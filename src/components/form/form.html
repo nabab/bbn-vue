@@ -2,7 +2,7 @@
       :disabled="disabled"
       :method="method"
       :autocomplete="autocomplete"
-      :class="['k-edit-form-container', 'bbn-flex-height', 'bbn-full-screen', componentClass]"
+      :class="currentClass"
       @submit.prevent="submit"
 >
   <div v-if="fixedFooter"
@@ -44,6 +44,7 @@
                   :key="i"
                   v-bind="button"
                   @click="submit()"
+                  glowing="green"
       ></bbn-button>
       <bbn-button v-else-if="button.command === reset"
                   :style="{visibility: modified || prefilled ? 'visible' : 'hidden'}"

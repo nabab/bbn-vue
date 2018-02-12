@@ -24,7 +24,11 @@
         <div class="k-block bbn-widget">
           <div class="k-header header">
             <div class="bbn-full-screen">
-              <h5 class="ui-sortable-handle" v-html="title"></h5>
+              <h5 :class="{
+                    'ui-sortable-handle': dashboard && dashboard.sortable
+                  }"
+                  v-html="title">
+              </h5>
             </div>
             <span class="button button-left">
               <i v-if="closable"
@@ -50,7 +54,7 @@
             </span>
           </div>
           <div class="content">
-            <component v-if="component" :is="component" :source="source"></component>
+            <component v-if="component" :is="component" :source="currentSource"></component>
             <div v-else-if="content" v-html="content"></div>
             <ul v-else-if="currentItems">
               <li v-for="(it, idx) in currentItems"

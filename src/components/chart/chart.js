@@ -169,6 +169,10 @@
       legend: {
         type: [Boolean, Array]
       },
+      legendPosition: {
+			  type: [String, HTMLElement],
+        default: undefined
+      },
       customLegend: {},
 
       /*threshold: {
@@ -236,7 +240,7 @@
       data(){
         let data = this.source;
         if ( this.isLine || this.isBar ){
-          if ( !Array.isArray(data.series[0]) && !this.distributeSeries ){
+          if ( data.series && !Array.isArray(data.series[0]) && !this.distributeSeries ){
             data.series = [data.series];
           }
         }
@@ -301,7 +305,8 @@
               }
             },
             removeAll: true,
-            legendNames: Array.isArray(this.legendFixed) ? this.legendFixed : false
+            legendNames: Array.isArray(this.legendFixed) ? this.legendFixed : false,
+            position: this.legendPosition || 'top'
           }));
         }
         // Thresold
@@ -959,6 +964,9 @@
               }
             });
             setTimeout(() => {
+              if ( this.isPie && this.legendPosition ){
+                $("ul.ct-legend.ct-legend-inside", this.widget.container).removeClass("ct-legend-inside");
+              }
               let legendHeight = $('ul.ct-legend:not(.ct-legend-inside)', this.widget.container).height(),
                   svgHeight = $('svg', this.widget.container).height(),
                   contHeight = $(this.widget.container).height();

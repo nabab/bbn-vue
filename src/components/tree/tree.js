@@ -61,6 +61,10 @@
         type: Boolean,
         default: false
       },
+      checkable: {
+        type: Boolean,
+        default: false
+      },
       // An array (or a function returning one) of elements for the node context menu
       menu: {
         type: [Array, Function]
@@ -134,7 +138,8 @@
         // dragging state, true if an element is being dragged
         dragging: false,
         // Real dragging will start after the mouse's first move, useful to kow if we are in a select or drag context
-        realDragging: false
+        realDragging: false,
+        checked: []
       };
     },
 
@@ -536,7 +541,7 @@
               criteria = path.shift(),
               idx = -1;
           if ( typeof(criteria) === 'object' ){
-            idx = bbn.fn.search(this.items, criteria);
+            idx = bbn.fn.search(this.items, {data: criteria});
           }
           else if ( this.tree.uid ){
             let cr = {};
@@ -551,7 +556,6 @@
             $.each(this.items, (i, a) => {
               if ( i !== idx ){
                 this.$set(this.items[idx], "path", []);
-                this.$set(this.items[idx], "path", []);
               }
             })
             if ( path.length ){
@@ -562,6 +566,9 @@
               this.$set(this.items[idx], "selected", true);
             }
           }
+        }
+        else {
+          //this.$set(this.items[idx], "path", []);
         }
       },
 
@@ -728,7 +735,6 @@
     components: {
       'bbn-tree-node': {
         name: 'bbn-tree-node',
-
         props: {
           filterString: {
             type: String
@@ -753,6 +759,10 @@
           },
           // True if the node is selectable
           selectable: {
+            type: Boolean,
+            default: true
+          },
+          checkable: {
             type: Boolean,
             default: true
           },
@@ -805,6 +815,7 @@
 
         data: function(){
           return {
+            double: false,
             // The parent tree
             parent: false,
             // The root tree
@@ -834,6 +845,26 @@
           }
         },
         methods: {
+          isChecked(){
+           return $.inArray(this.data[this.tree.uid], this.tree.checked) > -1
+          },
+          checkNode(){
+            if ( this.data[this.tree.uid] && $.inArray(this.data[this.tree.uid], this.tree.checked) === -1 ){
+              this.tree.checked.push(this.data[this.tree.uid]);
+              this.tree.$emit('check', this.data[this.tree.uid])
+            }
+          },
+          uncheckNode(){
+            let tmp = $.inArray(this.data[this.tree.uid], this.tree.checked);
+            if ( tmp > -1 ){
+              this.tree.checked.splice(tmp, 1)
+              this.tree.$emit('uncheck', this.data[this.tree.uid])
+            }
+          },
+          activate(){
+            let ev = $.Event('activate');
+            this.tree.$emit('activate', this, ev);
+          },
           remove(){
 
           },
@@ -867,18 +898,20 @@
             }
           },
           startDrag(e){
-            e.preventDefault();
-            e.stopImmediatePropagation();
-            this.tree.dragging = this;
-            if ( this.tree.droppableTrees.length ){
-              $.each(this.tree.droppableTrees, (i, a) => {
-                if ( a !== this.tree ){
-                  a.dragging = this;
-                }
-              });
+            if ( !this.double && this.tree.draggable ){
+              e.preventDefault();
+              e.stopImmediatePropagation();
+              this.tree.dragging = this;
+              if ( this.tree.droppableTrees.length ){
+                $.each(this.tree.droppableTrees, (i, a) => {
+                  if ( a !== this.tree ){
+                    a.dragging = this;
+                  }
+                });
+              }
+              $(document.body).one('mouseup', this.endDrag);
+              $(document.body).on("mousemove", this.drag);
             }
-            $(document.body).one('mouseup', this.endDrag);
-            $(document.body).on("mousemove", this.drag);
           },
           drag(e){
             bbn.fn.log("DS");
@@ -1073,6 +1106,13 @@
           })
         },
         watch: {
+          double(newVal){
+            if ( newVal ){
+              setTimeout(() => {
+                this.double = false
+              }, 500);
+            }
+          },
           isExpanded(newVal){
             if ( newVal ){
               if ( this.numChildren && !this.$refs.tree[0].isLoaded ){

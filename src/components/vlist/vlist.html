@@ -3,27 +3,26 @@
 >
   <ul :class="'k-widget k-popup k-group k-reset ' + mode + (parent ? ' k-menugroup' : ' k-menu k-menu-vertical k-context-menu')"
       @mouseleave.stop.prevent="leaveList($event)"
-  >
+      tabindex="0"
+      @keydown="pressKey">
     <li v-for="(li, idx) in items"
         v-show="!li.hidden"
         :class="{
           'k-item': true,
           'k-state-default': true,
-          'k-state-hover': currentIndex === idx,
+          'k-state-hover': !li.disabled && (currentIndex === idx),
           selected: li.selected ? true : false,
-          'k-state-disabled': !!li.disabled,
+          disabled: !!li.disabled,
           'k-first': idx === 0,
           'k-last': idx === items.length - 1
         }"
         :key="idx"
         :style="li.items && li.items.length ? 'z-index: auto;' : ''"
         @mouseenter="over(idx)"
-    >
-      <span class="k-link"
-            @mousedown="beforeClick"
-            @click.stop.prevent="select(idx)"
-            @mouseup="afterClick"
-      >
+        @mousedown="beforeClick"
+        @click.stop.prevent="select(idx)"
+        @mouseup="afterClick">
+      <span class="k-link">
         <span class="space" v-if="(mode === 'selection') || (mode === 'options')">
           <i v-if="(mode === 'selection') && (li.selected)" class="fa fa-check bbn-lg"></i>
           <i v-else-if="mode === 'options'" class="fa fa-check bbn-lg"></i>
@@ -37,6 +36,7 @@
         ></span>
       </span>
       <bbn-vlist v-if="li.items && li.items.length && (idx === currentIndex)"
+                 :level="level + 1"
                  @closeall="closeAll()"
                  :source="li.items"
                  :unique="li.unique"

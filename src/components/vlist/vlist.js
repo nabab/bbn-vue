@@ -1,7 +1,7 @@
 /**
  * Created by BBN on 15/02/2017.
  */
-(function($, bbn, kendo){
+(function($, bbn){
   "use strict";
 
   /**
@@ -32,6 +32,11 @@
       noIcon: {
         default: false
       },
+      // The hierarchy level, root is 0, and for each generation 1 is added to the level
+      level: {
+        type: Number,
+        default: 0
+      },
       left: {},
       right: {},
       top: {},
@@ -49,9 +54,10 @@
       }
       return {
         items: items,
-        currentIndex: false,
+        currentIndex: 0,
         currentHeight: 0,
-        currentWidth: 0
+        currentWidth: 0,
+        focused: false
       };
     },
     methods: {
@@ -88,6 +94,44 @@
           maxHeight: this.maxHeight
         };
       },
+      pressKey(e){
+        bbn.fn.log(e);
+        switch ( e.key ){
+          case "Enter":
+          case "Space":
+            this.select(this.currentIndex);
+            break;
+          case "Escape":
+            this.closeAll();
+            break;
+          case "ArrowLeft":
+            this.close();
+            break;
+          case "ArrowRight":
+            //this.close();
+            break;
+          case "ArrowDown":
+            if ( this.items.length ){
+              if ( this.currentIndex > this.items.length - 2 ){
+                this.currentIndex = 0;
+              }
+              else{
+                this.currentIndex++;
+              }
+            }
+            break;
+          case "ArrowUp":
+            if ( this.items.length ){
+              if ( this.currentIndex > 0 ){
+                this.currentIndex--;
+              }
+              else{
+                this.currentIndex = this.items.length - 1;
+              }
+            }
+            break;
+        }
+      },
       leaveList: function(e){
         if ( !isClicked ){
           this.close();
@@ -104,7 +148,7 @@
 
       over(idx){
         if ( this.currentIndex !== idx ){
-              this.currentIndex = idx;
+          this.currentIndex = idx;
           if ( this.items[idx].items ){
             var $item = $(this.$el).find(" > ul > li").eq(idx),
                 offset = $item.offset(),
@@ -123,8 +167,13 @@
       },
       closeAll(){
         this.close();
-        if ( this.$parent ){
+        if ( this.level ){
           this.$emit("closeall");
+        }
+        else{
+          this.$emit('close');
+          this.focused.focus();
+          this.focus = false;
         }
       },
       select(idx){
@@ -151,18 +200,17 @@
             }
           }
           if ( this.mode !== 'options' ){
-            this.close();
-            if ( this.parent ){
-              this.$emit("closeall");
-            }
+            this.closeAll();
           }
         }
       }
     },
     mounted(){
       this.$nextTick(() => {
+        this.focused = bbn.env.focused;
         this.currentHeight = $(this.$el).children().height();
         this.currentWidth = $(this.$el).children().width();
+        this.$el.children[0].focus();
           /*
         let style = {},
             h = $(this.$el).children().height();
@@ -188,4 +236,4 @@
     }
   });
 
-})(jQuery, bbn, kendo);
+})(jQuery, bbn);

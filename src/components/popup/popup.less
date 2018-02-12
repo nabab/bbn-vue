@@ -20,37 +20,32 @@
   .bbn-window{
     position: absolute;
     padding-top: 0px;
-    .bbn-popup-header{
-      position: relative;
-      /** Codemirror highest zIndex: 6 */
-      .bbn-popup-title{
-        height: 1.1em;
-        border-bottom: solid 1px;
-        padding: .4em;
-        font-size: 1.2em;
-        white-space: nowrap;
-        min-height: 16px;
-        > span{
-          cursor: move;
-        }
-        .bbn-popup-actions{
-          position: absolute;
-          right: 3px;
-          top: 3px;
-          i{
-            cursor: pointer;
-          }
+    /** Codemirror highest zIndex: 6 */
+    .bbn-popup-title{
+      /*
+      height: 1.1em;
+      */
+      padding: .4em 0;
+      white-space: nowrap;
+      h1,h2,h3,h4,h5,h6{
+        margin: 0 3em 0 1em;
+        /*cursor: move;*/
+        overflow: hidden;
+      }
+      .bbn-popup-actions{
+        position: absolute;
+        right: 3px;
+        top: 3px;
+        i{
+          cursor: pointer;
         }
       }
     }
     .bbn-popup-footer{
-      clear: both;
-      text-align: right;
+      text-align: center;
       border-width: 1px 0 0;
       border-style: solid;
-      position: relative;
       padding: .6em;
-      bottom: 0;
     }
   }
 }

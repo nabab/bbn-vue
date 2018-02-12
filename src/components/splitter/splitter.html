@@ -2,7 +2,9 @@
      :style="{
        gridTemplateColumns: columnsCfg,
        gridTemplateRows: rowsCfg,
-    }"
+     }"
+     v-if="currentOrientation !== 'auto'"
+     v-show="currentDimensions.length"
 >
   <slot></slot>
   <div v-for="(rs, i) in resizers"

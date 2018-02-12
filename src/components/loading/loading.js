@@ -43,7 +43,8 @@
         id: false,
         data: [],
         selected: 0,
-        numLoaded: 0
+        numLoaded: 0,
+        info: false
       };
     },
 
@@ -110,6 +111,18 @@
           this.id = false;
           this.length = false;
         }
+      },
+      deleteHistory(){
+        let tmp = [];
+        $.each(this.data, (i, a) => {
+          if ( a.isLoading ){
+            tmp.push(a);
+          }
+        });
+        this.data = tmp;
+      },
+      getInfo(){
+        this.info = true;
       }
     },
 

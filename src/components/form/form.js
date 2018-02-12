@@ -18,6 +18,10 @@
       disabled: {},
       script: {},
       fields: {},
+      fullScreen: {
+        type: Boolean,
+        default: false
+      },
       blank: {
         type: Boolean,
         default: false
@@ -47,6 +51,10 @@
       method: {
         type: String,
         default: 'post'
+      },
+      scrollable: {
+        type: Boolean,
+        default: true
       },
       buttons: {
         type: Array,
@@ -130,6 +138,16 @@
     computed: {
       hasFooter(){
         return !!((this.$slots.footer && this.$slots.footer.length) || this.realButtons.length);
+      },
+      currentClass(){
+        let st = 'k-edit-form-container ' + this.componentClass;
+        if ( this.fixedFooter ){
+          st += ' bbn-flex-height';
+        }
+        if ( this.fullScreen ){
+          st += ' bbn-full-screen';
+        }
+        return st;
       }
     },
     methods: {
@@ -156,10 +174,13 @@
               p.alert(this.successMessage);
               bbn.fn.info(this.successMessage, p);
             }
-            this.$emit('success', d);
-            let p = this._getPopup();
-            if ( p ){
-              p.close();
+            let e = new $.Event('success');
+            this.$emit('success', d, e);
+            if ( !e.isDefaultPrevented() ){
+              let p = this._getPopup();
+              if ( p ){
+                p.close();
+              }
             }
           }, (xhr, textStatus, errorThrown) => {
             this.$emit('failure', xhr, textStatus, errorThrown)
@@ -167,10 +188,13 @@
         }
         else{
           this.originalData = this.source;
-          this.$emit('success', this.source);
-          let p = this._getPopup();
-          if ( p ){
-            p.close();
+          let e = new $.Event('success');
+          this.$emit('success', this.source, e);
+          if ( !e.isDefaultPrevented() ){
+            let p = this._getPopup();
+            if ( p ){
+              p.close();
+            }
           }
         }
       },

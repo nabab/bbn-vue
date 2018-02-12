@@ -3,7 +3,7 @@
             leave-active-class="animated fadeOut"
 >
   <div :class="componentClass"
-       v-if="realContainer && (contentWidth > containerWidth)"
+       v-if="realContainer && (contentWidth > containerWidth + 3)"
        v-show="show && width"
        @click="jump"
        ref="scrollRail"

@@ -11,28 +11,46 @@ div.bbn-vlist{
     top: auto;
     left: auto;
   }
-  li{
-    .space{
-      display: inline-block;
-      width: 1.8em;
-      text-align: left;
+  > ul{
+    &.options{
+      > li{
+        .space{
+          opacity: 0;
+        }
+        &.selected .space{
+          opacity: 1;
+        }
+        &.disabled{
+          opacity: 1;
+          .space {
+            opacity: 0.5;
+          }
+        }
+      }
     }
-    .text{
-      i{
-        margin-right: 1em;
+    > li{
+      &.disabled{
+        opacity: 0.7;
+        .k-link{
+          cursor: default;
+        }
       }
-      &.disabled i{
-        opacity: 0.5;
+      .space{
+        display: inline-block;
+        width: 1.8em;
+        text-align: left;
       }
-      &.hidden i{
-        opacity: 0 !important;
+      .text{
+        i{
+          margin-right: 1em;
+        }
+        &.disabled i{
+          opacity: 0.5;
+        }
+        &.hidden i{
+          opacity: 0 !important;
+        }
       }
     }
-  }
-  >ul.options li .space i{
-    opacity: 0;
-  }
-  >ul.options li.selected .space i{
-    opacity: 1;
   }
 }

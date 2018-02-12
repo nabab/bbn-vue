@@ -91,6 +91,32 @@
     },
 
     computed: {
+      activeTab(){
+        if ( (this.selected !== false) && this.tabs[this.selected] ){
+          return this.getVue(this.selected)
+        }
+        return false;
+      },
+      activeRealTab(){
+        let tab = this.activeTab;
+        if ( tab ){
+          let sub = this.getSubTabNav(this.selected);
+          if ( sub ){
+            return sub.activeRealTab;
+          }
+        }
+        return tab;
+      },
+      activeTabNav(){
+        let tab = this.activeTab;
+        if ( tab ){
+          let sub = this.getSubTabNav(this.selected);
+          if ( sub ){
+            return sub.activeTabNav;
+          }
+        }
+        return this;
+      },
       fullBaseURL(){
         let vm = this,
             base = '',
@@ -638,8 +664,9 @@
       },
 
       getMenuFn(idx){
-        let items = (($.isFunction(this.tabs[idx].menu) ? this.tabs[idx].menu() : this.tabs[idx].menu) || []).slice();
-        let others = false;
+        let items = [],
+            tmp = (($.isFunction(this.tabs[idx].menu) ? this.tabs[idx].menu() : this.tabs[idx].menu) || []).slice(),
+            others = false;
         $.each(this.tabs, (i, a) => {
           if ( (i !== idx) && !a.static ){
             others = true;
@@ -650,7 +677,7 @@
           items.push({
             text: bbn._("Help"),
             key: "help",
-            icon: "zmdi zmdi-info",
+            icon: "zmdi zmdi-help-outline",
             command: () => {
               let tab = this.getVue(idx),
                   span = $('<span/>').html(this.tabs[idx].title),
@@ -660,7 +687,7 @@
               }
               tab.getPopup().open({
                 content: '<div class="bbn-padded bbn-lg">' + this.tabs[idx].help + '<div>',
-                title: bbn._("Help") + ': ' + title,
+                title: '<i class="w3-large zmdi zmdi-help-outline"> </i> <span class="bbn-iblock">' + title + '</span>',
                 width: '90%',
                 height: '90%'
               });
@@ -674,6 +701,21 @@
             icon: "fa fa-refresh",
             command: () => {
               this.reload(idx);
+            }
+          });
+        }
+        if ( tmp && tmp.length ){
+          $.each(tmp, (i, a ) => {
+            items.push(a)
+          })
+        }
+        if ( this.tabs[idx].icon && this.tabs[idx].title ){
+          items.push({
+            text: this.tabs[idx].notext ? bbn._("Show text") : bbn._("Show only icon"),
+            key: "notext",
+            icon: this.tabs[idx].notext ? "fa fa-font" : "fa fa-fonticons",
+            command: () => {
+              this.$set(this.tabs[idx], 'notext', !this.tabs[idx].notext);
             }
           });
         }
@@ -827,6 +869,8 @@
           if ( obj.url ){
             let res = {
               url: obj.url,
+              icon: obj.icon || false,
+              notext: obj.notext || false,
               load: true,
               title: obj.title ? obj.title : bbn._('Untitled'),
               static: !!obj.static,
@@ -1038,11 +1082,27 @@
           idx: {},
           component: {},
           icon: {
-            type: String
+            type: [String, Boolean],
+          },
+          notext: {
+            type: Boolean,
+            default: false
           },
           content: {
             type: String,
             default: ""
+          },
+          menu: {
+            type: Array
+          },
+          loaded: {
+            type: Boolean
+          },
+          fcolor: {
+            type: String
+          },
+          bcolor: {
+            type: String
           },
           load: {
             type: Boolean,
@@ -1161,21 +1221,34 @@
               this.$parent.tabs &&
               this.$parent.tabs[this.idx]
             ){
-              let menu = this.$parent.tabs[this.idx].menu || [];
-              if ( !obj.key ){
-                obj.key = bbn.fn.randomInt(99,99999999999);
+              if ( this.$parent.tabs[this.idx].menu === undefined ){
+                this.$parent.$set(this.$parent.tabs[this.idx], "menu", []);
               }
-              if ( $.isFunction(menu) ){
-                menu = () => {
-                  let items = menu() || [];
-                  items.push(obj);
-                  return items;
-                };
+              let menu = this.$parent.tabs[this.idx].menu,
+                  idx = bbn.fn.search($.isFunction(menu) ? menu() : menu, obj);
+              if ( idx === -1 ){
+                if ( $.isFunction(menu) ){
+                  this.$parent.$set(this.$parent.tabs[this.idx], "menu", () => {
+                    let items = menu() || [];
+                    if ( bbn.fn.search(items, obj) === -1 ){
+                      if ( !obj.key ){
+                        obj.key = bbn.fn.randomInt(99999,99999999999);
+                      }
+                      items.push(obj);
+                    }
+                    return items;
+                  });
+                }
+                else{
+                  if ( !obj.key ){
+                    obj.key = bbn.fn.randomInt(99999,99999999999);
+                  }
+                  menu.push(obj)
+                }
               }
               else{
-                menu.push(obj)
+                obj.key = menu[idx].key;
               }
-              this.$parent.$set(this.$parent.tabs[this.idx], "menu", menu);
               return obj.key;
             }
             return false;

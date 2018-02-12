@@ -2,14 +2,15 @@
 >
   <span class="content" v-if="id">
     <span class="buttons" v-if="data.length">
-      <i :title="_('History informations')"
+      <!--i :title="_('History informations')"
          :class="{
            'bbn-p': false,
            'bbn-lg': true,
            'fa': true,
            'fa-info-circle': true
          }"
-      ></i>
+         @click="getInfo"
+      ></i-->
       <i :title="_('Delete history')"
          :class="{
            'bbn-p': data.length,
@@ -18,7 +19,7 @@
            'fa-times-circle-o': true,
            'bbn-invisible': !data.length
          }"
-         @click="data = []"
+         @click="deleteHistory"
       ></i>
       <i :title="_('Previous Ajax call')"
          :class="{
@@ -61,4 +62,11 @@
       <span class="text" v-else v-html="text"></span>
     </a>
   </span>
+  <div class="k-widget"
+       style="position: absolute; width: 100%; height: 300px; bottom: 100%; left: 0px"
+       v-show="info">
+    <div class="bbn-full-screen bbn-middle">
+      <h1>Hello!</h1>
+    </div>
+  </div>
 </div>

@@ -52,6 +52,10 @@
         }
       },
       onResize() {
+        bbn.fn.warning("SCROLL RESIZE");
+        bbn.fn.log(this.$el.scrollTop);
+        this.$el.scrollLeft = 0;
+        this.$el.scrollTop = 0;
         if ( this.$refs.xScroller ){
           this.$refs.xScroller.onResize();
         }
@@ -64,10 +68,12 @@
       /** @todo WTF?? Obliged to execute the following hack to not have scrollLeft and scrollTop when we open a
        *  popup a 2nd time.
        */
+      /*
       this.$refs.scrollContainer.style.position = 'relative';
       setTimeout(() => {
         this.$refs.scrollContainer.style.position = 'absolute';
       }, 0)
+      */
       this.$emit('ready');
     },
     watch: {

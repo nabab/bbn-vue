@@ -34,25 +34,46 @@
         <span class="k-loading k-complete"
               :ref="'spinner' + tabIndex"
         ></span>
-        <span
-          :class="['k-link', {'bbn-tabnav-unsaved': tab.isUnsaved}]"
+        <span :class="['k-link', {'bbn-tabnav-unsaved': tab.isUnsaved}]"
               :ref="'title-' + tabIndex"
               :style="{
                 color: tab.fcolor ? tab.fcolor : null
               }"
-              v-html="tab.title ? tab.title : '&nbsp;'"
-        ></span>
+              tabindex="0"
+              @keydown.space.enter.prevent="tabIndex !== selected ? activateIndex(tabIndex) : (() => {})()"
+              @keydown.right.down.prevent="getRef('menu-' + tabIndex).$el.focus(true)"
+        >
+          <i v-if="tab.icon"
+             :class="'w3-large ' + tab.icon">
+          </i>
+          <span v-if="!tab.notext && tab.title"
+                v-html="tab.title">
+          </span>
+        </span>
         <div class="bbn-tabnav-selected"
              :ref="'selector-' + tabIndex"
              :style="{
                 backgroundColor: getTabColor(tabIndex)
               }"
         ></div>
-        <div class="bbn-tabnav-icons">
+        <div class="bbn-tabnav-icons"
+             @keydown.left.prevent="getRef('title-' + tabIndex).focus()"
+             @keydown.right.up.prevent="
+                if ( getRef('closer-' + tabIndex) ){
+                  getRef('closer-' + tabIndex).focus();
+                }
+                else if ( getRef('title=' + (tabIndex+1)) ){
+                  getRef('title=' + (tabIndex+1)).focus();
+                }">
           <i v-if="!tab.static && !tab.pinned"
              class="fa fa-times-circle bbn-p"
+             tabindex="-1"
+             :ref="'closer-' + tabIndex"
+             @keydown.left.down.prevent.stop="getRef('menu-' + tabIndex).$el.focus()"
+             @keydown.space.enter.prevent="close(tabIndex)"
              @click.stop.prevent="close(tabIndex)"></i>
           <bbn-context class="fa fa-caret-down bbn-p"
+                       tabindex="-1"
                        tag="i"
                        :source="getMenuFn"
                        :source-option="tabIndex"

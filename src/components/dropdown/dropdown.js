@@ -29,7 +29,21 @@
         }
       }
     },
+    data(){
+      return {
+        widgetName: "kendoDropDownList",
+        isOpened: false
+      };
+    },
     methods: {
+      _pressEnter(){
+        if ( this.isOpened ){
+          this.widget.select();
+        }
+        else{
+          this.widget.open();
+        }
+      },
       getOptions(){
         var vm = this,
             cfg = bbn.vue.getOptions(vm);
@@ -52,13 +66,16 @@
         cfg.dataTextField = this.sourceText || this.widgetOptions.dataTextField || 'text';
         cfg.dataValueField = this.sourceValue || this.widgetOptions.dataValueField || 'value';
         cfg.valuePrimitive = true;
+        cfg.open = () => {
+          bbn.fn.log("IS OPEN CHANGED TO TRUE");
+          this.isOpened = true;
+        };
+        cfg.close = () => {
+          bbn.fn.log("IS OPEN CHANGED TO FALSE");
+          this.isOpened = false;
+        };
         return cfg;
       }
-    },
-    data(){
-      return $.extend({
-        widgetName: "kendoDropDownList"
-      }, bbn.vue.treatData(this));
     },
     mounted(){
       const vm = this;

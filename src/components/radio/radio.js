@@ -88,7 +88,7 @@
 			    return 'display: grid; grid-template-columns: ' + 'auto '.repeat(this.step) + ';';
         }
         else {
-			    return '';
+          return '';
         }
       }
 		}

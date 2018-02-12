@@ -78,7 +78,7 @@
         default: true
       },
       order: {
-        type: Array,
+        type: [Array, Object],
         default(){
           return [];
         }
@@ -201,9 +201,17 @@
       }
     },
     data(){
-      let editable = $.isFunction(this.editable) ? this.editable() : this.editable;
+      let editable = $.isFunction(this.editable) ? this.editable() : this.editable,
+          order = this.order;
+      if ( this.sortable && this.order && (typeof this.order === 'object') && !$.isArray(this.order) ){
+        order = [];
+        for ( var n in this.order ){
+          order.push({field: n, dir: this.order[n]});
+        }
+      }
       return {
         ready: false,
+        currentIndex: false,
         currentConfig: {},
         savedConfig: false,
         defaultConfig: this.loadedConfig ? this.loadedConfig : {
@@ -218,7 +226,7 @@
         floatingFilterTimeOut: 0,
         currentFilters: $.extend({}, this.filters),
         currentLimit: this.limit,
-        currentOrder: this.order,
+        currentOrder: order,
         currentHidden: this.hidden || [],
         currentData: [],
         selectedRows: [],
@@ -354,7 +362,7 @@
             data = this.currentData.slice(),
             o,
             realIndex = 0,
-            end = data.length,
+            end = this.pageable ? this.currentLimit : this.currentData.length,
             aggregates = {
               tot: 0,
               num: 0,
@@ -397,13 +405,13 @@
             index: -1,
             data: this.tmpRow,
             selected: false,
-            expander: true,
+            expander: !!this.expander,
             isEdited: true
           });
         }
         let currentGroupIndex = -1,
             currentGroupNum;
-        while ( i < end ){
+        while ( data[i] && (i < end) ){
           let a = data[i];
           if ( isGroup && (currentGroupValue !== a[this.cols[this.group].field]) ){
             currentGroupValue = a[this.cols[this.group].field];
@@ -570,18 +578,6 @@
       _map(data){
         return this.map ? $.map(data, this.map) : data;
       },
-      _overTr(idx, remove){
-        if ( remove ){
-          setTimeout(() => {
-            if ( this.currentOverTr === idx ){
-              this.currentOverTr = false
-            }
-          }, 100)
-        }
-        else{
-          this.currentOverTr = idx;
-        }
-      },
       /** Returns header's CSS object */
       _headStyles(col){
         let css = {
@@ -687,6 +683,21 @@
           }
         }
         return false;
+      },
+      replaceAllValues(data){
+        if ( typeof(data) === 'object' ){
+          data = [data];
+        }
+        if ( $.isArray(data) ){
+          let i = 0;
+          while ( i < this.currentData.length ){
+            $.each(data, (j, a) => {
+              let o = this.currentData.splice(i, 1)[0];
+              this.currentData.splice(i, 0, $.extend(o, a));
+              i++;
+            })
+          }
+        }
       },
       getPopup(){
         return this.popup || bbn.vue.closest(this, 'bbn-tab').getPopup();
@@ -819,7 +830,7 @@
           (this.trClass ? ' ' + this.trClass(d.data) : '') +
           (d.index % 2 ? ' k-alt' : '') +
           (d.aggregated || d.groupAggregated ? ' k-header' : '') +
-          (this.currentOverTr === d.index ? ' k-state-hover' : '')
+          (this.currentIndex === d.index ? ' k-state-hover' : '')
       },
       unsetFilter(){
         this.currentFilters = $.extend({}, this.filters);
@@ -870,6 +881,8 @@
               }
             },
           },
+          width: '90%',
+          height: '90%',
           source: {
             fields: $.grep(this.cols, (a) => {
               return (a.filterable !== false) && !a.buttons;
@@ -905,6 +918,7 @@
         let table = this;
         this.getPopup().open({
           title: bbn._('Columns\' picker'),
+          width: '90%',
           component: {
             template: `
 <div class="bbn-table-column-picker bbn-full-screen">
@@ -1035,6 +1049,9 @@
           this._addTmp();
           row = this.tmpRow;
         }
+        else{
+          this.originalRow = $.extend(true, {}, row);
+        }
         this.editedRow = row;
         if ( this.editMode === 'popup' ){
           if ( typeof(title) === 'object' ){
@@ -1046,21 +1063,38 @@
               row: row,
               data: $.isFunction(this.data) ? this.data() : this.data
             },
-            title: title || bbn._('Row edition')
+            title: title || bbn._('Row edition'),
+            width: 700
           });
           if ( this.editor ){
             popup.component = this.editor;
           }
           else if ( this.url ){
-            let me = this;
+            let table = this;
             popup.component = {
               data(){
                 return {
-                  fields: me.cols,
+                  fields: table.cols,
                   data: row
                 }
               },
-              template: '<bbn-form action="' + this.url + '" :schema="fields" :source="data" :data="{action: \'' + (this.tmpRow ? 'insert' : 'update') + '\'}"></bbn-form>'
+              template: `
+<bbn-form class="bbn-full-screen"
+          action="` + table.url + `"
+          :schema="fields"
+          :source="data"
+          :data="{action: '` + (table.tmpRow ? 'insert' : 'update') + `'}"
+          @success="success"
+          @failure="failure">
+</bbn-form>`,
+              methods: {
+                success(d, e){
+                  table.$emit('editSuccess', d, e);
+                },
+                failure(d){
+                  table.$emit('editFailure', d);
+                },
+              }
             };
           }
           popup.afterClose = () => {
@@ -1068,7 +1102,6 @@
             this._removeTmp();
             this.editedRow = false;
           };
-          bbn.fn.log("beforePOPUP ", popup);
           this.getPopup().open(popup);
         }
       },
@@ -1342,6 +1375,14 @@
       cancel(){
         if ( this.tmpRow ){
           this._removeTmp();
+        }
+        else if ( this.editedRow && this.originalRow ){
+          let row = bbn.fn.get_row(this.currentSet, {isEdited: true});
+          if ( row ){
+            this.$set(this.currentData, row.index, this.originalRow);
+          }
+          this.originalRow = false;
+          this.editedRow = false;
         }
       },
       /** @todo */
@@ -1913,11 +1954,18 @@
     },
 
     watch: {
-      editedRow: {
-        deep: true,
-        handler(newVal){
-          bbn.fn.log("editedRow is changing", newVal);
+      editedRow(newVal, oldVal){
+        /*
+        if ( oldVal && this.originalRow ){
+          let row = bbn.fn.get_row(this.currentSet, {isEdited: true});
+          if ( row ){
+            this.$set(this.currentData, row.index, this.originalRow);
+          }
+          this.originalRow = false;
+          bbn.fn.log(newVal, oldVal, this.originalRow, row, '------------')
         }
+        */
+        bbn.fn.log("editedRow is changing", newVal);
       },
       cols: {
         deep: true,

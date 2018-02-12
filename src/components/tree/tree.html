@@ -58,6 +58,13 @@
                    @mouseover="if ( tree.dragging ){ isExpanded = true; }"
                 ></i>
               </span>
+              <span v-if="tree.checkable && tree.uid && (it.checkable !== false)">
+                <bbn-checkbox value="it.data[tree.uid]"
+                              :checked="isChecked"
+                              @check="checkNode"
+                              @uncheck="uncheckNode">
+                </bbn-checkbox>
+              </span>
               <component v-if="component"
                          :is="component"
                          :source="data"
@@ -67,8 +74,15 @@
                            :source="getMenu"
               >
                 <span class="selectable"
-                      @mousedown.left="if(tree.draggable){startDrag($event);}"
-                      @mouseup.left="if(!tree.realDragging && selectable){isSelected = !isSelected}"
+                      @dblclick="activate"
+                      @mousedown.left="startDrag"
+                      @mouseup.left="
+                      if ( !double ){
+                        if ( !tree.realDragging && selectable ){
+                          isSelected = !isSelected;
+                        }
+                        double = true;
+                      }"
                       tabindex="0"
                 >
                   <span class="icon">

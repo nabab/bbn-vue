@@ -283,7 +283,7 @@
         }
         return false;
       },
-      //loading the state, such as loading last state saved 
+      //loading the state, such as loading last state saved
       loadState( obj ){
         this.widget.focus();
         let doc = this.widget.getDoc();
@@ -292,11 +292,11 @@
             this.widget.foldCode(mark.line, 0);
           }
         }
-        if( obj.line && obj.char && !obj.selections.length){
+        if( obj.line > 0 || obj.char > 0 ){
           this.cursorPosition(obj.line, obj.char);
         }
         else{
-          if ( obj.selections && obj.selections.length ){
+          if ( obj.selections && obj.selections.length && (obj.line === 0 && obj.char === 0) ){
             for ( let i = 0; i < obj.selections.length; i++ ){
               doc.setSelection(obj.selections);
             }

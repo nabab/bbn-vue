@@ -16,11 +16,20 @@ div.bbn-tabnav {
       border-bottom-style: solid;
       border-bottom-width: 3px;
       li.k-item {
+        i:focus, span:focus{
+          color: red !important;
+        }
         margin: 0 !important;
         span.k-link {
           color: inherit;
           padding-right: 1.25em !important;
           padding-left: 1.25em !important;
+          vertical-align: middle;
+          > i, > span{
+            display: inline-block;
+            line-height: 18px;
+            vertical-align: top;
+          }
           &.bbn-tabnav-unsaved::after {
             content: '*';
           }

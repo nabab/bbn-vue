@@ -31,6 +31,14 @@
         type: [Boolean, Function],
         default: false
       },
+      glowing: {
+        type: [String, Boolean],
+        default: false
+      },
+      glowingColor: {
+        type: String,
+        default: '#c4a300'
+      }
     },
     computed: {
       isDisabled(){

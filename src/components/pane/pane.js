@@ -44,7 +44,8 @@
     data(){
       return {
         currentHidden: this.collapsed,
-        checker: false
+        checker: false,
+        ready: false
       };
     },
     watch:{
@@ -52,8 +53,9 @@
         this.currentHidden = val;
       }
     },
-    beforeMount(){
+    mounted(){
       this.$parent.init();
+      this.ready = true;
     },
   });
 

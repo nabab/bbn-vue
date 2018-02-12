@@ -334,8 +334,7 @@
                     v-if="d.group || d.expander || isExpanded(d) || d.aggregated"
                     :key="i"
                     :index="d.index"
-                    @mouseenter="_overTr(d.index)"
-                    @mouseleave="_overTr(d.index, true)"
+                    @mouseenter="currentIndex = d.index"
                     tabindex="0"
                     @focusin="focusRow(d.index)"
                     @focusout="blurRow(d.index)"
@@ -403,6 +402,7 @@
                     <component v-else-if="col.component"
                                v-bind="col.options"
                                :is="col.component"
+                               :key="d.index"
                                :source="col.mapper ? col.mapper(d.data) : d.data"
                     ></component>
                     <div v-else-if="col.buttons">
@@ -414,6 +414,7 @@
                     </div>
                     <bbn-field v-else-if="col.field && !col.render"
                                v-bind="col"
+                               :key="d.index"
                                :value="d.data[col.field]"
                                :data="d.data">
                     </bbn-field>
@@ -461,8 +462,7 @@
                       @focusin="focusRow(d.index)"
                       @focusout="blurRow(d.index)"
                       :index="d.index"
-                      @mouseenter="_overTr(d.index)"
-                      @mouseleave="_overTr(d.index, true)"
+                      @mouseenter="currentIndex = d.index"
                       :class="fullTrClass(d)"
                   >
                     <!-- Checkboxes -->
@@ -532,6 +532,7 @@
                       ></div>
                       <div v-else-if="d.groupAggregated && (col.field !== isAggregated)"> </div>
                       <component v-else-if="col.component"
+                                 :key="d.index"
                                  :is="col.component"
                                  :source="col.mapper ? col.mapper(d.data) : d.data"
                                  v-bind="col.options"
@@ -545,6 +546,7 @@
                       </div>
                       <bbn-field v-else-if="col.field && !col.render"
                                  v-bind="col"
+                                 :key="d.index"
                                  :value="d.data[col.field]"
                                  :data="d.data">
                       </bbn-field>
@@ -593,8 +595,7 @@
                     tabindex="0"
                     @focusin="focusRow(d.index)"
                     @focusout="blurRow(d.index)"
-                    @mouseenter="_overTr(d.index)"
-                    @mouseleave="_overTr(d.index, true)"
+                    @mouseenter="currentIndex = d.index"
                 >
                   <td v-if="d.group || d.expansion" :colspan="numRightVisible">
                     &nbsp;
@@ -642,6 +643,7 @@
                     <component v-else-if="col.component"
                                v-bind="col.options"
                                :is="col.component"
+                               :key="d.index"
                                :source="col.mapper ? col.mapper(d.data) : d.data"
                     ></component>
                     <div v-else-if="col.buttons">
@@ -654,6 +656,7 @@
                     <bbn-field v-else-if="col.field && !col.render"
                                v-bind="col"
                                :value="d.data[col.field]"
+                               :key="d.index"
                                :data="d.data">
                     </bbn-field>
                     <div v-else v-html="render(d, col, i)"></div>

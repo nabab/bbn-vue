@@ -1,10 +1,12 @@
-<span :class="componentClass">
+<span :class="componentClass"
+      @keydown.enter="_pressEnter"
+      @keydown.space="_pressEnter"
+      @click="click($event)"
+      @focus="focus($event)"
+      @blur="blur($event)">
   <input :value="value"
          ref="element"
          @input="update($event.target.value)"
-         @click="click($event)"
-         @focus="focus($event)"
-         @blur="blur($event)"
          :disabled="disabled"
          :required="required"
          :name="name"

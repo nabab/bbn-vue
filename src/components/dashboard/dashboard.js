@@ -104,7 +104,7 @@
             placeholder: "bbn-widget bbn-bg-grey bbn-widget-placeholder",
             opacity: 0.5,
             forcePlaceholderSize: true,
-            handle: "div.k-header h4",
+            handle: "h5.ui-sortable-handle",
             start: (e, ui) => {
               oldIdx = ui.item.index();
             },
@@ -273,12 +273,12 @@
       },
 
       add(obj, idx){
-        if ( (idx === undefined) || (idx < 0) || (key >= this.widgets.length) ){
-          this.order.push(a.key);
+        if ( (idx === undefined) || (idx < 0) || (obj.key >= this.widgets.length) ){
+          this.order.push(obj.key);
           this.widgets.push(obj);
         }
         else{
-          this.order.splice(idx, 0, a.key);
+          this.order.splice(idx, 0, obj.key);
           this.widgets.splice(idx, 0, obj);
         }
         return obj;
@@ -326,6 +326,7 @@
     },
 
     mounted(){
+      this.onResize();
       this.updateMenu();
     },
 
@@ -437,11 +438,12 @@
         data(){
           return {
             isLoading: false,
-            dashBoard: bbn.vue.closest(this, "bbn-dashboard"),
+            dashboard: false,
             currentItems: this.items,
             currentStart: this.start,
             currentTotal: this.total,
             currentContent: this.content || false,
+            currentSource: this.source,
             lang: {
               close: bbn._("Close")
             }
@@ -508,13 +510,7 @@
               this.load();
             })
           },
-          updateDashboard(){
-            if ( !this.dashboard ) {
-              this.dashboard = bbn.vue.closest(this, "bbn-dashboard");
-            }
-          },
           load: function(){
-            this.updateDashboard();
             if ( this.url ){
               let params = {
                 key: this.uid
@@ -537,6 +533,9 @@
                   if ( d.total !== undefined && (this.currentTotal !== d.total) ){
                     this.currentTotal = d.total;
                   }
+                }
+                else if ( typeof d === 'object' ){
+                  this.currentSource = d
                 }
                 this.$nextTick(() => {
                   this.isLoading = false;
@@ -580,19 +579,29 @@
             }
           },
           setConfig(){
-            this.dashboard.setConfig(this.uid, {
-              uid: this.uid,
-              limit: this.limit,
-              hidden: this.hidden,
-              index: this.index
-            });
+            if ( this.dashboard ){
+              this.dashboard.setConfig(this.uid, {
+                uid: this.uid,
+                limit: this.limit,
+                hidden: this.hidden,
+                index: this.index
+              });
+            }
           }
         },
         mounted(){
+          this.dashboard = bbn.vue.closest(this, "bbn-dashboard");
+          if ( this.dashboard && this.dashboard.sortable ){
+            if ( $(this.$el).closest(".bbn-masonry").hasClass("ui-sortable") ){
+              $(this.$el).closest(".bbn-masonry").sortable('refresh')
+            }
+          }
           this.load();
         },
         updated(){
-          this.dashboard.selfEmit(true);
+          if ( this.dashboard ){
+            this.dashboard.selfEmit(true);
+          }
         },
         watch: {
           limit(newVal){
@@ -601,6 +610,12 @@
           hidden(newVal){
             if ( !newVal ){
               this.load();
+            }
+          },
+          source: {
+            deep: true,
+            handler(newVal){
+              this.currentSource = newVal
             }
           }
         }

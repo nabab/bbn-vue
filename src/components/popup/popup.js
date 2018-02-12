@@ -59,11 +59,12 @@
       noText: {
         type: String,
         default: bbn._("No")
-      },
+      }
     },
 
     data: function(){
       return {
+        type: false,
         items: []
       }
     },
@@ -221,18 +222,6 @@
         if ( !a.component && !a.content ){
           a.content = ' ';
         }
-        if ( !a.width ){
-          a.width = this.defaultWidth;
-        }
-        else if ( typeof(a.width) === 'number' ){
-          a.width = a.width.toString() + 'px';
-        }
-        if ( !a.height ){
-          a.height = this.defaultHeight;
-        }
-        else if ( typeof(a.height) === 'number' ){
-          a.height = a.height.toString() + 'px';
-        }
         return a;
       },
 
@@ -317,10 +306,9 @@
         let onYes = false,
             onNo = false;
         if ( typeof(o) !== 'object' ){
-          o = {};
+          o = {title: false};
           let options = {},
               has_msg = false,
-              has_title = false,
               has_yes = false,
               has_width = false,
               i;
@@ -337,9 +325,6 @@
                 o.width = arguments[i];
                 has_width = 1;
               }
-            }
-            else if ( !has_title && (typeof arguments[i] === 'string') ){
-              o.title = arguments[i];
             }
             else if ( !has_yes && (typeof arguments[i] === 'string') ){
               o.yesText = arguments[i];
@@ -373,31 +358,29 @@
           if ( !o.noText ){
             o.noText = this.noText;
           }
-          if ( !o.width ){
-            o.width = 400;
-          }
-          if ( !o.height ){
-            o.height = 200;
-          }
           o.component = {
             template: `
-<div class="bbn-100 bbn-flex-height">
-  <div class="bbn-w-100 bbn-flex-fill">
-    <div class="bbn-lpadded bbn-lg">` + o.content + `</div>
-  </div>
-  <div class="bbn-popup-footer">
-    <bbn-button class="bbn-bg-white bbn-black"
-                @click="yes()"
-                icon="fa fa-check-circle"
-                text="` + o.yesText + `"
-    ></bbn-button>
-    <bbn-button class="bbn-bg-black bbn-white"
-                @click="no()"
-                icon="fa fa-times-circle"
-                text="` + o.noText + `"
-    ></bbn-button>
-  </div>
-</div>
+    <div class="bbn-flex-height">
+      <div class="bbn-flex-fill">
+        <div class="bbn-lpadded bbn-lg" style="white-space: nowrap">` + o.content + `</div>
+      </div>
+      <div class="bbn-popup-footer">
+        <bbn-button @click="yes()"
+                    icon="fa fa-check-circle"
+                    text="` + o.yesText + `"
+                    class="w3-green"
+                    tabindex="0"
+                    ref="yes"
+        ></bbn-button>
+        <bbn-button @click="no()"
+                    icon="fa fa-times-circle"
+                    text="` + o.noText + `"
+                    class="w3-red"
+                    tabindex="0"
+                    ref="no"
+        ></bbn-button>
+      </div>
+    </div>
 `,
             data(){
               return {
@@ -421,7 +404,9 @@
             },
             mounted(){
               this.window = bbn.vue.closest(this, 'bbn-window');
-              $(this.$el).find(".bbn-button:last").focus();
+              setTimeout(() => {
+                this.$refs.no.$el.focus();
+              }, 50)
             }
           };
           this.open($.extend(o, {
@@ -507,7 +492,7 @@
     watch: {
       items: function(){
         this.makeWindows()
-      }
+      },
     },
 
     components: {
@@ -516,9 +501,21 @@
         mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent],
         props: {
           width: {
-            type: [String, Number]
+            type: [String, Number, Boolean]
           },
           height: {
+            type: [String, Number, Boolean]
+          },
+          minWidth: {
+            type: [String, Number]
+          },
+          minHeight: {
+            type: [String, Number]
+          },
+          maxWidth: {
+            type: [String, Number]
+          },
+          maxHeight: {
             type: [String, Number]
           },
           maximizable: {
@@ -562,7 +559,7 @@
             type: [String, Function, Object]
           },
           title: {
-            type: String,
+            type: [String, Boolean],
             default: bbn._("Untitled")
           },
           index: {
@@ -591,36 +588,67 @@
           return {
             isMaximized: this.maximized,
             widthUnit: (typeof this.width === 'string') && (this.width.substr(-1) === '%') ? '%' : 'px',
-            realWidth: parseInt(this.width),
+            currentWidth: this.width,
             heightUnit: (typeof this.height === 'string') && (this.height.substr(-1) === '%') ? '%' : 'px',
-            realHeight: parseInt(this.height),
+            currentHeight: this.height,
             closingFunctions: fns,
-            popup: false
+            showContent: false,
+            popup: false,
           }
         },
 
         computed: {
-          top(){
-            if ( !this.popup || this.isMaximized ){
-              return 0;
+          realWidth(){
+            if ( !this.currentWidth ){
+              return 'auto';
             }
-            if ( this.heightUnit === '%' ){
-              return Math.round((100 - parseInt(this.realHeight)) / 2);
+            if ( typeof this.currentWidth === 'number' ){
+              return this.currentWidth.toString() + 'px'
             }
-            return Math.round((this.popup.lastKnownHeight - parseInt(this.realHeight)) / 2);
+            return this.currentWidth;
           },
-          left(){
-            if ( !this.popup || this.isMaximized ){
-              return 0;
+          realHeight(){
+            if ( !this.currentHeight ){
+              return 'auto';
             }
-            if ( this.widthUnit === '%' ){
-              return Math.round((100 - parseInt(this.realWidth)) / 2);
+            if ( typeof this.currentHeight === 'number' ){
+              return this.currentHeight.toString() + 'px'
             }
-            return Math.round((this.popup.lastKnownWidth - parseInt(this.realWidth)) / 2);
-          }
+            return this.currentHeight;
+          },
         },
 
         methods: {
+          onResize(){
+            if ( this.realHeight === 'auto' ){
+              let target = $('div.bbn-scroll-container', this.$refs.container[0])[0],
+                  height = target ? target.scrollHeight : 0;
+
+              if ( height ){
+                //height += 50;
+              }
+              else {
+                target = $('div.bbn-flex-height', this.$refs.container[0])[0];
+                height = target ? target.scrollHeight : 0;
+              }
+              if ( !height ){
+                height = '90%';
+              }
+              else if ( height > bbn.env.height ){
+                height = bbn.env.height + 'px';
+              }
+              else{
+                height += 'px';
+              }
+              this.$refs.container[0].style.height = height;
+            }
+            this.$nextTick(() => {
+              let scroll = bbn.vue.find(this, 'bbn-scroll');
+              if ( scroll ){
+                scroll.selfEmit(true);
+              }
+            });
+          },
           addClose(fn){
             for ( let i = 0; i < arguments.length; i++ ){
               if ( typeof arguments[i] === 'function' ){
@@ -664,28 +692,7 @@
             }
           },
           onShow(){
-            this.selfEmit(true);
-            if ( this.draggable ){
-              $(this.$el).draggable({
-                handle: ".bbn-popup-title",
-                containment: ".bbn-popup"
-              });
-            }
-            if ( this.resizable ){
-              $(this.$el).resizable({
-                handles: "se",
-                containment: ".bbn-popup",
-                resize: () => {
-                  this.selfEmit();
-                },
-                stop: () => {
-                  this.realWidth = parseFloat($(this.$el).css("width"));
-                  this.realHeight = parseFloat($(this.$el).css("height"));
-                  //this.center();
-                  this.selfEmit();
-                }
-              });
-            }
+            this.onResize();
           }
         },
         created(){
@@ -693,11 +700,14 @@
         },
         mounted(){
           this.$el.style.display = 'block';
+          //this.onResize();
         },
         watch: {
           isMaximized(){
-            //; $forceUpdate(); center(index)
-          }
+            this.$nextTick(() => {
+              this.onResize();
+            })
+          },
         }
       }
     }

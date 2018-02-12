@@ -61,6 +61,10 @@
     localPrefix: '',
     loadingComponents: [],
     loadedComponents: [],
+    queueTimer: 0,
+    queue: [],
+    queueTimerBBN: 0,
+    queueBBN: [],
     components: {
       autocomplete: {},
       button: {},
@@ -160,7 +164,7 @@
           tmp[value] = null;
           res.unshift(tmp)
         }
-        return src;
+        return res;
       };
       if ( typeof(vm.source) === 'string' ){
         if ( vm.$options.propsData.filterValue && !vm._isFilterValueWatched ){
@@ -314,46 +318,128 @@
       }
     },
 
-    announceComponent(name, url, mixins){
-      if ( !bbn.vue.isNodeJS && (typeof(name) === 'string') && (Vue.options.components[name] === undefined) ){
-        Vue.component(name, (resolve, reject) => {
-          bbn.fn.post(url, (r) => {
+    queueComponent(name, url, mixins, resolve, reject){
+      clearTimeout(bbn.vue.queueTimer);
+      bbn.vue.queue.push({
+        name: name,
+        url: url,
+        mixins: mixins,
+        resolve: resolve,
+        reject: reject
+      });
+      bbn.vue.queueTimer = setTimeout(() => {
+        let todo = bbn.vue.queue.splice(0, bbn.vue.queue.length);
+        bbn.fn.warning("QUEUE: " + todo.length);
+        $.each(todo, (i, a) => {
+          bbn.fn.post(a.url, (r) => {
             if ( r.script ){
               if ( r.css ){
                 $(document.head).append('<style>' + r.css + '</style>');
               }
               if ( r.content ){
-                $(document.body).append('<script type="text/x-template" id="bbn-tpl-component-' + name + '">' + r.content + '</script>');
+                $(document.body).append('<script type="text/x-template" id="bbn-tpl-component-' + a.name + '">' + r.content + '</script>');
               }
               //let data = r.data || {};
               let res = eval(r.script);
               if ( typeof res === 'object' ){
                 if ( !res.template ){
-                  res.template = '#bbn-tpl-component-' + name;
+                  res.template = '#bbn-tpl-component-' + a.name;
                 }
                 if ( !res.props ){
                   res.props = ['source'];
                 }
                 if ( !res.name ){
-                  res.name = name;
+                  res.name = a.name;
                 }
-                if ( mixins ){
+                if ( a.mixins ){
                   if ( res.mixins ){
-                    $.each(mixins, (i, a) => {
-                      res.mixins.push(a);
+                    $.each(a.mixins, (j, b) => {
+                      bbn.fn.log(j, b);
+                      alert("mixins in bbn-vue.js");
+                      res.mixins.push(b);
                     })
                   }
                   else{
-                    res.mixins = mixins;
+                    res.mixins = a.mixins;
                   }
                 }
-                Vue.component(name, res);
+                Vue.component(a.name, res);
               }
-              resolve('ok');
+              a.resolve('ok');
               return;
             }
-            reject();
+            a.reject();
           })
+        });
+      }, 500)
+    },
+
+    queueComponentBBN(name, resolve, reject){
+      if ( bbn.fn.search(bbn.vue.queueBBN, {name: name}) === -1 ){
+        clearTimeout(bbn.vue.queueTimerBBN);
+        bbn.vue.queueBBN.push({
+          name: name,
+          resolve: resolve,
+          reject: reject
+        });
+        bbn.vue.queueTimerBBN = setTimeout(() => {
+          let todo = bbn.vue.queueBBN.splice(0, bbn.vue.queueBBN.length),
+              url = bbn_root_url + bbn_root_dir + 'components/?components=' + $.map(todo, (a) => {
+                return a.name;
+              }).join(',');
+          if ( bbn.env.isDev ){
+            url += '&test=1';
+          }
+          bbn.fn.ajax(url)
+            .then((res) => {
+              let prom = eval(res);
+              prom.then((arr) => {
+                // arr is the answer!
+                if ( $.isArray(arr) ){
+                  bbn.fn.warning("RES!!!!!");
+                  bbn.fn.log(arr);
+                  $.each(arr, (i, r) => {
+                    let resolved = false;
+                    if ( (typeof(r) === 'object') && r.script && r.name ){
+                      let idx = bbn.fn.search(todo, {name: r.name});
+                      if ( idx > -1 ){
+                        let a = todo[idx];
+                        if ( r.html && r.html.length ){
+                          $.each(r.html, (j, h) => {
+                            if ( h && h.content ){
+                              let id = 'bbn-tpl-component-' + a.name + (h.name === a.name ? '' : '-' + h.name),
+                                  $tpl = $('<script type="text/x-template" id="' + id + '"></script>');
+                              $tpl.html(h.content);
+                              document.body.appendChild($tpl[0]);
+                            }
+                          })
+                        }
+                        if ( r.css ){
+                          $(document.head).append('<style>' + r.css + '</style>');
+                        }
+                        r.script();
+                        if ( a.resolve !== undefined ){
+                          a.resolve(true);
+                          resolved = true;
+                        }
+                      }
+                    }
+                    if ( !resolved ){
+                      a.reject();
+                    }
+                  })
+                }
+                return prom;
+              })
+            })
+        }, 1000);
+      }
+    },
+
+    announceComponent(name, url, mixins){
+      if ( !bbn.vue.isNodeJS && (typeof(name) === 'string') && (Vue.options.components[name] === undefined) ){
+        Vue.component(name, (resolve, reject) => {
+          return bbn.vue.queueComponent(name, url, mixins, resolve, reject);
         });
       }
     },
@@ -365,41 +451,7 @@
           /** @var string bbn_root_url */
           /** @var string bbn_root_dir */
           Vue.component('bbn-' + a, (resolve, reject) => {
-            let url = bbn_root_url + bbn_root_dir + 'components/' + a + "/?component=1";
-
-            if ( bbn.env.isDev ){
-              url += '&test=1';
-            }
-            bbn.fn.ajax(url, "script")
-              .then((res) => {
-                let prom = typeof(res) === 'string' ? eval(res) : res;
-                prom.then((r) => {
-                  // r is the answer!
-                  if ( (typeof(r) === 'object') && r.script ){
-                    if ( r.html && r.html.length ){
-                      $.each(r.html, (j, h) => {
-                        if ( h && h.content ){
-                          let id = 'bbn-tpl-component-' + a + (h.name === a ? '' : '-' + h.name),
-                              $tpl = $('<script type="text/x-template" id="' + id + '"></script>');
-                          $tpl.html(h.content);
-                          document.body.appendChild($tpl[0]);
-                        }
-                      })
-                    }
-                    if ( r.css ){
-                      $(document.head).append('<style>' + r.css + '</style>');
-                    }
-                    setTimeout(() => {
-                      r.script();
-                      if ( resolve !== undefined ){
-                        resolve(prom);
-                      }
-                    }, 0);
-                    return prom;
-                  }
-                  reject();
-                })
-              })
+            bbn.vue.queueComponentBBN(a, resolve, reject);
           });
         }
       }
@@ -413,6 +465,14 @@
             return [];
           }
         },
+      },
+      methods: {
+        getRef(name){
+          if ( this.$refs[name] ){
+            return this.$refs[name][0] || this.$refs[name];
+          }
+          return {};
+        }
       },
       beforeCreate(){
         if ( !this.$options.render ){
@@ -630,7 +690,7 @@
     dataSourceComponent: {
       props: {
         source: {
-          type: [Array, Object, String],
+          type: [Array, Object, String, Function],
           default(){
             return [];
           }
@@ -1288,7 +1348,7 @@
     find(vm, selector, index){
       let vms = bbn.vue.getComponents(vm);
       let realIdx = 0;
-      index = parseInt(index);
+      index = parseInt(index) || 0;
       if ( vms ){
         for ( let i = 0; i < vms.length; i++ ){
           if ( bbn.vue.is(vms[i], selector) ){

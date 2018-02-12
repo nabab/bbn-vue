@@ -112,7 +112,7 @@
       // Is the component multi filter
       multi: {
         type: Boolean,
-        default: true
+        default: false
       },
       // The type of data for the operators (see this.editorOperators)
       type: {
@@ -168,6 +168,18 @@
             this.$emit('set', obj)
           }
         }
+        return obj;
+      },
+      unsetCondition(obj){
+        if ( obj.field && obj.operator && obj.time ){
+          if ( this.multi ){
+            this.conditions.push(obj);
+          }
+          else{
+            this.$emit('set', obj)
+          }
+        }
+        return obj;
       },
       hasFields(){
         return this.fields && Object.keys(this.fields).length;
@@ -291,6 +303,7 @@
             currentComponentOptions: this.componentOptions,
             currentOperator: this.operator || '',
             currentOperators: [],
+            currentCondition: false,
             has_group: false,
             has_condition: true,
             items: [],
@@ -336,7 +349,7 @@
           }
         },
         methods: {
-          validate(){
+          validate(cancel){
             if ( this.currentField && this.currentOperator && (this.editorHasNoValue(this.currentOperator) || this.currentValue) ){
               var tmp = {
                 field: this.currentField,
@@ -345,7 +358,15 @@
               if ( !this.editorHasNoValue(this.currentOperator) ){
                 tmp.value = this.currentValue;
               }
-              this.$emit('validate', tmp);
+              if ( (cancel === true) && this.currentCondition){
+                this.$parent.unsetCondition(this.currentCondition);
+                this.currentCondition = false;
+              }
+              else{
+                this.currentCondition = this.$parent.setCondition(tmp);
+                bbn.fn.log("CONDI", this.currentCondition);
+              }
+              //this.$emit(cancel ? 'invalidate' : 'validate', tmp, cancel);
             }
             else{
               bbn.fn.alert("Valeur obligatoire, sinon vous pouvez choisir d'autres opérateurs si vous cherchez un élément nul ou vide");

@@ -23,26 +23,28 @@
        * String => the same title to axixs X and Y.
        * Object => {x: 'titlex', y: 'titley'}
        */
-			title: {
+      title: {
         type: String,
         default: ''
       },
       titleX: {
-			  type: String,
+        type: String,
         default: undefined
       },
       titleY: {
-			  type: String,
+        type: String,
         default: undefined
       },
       width: {
-        type: Number
+        type: String,
+        default: '100%'
       },
       height: {
-        type: Number
+        type: String,
+        default: '100%'
       },
-      point: {
-        type: [Boolean, Number],
+      showPoint: {
+        type: Boolean,
         default: true
       },
       showLine: {
@@ -64,8 +66,8 @@
       showArea: {
         type: Boolean
       },
-      label: {
-        type: [Boolean, Function],
+      showLabel: {
+        type: Boolean,
         default: true
       },
       axisX: {
@@ -88,7 +90,7 @@
         type: Boolean,
         default: false
       },
-			odd: {
+      odd: {
         type: Boolean
       },
       even: {
@@ -165,15 +167,9 @@
         default: false
       },
       legend: {
-        type: [Boolean, String],
-        default: true
+        type: [Boolean, Array]
       },
-      customLegend: {
-
-      },
-      insetLegend: {
-			  type: Object
-      },
+      customLegend: {},
 
       /*threshold: {
         type: Number
@@ -238,13 +234,51 @@
     },
     computed: {
       data(){
-        let data = this.source;
-        if ( this.isLine || this.isBar ){
-          if ( !Array.isArray(data.series[0]) && !this.distributeSeries ){
-            data.series = [data.series];
+        let data = [],
+            fixSeriesLabels = (ser) => {
+              let tmp = {};
+              if ($.isArray(ser) ){
+                $.each(ser, (i, s) => {
+                  tmp[this.source.labels[i]] = s;
+                });
+              }
+              return tmp;
+            };
+        if ( (typeof this.source === 'object') && this.source.series && this.source.labels ){
+          if ( $.isArray(this.source.series[0]) ){
+            $.each(this.source.series, (i, s) => {
+              let tmp = fixSeriesLabels(s);
+              if ( this.legend && this.legend[i] ){
+                tmp = {
+                  name: this.legend[i],
+                  data: tmp
+                };
+              }
+              data.push(tmp);
+            });
+          }
+          else {
+            data.push(fixSeriesLabels(this.source.series));
           }
         }
-        return data;
+        else if ( $.isArray(this.source) ){
+          $.each(this.source, (i, s) => {
+            let tmp = {};
+            if ( $.isArray(s) ){
+              $.each(s, (k, v) => {
+                tmp[v[0]] = v[1];
+              });
+            }
+            if ( this.legend && this.legend[i] ){
+              tmp = {
+                name: this.legend[i],
+                data: tmp
+              };
+            }
+            data.push(tmp);
+          });
+        }
+        return data.length === 1 ? data[0] : data;
       },
       isLine(){
         return this.type === 'line';
@@ -255,8 +289,14 @@
       isPie(){
         return this.type === 'pie';
       },
-      isDonut(){
-        return (this.type === 'pie') && this.donut;
+      isColumn(){
+        return this.type === 'column';
+      },
+      isArea(){
+        return this.type === 'area';
+      },
+      isScatter(){
+        return this.type === 'scatter';
       },
       legendFixed(){
         if ( Array.isArray(this.legend) && (typeof this.legend[0] === 'object') ){
@@ -279,15 +319,7 @@
         }
       },
       lineCfg(){
-        let cfg = {
-          lineSmooth: this.step && this.showLine ? Chartist.Interpolation.step() : this.lineSmooth,
-          point: {
-            show: $.isNumeric(this.point) ? true : this.point,
-            r: $.isNumeric(this.point) ? this.point : undefined
-          },
-          showLine: this.showLine,
-          pointLabel: this.pointLabel
-        };
+        let cfg = {};
         return this.isLine ? $.extend(true, cfg, this.lineBarCommon) : {};
       },
       barCfg(){
@@ -297,6 +329,7 @@
         return this.isBar ? $.extend(true, cfg, this.lineBarCommon) : {};
       },
       lineBarCommon(){
+        return {};
         if ( this.isLine || this.isBar ){
           let cfg = {
             chartPadding: {
@@ -358,45 +391,79 @@
         return {};
       },
       pieCfg(){
-        return this.isPie ? {
-        [this.isDonut ? 'donut' : 'pie']: {
-          label: {
-            show: $.isFunction(this.label) ? true : this.label,
-            format: $.isFunction(this.label) ? this.label : (val) => { return val; }
-          },
-          width: $.isNumeric(this.donut) ? this.donut : undefined
-          }
-        } : {};
-      },
-      widgetCfg(){
-        const vm = this;
-        let cfg = $.extend(true, {
-          bindto: this.$refs.chart,
-          data: {
-            columns: [],
-            type: this.isDonut ? 'donut' : this.type
-          },
-          size: {
-            width: this.width || undefined,
-            height: this.height || undefined
-          },
-          padding: {
-            top: this.paddingTop || this.padding,
-            right: this.paddingRight || this.padding,
-            left: this.paddingLeft || this.padding,
-            bottom: this.paddingBottom || this.padding
-          },
-          legend: {
-            show: typeof this.legend === 'string' ? true : this.legend,
-            position: typeof this.legend === 'string' ? this.legend : undefined,
-            inset: ((this.legend === 'inset') && this.insetLegend) ? this.insetLegend : undefined
-          },
-          tooltip: {
-            show: $.isFunction(this.tooltip) ? true : this.tooltip,
-            format: {
-              value: $.isFunction(this.tooltip) ? this.tooltip : undefined
+        let cfg = {
+          donut: !!this.donut,
+          chartPadding: this.padding,
+          showLabel: this.showLabel,
+          labelDirection: this.labelExternal ? 'explode' : 'neutral',
+          labelOffset: this.labelOffset,
+          labelInterpolationFnc: (value) => {
+            if ( this.labelWrap ){
+              let ret = '',
+                  labelWrap = typeof this.labelWrap === 'number' ? this.labelWrap : 25,
+                  tmp,
+                  cont = 0,
+                  arr,
+                  spl = (text) => {
+                    let r = '',
+                        idx = labelWrap;
+                    if ( text.length <= labelWrap ){
+                      return text;
+                    }
+                    for ( let i = labelWrap; i < text.length; i += labelWrap ){
+                      if ( i === labelWrap ){
+                        r += text.slice(0, i) + "\n"
+                      }
+                      r += text.slice(idx, i) + "\n";
+                      idx = i;
+                    }
+                    return r + text.slice(idx);
+                  };
+              if ( typeof value === 'number' ){
+                value = value.toString();
+              }
+              if ( value.length <= labelWrap ){
+                return value;
+              }
+              if ( value.indexOf('\n') !== -1 ){
+                arr = value.split('\n');
+                arr.forEach((a, i) => {
+                  ret += spl(a) + (arr[i+1] ? '\n' : '');
+                });
+                return ret;
+              }
+              return spl(value);
+            }
+            else {
+              return value;
             }
           }
+        };
+        if ( typeof this.donut === 'number' ){
+          cfg.donutWidth = this.donut;
+        }
+        else if ( this.donut ){
+          cfg.donutWidth = '100%';
+        }
+        // Force donut if animation is active
+        if ( this.animation ){
+          cfg.donut = true;
+          cfg.donutWidth = '100%';
+        }
+        return this.isPie ? cfg : {};
+      },
+      columnCfg(){},
+      areaCfg(){},
+      scatterCfg(){},
+      widgetCfg(){
+        return {};
+        let cfg = $.extend(true, {
+          type: this.type,
+          fullWidth: this.fullWidth,
+          width: this.width,
+          height: this.height,
+          tooltip: this.tooltip,
+          plugins: this.plugins
         }, this.cfg);
         if ( this.isLine ){
           $.extend(true, cfg, this.lineCfg);
@@ -412,39 +479,320 @@
     },
     methods: {
       init(){
-        // if ( this.widget ){
-        //   this.widget.detach();
-        //   this.widget = false;
-        // }
-        // Widget initialization
-        this.widget = new c3.generate(this.widgetCfg);
-        this.setColumns();
-        // Set items color
-        if ( this.color ){
-          //this.setColor();
+        if ( this.widget ){
+          //this.widget.detach();
+          this.widget = false;
         }
-        // Set labels color
-        if ( this.labelColor || this.labelColorX || this.labelColorY ){
-          //this.setLabelColor();
-        }
-        // Set grid color
-        if ( this.gridColor ){
-          //this.setGridColor();
-        }
-        // Operations to be performed during the widget draw
-        //this.widgetDraw();
-        // Operations to be performed after widget creation
-        //this.widgetCreated();
-
+        setTimeout(() => {
+          // Widget configuration
+          if ( this.isPie ){
+            this.pieChart();
+          }
+          else if ( this.isColumn ){
+            this.columnChart();
+          }
+          else if ( this.isBar ){
+            this.barChart();
+          }
+          else if ( this.isArea ){
+            this.areaChart();
+          }
+          else if ( this.isScatter ){
+            this.scatterChart();
+          }
+          else {
+            this.lineChart();
+          }
+          // Set items color
+          /*if ( this.color ){
+            this.setColor();
+          }*/
+          // Set labels color
+          /*if ( this.labelColor || this.labelColorX || this.labelColorY ){
+            this.setLabelColor();
+          }*/
+          // Set grid color
+          /*if ( this.gridColor ){
+            this.setGridColor();
+          }*/
+          // Operations to be performed during the widget draw
+          /*this.widgetDraw();*/
+          // Operations to be performed after widget creation
+          /*this.widgetCreated();*/
+        }, 100);
       },
-      setColumns(){
-        if ( this.source.labels && this.source.labels.length && this.source.series ){
-          let d = [];
-          $.each(this.source.series, (i, v) => {
-            d.push([this.source.labels[i], v]);
+      pieChart(){
+        // Create widget
+        this.widget = new Chartist.Pie(this.$refs.chart, this.data, this.widgetCfg);
+        // Animations
+        this.pieAnimation();
+      },
+      lineChart(){
+        // Create widget
+        //this.widget = new Chartkick.LineChart(this.$refs.chart, this.data, this.widgetCfg);
+        this.widget = new Chartkick.LineChart(this.$refs.chart, this.data);
+        // Animations
+        //this.lineAnimation();
+      },
+      barChart(){
+        // Create widget
+        this.widget = new Chartist.Bar(this.$refs.chart, this.data, this.widgetCfg);
+        // Animations
+        this.barAnimation();
+      },
+      columnChart(){},
+      areaChart(){},
+      scatterChart(){},
+      getColorIdx(c){
+        return c.element._node.parentElement.className.baseVal.replace('ct-series ', '').slice(-1).charCodeAt()-97;
+      },
+      lineAnimation(){
+        if ( this.animation ){
+          let seq = 0,
+              delays = $.isNumeric(this.animation) ? this.animation : 20,
+              durations = 500;
+          // Once the chart is fully created we reset the sequence
+          this.widget.on('created', () => {
+            seq = 0;
           });
-          this.widget.load({columns: d});
-
+          // On each drawn element by Chartist we use the Chartist.Svg API to trigger SMIL animations
+          this.widget.on('draw', (chartData) => {
+            seq++;
+            if ( (chartData.type === 'line') || (chartData.type === 'area') ){
+              // If the drawn element is a line we do a simple opacity fade in. This could also be achieved using CSS3 animations.
+              chartData.element.animate({
+                opacity: {
+                  // The delay when we like to start the animation
+                  begin: seq * delays + 1000,
+                  // Duration of the animation
+                  dur: durations,
+                  // The value where the animation should start
+                  from: 0,
+                  // The value where it should end
+                  to: 1
+                }
+              });
+            }
+            else if ( (chartData.type === 'label') && (chartData.axis.units.pos === 'x') ){
+              chartData.element.animate({
+                y: {
+                  begin: seq * delays,
+                  dur: durations,
+                  from: chartData.y + 100,
+                  to: chartData.y,
+                  // We can specify an easing function from Chartist.Svg.Easing
+                  easing: 'easeOutQuart'
+                }
+              });
+            }
+            else if ( (chartData.type === 'label') && (chartData.axis.units.pos === 'y') ){
+              chartData.element.animate({
+                x: {
+                  begin: seq * delays,
+                  dur: durations,
+                  from: chartData.x - 100,
+                  to: chartData.x,
+                  easing: 'easeOutQuart'
+                }
+              });
+            }
+            else if ( chartData.type === 'point' ){
+              chartData.element.animate({
+                x1: {
+                  begin: seq * delays,
+                  dur: durations,
+                  from: chartData.x - 10,
+                  to: chartData.x,
+                  easing: 'easeOutQuart'
+                },
+                x2: {
+                  begin: seq * delays,
+                  dur: durations,
+                  from: chartData.x - 10,
+                  to: chartData.x,
+                  easing: 'easeOutQuart'
+                },
+                opacity: {
+                  begin: seq * delays,
+                  dur: durations,
+                  from: 0,
+                  to: 1,
+                  easing: 'easeOutQuart'
+                }
+              });
+            }
+            else if ( chartData.type === 'grid' ){
+              // Using chartData.axis we get x or y which we can use to construct our animation definition objects
+              let pos1Animation = {
+                    begin: seq * delays,
+                    dur: durations,
+                    from: chartData[chartData.axis.units.pos + '1'] - 30,
+                    to: chartData[chartData.axis.units.pos + '1'],
+                    easing: 'easeOutQuart'
+                  },
+                  pos2Animation = {
+                    begin: seq * delays,
+                    dur: durations,
+                    from: chartData[chartData.axis.units.pos + '2'] - 100,
+                    to: chartData[chartData.axis.units.pos + '2'],
+                    easing: 'easeOutQuart'
+                  },
+                  animations = {};
+              animations[chartData.axis.units.pos + '1'] = pos1Animation;
+              animations[chartData.axis.units.pos + '2'] = pos2Animation;
+              animations['opacity'] = {
+                begin: seq * delays,
+                dur: durations,
+                from: 0,
+                to: 1,
+                easing: 'easeOutQuart'
+              };
+              chartData.element.animate(animations);
+            }
+          });
+        }
+      },
+      barAnimation(){
+        if ( this.animation ){
+          let delays = $.isNumeric(this.animation) ? this.animation : 500,
+              durations = 500;
+          this.widget.on('draw', (chartData) => {
+            if ( chartData.type === 'bar' ){
+              let color = this.color[this.legend ? this.getColorIdx(chartData) : chartData.seriesIndex],
+                  style = chartData.element.attr('style');
+              if ( color ){
+                style = (style || '') + ' stroke: ' + color + ' !important;';
+              }
+              chartData.element.attr({
+                style: style + ' stroke-width: 0px'
+              });
+              for ( let s = 0; s < chartData.series.length; ++s) {
+                if ( chartData.seriesIndex === s ){
+                  let ax = {
+                    y2: {
+                      begin:  s * delays,
+                      dur:    durations,
+                      from:   chartData.y1,
+                      to:     chartData.y2,
+                      easing: Chartist.Svg.Easing.easeOutSine
+                    },
+                    'stroke-width': {
+                      begin: s * 500,
+                      dur:   1,
+                      from:  0,
+                      to:    10,
+                      fill:  'freeze'
+                    }
+                  };
+                  if ( this.horizontalBars ){
+                    ax.x2 = ax.y2;
+                    ax.x2.from = chartData.x1;
+                    ax.x2.to = chartData.x2;
+                    delete ax.y2;
+                  }
+                  chartData.element.animate(ax, false);
+                }
+              }
+            }
+            else if ( (chartData.type === 'label') && (chartData.axis.units.pos === 'x') ){
+              chartData.element.animate({
+                y: {
+                  begin: delays,
+                  dur: durations,
+                  from: chartData.y + 100,
+                  to: chartData.y,
+                  // We can specify an easing function from Chartist.Svg.Easing
+                  easing: 'easeOutQuart'
+                }
+              });
+            }
+            else if ( (chartData.type === 'label') && (chartData.axis.units.pos === 'y') ){
+              chartData.element.animate({
+                x: {
+                  begin: delays,
+                  dur: durations,
+                  from: chartData.x - 100,
+                  to: chartData.x,
+                  easing: 'easeOutQuart'
+                }
+              });
+            }
+            else if ( chartData.type === 'grid' ){
+              // Using chartData.axis we get x or y which we can use to construct our animation definition objects
+              let pos1Animation = {
+                    begin: delays,
+                    dur: durations,
+                    from: chartData[chartData.axis.units.pos + '1'] - 30,
+                    to: chartData[chartData.axis.units.pos + '1'],
+                    easing: 'easeOutQuart'
+                  },
+                  pos2Animation = {
+                    begin: delays,
+                    dur: durations,
+                    from: chartData[chartData.axis.units.pos + '2'] - 100,
+                    to: chartData[chartData.axis.units.pos + '2'],
+                    easing: 'easeOutQuart'
+                  },
+                  animations = {};
+              animations[chartData.axis.units.pos + '1'] = pos1Animation;
+              animations[chartData.axis.units.pos + '2'] = pos2Animation;
+              animations['opacity'] = {
+                begin: delays,
+                dur: durations,
+                from: 0,
+                to: 1,
+                easing: 'easeOutQuart'
+              };
+              chartData.element.animate(animations);
+            }
+          });
+        }
+      },
+      pieAnimation(){
+        if ( this.animation ){
+          this.widget.on('draw', (chartData) => {
+            if ( chartData.type === 'slice' ){
+              let style = chartData.element.attr('style'),
+                  color;
+              if ( this.color && Array.isArray(this.color) ){
+                color = this.color[this.legend ? this.getColorIdx(chartData) : chartData.index];
+                if ( color ){
+                  chartData.element.attr({
+                    style: (style || '') + ' stroke: ' + color + ' !important;'
+                  });
+                }
+              }
+              // Get the total path length in order to use for dash array animation
+              let pathLength = chartData.element._node.getTotalLength();
+              // Set a dasharray that matches the path length as prerequisite to animate dashoffset
+              chartData.element.attr({
+                'stroke-dasharray': pathLength + 'px ' + pathLength + 'px'
+              });
+              // Create animation definition while also assigning an ID to the animation for later sync usage
+              let animationDefinition = {
+                'stroke-dashoffset': {
+                  id: 'anim' + chartData.index,
+                  dur: $.isNumeric(this.animation) ? this.animation : 500,
+                  from: -pathLength + 'px',
+                  to: '0px',
+                  easing: Chartist.Svg.Easing.easeOutQuint,
+                  // We need to use `fill: 'freeze'` otherwise our animation will fall back to initial (not visible)
+                  fill: 'freeze'
+                }
+              };
+              // If this was not the first slice, we need to time the animation so that it uses the end sync event of the previous animation
+              if ( chartData.index !== 0 ){
+                animationDefinition['stroke-dashoffset'].begin = 'anim' + (chartData.index - 1) + '.end';
+              }
+              // We need to set an initial value before the animation starts as we are not in guided mode which would do that for us
+              chartData.element.attr({
+                'stroke-dashoffset': -pathLength + 'px'
+              });
+              // We can't use guided mode as the animations need to rely on setting begin manually
+              // See http://gionkunz.github.io/chartist-js/api-documentation.html#chartistsvg-function-animate
+              chartData.element.animate(animationDefinition, false);
+            }
+          });
         }
       },
       setColor(){
@@ -539,7 +887,7 @@
           let tmp = 1;
           // Insert linebreak to labels
           if ( this.isLine ){
-            
+
           }
           if ( this.isPie ){
             if ( chartData.type === 'label' ){
@@ -630,7 +978,7 @@
     },
     watch: {
       source(val){
-        //this.init();
+        this.init();
       },
     },
     mounted(){
