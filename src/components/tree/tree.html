@@ -58,11 +58,12 @@
                    @mouseover="if ( tree.dragging ){ isExpanded = true; }"
                 ></i>
               </span>
-              <span v-if="tree.checkable && tree.uid && (it.checkable !== false)">
-                <bbn-checkbox value="it.data[tree.uid]"
-                              :checked="isChecked"
-                              @check="checkNode"
-                              @uncheck="uncheckNode">
+              <span v-if="tree.checkable && tree.uid && (checkable !== false)">
+                <bbn-checkbox :value="data[tree.uid]"
+                              :checked="isChecked()"
+                              @change="checkNode"
+                              :disabled="isDisabled()"
+                >
                 </bbn-checkbox>
               </span>
               <component v-if="component"

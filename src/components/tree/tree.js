@@ -139,7 +139,8 @@
         dragging: false,
         // Real dragging will start after the mouse's first move, useful to kow if we are in a select or drag context
         realDragging: false,
-        checked: []
+        checked: [],
+        disabled: []
       };
     },
 
@@ -519,6 +520,7 @@
         if ( this.isAjax && !this.tree.isLoading && !this.isLoaded ){
           this.tree.isLoading = true;
           this.loading = true;
+          this.tree.$emit('beforeLoad', this.dataToSend());
           bbn.fn.post(this.tree.url, this.dataToSend(), (res) => {
             this.tree.isLoading = false;
             this.loading = false;
@@ -848,17 +850,20 @@
           isChecked(){
            return $.inArray(this.data[this.tree.uid], this.tree.checked) > -1
           },
-          checkNode(){
-            if ( this.data[this.tree.uid] && $.inArray(this.data[this.tree.uid], this.tree.checked) === -1 ){
-              this.tree.checked.push(this.data[this.tree.uid]);
-              this.tree.$emit('check', this.data[this.tree.uid])
-            }
+          isDisabled(){
+            return $.inArray(this.data[this.tree.uid], this.tree.disabled) > -1
           },
-          uncheckNode(){
-            let tmp = $.inArray(this.data[this.tree.uid], this.tree.checked);
-            if ( tmp > -1 ){
-              this.tree.checked.splice(tmp, 1)
-              this.tree.$emit('uncheck', this.data[this.tree.uid])
+          checkNode(val){
+            if ( val && this.data[this.tree.uid] && ($.inArray(this.data[this.tree.uid], this.tree.checked) === -1) ){
+              this.tree.checked.push(this.data[this.tree.uid]);
+              this.tree.$emit('check', this.data[this.tree.uid]);
+            }
+            else if ( !val ){
+              let tmp = $.inArray(this.data[this.tree.uid], this.tree.checked);
+              if ( tmp > -1 ){
+                this.tree.checked.splice(tmp, 1);
+                this.tree.$emit('uncheck', this.data[this.tree.uid]);
+              }
             }
           },
           activate(){

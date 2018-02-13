@@ -75,14 +75,6 @@
         let emitVal = !this.state ? this.valueToSet : this.novalue;
         this.$emit('input', emitVal);
         this.$emit('change', emitVal, this);
-      },
-      check(){
-        this.$emit('input', this.valueToSet);
-        this.$emit('change', this.valueToSet, this);
-      },
-      unCheck(){
-        this.$emit('input', this.novalue);
-        this.$emit('change', this.novalue, this);
       }
     },
     watch: {

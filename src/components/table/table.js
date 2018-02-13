@@ -1052,6 +1052,7 @@
         else{
           this.originalRow = $.extend(true, {}, row);
         }
+        // EditedRow exists from now on the time of the edition
         this.editedRow = row;
         if ( this.editMode === 'popup' ){
           if ( typeof(title) === 'object' ){
@@ -1066,14 +1067,17 @@
             title: title || bbn._('Row edition'),
             width: 700
           });
+          // A component is given as global editor (form)
           if ( this.editor ){
             popup.component = this.editor;
           }
+          // A URL is given and in this case the form will be created automatically with this URL as action
           else if ( this.url ){
             let table = this;
             popup.component = {
               data(){
                 return {
+                  // Table's columns are used as native form config
                   fields: table.cols,
                   data: row
                 }
@@ -1089,11 +1093,36 @@
 </bbn-form>`,
               methods: {
                 success(d, e){
-                  table.$emit('editSuccess', d, e);
+                  e.preventDefault();
+                  let ev = new $.Event('editSuccess');
+                  table.$emit('editSuccessxx', d, ev);
+                  alert("emit?");
+                  if ( d.data && !ev.isDefaultPrevented() ){
+                    bbn.fn.warning("DEFAULT");
+                    // New insert
+                    if ( table.tmpRow ){
+                      table.currentData.push(d);
+                    }
+                    // Update
+                    else if ( table.editedRow ){
+                      bbn.fn.warning("UPDATE", d.data);
+                      for ( let n in d.data ){
+                        if ( bbn.fn.hasOwnProperty(this.data, n) ){
+                          this.$set(this.data, n, d.data[n]);
+                        }
+                      }
+                    }
+                    table.getPopup().close();
+                  }
                 },
                 failure(d){
                   table.$emit('editFailure', d);
                 },
+              },
+              watch: {
+                deep: true,
+                handler(newVal){
+                }
               }
             };
           }
