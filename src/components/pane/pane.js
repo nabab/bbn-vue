@@ -44,8 +44,7 @@
     data(){
       return {
         currentHidden: this.collapsed,
-        checker: false,
-        ready: false
+        checker: false
       };
     },
     watch:{
@@ -54,8 +53,10 @@
       }
     },
     mounted(){
-      this.$parent.init();
-      this.ready = true;
+      if ( $.isFunction(this.$parent.init) ){
+        this.$parent.init();
+        this.ready = true;
+      }
     },
   });
 

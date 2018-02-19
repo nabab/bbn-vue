@@ -37,7 +37,7 @@
       if ( this.disabled ){
         $ele.addClass("k-state-disabled");
       }
-      this.$emit("ready", this.value);
+      this.ready = true;
     }
   });
 

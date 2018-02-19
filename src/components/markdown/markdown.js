@@ -67,7 +67,7 @@
       this.widget.codemirror.on("change", () => {
         this.emitInput(this.widget.value());
       });
-      this.$emit("ready", this.value);
+      this.ready = true;
     },
     data: function(){
       return $.extend({

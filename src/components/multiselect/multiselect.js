@@ -67,7 +67,7 @@
           }
         });
       }
-      this.$emit("ready", this.value);
+      this.ready = true;
     },
     computed: {
       dataSource(){

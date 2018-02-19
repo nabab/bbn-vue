@@ -115,7 +115,7 @@
     },
     mounted: function(){
       this.widget = $(this.$refs.element).kendoComboBox(this.getOptions()).data("kendoComboBox");
-      this.$emit("ready", this.value);
+      this.ready = true;
     }
   });
 })(jQuery, bbn, kendo);

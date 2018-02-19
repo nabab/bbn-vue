@@ -97,7 +97,7 @@
         this.widget.select(0);
         this.widget.trigger("change");
       }
-      this.$emit("ready", this.value);
+      this.ready = true;
     },
     computed: {
       dataSource(){

@@ -26,7 +26,7 @@
     },
     mounted: function(){
       this.widget = $(this.$refs.element).kendoMaskedTextBox(this.getOptions()).data("kendoMaskedTextBox");
-      this.$emit("ready", this.value);
+      this.ready = true;
     }
   });
 

@@ -4,6 +4,7 @@
   <ul :class="'k-widget k-popup k-group k-reset ' + mode + (parent ? ' k-menugroup' : ' k-menu k-menu-vertical k-context-menu')"
       @mouseleave.stop.prevent="leaveList($event)"
       tabindex="0"
+      v-if="items"
       @keydown="pressKey">
     <li v-for="(li, idx) in items"
         v-show="!li.hidden"

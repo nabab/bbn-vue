@@ -4,6 +4,7 @@
       :autocomplete="autocomplete"
       :class="currentClass"
       @submit.prevent="submit"
+      @keydown.enter.prevent.stop="submit()"
 >
   <div v-if="fixedFooter"
        class="bbn-w-100 bbn-flex-fill"

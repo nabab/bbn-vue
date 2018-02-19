@@ -74,7 +74,7 @@
         this.$refs.scrollContainer.style.position = 'absolute';
       }, 0)
       */
-      this.$emit('ready');
+      this.ready = true;
     },
     watch: {
       show(newVal, oldVal){

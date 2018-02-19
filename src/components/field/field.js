@@ -8,14 +8,14 @@
    * Classic input with normalized appearance
    */
   Vue.component('bbn-field', {
-    mixins: [bbn.vue.basicComponent],
-    props: $.extend({
+    mixins: [bbn.vue.basicComponent, bbn.vue.fieldComponent],
+    props: {
       value: {},
       mode: {
         type: String,
         default: 'read'
       },
-    }, bbn.vue.fieldProperties),
+    },
     data(){
       return {
         renderedComponent: false,
@@ -158,8 +158,15 @@
     },
     watch:{
       currentValue(val){
-        this.$emit('input', val);
+        if ( val !== this.actualValue ){
+          this.$emit('input', val);
+        }
         this.init();
+      },
+      actualValue(val){
+        if ( val !== this.currentValue ){
+          this.currentValue = this.actualValue;
+        }
       },
       value(val, oldVal){
         if(val !== oldVal){

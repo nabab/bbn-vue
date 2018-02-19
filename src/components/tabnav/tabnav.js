@@ -85,8 +85,7 @@
         tabs: [],
         parents: [],
         parentTab: false,
-        selected: false,
-        isMounted: false
+        selected: false
       };
     },
 
@@ -412,7 +411,7 @@
         }
         else if ( !vm.tabs[idx].disabled ){
           var subtab = vm.getSubTabNav(idx);
-          if ( subtab && subtab.isMounted ){
+          if ( subtab && subtab.ready ){
             subtab.activate(vm.getFullBaseURL() + url);
           }
           vm.selected = idx;
@@ -594,7 +593,7 @@
               });
               vm.tabs.splice(idx, 0, obj);
             }
-            if ( (vm.tabs.length === 1) && vm.isMounted ){
+            if ( (vm.tabs.length === 1) && vm.ready ){
               vm.activateIndex(0);
             }
           }
@@ -992,8 +991,7 @@
       // Giving colors
 
       this.activate(this.parseURL(bbn.env.path), true);
-      this.isMounted = true;
-      this.$emit("ready");
+      this.ready = true;
     },
 
     watch: {
@@ -1037,7 +1035,7 @@
               bbn.fn.log("CHANGING URL");
               vm.parents[0].$set(vm.parents[0], "currentURL", vm.baseURL + newVal);
             }
-            else if ( this.autoload && this.isMounted ){
+            else if ( this.autoload && this.ready ){
               this.setConfig();
             }
           }
@@ -1063,7 +1061,7 @@
       },
       'bbn-tab': {
         name: 'bbn-tab',
-        mixins: [bbn.vue.resizerComponent],
+        mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent],
         props: {
           title: {
             type: [String, Number],
@@ -1291,7 +1289,6 @@
             tabNav: null,
             isComponent: null,
             name: bbn.fn.randomString(20, 15).toLowerCase(),
-            isMounted: false,
             popups: []
           };
         },
@@ -1352,8 +1349,7 @@
             }
             this.popup.advert(ad);
           }
-          this.isMounted = true;
-          this.$emit("ready");
+          this.ready = true;
         },
 
         watch: {

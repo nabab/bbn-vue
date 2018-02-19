@@ -96,7 +96,7 @@
       }
     },
     mounted: function(){
-      this.$emit("ready", this.value);
+      this.ready = true;
     }
   });
 

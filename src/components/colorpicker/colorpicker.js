@@ -68,7 +68,7 @@
       this.widget = $(this.$refs.element)
         .kendoColorPicker(this.getOptions())
         .data("kendoColorPicker");
-      this.$emit("ready", this.value);
+      this.ready = true;
     },
     data(){
       return $.extend({

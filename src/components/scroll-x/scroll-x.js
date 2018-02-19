@@ -80,6 +80,7 @@
           (typeof(left) === 'number') &&
           ((left !== this.left) || force)
         ){
+          bbn.fn.warning("POSIT");
           this.scrollContainer(left, animate, origin);
         }
       },
@@ -146,23 +147,19 @@
 
       // When the users jumps by clicking the scrollbar
       jump(e) {
-        bbn.fn.log("JUMP");
         if ( this.realContainer ){
-          bbn.fn.log("JUMP 1");
           let isRail = e.target === this.$refs.scrollRail;
           if ( isRail ){
             let position = this.$refs.scrollSlider.getBoundingClientRect();
             // Calculate the horizontal Movement
             let xMovement = e.pageX - position.left;
             let centerize = 0;
-            bbn.fn.log("JUMP 2", xMovement);
             if ( Math.abs(xMovement) > (this.realWidth - 20) ){
               xMovement = xMovement > 0 ? (this.realWidth - 20) : - (this.realWidth - 20);
             }
             else{
               centerize = (xMovement > 0 ? 1 : -1) * this.width / 2;
             }
-            bbn.fn.log("JUMP 3", position, e, xMovement, centerize);
             let xMovementPercentage = xMovement / this.containerWidth * 100 + centerize;
             this._changePosition(this.left + xMovementPercentage, true);
           }
@@ -227,10 +224,6 @@
         this.overContent();
       },
 
-      adjustBar(){
-
-      },
-
       // Sets all event listeners
       initContainer(){
         if ( !this.realContainer && this.scroller ){
@@ -238,18 +231,17 @@
         }
         if ( this.realContainer && this.scroller ){
           this.onResize();
-          let $cont = $(this.realContainer);
           this.scroller.$off("resize", this.onResize);
           this.scroller.$on("resize", this.onResize);
-          $cont.off("scroll", this.adjust);
-          $cont.off("mousemove", this.overContent);
+          this.scroller.$off("scroll", this.adjust);
           this.scrollTo(this.initial);
-          $cont.scroll(this.adjust);
-          $cont.mousemove(this.overContent);
+          this.scroller.$on("scroll", this.adjust);
+          this.scroller.$off("mousemove", this.overContent);
+          this.scroller.$on("mousemove", this.overContent);
           $.each(this.scrollableElements(), (i, a) => {
-            $(a).off("scroll", this.adjustBar);
+            $(a).off("scroll", this.adjust);
             $(a).off("mousemove", this.overContent);
-            $(a).scroll(this.adjustBar);
+            $(a).scroll(this.adjust);
             $(a).mousemove(this.overContent);
           });
         }
@@ -327,6 +319,7 @@
             num = 0;
           }
           this._changePosition(100 / this.contentWidth * num, animate);
+          this.animateBar();
         }
       }
     },
@@ -347,7 +340,7 @@
       document.addEventListener("mouseup", this.stopDrag);
       document.addEventListener("touchend", this.stopDrag);
       this.onResize();
-      this.$emit('ready');
+      this.ready = true;
     },
     beforeDestroy() {
       $(this.realContainer).off("scroll", this.adjust);

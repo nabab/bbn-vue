@@ -111,7 +111,7 @@
           }
         }))
         .data("kendoDatePicker");
-      this.$emit("ready", this.value);
+      this.ready = true;
     },
     watch: {
       min(newVal){

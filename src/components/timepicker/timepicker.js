@@ -107,7 +107,7 @@
           }
         }))
         .data("kendoTimePicker");
-      this.$emit("ready", this.value);
+      this.ready = true;
     }
   });
 

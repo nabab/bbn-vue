@@ -274,7 +274,7 @@
         vm.widget.select(0);
         vm.widget.trigger("change");
       }*/
-      this.$emit("ready", this.value);
+      this.ready = true;
     },
     watch:{
       source(newSource){

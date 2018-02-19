@@ -240,7 +240,7 @@
       data(){
         let data = this.source;
         if ( this.isLine || this.isBar ){
-          if ( data.series && !Array.isArray(data.series[0]) && !this.distributeSeries ){
+          if ( data && data.series && !Array.isArray(data.series[0]) && !this.distributeSeries ){
             data.series = [data.series];
           }
         }
@@ -516,34 +516,36 @@
           this.widget.detach();
           this.widget = false;
         }
-        setTimeout(() => {
-          // Widget configuration
-          if ( this.isPie ){
-            this.pieChart();
-          }
-          else if ( this.isBar ){
-            this.barChart();
-          }
-          else {
-            this.lineChart();
-          }
-          // Set items color
-          if ( this.color ){
-            this.setColor();
-          }
-          // Set labels color
-          if ( this.labelColor || this.labelColorX || this.labelColorY ){
-            this.setLabelColor();
-          }
-          // Set grid color
-          if ( this.gridColor ){
-            this.setGridColor();
-          }
-          // Operations to be performed during the widget draw
-          this.widgetDraw();
-          // Operations to be performed after widget creation
-          this.widgetCreated();
-        }, 100);
+        if ( this.data ){
+          setTimeout(() => {
+            // Widget configuration
+            if ( this.isPie ){
+              this.pieChart();
+            }
+            else if ( this.isBar ){
+              this.barChart();
+            }
+            else {
+              this.lineChart();
+            }
+            // Set items color
+            if ( this.color ){
+              this.setColor();
+            }
+            // Set labels color
+            if ( this.labelColor || this.labelColorX || this.labelColorY ){
+              this.setLabelColor();
+            }
+            // Set grid color
+            if ( this.gridColor ){
+              this.setGridColor();
+            }
+            // Operations to be performed during the widget draw
+            this.widgetDraw();
+            // Operations to be performed after widget creation
+            this.widgetCreated();
+          }, 100);
+        }
       },
       pieChart(){
         // Create widget

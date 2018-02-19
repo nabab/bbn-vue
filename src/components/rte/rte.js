@@ -73,7 +73,7 @@
       $ele.on("tbwchange tbwpaste", (e) => {
         this.emitInput(e.target.value)
       });
-      this.$emit("ready", this.value);
+      this.ready = true;
     },
     watch: {
       value(newVal){

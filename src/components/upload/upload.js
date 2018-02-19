@@ -188,7 +188,7 @@
       this.$nextTick(() => {
         this.widget = new qq.FineUploader($.extend({
           element: this.$refs.upload,
-          template: this.$refs.ui_template,
+          template: this.getRef('ui_template'),
         }, this.getCfg));
         if ( this.value && this.getSource ){
           this.widget.addInitialFiles(this.getSource);

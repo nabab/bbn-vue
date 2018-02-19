@@ -62,7 +62,7 @@
     },
     mounted: function(){
       this.widget = $(this.$refs.element).kendoProgressBar(this.getOptions()).data("kendoProgressBar");
-      this.$emit("ready", this.value);
+      this.ready = true;
     }
   });
 

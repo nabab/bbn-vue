@@ -39,8 +39,7 @@
         default: 'year'
       },
       target: {
-        type: [Date, String, Function],
-        required: true
+        type: [Date, String, Function]
       }
     },
     data(){
@@ -71,14 +70,11 @@
         return this.realTarget &&
           (this.precisionIdx > -1) &&
           (this.scaleIdx > -1) &&
-          (this.precisionIdx >= this.scaleIdx);
+          (this.precisionIdx > this.scaleIdx);
       },
       init(){
         clearInterval(this.interval);
-        if ( !this.check() ){
-          bbn.fn.error(bbn._("Error in the countdown component, the precision can't be lower than the scale"));
-        }
-        else{
+        if ( this.check() ){
           this.time = this.realTarget.getTime();
           this.targetYear = this.realTarget.getFullYear();
           this.targetMonth = this.realTarget.getMonth();

@@ -35,7 +35,7 @@
           tmp,
           html;
       if ( $ele.find(".slot").length ){
-        if ( !cfg.items.length && vm.$slots.default.length ){
+        if ( !cfg.items.length && vm.$slots.default && vm.$slots.default.length ){
           $.each(vm.$slots.default, function(i, a){
             if ( a.tag === 'div' ){
               $elm = $(a.elm);

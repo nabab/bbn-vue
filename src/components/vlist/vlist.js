@@ -46,11 +46,14 @@
       }
     },
     data(){
-      let items = $.isFunction(this.source) ? this.source() : this.source.slice();
-      if ( this.mapper ){
-        $.map(items, (a) => {
-          return this.mapper(a);
-        })
+      let items = [];
+      if ( this.source ){
+        items = $.isFunction(this.source) ? this.source() : this.source.slice();
+        if ( this.mapper ){
+          $.map(items, (a) => {
+            return this.mapper(a);
+          })
+        }
       }
       return {
         items: items,
@@ -171,8 +174,10 @@
           this.$emit("closeall");
         }
         else{
+          if ( this.focused ){
+            this.focused.focus();
+          }
           this.$emit('close');
-          this.focused.focus();
           this.focus = false;
         }
       },

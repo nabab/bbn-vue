@@ -167,7 +167,7 @@
 
       // Emits vertical event
       normalize(){
-        this.$emit('vertical');
+        this.$emit('scroll');
       },
 
       // Gets the array of scrollable elements according to scrollAlso attribute
@@ -184,9 +184,7 @@
 
       // Calculates all the proportions based on content
       onResize() {
-        bbn.fn.info("ON RESIZE!");
         if ( this.realContainer ){
-          bbn.fn.log("real");
           let tmp1 = $(this.realContainer).height() - 18,
               tmp2 = this.realContainer.children[0] ? this.realContainer.children[0].clientHeight : this.containerHeight - 18;
           if ( (tmp1 !== this.containerHeight) || (tmp2 !== this.contentHeight) ){
@@ -204,7 +202,6 @@
           }
         }
         else{
-          bbn.fn.log("not real");
           this.initContainer();
         }
       },
@@ -233,7 +230,6 @@
         }
         if ( this.realContainer && this.scroller ){
           this.onResize();
-          let $cont = $(this.realContainer);
           this.scroller.$off("resize", this.onResize);
           this.scroller.$on("resize", this.onResize);
           this.scroller.$off("scroll", this.adjust);
@@ -321,7 +317,6 @@
           if ( num < 0 ){
             num = 0;
           }
-          bbn.fn.log("scrollToY", num);
           this._changePosition(100 / this.contentHeight * num, animate);
           this.animateBar();
         }
@@ -344,7 +339,7 @@
       document.addEventListener("mouseup", this.stopDrag);
       document.addEventListener("touchend", this.stopDrag);
       this.onResize();
-      this.$emit('ready');
+      this.ready = true;
     },
     beforeDestroy() {
       $(this.realContainer).off("scroll", this.adjust);

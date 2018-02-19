@@ -69,7 +69,6 @@
       autocomplete: {},
       button: {},
       chart: {},
-      chart2: {},
       checkbox: {},
       code: {},
       colorpicker: {},
@@ -339,14 +338,17 @@
               if ( r.content ){
                 $(document.body).append('<script type="text/x-template" id="bbn-tpl-component-' + a.name + '">' + r.content + '</script>');
               }
-              //let data = r.data || {};
+              let data = r.data || {};
               let res = eval(r.script);
               if ( typeof res === 'object' ){
                 if ( !res.template ){
                   res.template = '#bbn-tpl-component-' + a.name;
                 }
                 if ( !res.props ){
-                  res.props = ['source'];
+                  res.props = {};
+                }
+                if ( !res.props.source ){
+                  res.props.source = {};
                 }
                 if ( !res.name ){
                   res.name = a.name;
@@ -361,6 +363,11 @@
                   }
                   else{
                     res.mixins = a.mixins;
+                  }
+                }
+                if ( data ){
+                  res.props.source.default = () => {
+                    return data;
                   }
                 }
                 Vue.component(a.name, res);
@@ -457,6 +464,10 @@
       }
     },
 
+    emptyComponent: {
+      template: '<template><slot></slot></template>'
+    },
+
     basicComponent: {
       props: {
         componentClass: {
@@ -466,24 +477,72 @@
           }
         },
       },
+      data(){
+        return {
+          isMounted: false,
+          ready: false
+        }
+      },
       methods: {
         getRef(name){
-          if ( this.$refs[name] ){
-            return this.$refs[name][0] || this.$refs[name];
+          if ( Array.isArray(this.$refs[name]) ){
+            if ( this.$refs[name][0] ){
+              return this.$refs[name][0];
+            }
           }
-          return {};
+          else if ( this.$refs[name] ){
+            return this.$refs[name];
+          }
+          return false;
+        },
+        is(selector){
+          return bbn.vue.is(this, selector);
+        },
+        closest(selector, checkEle){
+          return bbn.vue.closest(this, selector, checkEle);
+        },
+        getChildByKey(key, selector){
+          return bbn.vue.getChildByKey(this, key, selector);
+        },
+
+        findByKey(key, selector, ar){
+          return bbn.vue.findByKey(this, key, selector, ar);
+        },
+
+        findAllByKey(key, selector){
+          return bbn.vue.findAllByKey(this, key, selector);
+        },
+
+        find(selector, index){
+          return bbn.vue.find(this, selector, index);
+        },
+
+        findAll(selector, only_children){
+          return bbn.vue.findAll(this, selector, only_children);
+        },
+
+        getComponents(ar, only_children){
+          return bbn.vue.getComponents(this, ar, only_children);
         }
       },
       beforeCreate(){
-        if ( !this.$options.render ){
+        if ( !this.$options.render && !this.$options.template && this.$options.name ){
           this.$options.template = '#bbn-tpl-component-' + this.$options.name.slice(4);
         }
       },
       created(){
-        this.componentClass.push(this.$options.name);
+        if ( this.$options.name ){
+          this.componentClass.push(this.$options.name);
+        }
       },
       mounted(){
+        this.isMounted = true;
         this.$emit('mounted');
+      },
+      watch: {
+        ready(newVal){
+          this.$emit('ready', newVal)
+        }
       }
     },
 
@@ -887,9 +946,6 @@
       created(){
         this.componentClass.push('bbn-input-component');
       },
-      mounted(){
-        this.$emit("ready");
-      },
       watch:{
         disabled(newVal){
           if ( this.widget && $.isFunction(this.widget.enable) ){
@@ -1155,105 +1211,106 @@
       }
     },
 
-    fieldProperties: {
-      width: {
-        type: [String, Number],
-      },
-      render: {
-        type: [String, Function]
-      },
-      title: {
-        type: [String, Number],
-        default: bbn._("Untitled")
-      },
-      ftitle: {
-        type: String
-      },
-      tcomponent: {
-        type: [String, Object]
-      },
-      icon: {
-        type: String
-      },
-      cls: {
-        type: String
-      },
-      type: {
-        type: String
-      },
-      field: {
-        type: String
-      },
-      fixed: {
-        type: [Boolean, String],
-        default: false
-      },
-      hidden: {
-        type: Boolean
-      },
-      encoded: {
-        type: Boolean,
-        default: false
-      },
-      sortable: {
-        type: Boolean,
-        default: true
-      },
-      editable: {
-        type: Boolean,
-        default: true
-      },
-      filterable: {
-        type: Boolean,
-        default: true
-      },
-      resizable: {
-        type: Boolean,
-        default: true
-      },
-      showable: {
-        type: Boolean,
-        default: true
-      },
-      nullable: {
-        type: Boolean,
-      },
-      buttons: {
-        type: [Array, Function]
-      },
-      source: {
-        type: [Array, Object, String]
-      },
-      required: {
-        type: Boolean,
-      },
-      options: {
-        type: [Object, Function],
-        default(){
-          return {};
+    fieldComponent: {
+      props: {
+        width: {
+          type: [String, Number],
+        },
+        render: {
+          type: [String, Function]
+        },
+        title: {
+          type: [String, Number]
+        },
+        ftitle: {
+          type: String
+        },
+        tcomponent: {
+          type: [String, Object]
+        },
+        icon: {
+          type: String
+        },
+        cls: {
+          type: String
+        },
+        type: {
+          type: String
+        },
+        field: {
+          type: String
+        },
+        fixed: {
+          type: [Boolean, String],
+          default: false
+        },
+        hidden: {
+          type: Boolean
+        },
+        encoded: {
+          type: Boolean,
+          default: false
+        },
+        sortable: {
+          type: [Boolean, Function],
+          default: true
+        },
+        editable: {
+          type: [Boolean, Function],
+          default: true
+        },
+        filterable: {
+          type: [Boolean, Function],
+          default: true
+        },
+        resizable: {
+          type: [Boolean, Function],
+          default: true
+        },
+        showable: {
+          type: [Boolean, Function],
+          default: true
+        },
+        nullable: {
+          type: [Boolean, Function],
+        },
+        buttons: {
+          type: [Array, Function]
+        },
+        source: {
+          type: [Array, Object, String]
+        },
+        required: {
+          type: Boolean,
+        },
+        options: {
+          type: [Object, Function],
+          default(){
+            return {};
+          }
+        },
+        editor: {
+          type: [String, Object]
+        },
+        maxLength: {
+          type: Number
+        },
+        sqlType: {
+          type: String
+        },
+        aggregate: {
+          type: [String, Array]
+        },
+        component: {
+          type: [String, Object]
+        },
+        mapper: {
+          type: Function
+        },
+        group: {
+          type: String
         }
       },
-      editor: {
-        type: [String, Object]
-      },
-      maxLength: {
-        type: Number
-      },
-      sqlType: {
-        type: String
-      },
-      aggregate: {
-        type: [String, Array]
-      },
-      component: {
-        type: [String, Object]
-      },
-      mapper: {
-        type: Function
-      },
-      group: {
-        type: String
-      }
     },
 
     retrieveRef(vm, path){

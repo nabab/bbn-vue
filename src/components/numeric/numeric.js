@@ -40,8 +40,18 @@
         widgetName: "kendoNumericTextBox"
       };
     },
+    methods: {
+      focus(e){
+        let el = this.getRef('element');
+        this.$nextTick(() => {
+          el.setSelectionRange(0, el.value.length);
+        });
+        //this.$emit('focus', e);
+      }
+    },
     mounted: function(){
-      this.widget = $(this.$refs.element).kendoNumericTextBox($.extend(this.getOptions(), {
+      let el = this.getRef('element');
+      this.widget = $(el).kendoNumericTextBox($.extend(this.getOptions(), {
         value: this.value,
         spin: (e) => {
           this.emitInput(e.sender.value());
@@ -50,7 +60,6 @@
           this.emitInput(e.sender.value());
         }
       })).data("kendoNumericTextBox");
-      this.$emit("ready", this.value);
     },
     watch: {
       min(newVal){

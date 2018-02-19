@@ -115,7 +115,7 @@
     mounted(){
       let $ele = $(this.$refs.element);
       this.widget = $ele.kendoAutoComplete(this.getOptions()).data("kendoAutoComplete");
-      this.$emit("ready", this.value);
+      this.ready = true;
       /** @todo You have to remove this event onDestroy */
       $(window).resize(() => {
         this.widget.setOptions({

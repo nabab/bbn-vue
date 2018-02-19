@@ -108,6 +108,17 @@
     },
 
     data(){
+      let items = [];
+      if ( typeof(this.source) !== 'string' ){
+        if ( this.map ){
+          $.each(this.source, (i, a) =>{
+            items.push(this.map(a));
+          })
+        }
+        else if ( this.source && this.source.length ){
+          items = this.source.slice();
+        }
+      }
       return {
         // Only for the origin tree
         isRoot: false,
@@ -128,7 +139,7 @@
         // True once the component is mounted
         isMounted: false,
         // The actual list of items (nodes)
-        items: this.getItems(),
+        items: items,
         // The currently active node component object
         activeNode: false,
         // The currently selected node component object
