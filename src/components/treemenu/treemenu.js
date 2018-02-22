@@ -160,6 +160,7 @@
     mounted(){
       this.onResize();
       this._position();
+      this.ready = true;
     },
     watch: {
       isOpened(newVal){

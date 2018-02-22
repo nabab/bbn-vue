@@ -14,15 +14,15 @@
   <bbn-scroll-x v-if="(axis === 'both') || (axis === 'x')"
                 ref="xScroller"
                 :scrollAlso="scrollAlso"
-                :initial="x"
-                @scroll="$emit('horizontal')"
+                :initial="currentX"
+                @scroll="scrollHorizontal"
   >
   </bbn-scroll-x>
   <bbn-scroll-y v-if="(axis === 'both') || (axis === 'y')"
                 ref="yScroller"
                 :scrollAlso="scrollAlso"
-                :initial="y"
-                @scroll="$emit('vertical')"
+                :initial="currentY"
+                @scroll="scrollVertical"
   >
   </bbn-scroll-y>
 </div>

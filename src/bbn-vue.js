@@ -725,9 +725,6 @@
         keydown(e){
           this.$emit('keydown', e)
         },
-        change(e){
-          this.$emit('change', e)
-        },
         over(e){
           this.$emit('over', e);
           setTimeout(() => {
@@ -870,6 +867,9 @@
       methods: {
         emitInput(val){
           this.$emit('input', val);
+        },
+        change(e){
+          this.$emit('change', e, this.value)
         },
         isValid(val){
           const elem = this.$refs.element,
@@ -1101,6 +1101,7 @@
         onResize(){
           return;
         },
+
         setResizeEvent(){
           // The timeout used in the listener
           let resizeTimeout;

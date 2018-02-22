@@ -3,17 +3,30 @@
   vertical-align: bottom;
   white-space: nowrap;
   overflow: visible;
-  span{
+  span, a{
     display: inline-block;
     height: 100%;
-    line-height: 100%;
+    vertical-align: middle;
+    i{
+      vertical-align: middle;
+    }
   }
   i{
     font-size: 16px;
   }
   /** loader */
+  span:before {
+    content: '';
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+    margin-right: -0.25em; /* Adjusts for spacing */
+  }
   .content{
     padding: 0 2em;
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
   }
   .loader {
     margin-right: 0.2em

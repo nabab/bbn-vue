@@ -10,7 +10,6 @@
       border-right-color: inherit;
       padding: 0.5em;
       overflow: hidden;
-      vertical-align: top;
       position: relative;
       .bbn-table-dirty{
         color: red;
@@ -41,10 +40,17 @@
         white-space: nowrap;
         text-overflow: ellipsis;
         font-weight: bold;
+        vertical-align: middle;
         .bbn-table-title-group{
           position: absolute;
           left: 0px;
+          top: 0px;
           margin-left: 20px;
+          > div{
+            height: 100%;
+            vertical-align: middle;
+            line-height: 38px;
+          }
         }
         a.k-link{
           color: inherit;
@@ -60,6 +66,9 @@
   div.bbn-table-data{
     tr.k-widget{
       box-sizing: border-box;
+      td{
+        vertical-align: top;
+      }
     }
   }
   div.bbn-table-footer{

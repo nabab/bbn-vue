@@ -178,6 +178,7 @@
     },
     mounted: function(){
       this.setup();
+      this.ready = true;
       setTimeout(() => {
         $(this.$el).trigger('mousemove');
       }, 1000);

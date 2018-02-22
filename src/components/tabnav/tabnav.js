@@ -394,7 +394,7 @@
           if ( vm.autoload ){
             //alert(this.baseURL + '----NOT VALID----' + url);
             //bbn.fn.log("link from autoload: " + url);
-            vm.load(url);
+            vm.load(url, force);
           }
           else{
             new Error(
@@ -412,7 +412,10 @@
         else if ( !vm.tabs[idx].disabled ){
           var subtab = vm.getSubTabNav(idx);
           if ( subtab && subtab.ready ){
-            subtab.activate(vm.getFullBaseURL() + url);
+            subtab.activate(vm.getFullBaseURL() + url, force);
+          }
+          else if ( force && vm.autoload ){
+            this.reload(idx);
           }
           vm.selected = idx;
         }
@@ -605,7 +608,7 @@
         return r === -1 ? false : r;
       },
 
-      load(url){
+      load(url, force){
         const vm = this;
         let idx = vm.search(url),
             finalURL = vm.fullBaseURL + url;
@@ -613,7 +616,10 @@
           if ( vm.tabs[idx].real ){
             finalURL = vm.tabs[idx].real;
           }
-          if ( vm.tabs[idx].load === false ){
+          if ( force ){
+            return this.reload(idx)
+          }
+          else if ( vm.tabs[idx].load === false ){
             return;
           }
         }

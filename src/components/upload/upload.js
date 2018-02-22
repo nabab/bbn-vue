@@ -69,7 +69,6 @@
     },
     data(){
       return {
-        isMounted: false,
         widgetValue: []
       };
     },
@@ -188,12 +187,12 @@
       this.$nextTick(() => {
         this.widget = new qq.FineUploader($.extend({
           element: this.$refs.upload,
-          template: this.getRef('ui_template'),
+          template: this.getRef('ui_template')
         }, this.getCfg));
         if ( this.value && this.getSource ){
           this.widget.addInitialFiles(this.getSource);
         }
-        this.isMounted = true;
+        this.ready = true;
         //this.enable(this.enabled);
         //this.$emit("ready", this.value);
       });

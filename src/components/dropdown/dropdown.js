@@ -53,6 +53,12 @@
 						vm.change(e.sender.value());
 					}
         };
+        cfg.select = function(e){
+          if ( e.item ){
+            vm.$emit("select", vm.widget.dataItem(e.item));
+          }
+          vm.$emit("select");
+        };
         if ( this.template ){
           cfg.template = e => {
             return this.template(e);

@@ -26,17 +26,19 @@
         }
       },
       x: {
-        type: [Number, Object],
+        type: Number,
         default: 0
       },
       y: {
-        type: [Number, Object],
+        type: Number,
         default: 0
       }
     },
     data() {
       return {
-        show: false
+        show: false,
+        currentX: this.x,
+        currentY: this.y
       }
     },
     methods: {
@@ -51,11 +53,14 @@
           this.$refs.yScroller.scrollTo(y, animate);
         }
       },
-      onResize() {
-        bbn.fn.warning("SCROLL RESIZE");
-        bbn.fn.log(this.$el.scrollTop);
-        this.$el.scrollLeft = 0;
-        this.$el.scrollTop = 0;
+      scrollHorizontal(ev, left){
+        bbn.fn.log(arguments);
+        this.currentX = left;
+      },
+      scrollVertical(ev, top){
+        this.currentY = top;
+      },
+      onResize(){
         if ( this.$refs.xScroller ){
           this.$refs.xScroller.onResize();
         }

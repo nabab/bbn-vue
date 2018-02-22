@@ -58,6 +58,7 @@
         },
         change: (e) => {
           this.emitInput(e.sender.value());
+          this.$emit('change', e.sender.value());
         }
       })).data("kendoNumericTextBox");
     },

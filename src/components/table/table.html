@@ -130,7 +130,7 @@
       </div>
       
       <!-- Data part -->
-      <div class="bbn-table-data bbn-flex-fill">
+      <div class="bbn-table-data bbn-flex-fill" ref="data">
         <div class="bbn-full-screen bbn-flex-width">
           <div  v-for="(groupCol, groupIndex) in groupCols"
                 :class="{
@@ -138,7 +138,7 @@
                   'bbn-flex-fill': groupCol.name === 'main'
                 }"
                 :style="{width: groupCol.name === 'main' ? 'auto' : groupCol.width + 'px'}"
-                ref="groupCol.name + 'Data'"
+                :ref="groupCol.name + 'Data'"
                 v-if="groupCol.cols.length"
           >
             <!-- Fixed data -->
@@ -163,15 +163,15 @@
                     v-if="d.group || d.expander || isExpanded(d) || d.aggregated || (isExpanded(d) && d.groupAggregated)"
                     :key="i"
                     :index="d.index"
-                    tabindex="0"
+                    :tabindex="groupCol.name === 'main' ? 0 : null"
                     :class="[{
                       'k-widget': true,
                       'k-alt': !!(d.index % 2),
                       'k-header': !!(d.aggregated || d.groupAggregated),
                       'k-state-hover': currentIndex === d.index
                     }, trClass ? trClass(d.data) : '']"
-                    @focusin="focusRow(d, $event)"
-                    @focusout="blurRow(d.index)"
+                    @focusin="focusedRow = i"
+                    @focusout="focusedRow = false"
                     @mouseover="currentIndex = d.index"
                 >
                   <!-- Checkboxes -->
@@ -186,13 +186,13 @@
                     ></bbn-checkbox>
                   </td>
                   <!-- Expander -->
-                  <td v-if="groupable &&
-                            (d.group || d.expander) && (
+                  <td v-if="((groupable && d.group) || d.expander) && (
                               (groupIndex === 0) ||
                               !groupCols[groupIndex-1].cols.length
                             )">
                     <i :class="'bbn-p fa fa-caret-' + (isExpanded(d) ? 'down' : 'right')"
                        @click="toggleExpanded(d.index)"
+                       tabindex="0"
                     ></i>
                   </td>
                   <!-- Group By on the main table, where the group value is -->
@@ -225,16 +225,16 @@
                                :is="expander"
                                :source="d.data"
                     ></component>
-                    <div v-else v-html="expander(d.data, d.index)"></div>
+                    <div v-else v-html="expander(d.data, i)"></div>
                   </td>
                   <td v-for="(col, j) in groupCol.cols"
                       v-if="hasTd(d, j, groupIndex)"
                       v-show="!col.hidden"
                       :style="_bodyStyles(col)"
-                      :class="currentClass(col, d.data, d.index)"
+                      :class="currentClass(col, d.data, i)"
                       :key="j"
                   >
-                    <div v-if="editable && d.isEdited && isEditable(d.data, col, d.index)">
+                    <div v-if="editable && d.isEdited && isEditable(d.data, col, i)">
                       <div v-if="(editMode === 'inline') && (col.index === colButtons)">
                         <bbn-button :text="_('Save')"
                                     :disabled="!isEditedValid"
@@ -254,21 +254,43 @@
                                  v-model="editedRow[col.field]"
                                  style="width: 100%"
                       ></component>
-                      <div v-else-if="!col.buttons" v-html="render(d.data, col, d.index)"></div>
+                      <div v-else-if="!col.buttons" v-html="render(d.data, col, i)"></div>
                       <div v-else> </div>
                     </div>
-                    <div v-else-if="d.aggregated && colsMain[j+1] && (colsMain[j+1].field === isAggregated)"
-                         class="bbn-b"
-                         v-html="aggregateExp[d.name]"
-                    ></div>
-                    <div v-else-if="d.aggregated && ((colsMain[j+1] && (colsMain[j+1].field === isAggregated)) || (colsRight[0] && (colsRight[0].field === isAggregated)))"
+                    <div v-else-if="
+                      d.aggregated && (
+                        (
+                          groupCol.cols[j+1] &&
+                          (groupCol.cols[j+1].field === isAggregated)
+                        ) ||
+                        (
+                          !groupCol.cols[j+1] &&
+                          groupCols[groupIndex+1] &&
+                          groupCols[groupIndex+1].cols[0] &&
+                          (groupCols[groupIndex+1].cols[0].field === isAggregated)
+                        )
+                      )"
                          class="bbn-b"
                          v-html="aggregateExp[d.name]"
                     ></div>
                     <!-- The row is an aggregate and there are no other cells -->
-                    <div v-else-if="d.aggregated && (col.field !== isAggregated)"> </div>
-                    <!-- The cell before the aggregates value where we put the prior aggregation expression -->
-                    <div v-else-if="d.groupAggregated && ((colsMain[j+1] && (colsMain[j+1].field === isAggregated)) || (colsRight[0] && (colsRight[0].field === isAggregated)))"
+                    <div v-else-if="
+                      d.aggregated &&
+                      (col.field !== isAggregated)">
+                    </div>
+                    <div v-else-if="
+                      d.groupAggregated && (
+                        (
+                          groupCol.cols[j+1] &&
+                          (groupCol.cols[j+1].field === isAggregated)
+                        ) ||
+                        (
+                          !groupCol.cols[j+1] &&
+                          groupCols[groupIndex+1] &&
+                          groupCols[groupIndex+1].cols[0] &&
+                          (groupCols[groupIndex+1].cols[0].field === isAggregated)
+                        )
+                      )"
                          class="bbn-b"
                          v-html="aggregateExp[d.name]"
                     ></div>
@@ -280,10 +302,10 @@
                                v-bind="col.options"
                     ></component>
                     <div v-else-if="col.buttons">
-                      <bbn-button v-for="(button, j) in (Array.isArray(col.buttons) ? col.buttons : col.buttons(d.data, col, d.index))"
+                      <bbn-button v-for="(button, j) in (Array.isArray(col.buttons) ? col.buttons : col.buttons(d.data, col, i))"
                                   :key="j"
                                   v-bind="button"
-                                  @click="_execCommand(button, d.data, col, d.index)"
+                                  @click="_execCommand(button, d.data, col, i)"
                       ></bbn-button>
                     </div>
                     <bbn-field v-else-if="col.field && !col.render"
@@ -292,9 +314,9 @@
                                :value="d.data[col.field]"
                                :data="d.data">
                     </bbn-field>
-                    <div v-else v-html="render(d.data, col, d.index)"></div>
+                    <div v-else v-html="render(d.data, col, i)"></div>
                     <span class="bbn-table-dirty"
-                          v-if="isDirty(d, col, d.index)"></span>
+                          v-if="isDirty(d, col, i)"></span>
                   </td>
                   <td v-if="d.expanded" :colspan="groupCol.visible">Expander</td>
                 </tr>

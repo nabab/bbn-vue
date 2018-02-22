@@ -26,10 +26,6 @@
         type: Number,
         default: 2
       },
-      scrolling: {
-        type: Number,
-        default: 0
-      },
       scrollAlso: {
         type: [HTMLElement, Array, Function],
         default(){
@@ -51,7 +47,7 @@
         dragging: false,
         width: 100,
         start: 0,
-        left: this.scrolling,
+        left: 0,
         currentScroll: 0,
         moveTimeout: 0,
         show: this.hidden === 'auto' ? false : !this.hidden,
@@ -80,7 +76,6 @@
           (typeof(left) === 'number') &&
           ((left !== this.left) || force)
         ){
-          bbn.fn.warning("POSIT");
           this.scrollContainer(left, animate, origin);
         }
       },
@@ -168,7 +163,7 @@
 
       // Emits scroll event
       normalize(){
-        this.$emit('scroll');
+        this.$emit('scroll', this.left);
       },
 
       // Gets the array of scrollable elements according to scrollAlso attribute
@@ -186,6 +181,7 @@
       // Calculates all the proportions based on content
       onResize(){
         if ( this.realContainer ){
+          bbn.fn.warning("RESIZE");
           let tmp1 = $(this.realContainer).width() - 18,
               tmp2 = this.realContainer.children[0] ? this.realContainer.children[0].clientWidth : this.containerWidth - 18;
           if ( (tmp1 !== this.containerWidth) || (tmp2 !== this.contentWidth) ){
@@ -208,7 +204,12 @@
       },
 
       // Sets the variables when the content is scrolled with mouse
-      adjust(e){
+      adjust(e, x){
+        if ( x === this.left ){
+          return
+        }
+        bbn.fn.log(x, this.left);
+        bbn.fn.warning("ADJUST");
         if (
           this.realContainer &&
           !this.dragging &&
@@ -226,10 +227,12 @@
 
       // Sets all event listeners
       initContainer(){
+        bbn.fn.warning("INIT");
         if ( !this.realContainer && this.scroller ){
           this.realContainer = this.scroller.$refs.scrollContainer || false;
         }
         if ( this.realContainer && this.scroller ){
+          bbn.fn.warning("INITIAL: " + this.initial);
           this.onResize();
           this.scroller.$off("resize", this.onResize);
           this.scroller.$on("resize", this.onResize);

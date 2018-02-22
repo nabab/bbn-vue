@@ -167,7 +167,8 @@
 
       // Emits vertical event
       normalize(){
-        this.$emit('scroll');
+        let e = new Event('scroll');
+        this.$emit('scroll', e, this.top);
       },
 
       // Gets the array of scrollable elements according to scrollAlso attribute

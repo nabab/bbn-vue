@@ -21,7 +21,7 @@
         renderedComponent: false,
         renderedContent: '',
         renderedOptions: {},
-        currentValue: this.value === undefined ? (this.data && this.field && (this.value === undefined) ? this.data[this.field] || '' : '') : this.value
+        currentValue: this.value === undefined ? (this.data && this.field ? this.data[this.field] || '' : '') : this.value
       }
     },
     computed: {
@@ -36,7 +36,7 @@
         }
       },
       actualValue(){
-        return this.value === undefined ? (this.data && this.field && (this.value === undefined) ? this.data[this.field] || '' : undefined) : this.value;
+        return this.value === undefined ? (this.data && this.field ? this.data[this.field] || '' : undefined) : this.value;
       }
     },
     methods: {
@@ -72,9 +72,15 @@
                 case "money":
                   this.renderedComponent = 'bbn-numeric';
                   break;
+                case "json":
+                  this.renderedComponent = 'bbn-json-editor';
+                  break;
                 case "bool":
                 case "boolean":
                   this.renderedComponent = 'bbn-checkbox';
+                  break;
+                default:
+                  this.renderedComponent = 'bbn-input';
                   break;
               }
             }
@@ -90,6 +96,9 @@
               this.renderedOptions.value = this.value
             }
             */
+            if ( this.options ){
+              this.renderedOptions = this.options;
+            }
           }
           else {
             if ( this.component ){

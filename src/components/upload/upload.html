@@ -1,6 +1,6 @@
 <div :class="componentClass">
   <div class="bbn-upload k-widget" ref="upload"></div>
-  <div ref="ui_template" v-if="!isMounted">
+  <div ref="ui_template" v-if="!ready">
     <div class="qq-uploader-selector qq-uploader qq-gallery bbn-vmiddle k-block"
          v-bind="{'qq-drop-area-text': dropHereText}"
     >
