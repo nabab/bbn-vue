@@ -39,6 +39,7 @@
       return {
         _mountingTimeout: false,
         resizeTimeout: false,
+        initTimeout: 0,
         isResized: false,
         currentOrientation: this.orientation,
         panes: [],
@@ -205,96 +206,99 @@
         })
       },
       init(){
-        /** @todo we have a problem with pane's collapsible property (fake true) */
-        this.panes.splice(0, this.panes.length);
-        this.originalDimensions = [];
-        let currentPosition = 1,
-            tmp = [];
-        $.each(this.$children, (i, pane) => {
-          bbn.fn.log("CHILDREN", pane);
-          if ( pane.$vnode.componentOptions.tag === 'bbn-pane' ){
-            bbn.fn.warning("IS PANE");
-            let isPercent = false,
-                isFixed = false,
-                props = pane.$vnode.componentOptions.propsData,
-                resizable = this.resizable && (props.resizable !== false),
-                collapsible = this.collapsible && (props.collapsible !== false);
-            if ( props.size ){
-              isFixed = true;
-              if ( (typeof props.size === 'string') && (props.size.substr(-1) === '%') ){
-                isPercent = true;
+        clearTimeout(this.initTimeout);
+        this.initTimeout = setTimeout(() => {
+          /** @todo we have a problem with pane's collapsible property (fake true) */
+          this.panes.splice(0, this.panes.length);
+          this.originalDimensions = [];
+          let currentPosition = 1,
+              tmp = [];
+          $.each(this.$children, (i, pane) => {
+            bbn.fn.log("CHILDREN", pane);
+            if ( pane.$vnode.componentOptions.tag === 'bbn-pane' ){
+              bbn.fn.warning("IS PANE");
+              let isPercent = false,
+                  isFixed = false,
+                  props = pane.$vnode.componentOptions.propsData,
+                  resizable = this.resizable && (props.resizable !== false),
+                  collapsible = this.collapsible && (props.collapsible !== false);
+              if ( props.size ){
+                isFixed = true;
+                if ( (typeof props.size === 'string') && (props.size.substr(-1) === '%') ){
+                  isPercent = true;
+                }
+              }
+              this.originalDimensions.push(props.size || false);
+              this.currentDimensions.push(props.size || false);
+              let obj = $.extend({
+                index: i,
+                difference: 0,
+                oDifference: 0,
+                isPercent: isPercent,
+                isFixed: isFixed,
+                resizable: resizable,
+                collapsible: collapsible,
+                isResizable: collapsible || resizable,
+              }, props);
+              tmp.push(obj);
+            }
+          });
+          $.each(tmp, (idx, pane) => {
+            pane.position = currentPosition;
+            this.panes.push(pane);
+            currentPosition++;
+            if ( pane.isResizable ){
+              for ( let i = idx + 1; i < tmp.length; i++ ){
+                if ( tmp[i].isResizable ){
+                  currentPosition++;
+                  break;
+                }
               }
             }
-            this.originalDimensions.push(props.size || false);
-            this.currentDimensions.push(props.size || false);
-            let obj = $.extend({
-              index: i,
-              difference: 0,
-              oDifference: 0,
-              isPercent: isPercent,
-              isFixed: isFixed,
-              resizable: resizable,
-              collapsible: collapsible,
-              isResizable: collapsible || resizable,
-            }, props);
-            tmp.push(obj);
-          }
-        });
-        $.each(tmp, (idx, pane) => {
-          pane.position = currentPosition;
-          this.panes.push(pane);
-          currentPosition++;
-          if ( pane.isResizable ){
-            for ( let i = idx + 1; i < tmp.length; i++ ){
-              if ( tmp[i].isResizable ){
-                currentPosition++;
-                break;
-              }
-            }
-          }
-        });
-        setTimeout(() => {
-          $.each(this.resizers, (i, a) => {
-            bbn.fn.log("DRAGGABLE?", this.$children[i].$el);
-            let prop = this.currentOrientation === 'horizontal' ? 'left' : 'top',
-                max,
-                min;
-            $(this.$el).children(".resizer").eq(i).draggable({
-              helper: 'clone',
-              containment: "parent",
-              opacity: 0.1,
-              axis: this.currentAxis,
-              start: (e, ui) => {
-                let pos1 = a.pane1.cp.$el.getBoundingClientRect(),
-                    pos2 = a.pane2.cp.$el.getBoundingClientRect();
-                min = - pos1.width + 20;
-                max = pos2.width - 20;
-                bbn.fn.log("START", min, max, ui.position[prop] + '/' + ui.originalPosition[prop], "------------");
-              },
-              drag: (e, ui) => {
-                let size = a.pane1.obj.oDifference + ui.position[prop] - ui.originalPosition[prop];
-                if ( (size <= max) && (size >= min) ){
-                  this.$set(a.pane2.obj, 'difference', - size);
-                  this.$set(a.pane1.obj, 'difference', size);
-                  bbn.fn.log(size, ui.position[prop] + '/' + ui.originalPosition[prop], "------------");
+          });
+          setTimeout(() => {
+            $.each(this.resizers, (i, a) => {
+              bbn.fn.log("DRAGGABLE?", this.$children[i].$el);
+              let prop = this.currentOrientation === 'horizontal' ? 'left' : 'top',
+                  max,
+                  min;
+              $(this.$el).children(".resizer").eq(i).draggable({
+                helper: 'clone',
+                containment: "parent",
+                opacity: 0.1,
+                axis: this.currentAxis,
+                start: (e, ui) => {
+                  let pos1 = a.pane1.cp.$el.getBoundingClientRect(),
+                      pos2 = a.pane2.cp.$el.getBoundingClientRect();
+                  min = - pos1.width + 20;
+                  max = pos2.width - 20;
+                  bbn.fn.log("START", min, max, ui.position[prop] + '/' + ui.originalPosition[prop], "------------");
+                },
+                drag: (e, ui) => {
+                  let size = a.pane1.obj.oDifference + ui.position[prop] - ui.originalPosition[prop];
+                  if ( (size <= max) && (size >= min) ){
+                    this.$set(a.pane2.obj, 'difference', - size);
+                    this.$set(a.pane1.obj, 'difference', size);
+                    bbn.fn.log(size, ui.position[prop] + '/' + ui.originalPosition[prop], "------------");
+                  }
+                },
+                stop: (e, ui) => {
+                  let size = a.pane1.obj.oDifference + ui.position[prop] - ui.originalPosition[prop];
+                  if ( (size <= max) && (size >= min) ){
+                    this.$set(a.pane2.obj, 'difference', -size);
+                    this.$set(a.pane1.obj, 'difference', size);
+                    this.$set(a.pane2.obj, 'oDifference', -size);
+                    this.$set(a.pane1.obj, 'oDifference', size);
+                  }
+                  else{
+                    bbn.fn.log("STOOOPO", e, ui);
+                  }
                 }
-              },
-              stop: (e, ui) => {
-                let size = a.pane1.obj.oDifference + ui.position[prop] - ui.originalPosition[prop];
-                if ( (size <= max) && (size >= min) ){
-                  this.$set(a.pane2.obj, 'difference', -size);
-                  this.$set(a.pane1.obj, 'difference', size);
-                  this.$set(a.pane2.obj, 'oDifference', -size);
-                  this.$set(a.pane1.obj, 'oDifference', size);
-                }
-                else{
-                  bbn.fn.log("STOOOPO", e, ui);
-                }
-              }
+              })
             })
-          })
-        }, 200);
-        this.onResize();
+          }, 200);
+          this.onResize();
+        }, 100);
       },
       collapse(resizerIndex, paneObj){
         if ( this.collapsible ){

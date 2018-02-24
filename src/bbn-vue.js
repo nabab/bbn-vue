@@ -1314,6 +1314,52 @@
       },
     },
 
+    observerComponent: {
+      props: {
+        observer: {}
+      },
+      data(){
+        let broadcaster;
+        if ( this.observer){
+          if ( window.appui ){
+            broadcaster = window.appui;
+          }
+          else {
+            braodcaster = bbn.vue.closest('bbn-broadcaster');
+          }
+        }
+        return {
+          observerValue: null,
+          observerID: null,
+          observationTower: broadcaster
+        }
+      },
+      methods: {
+        observerCheck(){
+          return this.observer && this.observationTower;
+        },
+        isObserved(){
+          return this.observerCheck() && this.observationValue;
+        },
+        observerWatch(){
+          if ( this.observerCheck() && this.observerID ){
+            this.observationTower.$on('bbnObs' + this.observerID, (newVal) => {
+              // Integration of the functionnality is done through a watcher on this property
+              this.observerValue = newVal;
+            });
+          }
+        }
+      },
+      beforeMount(){
+        this.observerWatch();
+      },
+      beforeDestroy(){
+        if ( this.isObserved() ){
+          this.observationTower.$off('bbnObs' + this.observerID);
+        }
+      }
+    },
+
     retrieveRef(vm, path){
       let bits = path.split("."),
           target = vm,

@@ -55,7 +55,9 @@
     mounted(){
       if ( $.isFunction(this.$parent.init) ){
         this.$parent.init();
-        this.ready = true;
+        setTimeout(() => {
+          this.ready = true;
+        }, 150)
       }
     },
   });

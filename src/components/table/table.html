@@ -191,6 +191,7 @@
                               !groupCols[groupIndex-1].cols.length
                             )">
                     <i :class="'bbn-p fa fa-caret-' + (isExpanded(d) ? 'down' : 'right')"
+                       v-if="d.expander"
                        @click="toggleExpanded(d.index)"
                        tabindex="0"
                     ></i>

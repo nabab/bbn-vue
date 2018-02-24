@@ -10,7 +10,13 @@
    * Classic input with normalized appearance
    */
   Vue.component('bbn-table', {
-    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent, bbn.vue.dataEditorComponent, bbn.vue.localStorageComponent],
+    mixins: [
+      bbn.vue.basicComponent,
+      bbn.vue.resizerComponent,
+      bbn.vue.dataEditorComponent,
+      bbn.vue.localStorageComponent,
+      bbn.vue.observerComponent
+    ],
     props: {
       titleGroups: {
         type: [Array, Function]
@@ -210,6 +216,8 @@
         }
       }
       return {
+        _1strun: false,
+        _observerReceived: false,
         groupCols: [
           {name: 'left', width: 0, visible: 0, cols: []},
           {name: 'main', width: 0, visible: 0, cols: []},
@@ -241,11 +249,6 @@
         start: 0,
         total: 0,
         editMode: editable === true ? (this.editor ? 'popup' : 'inline') : (editable === 'popup' ? 'popup' : 'inline'),
-        buttonCls: 'bbn-table-command-',
-        buttonDone: 'bbn-table-button',
-        selectDone: 'bbn-table-select',
-        widgetName: "DataTable",
-        toolbarDone: [],
         tmpRow: false,
         originalRow: false,
         editedRow: false,
@@ -336,16 +339,32 @@
         }
         return ok;
       },
+      /**
+       *
+       * @returns {number}
+       */
       numPages(){
         return Math.ceil(this.total/this.currentLimit);
       },
+      /**
+       *
+       * @returns {number}
+       */
       numVisible(){
         return this.cols.length - bbn.fn.count(this.cols, {hidden: true}) + (this.hasExpander ? 1 : 0) + (this.selection ? 1 : 0);
       },
+      /**
+       *
+       * @returns {*}
+       */
       scroller(){
         return this.$refs.scroller instanceof Vue ? this.$refs.scroller : null;
       },
       currentPage: {
+        /**
+         *
+         * @returns {number}
+         */
         get(){
           return Math.ceil((this.start+1)/this.currentLimit);
         },
@@ -354,17 +373,27 @@
           this.updateData();
         }
       },
+      /**
+       *
+       * @returns {Array}
+       */
       currentSet(){
         if ( !this.cols.length ){
           return [];
         }
         // The final result
+        /**
+         *
+         * @type {Array}
+         */
         let res = [],
             isGroup = this.groupable &&
               (this.group !== false) &&
               this.cols[this.group] &&
               this.cols[this.group].field,
+        // The group value will change each time a row has a different value on the group's column
             currentGroupValue,
+        /* @todo Not sure of what it does ! */
             currentLink,
             // the data is put in a new array with its original index
             data = this.currentData.slice().map((item, index) => {
@@ -432,7 +461,7 @@
           rowIndex++;
         }
 
-        // If there's a group that will eb the row index of its title
+        // If there's a group that will be the row index of its 1st value (where the expander is)
         let currentGroupIndex = -1,
             isExpanded = false;
         while ( data[i] && (i < end) ){
@@ -447,6 +476,7 @@
               value: currentGroupValue,
               data: a,
               rowIndex: rowIndex,
+              expander: true,
               num: bbn.fn.count(data, 'data.' + this.cols[this.group].field, currentGroupValue)
             };
             // Expanded is true: all is opened
@@ -479,7 +509,13 @@
             }
           }
           else if ( this.expander ){
-            isExpanded = this.currentExpanded.indexOf(data[i].index) > -1;
+            let exp = bbn.fn.isFunction(this.expander) ? this.expander(data[i], i) : this.expander;
+            if ( !exp ){
+
+            }
+            else{
+              isExpanded = this.currentExpanded.indexOf(data[i].index) > -1;
+            }
           }
           if ( !isGroup || isExpanded ){
             o = {index: data[i].index, data: a, rowIndex: rowIndex};
@@ -1275,6 +1311,7 @@
         }
         this.$emit('toggle', isSelected, this.currentData[index]);
       },
+
       /** Refresh the current data set */
       updateData(withoutOriginal){
         this.currentExpanded = [];
@@ -1310,7 +1347,15 @@
               }
               else{
                 this.currentData = this._map(result.data || []);
-                if ( this.isBatch ){
+                if ( result.observer && this.observerCheck() ){
+                  this._observerReceived = result.observer.value;
+                  this.observerID = result.observer.id;
+                  this.observerValue = result.observer.value;
+                  if ( !this._1strun ){
+                    this.observerWatch();
+                  }
+                }
+                if ( this.editable ){
                   this.originalData = JSON.parse(JSON.stringify(this.currentData));
                 }
                 this.total = result.total || result.data.length || 0;
@@ -1319,6 +1364,7 @@
                   this.currentOrder.push({field: result.order, dir: (result.dir || '').toUpperCase() === 'DESC' ? 'DESC' : 'ASC'});
                 }
               }
+              this._1strun = true;
             })
           })
         }
@@ -1347,7 +1393,10 @@
         return '';
       },
       isModified(idx){
-        return JSON.stringify(this.currentData[idx]) === JSON.stringify(this.originalData[idx])
+        if ( !this.originalData ){
+          return false;
+        }
+        return JSON.stringify(this.currentData[idx]) !== JSON.stringify(this.originalData[idx])
       },
 
       isSorted(col){
@@ -1890,6 +1939,12 @@
     },
 
     watch: {
+      observerValue(newVal){
+        if ( (newVal !== this._observerReceived) && !this.editedRow ){
+          this._observerReceived = newVal;
+          this.updateData();
+        }
+      },
       editedRow(newVal, oldVal){
         /*
         if ( oldVal && this.originalRow ){
@@ -1942,17 +1997,16 @@
       },
       focusedRow(newIndex, oldIndex){
         if ( this.currentSet[oldIndex] !== undefined ){
+          let idx = this.currentSet[oldIndex].index;
           if (
             (this.editable === 'inline') &&
             (this.editedIndex === oldIndex) &&
-            this.isModified(oldIndex)
+            this.isModified(idx)
           ){
-
             //this.$forceUpdate();
-            if ( this.colButtons === false ){
-              bbn.fn.log("SAVE FUNCTION");
-              //this.save();
-            }
+            this.$emit('change', this.currentSet[oldIndex].data, idx);
+            bbn.fn.log("SAVE FUNCTION");
+            //this.save();
           }
         }
         if ( this.currentSet[newIndex] !== undefined ){

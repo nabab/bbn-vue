@@ -376,30 +376,28 @@
         for (var i = 0; i < this.widget.lineCount() ; i++) {
           this.widget.foldCode({ line: i, ch: 0 }, null, "unfold");
         }
-      }
-    },
-
-    created(){
-      if ( bbn.vue.tern === undefined ){
-        let getURL = (url, c) => {
-          let xhr = new XMLHttpRequest();
-          xhr.open("get", url, true);
-          xhr.send();
-          xhr.onreadystatechange = function() {
-            if (xhr.readyState != 4) return;
-            if (xhr.status < 400) return c(null, xhr.responseText);
-            let e = new Error(xhr.responseText || "No response");
-            e.status = xhr.status;
-            c(e);
+      },
+      initTern(){
+        if ( (bbn.vue.tern === undefined) && (this.mode === 'js') ){
+          let getURL = (url, c) => {
+            let xhr = new XMLHttpRequest();
+            xhr.open("get", url, true);
+            xhr.send();
+            xhr.onreadystatechange = function() {
+              if (xhr.readyState != 4) return;
+              if (xhr.status < 400) return c(null, xhr.responseText);
+              let e = new Error(xhr.responseText || "No response");
+              e.status = xhr.status;
+              c(e);
+            };
           };
-        };
-
-        getURL("//ternjs.net/defs/ecmascript.json", function(err, code) {
-          if (err) throw new Error("Request for ecmascript.json: " + err);
-          bbn.vue.tern = new CodeMirror.TernServer({defs: [JSON.parse(code)]});
-        });
-
-      }
+          getURL("//ternjs.net/defs/ecmascript.json", (err, code) => {
+            if (err) throw new Error("Request for ecmascript.json: " + err);
+            bbn.vue.tern = new CodeMirror.TernServer({defs: [JSON.parse(code)]});
+            this.widget.on("cursorActivity", function(cm) { bbn.vue.tern.updateArgHints(cm); });
+          });
+        }
+      },
     },
 
     mounted: function(){
@@ -410,9 +408,19 @@
         this.emitInput(this.widget.doc.getValue());
       });
       if ( this.mode === 'js' ){
-        this.widget.on("cursorActivity", function(cm) { bbn.vue.tern.updateArgHints(cm); });
+        if ( bbn.vue.tern ){
+          this.widget.on("cursorActivity", function(cm) { bbn.vue.tern.updateArgHints(cm); });
+        }
+        else{
+          this.initTern();
+        }
       }
-      //this.$emit("ready", this.value);
+      this.$nextTick(() => {
+        this.ready = true;
+        this.$nextTick(() => {
+          this.widget.refresh();
+        })
+      })
     },
 
     watch: {

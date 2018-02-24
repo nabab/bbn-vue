@@ -1,9 +1,9 @@
 <div :class="[componentClass, 'k-widget']"
-     v-if="!currentHidden">
-  <bbn-scroll v-if="scrollable && ready">
+     v-if="!currentHidden && ready">
+  <bbn-scroll v-if="scrollable">
     <slot></slot>
   </bbn-scroll>
-  <div v-else-if="ready"
+  <div v-else
        class="bbn-full-screen" :style="{overflow: overflow}">
     <slot></slot>
   </div>
