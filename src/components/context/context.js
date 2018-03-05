@@ -62,7 +62,7 @@
             }
             vlist.push({
               mode: this.mode,
-              items: this.getItems(),
+              items: this.items,
               left: x,
               top: y
             });

@@ -4,23 +4,27 @@
     box-sizing: border-box !important;
     position: relative;
   }
-  .resizer {
-    background-color: #CCC;
-    z-index: 1;
+  .bbn-splitter-bar{
+    margin: 0;
+    padding: 0;
     i{
       font-weight: bold;
     }
-    &.vertical {
-      cursor: ns-resize;
+    &.vertical{
       i{
         padding: 0 1em;
       }
     }
-    &.horizontal {
-      cursor: ew-resize;
+    &.horizontal{
       i{
         padding: 1em 0;
       }
+    }
+    &.bbn-splitter-resizer.vertical {
+      cursor: ns-resize;
+    }
+    &.bbn-splitter-resizer.horizontal {
+      cursor: ew-resize;
     }
   }
 }

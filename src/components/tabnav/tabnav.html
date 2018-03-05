@@ -21,6 +21,7 @@
             backgroundColor: tab.bcolor ? tab.bcolor : null,
             color: tab.fcolor ? tab.fcolor : null
           }"
+          :data-index="tabIndex"
           :class="{
             'k-item': true,
             'k-state-default': true,
@@ -28,9 +29,14 @@
             'k-state-active': tab.selected,
             'k-first': tabIndex === 0,
             'k-last': tabIndex === tabs.length - 1,
+            'bbn-tabnav-alarm': tab.alarm
           }"
           @click="tabIndex !== selected ? activateIndex(tabIndex) : (() => {})()"
       >
+        <div class="bbn-tabnav-badge-container bbn-middle"
+             v-if="numProperties(tab.events)">
+          <span class="bbn-badge bbn-small bbn-bg-red" v-text="numProperties(tab.events)"></span>
+        </div>
         <span class="k-loading k-complete"
               :ref="'spinner' + tabIndex"
         ></span>
@@ -72,7 +78,8 @@
              @keydown.left.down.prevent.stop="getRef('menu-' + tabIndex).$el.focus()"
              @keydown.space.enter.prevent="close(tabIndex)"
              @click.stop.prevent="close(tabIndex)"></i>
-          <bbn-context class="fa fa-caret-down bbn-p"
+          <bbn-context v-if="tab.selected"
+                       class="fa fa-caret-down bbn-p"
                        tabindex="-1"
                        tag="i"
                        :source="getMenuFn"
@@ -83,13 +90,13 @@
       </li>
     </ul>
     <template v-for="(tab, tabIndex) in tabs">
-      <bbn-loader inline-template
-                  v-if="tab.load || (!tab.selected && !tab.loaded)"
-                  :ref="'container' + tabIndex"
-                  :source="tab"
-                  :key="tab.url"
+      <div class="bbn-loader"
+           v-if="tab.load || (!tab.selected && !tab.loaded)"
+           :data-index="tabIndex"
+           :ref="'container' + tabIndex"
+           :key="tab.url"
       >
-        <div class="bbn-loader bbn-flex-fill" v-show="source.selected">
+        <div class="bbn-loader bbn-flex-fill" v-if="source.selected">
           <div class="loader-animation" v-if="source.selected">
             <div class="sk-cube-grid">
               <div class="sk-cube sk-cube1"></div>
@@ -105,10 +112,11 @@
             <h1 v-text="'Loading...'"></h1>
           </div>
         </div>
-      </bbn-loader>
+      </div>
       <bbn-tab inline-template
                v-else
                v-bind="tab"
+               :data-index="tabIndex"
                :ref="'container-' + tabIndex"
                :key="tab.url"
                @ready="tab.loaded = true"

@@ -66,6 +66,7 @@
     queueTimerBBN: 0,
     queueBBN: [],
     components: {
+      appui: {},
       autocomplete: {},
       button: {},
       chart: {},
@@ -94,7 +95,6 @@
       markdown: {},
       masked: {},
       menu: {},
-      'menu-button': {},
       message: {},
       multiselect: {},
       notification: {},
@@ -105,11 +105,13 @@
       progressbar:{},
       radio: {},
       rte: {},
+      scheduler: {},
       scroll: {},
       'scroll-x': {},
       'scroll-y': {},
       search: {},
       slider: {},
+      slideshow: {},
       splitter: {},
       table: {},
       tabnav: {},
@@ -464,6 +466,24 @@
       }
     },
 
+    resetDefBBN(cp){
+      if ( Vue.options.components[cp] ){
+        delete Vue.options.components['bbn-' + cp];
+        Vue.component('bbn-' + cp, (resolve, reject) => {
+          bbn.vue.queueComponentBBN(cp, resolve, reject);
+        });
+      }
+    },
+
+    resetDef(cp){
+      if ( Vue.options.components[cp] ){
+        delete Vue.options.components[cp];
+        Vue.component(cp, (resolve, reject) => {
+          bbn.vue.queueComponent(cp, resolve, reject);
+        });
+      }
+    },
+
     emptyComponent: {
       template: '<template><slot></slot></template>'
     },
@@ -484,6 +504,12 @@
         }
       },
       methods: {
+        focus(){
+          let ele = this.getRef('element');
+          if ( ele ){
+            ele.focus()
+          }
+        },
         getRef(name){
           if ( Array.isArray(this.$refs[name]) ){
             if ( this.$refs[name][0] ){
@@ -1316,22 +1342,21 @@
 
     observerComponent: {
       props: {
-        observer: {}
+        observer: {
+          type: Boolean,
+          default: true
+        }
       },
       data(){
-        let broadcaster;
-        if ( this.observer){
-          if ( window.appui ){
-            broadcaster = window.appui;
-          }
-          else {
-            braodcaster = bbn.vue.closest('bbn-broadcaster');
-          }
-        }
         return {
+          // Integration of the functionnality is done through a watcher on this property
+          observers: [],
+          observersCopy: [],
           observerValue: null,
+          observers: [],
           observerID: null,
-          observationTower: broadcaster
+          observationTower: null,
+          observerUID: bbn.fn.randomString().toLowerCase()
         }
       },
       methods: {
@@ -1339,25 +1364,74 @@
           return this.observer && this.observationTower;
         },
         isObserved(){
-          return this.observerCheck() && this.observationValue;
+          return this.observerCheck() && this.observerValue;
         },
         observerWatch(){
-          if ( this.observerCheck() && this.observerID ){
-            this.observationTower.$on('bbnObs' + this.observerID, (newVal) => {
+          if ( this.isObserved() ){
+            bbn.fn.log("----------------isObserved--------------", this.$el)
+            this.observationTower.observerRelay({
+              element: this.observerUID,
+              id: this.observerID,
+              value: this.observerValue
+            });
+            this.observationTower.$on('bbnObs' + this.observerUID + this.observerID, (newVal) => {
               // Integration of the functionnality is done through a watcher on this property
               this.observerValue = newVal;
             });
           }
+        },
+        observerRelay(obs){
+          if ( this.observer ){
+            bbn.fn.log("----------------observerRelay--------------", this.$el)
+            let idx = bbn.fn.search(this.observers, {id: obs.id, element: obs.element});
+            if ( idx > -1 ){
+              if ( this.observers[idx].value !== obs.value ){
+                this.observers.splice(idx, 1, obs);
+              }
+            }
+            else{
+              this.observers.push(obs);
+              if ( this.observerCheck() ){
+                bbn.fn.log("----------------observing " + 'bbnObs' + obs.element + obs.id + "--------------", this.$el)
+                this.observationTower.$on('bbnObs' + obs.element + obs.id, (newVal) => {
+                  this.observerEmit(newVal, obs);
+                });
+              }
+            }
+            if ( this.observerCheck() ){
+              this.observationTower.observerRelay(obs);
+            }
+          }
+        },
+        observerEmit(newVal, obs){
+          bbn.fn.log("--------------observerEmit-------------------", this.$el);
+          let row = bbn.fn.get_row(this.observers, {id: obs.id, element: obs.element});
+          if ( row && (row.value !== newVal) ){
+            this.$set(row, 'value', newVal);
+            this.$emit('bbnObs' + obs.element + obs.id, newVal);
+          }
         }
       },
-      beforeMount(){
-        this.observerWatch();
+      created(){
+        if ( this.componentClass ){
+          this.componentClass.push('bbn-observer', 'bbn-observer-' + this.observerUID);
+        }
+      },
+      mounted(){
+        if ( this.observer ){
+          this.observationTower = bbn.vue.closest(this, '.bbn-observer');
+          this.observerWatch();
+        }
       },
       beforeDestroy(){
         if ( this.isObserved() ){
-          this.observationTower.$off('bbnObs' + this.observerID);
+          let idx = bbn.fn.search(this.observationTower.observers, {element: this.observerUID});
+          if ( idx > -1 ){
+            this.observationTower.observers.splice(idx, 1);
+          }
+          this.observationTower.$off('bbnObs' + this.observerUID + this.observerID);
         }
-      }
+      },
     },
 
     retrieveRef(vm, path){

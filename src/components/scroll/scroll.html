@@ -1,6 +1,10 @@
 <div :class="[{'bbn-full-screen': true}, componentClass]"
 >
   <div class="bbn-scroll-container"
+       :style="{
+         right: scrollPos,
+         bottom: scrollPos
+       }"
        ref="scrollContainer"
        @scroll="$emit('scroll', $event)"
   >

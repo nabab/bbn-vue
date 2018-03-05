@@ -1,4 +1,6 @@
-<div :class="[{'bbn-100': true}, componentClass]">
+<div :class="[{'bbn-100': true}, componentClass]"
+     @keydown.enter.stop=""
+>
   <div class="bbn-100"
        ref="code"
        @focus="focus($event)"

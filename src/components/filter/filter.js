@@ -293,6 +293,10 @@
               return {}
             }
           },
+          buttonDelete: {
+            type: Boolean,
+            default: false
+          }
         },
         data(){
           return {
@@ -360,7 +364,6 @@
               }
               if ( (cancel === true) && this.currentCondition){
                 this.$parent.unsetCondition(this.currentCondition);
-                this.currentCondition = false;
               }
               else{
                 this.currentCondition = this.$parent.setCondition(tmp);
@@ -371,6 +374,12 @@
             else{
               bbn.fn.alert("Valeur obligatoire, sinon vous pouvez choisir d'autres opérateurs si vous cherchez un élément nul ou vide");
             }
+          },
+          unset(){
+            bbn.fn.log("UNST", this.currentCondition);
+            this.currentOperator = '';
+            this.currentValue = '';
+            this.$parent.$emit('unset')
           }
         },
         created(){
@@ -379,6 +388,7 @@
           }
         },
         mounted(){
+          this.ready = true;
           //bbn.fn.log("FILTER FORM MOUNTED", this);
         },
         watch: {

@@ -97,45 +97,45 @@
         popup: false,
         popupIndex: false,
         tab: false,
-        originalData: {},
-        realButtons: (() => {
-          let r = [];
-          $.each(this.buttons.slice(), (i, a) => {
-            let t = typeof(a);
-            if ( t === 'string' ){
-              switch ( a ){
-                case 'submit':
-                  r.push({
-                    text: bbn._('Submit'),
-                    icon: 'fa fa-check-circle',
-                    command: this.submit
-                  });
-                  break;
-                case 'cancel':
-                  r.push({
-                    text: bbn._('Cancel'),
-                    icon: 'fa fa-times-circle',
-                    command: this.cancel
-                  });
-                  break;
-                case 'reset':
-                  r.push({
-                    text: bbn._('Reset'),
-                    icon: 'fa fa-refresh',
-                    command: this.reset
-                  });
-                  break;
-              }
-            }
-            else if ( t === 'object' ){
-              r.push(a);
-            }
-          });
-          return r;
-        })()
+        originalData: {}
       };
     },
     computed: {
+      realButtons(){
+        let r = [];
+        $.each(this.buttons.slice(), (i, a) => {
+          let t = typeof(a);
+          if ( t === 'string' ){
+            switch ( a ){
+              case 'submit':
+                r.push({
+                  text: bbn._('Submit'),
+                  icon: 'fa fa-check-circle',
+                  command: this.submit
+                });
+                break;
+              case 'cancel':
+                r.push({
+                  text: bbn._('Cancel'),
+                  icon: 'fa fa-times-circle',
+                  command: this.cancel
+                });
+                break;
+              case 'reset':
+                r.push({
+                  text: bbn._('Reset'),
+                  icon: 'fa fa-refresh',
+                  command: this.reset
+                });
+                break;
+            }
+          }
+          else if ( t === 'object' ){
+            r.push(a);
+          }
+        });
+        return r;
+      },
       hasFooter(){
         return !!((this.$slots.footer && this.$slots.footer.length) || this.realButtons.length);
       },

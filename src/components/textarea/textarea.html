@@ -8,6 +8,7 @@
           @blur="blur($event)"
           @change="change($event)"
           @keydown="keydown($event)"
+          @keydown.enter.stop=""
           @keyup="keyup($event)"
           :disabled="disabled"
           :required="required"

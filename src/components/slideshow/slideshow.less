@@ -1,0 +1,130 @@
+.bbn-slideshow{
+  .navigation {
+    position: absolute;
+    bottom: 3vw;
+    right: 3vw;
+    font-size: 4vw;
+  }
+  .next,
+  .prev {
+    color: #7dbeeb;
+  }
+  .disabled {
+    color: #0a629f;
+  }
+  .next::after,
+  .prev::after {
+    font-family: 'FontAwesome';
+  }
+  .next::after {
+    content: "\f0a9";
+  }
+  .prev {
+    margin-right: 0.3em;
+  }
+  .prev::after {
+    content: "\f0a8";
+  }
+  .slide {
+    width: 100%;
+    height: 100%;
+  }
+  .content {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    animation-fill-mode: both;
+    animation-duration: 0.5s;
+  }
+  .fade_in{
+    -webkit-animation-name: fade_in;
+    -moz-animation-name: fade_in;
+    -o-animation-name: fade_in;
+    animation-name: fade_in;
+  }
+
+  .grow{
+    -webkit-animation-name: grow;
+    -moz-animation-name: grow;
+    -o-animation-name: grow;
+    animation-name: grow;
+  }
+
+  .slide_from_left{
+    -webkit-animation-name: slide_from_left;
+    -moz-animation-name: slide_from_left;
+    -o-animation-name: slide_from_left;
+    animation-name: slide_from_left;
+  }
+
+  .slide_from_right{
+    -webkit-animation-name: slide_from_right;
+    -moz-animation-name: slide_from_right;
+    -o-animation-name: slide_from_right;
+    animation-name: slide_from_right;
+  }
+
+  .flip{
+    -webkit-animation-name: flip;
+    -moz-animation-name: flip;
+    -o-animation-name: flip;
+    animation-name: flip;
+    backface-visibility: hidden;
+  }
+}
+@keyframes fade_in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes slide_from_left {
+  from {
+    opacity: 0;
+    transform: translateX(100vw);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes slide_from_right {
+  from {
+    opacity: 0;
+    transform: translateX(-100vw);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes flip {
+  0% {
+    opacity: 0;
+    transform: rotateY(180deg) translateX(0);
+  }
+  100% {
+    opacity: 1;
+    transform: rotateY(0deg) translateX(0);
+  }
+}
+@keyframes grow {
+  0% {
+    opacity: 0;
+    transform: scale(0, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1, 1);
+  }
+}

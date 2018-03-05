@@ -246,7 +246,6 @@
             });
           }
         }
-        bbn.fn.log(cfg);
         new Error("No corresponding widget found for key " + key);
       },
 
@@ -337,7 +336,7 @@
     components: {
       'bbn-widget': {
         name: 'bbn-widget',
-        mixins: [bbn.vue.localStorageComponent],
+        mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent, bbn.vue.observerComponent],
         props: {
           uid: {},
           content: {
@@ -437,6 +436,7 @@
         },
         data(){
           return {
+            _1strun: false,
             isLoading: false,
             dashboard: false,
             currentItems: this.items,
@@ -533,6 +533,14 @@
                   if ( d.total !== undefined && (this.currentTotal !== d.total) ){
                     this.currentTotal = d.total;
                   }
+                  if ( d.observer && this.observerCheck() ){
+                    this.observerID = d.observer.id;
+                    this.observerValue = d.observer.value;
+                    if ( !this._1strun ){
+                      this.observerWatch();
+                      this._1strun = true;
+                    }
+                  }
                 }
                 else if ( typeof d === 'object' ){
                   this.currentSource = d
@@ -565,11 +573,16 @@
               this.load();
             }
           },
-          actionButton: function(name){
-            var tmp = this;
+          actionButton(name, uid){
+            let tmp = this;
+            if ( this.component ){
+              let comp = bbn.vue.find(this, this.component);
+              if ( comp && $.isFunction(comp[name]) ){
+                return comp[name]();
+              }
+            }
             if ( $.isFunction(name) ){
-              bbn.fn.log("action", name);
-              return name(tmp, tmp.items);
+              return name(this, this.items);
             }
             while ( tmp ){
               if ( $.isFunction(tmp[name]) ){
@@ -609,6 +622,11 @@
           },
           hidden(newVal){
             if ( !newVal ){
+              this.load();
+            }
+          },
+          observerValue(newVal){
+            if ( (newVal !== this._observerReceived) && !this.editedRow ){
               this.load();
             }
           },

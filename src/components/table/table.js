@@ -234,6 +234,7 @@
           hidden: this.hidden || null,
         },
         currentFilter: false,
+        editedFilter: false,
         floatingFilterX: 0,
         floatingFilterY: 0,
         floatingFilterTimeOut: 0,
@@ -897,6 +898,15 @@
       unsetFilter(){
         this.currentFilters = $.extend({}, this.filters);
         this.currentFilter = false;
+        this.editedFilter = false;
+      },
+      unsetCurrentFilter(){
+        if ( this.editedFilter ){
+          let idx = bbn.fn.search(this.currentFilters.conditions, {time: this.editedFilter.time});
+          if ( idx > -1 ){
+            this.currentFilters.conditions.splice(idx, 1)
+          }
+        }
       },
       checkFilterWindow(e){
         if ( this.currentFilter ){
@@ -907,7 +917,10 @@
             (e.clientY > this.floatingFilterY + 200)
           ){
             if ( !this.floatingFilterTimeOut ){
-              this.floatingFilterTimeOut = setTimeout(() => this.currentFilter = false, 500);
+              this.floatingFilterTimeOut = setTimeout(() =>{
+                this.currentFilter = false;
+                this.editedFilter = false;
+              }, 500);
             }
           }
           else{
@@ -925,21 +938,24 @@
           if ( o.conditions.length ){
             o.value = o.conditions[0].value;
             o.operator = o.conditions[0].operator;
+            this.editedFilter = o.conditions[0];
           }
           o.multi = false;
           return o;
         }
       },
       openMultiFilter(){
+        let table = this;
         this.getPopup().open({
           title: bbn._('Multi Filter'),
           component: {
-            template: `<bbn-scroll><bbn-filter v-bind="source" @change="changeConditions"></bbn-filter></bbn-scroll>`,
+            template: `<bbn-scroll><bbn-filter v-bind="source" @change="changeConditions" :multi="true"></bbn-filter></bbn-scroll>`,
             props: ['source'],
             methods: {
               changeConditions(o){
-                bbn.vue.closest(this, 'bbn-table').currentFilters.logic = o.logic;
                 bbn.fn.log("changeConditions", o)
+                table.$set(table.currentFilters, 'logic', o.logic);
+                table.$set(table.currentFilters, 'conditions', o.conditions);
               }
             },
           },
@@ -1353,6 +1369,7 @@
                   this.observerValue = result.observer.value;
                   if ( !this._1strun ){
                     this.observerWatch();
+                    this._1strun = true;
                   }
                 }
                 if ( this.editable ){
@@ -1364,7 +1381,6 @@
                   this.currentOrder.push({field: result.order, dir: (result.dir || '').toUpperCase() === 'DESC' ? 'DESC' : 'ASC'});
                 }
               }
-              this._1strun = true;
             })
           })
         }

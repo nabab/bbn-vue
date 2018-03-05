@@ -92,10 +92,18 @@
       },
       _position(){
         $(this.$el)
-          .animate($.extend({
-            top: this.posTop + 'px',
-            bottom: this.posBottom + 'px'
-          }, this.posObject()), 200);
+          .animate(
+            $.extend({
+              top: this.posTop + 'px',
+              bottom: this.posBottom + 'px'
+            }, this.posObject()),
+            200,
+            () => {
+              if ( this.isOpened ){
+                this.getRef('search').focus();
+              }
+            }
+          );
       },
       posObject(){
         let o = {};

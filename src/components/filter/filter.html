@@ -1,4 +1,3 @@
-
 <div :class="componentClass" :style="'border-left-color:' + border_color">
   <h3 v-if="first"
       v-html="_('Où les conditions suivantes sont vraies')"
@@ -63,6 +62,7 @@
                       @change="(d) => {condition.logic = d.logic}"
                       :num="num + 1"
                       :idx="idx"
+                      :multi="multi"
           ></bbn-filter>
         </div>
       </div>
@@ -91,6 +91,7 @@
                          :type="type"
                          :fields="fields"
                          :field="field"
+                         :button-delete="!multi"
                          :component="component"
                          :component-options="componentOptions"
                          @validate="setCondition"
@@ -132,10 +133,16 @@
             <div class="bbn-block padding bbn-db-column">
               <bbn-button :disabled="!currentOperator"
                           @click="validate"
-                          title="Validate"
+                          :title="_('Validate')"
                           ref="check"
-              >
-                <i class="fa fa-check"> </i>
+                          icon="fa fa-check">
+              </bbn-button>
+              <bbn-button v-if="buttonDelete"
+                          :disabled="!currentOperator"
+                          @click="unset"
+                          :title="_('Unset condition')"
+                          ref="unset"
+                          icon="fa fa-times">
               </bbn-button>
             </div>
           </div>

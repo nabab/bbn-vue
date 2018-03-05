@@ -1,4 +1,6 @@
-<div :class="[{'bbn-100': true, 'bbn-block': true}, componentClass]">
+<div :class="[{'bbn-100': true, 'bbn-block': true}, componentClass]"
+     @keydown.enter.stop=""
+>
   <div class="bbn-100 bbn-block"
        ref="element"
        @click="click($event)"

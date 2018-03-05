@@ -72,23 +72,31 @@
         if ( this.currentHeight ){
           let tW = bbn.env.width,
               tH = bbn.env.height;
-          if ( this.right && ((this.right - this.currentWidth) < 0) ){
-            left = '0px';
-            right = '';
+          if ( this.right && ((this.right + this.currentWidth) > tW) ){
+            left = '';
+            right = (bbn.env.width - this.currentWidth) + 'px';
           }
           else if ( this.left && ((this.left + this.currentWidth) > tW) ){
-            right = '0px';
-            left = '';
+            right = '';
+            left = (bbn.env.width - this.currentWidth) + 'px';
           }
-          if ( this.bottom && ((this.bottom - this.currentHeight) < 0) ){
-            top = '0px';
-            bottom: '';
+          if ( this.bottom && ((this.bottom + this.currentHeight) > tH) ){
+            top = '';
+            bottom: (bbn.env.height - this.currentHeight) + 'px';
           }
           else if ( this.top && ((this.top + this.currentHeight) > tH) ){
-            bottom = '0px';
-            top = '';
+            bottom = '';
+            top = (bbn.env.height - this.currentHeight) + 'px';
           }
         }
+        bbn.fn.warning("GET STYLES");
+        bbn.fn.log({
+          left: left,
+          right: right,
+          top: top,
+          bottom: bottom,
+          maxHeight: this.maxHeight
+        });
         return {
           left: left,
           right: right,

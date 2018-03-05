@@ -3,6 +3,30 @@
  */
 (function($, bbn){
   "use strict";
+  let scrollBarWidth = (() => {
+    var outer = document.createElement("div");
+    outer.style.visibility = "hidden";
+    outer.style.width = "100px";
+    outer.style.msOverflowStyle = "scrollbar"; // needed for WinJS apps
+
+    document.body.appendChild(outer);
+
+    var widthNoScroll = outer.offsetWidth;
+    // force scrollbars
+    outer.style.overflow = "scroll";
+
+    // add innerdiv
+    var inner = document.createElement("div");
+    inner.style.width = "100%";
+    outer.appendChild(inner);
+
+    var widthWithScroll = inner.offsetWidth;
+
+    // remove divs
+    outer.parentNode.removeChild(outer);
+
+    return widthNoScroll - widthWithScroll;
+  })();
 
   Vue.component('bbn-scroll', {
     mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent],
@@ -38,7 +62,8 @@
       return {
         show: false,
         currentX: this.x,
-        currentY: this.y
+        currentY: this.y,
+        scrollPos: '-' + scrollBarWidth + 'px',
       }
     },
     methods: {

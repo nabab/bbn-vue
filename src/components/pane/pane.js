@@ -57,6 +57,7 @@
         this.$parent.init();
         setTimeout(() => {
           this.ready = true;
+          this.selfEmit(true)
         }, 150)
       }
     },

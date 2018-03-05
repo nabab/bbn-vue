@@ -435,7 +435,13 @@
   >
     <bbn-filter v-bind="getFilterOptions()"
                 @set="onSetFilter"
-                @unset="onUnsetFilter"
+                @unset="unsetCurrentFilter"
     ></bbn-filter>
+    <div v-if="multifilter"
+         class="bbn-table-filter-link bbn-p bbn-b bbn-i"
+         @click="openMultiFilter(); currentFilter = false;">
+      <i class="zmdi zmdi-filter-list"></i>
+      <span v-text="_('Open the full filter')"></span>
+    </div>
   </div>
 </div>

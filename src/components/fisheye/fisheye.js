@@ -181,6 +181,7 @@
       this.ready = true;
       setTimeout(() => {
         $(this.$el).trigger('mousemove');
+        this.widget.fisheye('refresh');
       }, 1000);
     },
 

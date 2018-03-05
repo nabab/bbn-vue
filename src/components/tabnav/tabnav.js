@@ -24,7 +24,7 @@
    * @param {boolean|number} selected - The index of the currently selected tab, and false otherwise.
    */
   Vue.component('bbn-tabnav', {
-    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent, bbn.vue.localStorageComponent, bbn.vue.closeComponent],
+    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent, bbn.vue.localStorageComponent, bbn.vue.closeComponent, bbn.vue.observerComponent],
     props: {
        url: {
         type: String,
@@ -208,7 +208,17 @@
             }
             // Or in the content?
             else{
-              var $panel = misc.is("div.bbn-tab") ? misc : misc.closest("div.bbn-tab");
+              let found = false,
+                  $panel = misc.is("div.bbn-tab") ? misc : misc.closest("div.bbn-tab");
+              while ( !found && $panel.length ){
+                bbn.fn.log("CHECKING EQUALITY", $panel[0], $panel.attr("data-index"), vm.getContainer(parseInt($panel.attr("data-index"))));
+                if ( vm.getContainer(parseInt($panel.attr("data-index"))) === $panel[0] ){
+                  found = true;
+                }
+                else{
+                  $panel = $panel.parent().closest("div.bbn-tab");
+                }
+              }
               // If the element is in full screen mode
               if ( $panel.hasClass('bbn-tab-full-screen') ){
                 var $prev = $(".bbn-tab-before-full-screen:first", vm.el);
@@ -216,7 +226,7 @@
                   $(vm.$el).children("div.bbn-tab,div.bbn-loader").index($prev) + 1 : 0;
               }
               else if ( $panel.length ){
-                misc = $(vm.$el).children("div.bbn-tab,div.bbn-loader").index($panel);
+                misc = parseInt($panel.attr("data-index"));
               }
             }
           }
@@ -335,7 +345,7 @@
 
       getTab(idx){
         if ( this.isValidIndex(idx) && this.$refs['tab-' + idx] ){
-          return this.$refs['tab-' + idx];
+          return this.getRef('tab-' + idx);
         }
         return false;
       },
@@ -568,6 +578,7 @@
         ){
           index = vm.search(obj.url);
           obj.isUnsaved = false;
+          obj.events = {};
           if ( !obj.menu ){
             obj.menu = [];
           }
@@ -691,7 +702,13 @@
                 title = span.find("[title]").attr("title");
               }
               tab.getPopup().open({
-                content: '<div class="bbn-padded bbn-lg">' + this.tabs[idx].help + '<div>',
+                component: {
+                  props: ['source'],
+                  template: '<bbn-slideshow :source="source.content" separator="---page---"></bbn-slideshow>'
+                },
+                source: {
+                  content: this.tabs[idx].help
+                },
                 title: '<i class="w3-large zmdi zmdi-help-outline"> </i> <span class="bbn-iblock">' + title + '</span>',
                 width: '90%',
                 height: '90%'
@@ -915,6 +932,32 @@
         }
       },
 
+      numProperties(obj){
+        return bbn.fn.numProperties(obj);
+      },
+
+      observerEmit(newVal, obs){
+        let ele = $(".bbn-observer-" + obs.element, this.$el);
+        if ( ele.length ){
+          let idx = this.getIndex(ele);
+          if ( idx !== false ){
+            let i = bbn.fn.search(this.observers, {id: obs.id, element: obs.element});
+            bbn.fn.log("INDEX FOUND", idx, i, this.observers[i].value, newVal);
+            if ( (i > -1) && (this.observers[i].value !== newVal) ){
+              if ( idx === this.selected ){
+                this.$emit('bbnObs' + obs.element + obs.id, newVal);
+                this.$set(this.observers[i], 'value', newVal);
+              }
+              else{
+                this.$set(this.observers[i], 'value', newVal);
+                this.$set(this.tabs[idx].events, 'bbnObs' + obs.element + obs.id, newVal);
+              }
+            }
+          }
+        }
+      }
+
+
     },
 
     created(){
@@ -1020,6 +1063,10 @@
           }
           this.history.unshift(this.tabs[newVal].url);
           this.navigate();
+          for ( let ev in this.tabs[newVal].events ){
+            this.$emit(ev, this.tabs[newVal].events[ev]);
+            delete this.tabs[newVal].events[ev];
+          }
         }
       },
       currentURL(newVal, oldVal){
@@ -1196,6 +1243,12 @@
               }
             }
             return false;
+          },
+          reload(){
+            this.tabNav.reload(this.idx);
+          },
+          activate(force){
+            this.tabNav.activate(this.idx, force);
           },
           getSubTabNav(ele){
             if ( ele === undefined ){

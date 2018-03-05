@@ -1,7 +1,8 @@
 <div :class="[{'bbn-full-screen': true}, componentClass]">
   <bbn-scroll ref="scroll"
               class="bbn-w-100"
-              @ready="onResize">
+              @ready="onResize"
+  >
     <transition-group name="custom-classes-transition"
                       :duration="{enter: isRefreshing ? 0 : 500, leave: isRefreshing ? 0 : 500}"
                       enter-active-class="animated zoomIn"
@@ -21,52 +22,68 @@
                   :index="index"
                   :title="w.title ? w.title : (w.text ? w.text : '')"
       >
-        <div class="k-block bbn-widget">
+        <div :class="['k-block', 'bbn-widget', componentClass]">
           <div class="k-header header">
             <div class="bbn-full-screen">
               <h5 :class="{
                     'ui-sortable-handle': dashboard && dashboard.sortable
                   }"
-                  v-html="title">
-              </h5>
+                  v-html="title"
+              ></h5>
             </div>
             <span class="button button-left">
               <i v-if="closable"
                  :title="_('Close')"
                  @click="close"
-                 class="fa fa-times"></i>
+                 class="fa fa-times"
+              ></i>
               <bbn-context v-if="hasMenu"
                            :source="finalMenu"
               >
                 <i :title="_('Menu')"
-                   class="fa fa-caret-down"> </i>
+                   class="fa fa-caret-down"
+                > </i>
               </bbn-context>
               <i v-for="(b, idx) in buttonsLeft"
                  :title="b.text"
-                 @click="actionButton(b.action)"
-                 :class="b.icon"></i>
+                 @click="actionButton(b.action, uid)"
+                 :class="b.icon"
+              ></i>
             </span>
             <span class="button button-right">
               <i v-for="(b, idx) in buttonsRight"
                  :title="b.text"
-                 @click="actionButton(b.action)"
-                 :class="b.icon"></i>
+                 @click="actionButton(b.action, uid)"
+                 :class="b.icon"
+              ></i>
             </span>
           </div>
           <div class="content">
-            <component v-if="component" :is="component" :source="currentSource"></component>
-            <div v-else-if="content" v-html="content"></div>
+            <component v-if="component"
+                       :is="component"
+                       :source="currentSource"
+            ></component>
+            <div v-else-if="content"
+                 v-html="content"
+            ></div>
             <ul v-else-if="currentItems">
               <li v-for="(it, idx) in currentItems"
                   v-if="limit ? idx < limit : true"
                   :class="itemClass"
                   :style="itemStyle"
               >
-                <component v-if="itemComponent" :is="itemComponent" :source="it"></component>
-                <span v-else v-html="it"></span>
+                <component v-if="itemComponent"
+                           :is="itemComponent"
+                           :source="it"
+                ></component>
+                <span v-else
+                      v-html="it"
+                ></span>
               </li>
             </ul>
-            <div v-else><slot>Nothing to display</slot></div>
+            <div v-else>
+              <slot>Nothing to display</slot>
+            </div>
             <div v-if="zoomable && currentItems && currentItems.length"
                  class="content-buttons zoom bbn-unselectable"
             >
@@ -74,7 +91,9 @@
                  @click="zoom"
               ></i>
             </div>
-            <div v-if="currentPage" class="nav bbn-unselectable">
+            <div v-if="currentPage"
+                 class="nav bbn-unselectable"
+            >
               <div class="content-buttons nav-first">
                 <i class="fa fa-angle-double-left"
                    @click="nav('first')"
