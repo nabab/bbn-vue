@@ -34,7 +34,7 @@
       },
       alertTitle: {
         type: String,
-        default: bbn._("Error")
+        default: '<i class="fa fa-warning bbn-l"> </i> ' + bbn._("Alert")
       },
       alertText: {
         type: String,
@@ -293,10 +293,40 @@
           if ( !o.okText ){
             o.okText = this.okText;
           }
-          o.content = '<div class="bbn-lpadded">' + o.content + '</div>';
+          o.content = '<div class="bbn-lpadded bbn-large bbn-c" style="min-width: 30em">' + o.content + '</div>';
+          o.footer = {
+            template: `
+      <div class="k-button-group k-dialog-buttongroup k-dialog-button-layout-stretched bbn-flex-width">
+        <bbn-button @click="click()"
+                    icon="fa fa-check-circle"
+                    text="` + this.okText + `"
+                    class="bbn-flex-fill k-primary"
+                    tabindex="0"
+                    ref="click"
+        ></bbn-button>
+      </div>
+`,
+            data(){
+              return {
+                window: false
+              }
+            },
+            methods: {
+              click(){
+                this.window.close(true);
+              },
+            },
+            mounted(){
+              this.window = bbn.vue.closest(this, 'bbn-window');
+              setTimeout(() => {
+                this.$refs.click.$el.focus();
+              }, 50)
+            }
+          };
           this.open($.extend(o, {
             maximizable: false,
-            closable: false
+            closable: false,
+            scrollable: false
           }));
 
         }
@@ -358,29 +388,25 @@
           if ( !o.noText ){
             o.noText = this.noText;
           }
-          o.component = {
+          o.content = '<div class="bbn-lpadded bbn-large">' + o.content + '</div>';
+          o.footer = {
             template: `
-    <div class="bbn-flex-height">
-      <div class="bbn-flex-fill">
-        <div class="bbn-lpadded bbn-lg" style="white-space: nowrap">` + o.content + `</div>
-      </div>
-      <div class="bbn-popup-footer">
+      <div class="k-button-group k-dialog-buttongroup k-dialog-button-layout-stretched bbn-flex-width">
         <bbn-button @click="yes()"
                     icon="fa fa-check-circle"
                     text="` + o.yesText + `"
-                    class="w3-green"
+                    class="bbn-flex-fill k-primary"
                     tabindex="0"
                     ref="yes"
         ></bbn-button>
         <bbn-button @click="no()"
                     icon="fa fa-times-circle"
                     text="` + o.noText + `"
-                    class="w3-red"
+                    class="bbn-flex-fill"
                     tabindex="0"
                     ref="no"
         ></bbn-button>
       </div>
-    </div>
 `,
             data(){
               return {
@@ -700,7 +726,18 @@
         },
         mounted(){
           this.$el.style.display = 'block';
-          //this.onResize();
+          if ( this.resizable ){
+            $(this.getRef('window')).resizable({
+              handles: "se",
+              containment: ".bbn-popup",
+              resize: () => {
+                this.selfEmit(true);
+              },
+              stop: () => {
+                this.selfEmit(true);
+              }
+            });
+          }
         },
         watch: {
           isMaximized(){

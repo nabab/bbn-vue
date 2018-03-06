@@ -704,7 +704,7 @@
               tab.getPopup().open({
                 component: {
                   props: ['source'],
-                  template: '<bbn-slideshow :source="source.content" separator="---page---"></bbn-slideshow>'
+                  template: '<bbn-slideshow :source="source.content" separator="---slide---"></bbn-slideshow>'
                 },
                 source: {
                   content: this.tabs[idx].help
@@ -930,6 +930,14 @@
             this.setStorage(cfg);
           }
         }
+      },
+
+      saveEditedRow(){
+        this.$emit('saveRow', this.editedRow);
+      },
+
+      cancelEditedRow(){
+        this.$emit('cancelRow')
       },
 
       numProperties(obj){

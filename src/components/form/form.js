@@ -59,7 +59,7 @@
       buttons: {
         type: Array,
         default(){
-          return ['submit', 'cancel'];
+          return ['cancel', 'submit'];
         }
       },
       // This is the proper data used in the form
@@ -107,13 +107,6 @@
           let t = typeof(a);
           if ( t === 'string' ){
             switch ( a ){
-              case 'submit':
-                r.push({
-                  text: bbn._('Submit'),
-                  icon: 'fa fa-check-circle',
-                  command: this.submit
-                });
-                break;
               case 'cancel':
                 r.push({
                   text: bbn._('Cancel'),
@@ -128,6 +121,13 @@
                   command: this.reset
                 });
                 break;
+              case 'submit':
+                r.push({
+                  text: bbn._('Submit'),
+                  icon: 'fa fa-check-circle',
+                  command: this.submit
+                });
+                break;
             }
           }
           else if ( t === 'object' ){
@@ -137,7 +137,7 @@
         return r;
       },
       hasFooter(){
-        return !!((this.$slots.footer && this.$slots.footer.length) || this.realButtons.length);
+        return this.$slots.footer && this.$slots.footer.length;
       },
       currentClass(){
         let st = 'k-edit-form-container ' + this.componentClass;

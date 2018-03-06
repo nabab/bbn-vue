@@ -2,7 +2,7 @@
       :disabled="disabled"
       :method="method"
       :autocomplete="autocomplete"
-      :class="currentClass"
+      :class="[currentClass, 'k-dialog']"
       @submit.prevent="submit"
       @keydown.enter.prevent.stop="submit()"
 >
@@ -37,29 +37,40 @@
     </bbn-scroll>
   </div>
   <slot v-else></slot>
-  <div class="footer bbn-footer k-header" v-if="hasFooter">
+  <div v-if="hasFooter"
+       class="footer k-header">
     <slot name="footer"></slot>
+  </div>
+  <div v-else-if="realButtons.length"
+       class="footer bbn-popup-footer k-button-group k-dialog-buttongroup k-dialog-button-layout-stretched bbn-flex-width">
     <template v-for="(button, i) in realButtons">
-      <bbn-button v-if="button.command === submit"
+      <bbn-button v-if="button.command === reset"
                   :style="{visibility: modified || prefilled ? 'visible' : 'hidden'}"
                   :key="i"
-                  v-bind="button"
-                  @click="submit()"
-                  glowing="green"
-      ></bbn-button>
-      <bbn-button v-else-if="button.command === reset"
-                  :style="{visibility: modified || prefilled ? 'visible' : 'hidden'}"
-                  :key="i"
+                  class="bbn-flex-fill"
                   @click="reset()"
       ></bbn-button>
       <bbn-button v-else-if="button.command === cancel"
                   :key="i"
                   v-bind="button"
+                  class="bbn-flex-fill"
                   @click="cancel()"
+      ></bbn-button>
+      <bbn-button v-else-if="button.command === submit"
+                  :key="i"
+                  v-bind="button"
+                  :class="{
+                    'bbn-flex-fill': true,
+                    'k-primary': true,
+                    'k-disabled': !modified && !prefilled
+                  }"
+                  @click="!modified && !prefilled ? submit() : modified"
+                  glowing="green"
       ></bbn-button>
       <bbn-button v-else
                   :key="i"
                   v-bind="button"
+                  class="bbn-flex-fill"
                   @click="_execCommand(button, $event)"
       ></bbn-button>
     </template>

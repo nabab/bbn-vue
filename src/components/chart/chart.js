@@ -394,12 +394,12 @@
           if ( this.dateFormat ){
             cfg.axisX.labelInterpolationFnc = (date, idx) => {
               if ( this.odd ){
-                return idx % 2 > 0 ? moment(date).format(this.dateFormat) : null;
+                return idx % 2 > 0 ? moment(new Date(date)).format(this.dateFormat) : null;
               }
               if ( this.even ){
-                return idx % 2 === 0 ? moment(date).format(this.dateFormat) : null;
+                return idx % 2 === 0 ? moment(new Date(date)).format(this.dateFormat) : null;
               }
-              return moment(date).format(this.dateFormat);
+              return moment(new Date(date)).format(this.dateFormat);
             };
           }
           // Odd labels

@@ -18,13 +18,14 @@
          @animationend="onShow"
          @keydown.esc.prevent.stop="close()">
       <div class="bbn-full-screen bbn-middle">
-        <div class="w3-modal-content w3-animate-zoom bbn-flex-height k-content"
+        <div class="w3-modal-content w3-animate-opacity bbn-flex-height k-dialog"
              tabindex="0"
+             ref="window"
              :style="{
                width: isMaximized ? '100%' : realWidth,
                height: isMaximized ? '100%' : realHeight,
                maxHeight: '100%',
-               zIndex: $parent.$parent.$props.zIndex + index,
+               zIndex: $parent.$parent.$props.zIndex + index
              }">
           <header class="w3-container k-header bbn-popup-title" v-if="title">
             <div class="w3-display-topright">

@@ -1898,7 +1898,9 @@
           }
         }
         return o;
-      }
+      },
+      saveEditedRow(){},
+      cancelEditedRow(){}
     },
 
     created(){
@@ -1948,6 +1950,7 @@
       this.$nextTick(() => {
         this.updateData();
       });
+      this.ready = true;
     },
 
     updated(){
