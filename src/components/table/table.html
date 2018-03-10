@@ -181,7 +181,9 @@
                             )">
                     <bbn-checkbox v-if="(typeof(selection) !== 'function') || selection(d)"
                                   v-model="d.selected"
-                                  :value="d.index"
+                                  :value="true"
+                                  :novalue="false"
+                                  :strict="true"
                                   @change="checkSelection(d.index)"
                     ></bbn-checkbox>
                   </td>

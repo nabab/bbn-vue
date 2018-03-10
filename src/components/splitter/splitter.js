@@ -468,8 +468,8 @@
               });
             }, 200)
           }
-          this.onResize();
           this.ready = true;
+          this.selfEmit(true);
         }, 200);
       },
       collapse(toCollapse, toUpdate, full){

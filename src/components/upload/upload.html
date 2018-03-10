@@ -1,5 +1,10 @@
-<div :class="componentClass">
+<div :class="[componentClass, 'bbn-w-100']">
   <div class="bbn-upload k-widget" ref="upload"></div>
+  <div class="k-widget paste-container"
+       ref="pasteContainer"
+  >
+    <span v-html="text.pasteContainer"></span>
+  </div>
   <div ref="ui_template" v-if="!ready">
     <div class="qq-uploader-selector qq-uploader qq-gallery bbn-vmiddle k-block"
          v-bind="{'qq-drop-area-text': dropHereText}"
@@ -19,10 +24,10 @@
       >
         <span class="qq-upload-drop-area-text-selector"></span>
       </div>
-      <a class="qq-upload-button-selector k-button"
+      <bbn-button class="qq-upload-button-selector"
          :class="{'k-state-disabled': !enabled}"
          v-text="text.uploadButton"
-      ></a>
+      ></bbn-button>
       <span class="qq-drop-processing-selector qq-drop-processing">
               <span v-text="text.processingDropped"></span>
               <span class="qq-drop-processing-spinner-selector qq-drop-processing-spinner"></span>
@@ -77,42 +82,42 @@
         </li>
       </ul>
 
-      <dialog class="qq-alert-dialog-selector">
+      <dialog class="qq-alert-dialog-selector k-widget">
         <div class="qq-dialog-message-selector"></div>
         <div class="qq-dialog-buttons">
-          <button type="button"
+          <bbn-button type="button"
                   class="qq-cancel-button-selector"
                   v-text="text.close"
-          ></button>
+          ></bbn-button>
         </div>
       </dialog>
 
-      <dialog class="qq-confirm-dialog-selector">
+      <dialog class="qq-confirm-dialog-selector k-widget">
         <div class="qq-dialog-message-selector"></div>
         <div class="qq-dialog-buttons">
-          <button type="button"
-                  class="qq-cancel-button-selector"
-                  v-text="text.no"
-          ></button>
-          <button type="button"
-                  class="qq-ok-button-selector"
-                  v-text="text.yes"
-          ></button>
+          <bbn-button type="button"
+                      class="qq-cancel-button-selector"
+                      v-text="text.no"
+          ></bbn-button>
+          <bbn-button type="button"
+                      class="qq-ok-button-selector k-primary"
+                      v-text="text.yes"
+          ></bbn-button>
         </div>
       </dialog>
 
-      <dialog class="qq-prompt-dialog-selector">
+      <dialog class="qq-prompt-dialog-selector k-widget">
         <div class="qq-dialog-message-selector"></div>
-        <input type="text">
+        <bbn-input type="text"></bbn-input>
         <div class="qq-dialog-buttons">
-          <button type="button"
+          <bbn-button type="button"
                   class="qq-cancel-button-selector"
                   v-text="text.cancel"
-          ></button>
-          <button type="button"
-                  class="qq-ok-button-selector"
+          ></bbn-button>
+          <bbn-button type="button"
+                  class="qq-ok-button-selector k-primary"
                   v-text="text.ok"
-          ></button>
+          ></bbn-button>
         </div>
       </dialog>
     </div>

@@ -47,7 +47,7 @@
               }"
               tabindex="0"
               @keydown.space.enter.prevent="tabIndex !== selected ? activateIndex(tabIndex) : (() => {})()"
-              @keydown.right.down.prevent="getRef('menu-' + tabIndex).$el.focus(true)"
+              @keydown.right.down.prevent="getRef('menu-' + tabIndex).$el.focus()"
         >
           <i v-if="tab.icon"
              :class="'w3-large ' + tab.icon">

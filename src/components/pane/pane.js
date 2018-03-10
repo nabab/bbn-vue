@@ -54,10 +54,11 @@
     },
     mounted(){
       if ( $.isFunction(this.$parent.init) ){
+        this.selfEmit(true)
         this.$parent.init();
         setTimeout(() => {
           this.ready = true;
-          this.selfEmit(true)
+          this.selfEmit(true);
         }, 150)
       }
     },

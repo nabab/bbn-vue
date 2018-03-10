@@ -1,59 +1,55 @@
-<div :class="['bbn-full-screen', componentClass]">
+<div :class="['bbn-full-screen', 'bbn-lpadded', componentClass]">
   
-  <div v-for="(it, i) in items"
-       :class="['slideswitch', 'sliden' + i.toString()]"
-       :id="name + (i+1)">
-    
-  </div>
-
-  <div v-for="(it, i) in items"
-       :class="['slide', 'sliden' + i.toString(), i === 0 ? 'first' : '']"
-       :id="name + i.toString()"
-       :style="{
+  <div class="bbn-100">
+    <div v-for="(it, i) in items"
+         :class="['slide', 'sliden' + i.toString(), i === 0 ? 'first' : '']"
+         :id="name + i.toString()"
+         :style="{
          display: currentIndex === i ? 'block' : 'none'
        }"
-  >
+    >
     
-    <div :ref="'slide' + i.toString()"
-         :class="['content', it.animation || '', 'bbn-middle', 'bbn-xxl']">
-      <component v-if="it.component"
-                 :is="it.component"
-                 :content="it.content || ''"
-                 :data="it.data || {}"
-      ></component>
-      <component v-else-if="component"
-                 :is="component"
-                 :content="it.content || ''"
-                 :data="it.data || {}"
-      ></component>
-      <div v-else-if="it.content"
-           v-html="it.content">
+      <div :ref="'slide' + i.toString()"
+           :class="['content', it.animation || '', it.cls || '', 'bbn-middle', 'bbn-xxl']">
+        <component v-if="it.component"
+                   :is="it.component"
+                   :content="it.content || ''"
+                   :data="it.data || {}"
+        ></component>
+        <component v-else-if="component"
+                   :is="component"
+                   :content="it.content || ''"
+                   :data="it.data || {}"
+        ></component>
+        <div v-else-if="it.content"
+             v-html="it.content">
+        </div>
+        <div v-else
+             class="bbn-100 bbn-middle w3-black"
+             v-text="_('No content for this slide')">
+        </div>
       </div>
-      <div v-else
-           class="bbn-100 bbn-middle w3-black"
-           v-text="_('No content for this slide')">
-      </div>
+  
     </div>
   
-  </div>
-  
-  <div v-if="items.length"
-       class="navigation">
-    <a href="javascript:;"
-       @click="prev"
-       :class="{
+    <div v-if="items.length"
+         class="navigation">
+      <a href="javascript:;"
+         @click="prev"
+         :class="{
          prev: true,
          disabled: currentIndex === 0
        }">
     
-    </a>
-    <a href="javascript:;"
-       @click="next"
-       :class="{
+      </a>
+      <a href="javascript:;"
+         @click="next"
+         :class="{
          next: true,
          disabled: currentIndex >= (items.length - 1)
        }">
-    </a>
-  </div>
+      </a>
+    </div>
 
+  </div>
 </div>

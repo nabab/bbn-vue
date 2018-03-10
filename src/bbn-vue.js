@@ -113,6 +113,7 @@
       slider: {},
       slideshow: {},
       splitter: {},
+      switch: {},
       table: {},
       tabnav: {},
       textarea: {},
@@ -358,8 +359,6 @@
                 if ( a.mixins ){
                   if ( res.mixins ){
                     $.each(a.mixins, (j, b) => {
-                      bbn.fn.log(j, b);
-                      alert("mixins in bbn-vue.js");
                       res.mixins.push(b);
                     })
                   }
@@ -380,7 +379,7 @@
             a.reject();
           })
         });
-      }, 500)
+      }, 100)
     },
 
     queueComponentBBN(name, resolve, reject){
@@ -441,7 +440,7 @@
                 return prom;
               })
             })
-        }, 1000);
+        }, 100);
       }
     },
 
@@ -1132,7 +1131,7 @@
           // The timeout used in the listener
           let resizeTimeout;
           // This class will allow to recognize the element to listen to
-          $(this.$el).addClass("bbn-resize-emitter");
+          this.$el.className += " bbn-resize-emitter";
           this.parentResizer = bbn.vue.closest(this, ".bbn-resize-emitter", true);
           // Setting initial dimensions
           this.lastKnownHeight = this.parentResizer ? Math.round($(this.parentResizer.$el).innerHeight()) : bbn.env.height;
@@ -1209,6 +1208,7 @@
         this.componentClass.push('bbn-resizer-component');
       },
       mounted(){
+        bbn.fn.log("setResizeEvent", this.$el, this.$options.name);
         this.setResizeEvent();
       },
       beforeDestroy(){
@@ -1485,7 +1485,7 @@
             obj.$el &&
             obj.$vnode &&
             obj.$vnode.data &&
-            obj.$vnode.data.key &&
+            (obj.$vnode.data.key !== undefined) &&
             (obj.$vnode.data.key === key)
           ){
             if ( selector && bbn.vue.is(obj, selector) ){

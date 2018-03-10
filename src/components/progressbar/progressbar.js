@@ -35,8 +35,8 @@
       },
       type: {
         type: String,
-        default: 'value' //allowed 'value', 'percent', 'chunk' ('chunk' divides the bar into boxes to show the
-        // progress)
+        default: 'value'
+        //allowed 'value', 'percent', 'chunk' ('chunk' divides the bar into boxes to show the progress)
       },
       cfg: {
         type: Object,

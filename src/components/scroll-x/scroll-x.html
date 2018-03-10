@@ -3,7 +3,7 @@
             leave-active-class="animated fadeOut"
 >
   <div :class="componentClass"
-       v-if="realContainer && (contentWidth > containerWidth + 5)"
+       v-if="realContainer && containerWidth && (contentWidth > (containerWidth + 5))"
        v-show="show && width"
        @click="jump"
        ref="scrollRail"
@@ -11,7 +11,7 @@
        @mouseenter="inSlider"
        @mouseleave="outSlider"
   >
-    <div class="bbn-scroll-slider"
+    <div class="bbn-scroll-slider k-primary"
          :style="{
            width: width + '%',
            left: left + '%'

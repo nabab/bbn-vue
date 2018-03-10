@@ -1,0 +1,66 @@
+.bbn-switch {
+  position: relative;
+  display: inline-block;
+  width: 3.75rem;
+  height: 2.15rem;
+  input {display:none;}
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    -webkit-transition: .4s;
+    transition: .4s;
+    filter: grayscale(85%)
+  }
+
+  .slider:before {
+    position: absolute;
+    content: "O";
+    font-size: small;
+    text-align: center;
+    line-height: 1.60rem;
+    vertical-align: middle;
+    color: #666;
+    height: 1.60rem;
+    width: 1.60rem;
+    left: 0.275rem;
+    bottom: 0.275rem;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+
+  input:focus + .slider {
+    box-shadow: 0 0 1px;
+  }
+
+  input:checked + .slider{
+    filter: none
+  }
+
+  input:disabled + .slider{
+    filter: grayscale(100%) brightness(1.5);
+    cursor: default;
+  }
+
+  input:checked + .slider:before {
+    -webkit-transform: translateX(1.60rem);
+    -ms-transform: translateX(1.60rem);
+    transform: translateX(1.60rem);
+    content: "|";
+  }
+
+  /* Rounded sliders */
+  .slider.round {
+    border-radius: 2.15rem;
+  }
+
+  .slider.round:before {
+    border-radius: 50%;
+  }
+}
+

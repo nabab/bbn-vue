@@ -1137,6 +1137,9 @@
           if ( typeof(winOptions) === 'string' ){
             winOptions = {title: winOptions};
           }
+          if ( !winOptions.height ){
+            //winOptions.height = (this.cols.length * 2) + 'rem'
+          }
           let popup = $.extend({title: bbn._('Row edition'), width: 700}, winOptions ? winOptions : {}, {
             source: {
               row: row,
@@ -2058,9 +2061,6 @@
           return {
 
           }
-        },
-        created(){
-
         }
       }
     },

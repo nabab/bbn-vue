@@ -59,12 +59,9 @@
       <bbn-button v-else-if="button.command === submit"
                   :key="i"
                   v-bind="button"
-                  :class="{
-                    'bbn-flex-fill': true,
-                    'k-primary': true,
-                    'k-disabled': !modified && !prefilled
-                  }"
-                  @click="!modified && !prefilled ? submit() : modified"
+                  :class="['bbn-flex-fill', {'k-primary': modified || prefilled}]"
+                  :disabled="!modified && !prefilled"
+                  @click="(modified && !prefilled) || prefilled ? submit() : false"
                   glowing="green"
       ></bbn-button>
       <bbn-button v-else

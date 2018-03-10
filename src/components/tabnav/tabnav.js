@@ -704,7 +704,10 @@
               tab.getPopup().open({
                 component: {
                   props: ['source'],
-                  template: '<bbn-slideshow :source="source.content" separator="---slide---"></bbn-slideshow>'
+                  template: `
+                  <bbn-slideshow :source="source.content" 
+                                 class="w3-blue"
+                                 separator="---slide---"></bbn-slideshow>`
                 },
                 source: {
                   content: this.tabs[idx].help

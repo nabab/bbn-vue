@@ -2,8 +2,8 @@
             enter-active-class="animated fadeIn"
             leave-active-class="animated fadeOut"
 >
-  <div :class="componentClass"
-       v-if="realContainer && (contentHeight > containerHeight + 3)"
+  <div :class="[componentClass]"
+       v-if="realContainer && containerHeight && (contentHeight > (containerHeight + 5))"
        v-show="show && height"
        @click="jump"
        ref="scrollRail"
@@ -11,7 +11,7 @@
        @mouseenter="inSlider"
        @mouseleave="outSlider"
   >
-    <div class="bbn-scroll-slider"
+    <div class="bbn-scroll-slider k-primary"
          :style="{
            height: height + '%',
            top: top + '%'

@@ -51,6 +51,7 @@
         default(){
           return {
             uploadButton: bbn._('Upload a file'),
+            pasteContainer: '<i class="fa fa-paste bbn-xl"></i> Ctrl+V',
             dropHere: bbn._('Drop files here'),
             processingDropped: bbn._('Processing dropped files...'),
             retry: bbn._('Retry'),
@@ -178,6 +179,18 @@
         else {
           $inp.attr('disabled', 'disabled');
         }
+      },
+      _getPopup(){
+        if ( this.window ){
+          return this.window.popup;
+        }
+        if ( this.tab && this.tab.$refs.popup ){
+          return this.tab.$refs.popup.length ? this.tab.$refs.popup[0] : this.tab.$refs.popup;
+        }
+        if ( this.$root.$refs.popup ){
+          return this.$root.$refs.popup.length ? this.$root.$refs.popup[0] : this.$root.$refs.popup;
+        }
+        return false;
       }
     },
     created(){
@@ -185,16 +198,49 @@
     },
     mounted(){
       this.$nextTick(() => {
+        if ( !this.window ){
+          this.window = bbn.vue.closest(this, "bbn-window");
+        }
+        if ( !this.tab ){
+          this.tab = bbn.vue.closest(this, "bbn-tab");
+        }
         this.widget = new qq.FineUploader($.extend({
-          element: this.$refs.upload,
-          template: this.getRef('ui_template')
+          element: this.getRef('upload'),
+          template: this.getRef('ui_template'),
+          paste: {
+            targetElement: this.getRef('pasteContainer'),
+            defaultName: 'image',
+            promptForName: true
+          },
+          showPrompt: (message, defaultValue) => {
+            let promise = new qq.Promise();
+            this._getPopup().open({
+              title: message,
+              component: this.$options.components['bbn-uploader-prompt'],
+              width: 400,
+              height: 150,
+              source: {
+                message: message,
+                val: defaultValue,
+                promise: promise
+              }
+            });
+            return promise;
+          },
+          showConfirm(message){
+            let promise = new qq.Promise();
+            bbn.fn.confirm(message, () => {
+              promise.success();
+            }, () => {
+              promise.failure();
+            });
+            return promise;
+          }
         }, this.getCfg));
         if ( this.value && this.getSource ){
           this.widget.addInitialFiles(this.getSource);
         }
         this.ready = true;
-        //this.enable(this.enabled);
-        //this.$emit("ready", this.value);
       });
     },
     watch: {
@@ -204,6 +250,34 @@
       widgetValue(val){
         vc.$emit('input', vc.getValue);
         vc.$emit('change', vc.getValue);
+      }
+    },
+    components: {
+      'bbn-uploader-prompt': {
+        props: ['source'],
+        template: `
+<bbn-form :source="source" 
+          class="bbn-full-screen"
+          @submit.prevent="submit"
+          :prefilled="true"
+          confirmLeave=""
+>
+  <div class="bbn-padded">
+    <bbn-input v-model="source.val" 
+               required="required"
+               class="bbn-w-100"
+     ></bbn-input>
+  </div>
+</bbn-form>
+        `,
+        methods: {
+          submit(){
+            if ( this.source.val ){
+              this.source.promise.success(this.source.val);
+              bbn.vue.closest(this, 'bbn-popup').close(undefined, true);
+            }
+          }
+        }
       }
     }
   });

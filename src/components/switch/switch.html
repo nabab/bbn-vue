@@ -1,0 +1,20 @@
+<label :class="[{'bbn-iblock': true}, componentClass]">
+  <input type="checkbox"
+         :id="id"
+         :name="name"
+         :value="value"
+         :required="required"
+         :disabled="disabled"
+         :checked="state"
+         ref="element"
+  >
+  <span class="slider k-primary"
+        tabindex="0"
+        :for="id"
+        @focus="focus"
+        @blur="blur"
+        @keyup="keyup"
+        @keydown.space="toggle"
+        @click="toggle"
+  ></span>
+</label>

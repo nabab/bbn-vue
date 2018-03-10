@@ -726,7 +726,7 @@
       else if ( this.isExpanded ){
         this.load();
       }
-      this.isMounted = true;
+      this.ready = true;
     },
 
     watch: {
@@ -1100,6 +1100,7 @@
               this.checkPath();
             });
             this.resize();
+            this.ready = true;
             /*
             $(this.$el)
               .draggable({

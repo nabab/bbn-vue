@@ -227,7 +227,9 @@
               theme: this.currentTheme,
               value: this.value
             }, this.cfg);
-
+        if ( this.readonly || this.disabled ){
+          cfg.readOnly = true;
+        }
         if ( tmp = this.getMode(this.mode) ){
           $.extend(true, cfg, tmp);
         }

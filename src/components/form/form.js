@@ -246,9 +246,10 @@
         }
       },
       submit(force){
-        let ok = true;
-        if ( ok ){
-          let elems = bbn.vue.findAll(this, '.bbn-input-component');
+        let ok = true,
+            elems = bbn.vue.findAll(this, '.bbn-input-component'),
+            cf = false;
+        if ( Array.isArray(elems) ){
           $.each(elems, (i, a) => {
             if ( $.isFunction(a.isValid) && !a.isValid() ){
               ok = false;
@@ -262,7 +263,6 @@
         if ( !ok ){
           return false;
         }
-        let cf = false;
         if ( !force ){
           let ev = $.Event('submit');
           this.$emit('submit', ev, this);

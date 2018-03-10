@@ -46,10 +46,12 @@
                 ></i>
               </span>
             </div>
-            <h4 v-html="title"></h4>
+            <h4 v-html="title"
+                ref="title">
+            </h4>
           </header>
     
-          <div class="bbn-flex-fill"
+          <div class="bbn-flex-fill k-widget"
                ref="container"
           >
             <component v-if="component"

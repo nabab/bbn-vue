@@ -599,7 +599,7 @@
           },
           draggable: {
             type: Boolean,
-            default: true
+            default: false
           },
           resizable: {
             type: Boolean,
@@ -738,6 +738,15 @@
               }
             });
           }
+          /*
+          // It shouldn't be centered if it's draggable
+          if ( this.draggable ){
+            $(this.getRef('window')).draggable({
+              handle: 'header > h4',
+              containment: ".bbn-popup"
+            });
+          }
+          */
         },
         watch: {
           isMaximized(){
