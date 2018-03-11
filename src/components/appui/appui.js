@@ -5,7 +5,7 @@
 (function($, bbn){
   "use strict";
 
-  var app;
+  let app;
   /**
    * Classic input with normalized appearance
    */
@@ -96,14 +96,8 @@
             "value": "blueopal",
             "text": "Blue Opal"
           }, {
-            "value": "bootstrap",
-            "text": "Bootstrap"
-          }, {
             "value": "default",
             "text": "Default"
-          }, {
-            "value": "fiori",
-            "text": "Fiori"
           }, {
             "value": "flat",
             "text": "Flat"
@@ -129,9 +123,6 @@
             "value": "nova",
             "text": "Nova"
           }, {
-            "value": "office365",
-            "text": "Office 365"
-          }, {
             "value": "silver",
             "text": "Silver"
           }
@@ -156,6 +147,10 @@
       }
     },
     methods: {
+
+      openChat(){
+        bbn.fn.log("openChat");
+      },
 
       toggleMenu(){
         let menu = this.getRef('menu');
