@@ -32,7 +32,7 @@
     methods: {
       onResize(){
         this.height = $(this.$el).height();
-        bbn.fn.log("HEIGHT", this.height);
+        //bbn.fn.log("HEIGHT", this.height);
         let currentFont = this.fontClass,
             currentMinHeight = this.minHeight;
         if( this.height >= 500 ){

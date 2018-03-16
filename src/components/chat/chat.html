@@ -1,0 +1,76 @@
+<div :class="componentClass">
+  <div v-if="usersVisible"
+       class="bbn-chat-users k-widget">
+    <bbn-list :source="usersOnlineWithoutMe"
+              class="bbn-full-screen">
+      <div class="bbn-w-100 bbn-p"
+           style="overflow: auto"
+           slot="item"
+           slot-scope="item"
+           @click="chatTo([item.value])">
+        <bbn-initial :user-id="item.value"
+                     :user-name="get_field(users, 'value', item.value, 'text')"
+                     style="padding-right: 3px"
+        ></bbn-initial>
+        <span class="bbn-large"
+              v-text="get_field(users, 'value', item.value, 'text')">
+        </span>
+      </div>
+    </bbn-list>
+    <i class="bbn-p fa fa-times"
+       @click="usersVisible = false"
+       style="position: absolute; right: 2px; top: 2px"></i>
+  </div>
+  <container v-for="(chat, i) in currentWindows"
+             inline-template
+             :key="i"
+             :idx="i"
+             :style="{
+               right: (300 * (i + 1)) + 'px',
+             }"
+             :participants="chat.participants"
+             :messages="chat.messages"
+             :chat-id="chat.id"
+             :users="users"
+             @send="relay"
+             v-show="isInScreen(i)"
+  >
+    <div class="bbn-chat-users k-widget bbn-flex-height">
+      <div class="k-header bbn-spadded">
+      <span v-for="participant in participants"
+            class="bbn-user-title"
+            v-text="get_field(users, 'value', participant, 'text')">
+      </span>
+        <i class="bbn-p fa fa-times"
+           @click="$parent.currentWindows.splice(idx, 1)"
+           style="position: absolute; right: 2px; top: 2px"></i>
+      </div>
+      <bbn-list :source="messages"
+                ref="messages"
+                class="bbn-flex-fill"
+                @scroll="scrollChat"
+                :styled="false">
+        <div class="bbn-w-100"
+             style="overflow: auto"
+             slot="item"
+             slot-scope="msg">
+          <bbn-initial :user-id="msg.user"
+                       :user-name="get_field(users, 'value', msg.user, 'text')"
+                       :width="16"
+                       :height="16"
+                       style="vertical-align: middle; padding-right: 3px">
+          </bbn-initial>
+          <span v-text="msg.message"></span>
+        </div>
+      </bbn-list>
+      <div class="bbn-flex-width">
+        <bbn-input class="bbn-flex-fill"
+                   @keydown.enter.prevent="sendMessage"
+                   v-model="currentMessage"
+        ></bbn-input>
+        <bbn-button icon="fa fa-send"
+                    @click="sendMessage"></bbn-button>
+      </div>
+    </div>
+  </container>
+</div>

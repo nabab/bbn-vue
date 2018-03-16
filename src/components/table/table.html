@@ -24,7 +24,7 @@
                  :is="toolbar"
       ></component>
     </div>
-    
+
     <div class="bbn-table-container bbn-w-100 bbn-flex-fill bbn-flex-height">
       <!-- Titles part -->
       <div :class="{
@@ -128,7 +128,7 @@
           </div>
         </div>
       </div>
-      
+
       <!-- Data part -->
       <div class="bbn-table-data bbn-flex-fill" ref="data">
         <div class="bbn-full-screen bbn-flex-width">
@@ -147,7 +147,7 @@
                         :scroll-also="groupCol.name === 'main' ? [getRef('mainTitles')] : dataScrollContents"
             >
               <h3 v-if="isLoading"> </h3>
-              <table v-else-if="currentData.length"
+              <table v-else-if="currentSet.length"
                      :class="'bbn-table-data-' + groupCol.name + ' bbn-table-t'"
                      :style="{width: groupCol.width + 'px'}"
               >
@@ -217,7 +217,7 @@
                       :colspan="groupCol.visible - (selection ? 2 : 1)">
                   </td>
                   <td v-else-if="groupable && d.group && groupCols.visible" :colspan="groupCol.visible">
-  
+
                   </td>
                   <td v-else-if="(groupIndex !== 1) && d.expansion && !selection"
                       :colspan="groupCol.visible">
@@ -325,9 +325,13 @@
                 </tr>
                 </tbody>
               </table>
+              <div v-else class="bbn-full-screen bbn-middle bbn-lg">
+                <div class="bbn-block" v-text="_('No data...')"></div>
+              </div>
             </bbn-scroll>
+
           </div>
-          
+
           <!-- Right vertical scroller -->
           <bbn-scroll-y v-if="currentData.length && groupCols[1].cols.length && getRef('mainScroller') && getRef('mainScroller').ready"
                         ref="scrollerY"
@@ -338,7 +342,7 @@
         </div>
       </div>
     </div>
-    
+
     <!-- Footer -->
     <div class="bbn-table-footer k-grid-pager k-widget k-floatwrap"
          v-if="pageable || saveable || filterable || isAjax || showable"
@@ -425,7 +429,7 @@
                     icon="fa fa-refresh"
         ></bbn-button>
       </div>
-    
+
     </div>
   </div>
   <div v-if="currentFilter"

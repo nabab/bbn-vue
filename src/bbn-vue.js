@@ -70,6 +70,7 @@
       autocomplete: {},
       button: {},
       chart: {},
+      chat: {},
       checkbox: {},
       code: {},
       colorpicker: {},
@@ -331,7 +332,7 @@
       });
       bbn.vue.queueTimer = setTimeout(() => {
         let todo = bbn.vue.queue.splice(0, bbn.vue.queue.length);
-        bbn.fn.warning("QUEUE: " + todo.length);
+        //bbn.fn.warning("QUEUE: " + todo.length);
         $.each(todo, (i, a) => {
           bbn.fn.post(a.url, (r) => {
             if ( r.script ){
@@ -404,7 +405,7 @@
               prom.then((arr) => {
                 // arr is the answer!
                 if ( $.isArray(arr) ){
-                  bbn.fn.warning("RES!!!!!");
+                  //bbn.fn.warning("RES!!!!!");
                   bbn.fn.log(arr);
                   $.each(arr, (i, r) => {
                     let resolved = false;
@@ -1208,7 +1209,6 @@
         this.componentClass.push('bbn-resizer-component');
       },
       mounted(){
-        bbn.fn.log("setResizeEvent", this.$el, this.$options.name);
         this.setResizeEvent();
       },
       beforeDestroy(){
@@ -1305,7 +1305,7 @@
           type: [Array, Function]
         },
         source: {
-          type: [Array, Object, String]
+          type: [Array, Object, String, Function]
         },
         required: {
           type: Boolean,
@@ -1577,6 +1577,21 @@
       }
       return e;
     },
+
+    replaceArrays(oldArr, newArr, key){
+      if ( key && $.isArray(oldArr, newArr) ){
+        for ( let i = oldArr.length; i > 0; --i ){
+          if ( bbn.fn.search(newArr, key, oldArr[i][key]) === -1 ){
+            oldArr.splice(i, 1)
+          }
+        }
+        for ( let a of newArr ){
+          if ( bbn.fn.search(oldArr, key, a[key]) === -1 ){
+            oldArr.push(a)
+          }
+        }
+      }
+    }
   };
 
   bbn.vue.fullComponent = bbn.fn.extend({}, bbn.vue.inputComponent, bbn.vue.optionComponent, bbn.vue.eventsComponent, bbn.vue.widgetComponent);

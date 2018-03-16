@@ -96,8 +96,35 @@
       <div class="bbn-w-50 bbn-h-100">
         <bbn-loading ref="loading"></bbn-loading>
       </div>
-      <div class="bbn-w-50 bbn-h-100 bbn-r" style="padding-right: 3rem">
-        <i class="bbn-p bbn-large fa fa-stack-exchange" @click="openChat"></i>
+      <div class="bbn-h-100" style="float: right; width: 8rem;">
+        <i :class="{
+             'bbn-p': true,
+             'bbn-xl': true,
+             'fa': true,
+             'fa-stack-exchange': true,
+             'bbn-green': chatOnline,
+             'bbn-red': !chatOnline
+           }"
+           @click="chatVisible = !chatVisible; if ( chatVisible && !chatOnline ){ chatOnline = true; }">
+        </i>
+        <i v-if="chatVisible && !getRef('chat').usersVisible"
+           :class="{
+             'bbn-p': true,
+             'bbn-xl': true,
+             'fa': true,
+             'fa-users': true,
+           }"
+           @click="getRef('chat').usersVisible = true">
+        </i>
+        <i v-if="chatVisible && chatOnline"
+           :class="{
+             'bbn-p': true,
+             'bbn-xl': true,
+             'fa': true,
+             'fa-ban': true,
+           }"
+           @click="chatOnline = false; chatVisible = false">
+        </i>
       </div>
     </bbn-pane>
   </bbn-splitter>
@@ -123,13 +150,15 @@
              :source="li.items"
              :unique="li.unique ? true : false">
   </bbn-vlist>
-  <div class="w3-sidebar w3-bar-block w3-card w3-animate-right"
-       style="display:none; width: 50%; right:0; z-index: 1000"
-       id="rightMenu">
-    <button onclick="this.parentNode.style.display = 'none'" class="w3-bar-item w3-button w3-large">Close &times;</button>
-    <a href="#" class="w3-bar-item w3-button">Link 1</a>
-    <a href="#" class="w3-bar-item w3-button">Link 2</a>
-    <a href="#" class="w3-bar-item w3-button">Link 3</a>
-  </div>
+  <bbn-chat v-if="chatVisible"
+            ref="chat"
+            :width="lastKnownWidth"
+            :user-id="app.userId"
+            :users="app.users"
+            :online-users="usersOnline"
+            :online="chatOnline"
+            @send="sendChatMessage"
+            :groups="app.groups">
+  </bbn-chat>
   <component ref="app" :is="appComponent"></component>
 </div>

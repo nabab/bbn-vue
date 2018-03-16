@@ -4,16 +4,18 @@
 (function($, bbn, kendo){
   "use strict";
 
-  var ui = kendo.ui,
+  let ui = kendo.ui,
       MaskedDatePicker = ui.Widget.extend({
         init: function (element, options) {
-          var that = this;
+          let that = this;
           ui.Widget.fn.init.call(this, element, options);
 
-          $(element).kendoMaskedTextBox({ mask: that.options.dateOptions.mask || "00/00/0000" })
+          $(element).kendoMaskedTextBox({ mask: that.options.mask || "00/00/0000" })
             .kendoDatePicker({
-              format: that.options.dateOptions.format || "dd/MM/yyyy",
-              parseFormats: that.options.dateOptions.parseFormats || ["yyyy-MM-dd", "dd/MM/yyyy"]
+              format: that.options.format || "dd/MM/yyyy HH:mm",
+              parseFormats: that.options.parseFormats || ["yyyy-MM-dd HH:mm:ss", "dd/MM/yyyy HH:mm"],
+              max: that.options.max || undefined,
+              min: that.options.min || undefined
             })
             .closest(".k-datepicker")
             .add(element)
@@ -31,18 +33,15 @@
           'change'
         ],
         destroy: function () {
-          var that = this;
+          const that = this;
           ui.Widget.fn.destroy.call(that);
-
           kendo.destroy(that.element);
         },
         value: function(value) {
-          var datepicker = this.element.data("kendoDatePicker");
-
+          const datepicker = this.element.data("kendoDatePicker");
           if (value === undefined) {
             return datepicker.value();
           }
-
           datepicker.value(value);
         }
       });
@@ -94,30 +93,22 @@
       }, bbn.vue.treatData(this));
     },
     mounted: function(){
-      var vm = this,
-          cfg = $.extend(vm.getOptions(), {
-            change: function(e){
-              vm.emitInput(kendo.toString(vm.widget.value(), "yyyy-MM-dd"));
-              return true;
-            }
-          });
-      vm.widget = $(vm.$refs.element)
-        .kendoMaskedDatePicker($.extend(vm.getOptions(), {
-          min: vm.min ? ( (typeof vm.min === 'string') ? new Date(vm.min) : vm.min) : undefined,
-          max: vm.max ? ( (typeof vm.max === 'string') ? new Date(vm.max) : vm.max) : undefined,
-          change: function(e){
-            vm.emitInput(kendo.toString(vm.widget.value(), "yyyy-MM-dd"));
-            return true;
-          }
-        }))
-        .data("kendoDatePicker");
+      const vm = this;
+      this.widget = $(this.$refs.element).kendoMaskedDatePicker($.extend(vm.getOptions(), {
+        min: this.min ? ( (typeof this.min === 'string') ? bbn.fn.date(this.min) : this.min) : undefined,
+        max: this.max ? ( (typeof this.max === 'string') ? bbn.fn.date(this.max) : this.max) : undefined,
+        change: function(e){
+          vm.emitInput(kendo.toString(vm.widget.value(), "yyyy-MM-dd"));
+          return true;
+        }
+      })).data("kendoDatePicker");
       this.ready = true;
     },
     watch: {
       min(newVal){
        if ( newVal ){
          if ( typeof newVal === 'string' ){
-           newVal = new Date(newVal);
+           newVal = bbn.fn.date(newVal);
          }
          this.widget.setOptions({
            min: newVal
@@ -127,7 +118,7 @@
       max(newVal){
         if ( newVal ){
           if ( typeof newVal === 'string' ){
-            newVal = new Date(newVal);
+            newVal = bbn.fn.date(newVal);
           }
           this.widget.setOptions({
             max: newVal

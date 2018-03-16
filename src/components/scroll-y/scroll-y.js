@@ -165,7 +165,7 @@
         }
       },
 
-      // Emits vertical event
+      // Emits scroll event
       normalize(){
         let e = new Event('scroll');
         this.$emit('scroll', e, this.top);
@@ -208,7 +208,10 @@
       },
 
       // Sets the variables when the content is scrolled with mouse
-      adjust(e){
+      adjust(e, y){
+        if ( y === this.top ){
+          return
+        }
         if (
           this.realContainer &&
           !this.dragging &&
@@ -302,7 +305,10 @@
       },
       scrollTo(val, animate){
         let num = null;
-        if ( typeof(val) === 'number' ){
+        if ( bbn.fn.isPercent(val) ){
+          num = Math.round(parseFloat(val) * this.contentHeight / 100);
+        }
+        else if ( typeof(val) === 'number' ){
           num = val;
         }
         else if ( val instanceof HTMLElement ){
@@ -321,6 +327,14 @@
           this._changePosition(100 / this.contentHeight * num, animate);
           this.animateBar();
         }
+      },
+
+      scrollStart(){
+        this.scrollTo(0);
+      },
+
+      scrollEnd(){
+        this.scrollTo('100%');
       }
     },
     watch: {
@@ -356,4 +370,4 @@
     },
   });
 
-})(jQuery, bbn, Vue);
+})(window.jQuery, window.bbn, window.Vue);

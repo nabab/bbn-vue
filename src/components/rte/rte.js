@@ -30,7 +30,7 @@
             ['strong', 'em', 'underline', 'del'],
             ['superscript', 'subscript'],
             ['link'],
-            ['insertImage'],
+            ['insertImage', 'base64'],
             ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
             ['unorderedList', 'orderedList'],
             ['horizontalRule'],

@@ -1,3 +1,22 @@
 <div :class="componentClass">
-  <slot></slot>
+  <bbn-scroll ref="scroll" @scroll="$emit('scroll', $event)">
+    <ul>
+      <li v-for="(item, i) in items"
+          :key="i"
+          @mouseover="over = i"
+          :class="{
+          'k-widget': styled,
+          'k-state-default': styled,
+          'k-state-hover': styled ? over === i : false,
+          'bbn-content': true
+        }">
+        <slot name="item"
+              v-bind="item"
+        >
+          <div class="bbn-w-100 bbn-padded"
+               v-text="item.text ? item.text : '?'"></div>
+        </slot>
+      </li>
+    </ul>
+  </bbn-scroll>
 </div>

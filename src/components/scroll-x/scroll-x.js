@@ -1,7 +1,7 @@
 /**
  * Created by BBN on 10/07/2017.
  */
-(function($, bbn){
+(function($, bbn, Vue){
   "use strict";
 
   Vue.component('bbn-scroll-x', {
@@ -11,7 +11,7 @@
       scroller: {
         type: Vue,
         default(){
-          let tmp = bbn.vue.closest(this, "bbn-scroll");
+          let tmp = bbn.vue.closest(this, 'bbn-scroll');
           return tmp ? tmp : null;
         }
       },
@@ -25,6 +25,10 @@
       tolerance: {
         type: Number,
         default: 2
+      },
+      scrolling: {
+        type: Number,
+        default: 0
       },
       scrollAlso: {
         type: [HTMLElement, Array, Function],
@@ -47,12 +51,12 @@
         dragging: false,
         width: 100,
         start: 0,
-        left: 0,
+        left: this.scrolling,
         currentScroll: 0,
         moveTimeout: 0,
         show: this.hidden === 'auto' ? false : !this.hidden,
         scroll: this.initial
-      }
+      };
     },
     computed: {
       realWidth(){
@@ -104,8 +108,8 @@
         }
       },
 
-      stopDrag(e) {
-        this.dragging = false
+      stopDrag() {
+        this.dragging = false;
       },
 
       // Effectively change the scroll and bar position and sets variables
@@ -163,7 +167,8 @@
 
       // Emits scroll event
       normalize(){
-        this.$emit('scroll', this.left);
+        let e = new Event('scroll');
+        this.$emit('scroll', e, this.left);
       },
 
       // Gets the array of scrollable elements according to scrollAlso attribute
@@ -181,7 +186,6 @@
       // Calculates all the proportions based on content
       onResize(){
         if ( this.realContainer ){
-          bbn.fn.warning("RESIZE");
           let tmp1 = $(this.realContainer).width() - 18,
               tmp2 = this.realContainer.children[0] ? this.realContainer.children[0].clientWidth : this.containerWidth - 18;
           if ( (tmp1 !== this.containerWidth) || (tmp2 !== this.contentWidth) ){
@@ -208,8 +212,6 @@
         if ( x === this.left ){
           return
         }
-        bbn.fn.log(x, this.left);
-        bbn.fn.warning("ADJUST");
         if (
           this.realContainer &&
           !this.dragging &&
@@ -227,12 +229,10 @@
 
       // Sets all event listeners
       initContainer(){
-        bbn.fn.warning("INIT");
         if ( !this.realContainer && this.scroller ){
           this.realContainer = this.scroller.$refs.scrollContainer || false;
         }
         if ( this.realContainer && this.scroller ){
-          bbn.fn.warning("INITIAL: " + this.initial);
           this.onResize();
           this.scroller.$off("resize", this.onResize);
           this.scroller.$on("resize", this.onResize);
@@ -305,7 +305,10 @@
       },
       scrollTo(val, animate){
         let num = null;
-        if ( typeof(val) === 'number' ){
+        if ( bbn.fn.isPercent(val) ){
+          num = Math.round(parseFloat(val) * this.contentHeight / 100);
+        }
+        else if ( typeof(val) === 'number' ){
           num = val;
         }
         else if ( val instanceof HTMLElement ){
@@ -324,6 +327,14 @@
           this._changePosition(100 / this.contentWidth * num, animate);
           this.animateBar();
         }
+      },
+
+      scrollStart(){
+        this.scrollTo(0);
+      },
+
+      scrollEnd(){
+        this.scrollTo('100%');
       }
     },
     watch: {
@@ -359,4 +370,4 @@
     },
   });
 
-})(jQuery, bbn);
+})(window.jQuery, window.bbn, window.Vue);

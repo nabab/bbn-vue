@@ -8,10 +8,21 @@
    * Classic input with normalized appearance
    */
   Vue.component('bbn-list', {
-    mixins: [bbn.vue.basicComponent, bbn.vue.optionComponent, bbn.vue.widgetComponent, bbn.vue.dataSourceComponent],
+    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent],
     props: {
+      source: {
+        type: [String, Array, Function],
+        default(){
+          return []
+        }
+      },
+      styled: {
+        type: Boolean,
+        default: true,
+      },
       expandMode: {
-        type: String
+        type: String,
+        default: 'single'
       },
       itemClass: {
         type: String
@@ -19,34 +30,41 @@
       selected: {
         type: Number
       },
-      cfg: {
-        type: Object,
-        default: function(){
-          return {
-            loadOnDemand: false,
-            // spriteCssClass: "rootfolder",
-            // template:'<span><b></b></span>',
-            expandMode: "single",
-            dataSource: [],
-            dataTextField: 'text',
-            dataUrlField: 'url',
-            animation: {
-              expand: {
-                duration: 400,
-                effects: "expandVertical"
-              }
-            },
-          };
+      animation: {
+        expand: {
+          duration: 400,
+          effects: "expandVertical"
         }
+      },
+      template: {
+        type: [String, Function],
+
       }
     },
     data: function(){
-      return $.extend({
+      return {
+        over: false,
+        isOk: false,
         selectedIndex: null,
-        widgetName: "kendoPanelBar",
-      }, bbn.vue.treatData(this));
+        items: []
+      }
     },
     methods: {
+      update(){
+        if ( bbn.fn.isArray(this.source) ){
+          this.items = this.source.slice();
+        }
+        if ( bbn.fn.isFunction(this.source) ){
+          this.items = this.source();
+        }
+        else{
+          bbn.fn.post(this.source, (d) => {
+            if ( d.data ){
+              this.items = d.data;
+            }
+          })
+        }
+      },
       drawItem: function(obj, e){
         var vm = this,
             data = obj.item,
@@ -73,42 +91,33 @@
         }
         return tpl;
       },
-      getOptions: function(){
-        var vm = this,
-            cfg = bbn.vue.getOptions(vm);
-        delete cfg.source;
-        cfg.template = vm.drawItem;
-        cfg.select = function(e){
-          let idx = $(e.item).index();
-          if ( idx !== vm.selectedIndex ){
-            vm.selectedIndex = idx;
-            vm.$emit("select", idx, vm.dataSource[idx]);
-          }
-        };
-        return cfg;
-      }
-    },
-    computed: {
-      dataSource: function(){
-        if ( this.source ){
-          return bbn.vue.toKendoDataSource(this);
-        }
-        return [];
-      }
     },
     mounted: function(){
-      var vm = this,
-          cfg = this.getOptions();
-      cfg.dataSource = vm.dataSource;
-      vm.widget = $(this.$el).kendoPanelBar(cfg).data("kendoPanelBar");
-
+      this.ready = true;
+      this.$nextTick(() => {
+        this.update();
+      })
     },
     watch: {
-      source: function(newSource){
-        this.widget.setDataSource(this.dataSource);
+      source: {
+        deep: true,
+        handler(){
+          this.update();
+        }
       },
-      cfg: function(){
-
+      items: {
+        deep: true,
+        handler(){
+          if ( this.getRef('scroll') ){
+            this.getRef('scroll').selfEmit()
+          }
+        }
+      }
+    },
+    components: {
+      item: {
+        template: '<div class="bbn-padded" v-html="source.text"></div>',
+        props: ['source']
       }
     }
   });

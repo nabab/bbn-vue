@@ -1,0 +1,17 @@
+<span :class="['bbn-iblock', componentClass]"
+      :title="userName || name"
+      :style="{
+        'background-color': currentColor,
+        width: currentWidth,
+        height: currentHeight,
+        'border-radius': currentRadius,
+        '-moz-border-radius': currentRadius
+      }"
+>
+  <div class="bbn-100 bbn-middle">
+    <div class="bbn-block"
+         :style="fontStyle"
+         v-text="currentLetters">
+    </div>
+  </div>
+</span>

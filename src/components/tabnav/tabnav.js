@@ -689,6 +689,34 @@
             return false;
           }
         });
+        if ( !this.tabs[idx].help ){
+          let sub = this.getSubTabNav(idx);
+          if ( sub && sub.tabs && sub.tabs.length ){
+            let helps = [];
+            sub.tabs.forEach((a) => {
+              if ( a.help ){
+                helps.push({
+                  url: sub.getFullBaseURL() + a.url,
+                  content: a.help,
+                  title: a.title || a.url,
+                  anchor: bbn.fn.randomString(15, 20).toLowerCase()
+                });
+              }
+            });
+            if ( helps.length === 1 ){
+              this.tabs[idx].help = helps[0].content;
+            }
+            else if ( helps.length ){
+              this.tabs[idx].help = '';
+              let slide1 = '';
+              helps.forEach((a) => {
+                slide1 += '<h1><a href="#' + a.anchor + '">' + a.title + '</a></h1>\n';
+                this.tabs[idx].help += '---slide---' + '\n<a name="' + a.anchor + '">\n' + a.content;
+              });
+              this.tabs[idx].help = slide1 + this.tabs[idx].help;
+            }
+          }
+        }
         if ( this.tabs[idx].help ){
           items.push({
             text: bbn._("Help"),
@@ -1190,6 +1218,9 @@
           help: {
             type: String
           },
+          imessages: {
+            type: Array
+          },
           script: {},
           static: {
             type: [Boolean, Number],
@@ -1418,6 +1449,24 @@
               ad.content = this.advert;
             }
             this.popup.advert(ad);
+          }
+          if ( this.imessages ){
+            this.getPopup().open({
+              component: {
+                props: ['source'],
+                template: `
+                  <bbn-slideshow :source="source.content" 
+                                 class="w3-blue"
+                                 separator="---slide---"
+                  ></bbn-slideshow>`
+              },
+              source: {
+                content: this.imessages
+              },
+              title: '<i class="w3-large fa fa-message"> </i> <span class="bbn-iblock">' + bbn._('Internal message') + '</span>',
+              width: '90%',
+              height: '90%'
+            });
           }
           this.ready = true;
         },

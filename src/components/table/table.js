@@ -1020,8 +1020,8 @@
                             :contrary="true"
               ></bbn-checkbox>
             </li>
-          </ul> 
-        </li>  
+          </ul>
+        </li>
       </ul>
       <ul v-else>
         <li v-for="(col, i) in source.cols"
@@ -1884,6 +1884,9 @@
         }
         if ( col.source ){
           $.extend(res, {source: col.source});
+        }
+        else if ( col.editor ){
+          res.source = data;
         }
         return res;
       },

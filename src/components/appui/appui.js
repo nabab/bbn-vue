@@ -21,12 +21,6 @@
         type: String,
         default: bbn.env.path
       },
-      users: {
-        type: Array,
-        default(){
-          return []
-        }
-      },
       options: {
         type: Object,
         default(){
@@ -72,6 +66,21 @@
     },
     data(){
       return {
+        pollerObject: {
+          chat: true,
+          lastChat: 0,
+          message: null,
+          usersHash: false
+        },
+        // For the server query (checking or not)
+        chatOnline: true,
+        // No chat component if chat is not visible
+        chatVisible: false,
+        chatLast: 0,
+        // Chat dialog windows
+        chatWindows: [],
+        usersOnline: [],
+        usersOnlineHash: false,
         search: "",
         searchPlaceholder: "Rechercher par ID, nom, marque, adresse, contact, email, etc...",
         width: 0,
@@ -148,9 +157,29 @@
     },
     methods: {
 
-      openChat(){
-        bbn.fn.log("openChat");
+      sendChatMessage(obj, idx){
+        if ( this.$refs.chat.currentWindows[idx] ){
+          this.pollerObject.message = {
+            text: obj.message,
+            id_chat: obj.chatId || null,
+            users: obj.users
+          };
+          /*
+          bbn.fn.post('chat/actions/message', obj, (d) => {
+            if ( d.success && d.id_chat ){
+              if ( !obj.id ){
+                let chat = this.getRef('chat');
+                if ( chat ){
+                  chat.$set(chat.currentWindows[idx], 'id_chat', d.id_chat)
+                }
+              }
+            }
+          })
+          */
+        }
       },
+
+      get_field: bbn.fn.get_field,
 
       toggleMenu(){
         let menu = this.getRef('menu');
@@ -158,6 +187,7 @@
           menu.toggle();
         }
       },
+
       popup(obj){
         if ( !obj ){
           return this.$refs.popup;
@@ -260,33 +290,67 @@
         */
       },
 
-      poll(timestamp){
+      /*
+      userName(d, force){
+        let type = (typeof(d)).toLowerCase();
+        if ( type === 'object' ){
+          if ( d.full_name ){
+            return d.full_name;
+          }
+          if ( d.login ){
+            return d.login;
+          }
+          return bbn.lng.unknown + (d.id ? " (" + d.id + ")" : "");
+        }
+        else {
+          if ( bbn.users !== undefined ){
+            return bbn.fn.get_field(bbn.users, "value", d, "text");
+          }
+        }
+        if ( force ){
+          return bbn._('Unknown');
+        }
+        return false;
+      },
+
+      userGroup(d){
+        let type = (typeof(d)).toLowerCase();
+        if ( type === 'object' ){
+          d = d.id_group;
+          type = (typeof(d)).toLowerCase();
+        }
+        if ( (type === 'number') ){
+          if ( bbn.usergroups !== undefined ){
+            return bbn.fn.get_field(bbn.usergroups, "value", id, "text");
+          }
+          return bbn.lng.unknown + " (" + d + ")";
+        }
+        return bbn.lng.unknown;
+      },
+      */
+
+      poll(){
         if ( !this.polling ){
           this.polling = true;
-          let obj = {mode: 'json'},
-              diff = bbn.fn.diffObj(this.observers, this.observersCopy);
-          if ( timestamp ){
-            obj.timestamp = timestamp;
-          }
-          obj.observers = this.observers;
           this.observersCopy = this.observers.slice();
-          this.poller = bbn.fn.ajax(this.root + 'poller', 'json', obj, null, (r) => {
-            bbn.fn.log("--------------OBS: Returning Data---------------");
+          this.poller = bbn.fn.ajax(this.root + 'poller', 'json', $.extend({}, this.pollerObject, this.observers), null, (r) => {
+            this.pollerObject.message = null;
+            //bbn.fn.log("--------------OBS: Returning Data---------------");
             // put the data_from_file into #response
             if ( r.data ){
               for ( let d of r.data ){
                 if ( d.observers ){
                   for ( let b of d.observers ){
-                    let arr = bbn.fn.filterObj(this.observers, {id: b.id});
-                    bbn.fn.log("LENGHTH: " + arr.length);
+                    let arr = bbn.fn.filter(this.observers, {id: b.id});
+                    bbn.fn.log("LENGTH: " + arr.length);
                     for ( let a of arr ){
                       if ( a.value !== b.result ){
                         this.$emit('bbnObs' + a.element + a.id, b.result);
                         this.$set(a, 'value', b.result);
-                        bbn.fn.log("--------------Emitting: bbnObs" + a.element + a.id + ': ' + b.result + "---------------");
+                        // bbn.fn.log("--------------Emitting: bbnObs" + a.element + a.id + ': ' + b.result + "---------------");
                       }
                       else{
-                        bbn.fn.log("--------------Not Emitting: same value------------------");
+                        // bbn.fn.log("--------------Not Emitting: same value------------------");
                       }
                     }
                   }
@@ -294,6 +358,40 @@
               }
               //appui.success("<div>ANSWER</div><code>" + JSON.stringify(r.data) + '</code>', 5);
             }
+            if ( r.chat ){
+              if ( r.chat.hash ){
+                if ( this.usersOnlineHash !== r.chat.hash ){
+                  this.usersOnlineHash = r.chat.hash;
+                  this.usersOnline.splice(0, this.usersOnline.length);
+                  r.chat.users.forEach((a) => {
+                    this.usersOnline.push(a);
+                  })
+                }
+              }
+              let chat = this.getRef('chat');
+              if ( r.chat.chats && chat ){
+                this.chatLast = r.chat.last;
+                this.$set(this.pollerObject, 'lastChat', r.chat.last);
+                bbn.fn.iterate(r.chat.chats, (id_chat, chat_info) => {
+                  let idx = bbn.fn.search(chat.currentWindows, {id: id_chat});
+                  if ( chat ){
+                    if ( idx === -1 ){
+                      chat.currentWindows.push({
+                        id: id_chat,
+                        participants: chat_info.participants,
+                        messages: chat_info.messages
+                      });
+                    }
+                    else{
+                      for ( let msg of chat_info.messages ){
+                        chat.currentWindows[idx].messages.push(msg)
+                      }
+                    }
+                  }
+                });
+              }
+            }
+
             // call the function again, this time with the timestamp we just got from server.php
             this.polling = false;
             this.poller = false;
@@ -331,7 +429,6 @@
           }
         }]);
         bbn.vue.unsetComponentRule();
-
         bbn.vue.setDefaultComponentRule('components/', 'apst');
         bbn.vue.addComponent('widget/adh');
         bbn.vue.addComponent('widget/link');
@@ -365,7 +462,7 @@
             this.$emit('resize');
             setTimeout(() => {
               this.poll();
-            }, 10000)
+            }, 2000)
           })
         }, 2000);
       }
@@ -387,13 +484,30 @@
           }, 1000)
         }
       },
+      chatVisible(newVal){
+        if ( !newVal ){
+          this.chatWindows.splice(0, this.chatWindows.length);
+        }
+        this.polling = false;
+      },
+      chatOnline(newVal){
+        this.$set(this.pollerObject, 'chat', newVal);
+      },
+      usersOnlineHash(newVal){
+        this.$set(this.pollerObject, 'usersHash', newVal);
+      },
       observers: {
         deep: true,
         handler(){
+          this.polling = false;
+        }
+      },
+      'pollerObject.message'(newVal){
+        if ( newVal ){
           this.polling = false;
         }
       }
     }
   });
 
-})(jQuery, bbn);
+})(window.jQuery, window.bbn);

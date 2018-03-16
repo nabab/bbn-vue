@@ -78,13 +78,16 @@
           this.$refs.yScroller.scrollTo(y, animate);
         }
       },
+
       scrollHorizontal(ev, left){
         bbn.fn.log(arguments);
         this.currentX = left;
       },
+
       scrollVertical(ev, top){
         this.currentY = top;
       },
+
       onResize(){
         if ( this.$refs.xScroller ){
           this.$refs.xScroller.onResize();
@@ -92,6 +95,32 @@
         if ( this.$refs.yScroller ){
           this.$refs.yScroller.onResize();
         }
+      },
+
+      scrollStart(){
+        this.$refs.xScroller.scrollTo(0);
+        this.$refs.yScroller.scrollTo(0);
+      },
+
+      scrollEnd(){
+        this.$refs.xScroller.scrollTo('100%');
+        this.$refs.yScroller.scrollTo('100%');
+      },
+
+      scrollStartY(){
+        this.$refs.yScroller.scrollTo(0);
+      },
+
+      scrollStartX(){
+        this.$refs.xScroller.scrollTo(0);
+      },
+
+      scrollEndY(){
+        this.$refs.yScroller.scrollTo('100%');
+      },
+
+      scrollEndX(){
+        this.$refs.xScroller.scrollTo('100%');
       }
     },
     mounted(){

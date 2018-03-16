@@ -536,10 +536,6 @@
             if ( this.labelColor || this.labelColorX || this.labelColorY ){
               this.setLabelColor();
             }
-            // Set grid color
-            if ( this.gridColor ){
-              this.setGridColor();
-            }
             // Operations to be performed during the widget draw
             this.widgetDraw();
             // Operations to be performed after widget creation
@@ -556,12 +552,16 @@
       lineChart(){
         // Create widget
         this.widget = new Chartist.Line(this.$refs.chart, this.data, this.widgetCfg);
+        // Set grid color
+        this.setGridColor();
         // Animations
         this.lineAnimation();
       },
       barChart(){
         // Create widget
         this.widget = new Chartist.Bar(this.$refs.chart, this.data, this.widgetCfg);
+        // Set grid color
+        this.setGridColor();
         // Animations
         this.barAnimation();
       },
@@ -874,7 +874,7 @@
         this.widget.on('draw', (chartData) => {
           if ( chartData.type === 'grid' ){
             chartData.element.attr({
-              style: 'stroke: ' + this.gridColor
+              style: 'stroke: ' + (this.gridColor || $(chartData.element._node).css('color')) + '; stroke-opacity: 0.2;'
             });
           }
         });
