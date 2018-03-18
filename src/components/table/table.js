@@ -632,7 +632,13 @@
           }
           i++;
         }
-        return res;
+        let fdata = [];
+        res.forEach((d) => {
+          if ( d.group || d.expander || this.isExpanded(d) || d.aggregated || (this.isExpanded(d) && d.groupAggregated) ){
+            fdata.push(d)
+          }
+        })
+        return fdata;
       },
       hasExpander(){
         return this.expander || (

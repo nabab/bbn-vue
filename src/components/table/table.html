@@ -160,7 +160,6 @@
                 </colgroup>
                 <tbody>
                 <tr v-for="(d, i) in currentSet"
-                    v-if="d.group || d.expander || isExpanded(d) || d.aggregated || (isExpanded(d) && d.groupAggregated)"
                     :key="i"
                     :index="d.index"
                     :tabindex="groupCol.name === 'main' ? 0 : null"
