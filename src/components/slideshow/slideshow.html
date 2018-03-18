@@ -22,16 +22,23 @@
                    :data="it.data || {}"
         ></component>
         <div v-else-if="it.content"
-             v-html="it.content">
-        </div>
+             v-html="it.content"
+        ></div>
         <div v-else
              class="bbn-100 bbn-middle w3-black"
              v-text="_('No content for this slide')">
         </div>
+        <bbn-checkbox v-if="checkbox && it.checkable"
+                      v-model="valuesCB[i]"
+                      :value="true"
+                      :novalue="false"
+                      :strict="true"
+                      :label="(typeof checkbox === 'string') ? checkbox : defaultTextCB"
+                      class="showagain"
+        ></bbn-checkbox>
       </div>
-  
     </div>
-  
+
     <div v-if="items.length"
          class="navigation"
     >

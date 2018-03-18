@@ -170,7 +170,7 @@
             if ( sc ){
               this.$nextTick(() => {
                 sc.selfEmit(true);
-                this.setTimeout(() => {
+                setTimeout(() => {
                   sc.scrollEndY();
                 }, 250)
               })

@@ -23,12 +23,10 @@
         type: String,
       },
       width: {
-        type: [String, Number],
-        default: 36
+        type: [String, Number]
       },
       height: {
-        type: [String, Number],
-        default: 36
+        type: [String, Number]
       },
       charCount: {
         type: Number,
@@ -124,6 +122,10 @@
       }
       if ( !currentWidth && currentHeight ){
         currentWidth = currentHeight;
+      }
+      if ( !currentWidth ){
+        currentHeight = 36;
+        currentWidth = 36;
       }
       return {
         currentColor: col,

@@ -14,10 +14,17 @@
       },
       component: {
         type: Object
+      },
+      checkbox: {
+        type: [String, Boolean],
+        default(){
+          return false;
+        }
       }
     },
     data() {
       let src = [],
+          valuesCB = {},
           isAjax = false;
       if ( (typeof this.source === 'string') ){
         if ( this.separator ){
@@ -31,6 +38,23 @@
       else if ( bbn.fn.isFunction(this.source) ){
         src = this.source();
       }
+      else if ( bbn.fn.isArray(this.source) && this.checkbox ){
+        this.source.forEach((v, i) => {
+          if ( this.separator ){
+            v.content.split(this.separator).forEach((a, k) => {
+              let o = {
+                content: a,
+                id: v.id
+              };
+              if ( k === 0 ){
+                o.checkable= true;
+              }
+              src.push(o);
+            });
+          }
+          valuesCB[i] = false;
+        });
+      }
       else if ( bbn.fn.isArray(this.source) ){
         src = this.source.slice();
       }
@@ -38,7 +62,9 @@
         name: bbn.fn.randomString().toLowerCase(),
         currentIndex: 0,
         items: src,
-        isAjax: isAjax
+        isAjax: isAjax,
+        defaultTextCB: bbn._("Don't show it again"),
+        valuesCB: valuesCB
       }
     },
     methods: {
@@ -91,6 +117,12 @@
       show(newVal, oldVal){
         if ( newVal != oldVal ){
           this.$emit(newVal ? "show" : "hide");
+        }
+      },
+      valuesCB: {
+        deep: true,
+        handler(newVal){
+          this.$emit(newVal[this.currentIndex] ? 'check' : 'uncheck', this.items[this.currentIndex]);
         }
       }
     }

@@ -1458,7 +1458,20 @@
                   <bbn-slideshow :source="source.content" 
                                  class="w3-blue"
                                  separator="---slide---"
-                  ></bbn-slideshow>`
+                                 :checkbox="true"
+                                 @check="setHidden"
+                                 @uncheck="unsetHidden"
+                  ></bbn-slideshow>`,
+                methods: {
+                  setHidden(e){
+                    e.hidden = true;
+                    bbn.vue.closest(this, 'bbn-appui').$emit('setimessage', e);
+                  },
+                  unsetHidden(e){
+                    e.hidden = false;
+                    bbn.vue.closest(this, 'bbn-appui').$emit('setimessage', e);
+                  }
+                }
               },
               source: {
                 content: this.imessages
