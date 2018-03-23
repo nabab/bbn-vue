@@ -457,6 +457,7 @@
                       else if ( diff <= min ){
                         diff = min + 5;
                       }
+                      bbn.fn.log(diff, max, min);
                       this.$set(this.panes[a.pane2], 'difference', 0);
                       this.$set(this.panes[a.pane1], 'difference', 0);
                       this.$set(this.panes[a.pane2], 'oDifference', this.panes[a.pane2].oDifference - diff);

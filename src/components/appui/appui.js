@@ -448,6 +448,7 @@
         bbn.vue.addComponent('widget/user');
         bbn.vue.addComponent('widget/cotis-valid');
         bbn.vue.addComponent('widget/news');
+        bbn.vue.addComponent('widget/liste');
         bbn.vue.addComponent('map');
         bbn.vue.addComponent('lieux_fusion');
       }

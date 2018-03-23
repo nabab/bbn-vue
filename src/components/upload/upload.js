@@ -35,7 +35,7 @@
       },
       success: {},
       error: {},
-      delete: {},
+      remove: {},
       thumbNot : {
         type: String
       },
@@ -56,9 +56,9 @@
             processingDropped: bbn._('Processing dropped files...'),
             retry: bbn._('Retry'),
             editFilename: bbn._('Edit filename'),
-            delete: bbn._('Delete'),
+            remove: bbn._('Delete'),
             pause: bbn._('Pause'),
-            continue: bbn._('Continue'),
+            cont: bbn._('Continue'),
             close: bbn._('Close'),
             no: bbn._('No'),
             yes: bbn._('Yes'),
@@ -91,7 +91,7 @@
         let files = $.map(this.widgetValue, (e) => {
           return {
             name: e.name,
-            size: e.size,
+            //size: e.size,
             extension: e.name.slice(e.name.lastIndexOf('.'))
           }
         });
@@ -142,8 +142,8 @@
               this.setDeleteFileParams({file: this.getName(id)}, id);
             },
             onDeleteComplete(id, xhr, err, e){
-              if ( $.isFunction(vc.delete) ){
-                vc.delete();
+              if ( $.isFunction(vc.remove) ){
+                vc.remove();
               }
             },
             onStatusChange(){

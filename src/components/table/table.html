@@ -325,7 +325,9 @@
                 </tbody>
               </table>
               <div v-else class="bbn-full-screen bbn-middle bbn-lg">
-                <div class="bbn-block" v-text="_('No data...')"></div>
+                <div v-if="groupCol.name === 'main'"
+                     class="bbn-block"
+                     v-text="_('No data...')"></div>
               </div>
             </bbn-scroll>
 

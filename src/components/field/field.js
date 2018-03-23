@@ -54,6 +54,9 @@
             }
             else if ( this.type ){
               switch ( this.type ){
+                case "datetime":
+                  this.renderedComponent = 'bbn-datetimepicker';
+                  break;
                 case "date":
                   this.renderedComponent = 'bbn-datepicker';
                   break;
@@ -116,7 +119,23 @@
               }
               else if ( this.type ){
                 switch ( this.type ){
+                  case "datetime":
+                    if ( this.format ){
+                      this.renderedContent = this.currentValue ? (new moment(this.currentValue)).format(this.format) : '-';
+                    }
+                    else{
+                      this.renderedContent = this.currentValue ? bbn.fn.fdate(this.currentValue) : '-';
+                    }
+                    break;
                   case "date":
+                    if ( this.format ){
+                      this.renderedContent = this.currentValue ? (new moment(this.currentValue)).format(this.format) : '-';
+                    }
+                    else{
+                      this.renderedContent = this.currentValue ? bbn.fn.fdate(this.currentValue) : '-';
+                    }
+                    break;
+                  case "time":
                     if ( this.format ){
                       this.renderedContent = this.currentValue ? (new moment(this.currentValue)).format(this.format) : '-';
                     }

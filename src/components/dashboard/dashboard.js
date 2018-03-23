@@ -541,6 +541,9 @@
                       this._1strun = true;
                     }
                   }
+                  if ( d.optional !== undefined ){
+                    this.optionalData = d.optional;
+                  }
                 }
                 else if ( typeof d === 'object' ){
                   this.currentSource = d
