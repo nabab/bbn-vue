@@ -711,17 +711,19 @@
         return this;
       },
       _checkHeaders(){
-        if ( this.titleGroups ){
-          let x = this.$refs.scroller.$refs.xScroller.currentScroll,
-              cols = this.titleGroupsCells(),
+        let mainScroller = this.getRef('mainScroller');
+        if ( this.titleGroups && mainScroller ){
+          let x = mainScroller.getRef('xScroller').currentScroll,
+              cols = this.titleGroupsCells(this.groupCols[1] && (this.groupCols[1].name === 'main') ? 1 : 0),
               tot = 0;
           $.each(cols, (i, a) => {
-            if ( tot + a.width > x ){
-              $(".bbn-table-title-group", this.$refs.titleGroup[i]).css({left: tot < x ? x - tot : 0});
+            if ( tot + a.realWidth > x ){
+              $(".bbn-table-title-group", this.getRef('mainTitles')).css({left: tot < x ? x - tot : 0});
               return false;
             }
-            tot += (a.width + a.colspan);
+            tot += a.realWidth;
           })
+          bbn.fn.log("X", x, tot);
         }
       },
       _execCommand(button, data, col, index){
@@ -959,9 +961,8 @@
             props: ['source'],
             methods: {
               changeConditions(o){
-                bbn.fn.log("changeConditions", o)
-                table.$set(table.currentFilters, 'logic', o.logic);
-                table.$set(table.currentFilters, 'conditions', o.conditions);
+                table.currentFilters.logic =  o.logic;
+                table.currentFilters.conditions = o.conditions;
               }
             },
           },
@@ -1095,7 +1096,7 @@
                 return ok;
               },
               check(col, index){
-                this.$set(this.shownCols, index, !this.shownCols[index]);
+                this.shownCols[index] = !this.shownCols[index];
               },
               checkAll(group){
                 let show = !this.allVisible(group),
@@ -1254,7 +1255,7 @@
             $.each(this.cols, (i, a) => {
               let hidden = (this.currentHidden.indexOf(i) > -1);
               if ( a.hidden !== hidden ){
-                this.$set(this.cols[i], "hidden", hidden);
+                this.cols[i].hidden =  hidden;
               }
             });
           }
@@ -1449,7 +1450,7 @@
               pos = bbn.fn.search(this.currentOrder, {field: f});
           if ( pos > -1 ){
             if ( this.currentOrder[pos].dir === 'ASC' ){
-              this.$set(this.currentOrder[pos], 'dir', 'DESC');
+              this.currentOrder[pos].dir = 'DESC';
             }
             else{
               this.currentOrder.splice(0, this.currentOrder.length);
@@ -1523,7 +1524,7 @@
         else if ( this.editedRow && this.originalRow ){
           let row = bbn.fn.get_row(this.currentSet, {isEdited: true});
           if ( row ){
-            this.$set(this.currentData, row.index, this.originalRow);
+            this.currentData[row.index] = this.originalRow;
           }
           this.originalRow = false;
           this.editedRow = false;

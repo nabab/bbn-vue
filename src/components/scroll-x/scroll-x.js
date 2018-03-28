@@ -305,20 +305,44 @@
       },
       scrollTo(val, animate){
         let num = null;
-        if ( bbn.fn.isPercent(val) ){
-          num = Math.round(parseFloat(val) * this.contentHeight / 100);
-        }
-        else if ( typeof(val) === 'number' ){
-          num = val;
+        let witness;
+        if ( bbn.fn.isVue(val) ){
+          if ( val.$el ){
+            let $container = $(val.$el).offsetParent();
+            num = $(val.$el).position().left;
+            while ( $container[0] && (witness !== $container[0]) && ($container[0] !== this.scroller.$refs.scrollContent) ){
+              if ( $container[0] === document.body ){
+                break;
+              }
+              else{
+                num += $container.position().left;
+                $container = $container.offsetParent();
+              }
+              witness = $container[0];
+            }
+            num -= 20;
+          }
         }
         else if ( val instanceof HTMLElement ){
           let $container = $(val).offsetParent();
           num = $(val).position().left;
-          while ( $container[0] !== this.scroller.$refs.scrollContent ){
-            num += $container.position().left;
-            $container = $container.offsetParent();
+          while ( $container[0] && (witness !== $container[0]) && ($container[0] !== this.scroller.$refs.scrollContent) ){
+            if ( $container[0] === document.body ){
+              break;
+            }
+            else{
+              num += $container.position().left;
+              $container = $container.offsetParent();
+            }
+            witness = $container[0];
           }
           num -= 20;
+        }
+        else if ( bbn.fn.isPercent(val) ){
+          num = Math.round(parseFloat(val) * this.contentHeight / 100);
+        }
+        else if ( typeof(val) === 'number' ){
+          num = val;
         }
         if ( num !== null ){
           if ( num < 0 ){

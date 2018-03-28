@@ -110,7 +110,7 @@
             tNow = d.getTime();
         if ( tNow > this.time ){
           $.each(VALUES, (i, a) => {
-            this.$set(this, a.name, 0);
+            this[a.name] = 0;
           });
         }
         else{
@@ -175,7 +175,7 @@
               }
             }
             else{
-              this.$set(this, VALUES[i].name, diff[i]);
+              this[VALUES[i].name] = diff[i];
             }
           }
           this.$forceUpdate();

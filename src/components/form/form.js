@@ -97,7 +97,8 @@
         popup: false,
         popupIndex: false,
         tab: false,
-        originalData: {}
+        originalData: {},
+        isPosted: false
       };
     },
     computed: {
@@ -164,6 +165,7 @@
         return false;
       },
       _post(){
+        this.isPosted = true;
         if ( this.action ){
           bbn.fn[this.blank ? 'post_out' : 'post'](this.action, $.extend(true, {}, this.data, this.source), (d) => {
             this.originalData = this.source;
@@ -176,10 +178,14 @@
             }
             let e = new $.Event('success');
             this.$emit('success', d, e);
+            if ( this.sendModel ){
+              this.originalData = this.source;
+            }
+            this.modified = false;
             if ( !e.isDefaultPrevented() ){
               let p = this._getPopup();
               if ( p ){
-                p.close();
+                p.close(true);
               }
             }
           }, (xhr, textStatus, errorThrown) => {
@@ -190,10 +196,14 @@
           this.originalData = this.source;
           let e = new $.Event('success');
           this.$emit('success', this.source, e);
+          if ( this.sendModel ){
+            this.originalData = this.source;
+          }
+          this.modified = false;
           if ( !e.isDefaultPrevented() ){
             let p = this._getPopup();
             if ( p ){
-              p.close();
+              p.close(true);
             }
           }
         }
@@ -220,8 +230,8 @@
         return this.prefilled || !bbn.fn.isSame($.extend(true, {}, this.getData(this.$el) || {}), $.extend(true, {}, this.originalData));
       },
       closePopup(window, ev){
-        if ( this.window ){
-          if ( this.confirmLeave && this.isModified() ){
+        if ( this.window && this.$el ){
+          if ( !this.isPosted && this.confirmLeave && this.isModified() ){
             if ( ev ){
               ev.preventDefault();
             }
@@ -280,7 +290,6 @@
           if ( cf ){
             let popup = this._getPopup();
             if ( popup ){
-              bbn.fn.info("POPUP!", popup);
               popup.confirm(cf, () => {
                 popup.close();
                 this._post();
@@ -293,7 +302,7 @@
         }
       },
       reset(){
-        bbn.fn.log("reset");
+        this.isPosted = false;
         $.each(this.originalData, (name, val) => {
           this.$set(this.source, name, val);
         });

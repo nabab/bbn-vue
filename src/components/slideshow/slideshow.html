@@ -44,18 +44,18 @@
     >
       <a href="javascript:;"
          @click="prev"
-         :class="{
-         prev: true,
-         disabled: currentIndex === 0
-       }">
+         :style="{
+          visibility: currentIndex === 0 ? 'hidden' : 'visible'
+         }"
+         class="prev">
     
       </a>
       <a href="javascript:;"
          @click="next"
-         :class="{
-         next: true,
-         disabled: currentIndex >= (items.length - 1)
-       }">
+         :style="{
+          visibility: currentIndex >= (items.length - 1) ? 'hidden' : 'visible'
+         }"
+         class="next">
       </a>
     </div>
 

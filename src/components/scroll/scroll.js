@@ -68,13 +68,14 @@
     },
     methods: {
       scrollTo(x, y, animate){
+        bbn.fn.log("SCROLLTO", x, y, typeof(x), typeof(y), this.$refs.yScroller);
         if ( !y && (typeof x === HTMLElement) ){
           y = x;
         }
-        if ( this.$refs.xScroller ){
+        if ( this.$refs.xScroller && (x !== undefined) && (x !== null) ){
           this.$refs.xScroller.scrollTo(x, animate);
         }
-        if ( this.$refs.yScroller ){
+        if ( this.$refs.yScroller && (y !== undefined) && (y !== null) ){
           this.$refs.yScroller.scrollTo(y, animate);
         }
       },

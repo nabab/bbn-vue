@@ -149,7 +149,7 @@
         bbn.fn.move(this.widgets, oldIdx, newIdx);
         $.each(this.widgets, (i, a) => {
           if ( i !== a.index ){
-            this.$set(this.widgets[i], "index", i);
+            this.widgets[i].index = i;
           }
         });
       },
@@ -234,7 +234,7 @@
             let prom = this.url ? bbn.fn.post(vm.url + 'save', params) : Promise.resolve({success: true});
             return prom.then((d) => {
               if ( d.success ){
-                for ( var n in params.cfg ){
+                for ( let n in params.cfg ){
                   vm.$set(vm.widgets[idx], n, params.cfg[n]);
                 }
                 this.setWidgetStorage(idx);
@@ -386,13 +386,13 @@
             type: String
           },
           buttonsLeft: {
-            type: Array,
+            type: [Array, Function],
             default(){
               return [];
             }
           },
           buttonsRight: {
-            type: Array,
+            type: [Array, Function],
             default(){
               return [];
             }
@@ -446,7 +446,9 @@
             currentSource: this.source,
             lang: {
               close: bbn._("Close")
-            }
+            },
+            realButtonsRight: [],
+            realButtonsLeft: []
           };
         },
         computed: {
@@ -498,6 +500,10 @@
         },
         methods: {
           _: bbn._,
+          updateButtons(){
+            this.realButtonsLeft = bbn.fn.isFunction(this.buttonsLeft) ? this.buttonsLeft() : this.buttonsLeft;
+            this.realButtonsRight = bbn.fn.isFunction(this.buttonsRight) ? this.buttonsRight() : this.buttonsRight;
+          },
           close: function(){
             this.dashboard.updateWidget(this.uid, {hidden: !this.hidden});
             this.$emit("close", this.uid, this);
@@ -604,6 +610,9 @@
               });
             }
           }
+        },
+        created(){
+          this.updateButtons();
         },
         mounted(){
           this.dashboard = bbn.vue.closest(this, "bbn-dashboard");

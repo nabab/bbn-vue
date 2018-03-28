@@ -667,14 +667,14 @@
 
       pin(idx){
         if ( this.isValidIndex(idx) ){
-          this.$set(this.tabs[idx], "pinned", true);
+          this.tabs[idx].pinned = true;
           this.setConfig();
         }
       },
 
       unpin(idx){
         if ( this.isValidIndex(idx) ){
-          this.$set(this.tabs[idx], "pinned", false);
+          this.tabs[idx].pinned = false;
           this.setConfig();
         }
       },
@@ -768,7 +768,7 @@
             key: "notext",
             icon: this.tabs[idx].notext ? "fa fa-font" : "fa fa-fonticons",
             command: () => {
-              this.$set(this.tabs[idx], 'notext', !this.tabs[idx].notext);
+              this.tabs[idx].notext = !this.tabs[idx].notext;
             }
           });
         }
@@ -830,10 +830,13 @@
         if ( subtabnav && subtabnav.autoload ){
           let cfg = this.getConfig(subtabnav);
           if ( cfg && cfg.tabs ){
-            this.$set(this.tabs[idx], "cfg", cfg);
+            this.tabs[idx].cfg = cfg;
           }
         }
-        this.$set(this.tabs[idx], "load", true);
+        this.tabs[idx].load = true;
+        if ( this.tabs[idx].imessages ){
+          this.tabs[idx].imessages.splice(0, this.tabs[idx].imessages.length);
+        }
         this.$nextTick(() => {
           this.activateIndex(idx);
         })
@@ -985,10 +988,10 @@
             if ( (i > -1) && (this.observers[i].value !== newVal) ){
               if ( idx === this.selected ){
                 this.$emit('bbnObs' + obs.element + obs.id, newVal);
-                this.$set(this.observers[i], 'value', newVal);
+                this.observers[i].value = newVal;
               }
               else{
-                this.$set(this.observers[i], 'value', newVal);
+                this.observers[i].value = newVal;
                 this.$set(this.tabs[idx].events, 'bbnObs' + obs.element + obs.id, newVal);
               }
             }
@@ -1090,7 +1093,7 @@
           }
           $.each(this.tabs, (i, a) => {
             if ( this.tabs[i].selected !== (i === newVal) ){
-              this.$set(this.tabs[i], "selected", (i === newVal));
+              this.tabs[i].selected = (i === newVal);
             }
           });
           let historyIndex = $.inArray(this.tabs[newVal].url, this.history);
@@ -1120,12 +1123,12 @@
               (vm.tabs[vm.selected].current !== newVal) &&
               (newVal.indexOf(vm.tabs[vm.selected].url) === 0)
             ){
-              vm.$set(vm.tabs[vm.selected], "current", newVal);
+              vm.tabs[vm.selected].current = newVal;
             }
             // CHECKING PARENTS
             if ( vm.parents.length ){
               bbn.fn.log("CHANGING URL");
-              vm.parents[0].$set(vm.parents[0], "currentURL", vm.baseURL + newVal);
+              vm.parents[0].currentURL = vm.baseURL + newVal;
             }
             else if ( this.autoload && this.ready ){
               this.setConfig();
@@ -1219,7 +1222,10 @@
             type: String
           },
           imessages: {
-            type: Array
+            type: Array,
+            default(){
+              return []
+            }
           },
           script: {},
           static: {
@@ -1253,16 +1259,16 @@
           },
           setTitle(title){
             if ( this.tabNav ){
-              this.tabNav.$set(this.tabNav.tabs[this.idx], 'title', title);
+              this.tabNav.tabs[this.idx].title = title;
             }
           },
           setColor(bcolor, fcolor){
             if ( this.tabNav ){
               if ( bcolor ){
-                this.tabNav.$set(this.tabNav.tabs[this.idx], 'bcolor', bcolor);
+                this.tabNav.tabs[this.idx].bcolor = bcolor;
               }
               if ( fcolor ){
-                this.tabNav.$set(this.tabNav.tabs[this.idx], 'fcolor', fcolor);
+                this.tabNav.tabs[this.idx].fcolor =  fcolor;
               }
             }
           },
@@ -1321,13 +1327,13 @@
               this.$parent.tabs[this.idx]
             ){
               if ( this.$parent.tabs[this.idx].menu === undefined ){
-                this.$parent.$set(this.$parent.tabs[this.idx], "menu", []);
+                this.$parent.tabs[this.idx].menu = [];
               }
               let menu = this.$parent.tabs[this.idx].menu,
-                  idx = bbn.fn.search($.isFunction(menu) ? menu() : menu, obj);
+                  idx = bbn.fn.search($.isFunction(menu) ? menu() : menu, {text: obj.text});
               if ( idx === -1 ){
                 if ( $.isFunction(menu) ){
-                  this.$parent.$set(this.$parent.tabs[this.idx], "menu", () => {
+                  this.$parent.tabs[this.idx].menu = () => {
                     let items = menu() || [];
                     if ( bbn.fn.search(items, obj) === -1 ){
                       if ( !obj.key ){
@@ -1336,7 +1342,7 @@
                       items.push(obj);
                     }
                     return items;
-                  });
+                  };
                 }
                 else{
                   if ( !obj.key ){
@@ -1347,6 +1353,7 @@
               }
               else{
                 obj.key = menu[idx].key;
+                menu.splice(idx, 1, obj);
               }
               return obj.key;
             }
@@ -1365,7 +1372,7 @@
                   let idx = bbn.fn.search(items, "key", key);
                   if ( idx > -1 ){
                     items.splice(idx, 1);
-                    this.$parent.$set(this.$parent.tabs[this.idx], "menu", items);
+                    this.$parent.tabs[this.idx].menu = items;
                     this.$parent.$forceUpdate();
                     return true;
                   }
@@ -1375,7 +1382,7 @@
                 let idx = bbn.fn.search(menu, "key", key);
                 if ( idx > -1 ){
                   menu.splice(idx, 1);
-                  this.$parent.$set(this.$parent.tabs[this.idx], "menu", menu);
+                  this.$parent.tabs[this.idx].menu = menu;
                   this.$parent.$forceUpdate();
                   return true;
                 }
@@ -1450,7 +1457,7 @@
             }
             this.popup.advert(ad);
           }
-          if ( this.imessages ){
+          if ( this.imessages.length ){
             this.getPopup().open({
               component: {
                 props: ['source'],

@@ -346,7 +346,7 @@
                     for ( let a of arr ){
                       if ( a.value !== b.result ){
                         this.$emit('bbnObs' + a.element + a.id, b.result);
-                        this.$set(a, 'value', b.result);
+                        a.value = b.result;
                         // bbn.fn.log("--------------Emitting: bbnObs" + a.element + a.id + ': ' + b.result + "---------------");
                       }
                       else{
@@ -371,7 +371,7 @@
               let chat = this.getRef('chat');
               if ( r.chat.chats && chat ){
                 this.chatLast = r.chat.last;
-                this.$set(this.pollerObject, 'lastChat', r.chat.last);
+                this.pollerObject.lastChat = r.chat.last;
                 bbn.fn.iterate(r.chat.chats, (id_chat, chat_info) => {
                   let idx = bbn.fn.search(chat.currentWindows, {id: id_chat});
                   if ( chat ){
@@ -492,10 +492,10 @@
         this.polling = false;
       },
       chatOnline(newVal){
-        this.$set(this.pollerObject, 'chat', newVal);
+        this.pollerObject.chat = newVal;
       },
       usersOnlineHash(newVal){
-        this.$set(this.pollerObject, 'usersHash', newVal);
+        this.pollerObject.usersHash = newVal;
       },
       observers: {
         deep: true,

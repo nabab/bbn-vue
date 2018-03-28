@@ -145,6 +145,7 @@
             <bbn-scroll :ref="groupCol.name + 'Scroller'"
                         :axis="groupCol.name === 'main' ? 'x' : 'none'"
                         :scroll-also="groupCol.name === 'main' ? [getRef('mainTitles')] : dataScrollContents"
+                        @scroll="_checkHeaders"
             >
               <h3 v-if="isLoading"> </h3>
               <table v-else-if="currentSet.length"

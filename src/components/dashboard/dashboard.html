@@ -44,14 +44,14 @@
                    class="fa fa-caret-down"
                 > </i>
               </bbn-context>
-              <i v-for="(b, idx) in buttonsLeft"
+              <i v-for="(b, idx) in realButtonsLeft"
                  :title="b.text"
                  @click="actionButton(b.action, uid)"
                  :class="b.icon"
               ></i>
             </span>
             <span class="button button-right">
-              <i v-for="(b, idx) in buttonsRight"
+              <i v-for="(b, idx) in realButtonsRight"
                  :title="b.text"
                  @click="actionButton(b.action, uid)"
                  :class="b.icon"

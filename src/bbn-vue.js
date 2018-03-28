@@ -4,12 +4,6 @@
 (function($, bbn, kendo){
   "use strict";
 
-  Vue.mixin({
-    methods: {
-      _: bbn._
-    }
-  });
-
   const
     editorOperators = {
       string: {
@@ -510,46 +504,6 @@
             ele.focus()
           }
         },
-        getRef(name){
-          if ( Array.isArray(this.$refs[name]) ){
-            if ( this.$refs[name][0] ){
-              return this.$refs[name][0];
-            }
-          }
-          else if ( this.$refs[name] ){
-            return this.$refs[name];
-          }
-          return false;
-        },
-        is(selector){
-          return bbn.vue.is(this, selector);
-        },
-        closest(selector, checkEle){
-          return bbn.vue.closest(this, selector, checkEle);
-        },
-        getChildByKey(key, selector){
-          return bbn.vue.getChildByKey(this, key, selector);
-        },
-
-        findByKey(key, selector, ar){
-          return bbn.vue.findByKey(this, key, selector, ar);
-        },
-
-        findAllByKey(key, selector){
-          return bbn.vue.findAllByKey(this, key, selector);
-        },
-
-        find(selector, index){
-          return bbn.vue.find(this, selector, index);
-        },
-
-        findAll(selector, only_children){
-          return bbn.vue.findAll(this, selector, only_children);
-        },
-
-        getComponents(ar, only_children){
-          return bbn.vue.getComponents(this, ar, only_children);
-        }
       },
       beforeCreate(){
         if ( !this.$options.render && !this.$options.template && this.$options.name ){
@@ -1407,7 +1361,7 @@
           bbn.fn.log("--------------observerEmit-------------------", this.$el);
           let row = bbn.fn.get_row(this.observers, {id: obs.id, element: obs.element});
           if ( row && (row.value !== newVal) ){
-            this.$set(row, 'value', newVal);
+            row.value = newVal;
             this.$emit('bbnObs' + obs.element + obs.id, newVal);
           }
         }
@@ -1473,6 +1427,20 @@
           }
         }
         vm = vm.$parent;
+      }
+      return false;
+    },
+
+    getRef(vm, name){
+      if ( vm ){
+        if ( Array.isArray(vm.$refs[name]) ){
+          if ( vm.$refs[name][0] ){
+            return vm.$refs[name][0];
+          }
+        }
+        else if ( vm.$refs[name] ){
+          return vm.$refs[name];
+        }
       }
       return false;
     },
@@ -1593,6 +1561,45 @@
       }
     }
   };
+
+
+  Vue.mixin({
+    methods: {
+      _: bbn._,
+      getRef(name){
+        return bbn.vue.getRef(this, name);
+      },
+      is(selector){
+        return bbn.vue.is(this, selector);
+      },
+      closest(selector, checkEle){
+        return bbn.vue.closest(this, selector, checkEle);
+      },
+      getChildByKey(key, selector){
+        return bbn.vue.getChildByKey(this, key, selector);
+      },
+
+      findByKey(key, selector, ar){
+        return bbn.vue.findByKey(this, key, selector, ar);
+      },
+
+      findAllByKey(key, selector){
+        return bbn.vue.findAllByKey(this, key, selector);
+      },
+
+      find(selector, index){
+        return bbn.vue.find(this, selector, index);
+      },
+
+      findAll(selector, only_children){
+        return bbn.vue.findAll(this, selector, only_children);
+      },
+
+      getComponents(ar, only_children){
+        return bbn.vue.getComponents(this, ar, only_children);
+      }
+    }
+  });
 
   bbn.vue.fullComponent = bbn.fn.extend({}, bbn.vue.inputComponent, bbn.vue.optionComponent, bbn.vue.eventsComponent, bbn.vue.widgetComponent);
 
