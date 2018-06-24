@@ -1,3 +1,14 @@
+.iconForImmage{
+  cursor: pointer;
+}
+
+.circleMiniature{
+  cursor: pointer;
+  width: 0.2em;
+  height: 0.2em;
+}
+
+
 .bbn-slideshow{
   .navigation {
     position: absolute;
@@ -15,10 +26,10 @@
     color: inherit;
   }
   .next,
-  .prev {
+  .prev {    
     color: #FFF;
-    opacity: 0.7;
-    -moz-opacity: 0.7;
+    opacity: 0.6;
+    -moz-opacity: 0.6;
   }
   .next:hover,
   .prev:hover{
@@ -27,6 +38,7 @@
   }
   .next::after,
   .prev::after {
+    cursor: pointer;
     font-family: 'FontAwesome';
   }
   .next::after {
@@ -140,4 +152,14 @@
     opacity: 1;
     transform: scale(1, 1);
   }
+}
+
+.zoom {
+  transition: transform .2s;
+}
+
+.zoom:hover {
+    -ms-transform: scale(1.2); /* IE 9 */
+    -webkit-transform: scale(1.2); /* Safari 3-8 */
+    transform: scale(1.2);
 }

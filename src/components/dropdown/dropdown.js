@@ -45,20 +45,29 @@
         }
       },
       getOptions(){
-        var vm = this,
-            cfg = bbn.vue.getOptions(vm);
-        cfg.change = function(e){
-          vm.$emit("input", e.sender.value());
-					if ( $.isFunction(vm.change) ){
-						vm.change(e.sender.value());
-					}
-        };
-        cfg.select = function(e){
-          if ( e.item ){
-            vm.$emit("select", vm.widget.dataItem(e.item));
+        let cfg = $.extend(bbn.vue.getOptions(this), {
+          change: (e) => {
+            this.$emit("input", e.sender.value());
+            if ( $.isFunction(this.change) ){
+              this.change(e.sender.value());
+            }
+          },
+          select: (e) =>{
+            if ( e.item && this.widget ){
+              this.$emit("select", this.widget.dataItem(e.item));
+            }
+            this.$emit("select");
+          },
+          dataTextField: this.sourceText || this.widgetOptions.dataTextField || 'text',
+          dataValueField: this.sourceValue || this.widgetOptions.dataValueField || 'value',
+          valuePrimitive: true,
+          open: () => {
+            this.isOpened = true;
+          },
+          close: () => {
+            this.isOpened = false;
           }
-          vm.$emit("select");
-        };
+        });
         if ( this.template ){
           cfg.template = e => {
             return this.template(e);
@@ -69,21 +78,11 @@
             return this.valueTemplate(e)
           }
         }
-        cfg.dataTextField = this.sourceText || this.widgetOptions.dataTextField || 'text';
-        cfg.dataValueField = this.sourceValue || this.widgetOptions.dataValueField || 'value';
-        cfg.valuePrimitive = true;
-        cfg.open = () => {
-          bbn.fn.log("IS OPEN CHANGED TO TRUE");
-          this.isOpened = true;
-        };
-        cfg.close = () => {
-          bbn.fn.log("IS OPEN CHANGED TO FALSE");
-          this.isOpened = false;
-        };
         return cfg;
       }
     },
     mounted(){
+
       const vm = this;
       let cfg = this.getOptions();
       if ( this.disabled ){
@@ -104,6 +103,7 @@
         this.widget.trigger("change");
       }
       this.ready = true;
+
     },
     computed: {
       dataSource(){
@@ -117,6 +117,7 @@
             }
           }
           return bbn.vue.toKendoDataSource(this);
+
         }
         return [];
       }

@@ -47,7 +47,6 @@
             if ( this.editor ){
               return this.editor;
             }
-
             else if ( this.render !== undefined ){
               this.renderedComponent = 'div';
               this.renderedContent = this.render(this.actualData, this.index, this.field, this.value);
@@ -99,8 +98,8 @@
               this.renderedOptions.value = this.value
             }
             */
-            if ( this.options ){
-              this.renderedOptions = this.options;
+            if ( this.options && Object.keys(this.options).length ){
+              this.renderedOptions = bbn.fn.extend(this.renderedOptions, this.options);
             }
           }
           else {

@@ -1,0 +1,139 @@
+<div class="bbn-c">
+  <div  :class="['bbn-full-screen', componentClass, {'bbn-lpadded' : !fullSlide}]">
+    <div class="bbn-100">
+        <div v-for="(it, i) in items"
+             :class="['bbn-100','slide', 'sliden' + i.toString(), i === 0 ? 'first' : '']"
+             :id="name + i.toString()"
+             :style="{
+             display: currentIndex === i ? 'block' : 'none'
+           }"
+        >
+
+          <div :ref="'slide' + i.toString()"
+               :class="['content', it.animation || '', it.cls || '', 'bbn-middle', 'bbn-xxl', 'bbn-100']"
+          >
+            <component v-if="it.component"
+                       :is="it.component"
+                       :content="it.content || ''"
+                       :data="it.data || {}"
+            ></component>
+            <component v-else-if="component"
+                       :is="component"
+                       :content="it.content || ''"
+                       :data="it.data || {}"
+            ></component>
+            <!--only image-->
+            <div class="bbn-100" v-else-if="it.content">
+              <div class="bbn-100 bbn-vmiddle" v-html="it.content" style="position: absolute;"></div>
+            </div>
+            <div v-else
+                 class="bbn-100 bbn-middle w3-black"
+                 v-text="_('No content for this slide')">
+            </div>
+            <!--div v-if="items.length && !arrows" class="navigation">
+              <div>
+                <a href="javascript:;"
+                   @click="prev"
+                   :style="{
+                    visibility: currentIndex === 0 ? 'hidden' : 'visible'
+                   }"
+                   class="prev">
+
+                </a>
+                <a href="javascript:;"
+                   @click="next"
+                   :style="{
+                    visibility: currentIndex >= (items.length - 1) ? 'hidden' : 'visible'
+                   }"
+                   class="next">
+                </a>
+              </div>
+            </div-->
+            <!--arrow left-->
+            <div  v-if="arrows"
+                  class="bbn-h-100 bbn-vmiddle"
+                  style="position: absolute; top: 0; left:10px;  min-width: 30px"
+                  @mouseover="arrowsPreview('prev', true)"
+                  @mouseleave="arrowsPreview('prev', false)"
+            >
+              <i  v-show="showArrowLeft"
+                  :class="[arrowClass.left, 'prev', 'iconForImmage', 'dd']"
+                  @click="prev"
+                  :style="{
+                   visibility: (currentIndex === 0 && !loop)? 'hidden' : 'visible',
+                  }"
+               ></i>
+            </div>
+
+            <!--arrow next-->
+            <div v-if="arrows"
+                class="bbn-h-100 bbn-vmiddle"
+                style="position: absolute; right: 10px; min-width: 30px"
+                @mouseover="arrowsPreview('next', true)"
+                @mouseleave="arrowsPreview('next', false)"
+            >
+              <i v-show="showArrowRight"
+                 :class="[arrowClass.right, 'prev', 'iconForImmage', 'aa']"
+                 @click="next"
+                 :style="{
+                   visibility: (currentIndex >= (items.length - 1) && !loop) ? 'hidden' : 'visible',
+                 }"
+              ></i>
+            </div>
+            <!--for pause and play autoscroll-->
+            <div v-if="ctrl"
+                 class="bbn-h-100 bbn-vmiddle"
+                 style="position: absolute; top: 0;"
+                 @mouseover="ctrlPreview(true)"
+                 @mouseleave="ctrlPreview(false)"
+            >
+              <div v-if ="scrollInterval !== false"
+                  style="min-width: 10px"
+                  class="iconsCtrl bbn-w-20"
+              >
+                <i v-show="showCtrl"
+                   class="fa fa-pause iconForImmage  bbn-xxl"
+                   @click="stopAutoScroll"
+                   style="opacity: 0.6"
+                ></i>
+              </div>
+              <div v-else
+                   style="min-width: 10px"
+                   class="bbn-w-20"
+              >
+                <i v-show="showCtrl"
+                   class="fa fa-play iconForImmage bbn-xxl"
+                   @click="startAutoScroll"
+                   style="opacity: 0.6"
+                ></i>
+              </div>
+            </div>
+          </div>
+
+          <bbn-checkbox v-if="checkbox && it.checkable"
+                        v-model="valuesCB[i]"
+                        :value="true"
+                        :novalue="false"
+                        :strict="true"
+                        :label="(typeof checkbox === 'string') ? checkbox : defaultTextCB"
+                        class="showagain"
+          ></bbn-checkbox>
+        </div>
+
+    </div>
+  </div>
+  <!--for miniature-->
+  <div class="bbn-w-100 bbn-c bbn-gallery-miniature"
+    style="position: absolute; bottom: 0; min-height: 80px"
+    v-if="preview === true || preview === 'image' || preview === 'circle'"
+    @mouseover="miniaturePreview(true)"
+    @mouseleave="miniaturePreview(false)"
+  >
+    <bbn-slideshow-miniature
+      v-show="showMiniature"
+      :items="items"
+      :type="preview === true ? 'image' : preview"
+      :dimension="dimensionPreview"
+    ></bbn-slideshow-miniature>
+  </div>
+</div>

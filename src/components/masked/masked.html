@@ -1,9 +1,9 @@
-<span :class="[{'k-textbox': true}, componentClass]"
->
+<span :class="componentClass">
   <input ref="element"
          :disabled="disabled"
          :required="required"
-         @keyup="update(widget.raw())">
+         @keyup="emitInput(widget.raw())"
+  >
   <input :value="value"
          ref="real_masked"
          :name="name"

@@ -1,6 +1,7 @@
 .bbn-upload {
   .qq-gallery.qq-uploader {
     min-height: unset;
+    max-height: unset;
     &:before {
       top: unset;
     }
@@ -14,14 +15,20 @@
     }
     .qq-upload-button-selector.k-button {
       display: inline;
-      width: 105px;
+      //width: 105px;
+			width: fit-content;
+			width: -webkit-fit-content;
+      width: -moz-fit-content;
       float: left;
       &.qq-upload-button-hover {
         background: unset;
       }
     }
     ul.qq-upload-list-selector.qq-upload-list {
+      max-height: unset;
+      overflow: unset;
       padding: 0;
+      margin-top: 10px;
       li {
         margin-top: 25px;
         margin-bottom: 1px;

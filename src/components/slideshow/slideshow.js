@@ -17,18 +17,65 @@
       },
       checkbox: {
         type: [String, Boolean],
-        default(){
-          return false;
-        }
+        default: false
+      },//for image
+      gallery: {
+        type: Boolean,
+        default: false
+      },
+      preview:{
+        type: [Boolean, String],
+        default: false
+      },
+      dimensionPreview:{
+        type: Number,
+        default: 45
+      },
+      autoPlay:{
+        type: [Boolean, Number],
+        default: false
+      },// pause and start autoscroll
+      ctrl:{
+        type: [Boolean, String],
+        default: false
+      }, //show or no show arrow
+      arrows:{
+        type: [Boolean, Object],
+        default: false
+      },
+      autoHidePreview:{
+        type: Boolean,
+        default: false
+      },
+      autoHideArrows:{
+        type: Boolean,
+        default: false
+      },
+      autoHideCtrl:{
+        type: Boolean,
+        default: false
+      },
+      loop:{
+        type: Boolean,
+        default: false
+      },
+      fullSlide:{
+        type: Boolean,
+        default: false
       }
     },
-    data() {
-      let src = [],
+    data(){
+      let src      = [],
           valuesCB = {},
-          isAjax = false;
+          isAjax   = false;
+      if ( this.gallery ){
+
+      }
       if ( (typeof this.source === 'string') ){
         if ( this.separator ){
-          src = this.source.split(this.separator).map((a) => { return {content: a};});
+          src = this.source.split(this.separator).map((a) =>{
+            return {content: a, type: 'text'};
+          });
         }
         else{
           src = [];
@@ -38,25 +85,50 @@
       else if ( bbn.fn.isFunction(this.source) ){
         src = this.source();
       }
+
       else if ( bbn.fn.isArray(this.source) && this.checkbox ){
-        this.source.forEach((v, i) => {
-          if ( this.separator ){
-            v.content.split(this.separator).forEach((a, k) => {
+        if ( this.separator ){
+          this.source.forEach((v, i) =>{
+            v.content.split(this.separator).forEach((a, k) =>{
               let o = {
+                type: 'text',
                 content: a,
                 id: v.id
               };
               if ( k === 0 ){
-                o.checkable= true;
+                o.checkable = true;
               }
               src.push(o);
             });
-          }
+          });
           valuesCB[i] = false;
-        });
+        }
       }
-      else if ( bbn.fn.isArray(this.source) ){
-        src = this.source.slice();
+
+      else if ( bbn.fn.isArray(this.source)  ){
+        if ( bbn.fn.isEmpty(src) ){
+          src = this.source.slice().map((val, idx) => {
+            if ( typeof val === 'string' ){
+              val = {
+                type: this.gallery ? 'img' : 'text',
+                content: val
+              };
+              if ( val.type === 'img' ){
+                bbn.fn.extend(val, {
+                  imageWidth: 0,
+                  imageHeight: 0,
+                  imageLeftMargin: 0,
+                  imageTopMargin: 0,
+                  showImg: false
+                });
+              }
+            }
+            if ( bbn.fn.isObject(val) && (!val.type || val.type !== 'img') ){
+              val.type = 'text';
+            }
+            return bbn.fn.isObject(val) ? val : {};
+          });
+        }
       }
       return {
         name: bbn.fn.randomString().toLowerCase(),
@@ -64,10 +136,74 @@
         items: src,
         isAjax: isAjax,
         defaultTextCB: bbn._("Don't show it again"),
-        valuesCB: valuesCB
+        valuesCB: valuesCB,
+        activeMiniature: 0,
+        defaultAutoPlay: 5000,
+        scrollInterval: false,
+        showMiniature: this.autoHidePreview ? false : true,
+        showArrowLeft: this.autoHideArrows ? false : true,
+        showArrowRight: this.autoHideArrows ? false : true,
+        showCtrl: this.autoHideCtrl ? false : true,
+        arrowClass:{
+          left:  'fa fa-arrow-circle-left',
+          right: 'fa fa-arrow-circle-right',
+        },
+        imageWidth: 0,
+        imageHeight: 0,
+        imageLeftMargin: 0,
+        imageTopMargin: 0
       }
     },
     methods: {
+      /*updateImage(ev, idx){
+        this.ratio(idx);
+      },*/
+      aspectRatio(idx){
+        this.$nextTick(()=>{
+          let ctnRatio = this.lastKnownWidth/this.lastKnownHeight,
+              img =  this.getRef('slide-img' + idx.toString()),
+              imgW = img.naturalWidth,
+              imgH = img.naturalHeight,
+              imgRatio = imgW/imgH,
+              diff = Math.abs(ctnRatio - imgRatio),
+              mode   = this.items[idx].mode ? this.items[idx].mode : 'original';
+
+          if( imgRatio > ctnRatio ){
+            if( mode === 'zoom' ){
+
+              this.items[idx].imageWidth = "auto";
+              this.items[idx].imageHeight =  "100%";
+              this.items[idx].showImg =  true;
+            }
+            if( mode === 'full' ){
+              this.items[idx].imageWidth = "100%";
+              this.items[idx].imageHeight = "auto";
+              this.items[idx].showImg =  true;
+            }
+          }
+          if( imgRatio < ctnRatio ){
+            if( mode === 'zoom' ){
+
+              this.items[idx].imageWidth = "100%";
+              this.items[idx].imageHeight = "auto";
+              this.items[idx].showImg =  true;
+            }
+            if( mode === 'full' ){
+              this.items[idx].imageWidth = "auto";
+              this.items[idx].imageHeight = "100%";
+              this.items[idx].showImg =  true;
+            }
+          }
+          if( mode === 'stretch' ){
+            this.items[idx].imageWidth = this.lastKnownWidth + 'px';
+            this.items[idx].imageHeight = this.lastKnownHeight + 'px';
+            this.items[idx].showImg =  true;
+          }
+          if ( mode === "original" ){
+            this.items[idx].showImg = true;
+          }
+        });
+      },
       createStyle(){
         let st = '',
             rules = [];
@@ -89,16 +225,75 @@
           }
           this.currentIndex--;
         }
+        if ( this.loop &&  idx === 0 ){
+          this.currentIndex = this.items.length - 1;
+        }
+        if( this.autoPlay ){
+          this.stopAutoPlay();
+          this.$nextTick(()=>{
+            this.startAutoPlay();
+          });
+        }
       },
       next(){
         let idx = this.currentIndex;
-        if ( idx < (this.items.length - 1) ){
+        if ( idx < (this.items.length -1) ){
+
           if ( !this.items[idx+1].animation ){
             this.getRef('slide' + (idx+1).toString()).style.animationName = 'slide_from_left';
           }
           this.currentIndex++;
         }
+        if ( this.loop &&  idx === (this.items.length - 1) ){
+          this.currentIndex = 0;
+        }
+        if( this.autoPlay ){
+          this.stopAutoPlay();
+          this.$nextTick(()=>{
+            this.startAutoPlay();
+          });
+        }
       },
+      startAutoPlay(){
+        this.scrollInterval = setInterval(()=>{
+          if ( this.currentIndex < (this.items.length -1) ){
+            this.next();
+          }
+          else if( this.currentIndex === (this.items.length-1) ){
+            this.currentIndex = 0;
+          }
+          if( this.preview ){
+            this.activeMiniature = this.currentIndex;
+          }
+        }, typeof(this.autoPlay) === 'number' ? this.autoPlay*1000 : this.defaultAutoPlay);
+      },
+      stopAutoPlay(){
+        if ( this.scrollInterval ){
+          clearInterval(this.scrollInterval);
+          this.scrollInterval = false;
+        }
+      },
+      // for show or hide elements
+      miniaturePreview(val){
+        if( this.autoHidePreview ){
+          this.showMiniature = val;
+        }
+      },
+      arrowsPreview(direction, val){
+        if( this.autoHideArrows ){
+          if( direction === 'next' ){
+            this.showArrowRight = val;
+          }
+          if( direction === 'prev' ){
+            this.showArrowLeft = val;
+          }
+        }
+      },
+      ctrlPreview(val){
+        if( this.autoHideCtrl ){
+          this.showCtrl = val;
+        }
+      }
     },
     mounted(){
       /** @todo WTF?? Obliged to execute the following hack to not have scrollLeft and scrollTop when we open a
@@ -111,6 +306,17 @@
       }, 0)
       */
       this.createStyle();
+      if( this.autoPlay ){
+        this.startAutoPlay();
+      }
+      if ( bbn.fn.isObject(this.arrows) ){
+        if ( this.arrows.left && this.arrows.left.length ){
+          this.arrowClass.left = this.arrows.left
+        }
+        if( this.arrows.right && this.arrows.right.length ){
+          this.arrowClass.right = this.arrows.right
+        }
+      }
       this.ready = true;
     },
     watch: {
@@ -125,7 +331,101 @@
           this.$emit(newVal[this.currentIndex] ? 'check' : 'uncheck', this.items[this.currentIndex]);
         }
       }
+    },
+    components: {
+      'bbn-gallery-miniature': {
+        name: 'bbn-gallery-miniature',
+        template: `<div class="bbn-w-100 bbn-c bbn-middle"
+                        :style="{
+                          position: 'absolute',
+                          bottom:( mainComponent.fullSlide ? '10px' : '40px')
+                        }"
+                   >
+            <template  v-for="(it, i) in items"
+                       style="display: inline; width: 20px; height: 20px"
+            >
+              <div  v-if="(type === 'image' || true) && (it.type === 'img')"
+                    @click= "clickMiniature(it , i)"
+                    class="zoom"
+                    :style="{
+                      border: (mainComponent.currentIndex === i) ? '2px inset red' : '1px inset black',
+                      width: dimension +'px',
+                      height: dimension + 'px',
+                      margin: '0 3px 0 0',
+
+                    }"
+              >
+                <img :src="it.content" width="100%" height="100%">
+              </div>
+              <div  v-if="(type === 'image' || true) && (it.type === 'text')"
+                    @click= "clickMiniature(it , i)"
+                    class="testing zoom"
+                    :style="{
+                      border: (mainComponent.currentIndex === i) ? '2px inset red' : '1px inset black',
+                      width: dimension +'px',
+                      height: dimension + 'px',
+                      margin: '0 3px 0 0',
+                    }"
+              >
+                <div v-html="it.content" class="content"></div>
+              </div>
+              <i v-else-if="type === 'circle'"
+                   @click= "clickMiniature(it , i)"
+                   :style="{
+                     color: (mainComponent.currentIndex === i) ? 'red' : 'white',
+                   }"
+                  :class="[
+                    (mainComponent.currentIndex === i ? 'far fa-dot-circle' : 'far fa-circle'),
+                    'bbn-padded',
+                    'circleMiniature'
+                  ]"
+              ></i>
+            </template>
+          </div>`,
+        props: {
+         items:{
+           type: Array,
+           default(){
+             return []
+           }
+         },
+         comapare:{
+           type: Boolean,
+           default: true
+         },
+         type:{
+           type: [Boolean, String],
+           default: 'image'
+         },
+         dimension:{
+           type: Number,
+           default: 45
+         }
+       },
+        data(){
+         return {
+           mainComponent: bbn.vue.closest(this, 'bbn-slideshow')
+
+         }
+       },
+        methods:{
+          clickMiniature(miniature, idx){
+            this.mainComponent.activeMiniature = idx;
+            this.mainComponent.currentIndex = idx;
+            if( this.mainComponent.autoPlay ){
+              this.mainComponent.stopAutoPlay();
+              this.$nextTick(()=>{
+                this.mainComponent.startAutoPlay();
+              });
+            }
+          }
+        },
+        mounted(){
+          $("div.zoom div.content").css("transform", "scale(0.2)")
+          //$("div.zoom img").css("transform", "scale(0.2)")
+          $("div.zoom div.content").find("img").css("transform", "scale(0.1)")
+        }
+      }
     }
   });
-
 })();

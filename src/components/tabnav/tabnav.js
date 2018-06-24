@@ -1,7 +1,7 @@
 /**
  * Created by BBN on 15/02/2017.
  */
-(function($, bbn, kendo){
+(function($, bbn, Vue){
   "use strict";
 
   /**
@@ -62,7 +62,8 @@
         default: function(){
           return [];
         }
-      }
+      },
+
     },
 
     data(){
@@ -85,7 +86,8 @@
         tabs: [],
         parents: [],
         parentTab: false,
-        selected: false
+        selected: false,
+
       };
     },
 
@@ -209,21 +211,21 @@
             // Or in the content?
             else{
               let found = false,
-                  $panel = misc.is("div.bbn-tab") ? misc : misc.closest("div.bbn-tab");
+                  $panel = misc.is("div.bbns-tab") ? misc : misc.closest("div.bbns-tab");
               while ( !found && $panel.length ){
                 bbn.fn.log("CHECKING EQUALITY", $panel[0], $panel.attr("data-index"), vm.getContainer(parseInt($panel.attr("data-index"))));
                 if ( vm.getContainer(parseInt($panel.attr("data-index"))) === $panel[0] ){
                   found = true;
                 }
                 else{
-                  $panel = $panel.parent().closest("div.bbn-tab");
+                  $panel = $panel.parent().closest("div.bbns-tab");
                 }
               }
               // If the element is in full screen mode
-              if ( $panel.hasClass('bbn-tab-full-screen') ){
-                var $prev = $(".bbn-tab-before-full-screen:first", vm.el);
-                misc = $prev.is("div.bbn-tab") ?
-                  $(vm.$el).children("div.bbn-tab,div.bbn-loader").index($prev) + 1 : 0;
+              if ( $panel.hasClass('bbns-tab-full-screen') ){
+                var $prev = $(".bbns-tab-before-full-screen:first", vm.el);
+                misc = $prev.is("div.bbns-tab") ?
+                  $(vm.$el).children("div.bbns-tab,div.bbn-loader").index($prev) + 1 : 0;
               }
               else if ( $panel.length ){
                 misc = parseInt($panel.attr("data-index"));
@@ -502,7 +504,7 @@
             !force
           ){
             ev.preventDefault();
-            bbn.fn.confirm(this.confirmLeave, () => {
+            this.getTab(this.selected).confirm(this.confirmLeave, () => {
               $.each(this.unsavedTabs, (i, t) => {
                 let forms = bbn.vue.findAll(this.getVue(t.idx), 'bbn-form');
                 if ( Array.isArray(forms) && forms.length ){
@@ -642,7 +644,9 @@
             d.url = vm.parseURL(d.url);
 
             d.loaded = true;
-            d.load = null;
+            if ( d.load !== false ){
+              d.load = null;
+            }
             /** @todo Why is it here? */
             this.$emit('tabLoaded', d.data, d.url, vm.tabs[idx]);
             idx = vm.search(d.url);
@@ -757,6 +761,15 @@
             }
           });
         }
+        items.push({
+          text: bbn._("Enlarge"),
+          key: "enlarge",
+          icon: "fas fa-expand-arrows-alt",
+          command: () => {
+            bbn.fn.log("ENLARGE", this.getVue(idx));
+            this.getVue(idx).fullScreen = true;
+          }
+        });
         if ( tmp && tmp.length ){
           $.each(tmp, (i, a ) => {
             items.push(a)
@@ -833,7 +846,9 @@
             this.tabs[idx].cfg = cfg;
           }
         }
-        this.tabs[idx].load = true;
+        if ( this.tabs[idx].load !== false ){
+          this.tabs[idx].load = true;
+        }
         if ( this.tabs[idx].imessages ){
           this.tabs[idx].imessages.splice(0, this.tabs[idx].imessages.length);
         }
@@ -871,7 +886,7 @@
             }
             $("div.ui-tabNav-tabSelected", tab[0]).css("backgroundColor", col);
             if (window.tinycolor) {
-              if (!vm.colorIsDone) {
+              if ( !vm.colorIsDone ){
                 vm.bColorIsLight = (tinycolor(vm.bThemeColor)).isLight();
                 vm.fColorIsLight = (tinycolor(vm.fThemeColor)).isLight();
               }
@@ -1003,12 +1018,12 @@
     },
 
     created(){
-      // Adding bbn-tab from the slot
+      // Adding bbns-tab from the slot
       if ( this.$slots.default ){
         for ( let node of this.$slots.default ){
           if (
             node &&
-            (node.tag === 'bbn-tab') &&
+            (node.tag === 'bbns-tab') &&
             node.data.attrs.url
           ){
             this.add(node.data.attrs);
@@ -1018,6 +1033,7 @@
     },
 
     mounted(){
+
       let parent = this.$parent;
       // Looking for a parent tabnav to put in parentTab && parents props
       while ( parent ){
@@ -1025,7 +1041,7 @@
           parent.$vnode &&
           parent.$vnode.componentOptions
         ){
-          if ( !this.parentTab && (parent.$vnode.componentOptions.tag === 'bbn-tab') ){
+          if ( !this.parentTab && (parent.$vnode.componentOptions.tag === 'bbns-tab') ){
             this.parentTab = parent;
           }
           else if ( parent.$vnode.componentOptions.tag === 'bbn-tabnav' ){
@@ -1060,6 +1076,7 @@
           this.add(obj);
         }
       });
+
       // We make the tabs reorderable
       let $tabgroup = $(this.$refs.tabgroup),
           reorderable = $tabgroup.data('kendoDraggable');
@@ -1083,7 +1100,9 @@
 
       this.activate(this.parseURL(bbn.env.path), true);
       this.ready = true;
-    },
+
+
+      },
 
     watch: {
       selected(newVal){
@@ -1116,7 +1135,7 @@
           bbn.fn.log("NEW URL", newVal);
           if ( this.isValidIndex(this.selected) ){
             var vm = this,
-                tab = bbn.vue.getChildByKey(vm, vm.tabs[vm.selected].url, 'bbn-tab');
+                tab = bbn.vue.getChildByKey(vm, vm.tabs[vm.selected].url, 'bbns-tab');
             bbn.fn.log("IS VALID", tab);
             if (
               tab &&
@@ -1150,21 +1169,17 @@
       }
     },
     components: {
-      'bbn-loader': {
-        name: 'bbn-loader',
+      'bbns-loader': {
+        name: 'bbns-loader',
         props: ['source']
       },
-      'bbn-tab': {
-        name: 'bbn-tab',
+      'bbns-tab': {
+        name: 'bbns-tab',
         mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent],
         props: {
           title: {
             type: [String, Number],
             default: bbn._("Untitled")
-          },
-          hasPopups: {
-            type: Boolean,
-            default: false
           },
           componentAttributes: {
             type: Object,
@@ -1247,7 +1262,23 @@
           },
           cfg: {
             type: Object
-          }
+          },
+          events: {
+            type: Object,
+            default(){
+              return {}
+            }
+          },
+        },
+
+        data(){
+          return {
+            tabNav: null,
+            isComponent: null,
+            fullScreen: false,
+            name: bbn.fn.randomString(20, 15).toLowerCase(),
+            popups: []
+          };
         },
 
         methods: {
@@ -1272,17 +1303,9 @@
               }
             }
           },
-          getPopup(){
-            return Array.isArray(this.$refs.popup) ? this.$refs.popup[0] : this.$refs.popup;
-          },
           popup(){
             let popup = this.getPopup();
-            if ( arguments.length ){
-              return popup.open.apply(popup, arguments)
-            }
-            else{
-              return popup;
-            }
+            return arguments.length ? popup.open.apply(popup, arguments) : popup;
           },
           getComponent(){
             for ( let i = 0; i < this.$children.length; i++ ){
@@ -1293,10 +1316,22 @@
             return false;
           },
           reload(){
-            this.tabNav.reload(this.idx);
+            return this.tabNav.reload(this.idx);
           },
           activate(force){
-            this.tabNav.activate(this.idx, force);
+            return this.tabNav.activate(this.idx, force);
+          },
+          confirm(){
+            let p = this.popup();
+            if ( p ){
+              return p.confirm.apply(p, arguments)
+            }
+          },
+          alert(){
+            let p = this.popup();
+            if ( p ){
+              return p.alert.apply(p, arguments)
+            }
           },
           getSubTabNav(ele){
             if ( ele === undefined ){
@@ -1392,15 +1427,6 @@
           }
         },
 
-        data(){
-          return {
-            tabNav: null,
-            isComponent: null,
-            name: bbn.fn.randomString(20, 15).toLowerCase(),
-            popups: []
-          };
-        },
-
         created(){
           if ( this.isComponent === null ){
             this.onMount = () => {
@@ -1418,6 +1444,7 @@
               }
             }
             if ( this.isComponent ){
+              bbn.fn.warning("IS COMPONENT " + this.url);
               bbn.fn.extend(res ? res : {}, {
                 name: this.name,
                 template: '<div class="bbn-full-screen">' + this.content + '</div>',
@@ -1425,7 +1452,6 @@
                   getTab: () => {
                     return this;
                   },
-                  popup: this.popup,
                   addMenu: this.addMenu,
                   deleteMenu: this.deleteMenu
                 },
@@ -1434,6 +1460,7 @@
               this.$options.components[this.name] = res;
             }
             else{
+              bbn.fn.warning("IS NOT COMPONENT " + this.url);
               this.isComponent = false;
             }
           }
@@ -1495,13 +1522,30 @@
           selected(newVal){
             if ( newVal ){
               this.$nextTick(() => {
-                this.$emit("resize", true);
+                this.fullScreen = false;
+                this.selfEmit(true);
               })
             }
+          },
+          fullScreen(newVal){
+            let fn = (e) => {
+              if ( e.keyCode === 27 ){
+                this.fullScreen = false;
+              }
+            };
+            if ( newVal ){
+              document.body.addEventListener('keydown', fn);
+            }
+            else{
+              document.body.removeEventListener('keydown', fn);
+            }
+            this.$nextTick(() => {
+              this.onResize();
+            })
           }
         }
       }
     }
   });
 
-})(jQuery, bbn, kendo);
+})(jQuery, bbn, Vue);

@@ -1,9 +1,11 @@
 .bbn-switch {
   position: relative;
   display: inline-block;
-  width: 3.75rem;
-  height: 2.15rem;
-  input {display:none;}
+  width: 2.96rem;
+  height: 1.7rem;
+  input {
+    display:none;
+  }
 
   .slider {
     position: absolute;
@@ -17,18 +19,17 @@
     filter: grayscale(85%)
   }
 
-  .slider:before {
+  .slider .slider-button {
     position: absolute;
-    content: "O";
     font-size: small;
     text-align: center;
-    line-height: 1.60rem;
+    line-height: 1.26rem;
     vertical-align: middle;
     color: #666;
-    height: 1.60rem;
-    width: 1.60rem;
-    left: 0.275rem;
-    bottom: 0.275rem;
+    height: 1.26rem;
+    width: 1.26rem;
+    left: 0.22rem;
+    bottom: 0.22rem;
     background-color: white;
     -webkit-transition: .4s;
     transition: .4s;
@@ -47,19 +48,18 @@
     cursor: default;
   }
 
-  input:checked + .slider:before {
-    -webkit-transform: translateX(1.60rem);
-    -ms-transform: translateX(1.60rem);
-    transform: translateX(1.60rem);
-    content: "|";
+  input:checked + .slider .slider-button {
+    -webkit-transform: translateX(1.26rem);
+    -ms-transform: translateX(1.26rem);
+    transform: translateX(1.26rem);
   }
 
   /* Rounded sliders */
   .slider.round {
-    border-radius: 2.15rem;
+    border-radius: 1.7rem;
   }
 
-  .slider.round:before {
+  .slider.round .slider-button {
     border-radius: 50%;
   }
 }

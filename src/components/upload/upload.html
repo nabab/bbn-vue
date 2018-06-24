@@ -2,6 +2,7 @@
   <div class="bbn-upload k-widget" ref="upload"></div>
   <div class="k-widget paste-container"
        ref="pasteContainer"
+			 v-show="isEnabled"
   >
     <span v-html="text.pasteContainer"></span>
   </div>
@@ -17,17 +18,17 @@
              class="qq-total-progress-bar-selector qq-progress-bar qq-total-progress-bar"
         ></div>
       </div>
-      <div v-if="enabled"
+      <div v-if="isEnabled"
            class="qq-upload-drop-area-selector qq-upload-drop-area"
            style="background-color: lightgreen"
            qq-hide-dropzone
       >
         <span class="qq-upload-drop-area-text-selector"></span>
       </div>
-      <bbn-button class="qq-upload-button-selector"
-         :class="{'k-state-disabled': !enabled}"
-         v-text="text.uploadButton"
-      ></bbn-button>
+      <div :class="['qq-upload-button-selector', 'k-button', {'k-state-disabled': !isEnabled}]">
+        <i :class="icon" style="margin-right: 0.3rem"></i>
+        <span v-text="text.uploadButton"></span>
+      </div>
       <span class="qq-drop-processing-selector qq-drop-processing">
               <span v-text="text.processingDropped"></span>
               <span class="qq-drop-processing-spinner-selector qq-drop-processing-spinner"></span>
@@ -36,7 +37,7 @@
           role="region"
           aria-live="polite"
           aria-relevant="additions removals"
-          v-show="enabled"
+          v-show="isEnabled"
       >
         <li>
           <span role="status" class="qq-upload-status-text-selector qq-upload-status-text"></span>

@@ -1,0 +1,12 @@
+{
+  "name": "grapes",
+  "version": "0.0.1",
+  "authors": [
+    "Thomas Nabet <thomas@bbn.solutions>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "grapesjs": "~0.14.17",
+    "grapesjs-blocks-basic": "~0.14.17"
+  }
+}

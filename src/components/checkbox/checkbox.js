@@ -1,7 +1,7 @@
 /**
  * Created by BBN on 13/02/2017.
  */
-(($, bbn, kendo) => {
+(($, bbn) => {
   "use strict";
   Vue.component('bbn-checkbox', {
     mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent],
@@ -87,9 +87,11 @@
     },
     methods: {
       toggle(){
-        let emitVal = !this.state ? this.valueToSet : this.novalue;
-        this.$emit('input', emitVal);
-        this.$emit('change', emitVal, this);
+        if ( !this.disabled && !this.readonly ){
+          let emitVal = !this.state ? this.valueToSet : this.novalue;
+          this.$emit('input', emitVal);
+          this.$emit('change', emitVal, this);
+        }
       }
     },
     watch: {
@@ -108,4 +110,4 @@
       }
     }
   });
-})(jQuery, bbn, kendo);
+})(jQuery, bbn);

@@ -1,4 +1,4 @@
-<div :class="[{'bbn-full-screen': true}, componentClass]">
+<div :class="['bbn-full-screen', componentClass]">
   <bbn-scroll ref="scroll"
               class="bbn-w-100"
               @ready="onResize"
@@ -11,7 +11,7 @@
                       :class="'bbn-masonry bbn-margin' + (sortable ? ' bbn-dashboard-sortable' : '')"
                       tag="div"
     >
-      <bbn-widget inline-template
+      <bbns-widget inline-template
                   ref="widgets"
                   v-for="(w, index) in widgets"
                   v-if="!w.hidden"
@@ -22,7 +22,7 @@
                   :index="index"
                   :title="w.title ? w.title : (w.text ? w.text : '')"
       >
-        <div :class="['k-block', 'bbn-widget', componentClass]">
+        <div :class="['k-block', 'bbns-widget', componentClass]">
           <div class="k-header header">
             <div class="bbn-full-screen">
               <h5 :class="{
@@ -41,7 +41,7 @@
                            :source="finalMenu"
               >
                 <i :title="_('Menu')"
-                   class="fa fa-caret-down"
+                   class="fas fa-caret-down"
                 > </i>
               </bbn-context>
               <i v-for="(b, idx) in realButtonsLeft"
@@ -71,6 +71,7 @@
                   v-if="limit ? idx < limit : true"
                   :class="itemClass"
                   :style="itemStyle"
+                  :key="idx"
               >
                 <component v-if="itemComponent"
                            :is="itemComponent"
@@ -123,7 +124,7 @@
             <bbn-loader v-if="isLoading"></bbn-loader>
           </div>
         </div>
-      </bbn-widget>
+      </bbns-widget>
     </transition-group>
   </bbn-scroll>
 </div>

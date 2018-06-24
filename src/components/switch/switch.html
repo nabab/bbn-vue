@@ -1,4 +1,4 @@
-<label :class="[{'bbn-iblock': true}, componentClass]">
+<span :class="['bbn-iblock', componentClass]">
   <input type="checkbox"
          :id="id"
          :name="name"
@@ -8,7 +8,7 @@
          :checked="state"
          ref="element"
   >
-  <span class="slider k-primary"
+  <span :class="['slider', 'k-primary', {round: !!radius}]"
         tabindex="0"
         :for="id"
         @focus="focus"
@@ -16,5 +16,9 @@
         @keyup="keyup"
         @keydown.space="toggle"
         @click="toggle"
-  ></span>
-</label>
+  >
+    <span class="slider-button">
+			<i :class="currentIcon"></i>
+		</span>
+  </span>
+</span>

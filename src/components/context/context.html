@@ -6,5 +6,6 @@
            @keydown.space.enter.prevent="clickItem"
            @mousedown.prevent.stop="() => {return false}"
 >
-  <slot></slot>
+  <span v-if="content" v-html="content"></span>
+  <slot v-else></slot>
 </component>

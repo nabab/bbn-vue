@@ -81,7 +81,6 @@
       },
 
       scrollHorizontal(ev, left){
-        bbn.fn.log(arguments);
         this.currentX = left;
       },
 

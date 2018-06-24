@@ -31,6 +31,7 @@
              :participants="chat.participants"
              :messages="chat.messages"
              :chat-id="chat.id"
+             :user-id="userId"
              :users="users"
              @send="relay"
              v-show="isInScreen(i)"
@@ -38,6 +39,7 @@
     <div class="bbn-chat-users k-widget bbn-flex-height">
       <div class="k-header bbn-spadded">
       <span v-for="participant in participants"
+            v-if="participant !== userId"
             class="bbn-user-title"
             v-text="get_field(users, 'value', participant, 'text')">
       </span>

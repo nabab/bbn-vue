@@ -19,7 +19,15 @@
       loadingText: {
         types: [String],
         default: 'Loading'
-      }
+      },
+      bgColor: {
+        types: [String],
+        default: ''
+      },
+      fontSize: {
+        types: String,
+        default: 's'
+      },
     },
     data(){
       return{
@@ -28,7 +36,11 @@
         height: false,
       }
     },
-
+    mounted(){
+      if ( this.bgColor ){
+        $(this.$el).css('background-color', this.bgColor)
+      }
+      },
     methods: {
       onResize(){
         this.height = $(this.$el).height();
@@ -52,6 +64,15 @@
         }
       }
     },
+
+    watch: {
+      bgColor(val){
+        if ( val ){
+          $(this.$el).css('background-color', val)
+        }
+      },
+
+    }
 
   });
 

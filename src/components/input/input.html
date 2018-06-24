@@ -1,4 +1,4 @@
-<span :class="componentClass">
+<span :class="[componentClass, {'k-state-disabled': !!disabled}]">
   <input v-if="type === 'email'"
          class="k-textbox"
          :value="value"

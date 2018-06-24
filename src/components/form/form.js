@@ -26,7 +26,11 @@
         type: Boolean,
         default: false
       },
-      confirm: {
+			self: {
+        type: Boolean,
+        default: false
+      },
+      confirmMessage: {
         type: [String, Function]
       },
       confirmLeave: {
@@ -152,26 +156,11 @@
       }
     },
     methods: {
-      _getPopup(){
-        if ( this.window ){
-          return this.window.popup;
-        }
-        if ( this.tab && this.tab.$refs.popup ){
-          return this.tab.$refs.popup.length ? this.tab.$refs.popup[0] : this.tab.$refs.popup;
-        }
-        if ( this.$root.$refs.popup ){
-          return this.$root.$refs.popup.length ? this.$root.$refs.popup[0] : this.$root.$refs.popup;
-        }
-        return false;
-      },
       _post(){
         this.isPosted = true;
         if ( this.action ){
-          bbn.fn[this.blank ? 'post_out' : 'post'](this.action, $.extend(true, {}, this.data, this.source), (d) => {
-            this.originalData = this.source;
-            if ( this.tab && this.tab.tabNav ){
-              this.tab.tabNav.tabs[this.tab.tabNav.selected].isUnsaved = this.isModified();
-            }
+          bbn.fn[this.blank || this.self ? 'post_out' : 'post'](this.action, $.extend(true, {}, this.data, this.source), (d) => {
+            this.originalData = $.extend(true, {}, this.source);
             if ( this.successMessage && p ){
               p.alert(this.successMessage);
               bbn.fn.info(this.successMessage, p);
@@ -179,31 +168,37 @@
             let e = new $.Event('success');
             this.$emit('success', d, e);
             if ( this.sendModel ){
-              this.originalData = this.source;
+              this.originalData = $.extend(true, {}, this.source);
             }
             this.modified = false;
+            if ( this.tab && this.tab.tabNav ){
+              this.tab.tabNav.tabs[this.tab.tabNav.selected].isUnsaved = this.modified;
+            }
             if ( !e.isDefaultPrevented() ){
-              let p = this._getPopup();
+              let p = this.getPopup();
               if ( p ){
-                p.close(true);
+                p.close();
               }
             }
-          }, (xhr, textStatus, errorThrown) => {
+          }, !this.blank && !this.self ? (xhr, textStatus, errorThrown) => {
             this.$emit('failure', xhr, textStatus, errorThrown)
-          });
+          } : (this.self ? '_self' : '_blank'));
         }
         else{
-          this.originalData = this.source;
+          this.originalData = $.extend(true, {}, this.source);
           let e = new $.Event('success');
           this.$emit('success', this.source, e);
           if ( this.sendModel ){
-            this.originalData = this.source;
+            this.originalData = $.extend(true, {}, this.source);
           }
           this.modified = false;
+          if ( this.tab && this.tab.tabNav ){
+            this.tab.tabNav.tabs[this.tab.tabNav.selected].isUnsaved = this.modified;
+          }
           if ( !e.isDefaultPrevented() ){
-            let p = this._getPopup();
+            let p = this.getPopup();
             if ( p ){
-              p.close(true);
+              p.close();
             }
           }
         }
@@ -235,7 +230,7 @@
             if ( ev ){
               ev.preventDefault();
             }
-            this.window.popup.confirm(this.confirmLeave, () => {
+            this.getPopup().confirm(this.confirmLeave, () => {
               if ( this.reset() ){
                 this.$nextTick(() => {
                   this.window.close(true);
@@ -280,15 +275,15 @@
             return false;
           }
         }
-        if ( this.confirm ){
-          if ( $.isFunction(this.confirm) ){
-            cf = this.confirm(this);
+        if ( this.confirmMessage ){
+          if ( $.isFunction(this.confirmMessage) ){
+            cf = this.confirmMessage(this);
           }
           else{
-            cf = this.confirm;
+            cf = this.confirmMessage;
           }
           if ( cf ){
-            let popup = this._getPopup();
+            let popup = this.getPopup();
             if ( popup ){
               popup.confirm(cf, () => {
                 popup.close();
@@ -326,9 +321,9 @@
             }
           }
           if ( !this.tab ){
-            this.tab = bbn.vue.closest(this, ".bbn-tab");
+            this.tab = bbn.vue.closest(this, ".bbns-tab");
           }
-          $("input:visible:first", this.$el).focus();
+          $(":input:visible:first", this.$el).focus();
         });
       }
     },
@@ -340,6 +335,7 @@
         deep: true,
         handler(newVal){
           this.$emit('input', newVal);
+          bbn.fn.log("MODIFIED");
           this.modified = this.isModified();
           if ( this.tab && this.tab.tabNav ){
             this.tab.tabNav.tabs[this.tab.tabNav.selected].isUnsaved = this.modified;

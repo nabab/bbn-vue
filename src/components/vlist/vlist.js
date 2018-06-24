@@ -37,10 +37,22 @@
         type: Number,
         default: 0
       },
-      left: {},
-      right: {},
-      top: {},
-      bottom: {},
+      left: {
+        type: [Number, String],
+        default: null
+      },
+      right: {
+        type: [Number, String],
+        default: null
+      },
+      top: {
+        type: [Number, String],
+        default: null
+      },
+      bottom: {
+        type: [Number, String],
+        default: null
+      },
       mapper: {
         type: Function
       }
@@ -65,26 +77,26 @@
     },
     methods: {
       getStyles(){
-        let left = this.right > 0 ? '' : (this.left + 'px'),
-            right = this.right > 0 ? '' : (this.right + 'px'),
-            top = this.bottom > 0 ? '' : (this.top + 'px'),
-            bottom = this.bottom > 0 ? '' : (this.bottom + 'px');
+        let left = this.left ? (bbn.fn.isNumber(this.left) ? (this.left + 'px') : this.left) : '',
+            right = this.right ? (bbn.fn.isNumber(this.right) ? (this.right + 'px') : this.right) : '',
+            top = this.top ? (bbn.fn.isNumber(this.top) ? (this.top + 'px') : this.top) : '',
+            bottom = this.bottom ? (bbn.fn.isNumber(this.bottom) ? (this.bottom + 'px') : this.bottom) : '';
         if ( this.currentHeight ){
           let tW = bbn.env.width,
               tH = bbn.env.height;
-          if ( this.right && ((this.right + this.currentWidth) > tW) ){
+          if ( (this.right !== null) && ((this.right + this.currentWidth) >= tW) ){
             left = '';
             right = (bbn.env.width - this.currentWidth) + 'px';
           }
-          else if ( this.left && ((this.left + this.currentWidth) > tW) ){
+          else if ( (this.left !== null) && ((this.left + this.currentWidth) >= tW) ){
             right = '';
             left = (bbn.env.width - this.currentWidth) + 'px';
           }
-          if ( this.bottom && ((this.bottom + this.currentHeight) > tH) ){
+          if ( (this.bottom !== null) && ((this.bottom + this.currentHeight) >= tH) ){
             top = '';
-            bottom: (bbn.env.height - this.currentHeight) + 'px';
+            bottom = (bbn.env.height - this.currentHeight) + 'px';
           }
-          else if ( this.top && ((this.top + this.currentHeight) > tH) ){
+          else if ( (this.top !== null) && ((this.top + this.currentHeight) >= tH) ){
             bottom = '';
             top = (bbn.env.height - this.currentHeight) + 'px';
           }
@@ -203,7 +215,6 @@
 
           }
           if ( this.items[idx].command ){
-            bbn.fn.log()
             if ( typeof(this.items[idx].command) === 'string' ){
               bbn.fn.log("CLICK IS STRING", this);
             }
@@ -224,6 +235,7 @@
         this.currentHeight = $(this.$el).children().height();
         this.currentWidth = $(this.$el).children().width();
         this.$el.children[0].focus();
+        this.ready = true;
           /*
         let style = {},
             h = $(this.$el).children().height();

@@ -28,6 +28,10 @@
       height: {
         type: [String, Number]
       },
+      defaultSize: {
+        type: Number,
+        default: 36
+      },
       charCount: {
         type: Number,
         default: 2
@@ -59,19 +63,19 @@
       source: {
         type: Array,
         default(){
-          return appui && appui.app && appui.app.users ? appui.app.users : []
+          return window.appui && appui.app && appui.app.users ? appui.app.users : []
         }
       },
       nameField: {
         type: String,
         default(){
-          return appui && appui.app && appui.app.users ? 'text' : 'name'
+          return window.appui && appui.app && appui.app.users ? 'text' : 'name'
         }
       },
       idField: {
         type: String,
         default(){
-          return appui && appui.app && appui.app.users ? 'value' : 'id'
+          return window.appui && appui.app && appui.app.users ? 'value' : 'id'
         }
       },
       url: {
@@ -79,62 +83,8 @@
       }
     },
     data(){
-      let currentLetters = '',
-          name = this.userName;
-      if ( this.letters ){
-        currentLetters = this.letters;
-      }
-      if ( !name && this.userId && this.source ){
-        name = bbn.fn.get_field(this.source, this.idField, this.userId, this.nameField);
-      }
-      if ( !this.letters && name ){
-        let tmp = bbn.fn.removeEmpty(name.split(" "))
-        while ( (tmp.length > this.charCount) && (tmp[0].length <= 3) ){
-          tmp.shift();
-        }
-        for ( let i = 0; i < tmp.length; i++ ){
-          if ( !this.charCount || (currentLetters.length <= this.charCount) ){
-            currentLetters += tmp[i].substr(0, 1);
-          }
-        }
-      }
-      let col = this.color;
-      if ( !col ){
-        let sum = 0;
-        currentLetters.split('').forEach((a) => {
-          sum += a.charCodeAt();
-        });
-        sum += name ?
-          name.substr(-1).charCodeAt() :
-          this.currentLetters.substr(0, 1).charCodeAt();
-        let colorIndex = Math.floor(sum % colors.length);
-        col = colors[colorIndex]
-      }
-      let currentFontSize = this.fontSize;
-      if ( !this.fontSize ){
-        let baseSize = parseInt(this.height) / this.charCount;
-        currentFontSize = Math.round(baseSize + bbn.fn.percent(15*this.charCount, baseSize));
-      }
-      let currentWidth = this.width;
-      let currentHeight = this.height;
-      if ( currentWidth && !currentHeight ){
-        currentHeight = currentWidth;
-      }
-      if ( !currentWidth && currentHeight ){
-        currentWidth = currentHeight;
-      }
-      if ( !currentWidth ){
-        currentHeight = 36;
-        currentWidth = 36;
-      }
       return {
-        currentColor: col,
-        currentFontSize: bbn.fn.isNumber(currentFontSize) ? currentFontSize + 'px' : currentFontSize,
-        currentLetters: currentLetters ? currentLetters.toUpperCase() : '??',
-        currentWidth: bbn.fn.isNumber(currentWidth) ? currentWidth + 'px' : currentWidth,
-        currentHeight: bbn.fn.isNumber(currentHeight) ? currentHeight + 'px' : currentHeight,
-        currentRadius: bbn.fn.isNumber(this.radius) ? this.radius + 'px' : this.radius,
-        name: name
+        name: this.userName
       }
     },
     computed: {
@@ -148,6 +98,70 @@
           o['font-family'] = this.fontFamily;
         }
         return o;
+      },
+      currentLetters(){
+        let currentLetters = '',
+            name = this.userName;
+        if ( this.letters ){
+          currentLetters = this.letters;
+        }
+        if ( !name && this.userId && this.source ){
+          name = bbn.fn.get_field(this.source, this.idField, this.userId, this.nameField);
+        }
+        if ( !this.letters && name ){
+          let tmp = bbn.fn.removeEmpty(name.split(" "));
+          while ( (tmp.length > this.charCount) && (tmp[0].length <= 3) ){
+            tmp.shift();
+          }
+          for ( let i = 0; i < tmp.length; i++ ){
+            if ( !this.charCount || (currentLetters.length <= this.charCount) ){
+              currentLetters += tmp[i].substr(0, 1);
+            }
+          }
+        }
+        return currentLetters;
+      },
+      currentColor(){
+        let name = this.userName,
+            col = this.color;
+        if ( !col ){
+          let sum = 0;
+          this.currentLetters.split('').forEach((a) => {
+            sum += a.charCodeAt();
+          });
+          sum += name ?
+            this.userName.substr(-1).charCodeAt() :
+            this.currentLetters.substr(0, 1).charCodeAt();
+          let colorIndex = Math.floor(sum % colors.length);
+          col = colors[colorIndex]
+        }
+        return col ? col : '#000'
+      },
+      currentFontSize(){
+        let currentFontSize = this.fontSize;
+        if ( !this.fontSize ){
+          let baseSize = parseInt(this.height) / this.charCount;
+          currentFontSize = Math.round(baseSize + bbn.fn.percent(15*this.charCount, baseSize));
+        }
+        return bbn.fn.isNumber(currentFontSize) ? currentFontSize + 'px' : currentFontSize;
+      },
+      currentWidth(){
+        let w = this.width || this.height || this.defaultSize;
+        return bbn.fn.isNumber(w) ? w + 'px' : w;
+      },
+      currentHeight(){
+        let h = this.height || this.width || this.defaultSize;
+        return bbn.fn.isNumber(h) ? h + 'px' : h;
+      },
+      currentRadius(){
+        return bbn.fn.isNumber(this.radius) ? this.radius + 'px' : this.radius;
+      }
+    },
+    methods:{
+    },
+    watch: {
+      userId(va, oldVa){
+        bbn.fn.log("CHANGE OF USER", va, oldVa)
       }
     }
   });

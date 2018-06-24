@@ -13,6 +13,9 @@
       sortable: {
         type: Boolean
       },
+      maxSelectedItems: {
+        type: Number
+      },
       cfg: {
         type: Object,
         default(){

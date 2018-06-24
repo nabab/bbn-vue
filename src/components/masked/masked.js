@@ -12,20 +12,20 @@
       },
       cfg: {
         type: Object,
-        default: function(){
+        default(){
           return {
             promptChar: '_'
           };
         }
       }
     },
-    data: function(){
+    data(){
       return $.extend({
         widgetName: "kendoMaskedTextBox"
       }, bbn.vue.treatData(this));
     },
-    mounted: function(){
-      this.widget = $(this.$refs.element).kendoMaskedTextBox(this.getOptions()).data("kendoMaskedTextBox");
+    mounted(){
+      this.widget = $(this.getRef('element')).kendoMaskedTextBox(this.getOptions()).data("kendoMaskedTextBox");
       this.ready = true;
     }
   });

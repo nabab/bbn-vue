@@ -63,8 +63,13 @@
       },
 
       chatTo(users){
+        bbn.fn.log(users);
+        if ( !Array.isArray(users) ){
+          users = [users];
+        }
+        users.push(this.userId);
         let i = 0,
-        found = false;
+            found = false;
         for ( let win of this.currentWindows ){
           if ( win.participants.length === users.length ){
             found = true;
@@ -115,6 +120,10 @@
         props: {
           idx: {
             type: Number
+          },
+          userId: {
+            type: String,
+            default: ''
           },
           chatId: {
             type: String,

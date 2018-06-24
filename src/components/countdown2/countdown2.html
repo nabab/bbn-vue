@@ -1,0 +1,13 @@
+<div :class="[{'bbn-iblock': true, 'bbn-w-100':true}, componentClass]" v-if="deadline">
+
+  <span v-if="days > 0" class="digit" v-text="twoDigits(days) + (  days > 1 ? ' days' : ' day')"></span>
+
+  <span class="digit" v-text="twoDigits(hours) + (hours > 1 ? ' hours' : ' hour') "></span>
+
+  <span class="digit" v-text="twoDigits(minutes)+ ' min'"></span>
+
+
+  <span class="digit" v-text="twoDigits(seconds) + ' sec'"></span>
+
+
+</div>

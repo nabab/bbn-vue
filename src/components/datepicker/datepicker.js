@@ -6,22 +6,27 @@
 
   let ui = kendo.ui,
       MaskedDatePicker = ui.Widget.extend({
-        init: function (element, options) {
+        init: function (element, options){
           let that = this;
           ui.Widget.fn.init.call(this, element, options);
-
-          $(element).kendoMaskedTextBox({ mask: that.options.mask || "00/00/0000" })
+          $(element)
+            .kendoMaskedTextBox({
+              mask: options.mask
+            })
             .kendoDatePicker({
-              format: that.options.format || "dd/MM/yyyy HH:mm",
-              parseFormats: that.options.parseFormats || ["yyyy-MM-dd HH:mm:ss", "dd/MM/yyyy HH:mm"],
-              max: that.options.max || undefined,
-              min: that.options.min || undefined
+              format: options.format,
+              parseFormats: options.parseFormats,
+              max: options.max || undefined,
+              min: options.min || undefined,
+              depth: options.depth || undefined,
+              start: options.depth || undefined,
+              value: options.value || undefined
             })
             .closest(".k-datepicker")
             .add(element)
             .removeClass("k-textbox");
 
-          that.element.data("kendoDatePicker").bind("change", function() {
+          that.element.data("kendoDatePicker").bind("change", function(){
             that.trigger('change');
           });
         },
@@ -32,14 +37,14 @@
         events: [
           'change'
         ],
-        destroy: function () {
+        destroy: function(){
           const that = this;
           ui.Widget.fn.destroy.call(that);
           kendo.destroy(that.element);
         },
-        value: function(value) {
+        value: function(value){
           const datepicker = this.element.data("kendoDatePicker");
-          if (value === undefined) {
+          if ( value === undefined ){
             return datepicker.value();
           }
           datepicker.value(value);
@@ -51,20 +56,27 @@
     mixins: [bbn.vue.basicComponent, bbn.vue.fullComponent],
     props: {
       cfg: {
-        type: Object,
-        default: function(){
-          return {
-            format: 'dd/MM/yyyy',
-            parseFormats: ['yyyy-MM-dd', 'dd/MM/yyyy'],
-            mask: '00/00/0000'
-          }
-        }
+        type: Object
       },
       format: {
-        type: String
+        type: String,
+        default: 'dd/MM/yyyy'
+      },
+      valueFormat: {
+        type: [String, Function],
+        default(){
+          return 'yyyy-MM-dd';
+        }
+      },
+      parseFormats: {
+        type: Array,
+        default(){
+          return ['yyyy-MM-dd', 'dd/MM/yyyy'];
+        }
       },
       mask: {
-        type: String
+        type: String,
+        default: '00/00/0000'
       },
       max: {
         type: [Date, String]
@@ -83,22 +95,34 @@
       }
     },
     computed: {
-      ivalue: function(){
-        return kendo.toString(kendo.parseDate(this.value, "yyyy-MM-dd"), "dd/MM/yyyy");
+      ivalue(){
+        return kendo.toString(
+          kendo.parseDate(this.value, $.isFunction(this.valueFormat) ? this.valueFormat(this.value) : this.valueFormat),
+          this.format
+        );
       }
     },
-    data: function(){
+    data(){
       return $.extend({
         widgetName: "kendoMaskedDatePicker"
       }, bbn.vue.treatData(this));
     },
-    mounted: function(){
+    mounted(){
       const vm = this;
-      this.widget = $(this.$refs.element).kendoMaskedDatePicker($.extend(vm.getOptions(), {
+      this.widget = $(this.$refs.element).kendoMaskedDatePicker($.extend({}, this.getOptions(), {
+        format: this.format,
+        parseFormats: this.parseFormats,
+        mask: this.mask,
         min: this.min ? ( (typeof this.min === 'string') ? bbn.fn.date(this.min) : this.min) : undefined,
         max: this.max ? ( (typeof this.max === 'string') ? bbn.fn.date(this.max) : this.max) : undefined,
+        depth: this.depth || undefined,
+        start: this.depth || undefined,
+        value: this.value || undefined,
         change: function(e){
-          vm.emitInput(kendo.toString(vm.widget.value(), "yyyy-MM-dd"));
+          vm.emitInput(kendo.toString(
+            vm.widget.value(),
+            $.isFunction(vm.valueFormat) ? vm.valueFormat(vm.widget.value()) : vm.valueFormat
+          ));
           return true;
         }
       })).data("kendoDatePicker");
@@ -124,6 +148,22 @@
             max: newVal
           });
         }
+      },
+      depth(newVal){
+        this.widget.setOptions({
+          depth: newVal,
+          start: newVal
+        });
+      },
+      format(newVal){
+        this.widget.setOptions({
+          format: newVal
+        });
+      },
+      parseFormats(newVal){
+        this.widget.setOptions({
+          parseFormats: newVal
+        });
       }
     }
   });

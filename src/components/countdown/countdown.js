@@ -1,6 +1,17 @@
+//backup countdown
 /**
  * Created by BBN on 13/02/2017.
  */
+
+
+/** @todo try this way
+
+ const timestamp = 1519482900000;
+ const formatted = moment(timestamp).format('L');
+
+ console.log(formatted);*/
+
+
 (function($, bbn){
   "use strict";
 
@@ -40,6 +51,10 @@
       },
       target: {
         type: [Date, String, Function]
+      },
+      showZero: {
+        type: Boolean,
+        default: false
       }
     },
     data(){
@@ -83,39 +98,36 @@
           this.targetMinute = this.realTarget.getMinutes();
           this.targetSecond = this.realTarget.getSeconds();
           this.targetMillisecond = this.realTarget.getMilliseconds();
-          let next,
-              d = new Date();
-          if ( this.precisionIdx <= 3 ){
-            next = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours() +1, 0, 0);
-          }
-          else if ( this.precisionIdx === 4 ){
-            next = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getMinutes() +1, 0, 0);
-          }
-          else {
-            next = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getMinutes(), d.getSeconds() + 1, 0);
-          }
-          let timeout = next.getTime() - d.getTime();
-          if ( timeout < 0 ){
-            timeout = 0;
-          }
-          setTimeout(() => {
-            this.update();
-            this.interval = setInterval(this.update, VALUES[this.precision]);
-          }, timeout);
+          /* let next,
+             d = new Date();
+           if ( this.precisionIdx <= 3 ){
+             next = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours() +1, 0, 0);
+           }
+           else if ( this.precisionIdx === 4 ){
+             next = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getMinutes() +1, 0, 0);
+           }
+           else {
+             next = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getMinutes(), d.getSeconds() + 1, 0);
+           }
+           let timeout = next.getTime() - d.getTime();
+
+           if ( timeout < 0 ){
+             timeout = 0;
+           }*/
+          let timeout = bbn.fn.get_field(VALUES, 'name', this.precision, 'timeout');
           this.update();
+          this.interval = setInterval(this.update, timeout);
         }
       },
       update(){
         let d = new Date(),
-            tNow = d.getTime();
+          tNow = d.getTime();
         if ( tNow > this.time ){
           $.each(VALUES, (i, a) => {
             this[a.name] = 0;
           });
         }
         else{
-          //let diff = tNow - this.time;
-
           let diff = [
             this.targetYear - d.getFullYear(),
             this.targetMonth - d.getMonth(),
@@ -126,58 +138,155 @@
             this.targetMillisecond - d.getMilliseconds()
           ];
           for ( let i = 0; i < VALUES.length; i++ ){
+            /*if ( this.precisionIdx > i ){
+              if ( diff[i] <= 0 ) {
+                diff[i - 1]--;
+                switch (i) {
+                  case 1:
+                    if ( this.targetMonth - d.getMonth() === 0 ){
+                      diff[1] = 0;
+                    }
+                    break;
+
+                  case 3:
+                    bbn.fn.log('DIFFERENZA GIORNI', diff[i - 1])
+
+                    diff[3] = 24 + diff[3];
+                    break;
+                  case 4:
+                    diff[4] = 60 - d.getMinutes() + this.targetMinute;
+                    break;
+                  case 5:
+                    //because of diff[5] is a negative number
+                    diff[5] = 60 + diff[5];
+                    break;
+                }
+              }
+            }*/
             if ( this.precisionIdx <= i ){
-              if ( diff[i] < 0 ){
-                diff[i-1]--;
+              if ( diff[i] <= 0 ){
+                diff[i - 1]--;
                 switch ( i ){
                   case 1:
-                    diff[1] = 11 - diff[1];
+                    bbn.fn.log('1-diff[1]', diff[1])
+                    diff[1] = 11 + diff[1];
                     break;
                   case 2:
                     diff[2] = bbn.fn.daysInMonth(d) - diff[2];
                     break;
                   case 3:
-                    diff[3] = 24 - diff[3];
+                    diff[3] = 24 + diff[3];
                     break;
                   case 4:
-                    diff[4] = 60 - diff[4];
+                    bbn.fn.log('diff before', diff[4])
+                    diff[4] = 60 + diff[4];
+                    bbn.fn.log('diff before', diff[4])
                     break;
                   case 5:
-                    diff[5] = 60 - diff[5];
+                    //because of diff[5] is a negative number
+                    diff[5] = 60 + diff[5];
                     break;
                   case 6:
-                    diff[6] = 1000 - diff[6];
+                    diff[6] = 1000 + diff[6];
+
                     break;
                 }
-              }
-              if ( this.scaleIdx > i ){
-                switch ( i ){
-                  case 0:
-                    diff[1] += 365 * diff[i];
-                    break;
-                  case 1:
-                    diff[2] += 12 * diff[i];
-                    break;
-                  case 2:
-                    diff[3] += 30 * diff[i];
-                    break;
-                  case 3:
-                    diff[4] += 24 * diff[i];
-                    break;
-                  case 4:
-                    diff[5] += 60 * diff[i];
-                    break;
-                  case 5:
-                    diff[6] += 60 * diff[i];
-                    break;
-                }
-                diff[i] = 0;
               }
             }
-            else{
+            if ( this.scaleIdx > i ){
+              switch ( i ){
+                case 0:
+                  bbn.fn.log('2-diff[1]-before', diff[1], diff[0])
+                  diff[1] += 12 * diff[i];
+                  bbn.fn.log('2-diff[1]-after', diff[1], diff[0])
+                  break;
+                case 1:
+                  diff[2] += 12 * diff[i];
+                  break;
+                case 2:
+                  diff[3] += 30 * diff[i];
+                  break;
+                case 3:
+                  diff[4] += 24 * diff[i];
+                  break;
+                case 4:
+                  diff[5] += 60 * diff[i];
+                  break;
+                case 5:
+                  diff[6] += 60 * diff[i];
+                  break;
+              }
+              diff[i] = 0;
+              }
+            else {
+              switch ( i ){
+                case 1:
+                  //bbn.fn.log('mesi',diff[i])
+                  if (( diff[i + 1] < 0  ) &&  ( diff[i] <= 1)){
+                    diff[i] = 0;
+                  }
+                  else {
+                    //diff[i] --
+                    bbn.fn.log('diff else month', diff[i], diff )
+                    //diff[i] = 24 + diff[i];
+                  }
+                  break;
+
+                  case 2:
+                    bbn.fn.log('days before', diff[i])
+                  if (( diff[i + 1] < 0  ) &&  ( diff[i] === 1)){
+                    //bbn.fn.log('diff if days', diff[i], diff )
+                    diff[i] = 0;
+                  }
+                  else if ( ( diff[i] <  0) && ( diff[i + 1] < 0  ) ) {
+                    bbn.fn.log('days',diff[i], diff)
+                    diff[i] = bbn.fn.daysInMonth(d) + diff[i] -1
+
+                    //bbn.fn.log('diff else days',diff[i], bbn.fn.daysInMonth(d))
+                  }
+                  else if ( ( diff[i] > 0 ) && ( diff[i + 1] === 0 ) ) {
+                      bbn.fn.log('this is the case', diff[i], diff)
+                      diff[i] = diff[i] - 1;
+                      bbn.fn.log(diff[i])
+                  }
+                  else if ( diff[i] < 0 ) {
+                    diff[i] = bbn.fn.daysInMonth(d) + diff[i]
+                  }
+                  break;
+
+                case 3:
+                  bbn.fn.log('diff hours', diff[3], diff)
+                  // case precisionIdx > i
+                  if (( diff[i + 1] < 0  ) &&  ( diff[i] <= 1)){
+                    diff[i] = 0;
+                  }
+                  if (( diff[i + 1] < 0  ) &&  ( diff[i] === 0)){
+                    diff[i] = 23;
+                  }
+                  else if ( ( diff[i + 1] <= 0  ) &&  ( diff[i] > 1) ){
+                    diff[i]  = diff[i] --;
+                  }
+                  else if ( diff[i] <  0) {
+                    diff[i] = 24 + diff[i];
+                  }
+                  else {
+                    bbn.fn.log('hours exeption')
+                  }
+                  break;
+                case 4:
+                  if ( diff[i] < 0 ){
+                    diff[i] = 60 - d.getMinutes() + this.targetMinute;
+                  }
+
+                  //bbn.fn.log('diff else', diff[3], this.targetHour - d.getHours())
+                  break;
+
+              }
+
               this[VALUES[i].name] = diff[i];
             }
           }
+
           this.$forceUpdate();
         }
       }
@@ -187,3 +296,4 @@
     },
   });
 })(jQuery, bbn);
+

@@ -22,7 +22,7 @@
         type: Boolean,
         default: false
       },
-      titleSize: {
+      tileSize: {
         type: Object,
         default(){
           return {

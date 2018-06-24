@@ -15,8 +15,8 @@
          :class="{
            'bbn-p': data.length,
            'bbn-lg': true,
-           'fa': true,
-           'fa-times-circle-o': true,
+           'far': true,
+           'fa-times-circle': true,
            'bbn-invisible': !data.length
          }"
          @click="deleteHistory"
@@ -25,7 +25,7 @@
          :class="{
            'bbn-p': selected < data.length - 1,
            'bbn-lg': true,
-           'fa': true,
+           'fas': true,
            'fa-angle-left': true,
            'bbn-invisible': selected >= data.length - 1
          }"

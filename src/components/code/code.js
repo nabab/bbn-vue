@@ -395,34 +395,52 @@
           };
           getURL("//ternjs.net/defs/ecmascript.json", (err, code) => {
             if (err) throw new Error("Request for ecmascript.json: " + err);
-            bbn.vue.tern = new CodeMirror.TernServer({defs: [JSON.parse(code)]});
+            if ( this.widget ){
+              bbn.vue.tern = new CodeMirror.TernServer({defs: [JSON.parse(code)]});
+            }
             this.widget.on("cursorActivity", function(cm) { bbn.vue.tern.updateArgHints(cm); });
           });
         }
       },
-    },
-
-    mounted: function(){
-      this.widget = CodeMirror(this.$refs.code, this.getOptions());
-      this.widget.on("change", (ins, bbb) => {
-        bbn.fn.info("CODE CHANGE");
-        bbn.fn.log(arguments, this.widget);
-        this.emitInput(this.widget.doc.getValue());
-      });
-      if ( this.mode === 'js' ){
-        if ( bbn.vue.tern ){
-          this.widget.on("cursorActivity", function(cm) { bbn.vue.tern.updateArgHints(cm); });
+      //add block of text in editor
+      addSnippet(code){
+        if ( code === undefined ){
+          code = "";
         }
-        else{
-          this.initTern();
-        }
+        this.widget.focus();
+        let replace = this.widget.getDoc().replaceRange,
+            state = this.getState(),
+            position = {
+              line: state.line-1,
+              ch: state.char
+            };
+        this.widget.getDoc().replaceRange("\n" + code + "\n", position);
       }
-      this.$nextTick(() => {
-        this.ready = true;
+    },
+    mounted: function(){
+      bbn.fn.log(this.getOptions());
+      if ( this.getRef('code') ){
+        this.widget = CodeMirror(this.getRef('code'), this.getOptions());
+        this.widget.on("change", (ins, bbb) => {
+          bbn.fn.info("CODE CHANGE");
+          bbn.fn.log(arguments, this.widget);
+          this.emitInput(this.widget.doc.getValue());
+        });
+        if ( this.mode === 'js' ){
+          if ( bbn.vue.tern ){
+            this.widget.on("cursorActivity", function(cm) { bbn.vue.tern.updateArgHints(cm); });
+          }
+          else{
+            this.initTern();
+          }
+        }
         this.$nextTick(() => {
-          this.widget.refresh();
+          this.ready = true;
+          this.$nextTick(() => {
+            this.widget.refresh();
+          })
         })
-      })
+      }
     },
 
     watch: {

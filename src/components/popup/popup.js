@@ -36,7 +36,7 @@
         type: String,
         default: '<i class="fa fa-warning bbn-l"> </i> ' + bbn._("Alert")
       },
-      alertText: {
+      alertMessage: {
         type: String,
         default: bbn._("There was a problem...")
       },
@@ -44,7 +44,7 @@
         type: String,
         default: bbn._("Confirmation request")
       },
-      confirmText: {
+      confirmMessage: {
         type: String,
         default: bbn._("Are you sure?")
       },
@@ -285,7 +285,7 @@
         }
         if ( typeof(o) === 'object' ){
           if ( !o.content ){
-            o.content = this.alertText;
+            o.content = this.alertMessage;
           }
           if ( !o.title ){
             o.title = this.alertTitle;
@@ -377,7 +377,7 @@
         }
         if ( typeof(o) === 'object' ){
           if ( !o.content ){
-            o.content = this.confirmText;
+            o.content = this.confirmMessage;
           }
           if ( !o.title ){
             o.title = this.confirmTitle;
@@ -711,6 +711,7 @@
               this.$el.style.display = 'block';
               this.$nextTick(() => {
                 this.$emit("close", this);
+                bbn.fn.log("EMITTING VLOSE");
                 if ( this.afterClose ){
                   this.afterClose(this);
                 }
@@ -751,7 +752,7 @@
         watch: {
           isMaximized(){
             this.$nextTick(() => {
-              this.onResize();
+              this.selfEmit(true);
             })
           },
         }

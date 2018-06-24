@@ -47,7 +47,7 @@ div.bbn-tabnav {
           right: 0;
           top: 0;
           bottom: 0;
-          i.fa {
+          i.fas {
             position: absolute;
             right: 0;
             margin: 0;
@@ -87,11 +87,17 @@ div.bbn-tabnav {
         }
       }
     }
-    > div.bbn-tab {
+    > div.bbns-tab {
       display: none;
       position: relative !important;
-      &.bbn-tab-selected{
+      &.bbns-tab-selected{
         display: block;
+      }
+      > .bbns-tab-fullscreen-closer{
+        position: fixed;
+        font-size: x-large;
+        right: 5px;
+        top: 5px;
       }
     }
     > div.bbn-loader {

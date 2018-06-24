@@ -39,6 +39,12 @@
           return []
         }
       },
+      plugins: {
+        type: Object,
+        default(){
+          return {}
+        }
+      },
       logoPath: {
         type: String,
         default: 'https://bbn.solutions/logo.png'
@@ -142,7 +148,7 @@
             title: bbn._("Tableau de bord"),
             load: true,
             static: true,
-            icon: 'fa fa-dashboard'
+            icon: 'fas fa-tachometer-alt'
           }
         ],
         poller: false,
@@ -188,15 +194,18 @@
         }
       },
 
-      popup(obj){
-        if ( !obj ){
-          return this.$refs.popup;
+      popup(){
+        let p = this.getPopup();
+        if ( p ){
+          if ( arguments.length ){
+            return p.open.apply(this, arguments);
+          }
+          return p;
         }
-        return this.$refs.popup.open.apply(this, arguments);
       },
 
       loadPopup(obj){
-        return this.$refs.popup.load.apply(this, arguments);
+        return this.popup().load.apply(this, arguments);
       },
 
       userName(d){
@@ -228,11 +237,13 @@
       },
 
       confirm(){
-        return bbn.fn.confirm.apply(bbn, arguments);
+        let p = appui.popup();
+        return p.confirm.apply(p, arguments);
       },
 
       alert(){
-        return bbn.fn.alert.apply(bbn, arguments);
+        let p = appui.popup();
+        return p.alert.apply(p, arguments);
       },
 
       focusSearch(){
@@ -333,29 +344,24 @@
         if ( !this.polling ){
           this.polling = true;
           this.observersCopy = this.observers.slice();
-          this.poller = bbn.fn.ajax(this.root + 'poller', 'json', $.extend({}, this.pollerObject, this.observers), null, (r) => {
+          this.poller = bbn.fn.ajax(this.root + 'poller', 'json', $.extend({observers: this.observers}, this.pollerObject), null, (r) => {
             this.pollerObject.message = null;
             //bbn.fn.log("--------------OBS: Returning Data---------------");
             // put the data_from_file into #response
             if ( r.data ){
-              for ( let d of r.data ){
+              bbn.fn.each(r.data, (d, i) => {
                 if ( d.observers ){
                   for ( let b of d.observers ){
                     let arr = bbn.fn.filter(this.observers, {id: b.id});
-                    bbn.fn.log("LENGTH: " + arr.length);
                     for ( let a of arr ){
                       if ( a.value !== b.result ){
                         this.$emit('bbnObs' + a.element + a.id, b.result);
                         a.value = b.result;
-                        // bbn.fn.log("--------------Emitting: bbnObs" + a.element + a.id + ': ' + b.result + "---------------");
-                      }
-                      else{
-                        // bbn.fn.log("--------------Not Emitting: same value------------------");
                       }
                     }
                   }
                 }
-              }
+              });
               //appui.success("<div>ANSWER</div><code>" + JSON.stringify(r.data) + '</code>', 5);
             }
             if ( r.chat ){
@@ -372,7 +378,7 @@
               if ( r.chat.chats && chat ){
                 this.chatLast = r.chat.last;
                 this.pollerObject.lastChat = r.chat.last;
-                bbn.fn.iterate(r.chat.chats, (id_chat, chat_info) => {
+                bbn.fn.iterate(r.chat.chats, (chat_info, id_chat) => {
                   let idx = bbn.fn.search(chat.currentWindows, {id: id_chat});
                   if ( chat ){
                     if ( idx === -1 ){
@@ -419,38 +425,9 @@
         this.cool = true;
         this.componentClass.push('bbn-observer');
         window.appui = this;
-        let root = this.root;
-        bbn.vue.setComponentRule(root + 'components/', 'appui');
-        bbn.vue.addComponent('popup/iconpicker', [{
-          data(){
-            return {
-              root: root
-            }
-          }
-        }]);
-        bbn.vue.unsetComponentRule();
-        bbn.vue.setDefaultComponentRule('components/', 'apst');
-        bbn.vue.addComponent('widget/adh');
-        bbn.vue.addComponent('widget/link');
-        bbn.vue.addComponent('widget/lieu');
-        bbn.vue.addComponent('widget/tier');
-        bbn.vue.addComponent('widget/bug');
-        bbn.vue.addComponent('widget/cgar');
-        bbn.vue.addComponent('widget/doc');
-        bbn.vue.addComponent('widget/dossiers');
-        bbn.vue.addComponent('widget/modifs');
-        bbn.vue.addComponent('widget/msg');
-        bbn.vue.addComponent('widget/note');
-        bbn.vue.addComponent('widget/personal');
-        bbn.vue.addComponent('widget/pdt');
-        bbn.vue.addComponent('widget/stats');
-        bbn.vue.addComponent('widget/svn');
-        bbn.vue.addComponent('widget/user');
-        bbn.vue.addComponent('widget/cotis-valid');
-        bbn.vue.addComponent('widget/news');
-        bbn.vue.addComponent('widget/liste');
-        bbn.vue.addComponent('map');
-        bbn.vue.addComponent('lieux_fusion');
+        bbn.fn.each(this.plugins, (p, i) => {
+
+        })
       }
     },
     mounted(){
@@ -482,7 +459,7 @@
             this.pollingTimeout = setTimeout(() => {
               this.polling = false;
             }, 300000);
-          }, 1000)
+          }, 100)
         }
       },
       chatVisible(newVal){

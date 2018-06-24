@@ -4,22 +4,29 @@
     width: auto;
     table-layout: fixed;
     border-collapse: collapse;
-    > tbody > tr > td{
-      border-width: 0px;
-      border-right: 1px solid;
-      border-right-color: inherit;
-      padding: 0.5em;
-      overflow: hidden;
-      .bbn-table-dirty{
-        color: red;
-        font-size: 14px;
-        position: absolute;
-        bottom: 0px;
-        right: 3px;
-        font-weight:  bold;
+    > tbody > tr{
+      &.k-widget{
+        box-sizing: border-box;
+        border-left-width: 0;
+        border-right-width: 0;
       }
-      .bbn-table-dirty:after{
-        content: "!";
+      > td{
+        border-width: 0px;
+        border-right: 1px solid;
+        border-right-color: inherit;
+        padding: 0.5em;
+        overflow: hidden;
+        .bbn-table-dirty{
+          color: red;
+          font-size: 14px;
+          position: absolute;
+          bottom: 0px;
+          right: 3px;
+          font-weight:  bold;
+        }
+        .bbn-table-dirty:after{
+          content: "!";
+        }
       }
     }
   }
@@ -65,7 +72,6 @@
   }
   div.bbn-table-data{
     tr.k-widget{
-      box-sizing: border-box;
       td{
         vertical-align: top;
       }

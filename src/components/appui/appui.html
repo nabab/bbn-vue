@@ -19,7 +19,7 @@
                @keydown.space="toggleMenu"
                @mousedown.prevent.stop="toggleMenu"
                class="bbn-full-screen bbn-middle bbn-p">
-            <i ref="icon" class="fa fa-navicon bbn-xxxl"> </i>
+            <i ref="icon" class="fa fa-bars bbn-xxxl"> </i>
           </div>
         </div>
         <div class="bbn-block bbn-h-100 bbn-vmiddle" style="width: 70px">
@@ -96,11 +96,11 @@
       <div class="bbn-w-50 bbn-h-100">
         <bbn-loading ref="loading"></bbn-loading>
       </div>
-      <div class="bbn-h-100" style="float: right; width: 8rem;">
+      <div class="bbn-h-100 bbn-vmiddle" style="float: right; width: 8rem;">
         <i :class="{
              'bbn-p': true,
-             'bbn-xl': true,
-             'fa': true,
+             'bbn-lg': true,
+             'fab': true,
              'fa-stack-exchange': true,
              'bbn-green': chatOnline,
              'bbn-red': !chatOnline
@@ -110,8 +110,8 @@
         <i v-if="chatVisible && !getRef('chat').usersVisible"
            :class="{
              'bbn-p': true,
-             'bbn-xl': true,
-             'fa': true,
+             'bbn-lg': true,
+             'fas': true,
              'fa-users': true,
            }"
            @click="getRef('chat').usersVisible = true">
@@ -119,8 +119,8 @@
         <i v-if="chatVisible && chatOnline"
            :class="{
              'bbn-p': true,
-             'bbn-xl': true,
-             'fa': true,
+             'bbn-lg': true,
+             'fas': true,
              'fa-ban': true,
            }"
            @click="chatOnline = false; chatVisible = false">

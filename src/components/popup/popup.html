@@ -9,7 +9,7 @@
               :ref="popup.uid"
               :index="i"
               v-bind="popup"
-              @close="items.splice(popup.index, 1)"
+              @close="items.splice(i, 1)"
               
   >
     <div class="w3-modal bbn-window"

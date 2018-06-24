@@ -27,6 +27,9 @@
         type: Boolean,
         default: false
       },
+      content: {
+        type: String
+      },
       mode: {
         type: String,
         default: 'free'

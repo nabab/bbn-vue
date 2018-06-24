@@ -96,10 +96,6 @@
           })
         }
       }
-
-      if ( this.disabled ){
-        $ele.addClass("k-state-disabled");
-      }
 			
 			if ( this.type === 'hidden' ){
 				$ele.hide();

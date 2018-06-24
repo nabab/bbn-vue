@@ -32,6 +32,16 @@
           };
         }
         return cfg;
+      },
+      init(){
+        let cfg = this.getOptions();
+        bbn.fn.log("VALUE", this.value);
+        this.widget = new JSONEditor(this.$refs.element, cfg);
+        this.widget.setText(this.value);
+      },
+      reinit(){
+        this.widget.destroy();
+        this.init();
       }
     },
     props: {
@@ -68,10 +78,7 @@
       }
     },
     mounted(){
-      let cfg = this.getOptions();
-      bbn.fn.log("VALUE", this.value);
-      this.widget = new JSONEditor(this.$refs.element, cfg);
-      this.widget.setText(this.value);
+      this.init();
     },
     data(){
       return $.extend({
@@ -88,4 +95,4 @@
     }
   });
 
-})(window.jQuery, window.bbn, window.JSONEditor);
+})(jQuery, bbn, JSONEditor);

@@ -151,9 +151,7 @@
       uid: {
         type: [String, Number, Array]
       },
-      toolbar: {
-        type: [String, Array, Function, Object]
-      },
+      toolbar: {},
       source: {
         type: [Array, String],
         default(){
@@ -275,6 +273,9 @@
     computed: {
       isBatch(){
         return this.editable && (this.editMode === 'inline') && !this.isAjax
+      },
+      hasToolbar(){
+        return this.toolbarButtons.length || (typeof this.toolbar === 'function') || (typeof this.toolbar === 'object');
       },
       modifiedRows(){
         let res = [];
@@ -456,9 +457,9 @@
             rowIndex: 0,
             data: this.tmpRow,
             selected: false,
-            expander: !!this.expander,
-            isEdited: true
+            expander: !!this.expander
           });
+          this.editedIndex = -1;
           rowIndex++;
         }
 
@@ -520,9 +521,6 @@
           }
           if ( !isGroup || isExpanded ){
             o = {index: data[i].index, data: a, rowIndex: rowIndex};
-            if ( a === this.editedRow ){
-              o.isEdited = true;
-            }
             if ( this.selection ){
               o.selected = this.selectedRows.indexOf(data[i].index) > -1;
               o.selection = true;
@@ -727,6 +725,7 @@
         }
       },
       _execCommand(button, data, col, index){
+        bbn.fn.log("EXEC COMMAND");
         if ( button.command ){
           if ( $.isFunction(button.command) ){
             return button.command(data, col, index);
@@ -735,19 +734,14 @@
             switch ( button.command ){
               case 'insert':
                 return this.insert(data, {title: bbn._('New row creation')}, -1);
-                break;
               case 'select':
-                return this.select();
-                break;
+                return this.select(index);
               case 'edit':
-                return this.edit(data, {title: bbn._('Row edition')}, index);
-                break;
+                return this.edit(data, {title: bbn._('Row edition')}, index)
               case 'add':
                 return this.add(data);
-                break;
               case 'copy':
                 return this.copy(data, {title: bbn._('Row copy')}, index);
-                break;
               case 'delete':
                 return this.delete(index);
             }
@@ -763,7 +757,7 @@
       },
 
       getPopup(){
-        return this.popup || bbn.vue.closest(this, 'bbn-tab').getPopup();
+        return this.popup || bbn.vue.closest(this, 'bbns-tab').getPopup();
       },
       isEditable(row, col, index){
         if ( !this.editable ){
@@ -873,7 +867,7 @@
             bbn.fn.log("Is there the index?", idx);
             if ( idx > -1 ){
               if ( arr[idx].conditions && arr[idx].conditions.length ){
-                bbn.fn.confirm(bbn._("Êtes-vous sûr de vouloir supprimer ce groupe de conditions?"), () => {
+                this.getPopup().confirm(bbn._("Êtes-vous sûr de vouloir supprimer ce groupe de conditions?"), () => {
                   arr.splice(idx, 1);
                 })
               }
@@ -1096,7 +1090,7 @@
                 return ok;
               },
               check(col, index){
-                this.shownCols[index] = !this.shownCols[index];
+                this.$set(this.shownCols, index, !this.shownCols[index]);
               },
               checkAll(group){
                 let show = !this.allVisible(group),
@@ -1139,7 +1133,9 @@
         }
         // EditedRow exists from now on the time of the edition
         this.editedRow = row;
-        this.editedIndex = index;
+        if ( this.currentSet[index] ){
+          this.editedIndex = this.currentSet[index].index;
+        }
         if ( this.editMode === 'popup' ){
           if ( typeof(winOptions) === 'string' ){
             winOptions = {title: winOptions};
@@ -1405,7 +1401,7 @@
       isDirty(row, col, idx){
         return this.isBatch &&
           col &&
-          !row.isEdited &&
+          (row.index !== this.editedIndex) &&
           !row.aggregated &&
           !row.groupAggregated &&
           (col.editable !== false) &&
@@ -1522,14 +1518,13 @@
           this._removeTmp();
         }
         else if ( this.editedRow && this.originalRow ){
-          let row = bbn.fn.get_row(this.currentSet, {isEdited: true});
-          if ( row ){
-            this.currentData[row.index] = this.originalRow;
+          if ( this.currentData[this.editedIndex] ){
+            this.currentData[this.editedIndex] = this.originalRow;
           }
-          this.originalRow = false;
-          this.editedRow = false;
-          this.editedIndex = false;
         }
+        this.originalRow = false;
+        this.editedRow = false;
+        this.editedIndex = false;
       },
       /** @todo */
       editTmp(data){
@@ -1799,7 +1794,7 @@
           }
         }
         $.each(groupCols, (i, a) => {
-          a.width = bbn.fn.sum(a.cols, 'realWidth') + a.visible;
+          a.width = bbn.fn.sum(a.cols, 'realWidth');
         });
         this.groupCols = groupCols;
         this.colButtons = colButtons;
@@ -1917,19 +1912,19 @@
     },
 
     created(){
-      // Adding bbn-column from the slot
+      // Adding bbns-column from the slot
       if (this.$slots.default){
         let def = this.defaultObject();
         for ( let node of this.$slots.default ){
           //bbn.fn.log("TRYING TO ADD COLUMN", node);
           if (
             node.componentOptions &&
-            (node.componentOptions.tag === 'bbn-column')
+            (node.componentOptions.tag === 'bbns-column')
           ){
             this.addColumn($.extend({}, def, node.componentOptions.propsData));
           }
           else if (
-            (node.tag === 'bbn-column') &&
+            (node.tag === 'bbns-column') &&
             node.data && node.data.attrs
           ){
             this.addColumn($.extend({}, def, node.data.attrs));
@@ -2032,12 +2027,11 @@
           let idx = this.currentSet[oldIndex].index;
           if (
             (this.editable === 'inline') &&
-            (this.editedIndex === oldIndex) &&
+            (this.editedIndex === idx) &&
             this.isModified(idx)
           ){
             //this.$forceUpdate();
             this.$emit('change', this.currentSet[oldIndex].data, idx);
-            bbn.fn.log("SAVE FUNCTION");
             //this.save();
           }
         }
@@ -2055,14 +2049,10 @@
             })
           }
         }
-        else{
-          this.editedRow = false;
-          this.editedIndex = false;
-        }
       },
     },
     components: {
-      'bbn-columns': {
+      'bbns-columns': {
         mixins: [bbn.vue.fieldProperties]
       },
       'bbn-row': {

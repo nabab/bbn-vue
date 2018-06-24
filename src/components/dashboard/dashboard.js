@@ -67,7 +67,7 @@
       getWidget(key){
         let idx = bbn.fn.search(this.widgets, {key: key});
         if ( idx > -1 ){
-          return bbn.vue.closest(this, ".bbn-tab");
+          return bbn.vue.closest(this, ".bbns-tab");
         }
       },
       hideWidget(key){
@@ -101,7 +101,7 @@
         if ( this.sortable && !$ele.hasClass("ui-sortable") ){
           let oldIdx = false;
           $ele.sortable({
-            placeholder: "bbn-widget bbn-bg-grey bbn-widget-placeholder",
+            placeholder: "bbns-widget bbn-bg-grey bbns-widget-placeholder",
             opacity: 0.5,
             forcePlaceholderSize: true,
             handle: "h5.ui-sortable-handle",
@@ -185,7 +185,7 @@
       },
 
       updateMenu(){
-        let tab = bbn.vue.closest(this, ".bbn-tab");
+        let tab = bbn.vue.closest(this, ".bbns-tab");
         if ( tab ){
           if ( this.selectable && this.menu && this.menu.length ){
             $.each(this.menu, function(i, a){
@@ -292,12 +292,12 @@
 
     created(){
 
-      // Adding bbn-tab from the slot
+      // Adding bbns-tab from the slot
       if ( this.$slots.default ){
         for ( let node of this.$slots.default ){
           if (
             node &&
-            (node.tag === 'bbn-widget')
+            (node.tag === 'bbns-widget')
           ){
             this.originalSource.push(this.normalize(node.data.attrs));
           }
@@ -334,8 +334,8 @@
     },
 
     components: {
-      'bbn-widget': {
-        name: 'bbn-widget',
+      'bbns-widget': {
+        name: 'bbns-widget',
         mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent, bbn.vue.observerComponent],
         props: {
           uid: {},

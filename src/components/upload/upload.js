@@ -4,7 +4,6 @@
 (($, bbn) => {
   "use strict";
 
-  var vc;
   Vue.component('bbn-upload', {
     //mixins: [bbn.vue.fullComponent],
     mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent],
@@ -16,10 +15,12 @@
         }
       },
       saveUrl: {
-        type: String
+        type: String,
+        default: null
       },
       removeUrl: {
-        type: String
+        type: String,
+        default: null
       },
       autoUpload : {
         type: Boolean,
@@ -29,13 +30,10 @@
         type: Boolean,
         default: true
       },
-      enabled: {
+      disabled: {
         type: Boolean,
-        default: true
+        default: false
       },
-      success: {},
-      error: {},
-      remove: {},
       thumbNot : {
         type: String
       },
@@ -66,16 +64,21 @@
             ok: bbn._('OK')
           }
         }
+      },
+      icon: {
+        type: String,
+        default: 'fas fa-upload'
       }
     },
     data(){
       return {
+				isEnabled: !this.disabled,
         widgetValue: []
       };
     },
     computed: {
       dropHereText(){
-        return this.enabled ? this.text.dropHere : '';
+        return this.isEnabled ? this.text.dropHere : '';
       },
       getSource(){
         let res;
@@ -89,19 +92,30 @@
       },
       getValue(){
         let files = $.map(this.widgetValue, (e) => {
-          return {
+          let s = bbn.fn.get_row(this.getSource, 'name', e.originalName);
+          return $.extend(s || {}, {
             name: e.name,
             //size: e.size,
             extension: e.name.slice(e.name.lastIndexOf('.'))
-          }
+          });
+          /*return {
+            name: e.name,
+            //size: e.size,
+            extension: e.name.slice(e.name.lastIndexOf('.'))
+          }*/
         });
         return this.json ? JSON.stringify(files) : files;
       },
       getCfg(){
         let cfg = {
+          element: this.getRef('upload'),
+          template: this.getRef('ui_template'),
+          autoUpload: this.autoUpload,
+          multiple: this.multiple,
           request: {
+            filenameParam: 'name',
             inputName: 'file',
-            endpoint: this.saveUrl
+            endpoint: this.saveUrl || null
           },
           deleteFile: {
             endpoint: this.removeUrl || null,
@@ -110,9 +124,14 @@
             method: 'POST',
             confirmMessage: bbn._('Are you sure you want to delete') + " {filename}?"
           },
+          paste: {
+            targetElement: this.getRef('pasteContainer'),
+            defaultName: 'image',
+            promptForName: true
+          },
           callbacks: {
-            onValidate(d){
-              const files = this.getUploads({
+						onValidate: (d) => {
+              const files = this.widget.getUploads({
                 status: [
                   qq.status.SUBMITTED,
                   qq.status.QUEUED,
@@ -123,35 +142,60 @@
                   qq.status.PAUSED
                 ]
               });
-              if ( bbn.fn.search(files, 'name', d.name) > -1 ){
-                bbn.fn.alert('The file ' + d.name + ' already exists!');
+              if ( !this.isEnabled ){
                 return false;
               }
-            },
-            onComplete(){
-              if ( $.isFunction(vc.success) ){
-                vc.success();
+              if ( bbn.fn.search(files, 'name', d.name) > -1 ){
+                this.$emit('error', {file: d.name, message: bbn._('The file exists!')});
+                return false;
               }
+              return true;
             },
-            onError(){
-              if ( $.isFunction(vc.error) ){
-                vc.error();
-              }
+            onComplete: (id, name, responseJSON, xhr) => {
+              this.$emit('success', id, name, responseJSON, xhr);
+            },
+            onError: (id, name, errorReason, xhr) => {
+              this.$emit('error', id, name, errorReason, xhr);
             },
             onSubmitDelete(id){
-              this.setDeleteFileParams({file: this.getName(id)}, id);
+              this.setDeleteFileParams({
+								file: this.getName(id),
+								_bbn_token: bbn.env.token
+							}, id);
             },
-            onDeleteComplete(id, xhr, err, e){
-              if ( $.isFunction(vc.remove) ){
-                vc.remove();
-              }
+            onDeleteComplete: (id, xhr, isError) => {
+						  this.$emit('remove', id, xhr, isError);
             },
-            onStatusChange(){
-              vc.widgetValue = vc.widget.getUploads({status: [qq.status.UPLOAD_SUCCESSFUL]}) || [];
+            onStatusChange: () => {
+              this.widgetValue = this.widget.getUploads({status: [qq.status.UPLOAD_SUCCESSFUL]}) || [];
             }
           },
           validation: {
             stopOnFirstInvalidFile: true
+          },
+          showPrompt: (message, defaultValue) => {
+            let promise = new qq.Promise();
+            this.getPopup().open({
+              title: message,
+              component: this.$options.components['bbn-uploader-prompt'],
+              width: 400,
+              height: 150,
+              source: {
+                message: message,
+                val: defaultValue,
+                promise: promise
+              }
+            });
+            return promise;
+          },
+          showConfirm(message){
+            let promise = new qq.Promise();
+            appui.confirm(message, 280, 220, () => {
+              promise.success();
+            }, () => {
+              promise.failure();
+            });
+            return promise;
           },
           thumbnails: {
             placeholders: {
@@ -172,29 +216,27 @@
     },
     methods: {
       enable(val){
-        const $inp = $("input[name=qqfile]", this.$el);
+				if ( val !== this.isEnabled ){
+					this.isEnabled = val;
+					return true;
+				}
+        const $inp = $("input[name=file]", this.$el),
+              $pas = $("div.paste-container", this.$el),
+              $sel = $("div.qq-uploader-selector", this.$el);
         if ( val ){
           $inp.removeAttr('disabled');
+          $inp.parent().removeClass('k-state-disabled');
+          $pas.show();
+          $sel.attr('qq-drop-area-text', this.dropHereText);
         }
         else {
           $inp.attr('disabled', 'disabled');
+          $inp.parent().addClass('k-state-disabled');
+          $pas.hide();
+          $sel.attr('qq-drop-area-text', this.dropHereText);
         }
-      },
-      _getPopup(){
-        if ( this.window ){
-          return this.window.popup;
-        }
-        if ( this.tab && this.tab.$refs.popup ){
-          return this.tab.$refs.popup.length ? this.tab.$refs.popup[0] : this.tab.$refs.popup;
-        }
-        if ( this.$root.$refs.popup ){
-          return this.$root.$refs.popup.length ? this.$root.$refs.popup[0] : this.$root.$refs.popup;
-        }
-        return false;
+
       }
-    },
-    created(){
-      vc = this;
     },
     mounted(){
       this.$nextTick(() => {
@@ -202,68 +244,41 @@
           this.window = bbn.vue.closest(this, "bbn-window");
         }
         if ( !this.tab ){
-          this.tab = bbn.vue.closest(this, "bbn-tab");
+          this.tab = bbn.vue.closest(this, "bbns-tab");
         }
-        this.widget = new qq.FineUploader($.extend({
-          element: this.getRef('upload'),
-          template: this.getRef('ui_template'),
-          paste: {
-            targetElement: this.getRef('pasteContainer'),
-            defaultName: 'image',
-            promptForName: true
-          },
-          showPrompt: (message, defaultValue) => {
-            let promise = new qq.Promise();
-            this._getPopup().open({
-              title: message,
-              component: this.$options.components['bbn-uploader-prompt'],
-              width: 400,
-              height: 150,
-              source: {
-                message: message,
-                val: defaultValue,
-                promise: promise
-              }
-            });
-            return promise;
-          },
-          showConfirm(message){
-            let promise = new qq.Promise();
-            bbn.fn.confirm(message, () => {
-              promise.success();
-            }, () => {
-              promise.failure();
-            });
-            return promise;
-          }
-        }, this.getCfg));
+        this.widget = new qq.FineUploader(this.getCfg);
         if ( this.value && this.getSource ){
           this.widget.addInitialFiles(this.getSource);
+        }
+        if ( this.disabled ){
+          this.enable(false);
         }
         this.ready = true;
       });
     },
     watch: {
       enabled(val){
-        this.enable(val);
+				this.isEnabled = !val;
       },
+			isEnabled(val){
+				this.enable(val);
+			},
       widgetValue(val){
-        vc.$emit('input', vc.getValue);
-        vc.$emit('change', vc.getValue);
+        this.$emit('input', this.getValue);
+        this.$emit('change', this.getValue);
       }
     },
     components: {
       'bbn-uploader-prompt': {
         props: ['source'],
         template: `
-<bbn-form :source="source" 
-          class="bbn-full-screen"
+<bbn-form class="bbn-full-screen"
           @submit.prevent="submit"
           :prefilled="true"
           confirmLeave=""
 >
   <div class="bbn-padded">
-    <bbn-input v-model="source.val" 
+    <bbn-input v-model="source.val"
                required="required"
                class="bbn-w-100"
      ></bbn-input>
@@ -272,10 +287,12 @@
         `,
         methods: {
           submit(){
-            if ( this.source.val ){
-              this.source.promise.success(this.source.val);
-              bbn.vue.closest(this, 'bbn-popup').close(undefined, true);
-            }
+            this.$nextTick(() => {
+              if ( this.source.val ){
+                this.source.promise.success(this.source.val);
+                bbn.vue.closest(this, 'bbn-popup').close(undefined, true);
+              }
+            });
           }
         }
       }

@@ -52,6 +52,22 @@
       strict: {
         type: Boolean,
         default: false
+      },
+      onIcon: {
+        type: String,
+        default: 'fas fa-play'
+      },
+      offIcon: {
+        type: String,
+        default: 'fas fa-stop'
+      },
+      noIcon: {
+        type: Boolean,
+        default: true
+      },
+      radius: {
+        type: Boolean,
+        default: false
       }
     },
     model: {
@@ -65,8 +81,8 @@
     },
     computed: {
       state(){
-        if ( this.checked && (this.modelValue === undefined) ){
-          return true;
+        if ( this.modelValue === undefined ){
+          return this.checked;
         }
         if ( this.checked &&
           (
@@ -83,6 +99,10 @@
           return true;
         }
         return this.checked;
+      },
+      currentIcon(){
+        return this.noIcon ? '' : (this.state ? this.onIcon : this.offIcon);
+
       }
     },
     methods: {

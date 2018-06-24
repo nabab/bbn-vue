@@ -27,6 +27,7 @@
             'k-state-default': true,
             'bbn-tabnav-static': !!tab.static,
             'k-state-active': tab.selected,
+            'k-state-disabled': tab.disabled,
             'k-first': tabIndex === 0,
             'k-last': tabIndex === tabs.length - 1,
             'bbn-tabnav-alarm': tab.alarm
@@ -50,7 +51,8 @@
               @keydown.right.down.prevent="getRef('menu-' + tabIndex).$el.focus()"
         >
           <i v-if="tab.icon"
-             :class="'w3-large ' + tab.icon">
+					   :title="tab.title"
+             :class="tab.icon + (tab.notext ? ' bbn-lg' : '')">
           </i>
           <span v-if="!tab.notext && tab.title"
                 v-html="tab.title">
@@ -79,7 +81,7 @@
              @keydown.space.enter.prevent="close(tabIndex)"
              @click.stop.prevent="close(tabIndex)"></i>
           <bbn-context v-if="tab.selected"
-                       class="fa fa-caret-down bbn-p"
+                       class="fas fa-caret-down bbn-p"
                        tabindex="-1"
                        tag="i"
                        :source="getMenuFn"
@@ -113,7 +115,7 @@
           </div>
         </div>
       </div>
-      <bbn-tab inline-template
+      <bbns-tab inline-template
                v-else
                v-bind="tab"
                :data-index="tabIndex"
@@ -122,13 +124,18 @@
                @ready="tab.loaded = true"
       >
         <div :class="{
-               'bbn-flex-fill': true,
-               'bbn-tab': true,
+               'bbn-flex-fill': !fullScreen,
+               'bbn-full-screen': !!fullScreen,
+               'bbns-tab': true,
                'k-content': true,
                'bbn-w-100': true,
-               'bbn-tab-selected': !!selected
+               'bbns-tab-selected': !!selected
              }"
-        >
+             :style="{
+               'z-index': fullScreen ? 10 : 'inherit',
+               position: fullScreen ? 'fixed !important' : 'relative'
+               
+             }">
           <component v-if="isComponent"
                      :is="name"
                      :source="source"
@@ -144,11 +151,15 @@
             <div v-html="content"></div>
           </bbn-scroll>
           <component is="style" v-if="css" scoped="scoped" v-html="css"></component>
+          <i v-if="fullScreen"
+             class="far fa-times-circle bbns-tab-fullscreen-closer bbn-p"
+             @click="fullScreen = false"
+          ></i>
           <bbn-popup ref="popup" :source="popups"></bbn-popup>
         </div>
-      </bbn-tab>
+      </bbns-tab>
     </template>
-    <span v-if="scrollable"
+   <!-- <span v-if="scrollable"
           class="k-button k-button-icon k-button-bare k-tabstrip-prev"
           @click="scrollTabs('left')"
     >
@@ -159,6 +170,24 @@
           @click="scrollTabs('right')"
     >
       <i class="fa fa-angle-right bbn-p"></i>
+    </span>-->
+    <span v-if="scrollable"
+          class="k-button-icon k-button-bare k-tabstrip-prev"
+          @click="scrollTabs('left')"
+          style="position: absolute"
+    >
+      <i class="fa fa-angle-left bbn-p bbn-xlarge"
+         style="padding-top: 6.5px;"
+      ></i>
+    </span>
+    <span v-if="scrollable"
+          class="k-button-icon k-button-bare k-tabstrip-next bbn-r"
+          @click="scrollTabs('right')"
+          style="position: absolute"
+    >
+      <i class="fa fa-angle-right bbn-p bbn-xlarge"
+         style="padding-top: 6.5px;"
+      ></i>
     </span>
   </div>
   <div v-else v-html="_('Preparing content')"></div>

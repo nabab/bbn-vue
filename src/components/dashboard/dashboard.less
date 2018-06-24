@@ -5,7 +5,7 @@
   }
   .bbn-masonry{
     overflow: hidden;
-    div.bbn-widget{
+    div.bbns-widget{
       display: inline-block;
       margin-bottom: 1em;
       width: 100%;
@@ -87,7 +87,6 @@
           position: absolute;
           top: 3px;
           i{
-            font-size: large;
             cursor: pointer;
             opacity: 0.5;
           }
@@ -99,22 +98,25 @@
           }
         }
         span.button-left{
-          left: 5px;
-          padding-right: 3px;
+          left: 3px;
           float: left;
           clear: left;
+          i{
+            margin-left: 2px;
+          }
         }
         span.button-right{
+          right: 3px;
           float: right;
-          padding-left: 3px;
           clear: right;
-          text-align: right;
-          right: 5px;
+          i{
+            margin-right: 2px;
+          }
         }
       }
     }
   }
-  div.bbn-dashboard-sortable div.bbn-widget div.k-header h5{
+  div.bbn-dashboard-sortable div.bbns-widget div.k-header h5{
     cursor: move;
   }
 }

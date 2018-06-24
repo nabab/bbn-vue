@@ -127,29 +127,21 @@
         currentOperator: this.operator !== undefined ? this.value : null
       };
     },
-    mounted(){
-      //bbn.fn.analyzeContent(this.$el, true);
-    },
-    updated(){
-      //bbn.fn.analyzeContent(this.$el, true);
-    },
     computed: {
       border_color(){
-        if ( this.num > borders.length){
+        if ( this.num > borders.length ){
           return borders[this.num % borders.length]
         }
         else{
           return borders[this.num]
         }
       },
-      is_not_root: function(){
-        //bbn.fn.log("ISNOT ROTT", $(this.$el).parents(".bbn-filter-control"));
+      is_not_root(){
         return $(this.$parent.$el).hasClass("bbn-filter-control");
       },
     },
     methods: {
       over(e){
-        //bbn.fn.log('bg_color', this.bg_color)
         $(e.target).css('color' , 'red');
         $(e.target).parent().parent().find('.bbn-filter-main').eq(0).css('background-color', 'rgba(158,158,158, 0.3)' );
       },
@@ -184,7 +176,7 @@
       hasFields(){
         return this.fields && Object.keys(this.fields).length;
       },
-      condition_text: function(cd){
+      condition_text(cd){
         let st = '';
         if ( cd && cd.field ){
           let index = bbn.fn.search(this.fields, {field: cd.field});
@@ -225,46 +217,43 @@
       delete_full_condition(idx){
         this.$emit('unset', this.conditions.splice(idx, 1));
       },
-      delete_condition: function(condition){
-        bbn.fn.log(condition);
-        if ( condition.time ){
-          bbn.fn.log("There is the time", condition);
-          let del = (arr) => {
-                let idx = bbn.fn.search(arr, {time: condition.time});
-            bbn.fn.log("Is there the index?", idx);
-                if ( idx > -1 ){
-                  if ( arr[idx].conditions && arr[idx].conditions.length ){
-                    bbn.fn.confirm(bbn._("Êtes-vous sûr de vouloir supprimer ce groupe de conditions?"), () => {
-                      arr.splice(idx, 1);
-                    })
-                  }
-                  else{
-                    arr.splice(idx, 1);
-                    bbn.fn.log("It seems to be deleted", arr);
-                  }
-                  return true;
-                }
-                for ( let i = 0; i < arr.length; i++ ){
-                  if ( arr[i].conditions ){
-                    if ( del(arr[i].conditions) ){
-                      return true;
-                    }
-                  }
-                }
-              };
-          if ( del(this.conditions) ){
-            this.$forceUpdate();
-            this.$emit('unset', condition);
+      delete_condition(condition){
+        let del = (arr) => {
+          let idx = bbn.fn.search(arr, {time: condition.time});
+          bbn.fn.log("Is there the index?", idx);
+          if ( idx > -1 ){
+            if ( arr[idx].conditions && arr[idx].conditions.length ){
+              this.confirm(bbn._("Êtes-vous sûr de vouloir supprimer ce groupe de conditions?"), () => {
+                arr.splice(idx, 1);
+              })
+            }
+            else{
+              arr.splice(idx, 1);
+              bbn.fn.log("It seems to be deleted", arr);
+            }
+            return true;
           }
+          for ( let i = 0; i < arr.length; i++ ){
+            if ( arr[i].conditions ){
+              if ( del(arr[i].conditions) ){
+                return true;
+              }
+            }
+          }
+        };
+        if ( del(this.conditions) ){
+          this.$forceUpdate();
+          this.$emit('unset', condition);
         }
+
       },
-      add_group: function(idx){
+      add_group(idx){
         this.conditions.splice(idx, 1, {
           logic: this.currentLogic,
           conditions: [this.conditions[idx]]
         })
       },
-      delete_group: function(){
+      delete_group(){
         this.$parent.conditions.splice(idx, 1);
       },
     },
@@ -284,9 +273,7 @@
             type: String
           },
           value: {},
-          component: {
-
-          },
+          component: {},
           componentOptions: {
             type: Object,
             default(){
@@ -316,7 +303,11 @@
         },
         computed: {
           operators(){
-            let cfg = this.editorGetComponentOptions({field: this.currentField, type: this.currentType, value: this.currentValue});
+            let cfg = this.editorGetComponentOptions({
+              field: this.currentField,
+              type: this.currentType,
+              value: this.currentValue
+            });
             return this.currentType && this.editorOperators[cfg.type || this.currentType] ?
               this.editorOperators[cfg.type || this.currentType] : [];
           },
@@ -324,7 +315,7 @@
             return this.editorHasNoValue(this.operator);
           },
           columns(){
-            var r = [];
+            let r = [];
             if ( $.isArray(this.fields) ){
               $.each(this.fields, (i, a) => {
                 if ( a.field ){
@@ -336,7 +327,7 @@
               })
             }
             else{
-              for ( var n in this.fields ){
+              for ( let n in this.fields ){
                 r.push(n);
               }
             }
@@ -354,7 +345,7 @@
         },
         methods: {
           validate(cancel){
-            if ( this.currentField && this.currentOperator && (this.editorHasNoValue(this.currentOperator) || this.currentValue) ){
+            if ( this.currentField && this.currentOperator && (this.currentValue || this.editorHasNoValue(this.currentOperator)) ){
               var tmp = {
                 field: this.currentField,
                 operator: this.currentOperator
@@ -369,10 +360,10 @@
                 this.currentCondition = this.$parent.setCondition(tmp);
                 bbn.fn.log("CONDI", this.currentCondition);
               }
-              //this.$emit(cancel ? 'invalidate' : 'validate', tmp, cancel);
+              this.$emit(cancel ? 'invalidate' : 'validate', tmp, cancel);
             }
             else{
-              bbn.fn.alert("Valeur obligatoire, sinon vous pouvez choisir d'autres opérateurs si vous cherchez un élément nul ou vide");
+              this.$emit('error', bbn._("Valeur obligatoire, sinon vous pouvez choisir d'autres opérateurs si vous cherchez un élément nul ou vide"));
             }
           },
           unset(){

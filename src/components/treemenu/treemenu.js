@@ -78,7 +78,7 @@
             menu = this;
         return [{
           text: bbn._('Create a shortcut'),
-          icon: 'fa fa-external-link-square',
+          icon: 'fas fa-external-link-alt',
           command(){
             if ( menu.shortcuts ){
               let sc = $.isFunction(menu.shortcuts) ? menu.shortcuts() : menu.shortcuts;

@@ -17,7 +17,7 @@
                     @click="_execCommand(button, i)"
         ></bbn-button>
       </div>
-      <div v-else-if="typeof(toolbar) === 'function'"
+      <div v-else-if="typeof toolbar === 'function'"
            v-html="toolbar()"
       ></div>
       <component v-else
@@ -117,7 +117,7 @@
                   <i v-if="isSorted(col)"
                      :class="{
                    'bbn-table-sortable-icon': true,
-                   fa: true,
+                   fas: true,
                    'fa-caret-up': isSorted(col).dir === 'ASC',
                    'fa-caret-down': isSorted(col).dir === 'DESC',
                  }"></i>
@@ -192,7 +192,7 @@
                               (groupIndex === 0) ||
                               !groupCols[groupIndex-1].cols.length
                             )">
-                    <i :class="'bbn-p fa fa-caret-' + (isExpanded(d) ? 'down' : 'right')"
+                    <i :class="'bbn-p fas fa-caret-' + (isExpanded(d) ? 'down' : 'right')"
                        v-if="d.expander"
                        @click="toggleExpanded(d.index)"
                        tabindex="0"
@@ -237,7 +237,7 @@
                       :class="currentClass(col, d.data, i)"
                       :key="j"
                   >
-                    <div v-if="editable && d.isEdited && isEditable(d.data, col, i)">
+                    <div v-if="editable && (d.index === editedIndex) && isEditable(d.data, col, i)">
                       <div v-if="(editMode === 'inline') && (col.index === colButtons)">
                         <bbn-button :text="_('Save')"
                                     :disabled="!isEditedValid"
@@ -308,7 +308,7 @@
                       <bbn-button v-for="(button, j) in (Array.isArray(col.buttons) ? col.buttons : col.buttons(d.data, col, i))"
                                   :key="j"
                                   v-bind="button"
-                                  @click="_execCommand(button, d.data, col, i)"
+                                  @click.stop="_execCommand(button, d.data, col, i)"
                       ></bbn-button>
                     </div>
                     <bbn-field v-else-if="col.field && !col.render"
@@ -412,7 +412,7 @@
                     :disabled="!isChanged"
                     :title="_('Reset to original configuration')"
                     @click="reset"
-                    icon="zmdi zmdi-time-restore-setting"
+                    icon="fa fa-undo"
         ></bbn-button>
         <bbn-button v-if="showable"
                     :title="_('Columns\' picker')"
@@ -428,7 +428,7 @@
         <bbn-button v-if="isAjax"
                     :title="_('Refresh')"
                     @click="updateData"
-                    icon="fa fa-refresh"
+                    icon="fas fa-sync"
         ></bbn-button>
       </div>
 

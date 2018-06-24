@@ -7,7 +7,7 @@
   /**
    * Classic input with normalized appearance
    */
-  Vue.component('bbn-column', {
+  Vue.component('bbns-column', {
     mixins: [bbn.vue.basicComponent],
     props: {
       width: {
