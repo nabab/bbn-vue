@@ -380,6 +380,9 @@
         },
         mounted(){
           this.ready = true;
+          /*if ( this.columns.length === 1 ){
+            this.currentField = this.fields[0].field;
+          }*/
           //bbn.fn.log("FILTER FORM MOUNTED", this);
         },
         watch: {

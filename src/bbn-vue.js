@@ -76,11 +76,11 @@
       checkbox: {},
       code: {},
       colorpicker: {},
+      colorpicker2: {},
       combo: {},
       context: {},
       countdown: {},
       countdown2: {},
-
       dashboard: {},
       datepicker: {},
       datetimepicker: {},
@@ -433,13 +433,10 @@
               (arr) => {
                 // arr is the answer!
                 if ( $.isArray(arr) ){
-                  //bbn.fn.warning("RES!!!!!");
-                  //bbn.fn.log(arr);
                   $.each(arr, (i, r) => {
                     let resolved = false;
                     if ( (typeof(r) === 'object') && r.script && r.name ){
                       let idx = bbn.fn.search(todo, {name: r.name});
-                      //bbn.fn.log(r, idx, todo);
                       if ( idx > -1 ){
                         let a = todo[idx];
                         if ( r.html && r.html.length ){
@@ -456,7 +453,6 @@
                           $(document.head).append('<style>' + r.css + '</style>');
                         }
                         r.script();
-                        //bbn.fn.log("CP", a.name, Vue.options.components['bbn-' + a.name]);
                         if ( (a.resolve !== undefined) && (Vue.options.components['bbn-' + a.name] !== undefined) ){
                           setTimeout(() => {
                             a.resolve('ok');
@@ -488,7 +484,6 @@
     },
 
     queueComponentBBN(name, resolve, reject){
-      bbn.fn.warning(name);
       if ( bbn.fn.search(bbn.vue.queueBBN, {name: name}) === -1 ){
         clearTimeout(bbn.vue.queueTimerBBN);
         bbn.vue.queueBBN.push({
@@ -703,7 +698,7 @@
     },
 
     getPopup(vm){
-      return vm.currentPopup;
+      return vm.currentPopup || null;
     },
 
     replaceArrays(oldArr, newArr, key){
@@ -749,9 +744,7 @@
         }
         // A rule has been found
         if ( idx > -1 ){
-          bbn.fn.log("DEFINING FROM PREFIX WITH TAG " + tag);
           Vue.component(tag, (resolve, reject) => {
-            bbn.fn.log("CREATING COMPONENT");
             bbn.vue.knownPrefixes[idx].handler(tag, resolve, reject);
           });
         }
@@ -810,7 +803,7 @@
         }
       },
       created(){
-        if ( this.$options.name ){
+        if ( this.$options.name && (this.componentClass.indexOf(this.$options.name) === -1) ){
           this.componentClass.push(this.$options.name);
         }
       },
@@ -1691,7 +1684,7 @@
   Vue.mixin({
     computed: {
       currentPopup(){
-        if ( !this._currentPopup ){
+        if ( this && !this._currentPopup ){
           let e = bbn.vue._retrievePopup(this);
           if ( e ){
             this._currentPopup = e;
@@ -1700,24 +1693,24 @@
             let vm = this
             while ( 1 ){
               vm = vm.$parent;
-              if ( vm._currentPopup ){
+              if ( vm && vm._currentPopup ){
                 this._currentPopup = vm._currentPopup;
                 break;
               }
-              else{
+              else if ( vm ){
                 e = bbn.vue._retrievePopup(vm);
                 if ( e ){
                   this._currentPopup = e;
                   break;
                 }
               }
-              if ( vm === this.$root ){
+              if ( !vm || (vm === this.$root) ){
                 break;
               }
             }
           }
         }
-        if ( this._currentPopup ){
+        if ( this && this._currentPopup ){
           return this._currentPopup;
         }
         throw new Error(bbn._('Impossible to find a popup instance. Add a bbn-popup in your root element'))
@@ -1725,7 +1718,7 @@
     },
     data(){
       return {
-        _currentPopup: false
+        _currentPopup: null
       };
     },
     methods: {

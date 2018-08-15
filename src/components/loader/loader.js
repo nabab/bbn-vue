@@ -66,6 +66,20 @@
     },
 
     watch: {
+      fontSize(val){
+        if ( val === 's' ){
+          this.fontClass = 'bbn-small'
+        }
+        else if ( val === 'm' ){
+          this.fontClass = 'bbn-medium'
+        }
+        else if ( val === 'l' ){
+          this.fontClass = 'bbn-large'
+        }
+        else if ( val === 'xl' ){
+          this.fontClass = 'bbn-xl'
+        }
+      },
       bgColor(val){
         if ( val ){
           $(this.$el).css('background-color', val)

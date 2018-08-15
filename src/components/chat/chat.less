@@ -1,4 +1,19 @@
 .bbn-chat{
+  .w3-badge{
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+  }
+  > .bbn-block{
+    margin-right: 0.2em;
+    > i{
+      margin-right: 0.7em;
+    }
+    > span.w3-badge{
+      position: absolute;
+      bottom: 0;
+      right: 0;
+    }
+  }
   .bbn-chat-users{
     position: absolute;
     right: 0;
@@ -8,6 +23,11 @@
     width: 300px;
     .bbn-user-title{
       margin-right: 5px;
+    }
+    .message{
+      a{
+        word-wrap: break-word;
+      }
     }
   }
 }

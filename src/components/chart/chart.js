@@ -1,234 +1,503 @@
 /**
- * Created by BBN Solutions.
- * User: Mirko Argentino
- * Date: 24/05/2017
- * Time: 15:45
+ * bbn-chart component
+ *
+ * @author Mirko Argentino
+ * @copyright BBN Solutions
  */
 
 (($, bbn) => {
   "use strict";
 
-  /**
-   * Classic input with normalized appearance
-   */
   Vue.component('bbn-chart', {
     mixins: [bbn.vue.basicComponent, bbn.vue.optionComponent],
     props: {
-      source: {},
+      /**
+       * The component's data.
+       *
+       * @prop {Object} source
+       */
+      source: {
+        type: Object
+      },
+      /**
+       * The chart type.
+       *
+       * @prop {String} [line] type
+       */
       type: {
         type: String,
         default: 'line'
       },
       /**
-       * String => the same title to axixs X and Y.
-       * Object => {x: 'titlex', y: 'titley'}
+       * The chart's title.
+       *
+       * @prop {String} [] title
        */
 			title: {
-        type: String,
-        default: ''
+        type: String
       },
+      /**
+       * The axis-x title
+       *
+       * @prop {String} titleX.
+       */
       titleX: {
-			  type: String,
-        default: undefined
+			  type: String
       },
+      /**
+       * The axis-y title.
+       *
+       * @prop {String} titleY
+       */
       titleY: {
-			  type: String,
-        default: undefined
+			  type: String
       },
+      /**
+      * The chart's width
+      *
+      * @prop {String} [100%] width.
+      */
       width: {
         type: String,
         default: '100%'
       },
+      /**
+       * The chart's height
+       *
+       * @prop {String} [100%] height.
+       */
       height: {
         type: String,
         default: '100%'
       },
+      /**
+       * Set it to true if you want see the values points on the line chart.
+       *
+       * @prop {Boolean} [true] showPoint
+       */
       showPoint: {
         type: Boolean,
         default: true
       },
+      /**
+       * Set it to true if you want see the grid on the line and bar charts.
+       *
+       * @prop {Boolean} [true] showLine
+       */
       showLine: {
         type: Boolean,
         default: true
       },
+      /**
+       * Set it to true if you want see smooth line on line chart.
+       *
+       * @prop {Boolean} [false] lineSmooth
+       */
       lineSmooth: {
         type: Boolean,
         default: false
       },
+      /**
+       * Set it to true if you want see a donut pie chart. If you give an integer it will be considered as the donut width.
+       *
+       * @prop {Boolean|Number} [false] donut
+       */
       donut: {
         type: [Boolean, Number],
         default: false
       },
+      /**
+       * Set it to false if you don't want the drawing of the chart to take the full width available.
+       *
+       * @prop {Boolean} [true] fullWidth
+       */
       fullWidth: {
         type: Boolean,
         default: true
       },
+      /**
+       * Set it to true if you want to see the area on line chart.
+       *
+       * @prop {Boolean} [false] showArea
+       */
       showArea: {
-        type: Boolean
+        type: Boolean,
+        default: false
       },
+      /**
+       * Set it to true if you want to see the labels on pie chart.
+       *
+       * @prop {Boolean} [true] showLabel
+       */
       showLabel: {
         type: Boolean,
         default: true
       },
+      /**
+       * Axis-x configuration object.
+       *
+       * @prop {Object} [{}] axisX
+       */
       axisX: {
         type: Object,
         default(){
           return {};
         }
       },
+      /**
+       * Axis-y configuration object.
+       *
+       * @prop {Object} [{}] axisY
+       */
       axisY: {
         type: Object,
         default(){
           return {};
         }
       },
+      /**
+       * Set it to true if you want see the axis-x labels on line and bar charts.
+       * You can give a function to customize the labels.
+       *
+       * @prop {Boolean|Function} [true] showLabelX
+       */
       showLabelX: {
         type: [Boolean, Function],
         default: true
       },
+      /**
+       * Set it to true if you want see the axis-x labels on the reverse order on line and bar charts.
+       *
+       * @prop {Boolean} [false] reverseLabelX
+       */
       reverseLabelX: {
         type: Boolean,
         default: false
       },
+      /**
+       * Set it to true if you want to see the odd values only.
+       *
+       * @prop {Boolean} [false] odd
+       */
 			odd: {
-        type: Boolean
+        type: Boolean,
+        default: false
       },
+      /**
+       * Set it to true if you want to see the even values only.
+       *
+       * @prop {Boolean} [false] even
+       */
       even: {
-        type: Boolean
+        type: Boolean,
+        default: false
       },
+      /**
+       * Set it to true if you want to see the grid for the axis-x on line and bar charts.
+       *
+       * @prop {Boolean} [true] showGridX
+       */
       showGridX: {
         type: Boolean,
         default: true
       },
+      /**
+       * Set it to true if you want see the axis-y labels on line and bar charts.
+       * You can give a function to customize the labels.
+       *
+       * @prop {Boolean|Function} [true] showLabelY
+       */
       showLabelY: {
         type: [Boolean, Function],
         default: true
       },
+      /**
+       * Set it to true if you want see the axis-y labels on the reverse order on line and bar charts.
+       *
+       * @prop {Boolean} [false] reverseLabelY
+       */
       reverseLabelY: {
         type: Boolean,
         default: false
       },
+      /**
+      * Set it to true if you want to see the grid for the axis-y on line and bar charts.
+      *
+      * @prop {Boolean} [true] showGridY
+      */
       showGridY: {
         type: Boolean,
         default: true
       },
+      /**
+       * Set it to true if you want to enable the animations.
+       * If you give a number it will be used as time (ms) for the animations.
+       *
+       * @prop {Boolean|Number} [false] animation
+       */
       animation: {
         type: [Boolean, Number],
         default: false
       },
       // set it to 0 (zero) for stacked bars
+      /**
+       * The bars distance on bar chart. You can set it to 0 for stacked bars.
+       *
+       * @prop {Number} barsDistance
+       */
       barsDistance: {
         type: Number,
         default: undefined
       },
+      /**
+       * Set it to true if you want see horizontal bars on bar chart.
+       *
+       * @prop {Boolean} [false] horizontalBars
+       */
       horizontalBars: {
-        type: Boolean
+        type: Boolean,
+        default: false
       },
+			/**
+			* Reverses the data order
+			* @prop {Boolean} [false] reverseData
+			*/
       reverseData: {
-        type: Boolean
+        type: Boolean,
+				default: false
       },
+			/**
+			 * A color list for personalization
+			 *
+			 * @prop {String|Array} color
+			 */
       color: {
         type: [String, Array]
       },
+			/**
+			 * The label color for personalization
+			 *
+			 * @prop {String} labelColor
+			 */
       labelColor: {
         type: String
       },
+			/**
+			 * The axis-x label color for personalization
+			 *
+			 * @prop {String} labelColorX
+			 */
       labelColorX: {
         type: String
       },
+			/**
+			 * The axis-y label color for personalization
+			 *
+			 * @prop {String} labelColorY
+			 */
       labelColorY: {
         type: String
       },
+			/**
+			 * The background color for personalization
+			 *
+			 * @prop {String} [inherit] backgroundColor
+			 */
       backgroundColor: {
         type: String,
         default: 'inherit'
       },
+			/**
+			 * The grid color for personalization
+			 *
+			 * @prop {String} gridColor
+			 */
       gridColor: {
         type: String
       },
+			/**
+			 * The max value limit
+			 *
+			 * @prop {Number} [undefined] max
+			 */
       max: {
         type: Number,
         default: undefined
       },
+			/**
+			 * The min value limit
+			 *
+			 * @prop {Number} [undefined] min
+			 */
       min: {
         type: Number,
         default: undefined
       },
+			/**
+			 * Numbers only on axis-y
+			 *
+			 * @prop {Boolean} [false] onlyInteger
+			 */
       onlyInteger: {
         type: Boolean,
         default: false
       },
+			/**
+			 * Set it to false if you don't want to activate the tooltip plugin.
+			 * You can customize tooltips by passing a function.
+			 *
+			 * @prop {Boolean|Function} [true] tooltip
+			 */
       tooltip: {
         type: [Boolean, Function],
         default: true
       },
+			/**
+			 * Se it to true if you want to enable the plugin.
+			 *
+			 * @prop {Boolean} [false] pointLabel
+			 */
       pointLabel: {
         type: Boolean,
         default: false
       },
+			/**
+			 * The legend list
+			 *
+			 * @prop {Boolean|Array} legend
+			 */
       legend: {
         type: [Boolean, Array]
       },
+			/**
+			 * The legend position.
+			 * You can use 'top', 'bottom' or a HTMLElement
+			 *
+			 *
+			 * @prop {String|HTMLElement} [undefined] legendPosition
+			 */
       legendPosition: {
 			  type: [String, HTMLElement],
         default: undefined
       },
-      customLegend: {},
-
       /*threshold: {
         type: Number
       },*/
+			/**
+			 * Set it to true to see squarish line on line chart.
+			 *
+			 * @prop {Boolean} [false] step
+			 */
       step: {
         type: Boolean,
         default: false
       },
+			/**
+			 * Date format personalization.
+			 *
+			 * @prop {String} dateFormat
+			 */
       dateFormat: {
         type: String
       },
+			/**
+			 * Label offset on pie chart.
+			 *
+			 * @prop {Number} [0] labelOffset
+			 */
       labelOffset: {
         type: Number,
         default: 0
       },
+			/**
+			 * Set it to true if you want to see the labels outside of pie chart.
+			 *
+			 * @prop {Boolean} [false] labelExternal
+			 */
       labelExternal: {
         type: Boolean,
         default: false
       },
+			/**
+			 * Set it to true if you want to wrap the labels on pie chart.
+			 * You can give the number of characters for the wrap also.
+			 *
+			 * @prop {Boolean|Number} [false] labelWrap
+			 */
       labelWrap: {
         type: [Boolean, Number],
         default: false
       },
+			/**
+			 * The chart padding.
+			 *
+			 * @prop {Number} [undefined] padding
+			 */
       padding: {
         type: Number,
         default: undefined
       },
+			/**
+			 * The top chart padding.
+			 *
+			 * @prop {Number} [undefined] paddingTop
+			 */
       paddingTop: {
         type: Number,
         default: undefined
       },
+			/**
+			 * The right chart padding.
+			 *
+			 * @prop {Number} [undefined] paddingRight
+			 */
       paddingRight: {
         type: Number,
         default: undefined
       },
+			/**
+			 * The bottom chart padding.
+			 *
+			 * @prop {Number} [undefined] paddingBottom
+			 */
       paddingBottom: {
         type: Number,
         default: undefined
       },
+			/**
+			 * The left chart padding.
+			 *
+			 * @prop {Number} [undefined] paddingLeft
+			 */
       paddingLeft: {
         type: Number,
         default: undefined
       },
-      /** @todo add this to labels */
+      /**
+       * Give a currency string to use it on tooltip plugin.
+       *
+       * @prop {String} currency
+       * @todo add this to labels
+       */
       currency: {
         type: String
       },
-      /** @todo to fix problem with animation:true */
+      /**
+       * Set it to true to see distributed series on bar chart.
+       *
+       * @prop {Boolean} distributeSeries
+       */
       distributeSeries: {
         type: Boolean
       },
-
       /*zoom: {
         type: Boolean
       },*/
+			/**
+			 * You can use this prop to give native widget's properties.
+			 *
+			 * @prop {Object} [{}] cfg
+			 */
       cfg: {
         type: Object,
         default(){
@@ -237,6 +506,12 @@
       }
     },
     computed: {
+      /**
+       * Makes the widget's data from the source
+       *
+       * @computed data
+       * @return {Object}
+       */
       data(){
         let data = this.source;
         if ( this.isLine || this.isBar ){
@@ -246,15 +521,39 @@
         }
         return data;
       },
+      /**
+       * Checks if the chart's type is 'line'
+       *
+       * @computed isLine
+       * @return {Boolean}
+       */
       isLine(){
         return this.type === 'line';
       },
+      /**
+       * Checks if the chart's type is 'bar'
+       *
+       * @computed isBar
+       * @return {Boolean}
+       */
       isBar(){
         return this.type === 'bar';
       },
+      /**
+       * Checks if the chart's type is 'pie'
+       *
+       * @computed isPie
+       * @return {Boolean}
+       */
       isPie(){
         return this.type === 'pie';
       },
+      /**
+       * Makes an array of activated plugins
+       *
+       * @computed plugins
+       * @return {Array}
+       */
       plugins(){
         let plugins = [];
         // tooltip
@@ -331,6 +630,27 @@
         }*/
         return plugins;
       },
+			/**
+			 * Set the color property to the correct form.
+			 *
+			 * @computed colors
+			 * @return {Array|Boolean}
+			 */
+			colors(){
+				if ( typeof this.color === 'string' ){
+					return [this.color];
+				}
+				if ( Array.isArray(this.color) ){
+					return this.color;
+				}
+				return false;
+			},
+      /**
+       * Makes a correct legend list
+       *
+       * @computed legendFixed
+       * @return {Boolean|Array}
+       */
       legendFixed(){
         if ( Array.isArray(this.legend) && (typeof this.legend[0] === 'object') ){
           return $.map(this.legend, (l) => {
@@ -341,6 +661,12 @@
           return this.legend;
         }
       },
+      /**
+       * Makes a correct legend list with title as text
+       *
+       * @computed legendTitles
+       * @return {Boolean|Array}
+       */
       legendTitles(){
         if ( Array.isArray(this.legend) && (typeof this.legend[0] === 'object') ){
           return $.map(this.legend, (l, i) => {
@@ -351,21 +677,42 @@
           return this.legend;
         }
       },
+      /**
+       * Makes the base configuration object for the type 'line'
+       *
+       * @computed lineCfg
+       * @return {Object}
+       */
       lineCfg(){
         let cfg = {
           lineSmooth: this.step && this.showLine ? Chartist.Interpolation.step() : this.lineSmooth,
           showPoint: this.showPoint,
           showLine: this.showLine,
-          pointLabel: this.pointLabel
+          pointLabel: this.pointLabel,
+          showArea: this.showArea
         };
         return this.isLine ? $.extend(true, cfg, this.lineBarCommon) : {};
       },
+      /**
+       * Makes the base configuration object for the type 'bar'
+       *
+       * @computed barCfg
+       * @return {Object}
+       */
       barCfg(){
         let cfg = {
-          seriesBarDistance: this.barsDistance
+          seriesBarDistance: this.barsDistance && (this.barsDistance > 0) ? this.barsDistance : undefined,
+          stackBars: this.barsDistance === 0,
+          horizontalBars: this.horizontalBars
         };
         return this.isBar ? $.extend(true, cfg, this.lineBarCommon) : {};
       },
+      /**
+       * Makes a common configuration object for the type 'line' and 'bar'
+       *
+       * @computed lineBarCommon
+       * @return {Object}
+       */
       lineBarCommon(){
         if ( this.isLine || this.isBar ){
           let cfg = {
@@ -427,6 +774,12 @@
         }
         return {};
       },
+      /**
+       * Makes the base configuration object for the type 'pie'
+       *
+       * @computed pieCfg
+       * @return {Object}
+       */
       pieCfg(){
         let cfg = {
               donut: !!this.donut,
@@ -489,6 +842,12 @@
         }
         return this.isPie ? cfg : {};
       },
+      /**
+       * Makes the configuration object for the widget
+       *
+       * @computed widgetCfg
+       * @return {Object}
+       */
       widgetCfg(){
         let cfg = $.extend(true, {
           type: this.type,
@@ -511,6 +870,15 @@
       }
     },
     methods: {
+      /**
+       * Destroys the current widget if it exists and fires the chart type constructor
+       *
+       * @method init
+       * @fires pieChart
+       * @fires barChart
+       * @fires lineChart
+       * @fires widgetCreated
+       */
       init(){
         if ( this.widget ){
           this.widget.detach();
@@ -525,60 +893,86 @@
             else if ( this.isBar ){
               this.barChart();
             }
-            else {
+            else if ( this.isLine ){
               this.lineChart();
             }
-            // Set items color
-            if ( this.color ){
-              this.setColor();
-            }
-            // Set labels color
-            if ( this.labelColor || this.labelColorX || this.labelColorY ){
-              this.setLabelColor();
-            }
-            // Operations to be performed during the widget draw
-            this.widgetDraw();
             // Operations to be performed after widget creation
             this.widgetCreated();
           }, 100);
         }
       },
+      /**
+       * Makes a Pie Chart
+       *
+       * @method pieChart
+       * @fires pieDraw
+       */
       pieChart(){
         // Create widget
         this.widget = new Chartist.Pie(this.$refs.chart, this.data, this.widgetCfg);
-        // Animations
-        this.pieAnimation();
+        this.pieDraw();
       },
+      /**
+       * Makes a Line Chart
+       *
+       * @method lineChart
+       * @fires lineDraw
+       */
       lineChart(){
         // Create widget
         this.widget = new Chartist.Line(this.$refs.chart, this.data, this.widgetCfg);
-        // Set grid color
-        this.setGridColor();
-        // Animations
-        this.lineAnimation();
+        this.lineDraw();
       },
+      /**
+       * Makes a Bar Chart
+       *
+       * @method barChart
+       * @fires barDraw
+       */
       barChart(){
         // Create widget
         this.widget = new Chartist.Bar(this.$refs.chart, this.data, this.widgetCfg);
-        // Set grid color
-        this.setGridColor();
-        // Animations
-        this.barAnimation();
+        this.barDraw();
       },
-      getColorIdx(c){
-        return c.element._node.parentElement.className.baseVal.replace('ct-series ', '').slice(-1).charCodeAt()-97;
-      },
-      lineAnimation(){
-        if ( this.animation ){
-          let seq = 0,
-              delays = $.isNumeric(this.animation) ? this.animation : 20,
-              durations = 500;
-          // Once the chart is fully created we reset the sequence
-          this.widget.on('created', () => {
-            seq = 0;
-          });
-          // On each drawn element by Chartist we use the Chartist.Svg API to trigger SMIL animations
-          this.widget.on('draw', (chartData) => {
+      /**
+       * Sets animations and colors during the line chart draw
+       *
+       * @method lineDraw
+       * @fires setGridColor
+       * @fires setColor
+       */
+      lineDraw(){
+        let seq = 0,
+            color = '';
+        // Once the chart is fully created we reset the sequence
+        this.widget.on('created', () => {
+          seq = 0;
+        });
+        this.widget.on('draw', (chartData) => {
+          // Set grid color
+          this.setGridColor(chartData);
+
+          // Color customize
+          this.setColor(chartData);
+
+          // Label color customize
+          if ( (chartData.type === 'label') ){
+            if ( this.labelColor ){
+              color = this.labelColor;
+            }
+            if ( this.labelColorX && (chartData.axis.units.pos === 'x') ){
+              color = this.labelColorX;
+            }
+            else if ( this.labelColorY && (chartData.axis.units.pos === 'y') ){
+              color = this.labelColorY;
+            }
+            $(chartData.element._node.children[0]).css('color', color);
+          }
+
+          // Animation
+          if ( this.animation ){
+            let delays = $.isNumeric(this.animation) ? this.animation : 20,
+                durations = 500;
             seq++;
             if ( (chartData.type === 'line') || (chartData.type === 'area') ){
               // If the drawn element is a line we do a simple opacity fade in. This could also be achieved using CSS3 animations.
@@ -671,22 +1065,53 @@
               };
               chartData.element.animate(animations);
             }
-          });
-        }
+          }
+        });
       },
-      barAnimation(){
-        if ( this.animation ){
-          let delays = $.isNumeric(this.animation) ? this.animation : 500,
-              durations = 500;
-          this.widget.on('draw', (chartData) => {
+      /**
+       * Sets animations and colors during the bar chart draw
+       *
+       * @method barDraw
+       * @fires setGridColor
+       * @fires setColor
+       */
+      barDraw(){
+        this.widget.on('draw', (chartData) => {
+          // Set grid color
+          this.setGridColor(chartData);
+
+          // Color customize
+          this.setColor(chartData);
+
+          // Label color customize
+          if ( (chartData.type === 'label') ){
+            let color = false;
+            if ( this.labelColor ){
+              color = this.labelColor;
+            }
+            if ( this.labelColorX && (chartData.axis.units.pos === 'x') ){
+              color = this.labelColorX;
+            }
+            else if ( this.labelColorY && (chartData.axis.units.pos === 'y') ){
+              color = this.labelColorY;
+            }
+            if ( color ){
+              $(chartData.element._node.children[0]).css('color', color);
+            }
+          }
+
+          // Animation
+          if ( this.animation ){
+            let delays = $.isNumeric(this.animation) ? this.animation : 500,
+                durations = delays;
             if ( chartData.type === 'bar' ){
-              let color = this.color[this.legend ? this.getColorIdx(chartData) : chartData.seriesIndex],
+              let color = Array.isArray(this.colors) ? this.colors[this.legend ? this.getColorIdx(chartData) : chartData.seriesIndex] : false,
                   style = chartData.element.attr('style');
               if ( color ){
                 style = (style || '') + ' stroke: ' + color + ' !important;';
               }
               chartData.element.attr({
-                style: style + ' stroke-width: 0px'
+                style: (style || '') + ' stroke-width: 0px'
               });
               for ( let s = 0; s < chartData.series.length; ++s) {
                 if ( chartData.seriesIndex === s ){
@@ -699,7 +1124,7 @@
                       easing: Chartist.Svg.Easing.easeOutSine
                     },
                     'stroke-width': {
-                      begin: s * 500,
+                      begin: s * delays,
                       dur:   1,
                       from:  0,
                       to:    10,
@@ -767,17 +1192,62 @@
               };
               chartData.element.animate(animations);
             }
-          });
-        }
+          }
+        });
       },
-      pieAnimation(){
-        if ( this.animation ){
-          this.widget.on('draw', (chartData) => {
+      /**
+       * Sets animations, colors and labels during the pie chart draw
+       *
+       * @method pieDraw
+       * @fires setColor
+       */
+      pieDraw(){
+        let yOffset = this.labelExternal ? 15 : 7.5,
+            p = 1,
+            idDef = bbn.fn.randomString(),
+            defs = false;
+        this.widget.on('draw', (chartData) => {
+          let tmp = 1;
+          // Insert linebreak to labels
+          if ( chartData.type === 'label' ){
+            let lb = chartData.text.split("\n"),
+                text = '';
+            if ( lb.length ){
+              text = '<tspan>' + lb[0] + '</tspan>';
+              $.each(lb, (i, v) => {
+                if ( i > 0 ){
+                  text += '<tspan dy="' + yOffset + '" x="' + chartData.x + '">' + v + '</tspan>';
+                  chartData.y -= yOffset;
+                  chartData.element._node.attributes.dy.value -= (this.labelExternal ? yOffset-10 : yOffset);
+                }
+              });
+              chartData.element._node.innerHTML = text;
+            }
+            tmp = lb.length > p ? lb.length : tmp;
+          }
+          if ( this.labelExternal && ( tmp > p) ){
+            p = tmp;
+            //this.widget.update(this.widget.data, {chartPadding: (this.widget.options.chartPadding ? this.widget.options.chartPadding : 0) + (p*yOffset)}, true);
+          }
+
+          // Color customize
+          this.setColor(chartData);
+
+          // Label color customize
+          if ( this.labelColor && (chartData.type === 'label') ){
+            chartData.element.attr({
+              style: 'fill: ' + this.labelColor
+            });
+          }
+
+          // Animation
+          if ( this.animation ){
+            let dur = $.isNumeric(this.animation) ? this.animation : 500;
             if ( chartData.type === 'slice' ){
               let style = chartData.element.attr('style'),
                   color;
-              if ( this.color && Array.isArray(this.color) ){
-                color = this.color[this.legend ? this.getColorIdx(chartData) : chartData.index];
+              if ( this.colors && Array.isArray(this.colors) ){
+                color = this.colors[this.legend ? this.getColorIdx(chartData) : chartData.index];
                 if ( color ){
                   chartData.element.attr({
                     style: (style || '') + ' stroke: ' + color + ' !important;'
@@ -794,7 +1264,7 @@
               let animationDefinition = {
                 'stroke-dashoffset': {
                   id: 'anim' + chartData.index,
-                  dur: $.isNumeric(this.animation) ? this.animation : 500,
+                  dur: dur,
                   from: -pathLength + 'px',
                   to: '0px',
                   easing: Chartist.Svg.Easing.easeOutQuint,
@@ -814,14 +1284,40 @@
               // See http://gionkunz.github.io/chartist-js/api-documentation.html#chartistsvg-function-animate
               chartData.element.animate(animationDefinition, false);
             }
-          });
-        }
+            else if ( chartData.type === 'label' ){
+              chartData.element.animate({
+                opacity: {
+                  begin: chartData.index * dur + dur,
+                  dur: dur,
+                  from: 0,
+                  to: 1,
+                  easing: 'easeOutQuart'
+                }
+              });
+            }
+          }
+
+          if ( chartData.type === 'slice' ){
+            if ( !defs ){
+              defs = {
+                x: chartData.center.x,
+                y: chartData.center.y
+              };
+              $(chartData.group._node.parentNode).prepend('<defs><radialGradient id="' + idDef + '" r="122.5" gradientUnits="userSpaceOnUse" cx="' + defs.x + '" cy="' + defs.y + '"><stop offset="0.05" style="stop-color:#fff;stop-opacity:0.65;"></stop><stop offset="0.55" style="stop-color:#fff;stop-opacity: 0;"></stop><stop offset="0.85" style="stop-color:#fff;stop-opacity: 0.25;"></stop></radialGradient></defs>');
+            }
+            chartData.element._node.outerHTML += '<path d="' + chartData.element._node.attributes.d.nodeValue + '" stroke="none" fill="url(#' + idDef + ')"></path>';
+          }
+        });
       },
-      setColor(){
-        if ( typeof this.color === 'string' ){
-          this.color = [this.color];
-        }
-        this.widget.on('draw', (chartData, b) => {
+      /**
+       * Sets the colors to an element
+       *
+       * @method setColor
+       * @param {Object} chartData A Chartist.js SVG element
+       * @fires getColorIdx
+       */
+      setColor(chartData){
+        if ( this.colors ){
           let style = chartData.element.attr('style'),
               color;
           if ( (chartData.type === 'line') ||
@@ -829,7 +1325,7 @@
             ((chartData.type === 'bar') && !this.animation) ||
             ( chartData.type === 'area' )
           ){
-            color = this.color[this.legend ? this.getColorIdx(chartData) : chartData.seriesIndex];
+            color = this.colors[this.legend ? this.getColorIdx(chartData) : chartData.seriesIndex];
             if ( color ){
               chartData.element.attr({
                 style: (style || '') + (chartData.type === 'area' ? ' fill: ' : ' stroke: ') + color + (chartData.type === 'area' ? '; fill-opacity: 0.1; stroke: none' : '')
@@ -837,47 +1333,37 @@
             }
           }
           if ( chartData.type === 'slice' ){
-            color = this.color[this.legend ? this.getColorIdx(chartData) : chartData.index];
+            color = this.colors[this.legend ? this.getColorIdx(chartData) : chartData.index];
             if ( color && (this.isLine || this.isBar || (this.isPie && !this.animation)) ){
               chartData.element.attr({
                 style: (style || '') + ' fill: ' + color
               });
             }
           }
-        });
+        }
       },
-      setLabelColor(){
-        this.widget.on('draw', (chartData) => {
-          let color = '';
-          if ( (chartData.type === 'label') ){
-            if ( this.labelColor ){
-              color = this.labelColor;
-            }
-            if ( !this.isPie ){
-              if ( this.labelColorX && (chartData.axis.units.pos === 'x') ){
-                color = this.labelColorX;
-              }
-              else if ( this.labelColorY && (chartData.axis.units.pos === 'y') ){
-                color = this.labelColorY;
-              }
-              $(chartData.element._node.children[0]).css('color', color);
-            }
-            else {
-              chartData.element.attr({
-                style: 'fill: ' + color
-              });
-            }
-          }
-        });
+      /**
+       * Sets the grid color to an element
+       *
+       * @method setGridColor
+       * @param {Object} chartData A Chartist.js SVG element
+       */
+      setGridColor(chartData){
+        if ( this.gridColor && (chartData.type === 'grid') ){
+          chartData.element.attr({
+            style: 'stroke: ' + this.gridColor + '; stroke-opacity: 0.2;'
+          });
+        }
       },
-      setGridColor(){
-        this.widget.on('draw', (chartData) => {
-          if ( chartData.type === 'grid' ){
-            chartData.element.attr({
-              style: 'stroke: ' + (this.gridColor || $(chartData.element._node).css('color')) + '; stroke-opacity: 0.2;'
-            });
-          }
-        });
+      /**
+       * Returns the SVG element index color
+       *
+       * @method getColorIdx
+       * @param {Object} color SVG element
+       * @return {Number}
+       */
+      getColorIdx(color){
+        return color.element._node.parentElement.className.baseVal.replace('ct-series ', '').slice(-1).charCodeAt()-97;
       },
       /*trasformData(){
         $.each(this.source.series, (i, v) => {
@@ -900,51 +1386,11 @@
         });
         return length;
       },*/
-      widgetDraw(){
-        let yOffset = this.labelExternal ? 15 : 7.5,
-            p = 1,
-            idDef = bbn.fn.randomString(),
-            defs = false;
-        this.widget.on('draw', (chartData) => {
-          let tmp = 1;
-          // Insert linebreak to labels
-          if ( this.isLine ){
-            
-          }
-          if ( this.isPie ){
-            if ( chartData.type === 'label' ){
-              let lb = chartData.text.split("\n"),
-                  text = '';
-              if ( lb.length ){
-                text = '<tspan>' + lb[0] + '</tspan>';
-                $.each(lb, (i, v) => {
-                  if ( i > 0 ){
-                    text += '<tspan dy="' + yOffset + '" x="' + chartData.x + '">' + v + '</tspan>';
-                    chartData.y -= yOffset;
-                    chartData.element._node.attributes.dy.value -= (this.labelExternal ? yOffset-10 : yOffset);
-                  }
-                });
-              }
-              chartData.element._node.innerHTML = text;
-              tmp = lb.length > p ? lb.length : tmp;
-            }
-            if ( this.labelExternal && ( tmp > p) ){
-              p = tmp;
-              //this.widget.update(this.widget.data, {chartPadding: (this.widget.options.chartPadding ? this.widget.options.chartPadding : 0) + (p*yOffset)}, true);
-            }
-            if ( chartData.type === 'slice' ){
-              if ( !defs ){
-                defs = {
-                  x: chartData.center.x,
-                  y: chartData.center.y
-                };
-                $(chartData.group._node.parentNode).prepend('<defs><radialGradient id="' + idDef + '" r="122.5" gradientUnits="userSpaceOnUse" cx="' + defs.x + '" cy="' + defs.y + '"><stop offset="0.05" style="stop-color:#fff;stop-opacity:0.65;"></stop><stop offset="0.55" style="stop-color:#fff;stop-opacity: 0;"></stop><stop offset="0.85" style="stop-color:#fff;stop-opacity: 0.25;"></stop></radialGradient></defs>');
-              }
-              chartData.element._node.outerHTML += '<path d="' + chartData.element._node.attributes.d.nodeValue + '" stroke="none" fill="url(#' + idDef + ')"></path>';
-            }
-          }
-        });
-      },
+      /**
+       * Operations to be performed after the widget creation
+       *
+       * @method widgetCreated
+       */
       widgetCreated(){
         this.widget.on('created', (chartData) => {
           // Set the right colors to legend
@@ -1002,10 +1448,20 @@
       }
     },
     watch: {
+      /**
+       * @watch source
+       * @fires init
+       */
       source(val){
-        this.init();
+        this.$nextTick(() => {
+          this.init();
+        });
       },
     },
+    /**
+     * @event mounted
+     * @fires init
+     */
     mounted(){
       this.$nextTick(() => {
         this.init();

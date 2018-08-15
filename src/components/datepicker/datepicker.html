@@ -2,6 +2,7 @@
   <input :value="ivalue"
          ref="element"
          :disabled="disabled"
+         :readonly="readonly"
          :required="required"
          :placeholder="placeholder"
          @click="click($event)"
@@ -11,7 +12,7 @@
          @keydown="keydown($event)"
          @keyup="keyup($event)"
          @mouseenter="over($event)"
-         @mouseleave="out($event)"
+         @mouseleave="out($event)"z
   >
   <input :value="value"
          ref="idatepicker"

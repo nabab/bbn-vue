@@ -3,6 +3,7 @@
          :disabled="disabled"
          :required="required"
          @keyup="emitInput(widget.raw())"
+         @blur="blur"
   >
   <input :value="value"
          ref="real_masked"

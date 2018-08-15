@@ -63,10 +63,10 @@
       vm.widget = $ele.kendoMenu(cfg).data("kendoMenu");
     },
     watch:{
-      source: function(newDataSource){
-        bbn.fn.log("Changed DS", this.dataSource);
-        this.widget.setDataSource(this.dataSource);
-      }
+      /*source: function(newDataSource){
+        //bbn.fn.log("Changed DS", this.dataSource);
+        this.widget.setDataSource(newDataSource);
+      }*/
     }
   });
 

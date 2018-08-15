@@ -4,7 +4,7 @@
 (function($, bbn){
   "use strict";
 
-  const NODE_PROPERTIES = ["selected", "selectedClass", "activeClass", "expanded", "tooltip", "icon", "selectable", "text", "data", "cls", "component", "num", "source", "level", "items"];
+  const NODE_PROPERTIES = ["selected", "selectedClass", "activeClass", "exp anded", "tooltip", "icon", "selectable", "text", "data", "cls", "component", "num", "source", "level", "items"];
 
   Vue.component('bbn-tree', {
     mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent],
@@ -98,6 +98,12 @@
       transferData: {
         type: Function
       },
+      expanded: {
+        type: Array,
+        default(){
+          return [];
+        }
+      },
       path: {
         type: Array,
         default(){
@@ -151,7 +157,8 @@
         // Real dragging will start after the mouse's first move, useful to kow if we are in a select or drag context
         realDragging: false,
         checked: [],
-        disabled: []
+        disabled: [],
+        currentExpanded: []
       };
     },
 

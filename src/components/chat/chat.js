@@ -32,6 +32,10 @@
         type: Boolean,
         default: true
       },
+      visible: {
+        type: Boolean,
+        default: false
+      },
       windows: {
         type: Array,
         default(){
@@ -40,10 +44,19 @@
       }
     },
     data(){
+      let data = [];
+      bbn.fn.each(this.windows, (w, i) => {
+        data.push($.extend({}, w, {visible: false}));
+      });
       return {
-        usersVisible: true,
+        currentOnline: this.online,
+        currentVisible: this.visible,
+        usersVisible: this.visible,
         currentFilter: '',
-        currentWindows: this.windows.slice()
+        currentWindows: data,
+        lastMsg: null,
+        onlineUsersHash: null,
+        unread: 0
       }
     },
     computed: {
@@ -54,6 +67,15 @@
           return bbn.fn.isObject(a) ? a : {value: a}
         })
       },
+      visibleWindows(){
+        let res = [];
+        this.currentWindows.map((val, idx) => {
+          if ( val.visible ){
+            res.push($.extend(val, {idx: idx}));
+          }
+        });
+        return res;
+      }
     },
     methods: {
       get_field: bbn.fn.get_field,
@@ -63,7 +85,6 @@
       },
 
       chatTo(users){
-        bbn.fn.log(users);
         if ( !Array.isArray(users) ){
           users = [users];
         }
@@ -90,6 +111,7 @@
           if ( found !== 0 ){
             bbn.fn.move(this.currentWindows, found, 0);
           }
+          this.$set(this.currentWindows[0], 'visible', true);
         }
         else{
           this.currentWindows.unshift({
@@ -97,6 +119,7 @@
             participants: users,
             messages: [],
             currentMessage: '',
+            visible: true
           })
         }
       },
@@ -109,9 +132,71 @@
         bbn.fn.log("openChat");
       },
 
+      getStyle(idx){
+        let r = {},
+            pos = this.usersVisible ? 300 : 0,
+            i = 0;
+        while ( i <= idx ){
+          if ( this.currentWindows.visible ){
+            pos += 300;
+          }
+          i++;
+        }
+        return {right: pos + 'px'}
+      },
+
+      receive(data){
+        if ( data.hash ){
+          if ( this.onlineUsersHash !== data.hash ){
+            this.onlineUsersHash = data.hash;
+            this.onlineUsers.splice(0, this.onlineUsers.length);
+            if ( data.users ){
+              data.users.forEach((a) => {
+                this.onlineUsers.push(a);
+              })
+            }
+          }
+        }
+        if ( data.chats ){
+          let isStarting = !this.lastMsg;
+          this.lastMsg = data.last;
+          bbn.fn.iterate(data.chats, (chat_info, id_chat) => {
+            let idx = bbn.fn.search(this.currentWindows, {id: id_chat});
+            if ( idx === -1 ){
+              this.currentWindows.push({
+                id: id_chat,
+                participants: chat_info.participants,
+                messages: chat_info.messages,
+                visible: true
+              });
+            }
+            else{
+              if ( !this.currentWindows[idx].visible ){
+                this.$set(this.currentWindows[idx], 'visible', true)
+              }
+              for ( let msg of chat_info.messages ){
+                this.currentWindows[idx].messages.push(msg)
+              }
+            }
+            if ( !isStarting && !this.currentVisible ){
+              this.unread++;
+            }
+          });
+        }
+      }
     },
     mounted(){
       this.ready = true;
+    },
+    watch: {
+      online(newVal){
+        this.currentOnline = newVal;
+      },
+      currentVisible(newVal){
+        if ( newVal ){
+          this.unread = 0;
+        }
+      }
     },
     components: {
       container: {
@@ -150,11 +235,21 @@
         },
         data(){
           return {
-            currentMessage: ''
+            currentMessage: '',
+            siteURL: bbn.env.host
           }
         },
         methods: {
           get_field: bbn.fn.get_field,
+
+          close(idx){
+            if ( this.$parent.visibleWindows.length > 1 ){
+              this.$parent.currentWindows[idx].visible = false;
+            }
+            else{
+              this.$parent.currentVisible = false;
+            }
+          },
 
           scrollChat(){
             bbn.fn.log("SCROLL");
@@ -172,19 +267,43 @@
             this.$emit('send', obj, this.idx);
             this.currentMessage = '';
           },
-        },
-        watch: {
-          messages(){
-            let sc = this.getRef('messages').getRef('scroll');
-            if ( sc ){
-              this.$nextTick(() => {
-                sc.selfEmit(true);
-                setTimeout(() => {
-                  sc.scrollEndY();
-                }, 250)
+
+          goto(url){
+            bbn.fn.link(url)
+          },
+
+          scrollEnd(){
+            this.$nextTick(() => {
+              let msg =this.getRef('messages'),
+                  sc = msg ? msg.getRef('scroll') : null;
+              if ( sc ){
+                sc.scrollEndY();
+              }
+            })
+          },
+
+          renderMsg(msg){
+            msg = bbn.fn.html2text(msg);
+            let matches = msg.match(/(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9]\.[^\s]{2,})/g);
+            if ( matches ){
+              bbn.fn.each(matches, (v) => {
+                if ( v.indexOf(bbn.env.host) === 0 ){
+                  msg = msg.replace(v, '<a href="javascript:;" onclick="bbn.fn.link(\'' + v.substr(bbn.env.host.length + 1) + '\')">' + v.substr(bbn.env.host.length + 1) + '</a>');
+                }
+                else{
+                  msg = msg.replace(v, '<a href="' + v + '" target="_blank">' + v + '</a>');
+                }
               })
             }
+            return msg;
           }
+        },
+        mounted(){
+          this.scrollEnd();
+        },
+
+        updated(){
+          this.scrollEnd();
         }
       }
     }

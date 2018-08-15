@@ -1,8 +1,46 @@
-<div :class="componentClass">
-  <div v-if="usersVisible"
+<div :class="[componentClass, 'bbn-iblock']" v-if="usersOnlineWithoutMe.length">
+  <div class="bbn-block bbn-p"
+       v-if="visibleWindows.length"
+       @click="currentVisible = !currentVisible; if ( currentVisible && !currentOnline ){ currentOnline = true; } if ( currentVisible && !currentOnline ){ currentOnline = true; }">
+    <i :class="{
+             'bbn-lg': true,
+             'fab': true,
+             'fa-stack-exchange': true,
+             'bbn-green': currentOnline,
+             'bbn-red': !currentOnline
+           }">
+    </i>
+    <span class="bbn-xs w3-badge w3-red"
+          v-if="unread && currentOnline"
+          v-text="unread"></span>
+  </div>
+  <div v-if="!usersVisible && currentOnline"
+       class="bbn-block bbn-p"
+       @click="usersVisible = true; currentVisible = true">
+    <i :class="{
+             'bbn-lg': true,
+             'fas': true,
+             'fa-users': true,
+           }">
+    </i>
+    <span class="bbn-xs w3-badge w3-blue"
+          v-text="usersOnlineWithoutMe.length"></span>
+  </div>
+  <div v-if="currentWindows.length && currentOnline"
+       class="bbn-block bbn-p"
+       @click="currentOnline = false">
+    <i :class="{
+             'bbn-p': true,
+             'bbn-lg': true,
+             'fas': true,
+             'fa-ban': true,
+           }">
+    </i>
+  </div>
+  <div v-if="usersVisible && currentOnline"
        class="bbn-chat-users k-widget">
     <bbn-list :source="usersOnlineWithoutMe"
-              class="bbn-full-screen">
+              class="bbn-full-screen bbn-vsmargin">
       <div class="bbn-w-100 bbn-p"
            style="overflow: auto"
            slot="item"
@@ -10,6 +48,8 @@
            @click="chatTo([item.value])">
         <bbn-initial :user-id="item.value"
                      :user-name="get_field(users, 'value', item.value, 'text')"
+                     :width="16"
+                     :height="16"
                      style="padding-right: 3px"
         ></bbn-initial>
         <span class="bbn-large"
@@ -21,12 +61,13 @@
        @click="usersVisible = false"
        style="position: absolute; right: 2px; top: 2px"></i>
   </div>
-  <container v-for="(chat, i) in currentWindows"
+  <container v-for="(chat, i) in visibleWindows"
+             v-if="chat.visible && currentVisible"
              inline-template
-             :key="i"
-             :idx="i"
+             :key="chat.idx"
+             :idx="chat.idx"
              :style="{
-               right: (300 * (i + 1)) + 'px',
+               right: (300 * (i + (usersVisible ? 1 : 0))) + 'px'
              }"
              :participants="chat.participants"
              :messages="chat.messages"
@@ -34,43 +75,44 @@
              :user-id="userId"
              :users="users"
              @send="relay"
-             v-show="isInScreen(i)"
   >
     <div class="bbn-chat-users k-widget bbn-flex-height">
       <div class="k-header bbn-spadded">
-      <span v-for="participant in participants"
-            v-if="participant !== userId"
-            class="bbn-user-title"
-            v-text="get_field(users, 'value', participant, 'text')">
-      </span>
-        <i class="bbn-p fa fa-times"
-           @click="$parent.currentWindows.splice(idx, 1)"
-           style="position: absolute; right: 2px; top: 2px"></i>
+        <span v-for="participant in participants"
+              v-if="participant !== userId"
+              class="bbn-user-title"
+              v-text="get_field(users, 'value', participant, 'text')">
+        </span>
+          <i class="bbn-p fa fa-times"
+             @click="close(idx)"
+             style="position: absolute; right: 2px; top: 2px"></i>
       </div>
       <bbn-list :source="messages"
                 ref="messages"
-                class="bbn-flex-fill"
+                class="bbn-flex-fill bbn-vsmargin"
                 @scroll="scrollChat"
                 :styled="false">
-        <div class="bbn-w-100"
+        <div class="bbn-flex-width"
              style="overflow: auto"
              slot="item"
              slot-scope="msg">
-          <bbn-initial :user-id="msg.user"
-                       :user-name="get_field(users, 'value', msg.user, 'text')"
-                       :width="16"
-                       :height="16"
-                       style="vertical-align: middle; padding-right: 3px">
-          </bbn-initial>
-          <span v-text="msg.message"></span>
+          <div class="bbn-block" style="min-width: 20px">
+            <bbn-initial :user-id="msg.user"
+                         :user-name="get_field(users, 'value', msg.user, 'text')"
+                         :width="16"
+                         :height="16"
+                         style="vertical-align: middle">
+            </bbn-initial>
+          </div>
+          <div class="bbn-flex-fill message" v-html="renderMsg(msg.message)"></div>
         </div>
       </bbn-list>
-      <div class="bbn-flex-width">
+      <div class="bbn-flex-width" style="min-height: 2em">
         <bbn-input class="bbn-flex-fill"
                    @keydown.enter.prevent="sendMessage"
                    v-model="currentMessage"
         ></bbn-input>
-        <bbn-button icon="fa fa-send"
+        <bbn-button icon="far fa-paper-plane"
                     @click="sendMessage"></bbn-button>
       </div>
     </div>

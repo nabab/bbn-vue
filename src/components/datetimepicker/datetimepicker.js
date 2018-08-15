@@ -7,11 +7,11 @@
   let ui = kendo.ui,
       MaskedDateTimePicker = ui.Widget.extend({
         init: function (element, options) {
-          const that = this;
+          let that = this;
           ui.Widget.fn.init.call(this, element, options);
           $(element)
             .kendoMaskedTextBox({
-              mask: that.options.mask
+              mask: options.mask
             })
             .kendoDateTimePicker({
               format: options.format,
@@ -20,12 +20,14 @@
               min: options.min || undefined,
               depth: options.depth || undefined,
               start: options.depth || undefined,
-              value: this.value,
+              value: options.value || undefined,
+              footer: options.footer !== undefined ? options.footer : undefined
             })
             .closest(".k-datetimepicker")
             .add(element)
             .removeClass("k-textbox");
-          that.element.data("kendoDateTimePicker").bind("change", function() {
+
+          that.element.data("kendoDateTimePicker").bind("change", function(){
             that.trigger('change');
           });
         },
@@ -36,14 +38,14 @@
         events: [
           'change'
         ],
-        destroy: function () {
+        destroy: function(){
           const that = this;
           ui.Widget.fn.destroy.call(that);
           kendo.destroy(that.element);
         },
         value: function(value) {
           const datetimepicker = this.element.data("kendoDateTimePicker");
-          if (value === undefined) {
+          if ( value === undefined ){
             return datetimepicker.value();
           }
           datetimepicker.value(value);
@@ -64,7 +66,7 @@
       valueFormat: {
         type: [String, Function],
         default(){
-          return 'yyyy-MM-dd';
+          return 'yyyy-MM-dd HH:mm:ss';
         }
       },
       parseFormats: {
@@ -95,6 +97,17 @@
       disableDates: {
         type: [Array, Function]
       },
+      footer:{
+        type: [Boolean, Function, String]
+      },
+      type: {
+        type: String,
+        default: ''
+      },
+      inputReadonly: {
+        type: Boolean,
+        default: false
+      }
     },
     computed: {
       ivalue(){
@@ -102,6 +115,12 @@
           kendo.parseDate(this.value, $.isFunction(this.valueFormat) ? this.valueFormat(this.value) : this.valueFormat),
           this.format
         );
+      },
+      fixedValue(){
+        if ( this.value ){
+          return kendo.parseDate(this.value, $.isFunction(this.valueFormat) ? this.valueFormat(this.value) : this.valueFormat);
+        }
+        return false;
       }
     },
     data(){
@@ -119,7 +138,8 @@
         max: this.max ? ( (typeof this.max === 'string') ? bbn.fn.date(this.max) : this.max) : undefined,
         depth: this.depth || undefined,
         start: this.depth || undefined,
-        value: this.value,
+        value: this.fixedValue || undefined,
+        footer: this.footer !== undefined ? this.footer : undefined,
           change: () => {
             vm.emitInput(kendo.toString(
               vm.widget.value(),
@@ -129,6 +149,9 @@
           }
         }))
         .data("kendoDateTimePicker");
+      if ( !this.readonly && this.inputReadonly ){
+        $(this.$refs.element).attr("readonly", true);
+      }
       this.ready = true;
     },
     watch: {
@@ -167,6 +190,25 @@
         this.widget.setOptions({
           parseFormats: newVal
         });
+      },
+      readonly(newVal){
+        this.widget.readonly(!!newVal);
+        if ( !newVal && this.inputReadonly ){
+          this.$nextTick(() => {
+            $(this.$refs.element).attr("readonly", true);
+          });
+        }
+      },
+      inputReadonly(newVal){
+        if ( !this.readonly ){
+          if ( newVal ){
+            $(this.$refs.element).attr("readonly", true);
+          }
+          else {
+            $(this.$refs.element).removeAttr("readonly");
+          }
+        }
+      }
     }
   });
 

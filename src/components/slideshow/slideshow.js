@@ -18,7 +18,12 @@
       checkbox: {
         type: [String, Boolean],
         default: false
-      },//for image
+      },
+      summary: {
+        type: Boolean,
+        default: false
+      },
+      //for image
       gallery: {
         type: Boolean,
         default: false
@@ -161,12 +166,12 @@
       aspectRatio(idx){
         this.$nextTick(()=>{
           let ctnRatio = this.lastKnownWidth/this.lastKnownHeight,
-              img =  this.getRef('slide-img' + idx.toString()),
+              img = this.getRef('slide-img' + idx.toString()),
               imgW = img.naturalWidth,
               imgH = img.naturalHeight,
               imgRatio = imgW/imgH,
               diff = Math.abs(ctnRatio - imgRatio),
-              mode   = this.items[idx].mode ? this.items[idx].mode : 'original';
+              mode = this.items[idx].mode ? this.items[idx].mode : 'original';
 
           if( imgRatio > ctnRatio ){
             if( mode === 'zoom' ){
@@ -181,20 +186,20 @@
               this.items[idx].showImg =  true;
             }
           }
-          if( imgRatio < ctnRatio ){
-            if( mode === 'zoom' ){
+          if ( imgRatio < ctnRatio ){
+            if ( mode === 'zoom' ){
 
               this.items[idx].imageWidth = "100%";
               this.items[idx].imageHeight = "auto";
               this.items[idx].showImg =  true;
             }
-            if( mode === 'full' ){
+            if ( mode === 'full' ){
               this.items[idx].imageWidth = "auto";
               this.items[idx].imageHeight = "100%";
               this.items[idx].showImg =  true;
             }
           }
-          if( mode === 'stretch' ){
+          if ( mode === 'stretch' ){
             this.items[idx].imageWidth = this.lastKnownWidth + 'px';
             this.items[idx].imageHeight = this.lastKnownHeight + 'px';
             this.items[idx].showImg =  true;
@@ -237,6 +242,9 @@
       },
       next(){
         let idx = this.currentIndex;
+        if ( this.summary ){
+          idx--;
+        }
         if ( idx < (this.items.length -1) ){
 
           if ( !this.items[idx+1].animation ){
@@ -305,19 +313,32 @@
         this.$refs.scrollContainer.style.position = 'absolute';
       }, 0)
       */
-      this.createStyle();
-      if( this.autoPlay ){
-        this.startAutoPlay();
-      }
-      if ( bbn.fn.isObject(this.arrows) ){
-        if ( this.arrows.left && this.arrows.left.length ){
-          this.arrowClass.left = this.arrows.left
+      if ( !this.isAjax && !this.items.length && this.getRef('slot').innerHTML.trim() ){
+        if ( this.separator ){
+          this.items = this.getRef('slot').innerHTML.split(this.separator).map((txt, i) => {
+            let title = $('<div/>').html(txt).find("h1,h2,h3,h4,h5").eq(0).text();
+            return {content: txt, type: 'text', title: title};
+          });
         }
-        if( this.arrows.right && this.arrows.right.length ){
-          this.arrowClass.right = this.arrows.right
+        else{
+          this.items = [{content: this.getRef('slot').innerHTML, type: 'text'}]
         }
       }
-      this.ready = true;
+      this.$nextTick(() => {
+        this.createStyle();
+        if( this.autoPlay ){
+          this.startAutoPlay();
+        }
+        if ( bbn.fn.isObject(this.arrows) ){
+          if ( this.arrows.left && this.arrows.left.length ){
+            this.arrowClass.left = this.arrows.left
+          }
+          if( this.arrows.right && this.arrows.right.length ){
+            this.arrowClass.right = this.arrows.right
+          }
+        }
+        this.ready = true;
+      })
     },
     watch: {
       show(newVal, oldVal){
@@ -330,11 +351,15 @@
         handler(newVal){
           this.$emit(newVal[this.currentIndex] ? 'check' : 'uncheck', this.items[this.currentIndex]);
         }
+      },
+      currentIndex(val){
+        this.$emit('changeSlide', val);
+
       }
     },
     components: {
-      'bbn-gallery-miniature': {
-        name: 'bbn-gallery-miniature',
+      'bbns-gallery-miniature': {
+        name: 'bbns-gallery-miniature',
         template: `<div class="bbn-w-100 bbn-c bbn-middle"
                         :style="{
                           position: 'absolute',

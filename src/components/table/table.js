@@ -209,7 +209,7 @@
           order = this.order;
       if ( this.sortable && this.order && (typeof this.order === 'object') && !Array.isArray(this.order) ){
         order = [];
-        for ( var n in this.order ){
+        for ( let n in this.order ){
           order.push({field: n, dir: this.order[n]});
         }
       }
@@ -467,6 +467,9 @@
         let currentGroupIndex = -1,
             isExpanded = false;
         while ( data[i] && (i < end) ){
+          /** @todo Local filtering */
+          if ( this.currentFilters && this.currentFilters.conditions && this.currentFilters.conditions.length && !this.serverFiltering ){
+          }
           let a = data[i].data;
           if ( isGroup && (currentGroupValue !== a[this.cols[this.group].field]) ){
             isExpanded = false;

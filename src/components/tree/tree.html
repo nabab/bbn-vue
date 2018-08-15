@@ -14,9 +14,9 @@
     >
       <ul v-show="items.length && (isRoot || $parent.isExpanded)"
           :class="{
-          'bbn-tree-child': !!level,
-          root: isRoot
-        }"
+            'bbn-tree-child': !!level,
+            root: isRoot
+          }"
       >
         <bbn-tree-node inline-template
                        v-for="(it, i) in items"
@@ -38,7 +38,7 @@
                        'bbn-tree-node': true,
                        'bbn-unselectable': true,
                        selected: isSelected,
-                       active: isActive
+                       active: isActive,
                       }"
               v-show="isMatch || numMatches"
           >

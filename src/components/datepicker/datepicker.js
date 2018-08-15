@@ -20,7 +20,8 @@
               min: options.min || undefined,
               depth: options.depth || undefined,
               start: options.depth || undefined,
-              value: options.value || undefined
+              value: options.value || undefined,
+              footer: options.footer !== undefined ? options.footer : undefined
             })
             .closest(".k-datepicker")
             .add(element)
@@ -92,7 +93,18 @@
       },
       disableDates: {
         type: [Array, Function]
-      }
+      },
+      footer: {
+        type: [Boolean, Function, String]
+      },
+      inputReadonly: {
+        type: Boolean,
+        default: false
+      },
+      type: {
+        type: String,
+        default: ''
+      },
     },
     computed: {
       ivalue(){
@@ -100,6 +112,12 @@
           kendo.parseDate(this.value, $.isFunction(this.valueFormat) ? this.valueFormat(this.value) : this.valueFormat),
           this.format
         );
+      },
+      fixedValue(){
+        if ( this.value ){
+          return kendo.parseDate(this.value, $.isFunction(this.valueFormat) ? this.valueFormat(this.value) : this.valueFormat);
+        }
+        return false;
       }
     },
     data(){
@@ -117,7 +135,8 @@
         max: this.max ? ( (typeof this.max === 'string') ? bbn.fn.date(this.max) : this.max) : undefined,
         depth: this.depth || undefined,
         start: this.depth || undefined,
-        value: this.value || undefined,
+        footer: this.footer === undefined ? this.footer : undefined,
+        value: this.fixedValue || undefined,
         change: function(e){
           vm.emitInput(kendo.toString(
             vm.widget.value(),
@@ -126,6 +145,9 @@
           return true;
         }
       })).data("kendoDatePicker");
+      if ( !this.readonly && this.inputReadonly ){
+        $(this.$refs.element).attr("readonly", true);
+      }
       this.ready = true;
     },
     watch: {
@@ -164,6 +186,24 @@
         this.widget.setOptions({
           parseFormats: newVal
         });
+      },
+      readonly(newVal){
+        this.widget.readonly(!!newVal);
+        if ( !newVal && this.inputReadonly ){
+          this.$nextTick(() => {
+            $(this.$refs.element).attr("readonly", true);
+          });
+        }
+      },
+      inputReadonly(newVal){
+        if ( !this.readonly ){
+          if ( newVal ){
+            $(this.$refs.element).attr("readonly", true);
+          }
+          else {
+            $(this.$refs.element).removeAttr("readonly");
+          }
+        }
       }
     }
   });

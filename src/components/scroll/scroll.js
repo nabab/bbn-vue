@@ -68,7 +68,6 @@
     },
     methods: {
       scrollTo(x, y, animate){
-        bbn.fn.log("SCROLLTO", x, y, typeof(x), typeof(y), this.$refs.yScroller);
         if ( !y && (typeof x === HTMLElement) ){
           y = x;
         }

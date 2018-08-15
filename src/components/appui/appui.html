@@ -97,34 +97,20 @@
         <bbn-loading ref="loading"></bbn-loading>
       </div>
       <div class="bbn-h-100 bbn-vmiddle" style="float: right; width: 8rem;">
-        <i :class="{
-             'bbn-p': true,
-             'bbn-lg': true,
-             'fab': true,
-             'fa-stack-exchange': true,
-             'bbn-green': chatOnline,
-             'bbn-red': !chatOnline
-           }"
-           @click="chatVisible = !chatVisible; if ( chatVisible && !chatOnline ){ chatOnline = true; }">
-        </i>
-        <i v-if="chatVisible && !getRef('chat').usersVisible"
-           :class="{
-             'bbn-p': true,
-             'bbn-lg': true,
-             'fas': true,
-             'fa-users': true,
-           }"
-           @click="getRef('chat').usersVisible = true">
-        </i>
-        <i v-if="chatVisible && chatOnline"
-           :class="{
-             'bbn-p': true,
-             'bbn-lg': true,
-             'fas': true,
-             'fa-ban': true,
-           }"
-           @click="chatOnline = false; chatVisible = false">
-        </i>
+        <bbn-chat ref="chat"
+                  :user-id="app.user.id"
+                  :users="app.users"
+                  :online-users="usersOnline"
+                  :online="chatOnline"
+                  @send="sendChatMessage"
+                  :groups="app.groups">
+        </bbn-chat>
+      </div>
+      <div v-if="Object.keys(plugins).indexOf('appui-task') > -1"
+           class="bbn-h-100 bbn-vmiddle"
+           style="float: right; width: 8rem;"
+      >
+        <appui-task-tracker></appui-task-tracker>
       </div>
     </bbn-pane>
   </bbn-splitter>
@@ -150,15 +136,5 @@
              :source="li.items"
              :unique="li.unique ? true : false">
   </bbn-vlist>
-  <bbn-chat v-if="chatVisible"
-            ref="chat"
-            :width="lastKnownWidth"
-            :user-id="app.userId"
-            :users="app.users"
-            :online-users="usersOnline"
-            :online="chatOnline"
-            @send="sendChatMessage"
-            :groups="app.groups">
-  </bbn-chat>
   <component ref="app" :is="appComponent"></component>
 </div>

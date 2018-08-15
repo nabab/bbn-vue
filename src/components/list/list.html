@@ -14,6 +14,7 @@
       <ul class="bbn-list-node"
           v-show="items && items.length"
           :class="{
+            'bbn-w-100': true,
             'bbn-list-child': !!level,
              root: isRoot,
           }"
@@ -24,8 +25,9 @@
             @click.stop="toggleExpanded(i)"
             :class="{
               'bbn-list-node': true,
+              'bbn-w-100': true,
               'bbn-unselectable': true,
-              selected: selected === i,
+              'selected': selected === i,
               'k-widget': styled && isRoot,
               'bbn-content': true
             }"
@@ -40,43 +42,45 @@
                @mouseover.stop="activate(i, item, $event.target)"
                @mouseout.stop="active = null"
           >
-            <span :class="'bbn-w-100 node' + (component ? '' : ' no-component') + (item.cls ? ' ' + item.cls : '')">
-              <span class="expander">
-                <!-- If there are no children we leave the white space -->
-                <span v-if="!item.items || (level < minExpandLevel) || !hierarchy.arrowIcons"> </span>
-                <i v-else-if="(item.items || item.num) && isExpanded(i) && hierarchy.arrowIcons"
-                   class="fas fa-caret-down"
-                   @click.stop="removeExpanded(i)"
-                ></i>
-                <i v-else-if="(item.items || item.num) && !isExpanded(i) && hierarchy.arrowIcons"
-                   class="fa fa-caret-right"
-                   @click="addExpanded(i)"
-                ></i>
-              </span>
-              <span @click.stop="item.items ? toggleExpanded(i) : select(item, i)">
-                <component v-if="component"
-                           :is="component"
-                           :source="item"
-                ></component>
-                <slot v-else
-                      name="item"
-                      v-bind="item"
-                >
-                  <div :class="{
-                         'bbn-iblock': true,
-                         'bbn-padded': isRoot,
-                         'bbn-spadded': !isRoot,
-                         'bbn-large': isRoot
-                       }"
+            <div :class="'bbn-w-100 node' + (component ? '' : ' no-component') + (item.cls ? ' ' + item.cls : '')">
+              <div class="bbn-flex-width">
+                <div class="expander bbn-block" v-if="item.items">
+                  <!-- If there are no children we leave the white space -->
+                  <span v-if="!item.items || (level < minExpandLevel) || !hierarchy.arrowIcons"> </span>
+                  <i v-else-if="(item.items || item.num) && isExpanded(i) && hierarchy.arrowIcons"
+                     class="fas fa-caret-down"
+                     @click.stop="removeExpanded(i)"
+                  ></i>
+                  <i v-else-if="(item.items || item.num) && !isExpanded(i) && hierarchy.arrowIcons"
+                     class="fa fa-caret-right"
+                     @click="addExpanded(i)"
+                  ></i>
+                </div>
+                <div class="bbn-flex-fill" @click.stop="item.items ? toggleExpanded(i) : select(item, i)">
+                  <component v-if="component"
+                             :is="component"
+                             :source="item"
+                  ></component>
+                  <slot v-else
+                        name="item"
+                        v-bind="item"
                   >
-                    <span v-text="item.text ? item.text : '?'"></span>
-                    <i :class="item.icon"
-                       style="margin-top: 1px"
-                    ></i>
-                  </div>
-                </slot>
-              </span>
-            </span>
+                    <div :class="{
+                           'bbn-iblock': true,
+                           'bbn-padded': isRoot,
+                           'bbn-spadded': !isRoot,
+                           'bbn-large': isRoot
+                         }"
+                    >
+                      <span v-text="item.text ? item.text : '?'"></span>
+                      <i :class="item.icon"
+                         style="margin-top: 1px"
+                      ></i>
+                    </div>
+                  </slot>
+                </div>
+              </div>
+            </div>
           </div>
           <bbn-list v-if="isExpanded(i) && item.items && item.items.length"
                     :node-idx="i"

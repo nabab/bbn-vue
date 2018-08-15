@@ -5,11 +5,11 @@
        v-if="cols.length && initReady"
   >
     <div v-if="toolbar"
-         class="k-header bbn-w-100"
+         class="k-header bbn-w-100 bbn-spadded"
          ref="toolbar"
          style="min-height: 30px"
     >
-      <div v-if="toolbarButtons.length" class="bbn-spadded">
+      <div v-if="toolbarButtons.length">
         <bbn-button v-for="(button, i) in toolbarButtons"
                     class="bbn-hsmargin"
                     :key="i"
@@ -308,7 +308,7 @@
                       <bbn-button v-for="(button, j) in (Array.isArray(col.buttons) ? col.buttons : col.buttons(d.data, col, i))"
                                   :key="j"
                                   v-bind="button"
-                                  @click.stop="_execCommand(button, d.data, col, i)"
+                                  @click.stop.prevent="_execCommand(button, d.data, col, i)"
                       ></bbn-button>
                     </div>
                     <bbn-field v-else-if="col.field && !col.render"

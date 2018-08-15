@@ -504,7 +504,7 @@
             !force
           ){
             ev.preventDefault();
-            this.getTab(this.selected).confirm(this.confirmLeave, () => {
+            this.confirm(this.confirmLeave, () => {
               $.each(this.unsavedTabs, (i, t) => {
                 let forms = bbn.vue.findAll(this.getVue(t.idx), 'bbn-form');
                 if ( Array.isArray(forms) && forms.length ){
@@ -642,14 +642,22 @@
               d.url = url;
             }
             d.url = vm.parseURL(d.url);
-
             d.loaded = true;
             if ( d.load !== false ){
               d.load = null;
             }
             /** @todo Why is it here? */
-            this.$emit('tabLoaded', d.data, d.url, vm.tabs[idx]);
             idx = vm.search(d.url);
+            let checkIdx = vm.search(url);
+            if ( (idx !== checkIdx) && (idx === false) && (checkIdx !== false) ){
+              idx = checkIdx;
+              this.tabs[idx].url = d.url;
+              this.navigate(d.url);
+              bbn.fn.error("NAVIGATING");
+              bbn.fn.log(d.url, url);
+              url = d.url;
+            }
+            this.$emit('tabLoaded', d.data, d.url, vm.tabs[idx]);
             d.menu = vm.tabs[idx] && vm.tabs[idx].menu ? vm.tabs[idx].menu : undefined;
             if ( d.data !== undefined ){
               d.source = $.extend({}, d.data);

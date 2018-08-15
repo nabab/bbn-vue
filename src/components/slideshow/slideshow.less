@@ -11,9 +11,13 @@
 
 .bbn-slideshow{
   .navigation {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
     position: absolute;
-    bottom: 3vw;
-    right: 3vw;
+    bottom: 0px;
+    right: 1vw;
     font-size: 4vw;
   }
   .showagain {
@@ -25,17 +29,20 @@
   a{
     color: inherit;
   }
+  .summary,
   .next,
   .prev {    
     color: #FFF;
     opacity: 0.6;
     -moz-opacity: 0.6;
   }
+  .summary:hover,
   .next:hover,
   .prev:hover{
     opacity: 1;
     -moz-opacity: 1;
   }
+  .summary::after,
   .next::after,
   .prev::after {
     cursor: pointer;
@@ -44,11 +51,15 @@
   .next::after {
     content: "\f0a9";
   }
+  .summary,
   .prev {
     margin-right: 0.3em;
   }
   .prev::after {
     content: "\f0a8";
+  }
+  .summary::after {
+    content: "\f039";
   }
   .slide {
     width: 100%;
@@ -68,6 +79,9 @@
     overflow: hidden;
     animation-fill-mode: both;
     animation-duration: 0.5s;
+    p{
+      text-align: justify;
+    }
   }
   .fade_in{
     -webkit-animation-name: fade_in;

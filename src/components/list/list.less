@@ -27,6 +27,7 @@ ul.bbn-list-helper{
       padding-left: 16px;
     }
   }
+  /*
   .bbn-list-toggle-enter-active, .bbn-list-toggle-leave-active{
     transition: max-height 0.3s;
     max-height: 500px;
@@ -34,13 +35,14 @@ ul.bbn-list-helper{
   .bbn-list-toggle-enter, .bbn-list-toggle-leave-to{
     max-height: 0;
   }
+  */
   .bbn-list-node{
     clear: both;
     margin: 0;
     box-sizing: content-box;
-    span.node{
-      display: inline-block;
-      white-space: nowrap;
+    div.node{
+      //display: inline-block;
+      //white-space: nowrap;
       height: auto;
       min-height: 18px;
       &.dropping{
@@ -48,17 +50,14 @@ ul.bbn-list-helper{
         color: white;
       }
       &.no-component{
-        span{
-          height: 100%;
-          cursor: pointer;
-          display: inline-block;
-        }
         .selectable{
           cursor: pointer;
           padding: 1px;
         }
         .expander{
           width: 18px;
+          height: 18px;
+          min-width: 18px;
           i{
             cursor: pointer;
           }
@@ -75,13 +74,13 @@ ul.bbn-list-helper{
         }
       }
     }
-    &.selected > span.node > span > span.selectable{
+    &.selected > div.node > div > span.selectable{
       border: 1px solid blue;
       padding: 0;
       background-color: blue;
       color: white;
     }
-    &.active > span.node > span > span.selectable{
+    &.active > div.node > div > span.selectable{
       border: 1px dotted #CCC !important;
       padding: 0;
       color: white;

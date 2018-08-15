@@ -123,17 +123,17 @@
     </div>
   </div>
   <!--for miniature-->
-  <div class="bbn-w-100 bbn-c bbn-gallery-miniature"
+  <div class="bbn-w-100 bbn-c bbns-gallery-miniature"
     style="position: absolute; bottom: 0; min-height: 80px"
     v-if="preview === true || preview === 'image' || preview === 'circle'"
     @mouseover="miniaturePreview(true)"
     @mouseleave="miniaturePreview(false)"
   >
-    <bbn-slideshow-miniature
+    <bbns-slideshow-miniature
       v-show="showMiniature"
       :items="items"
       :type="preview === true ? 'image' : preview"
       :dimension="dimensionPreview"
-    ></bbn-slideshow-miniature>
+    ></bbns-slideshow-miniature>
   </div>
 </div>

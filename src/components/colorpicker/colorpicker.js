@@ -57,7 +57,7 @@
       getOptions(){
         const vm  = this;
         let cfg = bbn.vue.getOptions(vm);
-        cfg.change = (e) => {
+        cfg.change = (e) => {        
           vm.change(e);
           vm.emitInput(e.sender.value());
         };

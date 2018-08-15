@@ -179,13 +179,16 @@
 
       /** emit of select event from this.hierarchy*/
       select(item, idx){
+		  
         let path = [idx],
             cp = this;
+        this.selected = idx;
         while ( cp.nodeIdx !== undefined ){
           path.unshift(cp.nodeIdx);
           cp = cp.$parent;
         }
-        this.selected = idx;
+
+		    bbn.fn.log('select', item, idx, this.selected)
 
         return this.hierarchy.$emit('select', item, idx, path, );
       },
@@ -210,6 +213,7 @@
       },
 
       toggleExpanded(i){
+
         let idx = this.expanded.indexOf(i);
         if ( idx > -1 ){
           this.removeExpanded(i);
@@ -263,19 +267,12 @@
       },
       reset(){
         if ( this.isAjax ){
-          this.isLoaded = false;
+          this.load();
         }
-        this.items = [];
-        this.$forceUpdate();
-        this.$nextTick(() => {
-          if ( this.isAjax ){
-            this.load();
-          }
-          else{
-            this.items = this.getItems();
-            this.$forceUpdate();
-          }
-        })
+        else{
+          this.items = this.getItems();
+          this.$forceUpdate();
+        }
       },
 
       // Resize the root scroller
@@ -608,9 +605,7 @@
       // Loads a node
       load(){
         // It must be Ajax and not being already in loading state
-
         if ( this.isAjax && !this.hierarchy.isLoading && !this.isLoaded ){
-
           this.hierarchy.isLoading = true;
           this.loading = true;
           this.hierarchy.$emit('beforeLoad', this.dataToSend());
@@ -809,6 +804,7 @@
         this.load();
       }
       this.ready = true;
+      bbn.fn.log('list mounted')
     },
 
     watch: {
@@ -824,6 +820,9 @@
       source(){
         this.reset();
         this.load();
+      },
+      items(){
+        this.getRef('scroll').selfEmit(true);
       }
     }
   });

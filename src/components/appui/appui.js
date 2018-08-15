@@ -69,6 +69,18 @@
           }
         }
       },
+      list: {
+        type: Array,
+        default(){
+          return [{
+            url: "core/home",
+            title: bbn._("Dashboard"),
+            load: true,
+            static: true,
+            icon: 'fas fa-tachometer-alt'
+          }];
+        }
+      }
     },
     data(){
       return {
@@ -82,7 +94,6 @@
         chatOnline: true,
         // No chat component if chat is not visible
         chatVisible: false,
-        chatLast: 0,
         // Chat dialog windows
         chatWindows: [],
         usersOnline: [],
@@ -140,15 +151,6 @@
           }, {
             "value": "silver",
             "text": "Silver"
-          }
-        ],
-        list: [
-          {
-            url: "dashboard",
-            title: bbn._("Tableau de bord"),
-            load: true,
-            static: true,
-            icon: 'fas fa-tachometer-alt'
           }
         ],
         poller: false,
@@ -364,37 +366,13 @@
               });
               //appui.success("<div>ANSWER</div><code>" + JSON.stringify(r.data) + '</code>', 5);
             }
-            if ( r.chat ){
+            if ( r.chat && this.getRef('chat') ){
               if ( r.chat.hash ){
-                if ( this.usersOnlineHash !== r.chat.hash ){
-                  this.usersOnlineHash = r.chat.hash;
-                  this.usersOnline.splice(0, this.usersOnline.length);
-                  r.chat.users.forEach((a) => {
-                    this.usersOnline.push(a);
-                  })
-                }
+                this.pollerObject.usersHash = r.chat.hash;
               }
-              let chat = this.getRef('chat');
-              if ( r.chat.chats && chat ){
-                this.chatLast = r.chat.last;
+              this.getRef('chat').receive(r.chat);
+              if ( r.chat.chats ){
                 this.pollerObject.lastChat = r.chat.last;
-                bbn.fn.iterate(r.chat.chats, (chat_info, id_chat) => {
-                  let idx = bbn.fn.search(chat.currentWindows, {id: id_chat});
-                  if ( chat ){
-                    if ( idx === -1 ){
-                      chat.currentWindows.push({
-                        id: id_chat,
-                        participants: chat_info.participants,
-                        messages: chat_info.messages
-                      });
-                    }
-                    else{
-                      for ( let msg of chat_info.messages ){
-                        chat.currentWindows[idx].messages.push(msg)
-                      }
-                    }
-                  }
-                });
               }
             }
 

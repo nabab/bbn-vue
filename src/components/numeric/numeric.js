@@ -21,21 +21,21 @@
         type: [Number, String]
       },
       round: {
-        type: Boolean
+        type: Boolean,
+        default: true
       },
       step: {
         type: [Number, String]
       },
+      spinners: {
+        type: Boolean,
+        default: true
+      },
       cfg: {
-        type: Object,
-        default: function(){
-          return {
-            format: "n0"
-          };
-        }
+        type: Object
       }
     },
-    data: function(){
+    data(){
       return {
         widgetName: "kendoNumericTextBox"
       };
@@ -49,10 +49,15 @@
         //this.$emit('focus', e);
       }
     },
-    mounted: function(){
+    mounted(){
       let el = this.getRef('element');
       this.widget = $(el).kendoNumericTextBox($.extend(this.getOptions(), {
         value: this.value,
+        format: this.format,
+        decimals: this.decimals,
+        round: this.round,
+        step: this.step,
+        spinners: this.spinners,
         spin: (e) => {
           this.emitInput(e.sender.value());
         },
