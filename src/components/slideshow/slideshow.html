@@ -143,14 +143,14 @@
             :class="[arrowClass.left, 'iconForImmage', 'bbn-xxxl']"
             @click="prev"
             :style="{
-                       visibility: (currentIndex === 0 && !loop)? 'hidden' : 'visible',
-                      }"
+             visibility: (currentIndex === 0 && !loop)? 'hidden' : 'visible',
+            }"
         ></i>
       </div>
       <!--arrow next-->
       <div v-if="arrows"
            class="bbn-h-100 bbn-vmiddle"
-           style="position: absolute; right: 10px; min-width: 30px"
+           style="position: absolute;  top: 0; right: 10px; min-width: 30px"
            @mouseover="arrowsPreview('next', true)"
            @mouseleave="arrowsPreview('next', false)"
       >

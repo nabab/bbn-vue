@@ -3,7 +3,7 @@
  */
 (function($, bbn){
   "use strict";
-
+  /* esversion: 6 */
   const METHODS4BUTTONS = ['insert', 'select', 'edit', 'add', 'copy', 'delete'];
 
   /**

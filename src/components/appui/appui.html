@@ -45,8 +45,8 @@
           </div>
         </div>
         <div class="bbn-h-100 bbn-splitter-top-center bbn-flex-fill">
-          <bbn-fisheye del-url="menu/shortcuts/delete"
-                       ins-url="menu/shortcuts/insert"
+          <bbn-fisheye :del-url="plugins['appui-menu'] + '/shortcuts/delete'"
+                       :ins-url="plugins['appui-menu'] + '/shortcuts/insert'"
                        :min-index="3"
                        :z-index="3"
                        ref="fisheye"
@@ -114,7 +114,7 @@
       </div>
     </bbn-pane>
   </bbn-splitter>
-  <bbn-treemenu source="menu/data"
+  <bbn-treemenu :source="plugins['appui-menu'] + '/data'"
                 v-if="fisheyeMounted"
                 ref="menu"
                 :menus="menus"

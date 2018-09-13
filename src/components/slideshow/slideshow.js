@@ -48,6 +48,10 @@
         type: [Boolean, Object],
         default: false
       },
+      navigation:{
+        type: Boolean,
+        default: false
+      },
       autoHidePreview:{
         type: Boolean,
         default: false

@@ -1,0 +1,35 @@
+<div :class="{
+       'bbn-flex-fill': !fullScreen,
+       'bbn-full-screen': !!fullScreen,
+       'bbn-container': true,
+       'k-content': true,
+       'bbn-w-100': true,
+       'bbns-tab-selected': !!selected
+     }"
+     :style="{
+       'z-index': fullScreen ? 10 : 'inherit',
+       position: fullScreen ? 'fixed !important' : 'relative'
+       
+     }">
+  <component v-if="isComponent"
+             :is="name"
+             :source="source"
+             ref="component"
+  ></component>
+  <component v-else-if="component"
+             :is="component"
+             :source="source"
+             ref="component"
+             v-bind="componentAttributes"
+  ></component>
+  <bbn-scroll v-else-if="content">
+    <div v-html="'HELLO' + content"></div>
+  </bbn-scroll>
+  <slot v-else></slot>
+  <component is="style" v-if="css" scoped="scoped" v-html="css"></component>
+  <i v-if="fullScreen"
+     class="far fa-times-circle bbns-tab-fullscreen-closer bbn-p"
+     @click="fullScreen = false"
+  ></i>
+  <bbn-popup ref="popup" :source="popups"></bbn-popup>
+</div>

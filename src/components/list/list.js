@@ -102,7 +102,6 @@
         type: Boolean,
         default: true
       },
-
       value: {}
     },
 

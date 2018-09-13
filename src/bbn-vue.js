@@ -132,7 +132,7 @@
       upload: {},
       vlist: {}
     },
-    loadDelay: 100,
+    loadDelay: 50,
 
     _retrievePopup(vm){
       if ( vm.$options && vm.$options._componentTag === 'bbn-popup' ){
@@ -356,11 +356,76 @@
       });
       bbn.vue.queueTimer = setTimeout(() => {
         let todo = bbn.vue.queue.splice(0, bbn.vue.queue.length);
+        bbn.vue.executeQueueItems(todo);
+        /*
+        bbn.fn.log("TODO", todo);
         $.each(todo, (i, a) => {
           bbn.vue.executeQueueItem(a);
         });
+        */
       }, bbn.vue.loadDelay)
       return bbn.vue.queueTimer
+    },
+
+    executeQueueItems(items){
+      if ( items.length ){
+        let url = 'components';
+        Array.prototype.forEach.call(items, (a) => {
+          url += '/' + a.name;
+        });
+        bbn.fn.log("QUEUE ITEMS IN " + url);
+        return bbn.fn.post(url, (d) => {
+          if ( d && d.success && d.components ){
+            Array.prototype.forEach.call(items, (a, i) => {
+              let r = d.components[i];
+              if ( r && r.script ){
+                if ( r.css ){
+                  $(document.head).append('<style>' + r.css + '</style>');
+                }
+                if ( r.content ){
+                  $(document.body).append('<script type="text/x-template" id="bbn-tpl-component-' + a.name + '">' + r.content + '</script>');
+                }
+                let data = r.data || {};
+                let res = eval(r.script);
+                if ( typeof res === 'object' ){
+                  if ( !res.template ){
+                    res.template = '#bbn-tpl-component-' + a.name;
+                  }
+                  if ( !res.props ){
+                    res.props = {};
+                  }
+                  if ( !res.props.source ){
+                    res.props.source = {};
+                  }
+                  if ( !res.name ){
+                    res.name = a.name;
+                  }
+                  if ( a.mixins ){
+                    if ( res.mixins ){
+                      $.each(a.mixins, (j, b) => {
+                        res.mixins.push(b);
+                      })
+                    }
+                    else{
+                      res.mixins = a.mixins;
+                    }
+                  }
+                  if ( Object.keys(data).length ){
+                    res.props.source.default = () => {
+                      return data;
+                    }
+                  }
+                  Vue.component(a.name, res);
+                }
+                a.resolve('ok');
+                return;
+              }
+              a.reject();
+            })
+          }
+        })
+      }
+      return false;
     },
 
     executeQueueItem(a){

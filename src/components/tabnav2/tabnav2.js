@@ -23,7 +23,7 @@
    * otherwise.
    * @param {boolean|number} selected - The index of the currently selected tab, and false otherwise.
    */
-  Vue.component("bbn-tabnav", {
+  Vue.component("bbn-tabnav2", {
     mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent, bbn.vue.localStorageComponent, bbn.vue.closeComponent, bbn.vue.observerComponent],
     props: {
        url: {
@@ -188,7 +188,7 @@
         if ( !this.tabs.length ){
           return false;
         }
-        let vm = this;
+        var vm = this;
         if ( !vm.isValidIndex(misc) ) {
           if ( typeof(misc) === 'string' ){
             misc = vm.search(misc);
@@ -211,20 +211,21 @@
             // Or in the content?
             else{
               let found = false,
-                  $panel = misc.is("div.bbns-tab") ? misc : misc.closest("div.bbns-tab");
+                  $panel = misc.is("div.bbn-container") ? misc : misc.closest("div.bbn-container");
               while ( !found && $panel.length ){
+                bbn.fn.log("CHECKING EQUALITY", $panel[0], $panel.attr("data-index"), vm.getContainer(parseInt($panel.attr("data-index"))));
                 if ( vm.getContainer(parseInt($panel.attr("data-index"))) === $panel[0] ){
                   found = true;
                 }
                 else{
-                  $panel = $panel.parent().closest("div.bbns-tab");
+                  $panel = $panel.parent().closest("div.bbn-container");
                 }
               }
               // If the element is in full screen mode
-              if ( $panel.hasClass('bbns-tab-full-screen') ){
-                var $prev = $(".bbns-tab-before-full-screen:first", vm.el);
-                misc = $prev.is("div.bbns-tab") ?
-                  $(vm.$el).children("div.bbns-tab,div.bbn-loader").index($prev) + 1 : 0;
+              if ( $panel.hasClass('bbn-container-full-screen') ){
+                var $prev = $(".bbn-container-before-full-screen:first", vm.el);
+                misc = $prev.is("div.bbn-container") ?
+                  $(vm.$el).children("div.bbn-container,div.bbn-loader").index($prev) + 1 : 0;
               }
               else if ( $panel.length ){
                 misc = parseInt($panel.attr("data-index"));
@@ -378,14 +379,15 @@
             tab,
             subtab;
         bbn.fn.info(url);
-        //alert(this.fullBaseURL + ' ------- ' + this.currentURL + ' ---- ' + url);
         //bbn.fn.log("url before parse: " + url);
-        //url = vm.parseURL(url);
+        url = vm.parseURL(url);
+        bbn.fn.log(url, this.getFullBaseURL());
         //bbn.fn.log("url after parse: " + url);
         // either the requested url or the url corresponding to the target index
 
         // No URL has been given -> we activate the default tab
         if ( !url ){
+          bbn.fn.log("activateDefault with no url ");
           return vm.activateDefault();
         }
         idx = vm.getIndex(url);
@@ -396,7 +398,8 @@
               ((url + '/').indexOf(vm.tabs[i].url) === 0) &&
               (subtab = vm.getSubTabNav(i))
             ){
-              return subtab.activate(url.substr(vm.tabs[idx].url.length));
+              vm.selected = i;
+              return subtab.activate(vm.getFullBaseURL() + url);
             }
           }
           // autoload is set to true we launch the link function which will activate the newly created tab
@@ -421,7 +424,7 @@
         else if ( !vm.tabs[idx].disabled ){
           var subtab = vm.getSubTabNav(idx);
           if ( subtab && subtab.ready ){
-            subtab.activate(url.substr(vm.tabs[idx].url.length), force);
+            subtab.activate(vm.getFullBaseURL() + url, force);
           }
           else if ( force && vm.autoload ){
             this.reload(idx);
@@ -491,6 +494,7 @@
       },
 
       close(idx, force){
+        bbn.fn.log("CLOSING", idx, this.selected);
         if ( this.tabs[idx] && !this.tabs[idx].static && !this.tabs[idx].pinned ){
           let ev = $.Event();
           if ( this.isUnsaved &&
@@ -528,6 +532,7 @@
               if ( this.tabs.length ){
                 $.each(this.history, (i, a) => {
                   let tmp = this.getIndex(a);
+                  bbn.fn.log("GETTING INDEX...", tmp, a);
                   if ( tmp !== false ){
                     idx = tmp;
                     return false;
@@ -612,15 +617,8 @@
       },
 
       search(url){
-        let r = bbn.fn.search(this.tabs, "url", url);
-        if ( r === -1 ){
-          bbn.fn.each(this.tabs, (tab, index) => {
-            if ( url.indexOf(tab.url + '/') === 0 ){
-              r = index;
-            }
-          });
-        }
-        return r > -1 ? r : false;
+        var r = bbn.fn.search(this.tabs, "url", url, "starts");
+        return r === -1 ? false : r;
       },
 
       load(url, force){
@@ -643,7 +641,7 @@
             if ( !d.url ){
               d.url = url;
             }
-            //d.url = vm.parseURL(d.url);
+            d.url = vm.parseURL(d.url);
             d.loaded = true;
             if ( d.load !== false ){
               d.load = null;
@@ -655,6 +653,8 @@
               idx = checkIdx;
               this.tabs[idx].url = d.url;
               this.navigate(d.url);
+              bbn.fn.error("NAVIGATING");
+              bbn.fn.log(d.url, url);
               url = d.url;
             }
             this.$emit('tabLoaded', d.data, d.url, vm.tabs[idx]);
@@ -774,6 +774,7 @@
           key: "enlarge",
           icon: "fas fa-expand-arrows-alt",
           command: () => {
+            bbn.fn.log("ENLARGE", this.getVue(idx));
             this.getVue(idx).fullScreen = true;
           }
         });
@@ -865,12 +866,18 @@
       },
 
       checkTabsHeight(noResize){
-        if ( this.tabs[this.selected] ){
-          var tab = this.getTab(vm.options.selected),
+        var vm = this;
+        if ( vm.tabs[vm.selected] ){
+          var tab = vm.getTab(vm.options.selected),
               h = tab.parent().outerHeight(true);
-          this.tabsHeight = h;
+          if ( !noResize && h && (h !== vm.tabsHeight) ){
+            /** @todo Check if it's right */
+            bbn.fn.log("checkTabsHeight change");
+            // Previous code (shit!)
+          }
+          vm.tabsHeight = h;
         }
-        return this;
+        return vm;
       },
 
       setColorSelector(col, idx){
@@ -1000,6 +1007,7 @@
           let idx = this.getIndex(ele);
           if ( idx !== false ){
             let i = bbn.fn.search(this.observers, {id: obs.id, element: obs.element});
+            bbn.fn.log("INDEX FOUND", idx, i, this.observers[i].value, newVal);
             if ( (i > -1) && (this.observers[i].value !== newVal) ){
               if ( idx === this.selected ){
                 this.$emit('bbnObs' + obs.element + obs.id, newVal);
@@ -1018,15 +1026,18 @@
     },
 
     created(){
-      // Adding bbns-tab from the slot
-      if ( this.$slots.default ){
-        for ( let node of this.$slots.default ){
+      // Adding bbn-container from the slot
+      if ( this.$slots ){
+        for ( let name in this.$slots ){
+          let node = this.$slots[name][0];
           if (
-            node &&
-            (node.tag === 'bbns-tab') &&
-            node.data.attrs.url
+            node && node.componentOptions &&
+            (node.componentOptions.tag === 'bbn-container') &&
+            node.componentOptions.propsData.url
           ){
-            this.add(node.data.attrs);
+            this.add($.extend({isCreated: true, loaded: true}, node.componentOptions.propsData));
+            node.componentOptions.propsData = this.tabs[this.tabs.length-1];
+            bbn.fn.log("CREATED AT CREATION", node);
           }
         }
       }
@@ -1041,10 +1052,10 @@
           parent.$vnode &&
           parent.$vnode.componentOptions
         ){
-          if ( !this.parentTab && (parent.$vnode.componentOptions.tag === 'bbns-tab') ){
+          if ( !this.parentTab && (parent.$vnode.componentOptions.tag === 'bbn-container') ){
             this.parentTab = parent;
           }
-          else if ( parent.$vnode.componentOptions.tag === 'bbn-tabnav' ){
+          else if ( parent.$vnode.componentOptions.tag === 'bbn-tabnav2' ){
             this.parents.push(parent);
           }
         }
@@ -1053,13 +1064,14 @@
       // If there is a parent tabnav we automatically give the proper baseURL
       let cfg;
       if ( this.parents.length ){
-        let tmp = this.parents[0].getURL(this.parentTab.idx);
+        var tmp = this.parents[0].getURL(this.parentTab.idx);
         if ( this.baseURL !== (tmp + '/') ) {
           this.baseURL = tmp + '/';
 
           /*
           if (this.parents.autoload && (tmp.indexOf(this.baseURL) === 0)) {
             this.parents.setURL(this.baseURL, this.$el);
+            this.currentURL = tmp.substr(this.baseURL.length + 1);
           }
           */
         }
@@ -1070,12 +1082,9 @@
       else{
         cfg = this.getStorage()
       }
-      this.currentURL = this.parents.length ?
-        this.parents[0].currentURL.substr(this.baseURL.length) :
-        window.location.pathname.substr(this.baseURL.length ? this.baseURL.length : 0);
-
       $.each(!this.autoload || !cfg || !cfg.tabs ? this.source : cfg.tabs, (i, obj) => {
         if ( obj.url ){
+          bbn.fn.log("CREATED AT MOUNT");
           this.add(obj);
         }
       });
@@ -1105,18 +1114,13 @@
       this.ready = true;
 
 
-    },
+      },
 
     watch: {
       selected(newVal){
         if ( this.tabs[newVal] ){
           if ( this.currentURL !== this.tabs[newVal].current ){
-            if ( this.currentURL.indexOf(this.tabs[newVal].url) === 0 ){
-              this.tabs[newVal].current = this.currentURL;
-            }
-            else{
-              this.currentURL = this.tabs[newVal].current;
-            }
+            this.currentURL = this.tabs[newVal].current;
           }
           $.each(this.tabs, (i, a) => {
             if ( this.tabs[i].selected !== (i === newVal) ){
@@ -1140,9 +1144,11 @@
       },
       currentURL(newVal, oldVal){
         if ( newVal !== oldVal ){
+          bbn.fn.log("NEW URL", newVal);
           if ( this.isValidIndex(this.selected) ){
-            let vm = this,
-                tab = bbn.vue.getChildByKey(vm, vm.tabs[vm.selected].url, 'bbns-tab');
+            var vm = this,
+                tab = bbn.vue.getChildByKey(vm, vm.tabs[vm.selected].url, 'bbn-container');
+            bbn.fn.log("IS VALID", tab);
             if (
               tab &&
               (vm.tabs[vm.selected].current !== newVal) &&
@@ -1152,6 +1158,7 @@
             }
             // CHECKING PARENTS
             if ( vm.parents.length ){
+              bbn.fn.log("CHANGING URL");
               vm.parents[0].currentURL = vm.baseURL + newVal;
             }
             else if ( this.autoload && this.ready ){
@@ -1160,6 +1167,8 @@
           }
         }
         this.$forceUpdate();
+        //bbn.fn.log("A change in tabs")
+        //var vm = this;
       },
       isUnsaved(val){
         if ( this.parentTab &&
@@ -1176,376 +1185,6 @@
         name: 'bbns-loader',
         props: ['source']
       },
-      'bbns-tab': {
-        name: 'bbns-tab',
-        mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent],
-        props: {
-          title: {
-            type: [String, Number],
-            default: bbn._("Untitled")
-          },
-          componentAttributes: {
-            type: Object,
-            default(){
-              return {}
-            }
-          },
-          idx: {},
-          component: {},
-          icon: {
-            type: [String, Boolean],
-          },
-          notext: {
-            type: Boolean,
-            default: false
-          },
-          content: {
-            type: String,
-            default: ""
-          },
-          menu: {
-            type: Array
-          },
-          loaded: {
-            type: Boolean
-          },
-          fcolor: {
-            type: String
-          },
-          bcolor: {
-            type: String
-          },
-          load: {
-            type: Boolean,
-            default: false
-          },
-          selected: {
-            type: [Boolean, Number],
-            default: false
-          },
-          css: {
-            type: String,
-            default: ""
-          },
-          source: {
-            type: [Array, Object],
-            default: function(){
-              return {};
-            }
-          },
-          advert: {
-            type: [String, Vue]
-          },
-          help: {
-            type: String
-          },
-          imessages: {
-            type: Array,
-            default(){
-              return []
-            }
-          },
-          script: {},
-          static: {
-            type: [Boolean, Number],
-            default: false
-          },
-          pinned: {
-            type: [Boolean, Number],
-            default: false
-          },
-          url: {
-            type: [String, Number]
-          },
-          current: {
-            type: [String, Number]
-          },
-          real: {
-            type: String
-          },
-          cfg: {
-            type: Object
-          },
-          events: {
-            type: Object,
-            default(){
-              return {}
-            }
-          },
-        },
-
-        data(){
-          return {
-            tabNav: null,
-            isComponent: null,
-            fullScreen: false,
-            name: bbn.fn.randomString(20, 15).toLowerCase(),
-            popups: []
-          };
-        },
-
-        methods: {
-          setCurrent(url){
-            const vm = this;
-            if ( url.indexOf(vm.url) === 0 ){
-              vm.tabNav.activate(url);
-            }
-          },
-          setTitle(title){
-            if ( this.tabNav ){
-              this.tabNav.tabs[this.idx].title = title;
-            }
-          },
-          setColor(bcolor, fcolor){
-            if ( this.tabNav ){
-              if ( bcolor ){
-                this.tabNav.tabs[this.idx].bcolor = bcolor;
-              }
-              if ( fcolor ){
-                this.tabNav.tabs[this.idx].fcolor =  fcolor;
-              }
-            }
-          },
-          popup(){
-            let popup = this.getPopup();
-            return arguments.length ? popup.open.apply(popup, arguments) : popup;
-          },
-          getComponent(){
-            for ( let i = 0; i < this.$children.length; i++ ){
-              if ( this.$children[i].$options._componentTag !== 'bbn-popup' ){
-                return this.$children[i];
-              }
-            }
-            return false;
-          },
-          reload(){
-            return this.tabNav.reload(this.idx);
-          },
-          activate(force){
-            return this.tabNav.activate(this.idx, force);
-          },
-          confirm(){
-            let p = this.popup();
-            if ( p ){
-              return p.confirm.apply(p, arguments)
-            }
-          },
-          alert(){
-            let p = this.popup();
-            if ( p ){
-              return p.alert.apply(p, arguments)
-            }
-          },
-          getSubTabNav(ele){
-            if ( ele === undefined ){
-              ele = this;
-            }
-
-            var recurse = function(el){
-              if ( el.$options && el.$options._componentTag && (el.$options._componentTag === "bbn-tabnav") ){
-                return el;
-              }
-              if ( el.$children ){
-                for ( var i = 0; i < el.$children.length; i++ ){
-                  var r = recurse(el.$children[i]);
-                  if ( r ){
-                    return r;
-                  }
-                }
-              }
-              return false;
-            };
-            return recurse(ele);
-          },
-          addMenu(obj){
-            if (
-              (this.idx > -1) &&
-              obj.text &&
-              this.$parent.tabs &&
-              this.$parent.tabs[this.idx]
-            ){
-              if ( this.$parent.tabs[this.idx].menu === undefined ){
-                this.$parent.tabs[this.idx].menu = [];
-              }
-              let menu = this.$parent.tabs[this.idx].menu,
-                  idx = bbn.fn.search($.isFunction(menu) ? menu() : menu, {text: obj.text});
-              if ( idx === -1 ){
-                if ( $.isFunction(menu) ){
-                  this.$parent.tabs[this.idx].menu = () => {
-                    let items = menu() || [];
-                    if ( bbn.fn.search(items, obj) === -1 ){
-                      if ( !obj.key ){
-                        obj.key = bbn.fn.randomInt(99999,99999999999);
-                      }
-                      items.push(obj);
-                    }
-                    return items;
-                  };
-                }
-                else{
-                  if ( !obj.key ){
-                    obj.key = bbn.fn.randomInt(99999,99999999999);
-                  }
-                  menu.push(obj)
-                }
-              }
-              else{
-                obj.key = menu[idx].key;
-                menu.splice(idx, 1, obj);
-              }
-              return obj.key;
-            }
-            return false;
-          },
-          deleteMenu(key){
-            if (
-              (this.idx > -1) &&
-              this.$parent.tabs &&
-              this.$parent.tabs[this.idx]
-            ){
-              let menu = this.$parent.tabs[this.idx].menu || [];
-              if ( $.isFunction(menu) ){
-                menu = () => {
-                  let items = menu() || [];
-                  let idx = bbn.fn.search(items, "key", key);
-                  if ( idx > -1 ){
-                    items.splice(idx, 1);
-                    this.$parent.tabs[this.idx].menu = items;
-                    this.$parent.$forceUpdate();
-                    return true;
-                  }
-                };
-              }
-              else{
-                let idx = bbn.fn.search(menu, "key", key);
-                if ( idx > -1 ){
-                  menu.splice(idx, 1);
-                  this.$parent.tabs[this.idx].menu = menu;
-                  this.$parent.$forceUpdate();
-                  return true;
-                }
-              }
-            }
-            return false;
-          }
-        },
-
-        created(){
-          if ( this.isComponent === null ){
-            this.onMount = () => {
-              return false;
-            };
-            let res;
-            if ( this.script ){
-              res = typeof this.script === 'string' ? eval(this.script) : this.script;
-              if ( $.isFunction(res) ){
-                this.onMount = res;
-                this.isComponent = false;
-              }
-              else if ( typeof(res) === 'object' ){
-                this.isComponent = true;
-              }
-            }
-            if ( this.isComponent ){
-              bbn.fn.extend(res ? res : {}, {
-                name: this.name,
-                template: '<div class="bbn-full-screen">' + this.content + '</div>',
-                methods: {
-                  getTab: () => {
-                    return this;
-                  },
-                  addMenu: this.addMenu,
-                  deleteMenu: this.deleteMenu
-                },
-                props: ['source']
-              });
-              this.$options.components[this.name] = res;
-            }
-            else{
-              this.isComponent = false;
-            }
-          }
-        },
-
-        mounted(){
-          this.tabNav = bbn.vue.closest(this, ".bbn-tabnav");
-          if ( !this.isComponent ){
-            this.onMount(this.$el, this.source);
-          }
-          if ( this.advert ){
-            let ad = {};
-            if ( this.advert instanceof Vue ){
-              ad.component = this.advert;
-            }
-            else if ( typeof this.advert === 'object' ){
-              ad = this.advert;
-            }
-            else if ( typeof this.advert === 'string' ){
-              ad.content = this.advert;
-            }
-            this.popup.advert(ad);
-          }
-          if ( this.imessages.length ){
-            this.getPopup().open({
-              component: {
-                props: ['source'],
-                template: `
-                  <bbn-slideshow :source="source.content" 
-                                 class="w3-blue"
-                                 separator="---slide---"
-                                 :checkbox="true"
-                                 @check="setHidden"
-                                 @uncheck="unsetHidden"
-                  ></bbn-slideshow>`,
-                methods: {
-                  setHidden(e){
-                    e.hidden = true;
-                    bbn.vue.closest(this, 'bbn-appui').$emit('setimessage', e);
-                  },
-                  unsetHidden(e){
-                    e.hidden = false;
-                    bbn.vue.closest(this, 'bbn-appui').$emit('setimessage', e);
-                  }
-                }
-              },
-              source: {
-                content: this.imessages
-              },
-              title: '<i class="w3-large fa fa-message"> </i> <span class="bbn-iblock">' + bbn._('Internal message') + '</span>',
-              width: '90%',
-              height: '90%'
-            });
-          }
-          this.ready = true;
-        },
-
-        watch: {
-          selected(newVal){
-            if ( newVal ){
-              this.$nextTick(() => {
-                this.fullScreen = false;
-                this.selfEmit(true);
-              })
-            }
-          },
-          fullScreen(newVal){
-            let fn = (e) => {
-              if ( e.keyCode === 27 ){
-                this.fullScreen = false;
-              }
-            };
-            if ( newVal ){
-              document.body.addEventListener('keydown', fn);
-            }
-            else{
-              document.body.removeEventListener('keydown', fn);
-            }
-            this.$nextTick(() => {
-              this.onResize();
-            })
-          }
-        }
-      }
     }
   });
 

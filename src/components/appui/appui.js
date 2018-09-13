@@ -73,7 +73,7 @@
         type: Array,
         default(){
           return [{
-            url: "core/home",
+            url: (this.plugins && this.plugins['appui-core'] ? this.plugins['appui-core'] : 'core') + '/home',
             title: bbn._("Dashboard"),
             load: true,
             static: true,

@@ -98,7 +98,7 @@
            :ref="'container' + tabIndex"
            :key="tab.url"
       >
-        <div class="bbn-loader bbn-flex-fill" v-if="tab.selected">
+        <div class="bbn-loader bbn-flex-fill" v-if="source.selected">
           <div class="loader-animation">
             <div class="sk-cube-grid">
               <div class="sk-cube sk-cube1"></div>
@@ -115,49 +115,20 @@
           </div>
         </div>
       </div>
-      <bbns-tab inline-template
-               v-else
+      <slot v-else-if="tab.isCreated"
+            :name="tab.url"
+            v-bind="tab"
+            :data-index="tabIndex"
+            :ref="'container-' + tabIndex"
+            @ready="tab.loaded = true"
+      ></slot>
+      <bbn-container v-else
                v-bind="tab"
                :data-index="tabIndex"
                :ref="'container-' + tabIndex"
                :key="tab.url"
-               @ready="tab.loaded = true"
       >
-        <div :class="{
-               'bbn-flex-fill': !fullScreen,
-               'bbn-full-screen': !!fullScreen,
-               'bbns-tab': true,
-               'k-content': true,
-               'bbn-w-100': true,
-               'bbns-tab-selected': !!selected
-             }"
-             :style="{
-               'z-index': fullScreen ? 10 : 'inherit',
-               position: fullScreen ? 'fixed !important' : 'relative'
-               
-             }">
-          <component v-if="isComponent"
-                     :is="name"
-                     :source="source"
-                     ref="component"
-          ></component>
-          <component v-else-if="component"
-                     :is="component"
-                     :source="source"
-                     ref="component"
-                     v-bind="componentAttributes"
-          ></component>
-          <bbn-scroll v-else-if="content">
-            <div v-html="'HELLO' + content"></div>
-          </bbn-scroll>
-          <component is="style" v-if="css" scoped="scoped" v-html="css"></component>
-          <i v-if="fullScreen"
-             class="far fa-times-circle bbns-tab-fullscreen-closer bbn-p"
-             @click="fullScreen = false"
-          ></i>
-          <bbn-popup ref="popup" :source="popups"></bbn-popup>
-        </div>
-      </bbns-tab>
+      </bbn-container>
     </template>
    <!-- <span v-if="scrollable"
           class="k-button k-button-icon k-button-bare k-tabstrip-prev"

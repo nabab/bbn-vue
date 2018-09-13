@@ -2,8 +2,8 @@
  * Created by BBN on 15/02/2017.
  */
 (($, bbn) => {
-  "use strict";
 
+  "use strict";
   /**
    * Classic input with normalized appearance
    */
@@ -91,7 +91,7 @@
               this.renderedOptions.source = this.source;
             }
             else{
-              this.renderedComponent  = 'bbn-input'
+              this.renderedComponent  = 'bbn-input';
             }
             /*
             if( this.renderedComponent !== undefined){
@@ -149,7 +149,7 @@
                     this.renderedContent = this.currentValue ? '<a href="' + this.currentValue + '">' + this.currentValue + '</a>' : '-';
                     break;
                   case "number":
-                    this.renderedContent = this.currentValue ? kendo.toString(parseInt(this.currentValue), "n0") + ( this.unit ? " " + this.unit : "") : '-';
+                    this.renderedContent = this.currentValue ? this.currentValue.toFixed(0).toLocaleString() + ( this.unit ? " " + this.unit : "") : '-';
                     break;
                   case "money":
                     this.renderedContent = this.currentValue ?

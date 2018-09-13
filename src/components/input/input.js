@@ -7,7 +7,7 @@
   /**
    * Classic input with normalized appearance
    */
-  Vue.component('bbn-input', {
+  Vue.component("bbn-input", {
     mixins: [bbn.vue.basicComponent, bbn.vue.eventsComponent, bbn.vue.inputComponent],
     props: {
       autocomplete: {},
