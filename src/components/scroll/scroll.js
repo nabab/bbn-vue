@@ -81,10 +81,12 @@
 
       scrollHorizontal(ev, left){
         this.currentX = left;
+        this.$emit('scrollx', ev, left);
       },
 
       scrollVertical(ev, top){
         this.currentY = top;
+        this.$emit('scrolly', ev, top);
       },
 
       onResize(){
@@ -97,29 +99,49 @@
       },
 
       scrollStart(){
-        this.$refs.xScroller.scrollTo(0);
-        this.$refs.yScroller.scrollTo(0);
+        let x = this.getRef('xScroller'),
+            y = this.getRef('yScroller');
+        if ( x ){
+          x.scrollTo(0);
+        }
+        if ( y ){
+          y.scrollTo(0);
+        }
       },
 
       scrollEnd(){
-        this.$refs.xScroller.scrollTo('100%');
-        this.$refs.yScroller.scrollTo('100%');
-      },
-
-      scrollStartY(){
-        this.$refs.yScroller.scrollTo(0);
+        let x = this.getRef('xScroller'),
+            y = this.getRef('yScroller');
+        if ( x ){
+          x.scrollTo('100%');
+        }
+        if ( y ){
+          y.scrollTo('100%');
+        }
       },
 
       scrollStartX(){
+        let x = this.getRef('xScroller');
         this.$refs.xScroller.scrollTo(0);
       },
 
-      scrollEndY(){
-        this.$refs.yScroller.scrollTo('100%');
+      scrollStartY(){
+        let y = this.getRef('yScroller');
+        this.$refs.yScroller.scrollTo(0);
       },
 
       scrollEndX(){
-        this.$refs.xScroller.scrollTo('100%');
+        let x = this.getRef('xScroller');
+        if ( x ){
+          x.scrollTo('100%');
+        }
+      },
+
+      scrollEndY(){
+        let y = this.getRef('yScroller');
+        if ( y ){
+          y.scrollTo('100%');
+        }
       }
     },
     mounted(){

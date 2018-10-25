@@ -7,9 +7,7 @@
   /**
    * Classic input with normalized appearance
    */
-  $.trumbowyg.svgPath = bbn_root_url + 'lib/Trumbowyg/v2.5.1/dist/ui/icons.svg';
-
-  Vue.component('bbn-rte', {
+  Vue.component('bbn-rte2', {
     mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent],
     props: {
       pinned: {},
@@ -66,33 +64,24 @@
     },
 
     mounted: function(){
-      let cfg = this.getOptions(),
-          $ele = $(this.$refs.element).css({minHeight: this.$el.clientHeight});
-      /*
-      if ( this.height ){
-        $(this.$el).css('height', this.height);
-      }
-      */
-      this.widget = $ele.trumbowyg({
-        lang: bbn.env.lang || 'en',
-        autoGrow: false,
-        resetCSS: true,
-        btns: this.buttons
-      });
-      setTimeout(() => {
-        $(this.$el).find('.trumbowyg-box').addClass('bbn-flex-height').find('.trumbowyg-editor').addClass('bbn-flex-fill').css({height: 'auto'});
-      }, 1000)
-      bbn.fn.log("WID", this.widget.trumbowyg('getOptions'));
-      $ele.on("tbwchange tbwpaste", (e) => {
-        this.emitInput(e.target.value)
-      });
+      $(this.getRef('element')).summernote({
+        maxHeight: this.$el.clientHeight,
+        callbacks: {
+          onInit: (editor) => {
+            editor.toolbar.addClass('k-widget');
+            bbn.fn.log(arguments)
+          },
+          onChange: (contents, editor) => {
+            bbn.fn.log(contents, editor);
+            this.$emit('input', contents);
+          }
+        }
+      })
       this.ready = true;
     },
     watch: {
       value(newVal){
-        if ( this.widget.trumbowyg('html') !== newVal ){
-          this.widget.trumbowyg('html', newVal);
-        }
+        bbn.fn.log("VALUE HAS CHANGED")
       }
     }
   });

@@ -1,0 +1,296 @@
+{
+  "components": {
+    "appui": {
+      "active": false,
+      "state": "dev"
+    },
+    "autocomplete": {
+      "active": true,
+      "state": "stable"
+    },
+    "button": {
+      "active": true,
+      "state": "stable"
+    },
+    "chart": {
+      "active": true,
+      "state": "stable"
+    },
+    "chart2": {
+      "active": false,
+      "state": "stable"
+    },
+    "chat": {
+      "active": true,
+      "state": "stable"
+    },
+    "checkbox": {
+      "active": true,
+      "state": "stable"
+    },
+    "code": {
+      "active": true,
+      "state": "stable"
+    },
+    "colorpicker": {
+      "active": true,
+      "state": "stable"
+    },
+    "colorpicker2": {
+      "active": false,
+      "state": "stable"
+    },
+    "column": {
+      "active": true,
+      "state": "stable"
+    },
+    "combo": {
+      "active": true,
+      "state": "stable"
+    },
+    "container": {
+      "active": true,
+      "state": "stable"
+    },
+    "context": {
+      "active": true,
+      "state": "stable"
+    },
+    "countdown": {
+      "active": true,
+      "state": "stable"
+    },
+    "countdown2": {
+      "active": true,
+      "state": "stable"
+    },
+    "dashboard": {
+      "active": true,
+      "state": "stable"
+    },
+    "datepicker": {
+      "active": true,
+      "state": "stable"
+    },
+    "datetimepicker": {
+      "active": true,
+      "state": "stable"
+    },
+    "dropdown": {
+      "active": true,
+      "state": "stable"
+    },
+    "dropdowntreeview": {
+      "active": true,
+      "state": "stable"
+    },
+    "field": {
+      "active": true,
+      "state": "stable"
+    },
+    "filter": {
+      "active": true,
+      "state": "stable"
+    },
+    "fisheye": {
+      "active": true,
+      "state": "stable"
+    },
+    "form": {
+      "active": true,
+      "state": "stable"
+    },
+    "gallery": {
+      "active": true,
+      "state": "stable"
+    },
+    "datepicker": {
+      "active": true,
+      "state": "stable"
+    },
+    "grapes": {
+      "active": true,
+      "state": "stable"
+    },
+    "hierarchy": {
+      "active": true,
+      "state": "stable"
+    },
+    "icon": {
+      "active": true,
+      "state": "stable"
+    },
+    "initial": {
+      "active": true,
+      "state": "stable"
+    },
+    "input": {
+      "active": true,
+      "state": "stable"
+    },
+    "json-editor": {
+      "active": true,
+      "state": "stable"
+    },
+    "list": {
+      "active": true,
+      "state": "stable"
+    },
+    "loadbar": {
+      "active": true,
+      "state": "stable"
+    },
+    "loader": {
+      "active": true,
+      "state": "stable"
+    },
+    "loadicon": {
+      "active": true,
+      "state": "stable"
+    },
+    "markdown": {
+      "active": true,
+      "state": "stable"
+    },
+    "masked": {
+      "active": true,
+      "state": "stable"
+    },
+    "menu": {
+      "active": true,
+      "state": "stable"
+    },
+    "message": {
+      "active": true,
+      "state": "stable"
+    },
+    "multiselect": {
+      "active": true,
+      "state": "stable"
+    },
+    "notification": {
+      "active": true,
+      "state": "stable"
+    },
+    "numeric": {
+      "active": true,
+      "state": "stable"
+    },
+    "operator": {
+      "active": true,
+      "state": "stable"
+    },
+    "pane": {
+      "active": true,
+      "state": "stable"
+    },
+    "popup": {
+      "active": true,
+      "state": "stable"
+    },
+    "progressbar": {
+      "active": true,
+      "state": "stable"
+    },
+    "radio": {
+      "active": true,
+      "state": "stable"
+    },
+    "rte": {
+      "active": true,
+      "state": "stable"
+    },
+    "rte2": {
+      "active": true,
+      "state": "stable"
+    },
+    "scheduler": {
+      "active": true,
+      "state": "stable"
+    },
+    "scroll": {
+      "active": true,
+      "state": "stable"
+    },
+    "scroll-x": {
+      "active": true,
+      "state": "stable"
+    },
+    "scroll-y": {
+      "active": true,
+      "state": "stable"
+    },
+    "search": {
+      "active": true,
+      "state": "stable"
+    },
+    "slider": {
+      "active": true,
+      "state": "stable"
+    },
+    "slideshow": {
+      "active": true,
+      "state": "stable"
+    },
+    "splitter": {
+      "active": true,
+      "state": "stable"
+    },
+    "switch": {
+      "active": true,
+      "state": "stable"
+    },
+    "table": {
+      "active": true,
+      "state": "stable"
+    },
+    "tabnav": {
+      "active": true,
+      "state": "stable"
+    },
+    "tabnav2": {
+      "active": true,
+      "state": "stable"
+    },
+    "textarea": {
+      "active": true,
+      "state": "stable"
+    },
+    "timepicker": {
+      "active": true,
+      "state": "stable"
+    },
+    "toolbar": {
+      "active": true,
+      "state": "stable"
+    },
+    "tooltip": {
+      "active": true,
+      "state": "stable"
+    },
+    "tree": {
+      "active": true,
+      "state": "stable"
+    },
+    "tree-input": {
+      "active": true,
+      "state": "stable"
+    },
+    "treemenu": {
+      "active": true,
+      "state": "stable"
+    },
+    "upload": {
+      "active": true,
+      "state": "stable"
+    },
+    "video": {
+      "active": true,
+      "state": "stable"
+    },
+    "vlist": {
+      "active": true,
+      "state": "stable"
+    }
+  }
+}  

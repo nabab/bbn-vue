@@ -1,7 +1,7 @@
 <div :class="componentClass" v-on="isRoot ? {keydown:keyNav} : {}">
 
   <div class="loader" v-if="loading">
-    Loading...
+    <bbn-loadicon></bbn-loadicon> Loading...
   </div>
   
   <component v-else-if="isLoaded"
@@ -45,17 +45,21 @@
             <span :class="'node' + (component ? '' : ' no-component') + (cls ? ' ' + cls : '')"
                   @mouseover.stop="mouseOver"
             >
-              <span class="expander">
+              <span class="expander"
+                    @click="if ( numChildren && (level >= tree.minExpandLevel) ){
+                      isExpanded = !isExpanded;
+                    }"
+                    @mouseover="if ( tree.dragging && numChildren && (level >= tree.minExpandLevel) ){
+                      isExpanded = true;
+                    }"
+              >
                 <!-- If there are no children we leave the white space -->
                 <span v-if="!numChildren || (level < tree.minExpandLevel)"> </span>
                 <i v-else-if="isExpanded"
                    class="fas fa-caret-down"
-                   @click="isExpanded = false"
                 ></i>
                 <i v-else
                    class="fas fa-caret-right"
-                   @click="isExpanded = true"
-                   @mouseover="if ( tree.dragging ){ isExpanded = true; }"
                 ></i>
               </span>
               <span v-if="tree.checkable && tree.uid && (checkable !== false)">

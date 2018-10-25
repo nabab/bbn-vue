@@ -2,7 +2,7 @@
       :disabled="disabled"
       :method="method"
       :autocomplete="autocomplete"
-      :class="[currentClass, 'k-dialog']"
+      :class="currentClass"
       @submit.prevent="submit"
       @keydown.enter.prevent.stop="submit()"
 >
@@ -11,7 +11,7 @@
   >
     <bbn-scroll>
       <div class="bbn-grid-fields bbn-padded" v-if="schema && schema.length">
-        <template v-for="field in schema"
+        <template v-for="field in currentSchema"
                   v-if="field.field && !field.buttons && (field.editable !== false)"
         >
           <component v-if="field.lineComponent"
@@ -19,15 +19,18 @@
                      :source="source"
           ></component>
           <template v-else>
-            <div v-html="field.title" :title="field.ftitle || field.title || field.field"></div>
+            <label v-html="field.title"
+                   :for="field.id"
+                   :title="field.ftitle || field.title || field.field"></label>
             <component v-if="field.editor"
                        :is="field.editor"
+                       v-bind="field.options"
                        v-model="source[field.field]"
             ></component>
             <bbn-field v-else
-                       v-bind="field"
                        mode="write"
                        v-model="source[field.field]"
+                       v-bind="field"
             ></bbn-field>
           </template>
 
@@ -44,19 +47,20 @@
   <div v-else-if="realButtons.length"
        class="footer bbn-popup-footer k-button-group k-dialog-buttongroup k-dialog-button-layout-stretched bbn-flex-width">
     <template v-for="(button, i) in realButtons">
-      <bbn-button v-if="button.command === reset"
-                  :style="{visibility: modified || prefilled ? 'visible' : 'hidden'}"
+      <bbn-button v-if="button.command === 'reset'"
+                  :disabled="!modified && !prefilled"
                   :key="i"
                   class="bbn-flex-fill"
+                  v-bind="button"
                   @click="reset()"
       ></bbn-button>
-      <bbn-button v-else-if="button.command === cancel"
+      <bbn-button v-else-if="button.command === 'cancel'"
                   :key="i"
                   v-bind="button"
                   class="bbn-flex-fill"
                   @click="cancel()"
       ></bbn-button>
-      <bbn-button v-else-if="button.command === submit"
+      <bbn-button v-else-if="button.command === 'submit'"
                   :key="i"
                   v-bind="button"
                   :class="['bbn-flex-fill', {'k-primary': modified || prefilled}]"
@@ -69,6 +73,7 @@
                   v-bind="button"
                   class="bbn-flex-fill"
                   @click="_execCommand(button, $event)"
+                  :disabled="button.checkDisabled && !modified && !prefilled"
       ></bbn-button>
     </template>
   </div>

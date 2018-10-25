@@ -119,7 +119,7 @@
             }
           }
         }
-        return currentLetters;
+        return this.charCount && !this.letters ? currentLetters.substr(0, this.charCount) : currentLetters;
       },
       currentColor(){
         let name = this.userName,

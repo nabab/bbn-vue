@@ -9,7 +9,7 @@
        @keyup="keyup($event)"
        @mouseenter="over($event)"
        @mouseleave="out($event)"
-       @scroll="scroll($event)"
+       @scroll.passive="scroll($event)"
   ></div>
   <input ref="element"
          type="hidden"

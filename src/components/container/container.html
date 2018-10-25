@@ -23,7 +23,7 @@
              v-bind="componentAttributes"
   ></component>
   <bbn-scroll v-else-if="content">
-    <div v-html="'HELLO' + content"></div>
+    <div v-html="content"></div>
   </bbn-scroll>
   <slot v-else></slot>
   <component is="style" v-if="css" scoped="scoped" v-html="css"></component>

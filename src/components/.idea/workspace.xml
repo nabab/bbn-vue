@@ -1,9 +1,199 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="32930029-2b38-4135-9cdd-17ec44300ab0" name="Default" comment="" />
+    <list default="true" id="32930029-2b38-4135-9cdd-17ec44300ab0" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/../../.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/../../.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../LICENSE" beforeDir="false" afterPath="$PROJECT_DIR$/../../LICENSE" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../../README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../components/bbn-code.vue" beforeDir="false" afterPath="$PROJECT_DIR$/../../components/bbn-code.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../components/bbn-message.vue" beforeDir="false" afterPath="$PROJECT_DIR$/../../components/bbn-message.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../components/bbn-notification.vue" beforeDir="false" afterPath="$PROJECT_DIR$/../../components/bbn-notification.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../components/bbn-upload.vue" beforeDir="false" afterPath="$PROJECT_DIR$/../../components/bbn-upload.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../bbn-vue.js" beforeDir="false" afterPath="$PROJECT_DIR$/../bbn-vue.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/components.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/components.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/appui/appui.html" beforeDir="false" afterPath="$PROJECT_DIR$/appui/appui.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/appui/appui.js" beforeDir="false" afterPath="$PROJECT_DIR$/appui/appui.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/autocomplete/autocomplete.html" beforeDir="false" afterPath="$PROJECT_DIR$/autocomplete/autocomplete.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/autocomplete/autocomplete.js" beforeDir="false" afterPath="$PROJECT_DIR$/autocomplete/autocomplete.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/button/button.html" beforeDir="false" afterPath="$PROJECT_DIR$/button/button.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/button/button.js" beforeDir="false" afterPath="$PROJECT_DIR$/button/button.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/chart/bbn.json" beforeDir="false" afterPath="$PROJECT_DIR$/chart/bbn.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/chart/chart.html" beforeDir="false" afterPath="$PROJECT_DIR$/chart/chart.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/chart/chart.js" beforeDir="false" afterPath="$PROJECT_DIR$/chart/chart.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/chart/chart.less" beforeDir="false" afterPath="$PROJECT_DIR$/chart/chart.less" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/chart2/bbn.json" beforeDir="false" afterPath="$PROJECT_DIR$/chart2/bbn.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/chart2/chart2.html" beforeDir="false" afterPath="$PROJECT_DIR$/chart2/chart2.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/chart2/chart2.js" beforeDir="false" afterPath="$PROJECT_DIR$/chart2/chart2.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/chat/chat.html" beforeDir="false" afterPath="$PROJECT_DIR$/chat/chat.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/chat/chat.js" beforeDir="false" afterPath="$PROJECT_DIR$/chat/chat.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/checkbox/checkbox.html" beforeDir="false" afterPath="$PROJECT_DIR$/checkbox/checkbox.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/checkbox/checkbox.js" beforeDir="false" afterPath="$PROJECT_DIR$/checkbox/checkbox.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/bbn.json" beforeDir="false" afterPath="$PROJECT_DIR$/code/bbn.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/code.html" beforeDir="false" afterPath="$PROJECT_DIR$/code/code.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/code.js" beforeDir="false" afterPath="$PROJECT_DIR$/code/code.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/code.less" beforeDir="false" afterPath="$PROJECT_DIR$/code/code.less" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/colorpicker/colorpicker.html" beforeDir="false" afterPath="$PROJECT_DIR$/colorpicker/colorpicker.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/colorpicker/colorpicker.js" beforeDir="false" afterPath="$PROJECT_DIR$/colorpicker/colorpicker.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/column/column.js" beforeDir="false" afterPath="$PROJECT_DIR$/column/column.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/column/column.less" beforeDir="false" afterPath="$PROJECT_DIR$/column/column.less" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/combo/combo.html" beforeDir="false" afterPath="$PROJECT_DIR$/combo/combo.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/combo/combo.js" beforeDir="false" afterPath="$PROJECT_DIR$/combo/combo.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/container/bbn.json" beforeDir="false" afterPath="$PROJECT_DIR$/container/bbn.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/container/container.html" beforeDir="false" afterPath="$PROJECT_DIR$/container/container.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/container/container.js" beforeDir="false" afterPath="$PROJECT_DIR$/container/container.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/container/container.less" beforeDir="false" afterPath="$PROJECT_DIR$/container/container.less" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/context/bbn.json" beforeDir="false" afterPath="$PROJECT_DIR$/context/bbn.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/context/context.js" beforeDir="false" afterPath="$PROJECT_DIR$/context/context.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/context/context.less" beforeDir="false" afterPath="$PROJECT_DIR$/context/context.less" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/countdown/countdown.html" beforeDir="false" afterPath="$PROJECT_DIR$/countdown/countdown.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/countdown/countdown.js" beforeDir="false" afterPath="$PROJECT_DIR$/countdown/countdown.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/countdown2/countdown2.html" beforeDir="false" afterPath="$PROJECT_DIR$/countdown2/countdown2.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/countdown2/countdown2.js" beforeDir="false" afterPath="$PROJECT_DIR$/countdown2/countdown2.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dashboard/bbn.json" beforeDir="false" afterPath="$PROJECT_DIR$/dashboard/bbn.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dashboard/dashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/dashboard/dashboard.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dashboard/dashboard.js" beforeDir="false" afterPath="$PROJECT_DIR$/dashboard/dashboard.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dashboard/dashboard.less" beforeDir="false" afterPath="$PROJECT_DIR$/dashboard/dashboard.less" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/datepicker/datepicker.html" beforeDir="false" afterPath="$PROJECT_DIR$/datepicker/datepicker.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/datepicker/datepicker.js" beforeDir="false" afterPath="$PROJECT_DIR$/datepicker/datepicker.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/datetimepicker/datetimepicker.html" beforeDir="false" afterPath="$PROJECT_DIR$/datetimepicker/datetimepicker.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/datetimepicker/datetimepicker.js" beforeDir="false" afterPath="$PROJECT_DIR$/datetimepicker/datetimepicker.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dropdown/dropdown.html" beforeDir="false" afterPath="$PROJECT_DIR$/dropdown/dropdown.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dropdown/dropdown.js" beforeDir="false" afterPath="$PROJECT_DIR$/dropdown/dropdown.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dropdowntreeview/dropdowntreeview.html" beforeDir="false" afterPath="$PROJECT_DIR$/dropdowntreeview/dropdowntreeview.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dropdowntreeview/dropdowntreeview.js" beforeDir="false" afterPath="$PROJECT_DIR$/dropdowntreeview/dropdowntreeview.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/field/field.js" beforeDir="false" afterPath="$PROJECT_DIR$/field/field.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/field/field.less" beforeDir="false" afterPath="$PROJECT_DIR$/field/field.less" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/filter/filter.html" beforeDir="false" afterPath="$PROJECT_DIR$/filter/filter.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/filter/filter.js" beforeDir="false" afterPath="$PROJECT_DIR$/filter/filter.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fisheye/bbn.json" beforeDir="false" afterPath="$PROJECT_DIR$/fisheye/bbn.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fisheye/fisheye.html" beforeDir="false" afterPath="$PROJECT_DIR$/fisheye/fisheye.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fisheye/fisheye.js" beforeDir="false" afterPath="$PROJECT_DIR$/fisheye/fisheye.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fisheye/fisheye.less" beforeDir="false" afterPath="$PROJECT_DIR$/fisheye/fisheye.less" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/form/form.html" beforeDir="false" afterPath="$PROJECT_DIR$/form/form.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/form/form.js" beforeDir="false" afterPath="$PROJECT_DIR$/form/form.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gallery/gallery.html" beforeDir="false" afterPath="$PROJECT_DIR$/gallery/gallery.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gallery/gallery.js" beforeDir="false" afterPath="$PROJECT_DIR$/gallery/gallery.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/grapes/bbn.json" beforeDir="false" afterPath="$PROJECT_DIR$/grapes/bbn.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/grapes/grapes.html" beforeDir="false" afterPath="$PROJECT_DIR$/grapes/grapes.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/grapes/grapes.js" beforeDir="false" afterPath="$PROJECT_DIR$/grapes/grapes.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hierarchy/bbn.json" beforeDir="false" afterPath="$PROJECT_DIR$/hierarchy/bbn.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hierarchy/hierarchy.js" beforeDir="false" afterPath="$PROJECT_DIR$/hierarchy/hierarchy.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hierarchy/hierarchy.less" beforeDir="false" afterPath="$PROJECT_DIR$/hierarchy/hierarchy.less" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/initial/bbn.json" beforeDir="false" afterPath="$PROJECT_DIR$/initial/bbn.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/initial/initial.backup.js" beforeDir="false" afterPath="$PROJECT_DIR$/initial/initial.backup.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/initial/initial.js" beforeDir="false" afterPath="$PROJECT_DIR$/initial/initial.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/input/input.html" beforeDir="false" afterPath="$PROJECT_DIR$/input/input.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/input/input.js" beforeDir="false" afterPath="$PROJECT_DIR$/input/input.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/json-editor/bbn.json" beforeDir="false" afterPath="$PROJECT_DIR$/json-editor/bbn.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/json-editor/json-editor.html" beforeDir="false" afterPath="$PROJECT_DIR$/json-editor/json-editor.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/json-editor/json-editor.js" beforeDir="false" afterPath="$PROJECT_DIR$/json-editor/json-editor.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/json-editor/json-editor.less" beforeDir="false" afterPath="$PROJECT_DIR$/json-editor/json-editor.less" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/list/list.html" beforeDir="false" afterPath="$PROJECT_DIR$/list/list.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/list/list.js" beforeDir="false" afterPath="$PROJECT_DIR$/list/list.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/loader/loader.html" beforeDir="false" afterPath="$PROJECT_DIR$/loader/loader.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/loader/loader.js" beforeDir="false" afterPath="$PROJECT_DIR$/loader/loader.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/loader/loader.less" beforeDir="false" afterPath="$PROJECT_DIR$/loader/loader.less" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/loading/loading.js" beforeDir="false" afterPath="$PROJECT_DIR$/loading/loading.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/loading/loading.less" beforeDir="false" afterPath="$PROJECT_DIR$/loading/loading.less" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/markdown/bbn.json" beforeDir="false" afterPath="$PROJECT_DIR$/markdown/bbn.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/markdown/markdown.html" beforeDir="false" afterPath="$PROJECT_DIR$/markdown/markdown.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/markdown/markdown.js" beforeDir="false" afterPath="$PROJECT_DIR$/markdown/markdown.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/markdown/markdown.less" beforeDir="false" afterPath="$PROJECT_DIR$/markdown/markdown.less" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/masked/masked.html" beforeDir="false" afterPath="$PROJECT_DIR$/masked/masked.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/masked/masked.js" beforeDir="false" afterPath="$PROJECT_DIR$/masked/masked.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/menu/bbn.json" beforeDir="false" afterPath="$PROJECT_DIR$/menu/bbn.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/menu/menu.html" beforeDir="false" afterPath="$PROJECT_DIR$/menu/menu.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/menu/menu.js" beforeDir="false" afterPath="$PROJECT_DIR$/menu/menu.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/menu/menu.less" beforeDir="false" afterPath="$PROJECT_DIR$/menu/menu.less" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/message/message.js" beforeDir="false" afterPath="$PROJECT_DIR$/message/message.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/multiselect/multiselect.html" beforeDir="false" afterPath="$PROJECT_DIR$/multiselect/multiselect.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/multiselect/multiselect.js" beforeDir="false" afterPath="$PROJECT_DIR$/multiselect/multiselect.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notification/notification.js" beforeDir="false" afterPath="$PROJECT_DIR$/notification/notification.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notification/notification.less" beforeDir="false" afterPath="$PROJECT_DIR$/notification/notification.less" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/numeric/numeric.html" beforeDir="false" afterPath="$PROJECT_DIR$/numeric/numeric.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/numeric/numeric.js" beforeDir="false" afterPath="$PROJECT_DIR$/numeric/numeric.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/operator/operator.html" beforeDir="false" afterPath="$PROJECT_DIR$/operator/operator.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/operator/operator.js" beforeDir="false" afterPath="$PROJECT_DIR$/operator/operator.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pane/pane.js" beforeDir="false" afterPath="$PROJECT_DIR$/pane/pane.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/popup/bbn.json" beforeDir="false" afterPath="$PROJECT_DIR$/popup/bbn.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/popup/popup.html" beforeDir="false" afterPath="$PROJECT_DIR$/popup/popup.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/popup/popup.js" beforeDir="false" afterPath="$PROJECT_DIR$/popup/popup.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/popup/popup.less" beforeDir="false" afterPath="$PROJECT_DIR$/popup/popup.less" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/progressbar/progressbar.html" beforeDir="false" afterPath="$PROJECT_DIR$/progressbar/progressbar.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/progressbar/progressbar.js" beforeDir="false" afterPath="$PROJECT_DIR$/progressbar/progressbar.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/progressbar/progressbar.js.bak" beforeDir="false" afterPath="$PROJECT_DIR$/progressbar/progressbar.js.bak" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/radio/radio.html" beforeDir="false" afterPath="$PROJECT_DIR$/radio/radio.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/radio/radio.html.bak" beforeDir="false" afterPath="$PROJECT_DIR$/radio/radio.html.bak" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/radio/radio.js" beforeDir="false" afterPath="$PROJECT_DIR$/radio/radio.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rte/bbn.json" beforeDir="false" afterPath="$PROJECT_DIR$/rte/bbn.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rte/rte.html" beforeDir="false" afterPath="$PROJECT_DIR$/rte/rte.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rte/rte.js" beforeDir="false" afterPath="$PROJECT_DIR$/rte/rte.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rte/rte.less" beforeDir="false" afterPath="$PROJECT_DIR$/rte/rte.less" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scheduler/bbn.json" beforeDir="false" afterPath="$PROJECT_DIR$/scheduler/bbn.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scheduler/scheduler.js" beforeDir="false" afterPath="$PROJECT_DIR$/scheduler/scheduler.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scheduler/scheduler.less" beforeDir="false" afterPath="$PROJECT_DIR$/scheduler/scheduler.less" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scroll-x/scroll-x.html" beforeDir="false" afterPath="$PROJECT_DIR$/scroll-x/scroll-x.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scroll-x/scroll-x.js" beforeDir="false" afterPath="$PROJECT_DIR$/scroll-x/scroll-x.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scroll-y/scroll-y.html" beforeDir="false" afterPath="$PROJECT_DIR$/scroll-y/scroll-y.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scroll-y/scroll-y.js" beforeDir="false" afterPath="$PROJECT_DIR$/scroll-y/scroll-y.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scroll/scroll.html" beforeDir="false" afterPath="$PROJECT_DIR$/scroll/scroll.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scroll/scroll.js" beforeDir="false" afterPath="$PROJECT_DIR$/scroll/scroll.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/search/search.html" beforeDir="false" afterPath="$PROJECT_DIR$/search/search.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/search/search.js" beforeDir="false" afterPath="$PROJECT_DIR$/search/search.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/slider/slider.html" beforeDir="false" afterPath="$PROJECT_DIR$/slider/slider.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/slider/slider.js" beforeDir="false" afterPath="$PROJECT_DIR$/slider/slider.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/slideshow/slideshow.html" beforeDir="false" afterPath="$PROJECT_DIR$/slideshow/slideshow.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/slideshow/slideshow.js" beforeDir="false" afterPath="$PROJECT_DIR$/slideshow/slideshow.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/splitter/splitter.html" beforeDir="false" afterPath="$PROJECT_DIR$/splitter/splitter.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/splitter/splitter.js" beforeDir="false" afterPath="$PROJECT_DIR$/splitter/splitter.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/splitter/splitter.less" beforeDir="false" afterPath="$PROJECT_DIR$/splitter/splitter.less" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/switch/switch.html" beforeDir="false" afterPath="$PROJECT_DIR$/switch/switch.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/switch/switch.js" beforeDir="false" afterPath="$PROJECT_DIR$/switch/switch.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/table/bbn.json" beforeDir="false" afterPath="$PROJECT_DIR$/table/bbn.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/table/table.html" beforeDir="false" afterPath="$PROJECT_DIR$/table/table.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/table/table.js" beforeDir="false" afterPath="$PROJECT_DIR$/table/table.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/table/table.less" beforeDir="false" afterPath="$PROJECT_DIR$/table/table.less" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tabnav/bbn.json" beforeDir="false" afterPath="$PROJECT_DIR$/tabnav/bbn.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tabnav/tabnav.html" beforeDir="false" afterPath="$PROJECT_DIR$/tabnav/tabnav.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tabnav/tabnav.js" beforeDir="false" afterPath="$PROJECT_DIR$/tabnav/tabnav.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tabnav/tabnav.less" beforeDir="false" afterPath="$PROJECT_DIR$/tabnav/tabnav.less" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tabnav2/bbn.json" beforeDir="false" afterPath="$PROJECT_DIR$/tabnav2/bbn.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tabnav2/tabnav2.js" beforeDir="false" afterPath="$PROJECT_DIR$/tabnav2/tabnav2.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tabnav2/tabnav2.less" beforeDir="false" afterPath="$PROJECT_DIR$/tabnav2/tabnav2.less" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/textarea/textarea.html" beforeDir="false" afterPath="$PROJECT_DIR$/textarea/textarea.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/textarea/textarea.js" beforeDir="false" afterPath="$PROJECT_DIR$/textarea/textarea.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/timepicker/timepicker.html" beforeDir="false" afterPath="$PROJECT_DIR$/timepicker/timepicker.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/timepicker/timepicker.js" beforeDir="false" afterPath="$PROJECT_DIR$/timepicker/timepicker.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/toolbar/toolbar.html" beforeDir="false" afterPath="$PROJECT_DIR$/toolbar/toolbar.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/toolbar/toolbar.js" beforeDir="false" afterPath="$PROJECT_DIR$/toolbar/toolbar.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/toolbar/toolbar.less" beforeDir="false" afterPath="$PROJECT_DIR$/toolbar/toolbar.less" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tooltip/bbn.json" beforeDir="false" afterPath="$PROJECT_DIR$/tooltip/bbn.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tooltip/tooltip.js" beforeDir="false" afterPath="$PROJECT_DIR$/tooltip/tooltip.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tooltip/tooltip.less" beforeDir="false" afterPath="$PROJECT_DIR$/tooltip/tooltip.less" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tree-input/tree-input.html" beforeDir="false" afterPath="$PROJECT_DIR$/tree-input/tree-input.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tree-input/tree-input.js" beforeDir="false" afterPath="$PROJECT_DIR$/tree-input/tree-input.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tree/bbn.json" beforeDir="false" afterPath="$PROJECT_DIR$/tree/bbn.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tree/tree.html" beforeDir="false" afterPath="$PROJECT_DIR$/tree/tree.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tree/tree.js" beforeDir="false" afterPath="$PROJECT_DIR$/tree/tree.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tree/tree.less" beforeDir="false" afterPath="$PROJECT_DIR$/tree/tree.less" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/treemenu/bbn.json" beforeDir="false" afterPath="$PROJECT_DIR$/treemenu/bbn.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/treemenu/treemenu.html" beforeDir="false" afterPath="$PROJECT_DIR$/treemenu/treemenu.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/treemenu/treemenu.js" beforeDir="false" afterPath="$PROJECT_DIR$/treemenu/treemenu.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/treemenu/treemenu.less" beforeDir="false" afterPath="$PROJECT_DIR$/treemenu/treemenu.less" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/upload/bbn.json" beforeDir="false" afterPath="$PROJECT_DIR$/upload/bbn.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/upload/upload.html" beforeDir="false" afterPath="$PROJECT_DIR$/upload/upload.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/upload/upload.js" beforeDir="false" afterPath="$PROJECT_DIR$/upload/upload.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/upload/upload.less" beforeDir="false" afterPath="$PROJECT_DIR$/upload/upload.less" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/video/bbn.json" beforeDir="false" afterPath="$PROJECT_DIR$/video/bbn.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/video/video.js" beforeDir="false" afterPath="$PROJECT_DIR$/video/video.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/video/video.less" beforeDir="false" afterPath="$PROJECT_DIR$/video/video.less" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vlist/bbn.json" beforeDir="false" afterPath="$PROJECT_DIR$/vlist/bbn.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vlist/vlist.html" beforeDir="false" afterPath="$PROJECT_DIR$/vlist/vlist.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vlist/vlist.js" beforeDir="false" afterPath="$PROJECT_DIR$/vlist/vlist.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vlist/vlist.less" beforeDir="false" afterPath="$PROJECT_DIR$/vlist/vlist.less" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
-    <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -12,20 +202,102 @@
   <component name="CreatePatchCommitExecutor">
     <option name="PATCH_PATH" value="" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
+  <component name="FUSProjectUsageTrigger">
+    <session id="513397470">
+      <usages-collector id="statistics.lifecycle.project">
+        <counts>
+          <entry key="project.closed" value="1" />
+          <entry key="project.open.time.25" value="1" />
+          <entry key="project.opened" value="1" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.open">
+        <counts>
+          <entry key="js" value="3" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.open">
+        <counts>
+          <entry key="JavaScript" value="3" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.edit">
+        <counts>
+          <entry key="js" value="1407" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.edit">
+        <counts>
+          <entry key="JavaScript" value="1407" />
+        </counts>
+      </usages-collector>
+    </session>
+  </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file leaf-file-name="code.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/code/code.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="26">
-              <caret line="191" column="6" lean-forward="false" selection-start-line="191" selection-start-column="6" selection-end-line="191" selection-end-column="6" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <splitter split-orientation="horizontal" split-proportion="0.5">
+      <split-first>
+        <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/code/code.js">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="298">
+                  <caret line="207" column="20" lean-forward="true" selection-start-line="207" selection-start-column="20" selection-end-line="207" selection-end-column="20" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/autocomplete/autocomplete.js">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="775">
+                  <caret line="226" column="22" lean-forward="true" selection-start-line="226" selection-start-column="22" selection-end-line="226" selection-end-column="22" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-first>
+      <split-second>
+        <leaf>
+          <file pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/chart/chart.js">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="571">
+                  <caret line="1456" column="9" lean-forward="true" selection-start-line="1453" selection-start-column="6" selection-end-line="1456" selection-end-column="9" />
+                  <folding>
+                    <element signature="n#style#0;n#stop#0;n#radialGradient#0;n#defs#0;n#!!top" expanded="true" />
+                    <element signature="n#style#0;n#stop#1;n#radialGradient#0;n#defs#0;n#!!top" expanded="true" />
+                    <element signature="n#style#0;n#stop#2;n#radialGradient#0;n#defs#0;n#!!top" expanded="true" />
+                    <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-second>
+    </splitter>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>personal</find>
+      <find>data()</find>
+      <find>emitInput</find>
+      <find>emitInput(</find>
+      <find>fires</find>
+      <find>[]</find>
+      <find>@return</find>
+    </findStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/autocomplete/autocomplete.js" />
+      </list>
+    </option>
   </component>
   <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
   <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
@@ -33,55 +305,40 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="PhpWorkspaceProjectConfiguration" backward_compatibility_performed="true" />
-  <component name="ProjectFrameBounds">
-    <option name="x" value="1200" />
-    <option name="y" value="-37" />
-    <option name="width" value="1200" />
-    <option name="height" value="1957" />
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="1979" />
+    <option name="width" value="1920" />
+    <option name="height" value="838" />
   </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
-    <navigator currentView="ProjectPane" proportions="" version="1">
-      <flattenPackages />
-      <showMembers />
-      <showModules />
-      <showLibraryContents />
-      <hideEmptyPackages />
-      <abbreviatePackageNames />
-      <autoscrollToSource />
-      <autoscrollFromSource />
-      <sortByType />
-      <manualOrder />
+    <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="components" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="components" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="components" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="components" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="code" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-          </PATH>
+          <expand>
+            <path>
+              <item name="components" type="b2602c69:ProjectViewProjectNode" />
+              <item name="components" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="components" type="b2602c69:ProjectViewProjectNode" />
+              <item name="components" type="462c0819:PsiDirectoryNode" />
+              <item name="autocomplete" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="components" type="b2602c69:ProjectViewProjectNode" />
+              <item name="components" type="462c0819:PsiDirectoryNode" />
+              <item name="chart" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="components" type="b2602c69:ProjectViewProjectNode" />
+              <item name="External Libraries" type="bcb0276e:PhpExternalLibrariesNodePatcher$PatchedExternalLibrariesNode" />
+            </path>
+          </expand>
+          <select />
         </subPane>
       </pane>
       <pane id="Scope" />
@@ -94,60 +351,31 @@
     <property name="js.eslint.eslintPackage" value="" />
     <property name="js-jscs-nodeInterpreter" value="/usr/bin/node" />
   </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
   <component name="RunManager">
-    <configuration default="true" type="JavaScriptTestRunnerProtractor" factoryName="Protractor">
-      <config-file value="" />
-      <node-interpreter value="project" />
-      <envs />
-      <method />
-    </configuration>
-    <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug">
-      <method />
-    </configuration>
-    <configuration default="true" type="NodeJSConfigurationType" factoryName="Node.js" path-to-node="project" working-dir="">
-      <method />
-    </configuration>
-    <configuration default="true" type="PHPUnitRunConfigurationType" factoryName="PHPUnit">
-      <TestRunner />
-      <method />
-    </configuration>
-    <configuration default="true" type="PhpBehatConfigurationType" factoryName="Behat">
-      <BehatRunner />
-      <method />
-    </configuration>
-    <configuration default="true" type="PhpLocalRunConfigurationType" factoryName="PHP Console">
-      <method />
-    </configuration>
-    <configuration default="true" type="PhpSpecConfigurationType" factoryName="PHPSpec">
-      <PhpTestRunnerSettings />
-      <method />
-    </configuration>
     <configuration default="true" type="js.build_tools.gulp" factoryName="Gulp.js">
-      <method />
-    </configuration>
-    <configuration default="true" type="js.build_tools.npm" factoryName="npm">
-      <command value="run" />
-      <scripts />
-      <node-interpreter value="project" />
-      <envs />
-      <method />
-    </configuration>
-    <configuration default="true" type="mocha-javascript-test-runner" factoryName="Mocha">
       <node-interpreter>project</node-interpreter>
       <node-options />
-      <working-directory />
-      <pass-parent-env>true</pass-parent-env>
+      <gulpfile />
+      <tasks />
+      <arguments />
       <envs />
-      <ui />
-      <extra-mocha-options />
-      <test-kind>DIRECTORY</test-kind>
-      <test-directory />
-      <recursive>false</recursive>
-      <method />
+      <method v="2" />
     </configuration>
   </component>
-  <component name="ShelveChangesManager" show_recycled="false">
-    <option name="remove_strategy" value="false" />
+  <component name="SvnConfiguration">
+    <configuration />
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -157,52 +385,81 @@
       <option name="presentableId" value="Default" />
       <updated>1513098102158</updated>
       <workItem from="1513098105105" duration="827000" />
+      <workItem from="1537429520302" duration="3550000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="827000" />
+    <option name="totallyTimeSpent" value="4377000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1200" y="-37" width="1200" height="1957" extended-state="6" />
-    <editor active="true" />
+    <frame x="2048" y="0" width="1920" height="1200" extended-state="6" />
     <layout>
-      <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
-      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.2683706" />
+      <window_info id="Structure" order="1" weight="0.25" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Docker" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Database Changes" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Run" order="2" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Version Control" order="7" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Terminal" order="8" />
+      <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
+      <window_info anchor="right" id="Commander" order="0" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="Remote Host" order="3" />
+      <window_info anchor="right" id="Database" order="4" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
-    <option name="processedProjectFiles" value="true" />
+    <option name="version" value="1" />
   </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager />
-    <watches-manager />
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/chart/chart.js</url>
+          <line>1452</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/code/code.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="26">
-          <caret line="191" column="6" lean-forward="false" selection-start-line="191" selection-start-column="6" selection-end-line="191" selection-end-column="6" />
-          <folding />
+        <state relative-caret-position="298">
+          <caret line="207" column="20" lean-forward="true" selection-start-line="207" selection-start-column="20" selection-end-line="207" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/chart/chart.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="571">
+          <caret line="1456" column="9" lean-forward="true" selection-start-line="1453" selection-start-column="6" selection-end-line="1456" selection-end-column="9" />
+          <folding>
+            <element signature="n#style#0;n#stop#0;n#radialGradient#0;n#defs#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#stop#1;n#radialGradient#0;n#defs#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#stop#2;n#radialGradient#0;n#defs#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/autocomplete/autocomplete.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="775">
+          <caret line="226" column="22" lean-forward="true" selection-start-line="226" selection-start-column="22" selection-end-line="226" selection-end-column="22" />
         </state>
       </provider>
     </entry>

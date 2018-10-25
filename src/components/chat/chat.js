@@ -36,6 +36,9 @@
         type: Boolean,
         default: false
       },
+      url: {
+        type: String
+      },
       windows: {
         type: Array,
         default(){
@@ -84,6 +87,10 @@
         return (300 * (i + 1) + 300) < this.lastKnownWidth;
       },
 
+      getMenuFn(){
+        return [];
+      },
+
       chatTo(users){
         if ( !Array.isArray(users) ){
           users = [users];
@@ -107,11 +114,17 @@
           }
           i++;
         }
+        bbn.fn.log("FOUND: " + found.toString());
         if ( found !== false ){
           if ( found !== 0 ){
+            bbn.fn.log("MOVING FROM " + found);
             bbn.fn.move(this.currentWindows, found, 0);
           }
-          this.$set(this.currentWindows[0], 'visible', true);
+          if ( !this.currentVisible ){
+            this.currentVisible = true;
+          }
+          this.currentWindows[0].visible = true;
+          bbn.fn.log(this.currentWindows);
         }
         else{
           this.currentWindows.unshift({
@@ -128,10 +141,6 @@
         this.$emit('send', obj, idx);
       },
 
-      openChat(){
-        bbn.fn.log("openChat");
-      },
-
       getStyle(idx){
         let r = {},
             pos = this.usersVisible ? 300 : 0,
@@ -143,6 +152,28 @@
           i++;
         }
         return {right: pos + 'px'}
+      },
+
+      chatById(idChat){
+        let idx = bbn.fn.search(this.currentWindows, {id: idChat});
+        if ( idx > -1 ){
+          return this.currentWindows[idx];
+        }
+        return false;
+      },
+
+      addUser(idChat, idUser){
+        let chat = this.chatById(idChat);
+        if ( chat && chat.participants.indexOf(idUser) === -1 ){
+          bbn.fn.post(this.url + '/actions/add_user', {id_chat: idChat, id_user: idUser}, (d) => {
+            if ( d.success ){
+              chat.participants.push(idUser);
+            }
+            else{
+              this.alert(bbn._("Impossible to add the user!"))
+            }
+          })
+        }
       },
 
       receive(data){
@@ -163,6 +194,10 @@
           bbn.fn.iterate(data.chats, (chat_info, id_chat) => {
             let idx = bbn.fn.search(this.currentWindows, {id: id_chat});
             if ( idx === -1 ){
+              let idx = bbn.fn.search(this.currentWindows, {id: ''});
+              if ( idx > -1 ){
+                this.currentWindows.splice(idx, 1);
+              }
               this.currentWindows.push({
                 id: id_chat,
                 participants: chat_info.participants,
@@ -170,7 +205,7 @@
                 visible: true
               });
             }
-            else{
+            if ( idx > -1 ){
               if ( !this.currentWindows[idx].visible ){
                 this.$set(this.currentWindows[idx], 'visible', true)
               }
@@ -236,11 +271,61 @@
         data(){
           return {
             currentMessage: '',
-            siteURL: bbn.env.host
+            siteURL: bbn.env.host,
+            chat: null
           }
         },
         methods: {
           get_field: bbn.fn.get_field,
+
+          getMenuFn(){
+            let chat = this.$parent;
+            let res = [
+              {
+                text: bbn._('Mute'),
+                icon: 'zmdi zmdi-volume-off',
+                command: () => {
+
+                }
+              }, {
+                text: bbn._('Exit chat'),
+                icon: 'fas fa-sign-out-alt',
+                command: () => {
+
+                }
+              }, {
+                text: bbn._('Delete messages'),
+                icon: 'fas fa-sign-out-alt',
+                command: () => {
+                  bbn.fn.confirm(bbn._('Are you sure you want to delete all messages for this chat? They will be' +
+                    ' deleted only on your end'), () => {
+                    bbn.fn.log("DELETED")
+                  })
+                }
+              }
+            ];
+            // I am in the participants so if usersOnlineWithoutMe is equal to participants it's still missing one
+            if ( chat.usersOnlineWithoutMe.length >= this.participants.length ){
+              let users = [];
+              bbn.fn.each(chat.usersOnlineWithoutMe, (o, i) => {
+                if ( this.participants.indexOf(o.value) === -1 ){
+                  users.push({
+                    text: bbn.fn.get_field(chat.users, 'value', o.value, 'text'),
+                    icon: 'fas fa-user',
+                    command: () => {
+                      chat.addUser(this.chatId, o.value)
+                    }
+                  });
+                }
+              });
+              res.push({
+                text: bbn._('Add participant'),
+                icon: 'fas fa-plus',
+                items: users
+              });
+            }
+            return res;
+          },
 
           close(idx){
             if ( this.$parent.visibleWindows.length > 1 ){
@@ -300,6 +385,7 @@
         },
         mounted(){
           this.scrollEnd();
+          this.getRef('input').focus()
         },
 
         updated(){

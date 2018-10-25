@@ -1,4 +1,6 @@
 /**
+ * bbn-dropdown component
+ *
  * Created by BBN on 10/02/2017.
  */
 (function($, bbn, kendo){
@@ -7,17 +9,51 @@
   kendo.ui.DropDownList.prototype.options.autoWidth = true;
 
   Vue.component('bbn-dropdown', {
-    mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.dataSourceComponent],
+    /**
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.inputComponent
+     * @mixin bbn.vue.dataSourceComponent
+     */
+    mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.dataSourceComponent, bbn.vue.urlComponent],
     props: {
+    /**
+     * State the type of filter, the allowed values are 'contains', 'startswith' and 'endswith'.
+     *
+     * @prop {String} [startswith] filterValue
+     */
       filterValue: {},
+      /**
+       * The template to costumize the dropdown menu.
+       *
+       * @prop {} template
+       */
       template: {},
+      /**
+       * @todo description
+       *
+       * @prop {} valueTemplate
+       */
       valueTemplate: {},
+      /**
+       * Define the groups for the dropdown menu.
+       * @prop {String} group
+       */
       group: {
         type: String
       },
+      /**
+       * The placeholder of the dropdown.
+       *
+       * @prop {String} placeholder
+       */
       placeholder: {
         type: String
       },
+      /**
+       * Use this prop to give native widget's properties.
+       *
+       * @prop {Object} [{}] cfg
+       */
       cfg: {
         type: Object,
         default(){
@@ -36,6 +72,14 @@
       };
     },
     methods: {
+      /**
+       * States the role of the enter button on the dropdown menu.
+       *
+       * @method _pressEnter
+       * @fires widget.select
+       * @fires widget.open
+       *
+       */
       _pressEnter(){
         if ( this.isOpened ){
           this.widget.select();
@@ -44,6 +88,12 @@
           this.widget.open();
         }
       },
+      /**
+       * Creates the object cfg.
+       *
+       * @method getOptions
+       * @returns {*}
+       */
       getOptions(){
         let cfg = $.extend(bbn.vue.getOptions(this), {
           change: (e) => {
@@ -79,10 +129,16 @@
           }
         }
         return cfg;
-      }
+      },
     },
     mounted(){
-
+      /**
+       * @todo description
+       *
+       * @event mounted
+       * @fires getOptions
+       * @return {Boolean}
+       */
       const vm = this;
       let cfg = this.getOptions();
       if ( this.disabled ){
@@ -91,21 +147,35 @@
       if ( this.placeholder ){
         cfg.optionLabel = this.placeholder;
       }
-      cfg.dataBound = (e) => {
-        if ( !e.sender.options.optionLabel && e.sender.dataSource.data().length && !vm.value ){
-          e.sender.select(0);
-          e.sender.trigger("change");
-        }
-      };
       this.widget = $(this.$refs.element).kendoDropDownList(cfg).data("kendoDropDownList");
+      if ( this.baseUrl && (bbn.env.path.indexOf(this.baseUrl) === 0) && (bbn.env.path.length > this.baseUrl.length) ){
+        let val = bbn.env.path.substr(this.baseUrl.length+1);
+        let idx = bbn.fn.search(cfg.dataSource, this.sourceValue, val);
+        if ( idx > -1 ){
+          this.widget.select(idx);
+          this.widget.trigger("change");
+        }
+      }
+      else if ( !cfg.optionLabel && cfg.dataSource.length && !vm.value ){
+        this.widget.select(0);
+        this.widget.trigger("change");
+      }
+      /*
       if ( !cfg.optionLabel && cfg.dataSource.length && !this.value ){
         this.widget.select(0);
         this.widget.trigger("change");
       }
+      */
       this.ready = true;
 
     },
     computed: {
+      /**
+       * The kendo datasource of the widget.
+       *
+       * @computed dataSource
+       * @return {Array}
+       */
       dataSource(){
         if ( this.source ){
           if ( this.group ){
@@ -123,8 +193,15 @@
       }
     },
     watch:{
+      /**
+       * @watch source
+       * @fires setDataSource
+       */
       source(){
         this.widget.setDataSource(this.dataSource);
+      },
+      value(){
+        this.updateUrl();
       }
     }
   });

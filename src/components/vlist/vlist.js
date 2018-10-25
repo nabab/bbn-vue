@@ -38,27 +38,24 @@
         default: 0
       },
       left: {
-        type: [Number, String],
-        default: null
+        type: [Number]
       },
       right: {
-        type: [Number, String],
-        default: null
+        type: [Number]
       },
       top: {
-        type: [Number, String],
-        default: null
+        type: [Number]
       },
       bottom: {
-        type: [Number, String],
-        default: null
+        type: [Number]
       },
       mapper: {
         type: Function
       }
     },
     data(){
-      let items = [];
+      let items = [],
+          hasIcons = false;
       if ( this.source ){
         items = $.isFunction(this.source) ? this.source() : this.source.slice();
         if ( this.mapper ){
@@ -66,13 +63,19 @@
             return this.mapper(a);
           })
         }
+        bbn.fn.each(items, (a) => {
+          if ( a.icon ){
+            hasIcons = true;
+          }
+        });
       }
       return {
         items: items,
         currentIndex: 0,
         currentHeight: 0,
         currentWidth: 0,
-        focused: false
+        focused: false,
+        hasIcons: hasIcons
       };
     },
     methods: {
@@ -84,23 +87,24 @@
         if ( this.currentHeight ){
           let tW = bbn.env.width,
               tH = bbn.env.height;
-          if ( (this.right !== null) && ((this.right + this.currentWidth) >= tW) ){
+          if ( (this.right !== undefined) && ((this.right + this.currentWidth) >= tW) ){
             left = '';
             right = (bbn.env.width - this.currentWidth) + 'px';
           }
-          else if ( (this.left !== null) && ((this.left + this.currentWidth) >= tW) ){
+          else if ( (this.left !== undefined) && ((this.left + this.currentWidth) >= tW) ){
             right = '';
-            left = (bbn.env.width - this.currentWidth) + 'px';
+            left = (tW < this.currentWidth ? 0 : tW - this.currentWidth) + 'px';
           }
-          if ( (this.bottom !== null) && ((this.bottom + this.currentHeight) >= tH) ){
+          if ( (this.bottom !== undefined) && ((this.bottom + this.currentHeight) >= tH) ){
             top = '';
-            bottom = (bbn.env.height - this.currentHeight) + 'px';
+            bottom = (tH - this.currentHeight) + 'px';
           }
-          else if ( (this.top !== null) && ((this.top + this.currentHeight) >= tH) ){
+          else if ( (this.top !== undefined) && ((this.top + this.currentHeight) >= tH) ){
             bottom = '';
-            top = (bbn.env.height - this.currentHeight) + 'px';
+            top = (tH - this.currentHeight) + 'px';
           }
         }
+        /*
         bbn.fn.warning("GET STYLES");
         bbn.fn.log({
           left: left,
@@ -109,6 +113,7 @@
           bottom: bottom,
           maxHeight: this.maxHeight
         });
+        */
         return {
           left: left,
           right: right,
@@ -118,7 +123,6 @@
         };
       },
       pressKey(e){
-        bbn.fn.log(e);
         switch ( e.key ){
           case "Enter":
           case "Space":
@@ -173,15 +177,19 @@
         if ( this.currentIndex !== idx ){
           this.currentIndex = idx;
           if ( this.items[idx].items ){
-            var $item = $(this.$el).find(" > ul > li").eq(idx),
+            let $item = $(this.$el).find(" > ul > li").eq(idx),
                 offset = $item.offset(),
                 h = $(this.$root.$el).height(),
                 w = $(this.$root.$el).width();
-            this.$set(this.items[idx], "right", offset.left > (w * 0.6) ? Math.round(w - offset.left) : '');
-            this.$set(this.items[idx], "left", offset.left <= (w * 0.6) ? Math.round(offset.left + $item[0].clientWidth) : '');
-            this.$set(this.items[idx], "bottom", offset.top > (h * 0.6) ? Math.round(offset.top + $item[0].clientHeight) : '');
-            this.$set(this.items[idx], "top", offset.top <= (h * 0.6) ? Math.round(offset.top) : '');
-            this.$set(this.items[idx], "maxHeight", (offset.top > (h * 0.6) ? Math.round(offset.top + $item[0].clientHeight) : Math.round(h - offset.top)) + 'px');
+            this.items[idx].right = offset.left > (w * 0.6) ? Math.round(w - offset.left) : null;
+            this.items[idx].left = offset.left <= (w * 0.6) ? Math.round(offset.left + $item[0].clientWidth) : null;
+            this.items[idx].bottom = offset.top > (h * 0.6) ? Math.round(h - offset.top - $item[0].clientHeight) : null;
+            this.items[idx].top = offset.top <= (h * 0.6) ? Math.round(offset.top) : null;
+            this.items[idx].maxHeight = (offset.top > (h * 0.6) ?
+              Math.round(offset.top + $item[0].clientHeight) :
+              Math.round(h - offset.top)
+            ) + 'px';
+            bbn.fn.log('over', this.items[idx])
           }
         }
       },
@@ -195,7 +203,7 @@
         }
         else{
           if ( this.focused ){
-            this.focused.focus();
+            $(this.focused).focus();
           }
           this.$emit('close');
           this.focus = false;
@@ -204,14 +212,14 @@
       select(idx){
         if ( !this.items[idx].disabled && !this.items[idx].items ){
           if ( this.mode === 'options' ){
-            this.$set(this.items[idx], "selected", this.items[idx].selected ? false : true);
+            this.items[idx].selected = !this.items[idx].selected;
           }
           else if ( (this.mode === 'selection') && !this.items[idx].selected ){
-            var prev = bbn.fn.search(this.items, "selected", true);
+            let prev = bbn.fn.search(this.items, "selected", true);
             if ( prev > -1 ){
-              this.$set(this.items[prev], "selected", false);
+              this.items[prev].selected = false;
             }
-            this.$set(this.items[idx], "selected", true);
+            this.items[idx].selected = true;
 
           }
           if ( this.items[idx].command ){
@@ -252,10 +260,21 @@
           */
       })
     },
-    watch:{
+    watch: {
       currentIndex(newVal){
         if ( (newVal === false) && !this.parent ){
           this.$emit("close");
+        }
+      },
+      items(){
+        let hasIcons = false;
+        bbn.fn.each(this.items, (a) => {
+          if ( a.icon ){
+            hasIcons = true;
+          }
+        });
+        if ( this.hasIcons !== hasIcons ){
+          this.hasIcons = hasIcons;
         }
       }
     }

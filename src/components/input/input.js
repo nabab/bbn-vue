@@ -40,6 +40,9 @@
     methods: {
       clear: function(){
         this.emitInput('');
+      },
+      focus(){
+        this.getRef('element').focus()
       }
     },
     data: function(){

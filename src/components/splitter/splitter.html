@@ -8,73 +8,86 @@
   <slot></slot>
   <div v-for="(rs, i) in resizers"
        :class="[
+         'bbn-unselectable',
          'bbn-middle',
          'bbn-splitter-bar',
          'k-header',
          currentOrientation,
-         {'bbn-splitter-resizer': !!rs.pane2}
+         {'bbn-splitter-resizer': !!rs.pane2},
+         realResizerClass(rs)
        ]"
        ref="resizer"
        :style="{
           gridColumn: currentOrientation === 'horizontal' ? rs.position : 1,
           gridRow: currentOrientation === 'vertical' ? rs.position : 1,
+          minWidth: resizerSize + 'px',
+          minHeight: resizerSize + 'px'
         }"
+       @mousedown.prevent.stop="resizeStart($event, rs)"
+       @touchstart.prevent.stop="resizeStart($event, rs)"
   >
-    <div v-if="panes[rs.panec1] && panes[rs.panec2] && (panes[rs.panec1].collapsible || panes[rs.panec2].collapsible)">
-      <i v-if="panes[rs.panec2].collapsed || (
-                 !panes[rs.panec1].addedDiff &&
-                 !panes[rs.panec1].addedSize &&
-                 !panes[rs.panec1].collapsed && (
-                   (rs.panec2 === (panes.length - 1)) ||
-                   !panes[rs.panec2].collapsed
-                 )
-               )"
-         :class="{
-           'bbn-p': true,
-           'fa fa-angle-left': currentOrientation === 'horizontal',
-           'fa fa-angle-top': currentOrientation === 'vertical'
-         }"
-         @click="collapse(rs.panec1, rs.panec2)">
-      </i>
-      <i v-if="panes[rs.panec1].collapsed || (
-                 !panes[rs.panec2].addedDiff &&
-                 !panes[rs.panec2].addedSize &&
-                 !panes[rs.panec2].collapsed && (
-                   (rs.panec1 === 0) ||
-                   !panes[rs.panec2].collapsed
-                 )
-               )"
-         :class="{
-           'bbn-p': true,
-           'fa fa-angle-right': currentOrientation === 'horizontal',
-           'fa fa-angle-bottom': currentOrientation === 'vertical'
-         }"
-         @click="collapse(rs.panec2, rs.panec1)">
-      </i>
-      <i v-if="panes[rs.panec2].collapsed && (
-                 ((rs.panec2 === (panes.length - 1)) && (i === (resizers.length - 1))) ||
-                 (rs.panec1 === (rs.panec2 - 1)) ||
-                 (panes[rs.panec1+1].collapsible)
-               )"
-         :class="{
-           'bbn-p': true,
-           'fa fa-angle-double-left': currentOrientation === 'horizontal',
-           'fa fa-angle-double-top': currentOrientation === 'vertical'
-         }"
-         @click="collapse(rs.panec1, rs.panec2, true)">
-      </i>
-      <i v-if="panes[rs.panec1].collapsed && (
-                 ((rs.panec1 === 0) && (i === 0)) ||
-                 (rs.panec1 === (rs.panec2 - 1)) ||
-                 (panes[rs.panec2-1].collapsible)
-               )"
-         :class="{
-           'bbn-p': true,
-           'fa fa-angle-double-right': currentOrientation === 'horizontal',
-           'fa fa-angle-double-bottom': currentOrientation === 'vertical'
-         }"
-         @click="collapse(rs.panec2, rs.panec1, true)">
-      </i>
+    <div v-if="areCollapsible(rs.panec1, rs.panec2)"
+         class="bbn-splitter-collapser"
+         :style="{fontSize: (resizerSize * 1.2) + 'px'}">
+      <div v-if="isCollapsiblePrev(rs.panec1, rs.panec2)"
+           @click.stop="collapse(rs.panec1, rs.panec2)"
+           :class="{
+             'bbn-p': true,
+             'bbn-w-100': currentOrientation === 'horizontal',
+             'bbn-h-100': currentOrientation === 'vertical',
+             'bbn-c': true
+           }">
+        <i :class="{
+           'fas fa-angle-left': currentOrientation === 'horizontal',
+           'fas fa-angle-up': currentOrientation === 'vertical'
+         }">
+        </i>
+      </div>
+      <div v-if="isCollapsibleNext(rs.panec1, rs.panec2)"
+           @click.stop="collapse(rs.panec2, rs.panec1)"
+           :class="{
+             'bbn-p': true,
+             'bbn-w-100': currentOrientation === 'horizontal',
+             'bbn-h-100': currentOrientation === 'vertical',
+             'bbn-c': true
+           }">
+        <i :class="{
+             'bbn-p': true,
+             'fas fa-angle-right': currentOrientation === 'horizontal',
+             'fas fa-angle-down': currentOrientation === 'vertical'
+           }">
+        </i>
+      </div>
+      <div v-if="isFullyCollapsiblePrev(rs.panec1, rs.panec2, i)"
+           @click.stop="collapse(rs.panec1, rs.panec2, true)"
+           :class="{
+             'bbn-p': true,
+             'bbn-w-100': currentOrientation === 'horizontal',
+             'bbn-h-100': currentOrientation === 'vertical',
+             'bbn-c': true
+           }">
+        <i :class="{
+             'bbn-p': true,
+             'fas fa-angle-double-left': currentOrientation === 'horizontal',
+             'fas fa-angle-double-up': currentOrientation === 'vertical'
+           }">
+        </i>
+      </div>
+      <div v-if="isFullyCollapsibleNext(rs.panec1, rs.panec2, i)"
+           @click.stop="collapse(rs.panec2, rs.panec1, true)"
+           :class="{
+             'bbn-p': true,
+             'bbn-w-100': currentOrientation === 'horizontal',
+             'bbn-h-100': currentOrientation === 'vertical',
+             'bbn-c': true
+           }">
+        <i :class="{
+             'bbn-p': true,
+             'fas fa-angle-double-right': currentOrientation === 'horizontal',
+             'fas fa-angle-double-down': currentOrientation === 'vertical'
+           }">
+        </i>
+      </div>
       <!--i v-if="panes[rs.panec1] &&
                     panes[rs.panec1].collapsible &&
                     !panes[rs.panec1].collapsed && (

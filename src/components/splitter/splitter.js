@@ -4,62 +4,101 @@
 (function($, bbn, kendo){
   "use strict";
 
-  /**
-   * Classic input with normalized appearance
-   */
   Vue.component('bbn-splitter', {
     mixins: [bbn.vue.basicComponent, bbn.vue.optionComponent, bbn.vue.resizerComponent],
     props: {
+      /**
+       * @property string Can be <tt>horizontal</tt>, <tt>vertical</tt>, or <tt>auto</tt> (default)
+       */
       orientation: {
         type: String,
         default: 'auto'
       },
+      /**
+       * @property {boolean} 
+       */
       resizable: {
         type: Boolean,
         default: false
       },
+      /**
+       * @property {boolean}
+       */
       collapsible: {
         type: Boolean,
         default: false
       },
+      /**
+       * @property {boolean}
+       */
       scrollable: {
         type: Boolean,
         default: false
       },
+      /**
+       * @property {number} the size of the resizer element, width if vertical, height if horizontal
+       */
       resizerSize: {
         type: Number,
-        default: 10
+        default: 15
       },
+      /**
+       * @property {string, function} a class name to add on the resizer element 
+       */
       resizerClass: {
         type: [String, Function]
       },
+      /**
+       * @property {number} The minimum size that can have a pane (non collapsed)
+       */
       minPaneSize: {
         type: Number,
-        default: 20
+        default: 40
       }
     },
     data(){
-      return {
-        _mountingTimeout: false,
-        resizeTimeout: false,
+      return  {
+        /**
+         * @var {number} The timeout used to launch the initial process (reset each time a new pane is added)
+         */
         initTimeout: 0,
+        /**
+         * @var {boolean} Will be set to true once the splitter has been resized
+         */
         isResized: false,
         /**
-         * An array consisting of each resizer objects (the bars separating resizable panes).
-         * @returns {Array}
+         * @var {boolean} Will be set to true when the splitter is being resized by the user
+         */
+        isResizing: false,
+        /**
+         * @var {boolean} An object containing info about current user resizing when it occurs
+         */
+        resizeCfg: null,
+        /**
+         * @var {array} An array consisting of each resizer objects (the bars separating resizable panes).
          */
         resizers: [],
+        /**
+         * @var {string}
+         */
         currentOrientation: this.orientation,
+        /**
+         * @var {array} panes' configurations
+         */
         panes: []
       };
     },
     computed: {
+      /**
+       * Return true if at least 2 panes are resizable - and so is the splitter
+       * @return {boolean}
+       */
       isResizable(){
         return (this.resizable || this.collapsible) && (bbn.fn.count(this.panes, {resizable: true}) >= 2)
       },
       /**
        * What will be actually in the CSS for grid-template-columns.
-       * @returns {string}
+       * @return {string}
        */
       columnsCfg(){
         return this.panes.length && (this.currentOrientation === 'horizontal') ?
@@ -67,43 +106,43 @@
       },
       /**
        * What will be actually in the CSS for grid-template-rows.
-       * @returns {string}
+       * @return {string}
        */
       rowsCfg(){
         return this.panes.length && (this.currentOrientation === 'vertical') ?
           this.getFormatted() : 'auto';
       },
       /**
-       * x or y.
-       * @returns {string}
+       * x or y depending on the current orientation.
+       * @return {string}
        */
       currentAxis(){
         return this.currentOrientation === 'horizontal' ? 'x' : 'y'
       },
       /**
-       * left or top.
-       * @returns {string}
-       */
-      currentOffType(){
-        return this.currentOrientation === 'horizontal' ? 'left' : 'top';
-      },
-      /**
-       * width or height.
-       * @returns {string}
+       * width or height depending on the current orientation.
+       * @return {string}
        */
       currentSizeType(){
         return this.currentOrientation === 'horizontal' ? 'Width' : 'Height';
       },
       /**
+       * width or height depending on the current orientation.
+       * @return {string}
+       */
+      currentOffsetType(){
+        return this.currentOrientation === 'horizontal' ? 'left' : 'top';
+      },
+      /**
        * Size of the container as given by bbn.
-       * @returns {string}
+       * @return {string}
        */
       currentSize(){
         return this['lastKnown' + this.currentSizeType];
       },
       /**
-       * Difference between currentSize (container's size) and addition of panes' sizes.
-       * @returns {bbn-splitter.computed.currentSize}
+       * Available for the panes: difference between currentSize (container's size) and the total of resizers' sizes.
+       * @return {bbn-splitter.computed.currentSize}
        */
       availableSize(){
         let availableSize = this.currentSize;
@@ -117,7 +156,7 @@
     methods: {
       /**
        * Returns the calculated grid-template-rows or grid-template-columns as CSS string.
-       * @returns {string}
+       * @return {string}
        */
       getFormatted(){
         /**
@@ -126,12 +165,15 @@
          */
         let pos = 1,
             lastVisibleResizer = false,
-            tmp = this.panes.map((a, i) => {
+            tmp = this.panes.map((a) => {
                   /**
-                   * The additions of the 2 differences: difference is the current difference while resizing while oDifference is the original difference resulting from other resizings.
+                   * The additions of the 3 differences: 
+                   * - currentDiff is the current difference while resizing
+                   * - savedDiff is the original difference resulting from other resizings
+                   * - tmpDiff is the temporary difference applied from other(s) collapsed pane(s)
                    * @type {number}
                    */
-              let diff = a.difference + a.oDifference + a.addedDiff,
+              let diff = a.currentDiff + a.savedDiff + a.tmpDiff,
                  /**
                   * The resulting string for the CSS property.
                   * @type {string}
@@ -140,7 +182,7 @@
                   rsAdded = false;
               // If position is not the one expected it means a resizer is before so it's added as a column
               while ( a.position > pos ){
-                sz += lastVisibleResizer ? '0 ' : '8px ';
+                sz += lastVisibleResizer ? '0 ' : this.resizerSize + 'px ';
                 lastVisibleResizer = true;
                 pos++;
               }
@@ -182,17 +224,17 @@
       /**
        * returns the resizer's class according to its resizerClass prop.
        * @param resizer
-       * @returns {*}
+       * @return {*}
        */
       realResizerClass(resizer){
         if ( $.isFunction(this.resizerClass) ){
           return this.resizerClass(resizer);
         }
-        return '';
+        return this.resizerClass || '';
       },
       /**
        * Returns orientation based on the largest side.
-       * @returns {string}
+       * @return {string}
        */
       getOrientation(){
         return this.lastKnownWidth > this.lastKnownHeight ? 'horizontal' : 'vertical';
@@ -264,18 +306,18 @@
           this.panes.splice(0, this.panes.length);
           // position starts at 1
           let currentPosition = 1,
-              tmp = [];
+              tmp             = [];
           // If 1st pane is collapsible we add a resizer at the start
           this.$children.forEach((pane, i) => {
             // Defining the panes base on the content
             if ( pane.$vnode.componentOptions.tag === 'bbn-pane' ){
-              let isPercent = false,
-                  isFixed = false,
-                  isNumber = false,
-                  props = JSON.parse(JSON.stringify(pane.$vnode.componentOptions.propsData)),
-                  resizable = this.resizable && (props.resizable !== false),
-                  collapsible = this.collapsible && (props.collapsible !== false),
-                  value = parseInt(props.size) || 0;
+              let isPercent   = false,
+                  isFixed     = false,
+                  isNumber    = false,
+                  props       = JSON.parse(JSON.stringify(pane.$vnode.componentOptions.propsData)),
+                  resizable   = (this.resizable || props.resizable) && (props.resizable !== false),
+                  collapsible = (this.collapsible || props.collapsible) && (props.collapsible !== false),
+                  value       = parseInt(props.size) || 0;
               if ( props.size ){
                 isFixed = true;
                 if ( props.size === 'auto' ){
@@ -295,10 +337,10 @@
               let obj = $.extend({
                 index: i,
                 value: value,
-                difference: 0,
-                oDifference: 0,
+                currentDiff: 0,
+                savedDiff: 0,
                 addedSize: '',
-                addedDiff: 0,
+                tmpDiff: 0,
                 collapsed: false,
                 isPercent: isPercent,
                 isFixed: isFixed,
@@ -346,11 +388,11 @@
                   pane1: false,
                   pane2: false
                 };
-                if ( this.resizable && pane.resizable && (prev !== false) ){
+                if ( pane.resizable && (prev !== false) ){
                   o.pane1 = prev;
                   o.pane2 = idx;
                 }
-                if ( this.collapsible && pane.collapsible && (prevc !== false) ){
+                if ( pane.collapsible && (prevc !== false) ){
                   o.panec1 = prevc;
                   o.panec2 = idx;
                 }
@@ -359,6 +401,12 @@
               }
             }
             pane.position = currentPosition;
+            /*
+            if ( pane.size === undefined ){
+              pane.isNumber = true;
+              pane.size = Math.floor(this.availableSize / tmp.length) + (idx < tmp.length - 1 ? 0 : this.availableSize % tmp.length)
+            }
+            */
             this.panes.push(pane);
             currentPosition++;
             if ( isResizable && pane.isResizable ){
@@ -376,7 +424,6 @@
               ){
                 bbn.fn.log("------ case 4", idx + ' position ' + currentPosition);
                 if (
-                  this.resizable &&
                   pane.resizable &&
                   (prev === false) &&
                   next &&
@@ -386,7 +433,6 @@
                   o.pane2 = next;
                 }
                 if (
-                  this.collapsible &&
                   pane.collapsible &&
                   (prevc === false) &&
                   nextc &&
@@ -403,7 +449,126 @@
             }
           });
           this.$forceUpdate();
-          if ( this.isResizable ){
+          this.ready = true;
+          this.selfEmit(true);
+        }, 200);
+      },
+      areCollapsible(idxPane1, idxPane2){
+        return this.panes[idxPane1] &&
+          this.panes[idxPane2] && (
+            this.panes[idxPane1].collapsible ||
+            this.panes[idxPane2].collapsible
+          );
+      },
+      isCollapsiblePrev(idxPane1, idxPane2){
+        return this.panes[idxPane2].collapsed || (
+          !this.panes[idxPane1].collapsed && (
+            (idxPane2 === (this.panes.length - 1)) ||
+            !this.panes[idxPane2].collapsed
+          )
+        )
+      },
+      isCollapsibleNext(idxPane1, idxPane2){
+        return this.panes[idxPane1].collapsed || (
+          !this.panes[idxPane2].collapsed && (
+            (idxPane1 === 0) ||
+            !this.panes[idxPane2].collapsed
+          )
+        )
+      },
+      isFullyCollapsiblePrev(idxPane1, idxPane2, idxResizer){
+        return this.panes[idxPane2].collapsed && (
+          (
+            (idxPane2 === (this.panes.length - 1)) &&
+            (idxResizer === (this.resizers.length - 1))
+          ) ||
+          (idxPane1 === (idxPane2 - 1)) ||
+          this.panes[idxPane1+1].collapsible
+        )
+      },
+      isFullyCollapsibleNext(idxPane1, idxPane2, idxResizer){
+        return this.panes[idxPane1].collapsed && (
+          ((idxPane1 === 0) && (idxResizer === 0)) ||
+          (idxPane1 === (idxPane2 - 1)) ||
+          (this.panes[idxPane2-1].collapsible)
+        )
+      },
+
+      resizeDrag(e){
+        if ( this.isResizing && this.resizeCfg && this.resizeCfg.panes ){
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          let diff = (e['client' + this.currentAxis.toUpperCase()] || event.touches[0]['page' + this.currentAxis.toUpperCase()]) - this.resizeCfg[this.currentOffsetType];
+          if ( diff >= this.resizeCfg.max ){
+            diff = this.resizeCfg.max;
+          }
+          else if ( diff <= this.resizeCfg.min ){
+            diff = this.resizeCfg.min;
+          }
+          this.panes[this.resizeCfg.resizer.pane1].currentDiff = diff;
+          this.panes[this.resizeCfg.resizer.pane2].currentDiff = - diff;
+        }
+      },
+
+      resizeEnd(e){
+        if ( this.isResizing && this.resizeCfg && this.resizeCfg.panes ){
+          let diff = (e['client' + this.currentAxis.toUpperCase()] || event.touches[0]['page' + this.currentAxis.toUpperCase()]) - this.resizeCfg[this.currentOffsetType];
+          if ( diff >= this.resizeCfg.max ){
+            diff = this.resizeCfg.max;
+          }
+          else if ( diff <= this.resizeCfg.min ){
+            diff = this.resizeCfg.min;
+          }
+          this.panes[this.resizeCfg.resizer.pane1].currentDiff = 0;
+          this.panes[this.resizeCfg.resizer.pane2].currentDiff = 0;
+          this.panes[this.resizeCfg.resizer.pane1].savedDiff = this.panes[this.resizeCfg.resizer.pane1].savedDiff + diff;
+          this.panes[this.resizeCfg.resizer.pane2].savedDiff = this.panes[this.resizeCfg.resizer.pane2].savedDiff - diff;
+          this.isResizing = false;
+          this.resizeCfg = null;
+          document.body.removeEventListener("touchmove", this.resizeDrag);
+          document.body.removeEventListener("mousemove", this.resizeDrag);
+          document.body.removeEventListener("touchend", this.resizeEnd);
+          document.body.removeEventListener("touchcancel", this.resizeEnd);
+          document.body.removeEventListener("mouseup", this.resizeEnd);
+          document.body.removeEventListener("mouseleave", this.resizeEnd);
+          this.selfEmit();
+        }
+      },
+
+      testMove(){
+        appui.notify("MOVE")
+      },
+
+
+      resizeStart(e, rs){
+        bbn.fn.log(this.isResizable);
+        if ( this.isResizable &&
+          !this.isResizing &&
+          this.panes[rs.panec1] && !this.panes[rs.panec1].collapsed &&
+          this.panes[rs.panec2] && !this.panes[rs.panec2].collapsed
+        ){
+          this.isResizing = true;
+          document.body.addEventListener("touchmove", this.resizeDrag);
+          document.body.addEventListener("mousemove", this.resizeDrag);
+          document.body.addEventListener("touchend", this.resizeEnd);
+          document.body.addEventListener("touchcancel", this.resizeEnd);
+          document.body.addEventListener("mouseup", this.resizeEnd);
+          document.body.addEventListener("mouseleave", this.resizeEnd);
+          let vue1 = bbn.vue.find(this, 'bbn-pane', rs.pane1),
+              vue2 = bbn.vue.find(this, 'bbn-pane', rs.pane2),
+              pos = e.target.getBoundingClientRect(),
+              pos1 = vue1.$el.getBoundingClientRect(),
+              pos2 = vue2.$el.getBoundingClientRect();
+          this.resizeCfg = {
+            resizer: rs,
+            panes: [vue1, vue2],
+            min: -pos1[this.currentSizeType.toLowerCase()] + this.minPaneSize,
+            max: pos2[this.currentSizeType.toLowerCase()] - this.minPaneSize - this.resizerSize
+          };
+          this.resizeCfg[this.currentOffsetType] = pos[this.currentOffsetType];
+          bbn.fn.log("START", this.resizeCfg, e, "------------");
+        }
+        /*
             setTimeout(() =>{
               this.resizers.forEach((a, i) => {
                 if ( a.pane2 ){
@@ -417,21 +582,23 @@
                     helper: 'clone',
                     containment: "parent",
                     opacity: 0.1,
+                    zIndex: 6000,
                     axis: this.currentAxis,
                     start: (e, ui) => {
                       if ( (a.panec1 && a.panec1.collapsed) || (a.panec2 && a.panec2.collapsed) ){
                         e.preventDefault();
+                        bbn.fn.log("PREVENTING");
                         return false;
                       }
                       /**
                        * Pane on the left side of the resizer
                        * @type {ClientRect}
-                       */
+                       *
                       let pos1 = pane1.$el.getBoundingClientRect(),
                           /**
                            * Pane on the right side of the resizer
                            * @type {ClientRect}
-                           */
+                           *
                           pos2 = pane2.$el.getBoundingClientRect();
                       min = -pos1.width;
                       max = pos2.width;
@@ -439,15 +606,15 @@
                     },
                     drag: (e, ui) =>{
                       let diff = ui.position[prop] - ui.originalPosition[prop];
-                      //bbn.fn.log(diff, max, min);
+                      bbn.fn.log(diff, max, min);
                       if ( diff >= max ){
                         diff = max - 5;
                       }
                       else if ( diff <= min ){
                         diff = min + 5;
                       }
-                      this.$set(this.panes[a.pane2], 'difference', -diff);
-                      this.$set(this.panes[a.pane1], 'difference', diff);
+                      this.$set(this.panes[a.pane2], 'currentDiff', -diff);
+                      this.$set(this.panes[a.pane1], 'currentDiff', diff);
                     },
                     stop: (e, ui) =>{
                       let diff = ui.position[prop] - ui.originalPosition[prop];
@@ -458,10 +625,10 @@
                         diff = min + 5;
                       }
                       bbn.fn.log(diff, max, min);
-                      this.$set(this.panes[a.pane2], 'difference', 0);
-                      this.$set(this.panes[a.pane1], 'difference', 0);
-                      this.$set(this.panes[a.pane2], 'oDifference', this.panes[a.pane2].oDifference - diff);
-                      this.$set(this.panes[a.pane1], 'oDifference', this.panes[a.pane1].oDifference + diff);
+                      this.$set(this.panes[a.pane2], 'currentDiff', 0);
+                      this.$set(this.panes[a.pane1], 'currentDiff', 0);
+                      this.$set(this.panes[a.pane2], 'savedDiff', this.panes[a.pane2].savedDiff - diff);
+                      this.$set(this.panes[a.pane1], 'savedDiff', this.panes[a.pane1].savedDiff + diff);
                       this.selfEmit(true);
                     }
                   })
@@ -469,46 +636,45 @@
               });
             }, 200)
           }
-          this.ready = true;
-          this.selfEmit(true);
-        }, 200);
+          */
       },
       collapse(toCollapse, toUpdate, full){
         if ( this.collapsible && this.panes[toCollapse] && this.panes[toUpdate] ){
           let collapsing = !this.panes[toCollapse].collapsed,
               smaller = collapsing ? toCollapse : toUpdate,
               bigger = collapsing ? toUpdate : toCollapse,
-              diff1 = this.panes[smaller].oDifference,
-              diff2 = this.panes[bigger].oDifference;
+              diff1 = this.panes[smaller].savedDiff,
+              diff2 = this.panes[bigger].savedDiff;
           bbn.fn.log(toCollapse, toUpdate, smaller, bigger, diff1, diff2);
+          // Not a full collapse (=- double) but with a already collapsed pane
           if ( !full && (this.panes[toCollapse].collapsed || this.panes[toUpdate].collapsed) ){
-            this.$set(this.panes[smaller], 'addedSize', '');
-            this.$set(this.panes[smaller], 'addedSize', '');
-            this.$set(this.panes[bigger], 'addedDiff', 0);
-            this.$set(this.panes[bigger], 'addedDiff', 0);
-            this.$set(this.panes[smaller], 'collapsed', false);
-            this.$set(this.panes[bigger], 'collapsed', false);
+            this.panes[smaller].addedSize = '';
+            this.panes[bigger].addedSize = '';
+            this.panes[smaller].tmpDiff = 0;
+            this.panes[bigger].tmpDiff =  0;
+            this.panes[smaller].collapsed = false;
+            this.panes[bigger].collapsed =  false;
           }
           // The other is also collapsed and the double arrow is clicked: switching
           else if ( full && (this.panes[toUpdate].collapsed === collapsing) ){
-            this.$set(this.panes[bigger], 'addedDiff', diff2);
-            this.$set(this.panes[smaller], 'addedDiff', 0);
+            this.panes[bigger].tmpDiff = diff1 - this.resizerSize;
+            this.panes[smaller].tmpDiff = 0;
             if ( this.panes[smaller].size ){
-              this.$set(this.panes[bigger], 'addedSize', this.panes[smaller].size)
+              this.panes[bigger].addedSize = this.panes[smaller].size
             }
-            this.$set(this.panes[bigger], 'collapsed', false);
-            this.$set(this.panes[smaller], 'collapsed', true);
+            this.panes[bigger].collapsed = false;
+            this.panes[smaller].collapsed = true;
           }
           else{
             if ( this.panes[toCollapse].size && this.panes[toUpdate].size ){
-              this.$set(this.panes[bigger], 'addedSize', this.panes[smaller].size);
+              this.panes[bigger].addedSize =  this.panes[smaller].size;
             }
             else{
-              this.$set(this.panes[bigger], 'addedSize', 'auto');
+              this.panes[bigger].addedSize = 'auto';
             }
-            this.$set(this.panes[bigger], 'addedDiff', diff1);
-            this.$set(this.panes[smaller], 'addedDiff', 0);
-            this.$set(this.panes[toCollapse], 'collapsed', collapsing);
+            this.panes[bigger].tmpDiff = diff1 - this.resizerSize;
+            this.panes[smaller].tmpDiff = 0;
+            this.panes[toCollapse].collapsed =  collapsing;
           }
         }
       },
@@ -541,7 +707,7 @@
       }
     },
     updated(){
-      this.onResize();
+      //this.onResize();
     },
     watch: {
       orientation(newVal, oldVal){

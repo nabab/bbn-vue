@@ -326,7 +326,8 @@
           this.open($.extend(o, {
             maximizable: false,
             closable: false,
-            scrollable: false
+            scrollable: false,
+            resizable: false
           }));
 
         }
@@ -388,7 +389,7 @@
           if ( !o.noText ){
             o.noText = this.noText;
           }
-          o.content = '<div class="bbn-lpadded bbn-large">' + o.content + '</div>';
+          o.content = '<div class="bbn-lpadded bbn-medium">' + o.content + '</div>';
           o.footer = {
             template: `
       <div class="k-button-group k-dialog-buttongroup k-dialog-button-layout-stretched bbn-flex-width">
@@ -538,12 +539,6 @@
           minHeight: {
             type: [String, Number]
           },
-          maxWidth: {
-            type: [String, Number]
-          },
-          maxHeight: {
-            type: [String, Number]
-          },
           maximizable: {
             type: Boolean,
             default: true
@@ -620,6 +615,8 @@
             closingFunctions: fns,
             showContent: false,
             popup: false,
+            maxHeight: null,
+            maxWidth: null
           }
         },
 
@@ -646,34 +643,37 @@
 
         methods: {
           onResize(){
-            if ( this.realHeight === 'auto' ){
-              let target = $('div.bbn-scroll-container', this.$refs.container[0])[0],
+            if ( this.popup ){
+              this.maxHeight = (this.popup.$el.clientHeight - 50) + 'px';
+              this.maxWidth = this.popup.$el.clientWidth + 'px';
+              if ( this.realHeight === 'auto' ){
+                let target = $('div.bbn-scroll-container', this.$refs.container[0])[0],
+                    height = target ? target.scrollHeight : 0;
+                if ( height ){
+                  height += 50;
+                }
+                else {
+                  target = $('div.bbn-flex-height', this.$refs.container[0])[0];
                   height = target ? target.scrollHeight : 0;
-
-              if ( height ){
-                //height += 50;
+                }
+                if ( !height ){
+                  height = '80%';
+                }
+                else if ( height > this.maxHeight ){
+                  height = this.maxHeight + 'px';
+                }
+                else{
+                  height += 'px';
+                }
+                this.$refs.container[0].style.height = height;
               }
-              else {
-                target = $('div.bbn-flex-height', this.$refs.container[0])[0];
-                height = target ? target.scrollHeight : 0;
-              }
-              if ( !height ){
-                height = '90%';
-              }
-              else if ( height > bbn.env.height ){
-                height = bbn.env.height + 'px';
-              }
-              else{
-                height += 'px';
-              }
-              this.$refs.container[0].style.height = height;
+              this.$nextTick(() => {
+                let scroll = bbn.vue.find(this, 'bbn-scroll');
+                if ( scroll ){
+                  scroll.selfEmit(true);
+                }
+              });
             }
-            this.$nextTick(() => {
-              let scroll = bbn.vue.find(this, 'bbn-scroll');
-              if ( scroll ){
-                scroll.selfEmit(true);
-              }
-            });
           },
           addClose(fn){
             for ( let i = 0; i < arguments.length; i++ ){
@@ -711,15 +711,11 @@
               this.$el.style.display = 'block';
               this.$nextTick(() => {
                 this.$emit("close", this);
-                bbn.fn.log("EMITTING VLOSE");
                 if ( this.afterClose ){
                   this.afterClose(this);
                 }
               })
             }
-          },
-          onShow(){
-            this.onResize();
           }
         },
         created(){
@@ -731,9 +727,6 @@
             $(this.getRef('window')).resizable({
               handles: "se",
               containment: ".bbn-popup",
-              resize: () => {
-                this.selfEmit(true);
-              },
               stop: () => {
                 this.selfEmit(true);
               }

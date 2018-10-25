@@ -24,28 +24,16 @@
         </div>
         <div class="bbn-block bbn-h-100 bbn-vmiddle" style="width: 70px">
           <div class="bbn-global-search bbn-vmiddle bbn-lg">
-            <bbn-autocomplete id="recherche"
-                              :delay="500"
-                              source-text="nom"
-                              source-value="id"
-                              :clear-button="false"
-                              :suggest="true"
-                              source="adherents"
-                              ref="search"
-                              placeholder="?"
-                              v-model="search"
-                              @focus="focusSearch"
-                              icon="fa fa-search"
-                              @blur="blurSearch"
-                              @change="selectSearch"
-                              :min-length="1"
-                              :template="tplSearch"
-                              style="z-index: 10">
-            </bbn-autocomplete>
+            <search-bar v-if="searchBar"
+                        id="recherche"
+                        ref="searchBar"
+                        :source="searchBar"
+            ></search-bar>
           </div>
         </div>
         <div class="bbn-h-100 bbn-splitter-top-center bbn-flex-fill">
-          <bbn-fisheye :del-url="plugins['appui-menu'] + '/shortcuts/delete'"
+          <bbn-fisheye v-if="plugins['appui-menu']"
+                       :del-url="plugins['appui-menu'] + '/shortcuts/delete'"
                        :ins-url="plugins['appui-menu'] + '/shortcuts/insert'"
                        :min-index="3"
                        :z-index="3"
@@ -84,6 +72,7 @@
     <bbn-pane ref="main">
       <bbn-tabnav :autoload="true"
                   :source="list"
+                  :storage="true"
                   :observer="true"
                   ref="tabnav">
       </bbn-tabnav>
@@ -94,10 +83,12 @@
               class="k-header"
               overflow="visible">
       <div class="bbn-w-50 bbn-h-100">
-        <bbn-loading ref="loading"></bbn-loading>
+        <bbn-loadbar ref="loading"></bbn-loadbar>
       </div>
       <div class="bbn-h-100 bbn-vmiddle" style="float: right; width: 8rem;">
-        <bbn-chat ref="chat"
+        <bbn-chat v-if="plugins['appui-chat']"
+                  ref="chat"
+                  :url="plugins['appui-chat']"
                   :user-id="app.user.id"
                   :users="app.users"
                   :online-users="usersOnline"
@@ -106,7 +97,7 @@
                   :groups="app.groups">
         </bbn-chat>
       </div>
-      <div v-if="Object.keys(plugins).indexOf('appui-task') > -1"
+      <div v-if="plugins['appui-task']"
            class="bbn-h-100 bbn-vmiddle"
            style="float: right; width: 8rem;"
       >

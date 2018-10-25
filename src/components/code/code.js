@@ -1,8 +1,6 @@
 /**
- * Created by BBN Solutions.
- * User: Loredana Bruno
- * Date: 20/02/17
- * Time: 16.21
+ * bbn-code component
+ *
  */
 
 

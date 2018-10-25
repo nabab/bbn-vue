@@ -167,6 +167,7 @@
 
       // Emits scroll event
       normalize(){
+        bbn.fn.log("normalize scrollX");
         let e = new Event('scroll');
         this.$emit('scroll', e, this.left);
       },

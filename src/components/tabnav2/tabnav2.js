@@ -496,7 +496,7 @@
       close(idx, force){
         bbn.fn.log("CLOSING", idx, this.selected);
         if ( this.tabs[idx] && !this.tabs[idx].static && !this.tabs[idx].pinned ){
-          let ev = $.Event();
+          let ev = $.Event('close');
           if ( this.isUnsaved &&
             this.tabs[idx].isUnsaved &&
             this.unsavedTabs.length &&

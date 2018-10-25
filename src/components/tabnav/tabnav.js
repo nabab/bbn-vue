@@ -24,7 +24,7 @@
    * @param {boolean|number} selected - The index of the currently selected tab, and false otherwise.
    */
   Vue.component("bbn-tabnav", {
-    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent, bbn.vue.localStorageComponent, bbn.vue.closeComponent, bbn.vue.observerComponent],
+    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent, bbn.vue.localStorageComponent, bbn.vue.closeComponent, bbn.vue.observerComponent, bbn.vue.urlComponent],
     props: {
        url: {
         type: String,
@@ -80,6 +80,7 @@
           titles: '',
           num: 0
         },
+        slotSource: [],
         history: [],
         currentURL: '',
         baseURL: baseURL ? baseURL + '/' : '',
@@ -203,9 +204,9 @@
               misc = $(misc);
             }
             // Is element in the titles?
-            var $titles = misc.closest("ul.k-tabstrip-items").children("li.k-item");
+            let $titles = misc.closest("ul.k-tabstrip-items").children("li.k-item");
             if ( $titles.length ){
-              var $title = misc.is("li.k-item") ? misc : misc.closest("li.k-item");
+              let $title = misc.is("li.k-item") ? misc : misc.closest("li.k-item");
               misc = $titles.index($title);
             }
             // Or in the content?
@@ -222,7 +223,7 @@
               }
               // If the element is in full screen mode
               if ( $panel.hasClass('bbns-tab-full-screen') ){
-                var $prev = $(".bbns-tab-before-full-screen:first", vm.el);
+                let $prev = $(".bbns-tab-before-full-screen:first", vm.el);
                 misc = $prev.is("div.bbns-tab") ?
                   $(vm.$el).children("div.bbns-tab,div.bbn-loader").index($prev) + 1 : 0;
               }
@@ -233,7 +234,7 @@
           }
         }
         if ( !vm.isValidIndex(misc) && force ) {
-          for ( var i = 0; i < vm.tabs.length; i++ ){
+          for ( let i = 0; i < vm.tabs.length; i++ ){
             if ( !vm.tabs[i].disabled ){
               if ( vm.tabs[i].default ){
                 return i;
@@ -268,7 +269,7 @@
 
       // Returns the current URL from the root tabNav without the hostname (if it has a baseURL it will start after)
       getFullURL(idx, force){
-        var url = this.getURL(idx, force);
+        let url = this.getURL(idx, force);
         if ( url !== false ){
           return this.getFullBaseURL() + url;
         }
@@ -286,7 +287,7 @@
       },
 
       getFullCurrentURL(idx, force){
-        var url = this.getCurrentURL(idx, force);
+        let url = this.getCurrentURL(idx, force);
         if ( url !== false ){
           return this.getFullBaseURL() + url;
         }
@@ -295,22 +296,23 @@
 
       // Returns the url relative to the current tabNav from the given url
       parseURL(fullURL){
-        var vm = this,
+        let vm = this,
             fullBaseURL = vm.fullBaseURL;
         if ( fullURL === undefined ){
           return '';
         }
         if ( typeof(fullURL) !== 'string' ){
-          return fullURL.toString();
+          fullURL = fullURL.toString();
         }
         if ( fullURL.indexOf(bbn.env.root) === 0 ){
           fullURL = fullURL.substr(bbn.env.root.length);
         }
-        if ( fullBaseURL === (fullURL + '/') ){
+        fullURL = bbn.fn.removeTrailingChars(fullURL, '/');
+        if ( (fullBaseURL === fullURL)  || (fullURL === '') ){
           return '';
         }
         if ( fullBaseURL && (fullURL.indexOf(fullBaseURL) === 0) ){
-          return fullURL.substr(fullBaseURL.length);
+          fullURL = fullURL.substr(fullBaseURL.length);
         }
         /*if ( vm.baseURL && (url.indexOf(vm.baseURL) === 0) ){
          return url.substr(vm.baseURL.length);
@@ -322,7 +324,7 @@
       },
 
       activateDefault(){
-        var vm = this,
+        let vm = this,
             idx = vm.getIndex('', true);
         if ( vm.isValidIndex(idx) ){
           this.activate(this.tabs[idx].current ? this.tabs[idx].current : this.tabs[idx].url);
@@ -372,66 +374,67 @@
        */
       activate(url, force){
 
+        url = bbn.fn.removeTrailingChars(url, '/');
         // if no parameter is passed we use the current url
-        var vm = this,
-            idx,
-            tab,
+        let vm = this,
+            idx= vm.getIndex(url),
             subtab;
-        bbn.fn.info(url);
         //alert(this.fullBaseURL + ' ------- ' + this.currentURL + ' ---- ' + url);
-        //bbn.fn.log("url before parse: " + url);
+        bbn.fn.log("url before parse: " + url);
         //url = vm.parseURL(url);
         //bbn.fn.log("url after parse: " + url);
         // either the requested url or the url corresponding to the target index
 
         // No URL has been given -> we activate the default tab
         if ( !url ){
-          return vm.activateDefault();
+          return this.activateDefault();
         }
-        idx = vm.getIndex(url);
         // No index found: loading or error
-        if ( !vm.isValidIndex(idx) ){
-          for ( var i = 0; i < vm.tabs.length; i++ ){
+        //bbn.fn.log("valid index: " + this.isValidIndex(idx));
+        if ( !this.isValidIndex(idx) ){
+          for ( let i = 0; i < this.tabs.length; i++ ){
             if (
-              ((url + '/').indexOf(vm.tabs[i].url) === 0) &&
-              (subtab = vm.getSubTabNav(i))
+              (
+                (url === this.tabs[i].url) ||
+                ((url + '/').indexOf(this.tabs[i].url) === 0)
+              ) &&
+              (subtab = this.getSubTabNav(i))
             ){
-              return subtab.activate(url.substr(vm.tabs[idx].url.length));
+              //bbn.fn.log("ACTIAVTE SUBTAB WOITH URL " + url.substr(this.tabs[i].url.length + 1));
+              return subtab.activate(url === this.tabs[i].url ? '' : url.substr(this.tabs[i].url.length + 1));
             }
           }
           // autoload is set to true we launch the link function which will activate the newly created tab
           if ( vm.autoload ){
             //alert(this.baseURL + '----NOT VALID----' + url);
-            //bbn.fn.log("link from autoload: " + url);
+            //bbn.fn.log("link from autoload: " + url, vm);
             vm.load(url, force);
           }
           else{
-            new Error(
+            bbn.fn.error(
               "Impossible to find an index for " + url + " in element with baseURL " +
               vm.getFullBaseURL()
             );
           }
         }
         // Index exists but content not loaded yet
-        else if ( vm.tabs[idx].load && !vm.tabs[idx].disabled && (vm.tabs[idx].load !== false) ){
-          //alert(this.baseURL + '----VALID----' + url);
-          //vm.selected = idx;
+        else if ( vm.tabs[idx].load && !vm.tabs[idx].disabled && !vm.tabs[idx].loading ){
           vm.load(url, force);
         }
         else if ( !vm.tabs[idx].disabled ){
-          var subtab = vm.getSubTabNav(idx);
+          vm.selected = idx;
+          let subtab = vm.getSubTabNav(idx);
           if ( subtab && subtab.ready ){
-            subtab.activate(url.substr(vm.tabs[idx].url.length), force);
+            subtab.activate(url.substr(vm.tabs[idx].url.length+1), force);
           }
           else if ( force && vm.autoload ){
             this.reload(idx);
           }
-          vm.selected = idx;
         }
 
         return this;
         /*
-        var // actual tab
+        let // actual tab
           $tab = vm.getTab(idx),
           // Container
           $cont = vm.getContainer(idx),
@@ -492,7 +495,7 @@
 
       close(idx, force){
         if ( this.tabs[idx] && !this.tabs[idx].static && !this.tabs[idx].pinned ){
-          let ev = $.Event();
+          let ev = $.Event('close');
           if ( this.isUnsaved &&
             this.tabs[idx].isUnsaved &&
             this.unsavedTabs.length &&
@@ -573,6 +576,14 @@
             )
           )
         ){
+          if ( !obj.current ){
+            obj.current = bbn.env.path.indexOf(this.getFullBaseURL() + obj.url) === 0 ?
+              bbn.env.path.substr(this.getFullBaseURL().length) : obj.url;
+            bbn.fn.log("CREATING CURRENT", this.getFullBaseURL(), obj.url, bbn.env.path, obj.current);
+          }
+          else if ( obj.current.indexOf(obj.url) !== 0 ){
+            obj.current = obj.url;
+          }
           index = vm.search(obj.url);
           obj.isUnsaved = false;
           obj.events = {};
@@ -582,7 +593,7 @@
           if ( index !== false ){
             obj.idx = index;
             obj.selected = index === vm.selected;
-            $.each(obj, function(n, val){
+            $.each(obj, function(n){
               vm.$set(vm.tabs[index], n, obj[n]);
             })
           }
@@ -603,9 +614,6 @@
                 }
               });
               vm.tabs.splice(idx, 0, obj);
-            }
-            if ( (vm.tabs.length === 1) && vm.ready ){
-              vm.activateIndex(0);
             }
           }
         }
@@ -637,13 +645,29 @@
           else if ( vm.tabs[idx].load === false ){
             return;
           }
+          else{
+            vm.tabs[idx].loading = true;
+          }
+        }
+        else{
+          idx = this.tabs.length;
+          this.tabs.push({url: url, title: bbn._('Loading'), load: true, loading: true, selected: true, current: url});
+          this.activate(url);
         }
         return bbn.fn.post(finalURL, {_bbn_baseURL: vm.fullBaseURL}, (d) => {
           if ( d.content ){
-            if ( !d.url ){
-              d.url = url;
+            if ( d.url ){
+              d.url = this.parseURL(d.url);
             }
-            //d.url = vm.parseURL(d.url);
+            else{
+              d.url = this.parseURL(finalURL);
+            }
+            if ( d.url !== url ){
+              let idx = this.search(url);
+              if ( idx !== false ){
+                this.tabs[idx].url = d.url;
+              }
+            }
             d.loaded = true;
             if ( d.load !== false ){
               d.load = null;
@@ -657,6 +681,7 @@
               this.navigate(d.url);
               url = d.url;
             }
+            vm.tabs[idx].loading = false;
             this.$emit('tabLoaded', d.data, d.url, vm.tabs[idx]);
             d.menu = vm.tabs[idx] && vm.tabs[idx].menu ? vm.tabs[idx].menu : undefined;
             if ( d.data !== undefined ){
@@ -671,8 +696,11 @@
               idx = vm.tabs.length;
               vm.add(d);
             }
-            vm.selected = idx;
-            //vm.$nextTick(() => vm.activate(d.url));
+            this.$forceUpdate();
+            vm.$nextTick(() => {
+              bbn.fn.log("ADFDING", d, vm.tabs[idx]);
+              vm.activate(d.current);
+            });
           }
         })
       },
@@ -763,7 +791,7 @@
           items.push({
             text: bbn._("Reload"),
             key: "reload",
-            icon: "fa fa-refresh",
+            icon: "zmdi zmdi-refresh-sync",
             command: () => {
               this.reload(idx);
             }
@@ -786,7 +814,7 @@
           items.push({
             text: this.tabs[idx].notext ? bbn._("Show text") : bbn._("Show only icon"),
             key: "notext",
-            icon: this.tabs[idx].notext ? "fa fa-font" : "fa fa-fonticons",
+            icon: this.tabs[idx].notext ? "fas fa-font" : "fab fa-font-awesome",
             command: () => {
               this.tabs[idx].notext = !this.tabs[idx].notext;
             }
@@ -797,7 +825,7 @@
             items.push({
               text: bbn._("Pin"),
               key: "pin",
-              icon: "fa fa-thumb-tack",
+              icon: "fas fa-thumbtack",
               command: () => {
                 this.pin(idx);
               }
@@ -815,7 +843,7 @@
             items.push({
               text: bbn._("Unpin"),
               key: "pin",
-              icon: "fa fa-thumb-tack",
+              icon: "fas fa-thumbtack",
               command: () => {
                 this.unpin(idx);
               }
@@ -866,7 +894,7 @@
 
       checkTabsHeight(noResize){
         if ( this.tabs[this.selected] ){
-          var tab = this.getTab(vm.options.selected),
+          let tab = this.getTab(vm.options.selected),
               h = tab.parent().outerHeight(true);
           this.tabsHeight = h;
         }
@@ -875,7 +903,7 @@
 
       setColorSelector(col, idx){
         if ( (idx = this.getIndex(idx)) !== false ) {
-          var vm = this,
+          let vm = this,
               tab = vm.getTab(idx);
           if (tab) {
             if (!vm.colorIsDone) {
@@ -898,9 +926,9 @@
       },
 
       setColor(bcol, fcol, idx, dontSetSelector) {
-        var vm = this;
+        let vm = this;
         if ( (idx = vm.getIndex(idx)) !== false ) {
-          var $tab = vm.getTab(idx);
+          let $tab = vm.getTab(idx);
           if ( $tab.length ) {
             $tab.css("backgroundColor", bbn.fn.isColor(bcol) ? bcol : null);
             $tab.children().not(".ui-tabNav-tabSelected").css("color", bbn.fn.isColor(fcol) ? fcol : null);
@@ -916,15 +944,42 @@
 
       },
 
+      getTitle(idx){
+        let cp = this,
+            res = '';
+        if ( idx === undefined ){
+          idx = this.selected;
+        }
+        if ( cp.tabs[idx] ){
+          res += (cp.tabs[idx].title || bbn._('Untitled'));
+          if ( cp.parentTab ){
+            idx = cp.parentTab.idx;
+            cp = cp.parentTab.tabNav;
+            while ( cp ){
+              res += ' < ' + (cp.tabs[idx].title || bbn._('Untitled'));
+              if ( cp.parentTab ){
+                idx = cp.parentTab.idx;
+                cp = cp.parentTab.tabNav;
+              }
+              else{
+                cp = false;
+              }
+            }
+          }
+          res += ' - ';
+        }
+        res += bbn.env.siteTitle || bbn._("Untitled site")
+        return res;
+      },
+
       navigate(){
-        var vm = this,
-            sub = vm.getSubTabNav(vm.selected);
+        let idx = this.selected,
+            sub = this.getSubTabNav(idx);
         if ( sub && sub.isValidIndex(sub.selected) ){
           sub.navigate();
         }
-        else if ( vm.isValidIndex(vm.selected) ){
-          var url = vm.getFullCurrentURL(vm.selected);
-          bbn.fn.setNavigationVars(url, vm.tabs[vm.selected].title, vm.tabs[vm.selected].source, false);
+        else if ( this.isValidIndex(idx) ){
+          bbn.fn.setNavigationVars(this.getFullCurrentURL(idx), this.getTitle(idx), this.tabs[idx].source, false);
         }
       },
 
@@ -1026,7 +1081,7 @@
             (node.tag === 'bbns-tab') &&
             node.data.attrs.url
           ){
-            this.add(node.data.attrs);
+            this.slotSource.push(node.data.attrs);
           }
         }
       }
@@ -1070,9 +1125,12 @@
       else{
         cfg = this.getStorage()
       }
-      this.currentURL = this.parents.length ?
-        this.parents[0].currentURL.substr(this.baseURL.length) :
-        window.location.pathname.substr(this.baseURL.length ? this.baseURL.length : 0);
+
+      $.each(this.slotSource, (i, obj) => {
+        if ( obj.url ){
+          this.add(obj);
+        }
+      });
 
       $.each(!this.autoload || !cfg || !cfg.tabs ? this.source : cfg.tabs, (i, obj) => {
         if ( obj.url ){
@@ -1100,8 +1158,17 @@
         }
       });
       // Giving colors
+      let url = window.location.pathname.substr(this.fullBaseURL.length ? this.fullBaseURL.length : 1);
+      this.activate(url);
 
-      this.activate(this.parseURL(bbn.env.path), true);
+      /*
+      let url = this.parents.length ?
+        this.parents[0].currentURL.substr(this.fullBaseURL.length) :
+        window.location.pathname.substr(this.fullBaseURL.length ? this.fullBaseURL.length : 1);
+      //bbn.fn.log("ACTIVATE AFTER MOUNT", this.currentURL, url, this.parents.length ? this.parents[0].currentURL : 'RIEN');
+
+      this.activate(url);
+      */
       this.ready = true;
 
 
@@ -1111,12 +1178,7 @@
       selected(newVal){
         if ( this.tabs[newVal] ){
           if ( this.currentURL !== this.tabs[newVal].current ){
-            if ( this.currentURL.indexOf(this.tabs[newVal].url) === 0 ){
-              this.tabs[newVal].current = this.currentURL;
-            }
-            else{
-              this.currentURL = this.tabs[newVal].current;
-            }
+            this.currentURL = this.tabs[newVal].current;
           }
           $.each(this.tabs, (i, a) => {
             if ( this.tabs[i].selected !== (i === newVal) ){
@@ -1141,18 +1203,17 @@
       currentURL(newVal, oldVal){
         if ( newVal !== oldVal ){
           if ( this.isValidIndex(this.selected) ){
-            let vm = this,
-                tab = bbn.vue.getChildByKey(vm, vm.tabs[vm.selected].url, 'bbns-tab');
+            let tab = bbn.vue.getChildByKey(this, this.tabs[this.selected].url, 'bbns-tab');
             if (
               tab &&
-              (vm.tabs[vm.selected].current !== newVal) &&
-              (newVal.indexOf(vm.tabs[vm.selected].url) === 0)
+              (this.tabs[this.selected].current !== newVal) &&
+              (newVal.indexOf(this.tabs[this.selected].url) === 0)
             ){
-              vm.tabs[vm.selected].current = newVal;
+              this.tabs[this.selected].current = newVal;
             }
             // CHECKING PARENTS
-            if ( vm.parents.length ){
-              vm.parents[0].currentURL = vm.baseURL + newVal;
+            if ( this.parents.length ){
+              this.parents[0].currentURL = this.baseURL + newVal;
             }
             else if ( this.autoload && this.ready ){
               this.setConfig();
@@ -1341,13 +1402,13 @@
               ele = this;
             }
 
-            var recurse = function(el){
+            let recurse = function(el){
               if ( el.$options && el.$options._componentTag && (el.$options._componentTag === "bbn-tabnav") ){
                 return el;
               }
               if ( el.$children ){
-                for ( var i = 0; i < el.$children.length; i++ ){
-                  var r = recurse(el.$children[i]);
+                for ( let i = 0; i < el.$children.length; i++ ){
+                  let r = recurse(el.$children[i]);
                   if ( r ){
                     return r;
                   }
@@ -1511,7 +1572,7 @@
               source: {
                 content: this.imessages
               },
-              title: '<i class="w3-large fa fa-message"> </i> <span class="bbn-iblock">' + bbn._('Internal message') + '</span>',
+              title: '<i class="w3-large fas fa-envelope"> </i> <span class="bbn-iblock">' + bbn._('Internal message') + '</span>',
               width: '90%',
               height: '90%'
             });

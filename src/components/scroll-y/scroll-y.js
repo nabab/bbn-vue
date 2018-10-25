@@ -66,6 +66,7 @@
     methods: {
       // Sets the top position
       _changePosition(next, animate, force, origin){
+        bbn.fn.log("changePos");
         let top;
         if ( next < 0 ){
           top = 0;
@@ -114,6 +115,7 @@
 
       // Effectively change the scroll and bar position and sets variables
       scrollContainer(top, animate, origin){
+        bbn.fn.log("scrollContainerY");
         if ( this.realContainer && this.contentHeight ){
           this.currentScroll = top ? Math.round(this.contentHeight * top / 100 * 10000) / 10000 : 0;
           if ( animate ){
@@ -167,6 +169,7 @@
 
       // Emits scroll event
       normalize(){
+        bbn.fn.log("normalize scrollY");
         let e = new Event('scroll');
         this.$emit('scroll', e, this.top);
       },

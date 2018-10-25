@@ -6,10 +6,15 @@
   .bbn-masonry{
     overflow: hidden;
     div.bbns-widget{
-      display: inline-block;
+      display: grid;
       margin-bottom: 1em;
       width: 100%;
       page-break-inside: avoid;
+      &.full{
+        -webkit-column-span: all;
+        -moz-column-span: all;
+        column-span: all;
+      }
       div.content{
         box-sizing: content-box;
         hyphens: auto;
@@ -21,6 +26,7 @@
         width: ~"-moz-calc(100% - 1em)";
         width: ~"calc(100% - 1em)";
         position: relative;
+        overflow: hidden;
       }
       div.content-buttons{
         cursor: pointer;
@@ -52,13 +58,16 @@
         list-style: none;
       }
       li{
+        .bbn-grid-fields{
+          padding: 0;
+        }
         padding: 0.4em 0.6em;
-        span:nth-child(even){
+        > span:nth-child(even){
           float: right;
           clear: right;
           text-align: right;
         }
-        span:nth-child(odd){
+        > span:nth-child(odd){
           float: left;
           clear: left;
         }

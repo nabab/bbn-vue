@@ -6,7 +6,7 @@
          bottom: scrollPos
        }"
        ref="scrollContainer"
-       @scroll="$emit('scroll', $event)"
+       @scroll.passive="$emit('scroll', $event)"
   >
     <div class="bbn-scroll-content"
          ref="scrollContent"
@@ -19,14 +19,14 @@
                 ref="xScroller"
                 :scrollAlso="scrollAlso"
                 :initial="currentX"
-                @scroll="scrollHorizontal"
+                @scroll.passive="scrollHorizontal"
   >
   </bbn-scroll-x>
   <bbn-scroll-y v-if="(axis === 'both') || (axis === 'y')"
                 ref="yScroller"
                 :scrollAlso="scrollAlso"
                 :initial="currentY"
-                @scroll="scrollVertical"
+                @scroll.passive="scrollVertical"
   >
   </bbn-scroll-y>
 </div>

@@ -80,6 +80,12 @@
             icon: 'fas fa-tachometer-alt'
           }];
         }
+      },
+      searchBar: {
+        type: [Object, Boolean],
+        default(){
+          return {}
+        }
       }
     },
     data(){
@@ -98,8 +104,6 @@
         chatWindows: [],
         usersOnline: [],
         usersOnlineHash: false,
-        search: "",
-        searchPlaceholder: "Rechercher par ID, nom, marque, adresse, contact, email, etc...",
         width: 0,
         height: 0,
         popups: [],
@@ -246,49 +250,6 @@
       alert(){
         let p = appui.popup();
         return p.alert.apply(p, arguments);
-      },
-
-      focusSearch(){
-        let $ele = $(this.$refs.search.$refs.element),
-            $parent = $(this.$refs.search.$el).closest("div.bbn-block"),
-            w = $parent.width() + $parent.next().width() - 40;
-        $ele
-          .attr("placeholder", this.searchPlaceholder)
-          .animate({
-            width: w
-          });
-      },
-
-      blurSearch(e){
-        let $ele = $(this.$refs.search.$refs.element);
-        if ( parseInt($ele.css("maxWidth")) !== 30 ){
-          $ele.animate({
-            width: 30
-          }, function (){
-            $ele.val("").attr("placeholder", "?");
-          })
-        }
-      },
-
-      tplSearch(d){
-        let maxW = $(this.$refs.search.$el).width();
-        return '<div class="bbn-hpadded bbn-nl ' +
-          this.app.get_adherent_class(d.statut, d.statut_prospect ? d.statut_prospect : '') +
-          '"><div class="bbn-block-left"><h3>' + d.nom + ' <em>' +
-          ( d.immatriculation ? d.immatriculation : d.statut ) +
-          ' ID: ' + d.id + '</em></h3></div><div class="bbn-block-right bbn-h-100 bbn-r" style="display: table"><span style="display: table-cell; vertical-align: middle">' +
-          d.match + '</span></div></div>';
-      },
-
-      selectSearch(id, event){
-        let $ele = $(this.$refs.search.$el);
-        if ( id ){
-          this.$refs.search.widget.close();
-          $(this.$refs.search.$el).val("").attr("placeholder", "?").focus();
-          bbn.fn.link("adherent/fiche/" + id + "/infos");
-          this.search = "";
-          $ele.trigger("blur");
-        }
       },
 
       measure(){
@@ -461,6 +422,120 @@
       'pollerObject.message'(newVal){
         if ( newVal ){
           this.polling = false;
+        }
+      }
+    },
+    components: {
+      searchBar: {
+        name: 'search-bar',
+        props: {
+          source: {
+            type: Object,
+            default() {
+              return {}
+            }
+          }
+        },
+        template: `
+<bbn-autocomplete ref="search"
+                  v-model="search"
+                  :style="currentStyle"
+                  v-bind="cfg"
+                  v-on="eventsCfg"
+></bbn-autocomplete>`,
+        data(){
+          return {
+            search: '',
+            style: bbn.fn.extend({}, this.source.style || {}),
+            isExpanded: false
+          }
+        },
+        computed: {
+          ui(){
+            return this.closest('bbn-appui');
+          },
+          cfg(){
+            if ( this.source && Object.keys(this.source).length ){
+              let cfg = $.extend(true, {}, this.source);
+              if ( cfg.focus !== undefined ){
+                delete cfg.focus;
+              }
+              if ( cfg.blur !== undefined ){
+                delete cfg.blur;
+              }
+              if ( cfg.change !== undefined ){
+                delete cfg.change;
+              }
+              if ( cfg.style !== undefined ){
+                delete cfg.style;
+              }
+              return cfg;
+            }
+            return {
+              delay: 500,
+              sourceText: 'text',
+              sourceValue: 'value',
+              clearButton: false,
+              suggest: true,
+              source: [],
+              placeholder: '?',
+              placeholderFocused: bbn._("Research.."),
+              icon: 'fas fa-search',
+              minLength: 1,
+              height: bbn.env.height - 100,
+              template(d){
+                return `
+                  <div class="bbn-hpadded bbn-nl">
+                    <div class="bbn-block-left">
+                      <h3>${d.text}</em></h3>
+                    </div>
+                    <div class="bbn-block-right bbn-h-100 bbn-r" style="display: table">
+                      <span style="display: table-cell; vertical-align: middle">${d.value}</span>
+                    </div>
+                  </div>`;
+              }
+            }
+          },
+          eventsCfg(){
+            let def = {
+              focus: (e) => {
+                if ( !this.isExpanded ){
+                  let pane = this.closest('bbn-pane'),
+                      w = pane.$children[0].$el.clientWidth + pane.$children[1].$el.clientWidth - 40;
+                  this.$refs.search.$refs.element.placeholder = this.cfg.placeholderFocused;
+                  this.$set(this.style, 'width', w + 'px');
+                  this.isExpanded = true;
+                }
+              },
+              blur: (e) => {
+                if ( this.isExpanded ){
+                  this.$set(this.style, 'width', this.source.style && this.source.style.width ? this.source.style.width : '30px');
+                  this.isExpanded = false;
+                  this.$refs.search.$refs.element.placeholder = this.cfg.placeholder;
+                  this.search = '';
+                }
+              },
+              change: (id, event) => {
+                if (id && !(id instanceof Event)) {
+                  setTimeout(() => {
+                    document.activeElement.blur();
+                  }, 15);
+                }
+              }
+            };
+            return {
+              focus: this.source.focus || def.focus,
+              blur: this.source.blur || def.blur,
+              change: this.source.change || def.change
+            };
+          },
+          currentStyle(){
+            return $.extend({
+              'z-index': 10,
+              transition: 'width 400ms',
+              width: '30px'
+            }, (this.source.style || {}), this.style);
+          }
         }
       }
     }

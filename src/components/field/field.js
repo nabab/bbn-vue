@@ -8,9 +8,18 @@
    * Classic input with normalized appearance
    */
   Vue.component('bbn-field', {
+    /**
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.fieldComponent
+     */
     mixins: [bbn.vue.basicComponent, bbn.vue.fieldComponent],
     props: {
       value: {},
+      /**
+       * The mode of the component.
+       *
+       * @prop {String} [read] mode
+       */
       mode: {
         type: String,
         default: 'read'
@@ -25,6 +34,12 @@
       }
     },
     computed: {
+      /**
+       * Returns the data or the value.
+       *
+       * @computed actualData
+       * @return {Object}
+       */
       actualData(){
         if ( this.data ){
           return this.data;
@@ -35,6 +50,13 @@
           return d;
         }
       },
+      /**
+       * If the value of the component is undefined then it returns this.data[this.field]. Otherwise it returns the value
+       *
+       * @computed actualValue
+       * @return {Object}
+       */
+
       actualValue(){
         return this.value === undefined ? (this.data && this.field ? this.data[this.field] || '' : undefined) : this.value;
       }
@@ -44,6 +66,9 @@
         this.renderedOptions = {};
         if ( this.field ){
           if ( (this.mode === 'write') && this.editable ){
+            if ( this.required !== undefined ){
+              this.renderedOptions.required = this.required;
+            }
             if ( this.editor ){
               return this.editor;
             }
@@ -98,14 +123,10 @@
               this.renderedOptions.value = this.value
             }
             */
-            if ( this.options && Object.keys(this.options).length ){
-              this.renderedOptions = bbn.fn.extend(this.renderedOptions, this.options);
-            }
           }
           else {
             if ( this.component ){
               this.renderedComponent = this.component;
-              this.renderedOptions = this.options;
             }
             else{
               this.renderedComponent = 'div';
@@ -152,17 +173,15 @@
                     this.renderedContent = this.currentValue ? this.currentValue.toFixed(0).toLocaleString() + ( this.unit ? " " + this.unit : "") : '-';
                     break;
                   case "money":
-                    this.renderedContent = this.currentValue ?
-                      bbn.fn.money(this.currentValue) + (
-                        this.currency || this.unit ?
-                          " " + ( this.currency || this.unit )
-                          : ""
-                      )
-                      : '-';
+                    this.renderedContent = bbn.fn.money(this.currentValue, false, this.options.currency || this.currency || this.unit || "", '-');
                     break;
                   case "bool":
                   case "boolean":
-                    this.renderedContent = this.currentValue && (this.currentValue !== 'false') && (this.currentValue !== '0') ? bbn._("Yes") : bbn._("No");
+                    let isYes = this.currentValue && (this.currentValue !== 'false') && (this.currentValue !== '0');
+                    if ( this.options.yesvalue !== undefined ){
+                      isYes = this.currentValue === this.options.yesvalue;
+                    }
+                    this.renderedContent = '<i class="fas fa-' + (isYes ? 'check' : 'times') + '" title="' + (isYes ? bbn._("Yes") : bbn._("No")) + '"></i>';
                     break;
                 }
               }
@@ -180,12 +199,15 @@
             }
             */
           }
+          if ( this.options && Object.keys(this.options).length ){
+            bbn.fn.extend(this.renderedOptions, this.options);
+          }
         }
       },
     },
     watch:{
       currentValue(val){
-        if ( val !== this.actualValue ){
+        if ( (this.mode === 'write') && (val !== this.actualValue) ){
           this.$emit('input', val);
         }
         this.init();

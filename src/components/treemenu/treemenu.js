@@ -163,12 +163,28 @@
           e.stopImmediatePropagation();
           this.toggle();
         }
+      },
+      _setEvents(add){
+        if ( add ){
+          document.addEventListener('mousedown', this.checkMouseDown);
+          document.addEventListener('touchstart', this.checkMouseDown);
+        }
+        else{
+          document.removeEventListener('mousedown', this.checkMouseDown);
+          document.removeEventListener('touchstart', this.checkMouseDown);
+        }
       }
     },
     mounted(){
       this.onResize();
       this._position();
       this.ready = true;
+    },
+    created(){
+      this._setEvents();
+    },
+    destroyed(){
+      this._setEvents();
     },
     watch: {
       isOpened(newVal){
@@ -177,10 +193,10 @@
             this.hasBeenOpened = true;
             this.$refs.tree.load();
           }
-          $(document.body).on("mousedown touch", "*", this.checkMouseDown)
+          this._setEvents(true);
         }
         else{
-          $(document.body).off("mousedown touch", "*", this.checkMouseDown)
+          this._setEvents();
         }
       },
       currentMenu(){

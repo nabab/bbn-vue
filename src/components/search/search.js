@@ -4,9 +4,6 @@
 (function($, bbn, kendo){
   "use strict";
 
-  /**
-   * Classic input with normalized appearance
-   */
   Vue.component('bbn-search', {
     mixins: [bbn.vue.basicComponent, bbn.vue.fullComponent],
     props: {

@@ -50,8 +50,13 @@
           ((e.type === 'contextmenu') && this.context) ||
           ((e.type === 'click') && !this.context)
         ){
-          let vlist = this.$root.vlist || (window.appui ? window.appui.vlist : undefined);
-          this.items = this.getItems();
+          let vlist = this.$root.vlist || (window.appui ? window.appui.vlist : undefined),
+              args = [0, this.items.length],
+              tmp = this.getItems();
+          bbn.fn.each(tmp, (o) => {
+            args.push(o);
+          });
+          this.items.splice(...args);
           if ( this.items.length && (vlist !== undefined) ){
             let x, y;
             if ( (e.type === 'keydown') || (!e.clientX && !e.clientY) ){

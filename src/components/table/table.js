@@ -83,6 +83,10 @@
         type: Boolean,
         default: true
       },
+      localGrouping: {
+        type: Boolean,
+        default: true
+      },
       order: {
         type: [Array, Object],
         default(){
@@ -140,6 +144,10 @@
       },
       expander: {
 
+      },
+      loader: {
+        type: Boolean,
+        default: false
       },
       editor: {
         type: [String, Object]
@@ -267,7 +275,11 @@
         groupInit: false,
         currentExpanded: Array.isArray(this.expanded) ? this.expanded : [],
         currentExpandedValues: Array.isArray(this.expandedValues) ? this.expandedValues : [],
-        focusedRow: false
+        focusedRow: false,
+        viewport: null,
+        viewportRows: [...Array(25).keys()],
+        viewportCols: [],
+        viewportUpdater: 0
       };
     },
     computed: {
@@ -388,22 +400,39 @@
          *
          * @type {Array}
          */
+        let data = [],
+            dataDefined = false;
+        if (
+          this.currentFilters &&
+          this.currentFilters.conditions &&
+          this.currentFilters.conditions.length &&
+          (!this.serverFiltering || !this.isAjax)
+        ){
+          let tmp = this.currentData.slice(),
+              idx = 0;
+          dataDefined = true;
+          for ( let i = 0; i < tmp.length; i++ ){
+            if ( this._checkConditionsOnValue(this.currentFilters, tmp[i]) ){
+              data.push({
+                data: tmp[i],
+                index: idx
+              });
+              idx++;
+            }
+          }
+          this.total = data.length;
+        }
         let res = [],
             isGroup = this.groupable &&
               (this.group !== false) &&
               this.cols[this.group] &&
               this.cols[this.group].field,
+            groupField = isGroup ? this.cols[this.group].field : false,
         // The group value will change each time a row has a different value on the group's column
             currentGroupValue,
         /* @todo Not sure of what it does ! */
             currentLink,
             // the data is put in a new array with its original index
-            data = this.currentData.slice().map((item, index) => {
-              return {
-                index: index,
-                data: item
-              }
-            }),
             o,
             rowIndex = 0,
             end = this.pageable ? this.currentLimit : this.currentData.length,
@@ -416,6 +445,15 @@
             },
             aggregateModes = [],
             i = 0;
+
+        if ( !dataDefined ){
+          data = this.currentData.slice().map((item, index) => {
+            return {
+              index: index,
+              data: item
+            }
+          });
+        }
         // Aggregated
         if ( this.isAggregated ){
           let idx = bbn.fn.search(this.cols, {field: this.isAggregated});
@@ -432,7 +470,7 @@
         let pos;
         if (
           isGroup &&
-          (!this.isAjax || !this.serverGrouping) &&
+          ((this.isAjax && this.serverGrouping) || (!this.isAjax  && this.localGrouping)) &&
           ((pos = bbn.fn.search(this.currentOrder, {field: this.cols[this.group].field})) !== 0)
         ){
           // First ordering the data
@@ -447,7 +485,32 @@
         }
         // Sorting locally
         else if ( this.sortable && this.currentOrder.length && (!this.serverSorting || !this.isAjax) ){
-          data = bbn.fn.multiorder(data, JSON.parse(JSON.stringify(this.currentOrder)).map((item) => {item.field = 'data.' + item.field; return item;}));
+          // If there is a source, we sort based on the text (not the value), so we replace temporary the values
+          // with the text + a boundary + the value just the time of sorting
+          if ( bbn.fn.count(this.cols, {source: undefined}, '!==') ){
+            /** @var will contain the original value of the column to reset it once the array is sorted */
+            let tmpData = {};
+            bbn.fn.each(this.cols, function(col){
+              if ( col.source && col.field ){
+                tmpData[col.field] = {};
+                bbn.fn.each(data, function(d){
+                  tmpData[col.field][d.index] = d.data[col.field];
+                  d.data[col.field] = d.data[col.field] ? bbn.fn.get_field(col.source, col.sourceValue ? col.sourceValue : 'value', d.data[col.field], col.sourceText ? col.sourceText : 'text') || '' : '';
+                })
+              }
+            });
+            data = bbn.fn.multiorder(data, JSON.parse(JSON.stringify(this.currentOrder)).map((item) => {item.field = 'data.' + item.field; return item;}));
+            bbn.fn.each(this.cols, (col) => {
+              if ( col.source && col.field ){
+                bbn.fn.each(data, (d, i) => {
+                  d.data[col.field] = tmpData[col.field][d.index];
+                })
+              }
+            });
+          }
+          else{
+            data = bbn.fn.multiorder(data, JSON.parse(JSON.stringify(this.currentOrder)).map((item) => {item.field = 'data.' + item.field; return item;}));
+          }
         }
 
         // A new row being edited
@@ -463,74 +526,83 @@
           rowIndex++;
         }
 
+
         // If there's a group that will be the row index of its 1st value (where the expander is)
         let currentGroupIndex = -1,
             isExpanded = false;
         while ( data[i] && (i < end) ){
-          /** @todo Local filtering */
-          if ( this.currentFilters && this.currentFilters.conditions && this.currentFilters.conditions.length && !this.serverFiltering ){
-          }
           let a = data[i].data;
-          if ( isGroup && (currentGroupValue !== a[this.cols[this.group].field]) ){
-            isExpanded = false;
-            currentGroupValue = a[this.cols[this.group].field];
-            currentGroupIndex = data.index;
-            let tmp = {
-              group: true,
-              index: data[i].index,
-              value: currentGroupValue,
-              data: a,
-              rowIndex: rowIndex,
-              expander: true,
-              num: bbn.fn.count(data, 'data.' + this.cols[this.group].field, currentGroupValue)
-            };
-            // Expanded is true: all is opened
-            if ( this.allExpanded ){
+          if ( isGroup && (currentGroupValue !== a[groupField]) ){
+            if ( !a[groupField] ){
+              currentGroupValue = null;
+              currentGroupIndex = -1;
               isExpanded = true;
             }
-            // expandedValues is a function, which will be executed on each value
-            else if ( $.isFunction(this.expandedValues) ){
-              if (
-                this.expandedValues(currentGroupValue) &&
-                (this.currentExpandedValues.indexOf(currentGroupValue) === -1)
-              ){
+            else {
+              isExpanded = false;
+              currentGroupValue = a[groupField];
+              currentGroupIndex = data.index;
+              let tmp = {
+                group: true,
+                index: data[i].index,
+                value: currentGroupValue,
+                data: a,
+                rowIndex: rowIndex,
+                expander: true,
+                num: bbn.fn.count(data, 'data.' + this.cols[this.group].field, currentGroupValue)
+              };
+              // Expanded is true: all is opened
+              if ( this.allExpanded ){
                 isExpanded = true;
               }
-            }
-            // The current group value should be opened
-            else if ( this.currentExpandedValues.indexOf(currentGroupValue) > -1 ){
-              isExpanded = true;
-            }
-            if ( !isExpanded && data[i-1] && (currentGroupValue === data[i-1].data[this.cols[this.group].field]) ){
-              if ( res.length ){
-                res.push(tmp);
+              // expandedValues is a function, which will be executed on each value
+              else if ( $.isFunction(this.expandedValues) ){
+                if (
+                  this.expandedValues(currentGroupValue) &&
+                  (this.currentExpandedValues.indexOf(currentGroupValue) === -1)
+                ){
+                  isExpanded = true;
+                }
               }
-            }
-            else{
-              tmp.expanded = isExpanded;
-              res.push(tmp);
-              currentLink = i;
-              rowIndex++;
+              // The current group value should be opened
+              else if ( this.currentExpandedValues.indexOf(currentGroupValue) > -1 ){
+                isExpanded = true;
+              }
+              if ( !isExpanded && data[i-1] && (currentGroupValue === data[i-1].data[groupField]) ){
+                if ( res.length ){
+                  res.push(tmp);
+                }
+              }
+              else {
+                tmp.expanded = isExpanded;
+                res.push(tmp);
+                currentLink = i;
+                rowIndex++;
+              }
             }
           }
           else if ( this.expander ){
             let exp = bbn.fn.isFunction(this.expander) ? this.expander(data[i], i) : this.expander;
-            if ( !exp ){
-
-            }
-            else{
-              isExpanded = this.currentExpanded.indexOf(data[i].index) > -1;
-            }
+            isExpanded = exp ? this.currentExpanded.indexOf(data[i].index) > -1 : false;
           }
-          if ( !isGroup || isExpanded ){
-            o = {index: data[i].index, data: a, rowIndex: rowIndex};
+          if ( !isGroup || isExpanded || !currentGroupValue ){
+            o = {
+              index: data[i].index,
+              data: a,
+              rowIndex: rowIndex
+            };
             if ( this.selection ){
               o.selected = this.selectedRows.indexOf(data[i].index) > -1;
               o.selection = true;
             }
             if ( isGroup ){
-              o.isGrouped = true;
-              o.link = currentLink;
+              if ( !currentGroupValue ){
+                o.expanded = true;
+              }
+              else {
+                o.isGrouped = true;
+                o.link = currentLink;
+              }
             }
             else if ( this.expander && (
                 !$.isFunction(this.expander) ||
@@ -541,7 +613,7 @@
             res.push(o);
             rowIndex++;
           }
-          else{
+          else {
             end++;
           }
           if ( this.expander && (
@@ -568,8 +640,7 @@
             else if ( aggregates.max < parseFloat(a[this.isAggregated]) ){
               aggregates.max = parseFloat(a[this.isAggregated])
             }
-            if ( isGroup ){
-              bbn.fn.log("IS GROUP", i);
+            if ( isGroup && currentGroupValue ){
               let searchRes = bbn.fn.search(aggregates.groups, {value: currentGroupValue});
               if ( searchRes === -1 ){
                 searchRes = aggregates.groups.length;
@@ -638,7 +709,10 @@
           if ( d.group || d.expander || this.isExpanded(d) || d.aggregated || (this.isExpanded(d) && d.groupAggregated) ){
             fdata.push(d)
           }
-        })
+        });
+        this.$nextTick(() => {
+          this._updateViewport();
+        });
         return fdata;
       },
       hasExpander(){
@@ -711,6 +785,31 @@
         }
         return this;
       },
+      _checkConditionsOnValue(where, row){
+        let pass = false;
+        if ( where.conditions && where.logic && (typeof row === 'object') ){
+          pass = where.logic !== 'OR';
+          for ( let i = 0; i < where.conditions.length; i++ ){
+            let cond = where.conditions[i],
+                res = true;
+            if ( cond.conditions && cond.logic ){
+              res = this._checkConditionsOnValue(cond, row);
+            }
+            else if ( cond.field && cond.operator ){
+              res = bbn.fn.compare(row[cond.field], cond.value || null, cond.operator);
+            }
+            if ( !res && where.logic !== 'OR' ){
+              pass = false;
+              break;
+            }
+            else if ( res && where.logic === 'OR' ){
+              pass = true;
+              break;
+            }
+          }
+        }
+        return pass;
+      },
       _checkHeaders(){
         let mainScroller = this.getRef('mainScroller');
         if ( this.titleGroups && mainScroller ){
@@ -723,12 +822,88 @@
               return false;
             }
             tot += a.realWidth;
-          })
-          bbn.fn.log("X", x, tot);
+          });
         }
       },
-      _execCommand(button, data, col, index){
-        bbn.fn.log("EXEC COMMAND");
+      _updateViewport(){
+        if ( this.viewportUpdater ){
+          clearTimeout(this.viewportUpdater);
+        }
+        this.viewportUpdater = setTimeout(() => {
+          bbn.fn.log("UPDATING VIEWPORT?");
+          let table = this.getRef('mainTable'),
+              scroll = this.getRef('mainScroller'),
+              container = scroll ? scroll.getRef('scrollContainer') : null,
+              top = container ? container.scrollTop : null,
+              left = container ? container.scrollLeft : null,
+              viewport = scroll ? bbn.fn.clone(scroll.$el.getBoundingClientRect()) : null;
+          if ( !viewport ){
+            return;
+          }
+          viewport.top = top || 0;
+          viewport.left = left || 0;
+          if (
+            this.viewport &&
+            (this.viewport.x === viewport.x) &&
+            (this.viewport.width === viewport.width) &&
+            (this.viewport.y === viewport.y) &&
+            (this.viewport.height === viewport.height) &&
+            (this.viewport.top === viewport.top) &&
+            (this.viewport.left === viewport.left)
+          ){
+            return;
+          }
+          this.viewport = viewport;
+          if ( table && scroll ){
+            let rows = [],
+                cols = [];
+            bbn.fn.log("UPDATING VIEWPORT", viewport);
+            /*
+            let testRow = null;
+            bbn.fn.each(table.rows, (row, i) => {
+              i = parseInt(i);
+              let vp = row.getBoundingClientRect();
+              bbn.fn.log("ROW", vp);
+              if ( vp.y > (viewport.y - 300) ){
+                if ( !testRow && (vp.y > viewport.y) ){
+                  testRow = row;
+                }
+                rows.push(i);
+              }
+              if ( vp.y > (viewport.y + viewport.height + 300) ){
+                bbn.fn.log("MUST STOP HERE");
+                return false;
+              }
+            });
+            */
+            if ( table && table.rows && table.rows[0] && table.rows[0].cells ){
+              bbn.fn.each(this.groupCols[1].cols, (col, idx) => {
+                if ( table.rows[0].cells[idx] ){
+                  let vp = table.rows[0].cells[idx].getBoundingClientRect();
+                  if ( vp.x > (viewport.x - 300) ){
+                    cols.push(col.index);
+                  }
+                  if ( vp.x > (viewport.x + viewport.width + 300 ) ){
+                    bbn.fn.log("MUST STOP HERE");
+                    return false;
+                  }
+                  this.viewportCols.splice(0, this.viewportCols.length, ...cols);
+                  this.viewportRows.splice(0, this.viewportRows.length, ...rows);
+                  this.$nextTick(() => {
+                    this.updateTable();
+                  })
+                }
+              })
+            }
+          }
+        }, 250)
+      },
+      _execCommand(button, data, col, index, ev){
+        if ( ev ){
+          ev.preventDefault();
+          ev.stopImmediatePropagation();
+        }
+        //bbn.fn.log("EXEC COMMAND");
         if ( button.command ){
           if ( $.isFunction(button.command) ){
             return button.command(data, col, index);
@@ -759,6 +934,27 @@
         } : bbn.vue.emptyComponent
       },
 
+      _delete(index){
+        if ( this.currentData[index] ){
+          let ev = $.Event('delete');
+          if ( this.url ){
+            bbn.fn.post(this.url, $.extend({}, this.currentData[index], {action: 'delete'}), (d) => {
+              if ( d.success ){
+                this.currentData.splice(index, 1);
+                this.$emit('delete', this.currentData[index], ev);
+              }
+              else{
+                this.alert(bbn._("Impossible de supprimer l'élément"))
+              }
+            })
+          }
+          else{
+            this.currentData.splice(index, 1);
+            this.$emit('delete', this.currentData[index], ev);
+          }
+        }
+      },
+
       getPopup(){
         return this.popup || bbn.vue.closest(this, 'bbns-tab').getPopup();
       },
@@ -770,6 +966,11 @@
           return col.editable(row, col, index)
         }
         return col.editable !== false
+      },
+      isEdited(data, col, idx){
+        return this.isEditable(data, col, idx) &&
+          (this.editMode === 'inline') &&
+          (this.currentSet[idx].index === this.editedIndex);
       },
       isNullable(row, col, index){
         if ( $.isFunction(col.nullable) ){
@@ -892,13 +1093,6 @@
             this.$forceUpdate();
           }
         }
-      },
-      fullTrClass(d){
-        return 'k-widget' +
-          (this.trClass ? ' ' + this.trClass(d.data) : '') +
-          (d.index % 2 ? ' k-alt' : '') +
-          (d.aggregated || d.groupAggregated ? ' k-header' : '') +
-          (this.currentIndex === d.index ? ' k-state-hover' : '')
       },
       unsetFilter(){
         this.currentFilters = $.extend({}, this.filters);
@@ -1159,12 +1353,14 @@
           // A URL is given and in this case the form will be created automatically with this URL as action
           else if ( this.url ){
             let table = this;
+            let o = $.extend({}, this.data, {action: table.tmpRow ? 'insert' : 'update'});
             popup.component = {
               data(){
                 return {
                   // Table's columns are used as native form config
                   fields: table.cols,
-                  data: row
+                  data: row,
+                  obj: o
                 }
               },
               template: `
@@ -1172,30 +1368,18 @@
           action="` + table.url + `"
           :schema="fields"
           :source="data"
-          :data="{action: '` + (table.tmpRow ? 'insert' : 'update') + `'}"
+          :data="obj"
           @success="success"
           @failure="failure">
 </bbn-form>`,
               methods: {
                 success(d, e){
                   e.preventDefault();
-                  let ev = new $.Event('editSuccess');
+                  let ev = $.Event('editSuccess');
                   table.$emit('editSuccess', d, ev);
                   if ( d.data && !ev.isDefaultPrevented() ){
                     bbn.fn.warning("DEFAULT");
-                    // New insert
-                    if ( table.tmpRow ){
-                      table.currentData.push(d);
-                    }
-                    // Update
-                    else if ( table.editedRow ){
-                      bbn.fn.warning("UPDATE", d.data);
-                      for ( let n in d.data ){
-                        if ( bbn.fn.hasOwnProperty(this.data, n) ){
-                          this.$set(this.data, n, d.data[n]);
-                        }
-                      }
-                    }
+                    table.saveRow();
                     table.getPopup().close();
                   }
                 },
@@ -1203,12 +1387,10 @@
                   table.$emit('editFailure', d);
                 },
               },
-              watch: {
-                deep: true,
-                handler(newVal){
-                }
-              }
             };
+          }
+          else{
+            throw new Error(bbn._("Impossible to open a window if either an editor or a URL is not set"))
           }
           popup.afterClose = () => {
           //  this.currentData.push($.extend({}, this.tmpRow)); // <-- Error. This add a new row into table when it's in edit mode
@@ -1217,6 +1399,43 @@
             this.editedIndex = false;
           };
           this.getPopup().open(popup);
+        }
+      },
+      saveRow(){
+        // New insert
+        let ev = $.Event('saveRow');
+        this.$emit('saveRow', this.tmpRow || this.editedRow, ev);
+        if ( !ev.isDefaultPrevented() ){
+          if ( this.tmpRow ){
+            this.currentData.push($.extend({}, this.tmpRow));
+            if ( this.originalData ){
+              this.originalData.push($.extend({}, this.tmpRow));
+            }
+            this.tmpRow = false;
+          }
+          // Update
+          else if ( this.editedRow ){
+            this.currentData.splice(this.editedIndex, 1, $.extend({}, this.editedRow));
+            if ( this.originalData ){
+              this.originalData.splice(this.editedIndex, 1, $.extend({}, this.editedRow));
+            }
+            this.editedRow = false;
+          }
+        }
+      },
+      saveInline(){
+        if ( this.tmpRow || this.editedRow ){
+          if ( this.url ){
+            let o = $.extend({}, this.data, this.tmpRow || this.editedRow, {action: this.tmpRow ? 'insert' : 'update'});
+            bbn.fn.post(this.url, o, (d) => {
+              if ( d.success ){
+                this.saveRow();
+              }
+            })
+          }
+          else{
+            this.saveRow()
+          }
         }
       },
       getConfig(){
@@ -1232,7 +1451,7 @@
       },
       setConfig(cfg, no_storage){
         if ( cfg === false ){
-          cfg = this.defaultConfig;
+          cfg = bbn.fn.clone(this.defaultConfig);
         }
         else if ( cfg === true ){
           cfg = this.getConfig();
@@ -1293,14 +1512,12 @@
           this.$emit('beforeDelete', this.currentData[index], ev);
           if ( !ev.isDefaultPrevented() ){
             if ( confirm ){
-              this.getPopup().confirm(confirm, () => {
-                this.currentData.splice(index, 1);
-                this.$emit('delete', this.currentData[index], ev);
+              this.confirm(confirm, () => {
+                this._delete(index);
               })
             }
             else{
-              this.currentData.splice(index, 1);
-              this.$emit('delete', this.currentData[index], ev);
+              this._delete(index);
             }
           }
         }
@@ -1336,7 +1553,6 @@
         }
         this.$emit('toggle', isSelected, this.currentData[index]);
       },
-
       /** Refresh the current data set */
       updateData(withoutOriginal){
         this.currentExpanded = [];
@@ -1365,10 +1581,11 @@
               this.isLoading = false;
               if (
                 !result ||
+                (typeof result === 'string') ||
                 result.error ||
                 ((result.success !== undefined) && !result.success)
               ){
-                alert(result && result.error ? result.error : "Error in updateData");
+                this.alert(result && result.error ? result.error : "Error in updateData");
               }
               else{
                 this.currentData = this._map(result.data || []);
@@ -1423,7 +1640,6 @@
         }
         return JSON.stringify(this.currentData[idx]) !== JSON.stringify(this.originalData[idx])
       },
-
       isSorted(col){
         if (
           this.sortable &&
@@ -1551,7 +1767,6 @@
       reset(){
         this.initReady = false;
         this.setConfig(false);
-        this.$forceUpdate();
         this.$nextTick(() => {
           this.initReady = true;
           this.init();
@@ -1564,9 +1779,28 @@
         }
         this.cols.push(obj);
       },
+      isBeforeAggregated(groupIndex, idx){
+        return this.isAggregated && ((
+          this.groupCols[groupIndex].cols[idx+1] &&
+          (this.groupCols[groupIndex].cols[idx+1].field === this.isAggregated)
+        ) ||
+        (
+          !this.groupCols[groupIndex].cols[idx+1] &&
+          this.groupCols[groupIndex+1] &&
+          this.groupCols[groupIndex+1].cols[0] &&
+          (this.groupCols[groupIndex+1].cols[0].field === this.isAggregated)
+        ));
+      },
+      /**
+       *
+       */
       onResize(){
         this.init();
       },
+      /**
+       *
+       * @returns {*}
+       */
       dataScrollContents(){
         if ( !this.groupCols[0].cols.length && !this.groupCols[2].cols.length ){
           return null;
@@ -1580,6 +1814,11 @@
         });
         return r;
       },
+      /**
+       *
+       * @param d
+       * @returns {boolean}
+       */
       isExpanded(d){
         if ( this.allExpanded ){
           return true;
@@ -1594,10 +1833,12 @@
           this.groupable &&
           (this.group !== false) &&
           this.cols[this.group] &&
-          this.cols[this.group].field &&
-          (d.data[this.cols[this.group].field] !== undefined)
+          this.cols[this.group].field
         ){
-          return this.currentExpandedValues.indexOf(d.data[this.cols[this.group].field]) > -1;
+          if ( d.data[this.cols[this.group].field] ){
+            return this.currentExpandedValues.indexOf(d.data[this.cols[this.group].field]) > -1;
+          }
+          return true;
         }
         if ((d.isGrouped || d.groupAggregated) && (this.currentExpanded.indexOf(d.link) > -1)){
           return true;
@@ -1688,8 +1929,8 @@
         if ( this.selection ){
           groupCols[0].cols.push({
             title: ' ',
-            width: this.minimumColumnWidth,
-            realWidth: this.minimumColumnWidth
+            width: 40,
+            realWidth: 40
           });
           groupCols[0].visible++;
         }
@@ -1726,7 +1967,7 @@
                 a.realWidth = this.minimumColumnWidth;
                 numUnknown++;
               }
-              if ( a.buttons ){
+              if ( a.buttons !== undefined ){
                 colButtons = i;
               }
               if ( a.fixed ){
@@ -1763,10 +2004,10 @@
 
         let toFill = this.$el.clientWidth - tot;
         // We must arrive to 100% minimum
-        if ( toFill > this.cols.length - this.currentHidden.length ){
+        if ( toFill > 0 ){
           if ( numUnknown ){
             let newWidth = Math.round(
-              (toFill - (this.cols.length - this.currentHidden.length))
+              (toFill )
               / numUnknown
               * 100
             ) / 100;
@@ -1935,19 +2176,26 @@
         }
       }
       if ( this.columns.length ){
-        $.each(this.columns.slice(), (i, a) => {
+        $.each(this.columns, (i, a) => {
           this.addColumn(a);
         })
       }
+
       if ( this.defaultConfig.hidden === null ){
         let tmp = [];
+        let initColumn = [];
         $.each(this.cols, (i, a) => {
           if ( a.hidden ){
             tmp.push(i);
           }
+          else if ( initColumn.length <= 10 ){
+            initColumn.push(i);
+          }
         });
+        this.viewportCols = initColumn;
         this.defaultConfig.hidden = tmp;
       }
+
       this.setConfig(false, true);
       this.initialConfig = this.jsonConfig;
       this.savedConfig = this.jsonConfig;
@@ -1957,11 +2205,10 @@
 
     mounted(){
       this.init();
-      this.$forceUpdate();
+      this.updateData();
       this.$nextTick(() => {
-        this.updateData();
+        this.ready = true;
       });
-      this.ready = true;
     },
 
     updated(){
@@ -1972,52 +2219,54 @@
       observerValue(newVal){
         if ( (newVal !== this._observerReceived) && !this.editedRow ){
           this._observerReceived = newVal;
+          bbn.fn.log("watch observerValue");
           this.updateData();
         }
       },
       editedRow(newVal, oldVal){
-        /*
-        if ( oldVal && this.originalRow ){
-          let row = bbn.fn.get_row(this.currentSet, {isEdited: true});
-          if ( row ){
-            this.$set(this.currentData, row.index, this.originalRow);
-          }
-          this.originalRow = false;
-          bbn.fn.log(newVal, oldVal, this.originalRow, row, '------------')
+        if ( newVal === false ){
+          this.editedIndex = false;
         }
-        bbn.fn.log("editedRow is changing", JSON.stringify(newVal, null, 2));
-        */
       },
       cols: {
         deep: true,
         handler(){
-          this.init();
+          bbn.fn.log("watch columns");
+          this.onResize();
         }
       },
       currentLimit(){
-        this.setConfig(true);
+        if ( this.ready ){
+          this.setConfig(true);
+        }
       },
       currentFilters: {
         deep: true,
         handler(){
-          this.currentFilter = false;
-          this.updateData();
-          this.setConfig(true);
-          this.$forceUpdate();
+          if ( this.ready ){
+            this.currentFilter = false;
+            this.updateData();
+            this.setConfig(true);
+            this.$forceUpdate();
+          }
         }
       },
       currentOrder: {
         deep: true,
         handler(){
-          this.setConfig(true);
-          this.$forceUpdate();
+          if ( this.ready ){
+            this.setConfig(true);
+            this.$forceUpdate();
+          }
         }
       },
       currentHidden: {
         deep: true,
         handler(){
-          this.setConfig(true);
-          this.$forceUpdate();
+          if ( this.ready ){
+            this.setConfig(true);
+            this.$forceUpdate();
+          }
         }
       },
       group(){
@@ -2029,7 +2278,8 @@
         if ( this.currentSet[oldIndex] !== undefined ){
           let idx = this.currentSet[oldIndex].index;
           if (
-            (this.editable === 'inline') &&
+            this.editable &&
+            (this.editMode === 'inline') &&
             (this.editedIndex === idx) &&
             this.isModified(idx)
           ){
@@ -2040,8 +2290,9 @@
         }
         if ( this.currentSet[newIndex] !== undefined ){
           if (
-            !this.currentSet[newIndex].group &&
-            (this.editable === 'inline')
+            this.editable &&
+            (this.editMode === 'inline') &&
+            !this.currentSet[newIndex].group
           ){
             let comeFromAfter = newIndex === oldIndex - 1;
             this.$nextTick(() =>{
@@ -2053,20 +2304,7 @@
           }
         }
       },
-    },
-    components: {
-      'bbns-columns': {
-        mixins: [bbn.vue.fieldProperties]
-      },
-      'bbn-row': {
-        props: {},
-        data(){
-          return {
-
-          }
-        }
-      }
-    },
+    }
   });
 
 })(window.jQuery, bbn);

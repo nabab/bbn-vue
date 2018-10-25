@@ -15,7 +15,7 @@
     <div class="w3-modal bbn-window"
          style="position: absolute"
          tabindex="-1"
-         @animationend="onShow"
+         @animationstart="selfEmit(true)"
          @keydown.esc.prevent.stop="close()">
       <div class="bbn-full-screen bbn-middle">
         <div class="w3-modal-content w3-animate-opacity bbn-flex-height k-dialog"
@@ -24,8 +24,11 @@
              :style="{
                width: isMaximized ? '100%' : realWidth,
                height: isMaximized ? '100%' : realHeight,
-               maxHeight: '100%',
-               zIndex: $parent.$parent.$props.zIndex + index
+               maxWidth: isMaximized ? null : maxWidth,
+               maxHeight: isMaximized ? null : maxHeight,
+               zIndex: $parent.$parent.$props.zIndex + index,
+               top: isMaximized ? '0px' : null,
+               left: isMaximized ? '0px' : null
              }">
           <header class="w3-container k-header bbn-popup-title" v-if="title">
             <div class="w3-display-topright">

@@ -11,8 +11,7 @@
         type: [Number, String]
       },
       format: {
-        type: String,
-        default: "n0"
+        type: String
       },
       max: {
         type: [Number, String]
@@ -25,7 +24,8 @@
         default: true
       },
       step: {
-        type: [Number, String]
+        type: Number,
+        default: 1
       },
       spinners: {
         type: Boolean,
@@ -37,7 +37,10 @@
     },
     data(){
       return {
-        widgetName: "kendoNumericTextBox"
+        widgetName: "kendoNumericTextBox",
+        realDecimals: this.decimals || (this.step.toString().split('.')[1] || []).length,
+        realFormat: this.format || 'n' + (this.decimals || (this.step.toString().split('.')[1] || []).length),
+        widget: null
       };
     },
     methods: {
@@ -53,8 +56,8 @@
       let el = this.getRef('element');
       this.widget = $(el).kendoNumericTextBox($.extend(this.getOptions(), {
         value: this.value,
-        format: this.format,
-        decimals: this.decimals,
+        format: this.realFormat,
+        decimals: this.realDecimals,
         round: this.round,
         step: this.step,
         spinners: this.spinners,

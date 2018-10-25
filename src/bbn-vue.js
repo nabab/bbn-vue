@@ -487,6 +487,9 @@
       if ( bbn.env.isDev ){
         url += '&test=1';
       }
+      if ( bbn.env.lang ){
+        url += '&lang=' + bbn.env.lang;
+      }
       return bbn.fn.ajax(url)
         .then(
           // resolve from server
@@ -836,7 +839,10 @@
     },
 
     emptyComponent: {
-      template: '<template><slot></slot></template>'
+      template: '<template><slot></slot></template>',
+      created(){
+        this.componentClass.push('bbn-empty-component');
+      },
     },
 
     basicComponent: {
@@ -871,6 +877,7 @@
         if ( this.$options.name && (this.componentClass.indexOf(this.$options.name) === -1) ){
           this.componentClass.push(this.$options.name);
         }
+        this.componentClass.push('bbn-basic-component');
       },
       mounted(){
         this.isMounted = true;
@@ -878,13 +885,19 @@
       },
       watch: {
         ready(newVal){
-          this.$emit('ready', newVal)
+          if ( newVal ){
+            this.$emit('ready', newVal)
+          }
         }
       }
     },
 
     localStorageComponent: {
       props: {
+        storage: {
+          type: Boolean,
+          default: false
+        },
         storageName: {
           type: String,
           default: 'default'
@@ -900,7 +913,7 @@
         }
       },
       computed: {
-        storage(){
+        _storage(){
           if ( window.store ){
             return {
               get(name){
@@ -928,27 +941,29 @@
           }
           return false;
         },
+        hasStorage(){
+          return (this.storage || (this.storageFullName || (this.storageName !== 'default'))) && !!this._storage;
+        },
       },
       methods: {
         _getStorageRealName(){
           return this.storageFullName ? this.storageFullName : this.$options.name + '-' + window.location.pathname.substr(1) + '-' + this.storageName;
         },
-        hasStorage(){
-          return !!this.storage;
-        },
-        getStorage(){
-          if ( this.hasStorage() ){
-            return this.storage.get(this._getStorageRealName())
+        getStorage(name){
+          if ( this.hasStorage ){
+            return this._storage.get(name || this._getStorageRealName())
           }
         },
-        setStorage(value){
-          if ( this.hasStorage() ){
-            return this.storage.set(this._getStorageRealName(), value)
+        setStorage(value, name){
+          if ( this.hasStorage ){
+            return this._storage.set(name || this._getStorageRealName(), value)
           }
         },
       },
       created(){
-        this.componentClass.push('bbn-local-storage-component');
+        if ( this.hasStorage ){
+          this.componentClass.push('bbn-local-storage-component');
+        }
       },
     },
 
@@ -1033,7 +1048,7 @@
         }
       },
       created(){
-        this.componentClass.push('bbn-dataeditor-component');
+        this.componentClass.push('bbn-data-editor-component');
       },
     },
 
@@ -1044,6 +1059,11 @@
           default(){
             return [];
           }
+        }
+      },
+      data(){
+        return {
+          isTouched: false
         }
       },
       methods: {
@@ -1074,6 +1094,25 @@
             this.$emit('hover', false, e);
           }, 0)
         },
+        touchstart(e){
+          this.isTouched = true;
+          setTimeout(() => {
+            if ( this.isTouched ){
+              let event = new Event('contextmenu');
+              this.$el.dispatchEvent(event);
+              this.isTouched = false;
+            }
+          }, 1000)
+        },
+        touchmove(e){
+          this.isTouched = false;
+        },
+        touchend(e){
+          this.isTouched = false;
+        },
+        touchcancel(e){
+          this.isTouched = false;
+        }
       },
       created(){
         this.componentClass.push('bbn-events-component');
@@ -1157,7 +1196,7 @@
         }
       },
       created(){
-        this.componentClass.push('bbn-datasource-component');
+        this.componentClass.push('bbn-memory-component');
       }
     },
 
@@ -1171,15 +1210,15 @@
           type: String
         },
         required: {
-          type: Boolean,
+          type: [Boolean, Function],
           default: false
         },
         disabled: {
-          type: Boolean,
+          type: [Boolean, Function],
           default: false
         },
         readonly: {
-          type: Boolean,
+          type: [Boolean, Function],
           default: false
         },
         size: {
@@ -1344,7 +1383,7 @@
       },
       created(){
         this.componentClass.push('bbn-option-component');
-      },
+      }
     },
 
     widgetComponent: {
@@ -1403,7 +1442,7 @@
           */
         },
         build(){
-          bbn.fn.info("CLASSIC BUILD " );
+          bbn.fn.info("CLASSIC BUILD");
         },
         getWidgetCfg(){
           const vm = this;
@@ -1619,7 +1658,7 @@
           type: [Array, Object, String, Function]
         },
         required: {
-          type: Boolean,
+          type: [Boolean, Function]
         },
         options: {
           type: [Object, Function],
@@ -1724,6 +1763,7 @@
       },
       created(){
         if ( this.componentClass ){
+          this.componentClass.push('bbn-observer-component');
           this.componentClass.push('bbn-observer', 'bbn-observer-' + this.observerUID);
         }
       },
@@ -1743,6 +1783,44 @@
         }
       },
     },
+
+    urlComponent: {
+      props: {
+        baseUrl: {
+          type: String
+        }
+      },
+      data(){
+        return {
+          currentURL: null,
+          title: null
+        }
+      },
+      methods: {
+        updateUrl(){
+          if ( this.baseUrl && (bbn.env.path.indexOf(this.baseUrl) === 0) && (bbn.env.path.length > (this.baseUrl.length + 1)) ){
+            let url = this.baseUrl + (this.currentURL ? '/' + this.currentURL : '');
+            bbn.fn.setNavigationVars(
+              url,
+              (this.currentURL ? bbn.fn.get_field(this.source, this.sourceValue, this.currentURL, this.sourceText) + ' < ' : '') + document.title,
+              {
+                script: () => {
+                  bbn.fn.log("EXEC SCRIPT");
+                  let idx = bbn.fn.search(this.source, this.sourceValue, this.currentURL);
+                  if ( idx > -1 ){
+                    this.widget.select(idx);
+                    this.widget.trigger("change");
+                  }
+                }
+              },
+              !this.ready)
+          }
+        }
+      },
+      created(){
+        this.componentClass.push('bbn-url-component');
+      },
+    }
   };
 
 
@@ -1846,6 +1924,20 @@
     }
   });
 
+  Vue.directive('bbn-url-registered', {
+    inserted(){
+      bbn.fn.log("INSE URL: " + bbn.env.path);
+    },
+    bind(el, binding, vnode) {
+      if ( vnode.componentInstance && bbn.fn.isFunction(vnode.componentInstance.registerURL) ){
+        vnode.componentInstance.registerURL(binding.value);
+        let vm = vnode.componentInstance,
+            val = vm.value;
+        $(el).addClass("bbn-url-registered");
+        bbn.fn.log("URL: " + bbn.env.path, vnode, val, binding.value);
+      }
+    }
+  });
 
   Vue.config.isReservedTag = (tag, context) => {
     return bbn.vue.loadComponentsByPrefix(tag, context)

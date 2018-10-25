@@ -20,7 +20,7 @@
         :key="idx"
         :style="li.items && li.items.length ? 'z-index: auto;' : ''"
         @mouseenter="over(idx)"
-        @mousedown="beforeClick"
+        @mousedown.stop.prevent="beforeClick"
         @click.stop.prevent="select(idx)"
         @mouseup="afterClick">
       <span class="k-link">
@@ -28,7 +28,7 @@
           <i v-if="(mode === 'selection') && (li.selected)" class="fa fa-check"></i>
           <i v-else-if="mode === 'options'" class="fa fa-check"></i>
         </span>
-        <span class="space" v-if="!noIcon">
+        <span class="space" v-if="hasIcons">
           <i v-if="li.icon" :class="li.icon"></i>
         </span>
         <span class="text" v-html="li.text"></span>

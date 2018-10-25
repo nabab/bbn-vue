@@ -1,7 +1,11 @@
 <div :class="['bbn-full-screen', componentClass]">
-  <bbn-scroll ref="scroll"
-              class="bbn-w-100"
-              @ready="onResize"
+  <component :is="scrollable ? 'bbn-scroll' : 'div'"
+             ref="scroll"
+             :class="{
+               'bbn-w-100': scrollable,
+               'bbn-100': !scrollable
+             }"
+             @ready="onResize"
   >
     <transition-group name="custom-classes-transition"
                       :duration="{enter: isRefreshing ? 0 : 500, leave: isRefreshing ? 0 : 500}"
@@ -12,17 +16,17 @@
                       tag="div"
     >
       <bbns-widget inline-template
-                  ref="widgets"
-                  v-for="(w, index) in widgets"
-                  v-if="!w.hidden"
-                  @loaded="onResize"
-                  v-bind="w"
-                  :uid="w.key"
-                  :key="w.key"
-                  :index="index"
-                  :title="w.title ? w.title : (w.text ? w.text : '')"
+                   ref="widgets"
+                   v-for="(w, index) in widgets"
+                   v-if="!w.hidden"
+                   @loaded="onResize"
+                   v-bind="w"
+                   :uid="w.key"
+                   :key="w.key"
+                   :index="index"
+                   :title="w.title ? w.title : (w.text ? w.text : '')"
       >
-        <div :class="['k-block', 'bbns-widget', componentClass]">
+        <div :class="['k-block', 'bbns-widget', componentClass, full ? 'full' : '']">
           <div class="k-header header">
             <div class="bbn-full-screen">
               <h5 :class="{
@@ -126,5 +130,5 @@
         </div>
       </bbns-widget>
     </transition-group>
-  </bbn-scroll>
+  </component>
 </div>

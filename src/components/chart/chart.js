@@ -9,6 +9,10 @@
   "use strict";
 
   Vue.component('bbn-chart', {
+    /**
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.optionComponent
+     */
     mixins: [bbn.vue.basicComponent, bbn.vue.optionComponent],
     props: {
       /**
@@ -20,7 +24,7 @@
         type: Object
       },
       /**
-       * The chart type.
+       * The type of chart.
        *
        * @prop {String} [line] type
        */
@@ -29,7 +33,7 @@
         default: 'line'
       },
       /**
-       * The chart's title.
+       * The title of the chart.
        *
        * @prop {String} [] title
        */
@@ -37,7 +41,7 @@
         type: String
       },
       /**
-       * The axis-x title
+       * The x-axis title.
        *
        * @prop {String} titleX.
        */
@@ -45,7 +49,7 @@
 			  type: String
       },
       /**
-       * The axis-y title.
+       * The y-axis title.
        *
        * @prop {String} titleY
        */
@@ -53,7 +57,7 @@
 			  type: String
       },
       /**
-      * The chart's width
+      * The width of the chart.
       *
       * @prop {String} [100%] width.
       */
@@ -62,7 +66,7 @@
         default: '100%'
       },
       /**
-       * The chart's height
+       * The height of the chart.
        *
        * @prop {String} [100%] height.
        */
@@ -71,7 +75,7 @@
         default: '100%'
       },
       /**
-       * Set it to true if you want see the values points on the line chart.
+       * Set it to true if you want to see the value points on the line chart.
        *
        * @prop {Boolean} [true] showPoint
        */
@@ -80,7 +84,7 @@
         default: true
       },
       /**
-       * Set it to true if you want see the grid on the line and bar charts.
+       * Set it to true if you want to see the grid on the line and bar charts.
        *
        * @prop {Boolean} [true] showLine
        */
@@ -89,7 +93,7 @@
         default: true
       },
       /**
-       * Set it to true if you want see smooth line on line chart.
+       * Set it to true if you want to see a smooth line on the line chart.
        *
        * @prop {Boolean} [false] lineSmooth
        */
@@ -98,7 +102,7 @@
         default: false
       },
       /**
-       * Set it to true if you want see a donut pie chart. If you give an integer it will be considered as the donut width.
+       * Set it to true if you want to see a donut pie chart. If you give an integer it will be used as the donut width.
        *
        * @prop {Boolean|Number} [false] donut
        */
@@ -107,7 +111,7 @@
         default: false
       },
       /**
-       * Set it to false if you don't want the drawing of the chart to take the full width available.
+       * Set it to false if you do not want the drawing of the chart to take the full width available.
        *
        * @prop {Boolean} [true] fullWidth
        */
@@ -116,7 +120,7 @@
         default: true
       },
       /**
-       * Set it to true if you want to see the area on line chart.
+       * Set it to true if you want to see the area on the line chart.
        *
        * @prop {Boolean} [false] showArea
        */
@@ -125,7 +129,7 @@
         default: false
       },
       /**
-       * Set it to true if you want to see the labels on pie chart.
+       * Set it to true if you want to see the labels on the pie chart.
        *
        * @prop {Boolean} [true] showLabel
        */
@@ -134,7 +138,7 @@
         default: true
       },
       /**
-       * Axis-x configuration object.
+       * X-axis configuration object.
        *
        * @prop {Object} [{}] axisX
        */
@@ -145,7 +149,7 @@
         }
       },
       /**
-       * Axis-y configuration object.
+       * Y-axis configuration object.
        *
        * @prop {Object} [{}] axisY
        */
@@ -156,8 +160,8 @@
         }
       },
       /**
-       * Set it to true if you want see the axis-x labels on line and bar charts.
-       * You can give a function to customize the labels.
+       * Set it to true if you want to see the x-axis labels on the line and bar charts.
+       * You can give a function to customize these labels.
        *
        * @prop {Boolean|Function} [true] showLabelX
        */
@@ -166,7 +170,7 @@
         default: true
       },
       /**
-       * Set it to true if you want see the axis-x labels on the reverse order on line and bar charts.
+       * Set it to true if you want to see the x-axis labels in the reverse order on the line and bar charts.
        *
        * @prop {Boolean} [false] reverseLabelX
        */
@@ -193,7 +197,7 @@
         default: false
       },
       /**
-       * Set it to true if you want to see the grid for the axis-x on line and bar charts.
+       * Set it to true if you want to see the grid for the x-axis on the line and bar charts.
        *
        * @prop {Boolean} [true] showGridX
        */
@@ -202,8 +206,8 @@
         default: true
       },
       /**
-       * Set it to true if you want see the axis-y labels on line and bar charts.
-       * You can give a function to customize the labels.
+       * Set it to true if you want to see the y-axis labels on the line and bar charts.
+       * You can give a function to customize these labels.
        *
        * @prop {Boolean|Function} [true] showLabelY
        */
@@ -212,7 +216,7 @@
         default: true
       },
       /**
-       * Set it to true if you want see the axis-y labels on the reverse order on line and bar charts.
+       * Set it to true if you want to see the y-axis labels in the reverse order on the line and bar charts.
        *
        * @prop {Boolean} [false] reverseLabelY
        */
@@ -221,7 +225,7 @@
         default: false
       },
       /**
-      * Set it to true if you want to see the grid for the axis-y on line and bar charts.
+      * Set it to true if you want to see the grid for the y-axis on the line and bar charts.
       *
       * @prop {Boolean} [true] showGridY
       */
@@ -231,7 +235,7 @@
       },
       /**
        * Set it to true if you want to enable the animations.
-       * If you give a number it will be used as time (ms) for the animations.
+       * If you give a number it will be used as the time (ms) for the animations.
        *
        * @prop {Boolean|Number} [false] animation
        */
@@ -241,7 +245,7 @@
       },
       // set it to 0 (zero) for stacked bars
       /**
-       * The bars distance on bar chart. You can set it to 0 for stacked bars.
+       * The distance between the bars on the bar chart. You can set it to 0 for stacked bars.
        *
        * @prop {Number} barsDistance
        */
@@ -250,7 +254,7 @@
         default: undefined
       },
       /**
-       * Set it to true if you want see horizontal bars on bar chart.
+       * Set it to true if you want to see horizontal bars on the bar chart.
        *
        * @prop {Boolean} [false] horizontalBars
        */
@@ -258,16 +262,16 @@
         type: Boolean,
         default: false
       },
-			/**
-			* Reverses the data order
-			* @prop {Boolean} [false] reverseData
-			*/
+	  /**
+	   * Set it to true if you want to reverse the data order.
+	   * @prop {Boolean} [false] reverseData
+	   */
       reverseData: {
         type: Boolean,
 				default: false
       },
 			/**
-			 * A color list for personalization
+			 * A color list for personalization.
 			 *
 			 * @prop {String|Array} color
 			 */
@@ -275,7 +279,7 @@
         type: [String, Array]
       },
 			/**
-			 * The label color for personalization
+			 * The label color for personalization.
 			 *
 			 * @prop {String} labelColor
 			 */
@@ -283,7 +287,7 @@
         type: String
       },
 			/**
-			 * The axis-x label color for personalization
+			 * The x-axis label color for personalization.
 			 *
 			 * @prop {String} labelColorX
 			 */
@@ -291,7 +295,7 @@
         type: String
       },
 			/**
-			 * The axis-y label color for personalization
+			 * The y-axis label color for personalization.
 			 *
 			 * @prop {String} labelColorY
 			 */
@@ -299,7 +303,7 @@
         type: String
       },
 			/**
-			 * The background color for personalization
+			 * The background color for personalization.
 			 *
 			 * @prop {String} [inherit] backgroundColor
 			 */
@@ -308,7 +312,7 @@
         default: 'inherit'
       },
 			/**
-			 * The grid color for personalization
+			 * The grid color for personalization.
 			 *
 			 * @prop {String} gridColor
 			 */
@@ -316,7 +320,7 @@
         type: String
       },
 			/**
-			 * The max value limit
+			 * The max value limit.
 			 *
 			 * @prop {Number} [undefined] max
 			 */
@@ -325,7 +329,7 @@
         default: undefined
       },
 			/**
-			 * The min value limit
+			 * The min value limit.
 			 *
 			 * @prop {Number} [undefined] min
 			 */
@@ -334,7 +338,7 @@
         default: undefined
       },
 			/**
-			 * Numbers only on axis-y
+			 * Numbers only on y-axis.
 			 *
 			 * @prop {Boolean} [false] onlyInteger
 			 */
@@ -343,7 +347,7 @@
         default: false
       },
 			/**
-			 * Set it to false if you don't want to activate the tooltip plugin.
+			 * Set it to false if you do not want to activate the tooltip plugin.
 			 * You can customize tooltips by passing a function.
 			 *
 			 * @prop {Boolean|Function} [true] tooltip
@@ -353,7 +357,7 @@
         default: true
       },
 			/**
-			 * Se it to true if you want to enable the plugin.
+			 * Set it to true if you want to enable the plugin.
 			 *
 			 * @prop {Boolean} [false] pointLabel
 			 */
@@ -362,7 +366,7 @@
         default: false
       },
 			/**
-			 * The legend list
+			 * The legend list.
 			 *
 			 * @prop {Boolean|Array} legend
 			 */
@@ -371,8 +375,7 @@
       },
 			/**
 			 * The legend position.
-			 * You can use 'top', 'bottom' or a HTMLElement
-			 *
+			 * You can use 'top', 'bottom' or a HTMLElement.
 			 *
 			 * @prop {String|HTMLElement} [undefined] legendPosition
 			 */
@@ -384,7 +387,7 @@
         type: Number
       },*/
 			/**
-			 * Set it to true to see squarish line on line chart.
+			 * Set it to true to see a square line on the line chart.
 			 *
 			 * @prop {Boolean} [false] step
 			 */
@@ -401,7 +404,7 @@
         type: String
       },
 			/**
-			 * Label offset on pie chart.
+			 * Label offset on the pie chart.
 			 *
 			 * @prop {Number} [0] labelOffset
 			 */
@@ -419,8 +422,8 @@
         default: false
       },
 			/**
-			 * Set it to true if you want to wrap the labels on pie chart.
-			 * You can give the number of characters for the wrap also.
+			 * Set it to true if you want to wrap the labels on the pie chart.
+			 * You can also give the number of characters for the wrap.
 			 *
 			 * @prop {Boolean|Number} [false] labelWrap
 			 */
@@ -429,7 +432,7 @@
         default: false
       },
 			/**
-			 * The chart padding.
+			 * The chart's padding.
 			 *
 			 * @prop {Number} [undefined] padding
 			 */
@@ -438,7 +441,7 @@
         default: undefined
       },
 			/**
-			 * The top chart padding.
+			 * The top chart's padding.
 			 *
 			 * @prop {Number} [undefined] paddingTop
 			 */
@@ -447,7 +450,7 @@
         default: undefined
       },
 			/**
-			 * The right chart padding.
+			 * The right chart's padding.
 			 *
 			 * @prop {Number} [undefined] paddingRight
 			 */
@@ -456,7 +459,7 @@
         default: undefined
       },
 			/**
-			 * The bottom chart padding.
+			 * The bottom chart's padding.
 			 *
 			 * @prop {Number} [undefined] paddingBottom
 			 */
@@ -465,7 +468,7 @@
         default: undefined
       },
 			/**
-			 * The left chart padding.
+			 * The left chart's padding.
 			 *
 			 * @prop {Number} [undefined] paddingLeft
 			 */
@@ -474,7 +477,7 @@
         default: undefined
       },
       /**
-       * Give a currency string to use it on tooltip plugin.
+       * Give a currency string to use on the tooltip plugin.
        *
        * @prop {String} currency
        * @todo add this to labels
@@ -483,7 +486,7 @@
         type: String
       },
       /**
-       * Set it to true to see distributed series on bar chart.
+       * Set it to true to see distributed series on the bar chart.
        *
        * @prop {Boolean} distributeSeries
        */
@@ -494,7 +497,7 @@
         type: Boolean
       },*/
 			/**
-			 * You can use this prop to give native widget's properties.
+			 * Use this prop to give native widget's properties.
 			 *
 			 * @prop {Object} [{}] cfg
 			 */
@@ -507,7 +510,7 @@
     },
     computed: {
       /**
-       * Makes the widget's data from the source
+       * This makes the widget's data from the source.
        *
        * @computed data
        * @return {Object}
@@ -522,7 +525,7 @@
         return data;
       },
       /**
-       * Checks if the chart's type is 'line'
+       * This checks the chart's type is 'line'.
        *
        * @computed isLine
        * @return {Boolean}
@@ -531,7 +534,7 @@
         return this.type === 'line';
       },
       /**
-       * Checks if the chart's type is 'bar'
+       * This checks the chart's type is 'bar'.
        *
        * @computed isBar
        * @return {Boolean}
@@ -540,7 +543,7 @@
         return this.type === 'bar';
       },
       /**
-       * Checks if the chart's type is 'pie'
+       * This checks the chart's type is 'pie'.
        *
        * @computed isPie
        * @return {Boolean}
@@ -549,7 +552,7 @@
         return this.type === 'pie';
       },
       /**
-       * Makes an array of activated plugins
+       * This makes an array of activated plugins.
        *
        * @computed plugins
        * @return {Array}
@@ -631,7 +634,7 @@
         return plugins;
       },
 			/**
-			 * Set the color property to the correct form.
+			 * Sets the color property to the correct form.
 			 *
 			 * @computed colors
 			 * @return {Array|Boolean}
@@ -646,7 +649,7 @@
 				return false;
 			},
       /**
-       * Makes a correct legend list
+       * Makes a correct legend list.
        *
        * @computed legendFixed
        * @return {Boolean|Array}
@@ -662,7 +665,7 @@
         }
       },
       /**
-       * Makes a correct legend list with title as text
+       * Makes a correct legend list with title as the text.
        *
        * @computed legendTitles
        * @return {Boolean|Array}
@@ -678,7 +681,7 @@
         }
       },
       /**
-       * Makes the base configuration object for the type 'line'
+       * Makes the base configuration object for the 'line' chart.
        *
        * @computed lineCfg
        * @return {Object}
@@ -694,7 +697,7 @@
         return this.isLine ? $.extend(true, cfg, this.lineBarCommon) : {};
       },
       /**
-       * Makes the base configuration object for the type 'bar'
+       * Makes the base configuration object for the 'bar' chart.
        *
        * @computed barCfg
        * @return {Object}
@@ -708,7 +711,7 @@
         return this.isBar ? $.extend(true, cfg, this.lineBarCommon) : {};
       },
       /**
-       * Makes a common configuration object for the type 'line' and 'bar'
+       * Makes a common configuration object for the 'line' and 'bar' charts.
        *
        * @computed lineBarCommon
        * @return {Object}
@@ -775,7 +778,7 @@
         return {};
       },
       /**
-       * Makes the base configuration object for the type 'pie'
+       * Makes the base configuration object for the 'pie' chart.
        *
        * @computed pieCfg
        * @return {Object}
@@ -843,7 +846,7 @@
         return this.isPie ? cfg : {};
       },
       /**
-       * Makes the configuration object for the widget
+       * Makes the configuration object for the widget.
        *
        * @computed widgetCfg
        * @return {Object}
@@ -871,7 +874,7 @@
     },
     methods: {
       /**
-       * Destroys the current widget if it exists and fires the chart type constructor
+       * Destroys the current widget if it exists and fires the chart type constructor.
        *
        * @method init
        * @fires pieChart
@@ -896,13 +899,13 @@
             else if ( this.isLine ){
               this.lineChart();
             }
-            // Operations to be performed after widget creation
+            // This operations is performed after widget creation
             this.widgetCreated();
           }, 100);
         }
       },
       /**
-       * Makes a Pie Chart
+       * Makes a Pie Chart.
        *
        * @method pieChart
        * @fires pieDraw
@@ -913,7 +916,7 @@
         this.pieDraw();
       },
       /**
-       * Makes a Line Chart
+       * Makes a Line Chart.
        *
        * @method lineChart
        * @fires lineDraw
@@ -924,7 +927,7 @@
         this.lineDraw();
       },
       /**
-       * Makes a Bar Chart
+       * Makes a Bar Chart.
        *
        * @method barChart
        * @fires barDraw
@@ -935,7 +938,7 @@
         this.barDraw();
       },
       /**
-       * Sets animations and colors during the line chart draw
+       * Sets animations and colors whilst drawing the line chart.
        *
        * @method lineDraw
        * @fires setGridColor
@@ -952,10 +955,10 @@
           // Set grid color
           this.setGridColor(chartData);
 
-          // Color customize
+          // Customize color
           this.setColor(chartData);
 
-          // Label color customize
+          // Customize label color
           if ( (chartData.type === 'label') ){
             if ( this.labelColor ){
               color = this.labelColor;
@@ -975,16 +978,16 @@
                 durations = 500;
             seq++;
             if ( (chartData.type === 'line') || (chartData.type === 'area') ){
-              // If the drawn element is a line we do a simple opacity fade in. This could also be achieved using CSS3 animations.
+              // If the element is drawn as a line, there is an opacity fade in. This could also be achieved using CSS3 animations.
               chartData.element.animate({
                 opacity: {
-                  // The delay when we like to start the animation
+                  // The delay when we the animation start
                   begin: seq * delays + 1000,
                   // Duration of the animation
                   dur: durations,
-                  // The value where the animation should start
+                  // The value when the animation will start
                   from: 0,
-                  // The value where it should end
+                  // The value when it will end
                   to: 1
                 }
               });
@@ -1038,7 +1041,7 @@
               });
             }
             else if ( chartData.type === 'grid' ){
-              // Using chartData.axis we get x or y which we can use to construct our animation definition objects
+              // Using chartData.axis we get x or y. We can use this to construct our animation definition objects
               let pos1Animation = {
                     begin: seq * delays,
                     dur: durations,
@@ -1069,8 +1072,8 @@
         });
       },
       /**
-       * Sets animations and colors during the bar chart draw
-       *
+       * Sets animations and colors whilst drawing the bar chart.
+	   *
        * @method barDraw
        * @fires setGridColor
        * @fires setColor
@@ -1080,10 +1083,10 @@
           // Set grid color
           this.setGridColor(chartData);
 
-          // Color customize
+          // Customize color
           this.setColor(chartData);
 
-          // Label color customize
+          // Customize label color 
           if ( (chartData.type === 'label') ){
             let color = false;
             if ( this.labelColor ){
@@ -1165,7 +1168,7 @@
               });
             }
             else if ( chartData.type === 'grid' ){
-              // Using chartData.axis we get x or y which we can use to construct our animation definition objects
+              // Using chartData.axis we get x or y. We can use this to construct our animation definition objects
               let pos1Animation = {
                     begin: delays,
                     dur: durations,
@@ -1196,7 +1199,7 @@
         });
       },
       /**
-       * Sets animations, colors and labels during the pie chart draw
+       * Sets animations, colors and labels whilst drawing the pie chart.
        *
        * @method pieDraw
        * @fires setColor
@@ -1230,10 +1233,10 @@
             //this.widget.update(this.widget.data, {chartPadding: (this.widget.options.chartPadding ? this.widget.options.chartPadding : 0) + (p*yOffset)}, true);
           }
 
-          // Color customize
+          // Customize color
           this.setColor(chartData);
 
-          // Label color customize
+          // Customize label color
           if ( this.labelColor && (chartData.type === 'label') ){
             chartData.element.attr({
               style: 'fill: ' + this.labelColor
@@ -1254,9 +1257,9 @@
                   });
                 }
               }
-              // Get the total path length in order to use for dash array animation
+              // Get the total path length to use for the dash array animation
               let pathLength = chartData.element._node.getTotalLength();
-              // Set a dasharray that matches the path length as prerequisite to animate dashoffset
+              // Set a dasharray that matches the path length as a prerequisite to animate dashoffset
               chartData.element.attr({
                 'stroke-dasharray': pathLength + 'px ' + pathLength + 'px'
               });
@@ -1268,7 +1271,7 @@
                   from: -pathLength + 'px',
                   to: '0px',
                   easing: Chartist.Svg.Easing.easeOutQuint,
-                  // We need to use `fill: 'freeze'` otherwise our animation will fall back to initial (not visible)
+                  // We need to use `fill: 'freeze'`, otherwise, the animation will fall back to initial (not visible)
                   fill: 'freeze'
                 }
               };
@@ -1280,7 +1283,7 @@
               chartData.element.attr({
                 'stroke-dashoffset': -pathLength + 'px'
               });
-              // We can't use guided mode as the animations need to rely on setting begin manually
+              // We can't use guided mode as the animations relies on the setting starting manually
               // See http://gionkunz.github.io/chartist-js/api-documentation.html#chartistsvg-function-animate
               chartData.element.animate(animationDefinition, false);
             }
@@ -1310,7 +1313,7 @@
         });
       },
       /**
-       * Sets the colors to an element
+       * Sets the colors to an element.
        *
        * @method setColor
        * @param {Object} chartData A Chartist.js SVG element
@@ -1343,7 +1346,7 @@
         }
       },
       /**
-       * Sets the grid color to an element
+       * Sets the grid color to an element.
        *
        * @method setGridColor
        * @param {Object} chartData A Chartist.js SVG element
@@ -1356,7 +1359,7 @@
         }
       },
       /**
-       * Returns the SVG element index color
+       * Returns the SVG element index color.
        *
        * @method getColorIdx
        * @param {Object} color SVG element
@@ -1387,7 +1390,7 @@
         return length;
       },*/
       /**
-       * Operations to be performed after the widget creation
+       * Operations to be performed after the widget creation.
        *
        * @method widgetCreated
        */

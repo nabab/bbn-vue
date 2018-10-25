@@ -29,6 +29,10 @@
         type: Boolean,
         default: true
       },
+      scrollable: {
+        type: Boolean,
+        default: true
+      },
       source: {},
       url: {},
       loadedConfig: {
@@ -60,9 +64,9 @@
     methods: {
       setConfig(uid, config){
         this.setStorage({
-          order: this.order,
-          hidden: this.hidden
-        });
+          order: config.order,
+          hidden: config.hidden
+        }, uid);
       },
       getWidget(key){
         let idx = bbn.fn.search(this.widgets, {key: key});
@@ -212,6 +216,7 @@
           this.menu.push(tab.addMenu({
             text: bbn._("Widgets"),
             mode: 'options',
+            icon: 'zmdi zmdi-widgets',
             // We keep the original source order
             items: items
           }));
@@ -250,12 +255,12 @@
       },
 
       setWidgetStorage(idx){
-        this.storage.set(this.widgets[idx].storageFullName, {
+        this.setStorage({
           uid: this.widgets[idx].uid,
           hidden: this.widgets[idx].hidden,
           limit: this.widgets[idx].limit,
           index: this.widgets[idx].index
-        });
+        }, this.widgets[idx].storageFullName);
       },
 
       normalize(obj_orig){
@@ -267,7 +272,7 @@
         if ( !obj.uid ){
           obj.uid = obj.key;
         }
-        obj.storageFullName = (this.storageFullName ? this.storageFullName : this._getStorageRealName()) + '-' + obj.key;
+        obj.storageFullName = (this.storageFullName || this._getStorageRealName()) + '-' + obj.key;
         return obj;
       },
 
@@ -309,7 +314,7 @@
       let cfg = [];
 
       $.each(this.originalSource, (i, obj) => {
-        let tmp = this.storage.get(obj.storageFullName);
+        let tmp = this.getStorage(obj.storageFullName);
         if ( tmp ){
           $.extend(this.originalSource[i], tmp);
         }
@@ -367,6 +372,10 @@
           },
           template: {
 
+          },
+          hideEmpty: {
+            type: Boolean,
+            default: false
           },
           component: {
             type: [String, Object]
@@ -432,6 +441,10 @@
           },
           top: {},
           bottom: {},
+          full: {
+            type: Boolean,
+            default: false
+          },
           opened: {}
         },
         data(){
@@ -583,12 +596,16 @@
             }
           },
           actionButton(name, uid){
-            let tmp = this;
+            let tmp = this,
+                comp;
             if ( this.component ){
-              let comp = bbn.vue.find(this, this.component);
-              if ( comp && $.isFunction(comp[name]) ){
-                return comp[name]();
-              }
+              comp = bbn.vue.find(this, this.component);
+            }
+            else if ( this.itemComponent ){
+              comp = bbn.vue.find(this, this.itemComponent);
+            }
+            if ( comp && $.isFunction(comp[name]) ){
+              return comp[name]();
             }
             if ( $.isFunction(name) ){
               return name(this, this.items);

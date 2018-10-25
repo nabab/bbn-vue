@@ -33,6 +33,7 @@
             'bbn-tabnav-alarm': tab.alarm
           }"
           @click="tabIndex !== selected ? activateIndex(tabIndex) : (() => {})()"
+          @context=""
       >
         <div class="bbn-tabnav-badge-container bbn-middle"
              v-if="numProperties(tab.events)">

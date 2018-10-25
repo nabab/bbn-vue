@@ -341,6 +341,15 @@
               }
             }
             return {};
+          },
+          currentTitle(){
+            if ( this.currentField ){
+              let idx = bbn.fn.search(this.fields, {field: this.currentField});
+              if ( idx > -1 ){
+                return this.fields[idx].title || this.fields[idx].ftitle || this.fields[idx].field || '';
+              }
+            }
+            return '';
           }
         },
         methods: {
