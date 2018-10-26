@@ -280,6 +280,8 @@
 
           getMenuFn(){
             let chat = this.$parent;
+            let res = [];
+            /*
             let res = [
               {
                 text: bbn._('Mute'),
@@ -304,6 +306,7 @@
                 }
               }
             ];
+            */
             // I am in the participants so if usersOnlineWithoutMe is equal to participants it's still missing one
             if ( chat.usersOnlineWithoutMe.length >= this.participants.length ){
               let users = [];

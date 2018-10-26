@@ -387,6 +387,7 @@
 
         // No URL has been given -> we activate the default tab
         if ( !url ){
+          bbn.fn.log("ACTIVATING DEFAULT");
           return this.activateDefault();
         }
         // No index found: loading or error
@@ -400,7 +401,7 @@
               ) &&
               (subtab = this.getSubTabNav(i))
             ){
-              //bbn.fn.log("ACTIAVTE SUBTAB WOITH URL " + url.substr(this.tabs[i].url.length + 1));
+              bbn.fn.log("ACTIAVTE SUBTAB WOITH URL " + url.substr(this.tabs[i].url.length + 1));
               return subtab.activate(url === this.tabs[i].url ? '' : url.substr(this.tabs[i].url.length + 1));
             }
           }
@@ -419,15 +420,18 @@
         }
         // Index exists but content not loaded yet
         else if ( vm.tabs[idx].load && !vm.tabs[idx].disabled && !vm.tabs[idx].loading ){
+          bbn.fn.log("LOADING " + url);
           vm.load(url, force);
         }
         else if ( !vm.tabs[idx].disabled ){
           vm.selected = idx;
           let subtab = vm.getSubTabNav(idx);
           if ( subtab && subtab.ready ){
+            bbn.fn.log("ACTIVATING SUBTAB");
             subtab.activate(url.substr(vm.tabs[idx].url.length+1), force);
           }
           else if ( force && vm.autoload ){
+            bbn.fn.log("RELOADING TAB");
             this.reload(idx);
           }
         }

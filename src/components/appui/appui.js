@@ -479,7 +479,7 @@
               suggest: true,
               source: [],
               placeholder: '?',
-              placeholderFocused: bbn._("Research.."),
+              placeholderFocused: bbn._("Search.."),
               icon: 'fas fa-search',
               minLength: 1,
               height: bbn.env.height - 100,

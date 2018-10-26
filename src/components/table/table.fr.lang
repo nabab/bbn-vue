@@ -1,0 +1,16 @@
+{
+  "Total": "Total",
+  "Average": "Moyenne",
+  "Count": "Décompte",
+  "Maximum": "Maximum",
+  "Minimum": "Minimum",
+  "New row creation": "Création d'un nouvel enregistrement",
+  "Row edition": "Modification d'un enregistrement",
+  "Row copy": "Copie d'un enregistrement",
+  "Impossible to delete the row": "impossible de supprimer l'enregistrement",
+  "Are you sure you want to delete this group of conditions?": "Êtes-vous sûr de vouloir supprimer ce groupe de conditions?",
+  "Multiple filters": "Filtres multiples",
+  "Columns' picker": "Sélecteur de colonne(s)",
+  "Row edition": "Modication de l'enregistrement",
+  "Impossible to open a window if either an editor or a URL is not set": "impossible d'ouvrir une fenêtre si ni un éditeur ni une URL ne sont renseignés"
+}

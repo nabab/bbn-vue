@@ -1,0 +1,4 @@
+{
+  "Are you sure you want to delete this group of conditions?": "Êtes-vous sûr de vouloir supprimer ce groupe de conditions?",
+  "Value is required. You should choose another operator if you want to look for an element empty or null": "Valeur obligatoire, sinon vous pouvez choisir d'autres opérateurs si vous cherchez un élément nul ou vide"
+}

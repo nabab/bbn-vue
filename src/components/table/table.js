@@ -944,7 +944,7 @@
                 this.$emit('delete', this.currentData[index], ev);
               }
               else{
-                this.alert(bbn._("Impossible de supprimer l'élément"))
+                this.alert(bbn._("Impossible to delete the row"))
               }
             })
           }
@@ -1071,13 +1071,14 @@
             bbn.fn.log("Is there the index?", idx);
             if ( idx > -1 ){
               if ( arr[idx].conditions && arr[idx].conditions.length ){
-                this.getPopup().confirm(bbn._("Êtes-vous sûr de vouloir supprimer ce groupe de conditions?"), () => {
+                this.getPopup().confirm(bbn._("Are you sure you want to delete this group of conditions?"), () => {
                   arr.splice(idx, 1);
+                  appui.success();
                 })
               }
               else{
                 arr.splice(idx, 1);
-                bbn.fn.log("It seems to be deleted", arr);
+                appui.success();
               }
               return true;
             }
@@ -1146,7 +1147,7 @@
       openMultiFilter(){
         let table = this;
         this.getPopup().open({
-          title: bbn._('Multi Filter'),
+          title: bbn._('Multiple filters'),
           component: {
             template: `<bbn-scroll><bbn-filter v-bind="source" @change="changeConditions" :multi="true"></bbn-filter></bbn-scroll>`,
             props: ['source'],
@@ -1193,7 +1194,7 @@
       openColumnsPicker(){
         let table = this;
         this.getPopup().open({
-          title: bbn._('Columns\' picker'),
+          title: bbn._("Columns' picker"),
           width: '90%',
           component: {
             template: `
@@ -1378,7 +1379,6 @@
                   let ev = $.Event('editSuccess');
                   table.$emit('editSuccess', d, ev);
                   if ( d.data && !ev.isDefaultPrevented() ){
-                    bbn.fn.warning("DEFAULT");
                     table.saveRow();
                     table.getPopup().close();
                   }

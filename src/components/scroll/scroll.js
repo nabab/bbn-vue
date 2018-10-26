@@ -25,7 +25,8 @@
     // remove divs
     outer.parentNode.removeChild(outer);
 
-    return widthNoScroll - widthWithScroll;
+    let sz = widthNoScroll - widthWithScroll;
+    return sz ? sz + 1 : 0;
   })();
 
   Vue.component('bbn-scroll', {

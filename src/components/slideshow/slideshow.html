@@ -42,7 +42,9 @@
                :ref="'slide' + i.toString()"
                :class="[it.animation || '' ]"
           >
-            <div v-html="it.content"></div>
+            <bbn-scroll>
+              <div v-html="it.content"></div>
+            </bbn-scroll>
           </div>
         </div>
         <!--only image-->
@@ -86,7 +88,7 @@
              class="iconsCtrl bbn-w-20"
         >
           <i v-show="showCtrl"
-             class="fa fa-pause iconForImmage  bbn-xxxl"
+             class="fa fa-pause iconImg  bbn-xxxl"
              @click="stopAutoPlay"
              style="opacity: 0.6"
           ></i>
@@ -96,7 +98,7 @@
              class="bbn-w-20"
         >
           <i v-show="showCtrl"
-             class="fa fa-play iconForImmage bbn-xxxl"
+             class="fa fa-play iconImg bbn-xxxl"
              @click="startAutoPlay"
              style="opacity: 0.6"
           ></i>
@@ -140,7 +142,7 @@
             @mouseleave="arrowsPreview('prev', false)"
       >
         <i  v-show="showArrowLeft"
-            :class="[arrowClass.left, 'iconForImmage', 'bbn-xxxl']"
+            :class="[arrowClass.left, 'iconImg', 'bbn-xxxl']"
             @click="prev"
             :style="{
              visibility: (currentIndex === 0 && !loop)? 'hidden' : 'visible',
@@ -155,7 +157,7 @@
            @mouseleave="arrowsPreview('next', false)"
       >
         <i v-show="showArrowRight"
-           :class="[arrowClass.right, 'iconForImmage', 'bbn-xxxl' ]"
+           :class="[arrowClass.right, 'iconImg', 'bbn-xxxl' ]"
            @click="next"
            :style="{
                        visibility: (currentIndex >= items.length - 1) && !loop ? 'hidden' : 'visible',

@@ -223,13 +223,12 @@
           bbn.fn.log("Is there the index?", idx);
           if ( idx > -1 ){
             if ( arr[idx].conditions && arr[idx].conditions.length ){
-              this.confirm(bbn._("Êtes-vous sûr de vouloir supprimer ce groupe de conditions?"), () => {
+              this.confirm(bbn._("Are you sure you want to delete this group of conditions?"), () => {
                 arr.splice(idx, 1);
               })
             }
             else{
               arr.splice(idx, 1);
-              bbn.fn.log("It seems to be deleted", arr);
             }
             return true;
           }
@@ -372,7 +371,7 @@
               this.$emit(cancel ? 'invalidate' : 'validate', tmp, cancel);
             }
             else{
-              this.$emit('error', bbn._("Valeur obligatoire, sinon vous pouvez choisir d'autres opérateurs si vous cherchez un élément nul ou vide"));
+              this.$emit('error', bbn._("Value is required. You should choose another operator if you want to look for an element empty or null"));
             }
           },
           unset(){
@@ -400,7 +399,6 @@
             if ( index > -1 ){
               let o = this.editorGetComponentOptions(this.fields[index]);
               if ( o ){
-                bbn.fn.log("onCURRENTCOL", o);
                 this.currentType = o.type;
                 this.currentComponent = o.component;
                 this.currentComponentOptions = o.componentOptions;
