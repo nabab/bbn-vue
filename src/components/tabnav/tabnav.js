@@ -327,12 +327,14 @@
         let vm = this,
             idx = vm.getIndex('', true);
         if ( vm.isValidIndex(idx) ){
+          //bbn.fn.log("ACTIVATE6", this.tabs[idx].current ? this.tabs[idx].current : this.tabs[idx].url);
           this.activate(this.tabs[idx].current ? this.tabs[idx].current : this.tabs[idx].url);
         }
       },
 
       activateIndex(idx){
         if ( this.isValidIndex(idx) ){
+          //bbn.fn.log("ACTIVATE7", this.tabs[idx].current);
           this.activate(this.tabs[idx].current);
         }
       },
@@ -387,7 +389,7 @@
 
         // No URL has been given -> we activate the default tab
         if ( !url ){
-          bbn.fn.log("ACTIVATING DEFAULT");
+          //bbn.fn.log("ACTIVATING DEFAULT");
           return this.activateDefault();
         }
         // No index found: loading or error
@@ -401,7 +403,7 @@
               ) &&
               (subtab = this.getSubTabNav(i))
             ){
-              bbn.fn.log("ACTIAVTE SUBTAB WOITH URL " + url.substr(this.tabs[i].url.length + 1));
+              //bbn.fn.log("ACTIAVTE SUBTAB WOITH URL " + url.substr(this.tabs[i].url.length + 1));
               return subtab.activate(url === this.tabs[i].url ? '' : url.substr(this.tabs[i].url.length + 1));
             }
           }
@@ -420,18 +422,18 @@
         }
         // Index exists but content not loaded yet
         else if ( vm.tabs[idx].load && !vm.tabs[idx].disabled && !vm.tabs[idx].loading ){
-          bbn.fn.log("LOADING " + url);
+          //bbn.fn.log("LOADING " + url);
           vm.load(url, force);
         }
         else if ( !vm.tabs[idx].disabled ){
           vm.selected = idx;
           let subtab = vm.getSubTabNav(idx);
           if ( subtab && subtab.ready ){
-            bbn.fn.log("ACTIVATING SUBTAB");
+            //bbn.fn.log("ACTIVATING SUBTAB");
             subtab.activate(url.substr(vm.tabs[idx].url.length+1), force);
           }
           else if ( force && vm.autoload ){
-            bbn.fn.log("RELOADING TAB");
+            //bbn.fn.log("RELOADING TAB");
             this.reload(idx);
           }
         }
@@ -639,6 +641,7 @@
         const vm = this;
         let idx = vm.search(url),
             finalURL = vm.fullBaseURL + url;
+        bbn.fn.log(idx, finalURL, url);
         if ( vm.isValidIndex(idx) ){
           if ( vm.tabs[idx].real ){
             finalURL = vm.tabs[idx].real;
@@ -656,6 +659,7 @@
         else{
           idx = this.tabs.length;
           this.tabs.push({url: url, title: bbn._('Loading'), load: true, loading: true, selected: true, current: url});
+          //bbn.fn.log("ACTIVATE1", url);
           this.activate(url);
         }
         return bbn.fn.post(finalURL, {_bbn_baseURL: vm.fullBaseURL}, (d) => {
@@ -703,6 +707,7 @@
             this.$forceUpdate();
             vm.$nextTick(() => {
               bbn.fn.log("ADFDING", d, vm.tabs[idx]);
+              //bbn.fn.log("ACTIVATE2", d.current);
               vm.activate(d.current);
             });
           }
@@ -1162,7 +1167,17 @@
         }
       });
       // Giving colors
-      let url = window.location.pathname.substr(this.fullBaseURL.length ? this.fullBaseURL.length : 1);
+      let url;
+      if ( this.parents.length ){
+        let idx = this.parents[0].search(this.baseURL.substr(0, this.baseURL.length - 1));
+        if ( this.parents[0].isValidIndex(idx) ){
+          url = this.parents[0].tabs[idx].current.substr(this.baseURL.length) || '';
+        }
+      }
+      else{
+        url = window.location.pathname.substr(this.fullBaseURL.length ? this.fullBaseURL.length : 1);
+      }
+      //bbn.fn.log("ACTIVATE3", url);
       this.activate(url);
 
       /*
@@ -1353,6 +1368,7 @@
           setCurrent(url){
             const vm = this;
             if ( url.indexOf(vm.url) === 0 ){
+              //bbn.fn.log("ACTIVATE4", url);
               vm.tabNav.activate(url);
             }
           },
@@ -1387,6 +1403,7 @@
             return this.tabNav.reload(this.idx);
           },
           activate(force){
+            //bbn.fn.log("ACTIVATE5", this.idx);
             return this.tabNav.activate(this.idx, force);
           },
           confirm(){
