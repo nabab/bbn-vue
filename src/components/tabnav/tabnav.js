@@ -88,7 +88,7 @@
         parents: [],
         parentTab: false,
         selected: false,
-
+        visible: true
       };
     },
 
@@ -427,6 +427,14 @@
         }
         else if ( !vm.tabs[idx].disabled ){
           vm.selected = idx;
+          bbn.fn.each(this.tabs, (t, i) => {
+            if ( i !== idx ){
+              let subtab = vm.getSubTabNav(i);
+              if ( subtab ){
+                subtab.visible = false;
+              }
+            }
+          })
           let subtab = vm.getSubTabNav(idx);
           if ( subtab && subtab.ready ){
             //bbn.fn.log("ACTIVATING SUBTAB");
@@ -567,8 +575,10 @@
       },
 
       blackhole(ele){
+        bbn.fn.log("BLACKHOLE", ele);
+        const vm = this;
         // Global Animation Setting
-        window.requestAnimFrame =
+        var requestAnimFrame =
           window.requestAnimationFrame ||
           window.webkitRequestAnimationFrame ||
           window.mozRequestAnimationFrame ||
@@ -581,12 +591,13 @@
 // Global Canvas Setting
         var canvas = ele;
         var ctx = canvas.getContext('2d');
+        ctx.save();
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
 
 // Particles Around the Parent
-        function Particle(x, y, distance) {
+        var Particle = function(x, y, distance) {
           this.angle = Math.random() * 2 * Math.PI;
           this.radius = Math.random() ;
           this.opacity =  (Math.random()*5 + 2)/10;
@@ -613,9 +624,9 @@
             };
             this.draw();
           }
-        }
+        };
 
-        function Emitter(x, y) {
+        var Emitter = function(x, y) {
           this.position = { x: x, y: y};
           this.radius = 30;
           this.count = 3000;
@@ -624,7 +635,7 @@
           for(var i=0; i< this.count; i ++ ){
             this.particles.push(new Particle(this.position.x, this.position.y, this.radius));
           }
-        }
+        };
 
 
         Emitter.prototype = {
@@ -641,18 +652,28 @@
             }
             this.draw();
           }
-        }
+        };
 
 
         var emitter = new Emitter(canvas.width/2, canvas.height/2);
 
-        function loop() {
+        var loop = function() {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
           emitter.update();
-          requestAnimFrame(loop);
-        }
+          if ( vm.visible ){
+            requestAnimFrame(loop);
+          }
+        };
 
         loop();
+      },
+
+      unblackhole(ele){
+        bbn.fn.log("UNBLACKHOLE", ele);
+        const canvas = ele;
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.restore()
       },
 
       add(obj_orig, idx){
@@ -663,18 +684,12 @@
         if (
           (typeof(obj) === 'object') &&
           obj.url &&
-          (
-            (idx === undefined) ||
-            (
-              (typeof(idx) === 'number') &&
-              vm.tabs[idx]
-            )
-          )
+          ((idx === undefined) || this.isValidIndex(idx))
         ){
           if ( !obj.current ){
             obj.current = bbn.env.path.indexOf(this.getFullBaseURL() + obj.url) === 0 ?
               bbn.env.path.substr(this.getFullBaseURL().length) : obj.url;
-            bbn.fn.log("CREATING CURRENT", this.getFullBaseURL(), obj.url, bbn.env.path, obj.current);
+            //bbn.fn.log("CREATING CURRENT", this.getFullBaseURL(), obj.url, bbn.env.path, obj.current);
           }
           else if ( obj.current.indexOf(obj.url) !== 0 ){
             obj.current = obj.url;
@@ -747,11 +762,11 @@
         }
         else{
           idx = this.tabs.length;
-          this.tabs.push({url: url, title: bbn._('Loading'), load: true, loading: true, selected: true, current: url});
+          this.tabs.push({url: url, title: bbn._('Loading'), load: true, loading: true, selected: true, current: url, error: false});
           //bbn.fn.log("ACTIVATE1", url);
-          this.activate(url);
         }
         vm.tabs[idx].state = 'loading';
+        this.activate(url);
         return bbn.fn.post(finalURL, {_bbn_baseURL: vm.fullBaseURL}, (d) => {
           if ( d.content ){
             if ( d.url ){
@@ -780,6 +795,7 @@
               url = d.url;
             }
             vm.tabs[idx].loading = false;
+            vm.tabs[idx].state = 'loaded';
             this.$emit('tabLoaded', d.data, d.url, vm.tabs[idx]);
             d.menu = vm.tabs[idx] && vm.tabs[idx].menu ? vm.tabs[idx].menu : undefined;
             if ( d.data !== undefined ){
@@ -796,7 +812,7 @@
             }
             this.$forceUpdate();
             vm.$nextTick(() => {
-              bbn.fn.log("ADFDING", d, vm.tabs[idx]);
+              //bbn.fn.log("ADDING", d, vm.tabs[idx]);
               //bbn.fn.log("ACTIVATE2", d.current);
               vm.activate(d.current);
             });
@@ -805,6 +821,7 @@
           bbn.fn.log(arguments);
           if ( this.isValidIndex(idx) ){
             this.tabs[idx].state = xhr.status;
+            this.tabs[idx].error = errorThrown;
             this.tabs[idx].loading = false;
             this.tabs[idx].loaded = true;
             this.tabs[idx].menu = false;
@@ -815,7 +832,7 @@
             this.navigate(url);
             this.activate(url);
           }
-          bbn.fn.log(arguments)
+          //bbn.fn.log(arguments)
         })
       },
 
@@ -1361,24 +1378,34 @@
         name: 'bbns-loader',
         props: ['source']
       },
-      'bbns-error-404': {
+      'bbns-error-tab': {
         props: {
           selected: {
             type: Boolean
+          },
+          error: {},
+          state: {}
+        },
+        data(){
+          return {
+            canvas: null
           }
         },
         mounted(){
-          this.$parent.blackhole(this.getRef('particle'));
-        }
-      },
-      'bbns-error-500': {
-        props: {
-          selected: {
-            type: Boolean
-          }
+          this.canvas = this.getRef('particle');
+          this.$parent.blackhole(this.canvas);
         },
-        mounted(){
-          this.$parent.blackhole(this.getRef('particle'));
+        watch: {
+          selected(v){
+            if ( v ){
+              setTimeout(() => {
+                this.$parent.blackhole($(this.$el).find('canvas')[0]);
+              }, 500)
+            }
+            else{
+              this.$parent.unblackhole($(this.$el).find('canvas')[0]);
+            }
+          }
         }
       },
       'bbns-tab': {

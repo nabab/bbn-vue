@@ -127,16 +127,19 @@
           </div>
         </div>
       </div>
-      <bbns-error-404 inline-template
-                      :selected="tab.selected"
-                      v-else-if="tab.state === 404">
-        <div v-if="selected"
+      <bbns-error-tab inline-template
+                      v-else-if="tab.error"
+                      :error="tab.error"
+                      :state="tab.state"
+                      :selected="tab.selected">
+        <div v-if="selected && $parent.visible"
              :class="{
                'bbn-flex-fill': true,
                'bbn-c': true,
                'bbn-white': true,
                'bbn-w-100': true,
-               'bbn-bg-darkgrey': true
+               'bbn-bg-darkgrey': state === 404,
+               'bbn-bg-red': state === 500
              }"
              style="position: relative">
           <div class="bbn-full-screen bbn-flex-height">
@@ -145,7 +148,7 @@
                 <br><br><br>
                 <i class="fas fa-exclamation-triangle bbn-xxl"></i>
                 <br><br><br>
-                <span v-text="_('Page not found...')"></span>
+                <span v-text="error"></span>
               </h3>
             </div>
             <div class="bbn-flex-fill">
@@ -153,34 +156,7 @@
             </div>
           </div>
         </div>
-      </bbns-error-404>
-      <bbns-error-500 inline-template
-                      :selected="tab.selected"
-                      v-else-if="tab.state === 500">
-        <div v-if="selected"
-             :class="{
-               'bbn-flex-fill': true,
-               'bbn-c': true,
-               'bbn-white': true,
-               'bbn-w-100': true,
-               'bbn-bg-red': true
-             }"
-             style="position: relative">
-          <div class="bbn-full-screen bbn-flex-height">
-            <div class="bbn-w-100">
-              <h3>
-                <br><br><br>
-                <i class="fas fa-exclamation-triangle bbn-xxl"></i>
-                <br><br><br>
-                <span v-text="_('Error from the server...')"></span>
-              </h3>
-            </div>
-            <div class="bbn-flex-fill">
-              <canvas ref="particle"></canvas>
-            </div>
-          </div>
-        </div>
-      </bbns-error-500>
+      </bbns-error-tab>
       <bbns-tab inline-template
                v-else
                v-bind="tab"
