@@ -184,6 +184,10 @@
       "active": true,
       "state": "stable"
     },
+    "panelbar": {
+      "active": true,
+      "state": "stable"
+    },
     "popup": {
       "active": true,
       "state": "stable"

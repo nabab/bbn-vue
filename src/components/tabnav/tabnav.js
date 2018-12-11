@@ -296,8 +296,6 @@
 
       // Returns the url relative to the current tabNav from the given url
       parseURL(fullURL){
-        let vm = this,
-            fullBaseURL = vm.fullBaseURL;
         if ( fullURL === undefined ){
           return '';
         }
@@ -308,18 +306,12 @@
           fullURL = fullURL.substr(bbn.env.root.length);
         }
         fullURL = bbn.fn.removeTrailingChars(fullURL, '/');
-        if ( (fullBaseURL === fullURL)  || (fullURL === '') ){
+        if ( (this.fullBaseURL === fullURL)  || (fullURL === '') ){
           return '';
         }
-        if ( fullBaseURL && (fullURL.indexOf(fullBaseURL) === 0) ){
-          fullURL = fullURL.substr(fullBaseURL.length);
+        if ( this.fullBaseURL && (fullURL.indexOf(this.fullBaseURL) === 0) ){
+          fullURL = fullURL.substr(this.fullBaseURL.length);
         }
-        /*if ( vm.baseURL && (url.indexOf(vm.baseURL) === 0) ){
-         return url.substr(vm.baseURL.length);
-         }
-         else if ( vm.baseURL === (url + '/') ){
-         return '';
-         }*/
         return fullURL;
       },
 
@@ -340,27 +332,37 @@
       },
 
       getVue(idx){
-        if ( this.isValidIndex(idx) && this.$refs['container-' + idx] ){
-          return $.isArray(this.$refs['container-' + idx]) ?
-            this.$refs['container-' + idx][0] :
-            this.$refs['container-' + idx];
+        if ( idx === undefined ){
+          idx = this.selected;
+        }
+        if ( this.isValidIndex(idx) ){
+          return this.getRef('container-' + idx);
         }
         return false;
       },
 
       getTab(idx){
-        if ( this.isValidIndex(idx) && this.$refs['tab-' + idx] ){
+        if ( idx === undefined ){
+          idx = this.selected;
+        }
+        if ( this.isValidIndex(idx) ){
           return this.getRef('tab-' + idx);
         }
         return false;
       },
 
       getContainer(idx){
+        if ( idx === undefined ){
+          idx = this.selected;
+        }
         let c = this.getVue(idx);
         return c ? c.$el : false;
       },
 
       getSubTabNav(idx){
+        if ( idx === undefined ){
+          idx = this.selected;
+        }
         if ( this.isValidIndex(idx) ){
           let tab = this.getVue(idx);
           if ( tab ){
@@ -368,6 +370,22 @@
           }
         }
         return false;
+      },
+
+      getRealVue(idx){
+        let tabnav = this,
+            sub = tabnav;
+        if ( idx === undefined ){
+          idx = this.selected;
+        }
+        while ( tabnav ){
+          tabnav = sub.getSubTabNav(idx);
+          if ( tabnav ){
+            sub = tabnav;
+            idx = sub.selected;
+          }
+        }
+        return sub.getVue(idx);
       },
 
       /**
@@ -379,9 +397,8 @@
         url = bbn.fn.removeTrailingChars(url, '/');
         // if no parameter is passed we use the current url
         let vm = this,
-            idx= vm.getIndex(url),
+            idx = vm.getIndex(url),
             subtab;
-        //alert(this.fullBaseURL + ' ------- ' + this.currentURL + ' ---- ' + url);
         bbn.fn.log("url before parse: " + url);
         //url = vm.parseURL(url);
         //bbn.fn.log("url after parse: " + url);
@@ -411,7 +428,7 @@
           if ( vm.autoload ){
             //alert(this.baseURL + '----NOT VALID----' + url);
             //bbn.fn.log("link from autoload: " + url, vm);
-            vm.load(url, force);
+            this.load(url, force);
           }
           else{
             bbn.fn.error(
@@ -426,13 +443,17 @@
           vm.load(url, force);
         }
         else if ( !vm.tabs[idx].disabled ){
+          if ( (vm.tabs[idx].current !== url) && (
+            (url === vm.tabs[idx].url) ||
+            (url.indexOf(vm.tabs[idx].url + '/') === 0)
+          )){
+            vm.tabs[idx].current = url;
+          }
           vm.selected = idx;
           bbn.fn.each(this.tabs, (t, i) => {
-            if ( i !== idx ){
-              let subtab = vm.getSubTabNav(i);
-              if ( subtab ){
-                subtab.visible = false;
-              }
+            let subtab = vm.getSubTabNav(i);
+            if ( subtab ){
+              subtab.visible = i === idx;
             }
           })
           let subtab = vm.getSubTabNav(idx);
@@ -677,54 +698,57 @@
       },
 
       add(obj_orig, idx){
-        const vm = this;
         let obj = $.extend({}, obj_orig),
             index;
         //obj must be an object with property url
         if (
           (typeof(obj) === 'object') &&
           obj.url &&
-          ((idx === undefined) || this.isValidIndex(idx))
+          ((idx === undefined) || this.isValidIndex(idx) || (idx === this.tabs.length))
         ){
           if ( !obj.current ){
-            obj.current = bbn.env.path.indexOf(this.getFullBaseURL() + obj.url) === 0 ?
-              bbn.env.path.substr(this.getFullBaseURL().length) : obj.url;
-            //bbn.fn.log("CREATING CURRENT", this.getFullBaseURL(), obj.url, bbn.env.path, obj.current);
+            if ( bbn.env.path.indexOf(this.getFullBaseURL() + obj.url + '/') === 0 ){
+              bbn.env.path.substr(this.getFullBaseURL().length);
+            }
+            else{
+              obj.current = obj.url;
+            }
           }
-          else if ( obj.current.indexOf(obj.url) !== 0 ){
+          else if ( (obj.current !== obj.url) && (obj.current.indexOf(obj.url + '/') !== 0) ){
             obj.current = obj.url;
           }
-          index = vm.search(obj.url);
+          index = this.search(obj.url);
           obj.isUnsaved = false;
           obj.events = {};
           if ( !obj.menu ){
             obj.menu = [];
           }
           if ( index !== false ){
-            obj.idx = index;
-            obj.selected = index === vm.selected;
-            $.each(obj, function(n){
-              vm.$set(vm.tabs[index], n, obj[n]);
+            if ( idx === undefined ){
+              idx = index;
+            }
+            obj.idx = idx;
+            obj.selected = index === this.selected;
+            // If the tab exists we remove it
+            bbn.fn.iterate(this.tabs[index], (v, n) => {
+              if ( obj[n] === undefined ){
+                obj[n] = v;
+              }
             })
+            this.tabs.splice(index, 1);
           }
           else{
             obj.selected = false;
-            if ( !obj.current ){
-              obj.current = obj.url;
-            }
-            if ( idx === undefined ){
-              obj.idx = vm.tabs.length;
-              vm.tabs.push(obj);
-            }
-            else{
-              obj.idx = idx;
-              $.each(vm.tabs, function(i, tab){
-                if ( i >= idx ){
-                  vm.$set(vm.tabs[i], "idx", tab.idx+1);
-                }
-              });
-              vm.tabs.splice(idx, 0, obj);
-            }
+            obj.idx = idx === undefined ? this.tabs.length : idx;
+          }
+          if ( !obj.current ){
+            obj.current = obj.url;
+          }
+          if ( obj.idx === this.tabs.length ){
+            this.tabs.push(obj);
+          }
+          else{
+            this.tabs.splice(idx, 0, obj);
           }
         }
       },
@@ -735,6 +759,7 @@
           bbn.fn.each(this.tabs, (tab, index) => {
             if ( url.indexOf(tab.url + '/') === 0 ){
               r = index;
+              return false;
             }
           });
         }
@@ -768,55 +793,57 @@
         vm.tabs[idx].state = 'loading';
         this.activate(url);
         return bbn.fn.post(finalURL, {_bbn_baseURL: vm.fullBaseURL}, (d) => {
-          if ( d.content ){
-            if ( d.url ){
-              d.url = this.parseURL(d.url);
-            }
-            else{
-              d.url = this.parseURL(finalURL);
-            }
-            if ( d.url !== url ){
-              let idx = this.search(url);
-              if ( idx !== false ){
-                this.tabs[idx].url = d.url;
-              }
-            }
-            d.loaded = true;
-            if ( d.load !== false ){
-              d.load = null;
-            }
-            /** @todo Why is it here? */
-            idx = vm.search(d.url);
-            let checkIdx = vm.search(url);
-            if ( (idx !== checkIdx) && (idx === false) && (checkIdx !== false) ){
-              idx = checkIdx;
-              this.tabs[idx].url = d.url;
-              this.navigate(d.url);
-              url = d.url;
-            }
-            vm.tabs[idx].loading = false;
-            vm.tabs[idx].state = 'loaded';
-            this.$emit('tabLoaded', d.data, d.url, vm.tabs[idx]);
-            d.menu = vm.tabs[idx] && vm.tabs[idx].menu ? vm.tabs[idx].menu : undefined;
-            if ( d.data !== undefined ){
-              d.source = $.extend({}, d.data);
-              delete d.data;
-            }
-            d.current = url;
-            if ( vm.isValidIndex(idx) ){
-              vm.add(d, idx);
-            }
-            else{
-              idx = vm.tabs.length;
-              vm.add(d);
-            }
-            this.$forceUpdate();
-            vm.$nextTick(() => {
-              //bbn.fn.log("ADDING", d, vm.tabs[idx]);
-              //bbn.fn.log("ACTIVATE2", d.current);
-              vm.activate(d.current);
-            });
+          if ( d.url ){
+            d.url = this.parseURL(d.url);
           }
+          else{
+            d.url = this.parseURL(finalURL);
+          }
+          if ( d.url !== url ){
+            let idx = this.search(url);
+            if ( idx !== false ){
+              this.tabs[idx].url = d.url;
+            }
+          }
+          d.loaded = true;
+          if ( d.load !== false ){
+            d.load = null;
+          }
+          vm.tabs[idx].loading = false;
+          vm.tabs[idx].state = 'loaded';
+          if ( !d.content ){
+            return;
+          }
+          /** @todo Why is it here? */
+          idx = vm.search(d.url);
+          let checkIdx = vm.search(url);
+          if ( (idx !== checkIdx) && (idx === false) && (checkIdx !== false) ){
+            idx = checkIdx;
+            this.tabs[idx].url = d.url;
+            //this.navigate(d.url);
+            url = d.url;
+          }
+          d.menu = vm.tabs[idx] && vm.tabs[idx].menu ? vm.tabs[idx].menu : undefined;
+          if ( d.data !== undefined ){
+            d.source = $.extend({}, d.data);
+            delete d.data;
+          }
+          d.current = url;
+          bbn.fn.log("URL: " + url);
+          if ( vm.isValidIndex(idx) ){
+            vm.add(d, idx);
+          }
+          else{
+            idx = vm.tabs.length;
+            vm.add(d);
+          }
+          this.$forceUpdate();
+          vm.$nextTick(() => {
+            //bbn.fn.log("ADDING", d, vm.tabs[idx]);
+            //bbn.fn.log("ACTIVATE2", d.current);
+            this.$emit('tabLoaded', d.data, d.url, vm.tabs[idx]);
+            vm.activate(d.current);
+          });
         }, (xhr, textStatus, errorThrown) => {
           bbn.fn.log(arguments);
           if ( this.isValidIndex(idx) ){
@@ -1097,9 +1124,10 @@
               }
             }
           }
-          res += ' - ';
         }
-        res += bbn.env.siteTitle || bbn._("Untitled site")
+        if ( bbn.env.siteTitle ){
+          res += ' - ' + bbn.env.siteTitle;
+        }
         return res;
       },
 
@@ -1199,8 +1227,6 @@
           }
         }
       }
-
-
     },
 
     created(){
@@ -1239,6 +1265,7 @@
       // If there is a parent tabnav we automatically give the proper baseURL
       let cfg;
       if ( this.parents.length ){
+        bbn.fn.info(this.parents[0].currentURL || 'NON');
         let tmp = this.parents[0].getURL(this.parentTab.idx);
         if ( this.baseURL !== (tmp + '/') ) {
           this.baseURL = tmp + '/';
@@ -1257,13 +1284,17 @@
         cfg = this.getStorage()
       }
 
-      $.each(this.slotSource, (i, obj) => {
-        if ( obj.url ){
-          this.add(obj);
-        }
-      });
-
-      $.each(!this.autoload || !cfg || !cfg.tabs ? this.source : cfg.tabs, (i, obj) => {
+      let tabs = [];
+      if ( this.slotSource ){
+        tabs = tabs.concat(this.slotSource);
+      }
+      if ( this.source ){
+        tabs = tabs.concat(this.source);
+      }
+      if ( cfg && cfg.tabs ){
+        tabs = tabs.concat(cfg.tabs);
+      }
+      bbn.fn.each(tabs, (obj, i) => {
         if ( obj.url ){
           this.add(obj);
         }
@@ -1318,6 +1349,7 @@
     watch: {
       selected(newVal){
         if ( this.tabs[newVal] ){
+          this.$emit('select', this.tabs[newVal], newVal);
           if ( this.currentURL !== this.tabs[newVal].current ){
             this.currentURL = this.tabs[newVal].current;
           }
@@ -1339,6 +1371,14 @@
             this.$emit(ev, this.tabs[newVal].events[ev]);
             delete this.tabs[newVal].events[ev];
           }
+          setTimeout(() => {
+            if ( this.isValidIndex(newVal) ){
+              let tab = this.getVue(newVal);
+              if ( tab ){
+                tab.selfEmit(true)
+              }
+            }
+          }, 100)
         }
       },
       currentURL(newVal, oldVal){
@@ -1347,8 +1387,10 @@
             let tab = bbn.vue.getChildByKey(this, this.tabs[this.selected].url, 'bbns-tab');
             if (
               tab &&
-              (this.tabs[this.selected].current !== newVal) &&
-              (newVal.indexOf(this.tabs[this.selected].url) === 0)
+              (this.tabs[this.selected].current !== newVal) && (
+                (newVal === this.tabs[this.selected].url) ||
+                (newVal.indexOf(this.tabs[this.selected].url + '/') === 0)
+              )
             ){
               this.tabs[this.selected].current = newVal;
             }
@@ -1359,6 +1401,7 @@
             else if ( this.autoload && this.ready ){
               this.setConfig();
             }
+            this.$emit('change', newVal, this.selected, oldVal);
           }
         }
         this.$forceUpdate();
@@ -1373,6 +1416,7 @@
         }
       }
     },
+
     components: {
       'bbns-loader': {
         name: 'bbns-loader',
@@ -1518,10 +1562,9 @@
 
         methods: {
           setCurrent(url){
-            const vm = this;
-            if ( url.indexOf(vm.url) === 0 ){
-              //bbn.fn.log("ACTIVATE4", url);
-              vm.tabNav.activate(url);
+            if ( (url === this.url) || (url.indexOf(this.url + '/') === 0) ){
+              this.tabNav.currentURL = url;
+              this.tabNav.navigate();
             }
           },
           setTitle(title){
@@ -1666,21 +1709,28 @@
 
         created(){
           if ( this.isComponent === null ){
+            // The default onMount funciton is to do nothing.
             this.onMount = () => {
               return false;
             };
             let res;
             if ( this.script ){
               res = typeof this.script === 'string' ? eval(this.script) : this.script;
+              // if evaluating the script property returns a function that will be onMount
               if ( $.isFunction(res) ){
                 this.onMount = res;
                 this.isComponent = false;
               }
+              // Otherwise if it's an object we assume it is a component
               else if ( typeof(res) === 'object' ){
                 this.isComponent = true;
               }
             }
             if ( this.isComponent ){
+              // We create a local component with a random name,
+              // the content as template
+              // and the object returned as component definition
+              // Adding also a few funciton to interact with the tab
               bbn.fn.extend(res ? res : {}, {
                 name: this.name,
                 template: '<div class="bbn-full-screen">' + this.content + '</div>',
@@ -1693,6 +1743,7 @@
                 },
                 props: ['source']
               });
+              // The local anonymous component gets defined
               this.$options.components[this.name] = res;
             }
             else{

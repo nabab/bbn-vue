@@ -45,7 +45,7 @@
     <slot name="footer"></slot>
   </div>
   <div v-else-if="realButtons.length"
-       class="footer bbn-popup-footer k-button-group k-dialog-buttongroup k-dialog-button-layout-stretched bbn-flex-width">
+       class="footer bbn-popup-footer k-button-group k-dialog-buttongroup k-dialog-button-layout-stretched bbn-flex-width bbn-lg">
     <template v-for="(button, i) in realButtons">
       <bbn-button v-if="button.command === 'reset'"
                   :disabled="!modified && !prefilled"

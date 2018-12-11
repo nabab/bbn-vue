@@ -1,0 +1,9 @@
+<div :class="[{
+       'bbn-h': !ready
+     }, componentClass]"
+>
+  <div class="bbn-full-screen">
+    <bbn-container v-for="view in views" :key="view.url" :current="currentURL" v-bind="view" @view="updateView"></bbn-container>
+    <slot></slot>
+  </div>
+</div>

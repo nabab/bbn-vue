@@ -37,7 +37,7 @@
       },
       // An array of objects representing the nodes
       source: {
-        Type: [Array, String]
+        Type: [Array, String, Object]
       },
       // Set to false if the source shouldn't be loaded at mount time
       autoload: {
@@ -89,6 +89,10 @@
           return [];
         }
       },
+      object: {
+        type: Boolean,
+        default: false
+      },
       // If set to false a draggable tree will not be able to drop on itself
       selfDrop: {
         type: Boolean,
@@ -116,13 +120,14 @@
     data(){
       let items = [];
       if ( typeof(this.source) !== 'string' ){
-        if ( this.map ){
-          $.each(this.source, (i, a) =>{
-            items.push(this.map(a));
-          })
+        if ( bbn.fn.isArray(this.source) ){
+          items = this._map(this.source);
         }
-        else if ( this.source && this.source.length ){
-          items = this.source.slice();
+        else if ( this.object ){
+          items = this._objectMapper(this.source)
+        }
+        else{
+          throw new Error(bbn._('The source of the tree must be an array or the object property must be set to true if it is an object'));
         }
       }
       return {
@@ -176,17 +181,82 @@
 
     methods: {
 
+      _objectMapper(items){
+        let res = [];
+        if ( bbn.fn.isArray(items) ){
+          bbn.fn.each(items, (a, i) => {
+            let num = 0;
+            let o = {
+              text: bbn._('Node') + ' ' + i,
+              num_children: num
+            };
+            if ( bbn.fn.isArray(a) ){
+              num = a.length;
+            }
+            else if ( a && (typeof a === 'object') ){
+              num = bbn.fn.numProperties(a);
+            }
+            else if ( a ){
+              o.text = typeof a === 'string' ? a : a.toString();
+            }
+            if ( num ){
+              o.num_children = num;
+              o.items = this._objectMapper(a);
+            }
+            res.push(o);
+          })
+        }
+        else if ( items && (typeof items === 'object') && bbn.fn.numProperties(items) ){
+          bbn.fn.iterate(items, (a, n) => {
+            let num = 0;
+            let o = {
+              text: n,
+              num_children: num
+            };
+            if ( bbn.fn.isArray(a) ){
+              num = a.length;
+            }
+            else if ( a && (typeof a === 'object') ){
+              num = bbn.fn.numProperties(a);
+            }
+            else if ( a ){
+              o.text = ('<strong>' + o.text + ': </strong>' + a);
+            }
+            if ( num ){
+              o.num_children = num;
+              o.items = this._objectMapper(a);
+            }
+            res.push(o);
+          });
+        }
+        return res;
+      },
+
+      _map(items, level){
+        if ( this.map ){
+          let res = [];
+          if ( !level ){
+            level = 1;
+          }
+          else{
+            level++;
+          }
+          bbn.fn.each(items, (a, i) => {
+            let b = this.map(a, i, level);
+            if ( b.items ){
+              b.items = this._map(b.items, level);
+            }
+            res.push(b);
+          });
+          return res;
+        }
+        return items.slice();
+      },
+
       getItems(){
         let items = [];
         if ( typeof(this.source) !== 'string' ){
-          if ( this.map ){
-            $.each(this.source, (i, a) =>{
-              items.push(this.map(a));
-            })
-          }
-          else if ( this.source.length ){
-            items = this.source.slice();
-          }
+          items = this._map(this.source);
         }
         return items;
       },
@@ -543,12 +613,15 @@
             this.tree.isLoading = false;
             this.loading = false;
             if ( res.data ){
+              this.items = this.tree._map(res.data);
+              /*
               if ( this.tree.map ){
                 this.items = this.mapper(this.tree.map, res.data);
               }
               else{
                 this.items = res.data;
               }
+              */
             }
             this.isLoaded = true;
           })

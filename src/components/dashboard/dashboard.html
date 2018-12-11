@@ -21,6 +21,7 @@
                    v-if="!w.hidden"
                    @loaded="onResize"
                    v-bind="w"
+                   :options="w.options"
                    :uid="w.key"
                    :key="w.key"
                    :index="index"
@@ -66,6 +67,7 @@
             <component v-if="component"
                        :is="component"
                        :source="currentSource"
+                       v-bind="options"
             ></component>
             <div v-else-if="content"
                  v-html="content"
@@ -79,6 +81,7 @@
               >
                 <component v-if="itemComponent"
                            :is="itemComponent"
+                           v-bind="options"
                            :source="it"
                 ></component>
                 <span v-else

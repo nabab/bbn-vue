@@ -32,6 +32,10 @@
         type: Number,
         default: 25
       },
+      scrollable: {
+        type: Boolean,
+        default: true
+      },
       pageable: {
         type: Boolean,
         default: false
@@ -102,6 +106,9 @@
           };
         }
       },
+      selected: {
+        type: Array
+      },
       selection: {
         type: [Boolean, Function],
         default: false
@@ -136,7 +143,8 @@
         type: [String, Function]
       },
       confirmMessage: {
-        type: [String, Function]
+        type: [String, Function, Boolean],
+        default: bbn._('Are you sure you want to delete this row?')
       },
       // Vue components
       component: {
@@ -249,7 +257,7 @@
         currentOrder: order,
         currentHidden: this.hidden || [],
         currentData: [],
-        selectedRows: [],
+        selectedRows: this.selected || [],
         originalData: null,
         group: this.groupBy === undefined ? false : this.groupBy,
         limits: [10, 25, 50, 100, 250, 500],
@@ -302,7 +310,7 @@
       },
       shownFields(){
         let r = [];
-        $.each(this.cols, (i, a) => {
+        bbn.fn.each(this.cols, (a) => {
           if ( a.field && !a.hidden ){
             r.push(a.field);
           }
@@ -529,10 +537,16 @@
 
         // If there's a group that will be the row index of its 1st value (where the expander is)
         let currentGroupIndex = -1,
-            isExpanded = false;
+            currentGroupRow = -1,
+            isExpanded = false,
+            groupNumCheckboxes = 0,
+            groupNumChecked = 0,
+            lastInGroup = false;
         while ( data[i] && (i < end) ){
           let a = data[i].data;
+          lastInGroup = isGroup && (!data[i+1] || (data[i+1].data[groupField] !== currentGroupValue));
           if ( isGroup && (currentGroupValue !== a[groupField]) ){
+            groupNumCheckboxes = 0;
             if ( !a[groupField] ){
               currentGroupValue = null;
               currentGroupIndex = -1;
@@ -542,6 +556,7 @@
               isExpanded = false;
               currentGroupValue = a[groupField];
               currentGroupIndex = data.index;
+              currentGroupRow = res.length;
               let tmp = {
                 group: true,
                 index: data[i].index,
@@ -554,6 +569,9 @@
               // Expanded is true: all is opened
               if ( this.allExpanded ){
                 isExpanded = true;
+                if ( this.currentExpandedValues.indexOf(currentGroupValue) === -1 ){
+                  this.currentExpandedValues.push(currentGroupValue);
+                }
               }
               // expandedValues is a function, which will be executed on each value
               else if ( $.isFunction(this.expandedValues) ){
@@ -568,6 +586,7 @@
               else if ( this.currentExpandedValues.indexOf(currentGroupValue) > -1 ){
                 isExpanded = true;
               }
+
               if ( !isExpanded && data[i-1] && (currentGroupValue === data[i-1].data[groupField]) ){
                 if ( res.length ){
                   res.push(tmp);
@@ -591,10 +610,6 @@
               data: a,
               rowIndex: rowIndex
             };
-            if ( this.selection ){
-              o.selected = this.selectedRows.indexOf(data[i].index) > -1;
-              o.selection = true;
-            }
             if ( isGroup ){
               if ( !currentGroupValue ){
                 o.expanded = true;
@@ -609,6 +624,14 @@
                 ($.isFunction(this.expander) && this.expander(a))
               ) ){
               o.expander = true;
+            }
+            if ( this.selection && (!bbn.fn.isFunction(this.selection) || this.selection(o)) ){
+              o.selected = this.selectedRows.indexOf(data[i].index) > -1;
+              o.selection = true;
+              groupNumCheckboxes++;
+              if ( o.selected ){
+                groupNumChecked++;
+              }
             }
             res.push(o);
             rowIndex++;
@@ -701,6 +724,10 @@
                 rowIndex++;
               });
             }
+          }
+          if ( isGroup && this.selection && lastInGroup && groupNumCheckboxes ){
+            res[currentGroupRow].selection = true;
+            res[currentGroupRow].selected = groupNumChecked === groupNumCheckboxes;
           }
           i++;
         }
@@ -811,6 +838,9 @@
         return pass;
       },
       _checkHeaders(){
+        if ( !this.scrollable ){
+          return
+        }
         let mainScroller = this.getRef('mainScroller');
         if ( this.titleGroups && mainScroller ){
           let x = mainScroller.getRef('xScroller').currentScroll,
@@ -826,6 +856,9 @@
         }
       },
       _updateViewport(){
+        if ( !this.scrollable ){
+          return
+        }
         if ( this.viewportUpdater ){
           clearTimeout(this.viewportUpdater);
         }
@@ -898,6 +931,31 @@
           }
         }, 250)
       },
+
+      _export(){
+        let span = window.document.createElement('span');
+        let cols = {};
+        let res = [];
+        bbn.fn.each(this.currentData, (a) => {
+          let o = $.extend({}, JSON.parse(JSON.stringify(a)));
+          let row = [];
+          bbn.fn.each(this.cols, (b) => {
+            if ( !b.hidden && !b.buttons && b.field ){
+              if ( typeof o[b.field] === 'string' ){
+                span.innerHTML = o[b.field];
+                row.push(span.textContent.trim());
+              }
+              else{
+                row.push(o[b.field]);
+              }
+            }
+          });
+          res.push(row);
+        });
+        return res;
+      },
+
+
       _execCommand(button, data, col, index, ev){
         if ( ev ){
           ev.preventDefault();
@@ -910,6 +968,8 @@
           }
           else if ( typeof(button.command) === 'string' ){
             switch ( button.command ){
+              case 'csv':
+                return this.exportCSV();
               case 'insert':
                 return this.insert(data, {title: bbn._('New row creation')}, -1);
               case 'select':
@@ -935,13 +995,18 @@
       },
 
       _delete(index){
-        if ( this.currentData[index] ){
+        if ( this.currentSet[index] && this.currentData[this.currentSet[index].index] ){
           let ev = $.Event('delete');
+          index = this.currentSet[index].index;
           if ( this.url ){
             bbn.fn.post(this.url, $.extend({}, this.currentData[index], {action: 'delete'}), (d) => {
               if ( d.success ){
                 this.currentData.splice(index, 1);
+                if ( this.originalData ){
+                  this.originalData.splice(index, 1);
+                }
                 this.$emit('delete', this.currentData[index], ev);
+                appui.success(bbn._('Deleted successfully'))
               }
               else{
                 this.alert(bbn._("Impossible to delete the row"))
@@ -950,9 +1015,20 @@
           }
           else{
             this.currentData.splice(index, 1);
+            if ( this.originalData ){
+              this.originalData.splice(index, 1);
+            }
             this.$emit('delete', this.currentData[index], ev);
           }
         }
+      },
+
+      exportCSV(filename, valSep, rowSep, valEsc){
+        let data = bbn.fn.toCSV(this._export(), valSep, rowSep, valEsc);
+        if ( !filename ){
+          filename = 'export-' + (new Date()).getSQL(true).replace('/:/g', '-') + '.csv';
+        }
+        bbn.fn.download(filename, data, 'csv');
       },
 
       getPopup(){
@@ -1196,6 +1272,7 @@
         this.getPopup().open({
           title: bbn._("Columns' picker"),
           width: '90%',
+          height: '90%',
           component: {
             template: `
 <div class="bbn-table-column-picker bbn-full-screen">
@@ -1357,9 +1434,17 @@
             let o = $.extend({}, this.data, {action: table.tmpRow ? 'insert' : 'update'});
             popup.component = {
               data(){
+                let fields = [];
+                table.cols.map((a) => {
+                  let o = $.extend(true, {}, a);
+                  if ( o.ftitle ){
+                    o.title = o.ftitle;
+                  }
+                  fields.push(o);
+                });
                 return {
                   // Table's columns are used as native form config
-                  fields: table.cols,
+                  fields: fields,
                   data: row,
                   obj: o
                 }
@@ -1376,10 +1461,7 @@
               methods: {
                 success(d, e){
                   e.preventDefault();
-                  let ev = $.Event('editSuccess');
-                  table.$emit('editSuccess', d, ev);
-                  if ( d.data && !ev.isDefaultPrevented() ){
-                    table.saveRow();
+                  if ( table.successEdit(d) ){
                     table.getPopup().close();
                   }
                 },
@@ -1401,10 +1483,26 @@
           this.getPopup().open(popup);
         }
       },
+      successEdit(d){
+        let ev = $.Event('editSuccess');
+        this.$emit('editSuccess', d, ev);
+        if ( d.success && !ev.isDefaultPrevented() ){
+          if ( d.data ){
+            bbn.fn.log(d.data);
+            bbn.fn.iterate(d.data, (o, n) => {
+              this.editedRow[n] = o;
+            });
+          }
+          this.saveRow();
+          return true;
+        }
+        return false;
+      },
+
       saveRow(){
         // New insert
-        let ev = $.Event('saveRow');
-        this.$emit('saveRow', this.tmpRow || this.editedRow, ev);
+        let ev = $.Event('saverow');
+        this.$emit('saverow', this.tmpRow || this.editedRow, ev);
         if ( !ev.isDefaultPrevented() ){
           if ( this.tmpRow ){
             this.currentData.push($.extend({}, this.tmpRow));
@@ -1428,15 +1526,25 @@
           if ( this.url ){
             let o = $.extend({}, this.data, this.tmpRow || this.editedRow, {action: this.tmpRow ? 'insert' : 'update'});
             bbn.fn.post(this.url, o, (d) => {
-              if ( d.success ){
-                this.saveRow();
-              }
+              this.successEdit(d);
             })
           }
           else{
             this.saveRow()
           }
         }
+      },
+
+      isGroupedCell(groupIndex, row){
+        if ( this.groupable && row.group ){
+          if ( this.groupCols[0].width > 200 ){
+            return groupIndex === 0;
+          }
+          else{
+            return groupIndex === 1;
+          }
+        }
+        return false;
       },
       getConfig(){
         return {
@@ -1473,7 +1581,8 @@
             $.each(this.cols, (i, a) => {
               let hidden = (this.currentHidden.indexOf(i) > -1);
               if ( a.hidden !== hidden ){
-                this.cols[i].hidden =  hidden;
+                bbn.fn.log("CHANGING HIDDEN");
+                this.$set(this.cols[i], 'hidden', hidden);
               }
             });
           }
@@ -1487,7 +1596,7 @@
             this.setStorage(this.currentConfig);
           }
 
-          this.$forceUpdate();
+          //this.$forceUpdate();
         }
       },
       /** @todo */
@@ -1511,6 +1620,9 @@
           let ev = $.Event('delete');
           this.$emit('beforeDelete', this.currentData[index], ev);
           if ( !ev.isDefaultPrevented() ){
+            if ( confirm === undefined ){
+              confirm = this.confirmMessage;
+            }
             if ( confirm ){
               this.confirm(confirm, () => {
                 this._delete(index);
@@ -1539,19 +1651,31 @@
         this.edit(this.tmpRow, options, index);
       },
       checkSelection(index){
-        bbn.fn.log("checkSelection");
-        let idx = this.selectedRows.indexOf(index),
-            isSelected = false;
-        if ( idx > -1 ){
-          this.$emit('unselect', this.currentData[index]);
-          this.selectedRows.splice(idx, 1);
+        let row = this.currentSet[index];
+        if ( row && this.groupable && row.group ){
+          if ( row.expanded ){
+            bbn.fn.fori((d, i) => {
+              if ( d && d.selection && (d.data[this.cols[this.group].field] === row.value) ){
+                this.checkSelection(i)
+              }
+            }, this.currentSet, index + row.num, index +1)
+          }
+          return;
         }
-        else{
-          this.$emit('select', this.currentData[index]);
-          this.selectedRows.push(index);
-          isSelected = true;
+        if ( row && row.selection ){
+          let idx = this.selectedRows.indexOf(row.index),
+              isSelected = false;
+          if ( idx > -1 ){
+            this.$emit('unselect', row.data);
+            this.selectedRows.splice(idx, 1);
+          }
+          else{
+            this.$emit('select', row.data);
+            this.selectedRows.push(row.index);
+            isSelected = true;
+          }
+          this.$emit('toggle', isSelected, this.currentData[row.index]);
         }
-        this.$emit('toggle', isSelected, this.currentData[index]);
       },
       /** Refresh the current data set */
       updateData(withoutOriginal){
@@ -1630,7 +1754,7 @@
       },
       currentClass(column, data, index){
         if ( column.cls ){
-          return $.isFunction(column.cls) ? column.cls(data, index) : column.cls;
+          return bbn.fn.isFunction(column.cls) ? column.cls(data, index) : column.cls;
         }
         return '';
       },
@@ -1943,7 +2067,7 @@
           groupCols[0].visible++;
         }
         $.each(this.cols, (i, a) => {
-          if ( !this.groupable || (this.group !== i) ){
+          if ( !a.hidden && (!this.groupable || (this.group !== i)) ){
             if ( a.aggregate && a.field ){
               isAggregated = a.field;
             }
@@ -1963,7 +2087,7 @@
                   a.realWidth = this.minimumColumnWidth;
                 }
               }
-              else{
+              else {
                 a.realWidth = this.minimumColumnWidth;
                 numUnknown++;
               }
@@ -2027,7 +2151,7 @@
             let bonus = Math.round(
               toFill / (
                 // We don't dispatch to the expander column
-                this.hasExpander ? this.numVisible - 1 : this.numVisible
+                this.hasExpander ? this.numVisible - 1 : groupCols[1].visible
               ) * 100
             ) / 100;
             $.each(this.cols, (i, a) => {
@@ -2125,6 +2249,7 @@
               break;
             case "bool":
             case "boolean":
+              $.extend(res, {value: 1, novalue: 0});
               break;
           }
         }
@@ -2232,7 +2357,7 @@
         deep: true,
         handler(){
           bbn.fn.log("watch columns");
-          this.onResize();
+          this.selfEmit();
         }
       },
       currentLimit(){

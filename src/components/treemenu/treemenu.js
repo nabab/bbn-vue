@@ -43,6 +43,10 @@
         type: Boolean,
         default: true
       },
+      hideable: {
+        type: Boolean,
+        default: true
+      },
       menus: {
         type: Array,
         default(){
@@ -115,6 +119,9 @@
         this._position();
       },
       hide(){
+        if ( !this.hideable ){
+          return;
+        }
         this.isOpened = false;
         this._position();
       },
@@ -126,17 +133,22 @@
           this.show();
         }
       },
-      mapSrc(data){
+      mapSrc(data, idx, level){
+        data.cls = 'bbn-treemenu-' + (level > 6 ? x : level);
+        if ( level < 3 ){
+          data.cls += ' bbn-bottom-sspace';
+        }
         if ( data.items && data.items.length ){
-          data.cls = 'bbn-lg';
+          data.cls += ' bbn-b';
           data.selectable = false;
         }
         return data;
       },
       go(node, event){
+        bbn.fn.log(node);
         event.preventDefault();
-        if ( node && node.data && node.data.link ){
-          bbn.fn.link(node.data.link);
+        if ( node && node.data && (node.data.link || node.data.url) ){
+          bbn.fn.link(node.data.link || node.data.url);
           this.hide();
         }
       },

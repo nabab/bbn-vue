@@ -1,4 +1,4 @@
-<button :class="[{'k-button': true}, componentClass]"
+<button :class="[{'k-button': true, 'bbn-button-icon-only': !text || notext}, componentClass]"
         ref="element"
         @click.prevent="click($event)"
         @focus="focus($event)"
@@ -12,7 +12,26 @@
         :disabled="isDisabled"
         :title="text && notext ? text : (title ? title : '')"
 >
-  <i v-if="icon" :class="icon"> </i>
+  <span v-if="icon" class="bbn-iblock">
+    <i :class="icon"> </i>
+    <i v-if="secondary"
+       :class="secondary + ' secondary'"
+       :style="{
+        color: secondaryColor,
+        transform: 'scale(0.7)',
+        bottom: '0.2em',
+        left: '0.7em',
+        position: 'absolute'
+      }"
+    ></i>
+  </span>
   <span v-if="text && !notext" v-html="text"></span>
   <span v-else><slot></slot></span>
+  <!--div-- class="bbn-middle">
+    <span>
+      <i v-if="icon" :class="icon" style="position: absolute"> </i>
+    </span>
+    <span v-if="text && !notext" v-html="text"></span>
+    <span v-else><slot></slot></span>
+  </div-->
 </button>

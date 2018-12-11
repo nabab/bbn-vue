@@ -29,7 +29,7 @@
       return {
         renderedComponent: false,
         renderedContent: '',
-        renderedOptions: {},
+        renderedOptions: $.extend(true, {}, this.options),
         currentValue: this.value === undefined ? (this.data && this.field ? this.data[this.field] || '' : '') : this.value
       }
     },
@@ -63,7 +63,6 @@
     },
     methods: {
       init(){
-        this.renderedOptions = {};
         if ( this.field ){
           if ( (this.mode === 'write') && this.editable ){
             if ( this.required !== undefined ){
@@ -96,8 +95,14 @@
                 case "number":
                   this.renderedComponent = 'bbn-numeric';
                   break;
+                case "percent":
+                  this.renderedComponent = 'bbn-numeric';
+                  this.renderedOptions.unit = '%';
+                  this.renderedOptions.decimals = 2;
+                  break;
                 case "money":
                   this.renderedComponent = 'bbn-numeric';
+                  this.renderedOptions.decimals = 2;
                   break;
                 case "json":
                   this.renderedComponent = 'bbn-json-editor';
@@ -105,6 +110,8 @@
                 case "bool":
                 case "boolean":
                   this.renderedComponent = 'bbn-checkbox';
+                  this.renderedOptions.value = 1;
+                  this.renderedOptions.novalue = 0;
                   break;
                 default:
                   this.renderedComponent = 'bbn-input';
@@ -169,16 +176,37 @@
                   case "url":
                     this.renderedContent = this.currentValue ? '<a href="' + this.currentValue + '">' + this.currentValue + '</a>' : '-';
                     break;
+                  case "percent":
+                    this.renderedContent = this.currentValue ? bbn.fn.money(this.currentValue * 100, false, "%", '-', '.', ' ', 2) : '-';
+                    break;
                   case "number":
-                    this.renderedContent = this.currentValue ? this.currentValue.toFixed(0).toLocaleString() + ( this.unit ? " " + this.unit : "") : '-';
+                    this.renderedContent = this.currentValue ?
+                      bbn.fn.money(
+                        this.currentValue,
+                        (this.precision === -4) || (this.format && (this.format.toLowerCase() === 'k')),
+                        this.renderedOptions.unit || this.unit || "",
+                        '-',
+                        '.',
+                        ' ',
+                        this.precision === -4 ? 3 : this.precision
+                      ) : '-';
                     break;
                   case "money":
-                    this.renderedContent = bbn.fn.money(this.currentValue, false, this.options.currency || this.currency || this.unit || "", '-');
+                    this.renderedContent = this.currentValue ?
+                      bbn.fn.money(
+                        this.currentValue,
+                        (this.precision === -4) || (this.format && (this.format.toLowerCase() === 'k')),
+                        this.renderedOptions.currency || this.currency || this.unit || "",
+                        '-',
+                        ',',
+                        ' ',
+                        this.precision === -4 ? 3 : this.precision
+                      ) : '-';
                     break;
                   case "bool":
                   case "boolean":
                     let isYes = this.currentValue && (this.currentValue !== 'false') && (this.currentValue !== '0');
-                    if ( this.options.yesvalue !== undefined ){
+                    if ( this.renderedOptions.yesvalue !== undefined ){
                       isYes = this.currentValue === this.options.yesvalue;
                     }
                     this.renderedContent = '<i class="fas fa-' + (isYes ? 'check' : 'times') + '" title="' + (isYes ? bbn._("Yes") : bbn._("No")) + '"></i>';
@@ -188,6 +216,10 @@
               else if ( this.source ){
                 let idx = bbn.fn.search(this.source, {value: this.value});
                 this.renderedContent = idx > -1 ? this.source[idx].text : '-';
+              }
+              else if ( this.renderedOptions.source ){
+                let idx = bbn.fn.search(this.renderedOptions.source, {value: this.value});
+                this.renderedContent = idx > -1 ? this.renderedOptions.source[idx].text : '-';
               }
               else if ( this.value ){
                 this.renderedContent = this.value;

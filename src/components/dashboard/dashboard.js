@@ -17,6 +17,9 @@
           return {};
         }
       },
+      max: {
+        type: Number
+      },
       selectable: {
         type: Boolean,
         default: true
@@ -94,7 +97,10 @@
             actualWidth = $ele.innerWidth(),
             num = 1,
             steps = [800, 1150, 1550, 2200, 3000];
-        $.each(steps, function(i, step){
+        bbn.fn.each(steps, (step, i) => {
+          if ( this.max && (this.max <= num) ){
+            return false;
+          }
           if ( actualWidth >= step ){
             num++;
           }
@@ -445,11 +451,16 @@
             type: Boolean,
             default: false
           },
-          opened: {}
+          opened: {},
+          options: {
+            default(){
+              return {}
+            }
+          }
         },
         data(){
           return {
-            _1strun: false,
+            _1stRun: false,
             isLoading: false,
             dashboard: false,
             currentItems: this.items,
@@ -555,9 +566,9 @@
                   if ( d.observer && this.observerCheck() ){
                     this.observerID = d.observer.id;
                     this.observerValue = d.observer.value;
-                    if ( !this._1strun ){
+                    if ( !this._1stRun ){
                       this.observerWatch();
-                      this._1strun = true;
+                      this._1stRun = true;
                     }
                   }
                   if ( d.optional !== undefined ){

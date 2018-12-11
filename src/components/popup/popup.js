@@ -38,7 +38,7 @@
       },
       alertMessage: {
         type: String,
-        default: bbn._("There was a problem...")
+        default: bbn._("There was a problem") + '...'
       },
       confirmTitle: {
         type: String,
@@ -357,11 +357,14 @@
                 has_width = 1;
               }
             }
-            else if ( !has_yes && (typeof arguments[i] === 'string') ){
-              o.yesText = arguments[i];
-            }
-            else if ( typeof(arguments[i]) === 'string' ){
-              o.noText = arguments[i];
+            else if ( (typeof arguments[i] === 'string') ){
+              if ( !has_yes ){
+                o.yesText = arguments[i];
+                has_yes = true;
+              }
+              else{
+                o.noText = arguments[i];
+              }
             }
             else if ( $.isFunction(arguments[i]) ){
               if ( onYes ){
@@ -439,7 +442,7 @@
           this.open($.extend(o, {
             resizable: false,
             maximizable: false,
-            closable: false
+            closable: true
           }));
         }
       },

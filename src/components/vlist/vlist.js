@@ -74,7 +74,7 @@
         currentIndex: 0,
         currentHeight: 0,
         currentWidth: 0,
-        focused: false,
+        focused: bbn.env.focused,
         hasIcons: hasIcons
       };
     },
@@ -195,6 +195,9 @@
       },
       close(e){
         this.currentIndex = false;
+        if ( !this.level && this.focused ){
+          $(this.focused).focus();
+        }
       },
       closeAll(){
         this.close();
@@ -237,9 +240,14 @@
         }
       }
     },
+    created(){
+      this.focused = bbn.env.focused;
+    },
     mounted(){
       this.$nextTick(() => {
-        this.focused = bbn.env.focused;
+        if ( !this.focused ){
+          this.focused = bbn.env.focused;
+        }
         this.currentHeight = $(this.$el).children().height();
         this.currentWidth = $(this.$el).children().width();
         this.$el.children[0].focus();
@@ -259,6 +267,13 @@
         }
           */
       })
+    },
+    beforeDestroy(){
+      bbn.fn.log("beforeDestroy");
+      if ( this.focused ){
+        bbn.fn.log("foc", this.focused);
+        this.focused.focus()
+      }
     },
     watch: {
       currentIndex(newVal){

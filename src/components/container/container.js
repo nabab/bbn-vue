@@ -26,10 +26,10 @@
   Vue.component("bbn-container", {
     name: 'bbn-container',
     mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent],
-    beforeCreate(){
-      bbn.fn.log("beforeCreate", this);
-    },
     props: {
+      source: {
+        type: [Object, Function]
+      },
       title: {
         type: [String, Number],
         default: bbn._("Untitled")
@@ -130,19 +130,27 @@
 
     data(){
       return {
-        tabNav: null,
+        visible: false,
         isComponent: null,
         fullScreen: false,
-        name: bbn.fn.randomString(20, 15).toLowerCase(),
-        popups: []
+        componentName: bbn.fn.randomString(20, 15).toLowerCase(),
+        popups: [],
+        isComponentActive: false,
+        currentURL: this.url
       };
     },
 
     methods: {
+      show(){
+        this.visible = true
+      },
+      hide(){
+        this.visible = false
+      },
       setCurrent(url){
         const vm = this;
         if ( url.indexOf(vm.url) === 0 ){
-          vm.tabNav.activate(url);
+          //vm.tabNav.activate(url);
         }
       },
       setTitle(title){
@@ -281,29 +289,29 @@
           }
         }
         return false;
-      }
-    },
-
-    created(){
-      if ( this.isComponent === null ){
-        this.onMount = () => {
-          return false;
-        };
-        let res;
+      },
+      init(){
         if ( this.script ){
+          bbn.fn.log("THERE IS SCRIPT for " + this.url);
           res = typeof this.script === 'string' ? eval(this.script) : this.script;
+          // if evaluating the script property returns a function that will be onMount
           if ( $.isFunction(res) ){
             this.onMount = res;
             this.isComponent = false;
           }
+          // Otherwise if it's an object we assume it is a component
           else if ( typeof(res) === 'object' ){
             this.isComponent = true;
           }
         }
         if ( this.isComponent ){
+          // We create a local component with a random name,
+          // the content as template
+          // and the object returned as component definition
+          // Adding also a few funciton to interact with the tab
           bbn.fn.extend(res ? res : {}, {
-            name: this.name,
             template: '<div class="bbn-full-screen">' + this.content + '</div>',
+            /*
             methods: {
               getTab: () => {
                 return this;
@@ -311,75 +319,80 @@
               addMenu: this.addMenu,
               deleteMenu: this.deleteMenu
             },
+            */
             props: ['source']
           });
-          this.$options.components[this.name] = res;
+          // The local anonymous component gets defined
+          this.$options.components[this.componentName] = res;
         }
         else{
           this.isComponent = false;
         }
+
+      }
+    },
+
+    created(){
+      if ( this.isComponent === null ){
+        // The default onMount funciton is to do nothing.
+        this.onMount = () => {
+          return false;
+        };
+        let res;
       }
     },
 
     mounted(){
-      this.tabNav = bbn.vue.closest(this, ".bbn-tabnav");
-      if ( !this.isComponent ){
-        this.onMount(this.$el, this.source);
-      }
-      if ( this.advert ){
-        let ad = {};
-        if ( this.advert instanceof Vue ){
-          ad.component = this.advert;
-        }
-        else if ( typeof this.advert === 'object' ){
-          ad = this.advert;
-        }
-        else if ( typeof this.advert === 'string' ){
-          ad.content = this.advert;
-        }
-        this.popup.advert(ad);
-      }
-      if ( this.imessages.length ){
-        this.getPopup().open({
-          component: {
-            props: ['source'],
-            template: `
-              <bbn-slideshow :source="source.content" 
-                             class="w3-blue"
-                             separator="---slide---"
-                             :checkbox="true"
-                             @check="setHidden"
-                             @uncheck="unsetHidden"
-              ></bbn-slideshow>`,
-            methods: {
-              setHidden(e){
-                e.hidden = true;
-                bbn.vue.closest(this, 'bbn-appui').$emit('setimessage', e);
-              },
-              unsetHidden(e){
-                e.hidden = false;
-                bbn.vue.closest(this, 'bbn-appui').$emit('setimessage', e);
-              }
-            }
-          },
-          source: {
-            content: this.imessages
-          },
-          title: '<i class="w3-large fa fa-message"> </i> <span class="bbn-iblock">' + bbn._('Internal message') + '</span>',
-          width: '90%',
-          height: '90%'
-        });
-      }
       this.ready = true;
+      if ( !this.load ){
+        this.init();
+      }
     },
 
     watch: {
-      selected(newVal){
+      load(nv, ov){
+        if ( nv && this.$options.components[this.componentName] ){
+          delete this.$options.components[this.componentName];
+        }
+        else if ( !nv && ov ){
+          this.init()
+        }
+      },
+      visible(nv, ov){
+        this.$nextTick(() => {
+          this.$emit(nv ? 'view' : 'unview', this)
+        })
+      },
+      content(newVal, oldVal){
         if ( newVal ){
-          this.$nextTick(() => {
-            this.fullScreen = false;
-            this.selfEmit(true);
-          })
+          this.isComponentActive = false;
+          setTimeout(() => {
+            this.onMount = () => {
+              return false;
+            };
+            let res;
+            if ( this.script ){
+              res = typeof this.script === 'string' ? eval(this.script) : this.script;
+              if ( $.isFunction(res) ){
+                this.onMount = res;
+                this.isComponent = false;
+              }
+              else if ( typeof(res) === 'object' ){
+                this.isComponent = true;
+              }
+            }
+            if ( this.isComponent ){
+              bbn.fn.extend(res ? res : {}, {
+                name: this.name,
+                template: '<div class="bbn-full-screen">' + this.content + '</div>',
+                props: ['source']
+              });
+            }
+            else{
+              this.isComponent = false;
+            }
+            this.isComponentActive = true;
+          }, oldVal ? 200 : 0)
         }
       },
       fullScreen(newVal){
@@ -398,7 +411,8 @@
           this.onResize();
         })
       }
-    }
+    },
+
   });
 
 })(jQuery, bbn, Vue);

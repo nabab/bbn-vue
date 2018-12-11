@@ -197,11 +197,17 @@
        * @watch source
        * @fires setDataSource
        */
-      source(){
-        this.widget.setDataSource(this.dataSource);
+      source: {
+        deep: true,
+        handler(){
+          this.widget.setDataSource(this.dataSource);
+        }
       },
       value(){
         this.updateUrl();
+      },
+      readonly(v){
+        this.widget.readonly(!!v);
       }
     }
   });

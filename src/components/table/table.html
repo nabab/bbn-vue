@@ -1,7 +1,7 @@
-<div :class="[{'bbn-full-screen': true}, componentClass]"
+<div :class="[{'bbn-full-screen': scrollable}, componentClass]"
      @mousemove="checkFilterWindow"
 >
-  <div class="bbn-full-screen bbn-flex-height"
+  <div :class="{'bbn-full-screen': scrollable, 'bbn-flex-height': scrollable}"
        v-if="cols.length && initReady"
   >
     <div v-if="toolbar"
@@ -29,14 +29,14 @@
       ></component>
     </div>
 
-    <div class="bbn-table-container bbn-w-100 bbn-flex-fill bbn-flex-height">
+    <div :class="{'bbn-flex-fill': scrollable, 'bbn-flex-height': scrollable, 'bbn-table-container': true, 'bbn-w-100': true}">
       <!-- Titles part -->
       <div :class="{
             'bbn-table-titles': true,
             'bbn-table-titles-group': !!titleGroups,
             'bbn-unselectable': true
           }">
-        <div class="bbn-full-screen bbn-flex-width">
+        <div :class="{'bbn-full-screen': scrollable, 'bbn-flex-width': true}">
           <!-- Looping the groups -->
           <div  v-for="(groupCol, groupIndex) in groupCols"
                 :class="{
@@ -63,6 +63,7 @@
                   class="k-widget k-header"
               >
                 <td v-for="col in titleGroupsCells(groupIndex)"
+                    class=""
                     :colspan="col.colspan">
                   <component v-if="col.component"
                              :is="col.component"
@@ -135,8 +136,8 @@
       </div>
 
       <!-- Data part -->
-      <div class="bbn-table-data bbn-flex-fill" ref="data">
-        <div class="bbn-full-screen bbn-flex-width">
+      <div :class="{'bbn-table-data': true, 'bbn-flex-fill': scrollable}" ref="data">
+        <div :class="{'bbn-full-screen': scrollable, 'bbn-flex-width': true}">
           <div  v-for="(groupCol, groupIndex) in groupCols"
                 :class="{
                   'bbn-table-part': true,
@@ -147,12 +148,13 @@
                 v-if="groupCol.cols.length"
           >
             <!-- Fixed data -->
-            <bbn-scroll :ref="groupCol.name + 'Scroller'"
-                        :axis="groupCol.name === 'main' ? 'x' : 'none'"
-                        :scroll-also="groupCol.name === 'main' ? [getRef('mainTitles')] : dataScrollContents"
-                        @scrollx="_updateViewport"
-                        @scroll.passive="_checkHeaders"
-            >
+            <component :is="scrollable ? 'bbn-scroll' : 'div'"
+                       :ref="groupCol.name + 'Scroller'"
+                       :axis="groupCol.name === 'main' ? 'x' : 'none'"
+                       :scroll-also="groupCol.name === 'main' ? [getRef('mainTitles')] : dataScrollContents"
+                       @scrollx="_updateViewport"
+                       @scroll.passive="_checkHeaders"
+                       >
               <h3 v-if="isLoading"> </h3>
               <table v-else-if="currentSet.length"
                      :ref="groupCol.name + 'Table'"
@@ -174,11 +176,12 @@
                       'k-widget': true,
                       'k-alt': !!(d.index % 2),
                       'k-header': !!(d.aggregated || d.groupAggregated),
-                      'k-state-hover': (!d.expanded || (d.expanded && !d.expander)) && (currentIndex === d.index)
+                      'bbn-table-tr-over': (currentIndex === d.index) && (!d.expanded || (d.expanded && !d.expander)) && (editedIndex !== i)
                     }, trClass ? trClass(d.data) : '']"
                     @focusin="if ( focusedRow !== i ){ focusedRow = i }"
                     @focusout="focusedRow = false"
                     @mouseenter="currentIndex = d.index"
+                    @mouseleave="currentIndex = null"
                 >
                   <!-- Checkboxes -->
                   <td v-if="selection && (
@@ -187,12 +190,12 @@
                             )"
                       class="bbn-c">
                     <div>
-                      <bbn-checkbox v-if="(typeof(selection) !== 'function') || selection(d)"
-                                    v-model="d.selected"
+                      <bbn-checkbox v-if="d.selection"
+                                    :checked="d.selected"
                                     :value="true"
                                     :novalue="false"
                                     :strict="true"
-                                    @change="checkSelection(d.index)"
+                                    @change="checkSelection(i)"
                       ></bbn-checkbox>
                     </div>
                   </td>
@@ -209,24 +212,26 @@
                     ></i>
                   </td>
                   <!-- Group By on the main table, where the group value is -->
-                  <td v-if="groupable && d.group && (groupIndex === 1)"
+                  <td v-if="groupable && d.group"
+                      :class="currentClass(cols[group], d.data, i)"
                       :colspan="groupCol.visible">
-                    <component v-if="cols[group].component"
+                    <span v-if="!isGroupedCell(groupIndex, d)"></span>
+                    <component v-else-if="cols[group].component"
                                :is="cols[group].component"
                                :source="d.data"
                     ></component>
-                    <div v-else v-html="render(d.data, cols[group], d.index) + ' (' + d.num + ')'"></div>
+                    <div v-else v-html="render(d.data, cols[group], d.index) + (d.expanded ? '' : ' (' + d.num + ')')"></div>
                   </td>
+                  
                   <!-- Group By on the other cells of the row where the expander is  -->
                   <td v-else-if="groupable &&
-                                 d.group && (
-                                  (groupIndex===0) ||
-                                  !groupCols[groupIndex-1].cols.length
-                                ) &&
+                                 d.group &&
+                                 (groupIndex!==(groupCols[0].visible > 1 ? 0 : 1)) &&
                                 (groupCol.visible > (selection ? 2 : 1))"
                       :colspan="groupCol.visible - (selection ? 2 : 1)">
                   </td>
-                  <td v-else-if="groupable && d.group && groupCols.visible" :colspan="groupCol.visible">
+                  <td v-else-if="groupable && d.group && groupCols.visible"
+                      :colspan="groupCol.visible">
 
                   </td>
                   <td v-else-if="(groupIndex !== 1) && d.expansion && !selection"
@@ -324,9 +329,9 @@
               <div v-else class="bbn-full-screen bbn-middle bbn-lg">
                 <div v-if="groupCol.name === 'main'"
                      class="bbn-block"
-                     v-text="_('No data...')"></div>
+                     v-text="_('No data') + '...'"></div>
               </div>
-            </bbn-scroll>
+            </component>
 
           </div>
 
@@ -360,7 +365,7 @@
                     :disabled="isLoading || (currentPage == 1)"
                     @click="currentPage--"
         ></bbn-button>
-        <Page
+        <span v-text="_('Page')"></span>
         <bbn-numeric v-if="currentData.length"
                      v-model="currentPage"
                      :min="1"
@@ -368,7 +373,7 @@
                      style="margin-right: 0.5em; width: 6em"
                      :disabled="isLoading"
         ></bbn-numeric>
-        <span v-text="_('of') + ' ' + numPages"
+        <span v-text="_('of') + ' ' + numPages" style="margin-right: 0.25em"></span>
         <bbn-button icon="fa fa-angle-right"
                     :notext="true"
                     :title="_('Go to the next page')"
@@ -387,7 +392,7 @@
                         @change="currentPage = 1"
                         :disabled="!!isLoading"
           ></bbn-dropdown>
-          <span>articles par page</span>
+          <span v-text="_('rows per page')"></span>
         </span>
       </div>
       <div class="bbn-block" style="float: right">

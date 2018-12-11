@@ -266,6 +266,9 @@
             }
           }
           else if ( t === 'object' ){
+            if ( (typeof a.command === 'string') && bbn.fn.isFunction(this[a.command]) ){
+              a.command = this[a.command];
+            }
             r.push(a);
           }
         });
@@ -498,6 +501,12 @@
           }
           $(":input:visible:first", this.$el).focus();
         });
+      },
+      checkValidity(){
+        return this.$el.checkValidity();
+      },
+      reportValidity() {
+        return this.$el.reportValidity();
       }
     },
     mounted(){

@@ -2,9 +2,9 @@
            :class="componentClass"
            tabindex="-1"
            @click.prevent="clickItem"
-           @contextmenu.prevent="clickItem"
-           @keydown.space.enter.prevent="clickItem"
-           @mousedown.prevent="() => {return false}"
+           @contextmenu.prevent.stop="clickItem"
+           @keydown.space.enter.prevent.stop="clickItem"
+           @mousedown.prevent.stop="() => {return false}"
 >
   <span v-if="content" v-html="content"></span>
   <slot v-else></slot>

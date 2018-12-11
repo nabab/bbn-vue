@@ -2,7 +2,7 @@
      style="opacity: 0;">
   <div v-if="!cool"
        class="bbn-middle bbn-xl"
-       v-text="_('Appui is already defined... :(')">
+       v-text="_('Appui is already defined') + '... :('">
   </div>
   <bbn-splitter v-else-if="isMounted"
                 orientation="vertical"
@@ -46,7 +46,7 @@
         </div>
         <div class="bbn-block bbn-h-100 bbn-logo-container" style="width: 140px">
           <div class="apst-logo bbn-100 bbn-r">
-            <img :src="logoPath" border="0" class="bbn-h-90">
+            <img :src="logoPath + '?t=2'" border="0" class="bbn-h-100 bbn-right-space">
           </div>
         </div>
         <div v-if="debug"
@@ -111,7 +111,7 @@
                 :menus="menus"
                 :current="currentMenu"
                 :top="50"
-                style="width: 350px"
+                style="width: 400px"
                 :shortcuts="$refs.fisheye"
                 @ready="menuMounted = true">
   </bbn-treemenu>

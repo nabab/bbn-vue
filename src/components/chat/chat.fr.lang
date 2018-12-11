@@ -1,5 +1,8 @@
 {
   "Available users": "Utilisateurs disponibles",
   "Impossible to add the user!": "Impossible d'ajouter l'utilisateur!",
-
+  "Mute" : "Mettre en sourdine",
+  "Exit chat" : "Sortir du chat",
+  "Delete messages": "Supprimer les messages",
+  "Add participant": "Ajouter un participant"
 }

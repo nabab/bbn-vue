@@ -1,4 +1,4 @@
-<span :class="componentClass">
+<!--span :class="componentClass">
   <input :value="value"
          :name="name"
          ref="element"
@@ -15,4 +15,61 @@
          @mouseenter="over"
          @mouseleave="out"
   >
+</span-->
+<span :class="[componentClass, 'bbn-unselectable']">
+  <span class="k-widget k-numerictextbox">
+    <span :class="{
+      'k-numeric-wrap': true,
+      'k-state-default': true,
+      'bbn-numeric-nospinners': !spinners
+      }">
+      <input class="k-formatted-value k-input" 
+             tabindex="0" 
+             autocomplete="off"
+             aria-disabled="false"
+             v-model="tmpValue"
+             :name="name"
+             ref="element"
+             :disabled="disabled"
+             :readonly="readonly"
+             :required="required"
+             @focus="_focus"
+             @blur="_blur"
+             @keydown="_keydown"
+             @keyup="keyup"
+             @mouseenter="over"
+             @mouseleave="out"
+      >
+      <input type="hidden"
+             ref="input"
+             :value="value"
+             role="spinbutton"
+             class="k-input" 
+             style="display: none;"
+      >
+      <span class="k-icon k-i-warning"
+            style="display: none;"></span>
+      <span class="k-select" v-if="spinners">
+        <span unselectable="on" 
+              class="k-link k-link-increase"
+              :title="_('Increase value')"
+              @click="increment"
+        >
+          <span unselectable="on"
+                :class="['k-icon', 'k-i-arrow-60-up', {'opacity': (max !== undefined) && (value >= max)}]"
+          ></span>
+        </span>
+        <span unselectable="on" 
+              class="k-link k-link-decrease"  
+              title="_('Decrease value')"
+              v-if=""
+              @click="decrement"
+              >
+              <span unselectable="on" 
+                    :class="['k-icon', 'k-i-arrow-60-down', {'opacity': (min !== undefined) && (value <= min)}]"
+              ></span>
+        </span>
+      </span>
+    </span>
+  </span>
 </span>

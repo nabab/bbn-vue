@@ -33,7 +33,6 @@
         destroy: function () {
           var that = this;
           ui.Widget.fn.destroy.call(that);
-
           kendo.destroy(that.element);
         },
         value: function(value) {

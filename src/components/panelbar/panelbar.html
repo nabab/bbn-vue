@@ -1,0 +1,39 @@
+<div :class="['bbn-100', componentClass]">
+  
+  <div v-if="items.length"
+       class="k-block bbn-c bbn-p item-container"
+       v-for="(i, idx) in items"
+  >
+    <div class="k-header panel"
+    >
+      <div class="arrow-container inline" @click="select(idx)">
+        <i :class="selected === idx ? 'fas fa-angle-down' : 'fas fa-angle-right'"></i>
+      </div>
+      <div @click="select(idx)"  v-text="i.text" :class="['inline',  i.class ? ( isArray(i.class) ? i.class.join(' ') : i.class) : currentItemsClass]">
+      </div>
+      <div v-if="i.buttons && (selected === idx)" class="buttons">
+        <bbn-button v-for="(b, bidx) in i.buttons" 
+                    :key="bidx" 
+                    v-bind="i.buttons[bidx]"
+                    @click.stop.prevent="i.buttons[bidx].command"
+        ></bbn-button>
+      </div>
+      <div v-else @click="select(idx)"></div>
+      
+    </div>
+    <!----transition name="show-content"-->
+      <div v-if="(i.content || i.component || i.template) && (selected === idx)"
+          :class="['item-slot', {'selected': selected === idx}]"
+      >
+        <div v-if="i.content" 
+             v-html="i.content"
+        ></div>
+        <component :is="i.component"
+                   ref="component" 
+                   v-bind="items[idx]['componentAttributes']"
+        ></component>
+      </div>
+    <!--/transition-->
+  </div>
+ 
+</div>

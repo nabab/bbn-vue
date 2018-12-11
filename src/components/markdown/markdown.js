@@ -12,15 +12,10 @@
 
   Vue.component('bbn-markdown', {
     mixins: [bbn.vue.basicComponent, bbn.vue.fullComponent],
-    methods: {
-      test: function(){
-        bbn.fn.log("test");
-      }
-    },
     props: {
       cfg: {
         type: Object,
-        default: function(){
+        default(){
           return {
             autoDownloadFontAwesome: false,
             spellChecker: false,
@@ -53,6 +48,44 @@
         type: Array
       }
     },
+    data(){
+      return $.extend({
+        widgetName: "SimpleMDE",
+      }, bbn.vue.treatData(this));
+    },
+    methods: {
+      test: function () {
+        bbn.fn.log("test");
+      },
+      disableWidget(v){
+        this.widget.codemirror.setOption('disableInput', !!v);
+        if ( !v && !this.readonly ){
+          this.widget.codemirror.setOption('readOnly', false);
+          $("div.editor-toolbar", this.$el).show();
+        }
+        else {
+          this.widget.codemirror.setOption('readOnly', true);
+          $("div.editor-toolbar", this.$el).hide();
+        }
+      },
+      readonlyWidget(v){
+        this.widget.codemirror.setOption('readOnly', !!v);
+        if ( !v && !this.disabled ){
+          $("div.editor-toolbar", this.$el).show();
+        }
+        else {
+          $("div.editor-toolbar", this.$el).hide();
+        }
+      }
+    },
+    watch: {
+      disabled(newVal){
+        this.disableWidget(newVal);
+      },
+      readonly(newVal){
+        this.readonlyWidget(newVal);
+      }
+    },
     mounted(){
       const vm = this;
       let cfg = $.extend(vm.getOptions(), {
@@ -67,13 +100,15 @@
       this.widget.codemirror.on("change", () => {
         this.emitInput(this.widget.value());
       });
+      if ( this.disabled ){
+        this.disableWidget(true);
+      }
+      if ( this.readonly ){
+        this.readonlyWidget(true);
+      }
       this.ready = true;
     },
-    data: function(){
-      return $.extend({
-        widgetName: "SimpleMDE",
-      }, bbn.vue.treatData(this));
-    },
+    
   });
 
 })(jQuery, bbn, SimpleMDE);

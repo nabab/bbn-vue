@@ -5,6 +5,9 @@
     table-layout: fixed;
     border-collapse: collapse;
     > tbody > tr{
+      &.bbn-table-tr-over{
+        mix-blend-mode: difference;
+      }
       &.k-widget{
         box-sizing: border-box;
         border-left-width: 0;
@@ -14,6 +17,7 @@
         border-width: 1px;
         border-style: solid;
         border-color: inherit;
+        overflow: hidden;
         > div{
           padding: 0.5em;
           overflow: hidden;
@@ -79,13 +83,17 @@
     }
   }
   div.bbn-table-data{
-    tr.k-widget{
-      td{
-        vertical-align: top;
-        &.bbn-table-expander{
-          i:focus{
-            outline: 0;
-            color: red;
+    table.bbn-table-t{
+      /** @@todo Temporary for scrolling problem */
+      margin-bottom: 1em;
+      tr.k-widget{
+        td{
+          vertical-align: top;
+          &.bbn-table-expander{
+            i:focus{
+              outline: 0;
+              color: red;
+            }
           }
         }
       }

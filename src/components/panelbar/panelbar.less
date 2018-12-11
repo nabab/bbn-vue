@@ -1,0 +1,45 @@
+.bbn-panelbar{
+  .k-block{
+    border-radius: 0;
+    /*.k-header{
+      border: none;
+      border-radius: 0;
+      margin-bottom: 0;
+    }*/
+    .k-header.panel{
+      border: none;
+      border-radius: 0;
+      margin-bottom: 0;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      .arrow-container{
+        height: 100%;
+        float: left;
+        margin-left: 1rem;
+        justify-self: baseline;
+      }
+      .buttons{
+        button{
+          border: 0;
+        }
+      }
+    }
+  }
+  .item-slot{
+    transition: height 1s linear;
+  }
+  .inline{
+    display: inline-block;
+  }
+  .arrow-container{
+    height: 100%;
+    float: left;
+    margin-left: 1rem;
+  }
+  .show-content-active, .show-content-active {
+    transition: height .3s;
+  }
+  .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+    height: 0;
+  }
+}

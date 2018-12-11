@@ -294,6 +294,9 @@
     created(){
       this.init();
     },
+    beforeDestroy(){
+      clearInterval(this.interval);
+    }
   });
 })(jQuery, bbn);
 

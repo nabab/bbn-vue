@@ -53,6 +53,13 @@
       icon: {
         type: String,
       },
+      secondary: {
+        type: String
+      },
+      secondaryColor: {
+        type: String,
+        default: null
+      },
      /** 
       * Specifies the type of button.
       *

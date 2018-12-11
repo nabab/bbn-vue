@@ -132,7 +132,7 @@
       upload: {},
       vlist: {}
     },
-    loadDelay: 50,
+    loadDelay: 20,
 
     _retrievePopup(vm){
       if ( vm.$options && vm.$options._componentTag === 'bbn-popup' ){
@@ -367,60 +367,91 @@
       return bbn.vue.queueTimer
     },
 
+    _realDefineComponent(name, r, mixins){
+      if ( r && r.script ){
+        if ( r.css ){
+          $(document.head).append('<style>' + r.css + '</style>');
+        }
+        if ( r.content ){
+          $(document.body).append('<script type="text/x-template" id="bbn-tpl-component-' + name + '">' + r.content + '</script>');
+        }
+        let data = r.data || {};
+        let res = eval(r.script);
+        if ( typeof res === 'object' ){
+          if ( !res.mixins ){
+            res.mixins = [];
+          }
+          if ( !res.template ){
+            res.template = '#bbn-tpl-component-' + name;
+          }
+          if ( !res.props ){
+            res.props = {};
+          }
+          if ( !res.props.source ){
+            res.props.source = {};
+          }
+          if ( !res.name ){
+            res.name = name;
+          }
+          if ( res.mixins && !bbn.fn.isArray(res.mixins) ){
+            res.mixins = [res.mixins];
+          }
+          if ( mixins ){
+            if ( !bbn.fn.isArray(mixins) ){
+              mixins = [mixins];
+            }
+            if ( res.mixins ){
+              bbn.fn.each(mixins, (b) => {
+                res.mixins.push(b);
+              })
+            }
+            else{
+              res.mixins = mixins;
+            }
+          }
+          let bits = res.name.split('-'),
+              st = '';
+          bbn.fn.each(bits, (b) => {
+            st += (b + '-');
+            let idx = bbn.fn.search(bbn.vue.knownPrefixes, {prefix: st});
+            if ( (idx > -1) && bbn.vue.knownPrefixes[idx].mixins ){
+              if ( bbn.fn.isArray(bbn.vue.knownPrefixes[idx].mixins) ){
+                bbn.fn.each(bbn.vue.knownPrefixes[idx].mixins.reverse(), (m) => {
+                  res.mixins.unshift(m)
+                })
+              }
+              else{
+                res.mixins.unshift(bbn.vue.knownPrefixes[idx].mixins)
+              }
+            }
+          });
+          if ( Object.keys(data).length ){
+            res.props.source.default = () => {
+              return data;
+            }
+          }
+          Vue.component(name, res);
+          return true;
+        }
+      }
+      return false;
+    },
+
     executeQueueItems(items){
       if ( items.length ){
         let url = 'components';
-        Array.prototype.forEach.call(items, (a) => {
+        bbn.fn.iterate(items, (a) => {
           url += '/' + a.name;
         });
-        bbn.fn.log("QUEUE ITEMS IN " + url);
         return bbn.fn.post(url, (d) => {
           if ( d && d.success && d.components ){
-            Array.prototype.forEach.call(items, (a, i) => {
-              let r = d.components[i];
-              if ( r && r.script ){
-                if ( r.css ){
-                  $(document.head).append('<style>' + r.css + '</style>');
-                }
-                if ( r.content ){
-                  $(document.body).append('<script type="text/x-template" id="bbn-tpl-component-' + a.name + '">' + r.content + '</script>');
-                }
-                let data = r.data || {};
-                let res = eval(r.script);
-                if ( typeof res === 'object' ){
-                  if ( !res.template ){
-                    res.template = '#bbn-tpl-component-' + a.name;
-                  }
-                  if ( !res.props ){
-                    res.props = {};
-                  }
-                  if ( !res.props.source ){
-                    res.props.source = {};
-                  }
-                  if ( !res.name ){
-                    res.name = a.name;
-                  }
-                  if ( a.mixins ){
-                    if ( res.mixins ){
-                      $.each(a.mixins, (j, b) => {
-                        res.mixins.push(b);
-                      })
-                    }
-                    else{
-                      res.mixins = a.mixins;
-                    }
-                  }
-                  if ( Object.keys(data).length ){
-                    res.props.source.default = () => {
-                      return data;
-                    }
-                  }
-                  Vue.component(a.name, res);
-                }
+            bbn.fn.iterate(items, (a, n) => {
+              if ( d.components[n] && this._realDefineComponent(a.name, d.components[n], a.mixins) ){
                 a.resolve('ok');
-                return;
               }
-              a.reject();
+              else{
+                a.reject();
+              }
             })
           }
         })
@@ -431,45 +462,7 @@
     executeQueueItem(a){
       if ( a.url ) {
         return bbn.fn.post(a.url, (r) => {
-          if ( r.script ){
-            if ( r.css ){
-              $(document.head).append('<style>' + r.css + '</style>');
-            }
-            if ( r.content ){
-              $(document.body).append('<script type="text/x-template" id="bbn-tpl-component-' + a.name + '">' + r.content + '</script>');
-            }
-            let data = r.data || {};
-            let res = eval(r.script);
-            if ( typeof res === 'object' ){
-              if ( !res.template ){
-                res.template = '#bbn-tpl-component-' + a.name;
-              }
-              if ( !res.props ){
-                res.props = {};
-              }
-              if ( !res.props.source ){
-                res.props.source = {};
-              }
-              if ( !res.name ){
-                res.name = a.name;
-              }
-              if ( a.mixins ){
-                if ( res.mixins ){
-                  $.each(a.mixins, (j, b) => {
-                    res.mixins.push(b);
-                  })
-                }
-                else{
-                  res.mixins = a.mixins;
-                }
-              }
-              if ( Object.keys(data).length ){
-                res.props.source.default = () => {
-                  return data;
-                }
-              }
-              Vue.component(a.name, res);
-            }
+          if ( this._realDefineComponent(a.name, r, a.mixins) ){
             a.resolve('ok');
             return;
           }
@@ -650,6 +643,20 @@
       return false;
     },
 
+    ancesters(vm, selector, checkEle){
+      let res = [];
+      let test = vm.$el;
+      while ( vm && vm.$parent && (vm !== vm.$parent) ){
+        if ( bbn.vue.is(vm.$parent, selector) ){
+          if ( !checkEle || (test !== vm.$parent.$el) ){
+            res.push(vm.$parent);
+          }
+        }
+        vm = vm.$parent;
+      }
+      return res;
+    },
+
     getRef(vm, name){
       if ( vm ){
         if ( Array.isArray(vm.$refs[name]) ){
@@ -812,6 +819,23 @@
         }
         // A rule has been found
         if ( idx > -1 ){
+          /*
+          let mixins = [];
+          bbn.fn.each(bbn.vue.knownPrefixes, (o) => {
+            if ( tag.indexOf(o.prefix) === 0 ){
+              if ( o.mixins ){
+                if ( !bbn.fn.isArray(o.mixins) ){
+                  mixins.push(o.mixins)
+                }
+                else{
+                  bbn.fn.each(o.mixins, (m) => {
+                    mixins.push(m);
+                  })
+                }
+              }
+            }
+          })
+          */
           Vue.component(tag, (resolve, reject) => {
             bbn.vue.knownPrefixes[idx].handler(tag, resolve, reject);
           });
@@ -820,7 +844,7 @@
       return false;
     },
 
-    addPrefix(prefix, handler){
+    addPrefix(prefix, handler, mixins){
       if ( typeof prefix !== 'string' ){
         throw new Error("Prefix must be a string!");
         return;
@@ -834,7 +858,8 @@
       }
       bbn.vue.knownPrefixes.push({
         prefix: prefix,
-        handler: handler
+        handler: handler,
+        mixins: mixins || []
       });
     },
 
@@ -1609,7 +1634,7 @@
           type: String
         },
         cls: {
-          type: String
+          type: [String, Function]
         },
         type: {
           type: String
@@ -1659,6 +1684,10 @@
         },
         required: {
           type: [Boolean, Function]
+        },
+        precision: {
+          type: Number,
+          default: 0
         },
         options: {
           type: [Object, Function],
@@ -1741,7 +1770,6 @@
             else{
               this.observers.push(obs);
               if ( this.observerCheck() ){
-                bbn.fn.log("----------------observing " + 'bbnObs' + obs.element + obs.id + "--------------", this.$el)
                 this.observationTower.$on('bbnObs' + obs.element + obs.id, (newVal) => {
                   this.observerEmit(newVal, obs);
                 });
@@ -1876,6 +1904,9 @@
       closest(selector, checkEle){
         return bbn.vue.closest(this, selector, checkEle);
       },
+      ancesters(selector, checkEle){
+        return bbn.vue.ancesters(this, selector, checkEle);
+      },
       getChildByKey(key, selector){
         return bbn.vue.getChildByKey(this, key, selector);
       },
@@ -1920,21 +1951,6 @@
         if ( popup ){
           popup.alert.apply(popup, arguments)
         }
-      }
-    }
-  });
-
-  Vue.directive('bbn-url-registered', {
-    inserted(){
-      bbn.fn.log("INSE URL: " + bbn.env.path);
-    },
-    bind(el, binding, vnode) {
-      if ( vnode.componentInstance && bbn.fn.isFunction(vnode.componentInstance.registerURL) ){
-        vnode.componentInstance.registerURL(binding.value);
-        let vm = vnode.componentInstance,
-            val = vm.value;
-        $(el).addClass("bbn-url-registered");
-        bbn.fn.log("URL: " + bbn.env.path, vnode, val, binding.value);
       }
     }
   });

@@ -23,25 +23,28 @@
             :key="i"
             v-show="isMatch(item) || getNumMatches(item)"
             @click.stop="toggleExpanded(i)"
+            @mouseenter="over = i"
+            @mouseleave="over = false"
             :class="{
               'bbn-list-node': true,
               'bbn-w-100': true,
               'bbn-unselectable': true,
               'selected': selected === i,
               'k-widget': styled && isRoot,
-              'bbn-content': true
+              'bbn-content': true,
+              'k-state-hover': over === i
             }"
         >
           <div :class="{
                  'bbn-w-100': true,
                  'k-state-default': styled,
-                 'k-state-selected': active === i,
-                 'class-selected': selected === i,
+                 'k-state-active': styled && (active === i),
+                 'k-state-selected': styled && (selected === i),
+                 'class-selected': styled && (selected === i),
 
                 }"
                @mouseover.stop="activate(i, item, $event.target)"
-               @mouseout.stop="active = null"
-          >
+               @mouseout.stop="active = null">
             <div :class="'bbn-w-100 node' + (component ? '' : ' no-component') + (item.cls ? ' ' + item.cls : '')">
               <div class="bbn-flex-width">
                 <div class="expander bbn-block" v-if="item.items">
@@ -56,7 +59,8 @@
                      @click="addExpanded(i)"
                   ></i>
                 </div>
-                <div class="bbn-flex-fill" @click.stop="item.items ? toggleExpanded(i) : select(item, i)">
+                <div class="bbn-flex-fill"
+                     @click.stop="item.items ? toggleExpanded(i) : select(item, i)">
                   <component v-if="component"
                              :is="component"
                              :source="item"
@@ -65,12 +69,12 @@
                         name="item"
                         v-bind="item"
                   >
-                    <div :class="{
+                    <div :class="[cls,{
                            'bbn-iblock': true,
                            'bbn-padded': isRoot,
                            'bbn-spadded': !isRoot,
-                           'bbn-large': isRoot
-                         }"
+                           'bbn-large': isRoot && !cls,
+                         }]"
                     >
                       <span v-text="item.text ? item.text : '?'"></span>
                       <i :class="item.icon"
@@ -104,6 +108,6 @@
     </div>-->
   </component>
   <h2 v-else-if="isRoot"
-      v-html="_('No items...')"
+      v-html="_('No items') + '...'"
   ></h2>
 </div>

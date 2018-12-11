@@ -1,4 +1,6 @@
 {
   "Dashboard": "Tableau de bord",
-  "Search": "Search"
+  "Search": "Rechercher",
+  "Appui is already defined": "Appui est déjà défini",
+  "Unknown" : ""
 }

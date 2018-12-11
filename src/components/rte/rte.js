@@ -25,18 +25,20 @@
         type: Array,
         default(){
           return [
+
             ['viewHTML'],
             ['undo', 'redo'], // Only supported in Blink browsers
             ['formatting'],
             ['strong', 'em', 'underline', 'del'],
+            ['removeformat', 'foreColor', 'backColor'],
             ['superscript', 'subscript'],
             ['link'],
             ['insertImage', 'base64'],
             ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
             ['unorderedList', 'orderedList'],
             ['horizontalRule'],
-            ['removeformat'],
-            ['fullscreen']
+            ['fullscreen'],
+            
           ];
         }
       },
@@ -76,7 +78,9 @@
       this.widget = $ele.trumbowyg({
         lang: bbn.env.lang || 'en',
         autoGrow: false,
+        semantic: false,
         resetCSS: true,
+        tagsToKeep: ['hr', 'img', 'div'],
         btns: this.buttons
       });
       setTimeout(() => {

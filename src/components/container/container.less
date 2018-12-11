@@ -1,13 +1,14 @@
 div.bbn-container {
-  display: none;
-  position: relative !important;
-  &.bbns-tab-selected{
-    display: block;
-  }
   > .bbns-tab-fullscreen-closer{
     position: fixed;
     font-size: x-large;
     right: 5px;
     top: 5px;
+  }
+  .fade-enter-active, .fade-leave-active {
+    transition: opacity .5s;
+  }
+  .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+    opacity: 0;
   }
 }

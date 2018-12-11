@@ -1,5 +1,5 @@
 /**
- * bbn-chart component
+ * @file bbn-chart component
  *
  * @author Mirko Argentino
  * @copyright BBN Solutions
@@ -35,7 +35,7 @@
       /**
        * The title of the chart.
        *
-       * @prop {String} [] title
+       * @prop {String} title
        */
 			title: {
         type: String
@@ -127,6 +127,15 @@
       showArea: {
         type: Boolean,
         default: false
+      },
+      /** 
+       * Area's opacity adjustment
+       * 
+       * @prop {Number|String} [0.1] areaOpacity
+      */
+      areaOpacity: {
+        type: [Number, String],
+        default: '0.1'
       },
       /**
        * Set it to true if you want to see the labels on the pie chart.
@@ -574,7 +583,7 @@
               axisClass: 'ct-axis-title',
               offset: {
                 x: 0,
-                y: 30
+                y: 50
               },
               textAnchor: 'middle'
             },
@@ -958,6 +967,11 @@
           // Customize color
           this.setColor(chartData);
 
+          // Custom area's opacity
+          if ( this.showArea ){
+            this.setAreaOpacity(chartData);
+          }
+
           // Customize label color
           if ( (chartData.type === 'label') ){
             if ( this.labelColor ){
@@ -1331,7 +1345,7 @@
             color = this.colors[this.legend ? this.getColorIdx(chartData) : chartData.seriesIndex];
             if ( color ){
               chartData.element.attr({
-                style: (style || '') + (chartData.type === 'area' ? ' fill: ' : ' stroke: ') + color + (chartData.type === 'area' ? '; fill-opacity: 0.1; stroke: none' : '')
+                style: (style || '') + (chartData.type === 'area' ? ' fill: ' : ' stroke: ') + color + (chartData.type === 'area' ? '; fill-opacity: ' + this.areaOpacity + '; stroke: none' : '')
               });
             }
           }
@@ -1343,6 +1357,20 @@
               });
             }
           }
+        }
+      },
+      /** 
+       * Sets the area's opacity
+       * 
+       * @method setAreaOpacity
+       * @param {Object} chartData A Chartist.js SVG element
+      */
+      setAreaOpacity(chartData) {
+        if ( this.areaOpacity && (chartData.type === 'area') ){
+          let style = chartData.element.attr('style');
+          chartData.element.attr({
+            style: (style || '') + 'fill-opacity: ' + this.areaOpacity + ';'
+          });
         }
       },
       /**

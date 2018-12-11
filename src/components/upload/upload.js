@@ -51,7 +51,7 @@
             uploadButton: bbn._('Upload a file'),
             pasteContainer: '<i class="fa fa-paste bbn-xl"></i> Ctrl+V',
             dropHere: bbn._('Drop files here'),
-            processingDropped: bbn._('Processing dropped files...'),
+            processingDropped: bbn._('Processing dropped files') + '...',
             retry: bbn._('Retry'),
             editFilename: bbn._('Edit filename'),
             remove: bbn._('Delete'),

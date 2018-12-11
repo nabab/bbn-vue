@@ -3,11 +3,13 @@
        'k-tabstrip': true,
        'k-floatwrap': true,
        'k-tabstrip-top': true,
-       'k-tabstrip-scrollable': scrollable
+       'k-tabstrip-scrollable': scrollable,
+       'bbn-full-screen': true
      }, componentClass]"
 >
-  <div class="bbn-flex-height" v-if="isMounted">
+  <div class="bbn-flex-height">
     <ul ref="tabgroup"
+        v-if="tabs"
         :class="{
           'k-reset': true,
           'k-tabstrip-items': true,
@@ -18,131 +20,107 @@
       <li v-for="(tab, tabIndex) in tabs"
           :ref="'tab-' + tabIndex"
           :style="{
-            backgroundColor: tab.bcolor ? tab.bcolor : null,
-            color: tab.fcolor ? tab.fcolor : null
+            backgroundColor: tab.bcolor || null,
+            color: tab.fcolor || null
           }"
           :data-index="tabIndex"
           :class="{
             'k-item': true,
             'k-state-default': true,
+            'bbn-unselectable': true,
             'bbn-tabnav-static': !!tab.static,
-            'k-state-active': tab.selected,
+            'k-state-active': tabIndex === selected,
             'k-state-disabled': tab.disabled,
             'k-first': tabIndex === 0,
             'k-last': tabIndex === tabs.length - 1,
             'bbn-tabnav-alarm': tab.alarm
           }"
-          @click="tabIndex !== selected ? activateIndex(tabIndex) : (() => {})()"
-          @context=""
+          @click="!tab.disabled && (tabIndex !== selected) ? (selected = tabIndex) : (() => {})()"
       >
-        <div class="bbn-tabnav-badge-container bbn-middle"
-             v-if="numProperties(tab.events)">
-          <span class="bbn-badge bbn-small bbn-bg-red" v-text="numProperties(tab.events)"></span>
-        </div>
-        <span class="k-loading k-complete"
-              :ref="'spinner' + tabIndex"
-        ></span>
-        <span :class="['k-link', {'bbn-tabnav-unsaved': tab.isUnsaved}]"
-              :ref="'title-' + tabIndex"
-              :style="{
-                color: tab.fcolor ? tab.fcolor : null
-              }"
-              tabindex="0"
-              @keydown.space.enter.prevent="tabIndex !== selected ? activateIndex(tabIndex) : (() => {})()"
-              @keydown.right.down.prevent="getRef('menu-' + tabIndex).$el.focus()"
+        <component :is="!tab.disabled && (tabIndex === selected) ? 'bbn-context' : 'div'"
+                   :source="getMenuFn"
+                   :source-option="tabIndex"
         >
-          <i v-if="tab.icon"
-					   :title="tab.title"
-             :class="tab.icon + (tab.notext ? ' bbn-lg' : '')">
-          </i>
-          <span v-if="!tab.notext && tab.title"
-                v-html="tab.title">
+          <div class="bbn-tabnav-badge-container bbn-middle"
+               v-if="numProperties(tab.events)">
+            <span class="bbn-badge bbn-small bbn-bg-red" v-text="numProperties(tab.events)"></span>
+          </div>
+          <span class="k-loading k-complete"
+                v-show="tab.load && !tab.loaded && tab.selected"
+                :ref="'spinner' + tabIndex"
+          ></span>
+          <span :class="['k-link', {'bbn-tabnav-unsaved': tab.isUnsaved}]"
+                :ref="'title-' + tabIndex"
+                :style="{
+                  color: tab.fcolor ? tab.fcolor : null
+                }"
+                tabindex="0"
+                @keydown.space.enter.prevent.stop="tabIndex !== selected ? activateIndex(tabIndex) : (() => {})()"
+                @keydown.right.down.prevent.stop="getRef('menu-' + tabIndex) ? getRef('menu-' + tabIndex).$el.focus() : (getRef('closer-' + tabIndex) ? getRef('closer-' + tabIndex).focus() : null)"
+          >
+            <i v-if="tab.icon"
+               :title="tab.title"
+               :class="tab.icon + (tab.notext ? ' bbn-lg' : '')">
+            </i>
+            <span v-if="!tab.notext && tab.title"
+                  v-html="tab.title">
+            </span>
           </span>
-        </span>
-        <div class="bbn-tabnav-selected"
-             :ref="'selector-' + tabIndex"
-             :style="{
-                backgroundColor: getTabColor(tabIndex)
-              }"
-        ></div>
-        <div class="bbn-tabnav-icons"
-             @keydown.left.prevent="getRef('title-' + tabIndex).focus()"
-             @keydown.right.up.prevent="
-                if ( getRef('closer-' + tabIndex) ){
-                  getRef('closer-' + tabIndex).focus();
-                }
-                else if ( getRef('title=' + (tabIndex+1)) ){
-                  getRef('title=' + (tabIndex+1)).focus();
-                }">
-          <i v-if="!tab.static && !tab.pinned"
-             class="fa fa-times-circle bbn-p"
-             tabindex="-1"
-             :ref="'closer-' + tabIndex"
-             @keydown.left.down.prevent.stop="getRef('menu-' + tabIndex).$el.focus()"
-             @keydown.space.enter.prevent="close(tabIndex)"
-             @click.stop.prevent="close(tabIndex)"></i>
-          <bbn-context v-if="tab.selected"
-                       class="fas fa-caret-down bbn-p"
-                       tabindex="-1"
-                       tag="i"
-                       :source="getMenuFn"
-                       :source-option="tabIndex"
-                       :ref="'menu-' + tabIndex"
-          ></bbn-context>
-        </div>
+          <div class="bbn-tabnav-selected"
+               :ref="'selector-' + tabIndex"
+               :style="{
+                  backgroundColor: getTabColor(tabIndex)
+                }"
+          ></div>
+          <div class="bbn-tabnav-icons"
+               @keydown.left.prevent.stop="getRef('title-' + tabIndex).focus()"
+               @keydown.right.up.prevent.stop="
+                  if ( getRef('closer-' + tabIndex) ){
+                    getRef('closer-' + tabIndex).focus();
+                  }
+                  else if ( getRef('title=' + (tabIndex+1)) ){
+                    getRef('title=' + (tabIndex+1)).focus();
+                  }">
+            <i v-if="!tab.static && !tab.pinned"
+               class="fas fa-times bbn-p bbn-xs"
+               tabindex="-1"
+               :ref="'closer-' + tabIndex"
+               @keydown.left.down.prevent.stop="getRef('menu-' + tabIndex) ? getRef('menu-' + tabIndex).$el.focus() : null"
+               @keydown.space.enter.prevent.stop="close(tabIndex)"
+               @click.stop.prevent="close(tabIndex)"></i>
+            <bbn-context v-if="tab.selected"
+                         class="fas fa-caret-down bbn-p"
+                         tabindex="-1"
+                         tag="i"
+                         :source="getMenuFn"
+                         :source-option="tabIndex"
+                         :ref="'menu-' + tabIndex"
+            ></bbn-context>
+          </div>
+        </component>
       </li>
     </ul>
-    <template v-for="(tab, tabIndex) in tabs">
-      <div class="bbn-loader"
-           v-if="tab.load || (!tab.selected && !tab.loaded)"
-           :data-index="tabIndex"
-           :ref="'container' + tabIndex"
-           :key="tab.url"
-      >
-        <div class="bbn-loader bbn-flex-fill" v-if="source.selected">
-          <div class="loader-animation">
-            <div class="sk-cube-grid">
-              <div class="sk-cube sk-cube1"></div>
-              <div class="sk-cube sk-cube2"></div>
-              <div class="sk-cube sk-cube3"></div>
-              <div class="sk-cube sk-cube4"></div>
-              <div class="sk-cube sk-cube5"></div>
-              <div class="sk-cube sk-cube6"></div>
-              <div class="sk-cube sk-cube7"></div>
-              <div class="sk-cube sk-cube8"></div>
-              <div class="sk-cube sk-cube9"></div>
-            </div>
-            <h1 v-text="'Loading...'"></h1>
-          </div>
-        </div>
-      </div>
-      <slot v-else-if="tab.isCreated"
-            :name="tab.url"
-            v-bind="tab"
-            :data-index="tabIndex"
-            :ref="'container-' + tabIndex"
-            @ready="tab.loaded = true"
-      ></slot>
-      <bbn-container v-else
-               v-bind="tab"
-               :data-index="tabIndex"
-               :ref="'container-' + tabIndex"
-               :key="tab.url"
-      >
-      </bbn-container>
-    </template>
-   <!-- <span v-if="scrollable"
-          class="k-button k-button-icon k-button-bare k-tabstrip-prev"
-          @click="scrollTabs('left')"
-    >
-      <i class="fa fa-angle-left bbn-p"></i>
-    </span>
-    <span v-if="scrollable"
-          class="k-button k-button-icon k-button-bare k-tabstrip-next"
-          @click="scrollTabs('right')"
-    >
-      <i class="fa fa-angle-right bbn-p"></i>
-    </span>-->
+    <bbn-router ref="router"
+                @mounted="init"
+                @change="routing"
+                :source="source"
+                :autoload="autoload"
+                :root="root"
+                class="bbn-flex-fill">
+      <slot></slot>
+    </bbn-router>
+    <!-- <span v-if="scrollable"
+           class="k-button k-button-icon k-button-bare k-tabstrip-prev"
+           @click="scrollTabs('left')"
+     >
+       <i class="fa fa-angle-left bbn-p"></i>
+     </span>
+     <span v-if="scrollable"
+           class="k-button k-button-icon k-button-bare k-tabstrip-next"
+           @click="scrollTabs('right')"
+     >
+       <i class="fa fa-angle-right bbn-p"></i>
+     </span>-->
     <span v-if="scrollable"
           class="k-button-icon k-button-bare k-tabstrip-prev"
           @click="scrollTabs('left')"
@@ -162,5 +140,4 @@
       ></i>
     </span>
   </div>
-  <div v-else v-html="_('Preparing content')"></div>
 </div>

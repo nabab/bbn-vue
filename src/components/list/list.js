@@ -56,6 +56,14 @@
         type: Boolean,
         default: true
       },
+      selectable: {
+        type: Boolean,
+        default: false
+      },
+      unselectable: {
+        type: Boolean,
+        default: false
+      },
       // The class given to the node (or a function returning the class name)
       cls: {
         type: [Function, String]
@@ -108,6 +116,7 @@
     data(){
       let items = this.getItems();
       return {
+        over: false,
         // True when the data is currently loading in the hierarchy (unique to the root)
         isLoading: false,
         // True when the data is currently loading in the current hierarchy
