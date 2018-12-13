@@ -565,6 +565,17 @@
 
     },
 
+    beforeMount(){
+      bbn.fn.each(this.$slots.default, (a) => {
+        if ( a.componentOptions ){
+          bbn.fn.log("BEFORE MOUNT");
+          this.views.push(a.componentOptions.propsData);
+
+        }
+      })
+      bbn.fn.log("beforeMount", this.$slots.default)
+    },
+
     mounted(){
       let cp = this;
       this.parents = this.ancesters('bbn-router');

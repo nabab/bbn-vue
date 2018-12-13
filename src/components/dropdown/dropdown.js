@@ -116,6 +116,9 @@
           },
           close: () => {
             this.isOpened = false;
+          },
+          dataBound: () => {
+            this.$emit("dataloaded");
           }
         });
         if ( this.template ){

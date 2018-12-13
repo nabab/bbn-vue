@@ -92,7 +92,7 @@
        */
       pattern(){
         let p = '^';
-        if ( this.min < 0 ){
+        if ( (this.min === undefined) || (this.min < 0) ){
           p += '[\\-]{0,1}';
         }
         if ( this.currentDecimals ){

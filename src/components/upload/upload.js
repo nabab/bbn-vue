@@ -37,6 +37,10 @@
       thumbNot : {
         type: String
       },
+      maxSize: {
+        type: Number,
+        default: 60
+      },
       thumbWaiting: {
         type: String
       },

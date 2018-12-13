@@ -1,0 +1,22 @@
+<div :class="[componentClass, 'bbn-w-100', 'bbn-widget']">
+  <input value="value" type="hidden" name="name">
+  <div ref="zone">
+    <div class="bbn-w-100" style="min-height: 60px">
+      <div class="bbn-full-screen bbn-r bbn-hpadded" style="opacity: 0.4">
+        <div class="bbn-xl" v-if="uploading">
+          <span v-text="lng.uploading + ' ' + progress + '%'"/>
+        </div>
+        <div class="bbn-lg" v-else>
+          <span v-text="lng.dropHere + '...'"/>
+          <span v-text="lng.clickHere"/> <em v-text="lng.browse + '... '"/>
+          <i class="bbn-xl fas fa-upload"></i>
+        </div>
+      </div>
+      <div ref="files" v-if="files.length">
+        <ul>
+          <li v-for="file of fileList" v-text="file.name"></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,8 +1,9 @@
 <div :class="['bbn-100', componentClass]">
-  
+  <transition-group name="show-content">
   <div v-if="items.length"
        class="k-block bbn-c bbn-p item-container"
        v-for="(i, idx) in items"
+       :key="idx"
   >
     <div class="k-header panel"
     >
@@ -21,9 +22,9 @@
       <div v-else @click="select(idx)"></div>
       
     </div>
-    <!----transition name="show-content"-->
+   
       <div v-if="(i.content || i.component || i.template) && (selected === idx)"
-          :class="['item-slot', {'selected': selected === idx}]"
+          :class="['item-slot', 'bbn-spadded', {'selected': selected === idx}]"
       >
         <div v-if="i.content" 
              v-html="i.content"
@@ -33,7 +34,7 @@
                    v-bind="items[idx]['componentAttributes']"
         ></component>
       </div>
-    <!--/transition-->
+    
   </div>
- 
+  </transition-group>
 </div>

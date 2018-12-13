@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css?family=Lato');
+
+.panelbar2 {
+  max-width: 400px;
+  font-family: Lato;
+  margin-bottom: 20px;
+
+  background-color: #ec5366;
+  border-radius: 6px;
+}
+
+.header {
+  height: 40px;
+  line-height: 40px;
+  padding: 0 40px 0 8px;
+  position: relative;
+  color: #fff;
+  cursor: pointer;
+  .text{
+    display: inline-block;
+  }
+  .buttons{
+    display: inline-block;
+  }
+}
+
+.header-icon {
+  position: absolute;
+  top: 5px;
+  right: 8px;
+  transform: rotate(0deg);
+  transition-duration: 0.3s;
+}
+
+.body {
+/*   display: none; */
+  overflow: hidden;
+  background-color: #fff;
+  border: 10px solid #ec5366;
+  border-top: 0;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+  transition: 150ms ease-out;
+  color: black
+}
+.body-inner {
+  padding: 8px;
+  overflow-wrap: break-word;
+/*   white-space: pre-wrap; */
+}
+
+.header-icon.rotate {
+  transform: rotate(180deg);
+  transition-duration: 0.3s;
+}
+
+.panelbar2.purple {
+  background-color: #8c618d;
+}
+
+.panelbar2.purple .body {
+  border-color: #8c618d;
+}

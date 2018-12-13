@@ -36,10 +36,11 @@
     float: left;
     margin-left: 1rem;
   }
-  .show-content-active, .show-content-active {
-    transition: height .3s;
-  }
-  .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
-    height: 0;
-  }
+  
 }
+.show-content-active, .show-content-active {
+    transition: all 2s ease;
+  }
+  .show-content-enter, .show-content-leave-to /* .fade-leave-active below version 2.1.8 */ {
+    display: none;
+  }
