@@ -290,7 +290,7 @@
        * @return {String}
        */
       currentClass(){
-        let st = 'k-edit-form-container ' + this.componentClass;
+        let st = 'k-edit-form-container ' + this.componentClass.join(' ');
         if ( this.fixedFooter ){
           st += ' bbn-flex-height';
         }

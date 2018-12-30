@@ -1,868 +1,49 @@
-/**
- * Created by BBN on 10/02/2017.
- */
-/* jslint esversion: 6 */
-(function($, bbn, kendo){
+((bbn) => {
   "use strict";
-
-  kendo.culture(bbn_language ? bbn_language : "en_EN");
-
   const
     editorOperators = {
       string: {
-        'contains': bbn._('Contient'),
-        'eq': bbn._('Est'),
-        'neq': bbn._('N’est pas'),
-        'startswith': bbn._('Commence par'),
-        'doesnotcontain': bbn._('Ne contient pas'),
-        'endswith': bbn._('Se termine par'),
-        'isempty': bbn._('Est vide'),
-        'isnotempty': bbn._('N’est pas vide')
+        contains: bbn._('Contient'),
+        eq: bbn._('Est'),
+        neq: bbn._('N’est pas'),
+        startswith: bbn._('Commence par'),
+        doesnotcontain: bbn._('Ne contient pas'),
+        endswith: bbn._('Se termine par'),
+        isempty: bbn._('Est vide'),
+        isnotempty: bbn._('N’est pas vide')
       },
       number: {
-        'eq': bbn._('Est égal à'),
-        'neq': bbn._('N’est pas égal à'),
-        'gte': bbn._('Est supérieur ou égal à'),
-        'gt': bbn._('Est supérieur à'),
-        'lte': bbn._('Est inférieur ou égal à'),
-        'lt': bbn._('Est inférieur à'),
+        eq: bbn._('Est égal à'),
+        neq: bbn._('N’est pas égal à'),
+        gte: bbn._('Est supérieur ou égal à'),
+        gt: bbn._('Est supérieur à'),
+        lte: bbn._('Est inférieur ou égal à'),
+        lt: bbn._('Est inférieur à'),
       },
       date: {
-        'eq': bbn._('Est égal à'),
-        'neq': bbn._('N’est pas égal à'),
-        'gte': bbn._('Est postérieur ou égal à'),
-        'gt': bbn._('Est postérieur à'),
-        'lte': bbn._('Est antérieur ou égal à'),
-        'lt': bbn._('Est antérieur à'),
+        eq: bbn._('Est égal à'),
+        neq: bbn._('N’est pas égal à'),
+        gte: bbn._('Est postérieur ou égal à'),
+        gt: bbn._('Est postérieur à'),
+        lte: bbn._('Est antérieur ou égal à'),
+        lt: bbn._('Est antérieur à'),
       },
       enums: {
-        'eq': bbn._('Est égal à'),
-        'neq': bbn._('N’est pas égal à'),
+        eq: bbn._('Est égal à'),
+        neq: bbn._('N’est pas égal à'),
       },
       boolean: {
-        'istrue': bbn._('Est vrai'),
-        'isfalse': bbn._('Est faux')
+        istrue: bbn._('Est vrai'),
+        isfalse: bbn._('Est faux')
       }
     },
     editorNullOps = {
-      'isnull': bbn._('Est nul'),
-      'isnotnull': bbn._('N’est pas nul')
+      isnull: bbn._('Est nul'),
+      isnotnull: bbn._('N’est pas nul')
     },
-    editorNoValueOperators = ['', 'isnull', 'isnotnull', 'isempty', 'isnotempty', 'istrue', 'isfalse'],
-    isReservedTag = Vue.config.isReservedTag;
+    editorNoValueOperators = ['', 'isnull', 'isnotnull', 'isempty', 'isnotempty', 'istrue', 'isfalse'];
 
-  bbn.vue = {
-    defaultLocalURL: false,
-    defaultLocalPrefix: '',
-    localURL: false,
-    isNodeJS: false,
-    localPrefix: '',
-    loadingComponents: [],
-    loadedComponents: [],
-    // Definition rules by prefix
-    knownPrefixes: [],
-    // Each unknown tag sent to loadComponentsByPrefix
-    parsedTags: [],
-    queueTimer: 0,
-    queue: [],
-    queueTimerBBN: 0,
-    queueBBN: [],
-    components: {
-      appui: {},
-      autocomplete: {},
-      button: {},
-      chart: {},
-      chat: {},
-      checkbox: {},
-      code: {},
-      colorpicker: {},
-      colorpicker2: {},
-      combo: {},
-      context: {},
-      countdown: {},
-      countdown2: {},
-      dashboard: {},
-      datepicker: {},
-      datetimepicker: {},
-      dropdown: {},
-      //dropdowntreeview: {},
-      field:{},
-      filter: {},
-      fisheye: {},
-      //footer: {},
-      form: {},
-      grapes: {},
-      initial: {},
-      input: {},
-      'json-editor': {},
-      list: {},
-      loader: {},
-      loading: {},
-      markdown: {},
-      masked: {},
-      menu: {},
-      message: {},
-      multiselect: {},
-      notification: {},
-      numeric: {},
-      operator: {},
-      pane: {},
-      popup: {},
-      progressbar:{},
-      radio: {},
-      rte: {},
-      scheduler: {},
-      scroll: {},
-      'scroll-x': {},
-      'scroll-y': {},
-      search: {},
-      slider: {},
-      slideshow: {},
-      splitter: {},
-      switch: {},
-      table: {},
-      tabnav: {},
-      textarea: {},
-      timepicker: {},
-      toolbar: {},
-      tooltip: {},
-      tree: {},
-      treemenu: {},
-      'tree-input': {},
-      upload: {},
-      vlist: {}
-    },
-    loadDelay: 20,
-
-    _retrievePopup(vm){
-      if ( vm.$options && vm.$options._componentTag === 'bbn-popup' ){
-        return vm;
-      }
-      else if ( vm.getRef('popup') ){
-        return vm.getRef('popup');
-      }
-      else if ( vm.window && vm.window.popup ){
-        return vm.window.popup;
-      }
-      else if ( vm.tab && vm.tab.getRef('popup') ){
-        return vm.tab.getRef('popup');
-      }
-      return false;
-    },
-
-    /**
-     * Makes the dataSource variable suitable to be used by the kendo UI widget
-     * @param vm Vue object
-     * @returns object
-     */
-    toKendoDataSource(vm){
-      let text = vm.sourceText || vm.widgetOptions.dataTextField || 'text',
-          value = vm.sourceValue || vm.widgetOptions.dataValueField || 'value',
-          nullable = vm.nullable || false,
-          res = [];
-      let transform = (src) => {
-        let type = typeof(src),
-            isArray = Array.isArray(src);
-        if ( (type === 'object') && !isArray ){
-          $.each(src, (n, a) => {
-            let tmp = {};
-            tmp[text] = (typeof a) === 'string' ? a : n;
-            tmp[value] = n;
-            if ( vm.group && a[vm.group] ){
-              tmp[vm.group] = a[vm.group];
-            }
-            res.push(tmp);
-          });
-        }
-        else if ( isArray && src.length && (typeof(src[0]) !== 'object') ){
-          res = $.map(src, (a) => {
-            let tmp = {};
-            tmp[text] = a;
-            tmp[value] = a;
-            return tmp;
-          });
-        }
-        else{
-          res = src;
-        }
-        if ( nullable && res.length ){
-          let tmp = {};
-          tmp[text] = '';
-          tmp[value] = null;
-          res.unshift(tmp)
-        }
-        return res;
-      };
-      if ( typeof(vm.source) === 'string' ){
-        if ( vm.$options.propsData.filterValue && !vm._isFilterValueWatched ){
-          vm.$watch("filterValue", () => {
-            vm.widget.dataSource.read();
-          }, {deep: true});
-          vm._isFilterValueWatched = true;
-        }
-        return new kendo.data.DataSource({
-          transport:{
-            read(e){
-              let dt;
-              if ( vm.filterValue !== undefined ){
-                dt = {};
-                if ( vm.param ){
-                  dt[param] = vm.filterValue;
-                }
-                else if ( typeof(vm.filterValue) === 'object' ){
-                  $.extend(dt, vm.filterValue);
-                }
-                else{
-                  dt.value = vm.filterValue;
-                }
-              }
-              else {
-                dt = e.data;
-              }
-              bbn.fn.post(vm.source, dt, (d) => {
-                if ( d.data ){
-                  e.success(transform(d.data));
-                }
-                else if ( d ){
-                  e.success(transform(d));
-                }
-              });
-            }
-          }
-        });
-      }
-      else if ( text && value ){
-        return transform(vm.source);
-      }
-      else{
-        return [];
-      }
-    },
-
-    initDefaults(defaults, cpName){
-      if ( !bbn.vue.components[cpName] ){
-        throw new Error("Impossible to find the component " + cpName);
-      }
-      if ( typeof defaults !== 'object' ){
-        throw new Error("The default object sent is not an object " + cpName);
-      }
-      bbn.vue.components[cpName].defaults = $.extend(true, defaults, bbn.vue.components[cpName].defaults);
-    },
-
-    isKendo(vm){
-      return (vm.widgetName.indexOf("kendo") === 0);
-    },
-
-    /**
-     * Supposed to give the data in an appropriate way
-     * @todo Remove or do something
-     * @param vm Vue object
-     * @returns {{}}
-     */
-    treatData(vm){
-
-      let cfg = {};
-      if ( vm.$options.props.cfg && (vm.$options.props.cfg.default !== undefined) ){
-        $.extend(cfg, $.isFunction(vm.$options.props.cfg.default) ? vm.$options.props.cfg.default() : vm.$options.props.cfg.default);
-      }
-      $.each(vm.$options.propsData, (n, a) => {
-        cfg[n] = a;
-      });
-      if ( vm.$options.propsData.cfg ){
-        $.extend(cfg,
-          typeof(vm.$options.propsData.cfg) === 'string' ?
-            JSON.parse(vm.$options.propsData.cfg) :
-            vm.$options.propsData.cfg
-        );
-      }
-      return {
-        widgetCfg: cfg
-      };
-    },
-
-    getOptions2(vm, obj){
-      if ( !obj || (typeof(obj) !== 'object') ){
-        obj = {};
-      }
-      let r = {};
-      return $.extend(obj, r, this.widgetOptions);
-    },
-
-    /**
-     *
-     * @param vm Vue object
-     * @returns {{}}
-     */
-    getOptions(vm, obj){
-      if ( !obj || (typeof(obj) !== 'object') ){
-        obj = {};
-      }
-      let tmp = bbn.vue.treatData(vm),
-          r = tmp.widgetCfg;
-      if ( r.source && vm.widgetName && (vm.widgetName.indexOf("kendo") === 0) ){
-        r.dataSource = vm.dataSource;
-        delete r.source;
-      }
-      if ( r.ivalue ){
-        delete r.ivalue;
-      }
-      if ( r.name ){
-        delete r.name;
-      }
-      return $.extend(obj, r);
-    },
-
-    setComponentRule(url, prefix){
-      if ( url ){
-        bbn.vue.localURL = url;
-        if ( bbn.vue.localURL.substr(-1) !== '/' ){
-          bbn.vue.localURL += '/';
-        }
-        bbn.vue.localPrefix = prefix || '';
-      }
-    },
-
-    setDefaultComponentRule(url, prefix){
-      if ( url ){
-        bbn.vue.defaultLocalURL = url;
-        bbn.vue.defaultLocalPrefix = prefix || '';
-        bbn.vue.setComponentRule(url, prefix);
-      }
-    },
-
-    unsetComponentRule(){
-      bbn.vue.localURL = bbn.vue.defaultLocalURL;
-      bbn.vue.localPrefix = bbn.vue.defaultLocalPrefix;
-    },
-
-    addComponent(name, mixins){
-      if ( bbn.vue.localURL ){
-        let componentName = bbn.fn.replaceAll("/", "-", name);
-        if ( bbn.vue.localPrefix ){
-          componentName = bbn.vue.localPrefix + '-' + componentName;
-        }
-        bbn.vue.announceComponent(componentName, bbn.vue.localURL + name, mixins);
-      }
-    },
-
-    queueComponent(name, url, mixins, resolve, reject){
-      clearTimeout(bbn.vue.queueTimer);
-      bbn.vue.queue.push({
-        name: name,
-        url: url,
-        mixins: mixins,
-        resolve: resolve,
-        reject: reject
-      });
-      bbn.vue.queueTimer = setTimeout(() => {
-        let todo = bbn.vue.queue.splice(0, bbn.vue.queue.length);
-        bbn.vue.executeQueueItems(todo);
-        /*
-        bbn.fn.log("TODO", todo);
-        $.each(todo, (i, a) => {
-          bbn.vue.executeQueueItem(a);
-        });
-        */
-      }, bbn.vue.loadDelay)
-      return bbn.vue.queueTimer
-    },
-
-    _realDefineComponent(name, r, mixins){
-      if ( r && r.script ){
-        if ( r.css ){
-          $(document.head).append('<style>' + r.css + '</style>');
-        }
-        if ( r.content ){
-          $(document.body).append('<script type="text/x-template" id="bbn-tpl-component-' + name + '">' + r.content + '</script>');
-        }
-        let data = r.data || {};
-        let res = eval(r.script);
-        if ( typeof res === 'object' ){
-          if ( !res.mixins ){
-            res.mixins = [];
-          }
-          if ( !res.template ){
-            res.template = '#bbn-tpl-component-' + name;
-          }
-          if ( !res.props ){
-            res.props = {};
-          }
-          if ( !res.props.source ){
-            res.props.source = {};
-          }
-          if ( !res.name ){
-            res.name = name;
-          }
-          if ( res.mixins && !bbn.fn.isArray(res.mixins) ){
-            res.mixins = [res.mixins];
-          }
-          if ( mixins ){
-            if ( !bbn.fn.isArray(mixins) ){
-              mixins = [mixins];
-            }
-            if ( res.mixins ){
-              bbn.fn.each(mixins, (b) => {
-                res.mixins.push(b);
-              })
-            }
-            else{
-              res.mixins = mixins;
-            }
-          }
-          let bits = res.name.split('-'),
-              st = '';
-          bbn.fn.each(bits, (b) => {
-            st += (b + '-');
-            let idx = bbn.fn.search(bbn.vue.knownPrefixes, {prefix: st});
-            if ( (idx > -1) && bbn.vue.knownPrefixes[idx].mixins ){
-              if ( bbn.fn.isArray(bbn.vue.knownPrefixes[idx].mixins) ){
-                bbn.fn.each(bbn.vue.knownPrefixes[idx].mixins.reverse(), (m) => {
-                  res.mixins.unshift(m)
-                })
-              }
-              else{
-                res.mixins.unshift(bbn.vue.knownPrefixes[idx].mixins)
-              }
-            }
-          });
-          if ( Object.keys(data).length ){
-            res.props.source.default = () => {
-              return data;
-            }
-          }
-          Vue.component(name, res);
-          return true;
-        }
-      }
-      return false;
-    },
-
-    executeQueueItems(items){
-      if ( items.length ){
-        let url = 'components';
-        bbn.fn.iterate(items, (a) => {
-          url += '/' + a.name;
-        });
-        return bbn.fn.post(url, (d) => {
-          if ( d && d.success && d.components ){
-            bbn.fn.iterate(items, (a, n) => {
-              if ( d.components[n] && this._realDefineComponent(a.name, d.components[n], a.mixins) ){
-                a.resolve('ok');
-              }
-              else{
-                a.reject();
-              }
-            })
-          }
-        })
-      }
-      return false;
-    },
-
-    executeQueueItem(a){
-      if ( a.url ) {
-        return bbn.fn.post(a.url, (r) => {
-          if ( this._realDefineComponent(a.name, r, a.mixins) ){
-            a.resolve('ok');
-            return;
-          }
-          a.reject();
-        })
-      }
-      return false;
-    },
-
-    /** Adds an array of components, calling them all at the same time, in a single script */
-    executeQueueBBNItem(todo){
-      let url = bbn_root_url + bbn_root_dir + 'components/?components=' + $.map(todo, (a) => {
-        return a.name;
-      }).join(',');
-      if ( bbn.env.isDev ){
-        url += '&test=1';
-      }
-      if ( bbn.env.lang ){
-        url += '&lang=' + bbn.env.lang;
-      }
-      return bbn.fn.ajax(url)
-        .then(
-          // resolve from server
-          (res) => {
-            // This executes the script returned by the server, which will return a new promise
-            let prom = eval(res);
-            prom.then(
-              // resolve from executed script
-              (arr) => {
-                // arr is the answer!
-                if ( $.isArray(arr) ){
-                  $.each(arr, (i, r) => {
-                    let resolved = false;
-                    if ( (typeof(r) === 'object') && r.script && r.name ){
-                      let idx = bbn.fn.search(todo, {name: r.name});
-                      if ( idx > -1 ){
-                        let a = todo[idx];
-                        if ( r.html && r.html.length ){
-                          $.each(r.html, (j, h) => {
-                            if ( h && h.content ){
-                              let id = 'bbn-tpl-component-' + a.name + (h.name === a.name ? '' : '-' + h.name),
-                                  $tpl = $('<script type="text/x-template" id="' + id + '"></script>');
-                              $tpl.html(h.content);
-                              document.body.appendChild($tpl[0]);
-                            }
-                          })
-                        }
-                        if ( r.css ){
-                          $(document.head).append('<style>' + r.css + '</style>');
-                        }
-                        r.script();
-                        if ( (a.resolve !== undefined) && (Vue.options.components['bbn-' + a.name] !== undefined) ){
-                          setTimeout(() => {
-                            a.resolve('ok');
-                          }, 200)
-                          resolved = true;
-                        }
-                      }
-                    }
-                    if ( !resolved ){
-                      a.reject();
-                    }
-                  })
-                }
-                return prom;
-              },
-              // reject: executed script has an error
-              () => {
-                bbn.fn.log("ERROR in the executed script from the server");
-                throw new Error("Problem in the executed script from the server from " + url)
-              }
-            )
-          },
-          // reject: no return from the server
-          () => {
-            bbn.fn.log("ERROR in executeQueueBBNItem");
-            throw new Error("Impossible to find the components from " + url)
-          }
-        )
-    },
-
-    queueComponentBBN(name, resolve, reject){
-      if ( bbn.fn.search(bbn.vue.queueBBN, {name: name}) === -1 ){
-        clearTimeout(bbn.vue.queueTimerBBN);
-        bbn.vue.queueBBN.push({
-          name: name,
-          resolve: resolve,
-          reject: reject
-        });
-        bbn.vue.queueTimerBBN = setTimeout(() => {
-          if ( bbn.vue.queueBBN.length ){
-            bbn.vue.executeQueueBBNItem(bbn.vue.queueBBN.splice(0, bbn.vue.queueBBN.length));
-          }
-        }, bbn.vue.loadDelay);
-      }
-      return bbn.vue.queueTimerBBN;
-    },
-
-    announceComponent(name, url, mixins){
-      if ( !bbn.vue.isNodeJS && (typeof(name) === 'string') && (Vue.options.components[name] === undefined) ){
-        Vue.component(name, (resolve, reject) => {
-          return bbn.vue.queueComponent(name, url, mixins, resolve, reject);
-        });
-      }
-    },
-
-    defineComponents(){
-      if ( !bbn.vue.loadedComponents.length && !bbn.vue.isNodeJS ){
-        for ( let a in bbn.vue.components ){
-          bbn.vue.loadedComponents.push('bbn-' + a);
-          /** @var string bbn_root_url */
-          /** @var string bbn_root_dir */
-          Vue.component('bbn-' + a, (resolve, reject) => {
-            bbn.vue.queueComponentBBN(a, resolve, reject);
-          });
-        }
-      }
-    },
-
-    resetDefBBN(cp){
-      if ( Vue.options.components[cp] ){
-        delete Vue.options.components['bbn-' + cp];
-        Vue.component('bbn-' + cp, (resolve, reject) => {
-          bbn.vue.queueComponentBBN(cp, resolve, reject);
-        });
-      }
-    },
-
-    resetDef(cp){
-      if ( Vue.options.components[cp] ){
-        delete Vue.options.components[cp];
-        Vue.component(cp, (resolve, reject) => {
-          bbn.vue.queueComponent(cp, resolve, reject);
-        });
-      }
-    },
-
-    retrieveRef(vm, path){
-      let bits = path.split("."),
-          target = vm,
-          prop;
-      while ( bits.length ){
-        prop = bits.shift();
-        target = target[prop];
-        if ( target === undefined ){
-          bbn.fn.log("Impossible to find the target " + path + "(blocking on " + prop + ")");
-          break;
-        }
-      }
-      if ( target && (target !== vm) ){
-        return target;
-      }
-      return false;
-    },
-
-    is(vm, selector){
-      if ( selector && vm ){
-        if ( vm.$el && $(vm.$el).is(selector) ){
-          return true;
-        }
-        if ( vm.$vnode && vm.$vnode.componentOptions && (vm.$vnode.componentOptions.tag === selector) ){
-          return true;
-        }
-      }
-      return false;
-    },
-
-    closest(vm, selector, checkEle){
-      let test = vm.$el;
-      while ( vm && vm.$parent && (vm !== vm.$parent) ){
-        if ( bbn.vue.is(vm.$parent, selector) ){
-          if ( !checkEle || (test !== vm.$parent.$el) ){
-            return vm.$parent;
-          }
-        }
-        vm = vm.$parent;
-      }
-      return false;
-    },
-
-    ancesters(vm, selector, checkEle){
-      let res = [];
-      let test = vm.$el;
-      while ( vm && vm.$parent && (vm !== vm.$parent) ){
-        if ( bbn.vue.is(vm.$parent, selector) ){
-          if ( !checkEle || (test !== vm.$parent.$el) ){
-            res.push(vm.$parent);
-          }
-        }
-        vm = vm.$parent;
-      }
-      return res;
-    },
-
-    getRef(vm, name){
-      if ( vm ){
-        if ( Array.isArray(vm.$refs[name]) ){
-          if ( vm.$refs[name][0] ){
-            return vm.$refs[name][0];
-          }
-        }
-        else if ( vm.$refs[name] ){
-          return vm.$refs[name];
-        }
-      }
-      return false;
-    },
-
-    getChildByKey(vm, key, selector){
-      if ( vm.$children ){
-        for ( let i = 0; i < vm.$children.length; i++ ){
-          let obj = vm.$children[i];
-          if (
-            obj.$el &&
-            obj.$vnode &&
-            obj.$vnode.data &&
-            (obj.$vnode.data.key !== undefined) &&
-            (obj.$vnode.data.key === key)
-          ){
-            if ( selector && bbn.vue.is(obj, selector) ){
-              return obj;
-            }
-            else{
-              return obj;
-            }
-          }
-        }
-      }
-      return false;
-    },
-
-    findByKey(vm, key, selector, ar){
-      let tmp = bbn.vue.getChildByKey(vm, key, selector);
-      if ( !tmp && vm.$children ){
-        for ( let i = 0; i < vm.$children.length; i++ ){
-          if ( tmp = bbn.vue.findByKey(vm.$children[i], key, selector, ar) ){
-            if ( $.isArray(ar) ){
-              ar.push(tmp);
-            }
-            else{
-              break;
-            }
-          }
-        }
-      }
-      return tmp;
-    },
-
-    findAllByKey(vm, key, selector){
-      let ar = [];
-      bbn.vue.findByKey(vm, key, selector, ar);
-      return ar;
-    },
-
-    find(vm, selector, index){
-      let vms = bbn.vue.getComponents(vm);
-      let realIdx = 0;
-      index = parseInt(index) || 0;
-      if ( vms ){
-        for ( let i = 0; i < vms.length; i++ ){
-          if ( bbn.vue.is(vms[i], selector) ){
-            if ( realIdx === index ){
-              return vms[i];
-            }
-            realIdx++;
-          }
-        }
-      }
-    },
-
-    findAll(vm, selector, only_children){
-      let vms = bbn.vue.getComponents(vm, only_children),
-          res = [];
-      for ( let i = 0; i < vms.length; i++ ){
-        if (
-          $(vms[i].$el).is(selector) ||
-          (vms[i].$vnode.componentOptions && (vms[i].$vnode.componentOptions.tag === selector))
-        ){
-          res.push(vms[i]);
-        }
-      }
-      return res;
-    },
-
-    getComponents(vm, ar, only_children){
-      if ( !Array.isArray(ar) ){
-        ar = [];
-      }
-      $.each(vm.$children, function(i, obj){
-        ar.push(obj)
-        if ( !only_children && obj.$children ){
-          bbn.vue.getComponents(obj, ar);
-        }
-      });
-      return ar;
-    },
-
-    makeUID(){
-      return bbn.fn.md5(bbn.fn.randomString(12, 30));
-    },
-
-    getRoot(vm){
-      let e = vm;
-      while ( e.$parent ){
-        e = e.$parent;
-      }
-      return e;
-    },
-
-    getPopup(vm){
-      return vm.currentPopup || null;
-    },
-
-    replaceArrays(oldArr, newArr, key){
-      if ( key && $.isArray(oldArr, newArr) ){
-        for ( let i = oldArr.length; i > 0; --i ){
-          if ( bbn.fn.search(newArr, key, oldArr[i][key]) === -1 ){
-            oldArr.splice(i, 1)
-          }
-        }
-        for ( let a of newArr ){
-          if ( bbn.fn.search(oldArr, key, a[key]) === -1 ){
-            oldArr.push(a)
-          }
-        }
-      }
-    },
-
-    // Looks if the given tag starts with one of the known prefixes,
-    // and it such case defines the component with the corresponding handler
-    loadComponentsByPrefix(tag){
-      let res = isReservedTag(tag);
-      // Tag is unknown and has never gone through this function
-      if ( tag && !res && (bbn.vue.parsedTags.indexOf(tag) === -1) ){
-        bbn.vue.parsedTags.push(tag);
-        let idx = -1;
-        // Looking for a corresponding prefix rule
-        for (let i = 0; i < bbn.vue.knownPrefixes.length; i++){
-          if (
-            bbn.vue.knownPrefixes[i].prefix &&
-            (typeof bbn.vue.knownPrefixes[i].handler === 'function') &&
-            (tag.indexOf(bbn.vue.knownPrefixes[i].prefix) === 0)
-          ) {
-            // Taking the longest (most precise) prefix's rule
-            if ( idx > -1 ){
-              if ( bbn.vue.knownPrefixes[i].prefix.length > bbn.vue.knownPrefixes[idx].prefix.length ){
-                idx = i;
-              }
-            }
-            else{
-              idx = i;
-            }
-          }
-        }
-        // A rule has been found
-        if ( idx > -1 ){
-          /*
-          let mixins = [];
-          bbn.fn.each(bbn.vue.knownPrefixes, (o) => {
-            if ( tag.indexOf(o.prefix) === 0 ){
-              if ( o.mixins ){
-                if ( !bbn.fn.isArray(o.mixins) ){
-                  mixins.push(o.mixins)
-                }
-                else{
-                  bbn.fn.each(o.mixins, (m) => {
-                    mixins.push(m);
-                  })
-                }
-              }
-            }
-          })
-          */
-          Vue.component(tag, (resolve, reject) => {
-            bbn.vue.knownPrefixes[idx].handler(tag, resolve, reject);
-          });
-        }
-      }
-      return false;
-    },
-
-    addPrefix(prefix, handler, mixins){
-      if ( typeof prefix !== 'string' ){
-        throw new Error("Prefix must be a string!");
-        return;
-      }
-      if ( typeof handler !== 'function' ){
-        throw new Error("Handler must be a function!");
-        return;
-      }
-      if ( prefix.substr(-1) !== '-' ){
-        prefix += '-';
-      }
-      bbn.vue.knownPrefixes.push({
-        prefix: prefix,
-        handler: handler,
-        mixins: mixins || []
-      });
-    },
-
+  bbn.fn.autoExtend("vue", {
     emptyComponent: {
       template: '<template><slot></slot></template>',
       created(){
@@ -913,6 +94,22 @@
           if ( newVal ){
             this.$emit('ready', newVal)
           }
+        }
+      }
+    },
+
+    focusComponent: {
+      data(){
+        return {
+          focusedComponent: bbn.env.focused
+        }
+      },
+      mounted(){
+        this.$el.focus();
+      },
+      beforeDestroy(){
+        if ( this.focusedComponent ){
+          this.focusedComponent.focus();
         }
       }
     },
@@ -1508,7 +705,7 @@
           let resizeTimeout;
           // This class will allow to recognize the element to listen to
           this.$el.className += " bbn-resize-emitter";
-          this.parentResizer = bbn.vue.closest(this, ".bbn-resize-emitter", true);
+          this.parentResizer = this.closest(".bbn-resize-emitter", true);
           // Setting initial dimensions
           this.lastKnownHeight = this.parentResizer ? Math.round($(this.parentResizer.$el).innerHeight()) : bbn.env.height;
           this.lastKnownWidth = this.parentResizer ? Math.round($(this.parentResizer.$el).innerWidth()) : bbn.env.width;
@@ -1520,7 +717,7 @@
             resizeTimeout = setTimeout(() => {
               if ( $(this.$el).is(":visible") ){
                 // Checking if the parent hasn't changed (case where the child is mounted before)
-                let tmp = bbn.vue.closest(this, ".bbn-resize-emitter", true);
+                let tmp = this.closest(".bbn-resize-emitter", true);
                 if ( tmp !== this.parentResizer ){
                   // In that case we reset
                   this.unsetResizeEvent();
@@ -1719,6 +916,110 @@
       },
     },
 
+    viewComponent: {
+      props: {
+        source: {
+          type: [Object, Function]
+        },
+        title: {
+          type: [String, Number],
+          default: bbn._("Untitled")
+        },
+        componentAttributes: {
+          type: Object,
+          default(){
+            return {}
+          }
+        },
+        idx: {},
+        scrollable: {
+          type: Boolean,
+          default: true
+        },
+        component: {},
+        icon: {
+          type: [String, Boolean],
+        },
+        notext: {
+          type: Boolean,
+          default: false
+        },
+        content: {
+          type: String,
+          default: ""
+        },
+        menu: {
+          type: Array
+        },
+        loaded: {
+          type: Boolean
+        },
+        fcolor: {
+          type: String
+        },
+        bcolor: {
+          type: String
+        },
+        load: {
+          type: Boolean,
+          default: false
+        },
+        selected: {
+          type: [Boolean, Number],
+          default: false
+        },
+        css: {
+          type: String,
+          default: ""
+        },
+        source: {
+          type: [Array, Object],
+          default: function(){
+            return {};
+          }
+        },
+        advert: {
+          type: [String, Vue]
+        },
+        help: {
+          type: String
+        },
+        imessages: {
+          type: Array,
+          default(){
+            return []
+          }
+        },
+        script: {},
+        static: {
+          type: [Boolean, Number],
+          default: false
+        },
+        pinned: {
+          type: [Boolean, Number],
+          default: false
+        },
+        url: {
+          type: [String, Number]
+        },
+        current: {
+          type: [String, Number]
+        },
+        real: {
+          type: String
+        },
+        cfg: {
+          type: Object
+        },
+        events: {
+          type: Object,
+          default(){
+            return {}
+          }
+        },
+      }
+    },
+
     observerComponent: {
       props: {
         observer: {
@@ -1797,7 +1098,7 @@
       },
       mounted(){
         if ( this.observer ){
-          this.observationTower = bbn.vue.closest(this, '.bbn-observer');
+          this.observationTower = this.closest('.bbn-observer');
           this.observerWatch();
         }
       },
@@ -1849,120 +1150,5 @@
         this.componentClass.push('bbn-url-component');
       },
     }
-  };
-
-
-  Vue.mixin({
-    computed: {
-      currentPopup(){
-        if ( this && !this._currentPopup ){
-          let e = bbn.vue._retrievePopup(this);
-          if ( e ){
-            this._currentPopup = e;
-          }
-          else{
-            let vm = this
-            while ( 1 ){
-              vm = vm.$parent;
-              if ( vm && vm._currentPopup ){
-                this._currentPopup = vm._currentPopup;
-                break;
-              }
-              else if ( vm ){
-                e = bbn.vue._retrievePopup(vm);
-                if ( e ){
-                  this._currentPopup = e;
-                  break;
-                }
-              }
-              if ( !vm || (vm === this.$root) ){
-                break;
-              }
-            }
-          }
-        }
-        if ( this && this._currentPopup ){
-          return this._currentPopup;
-        }
-        throw new Error(bbn._('Impossible to find a popup instance. Add a bbn-popup in your root element'))
-      }
-    },
-    data(){
-      return {
-        _currentPopup: null
-      };
-    },
-    methods: {
-      _: bbn._,
-
-      getRef(name){
-        return bbn.vue.getRef(this, name);
-      },
-      is(selector){
-        return bbn.vue.is(this, selector);
-      },
-      closest(selector, checkEle){
-        return bbn.vue.closest(this, selector, checkEle);
-      },
-      ancesters(selector, checkEle){
-        return bbn.vue.ancesters(this, selector, checkEle);
-      },
-      getChildByKey(key, selector){
-        return bbn.vue.getChildByKey(this, key, selector);
-      },
-
-      findByKey(key, selector, ar){
-        return bbn.vue.findByKey(this, key, selector, ar);
-      },
-
-      findAllByKey(key, selector){
-        return bbn.vue.findAllByKey(this, key, selector);
-      },
-
-      find(selector, index){
-        return bbn.vue.find(this, selector, index);
-      },
-
-      findAll(selector, only_children){
-        return bbn.vue.findAll(this, selector, only_children);
-      },
-
-      getComponents(ar, only_children){
-        return bbn.vue.getComponents(this, ar, only_children);
-      },
-
-      getPopup(){
-        let popup = bbn.vue.getPopup(this);
-        if ( arguments.length && popup ){
-          return popup.open.apply(popup, arguments)
-        }
-        return popup;
-      },
-
-      confirm(){
-        let popup = this.getPopup();
-        if ( popup ){
-          popup.confirm.apply(popup, arguments)
-        }
-      },
-
-      alert(){
-        let popup = this.getPopup();
-        if ( popup ){
-          popup.alert.apply(popup, arguments)
-        }
-      }
-    }
-  });
-
-  Vue.config.isReservedTag = (tag, context) => {
-    return bbn.vue.loadComponentsByPrefix(tag, context)
-  };
-
-  bbn.vue.fullComponent = bbn.fn.extend({}, bbn.vue.inputComponent, bbn.vue.optionComponent, bbn.vue.eventsComponent, bbn.vue.widgetComponent);
-
-  bbn.vue.addPrefix('bbn', (tag, resolve, reject) => {
-    bbn.vue.queueComponentBBN(tag.substr(4), resolve, reject);
-  });
-
-})(jQuery, bbn, kendo);
+  })
+})(window.bbn);

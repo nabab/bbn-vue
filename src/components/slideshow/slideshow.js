@@ -71,6 +71,11 @@
       fullSlide:{
         type: Boolean,
         default: false
+      },
+      //insert a scroll inside a slide
+      scroll: {
+        type: Boolean,
+        default: false
       }
     },
     data(){

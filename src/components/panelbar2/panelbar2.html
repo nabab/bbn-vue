@@ -9,7 +9,7 @@
       <i :class="['fa fa-2x', 'fa-angle-down', 'header-icon', {'rotate': selected === idx}]"></i>
       <div v-text="s.text" class="text"></div>
       <div v-if="s.buttons && (selected === idx)" class="buttons">
-        <bbn-button v-for="(b, bidx) in s.buttons" :key="bidx" v-bind="s.buttons[bidx]" @click.stop.prevent="s.buttons[bidx].command"></bbn-button>
+        <bbn-button v-for="(b, bidx) in s.buttons" :key="bidx + '-' + b" v-bind="s.buttons[bidx]" @click.stop.prevent="s.buttons[bidx].command"></bbn-button>
       </div>
     </div>
     <transition name="panelbar2" 
@@ -19,7 +19,8 @@
     >
       <div class="body" v-show="selected === idx">
         <div class="body-inner" v-html="s.content" v-if="s.content"></div>
-        <component :is="s.component" 
+        <component :is="s.component"
+                   style="min-height:500px"  
                    class="body-inner" 
                    v-bind="source[idx]['componentAttributes']" 
                    ref="component"

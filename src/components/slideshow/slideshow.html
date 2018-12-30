@@ -42,9 +42,10 @@
                :ref="'slide' + i.toString()"
                :class="[it.animation || '' ]"
           >
-            <bbn-scroll>
+            <bbn-scroll v-if="scroll">
               <div v-html="it.content"></div>
             </bbn-scroll>
+            <div v-else v-html="it.content"></div>
           </div>
         </div>
         <!--only image-->

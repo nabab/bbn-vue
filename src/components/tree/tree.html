@@ -115,8 +115,9 @@
             <bbn-tree v-if="numChildren"
                       ref="tree"
                       :num="numChildren"
-                      :source="items"
+                      :source="!items && tree.isFunction ? tree.source : items"
                       :level="level + 1"
+                      :object="tree.object"
             >
             </bbn-tree>
           </li>

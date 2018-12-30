@@ -142,6 +142,10 @@
       trClass: {
         type: [String, Function]
       },
+      noData: {
+        type: String,
+        default: bbn._('No data') + '...'
+      },
       confirmMessage: {
         type: [String, Function, Boolean],
         default: bbn._('Are you sure you want to delete this row?')
@@ -703,7 +707,7 @@
                     link: currentLink,
                     value: currentGroupValue,
                     name: c,
-                    data: $.extend({}, a, tmp)
+                    data: tmp
                   });
                   rowIndex++;
                 });
@@ -719,7 +723,7 @@
                   rowIndex: rowIndex,
                   aggregated: true,
                   name: c,
-                  data: $.extend({}, a, tmp)
+                  data: tmp
                 });
                 rowIndex++;
               });

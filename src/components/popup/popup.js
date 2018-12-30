@@ -379,6 +379,7 @@
             }
           }
         }
+        bbn.fn.log(arguments, "CONFIRM", o);
         if ( typeof(o) === 'object' ){
           if ( !o.content ){
             o.content = this.confirmMessage;

@@ -11,30 +11,30 @@
     <ul ref="tabgroup"
         v-if="tabs"
         :class="{
-          'k-reset': true,
-          'k-tabstrip-items': true,
-          'k-header': true,
-          'bbn-tabnav-tabs': true
-        }"
+        'k-reset': true,
+        'k-tabstrip-items': true,
+        'k-header': true,
+        'bbn-tabnav-tabs': true
+      }"
     >
       <li v-for="(tab, tabIndex) in tabs"
           :ref="'tab-' + tabIndex"
           :style="{
-            backgroundColor: tab.bcolor || null,
-            color: tab.fcolor || null
-          }"
+          backgroundColor: tab.bcolor || null,
+          color: tab.fcolor || null
+        }"
           :data-index="tabIndex"
           :class="{
-            'k-item': true,
-            'k-state-default': true,
-            'bbn-unselectable': true,
-            'bbn-tabnav-static': !!tab.static,
-            'k-state-active': tabIndex === selected,
-            'k-state-disabled': tab.disabled,
-            'k-first': tabIndex === 0,
-            'k-last': tabIndex === tabs.length - 1,
-            'bbn-tabnav-alarm': tab.alarm
-          }"
+          'k-item': true,
+          'k-state-default': true,
+          'bbn-unselectable': true,
+          'bbn-tabnav-static': !!tab.static,
+          'k-state-active': tabIndex === selected,
+          'k-state-disabled': tab.disabled,
+          'k-first': tabIndex === 0,
+          'k-last': tabIndex === tabs.length - 1,
+          'bbn-tabnav-alarm': tab.alarm
+        }"
           @click="!tab.disabled && (tabIndex !== selected) ? (selected = tabIndex) : (() => {})()"
       >
         <component :is="!tab.disabled && (tabIndex === selected) ? 'bbn-context' : 'div'"
@@ -52,35 +52,35 @@
           <span :class="['k-link', {'bbn-tabnav-unsaved': tab.isUnsaved}]"
                 :ref="'title-' + tabIndex"
                 :style="{
-                  color: tab.fcolor ? tab.fcolor : null
-                }"
+                color: tab.fcolor ? tab.fcolor : null
+              }"
                 tabindex="0"
                 @keydown.space.enter.prevent.stop="tabIndex !== selected ? activateIndex(tabIndex) : (() => {})()"
                 @keydown.right.down.prevent.stop="getRef('menu-' + tabIndex) ? getRef('menu-' + tabIndex).$el.focus() : (getRef('closer-' + tabIndex) ? getRef('closer-' + tabIndex).focus() : null)"
           >
-            <i v-if="tab.icon"
-               :title="tab.title"
-               :class="tab.icon + (tab.notext ? ' bbn-lg' : '')">
-            </i>
-            <span v-if="!tab.notext && tab.title"
-                  v-html="tab.title">
-            </span>
+          <i v-if="tab.icon"
+             :title="tab.title"
+             :class="tab.icon + (tab.notext ? ' bbn-lg' : '')">
+          </i>
+          <span v-if="!tab.notext && tab.title"
+                v-html="tab.title">
           </span>
+        </span>
           <div class="bbn-tabnav-selected"
                :ref="'selector-' + tabIndex"
                :style="{
-                  backgroundColor: getTabColor(tabIndex)
-                }"
+                backgroundColor: getTabColor(tabIndex)
+              }"
           ></div>
           <div class="bbn-tabnav-icons"
                @keydown.left.prevent.stop="getRef('title-' + tabIndex).focus()"
                @keydown.right.up.prevent.stop="
-                  if ( getRef('closer-' + tabIndex) ){
-                    getRef('closer-' + tabIndex).focus();
-                  }
-                  else if ( getRef('title=' + (tabIndex+1)) ){
-                    getRef('title=' + (tabIndex+1)).focus();
-                  }">
+                if ( getRef('closer-' + tabIndex) ){
+                  getRef('closer-' + tabIndex).focus();
+                }
+                else if ( getRef('title=' + (tabIndex+1)) ){
+                  getRef('title=' + (tabIndex+1)).focus();
+                }">
             <i v-if="!tab.static && !tab.pinned"
                class="fas fa-times bbn-p bbn-xs"
                tabindex="-1"
@@ -101,11 +101,13 @@
       </li>
     </ul>
     <bbn-router ref="router"
-                @mounted="init"
+                v-if="isMounted"
+                @ready="init"
+                @route="$emit('route')"
                 @change="routing"
-                :source="source"
                 :autoload="autoload"
                 :root="root"
+                :auto="false"
                 class="bbn-flex-fill">
       <slot></slot>
     </bbn-router>

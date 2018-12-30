@@ -80,26 +80,26 @@
     },
     methods: {
       getStyles(){
-        let left = this.left ? (bbn.fn.isNumber(this.left) ? (this.left + 'px') : this.left) : '',
-            right = this.right ? (bbn.fn.isNumber(this.right) ? (this.right + 'px') : this.right) : '',
-            top = this.top ? (bbn.fn.isNumber(this.top) ? (this.top + 'px') : this.top) : '',
-            bottom = this.bottom ? (bbn.fn.isNumber(this.bottom) ? (this.bottom + 'px') : this.bottom) : '';
+        let left = this.left ? (bbn.fn.isNumber(this.left) ? this.left : parseInt(this.left)) : '',
+            right = this.right ? (bbn.fn.isNumber(this.right) ? this.right : parseInt(this.right)) : '',
+            top = this.top ? (bbn.fn.isNumber(this.top) ? this.top : parseInt(this.top)) : '',
+            bottom = this.bottom ? (bbn.fn.isNumber(this.bottom) ? this.bottom : parseInt(this.bottom)) : '';
         if ( this.currentHeight ){
           let tW = bbn.env.width,
               tH = bbn.env.height;
-          if ( (this.right !== undefined) && ((this.right + this.currentWidth) >= tW) ){
+          if ( right && ((right + this.currentWidth) >= tW) ){
             left = '';
             right = (bbn.env.width - this.currentWidth) + 'px';
           }
-          else if ( (this.left !== undefined) && ((this.left + this.currentWidth) >= tW) ){
+          else if ( left && ((left + this.currentWidth) >= tW) ){
             right = '';
             left = (tW < this.currentWidth ? 0 : tW - this.currentWidth) + 'px';
           }
-          if ( (this.bottom !== undefined) && ((this.bottom + this.currentHeight) >= tH) ){
+          if ( bottom && ((bottom + this.currentHeight) >= tH) ){
             top = '';
             bottom = (tH - this.currentHeight) + 'px';
           }
-          else if ( (this.top !== undefined) && ((this.top + this.currentHeight) >= tH) ){
+          else if ( top && ((top + this.currentHeight) >= tH) ){
             bottom = '';
             top = (tH - this.currentHeight) + 'px';
           }
@@ -115,10 +115,10 @@
         });
         */
         return {
-          left: left,
-          right: right,
-          top: top,
-          bottom: bottom,
+          left: left ? left + 'px' : null,
+          right: right ? right + 'px' : null,
+          top: top ? top + 'px' : null,
+          bottom: bottom ? bottom + 'px' : null,
           maxHeight: this.maxHeight
         };
       },

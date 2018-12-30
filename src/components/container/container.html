@@ -2,9 +2,9 @@
   <transition name="fade"
               v-on:enter="$parent.enter"
   >
-    <div v-if="visible"
+    <div v-if="visible || cached"
+         v-show="visible"
          :class="{
-         'bbn-container': true,
          'bbn-full-screen': !fullScreen,
          'bbn-container-full-screen': fullScreen,
          'bbn-container-visible': visible

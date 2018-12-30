@@ -1,0 +1,14 @@
+<div :class="[componentClass, 'k-widget']" :style="{
+  left: realLeft,
+  right: realRight,
+  top: realTop,
+  bottom: realBottom,
+  width: realWidth,
+  height: realHeight
+}">
+  <component v-if="component"
+             :is="component"></component>
+  <bbn-scroll v-else-if="height"
+                v-html="content"></bbn-scroll>
+  <div v-else-if="!!content" v-html="content"></div>
+</div>

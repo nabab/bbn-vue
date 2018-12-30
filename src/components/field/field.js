@@ -110,8 +110,8 @@
                 case "bool":
                 case "boolean":
                   this.renderedComponent = 'bbn-checkbox';
-                  this.renderedOptions.value = 1;
-                  this.renderedOptions.novalue = 0;
+                  this.renderedOptions.value = this.options && (this.options.value !== undefined) ? this.options.value : 1;
+                  this.renderedOptions.novalue = this.options && (this.options.novalue !== undefined) ? this.options.novalue : 0;
                   break;
                 default:
                   this.renderedComponent = 'bbn-input';

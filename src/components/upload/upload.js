@@ -34,6 +34,10 @@
         type: Boolean,
         default: false
       },
+      thumbs: {
+        type: Boolean,
+        default: true
+      },
       thumbNot : {
         type: String
       },
@@ -72,6 +76,12 @@
       icon: {
         type: String,
         default: 'fas fa-upload'
+      },
+      extensions: {
+        type: Array,
+        default(){
+          return [];
+        }
       }
     },
     data(){
@@ -152,6 +162,13 @@
               if ( bbn.fn.search(files, 'name', d.name) > -1 ){
                 this.$emit('error', {file: d.name, message: bbn._('The file exists!')});
                 return false;
+              }
+              if ( this.extensions.length ){
+                let ext = d.name.substring(d.name.lastIndexOf('.')+1);
+                if ( this.extensions.indexOf(ext) === -1 ){
+                  this.$emit('error', { file: d.name, message: `${bbn._('The extension')} ${ext} ${bbn._('is not allowed')}!` });
+                  return false;
+                }
               }
               return true;
             },

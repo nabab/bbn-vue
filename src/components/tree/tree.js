@@ -37,7 +37,7 @@
       },
       // An array of objects representing the nodes
       source: {
-        Type: [Array, String, Object]
+        Type: [Array, String, Object, Function]
       },
       // Set to false if the source shouldn't be loaded at mount time
       autoload: {
@@ -119,7 +119,15 @@
 
     data(){
       let items = [];
-      if ( typeof(this.source) !== 'string' ){
+      let isAjax = false;
+      let isFunction = false;
+      if ( (typeof(this.source) === 'string') ){
+        isAjax = true;
+      }
+      else if ( bbn.fn.isFunction(this.source) ){
+        isFunction = true;
+      }
+      else{
         if ( bbn.fn.isArray(this.source) ){
           items = this._map(this.source);
         }
@@ -140,7 +148,9 @@
         // The URL where to pick the data from if isAjax
         url: typeof(this.source) === 'string' ? this.source : false,
         // Is the data provided from the server side
-        isAjax: typeof(this.source) === 'string',
+        isAjax: isAjax,
+        // True when the data is currently loading in the tree (unique to the root)
+        isFunction: isFunction,
         // True when the data is currently loading in the tree (unique to the root)
         isLoading: false,
         // True when the data is currently loading in the current tree
@@ -241,6 +251,9 @@
           else{
             level++;
           }
+          if ( bbn.fn.isFunction(items) ){
+            items = items(this.level ? this : null);
+          }
           bbn.fn.each(items, (a, i) => {
             let b = this.map(a, i, level);
             if ( b.items ){
@@ -255,7 +268,7 @@
 
       getItems(){
         let items = [];
-        if ( typeof(this.source) !== 'string' ){
+        if ( !this.isAjax && !this.isFunction ){
           items = this._map(this.source);
         }
         return items;
@@ -793,6 +806,9 @@
           this.isAjax = this.tree.isAjax;
         }
         this.node = bbn.vue.closest(this, 'bbn-tree-node');
+      }
+      if ( this.isFunction ){
+        this.items = this._map(this.source(this.level ? this.node : null));
       }
       if ( !this.isAjax || this.items.length ){
         this.isLoaded = true;

@@ -4,11 +4,6 @@
 (function($, bbn, Vue){
   "use strict";
 
-  const containerMixin = {
-
-  };
-
-
   /**
    * @component
    * @param {string} url - The URL on which the tabNav will be initialized.
@@ -60,7 +55,7 @@
       },
       historyMaxLength: {
         type: Number,
-        default: 25
+        default: 10
       },
       source: {
         type: Array,
@@ -78,7 +73,6 @@
           titles: '',
           num: 0
         },
-        router: null,
         slotSource: [],
         history: [],
         currentURL: '',
@@ -86,25 +80,19 @@
         parents: [],
         parentTab: false,
         selected: false,
-        visible: true
+        visible: true,
+        routerMounted: false,
+        router: null
       };
     },
 
     computed: {
-      /**
-       * Returns the currently active tab component from the current tabnav
-       * @returns Vue
-       */
       activeTab(){
         if ( (this.selected !== false) && this.tabs[this.selected] ){
           return this.getVue(this.selected)
         }
         return false;
       },
-      /**
-       * Returns the currently active tab component from the currently active tabnav
-       * @returns Vue
-       */
       activeRealTab(){
         let tab = this.activeTab;
         if ( tab ){
@@ -115,10 +103,6 @@
         }
         return tab;
       },
-      /**
-       * Returns the currently active tabnav component
-       * @returns Vue
-       */
       activeTabNav(){
         let tab = this.activeTab;
         if ( tab ){
@@ -129,11 +113,18 @@
         }
         return this;
       },
-      baseURL(){
-        return this.router.baseURL;
-      },
       fullBaseURL(){
-        return this.router.fullBaseURL;
+        let vm = this,
+            base = '',
+            tmp;
+        while ( tmp = vm.baseURL ){
+          base = tmp + base;
+          if ( !vm.parents.length ){
+            break;
+          }
+          vm = vm.parents[0];
+        }
+        return base;
       },
       unsavedTabs(){
         return $.map(this.tabs, (v) => {
@@ -152,9 +143,25 @@
     },
 
     methods: {
-      route(url){
+      route(url, force){
         if ( this.router ){
-          this.router.route(url)
+          this.router.route(url, force)
+        }
+      },
+      routing(){
+        this.setRouter();
+        let idx = this.getIndex(this.router.currentURL);
+        if ( this.isValidIndex(idx) ){
+          if ( idx !== this.selected ){
+            this.tabs[idx].current = this.router.currentURL;
+            this.selected = idx;
+          }
+          else {
+            this.tabs[idx].current = this.router.currentURL;
+          }
+        }
+        else{
+          bbn.fn.log("NO INDEX", this.router.currentURL);
         }
       },
       getTabColor(idx){
@@ -197,9 +204,10 @@
         if ( !this.tabs.length ){
           return false;
         }
-        if ( !this.isValidIndex(misc) ) {
+        let vm = this;
+        if ( !vm.isValidIndex(misc) ) {
           if ( typeof(misc) === 'string' ){
-            misc = this.search(misc);
+            misc = vm.search(misc);
           }
           else if ( typeof(misc) === 'object' ){
             // Vue
@@ -219,20 +227,20 @@
             // Or in the content?
             else{
               let found = false,
-                  $panel = misc.is("div.bbn-container") ? misc : misc.closest("div.bbn-container");
+                  $panel = misc.is("div.bbns-tab") ? misc : misc.closest("div.bbns-tab");
               while ( !found && $panel.length ){
                 if ( vm.getContainer(parseInt($panel.attr("data-index"))) === $panel[0] ){
                   found = true;
                 }
                 else{
-                  $panel = $panel.parent().closest("div.bbn-container");
+                  $panel = $panel.parent().closest("div.bbns-tab");
                 }
               }
               // If the element is in full screen mode
-              if ( $panel.hasClass('bbn-container-full-screen') ){
-                let $prev = $(".bbn-container-before-full-screen:first", this.$el);
-                misc = $prev.is("div.bbn-container") ?
-                  $(this.$el).children("div.bbns-tab,div.bbn-loader").index($prev) + 1 : 0;
+              if ( $panel.hasClass('bbns-tab-full-screen') ){
+                let $prev = $(".bbns-tab-before-full-screen:first", vm.el);
+                misc = $prev.is("div.bbns-tab") ?
+                  $(vm.$el).children("div.bbns-tab,div.bbn-loader").index($prev) + 1 : 0;
               }
               else if ( $panel.length ){
                 misc = parseInt($panel.attr("data-index"));
@@ -240,28 +248,28 @@
             }
           }
         }
-        if ( !this.isValidIndex(misc) && force ) {
-          for ( let i = 0; i < this.tabs.length; i++ ){
-            if ( !this.tabs[i].disabled ){
-              if ( this.tabs[i].default ){
+        if ( !vm.isValidIndex(misc) && force ) {
+          for ( let i = 0; i < vm.tabs.length; i++ ){
+            if ( !vm.tabs[i].disabled ){
+              if ( vm.tabs[i].default ){
                 return i;
               }
-              else if ( !this.isValidIndex(misc) ){
+              else if ( !vm.isValidIndex(misc) ){
                 misc = i;
               }
             }
           }
         }
-        return this.isValidIndex(misc) ? misc : false;
+        return vm.isValidIndex(misc) ? misc : false;
       },
 
       // Returns the baseURL property
       getBaseURL(){
-        return this.router.baseURL;
+        return this.router ? this.router.baseURL : '';
       },
 
       getFullBaseURL(){
-        return this.router.fullBaseURL;
+        return this.router ? this.router.fullBaseURL : '';
       },
 
       getURL(idx, force){
@@ -303,7 +311,7 @@
 
       // Returns the url relative to the current tabNav from the given url
       parseURL(fullURL){
-        return this.router.parseURL(fullURL);
+        return this.router ? this.router.parseURL(fullURL) : fullURL;
       },
 
       activateDefault(){
@@ -385,6 +393,84 @@
        */
       activate(url, force){
 
+        if ( !this.ready ){
+          return ;
+        }
+
+        url = bbn.fn.removeTrailingChars(url, '/');
+        // if no parameter is passed we use the current url
+        let vm = this,
+            idx = vm.getIndex(url),
+            subtab;
+        bbn.fn.log("url before parse: " + url);
+        //url = vm.parseURL(url);
+        //bbn.fn.log("url after parse: " + url);
+        // either the requested url or the url corresponding to the target index
+
+        // No URL has been given -> we activate the default tab
+        if ( !url ){
+          //bbn.fn.log("ACTIVATING DEFAULT");
+          return this.activateDefault();
+        }
+        // No index found: loading or error
+        //bbn.fn.log("valid index: " + this.isValidIndex(idx));
+        if ( !this.isValidIndex(idx) ){
+          for ( let i = 0; i < this.tabs.length; i++ ){
+            if (
+              (
+                (url === this.tabs[i].url) ||
+                ((url + '/').indexOf(this.tabs[i].url) === 0)
+              ) &&
+              (subtab = this.getSubTabNav(i))
+            ){
+              //bbn.fn.log("ACTIAVTE SUBTAB WOITH URL " + url.substr(this.tabs[i].url.length + 1));
+              return subtab.activate(url === this.tabs[i].url ? '' : url.substr(this.tabs[i].url.length + 1));
+            }
+          }
+          // autoload is set to true we launch the link function which will activate the newly created tab
+          if ( vm.autoload ){
+            //alert(this.baseURL + '----NOT VALID----' + url);
+            //bbn.fn.log("link from autoload: " + url, vm);
+            this.router.load(url, force);
+          }
+          else{
+            bbn.fn.error(
+              "Impossible to find an index for " + url + " in element with baseURL " +
+              vm.getFullBaseURL()
+            );
+          }
+        }
+        // Index exists but content not loaded yet
+        else if ( vm.tabs[idx].load && !vm.tabs[idx].disabled && !vm.tabs[idx].loading ){
+          //bbn.fn.log("LOADING " + url);
+          this.router.load(url, force);
+        }
+        else if ( !vm.tabs[idx].disabled ){
+          if ( (vm.tabs[idx].current !== url) && (
+            (url === vm.tabs[idx].url) ||
+            (url.indexOf(vm.tabs[idx].url + '/') === 0)
+          )){
+            vm.tabs[idx].current = url;
+          }
+          vm.selected = idx;
+          this.router.route(vm.tabs[idx].current);
+          bbn.fn.each(this.tabs, (t, i) => {
+            let subtab = vm.getSubTabNav(i);
+            if ( subtab ){
+              subtab.visible = i === idx;
+            }
+          })
+          let subtab = vm.getSubTabNav(idx);
+          if ( subtab && subtab.ready ){
+            //bbn.fn.log("ACTIVATING SUBTAB");
+            subtab.activate(url.substr(vm.tabs[idx].url.length+1), force);
+          }
+          else if ( force && vm.autoload ){
+            //bbn.fn.log("RELOADING TAB");
+            this.reload(idx);
+          }
+        }
+
         return this;
       },
 
@@ -424,21 +510,14 @@
             else if ( this.selected === idx ){
               this.selected = false;
               if ( this.tabs.length ){
-                bbn.fn.each(this.history, (a) => {
-                  let tmp = this.search(a);
+                $.each(this.history, (i, a) => {
+                  let tmp = this.getIndex(a);
                   if ( tmp !== false ){
                     idx = tmp;
                     return false;
                   }
                 });
-                if ( !this.isValidIndex(idx) ){
-                  idx--;
-                }
-                if ( this.isValidIndex(idx) ){
-                  bbn.fn.log("FROM TABNAV CLOSE");
-                  this.route(this.tabs[idx].current);
-                }
-
+                this.activateIndex(this.tabs[idx] ? idx : idx - 1);
               }
             }
             this.setConfig();
@@ -557,6 +636,29 @@
         }
         vm.tabs[idx].state = 'loading';
         this.activate(url);
+        /*
+          vm.$nextTick(() => {
+            //bbn.fn.log("ADDING", d, vm.tabs[idx]);
+            //bbn.fn.log("ACTIVATE2", d.current);
+            this.$emit('tabLoaded', d.data, d.url, vm.tabs[idx]);
+            vm.activate(d.current);
+          });
+        }, (xhr, textStatus, errorThrown) => {
+          bbn.fn.log(arguments);
+          if ( this.isValidIndex(idx) ){
+            this.tabs[idx].state = xhr.status;
+            this.tabs[idx].error = errorThrown;
+            this.tabs[idx].loading = false;
+            this.tabs[idx].loaded = true;
+            this.tabs[idx].menu = false;
+            this.tabs[idx].title = bbn._('Error') + ' ' + xhr.status;
+            if ( this.tabs[idx].load !== false ){
+              this.tabs[idx].load = null;
+            }
+            this.navigate(url);
+            this.activate(url);
+          }
+         */
       },
 
       pin(idx){
@@ -924,37 +1026,96 @@
         }
       },
 
-      routing(newURL){
-        let idx = this.search(newURL);
-        if ( (idx !== false) && (idx !== this.selected) ){
-          this.selected = idx;
+      setRouter(){
+        if ( !this.router ){
+          this.router = this.getRef("router");
         }
       },
-
       init(){
-        this.router = this.getRef('router');
-        this.parent = this.closest(this.$options._componentTag);
-        let cfg;
-        if ( this.parent ){
-          cfg = this.parent.cfg;
-        }
-        else{
-          cfg = this.getStorage()
-        }
-        let tabs = [];
-        if ( this.router.$children ){
-          bbn.fn.each(this.router.$children, (tab) => {
-            tabs.push(tab.$options.propsData)
-          })
-        }
-        if ( cfg && cfg.tabs ){
-          tabs = tabs.concat(cfg.tabs);
-        }
-        bbn.fn.each(tabs, (obj, i) => {
-          if ( obj.url ){
-            this.add(obj);
+        let parent = this.$parent;
+        // Looking for a parent tabnav to put in parentTab && parents props
+        while ( parent ){
+          if (
+            parent.$vnode &&
+            parent.$vnode.componentOptions
+          ){
+            if ( !this.parentTab && (parent.$vnode.componentOptions.tag === 'bbns-tab') ){
+              this.parentTab = parent;
+            }
+            else if ( parent.$vnode.componentOptions.tag === 'bbn-tabnav' ){
+              this.parents.push(parent);
+            }
           }
-        });
+          parent = parent.$parent;
+        }
+        // If there is a parent tabnav we automatically give the proper baseURL
+        //bbn.fn.log("ACTIVATE3", url);
+
+        /*
+        let url = this.parents.length ?
+          this.parents[0].currentURL.substr(this.fullBaseURL.length) :
+          window.location.pathname.substr(this.fullBaseURL.length ? this.fullBaseURL.length : 1);
+        //bbn.fn.log("ACTIVATE AFTER MOUNT", this.currentURL, url, this.parents.length ? this.parents[0].currentURL : 'RIEN');
+
+        this.activate(url);
+        */
+
+        if ( !this.ready ){
+          this.setRouter();
+          let cfg;
+          if ( this.parents.length ){
+            bbn.fn.info(this.parents[0].currentURL || 'NON');
+            let tmp = this.parents[0].getURL(this.parentTab.idx);
+            if ( this.baseURL !== (tmp + '/') ) {
+              this.baseURL = tmp + '/';
+
+              /*
+              if (this.parents.autoload && (tmp.indexOf(this.baseURL) === 0)) {
+                this.parents.setURL(this.baseURL, this.$el);
+              }
+              */
+            }
+            if ( this.parentTab.cfg ){
+              cfg = this.parentTab.cfg;
+            }
+          }
+          else{
+            cfg = this.getStorage()
+          }
+
+          let tabs = [];
+          if ( this.slotSource ){
+            tabs = tabs.concat(this.slotSource);
+          }
+          if ( this.source ){
+            tabs = tabs.concat(this.source);
+          }
+          if ( cfg && cfg.tabs ){
+            tabs = tabs.concat(cfg.tabs);
+          }
+          let url;
+          if ( this.parents.length ){
+            let idx = this.parents[0].search(this.baseURL.substr(0, this.baseURL.length - 1));
+            if ( this.parents[0].isValidIndex(idx) ){
+              url = this.parents[0].tabs[idx].current.substr(this.baseURL.length) || '';
+            }
+          }
+          else{
+            url = window.location.pathname.substr(this.fullBaseURL.length ? this.fullBaseURL.length : 1);
+          }
+          bbn.fn.each(this.router.views, (a) => {
+            this.add(a);
+          });
+          bbn.fn.each(tabs, (obj, i) => {
+            if ( obj.url ){
+              this.add(obj);
+              this.router.add(obj);
+            }
+          });
+          this.ready = true;
+          this.router.route(url, true);
+        }
+
       }
     },
 
@@ -964,63 +1125,76 @@
         for ( let node of this.$slots.default ){
           if (
             node &&
-            (node.tag === 'bbn-container') &&
+            (node.tag === 'bbns-tab') &&
             node.data.attrs.url
           ){
-            this.slotSource.push(node.data.attrs);
+            this.tabs.push($.extend({slot: false}, node.data.attrs));
           }
         }
       }
     },
 
     mounted(){
-      this.ready = true;
+
+
+      // We make the tabs reorderable
+      /*
+      let $tabgroup = $(this.$refs.tabgroup),
+          reorderable = $tabgroup.data('kendoDraggable');
+      if ( reorderable ) {
+        reorderable.destroy();
+      }
+      $tabgroup.kendoDraggable({
+        group: 'tabs',
+        filter:'.k-item',
+        hint: function(element) {
+          return element.clone().wrap('<ul class="k-reset k-tabstrip-items bbn-tabnav-tabs"/>').parent().css({opacity: 0.8});
+        }
+      });
+      $tabgroup.kendoDropTarget({
+        group: 'tabs',
+        drop: function(e){
+          bbn.fn.log(e);
+        }
+      });
+      */
+      // Giving colors
     },
 
     watch: {
       selected(newVal){
-        if ( this.tabs[newVal] && this.router ){
-          let historyIndex = $.inArray(this.tabs[newVal].url, this.history);
-          if ( historyIndex > -1 ){
-            this.history.splice(historyIndex, 1);
-          }
-          if ( this.history.length >= this.historyMaxLength ){
-            this.history.pop();
-          }
-          this.history.unshift(this.tabs[newVal].url);
-          if ( !this.router.activeContainer || (this.router.activeContainer.url !== this.tabs[newVal].url) ){
-            bbn.fn.log("ROUTING TO " + this.tabs[newVal].current, this.router.currentURL, this.tabs[newVal]);
-            bbn.fn.log("FROM SELECTED CHANGE");
-            this.router.route(this.tabs[newVal].current);
-            this.$emit('select', this.tabs[newVal], newVal);
-            for ( let ev in this.tabs[newVal].events ){
-              this.$emit(ev, this.tabs[newVal].events[ev]);
-              delete this.tabs[newVal].events[ev];
-            }
+        if ( this.tabs[newVal] && this.ready ){
+          this.$emit('select', this.tabs[newVal], newVal);
+          if ( this.currentURL !== this.tabs[newVal].current ){
+            this.currentURL = this.tabs[newVal].current;
           }
         }
       },
       currentURL(newVal, oldVal){
-        if ( this.isValidIndex(this.selected) ){
-          let tab = bbn.vue.getChildByKey(this, this.tabs[this.selected].url, 'bbns-tab');
-          if (
-            tab &&
-            (this.tabs[this.selected].current !== newVal) && (
-              (newVal === this.tabs[this.selected].url) ||
-              (newVal.indexOf(this.tabs[this.selected].url + '/') === 0)
-            )
-          ){
-            this.tabs[this.selected].current = newVal;
+        if ( newVal !== oldVal ){
+          if ( this.isValidIndex(this.selected) ){
+            let tab = bbn.vue.getChildByKey(this, this.tabs[this.selected].url, 'bbns-tab');
+            if (
+              tab &&
+              (this.tabs[this.selected].current !== newVal) && (
+                (newVal === this.tabs[this.selected].url) ||
+                (newVal.indexOf(this.tabs[this.selected].url + '/') === 0)
+              )
+            ){
+              this.tabs[this.selected].current = newVal;
+            }
+            // CHECKING PARENTS
+            if ( this.parents.length ){
+              this.parents[0].currentURL = this.baseURL + newVal;
+            }
+            else if ( this.autoload && this.ready ){
+              this.setConfig();
+            }
+            this.route(this.currentURL);
+            this.$emit('change', newVal, this.selected, oldVal);
           }
-          // CHECKING PARENTS
-          if ( this.parents.length ){
-            this.parents[0].currentURL = this.baseURL + newVal;
-          }
-          else if ( this.autoload && this.ready ){
-            this.setConfig();
-          }
-          this.$emit('change', newVal, this.selected, oldVal);
         }
+        this.$forceUpdate();
       },
       isUnsaved(val){
         if ( this.parentTab &&

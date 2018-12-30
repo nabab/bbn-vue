@@ -164,7 +164,8 @@
                 file.event('progress', (sent, total) => {
                   this.progress = Math.round(sent / total * 100);
                 });
-                file.sendTo(this.saveUrl, {xRequestedWith: 'XMLHttpRequest'});
+                
+                file.sendTo(this.saveUrl, { xRequestedWith: 'XMLHttpRequest'});
                 bbn.fn.log(file);
                 this.files.push(file);
               }

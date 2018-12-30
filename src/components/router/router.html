@@ -3,7 +3,16 @@
      }, componentClass]"
 >
   <div class="bbn-full-screen">
-    <bbn-container v-for="view in views" :key="view.url" :current="currentURL" v-bind="view" @view="updateView"></bbn-container>
-    <slot></slot>
+    <slot v-if="hasRealContainers"></slot>
+    <div v-else-if="hasFakeContainers" class="bbn-hidden">
+      <slot></slot>
+    </div>
+    <bbn-container v-for="view in views"
+                   v-if="!view.slot"
+                   :key="view.url"
+                   v-bind="view"
+                   @ready="updateView"
+                   @view="updateView">
+    </bbn-container>
   </div>
 </div>

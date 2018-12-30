@@ -25,111 +25,12 @@
    */
   Vue.component("bbn-container", {
     name: 'bbn-container',
-    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent],
-    props: {
-      source: {
-        type: [Object, Function]
-      },
-      title: {
-        type: [String, Number],
-        default: bbn._("Untitled")
-      },
-      componentAttributes: {
-        type: Object,
-        default(){
-          return {}
-        }
-      },
-      idx: {},
-      scrollable: {
-        type: Boolean,
-        default: true
-      },
-      component: {},
-      icon: {
-        type: [String, Boolean],
-      },
-      notext: {
-        type: Boolean,
-        default: false
-      },
-      content: {
-        type: String,
-        default: ""
-      },
-      menu: {
-        type: Array
-      },
-      loaded: {
-        type: Boolean
-      },
-      fcolor: {
-        type: String
-      },
-      bcolor: {
-        type: String
-      },
-      load: {
-        type: Boolean,
-        default: false
-      },
-      selected: {
-        type: [Boolean, Number],
-        default: false
-      },
-      css: {
-        type: String,
-        default: ""
-      },
-      source: {
-        type: [Array, Object],
-        default: function(){
-          return {};
-        }
-      },
-      advert: {
-        type: [String, Vue]
-      },
-      help: {
-        type: String
-      },
-      imessages: {
-        type: Array,
-        default(){
-          return []
-        }
-      },
-      script: {},
-      static: {
-        type: [Boolean, Number],
-        default: false
-      },
-      pinned: {
-        type: [Boolean, Number],
-        default: false
-      },
-      url: {
-        type: [String, Number]
-      },
-      current: {
-        type: [String, Number]
-      },
-      real: {
-        type: String
-      },
-      cfg: {
-        type: Object
-      },
-      events: {
-        type: Object,
-        default(){
-          return {}
-        }
-      },
-    },
+    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent, bbn.vue.viewComponent],
 
     data(){
       return {
+        router: null,
+        cached: true,
         visible: false,
         isComponent: null,
         fullScreen: false,
@@ -291,17 +192,20 @@
         return false;
       },
       init(){
+        bbn.fn.info("INIT");
         if ( this.script ){
           bbn.fn.log("THERE IS SCRIPT for " + this.url);
           res = typeof this.script === 'string' ? eval(this.script) : this.script;
           // if evaluating the script property returns a function that will be onMount
-          if ( $.isFunction(res) ){
-            this.onMount = res;
-            this.isComponent = false;
-          }
-          // Otherwise if it's an object we assume it is a component
-          else if ( typeof(res) === 'object' ){
-            this.isComponent = true;
+          if ( res ){
+            if ( $.isFunction(res) ){
+              this.onMount = res;
+              this.isComponent = false;
+            }
+            // Otherwise if it's an object we assume it is a component
+            else if ( typeof(res) === 'object' ){
+              this.isComponent = true;
+            }
           }
         }
         if ( this.isComponent ){
@@ -343,8 +247,12 @@
     },
 
     mounted(){
-      this.ready = true;
+      this.router = this.closest('bbn-router');
+      if ( this.router ){
+        this.router.register(this);
+      }
       if ( !this.load ){
+        this.ready = true;
         this.init();
       }
     },

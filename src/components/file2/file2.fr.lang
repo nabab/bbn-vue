@@ -1,0 +1,17 @@
+{
+  "Upload a file": "Envoyer un fichier",
+  "Drop files here": "Déposer les fichiers ici",
+  "Processing dropped files": "Traitement des fichiers déposés",
+  "Retry": "Ré-essayer",
+  "Edit filename": "Modifier le nom du fichier",
+  "Delete": "Supprimer",
+  "Pause": "Mettre en pause",
+  "Continue": "Reprendre",
+  "Close": "Fermer",
+  "No": "Non",
+  "Yes": "Oui",
+  "Cancel": "Annuler",
+  "OK": "OK",
+  "Are you sure you want to delete": "Êtes-vous sûr de vouloir supprimer",
+  "The file exists!": "Le fichier existe!",
+}

@@ -242,9 +242,9 @@
           });
 
           if ( bbn.fn.countProperties(params.cfg) ){
-            let prom = this.url ? bbn.fn.post(vm.url + 'save', params) : Promise.resolve({success: true});
+            let prom = this.url ? bbn.fn.post(vm.url + 'save', params) : Promise.resolve({data: {success: true}});
             return prom.then((d) => {
-              if ( d.success ){
+              if ( d.data && d.data.success ){
                 for ( let n in params.cfg ){
                   vm.$set(vm.widgets[idx], n, params.cfg[n]);
                 }

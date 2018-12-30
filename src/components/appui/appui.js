@@ -307,7 +307,7 @@
         if ( !this.polling ){
           this.polling = true;
           this.observersCopy = this.observers.slice();
-          this.poller = bbn.fn.ajax(this.root + 'poller', 'json', $.extend({observers: this.observers}, this.pollerObject), null, (r) => {
+          this.poller = bbn.fn.ajax(this.root + 'poller', 'json', $.extend({observers: this.observers}, this.pollerObject), 'poller', (r) => {
             this.pollerObject.message = null;
             //bbn.fn.log("--------------OBS: Returning Data---------------");
             // put the data_from_file into #response
@@ -355,6 +355,9 @@
           }
         }, this.cfg)
       }
+    },
+    beforeCreate(){
+      bbn.vue.preloadBBN(['tabnav', 'button', 'table', 'popup', 'autocomplete', 'chat', 'combo', 'context', 'treemenu', 'tree', 'loadicon', 'scroll', 'scroll-x', 'scroll-y', 'input', 'numeric', 'dropdown', 'loader', 'initial', 'chart', 'radio', 'checkbox', 'fisheye']);
     },
     created(){
       if ( window.appui ){
