@@ -4,6 +4,7 @@
     defaultLocalURL: false,
     defaultLocalPrefix: '',
     localURL: false,
+    version: '2.0.3',
     isNodeJS: false,
     localPrefix: '',
     loadingComponents: [],

@@ -15,18 +15,20 @@
       <slot></slot>
     </div>
   </div>
-  <bbn-scroll-x v-if="(axis === 'both') || (axis === 'x')"
-                ref="xScroller"
-                :scrollAlso="scrollAlso"
-                :initial="currentX"
-                @scroll.passive="scrollHorizontal"
+  <bbn-scrollbar v-if="(axis === 'both') || (axis === 'x')"
+                 orientation="horizontal"
+                 ref="xScroller"
+                 :scrollAlso="scrollAlso"
+                 :initial="currentX"
+                 @scroll.passive="scrollHorizontal"
   >
-  </bbn-scroll-x>
-  <bbn-scroll-y v-if="(axis === 'both') || (axis === 'y')"
-                ref="yScroller"
-                :scrollAlso="scrollAlso"
-                :initial="currentY"
-                @scroll.passive="scrollVertical"
+  </bbn-scrollbar>
+  <bbn-scrollbar v-if="(axis === 'both') || (axis === 'y')"
+                 orientation="vertical"
+                 ref="yScroller"
+                 :scrollAlso="scrollAlso"
+                 :initial="currentY"
+                 @scroll.passive="scrollVertical"
   >
-  </bbn-scroll-y>
+  </bbn-scrollbar>
 </div>

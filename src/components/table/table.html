@@ -178,10 +178,10 @@
                       'k-header': !!(d.aggregated || d.groupAggregated),
                       'bbn-table-tr-over': (currentIndex === d.index) && (!d.expanded || (d.expanded && !d.expander)) && (editedIndex !== i)
                     }, trClass ? trClass(d.data) : '']"
-                    @focusin="if ( focusedRow !== i ){ focusedRow = i }"
-                    @focusout="focusedRow = false"
-                    @mouseenter="currentIndex = d.index"
-                    @mouseleave="currentIndex = null"
+                    @focusin.passive="if ( focusedRow !== i ){ focusedRow = i }"
+                    @focusout.passive="focusedRow = false"
+                    @mouseenter="_updateRowIndex(d.index)"
+                    @mouseleave.passive="_updateRowIndex(null)"
                 >
                   <!-- Checkboxes -->
                   <td v-if="selection && (
@@ -222,7 +222,7 @@
                     ></component>
                     <div v-else v-html="render(d.data, cols[group], d.index) + (d.expanded ? '' : ' (' + d.num + ')')"></div>
                   </td>
-                  
+
                   <!-- Group By on the other cells of the row where the expander is  -->
                   <td v-else-if="groupable &&
                                  d.group &&
@@ -336,12 +336,13 @@
           </div>
 
           <!-- Right vertical scroller -->
-          <bbn-scroll-y v-if="currentData.length && groupCols[1].cols.length && getRef('mainScroller') && getRef('mainScroller').ready"
-                        ref="scrollerY"
-                        :scroller="getRef('mainScroller')"
-                        :scroll-also="dataScrollContents"
-                        :hidden="hiddenScroll"
-          ></bbn-scroll-y>
+          <bbn-scrollbar v-if="currentData.length && groupCols[1].cols.length && getRef('mainScroller') && getRef('mainScroller').ready"
+                         ref="scrollerY"
+                         orientation="vertical"
+                         :scroller="getRef('mainScroller')"
+                         :scroll-also="dataScrollContents"
+                         :hidden="hiddenScroll"
+          ></bbn-scrollbar>
         </div>
       </div>
     </div>

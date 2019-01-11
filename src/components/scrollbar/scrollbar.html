@@ -3,8 +3,8 @@
             leave-active-class="animated fadeOut"
 >
   <div :class="componentClass"
-       v-if="realContainer && containerWidth && (contentWidth > (containerWidth + 5))"
-       v-show="show && width"
+       v-if="_isVisible"
+       v-show="show && size"
        @click="jump"
        ref="scrollRail"
        @mouseover="$emit('mouseover')"
@@ -12,13 +12,10 @@
        @mouseleave="outSlider"
   >
     <div class="bbn-scroll-slider k-primary"
-         :style="{
-           width: width + '%',
-           left: left + '%'
-         }"
+         :style="style"
          ref="scrollSlider"
          @touchstart="startDrag"
-         @mousedown="startDrag"
-    ></div>
+         @mousedown="startDrag">
+    </div>
   </div>
 </transition>

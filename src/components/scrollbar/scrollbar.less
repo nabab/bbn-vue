@@ -1,0 +1,28 @@
+.bbn-scrollbar{
+  position: absolute;
+  &.vertical{
+    width: 0.6em;
+    bottom: 1em;
+    top: 1em;
+    right: 0.2em;
+    .bbn-scroll-slider{
+      width: 100%;
+      min-height: 20px;
+    }
+  }
+  &.horizontal{
+    height: 0.6em;
+    left: 1em;
+    right: 1em;
+    bottom: 0.2em;
+    .bbn-scroll-slider{
+      height: 100%;
+      min-width: 20px;
+    }
+  }
+  .bbn-scroll-slider{
+    opacity: 0.6;
+    border-radius: 0.3em;
+    position: absolute;
+  }
+}

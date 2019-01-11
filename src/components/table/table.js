@@ -291,7 +291,8 @@
         viewport: null,
         viewportRows: [...Array(25).keys()],
         viewportCols: [],
-        viewportUpdater: 0
+        viewportUpdater: 0,
+        rowIndexTimeOut: null
       };
     },
     computed: {
@@ -756,6 +757,24 @@
     },
     methods: {
 
+      _updateRowIndex(idx){
+        if ( this.rowIndexTimeOut ){
+          clearTimeout(this.rowIndexTimeOut);
+        }
+        if ( idx === null ){
+          if ( this.currentIndex !== null ){
+            this.currentIndex = null;
+          }
+        }
+        else{
+          if ( this.currentIndex !== idx ){
+            this.rowIndexTimeOut = setTimeout(() => {
+              this.currentIndex = idx;
+            }, 1000);
+          }
+        }
+      },
+
       _map(data){
         return this.map ? $.map(data, this.map) : data;
       },
@@ -863,77 +882,50 @@
         if ( !this.scrollable ){
           return
         }
-        if ( this.viewportUpdater ){
-          clearTimeout(this.viewportUpdater);
+        let table = this.getRef('mainTable'),
+            scroll = this.getRef('mainScroller'),
+            container = scroll ? scroll.getRef('scrollContainer') : null,
+            top = container ? container.scrollTop : null,
+            left = container ? container.scrollLeft : null,
+            viewport = scroll ? bbn.fn.clone(scroll.$el.getBoundingClientRect()) : null;
+        if ( !viewport ){
+          return;
         }
-        this.viewportUpdater = setTimeout(() => {
-          bbn.fn.log("UPDATING VIEWPORT?");
-          let table = this.getRef('mainTable'),
-              scroll = this.getRef('mainScroller'),
-              container = scroll ? scroll.getRef('scrollContainer') : null,
-              top = container ? container.scrollTop : null,
-              left = container ? container.scrollLeft : null,
-              viewport = scroll ? bbn.fn.clone(scroll.$el.getBoundingClientRect()) : null;
-          if ( !viewport ){
-            return;
-          }
-          viewport.top = top || 0;
-          viewport.left = left || 0;
-          if (
-            this.viewport &&
-            (this.viewport.x === viewport.x) &&
-            (this.viewport.width === viewport.width) &&
-            (this.viewport.y === viewport.y) &&
-            (this.viewport.height === viewport.height) &&
-            (this.viewport.top === viewport.top) &&
-            (this.viewport.left === viewport.left)
-          ){
-            return;
-          }
-          this.viewport = viewport;
-          if ( table && scroll ){
-            let rows = [],
-                cols = [];
-            bbn.fn.log("UPDATING VIEWPORT", viewport);
-            /*
-            let testRow = null;
-            bbn.fn.each(table.rows, (row, i) => {
-              i = parseInt(i);
-              let vp = row.getBoundingClientRect();
-              bbn.fn.log("ROW", vp);
-              if ( vp.y > (viewport.y - 300) ){
-                if ( !testRow && (vp.y > viewport.y) ){
-                  testRow = row;
+        viewport.top = top || 0;
+        viewport.left = left || 0;
+        if (
+          this.viewport &&
+          (this.viewport.x === viewport.x) &&
+          (this.viewport.width === viewport.width) &&
+          (this.viewport.y === viewport.y) &&
+          (this.viewport.height === viewport.height) &&
+          (this.viewport.top === viewport.top) &&
+          (this.viewport.left === viewport.left)
+        ){
+          return;
+        }
+        this.viewport = viewport;
+        if ( table && scroll ){
+          let rows = [],
+              cols = [];
+          if ( table && table.rows && table.rows[0] && table.rows[0].cells ){
+            bbn.fn.each(this.groupCols[1].cols, (col, idx) => {
+              if ( table.rows[0].cells[idx] ){
+                let vp = table.rows[0].cells[idx].getBoundingClientRect();
+                if ( vp.x > (viewport.x - 300) ){
+                  cols.push(col.index);
                 }
-                rows.push(i);
-              }
-              if ( vp.y > (viewport.y + viewport.height + 300) ){
-                bbn.fn.log("MUST STOP HERE");
-                return false;
-              }
-            });
-            */
-            if ( table && table.rows && table.rows[0] && table.rows[0].cells ){
-              bbn.fn.each(this.groupCols[1].cols, (col, idx) => {
-                if ( table.rows[0].cells[idx] ){
-                  let vp = table.rows[0].cells[idx].getBoundingClientRect();
-                  if ( vp.x > (viewport.x - 300) ){
-                    cols.push(col.index);
-                  }
-                  if ( vp.x > (viewport.x + viewport.width + 300 ) ){
-                    bbn.fn.log("MUST STOP HERE");
-                    return false;
-                  }
-                  this.viewportCols.splice(0, this.viewportCols.length, ...cols);
-                  this.viewportRows.splice(0, this.viewportRows.length, ...rows);
-                  this.$nextTick(() => {
-                    this.updateTable();
-                  })
+                if ( vp.x > (viewport.x + viewport.width + 300 ) ){
+                  // MUST STOP HERE
+                  return false;
                 }
-              })
-            }
+                this.viewportCols.splice(0, this.viewportCols.length, ...cols);
+                this.viewportRows.splice(0, this.viewportRows.length, ...rows);
+                this.updateTable();
+              }
+            })
           }
-        }, 250)
+        }
       },
 
       _export(){
@@ -1140,15 +1132,15 @@
         }
       },
       onUnsetFilter(filter){
-        bbn.fn.log("onUnset", filter);
+        //bbn.fn.log("onUnset", filter);
         this.removeFilter(filter);
       },
       removeFilter(condition){
         if ( condition.time ){
-          bbn.fn.log("There is the time", condition);
+          //bbn.fn.log("There is the time", condition);
           let del = (arr) => {
             let idx = bbn.fn.search(arr, {time: condition.time});
-            bbn.fn.log("Is there the index?", idx);
+            //bbn.fn.log("Is there the index?", idx);
             if ( idx > -1 ){
               if ( arr[idx].conditions && arr[idx].conditions.length ){
                 this.getPopup().confirm(bbn._("Are you sure you want to delete this group of conditions?"), () => {
@@ -1261,7 +1253,7 @@
         return r;
       },
       showFilter(col, ev){
-        bbn.fn.log(ev);
+        //bbn.fn.log(ev);
         this.floatingFilterX = ev.pageX - 10 < 0 ? 0 : (ev.pageX - 10 + 600 > this.$el.clientWidth ? this.$el.clientWidth - 600 : ev.pageX - 10);
         this.floatingFilterY = ev.pageY - 10 < 0 ? 0 : (ev.pageY - 10 + 200 > this.$el.clientHeight ? this.$el.clientHeight - 200 : ev.pageY - 10);
         this.currentFilter = col;
@@ -1352,7 +1344,7 @@
               },
               allVisible(group){
                 let ok = true;
-                bbn.fn.log("allVisible", group);
+                //bbn.fn.log("allVisible", group);
                 $.each(this.source.cols, (i, a) => {
                   if (
                     (a.showable !== false) &&
@@ -1361,7 +1353,7 @@
                   ){
                     if ( !this.shownCols[i] ){
                       ok = false;
-                      bbn.fn.log("NOT ALL VISIBLE!!!!!!!!!!!!!!!!!!!!!!", a);
+                      //bbn.fn.log("NOT ALL VISIBLE!!!!!!!!!!!!!!!!!!!!!!", a);
                       return false;
                     }
                   }
@@ -1492,7 +1484,7 @@
         this.$emit('editSuccess', d, ev);
         if ( d.success && !ev.isDefaultPrevented() ){
           if ( d.data ){
-            bbn.fn.log(d.data);
+            //bbn.fn.log(d.data);
             bbn.fn.iterate(d.data, (o, n) => {
               this.editedRow[n] = o;
             });
@@ -1585,8 +1577,8 @@
             $.each(this.cols, (i, a) => {
               let hidden = (this.currentHidden.indexOf(i) > -1);
               if ( a.hidden !== hidden ){
-                bbn.fn.log("CHANGING HIDDEN");
-                this.$set(this.cols[i], 'hidden', hidden);
+                //bbn.fn.log("CHANGING HIDDEN");
+                this.cols[i].hidden = hidden;
               }
             });
           }
@@ -2348,7 +2340,7 @@
       observerValue(newVal){
         if ( (newVal !== this._observerReceived) && !this.editedRow ){
           this._observerReceived = newVal;
-          bbn.fn.log("watch observerValue");
+          //bbn.fn.log("watch observerValue");
           this.updateData();
         }
       },
@@ -2360,7 +2352,7 @@
       cols: {
         deep: true,
         handler(){
-          bbn.fn.log("watch columns");
+          //bbn.fn.log("watch columns");
           this.selfEmit();
         }
       },
