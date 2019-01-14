@@ -860,24 +860,6 @@
         }
         return pass;
       },
-      _checkHeaders(){
-        if ( !this.scrollable ){
-          return
-        }
-        let mainScroller = this.getRef('mainScroller');
-        if ( this.titleGroups && mainScroller ){
-          let x = mainScroller.getRef('xScroller').currentScroll,
-              cols = this.titleGroupsCells(this.groupCols[1] && (this.groupCols[1].name === 'main') ? 1 : 0),
-              tot = 0;
-          $.each(cols, (i, a) => {
-            if ( tot + a.realWidth > x ){
-              $(".bbn-table-title-group", this.getRef('mainTitles')).css({left: tot < x ? x - tot : 0});
-              return false;
-            }
-            tot += a.realWidth;
-          });
-        }
-      },
       _updateViewport(){
         if ( !this.scrollable ){
           return
@@ -888,6 +870,18 @@
             top = container ? container.scrollTop : null,
             left = container ? container.scrollLeft : null,
             viewport = scroll ? bbn.fn.clone(scroll.$el.getBoundingClientRect()) : null;
+        if ( this.titleGroups && scroll ){
+          let x = scroll.getRef('xScroller').currentScroll,
+              cols = this.titleGroupsCells(this.groupCols[1] && (this.groupCols[1].name === 'main') ? 1 : 0),
+              tot = 0;
+          $.each(cols, (i, a) => {
+            if ( tot + a.realWidth > x ){
+              $(".bbn-table-title-group", this.getRef('mainTitles')).css({left: tot < x ? x - tot : 0});
+              return false;
+            }
+            tot += a.realWidth;
+          });
+        }
         if ( !viewport ){
           return;
         }

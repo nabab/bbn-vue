@@ -153,7 +153,6 @@
                        :axis="groupCol.name === 'main' ? 'x' : 'none'"
                        :scroll-also="groupCol.name === 'main' ? [getRef('mainTitles')] : dataScrollContents"
                        @scrollx="_updateViewport"
-                       @scroll.passive="_checkHeaders"
                        >
               <h3 v-if="isLoading"> </h3>
               <table v-else-if="currentSet.length"

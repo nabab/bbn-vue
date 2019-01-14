@@ -399,7 +399,7 @@
         let vm = this,
             idx = vm.getIndex(url),
             subtab;
-        bbn.fn.log("url before parse: " + url);
+        //bbn.fn.log("url before parse: " + url);
         //url = vm.parseURL(url);
         //bbn.fn.log("url after parse: " + url);
         // either the requested url or the url corresponding to the target index
@@ -931,7 +931,7 @@
                 component: {
                   props: ['source'],
                   template: `
-                  <bbn-slideshow :source="source.content" 
+                  <bbn-slideshow :source="source.content"
                                  class="w3-blue"
                                  separator="---slide---"></bbn-slideshow>`
                 },
@@ -1775,7 +1775,7 @@
               component: {
                 props: ['source'],
                 template: `
-                  <bbn-slideshow :source="source.content" 
+                  <bbn-slideshow :source="source.content"
                                  class="w3-blue"
                                  separator="---slide---"
                                  :checkbox="true"

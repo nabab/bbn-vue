@@ -313,7 +313,6 @@
 
       // When the mouse is over the content
       overContent(){
-        bbn.fn.log("OVER", this.orientation);
         clearTimeout(this.moveTimeout);
         if ( !this.show ){
           this.show = true;
