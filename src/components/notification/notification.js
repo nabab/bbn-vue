@@ -177,7 +177,7 @@
           bottom: cfg.bottom,
           right: cfg.right
         },
-        hideOnClick: false,
+        hideOnClick: true,
         button: true,
         templates: [{
           // define a custom template for the built-in "info" notification type

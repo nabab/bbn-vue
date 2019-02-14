@@ -1,9 +1,10 @@
-<div :class="[componentClass]">
+<div :class="[componentClass]"
+     v-show="visible">
   <transition name="fade"
               v-on:enter="$parent.enter"
+              v-on:after-enter="find('bbn-scroll') ? find('bbn-scroll').onResize() : (() => {})()"
   >
     <div v-if="visible || cached"
-         v-show="visible"
          :class="{
          'bbn-full-screen': !fullScreen,
          'bbn-container-full-screen': fullScreen,
@@ -38,7 +39,10 @@
          class="far fa-times-circle bbns-tab-fullscreen-closer bbn-p"
          @click="fullScreen = false"
       ></i>
-      <bbn-popup ref="popup" :source="popups"></bbn-popup>
+      <bbn-popup v-if="popups.length"
+                 ref="popup"
+                 :source="popups">
+      </bbn-popup>
     </div>
   </transition>
 </div>

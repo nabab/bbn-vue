@@ -188,6 +188,96 @@
         }
       },
     },
+    
+    dataComponent: {
+      methods: {
+        renderData(data, cfg){
+          if ( !cfg.field || !data ){
+            return '';
+          }
+          let v = data[cfg.field] || '';
+          if ( cfg.icon ){
+            return '<i class="' + cfg.icon + '"> </i>'
+          }
+          else if ( cfg.type ){
+            switch ( cfg.type ){
+              case "datetime":
+                if ( cfg.format ){
+                  return v ? (new moment(v)).format(cfg.format) : '-';
+                }
+                else{
+                  return v ? bbn.fn.fdate(v) : '-';
+                }
+                break;
+              case "date":
+                if ( cfg.format ){
+                  return v ? (new moment(v)).format(cfg.format) : '-';
+                }
+                else{
+                  return v ? bbn.fn.fdate(v) : '-';
+                }
+                break;
+              case "time":
+                if ( cfg.format ){
+                  return v ? (new moment(v)).format(cfg.format) : '-';
+                }
+                else{
+                  return v ? bbn.fn.fdate(v) : '-';
+                }
+                break;
+              case "email":
+                return v ? '<a href="mailto:' + v + '">' + v + '</a>' : '-';
+                break;
+              case "url":
+                return v ? '<a href="' + v + '">' + v + '</a>' : '-';
+                break;
+              case "percent":
+                return v ? bbn.fn.money(v * 100, false, "%", '-', '.', ' ', 2) : '-';
+                break;
+              case "number":
+                return v ?
+                  bbn.fn.money(
+                    v,
+                    (cfg.precision === -4) || (cfg.format && (cfg.format.toLowerCase() === 'k')),
+                    cfg.unit || "",
+                    '-',
+                    '.',
+                    ' ',
+                    cfg.precision === -4 ? 3 : (cfg.precision || 0)
+                  ) : '-';
+                break;
+              case "money":
+                return v ?
+                  bbn.fn.money(
+                    v,
+                    (cfg.precision === -4) || (cfg.format && (cfg.format.toLowerCase() === 'k')),
+                    cfg.currency || cfg.unit || "",
+                    '-',
+                    ',',
+                    ' ',
+                    cfg.precision === -4 ? 3 : cfg.precision
+                  ) : '-';
+                break;
+              case "bool":
+              case "boolean":
+                let isYes = v && (v !== 'false') && (v !== '0');
+                if ( cfg.yesvalue !== undefined ){
+                  isYes = v === cfg.yesvalue;
+                }
+                return '<i class="fas fa-' + (isYes ? 'check' : 'times') + '" title="' + (isYes ? bbn._("Yes") : bbn._("No")) + '"></i>';
+                break;
+            }
+          }
+          else if ( cfg.source ){
+            let idx = bbn.fn.search(cfg.source, {value: v});
+            return idx > -1 ? cfg.source[idx].text : '-';
+          }
+          else {
+            return v || '';
+          }          
+        }
+      }
+    },
 
     dataEditorComponent: {
       props: {
@@ -1111,6 +1201,39 @@
           this.observationTower.$off('bbnObs' + this.observerUID + this.observerID);
         }
       },
+    },
+
+    keepCoolComponent: {
+      data(){
+        return {
+          coolTimer: {
+            default: 0
+          },
+          coolTimeout: null,
+          coolInterval: 40
+        }
+      },
+      methods: {
+        keepCool(fn, idx, timeout){
+          if ( !idx ){
+            idx = 'default'
+          }
+          let t = (new Date()).getTime();
+          if ( !this.coolTimer[idx] || (this.coolTimer[idx] < (t - (timeout || this.coolInterval))) ){
+            this.coolTimer[idx] = (new Date()).getTime();
+            fn()
+          }
+          else{
+            setTimeout(() => {
+              let t = (new Date()).getTime();
+              if ( this.coolTimer[idx] < (t - (timeout || this.coolInterval)) ){
+                this.coolTimer[idx] = t;
+                fn();
+              }
+            }, this.coolInterval);
+          }
+        }
+      }
     },
 
     urlComponent: {

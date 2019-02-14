@@ -860,10 +860,6 @@
             this.activate(url);
           }
           //bbn.fn.log(arguments)
-        }, (message, url) => {
-          let idx = vm.search(url);
-          this.close(idx);
-          appui.notify(bbn._("The request has been aborted"));
         })
       },
 
@@ -936,7 +932,7 @@
                   props: ['source'],
                   template: `
                   <bbn-slideshow :source="source.content"
-                                 class="bbn-bg-webblue"
+                                 class="bbn-bg-blue"
 																 :scroll="true"
                                  separator="---slide---"></bbn-slideshow>`
                 },

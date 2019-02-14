@@ -5,7 +5,7 @@
   "use strict";
 
   Vue.component('bbn-scrollbar', {
-    mixins: [bbn.vue.basicComponent],
+    mixins: [bbn.vue.basicComponent, bbn.vue.keepCoolComponent],
     props: {
       orientation: {
         required: true,
@@ -55,6 +55,9 @@
       initial: {
         type: [Number, Object],
         default: 0
+      },
+      color: {
+        type: String
       }
     },
     data() {
@@ -85,6 +88,9 @@
           res.width = this.size + '%';
           res.left = this.position + '%';
         }
+        if ( this.color ){
+          res.backgroundColor = this.color;
+        }
         return res;
       },
       isVertical(){
@@ -93,10 +99,11 @@
       realSize(){
         return this.containerSize ? this.containerSize / 100 * this.size : 0;
       },
-      _isVisible(){
-        return this.realContainer &&
+      isVisible(){
+        return !this.hidden &&
+          this.realContainer &&
           this.containerSize &&
-          (this.contentSize > (this.containerSize + bbn.fn.getScrollBarSize()))
+          (this.contentSize > (this.containerSize + bbn.fn.getScrollBarSize() + 2))
       },
 
     },
@@ -134,15 +141,15 @@
 
       onDrag(e) {
         if ( this.realContainer && this.dragging && this.containerSize ){
-          e.preventDefault();
-          e.stopPropagation();
-          e = e.changedTouches ? e.changedTouches[0] : e;
-          let movement = (this.isVertical ? e.pageY : e.pageX) - this.start;
-          let movementPercentage = movement ? Math.round(movement / this.containerSize * 1000000) / 10000 : 0;
-          this.start = (this.isVertical ? e.pageY : e.pageX);
-          if ( movementPercentage ){
-            this._changePosition(this.position + movementPercentage);
-          }
+          this.keepCool(() => {
+            e = e.changedTouches ? e.changedTouches[0] : e;
+            let movement = (this.isVertical ? e.pageY : e.pageX) - this.start;
+            let movementPercentage = movement ? Math.round(movement / this.containerSize * 1000000) / 10000 : 0;
+            this.start = (this.isVertical ? e.pageY : e.pageX);
+            if ( movementPercentage ){
+              this._changePosition(this.position + movementPercentage);
+            }
+          })
         }
       },
 
@@ -196,22 +203,27 @@
       },
 
       // When the users jumps by clicking the scrollbar
-      jump(e) {
+      jump(e, tillEnd) {
         if ( this.realContainer ){
           let isRail = e.target === this.$refs.scrollRail;
           if ( isRail ){
             let position = this.$refs.scrollSlider.getBoundingClientRect();
             // Calculate the horizontal Movement
             let movement = (this.isVertical ? e.pageY : e.pageX) - position[this.isVertical ? 'top' : 'left'];
-            let centerize = 0;
-            if ( Math.abs(movement) > (this.realSize - 20) ){
-              movement = movement > 0 ? (this.realSize - 20) : - (this.realSize - 20);
+            if ( tillEnd ){
+              this._changePosition(movement > 0 ? 100 : 0, true);
             }
             else{
-              centerize = (movement > 0 ? 1 : -1) * this.size / 2;
+              let centerize = 0;
+              if ( Math.abs(movement) > (this.realSize - 20) ){
+                movement = movement > 0 ? (this.realSize - 20) : - (this.realSize - 20);
+              }
+              else{
+                centerize = (movement > 0 ? 1 : -1) * this.size;
+              }
+              let movementPercentage = movement / this.containerSize * 100 + centerize;
+              this._changePosition(this.position + movementPercentage, true);
             }
-            let movementPercentage = movement / this.containerSize * 100 + centerize;
-            this._changePosition(this.position + movementPercentage, true);
           }
         }
       },
@@ -246,12 +258,12 @@
       onResize() {
         if ( this.realContainer ){
           let tmp1 = (this.isVertical ? $(this.realContainer).height() : $(this.realContainer).width()) - bbn.fn.getScrollBarSize(),
-              tmp2 = this.realContainer.children[0] ? this.realContainer.children[0][this.isVertical ? 'clientHeight' : 'clientWidth'] : this.containerSize - bbn.fn.getScrollBarSize();
+              tmp2 = this.realContainer.children[0] ? this.realContainer.children[0][this.isVertical ? 'clientHeight' : 'clientWidth'] : this.containerSize;
           if ( (tmp1 !== this.containerSize) || (tmp2 !== this.contentSize) ){
-            this.containerSize = tmp1;
-            this.contentSize = tmp2;
+            this.containerSize = tmp1 > 0 ? tmp1 : 0;
+            this.contentSize = tmp2 > 0 ? tmp2 : 0;
             // The scrollbar is only visible if needed, i.e. the content is larger than the container
-            if ( this.contentSize - this.tolerance > this.containerSize ){
+            if ( this.containerSize && (this.contentSize - this.tolerance > this.containerSize) ){
               let old = this.size;
               this.size = this.containerSize / this.contentSize * 100;
               this._changePosition(old ? Math.round(this.position * (old/this.size) * 10000)/10000 : 0);
@@ -271,21 +283,23 @@
         if ( position === this.position ){
           return
         }
-        let prop = this.isVertical ? 'scrollTop' : 'scrollLeft';
-        if (
-          e && e.target &&
-          this.realContainer &&
-          !this.dragging &&
-          (e.target[prop] !== this.currentScroll)
-        ){
-          if ( e.target[prop] ){
-            this._changePosition(Math.round(e.target[prop] / this.contentSize * 1000000)/10000, false, false, e.target);
+        this.keepCool(() => {
+          let prop = this.isVertical ? 'scrollTop' : 'scrollLeft';
+          if (
+            e && e.target &&
+            this.realContainer &&
+            !this.dragging &&
+            (e.target[prop] !== this.currentScroll)
+          ){
+            if ( e.target[prop] ){
+              this._changePosition(Math.round(e.target[prop] / this.contentSize * 1000000)/10000, false, false, e.target);
+            }
+            else{
+              this._changePosition(0);
+            }
           }
-          else{
-            this._changePosition(0);
-          }
-        }
-        this.overContent();
+          this.overContent();
+        }, 'adjust')
       },
 
       // Sets all event listeners
@@ -313,15 +327,17 @@
 
       // When the mouse is over the content
       overContent(){
-        clearTimeout(this.moveTimeout);
-        if ( !this.show ){
-          this.show = true;
-        }
-        this.moveTimeout = setTimeout(() => {
-          if ( !this.isOverSlider ){
-            this.hideSlider();
+        this.keepCool(() => {
+          clearTimeout(this.moveTimeout);
+          if ( !this.show ){
+            this.show = true;
           }
-        }, 1000);
+          this.moveTimeout = setTimeout(() => {
+            if ( !this.isOverSlider ){
+              this.hideSlider();
+            }
+          }, 1000);
+        }, 'overContent')
       },
 
       // When the mouse enters over the slider

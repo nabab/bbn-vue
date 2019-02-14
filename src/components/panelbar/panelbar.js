@@ -1,49 +1,153 @@
 /**
- * Created by BBN on 10/02/2017.
+ * @file bbn-panelbar component
+ *
+ * @author Loredana Bruno
+ * @copyright BBN Solutions
  */
-
-
 (function(bbn){
   "use strict";
 
   Vue.component('bbn-panelbar', {
+    /**
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.localStorageComponent
+     */
     mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent],
-    // The events that will be emitted by this component
+    
     props: {
-      
       /**
-       * if itemsClass is given all Items will have the classes,if inthe array * items a class is specified for an item itemsClass will be overwritten * for that item
+       * The height that all contents will take if the height is not specified in the item object
+       *
+       * @prop {Number|String} [''] itemsHeight
+       */
+      itemsHeight: {
+        type: [Number, String],
+        default: ''
+      },
+      /**
+       * The class or classes that all items will take
+       *
        * @prop {Array|String} [''] itemsClass
        */
       itemsClass: {
         type: [ Array, String ],
         default: ''  
       }, 
-      items: {
+      /**
+       * The source of the component. The object item has property:
+       * - header // the title on the header
+       * - headerComponent // a component on the header
+       * - headerOptions // options relative to the component on the header
+       * - content // the content html or text to show when the item is selected
+       * - component // a component to show when the item is selected
+       * - height // the height of the item's slot, it will overwrite the props itemsHeight for the item
+       * - options // options of configuration of the component shown in the slot of the item
+       *
+       * @prop {Array} items
+       */
+      source: {
         type: [ Array ]
       },
+      /**
+       * Set to true allows to select multiple items
+       *
+       * @prop {Boolean} [false] multi
+       */
+      multi: {
+        type: [ Boolean ],
+        default: false
+      }, 
+      /**
+       * Specifies whether or not an index, an array of indexes, all items or none will be expanded
+       *
+       * @prop {Boolean|Number|Array} [false] opened
+       */
+      opened: {
+        type: [Boolean, Number, Array],
+        default: false
+      }
     },
     data(){
       return {
-        selected: false,
         isArray: bbn.fn.isArray,
+        selected: []
       };
     },
-    methods: {
-      select(idx){
-        if ( this.selected !== idx ){
-          this.selected = idx;
+     /**
+      * @event mounted
+      */
+    mounted(){
+      if ( this.opened !== false ){
+        if ( this.multi && ( this.opened === true  ) ) {
+          bbn.fn.each( this.source, (v, i) => {
+            this.selected.push(i);
+          })
+          return;
         }
-        else{
-          this.selected = false;
+        if ( !$.isArray(this.opened) && bbn.fn.isNumber(this.opened)) {
+          //case multi true and opened number
+          if ( this.opened < this.source.length ){
+            this.selected.push(this.opened);
+          }
         }
-        this.$emit('select', this.items[idx])
+        else if ( ( $.isArray(this.opened) ) && this.multi ){
+          this.selected = this.opened;
+        }
       }
     },
-    computed: {
-      text(){
-        return this.$options.components.item.data().text
+    methods: {
+      /**
+       * Return if an item is contained in the array of selected items
+       *
+       * @method includes
+       * @param {Array} arr
+       * @param {Number} i
+       * @return Boolean
+       */
+      includes(arr, i){
+        if ( bbn.fn.isArray(this.selected)){
+          return arr.includes(i)
+        }
+        else{
+          return false;
+        }
+        
       },
+      /**
+       * Return whether or not the param i is a number
+       * @method isNumber 
+       * @param {Number} i 
+       * @return Boolean
+       */
+      isNumber(i){
+        return bbn.fn.isNumber(i)
+      },
+      /**
+       * Shows the content of selected items and emits the event select
+       * @emits select
+       * @method select
+       * @param {Number} idx 
+       */
+      select(idx){
+        if ( this.multi ){
+          if ( !this.includes(this.selected, idx) ) {
+            this.selected.push(idx);
+          }
+          else {
+            this.selected.splice(this.selected.indexOf(idx), 1)
+          }
+        }
+        else { 
+          if ( this.selected.length ){
+            this.selected.splice(0,1);
+          }
+          this.selected.push(idx)
+        }
+        this.$emit('select', this.source[idx]) 
+      }
+
+    },
+    computed: {
       currentItemsClass(){
         if ( bbn.fn.isArray(this.itemsClass) ){
           return this.itemsClass.join(' ');
@@ -53,9 +157,7 @@
         }
       }
     },
-    watch:{
-      selected(val){}
-    }
+    
   });
 
 })(bbn);

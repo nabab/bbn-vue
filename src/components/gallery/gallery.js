@@ -1,415 +1,360 @@
-/**
- * Created by BBN on 10/02/2017.
- */
-(() => {
+(($, bbn) => {
   "use strict";
-  Vue.component('bbn-slideshow', {
-    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent],
+
+  Vue.component('bbn-gallery', {
+    mixins: [bbn.vue.basicComponent],
     props: {
       source: {
-        type: [Array, Function, String]
-      },
-      separator: {
-        type: String
-      },
-      component: {
-        type: Object
-      },
-      checkbox: {
-        type: [String, Boolean],
+        type: [Array, String],
         default(){
-          return false;
+          return [];
         }
-      },//for image
-      gallery: {
+      },
+      scrollable: {
         type: Boolean,
-        default(){
-          return false;
-        }
+        default: true
       },
-      preview:{
+      toolbar: {},
+      download: {
+        type: Boolean,
+        default: true
+      },
+      overlay: {
         type: [Boolean, String],
-        default(){
-          return false
-        }
+        default: false
       },
-      dimensionPreview:{
+      zoomable: {
+        type: Boolean,
+        default: false
+      },
+      pageable: {
+        type: Boolean,
+        default: false
+      },
+      info: {
+        type: Boolean,
+        default: false
+      },
+      columnGap: {
         type: Number,
-        defalut(){
-          return 45
+        default: 20
+      },
+      rowGap: {
+        type: Number,
+        default: 20
+      },
+      minCol: {
+        type: Number,
+        default: 1
+      },
+      maxCol: {
+        type: Number
+      },
+      itemWidth: {
+        type: Number,
+        default: 150
+      },
+      align: {
+        type: String,
+        default: 'center'
+      },
+      limit: {
+        type: Number,
+        default: 25
+      },
+      map: {
+        type: Function
+      },
+      data: {
+        type: Object,
+        default(){
+          return {}
         }
       },
-      autoscroll:{
-        type: [Boolean, Number],
-        default(){
-          return false
-        }
-      },// pause and start autoscroll
-      ctrl:{
-        type: [Boolean, String],
-        default(){
-          return false
-        }
-      }, //show or no show arrow
-      arrows:{
-        type: [Boolean, Object],
-        default(){
-          return false
-        }
+      upload: {
+        type: Function
       },
-      autoHidePreview:{
+      download: {
+        type: Function
+      },
+      remove: {
+        type: Function
+      },
+      preview: {
         type: Boolean,
-        default(){
-          return false
-        }
-      },
-      autoHideArrows:{
-        type: Boolean,
-        default(){
-          return false
-        }
-      },
-      autoHideCtrl:{
-        type: Boolean,
-        default(){
-          return false
-        }
-      },
-      loop:{
-        type: Boolean,
-        default(){
-          return false
-        }
-      },
-      fullSlide:{
-        type: Boolean,
-        default(){
-          return false
-        }
+        default: true
       }
     },
     data(){
-      let src = [],
-          valuesCB = {},
-          isAjax = false;
-      if ( (typeof this.source === 'string') ){
-        if ( this.separator ){
-          if ( !this.gallery ){
-            src = this.source.split(this.separator).map((a) => { return {content: a};});
-          }
-          else{
-            src = this.source.split(this.separator).map((a) => {
-              return {
-                type: 'img',
-                content: `<img src="` + a  + `" style="height: auto;  width: 100%">`
-              };
-            });
-          }
-        }
-        else{
-          src = [];
-          isAjax = true;
-        }
-      }
-      else if ( bbn.fn.isFunction(this.source) ){
-        src = this.source();
-      }
-
-      else if ( bbn.fn.isArray(this.source) && this.checkbox ){
-        this.source.forEach((v, i) => {
-          if ( this.separator ){
-            v.content.split(this.separator).forEach((a, k) => {
-              let o = {
-                content: a,
-                id: v.id
-              };
-              if ( k === 0 ){
-                o.checkable= true;
-              }
-              src.push(o);
-            });
-          }
-          valuesCB[i] = false;
-        });
-      }
-      else if ( bbn.fn.isArray(this.source)  ){
-        src = this.source.slice();
-        if ( !bbn.fn.isEmpty(src) ){
-          src.forEach((val, idx) => {
-            if ( bbn.fn.isObject(val) ){
-              var st= "";
-              /*
-              //dimension
-              if( val.dim && val.dim.length ){
-                switch(val.dim) {
-                  case 'stretch': st=""
-                       break;
-                  case 'zoom': console.log("zoom")
-                       break;
-                  case 'full': st=""
-                       break;
-                  default:
-                     //case set dim in originals
-                     st=""
-                }
-              }*/
-
-
-              if ( (val.type && val.type.length && (val.type === "img")) ){
-                src[idx].content = `<img src="` + src[idx].content + `" style="`+ st + `">`
-              }
-              else if( (val.type && val.type.length) && (val.type !== 'img') ){
-                src[idx].content = `<div class="bbn-100 bbn-middle"><i class="fa fa-wrench bbn-xxxxl" style="opacity: 0.6"></i></div>`
-              }
-            }
-          });
-        }
-      }
       return {
-        name: bbn.fn.randomString().toLowerCase(),
-        currentIndex: 0,
-        items: src,
-        isAjax: isAjax,
-        defaultTextCB: bbn._("Don't show it again"),
-        valuesCB: valuesCB,
-        activeMiniature: 0,
-        defaultAutoScroll: 5000,
-        scrollInterval: false,
-        showMiniature: this.autoHidePreview ? false : true,
-        showArrowLeft: this.autoHideArrows ? false : true,
-        showArrowRight: this.autoHideArrows ? false : true,
-        showCtrl: this.autoHideCtrl ? false : true,
-        arrowClass:{
-          left:  'fa fa-arrow-circle-left',
-          right: 'fa fa-arrow-circle-right',
+        width: 0,
+        isSelecting:  false,
+        isLoading: false,
+        isAjax: typeof this.source === 'string',
+        currentData: bbn.fn.isArray(this.source) ? this.source : [],
+        currentLimit: this.limit,
+        start: 0,
+        total: 0,
+        limits: [10, 25, 50, 100, 250, 500],
+        selectingMode: false,
+        selected: []
+      }
+    },
+    computed: {
+      cols(){
+        return parseInt(this.width / (this.itemWidth + this.columnGap)) || 1
+      },
+      numPages(){
+        return Math.ceil(this.total / this.currentLimit);
+      },
+      currentPage: {
+        get(){
+          return Math.ceil((this.start + 1) / this.currentLimit);
+        },
+        set(val) {
+          this.start = val > 1 ? (val - 1) * this.currentLimit : 0;
+          this.updateData();
         }
+      },
+      showToolbar(){
+        return this.upload || this.download || this.delete;
       }
     },
     methods: {
-      createStyle(){
-        let st = '',
-            rules = [];
-        this.items.forEach((it, i) => {
-          st += '.bbn-slideshow .slideswitch:target ~ .slide#' + (this.name + i.toString()) + ' .content{opacity: 0}';
-          st += '.bbn-slideshow .slideswitch[id="' + this.name + i.toString() + '"]:target ~ .slide#' + this.name + i.toString() + ' .navigation {display: block !important;}';
-          st += '.bbn-slideshow .slideswitch[id="' + this.name + i.toString() + '"]:target ~ .slide#' + this.name + i.toString() + ' .content {animation-name: fade_in; animation-duration: 0.5s;}';
-          if ( it.animation ){
-            st += '.bbn-slideshow .slideswitch[id="' + this.name + i.toString() + '"]:target ~ #' + this.name + i.toString() + ' .' + it.animation + ' {animation-name:' + it.animation + ' !important;animation-duration: ' + (it.duration || this.duration || '0.5') + 's;' + ( it.animation === 'flip' ? 'backface-visibility: hidden;' : '')+ '}';
-          }
-        });
-        //$(this.$el).append('<style>' + st + '</style>');
-      },
-      prev(){
-        let idx = this.currentIndex;
-        if ( idx > 0 ){
-          if ( !this.items[idx-1].animation ){
-            this.getRef('slide' + (idx-1).toString()).style.animationName = 'slide_from_right';
-          }
-          this.currentIndex--;
-        }
-        if ( this.loop &&  idx === 0 ){
-          this.currentIndex = this.items.length - 1;
-        }
-        if( this.autoscroll ){
-          this.stopAutoScroll();
-          this.$nextTick(()=>{
-            this.startAutoScroll();
+      updateData(){
+        if ( this.isAjax && !this.isLoading ){
+          this.setSelecting(false);
+          this.isLoading = true;
+          this.$nextTick(() => {
+            let data = {
+              limit: this.currentLimit,
+              start: this.start,
+              data: this.data
+            };
+            bbn.fn.post(this.source, data, result => {
+              this.isLoading = false;
+              if (
+                !result ||
+                result.error ||
+                ((result.success !== undefined) && !result.success)
+              ) {
+                appui.alert(result && result.error ? result.error : bbn._("Error while updating the data"));
+              }
+              else {
+                this.currentData = this._map(result.data || []);
+                this.total = result.total || result.data.length || 0;
+              }
+            });
           });
         }
+        else if ( bbn.fn.isArray(this.source) ){
+          this.currentData = this._map(this.source);
+          this.total = this.source.length;
+        }
       },
-      next(){
-        let idx = this.currentIndex;
-        if ( idx < (this.items.length - 1) ){
-          if ( !this.items[idx+1].animation ){
-            this.getRef('slide' + (idx+1).toString()).style.animationName = 'slide_from_left';
-          }
-          this.currentIndex++;
+      _map(data){
+        return this.map ? data.map(this.map) : data; 
+      },
+      setSelecting(mode){
+        if ( typeof mode === 'string' ){
+          this.isSelecting = true;
+          this.selectingMode = mode;
         }
-        if ( this.loop &&  idx === (this.items.length - 1) ){
-          this.currentIndex = 0;
+        else {
+          this.isSelecting = false;
+          this.selectingMode = false;
+          this.selected = [];
         }
-        if( this.autoscroll ){
-          this.stopAutoScroll();
-          this.$nextTick(()=>{
-            this.startAutoScroll();
+      },
+      action(){
+        if ( this[this.selectingMode] && this.selected.length ){
+          this.confirm(bbn._(`Are you sure you want to ${this.selectingMode} these photos?`), () => {
+            this[this.selectingMode](this.selected.map(v => {
+              return Object.assign({}, this.currentData[v]);
+            }));
+            this.setSelecting(false);
           });
-        }
-      },
-      startAutoScroll(){
-        this.scrollInterval = setInterval(()=>{
-          if ( this.currentIndex < (this.items.length -1) ){
-            this.next();
-          }
-          else if( this.currentIndex === (this.items.length-1) ){
-            this.currentIndex = 0;
-          }
-          if( this.preview ){
-            this.activeMiniature = this.currentIndex;
-          }
-        }, typeof(this.autoscroll) === 'number' ? this.autoscroll*1000 : this.defaultAutoScroll);
-      },
-      stopAutoScroll(){
-        if ( this.scrollInterval ){
-          clearInterval(this.scrollInterval);
-          this.scrollInterval = false;
-        }
-      },
-      // for show or hide elements
-      miniaturePreview(val){
-        if( this.autoHidePreview ){
-          this.showMiniature = val;
-        }
-      },
-      arrowsPreview(direction, val){
-        if( this.autoHideArrows ){
-          if( direction === 'next' ){
-            this.showArrowRight = val;
-          }
-          if( direction === 'prev' ){
-            this.showArrowLeft = val;
-          }
-        }
-      },
-      ctrlPreview(val){
-        if( this.autoHideCtrl ){
-          this.showCtrl = val;
         }
       }
     },
     mounted(){
-      /** @todo WTF?? Obliged to execute the following hack to not have scrollLeft and scrollTop when we open a
-       *  popup a 2nd time.
-       */
-      /*
-      this.$refs.scrollContainer.style.position = 'relative';
-      setTimeout(() => {
-        this.$refs.scrollContainer.style.position = 'absolute';
-      }, 0)
-      */
-
-
-
-      this.createStyle();
-      if( this.autoscroll ){
-        this.startAutoScroll();
-      }
-      if ( bbn.fn.isObject(this.arrows) ){
-        if ( this.arrows.left && this.arrows.left.length ){
-          this.arrowClass.left = this.arrows.left
-        }
-        if( this.arrows.right && this.arrows.right.length ){
-          this.arrowClass.right = this.arrows.right
-        }
-      }
-      this.ready = true;
-
       this.$nextTick(() => {
-        bbn.fn.log("DIMMM", this.$parent.lastKnownWidth, this.$parent.lastKnownHeight);
-      })
-
-    },
-    watch: {
-      show(newVal, oldVal){
-        if ( newVal != oldVal ){
-          this.$emit(newVal ? "show" : "hide");
+        this.width = this.$refs.gallery.offsetWidth;
+        if ( this.isAjax ){
+          this.updateData();
         }
-      },
-      valuesCB: {
-        deep: true,
-        handler(newVal){
-          this.$emit(newVal[this.currentIndex] ? 'check' : 'uncheck', this.items[this.currentIndex]);
-        }
-      }
+      });
     },
     components: {
-      'bbn-slideshow-miniature': {
-        name: 'bbn-slideshow-miniature',
-        template: `<div class="bbn-w-100 bbn-c bbn-middle"
-                        :style="{
-                          position: 'absolute',
-                          bottom:( mainComponent.fullSlide ? '10px' : '40px')
-                        }"
-                   >
-            <template  v-for="(it, i) in items"
-                       style="display: inline; width: 20px; height: 20px"
-            >
-              <div  v-if="type === 'image'"
-                    v-html="it.content"
-                    @click= "clickMiniature(it , i)"
-                    class="zoom"
-                    :style="{
-                      border: (mainComponent.activeMiniature === i) ? '2px inset red' : '1px inset black',
-                      width: dimension +'px',
-                      height: dimension + 'px',
-                      margin: '0 3px 0 0',
-
-                    }"
-              ></div>
-              <i v-else-if="type === 'circle'"
-                   @click= "clickMiniature(it , i)"
-                   :style="{
-                     color: (mainComponent.activeMiniature === i) ? 'red' : 'white',
-                   }"
-                  :class="[
-                    (mainComponent.activeMiniature === i ? 'far fa-dot-circle' : 'far fa-circle'),
-                    'bbn-padded',
-                    'circleMiniature'
-                  ]"
-              ></i>
-            </template>
-          </div>`,
+      galleryZoom: {
+        name: 'gallery-zoom',
+        template: `
+<div class="bbn-full-screen bbn-gallery-zoom">
+  <bbn-slideshow :source="source.item.col.gallery.currentData"
+                 :show-info="source.item.col.gallery.info"
+                 :arrows="true"
+                 :show-count="true"
+                 :full-slide="true"
+                 :initial-slide="source.item.idx"
+                 :preview="source.item.col.gallery.preview"
+  ></bbn-slideshow>
+</div>
+                `,
         props: {
-          items:{
+          source: {
+            type: [String, Object]
+          }
+        }
+      },
+      galleryCol: {
+        name: 'gallery-col',
+        template: `
+<div :style="colStyle">
+  <gallery-item v-for="(item, idx) in getSource(index)" 
+                :source="item"
+                :key="'gallery-item-'+index+'-'+idx"
+  ></gallery-item>
+</div>`,
+        props: {
+          source: {
             type: Array,
             default(){
-              return []
+              return [];
             }
           },
-          comapare:{
-            type: Boolean,
-            default(){
-              return true
-            }
+          index: {
+            type: Number
+          }
+        },
+        computed: {
+          gallery(){
+            return this.closest('bbn-gallery');
           },
-          type:{
-            type: String,
-            default(){
-              return 'image'
-            }
-          },
-          contentOnlyImage: {
-            type: Boolean
-          },
-          dimension:{
-            type: Number,
-            default(){
-              return 45
+          colStyle(){
+            return {
+              width: `${this.gallery.itemWidth}px`,
+              margin: `0 ${this.gallery.columnGap / 2}px`,
+              verticalAlign: 'top',
+              display: 'inline-block'
             }
           }
         },
-        data(){
-          return {
-            mainComponent: bbn.vue.closest(this, 'bbn-slideshow')
+        methods: {
+          getSource(idx){
+            return this.gallery.currentData.filter((it, i) => {
+              return i % this.gallery.cols === idx;
+            });
           }
         },
-        methods:{
-          clickMiniature(miniature, idx){
-            this.mainComponent.activeMiniature = idx;
-            this.mainComponent.currentIndex = idx;
-            if( this.mainComponent.autoscroll ){
-              this.mainComponent.stopAutoScroll();
-              this.$nextTick(()=>{
-                this.mainComponent.startAutoScroll();
-              });
+        components: {
+          galleryItem: {
+            name: 'gallery-item',
+            template: `
+<a v-if="!col.gallery.isLoading"
+   :class="['bbn-p', {'k-primary': isSelected}]" 
+   @click="action"
+   :style="aStyle"
+>
+  <img :src="isObj ? (source.thumb || source.content) : source" 
+       :style="imgStyle"
+       @load="loaded = true"
+       :class="{'bbn-gallery-item-selected': isSelected}"
+  >
+  <span v-if="showOverlay && loaded" 
+        class="bbn-gallery-overlay k-widget"
+        v-text="source.overlay"
+  ></span>
+  <i v-if="col.gallery.zoomable && loaded && !col.gallery.isSelecting" 
+    class="bbn-gallery-zoverlay fas fa-search"
+  ></i>
+</a>
+            `,
+            props: {
+              source: {
+                type: [String, Object]
+              }
+            },
+            data(){
+              return {
+                loaded: false,
+                selected: false,
+                idx: null
+              }
+            },
+            computed: {
+              col(){
+                return this.closest('gallery-col');
+              },
+              aStyle(){
+                let style = {
+                  margin: `0 0 ${this.col.gallery.rowGap}px 0`,
+                  border: this.isSelected ? '5px dotted' : 'none'
+                };
+                return style;
+              },
+              imgStyle(){
+                return {
+                  width: '100%',
+                  margin: 0,
+                  borderRadius: '5px',
+                  display: 'block',
+                  visibility: this.loaded ? 'visible' : 'hidden'
+                }
+              },
+              isObj(){
+                return bbn.fn.isObject(this.source);
+              },
+              showOverlay(){
+                return this.col.gallery.overlay && this.isObj && (this.source.overlay !== undefined);
+              },
+              isSelected(){
+                return (this.idx !== null) && this.col.gallery.selected.includes(this.idx);
+              }
+            },
+            methods: {
+              action(){
+                if ( this.col.gallery.isSelecting ){
+                  if ( this.isSelected ){
+                    this.col.gallery.selected.splice(this.col.gallery.selected.indexOf(this.idx), 1);
+                  }
+                  else {
+                    this.col.gallery.selected.push(this.idx);
+                  }
+                }
+                else {
+                  if ( this.col.gallery.zoomable ){
+                    this.getPopup().open({
+                      title: bbn._('Gallery'),
+                      scrollable: false,
+                      resizable: false,
+                      maximizable: false,
+                      maximized: true,
+                      component: this.col.gallery.$options.components.galleryZoom,
+                      source: {
+                        source: this.source,
+                        item: this
+                      }
+                    });
+                  }
+                }
+              },
+              getIdx(){
+                let idx = null;
+                bbn.fn.each(this.col.gallery.currentData, (v, i) => {
+                  if ( bbn.fn.isSame(v, this.source) ){
+                    idx = i;
+                    return;
+                  }
+                });
+                return idx;
+              }
+            },
+            mounted(){
+              this.idx = this.getIdx();
             }
-          },
-        },
-        mounted(){
-          if ( !this.contentOnlyImage ){
-            $("div.dddd").find("span").css("transform", "scale(0.2)")
           }
         }
       }
     }
-  });
-})();
+  })
+})(jQuery, bbn);

@@ -7,9 +7,9 @@
       @keydown.enter.prevent.stop="submit()"
 >
   <div v-if="fixedFooter"
-       class="bbn-w-100 bbn-flex-fill"
+       :class="['bbn-w-100', {'bbn-flex-fill': scrollable}]"
   >
-    <bbn-scroll>
+    <bbn-scroll v-if="scrollable">
       <div class="bbn-grid-fields bbn-padded" v-if="schema && schema.length">
         <template v-for="field in currentSchema"
                   v-if="field.field && !field.buttons && (field.editable !== false)"
@@ -38,6 +38,35 @@
       </div>
       <slot></slot>
     </bbn-scroll>
+    <template v-else>
+      <div class="bbn-grid-fields bbn-padded" v-if="schema && schema.length">
+        <template v-for="field in currentSchema"
+                  v-if="field.field && !field.buttons && (field.editable !== false)"
+        >
+          <component v-if="field.lineComponent"
+                     :is="field.lineComponent"
+                     :source="source"
+          ></component>
+          <template v-else>
+            <label v-html="field.title"
+                   :for="field.id"
+                   :title="field.ftitle || field.title || field.field"></label>
+            <component v-if="field.editor"
+                       :is="field.editor"
+                       v-bind="field.options"
+                       v-model="source[field.field]"
+            ></component>
+            <bbn-field v-else
+                       mode="write"
+                       v-model="source[field.field]"
+                       v-bind="field"
+            ></bbn-field>
+          </template>
+
+        </template>
+      </div>
+      <slot></slot>
+    </template>
   </div>
   <slot v-else></slot>
   <div v-if="hasFooter"
@@ -64,8 +93,8 @@
                   :key="i"
                   v-bind="button"
                   :class="['bbn-flex-fill', {'k-primary': modified || prefilled}]"
-                  :disabled="!modified && !prefilled"
-                  @click="(modified && !prefilled) || prefilled ? submit() : false"
+                  :disabled="(!modified && !prefilled) || isLoading"
+                  @click="(modified && !prefilled) || prefilled ? submit(false) : false"
                   glowing="green"
       ></bbn-button>
       <bbn-button v-else

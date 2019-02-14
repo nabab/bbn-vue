@@ -15,7 +15,9 @@
       bbn.vue.resizerComponent,
       bbn.vue.dataEditorComponent,
       bbn.vue.localStorageComponent,
-      bbn.vue.observerComponent
+      bbn.vue.observerComponent,
+      bbn.vue.keepCoolComponent,
+      bbn.vue.dataComponent,
     ],
     props: {
       titleGroups: {
@@ -758,21 +760,14 @@
     methods: {
 
       _updateRowIndex(idx){
-        if ( this.rowIndexTimeOut ){
-          clearTimeout(this.rowIndexTimeOut);
-        }
-        if ( idx === null ){
-          if ( this.currentIndex !== null ){
-            this.currentIndex = null;
+        bbn.fn.each(this.groupCols, (a) => {
+          let trs = $(this.getRef(a.name + 'Table')).find("tr");
+          trs.removeClass('bbn-table-tr-over');
+          if ( idx !== null ){
+            trs.eq(idx).addClass('bbn-table-tr-over');
           }
-        }
-        else{
-          if ( this.currentIndex !== idx ){
-            this.rowIndexTimeOut = setTimeout(() => {
-              this.currentIndex = idx;
-            }, 1000);
-          }
-        }
+        });
+        //this.currentIndex = idx;
       },
 
       _map(data){
@@ -835,6 +830,13 @@
         }
         return this;
       },
+      _scrollerHidden(groupCol, idx){
+        let last = this.groupCols.length === idx -1;
+        if ( groupCol.name === 'main' ){
+          return last ? 'x' : false;
+        }
+        return last ? 'y' : true;
+      },
       _checkConditionsOnValue(where, row){
         let pass = false;
         if ( where.conditions && where.logic && (typeof row === 'object') ){
@@ -864,62 +866,65 @@
         if ( !this.scrollable ){
           return
         }
-        let table = this.getRef('mainTable'),
-            scroll = this.getRef('mainScroller'),
-            container = scroll ? scroll.getRef('scrollContainer') : null,
-            top = container ? container.scrollTop : null,
-            left = container ? container.scrollLeft : null,
-            viewport = scroll ? bbn.fn.clone(scroll.$el.getBoundingClientRect()) : null;
-        if ( this.titleGroups && scroll ){
-          let x = scroll.getRef('xScroller').currentScroll,
-              cols = this.titleGroupsCells(this.groupCols[1] && (this.groupCols[1].name === 'main') ? 1 : 0),
-              tot = 0;
-          $.each(cols, (i, a) => {
-            if ( tot + a.realWidth > x ){
-              $(".bbn-table-title-group", this.getRef('mainTitles')).css({left: tot < x ? x - tot : 0});
-              return false;
-            }
-            tot += a.realWidth;
-          });
-        }
-        if ( !viewport ){
-          return;
-        }
-        viewport.top = top || 0;
-        viewport.left = left || 0;
-        if (
-          this.viewport &&
-          (this.viewport.x === viewport.x) &&
-          (this.viewport.width === viewport.width) &&
-          (this.viewport.y === viewport.y) &&
-          (this.viewport.height === viewport.height) &&
-          (this.viewport.top === viewport.top) &&
-          (this.viewport.left === viewport.left)
-        ){
-          return;
-        }
-        this.viewport = viewport;
-        if ( table && scroll ){
-          let rows = [],
-              cols = [];
-          if ( table && table.rows && table.rows[0] && table.rows[0].cells ){
-            bbn.fn.each(this.groupCols[1].cols, (col, idx) => {
-              if ( table.rows[0].cells[idx] ){
-                let vp = table.rows[0].cells[idx].getBoundingClientRect();
-                if ( vp.x > (viewport.x - 300) ){
-                  cols.push(col.index);
-                }
-                if ( vp.x > (viewport.x + viewport.width + 300 ) ){
-                  // MUST STOP HERE
-                  return false;
-                }
-                this.viewportCols.splice(0, this.viewportCols.length, ...cols);
-                this.viewportRows.splice(0, this.viewportRows.length, ...rows);
-                this.updateTable();
+        this.keepCool(() => {
+          let table = this.getRef('mainTable'),
+              scroll = this.getRef('mainScroller'),
+              container = scroll ? scroll.getRef('scrollContainer') : null,
+              top = container ? container.scrollTop : null,
+              left = container ? container.scrollLeft : null,
+              viewport = scroll ? bbn.fn.clone(scroll.$el.getBoundingClientRect()) : null;
+          if ( this.titleGroups && scroll ){
+            let x = scroll.getRef('xScroller').currentScroll,
+                cols = this.titleGroupsCells(this.groupCols[1] && (this.groupCols[1].name === 'main') ? 1 : 0),
+                tot = 0;
+            $.each(cols, (i, a) => {
+              if ( tot + a.realWidth > x ){
+                $(".bbn-table-title-group", this.getRef('mainTitles')).css({left: tot < x ? x - tot : 0});
+                return false;
               }
-            })
+              tot += a.realWidth;
+            });
           }
-        }
+          return;
+          if ( !viewport ){
+            return;
+          }
+          viewport.top = top || 0;
+          viewport.left = left || 0;
+          if (
+            this.viewport &&
+            (this.viewport.x === viewport.x) &&
+            (this.viewport.width === viewport.width) &&
+            (this.viewport.y === viewport.y) &&
+            (this.viewport.height === viewport.height) &&
+            (this.viewport.top === viewport.top) &&
+            (this.viewport.left === viewport.left)
+          ){
+            return;
+          }
+          this.viewport = viewport;
+          if ( table && scroll ){
+            let rows = [],
+                cols = [];
+            if ( table && table.rows && table.rows[0] && table.rows[0].cells ){
+              bbn.fn.each(this.groupCols[1].cols, (col, idx) => {
+                if ( table.rows[0].cells[idx] ){
+                  let vp = table.rows[0].cells[idx].getBoundingClientRect();
+                  if ( vp.x > (viewport.x - 300) ){
+                    cols.push(col.index);
+                  }
+                  if ( vp.x > (viewport.x + viewport.width + 300 ) ){
+                    // MUST STOP HERE
+                    return false;
+                  }
+                  this.viewportCols.splice(0, this.viewportCols.length, ...cols);
+                  this.viewportRows.splice(0, this.viewportRows.length, ...rows);
+                  this.updateTable();
+                }
+              })
+            }
+          }
+        }, '_updateViewport')
       },
 
       _export(){
@@ -1011,6 +1016,10 @@
             this.$emit('delete', this.currentData[index], ev);
           }
         }
+      },
+
+      reload(){
+        return this.updateData();
       },
 
       exportCSV(filename, valSep, rowSep, valEsc){
@@ -1174,8 +1183,17 @@
           }
         }
       },
+      moveMouse(e){
+        this.keepCool(() => {
+          this.checkFilterWindow(e);
+
+        }, 'moveMouse')
+      },
       checkFilterWindow(e){
         if ( this.currentFilter ){
+          if ( this.floatingFilterTimeOut ){
+            clearTimeout(this.floatingFilterTimeOut);
+          }
           if (
             (e.clientX < this.floatingFilterX) ||
             (e.clientX > this.floatingFilterX + 600) ||
@@ -1190,7 +1208,6 @@
             }
           }
           else{
-            clearTimeout(this.floatingFilterTimeOut);
             this.floatingFilterTimeOut = 0;
           }
         }
@@ -1211,6 +1228,7 @@
         }
       },
       openMultiFilter(){
+        this.currentFilter = false;
         let table = this;
         this.getPopup().open({
           title: bbn._('Multiple filters'),
@@ -1672,6 +1690,7 @@
         this.currentExpanded = [];
         if ( this.isAjax && !this.isLoading ){
           this.isLoading = true;
+          this.$emit('startloading');
           this._removeTmp();
           this.editedRow = false;
           this.editedIndex = false;
@@ -1693,13 +1712,14 @@
             }
             bbn.fn.post(this.source, data, (result) => {
               this.isLoading = false;
+              this.$emit('endloading');
               if (
                 !result ||
                 (typeof result === 'string') ||
                 result.error ||
                 ((result.success !== undefined) && !result.success)
               ){
-                this.alert(result && result.error ? result.error : "Error in updateData");
+                this.alert(result && result.error ? result.error : bbn._("Error while fetching data"));
               }
               else{
                 this.currentData = this._map(result.data || []);
@@ -1844,7 +1864,7 @@
         if ( column.render ){
           return column.render(data, column, index, value)
         }
-        return value;
+        return this.renderData(data, column, index);
       },
       cancel(){
         if ( this.tmpRow ){
@@ -1878,9 +1898,11 @@
         return '100px';
       },
       /** @todo */
-      reset(){
+      reset(noCfg){
         this.initReady = false;
-        this.setConfig(false);
+        if ( !noCfg ){
+          this.setConfig(false);
+        }
         this.$nextTick(() => {
           this.initReady = true;
           this.init();

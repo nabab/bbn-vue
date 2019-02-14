@@ -23,6 +23,9 @@ ul.bbn-list-helper{
     list-style: none;
     padding: 0;
     margin: 0;
+    li.k-state-hover {
+      filter: brightness(1.2);
+    }
     &.bbn-list-child {
       padding-left: 16px;
     }
@@ -35,16 +38,29 @@ ul.bbn-list-helper{
   .bbn-list-toggle-enter, .bbn-list-toggle-leave-to{
     max-height: 0;
   }
+  }
   */
   .bbn-list-node{
+    border: none;
+    //border-top: none!important;
+    //border-left: none!important;
+    //border-right: none!important;
+    padding-top: 3px;
+    padding-bottom: 3px;
     clear: both;
     margin: 0;
     box-sizing: content-box;
+    div.text-container {
+      padding-right: 3px;
+      padding-left: 3px;
+    }
     div.node{
+      padding-left:6px;
+      padding-right:6px;
       //display: inline-block;
       //white-space: nowrap;
       height: auto;
-      min-height: 18px;
+      //min-height: 18px;
       &.dropping{
         background-color: green;
         color: white;

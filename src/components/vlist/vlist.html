@@ -23,7 +23,10 @@
         @mousedown.stop.prevent="beforeClick"
         @click.stop.prevent="select(idx)"
         @mouseup="afterClick">
-      <span class="k-link">
+      <span class="k-link" v-if="itemComponent">
+        <component :is="itemComponent" :source="li"></component>
+      </span>
+      <span class="k-link" v-else>
         <span class="space" v-if="(mode === 'selection') || (mode === 'options')">
           <i v-if="(mode === 'selection') && (li.selected)" class="fa fa-check"></i>
           <i v-else-if="mode === 'options'" class="fa fa-check"></i>

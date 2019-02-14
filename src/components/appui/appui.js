@@ -13,6 +13,26 @@
   Vue.component('bbn-appui', {
     mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent, bbn.vue.localStorageComponent, bbn.vue.observerComponent],
     props: {
+      header: {
+        type: [Boolean, Object],
+        default: false
+      },
+      status: {
+        type: [Boolean, Object],
+        default: false
+      },
+      tabnav: {
+        type: Boolean,
+        default: false
+      },
+      pollable: {
+        type: Boolean,
+        default: false
+      },
+      pollerPath: {
+        type: String,
+        default: 'core/poller'
+      },
       root: {
         type: String,
         required: true
@@ -28,7 +48,10 @@
         }
       },
       menus: {
-        type: Array
+        type: Array,
+        default(){
+          return []
+        }
       },
       currentMenu:{
         type: String
@@ -69,16 +92,16 @@
           }
         }
       },
-      list: {
+      source: {
         type: Array,
         default(){
-          return [{
+          return [/*{
             url: (this.plugins && this.plugins['appui-core'] ? this.plugins['appui-core'] : 'core') + '/home',
             title: bbn._("Dashboard"),
             load: true,
             static: true,
             icon: 'fas fa-tachometer-alt'
-          }];
+          }*/];
         }
       },
       searchBar: {
@@ -113,6 +136,7 @@
         prePollingTimeout: 0,
         pollingErrors: 0,
         widgets: {},
+        loaders: [],
         notifications: [],
         menuOpened: false,
         themes: [
@@ -167,8 +191,24 @@
         cool: false
       }
     },
+    computed: {
+      appComponent(){
+        return $.extend({
+          render(createElement){
+            return createElement();
+          }
+        }, this.cfg)
+      }
+    },
     methods: {
-
+      /*
+      route(url, force){
+        let router = this.find('bbn-router');
+        if ( router ){
+          router.route(url, force);
+        }
+      },
+      */
       sendChatMessage(obj, idx){
         if ( this.$refs.chat.currentWindows[idx] ){
           this.pollerObject.message = {
@@ -215,11 +255,11 @@
       },
 
       userName(d){
-        return bbn.fn.get_field(this.users, "value", ($.type(d) === 'object') && d.id ? d.id : d, "text");
+        return bbn.fn.get_field(this.users, "value", bbn.fn.isObject(d) && d.id ? d.id : d, "text");
       },
 
       userGroup(d){
-        return bbn.fn.get_field(this.users, "value", ($.type(d) === 'object') && d.id ? d.id : d, "id_group");
+        return bbn.fn.get_field(this.users, "value", bbn.fn.isObject(d) && d.id ? d.id : d, "id_group");
       },
 
       notify(obj, type, timeout){
@@ -304,10 +344,10 @@
       */
 
       poll(){
-        if ( !this.polling ){
+        if ( this.pollable && !this.polling && this.pollerPath ){
           this.polling = true;
           this.observersCopy = this.observers.slice();
-          this.poller = bbn.fn.ajax(this.root + 'poller', 'json', $.extend({observers: this.observers}, this.pollerObject), 'poller', (r) => {
+          this.poller = bbn.fn.ajax(this.pollerPath, 'json', $.extend({observers: this.observers}, this.pollerObject), 'poller', (r) => {
             this.pollerObject.message = null;
             //bbn.fn.log("--------------OBS: Returning Data---------------");
             // put the data_from_file into #response
@@ -347,15 +387,6 @@
         }
       }
     },
-    computed: {
-      appComponent(){
-        return $.extend({
-          render(createElement){
-            return createElement();
-          }
-        }, this.cfg)
-      }
-    },
     beforeCreate(){
       bbn.vue.preloadBBN(['tabnav', 'button', 'table', 'popup', 'autocomplete', 'chat', 'combo', 'context', 'treemenu', 'tree', 'loadicon', 'scroll', 'scroll-x', 'scroll-y', 'input', 'numeric', 'dropdown', 'loader', 'initial', 'chart', 'radio', 'checkbox', 'fisheye']);
     },
@@ -376,7 +407,6 @@
       if ( this.cool ){
         this.app = this.$refs.app;
         this.ready = true;
-        this.$emit('resize');
         setTimeout(() => {
           $(this.$el).animate({opacity: 1}, 'slow', () => {
             this.$emit('resize');

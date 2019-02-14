@@ -1,5 +1,5 @@
 <div :class="[{'bbn-full-screen': scrollable}, componentClass]"
-     @mousemove="checkFilterWindow"
+     @mousemove="moveMouse"
 >
   <div :class="{'bbn-full-screen': scrollable, 'bbn-flex-height': scrollable}"
        v-if="cols.length && initReady"
@@ -137,7 +137,9 @@
 
       <!-- Data part -->
       <div :class="{'bbn-table-data': true, 'bbn-flex-fill': scrollable}" ref="data">
-        <div :class="{'bbn-full-screen': scrollable, 'bbn-flex-width': true}">
+        <div :class="{'bbn-full-screen': scrollable, 'bbn-flex-width': true}"
+             @mouseleave.passive="_updateRowIndex(null)"
+        >
           <div  v-for="(groupCol, groupIndex) in groupCols"
                 :class="{
                   'bbn-table-part': true,
@@ -150,8 +152,11 @@
             <!-- Fixed data -->
             <component :is="scrollable ? 'bbn-scroll' : 'div'"
                        :ref="groupCol.name + 'Scroller'"
-                       :axis="groupCol.name === 'main' ? 'x' : 'none'"
-                       :scroll-also="groupCol.name === 'main' ? [getRef('mainTitles')] : dataScrollContents"
+                       v-bind="scrollable ? {
+                         axis: groupCol.name === 'main' ? 'both' : 'y',
+                         hidden: _scrollerHidden(groupCol, groupIndex),
+                         scrollAlso: groupCol.name === 'main' ? [getRef('mainTitles')] : dataScrollContents
+                       } : {}"
                        @scrollx="_updateViewport"
                        >
               <h3 v-if="isLoading"> </h3>
@@ -175,12 +180,10 @@
                       'k-widget': true,
                       'k-alt': !!(d.index % 2),
                       'k-header': !!(d.aggregated || d.groupAggregated),
-                      'bbn-table-tr-over': (currentIndex === d.index) && (!d.expanded || (d.expanded && !d.expander)) && (editedIndex !== i)
                     }, trClass ? trClass(d.data) : '']"
-                    @focusin.passive="if ( focusedRow !== i ){ focusedRow = i }"
+                    @focusin.passive="if ( focusedRow !== i ) { focusedRow = i }"
                     @focusout.passive="focusedRow = false"
-                    @mouseenter="_updateRowIndex(d.index)"
-                    @mouseleave.passive="_updateRowIndex(null)"
+                    @mouseenter="_updateRowIndex(i)"
                 >
                   <!-- Checkboxes -->
                   <td v-if="selection && (
@@ -297,29 +300,25 @@
                       (d.aggregated || d.groupAggregated) &&
                       (col.field !== isAggregated)">
                     </div>
-                    <div v-else-if="loader && (groupCol.name === 'main') && (viewportCols.indexOf(col.index) === -1)">
-                      ...
-                    </div>
                     <component v-else-if="col.component"
                                :key="d.index"
                                :is="col.component"
-                               :source="col.mapper ? col.mapper(d.data) : d.data"
                                v-bind="col.options"
+                               :source="col.mapper ? col.mapper(d.data) : d.data"
                     ></component>
                     <div v-else-if="col.buttons">
                       <bbn-button v-for="(button, j) in (Array.isArray(col.buttons) ? col.buttons : col.buttons(d.data, col, i))"
                                   :key="j"
                                   v-bind="button"
-                                  @focusin.native.stop=""
                                   @click.stop="_execCommand(button, d.data, col, i, $event)"
                       ></bbn-button>
                     </div>
-                    <bbn-field v-else-if="col.field && !col.render"
+                    <!--bbn-field v-else-if="col.field && !col.render"
                                v-bind="col"
                                :key="d.index"
                                :value="d.data[col.field]"
                                :data="d.data">
-                    </bbn-field>
+                    </bbn-field-->
                     <div v-else v-html="render(d.data, col, i)"></div>
                   </td>
                 </tr>
@@ -371,7 +370,7 @@
                      :min="1"
                      :max="numPages"
                      style="margin-right: 0.5em; width: 6em"
-                     :disabled="isLoading"
+                     :readonly="isLoading ? 'readonly' : null"
         ></bbn-numeric>
         <span v-text="_('of') + ' ' + numPages" style="margin-right: 0.25em"></span>
         <bbn-button icon="fa fa-angle-right"
@@ -448,7 +447,7 @@
     ></bbn-filter>
     <div v-if="multifilter"
          class="bbn-table-filter-link bbn-p bbn-b bbn-i"
-         @click="openMultiFilter(); currentFilter = false;">
+         @click="openMultiFilter">
       <i class="zmdi zmdi-filter-list"></i>
       <span v-text="_('Open the full filter')"></span>
     </div>

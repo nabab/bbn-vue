@@ -39,6 +39,7 @@
              @keyup="keyup"
              @mouseenter="over"
              @mouseleave="out"
+             @change="change"
       >
       <input type="hidden"
              ref="input"
@@ -49,12 +50,13 @@
       >
       <span class="k-icon k-i-warning"
             style="display: none;"></span>
-      <span class="k-select" v-if="spinners">
-        <span unselectable="on" 
-              class="k-link k-link-increase"
-              :title="_('Increase value')"
-              @click="increment"
-        >
+        <span :class="['k-select', {opacity: readonly}]"
+              v-if="spinners">
+          <span unselectable="on" 
+                class="k-link k-link-increase"
+                :title="_('Increase value')"
+                @click="increment"
+          >
           <span unselectable="on"
                 :class="['k-icon', 'k-i-arrow-60-up', {'opacity': (max !== undefined) && (value >= max)}]"
           ></span>

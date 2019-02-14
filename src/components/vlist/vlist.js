@@ -51,7 +51,8 @@
       },
       mapper: {
         type: Function
-      }
+      },
+      itemComponent: {}
     },
     data(){
       let items = [],

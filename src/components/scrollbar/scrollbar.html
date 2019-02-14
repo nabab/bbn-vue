@@ -3,11 +3,11 @@
             leave-active-class="animated fadeOut"
 >
   <div :class="componentClass"
-       v-if="_isVisible"
+       v-if="isVisible"
        v-show="show && size"
        @click="jump"
+       @dblclick="jump($event, true)"
        ref="scrollRail"
-       @mouseover="$emit('mouseover')"
        @mouseenter="inSlider"
        @mouseleave="outSlider"
   >

@@ -4,7 +4,7 @@
 (function($, bbn){
   "use strict";
   Vue.component('bbn-scroll', {
-    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent],
+    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent, bbn.vue.keepCoolComponent],
     props: {
       classes: {
         type: String,
@@ -31,6 +31,13 @@
       y: {
         type: Number,
         default: 0
+      },
+      hidden: {
+        type: Boolean,
+        default: false
+      },
+      barColor: {
+        type: String
       }
     },
     data() {
@@ -39,9 +46,17 @@
         currentX: this.x,
         currentY: this.y,
         scrollPos: (bbn.fn.getScrollBarSize() ? '-' + bbn.fn.getScrollBarSize() : '0') + 'px',
+        containerPadding: (bbn.fn.getScrollBarSize() ? bbn.fn.getScrollBarSize() : '0') + 'px',
+        hiddenX: (this.hidden === true) || ((this.hidden === 'x')),
+        hiddenY: (this.hidden === true) || ((this.hidden === 'y'))
       }
     },
     methods: {
+      onScroll(e){
+        this.keepCool(() => {
+          this.$emit('scroll', e)
+        })
+      },
       scrollTo(x, y, animate){
         if ( !y && (typeof x === HTMLElement) ){
           y = x;
@@ -117,7 +132,7 @@
         if ( y ){
           y.scrollTo('100%');
         }
-      }
+      },
     },
     mounted(){
       /** @todo WTF?? Obliged to execute the following hack to not have scrollLeft and scrollTop when we open a
@@ -133,8 +148,10 @@
     },
     watch: {
       show(newVal, oldVal){
-        if ( newVal != oldVal ){
-          this.$emit(newVal ? "show" : "hide");
+        if ( !this.hidden ){
+          if ( newVal != oldVal ){
+            this.$emit(newVal ? "show" : "hide");
+          }
         }
       }
     }

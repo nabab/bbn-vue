@@ -12,7 +12,7 @@
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.fieldComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.fieldComponent],
+    mixins: [bbn.vue.basicComponent, bbn.vue.fieldComponent, bbn.vue.dataComponent],
     props: {
       value: {},
       /**
@@ -140,89 +140,8 @@
               if ( this.render !== undefined ){
                 this.renderedContent = this.render(this.actualData, this.index, this.field, this.value);
               }
-              else if ( this.icon ){
-                this.renderedComponent = 'div';
-                this.renderedContent = '<i class="' + this.icon + '"> </i>'
-              }
-              else if ( this.type ){
-                switch ( this.type ){
-                  case "datetime":
-                    if ( this.format ){
-                      this.renderedContent = this.currentValue ? (new moment(this.currentValue)).format(this.format) : '-';
-                    }
-                    else{
-                      this.renderedContent = this.currentValue ? bbn.fn.fdate(this.currentValue) : '-';
-                    }
-                    break;
-                  case "date":
-                    if ( this.format ){
-                      this.renderedContent = this.currentValue ? (new moment(this.currentValue)).format(this.format) : '-';
-                    }
-                    else{
-                      this.renderedContent = this.currentValue ? bbn.fn.fdate(this.currentValue) : '-';
-                    }
-                    break;
-                  case "time":
-                    if ( this.format ){
-                      this.renderedContent = this.currentValue ? (new moment(this.currentValue)).format(this.format) : '-';
-                    }
-                    else{
-                      this.renderedContent = this.currentValue ? bbn.fn.fdate(this.currentValue) : '-';
-                    }
-                    break;
-                  case "email":
-                    this.renderedContent = this.currentValue ? '<a href="mailto:' + this.currentValue + '">' + this.currentValue + '</a>' : '-';
-                    break;
-                  case "url":
-                    this.renderedContent = this.currentValue ? '<a href="' + this.currentValue + '">' + this.currentValue + '</a>' : '-';
-                    break;
-                  case "percent":
-                    this.renderedContent = this.currentValue ? bbn.fn.money(this.currentValue * 100, false, "%", '-', '.', ' ', 2) : '-';
-                    break;
-                  case "number":
-                    this.renderedContent = this.currentValue ?
-                      bbn.fn.money(
-                        this.currentValue,
-                        (this.precision === -4) || (this.format && (this.format.toLowerCase() === 'k')),
-                        this.renderedOptions.unit || this.unit || "",
-                        '-',
-                        '.',
-                        ' ',
-                        this.precision === -4 ? 3 : this.precision
-                      ) : '-';
-                    break;
-                  case "money":
-                    this.renderedContent = this.currentValue ?
-                      bbn.fn.money(
-                        this.currentValue,
-                        (this.precision === -4) || (this.format && (this.format.toLowerCase() === 'k')),
-                        this.renderedOptions.currency || this.currency || this.unit || "",
-                        '-',
-                        ',',
-                        ' ',
-                        this.precision === -4 ? 3 : this.precision
-                      ) : '-';
-                    break;
-                  case "bool":
-                  case "boolean":
-                    let isYes = this.currentValue && (this.currentValue !== 'false') && (this.currentValue !== '0');
-                    if ( this.renderedOptions.yesvalue !== undefined ){
-                      isYes = this.currentValue === this.options.yesvalue;
-                    }
-                    this.renderedContent = '<i class="fas fa-' + (isYes ? 'check' : 'times') + '" title="' + (isYes ? bbn._("Yes") : bbn._("No")) + '"></i>';
-                    break;
-                }
-              }
-              else if ( this.source ){
-                let idx = bbn.fn.search(this.source, {value: this.value});
-                this.renderedContent = idx > -1 ? this.source[idx].text : '-';
-              }
-              else if ( this.renderedOptions.source ){
-                let idx = bbn.fn.search(this.renderedOptions.source, {value: this.value});
-                this.renderedContent = idx > -1 ? this.renderedOptions.source[idx].text : '-';
-              }
-              else if ( this.value ){
-                this.renderedContent = this.value;
+              else {
+                this.renderedContent = this.renderData(this.actualData, this)
               }
             }
             /*

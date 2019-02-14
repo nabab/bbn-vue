@@ -7,11 +7,14 @@
   <bbn-splitter v-else-if="isMounted"
                 orientation="vertical"
                 ref="splitter">
-    <bbn-pane :size="50"
+    <!-- HEADER -->
+    <bbn-pane v-if="header"
+              :size="50"
               :scrollable="false"
               ref="head"
               overflow="visible">
-      <div class="k-header bbn-w-100 bbn-h-100 bbn-flex-width">
+      <div class="k-header bbn-100 bbn-flex-width">
+        <!-- MENU BUTTON -->
         <div class="bbn-block bbn-h-100 bbn-middle bbn-menu-button-container"
              style="width: 70px">
           <div tabindex="0"
@@ -22,16 +25,20 @@
             <i ref="icon" class="fa fa-bars bbn-xxxl"> </i>
           </div>
         </div>
-        <div class="bbn-block bbn-h-100 bbn-vmiddle" style="width: 70px">
+        <!-- SEARCHBAR -->
+        <div v-if="searchBar"
+             class="bbn-block bbn-h-100 bbn-vmiddle"
+             style="width: 70px">
           <div class="bbn-global-search bbn-vmiddle bbn-lg">
-            <search-bar v-if="searchBar"
-                        id="recherche"
+            <search-bar id="recherche"
                         ref="searchBar"
                         :source="searchBar"
             ></search-bar>
           </div>
         </div>
+        <!-- CENTRAL PART -->
         <div class="bbn-h-100 bbn-splitter-top-center bbn-flex-fill">
+          <!-- FISHEYE -->
           <bbn-fisheye v-if="plugins['appui-menu']"
                        :del-url="plugins['appui-menu'] + '/shortcuts/delete'"
                        :ins-url="plugins['appui-menu'] + '/shortcuts/insert'"
@@ -43,12 +50,17 @@
                        :fixed-right="rightShortcuts"
                        @ready="fisheyeMounted = true">
           </bbn-fisheye>
+          <div v-else>
+            Not a menu
+          </div>
         </div>
+        <!-- LOGO -->
         <div class="bbn-block bbn-h-100 bbn-logo-container" style="width: 140px">
           <div class="apst-logo bbn-100 bbn-r">
             <img :src="logoPath + '?t=2'" border="0" class="bbn-h-100 bbn-right-space">
           </div>
         </div>
+        <!-- DEBUGGER? -->
         <div v-if="debug"
              class="k-widget"
              :style="{
@@ -69,21 +81,33 @@
         </div>
       </div>
     </bbn-pane>
+    <!-- MAIN -->
     <bbn-pane ref="main">
-      <bbn-tabnav :autoload="true"
-                  :source="list"
+      <bbn-tabnav v-if="tabnav"
+                  :autoload="true"
+                  :root="root"
+                  :source="source"
                   :storage="true"
                   :observer="true"
                   ref="tabnav">
+        <slot></slot>
       </bbn-tabnav>
+      <bbn-router v-else
+                  ref="tabnav"
+                  :source="source"
+                  :root="root">
+        <slot></slot>
+      </bbn-router>
     </bbn-pane>
-    <bbn-pane :size="25"
+    <!-- STATUS -->
+    <bbn-pane v-if="status"
+              :size="25"
               :scrollable="false"
               ref="foot"
               class="k-header"
               overflow="visible">
-      <div class="bbn-w-50 bbn-h-100">
-        <bbn-loadbar ref="loading"></bbn-loadbar>
+      <div class="bbn-w-50 bbn-h-100" v-if="loaders">
+        <bbn-loadbar ref="loading" :source="loaders"></bbn-loadbar>
       </div>
       <div class="bbn-h-100 bbn-vmiddle" style="float: right; width: 8rem;">
         <bbn-chat v-if="plugins['appui-chat']"
@@ -105,8 +129,9 @@
       </div>
     </bbn-pane>
   </bbn-splitter>
-  <bbn-treemenu :source="plugins['appui-menu'] + '/data'"
-                v-if="fisheyeMounted"
+  <!-- TREEMENU -->
+  <bbn-treemenu v-if="plugins['appui-menu']"
+                :source="plugins['appui-menu'] + '/data'"
                 ref="menu"
                 :menus="menus"
                 :current="currentMenu"
@@ -115,8 +140,14 @@
                 :shortcuts="$refs.fisheye"
                 @ready="menuMounted = true">
   </bbn-treemenu>
-  <bbn-popup :source="popups" ref="popup" :z-index="14"></bbn-popup>
+  <!-- POPUPS -->
+  <bbn-popup :source="popups"
+             ref="popup"
+             :z-index="14">
+  </bbn-popup>
+  <!-- NOTIFICATIONS -->
   <bbn-notification ref="notification"></bbn-notification>
+  <!-- FLOATING LISTS -->
   <bbn-vlist v-for="(li, idx) in vlist"
              :key="idx"
              :left="li.left"
@@ -127,5 +158,6 @@
              :source="li.items"
              :unique="li.unique ? true : false">
   </bbn-vlist>
+  <!-- APP COMPONENT -->
   <component ref="app" :is="appComponent"></component>
 </div>

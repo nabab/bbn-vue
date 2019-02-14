@@ -72,6 +72,18 @@
         type: Boolean,
         default: false
       },
+      initialSlide:{
+        type: Number,
+        default: 0
+      },
+     showCount:{
+        type: Boolean,
+        default: false
+      },
+      showInfo:{
+        type: Boolean,
+        default: false
+      },
       //insert a scroll inside a slide
       scroll: {
         type: Boolean,
@@ -146,7 +158,7 @@
       }
       return {
         name: bbn.fn.randomString().toLowerCase(),
-        currentIndex: 0,
+        currentIndex: this.initialSlide > src.length ? 0 : this.initialSlide,
         items: src,
         isAjax: isAjax,
         defaultTextCB: bbn._("Don't show it again"),
@@ -184,38 +196,57 @@
 
           if( imgRatio > ctnRatio ){
             if( mode === 'zoom' ){
-
-              this.items[idx].imageWidth = "auto";
-              this.items[idx].imageHeight =  "100%";
-              this.items[idx].showImg =  true;
+              this.$set(this.items[idx], 'imageWidth', 'auto');
+              this.$set(this.items[idx], 'imageHeight', '100%');
+              this.$set(this.items[idx], 'showImg', true);
+              
+              //this.items[idx].imageWidth = "auto";
+              //this.items[idx].imageHeight =  "100%";
+              //this.items[idx].showImg =  true;
             }
             if( mode === 'full' ){
-              this.items[idx].imageWidth = "100%";
-              this.items[idx].imageHeight = "auto";
-              this.items[idx].showImg =  true;
+              this.$set(this.items[idx], 'imageWidth', '100%');
+              this.$set(this.items[idx], 'imageHeight', 'auto');
+              this.$set(this.items[idx], 'showImg', true);
+              //this.items[idx].imageWidth = "100%";
+              //this.items[idx].imageHeight = "auto";
+              //this.items[idx].showImg = true;
             }
           }
           if ( imgRatio < ctnRatio ){
             if ( mode === 'zoom' ){
-
-              this.items[idx].imageWidth = "100%";
-              this.items[idx].imageHeight = "auto";
-              this.items[idx].showImg =  true;
+              this.$set(this.items[idx], 'imageWidth', '100%');
+              this.$set(this.items[idx], 'imageHeight', 'auto');
+              this.$set(this.items[idx], 'showImg', true);
+              
+              //this.items[idx].imageWidth = "100%";
+              //this.items[idx].imageHeight = "auto";
+              //this.items[idx].showImg =  true;
             }
             if ( mode === 'full' ){
-              this.items[idx].imageWidth = "auto";
-              this.items[idx].imageHeight = "100%";
-              this.items[idx].showImg =  true;
+              this.$set(this.items[idx], 'imageWidth', 'auto');
+              this.$set(this.items[idx], 'imageHeight', '100%');
+              this.$set(this.items[idx], 'showImg', true);
+              
+              //this.items[idx].imageWidth = "auto";
+              //this.items[idx].imageHeight = "100%";
+              //this.items[idx].showImg =  true;
             }
           }
           if ( mode === 'stretch' ){
-            this.items[idx].imageWidth = this.lastKnownWidth + 'px';
-            this.items[idx].imageHeight = this.lastKnownHeight + 'px';
-            this.items[idx].showImg =  true;
+            
+            this.$set(this.items[idx], 'imageWidth',  this.lastKnownWidth + 'px');
+            this.$set(this.items[idx], 'imageHeight', this.lastKnownHeight + 'px');
+            this.$set(this.items[idx], 'showImg', true);
+              
+            //this.items[idx].imageWidth = this.lastKnownWidth + 'px';
+            //this.items[idx].imageHeight = this.lastKnownHeight + 'px';
+            //this.items[idx].showImg =  true;
           }
           if ( mode === "original" ){
-            this.items[idx].showImg = true;
-          }
+            this.$set(this.items[idx], 'showImg', true);
+            //this.items[idx].showImg = true;
+          }          
         });
       },
       createStyle(){

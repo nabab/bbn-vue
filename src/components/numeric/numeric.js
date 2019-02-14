@@ -206,7 +206,9 @@
        */
       
       increment(){
-        this.changeValue((typeof this.value === 'string' ? parseFloat(this.value) : this.value) + this.step);
+        if ( !this.readonly && !this.disabled ){
+          this.changeValue((typeof this.value === 'string' ? parseFloat(this.value) : this.value) + this.step);
+        }
       },
       /**
        * Decrease the value of the component of 1 step
@@ -215,7 +217,9 @@
        */
       
       decrement(){
-        this.changeValue((typeof this.value === 'string' ? parseFloat(this.value)  : this.value) - this.step);
+        if (!this.readonly && !this.disabled) {
+          this.changeValue((typeof this.value === 'string' ? parseFloat(this.value)  : this.value) - this.step);
+        }
       },
       /**
        * Change the value of the component 

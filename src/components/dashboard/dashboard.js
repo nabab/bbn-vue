@@ -242,8 +242,7 @@
           });
 
           if ( bbn.fn.countProperties(params.cfg) ){
-            let prom = this.url ? bbn.fn.post(vm.url + 'save', params) : Promise.resolve({data: {success: true}});
-            return prom.then((d) => {
+            return bbn.fn.post(vm.url + 'save', params, (d) => {
               if ( d.data && d.data.success ){
                 for ( let n in params.cfg ){
                   vm.$set(vm.widgets[idx], n, params.cfg[n]);
@@ -347,7 +346,7 @@
     components: {
       'bbns-widget': {
         name: 'bbns-widget',
-        mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent, bbn.vue.observerComponent],
+        mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent, bbn.vue.observerComponent, bbn.vue.resizerComponent],
         props: {
           uid: {},
           content: {
@@ -424,6 +423,10 @@
             type: Boolean,
             default: true
           },
+          pageable: {
+            type: Boolean,
+            default: true
+          },
           source: {
             type: Object,
             default: function(){
@@ -435,6 +438,10 @@
             default: function(){
               return [];
             }
+          },
+          noData: {
+            type: String,
+            default: bbn._("There is no available data")
           },
           menu: {
             type: Array,
@@ -488,10 +495,10 @@
             }
             return 1;
           },
-          hasMenu: function(){
+          hasMenu(){
             return !!this.finalMenu.length;
           },
-          finalMenu: function(){
+          finalMenu(){
             let tmp = this.menu.slice();
             if ( this.url ){
               tmp.unshift({
@@ -528,30 +535,30 @@
             this.realButtonsLeft = bbn.fn.isFunction(this.buttonsLeft) ? this.buttonsLeft() : this.buttonsLeft;
             this.realButtonsRight = bbn.fn.isFunction(this.buttonsRight) ? this.buttonsRight() : this.buttonsRight;
           },
-          close: function(){
+          close(){
             this.dashboard.updateWidget(this.uid, {hidden: !this.hidden});
             this.$emit("close", this.uid, this);
           },
-          zoom: function(){
+          zoom(){
           },
-          reload: function(){
+          reload(){
             this.currentItems = [];
             this.$nextTick(() => {
               this.load();
             })
           },
-          load: function(){
+          load(){
             if ( this.url ){
               let params = {
                 key: this.uid
               };
               this.isLoading = true;
               this.$forceUpdate();
-              if ( this.limit ){
+              if ( this.limit && this.pageable ){
                 params.limit = this.limit;
                 params.start = this.currentStart;
               }
-              bbn.fn.post(this.url, params, (d) => {
+              return bbn.fn.post(this.url, params, (d) => {
                 if ( d.data !== undefined ){
                   this.currentItems = d.data;
                   if ( d.limit && (this.limit !== d.limit) ){
@@ -581,6 +588,8 @@
                 this.$nextTick(() => {
                   this.isLoading = false;
                   this.$emit("loaded");
+                  this.onResize();
+                  this.selfEmit(true);
                 })
               })
             }

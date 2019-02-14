@@ -3,7 +3,7 @@
  */
 
 
-(function($, bbn){
+(function ($, bbn) {
   "use strict";
 
   const NODE_PROPERTIES = ["selected", "selectedClass", "activeClass", "expanded", "tooltip", "icon", "selectable", "text", "data", "cls", "component", "num", "source", "level", "items"];
@@ -24,7 +24,7 @@
       },
       num: {
         type: Number,
-       // default: 0
+        // default: 0
       },
       // The level until which the hierarchy must be opened
       minExpandLevel: {
@@ -43,7 +43,7 @@
       // The data to send to the server
       data: {
         type: [Object, Function],
-        default(){
+        default () {
           return {};
         }
       },
@@ -101,7 +101,7 @@
       // Other hierarchys where nodes can be dropped on
       droppables: {
         type: Array,
-        default(){
+        default () {
           return [];
         }
       },
@@ -113,7 +113,7 @@
       value: {}
     },
 
-    data(){
+    data() {
       let items = this.getItems();
       return {
         over: false,
@@ -131,10 +131,10 @@
         // The parent hierarchy if not root
         hierarchy: false,
         // The URL where to pick the data from if isAjax
-        url: typeof(this.source) === 'string' ? this.source : false,
+        url: typeof (this.source) === 'string' ? this.source : false,
         // Is the data provided from the server side
-        isAjax: typeof(this.source) === 'string',
-                // True once the data of the hierarchy has been loaded
+        isAjax: typeof (this.source) === 'string',
+        // True once the data of the hierarchy has been loaded
         isLoaded: false,
         // True once the component is mounted
         isMounted: false,
@@ -151,25 +151,29 @@
         // Real dragging will start after the mouse's first move, useful to kow if we are in a select or drag context
         realDragging: false,
         expanded: [],
+        overNode: false,
+        selectedNode: false,
         checked: [],
-        disabled: []
+        disabled: [],
+        currentLevel: 0,
+        
       };
     },
 
     computed: {
-      item_path(){
+      item_path() {
         let path = [],
           cp = this;
-        while ( cp.nodeIdx !== undefined ){
+        while (cp.nodeIdx !== undefined) {
           path.unshift(cp.nodeIdx);
           cp = cp.$parent;
         }
         return path;
       },
-      droppablehierarchys(){
+      droppablehierarchys() {
         let r = this.selfDrop ? [this] : [];
-        if ( this.droppables && this.droppables.length ){
-          for ( let a of this.droppables ){
+        if (this.droppables && this.droppables.length) {
+          for (let a of this.droppables) {
             r.push(a);
           }
         }
@@ -178,114 +182,119 @@
     },
 
     methods: {
-      /** add in the css li.class-selected{
-          background-image: none;
-          background:  @color;
-          color: white;
-          border: none;
-        } to define css property of the item selected */
-
-      /** emit of select event from this.hierarchy*/
-      select(item, idx){
-		  
+      isSame(obj, ob) {
+        return $.isEmptyObject(bbn.fn.diffObj(obj, ob));
+      },
+      getLevel(a, level) {
+        if (a.$parent !== undefined) {
+          bbn.fn.log('level before', level)
+          level++;
+          this.getLevel(a.$parent, level)
+        }
+        this.hierarchy.currentLevel = level;
+        return level
+      },
+      select(item, idx) {
         let path = [idx],
             cp = this;
-        this.selected = idx;
-        while ( cp.nodeIdx !== undefined ){
-          path.unshift(cp.nodeIdx);
-          cp = cp.$parent;
+        if ((this.hierarchy.selectedNode === false) || ( this.hierarchy.selectedNode.text !== item.text) ) {
+          this.selected = idx;
+          this.getLevel(this, this.hierarchy.currentLevel);
+          while (cp.nodeIdx !== undefined) {
+            path.unshift(cp.nodeIdx);
+            cp = cp.$parent;
+          }
+          this.hierarchy.selectedNode = item;
+          return this.hierarchy.$emit('select', item, idx, path );
         }
-
-		    bbn.fn.log('select', item, idx, this.selected)
-
-        return this.hierarchy.$emit('select', item, idx, path, );
+        else{
+          this.selected = false;
+          this.hierarchy.selectedNode = false;
+          return this.hierarchy.$emit('unselect', item, idx, path );
+        }
       },
 
-      removeExpanded(i){
+      removeExpanded(i) {
         let idx = this.expanded.indexOf(i);
-        if ( (idx > -1) && this.items[i]){
+        if ((idx > -1) && this.items[i]) {
           this.expanded.splice(idx, 1)
           this.hierarchy.$emit('close', i, this.items[i]);
         }
 
       },
 
-      addExpanded(i){
+      addExpanded(i) {
         let idx = this.expanded.indexOf(i);
-       // this.$emit('open', i);
-        if ( (idx === -1) && this.items[i] && this.items[i].items && this.items[i].items.length ){
+        // this.$emit('open', i);
+        if ((idx === -1) && this.items[i] && this.items[i].items && this.items[i].items.length) {
           this.expanded.push(i);
           this.hierarchy.$emit('open', i, this.items[i]);
         }
 
       },
 
-      toggleExpanded(i){
+      toggleExpanded(i) {
 
         let idx = this.expanded.indexOf(i);
-        if ( idx > -1 ){
+        if (idx > -1) {
           this.removeExpanded(i);
-        }
-        else{
+        } else {
           this.addExpanded(i);
           //this.hierarchy.$emit('open', i, this.items[i]);
         }
       },
 
-      isExpanded(i){
+      isExpanded(i) {
         return this.expanded.indexOf(i) > -1;
       },
 
-      isMatch(item){
+      isMatch(item) {
         return true;
       },
 
-      getNumMatches(item){
+      getNumMatches(item) {
         return 1;
       },
       /** emit the event mouseover and add the class k-state-selected'*/
-      activate(i, item, target){
+      activate(i, item, target) {
         this.active = i;
         let path = [i],
           cp = this;
-        while ( cp.nodeIdx !== undefined ){
+        while (cp.nodeIdx !== undefined) {
           path.unshift(cp.nodeIdx);
           cp = cp.$parent;
         }
         this.hierarchy.activeItem = path;
         this.hierarchy.$emit('mouseover', i, item, path);
-        },
+      },
 
-      getItems(){
+      getItems() {
         let items = [];
-        if ( bbn.fn.isArray(this.source) ){
-          if ( this.map ){
-            $.each(this.source, (i, a) =>{
+        if (bbn.fn.isArray(this.source)) {
+          if (this.map) {
+            $.each(this.source, (i, a) => {
               items.push(this.map(a));
             })
-          }
-          else {
+          } else {
             items = this.source.slice();
           }
-        }
-        else {
+        } else {
           items = [];
         }
         return items;
       },
-      reset(){
-        if ( this.isAjax ){
+      reset() {
+        if (this.isAjax) {
           this.load();
-        }
-        else{
+        } else {
           this.items = this.getItems();
           this.$forceUpdate();
         }
       },
 
       // Resize the root scroller
-      resize(){
-        if ( this.hierarchy.$refs.scroll ){
+      resize() {
+        if (this.hierarchy.$refs.scroll) {
           this.hierarchy.$refs.scroll.onResize();
         }
       },
@@ -293,45 +302,45 @@
 
       /** @todo onOpen and onClose don't work*/
       // Make the root hierarchy resize and emit an open event
-      onOpen(){
+      onOpen() {
         this.resize();
         this.$emit('open');
         this.hierarchy.$emit('open', this);
       },
 
       // Make the root hierarchy resize and emit a close event
-      onClose(){
+      onClose() {
         this.resize();
         this.$emit('close');
         this.hierarchy.$emit('close', this);
       },
 
       // Find a node based on its props
-/*      _findNode(props, node){
-        let ret = false;
-        if ( node ){
-          if ( node.numChildren && !node.isExpanded ){
-            node.isExpanded = true;
-          }
-          if ( node.$children && node.numChildren && node.isExpanded && Object.keys(props) ){
-            $.each(node.$children, (i, n) => {
-              if ( n.data ){
-                let tmp = {};
-                $.each(Object.keys(props), (j, k) => {
-                  if ( n.data[k] === undefined ){
-                    return true;
-                  }
-                  tmp[k] = n.data[k];
-                });
-                if ( JSON.stringify(tmp) === JSON.stringify(props) ){
-                  ret = n;
+      /*      _findNode(props, node){
+              let ret = false;
+              if ( node ){
+                if ( node.numChildren && !node.isExpanded ){
+                  node.isExpanded = true;
+                }
+                if ( node.$children && node.numChildren && node.isExpanded && Object.keys(props) ){
+                  $.each(node.$children, (i, n) => {
+                    if ( n.data ){
+                      let tmp = {};
+                      $.each(Object.keys(props), (j, k) => {
+                        if ( n.data[k] === undefined ){
+                          return true;
+                        }
+                        tmp[k] = n.data[k];
+                      });
+                      if ( JSON.stringify(tmp) === JSON.stringify(props) ){
+                        ret = n;
+                      }
+                    }
+                  });
                 }
               }
-            });
-          }
-        }
-        return ret;
-      },*/
+              return ret;
+            },*/
 
       // Find a node based on path
       /*getNode(arr, context){
@@ -396,44 +405,39 @@
 
       // Returns an object with the data to send for a given node
       // If UID has been given obj will only have this prop other the whole data object
-      dataToSend(){
+      dataToSend() {
         // The final object to send
         let r = {},
           uid = this.uid || this.hierarchy.uid;
         // If the uid field is defined
-        if ( uid ){
+        if (uid) {
           // If an item has been given we send the corresponding data, or otherwise an empty string
-          if ( this.node ){
+          if (this.node) {
             r[uid] = this.node.data && this.node.data[uid] ? this.node.data[uid] : '';
-          }
-          else if ( this.isRoot ){
+          } else if (this.isRoot) {
             r[uid] = this.root ? this.root : '';
           }
-        }
-        else if ( this.node ){
+        } else if (this.node) {
           r = this.node.data;
-        }
-        else if ( $.isFunction(this.data) ){
+        } else if ($.isFunction(this.data)) {
           r = this.data();
-        }
-        else{
+        } else {
           r = this.data;
         }
         return r;
       },
 
       // Makes an object out of the given properties, adding to data all non existing props
-      normalize(obj){
+      normalize(obj) {
         let r = {
           data: {}
         };
-        if ( obj.text || obj.icon ){
-          for ( let n in obj ){
-            if ( obj.hasOwnProperty(n) && (typeof n === 'string') ){
-              if ( $.inArray(n, NODE_PROPERTIES) > -1 ){
+        if (obj.text || obj.icon) {
+          for (let n in obj) {
+            if (obj.hasOwnProperty(n) && (typeof n === 'string')) {
+              if ($.inArray(n, NODE_PROPERTIES) > -1) {
                 r[n] = obj[n];
-              }
-              else{
+              } else {
                 r.data[n] = obj[n];
               }
             }
@@ -444,104 +448,99 @@
       },
 
       // Manages the key navigation inside the hierarchy
-      keyNav(e){
+      keyNav(e) {
         e.preventDefault();
         e.stopImmediatePropagation();
-        if ( this.hierarchy.activeNode ){
+        if (this.hierarchy.activeNode) {
           let idx = false,
             min = 1,
             max = this.hierarchy.activeNode.$parent.$children.length - 1,
             parent = this.hierarchy.activeNode.$parent;
           $.each(this.hierarchy.activeNode.$parent.$children, (i, a) => {
-            if ( a === this.hierarchy.activeNode ){
+            if (a === this.hierarchy.activeNode) {
               idx = i;
               return false;
             }
           });
           bbn.fn.log("keyNav", idx, max, e.key);
-          switch ( e.key ){
+          switch (e.key) {
             case 'Enter':
             case ' ':
               this.hierarchy.activeNode.isSelected = !this.hierarchy.activeNode.isSelected;
               break;
             case 'PageDown':
             case 'End':
-              if ( this.hierarchy.activeNode ){
+              if (this.hierarchy.activeNode) {
                 this.hierarchy.activeNode.isActive = false;
               }
               let node = this.$refs.root;
-              while ( node.$children.length && node.isExpanded ){
-                node = node.$children[node.$children.length-1];
+              while (node.$children.length && node.isExpanded) {
+                node = node.$children[node.$children.length - 1];
               }
               node.isActive = true;
               break;
 
             case 'PageUp':
             case 'Home':
-              if ( this.hierarchy.activeNode ){
+              if (this.hierarchy.activeNode) {
                 this.hierarchy.activeNode.isActive = false;
               }
-              if ( this.$refs.root.$children[1] ){
+              if (this.$refs.root.$children[1]) {
                 this.$refs.root.$children[1].isActive = true;
               }
               break;
 
             case 'ArrowLeft':
-              if ( this.hierarchy.activeNode.isExpanded ){
+              if (this.hierarchy.activeNode.isExpanded) {
                 this.hierarchy.activeNode.isExpanded = false;
-              }
-              else if ( this.hierarchy.activeNode.$parent !== this.$refs.root ){
+              } else if (this.hierarchy.activeNode.$parent !== this.$refs.root) {
                 this.hierarchy.activeNode.$parent.isActive = true;
               }
               break;
             case 'ArrowRight':
-              if ( !this.hierarchy.activeNode.isExpanded ){
+              if (!this.hierarchy.activeNode.isExpanded) {
                 this.hierarchy.activeNode.isExpanded = true;
               }
               break;
             case 'ArrowDown':
-              if ( this.hierarchy.activeNode.isExpanded && (this.hierarchy.activeNode.items.length > 1) ){
+              if (this.hierarchy.activeNode.isExpanded && (this.hierarchy.activeNode.items.length > 1)) {
                 this.hierarchy.activeNode.$children[1].isActive = true;
-              }
-              else if ( idx < max ){
+              } else if (idx < max) {
                 bbn.fn.log("ORKING");
-                parent.$children[idx+1].isActive = true;
-              }
-              else {
+                parent.$children[idx + 1].isActive = true;
+              } else {
                 let c = this.hierarchy.activeNode,
                   p = this.hierarchy.activeNode.$parent;
-                while ( (p.level > 0) && !p.$children[idx+1] ){
+                while ((p.level > 0) && !p.$children[idx + 1]) {
                   c = p;
                   p = p.$parent;
                   $.each(p.$children, (i, a) => {
-                    if ( a === c ){
+                    if (a === c) {
                       idx = i;
                       return false;
                     }
                   });
                 }
-                if ( p.$children[idx+1] ){
-                  p.$children[idx+1].isActive = true;
+                if (p.$children[idx + 1]) {
+                  p.$children[idx + 1].isActive = true;
                 }
               }
               break;
             case 'ArrowUp':
-              if ( idx > min ){
-                if ( parent.$children[idx - 1].isExpanded && parent.$children[idx - 1].items.length ){
+              if (idx > min) {
+                if (parent.$children[idx - 1].isExpanded && parent.$children[idx - 1].items.length) {
                   let p = parent.$children[idx - 1],
                     c = p.$children[p.$children.length - 1];
-                  while ( c.isExpanded && c.items.length ){
+                  while (c.isExpanded && c.items.length) {
                     p = c;
                     c = p.$children[p.$children.length - 1];
                   }
                   c.isActive = true;
-                }
-                else{
+                } else {
                   parent.$children[idx - 1].isActive = true;
                 }
-              }
-              else{
-                if ( parent !== this.$refs.root ){
+              } else {
+                if (parent !== this.$refs.root) {
                   parent.isActive = true;
                 }
                 /*
@@ -561,24 +560,22 @@
               }
               break;
           }
-        }
-        else if ( this.hierarchy.selectedNode ){
+        } else if (this.hierarchy.selectedNode) {
           this.hierarchy.activeNode = this.hierarchy.selectedNode;
         }
       },
 
       // Reloads a node already loaded
-      reload(node){
-        if ( this.isAjax ){
-          if ( !node ){
-            if ( this.isRoot ){
+      reload(node) {
+        if (this.isAjax) {
+          if (!node) {
+            if (this.isRoot) {
               this.items = [];
               this.isLoaded = false;
               this.$nextTick(() => {
                 this.load();
               })
-            }
-            else{
+            } else {
               this.node.isExpanded = false;
               this.node.$refs.hierarchy[0].isLoaded = false;
               this.node.$forceUpdate();
@@ -586,8 +583,7 @@
                 this.node.isExpanded = true;
               })
             }
-          }
-          else if ( node.$refs.hierarchy ){
+          } else if (node.$refs.hierarchy) {
             node.isExpanded = false;
             node.$refs.hierarchy[0].isLoaded = false;
             node.$forceUpdate();
@@ -598,11 +594,11 @@
         }
       },
 
-      mapper(fn, data){
+      mapper(fn, data) {
         let res = [];
         $.each(data, (i, a) => {
           let tmp = fn(a);
-          if ( tmp.items ){
+          if (tmp.items) {
             tmp.items = this.mapper(fn, tmp.items);
           }
           res.push(tmp);
@@ -611,20 +607,19 @@
       },
 
       // Loads a node
-      load(){
+      load() {
         // It must be Ajax and not being already in loading state
-        if ( this.isAjax && !this.hierarchy.isLoading && !this.isLoaded ){
+        if (this.isAjax && !this.hierarchy.isLoading && !this.isLoaded) {
           this.hierarchy.isLoading = true;
           this.loading = true;
           this.hierarchy.$emit('beforeLoad', this.dataToSend());
           bbn.fn.post(this.hierarchy.url, this.dataToSend(), (res) => {
             this.hierarchy.isLoading = false;
             this.loading = false;
-            if ( res.data ){
-              if ( this.hierarchy.map ){
+            if (res.data) {
+              if (this.hierarchy.map) {
                 this.items = this.mapper(this.hierarchy.map, res.data);
-              }
-              else{
+              } else {
                 this.items = res.data;
               }
             }
@@ -633,182 +628,35 @@
         }
       },
 
-      /*openPath(){
-        if ( this.path.length ){
-          let path = this.path.slice(),
-            criteria = path.shift(),
-            idx = -1;
-          if ( typeof(criteria) === 'object' ){
-            idx = bbn.fn.search(this.items, {data: criteria});
-          }
-          else if ( this.hierarchy.uid ){
-            let cr = {};
-            cr[this.hierarchy.uid] = criteria;
-            idx = bbn.fn.search(this.items, cr);
-          }
-          else if ( typeof(criteria) === 'number' ){
-            idx = criteria;
-          }
-          bbn.fn.log("OopenPath", path, idx, criteria, this.items);
-          if ( idx > -1 ){
-            $.each(this.items, (i, a) => {
-              if ( i !== idx ){
-                this.$set(this.items[idx], "path", []);
-              }
-            })
-            if ( path.length ){
-              this.$children[idx].isExpanded = true;
-              this.$children[idx].path = path;
-            }
-            else{
-              this.$set(this.items[idx], "selected", true);
-            }
-          }
-        }
-        else {
-          //this.$set(this.items[idx], "path", []);
-        }
-      },*/
-
-      // Unselects the currently selected node
-    /*  unselect(){
-        if ( this.hierarchy.selectedNode ){
-          this.hierarchy.selectedNode.isSelected = false;
-        }
-      },*/
-
-      // Deac\\tivate the active node
-     /* deactivateAll(){
-        if ( this.hierarchy.activeNode ){
-          this.hierarchy.activeNode.isActive = true;
-        }
-      },*/
-
-      // Returns true if the first argument node descends from the second
-     /* isNodeOf(childNode, parentNode){
-        childNode = bbn.vue.closest(childNode, 'bbn-list-node');
-        while ( childNode ){
-          if ( childNode === parentNode ){
-            return true;
-          }
-          childNode = bbn.vue.closest(childNode, 'bbn-list-node');
-        }
-        return false;
-      },*/
-
-      // Moves a node to or inside a hierarchy
-      /*move(node, target, index){
-        let idx = $(node.$el).index(),
-          parent = node.parent;
-        if ( idx > -1 ){
-          if ( !target.numChildren ){
-            target.numChildren = 1;
-            target.$forceUpdate();
-          }
-          else{
-            target.numChildren++;
-          }
-          this.$nextTick(() => {
-            let targethierarchy = target.$refs.hierarchy[0];
-            parent.numChildren--;
-            let params = parent.items.splice(idx, 1)[0];
-            targethierarchy.items.push(params);
-            if ( !targethierarchy.isExpanded ){
-              targethierarchy.isExpanded = true;
-            }
-            parent.$forceUpdate();
-            target.$forceUpdate();
-          });
-        }
-      },*/
-
-      /*
-      // dragging action
-      drag(e){
-        if ( this.hierarchy.dragging ){
-          e.preventDefault();
-          e.stopImmediatePropagation();
-          $(this.$el).find(".dropping").removeClass("dropping");
-          bbn.fn.log(e);
-          let $container = $(e.target).offsetParent(),
-              top = e.layerY,
-              left = e.layerX,
-              p;
-          while ( $container[0] !== this.$refs.scroll.$refs.scrollContent ){
-            p = $container.position();
-            top += p.top;
-            left += p.left;
-            $container = $container.offsetParent();
-          }
-          this.hierarchy.$refs.helper.style.left = left + 'px';
-          this.hierarchy.$refs.helper.style.top = top + 'px';
-          let ok = false;
-          if (
-            this.overNode &&
-            (this.hierarchy.dragging !== this.overNode) &&
-            !this.isNodeOf(this.overNode, this.hierarchy.dragging)
-          ){
-            let $t = $(e.target);
-            $t.parents().each((i, a) => {
-              if ( a === this.overNode.$el ){
-                ok = 1;
-                return false;
-              }
-              else if ( a === this.$el ){
-                return false;
-              }
-            });
-          }
-          if ( ok ){
-            $(this.overNode.$el).children("span.node").addClass("dropping");
-          }
-          else{
-            this.overNode = false;
-          }
-        }
-      },
-      */
-
-      // Returns an object with all the unknown properties of the node component
-      /*toData(data){
-        let r = {};
-        for ( let n in data ){
-          if ( $.inArray(n, NODE_PROPERTIES) === -1 ){
-            r[n] = data[n];
-          }
-        }
-        return r;
-      }*/
+    
     },
 
     // Definition of the root hierarchy and parent node
-    created(){
+    created() {
       let cp = bbn.vue.closest(this, 'bbn-list');
-      if ( !cp ){
+      if (!cp) {
         this.isRoot = true;
         this.node = false;
         this.hierarchy = this;
-      }
-      else{
-        while ( cp && cp.level ){
+      } else {
+        while (cp && cp.level) {
           cp = bbn.vue.closest(cp, 'bbn-list');
         }
-        if ( cp && !cp.level ){
+        if (cp && !cp.level) {
           this.hierarchy = cp;
           this.isAjax = this.hierarchy.isAjax;
         }
         this.node = bbn.vue.closest(this, 'bbn-list-node');
       }
-      if ( !this.isAjax || this.items.length ){
+      if (!this.isAjax || this.items.length) {
         this.isLoaded = true;
       }
     },
 
-    mounted(){
-      if ( this.isRoot && this.autoload ){
+    mounted() {
+      if (this.isRoot && this.autoload) {
         this.load();
-      }
-      else if ( this.isExpanded ){
+      } else if (this.isExpanded) {
         this.load();
       }
       this.ready = true;
@@ -816,21 +664,21 @@
     },
 
     watch: {
-      /*activeNode(newVal){
-        if ( newVal ){
-          this.$refs.scroll.scrollTo(0, newVal.$el);
+      over(val) {
+        if (val !== false) {
+          this.hierarchy.overNode = val;
+          this.hierarchy.$emit('mouseover', val);
+        } else if (val === false) {
+          this.hierarchy.overNode = false;
+          this.hierarchy.$emit('mouseout', val);
         }
-      },*/
-     /* path(newVal){
-        bbn.fn.log("Change path", newVal);
-        this.$emit('pathChange');
-      },*/
-      source(){
+      },
+      source() {
         this.reset();
         this.load();
       },
-      items(){
-        this.getRef('scroll').selfEmit(true);
+      items() {
+        //this.getRef('scroll').selfEmit(true);
       }
     }
   });

@@ -1,7 +1,7 @@
 /**
  * Created by BBN on 07/01/2017.
  */
-;(function($, bbn, kendo){
+;(($, bbn, kendo) => {
   "use strict";
 
   /**
@@ -16,7 +16,7 @@
       },
       position: {
         type: Object,
-        default: function(){
+        default(){
           return {
             position: {
               bottom: 5,
@@ -25,87 +25,48 @@
           };
         }
       },
+      source: {
+        type: Array
+      },
       history: {
         type: Number,
         default: 100
       },
     },
-    data: function(){
+    data(){
       return {
         isLoading: false,
         isSuccess: false,
         isError: false,
         text: '',
         id: false,
-        data: [],
         selected: 0,
         numLoaded: 0,
         info: false
       };
     },
 
+    computed: {
+      loadingItems(){
+        return bbn.fn.filter(this.source, {loading: true})
+      },
+      loadedItems(){
+        return bbn.fn.filter(this.source, {loading: false})
+      },
+      items(){
+        return this.source
+      },
+      currentItem(){
+        return this.loadingItems.length ? this.loadingItems[0] : (this.loadedItems.length ? this.loadedItems[0] : false)
+      },
+    },
+
     methods: {
-      start: function(url, id){
-        this.data.unshift({
-          text: url,
-          isLoading: true,
-          isError: false,
-          isSuccess: false,
-          isPage: false,
-          id: this.setId(id),
-          time: (new Date()).getTime()
-        });
-        this.numLoaded++;
-        if ( this.selected ){
-          this.selected++;
-        }
-        if ( this.data.length >= this.history ){
-          this.data.pop();
-        }
-      },
-
-      end: function(url, id, data, res){
-        let idx = bbn.fn.search(this.data, "id", id);
-        if ( idx > -1 ){
-          this.data.splice(idx, 1, $.extend(this.data[idx], {
-            isLoading: false,
-            isError: typeof(res) === 'string',
-            isSuccess: typeof(res) !== 'string',
-            isPage: (typeof(res) === 'object') && !!res.content && !!res.title,
-            error: typeof(res) === 'string' ? res : false,
-            length: (new Date()).getTime() - this.data[idx].time
-          }));
-        }
-      },
-
-      setId: function(id){
-        if ( !id ){
-          id = (new Date()).getTime();
-        }
-        return id;
-      },
-
-      update(selected){
-        if ( selected === undefined ){
-          selected = this.selected;
-        }
-        if ( this.data.length && this.data[selected] ){
-          this.isLoading = this.data[selected].isLoading;
-          this.isSuccess = this.data[selected].isSuccess;
-          this.isError = this.data[selected].isError;
-          this.isPage = this.data[selected].isPage;
-          this.text = this.data[selected].text;
-          this.id = this.data[selected].id;
-          this.length = this.data[selected].length || false;
-        }
-        else{
-          this.isLoading = false;
-          this.isSuccess = false;
-          this.isError = false;
-          this.isPage = false;
-          this.text = false;
-          this.id = false;
-          this.length = false;
+      cancel(item){
+        if ( item.loading ){
+          this.getPopup().confirm(bbn._("Are you sure you want to abort this request?"), (d) => {
+            bbn.fn.abort(item.url)
+          })
         }
       },
       deleteHistory(){
@@ -117,28 +78,7 @@
         });
         this.data = tmp;
       },
-      getInfo(){
-        this.info = true;
-      }
     },
-
-    mounted: function(){
-
-    },
-
-    watch: {
-      data(){
-        this.update();
-      },
-      selected(newVal, oldVal){
-        if ( this.data[newVal] ){
-          this.update();
-        }
-        else {
-          this.update(0);
-        }
-      }
-    }
   });
 
 })(jQuery, bbn, kendo);

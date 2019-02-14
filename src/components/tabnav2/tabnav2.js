@@ -325,7 +325,7 @@
 
       activateIndex(idx){
         if ( this.isValidIndex(idx) ){
-          //bbn.fn.log("ACTIVATE7", this.tabs[idx].current);
+          bbn.fn.log("ACTIVATE7", this.tabs[idx].current);
           this.activate(this.tabs[idx].current);
         }
       },
@@ -393,10 +393,6 @@
        */
       activate(url, force){
 
-        if ( !this.ready ){
-          return ;
-        }
-
         url = bbn.fn.removeTrailingChars(url, '/');
         // if no parameter is passed we use the current url
         let vm = this,
@@ -453,7 +449,7 @@
             vm.tabs[idx].current = url;
           }
           vm.selected = idx;
-          this.router.route(vm.tabs[idx].current);
+          this.route(vm.tabs[idx].current);
           bbn.fn.each(this.tabs, (t, i) => {
             let subtab = vm.getSubTabNav(i);
             if ( subtab ){
@@ -1039,10 +1035,10 @@
             parent.$vnode &&
             parent.$vnode.componentOptions
           ){
-            if ( !this.parentTab && (parent.$vnode.componentOptions.tag === 'bbns-tab') ){
+            if ( !this.parentTab && (parent.$vnode.componentOptions.tag === 'bbn-container') ){
               this.parentTab = parent;
             }
-            else if ( parent.$vnode.componentOptions.tag === 'bbn-tabnav' ){
+            else if ( parent.$vnode.componentOptions.tag === 'bbn-tabnav2' ){
               this.parents.push(parent);
             }
           }
@@ -1093,16 +1089,18 @@
           if ( cfg && cfg.tabs ){
             tabs = tabs.concat(cfg.tabs);
           }
-          let url;
+          let url = '';
+          /*
           if ( this.parents.length ){
             let idx = this.parents[0].search(this.baseURL.substr(0, this.baseURL.length - 1));
-            if ( this.parents[0].isValidIndex(idx) ){
-              url = this.parents[0].tabs[idx].current.substr(this.baseURL.length) || '';
+            if ( this.parents[0].isValidIndex(idx) && (this.parents[0].tabs[idx].current.indexOf(this.baseURL) === 0) ){
+              url = this.parents[0].tabs[idx].current.substr(this.baseURL.length);
             }
           }
-          else{
-            url = window.location.pathname.substr(this.fullBaseURL.length ? this.fullBaseURL.length : 1);
+          if ( !url && (window.location.pathname.indexOf(this.fullBaseURL) === 0) ){
+            url = window.location.pathname.substr(this.fullBaseURL.length);
           }
+          */
           bbn.fn.each(this.router.views, (a) => {
             this.add(a);
           });
@@ -1113,7 +1111,11 @@
             }
           });
           this.ready = true;
-          this.router.route(url, true);
+          if ( !url && tabs.length ){
+            this.activateDefault();
+          }
+          bbn.fn.log("TABNAV INTI", url, this.parents);
+          this.route(url, true);
         }
 
       }
@@ -1163,6 +1165,7 @@
 
     watch: {
       selected(newVal){
+        bbn.fn.log("CHANGE SELECTED TO " + newVal);
         if ( this.tabs[newVal] && this.ready ){
           this.$emit('select', this.tabs[newVal], newVal);
           if ( this.currentURL !== this.tabs[newVal].current ){
@@ -1172,6 +1175,7 @@
       },
       currentURL(newVal, oldVal){
         if ( newVal !== oldVal ){
+          bbn.fn.log("CHANGE currentURL TO " + newVal);
           if ( this.isValidIndex(this.selected) ){
             let tab = bbn.vue.getChildByKey(this, this.tabs[this.selected].url, 'bbns-tab');
             if (
@@ -1184,13 +1188,15 @@
               this.tabs[this.selected].current = newVal;
             }
             // CHECKING PARENTS
+            /*
             if ( this.parents.length ){
               this.parents[0].currentURL = this.baseURL + newVal;
             }
             else if ( this.autoload && this.ready ){
               this.setConfig();
             }
-            this.route(this.currentURL);
+            */
+            this.route(newVal);
             this.$emit('change', newVal, this.selected, oldVal);
           }
         }

@@ -1,6 +1,7 @@
 <div :class="['bbn-full-screen', componentClass]">
   <component :is="scrollable ? 'bbn-scroll' : 'div'"
              ref="scroll"
+             v-bind="scrollable ? {axis: 'y'} : {}"
              :class="{
                'bbn-w-100': scrollable,
                'bbn-100': !scrollable
@@ -72,7 +73,7 @@
             <div v-else-if="content"
                  v-html="content"
             ></div>
-            <ul v-else-if="currentItems">
+            <ul v-else-if="currentItems.length">
               <li v-for="(it, idx) in currentItems"
                   v-if="limit ? idx < limit : true"
                   :class="itemClass"
@@ -89,8 +90,10 @@
                 ></span>
               </li>
             </ul>
-            <div v-else>
-              <slot>Nothing to display</slot>
+            <div v-else-if="!isLoading">
+              <slot>
+                <div v-html="noData" class="bbn-w-100 bbn-c bbn-padded"></div>
+              </slot>
             </div>
             <div v-if="zoomable && currentItems && currentItems.length"
                  class="content-buttons zoom bbn-unselectable"

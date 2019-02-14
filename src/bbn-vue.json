@@ -88,6 +88,10 @@
       "active": true,
       "state": "stable"
     },
+    "finder": {
+      "active": true,
+      "state": "stable"
+    },
     "filter": {
       "active": true,
       "state": "stable"

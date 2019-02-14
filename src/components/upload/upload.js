@@ -163,7 +163,7 @@
                 this.$emit('error', {file: d.name, message: bbn._('The file exists!')});
                 return false;
               }
-              if ( this.extensions.length ){
+              if ( bbn.fn.isArray(this.extensions) && this.extensions.length ){
                 let ext = d.name.substring(d.name.lastIndexOf('.')+1);
                 if ( this.extensions.indexOf(ext) === -1 ){
                   this.$emit('error', { file: d.name, message: `${bbn._('The extension')} ${ext} ${bbn._('is not allowed')}!` });
@@ -173,6 +173,14 @@
               return true;
             },
             onComplete: (id, name, responseJSON, xhr) => {
+              if ( responseJSON.file || responseJSON.fichier ){
+                let f = responseJSON.file || responseJSON.fichier;
+                if ( f.name !== name ){
+                  bbn.fn.log('aaaaa', name, responseJSON, xhr);
+                  this.widget.setName(id, f.name);
+                  //this.widgetValue = this.widget.getUploads({ status: [qq.status.UPLOAD_SUCCESSFUL] }) || [];
+                }
+              }
               this.$emit('success', id, name, responseJSON, xhr);
             },
             onError: (id, name, errorReason, xhr) => {

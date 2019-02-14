@@ -114,6 +114,16 @@
           return [];
         }
       },
+      multiselect: {
+        type: Boolean,
+        default: true
+      },
+      selectedValues: {
+        type: [Array, String],
+        default(){
+          return []
+        }
+      },
       value: {}
     },
 
@@ -173,7 +183,8 @@
         realDragging: false,
         checked: [],
         disabled: [],
-        currentExpanded: []
+        currentExpanded: [],
+        currentSelectedValues: []
       };
     },
 
@@ -602,7 +613,7 @@
           }
         }
       },
-
+      
       mapper(fn, data){
         let res = [];
         $.each(data, (i, a) => {
@@ -627,6 +638,7 @@
             this.loading = false;
             if ( res.data ){
               this.items = this.tree._map(res.data);
+              this.$emit('load', res);
               /*
               if ( this.tree.map ){
                 this.items = this.mapper(this.tree.map, res.data);
@@ -1242,17 +1254,15 @@
               this.resize();
             }
           },
-          isSelected(newVal){
-            if ( newVal && this.tree.selectedNode ){
-              this.tree.selectedNode.isSelected = false;
-            }
+          isSelected(newVal, oldVal){
             if ( newVal ){
+              if ( this.tree.selectedNode ){
+                this.tree.selectedNode.isSelected = false;
+                this.tree.$emit('unselect', this);
+              }
               let ev = $.Event('select');
               this.tree.$emit('select', this, ev);
               this.tree.selectedNode = this;
-            }
-            else{
-              this.tree.$emit('unselect', this);
             }
           },
           isActive(newVal){

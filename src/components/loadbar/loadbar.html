@@ -1,8 +1,7 @@
-<div :class="[{'bbn-100': true, 'bbn-unselectable': true}, componentClass]"
->
-  <span class="content" v-if="id">
-    <span class="buttons" v-if="data.length">
-      <!--i :title="_('History informations')"
+<div :class="[{'bbn-100': true, 'bbn-unselectable': true}, componentClass]" @click="info = true">
+  <span class="content">
+    <!--span class="buttons" v-if="data.length">
+      <i :title="_('History informations')"
          :class="{
            'bbn-p': false,
            'bbn-lg': true,
@@ -10,7 +9,7 @@
            'fa-info-circle': true
          }"
          @click="getInfo"
-      ></i-->
+      ></i>
       <i :title="_('Delete history')"
          :class="{
            'bbn-p': data.length,
@@ -51,22 +50,42 @@
          }"
          @click="selected = 0"
       ></i>
+    </span-->
+    <span class="bbn-loadbar-state">
+      <bbn-loadicon v-if="currentItem.loading" class="bbn-blue"></bbn-loadicon>
+      <i v-else-if="currentItem.error" class="fas fa-times-circle bbn-red"></i>
+      <i v-else-if="currentItem.success" class="fas fa-check bbn-green"></i>
+      <i v-else-if="currentItem.abort" class="zmdi zmdi-stop bbn-orange"></i>
     </span>
-    <span class="loader">
-      <bbn-loadicon v-if="isLoading" class="bbn-blue"></bbn-loadicon>
-      <i v-else-if="isError" class="fa fa-warning bbn-red"></i>
-      <i v-else-if="isSuccess" class="fa fa-check bbn-green"></i>
-    </span>
-    <a :href="isPage ? text : 'javascript:;'" :title="text + ' ' + (isLoading ? _('Loading') + '...' : _('Loaded in') + ' ' + length + 'ms')" :style="isPage ? '' : 'color: inherit; cursor: default'">
-      <span class="text" v-if="encoded" v-text="text"></span>
-      <span class="text" v-else v-html="text"></span>
+    <a href="javascript:;" :title="text + ' ' + _('Loading')" style="color: inherit; cursor: default" v-if="currentItem">
+      <span class="text" v-text="currentItem.url"></span>
     </a>
   </span>
-  <div class="k-widget"
-       style="position: absolute; width: 100%; height: 300px; bottom: 100%; left: 0px"
-       v-show="info">
-    <div class="bbn-full-screen bbn-middle">
-      <h1>Hello!</h1>
+  <transition name="fade">
+    <div class="bbn-loadbar-floater k-widget"
+         v-if="info && items.length"
+         @mouseenter="info = true"
+         @mouseleave="info = false">
+      <div class="k-header bbn-w-100 bbn-c">
+        <h5 v-text="_('Loading scripts')"></h5>
+      </div>
+      
+      <div class="bbn-w-100 bbn-padded">
+        <ul class="bbn-reset">
+          <li v-for="it of items" @click="cancel(it)">
+            <span class="bbn-loadbar-time">
+            
+            </span>
+            <span class="bbn-loadbar-state">
+              <bbn-loadicon v-if="it.loading" class="bbn-blue"></bbn-loadicon>
+              <i v-else-if="it.error" class="fas fa-times-circle bbn-red"></i>
+              <i v-else-if="it.success" class="fas fa-check bbn-green"></i>
+              <i v-else-if="it.abort" class="zmdi zmdi-stop bbn-orange"></i>
+            </span>
+            <span v-text="it.url"></span>
+          </li>
+        </ul>
+      </div>
     </div>
-  </div>
+  </transition>
 </div>

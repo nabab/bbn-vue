@@ -224,6 +224,7 @@
         tab: false,
         originalData: {},
         isPosted: false,
+        isLoading: false,
         currentSchema: currentSchema
       };
     },
@@ -244,14 +245,14 @@
                 r.push({
                   text: bbn._('Cancel'),
                   icon: 'fa fa-times-circle',
-                  command: this.cancel
+                  command: 'cancel'
                 });
                 break;
               case 'reset':
                 r.push({
                   text: bbn._('Reset'),
                   icon: 'fa fa-refresh',
-                  command: this.reset,
+                  command: 'reset',
                   checkDisabled: true
                 });
                 break;
@@ -259,7 +260,7 @@
                 r.push({
                   text: bbn._('Submit'),
                   icon: 'fa fa-check-circle',
-                  command: this.submit,
+                  command: 'submit',
                   checkDisabled: true
                 });
                 break;
@@ -291,7 +292,7 @@
        */
       currentClass(){
         let st = 'k-edit-form-container ' + this.componentClass.join(' ');
-        if ( this.fixedFooter ){
+        if ( this.fixedFooter && this.scrollable ){
           st += ' bbn-flex-height';
         }
         if ( this.fullScreen ){
@@ -311,6 +312,7 @@
        */
       _post(){
         this.isPosted = true;
+        this.isLoading = true;
         if ( this.action ){
           bbn.fn[this.blank || this.self ? 'post_out' : 'post'](this.action, $.extend(true, {}, this.data, this.source), (d) => {
             this.originalData = $.extend(true, {}, this.source);
@@ -327,6 +329,7 @@
             if ( this.tab && this.tab.tabNav ){
               this.tab.tabNav.tabs[this.tab.tabNav.selected].isUnsaved = this.modified;
             }
+            this.isLoading = false;
             if ( !e.isDefaultPrevented() ){
               let p = this.getPopup();
               if ( p ){
@@ -334,7 +337,8 @@
               }
             }
           }, !this.blank && !this.self ? (xhr, textStatus, errorThrown) => {
-            this.$emit('failure', xhr, textStatus, errorThrown)
+            this.$emit('failure', xhr, textStatus, errorThrown);
+              this.isLoading = false;
           } : (this.self ? '_self' : '_blank'));
         }
         else{
@@ -348,6 +352,7 @@
           if ( this.tab && this.tab.tabNav ){
             this.tab.tabNav.tabs[this.tab.tabNav.selected].isUnsaved = this.modified;
           }
+          this.isLoading = false;
           if ( !e.isDefaultPrevented() ){
             let p = this.getPopup();
             if ( p ){
@@ -439,7 +444,7 @@
           });
         }
         if ( ok && this.validation ){
-          ok = this.validation(this.source, this.originalData)
+          ok = this.validation(this.source, this.originalData, force)
         }
         if ( !ok ){
           return false;

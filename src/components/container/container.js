@@ -23,18 +23,27 @@
    * otherwise.
    * @param {boolean|number} selected - The index of the currently selected tab, and false otherwise.
    */
+
+  // Will hold all the current rendered components random names to avoid doubles
+  let componentsList = [];
+
   Vue.component("bbn-container", {
     name: 'bbn-container',
     mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent, bbn.vue.viewComponent],
 
     data(){
       return {
+        // The router to which belongs the container if any
         router: null,
-        cached: true,
+        // The content of the container will or not remain in memory when hidden
+        cached: false,
+        // Should the conatiner be shown
         visible: false,
+        // Is the container a component???
         isComponent: null,
         fullScreen: false,
-        componentName: bbn.fn.randomString(20, 15).toLowerCase(),
+        // A random unique component name
+        componentName: this.randomName(),
         popups: [],
         isComponentActive: false,
         currentURL: this.url
@@ -42,6 +51,13 @@
     },
 
     methods: {
+      randomName(){
+        let n = bbn.fn.randomString(20, 15).toLowerCase();
+        while ( componentsList.indexOf(n) > -1 ){
+          n = bbn.fn.randomString(20, 15).toLowerCase();
+        }
+        return n;
+      },
       show(){
         this.visible = true
       },
@@ -237,7 +253,10 @@
     },
 
     created(){
-      if ( this.isComponent === null ){
+      if ( this.isComponent ){
+        componentsList.push(this.componentName);
+      }
+      else if ( this.isComponent === null ){
         // The default onMount funciton is to do nothing.
         this.onMount = () => {
           return false;
@@ -257,18 +276,34 @@
       }
     },
 
+    beforeDestroy(){
+      if ( this.isComponent ){
+        let idx = componentsList.indexOf(this.componentName);
+        if ( idx > -1 ){
+          componentsList.splice(idx, 1);
+        }
+      }
+    },
+
     watch: {
       load(nv, ov){
+        /** Why????
         if ( nv && this.$options.components[this.componentName] ){
           delete this.$options.components[this.componentName];
         }
         else if ( !nv && ov ){
           this.init()
         }
+         */
       },
       visible(nv, ov){
         this.$nextTick(() => {
-          this.$emit(nv ? 'view' : 'unview', this)
+          this.$emit(nv ? 'view' : 'unview', this);
+          if ( nv ){
+            this.$nextTick(() => {
+              this.selfEmit(true)
+            })
+          }
         })
       },
       content(newVal, oldVal){
@@ -316,8 +351,11 @@
           document.body.removeEventListener('keydown', fn);
         }
         this.$nextTick(() => {
-          this.onResize();
+          this.selfEmit(true)
         })
+      },
+      currentURL(newVal, oldVal){
+        this.$emit("change", newVal);
       }
     },
 
