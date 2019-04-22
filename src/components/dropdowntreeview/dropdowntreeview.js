@@ -224,7 +224,7 @@
 					opt.optionLabel = cfg.placeholder;
 				}
         opt.change = () => {
-					if ( $.isFunction(cfg.change) ){
+					if (bbn.fn.isFunction(cfg.change) ){
 						return cfg.change();
 					}
         };
@@ -234,7 +234,7 @@
 				if ( cfg.dataValueField ){
 					cfg.treeview.dataValueField = cfg.dataValueField;
 				}
-				opt.treeview = $.extend(cfg.treeview, {
+				opt.treeview = bbn.fn.extend(cfg.treeview, {
 					dataSource: new kendo.data.HierarchicalDataSource({
 						data: this.source,
 						schema: {
@@ -261,7 +261,7 @@
       }
     },
     data: function(){
-      return $.extend({
+      return bbn.fn.extend({
         widgetName: "kendoDropDownTreeView"
       }, bbn.vue.treatData(this));
     },

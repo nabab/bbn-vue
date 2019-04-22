@@ -48,7 +48,7 @@
       }
     },
     data: function(){
-      return $.extend({
+      return bbn.fn.extend({
         widgetName: "kendoProgressBar"
       }, bbn.vue.treatData(this));
     },

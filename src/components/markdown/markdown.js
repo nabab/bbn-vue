@@ -49,7 +49,7 @@
       }
     },
     data(){
-      return $.extend({
+      return bbn.fn.extend({
         widgetName: "SimpleMDE",
       }, bbn.vue.treatData(this));
     },
@@ -88,13 +88,13 @@
     },
     mounted(){
       const vm = this;
-      let cfg = $.extend(vm.getOptions(), {
+      let cfg = bbn.fn.extend(vm.getOptions(), {
         change: function(e){
           vm.emitInput(vm.widget.value());
           return true
         }
       });
-      this.widget = new SimpleMDE($.extend({
+      this.widget = new SimpleMDE(bbn.fn.extend({
         element: this.$refs.element
       }, this.getOptions()));
       this.widget.codemirror.on("change", () => {

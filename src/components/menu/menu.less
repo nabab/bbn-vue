@@ -1,7 +1,24 @@
 .bbn-menu{
-  li.k-item {
-    i{
-      margin-right: 0.5em;
+  > ul{
+    zoom: 1;
+    cursor: default;
+    > li.bbn-menu-item {
+      display: table-cell;
+      list-style: none;
+      user-select: none;
+      white-space: nowrap;
+      margin: 0;
+      padding: 0.3em 1em;
+      line-height: 1.7em;
+      zoom: 1;
+      line-height: normal;
+      font-size: 100%;
+      &:not(.bbn-disabled){
+        cursor: pointer;
+      }
+      span.bbn-menu-icon{
+        margin-right: 0.5em;
+      }
     }
   }
 }

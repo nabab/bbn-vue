@@ -237,7 +237,7 @@
         let data = [],
             fixSeriesLabels = (ser) => {
               let tmp = {};
-              if ($.isArray(ser) ){
+              if (bbn.fn.isArray(ser) ){
                 $.each(ser, (i, s) => {
                   tmp[this.source.labels[i]] = s;
                 });
@@ -245,7 +245,7 @@
               return tmp;
             };
         if ( (typeof this.source === 'object') && this.source.series && this.source.labels ){
-          if ( $.isArray(this.source.series[0]) ){
+          if (bbn.fn.isArray(this.source.series[0]) ){
             $.each(this.source.series, (i, s) => {
               let tmp = fixSeriesLabels(s);
               if ( this.legend && this.legend[i] ){
@@ -261,10 +261,10 @@
             data.push(fixSeriesLabels(this.source.series));
           }
         }
-        else if ( $.isArray(this.source) ){
+        else if (bbn.fn.isArray(this.source) ){
           $.each(this.source, (i, s) => {
             let tmp = {};
-            if ( $.isArray(s) ){
+            if (bbn.fn.isArray(s) ){
               $.each(s, (k, v) => {
                 tmp[v[0]] = v[1];
               });
@@ -320,13 +320,13 @@
       },
       lineCfg(){
         let cfg = {};
-        return this.isLine ? $.extend(true, cfg, this.lineBarCommon) : {};
+        return this.isLine ? bbn.fn.extend(true, cfg, this.lineBarCommon) : {};
       },
       barCfg(){
         let cfg = {
           seriesBarDistance: this.barsDistance
         };
-        return this.isBar ? $.extend(true, cfg, this.lineBarCommon) : {};
+        return this.isBar ? bbn.fn.extend(true, cfg, this.lineBarCommon) : {};
       },
       lineBarCommon(){
         return {};
@@ -338,13 +338,13 @@
               bottom: this.paddingBottom || this.padding,
               left: this.paddingLeft || this.padding
             },
-            axisX: $.extend(true, {
-              showLabel: $.isFunction(this.showLabelX) ? true : this.showLabelX,
+            axisX: bbn.fn.extend(true, {
+              showLabel:bbn.fn.isFunction(this.showLabelX) ? true : this.showLabelX,
               showGrid: this.showGridX,
               position: this.reverseLabelX ? 'start' : 'end'
             }, this.axisX),
-            axisY: $.extend(true, {
-              showLabel: $.isFunction(this.showLabelY) ? true : this.showLabelY,
+            axisY: bbn.fn.extend(true, {
+              showLabel:bbn.fn.isFunction(this.showLabelY) ? true : this.showLabelY,
               showGrid: this.showGridY,
               position: this.reverseLabelY ? 'end' : 'start',
               onlyInteger: this.onlyInteger,
@@ -378,11 +378,11 @@
             };
           }
           // Custom axisX label
-          if ( $.isFunction(this.showLabelX) ){
+          if (bbn.fn.isFunction(this.showLabelX) ){
             cfg.axisX.labelInterpolationFnc = this.showLabelX;
           }
           // Custom axisY label
-          if ( $.isFunction(this.showLabelY) ){
+          if (bbn.fn.isFunction(this.showLabelY) ){
             cfg.axisY.labelInterpolationFnc = this.showLabelY;
             cfg.axisY.offset = 100;
           }
@@ -457,7 +457,7 @@
       scatterCfg(){},
       widgetCfg(){
         return {};
-        let cfg = $.extend(true, {
+        let cfg = bbn.fn.extend(true, {
           type: this.type,
           fullWidth: this.fullWidth,
           width: this.width,
@@ -466,13 +466,13 @@
           plugins: this.plugins
         }, this.cfg);
         if ( this.isLine ){
-          $.extend(true, cfg, this.lineCfg);
+          bbn.fn.extend(true, cfg, this.lineCfg);
         }
         if ( this.isBar ){
-          $.extend(true, cfg, this.barCfg);
+          bbn.fn.extend(true, cfg, this.barCfg);
         }
         if ( this.isPie ){
-          $.extend(true, cfg, this.pieCfg);
+          bbn.fn.extend(true, cfg, this.pieCfg);
         }
         return cfg;
       }
@@ -549,7 +549,7 @@
       lineAnimation(){
         if ( this.animation ){
           let seq = 0,
-              delays = $.isNumeric(this.animation) ? this.animation : 20,
+              delays =bbn.fn.isNumber(this.animation) ? this.animation : 20,
               durations = 500;
           // Once the chart is fully created we reset the sequence
           this.widget.on('created', () => {
@@ -654,7 +654,7 @@
       },
       barAnimation(){
         if ( this.animation ){
-          let delays = $.isNumeric(this.animation) ? this.animation : 500,
+          let delays =bbn.fn.isNumber(this.animation) ? this.animation : 500,
               durations = 500;
           this.widget.on('draw', (chartData) => {
             if ( chartData.type === 'bar' ){
@@ -772,7 +772,7 @@
               let animationDefinition = {
                 'stroke-dashoffset': {
                   id: 'anim' + chartData.index,
-                  dur: $.isNumeric(this.animation) ? this.animation : 500,
+                  dur:bbn.fn.isNumber(this.animation) ? this.animation : 500,
                   from: -pathLength + 'px',
                   to: '0px',
                   easing: Chartist.Svg.Easing.easeOutQuint,
@@ -968,7 +968,7 @@
           // Reset zoom
           /*if ( this.zoom && this.isLine ){
             $(this.widget.container).dblclick(() => {
-              if ( this.resetZoom && $.isFunction(this.resetZoom) ){
+              if ( this.resetZoom &&bbn.fn.isFunction(this.resetZoom) ){
                 this.resetZoom();
               }
             });

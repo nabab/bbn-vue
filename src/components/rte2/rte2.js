@@ -68,7 +68,7 @@
         maxHeight: this.$el.clientHeight,
         callbacks: {
           onInit: (editor) => {
-            editor.toolbar.addClass('k-widget');
+            editor.toolbar.addClass('bbn-widget');
             bbn.fn.log(arguments)
           },
           onChange: (contents, editor) => {

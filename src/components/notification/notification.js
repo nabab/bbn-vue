@@ -72,8 +72,8 @@
           var cfg = vm.tplCfg;
           return '<div class="bbn-notification k-notification-wrap ' +
             '">' +
-/*            ( type && cfg[type] ? '<div class="bbn-notification-close k-i-close k-button" title="' + bbn.lng.close + '"><i class="fa fa-times"> </i></div>' : '' ) +
-            ( type && cfg[type] ? '<i class="bbn-notification-icon fa fa-' + cfg[type].icon + '"> </i>' : '<span class="bbn-notification-icon loader"><span class="loader-inner"></span></span> ' ) + */
+/*            ( type && cfg[type] ? '<div class="bbn-notification-close k-i-close k-button" title="' + bbn.lng.close + '"><i class="nf nf-fa-times"> </i></div>' : '' ) +
+            ( type && cfg[type] ? '<i class="bbn-notification-icon nf nf-fa-' + cfg[type].icon + '"> </i>' : '<span class="bbn-notification-icon loader"><span class="loader-inner"></span></span> ' ) + */
             ( obj.title ? '<span class="bbn-b">' + obj.title + '</span><hr>' : '' ) +
             ( obj.content ? obj.content : ( obj.text ? obj.text : bbn.lng.loading ) ) +
             '</div>';
@@ -88,7 +88,7 @@
           obj = {};
         }
         if ( !obj.text ){
-          obj.text = $.isFunction(this[type + 'Message']) ? this[type + 'Message'](obj) : this[type + 'Message']
+          obj.text =bbn.fn.isFunction(this[type + 'Message']) ? this[type + 'Message'](obj) : this[type + 'Message']
         }
         if ( !obj.text ){
           obj.text = '';

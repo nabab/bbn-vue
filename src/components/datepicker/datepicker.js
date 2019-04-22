@@ -20,7 +20,7 @@
               max: options.max || undefined,
               min: options.min || undefined,
               depth: options.depth || undefined,
-              start: options.depth || undefined,
+              start: options.start || undefined,
               value: options.value || undefined,
               footer: options.footer !== undefined ? options.footer : undefined
             })
@@ -182,19 +182,19 @@
 
       ivalue(){
         return kendo.toString(
-          kendo.parseDate(this.value, $.isFunction(this.valueFormat) ? this.valueFormat(this.value) : this.valueFormat),
+          kendo.parseDate(this.value,bbn.fn.isFunction(this.valueFormat) ? this.valueFormat(this.value) : this.valueFormat),
           this.format
         );
       },
       fixedValue(){
         if ( this.value ){
-          return kendo.parseDate(this.value, $.isFunction(this.valueFormat) ? this.valueFormat(this.value) : this.valueFormat);
+          return kendo.parseDate(this.value,bbn.fn.isFunction(this.valueFormat) ? this.valueFormat(this.value) : this.valueFormat);
         }
         return false;
       }
     },
     data(){
-      return $.extend({
+      return bbn.fn.extend({
         widgetName: "kendoMaskedDatePicker"
       }, bbn.vue.treatData(this));
     },
@@ -205,7 +205,7 @@
      */
     mounted(){
       const vm = this;
-      this.widget = $(this.$refs.element).kendoMaskedDatePicker($.extend({}, this.getOptions(), {
+      this.widget = $(this.$refs.element).kendoMaskedDatePicker(bbn.fn.extend({}, this.getOptions(), {
         format: this.format,
         parseFormats: this.parseFormats,
         mask: this.mask,
@@ -218,7 +218,7 @@
         change: function(e){
           vm.emitInput(kendo.toString(
             vm.widget.value(),
-            $.isFunction(vm.valueFormat) ? vm.valueFormat(vm.widget.value()) : vm.valueFormat
+           bbn.fn.isFunction(vm.valueFormat) ? vm.valueFormat(vm.widget.value()) : vm.valueFormat
           ));
           return true;
         }

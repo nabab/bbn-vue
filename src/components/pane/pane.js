@@ -53,7 +53,7 @@
       }
     },
     mounted(){
-      if ( $.isFunction(this.$parent.init) ){
+      if (bbn.fn.isFunction(this.$parent.init) ){
         this.selfEmit(true);
         this.$parent.init();
         setTimeout(() => {

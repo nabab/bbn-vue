@@ -75,7 +75,7 @@
         default: '100%'
       },
       /**
-       * Set it to true if you want to see the value points on the line chart.
+       * Set to true shows the value points on the line chart.
        *
        * @prop {Boolean} [true] showPoint
        */
@@ -84,7 +84,7 @@
         default: true
       },
       /**
-       * Set it to true if you want to see the grid on the line and bar charts.
+       * Set to true shows the grid line on the chart.
        *
        * @prop {Boolean} [true] showLine
        */
@@ -93,7 +93,7 @@
         default: true
       },
       /**
-       * Set it to true if you want to see a smooth line on the line chart.
+       * Set to true shows a smooth line on the line chart.
        *
        * @prop {Boolean} [false] lineSmooth
        */
@@ -102,7 +102,7 @@
         default: false
       },
       /**
-       * Set it to true if you want to see a donut pie chart. If you give an integer it will be used as the donut width.
+       * Set to true to create a donut pie chart. If you give an integer it will be used as the donut width.
        *
        * @prop {Boolean|Number} [false] donut
        */
@@ -572,7 +572,7 @@
         if ( this.tooltip ){
           plugins.push(Chartist.plugins.tooltip({
             currency: this.currency || false,
-            transformTooltipTextFnc: $.isFunction(this.tooltip) ? this.tooltip : undefined
+            transformTooltipTextFnc:bbn.fn.isFunction(this.tooltip) ? this.tooltip : undefined
           }));
         }
         // axis X/Y title
@@ -703,7 +703,7 @@
           pointLabel: this.pointLabel,
           showArea: this.showArea
         };
-        return this.isLine ? $.extend(true, cfg, this.lineBarCommon) : {};
+        return this.isLine ? bbn.fn.extend(true, cfg, this.lineBarCommon) : {};
       },
       /**
        * Makes the base configuration object for the 'bar' chart.
@@ -717,7 +717,7 @@
           stackBars: this.barsDistance === 0,
           horizontalBars: this.horizontalBars
         };
-        return this.isBar ? $.extend(true, cfg, this.lineBarCommon) : {};
+        return this.isBar ? bbn.fn.extend(true, cfg, this.lineBarCommon) : {};
       },
       /**
        * Makes a common configuration object for the 'line' and 'bar' charts.
@@ -734,13 +734,13 @@
               bottom: this.paddingBottom || this.padding,
               left: this.paddingLeft || this.padding
             },
-            axisX: $.extend(true, {
-              showLabel: $.isFunction(this.showLabelX) ? true : this.showLabelX,
+            axisX: bbn.fn.extend(true, {
+              showLabel:bbn.fn.isFunction(this.showLabelX) ? true : this.showLabelX,
               showGrid: this.showGridX,
               position: this.reverseLabelX ? 'start' : 'end'
             }, this.axisX),
-            axisY: $.extend(true, {
-              showLabel: $.isFunction(this.showLabelY) ? true : this.showLabelY,
+            axisY: bbn.fn.extend(true, {
+              showLabel:bbn.fn.isFunction(this.showLabelY) ? true : this.showLabelY,
               showGrid: this.showGridY,
               position: this.reverseLabelY ? 'end' : 'start',
               onlyInteger: this.onlyInteger,
@@ -774,11 +774,11 @@
             };
           }
           // Custom axisX label
-          if ( $.isFunction(this.showLabelX) ){
+          if (bbn.fn.isFunction(this.showLabelX) ){
             cfg.axisX.labelInterpolationFnc = this.showLabelX;
           }
           // Custom axisY label
-          if ( $.isFunction(this.showLabelY) ){
+          if (bbn.fn.isFunction(this.showLabelY) ){
             cfg.axisY.labelInterpolationFnc = this.showLabelY;
             cfg.axisY.offset = 100;
           }
@@ -861,7 +861,7 @@
        * @return {Object}
        */
       widgetCfg(){
-        let cfg = $.extend(true, {
+        let cfg = bbn.fn.extend(true, {
           type: this.type,
           fullWidth: this.fullWidth,
           width: this.width,
@@ -870,13 +870,13 @@
           plugins: this.plugins
         }, this.cfg);
         if ( this.isLine ){
-          $.extend(true, cfg, this.lineCfg);
+          bbn.fn.extend(true, cfg, this.lineCfg);
         }
         if ( this.isBar ){
-          $.extend(true, cfg, this.barCfg);
+          bbn.fn.extend(true, cfg, this.barCfg);
         }
         if ( this.isPie ){
-          $.extend(true, cfg, this.pieCfg);
+          bbn.fn.extend(true, cfg, this.pieCfg);
         }
         return cfg;
       }
@@ -914,7 +914,7 @@
         }
       },
       /**
-       * Makes a Pie Chart.
+       * Creates a Pie Chart.
        *
        * @method pieChart
        * @fires pieDraw
@@ -925,24 +925,24 @@
         this.pieDraw();
       },
       /**
-       * Makes a Line Chart.
+       * Creates a Line Chart.
        *
        * @method lineChart
        * @fires lineDraw
        */
       lineChart(){
-        // Create widget
+        // Creates widget
         this.widget = new Chartist.Line(this.$refs.chart, this.data, this.widgetCfg);
         this.lineDraw();
       },
       /**
-       * Makes a Bar Chart.
+       * Creates a Bar Chart.
        *
        * @method barChart
        * @fires barDraw
        */
       barChart(){
-        // Create widget
+        // Creates widget
         this.widget = new Chartist.Bar(this.$refs.chart, this.data, this.widgetCfg);
         this.barDraw();
       },
@@ -988,7 +988,7 @@
 
           // Animation
           if ( this.animation ){
-            let delays = $.isNumeric(this.animation) ? this.animation : 20,
+            let delays =bbn.fn.isNumber(this.animation) ? this.animation : 20,
                 durations = 500;
             seq++;
             if ( (chartData.type === 'line') || (chartData.type === 'area') ){
@@ -1119,7 +1119,7 @@
 
           // Animation
           if ( this.animation ){
-            let delays = $.isNumeric(this.animation) ? this.animation : 500,
+            let delays =bbn.fn.isNumber(this.animation) ? this.animation : 500,
                 durations = delays;
             if ( chartData.type === 'bar' ){
               let color = Array.isArray(this.colors) ? this.colors[this.legend ? this.getColorIdx(chartData) : chartData.seriesIndex] : false,
@@ -1259,7 +1259,7 @@
 
           // Animation
           if ( this.animation ){
-            let dur = $.isNumeric(this.animation) ? this.animation : 500;
+            let dur = bbn.fn.isNumber(this.animation) ? this.animation : 500;
             if ( chartData.type === 'slice' ){
               let style = chartData.element.attr('style'),
                   color;
@@ -1330,7 +1330,7 @@
        * Sets the colors to an element.
        *
        * @method setColor
-       * @param {Object} chartData A Chartist.js SVG element
+       * @param {Object} chartData 
        * @fires getColorIdx
        */
       setColor(chartData){
@@ -1470,7 +1470,7 @@
           // Reset zoom
           /*if ( this.zoom && this.isLine ){
             $(this.widget.container).dblclick(() => {
-              if ( this.resetZoom && $.isFunction(this.resetZoom) ){
+              if ( this.resetZoom &&bbn.fn.isFunction(this.resetZoom) ){
                 this.resetZoom();
               }
             });
@@ -1480,7 +1480,7 @@
     },
     watch: {
       /**
-       * @watch source
+       * @watch source 
        * @fires init
        */
       source(val){

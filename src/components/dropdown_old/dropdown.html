@@ -1,0 +1,14 @@
+<span :class="componentClass"
+      @keydown.enter="_pressEnter"
+      @keydown.space="_pressEnter"
+      @click="click($event)"
+      @focus="focus($event)"
+      @blur="blur($event)">
+  <input :value="value"
+         ref="element"
+         :disabled="disabled"
+         :required="required"
+         :readonly="readonly"
+         :name="name"
+  >
+</span>

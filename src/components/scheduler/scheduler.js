@@ -157,7 +157,7 @@
         }
       },
       randomClass(){
-        return bbn.fn.pickValue(['w3-green', 'w3-blue', 'w3-orange', 'w3-teal'])
+        return bbn.fn.pickValue(['bbn-green', 'bbn-blue', 'bbn-orange', 'bbn-teal'])
       }
     }
   })

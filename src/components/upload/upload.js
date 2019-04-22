@@ -57,7 +57,7 @@
         default(){
           return {
             uploadButton: bbn._('Upload a file'),
-            pasteContainer: '<i class="fa fa-paste bbn-xl"></i> Ctrl+V',
+            pasteContainer: '<i class="nf nf-fa-paste bbn-xl"></i> Ctrl+V',
             dropHere: bbn._('Drop files here'),
             processingDropped: bbn._('Processing dropped files') + '...',
             retry: bbn._('Retry'),
@@ -75,7 +75,7 @@
       },
       icon: {
         type: String,
-        default: 'fas fa-upload'
+        default: 'nf nf-fa-upload'
       },
       extensions: {
         type: Array,
@@ -107,7 +107,7 @@
       getValue(){
         let files = $.map(this.widgetValue, (e) => {
           let s = bbn.fn.get_row(this.getSource, 'name', e.originalName);
-          return $.extend(s || {}, {
+          return bbn.fn.extend(s || {}, {
             name: e.name,
             //size: e.size,
             extension: e.name.slice(e.name.lastIndexOf('.'))
@@ -301,7 +301,7 @@
       'bbn-uploader-prompt': {
         props: ['source'],
         template: `
-<bbn-form class="bbn-full-screen"
+<bbn-form class="bbn-overlay"
           @submit.prevent="submit"
           :prefilled="true"
           confirmLeave=""

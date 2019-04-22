@@ -49,11 +49,11 @@
                 <!-- If there are no children we leave the white space -->
                 <span v-if="!numChildren || (level < tree.minExpandLevel)"> </span>
                 <i v-else-if="isExpanded"
-                   class="fas fa-caret-down"
+                   class="nf nf-fa-caret_down"
                    @click="isExpanded = false"
                 ></i>
                 <i v-else
-                   class="fas fa-caret-right"
+                   class="nf nf-fa-caret_right"
                    @click="isExpanded = true"
                    @mouseover="if ( tree.dragging ){ isExpanded = true; }"
                 ></i>
@@ -98,7 +98,7 @@
                        :style="iconStyle"
                     ></i>
                     <i v-else
-                       class="fa fa-file"
+                       class="nf nf-fa-file"
                        :style="iconStyle"
                     ></i>
                   </span>

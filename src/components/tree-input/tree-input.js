@@ -9,8 +9,8 @@
       return $.map(d.data, function(v){
         var r = {
           title: v.text,
-          /** @todo apply a function on the icons for removing all which only have 'cogs' (without fa fa-) */
-          icon: v.icon && v.icon.length ? v.icon : 'fa fa-cog',
+          /** @todo apply a function on the icons for removing all which only have 'cogs' (without nf nf-fa-) */
+          icon: v.icon && v.icon.length ? v.icon : 'nf nf-fa-cog',
           data: {}
         };
         if ( v.code ){
@@ -53,7 +53,7 @@
       }
     },
     data: function(){
-      return $.extend({
+      return bbn.fn.extend({
         widgetName: "fancytree",
         ivalue: this.currentSelection ? this.currentSelection : ''
       }, bbn.vue.treatData(this));
@@ -61,7 +61,7 @@
     methods: {
       build: function(){
         var vm = this,
-            cfg = $.extend({
+            cfg = bbn.fn.extend({
               extensions: this.extensions,
               keydown: function (e, d) {
                 if ((e.key === 'Enter') || (e.key === ' ')) {

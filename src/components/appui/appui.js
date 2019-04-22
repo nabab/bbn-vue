@@ -13,30 +13,6 @@
   Vue.component('bbn-appui', {
     mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent, bbn.vue.localStorageComponent, bbn.vue.observerComponent],
     props: {
-      header: {
-        type: [Boolean, Object],
-        default: false
-      },
-      status: {
-        type: [Boolean, Object],
-        default: false
-      },
-      tabnav: {
-        type: Boolean,
-        default: false
-      },
-      pollable: {
-        type: Boolean,
-        default: false
-      },
-      pollerPath: {
-        type: String,
-        default: 'core/poller'
-      },
-      root: {
-        type: String,
-        required: true
-      },
       url: {
         type: String,
         default: bbn.env.path
@@ -68,22 +44,6 @@
           return {}
         }
       },
-      logoPath: {
-        type: String,
-        default: 'https://bbn.solutions/logo.png'
-      },
-      leftShortcuts: {
-        type: Array,
-        default(){
-          return []
-        }
-      },
-      rightShortcuts: {
-        type: Array,
-        default(){
-          return []
-        }
-      },
       cfg: {
         type: Object,
         default(){
@@ -100,7 +60,7 @@
             title: bbn._("Dashboard"),
             load: true,
             static: true,
-            icon: 'fas fa-tachometer-alt'
+            icon: 'nf nf-fa-tachometer_alt'
           }*/];
         }
       },
@@ -115,7 +75,6 @@
       return {
         pollerObject: {
           chat: true,
-          lastChat: 0,
           message: null,
           usersHash: false
         },
@@ -139,48 +98,6 @@
         loaders: [],
         notifications: [],
         menuOpened: false,
-        themes: [
-          {
-            "value": "uniform",
-            "text": "Uniform"
-          }, {
-            "value": "black",
-            "text": "Black"
-          }, {
-            "value": "blueopal",
-            "text": "Blue Opal"
-          }, {
-            "value": "default",
-            "text": "Default"
-          }, {
-            "value": "flat",
-            "text": "Flat"
-          }, {
-            "value": "highcontrast",
-            "text": "High Contrast"
-          }, {
-            "value": "material",
-            "text": "Material"
-          }, {
-            "value": "materialblack",
-            "text": "Material Black"
-          }, {
-            "value": "metro",
-            "text": "Metro"
-          }, {
-            "value": "metroblack",
-            "text": "Metro Black"
-          }, {
-            "value": "moonlight",
-            "text": "Moonlight"
-          }, {
-            "value": "nova",
-            "text": "Nova"
-          }, {
-            "value": "silver",
-            "text": "Silver"
-          }
-        ],
         poller: false,
         isMounted: false,
         debug: false,
@@ -193,7 +110,7 @@
     },
     computed: {
       appComponent(){
-        return $.extend({
+        return bbn.fn.extend({
           render(createElement){
             return createElement();
           }
@@ -201,6 +118,9 @@
       }
     },
     methods: {
+      route(url, force){
+        this.getRef('tabnav').route(url, force)
+      },
       /*
       route(url, force){
         let router = this.find('bbn-router');
@@ -213,9 +133,10 @@
         if ( this.$refs.chat.currentWindows[idx] ){
           this.pollerObject.message = {
             text: obj.message,
-            id_chat: obj.chatId || null,
+            id_chat: this.$refs.chat.currentWindows[idx].id || null,
             users: obj.users
           };
+          this.poll();
           /*
           bbn.fn.post('chat/actions/message', obj, (d) => {
             if ( d.success && d.id_chat ){
@@ -343,11 +264,65 @@
       },
       */
 
+
+
+      receive(data){
+        bbn.fn.info("RECEIVE 5/5");
+        bbn.fn.log(data);
+        if ( data.chat && bbn.fn.numProperties(data.chat) && this.getRef('chat') ){
+          bbn.fn.log("THERE IS A CHAT SO I SEND IT TO THE CHAT");
+          this.getRef('chat').receive(data.chat);
+        }
+        else if ( data.data ){
+          bbn.fn.each(data.data, (d, i) => {
+            if ( d.observers ){
+              for ( let b of d.observers ){
+                let arr = bbn.fn.filter(this.observers, {id: b.id});
+                for ( let a of arr ){
+                  if ( a.value !== b.result ){
+                    bbn.fn.log("EMITTING OBS", a);
+                    this.observerEmit(b.result, a);
+                    a.value = b.result;
+                  }
+                }
+              }
+            }
+          });
+        }
+      },
+
       poll(){
-        if ( this.pollable && !this.polling && this.pollerPath ){
-          this.polling = true;
-          this.observersCopy = this.observers.slice();
-          this.poller = bbn.fn.ajax(this.pollerPath, 'json', $.extend({observers: this.observers}, this.pollerObject), 'poller', (r) => {
+        bbn.fn.info("POLL");
+        if ( this.pollable && this.pollerPath ){
+          if ( 'serviceWorker' in navigator ){
+            if ( navigator.serviceWorker.controller ){
+              if ( navigator.serviceWorker.controller.state === 'redundant' ){
+                bbn.fn.info("SERVICE REDONDANT");
+                if ( confirm(
+                  bbn._("The application has been updated but you still use an old version.") + "\n" +
+                  bbn._("You need to refresh the page to upgrade.") + "\n" +
+                  bbn._("Do you want to do it now?")
+                ) ){
+                  document.location.reload();
+                }
+              }
+              else{
+                bbn.fn.info("ALL OK");
+                navigator.serviceWorker.controller.postMessage(bbn.fn.extend({
+                  observers: this.observers
+                }, this.pollerObject));
+                this.observersCopy = this.observers.slice();
+              }
+            }
+            else{
+              bbn.fn.info("NO CONTROLLER FOR SW");
+            }
+          }
+          else{
+            bbn.fn.info("NO SW ???");
+          }
+        /*
+          this.poller = bbn.fn.ajax(this.pollerPath, 'json', bbn.fn.extend({observers: this.observers}, this.pollerObject), 'poller', (r) => {
             this.pollerObject.message = null;
             //bbn.fn.log("--------------OBS: Returning Data---------------");
             // put the data_from_file into #response
@@ -367,15 +342,6 @@
               });
               //appui.success("<div>ANSWER</div><code>" + JSON.stringify(r.data) + '</code>', 5);
             }
-            if ( r.chat && this.getRef('chat') ){
-              if ( r.chat.hash ){
-                this.pollerObject.usersHash = r.chat.hash;
-              }
-              this.getRef('chat').receive(r.chat);
-              if ( r.chat.chats ){
-                this.pollerObject.lastChat = r.chat.last;
-              }
-            }
 
             // call the function again, this time with the timestamp we just got from server.php
             this.polling = false;
@@ -384,6 +350,7 @@
             this.polling = false;
             this.poller = false;
           });
+          */
         }
       }
     },
@@ -418,22 +385,6 @@
       }
     },
     watch: {
-      polling(newVal){
-        if ( !newVal && this.cool ){
-          clearTimeout(this.prePollingTimeout);
-          this.prePollingTimeout = setTimeout(() => {
-            clearTimeout(this.pollingTimeout);
-            if ( this.poller && bbn.fn.isFunction(this.poller.abort) ){
-              this.poller.abort();
-            }
-            this.poll();
-            // Restart the polling every 5 minutes so we can destroy all inactive tokens
-            this.pollingTimeout = setTimeout(() => {
-              this.polling = false;
-            }, 300000);
-          }, 100)
-        }
-      },
       chatVisible(newVal){
         if ( !newVal ){
           this.chatWindows.splice(0, this.chatWindows.length);
@@ -442,21 +393,20 @@
       },
       chatOnline(newVal){
         this.pollerObject.chat = newVal;
+        this.poll();
       },
       usersOnlineHash(newVal){
         this.pollerObject.usersHash = newVal;
+        this.poll();
       },
+      /*
       observers: {
         deep: true,
         handler(){
-          this.polling = false;
+          this.poll();
         }
       },
-      'pollerObject.message'(newVal){
-        if ( newVal ){
-          this.polling = false;
-        }
-      }
+      */
     },
     components: {
       searchBar: {
@@ -479,7 +429,7 @@
         data(){
           return {
             search: '',
-            style: bbn.fn.extend({}, this.source.style || {}),
+            style: this.source.style || {},
             isExpanded: false
           }
         },
@@ -489,7 +439,7 @@
           },
           cfg(){
             if ( this.source && Object.keys(this.source).length ){
-              let cfg = $.extend(true, {}, this.source);
+              let cfg = bbn.fn.extend(true, {}, this.source);
               if ( cfg.focus !== undefined ){
                 delete cfg.focus;
               }
@@ -513,7 +463,7 @@
               source: [],
               placeholder: '?',
               placeholderFocused: bbn._("Search.."),
-              icon: 'fas fa-search',
+              icon: 'nf nf-fa-search',
               minLength: 1,
               height: bbn.env.height - 100,
               template(d){
@@ -548,7 +498,7 @@
                   this.search = '';
                 }
               },
-              change: (id, event) => {
+              change: (id) => {
                 if (id && !(id instanceof Event)) {
                   setTimeout(() => {
                     document.activeElement.blur();
@@ -563,7 +513,7 @@
             };
           },
           currentStyle(){
-            return $.extend({
+            return bbn.fn.extend({
               'z-index': 10,
               transition: 'width 400ms',
               width: '30px'

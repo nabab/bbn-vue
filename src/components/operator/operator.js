@@ -1,7 +1,7 @@
 /**
  * Created by BBN on 10/02/2017.
  */
-(function($, bbn, kendo){
+(function(bbn){
   "use strict";
   Vue.component('bbn-operator', {
     mixins: [bbn.vue.basicComponent, bbn.vue.dataEditorComponent, bbn.vue.inputComponent],
@@ -24,7 +24,7 @@
       operators(){
         let ops = this.type && this.editorOperators[this.type] ? this.editorOperators[this.type] : {};
         if ( this.isNull ){
-          $.extend(ops, this.editorNullOps);
+          bbn.fn.extend(true, ops, this.editorNullOps);
         }
         return ops;
       },
@@ -51,4 +51,4 @@
     }
   });
 
-})(jQuery, bbn, kendo);
+})(bbn);

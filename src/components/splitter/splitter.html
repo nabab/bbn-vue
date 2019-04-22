@@ -1,4 +1,4 @@
-<div :class="[{'bbn-full-screen': true}, componentClass]"
+<div :class="[{'bbn-overlay': true}, componentClass]"
      :style="{
        gridTemplateColumns: columnsCfg,
        gridTemplateRows: rowsCfg,
@@ -11,7 +11,7 @@
          'bbn-unselectable',
          'bbn-middle',
          'bbn-splitter-bar',
-         'k-header',
+         'bbn-header',
          currentOrientation,
          {'bbn-splitter-resizer': !!rs.pane2},
          realResizerClass(rs)
@@ -38,8 +38,8 @@
              'bbn-c': true
            }">
         <i :class="{
-           'fas fa-angle-left': currentOrientation === 'horizontal',
-           'fas fa-angle-up': currentOrientation === 'vertical'
+           'nf nf-fa-angle_left': currentOrientation === 'horizontal',
+           'nf nf-fa-angle_up': currentOrientation === 'vertical'
          }">
         </i>
       </div>
@@ -53,8 +53,8 @@
            }">
         <i :class="{
              'bbn-p': true,
-             'fas fa-angle-right': currentOrientation === 'horizontal',
-             'fas fa-angle-down': currentOrientation === 'vertical'
+             'nf nf-fa-angle_right': currentOrientation === 'horizontal',
+             'nf nf-fa-angle_down': currentOrientation === 'vertical'
            }">
         </i>
       </div>
@@ -68,8 +68,8 @@
            }">
         <i :class="{
              'bbn-p': true,
-             'fas fa-angle-double-left': currentOrientation === 'horizontal',
-             'fas fa-angle-double-up': currentOrientation === 'vertical'
+             'nf nf-fa-angle_double_left': currentOrientation === 'horizontal',
+             'nf nf-fa-angle_double_up': currentOrientation === 'vertical'
            }">
         </i>
       </div>
@@ -83,8 +83,8 @@
            }">
         <i :class="{
              'bbn-p': true,
-             'fas fa-angle-double-right': currentOrientation === 'horizontal',
-             'fas fa-angle-double-down': currentOrientation === 'vertical'
+             'nf nf-fa-angle_double_right': currentOrientation === 'horizontal',
+             'nf nf-fa-angle_double_down': currentOrientation === 'vertical'
            }">
         </i>
       </div>
@@ -97,8 +97,8 @@
                     !panes[rs.panec1].collapsed"
          :class="{
            'bbn-p': true,
-           'fa fa-angle-double-left': currentOrientation === 'horizontal',
-           'fa fa-angle-double-top': currentOrientation === 'vertical'
+           'nf nf-fa-angle_double_left': currentOrientation === 'horizontal',
+           'nf nf-fa-angle_double_top': currentOrientation === 'vertical'
          }"
          @click="collapse(rs.panec1, rs.panec2, true)">
       </i>
@@ -110,8 +110,8 @@
                     panes[rs.panec1].collapsed"
          :class="{
            'bbn-p': true,
-           'fa fa-angle-double-right': currentOrientation === 'horizontal',
-           'fa fa-angle-double-bottom': currentOrientation === 'vertical'
+           'nf nf-fa-angle_double_right': currentOrientation === 'horizontal',
+           'nf nf-fa-angle_double_bottom': currentOrientation === 'vertical'
          }"
          @click="collapse(rs.panec2, rs.panec1, true)">
       </i>
@@ -124,8 +124,8 @@
                !panes[rs.panec2].collapsed"
          :class="{
            'bbn-p': true,
-           'fa fa-angle-right': currentOrientation === 'horizontal',
-           'fa fa-angle-bottom': currentOrientation === 'vertical'
+           'nf nf-fa-angle_right': currentOrientation === 'horizontal',
+           'nf nf-fa-angle_bottom': currentOrientation === 'vertical'
          }"
          @click="collapse(rs.panec2, rs.panec1)">
       </i>
@@ -137,8 +137,8 @@
                panes[rs.panec2].collapsed"
          :class="{
            'bbn-p': true,
-           'fa fa-angle-left': currentOrientation === 'horizontal',
-           'fa fa-angle-top': currentOrientation === 'vertical'
+           'nf nf-fa-angle_left': currentOrientation === 'horizontal',
+           'nf nf-fa-angle_top': currentOrientation === 'vertical'
          }"
          @click="collapse(rs.panec1, rs.panec2)">
       </i>
@@ -150,8 +150,8 @@
                !panes[rs.panec2].collapsed"
          :class="{
            'bbn-p': true,
-           'fa fa-angle-double-right': currentOrientation === 'horizontal',
-           'fa fa-angle-double-bottom': currentOrientation === 'vertical'
+           'nf nf-fa-angle_double_right': currentOrientation === 'horizontal',
+           'nf nf-fa-angle_double_bottom': currentOrientation === 'vertical'
          }"
          @click="collapse(rs.panec1, rs.panec2, true)">
       </i>
@@ -163,8 +163,8 @@
                panes[rs.panec2].collapsed"
          :class="{
            'bbn-p': true,
-           'fa fa-angle-double-left': currentOrientation === 'horizontal',
-           'fa fa-angle-double-top': currentOrientation === 'vertical'
+           'nf nf-fa-angle_double_left': currentOrientation === 'horizontal',
+           'nf nf-fa-angle_double_top': currentOrientation === 'vertical'
          }"
          @click="collapse(i, rs.panec2, true);">
       </i-->

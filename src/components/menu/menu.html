@@ -1,2 +1,29 @@
-<ul :class="componentClass">
-</ul>
+<div :class="[componentClass, 'bbn-block']"
+     @mouseleave="onLeave">
+  <ul class="bbn-widget bbn-ul bbn-no-border"
+      data-role="menu"
+      role="menubar">
+    <li v-for="(item, i) in filteredData"
+        class="bbn-menu-item bbn-reactive-block"
+        role="menuitem"
+        :ref="'li' + i"
+        :key="i"
+        :tabindex="item.disabled ? '-1' : '0'"
+        @focus="selectedElement = i"
+        @blur="selectedElement = -1"
+        @mouseenter="_enterLi(i)"
+        >
+      <span v-html="item.text"></span>
+      <span v-if="item.icon" class="k-icon k-i-arrow-60-down k-menu-expand-arrow"></span>
+    </li>
+  </ul>
+  <bbn-floater v-if="selectedElement > -1"
+               children="items"
+               :auto-hide="true"
+               :element="getRef('li' + selectedElement)"
+               @close="onClose"
+               :source="filteredData[selectedElement].items">
+  </bbn-floater>
+</div>
+    
+

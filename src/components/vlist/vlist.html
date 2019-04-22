@@ -1,7 +1,7 @@
-<div :class="[{'k-animation-container': true}, componentClass]"
+<div :class="['bbn-unselectable', componentClass]"
      :style="getStyles()"
 >
-  <ul :class="'k-widget k-popup k-group k-reset ' + mode + (parent ? ' k-menugroup' : ' k-menu k-menu-vertical k-context-menu')"
+  <ul :class="'bbn-bbox bbn-no-radius bbn-box k-group k-reset ' + mode + (parent ? ' k-menugroup' : ' k-menu k-menu-vertical k-context-menu')"
       @mouseleave.stop.prevent="leaveList($event)"
       tabindex="0"
       v-if="items"
@@ -10,12 +10,9 @@
         v-show="!li.hidden"
         :class="{
           'k-item': true,
-          'k-state-default': true,
-          'k-state-hover': !li.disabled && (currentIndex === idx),
+          'bbn-reactive': true,
           selected: li.selected ? true : false,
-          disabled: !!li.disabled,
-          'k-first': idx === 0,
-          'k-last': idx === items.length - 1
+          disabled: !!li.disabled
         }"
         :key="idx"
         :style="li.items && li.items.length ? 'z-index: auto;' : ''"
@@ -28,8 +25,8 @@
       </span>
       <span class="k-link" v-else>
         <span class="space" v-if="(mode === 'selection') || (mode === 'options')">
-          <i v-if="(mode === 'selection') && (li.selected)" class="fa fa-check"></i>
-          <i v-else-if="mode === 'options'" class="fa fa-check"></i>
+          <i v-if="(mode === 'selection') && (li.selected)" class="nf nf-fa-check"></i>
+          <i v-else-if="mode === 'options'" class="nf nf-fa-check"></i>
         </span>
         <span class="space" v-if="hasIcons">
           <i v-if="li.icon" :class="li.icon"></i>

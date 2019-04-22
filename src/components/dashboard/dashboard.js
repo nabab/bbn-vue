@@ -74,7 +74,7 @@
       getWidget(key){
         let idx = bbn.fn.search(this.widgets, {key: key});
         if ( idx > -1 ){
-          return bbn.vue.closest(this, ".bbns-tab");
+          return bbn.vue.closest(this, ".bbn-container");
         }
       },
       hideWidget(key){
@@ -96,7 +96,7 @@
         let $ele = $(".bbn-masonry:first", this.$el),
             actualWidth = $ele.innerWidth(),
             num = 1,
-            steps = [800, 1150, 1550, 2200, 3000];
+            steps = [800, 1150, 1550, 2200, 3000, 3800];
         bbn.fn.each(steps, (step, i) => {
           if ( this.max && (this.max <= num) ){
             return false;
@@ -111,10 +111,10 @@
         if ( this.sortable && !$ele.hasClass("ui-sortable") ){
           let oldIdx = false;
           $ele.sortable({
-            placeholder: "bbns-widget bbn-bg-grey bbns-widget-placeholder",
+            placeholder: "bbn-widget bbn-bg-grey bbn-widget-placeholder",
             opacity: 0.5,
             forcePlaceholderSize: true,
-            handle: "h5.ui-sortable-handle",
+            handle: ".bbn-header .ui-sortable-handle",
             start: (e, ui) => {
               oldIdx = ui.item.index();
             },
@@ -165,6 +165,7 @@
       },
 
       move(oldIdx, newIdx){
+        // Correcting the index counting the hidden widgets
         $.each(this.widgets, (i, a) => {
           if ( a.hidden ){
             if ( i <= oldIdx ){
@@ -195,22 +196,24 @@
       },
 
       updateMenu(){
-        let tab = bbn.vue.closest(this, ".bbns-tab");
+        let tab = this.closest("bbn-container");
         if ( tab ){
           if ( this.selectable && this.menu && this.menu.length ){
-            $.each(this.menu, function(i, a){
+            bbn.fn.each(this.menu, (a) => {
               tab.deleteMenu(a);
             });
           }
           this.menu = [];
           let items = [];
-          $.each(this.originalSource, (i, a) => {
+          bbn.fn.each(this.originalSource, (a) => {
             let idx = bbn.fn.search(this.widgets, {uid: a.uid});
             if ( idx > -1 ){
               items.push({
                 disabled: !this.closable || (this.widgets[idx].closable === false),
                 selected: !this.widgets[idx].hidden,
-                text: this.widgets[idx].text ? this.widgets[idx].text : (this.widgets[idx].title ? this.widgets[idx].title : bbn._('Untitled')),
+                text: this.widgets[idx].text ? 
+                  this.widgets[idx].text : 
+                  (this.widgets[idx].title ? this.widgets[idx].title : bbn._('Untitled')),
                 command: () => {
                   if ( this.widgets[idx].closable !== false ){
                     this.toggleWidget(a.uid);
@@ -222,7 +225,7 @@
           this.menu.push(tab.addMenu({
             text: bbn._("Widgets"),
             mode: 'options',
-            icon: 'zmdi zmdi-widgets',
+            icon: 'nf nf-mdi-widgets',
             // We keep the original source order
             items: items
           }));
@@ -230,28 +233,26 @@
       },
 
       updateWidget(key, cfg){
-        let vm = this,
-            idx = bbn.fn.search(vm.widgets, "key", key),
+        let idx = bbn.fn.search(this.widgets, 'key', key),
             params = {id: key, cfg: cfg},
-            no_save = ['items', 'num', 'start'];
+            no_save = ['items', 'num', 'start', 'index'];
         if ( idx > -1 ){
           $.each(no_save, function(i, a){
             if ( cfg[a] !== undefined ){
               delete params.cfg[a];
             }
           });
-
           if ( bbn.fn.countProperties(params.cfg) ){
-            return bbn.fn.post(vm.url + 'save', params, (d) => {
+            return bbn.fn.post(this.url + 'save', params, (d) => {
               if ( d.data && d.data.success ){
                 for ( let n in params.cfg ){
-                  vm.$set(vm.widgets[idx], n, params.cfg[n]);
+                  this.$set(this.widgets[idx], n, params.cfg[n]);
                 }
                 this.setWidgetStorage(idx);
                 if ( params.cfg.hidden !== undefined ){
                   this.updateMenu();
                 }
-                vm.$forceUpdate();
+                this.$forceUpdate();
               }
             });
           }
@@ -265,11 +266,11 @@
           hidden: this.widgets[idx].hidden,
           limit: this.widgets[idx].limit,
           index: this.widgets[idx].index
-        }, this.widgets[idx].storageFullName);
+        }, this.widgets[idx].storageFullName, true);
       },
 
       normalize(obj_orig){
-        let obj = $.extend({}, obj_orig);
+        let obj = bbn.fn.clone( obj_orig);
         obj.hidden = !!obj.hidden;
         if ( !obj.key ){
           obj.key = obj.uid ? obj.uid : bbn.vue.makeUID();
@@ -301,7 +302,6 @@
     },
 
     created(){
-
       // Adding bbns-tab from the slot
       if ( this.$slots.default ){
         for ( let node of this.$slots.default ){
@@ -319,11 +319,11 @@
       let cfg = [];
 
       $.each(this.originalSource, (i, obj) => {
-        let tmp = this.getStorage(obj.storageFullName);
+        let tmp = this.getStorage(obj.storageFullName, true);
         if ( tmp ){
-          $.extend(this.originalSource[i], tmp);
+          bbn.fn.extend(this.originalSource[i], tmp);
         }
-        else{
+        else if ( (obj.index === undefined) || !bbn.fn.isNumber(obj.index) ){
           this.originalSource[i].index = 10000+i;
         }
         cfg.push(tmp);
@@ -342,352 +342,6 @@
     updated(){
       this.selfEmit(true);
     },
-
-    components: {
-      'bbns-widget': {
-        name: 'bbns-widget',
-        mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent, bbn.vue.observerComponent, bbn.vue.resizerComponent],
-        props: {
-          uid: {},
-          content: {
-            type: String
-          },
-          url: {
-            type: [String, Boolean],
-            default: false
-          },
-          limit: {
-            type: Number,
-            default: 0
-          },
-          index: {
-            type: Number
-          },
-          hidden: {
-            type: Boolean,
-            default: false
-          },
-          start: {
-            type: Number,
-            default: 0
-          },
-          total: {
-            type: Number,
-            default: 0
-          },
-          template: {
-
-          },
-          hideEmpty: {
-            type: Boolean,
-            default: false
-          },
-          component: {
-            type: [String, Object]
-          },
-          itemComponent: {
-            type: [String, Object]
-          },
-          itemStyle: {
-            type: [String, Object],
-            default: ''
-          },
-          itemClass: {
-            type: [String, Object],
-            default: ''
-          },
-          title: {
-            type: String
-          },
-          buttonsLeft: {
-            type: [Array, Function],
-            default(){
-              return [];
-            }
-          },
-          buttonsRight: {
-            type: [Array, Function],
-            default(){
-              return [];
-            }
-          },
-          zoomable: {
-            type: Boolean,
-            default: false
-          },
-          closable: {
-            type: Boolean,
-            default: true
-          },
-          sortable: {
-            type: Boolean,
-            default: true
-          },
-          pageable: {
-            type: Boolean,
-            default: true
-          },
-          source: {
-            type: Object,
-            default: function(){
-              return {};
-            }
-          },
-          items: {
-            type: Array,
-            default: function(){
-              return [];
-            }
-          },
-          noData: {
-            type: String,
-            default: bbn._("There is no available data")
-          },
-          menu: {
-            type: Array,
-            default: function(){
-              return [];
-            }
-          },
-          position: {
-            type: String
-          },
-          top: {},
-          bottom: {},
-          full: {
-            type: Boolean,
-            default: false
-          },
-          opened: {},
-          options: {
-            default(){
-              return {}
-            }
-          }
-        },
-        data(){
-          return {
-            _1stRun: false,
-            isLoading: false,
-            dashboard: false,
-            currentItems: this.items,
-            currentStart: this.start,
-            currentTotal: this.total,
-            currentContent: this.content || false,
-            currentSource: this.source,
-            lang: {
-              close: bbn._("Close")
-            },
-            realButtonsRight: [],
-            realButtonsLeft: []
-          };
-        },
-        computed: {
-          currentPage(){
-            if ( this.currentTotal > this.limit ){
-              return (this.currentStart + this.limit) / this.limit;
-            }
-            return 0;
-          },
-          totalPages(){
-            if ( this.currentTotal > this.limit ){
-              return Math.ceil(this.currentTotal / this.limit);
-            }
-            return 1;
-          },
-          hasMenu(){
-            return !!this.finalMenu.length;
-          },
-          finalMenu(){
-            let tmp = this.menu.slice();
-            if ( this.url ){
-              tmp.unshift({
-                text: bbn._("Reload"),
-                icon: "fa fa-refresh",
-                command: () => {
-                  this.reload();
-                }
-              });
-            }
-            if ( this.limit ){
-              let items = [];
-              $.each(limits, (i, a) => {
-                items.push({
-                  text: a.toString() + " " + bbn._("Items"),
-                  selected: a === this.limit,
-                  command: () => {
-                    this.dashboard.updateWidget(this.uid, {limit: a});
-                  }
-                })
-              });
-              tmp.push({
-                text: bbn._("Limit"),
-                items: items,
-                mode: "selection"
-              });
-            }
-            return tmp;
-          }
-        },
-        methods: {
-          _: bbn._,
-          updateButtons(){
-            this.realButtonsLeft = bbn.fn.isFunction(this.buttonsLeft) ? this.buttonsLeft() : this.buttonsLeft;
-            this.realButtonsRight = bbn.fn.isFunction(this.buttonsRight) ? this.buttonsRight() : this.buttonsRight;
-          },
-          close(){
-            this.dashboard.updateWidget(this.uid, {hidden: !this.hidden});
-            this.$emit("close", this.uid, this);
-          },
-          zoom(){
-          },
-          reload(){
-            this.currentItems = [];
-            this.$nextTick(() => {
-              this.load();
-            })
-          },
-          load(){
-            if ( this.url ){
-              let params = {
-                key: this.uid
-              };
-              this.isLoading = true;
-              this.$forceUpdate();
-              if ( this.limit && this.pageable ){
-                params.limit = this.limit;
-                params.start = this.currentStart;
-              }
-              return bbn.fn.post(this.url, params, (d) => {
-                if ( d.data !== undefined ){
-                  this.currentItems = d.data;
-                  if ( d.limit && (this.limit !== d.limit) ){
-                    this.dashboard.updateWidget(this.uid, {limit: d.limit});
-                  }
-                  if ( d.start !== undefined ){
-                    this.currentStart = d.start;
-                  }
-                  if ( d.total !== undefined && (this.currentTotal !== d.total) ){
-                    this.currentTotal = d.total;
-                  }
-                  if ( d.observer && this.observerCheck() ){
-                    this.observerID = d.observer.id;
-                    this.observerValue = d.observer.value;
-                    if ( !this._1stRun ){
-                      this.observerWatch();
-                      this._1stRun = true;
-                    }
-                  }
-                  if ( d.optional !== undefined ){
-                    this.optionalData = d.optional;
-                  }
-                }
-                else if ( typeof d === 'object' ){
-                  this.currentSource = d
-                }
-                this.$nextTick(() => {
-                  this.isLoading = false;
-                  this.$emit("loaded");
-                  this.onResize();
-                  this.selfEmit(true);
-                })
-              })
-            }
-          },
-          nav(arg){
-            let newStart = false;
-            switch ( arg ){
-              case 'first':
-                newStart = 0;
-                break;
-              case 'prev':
-                newStart = this.currentStart >= this.limit ? this.currentStart - this.limit : 0;
-                break;
-              case 'next':
-                newStart = this.currentStart + this.limit;
-                break;
-              case 'last':
-                newStart = (this.totalPages - 1) * this.limit;
-                break;
-            }
-            if ( (newStart !== false) && (newStart !== this.currentStart) ){
-              this.currentStart = newStart;
-              this.load();
-            }
-          },
-          actionButton(name, uid){
-            let tmp = this,
-                comp;
-            if ( this.component ){
-              comp = bbn.vue.find(this, this.component);
-            }
-            else if ( this.itemComponent ){
-              comp = bbn.vue.find(this, this.itemComponent);
-            }
-            if ( comp && $.isFunction(comp[name]) ){
-              return comp[name]();
-            }
-            if ( $.isFunction(name) ){
-              return name(this, this.items);
-            }
-            while ( tmp ){
-              if ( $.isFunction(tmp[name]) ){
-                return tmp[name]();
-              }
-              tmp = tmp.$parent;
-            }
-          },
-          setConfig(){
-            if ( this.dashboard ){
-              this.dashboard.setConfig(this.uid, {
-                uid: this.uid,
-                limit: this.limit,
-                hidden: this.hidden,
-                index: this.index
-              });
-            }
-          }
-        },
-        created(){
-          this.updateButtons();
-        },
-        mounted(){
-          this.dashboard = bbn.vue.closest(this, "bbn-dashboard");
-          if ( this.dashboard && this.dashboard.sortable ){
-            if ( $(this.$el).closest(".bbn-masonry").hasClass("ui-sortable") ){
-              $(this.$el).closest(".bbn-masonry").sortable('refresh')
-            }
-          }
-          this.load();
-        },
-        updated(){
-          if ( this.dashboard ){
-            this.dashboard.selfEmit(true);
-          }
-        },
-        watch: {
-          limit(newVal){
-            this.load();
-          },
-          hidden(newVal){
-            if ( !newVal ){
-              this.load();
-            }
-          },
-          observerValue(newVal){
-            if ( (newVal !== this._observerReceived) && !this.editedRow ){
-              this.load();
-            }
-          },
-          source: {
-            deep: true,
-            handler(newVal){
-              this.currentSource = newVal
-            }
-          }
-        }
-      }
-    }
   });
 
 })(jQuery, bbn);

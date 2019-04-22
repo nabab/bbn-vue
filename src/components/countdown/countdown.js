@@ -61,7 +61,7 @@
       return {
         precisionIdx: bbn.fn.search(VALUES, "name", this.precision),
         scaleIdx: bbn.fn.search(VALUES, "name", this.scale),
-        realTarget: bbn.fn.date($.isFunction(this.target) ? this.target() : this.target),
+        realTarget: bbn.fn.date(bbn.fn.isFunction(this.target) ? this.target() : this.target),
         targetYear: false,
         targetMonth: false,
         targetDay: false,

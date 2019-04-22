@@ -1,5 +1,5 @@
 /**
- * Created by BBN on 10/02/2017.
+ * Created by BBN on 10/dd02/2017.
  */
 (() => {
   "use strict";
@@ -171,8 +171,8 @@
         showArrowRight: this.autoHideArrows ? false : true,
         showCtrl: this.autoHideCtrl ? false : true,
         arrowClass:{
-          left:  'fa fa-arrow-circle-left',
-          right: 'fa fa-arrow-circle-right',
+          left:  'nf nf-fa-arrow_circle_left',
+          right: 'nf nf-fa-arrow_circle_right',
         },
         imageWidth: 0,
         imageHeight: 0,
@@ -184,6 +184,19 @@
       /*updateImage(ev, idx){
         this.ratio(idx);
       },*/
+      onResize(){
+        if ( bbn.fn.isArray(this.source) && this.source.length ){
+          this.source.forEach((v, i)=>{
+            if ( v.loaded ){
+              this.aspectRatio(i);
+            }
+          });
+        }
+      },
+      afterLoad(idx){
+        this.$set(this.source[idx], 'loaded', true);
+        this.aspectRatio(idx);
+      },
       aspectRatio(idx){
         this.$nextTick(()=>{
           let ctnRatio = this.lastKnownWidth/this.lastKnownHeight,
@@ -199,7 +212,7 @@
               this.$set(this.items[idx], 'imageWidth', 'auto');
               this.$set(this.items[idx], 'imageHeight', '100%');
               this.$set(this.items[idx], 'showImg', true);
-              
+
               //this.items[idx].imageWidth = "auto";
               //this.items[idx].imageHeight =  "100%";
               //this.items[idx].showImg =  true;
@@ -218,7 +231,7 @@
               this.$set(this.items[idx], 'imageWidth', '100%');
               this.$set(this.items[idx], 'imageHeight', 'auto');
               this.$set(this.items[idx], 'showImg', true);
-              
+
               //this.items[idx].imageWidth = "100%";
               //this.items[idx].imageHeight = "auto";
               //this.items[idx].showImg =  true;
@@ -227,18 +240,18 @@
               this.$set(this.items[idx], 'imageWidth', 'auto');
               this.$set(this.items[idx], 'imageHeight', '100%');
               this.$set(this.items[idx], 'showImg', true);
-              
+
               //this.items[idx].imageWidth = "auto";
               //this.items[idx].imageHeight = "100%";
               //this.items[idx].showImg =  true;
             }
           }
           if ( mode === 'stretch' ){
-            
+
             this.$set(this.items[idx], 'imageWidth',  this.lastKnownWidth + 'px');
             this.$set(this.items[idx], 'imageHeight', this.lastKnownHeight + 'px');
             this.$set(this.items[idx], 'showImg', true);
-              
+
             //this.items[idx].imageWidth = this.lastKnownWidth + 'px';
             //this.items[idx].imageHeight = this.lastKnownHeight + 'px';
             //this.items[idx].showImg =  true;
@@ -246,7 +259,7 @@
           if ( mode === "original" ){
             this.$set(this.items[idx], 'showImg', true);
             //this.items[idx].showImg = true;
-          }          
+          }
         });
       },
       createStyle(){
@@ -398,14 +411,8 @@
       }
     },
     components: {
-      'bbns-gallery-miniature': {
-        name: 'bbns-gallery-miniature',
-        template: `<div class="bbn-w-100 bbn-c bbn-middle"
-                        :style="{
-                          position: 'absolute',
-                          bottom:( mainComponent.fullSlide ? '10px' : '40px')
-                        }"
-                   >
+      miniature: {
+        template: `<div class="bbn-w-100 bbn-c bbn-middle">
             <template  v-for="(it, i) in items"
                        style="display: inline; width: 20px; height: 20px"
             >
@@ -440,7 +447,7 @@
                      color: (mainComponent.currentIndex === i) ? 'red' : 'white',
                    }"
                   :class="[
-                    (mainComponent.currentIndex === i ? 'far fa-dot-circle' : 'far fa-circle'),
+                    (mainComponent.currentIndex === i ? 'nf nf-fa-dot_circle' : 'nf nf-fa-circle'),
                     'bbn-padded',
                     'circleMiniature'
                   ]"
@@ -469,7 +476,7 @@
        },
         data(){
          return {
-           mainComponent: bbn.vue.closest(this, 'bbn-slideshow')
+           mainComponent: bbn.vue.closest(this, 'bbn-slideshow2')
 
          }
        },

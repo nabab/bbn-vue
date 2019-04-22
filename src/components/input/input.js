@@ -1,7 +1,7 @@
 /**
  * Created by BBN on 10/02/2017.
  */
-(function($, bbn, kendo){
+(function($, bbn){
   "use strict";
 
   /**
@@ -37,22 +37,19 @@
         }
       },
     },
+    data(){
+      return {
+        currentValue: this.value
+      }
+    },
     methods: {
       clear: function(){
         this.emitInput('');
-      },
-      focus(){
-        this.getRef('element').focus()
       }
-    },
-    data: function(){
-      return {
-        widgetName: "input",
-      };
     },
     mounted: function(){
       let $ele = $(this.$el),
-          cfg = this.getOptions();
+          cfg = this.cfg;
 
       // button left
       if ( cfg.buttonLeft ){
@@ -60,10 +57,10 @@
         $ele.addClass("k-space-left").append($al);
         if ( cfg.actionLeft ){
           $al.click((e) => {
-            if ( $.isFunction(cfg.actionLeft) ){
+            if (bbn.fn.isFunction(cfg.actionLeft) ){
               cfg.actionLeft(e, this);
             }
-            else if ( $.isFunction(this[cfg.actionLeft]) ){
+            else if (bbn.fn.isFunction(this[cfg.actionLeft]) ){
               this[cfg.actionLeft](e, this);
             }
           });
@@ -83,10 +80,10 @@
         $ele.addClass("k-space-right").append($ar);
         if ( cfg.actionRight ){
           $ar.click((e) => {
-            if ( $.isFunction(cfg.actionRight) ){
+            if (bbn.fn.isFunction(cfg.actionRight) ){
               cfg.actionRight(e, this);
             }
-            else if ( $.isFunction(this[cfg.actionRight]) ){
+            else if (bbn.fn.isFunction(this[cfg.actionRight]) ){
               this[cfg.actionRight](e, this);
             }
           });
@@ -106,4 +103,4 @@
     }
   });
 
-})(jQuery, bbn, kendo);
+})(jQuery, bbn);

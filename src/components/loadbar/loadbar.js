@@ -1,7 +1,7 @@
 /**
  * Created by BBN on 07/01/2017.
  */
-;(($, bbn, kendo) => {
+;((bbn) => {
   "use strict";
 
   /**
@@ -42,36 +42,53 @@
         id: false,
         selected: 0,
         numLoaded: 0,
-        info: false
+        info: false,
+        interval: false,
+        timeNow: false
       };
     },
-
     computed: {
       loadingItems(){
         return bbn.fn.filter(this.source, {loading: true})
       },
+      
       loadedItems(){
         return bbn.fn.filter(this.source, {loading: false})
       },
       items(){
-        return this.source
+        let items = [];
+        bbn.fn.each(this.loadingItems, (a) => {
+          let b = bbn.fn.clone(a);
+          b.duration = this.timeNow - b.start;
+          items.push(b);
+        })
+        return items.concat(this.loadedItems)
       },
       currentItem(){
         return this.loadingItems.length ? this.loadingItems[0] : (this.loadedItems.length ? this.loadedItems[0] : false)
       },
+      
     },
-
     methods: {
+      renderDuration(d){
+        let tmp = d / 1000;
+        if ( tmp < 10){
+          return tmp.toFixed(3)+ ' s';
+        }
+        else {
+          return parseInt(tmp) + ' s';
+        }
+      },
       cancel(item){
         if ( item.loading ){
           this.getPopup().confirm(bbn._("Are you sure you want to abort this request?"), (d) => {
-            bbn.fn.abort(item.url)
+            bbn.fn.abort(item.key)
           })
         }
       },
       deleteHistory(){
         let tmp = [];
-        $.each(this.data, (i, a) => {
+        bbn.fn.each(this.data, (a) => {
           if ( a.isLoading ){
             tmp.push(a);
           }
@@ -79,6 +96,15 @@
         this.data = tmp;
       },
     },
+    mounted(){
+      this.interval = setInterval(() => {
+        var date = new Date();
+        this.timeNow = parseInt(date.getTime());
+      }, 1000);
+    },
+    beforeDestroy() {
+      clearInterval(this.interval)
+    },
   });
 
-})(jQuery, bbn, kendo);
+})(bbn);

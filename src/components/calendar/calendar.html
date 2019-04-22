@@ -1,0 +1,109 @@
+<div :class="[componentClass, 'bbn-100']">
+  <div class="bbn-widget bbn-flex-height">
+    <div class="bbn-calendar-header bbn-header">
+      <component v-if="headerComponent"
+                 :is="headerComponent"
+      ></component>
+      <div v-else
+           class="bbn-flex-width bbn-vmiddle"
+      >
+        <bbn-button v-if="arrowsYear && arrowsButtons"
+                    icon="nf nf-fa-angle_double_left"
+                    @click="prevYear"
+                    :title="_('Previous year')"
+        ></bbn-button>
+        <i v-else-if="arrowsYear && !arrowsButtons"
+           class="nf nf-fa-angle_double_left bbn-p bbn-hsmargin"
+           @click="prevYear"
+           :title="_('Previous year')"
+        ></i>
+        <bbn-button v-if="arrowsMonth && arrowsButtons"
+                    icon="nf nf-fa-angle_left"
+                    @click="prevMonth"
+                    :title="_('Previous month')"
+        ></bbn-button>
+        <i v-else-if="arrowsMonth && !arrowsButtons"
+           class="nf nf-fa-angle_left bbn-p bbn-hsmargin"
+           @click="prevMonth"
+           :title="_('Previous month')"
+        ></i>
+        <div class="bbn-flex-fill bbn-middle bbn-calendar-header-month">
+          <i v-if="monthIcon"
+             :class="[monthIcon, 'bbn-hsmargin', 'bbn-large']"></i>
+          <strong v-text="monthYear"></strong>
+        </div>
+        <bbn-button v-if="arrowsMonth && arrowsButtons"
+                    icon="nf nf-fa-angle_right"
+                    @click="nextMonth"
+                    :title="_('Next month')"
+        ></bbn-button>
+        <i v-else-if="arrowsMonth && !arrowsButtons"
+           class="nf nf-fa-angle_right bbn-p bbn-hsmargin"
+           @click="nextMonth"
+           :title="_('Next month')"
+        ></i>
+        <bbn-button v-if="arrowsYear && arrowsButtons"
+                    icon="nf nf-fa-angle_double_right"
+                    @click="nextYear"
+                    :title="_('Next year')"
+        ></bbn-button>
+        <i v-else-if="arrowsYear && !arrowsButtons"
+           class="nf nf-fa-angle_double_right bbn-p bbn-hsmargin"
+           @click="nextYear"
+           :title="_('Next year')"
+        ></i>
+      </div>
+    </div>
+    <div class="bbn-calendar-container bbn-flex-fill bbn-spadded">
+      <div class="bbn-calendar-weekday"
+            v-for="(initial, i) in initials"
+      >
+        {{initial}}
+      </div>
+      <template v-for="day in days">
+        <div v-if="day.visible"
+             :class="['bbn-calendar-day', 'bbn-box', {
+               'bbn-p': selectable,               
+               'bbn-spadded': !dayDetails && dayPadding,
+               'bbn-primary': day.isToday && (!day.inRange || (day.inRange && day.hover)),
+               'bbn-background-effect-primary': day.isToday && day.inRange,
+               'bbn-state-hover': selectable && day.hover,
+               'bbn-state-active': selectable && (day.fullDate === selected),
+               'last-day': day.isLast && day.visible,
+               'bbn-background-effect-alt': day.visible && day.inRange && !day.isToday
+             }]"
+             @mouseover="day.hover = true"
+             @mouseleave="day.hover = false"
+             @click="select(day.fullDate)"
+             :title="typeof titleDetails === 'function' ? titleDetails(day) : titleDetails"
+        >
+          <div v-if="day.events && day.events.length && dayDetails"
+               class="bbn-flex-height"
+               style="position: relative" 
+          >
+            <div :class="['bbn-r', 'bbn-unselectable', 'day', {'bbn-white': day.isLast}]"
+                 style="margin-right: .2em"
+            >
+              <strong v-text="day.day"></strong>
+            </div>
+            <component v-if="detailsComponent"
+                       :is="detailsComponent"
+                       :source="day"
+                       :selected="selected"
+                       class="bbn-flex-fill"
+            ></component>
+          </div>
+          <template v-else>
+            <i v-if="day.events && day.events.length && dayIcon"
+               :class="[dayIcon, 'bbn-unselectable', 'day-user']"
+            ></i>
+            <div :class="['bbn-100', 'bbn-middle', 'bbn-unselectable', 'day', {'bbn-white': day.isLast}]">
+              <strong v-text="day.day"></strong>
+            </div>
+          </template>
+        </div>
+        <div v-else :class="['bbn-calendar-day', 'bbn-box', {'last-day': day.isLast && day.visible}]"></div>
+      </template>
+    </div>
+  </div>
+</div>

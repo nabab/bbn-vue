@@ -3,25 +3,26 @@
  *
  * Created by BBN on 10/02/2017.
  */
-(function($, bbn, kendo){
+(function(bbn){
   "use strict";
-
-  kendo.ui.DropDownList.prototype.options.autoWidth = true;
 
   Vue.component('bbn-dropdown', {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.inputComponent
-     * @mixin bbn.vue.dataSourceComponent
-     */
-    mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.dataSourceComponent, bbn.vue.urlComponent],
+     * @mixin bbn.vue.resizerComponent
+     * @mixin bbn.vue.sourceArrayComponent
+     * @mixin bbn.vue.urlComponent
+      */
+    mixins: [
+      bbn.vue.basicComponent,
+      bbn.vue.eventsComponent,
+      bbn.vue.inputComponent,
+      bbn.vue.resizerComponent,
+      bbn.vue.sourceArrayComponent,
+      bbn.vue.urlComponent
+    ],
     props: {
-    /**
-     * State the type of filter, the allowed values are 'contains', 'startswith' and 'endswith'.
-     *
-     * @prop {String} [startswith] filterValue
-     */
-      filterValue: {},
       /**
        * The template to costumize the dropdown menu.
        *
@@ -49,29 +50,60 @@
       placeholder: {
         type: String
       },
-      /**
-       * Use this prop to give native widget's properties.
-       *
-       * @prop {Object} [{}] cfg
-       */
-      cfg: {
-        type: Object,
-        default(){
-          return {
-            dataTextField: 'text',
-            dataValueField: 'value',
-            dataSource: []
-          };
-        }
-      }
     },
     data(){
       return {
-        widgetName: "kendoDropDownList",
-        isOpened: false
+        _list: null,
+        filterString: '',
+        vlist: null,
+        isOpened: false,
+        currentText: '',
+        currentWidth: 0,
+        currentHeight: 0
       };
     },
     methods: {
+      onResize(){
+        this.currentWidth = this.$el.offsetWidth;
+        this.currentHeight = this.$el.offsetHeight;
+      },
+      enter(element){
+        const height = bbn.fn.calculateHeight(element);
+        bbn.fn.log(height);
+        element.style.height = 0;
+        setTimeout(() => {
+          element.style.height = height;
+        })
+      },
+
+      leave(element){
+        const height = getComputedStyle(element).height;
+        element.style.height = height;
+        // Force repaint to make sure the
+        // animation is triggered correctly.
+        getComputedStyle(element).height;
+        setTimeout(() => {
+          element.style.height = 0;
+        });
+      },
+      init(){
+        this._list = this.getRef('list');
+      },
+      select(item){
+        if ( item && (item[this.sourceValue] !== undefined) ){
+          this.emitInput(item[this.sourceValue]);
+          this.$emit('change');
+        }
+        this.isOpened = false;
+      },
+      clickContainer(){
+        if ( this.isFocused ){
+          this.isOpened = !this.isOpened;
+        }
+        else {
+          this.focus();
+        }
+      },
       /**
        * States the role of the enter button on the dropdown menu.
        *
@@ -80,58 +112,77 @@
        * @fires widget.open
        *
        */
-      _pressEnter(){
-        if ( this.isOpened ){
-          this.widget.select();
+      keydown(e){
+        bbn.fn.log(e);
+        if ( !this.filteredData.length || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey ){
+          return;
         }
-        else{
-          this.widget.open();
+        if ( e.key === ' '){
+          this.isOpened = !this.isOpened;
         }
-      },
-      /**
-       * Creates the object cfg.
-       *
-       * @method getOptions
-       * @returns {*}
-       */
-      getOptions(){
-        let cfg = $.extend(bbn.vue.getOptions(this), {
-          change: (e) => {
-            this.$emit("input", e.sender.value());
-            if ( $.isFunction(this.change) ){
-              this.change(e.sender.value());
+        else if ( e.key.match(/^[A-z0-9]{1}$/) ){
+          let filtered = bbn.fn.filter(this.filteredData, {
+            conditions: [
+              {
+                field: this.sourceText,
+                operator: 'startswith',
+                value: e.key
+              }
+            ],
+            logic: 'AND'
+          });
+          if ( filtered.length ){
+            let values = filtered.map((a) => {
+              return a[this.sourceValue];
+            });
+            // We check if we already have one selected
+            let idx = values.indexOf(this.value);
+            if ( ((values.length - 1) > idx) && (idx > -1) ){
+              // If so we take the next one
+              idx++;
             }
-          },
-          select: (e) =>{
-            if ( e.item && this.widget ){
-              this.$emit("select", this.widget.dataItem(e.item));
+            else{
+              idx = 0;
             }
-            this.$emit("select");
-          },
-          dataTextField: this.sourceText || this.widgetOptions.dataTextField || 'text',
-          dataValueField: this.sourceValue || this.widgetOptions.dataValueField || 'value',
-          valuePrimitive: true,
-          open: () => {
-            this.isOpened = true;
-          },
-          close: () => {
-            this.isOpened = false;
-          },
-          dataBound: () => {
-            this.$emit("dataloaded", this);
-          }
-        });
-        if ( this.template ){
-          cfg.template = e => {
-            return this.template(e);
-          };
-        }
-        if ( this.valueTemplate ){
-          cfg.valueTemplate = e => {
-            return this.valueTemplate(e)
+            if ( values[idx] !== this.value ){
+              this.select(values[idx]);
+            }
           }
         }
-        return cfg;
+        else if ( bbn.var.keys.upDown.indexOf(e.keyCode) > -1 ){
+          let idx = bbn.fn.search(this.filteredData, this.sourceValue, this.value);
+          switch ( e.keyCode ){
+            // Arrow down
+            case 40:
+              if ( this.filteredData[idx+1] ){
+                this.select(this.filteredData[idx+1][this.sourceValue]);
+              }
+              break;
+            // Arrow Up
+            case 38:
+            if ( this.filteredData[idx-1] ){
+                this.select(this.filteredData[idx-1][this.sourceValue]);
+              }
+              break;
+            // Page down (10)
+            case 34:
+              this.select(this.filteredData[this.filteredData[idx+10] ? idx + 10 : this.filteredData.length - 1][this.sourceValue]);
+              break;
+            // Page up (10)
+            case 33:
+              this.select(this.filteredData[this.filteredData[idx-10] ? idx-10 : 0][this.sourceValue]);
+              break;
+            // End
+            case 35:
+              this.select(this.filteredData[this.filteredData.length - 1][this.sourceValue]);
+              break;
+            // Home
+            case 36:
+              this.select(this.filteredData[0][this.sourceValue]);
+              break;
+
+          }
+        }
       },
     },
     mounted(){
@@ -139,80 +190,48 @@
        * @todo description
        *
        * @event mounted
-       * @fires getOptions
        * @return {Boolean}
        */
-      const vm = this;
-      let cfg = this.getOptions();
-      if ( this.disabled ){
-        cfg.enable = false;
-      }
-      if ( this.placeholder ){
-        cfg.optionLabel = this.placeholder;
-      }
-      this.widget = $(this.$refs.element).kendoDropDownList(cfg).data("kendoDropDownList");
-      if ( this.baseUrl && (bbn.env.path.indexOf(this.baseUrl) === 0) && (bbn.env.path.length > this.baseUrl.length) ){
-        let val = bbn.env.path.substr(this.baseUrl.length+1);
-        let idx = bbn.fn.search(cfg.dataSource, this.sourceValue, val);
-        if ( idx > -1 ){
-          this.widget.select(idx);
-          this.widget.trigger("change");
-        }
-      }
-      else if ( !cfg.optionLabel && cfg.dataSource.length && !vm.value ){
-        this.widget.select(0);
-        this.widget.trigger("change");
-      }
-      /*
-      if ( !cfg.optionLabel && cfg.dataSource.length && !this.value ){
-        this.widget.select(0);
-        this.widget.trigger("change");
-      }
-      */
-      this.ready = true;
-
-    },
-    computed: {
-      /**
-       * The kendo datasource of the widget.
-       *
-       * @computed dataSource
-       * @return {Array}
-       */
-      dataSource(){
-        if ( this.source ){
-          if ( this.group ){
-            return {
-              data: bbn.vue.toKendoDataSource(this),
-              group: {
-                field: this.group
-              }
-            }
+      this.updateData().then(() => {
+        if ( this.value !== undefined ){
+          let row = bbn.fn.get_row(this.currentData, this.sourceValue, this.value);
+          if ( row ){
+            this.currentText = row[this.sourceText];
           }
-          return bbn.vue.toKendoDataSource(this);
-
         }
-        return [];
-      }
+        this.onResize();
+        this.ready = true;
+      });
     },
-    watch:{
-      /**
-       * @watch source
-       * @fires setDataSource
-       */
-      source: {
-        deep: true,
-        handler(){
-          this.widget.setDataSource(this.dataSource);
+    watch: {
+      isOpened(newVal){
+        this._list[newVal ? 'show' : 'hide']();
+      },
+      value(newVal, oldVal){
+        let row = bbn.fn.get_row(this.currentData, this.sourceValue, newVal);
+        bbn.fn.log(newVal, row);
+        if ( row ){
+          this.currentText = row[this.sourceText];
         }
       },
-      value(){
-        this.updateUrl();
-      },
-      readonly(v){
-        this.widget.readonly(!!v);
+      filterString(nVal){
+        if ( nVal ){
+          if ( !this._list.currentFilters.conditions.length ){
+            this._list.currentFilters.conditions.push({
+              field: 'text',
+              operator: 'startswith',
+              value: nVal
+            });
+          }
+          else {
+            this_list.$set(this._list.currentFilters.conditions[0], 'value', nVal);
+          }
+        }
+        else if ( this._list.currentFilters.conditions.length ){
+          this._list.currentFilters.conditions.splice(0, this._list.currentFilters.conditions.length);
+        }
       }
     }
   });
 
-})(jQuery, bbn, kendo);
+})(bbn);

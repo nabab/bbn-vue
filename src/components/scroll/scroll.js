@@ -6,6 +6,12 @@
   Vue.component('bbn-scroll', {
     mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent, bbn.vue.keepCoolComponent],
     props: {
+      maxWidth: {
+        type: Number
+      },
+      maxHeight: {
+        type: Number
+      },
       classes: {
         type: String,
         default: ""
@@ -48,14 +54,51 @@
         scrollPos: (bbn.fn.getScrollBarSize() ? '-' + bbn.fn.getScrollBarSize() : '0') + 'px',
         containerPadding: (bbn.fn.getScrollBarSize() ? bbn.fn.getScrollBarSize() : '0') + 'px',
         hiddenX: (this.hidden === true) || ((this.hidden === 'x')),
-        hiddenY: (this.hidden === true) || ((this.hidden === 'y'))
+        hiddenY: (this.hidden === true) || ((this.hidden === 'y')),
+        currentWidth: null,
+        currentHeight: null
+      }
+    },
+    computed: {
+      /**
+       * Based on the prop fixedFooter and fullScreen, a string is returned containing the classes for the form template.
+       *
+       * @computed currentClass
+       * @return {String}
+       */
+      currentClass(){
+        let st = this.componentClass.join(' ');
+        if ( !this.currentWidth ){
+          st += ' bbn-overlay';
+        }
+        if ( !this.ready ){
+          st += ' bbn-invisible';
+        }
+        return st;
+      },
+      currentStyle(){
+        if ( this.currentWidth ){
+          return {
+            width: this.currentWidth + 'px',
+            height: this.currentHeight + 'px'
+          };
+        }
+        return {};
       }
     },
     methods: {
+      mousemove(e){
+        this.keepCool(() => {
+          this.$emit('mousemove', e);
+        }, 'mousemove', 50);
+      },
       onScroll(e){
         this.keepCool(() => {
           this.$emit('scroll', e)
         })
+      },
+      testready(){
+        bbn.fn.log("HEY I AM READY", this.$el);
       },
       scrollTo(x, y, animate){
         if ( !y && (typeof x === HTMLElement) ){
@@ -80,12 +123,24 @@
       },
 
       onResize(){
-        if ( this.$refs.xScroller ){
-          this.$refs.xScroller.onResize();
+        if ( !this.lastKnownWidth || !this.lastKnownHeight ){
+          this.currentWidth = this.getRef('scrollContent').clientWidth;
+          if ( this.maxWidth && (this.currentWidth > this.maxWidth) ){
+            this.currentWidth = this.maxWidth;
+          }
+          this.currentHeight = this.getRef('scrollContent').clientHeight;
+          if ( this.maxHeight && (this.currentHeight > this.maxHeight) ){
+            this.currentHeight = this.maxHeight;
+          }
         }
-        if ( this.$refs.yScroller ){
-          this.$refs.yScroller.onResize();
-        }
+        return this.$nextTick(() => {
+          if ( this.$refs.xScroller ){
+            this.$refs.xScroller.onResize();
+          }
+          if ( this.$refs.yScroller ){
+            this.$refs.yScroller.onResize();
+          }
+        });
       },
 
       scrollStart(){
@@ -144,9 +199,14 @@
         this.$refs.scrollContainer.style.position = 'absolute';
       }, 0)
       */
-      this.ready = true;
+      this.waitReady();
     },
     watch: {
+      readyDelay(newVal){
+        if ( newVal === false ){
+          this.onResize();
+        }
+      },
       show(newVal, oldVal){
         if ( !this.hidden ){
           if ( newVal != oldVal ){

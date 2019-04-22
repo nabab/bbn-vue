@@ -1,7 +1,7 @@
 /**
  * Created by BBN on 15/02/2017.
  */
-(function($, bbn, kendo){
+(function($, bbn){
   "use strict";
 
   /**
@@ -34,7 +34,7 @@
       },
       alertTitle: {
         type: String,
-        default: '<i class="fa fa-warning bbn-l"> </i> ' + bbn._("Alert")
+        default: '<i class="nf nf-fa-warning bbn-l"> </i> ' + bbn._("Alert")
       },
       alertMessage: {
         type: String,
@@ -72,8 +72,8 @@
     computed: {
       popups(){
         let r = [];
-        $.each(this.items, (i, a) => {
-          r.push(this.getObject($.extend({index: i}, a)));
+        bbn.fn.each(this.items, (a, i) => {
+          r.push(this.getObject(bbn.fn.extend({index: i}, a)));
         });
         return r;
       },
@@ -101,7 +101,7 @@
             else if ( !d.title && (typeof(arguments[i]) === 'string') ){
               d.title = arguments[i];
             }
-            else if ( $.isFunction(arguments[i]) ){
+            else if (bbn.fn.isFunction(arguments[i]) ){
               if ( !d.open ){
                 d.open = arguments[i];
               }
@@ -150,7 +150,7 @@
                 d.height = arguments[i];
               }
             }
-            else if ( $.isFunction(arguments[i]) ){
+            else if (bbn.fn.isFunction(arguments[i]) ){
               if ( !d.open ){
                 d.open = arguments[i];
               }
@@ -179,14 +179,14 @@
             if ( r.content || r.title ){
               if ( r.script ){
                 let tmp = eval(r.script);
-                if ( $.isFunction(tmp) ){
+                if (bbn.fn.isFunction(tmp) ){
                   d.open = tmp;
                 }
                 // anonymous vuejs component initialization
                 else if ( typeof(tmp) === 'object' ){
-                  bbn.fn.extend(tmp, {
+                  bbn.fn.extendOut(tmp, {
                     name: bbn.fn.randomString(20, 15).toLowerCase(),
-                    template: '<div class="bbn-full-screen">' + (r.content || '') + '</div>',
+                    template: '<div class="bbn-overlay">' + (r.content || '') + '</div>',
                     props: ['source']
                   });
                   this.$options.components[tmp.name] = tmp;
@@ -194,7 +194,7 @@
                   d.source = r.data || [];
                 }
               }
-              $.extend(d, r);
+              bbn.fn.extend(d, r);
               delete d.url;
               delete d.data;
               if ( !d.uid ){
@@ -212,7 +212,7 @@
       },
 
       getObject(from){
-        let a = $.extend({}, from);
+        let a = bbn.fn.clone( from);
         if ( !a.uid ){
           a.uid = 'bbn-popup-' + bbn.fn.timestamp().toString()
         }
@@ -269,7 +269,7 @@
             else if ( typeof arguments[i] === 'string' ){
               o.okText = arguments[i];
             }
-            else if ( $.isFunction(arguments[i]) ){
+            else if (bbn.fn.isFunction(arguments[i]) ){
               if ( has_callback ){
                 o.close = arguments[i];
               }
@@ -296,11 +296,11 @@
           o.content = '<div class="bbn-lpadded bbn-large bbn-c" style="min-width: 30em">' + o.content + '</div>';
           o.footer = {
             template: `
-      <div class="k-button-group k-dialog-buttongroup k-dialog-button-layout-stretched bbn-flex-width">
+      <div class="bbn-button-group bbn-flex-width">
         <bbn-button @click="click()"
-                    icon="fa fa-check-circle"
+                    icon="nf nf-fa-check_circle"
                     text="` + this.okText + `"
-                    class="bbn-flex-fill k-primary"
+                    class="bbn-flex-fill bbn-primary"
                     tabindex="0"
                     ref="click"
         ></bbn-button>
@@ -319,11 +319,14 @@
             mounted(){
               this.window = bbn.vue.closest(this, 'bbn-window');
               setTimeout(() => {
-                this.$refs.click.$el.focus();
+                let ele = this.getRef('click');
+                if ( ele ){
+                  ele.$el.focus();
+                }
               }, 50)
             }
           };
-          this.open($.extend(o, {
+          this.open(bbn.fn.extend(o, {
             maximizable: false,
             closable: false,
             scrollable: false,
@@ -366,7 +369,7 @@
                 o.noText = arguments[i];
               }
             }
-            else if ( $.isFunction(arguments[i]) ){
+            else if (bbn.fn.isFunction(arguments[i]) ){
               if ( onYes ){
                 onNo = arguments[i];
               }
@@ -396,16 +399,16 @@
           o.content = '<div class="bbn-lpadded bbn-medium">' + o.content + '</div>';
           o.footer = {
             template: `
-      <div class="k-button-group k-dialog-buttongroup k-dialog-button-layout-stretched bbn-flex-width">
+      <div class="bbn-button-group bbn-flex-width">
         <bbn-button @click="yes()"
-                    icon="fa fa-check-circle"
+                    icon="nf nf-fa-check_circle"
                     text="` + o.yesText + `"
-                    class="bbn-flex-fill k-primary"
+                    class="bbn-flex-fill bbn-primary"
                     tabindex="0"
                     ref="yes"
         ></bbn-button>
         <bbn-button @click="no()"
-                    icon="fa fa-times-circle"
+                    icon="nf nf-fa-times_circle"
                     text="` + o.noText + `"
                     class="bbn-flex-fill"
                     tabindex="0"
@@ -440,7 +443,7 @@
               }, 50)
             }
           };
-          this.open($.extend(o, {
+          this.open(bbn.fn.extend(o, {
             resizable: false,
             maximizable: false,
             closable: true
@@ -492,11 +495,6 @@
 
       makeWindows(){
         this.$forceUpdate();
-        this.$nextTick(() => {
-          $.each(this.items, (i, a) => {
-            //this.center(i);
-          })
-        })
       },
 
       getWindow(idx){
@@ -526,6 +524,7 @@
       },
     },
 
+    /*
     components: {
       'bbn-window': {
         name: 'bbn-window',
@@ -672,7 +671,7 @@
                 this.$refs.container[0].style.height = height;
               }
               this.$nextTick(() => {
-                let scroll = bbn.vue.find(this, 'bbn-scroll');
+                let scroll = this.find('bbn-scroll');
                 if ( scroll ){
                   scroll.selfEmit(true);
                 }
@@ -744,7 +743,7 @@
               containment: ".bbn-popup"
             });
           }
-          */
+          * /
         },
         watch: {
           isMaximized(){
@@ -755,6 +754,7 @@
         }
       }
     }
+      */
   });
 
-})(jQuery, bbn, kendo);
+})(jQuery, bbn);

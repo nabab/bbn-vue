@@ -24,12 +24,14 @@
    * @param {boolean|number} selected - The index of the currently selected tab, and false otherwise.
    */
   Vue.component("bbn-router", {
-    mixins: [bbn.vue.basicComponent],
+    mixins: [bbn.vue.basicComponent, bbn.vue.closeComponent],
     props: {
+      // Routes automatically after mount
       auto: {
         type: Boolean,
         default: true
       },
+      // 
       url: {
         type: String,
         default: ''
@@ -52,11 +54,12 @@
         }
       },
     },
-
     data(){
       let baseURL = this.setBaseURL(this.root);
       return {
-        // Real Cntainers are the bbn-container in the slot
+        // Number of conatainers registered - as they say it
+        numRegistered: 0,
+        // Real containers are the bbn-container in the slot
         hasRealContainers: false,
         // Fake containers are the bbns-container in the slot
         hasFakeContainers: false,
@@ -85,7 +88,15 @@
         // The currently visible container
         activeContainer: null,
         // set to true each time the router is loading (can only load once at a time)
-        isLoading: false
+        isLoading: false,
+        // This will remain false until the first routing
+        routed: false,
+        // True while the component is in the action of routing
+        isRouting: false,
+        // False until the first routing
+        isInit: false,
+        // The index of the currently selected view
+        selected: null
       };
     },
 
@@ -105,33 +116,73 @@
         return base;
       },
       // Array of unsaved views
-      unsavedViews(){
-        return $.map(this.views, (v) => {
-          if ( v.isUnsaved ){
-            return {
+      dirtyContainers(){
+        let r = []
+        bbn.fn.iterate(this.urls, (v) => {
+          if ( v.dirty ){
+            r.push({
               idx: v.idx,
               url: v.url
-            }
+            });
           }
-          return null;
         });
+        return r;
       },
       // Returns true if there are any unsaved views
-      isUnsaved(){
-        return !!this.unsavedViews.length;
+      isDirty(){
+        return !!this.dirtyContainers.length;
       }
     },
 
     methods: {
-
-      // Function used by container to make themselves known when they are mounted
-      register(cp){
-        if ( cp.url ){
+      /**
+       * Function used by container to make themselves known when they are mounted
+       *
+       * @param {Vue} cp
+       */
+      register(cp, fake){
+        if ( fake ){
+          this.add(cp);
+          return;
+        }
+        this.numRegistered++;
+        if ( cp.url && !this.urls[cp.url] ){
           this.urls[cp.url] = cp;
         }
+        if ( !this.isInit && (this.numRegistered === this.views.length) ){
+          this.isInit = true;
+          if ( this.auto ){
+            this.route(this.parseURL(this.parent ? this.router.getFullCurrentURL() : bbn.env.path), true);
+          }
+    
+        }
       },
-      // Given a URL returns the existing path of a corresponding view
-      get_route(url, force){
+      /**
+       * Function used by container to make themselves known when they are destroyed
+       *
+       * @param {Vue} cp
+       */
+      unregister(cp){
+        this.numRegistered--;
+        if ( cp.url && this.urls[cp.url] ){
+          delete this.urls[cp.url];
+        }
+      },
+
+      /**
+       * Given a URL returns the existing path of a corresponding view or false, or the default view if forced
+       *
+       * @param {String} url
+       * @param {Boolean} force
+       * @returns {String|false}
+       */
+      getRoute(url, force){
+        if ( !url && !this.parent ){
+          url = this.parseURL(bbn.env.path);
+        }
+        if ( !url && force && this.parent ){
+          url = this.parseURL(this.router.getFullCurrentURL());
+        }
         if ( url ){
           let bits = url.split('/');
           while ( bits.length ){
@@ -142,15 +193,21 @@
             bits.pop();
           }
         }
-        if ( this.def ){
+        if ( this.def && force ){
           return this.def
         }
-        if ( this.views.length ){
+        if ( this.views.length && force ){
           return this.views[0].current
         }
         return false;
       },
-      // Formats a baseURL correctly (without 1st slash and with end slash
+
+      /**
+       * Formats a baseURL correctly (without 1st slash and with end slash
+       *
+       * @param {String} baseURL
+       * @returns {String}
+       */
       setBaseURL(baseURL){
         while ( baseURL.substr(-1) === '/' ){
           baseURL = baseURL.substr(0, baseURL.length-1);
@@ -160,7 +217,69 @@
         }
         return baseURL ? baseURL + '/' : '';
       },
-      // Route the router! Sends event beforeRoute (cancellable) and route
+
+      getDefaultView(){
+        return {
+          source: null,
+          title: bbn._("Untitled"),
+          options: null,
+          cached: true,
+          scrollable: true,
+          component: null,
+          icon: '',
+          notext: false,
+          content: null,
+          menu: [],
+          loaded: null,
+          fcolor: null,
+          bcolor: null,
+          load: false,
+          selected: null,
+          css: '',
+          advert: null,
+          help: null,
+          imessages: [],
+          script: null,
+          static: false,
+          pinned: false,
+          url: null,
+          current: null,
+          real: false,
+          cfg: {},
+          events: {}
+        };
+      },
+
+      /*
+      observerEmit(newVal, obs){
+        bbn.fn.log("OBS EMIT", newVal, obs);
+        let ele = $(".bbn-observer-" + obs.element, this.$el);
+        if ( ele.length ){
+          let idx = this.getIndex(ele);
+          if ( idx !== false ){
+            let i = bbn.fn.search(this.observers, {id: obs.id, element: obs.element});
+            if ( (i > -1) && (this.observers[i].value !== newVal) ){
+              if ( idx === this.selected ){
+                this.$emit('bbnObs' + obs.element + obs.id, newVal);
+                this.observers[i].value = newVal;
+              }
+              else{
+                this.observers[i].value = newVal;
+                this.$set(this.views[idx].events, 'bbnObs' + obs.element + obs.id, newVal);
+              }
+            }
+          }
+        }
+      },
+      */
+
+      /**
+       * Sends event beforeRoute (cancellable) and launch real routing
+       *
+       * @param {String} url
+       * @param {Boolean} force
+       * @returns {void}
+       */
       route(url, force){
         if ( this.ready && (force || !this.activeContainer || (url !== this.currentURL)) ){
           let event = new CustomEvent(
@@ -174,22 +293,28 @@
           if ( !event.defaultPrevented ){
             // Checks weather the container is already there
             if ( !url ){
-              url = this.get_route('', true);
+              let idx = this.getRoute('', true);
+              if ( idx ){
+                url = this.urls[idx].currentURL;
+              }
             }
-            let st = url ? this.get_route(url) : '';
-            bbn.fn.log("ROUTING FUNCTION EXECUTED", st, url);
+            let st = url ? this.getRoute(url) : '';
+            //bbn.fn.log("ROUTING FUNCTION EXECUTING FOR " + url + " (CORRESPONDING TO " + st + ")");
             if ( !url ){
               return;
             }
-            if ( url && ((!st && this.autoload) || (this.urls[st] && this.urls[st].load)) ){
+            if ( !force && (this.currentURL === url) ){
+              //bbn.fn.log("SAME URL END ROUTING");
+              return;
+            }
+            if ( url && ((!st && this.autoload) || (this.urls[st] && this.urls[st].load && !this.urls[st].loaded)) ){
               this.load(url);
-              bbn.fn.log("LOADING");
             }
             // Otherwise the container is activated ie made visible
             else {
-              bbn.fn.log("LOADED", url);
+              //bbn.fn.log("LOADED " + url);
               if ( !st && this.def && (!url || force)){
-                st = this.get_route(this.def);
+                st = this.getRoute(this.def);
                 if ( st ){
                   url = this.def;
                 }
@@ -197,16 +322,52 @@
               if ( !st && force && this.views.length ){
                 st = this.views[0].url;
                 if ( st ){
-                  url = this.views[0].current || st;
+                  url = this.urls[st].currentURL || st;
                 }
               }
               if ( st ){
-                bbn.fn.log("REAL ROUTING GOING ON...................", st);
-                this.currentURL = url;
-                this.activate(url, this.urls[st]);
-                this.$emit("route", url);
+                this.urls[st].setCurrent(url);
+                this.realRoute(url, st, force);
               }
             }
+          }
+        }
+      },
+
+      /**
+       * Route the router!
+       *
+       * @param {String} url The URL to route to
+       * @param {String} st The URL/key of the container on which we will route
+       * @param {Boolean} force
+       */
+      realRoute(url, st, force){
+        if ( st && this.urls[st] ){
+          //bbn.fn.log("REAL ROUTING GOING ON FOR " + url);
+          if ( url !== this.currentURL ){
+            //bbn.fn.log("THE URL IS DIFFERENT FROM THE ORIGINAL " + this.currentURL);
+            this.currentURL = url;
+          }
+          // First routing, triggered only once
+          if ( !this.routed ){
+            this.routed = true;
+            this.$emit("route1", this);
+          }
+          this.activate(url, this.urls[st]);
+          this.urls[st].currentURL = url;
+          if ( this.urls[st] ){
+            this.urls[st].init();
+            let child = this.urls[st].find('bbn-router');
+            if ( child ){
+              //bbn.fn.log("CHILD ROUTER ROUTING: " + url.substr(st.length + 1));
+              child.route(url.substr(st.length + 1), force)
+            }
+            else{
+              //this.$emit("route", url);
+            }
+          }
+          else{
+            //this.$emit("route", url);
           }
         }
       },
@@ -217,17 +378,22 @@
        * @param container
        */
       updateView(container){
+        return;
         // Looking for a subrouter in the activated container
         let subRouter = this.getSubRouter();
         if ( subRouter ){
           // If so routing also this container
-          bbn.fn.log("FROM UPDATEVIEW");
+          //bbn.fn.log("FROM UPDATEVIEW");
           subRouter.route(container.currentURL);
         }
         else{
+          //bbn.fn.log(container);
           if ( this.$children.length && !this.currentURL && this.auto ){
-            bbn.fn.log("ROUTER FROM UPDATEVIEW");
+            //bbn.fn.log("ROUTING " + this.url + " FROM METHOD UPDATEVIEW");
             this.route(this.url, true);
+          }
+          else{
+            //bbn.fn.log("NOT ROUTING " + this.currentURL + " NOR " + this.url + "FROM METHOD UPDATEVIEW");
           }
         }
       },
@@ -240,13 +406,12 @@
        */
       activate(url, container){
         let todo = false;
-        bbn.fn.log("ACTIVATING", url, container, this.activeContainer);
+        //bbn.fn.log("ACTIVATING " + url + " AND SENDING FOLLOWING CONTAINER:", container);
         if ( !this.activeContainer || (container && (this.activeContainer !== container)) ){
           this.activeContainer = null;
           bbn.fn.each(this.$children, (cp) => {
             if ( bbn.fn.isFunction(cp.hide) ){
               if ( (cp !== container) ){
-                bbn.fn.log(cp);
                 cp.hide();
               }
               else{
@@ -262,23 +427,30 @@
         else if ( url !== this.activeContainer.currentURL ){
           this.activeContainer.setCurrent(url);
         }
-        bbn.fn.log("ACTIVATED?", this.activeContainer);
+        //bbn.fn.log("ACTIVATED " + url + " AND ACTIVATED CONTAINER BELOW:", this.activeContainer);
       },
 
       /**
        * Function triggered every time a container is shown (at the start of the animation) to change the URL if needed.
        */
-      enter(){
-        bbn.fn.log("ENTER!!");
+      enter(container){
+        //bbn.fn.log("THE CONTAINER WILL BE SHOWN: ", container);
       },
 
       changeURL(url, title, replace){
-        bbn.fn.log("CHANGE URL", url);
+        //bbn.fn.log("CHANGE URL TO " + url);
         if ( this.parent ){
           this.parent.changeURL(this.baseURL + url, title, replace);
         }
-        else {
-          bbn.fn.setNavigationVars(this.getFullBaseURL() + url, title, replace);
+        else if ( replace || (url !== bbn.env.path) ){
+          if ( !replace ){
+            //bbn.fn.log("NO REPLAACE", this.getFullBaseURL() + url, bbn.env.path);
+          }
+          if ( !replace && ((this.getFullBaseURL() + url).indexOf(bbn.env.path) === 0) ){
+            //bbn.fn.log("REPLACING");
+            replace = true;
+          }
+          bbn.fn.setNavigationVars(this.getFullBaseURL() + url, title, {}, replace);
         }
       },
 
@@ -319,7 +491,7 @@
        * @returns {string}
        */
       getCurrentURL(){
-        return this.activeContainer ? this.activeContainer.currentURL : '';
+        return this.currentURL;
       },
 
       /**
@@ -342,6 +514,7 @@
        * @returns {string}
        */
       parseURL(fullURL){
+        let url = fullURL;
         if ( fullURL === undefined ){
           return '';
         }
@@ -352,13 +525,13 @@
           fullURL = fullURL.substr(bbn.env.root.length);
         }
         fullURL = bbn.fn.removeTrailingChars(fullURL, '/');
-        bbn.fn.log("PARSING", fullURL, this.fullBaseURL);
         if ( (this.fullBaseURL === (fullURL + '/'))  || (fullURL === '') ){
           return '';
         }
         if ( this.fullBaseURL && (fullURL.indexOf(this.fullBaseURL) === 0) ){
           fullURL = fullURL.substr(this.fullBaseURL.length);
         }
+        //bbn.fn.log("PARSING " + url + ' INTO ' + fullURL + ' with a baseURL like this: ' + this.fullBaseURL);
         return fullURL;
       },
 
@@ -379,8 +552,12 @@
 
       activateIndex(idx){
         if ( this.isValidIndex(idx) ){
-          //bbn.fn.log("ACTIVATE7", this.views[idx].current);
-          this.activate(this.views[idx].current);
+          if ( this.urls[this.views[idx].url] ){
+            this.route(this.urls[this.views[idx].url].currentURL);
+          }
+          else{
+            this.route(this.views[idx].current);
+          }
         }
       },
 
@@ -389,7 +566,7 @@
           idx = this.selected;
         }
         if ( this.isValidIndex(idx) ){
-          return this.getRef('container-' + idx);
+          return this.urls[this.views[idx].url];
         }
         return false;
       },
@@ -404,7 +581,8 @@
       },
 
       // Returns the next router in the corresponding container if there's any
-      getSubRouter(idx){
+      getSubRouter(misc){
+        let idx = this.getIndex(misc);
         if ( idx === undefined ){
           idx = this.selected;
         }
@@ -415,7 +593,8 @@
         return null;
       },
 
-      getRealVue(idx){
+      getRealVue(misc){
+        let idx = this.getIndex(misc);
         let tabnav = this,
             sub = tabnav;
         if ( idx === undefined ){
@@ -431,10 +610,106 @@
         return sub.getVue(idx);
       },
 
-      add(obj_orig, idx){
-        let obj = $.extend({}, obj_orig),
-            index;
+      getIndex(misc){
+        if ( !this.views.length ){
+          return false;
+        }
+        if ( misc === undefined ){
+          return this.selected;
+        }
+        if ( !this.isValidIndex(misc) ) {
+          if ( typeof(misc) === 'string' ){
+            misc = this.search(misc);
+          }
+          else if ( typeof(misc) === 'object' ){
+            // Vue
+            if ( misc.$el ){
+              misc = $(misc.$el);
+            }
+            // Not jQuery
+            else if ( misc instanceof jQuery ){
+              misc = misc[0];
+            }
+            if ( misc.tagName ){
+              bbn.fn.each(this.$children, (ct) => {
+                if (
+                  ct.$vnode &&
+                  ct.$vnode.componentOptions &&
+                  (ct.$vnode.componentOptions.tag === 'bbn-container') &&
+                  ((ct.$el === misc) || ct.$el.contains(misc))
+                ){
+                  misc = ct.currentIndex;
+                  return false;
+                }
+              });
+            }
+          }
+        }
+        return this.isValidIndex(misc) ? misc : false;
+      },
+
+      remove(misc, force){
+        let idx = this.getIndex(misc);
+        if ( (idx > -1) && !this.views[idx].slot ){
+          let ev = $.Event('close');
+          if ( this.isDirty &&
+            this.views[idx].dirty &&
+            !ev.isDefaultPrevented() &&
+            !force
+          ){
+            ev.preventDefault();
+            this.confirm(this.confirmLeave, () => {
+              $.each(this.unsavedTabs, (i, t) => {
+                let forms = bbn.vue.findAll(this.getVue(t.idx), 'bbn-form');
+                if ( Array.isArray(forms) && forms.length ){
+                  $.each(forms, (k, f) => {
+                    f.reset();
+                  });
+                }
+              });
+              this.$nextTick(() => {
+                this.$emit('close', idx, ev);
+                this.remove(idx, true);
+              });
+            });
+          }
+          else if ( !force ){
+            this.$emit('close', idx, ev);
+          }
+          if ( !ev.isDefaultPrevented() || force ){
+            let t = this.views.splice(idx, 1);
+            delete this.urls[t.url];
+            bbn.fn.each(this.views, (v, i) => {
+              if ( v.idx !== i ){
+                v.idx = i;
+              }
+            });
+            if ( this.selected > idx ){
+              this.selected = this.selected - 1;
+            }
+            else if ( this.selected === idx ){
+              this.selected = false;
+              if ( this.views.length ){
+                $.each(this.history, (i, a) => {
+                  let tmp = this.getIndex(a);
+                  if ( tmp !== false ){
+                    idx = tmp;
+                    return false;
+                  }
+                });
+                this.activateIndex(this.views[idx] ? idx : idx - 1);
+              }
+            }
+          }
+          return true;
+        }
+        return false;
+      },
+
+      add(obj, idx){
+        let index;
         //obj must be an object with property url
+        //bbn.fn.log("ADDING", obj);
         if (
           (typeof(obj) === 'object') &&
           obj.url &&
@@ -442,7 +717,7 @@
         ){
           if ( !obj.current ){
             if ( bbn.env.path.indexOf(this.getFullBaseURL() + obj.url + '/') === 0 ){
-              bbn.env.path.substr(this.getFullBaseURL().length);
+              obj.current = bbn.env.path.substr(this.getFullBaseURL().length);
             }
             else{
               obj.current = obj.url;
@@ -454,33 +729,41 @@
           if ( !obj.current ){
             obj.current = obj.url;
           }
-          obj.isUnsaved = false;
+          if ( obj.content ){
+            obj.loaded = true;
+          }
           obj.events = {};
           if ( !obj.menu ){
             obj.menu = [];
           }
-          bbn.fn.log("ADD", obj.url);
           index = this.search(obj.url);
+          //bbn.fn.log("ADDING CONTAINER " + obj.current + " (" + index + ")");
           if ( index !== false ){
-            if ( this.views[index] && this.views[index].slot ){
-              return;
-            }
+            let o = this.views[index],
+                cn = this.urls[this.views[index].url];
             if ( idx === undefined ){
               idx = index;
             }
-            obj.idx = idx;
-            obj.selected = index === this.selected;
-            // If the tab exists we remove it
-            bbn.fn.iterate(this.views[index], (v, n) => {
-              if ( obj[n] === undefined ){
-                obj[n] = v;
+            if ( cn ){
+              cn.currentIndex = idx;
+            }
+            if ( obj.real ){
+              return;
+            }
+            bbn.fn.iterate(obj, (a, n) => {
+              if ( o[n] !== a ){
+                this.$set(o, n, a)
               }
-            })
-            this.views.splice(index, 1, obj);
+            });
           }
           else{
             obj.selected = false;
             obj.idx = idx === undefined ? this.views.length : idx;
+            bbn.fn.iterate(this.getDefaultView(), (a, n) => {
+              if ( obj[n] === undefined ){
+                this.$set(obj, n, a);
+              }
+            })
             this.views.push(obj);
           }
         }
@@ -499,43 +782,88 @@
         return r > -1 ? r : false;
       },
 
+      callRouter(url, st){
+        if ( this.parent ){
+          let containers = this.ancesters('bbn-container');
+          url = this.getFullBaseURL().substr(this.router.baseURL.length) + url;
+          //bbn.fn.log("CALL ROOT ROUTER WITH URL " + url);
+          // The URL of the last bbn-container as index of the root router
+          this.router.realRoute(url, containers[containers.length - 1].url, true);
+        }
+        else{
+          this.realRoute(url, st, true);
+        }
+  
+      },
+
       load(url, force){
-        if ( !this.isLoading ){
+        if ( url ){
+          this.isLoading = true;
           let finalURL = this.fullBaseURL + url;
           let idx = this.search(url);
+          //bbn.fn.log("START LOADING FN FOR IDX " + idx + " ON URL " + finalURL);
           if ( idx !== false ){
-            if ( this.views[idx].slot || this.views[idx].loading ){
+            //bbn.fn.log("INDEX RETRIEVED BEFORE LOAD: " + idx.toString(), this.views[idx].slot, this.views[idx].loading);
+            if ( this.views[idx].loading || (!force && !this.views[idx].load) ){
               return;
             }
-            if ( !force && !this.views[idx].load ){
-              return;
-            }
-            else{
-              this.views[idx].loading = true;
-            }
+            this.views[idx].loading = true;
           }
           else{
-            this.add({url: url, title: bbn._('Loading'), load: true, loading: true, visible: true, current: url, error: false, state: 'loading'});
+            this.add({url: url, title: bbn._('Loading'), load: true, loading: true, visible: true, real: false, current: url, error: false, loaded: false});
           }
-          this.isLoading = true;
+          this.$emit('update', this.views);
           return bbn.fn.post(finalURL, {_bbn_baseURL: this.fullBaseURL}, (d) => {
             this.isLoading = false;
+            //this.remove(url);
             if ( d.url ){
               d.url = this.parseURL(d.url);
             }
-            else{
+            if ( !d.url ){
               d.url = url;
             }
-            d.current = url;
+            //bbn.fn.log("URLS", url, d.url);
+            if ( url.indexOf(d.url) === 0 ){
+              d.current = url;
+              //bbn.fn.log("CURRENT DEFINED AS " + d.current);
+            }
             if ( d.data ){
               d.source = d.data;
               delete d.data;
             }
-            this.add($.extend(d, {slot: false, loading: false, load: false, loaded: true, state: 'loaded'}));
+            if ( (d.url !== d.current) && this.urls[d.current] ){
+              bbn.fn.log("DELETING VIEW CASE");
+              this.views.splice(this.urls[d.current].idx, 1);
+              delete this.urls[d.current];
+            }
             this.$nextTick(() => {
-              bbn.fn.log("ROUTER LOAD ", d.current);
-              this.route(d.current, true);
+              this.add(bbn.fn.extend(d, {slot: false, loading: false, load: true, real: false, loaded: true}));
+              setTimeout(() => {
+                if ( !this.urls[d.url] ){
+                  throw new Error(bbn._("Impossible to find the container for URL") + ' ' + d.url);
+                }
+                //bbn.fn.log("LOADED " + d.url, url);
+                this.urls[d.url].setLoaded(true);
+                // Otherwise the changes we just did on the props wont be taken into account at container level
+                this.urls[d.url].init();
+                this.callRouter(d.current, d.url);
+                this.$emit('update', this.views);
+              })
             })
+            /*
+            setTimeout(() => {
+              bbn.fn.log(d.url, d, ';;;;;');
+              if ( !this.urls[d.url] ){
+                throw new Error(bbn._("Impossible to find the container for URL") + ' ' + d.url);
+              }
+              this.urls[d.url].setLoaded(true);
+              this.urls[d.url].init();
+              setTimeout(() => {
+                bbn.fn.log("ROUTER LOADED:" + d.current);
+                //this.callRouter(d.current, d.url);
+              }, 200)
+            }, 200)
+            */
           }, (xhr, textStatus, errorThrown) => {
             this.isLoading = false;
             /*
@@ -561,22 +889,19 @@
       },
 
       reload(idx){
-        let subtabnav = this.getSubRouter(idx);
-        if ( subtabnav && subtabnav.autoload ){
-          let cfg = this.getConfig(subtabnav);
-          if ( cfg && cfg.views ){
-            this.views[idx].cfg = cfg;
-          }
+        if (
+          this.views[idx] &&
+          !this.views[idx].slot &&
+          this.views[idx].load &&
+          this.urls[this.views[idx].url] &&
+          this.urls[this.views[idx].url].isLoaded
+        ){
+          this.views[idx].loaded = false;
+          this.urls[this.views[idx].url].isLoaded = false;
+          this.$nextTick(() => {
+            this.route(this.urls[this.views[idx].url].currentURL, true);
+          })
         }
-        if ( this.views[idx].load !== false ){
-          this.views[idx].load = true;
-        }
-        if ( this.views[idx].imessages ){
-          this.views[idx].imessages.splice(0, this.views[idx].imessages.length);
-        }
-        this.$nextTick(() => {
-          this.activateIndex(idx);
-        })
       },
 
       getTitle(idx){
@@ -609,93 +934,74 @@
     },
 
     mounted(){
-      // Adding bbns-tab from the slot
-      if ( this.$slots.default ){
-        for ( let node of this.$slots.default ){
-          if ( node.componentOptions ){
-            if (
-              !this.hasFakeContainers &&
-              (node.componentOptions.tag === 'bbn-container')
-            ){
-              if ( !this.hasRealContainers ){
-                this.hasRealContainers = true;
-              }
-              this.add($.extend({slot: true}, node.componentOptions.propsData));
-            }
-            else if (
-              !this.hasRealContainers &&
-              (node.componentOptions.tag === 'bbns-container')
-            ){
-              if ( !this.hasFakeContainers ){
-                this.hasFakeContainers = true;
-              }
-              let o = {slot: false};
-
-              /*
-              bbn.fn.info(node.$slots.default.innerHTML);
-              let st = node.$el.innerHTML.trim();
-              if ( st ){
-                o.content = st;
-              }
-              */
-              bbn.fn.log("EL", node.componentInstance);
-              if ( node.componentInstance && node.componentInstance.template ){
-                o.content = node.componentInstance.template;
-              }
-              this.add($.extend(o, node.componentOptions.propsData));
-            }
-          }
-        }
-      }
-
+      // All routers above (which constitute the fullBaseURL)
       this.parents = this.ancesters('bbn-router');
+      // The closest
       this.parent = this.parents.length ? this.parents[0] : false;
+      // The root
       this.router = this.parents.length ? this.parents[this.parents.length-1] : this;
       let url;
       // If there is a parent router we automatically give the proper baseURL
       if ( this.parent ){
         this.parentContainer = this.closest('bbn-container');
-        this.baseURL = this.setBaseURL(this.parent.activeContainer.url);
-        url = this.parseURL(this.parent.getFullCurrentURL());
-        bbn.fn.log("URL FROM PARENT", url);
+        this.baseURL = this.setBaseURL(this.parentContainer.url);
+        url = this.parentContainer.currentURL !== this.parentContainer.url ? this.parentContainer.currentURL.substr(this.parentContainer.url.length + 1) : '';
+        //bbn.fn.log("URL FROM PARENT: " + url + " (FROM " + this.parentContainer.url + ")");
+      }
+      else{
+        url = this.parseURL(bbn.env.path);
       }
       if ( !url && this.url ){
         url = this.url;
-        bbn.fn.log("URL FROM PROP", url);
+        //bbn.fn.log("URL FROM PROP", url);
       }
-      if ( !url ){
-        url = this.parseURL(bbn.env.path);
+      // Adding bbns-tab from the slot
+      if ( this.$slots.default ){
+        for ( let node of this.$slots.default ){
+          if (
+            node.componentOptions &&
+            (node.componentOptions.tag === 'bbn-container')
+          ){
+            if ( !this.hasRealContainers ){
+              this.hasRealContainers = true;
+            }
+            let o = {slot: true, load: false, loaded: true};
+            if ( url && (url.indexOf(node.componentOptions.propsData.url) === 0) ){
+              o.current = url;
+            }
+            this.add(bbn.fn.extend({}, node.componentOptions.propsData, o));
+          }
+        }
       }
       bbn.fn.each(this.source, (a) => {
-        this.add($.extend({slot: false}, a));
+        if ( url && (url.indexOf(a.url) === 0) ){
+          a.current = url;
+        }
+        this.add(bbn.fn.extendOut(a, {slot: false}));
       });
-      if ( !url ){
-        url = this.def || Object.keys(this.urls)[0] || '';
-      }
       this.ready = true;
-      if ( this.auto ){
-        this.$nextTick(() => {
-          bbn.fn.log("ROUTER MOUNT");
-          this.route(url, true);
-        })
-      }
     },
 
     watch: {
       currentURL(newVal, oldVal){
         this.$nextTick(() => {
-          this.$emit('change', newVal);
           if ( this.activeContainer ){
             this.changeURL(newVal, this.activeContainer.title);
           }
           else if ( this.isLoading ){
             this.changeURL(newVal, bbn._("Loading"));
           }
-        })
+          let idx = this.search(newVal);
+          if ( idx !== false ){
+            this.selected = idx;
+          }
+          this.$emit('change', newVal);
+        });
+        this.$emit('route', newVal);
       },
       url(newVal){
         if ( this.ready ){
-          bbn.fn.log("ROUTER change URL", newVal);
+          //bbn.fn.log("ROUTER change URL", newVal);
           this.route(newVal);
         }
       },

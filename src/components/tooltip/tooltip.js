@@ -39,7 +39,7 @@
     },
     methods: {
       getItems(){
-        return ($.isFunction(this.source) ? this.source(this.sourceOption) : this.source) || [];
+        return (bbn.fn.isFunction(this.source) ? this.source(this.sourceOption) : this.source) || [];
       },
       clickItem(e){
         if (

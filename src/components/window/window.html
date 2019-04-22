@@ -1,0 +1,21 @@
+<div :class="[componentClass, 'bbn-modal']"
+     :style="containerCSS"
+     tabindex="-1"
+     @animationstart="onResize"
+     @keydown.esc.prevent.stop="close()">
+  <bbn-floater v-if="ready"
+              :title="title"
+              :maximizable="maximizable"
+              :closable="closable"
+              :width="width || null"
+              :height="height || null"
+              :component="component"
+              :content="content"
+              :source="source"
+              :container="$el"
+              @close="close"
+              @keydown.esc.prevent.stop="close()">
+              :height="height || null">
+    <slot></slot>
+  </bbn-floater>
+</div>

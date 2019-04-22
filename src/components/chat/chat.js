@@ -49,7 +49,7 @@
     data(){
       let data = [];
       bbn.fn.each(this.windows, (w, i) => {
-        data.push($.extend({}, w, {visible: false}));
+        data.push(bbn.fn.extend({}, w, {visible: false}));
       });
       return {
         currentOnline: this.online,
@@ -74,7 +74,7 @@
         let res = [];
         this.currentWindows.map((val, idx) => {
           if ( val.visible ){
-            res.push($.extend(val, {idx: idx}));
+            res.push(bbn.fn.extend(val, {idx: idx}));
           }
         });
         return res;
@@ -141,6 +141,8 @@
         this.$emit('send', obj, idx);
       },
 
+
+
       getStyle(idx){
         let r = {},
             pos = this.usersVisible ? 300 : 0,
@@ -177,6 +179,7 @@
       },
 
       receive(data){
+        bbn.fn.log("RECEIVING THIS FOR CHAT", data);
         if ( data.hash ){
           if ( this.onlineUsersHash !== data.hash ){
             this.onlineUsersHash = data.hash;
@@ -291,13 +294,13 @@
                 }
               }, {
                 text: bbn._('Exit chat'),
-                icon: 'fas fa-sign-out-alt',
+                icon: 'nf nf-fa-sign_out_alt',
                 command: () => {
 
                 }
               }, {
                 text: bbn._('Delete messages'),
-                icon: 'fas fa-sign-out-alt',
+                icon: 'nf nf-fa-sign_out_alt',
                 command: () => {
                   bbn.fn.confirm(bbn._('Are you sure you want to delete all messages for this chat? They will be' +
                     ' deleted only on your end'), () => {
@@ -314,7 +317,7 @@
                 if ( this.participants.indexOf(o.value) === -1 ){
                   users.push({
                     text: bbn.fn.get_field(chat.users, 'value', o.value, 'text'),
-                    icon: 'fas fa-user',
+                    icon: 'nf nf-fa-user',
                     command: () => {
                       chat.addUser(this.chatId, o.value)
                     }
@@ -323,7 +326,7 @@
               });
               res.push({
                 text: bbn._('Add participant'),
-                icon: 'fas fa-plus',
+                icon: 'nf nf-fa-plus',
                 items: users
               });
             }
@@ -362,10 +365,11 @@
 
           scrollEnd(){
             this.$nextTick(() => {
-              let msg =this.getRef('messages'),
-                  sc = msg ? msg.getRef('scroll') : null;
+              let sc = this.getRef('scroll');
               if ( sc ){
+                sc.onResize();
                 sc.scrollEndY();
+                sc.onResize();
               }
             })
           },

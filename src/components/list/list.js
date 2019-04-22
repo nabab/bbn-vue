@@ -13,7 +13,7 @@
     // The events that will be emitted by this component
     _emitter: ['dragstart', 'drag', 'dragend', 'select', 'open'],
     props: {
-      // property to remove fa fa-caret icons from all level of items of list
+      // property to remove nf nf-fa-caret icons from all level of items of list
       arrowIcons: {
         type: Boolean,
         default: true
@@ -35,6 +35,16 @@
       opened: {
         type: Boolean,
         default: false
+      },
+      // the icon of the item when expanded
+      expandedIcon: {
+        type: String,
+        default: 'nf nf-fa-caret_down'
+      },
+      // the icon of the item when expandible but closed
+      closedIcon: {
+        type: String,
+        default: 'nf nf-fa-caret_right'
       },
       // A function for mapping the hierarchy data
       map: {
@@ -123,7 +133,7 @@
         loading: false,
         active: false,
         num_children: this.num !== undefined ? this.num : items.length,
-        styled: true,
+        styled: false,
         // Only for the origin hierarchy
         isRoot: false,
         // The parent node if not root
@@ -151,12 +161,9 @@
         // Real dragging will start after the mouse's first move, useful to kow if we are in a select or drag context
         realDragging: false,
         expanded: [],
-        overNode: false,
         selectedNode: false,
         checked: [],
         disabled: [],
-        currentLevel: 0,
-        
       };
     },
 
@@ -183,23 +190,13 @@
 
     methods: {
       isSame(obj, ob) {
-        return $.isEmptyObject(bbn.fn.diffObj(obj, ob));
-      },
-      getLevel(a, level) {
-        if (a.$parent !== undefined) {
-          bbn.fn.log('level before', level)
-          level++;
-          this.getLevel(a.$parent, level)
-        }
-        this.hierarchy.currentLevel = level;
-        return level
+        return bbn.fn.numProperties(bbn.fn.diffObj(obj, ob)) === 0;
       },
       select(item, idx) {
         let path = [idx],
             cp = this;
         if ((this.hierarchy.selectedNode === false) || ( this.hierarchy.selectedNode.text !== item.text) ) {
           this.selected = idx;
-          this.getLevel(this, this.hierarchy.currentLevel);
           while (cp.nodeIdx !== undefined) {
             path.unshift(cp.nodeIdx);
             cp = cp.$parent;
@@ -213,6 +210,21 @@
           return this.hierarchy.$emit('unselect', item, idx, path );
         }
       },
+     /* select(item, idx) {
+
+        let path = [idx],
+            cp = this;
+        this.selected = idx;
+        while (cp.nodeIdx !== undefined) {
+          path.unshift(cp.nodeIdx);
+          cp = cp.$parent;
+        }
+
+        bbn.fn.log('select', item, idx, this.selected)
+
+        return this.hierarchy.$emit('select', item, idx, path, );
+      },*/
+
 
       removeExpanded(i) {
         let idx = this.expanded.indexOf(i);
@@ -315,93 +327,6 @@
         this.hierarchy.$emit('close', this);
       },
 
-      // Find a node based on its props
-      /*      _findNode(props, node){
-              let ret = false;
-              if ( node ){
-                if ( node.numChildren && !node.isExpanded ){
-                  node.isExpanded = true;
-                }
-                if ( node.$children && node.numChildren && node.isExpanded && Object.keys(props) ){
-                  $.each(node.$children, (i, n) => {
-                    if ( n.data ){
-                      let tmp = {};
-                      $.each(Object.keys(props), (j, k) => {
-                        if ( n.data[k] === undefined ){
-                          return true;
-                        }
-                        tmp[k] = n.data[k];
-                      });
-                      if ( JSON.stringify(tmp) === JSON.stringify(props) ){
-                        ret = n;
-                      }
-                    }
-                  });
-                }
-              }
-              return ret;
-            },*/
-
-      // Find a node based on path
-      /*getNode(arr, context){
-        let root = context || this.$refs.root;
-
-        if ( arr ){
-          if ( !$.isArray(arr) ){
-            arr = [arr];
-          }
-          arr = arr.map((v) => {
-            if ( (typeof v === 'number') || (typeof v === 'string') ){
-              return {idx: v}
-            }
-            return v;
-          });
-          let node = false;
-          $.each(arr, (i, v) => {
-            node = this._findNode(v, root);
-          });
-          return node;
-        }
-      },*/
-
-      // Returns the menu of a given node
-      /*getMenu(node){
-        let idx = $(node.$el).index();
-        let menu = [];
-        if ( node.numChildren ){
-          menu.push({
-            text: node.isExpanded ? bbn._("Close") : bbn._("Open"),
-            icon: node.isExpanded ? 'fa fa-arrow-circle-up' : 'fa fa-arrow-circle-down',
-            command: () => {
-              node.isExpanded = !node.isExpanded;
-            }
-          });
-        }
-        if ( this.isAjax && node.numChildren && node.$refs.hierarchy && node.$refs.hierarchy[0].isLoaded ){
-          menu.push({
-            text: bbn._("Refresh"),
-            icon: 'fa fa-refresh',
-            command: () => {
-              this.reload(node);
-            }
-          })
-        }
-        if ( this.menu ){
-          let m2 = $.isFunction(this.menu) ? this.menu(node, idx) : this.menu;
-          if ( m2.length ){
-            $.each(m2, function(i, a){
-              menu.push({
-                text: a.text,
-                icon: a.icon ? a.icon : '',
-                command: a.command ? () => {
-                  a.command(node)
-                } : false
-              });
-            })
-          }
-        }
-        return menu;
-      },*/
 
       // Returns an object with the data to send for a given node
       // If UID has been given obj will only have this prop other the whole data object
@@ -419,7 +344,7 @@
           }
         } else if (this.node) {
           r = this.node.data;
-        } else if ($.isFunction(this.data)) {
+        } else if (bbn.fn.isFunction(this.data)) {
           r = this.data();
         } else {
           r = this.data;
@@ -660,7 +585,16 @@
         this.load();
       }
       this.ready = true;
-      bbn.fn.log('list mounted')
+      //if the property opened is given it expands all items at the first level
+      
+      this.$nextTick(()=>{
+        if ( this.opened ){
+          bbn.fn.each(this.source ,(v, i) => {
+            this.addExpanded(i)
+          });
+        }
+      })
+      
     },
 
     watch: {
@@ -668,7 +602,8 @@
         if (val !== false) {
           this.hierarchy.overNode = val;
           this.hierarchy.$emit('mouseover', val);
-        } else if (val === false) {
+        } 
+        else if (val === false) {
           this.hierarchy.overNode = false;
           this.hierarchy.$emit('mouseout', val);
         }
@@ -676,9 +611,6 @@
       source() {
         this.reset();
         this.load();
-      },
-      items() {
-        //this.getRef('scroll').selfEmit(true);
       }
     }
   });

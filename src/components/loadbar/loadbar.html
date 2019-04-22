@@ -6,7 +6,7 @@
            'bbn-p': false,
            'bbn-lg': true,
            'fa': true,
-           'fa-info-circle': true
+           'fa-info_circle': true
          }"
          @click="getInfo"
       ></i>
@@ -15,7 +15,7 @@
            'bbn-p': data.length,
            'bbn-lg': true,
            'far': true,
-           'fa-times-circle': true,
+           'fa-times_circle': true,
            'bbn-invisible': !data.length
          }"
          @click="deleteHistory"
@@ -25,7 +25,7 @@
            'bbn-p': selected < data.length - 1,
            'bbn-lg': true,
            'fas': true,
-           'fa-angle-left': true,
+           'fa-angle_left': true,
            'bbn-invisible': selected >= data.length - 1
          }"
          @click="selected++"
@@ -35,7 +35,7 @@
            'bbn-p': selected > 0,
            'bbn-lg': true,
            'fa': true,
-           'fa-angle-right': true,
+           'fa-angle_right': true,
            'bbn-invisible': selected <= 0
          }"
          @click="selected--"
@@ -53,8 +53,8 @@
     </span-->
     <span class="bbn-loadbar-state">
       <bbn-loadicon v-if="currentItem.loading" class="bbn-blue"></bbn-loadicon>
-      <i v-else-if="currentItem.error" class="fas fa-times-circle bbn-red"></i>
-      <i v-else-if="currentItem.success" class="fas fa-check bbn-green"></i>
+      <i v-else-if="currentItem.error" class="nf nf-fa-times_circle bbn-red"></i>
+      <i v-else-if="currentItem.success" class="nf nf-fa-check bbn-green"></i>
       <i v-else-if="currentItem.abort" class="zmdi zmdi-stop bbn-orange"></i>
     </span>
     <a href="javascript:;" :title="text + ' ' + _('Loading')" style="color: inherit; cursor: default" v-if="currentItem">
@@ -62,27 +62,30 @@
     </a>
   </span>
   <transition name="fade">
-    <div class="bbn-loadbar-floater k-widget"
-         v-if="info && items.length"
-         @mouseenter="info = true"
-         @mouseleave="info = false">
-      <div class="k-header bbn-w-100 bbn-c">
-        <h5 v-text="_('Loading scripts')"></h5>
-      </div>
-      
+    <!--div class="bbn-loadbar-floater k-widget" v-if="info && items.length" @mouseenter="info = true" @mouseleave="info = false"-->
+    <div class="bbn-loadbar-floater k-widget" v-if="info && items.length" @mouseenter="info = true" @mouseleave="info = false">
+      <header class="bbn-header bbn-w-100 bbn-c bbn-m" v-text="_('Requests\' history')"></header>
       <div class="bbn-w-100 bbn-padded">
         <ul class="bbn-reset">
           <li v-for="it of items" @click="cancel(it)">
-            <span class="bbn-loadbar-time">
-            
-            </span>
-            <span class="bbn-loadbar-state">
-              <bbn-loadicon v-if="it.loading" class="bbn-blue"></bbn-loadicon>
-              <i v-else-if="it.error" class="fas fa-times-circle bbn-red"></i>
-              <i v-else-if="it.success" class="fas fa-check bbn-green"></i>
-              <i v-else-if="it.abort" class="zmdi zmdi-stop bbn-orange"></i>
-            </span>
-            <span v-text="it.url"></span>
+            <div>
+              <span class="bbn-loadbar-state">
+                <bbn-loadicon v-if="it.loading" class="bbn-blue"></bbn-loadicon>
+                <i v-else-if="it.error" class="nf nf-fa-times_circle bbn-red"></i>
+                <i v-else-if="it.success" class="nf nf-fa-check bbn-green"></i>
+                <i v-else-if="it.abort" class="zmdi zmdi-stop bbn-orange"></i>
+              </span>
+              <div class="bbn-loadbar-time">
+                <span v-text="renderDuration(it.duration)">
+                </span>
+              </div>
+              <span v-text="it.url"></span>
+            </div>
+            <div v-if="it.error && it.errorMessage" 
+                 class="bbn-loadbar-error"
+                 v-text="it.errorMessage"
+            >
+            </div>
           </li>
         </ul>
       </div>

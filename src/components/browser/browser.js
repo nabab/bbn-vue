@@ -51,16 +51,16 @@
     components: {
       tab: {
         template: `
-<div class="bbn-full-screen">
+<div class="bbn-overlay">
   <div class="bbn-flex-height">
     <div class="bbn-w-100">
       <div class="bbn-flex-width">
         <div class="bbn-block">
           <span v-if="ssl" class="bbn-green">
-            <i class="fas fa-lock"></i>
+            <i class="nf nf-fa-lock"></i>
           </span>
           <span v-else class="bbn-red">
-            <i class="fas fa-unlock"></i>
+            <i class="nf nf-fa-unlock"></i>
           </span>
         </div>
         <div class="bbn-flex-fill">
@@ -69,8 +69,8 @@
       </div>
     </div>
     <div class="bbn-flex-fill">
-      <iframe v-if="realURL" class="bbn-full-screen" src="rawURL"></iframe>
-      <div v-else class="bbn-full-screen">
+      <iframe v-if="realURL" class="bbn-overlay" src="rawURL"></iframe>
+      <div v-else class="bbn-overlay">
         
       </div>
     </div>

@@ -140,7 +140,7 @@
       }
     },
     data: function(){
-      return $.extend({
+      return bbn.fn.extend({
         widgetName: "kendoComboBox"
       }, bbn.vue.treatData(this));
     },

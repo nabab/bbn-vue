@@ -1,0 +1,41 @@
+.bbn-calendar {
+  min-width: 210px;
+  .bbn-calendar-header {
+    margin-bottom: 0;
+    min-height: unset;
+    .bbn-calendar-header-month {
+      font-size: 1em;
+    }
+  }
+  .bbn-calendar-container {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: max-content repeat(6, 1fr);
+    .bbn-calendar-weekday {
+      text-align: center;
+      margin-bottom: .5em;
+      //font-size: large;
+      font-size: 1.2em;
+    }
+    .bbn-calendar-day {
+      position: relative;
+      border-radius: 0;
+      .day {
+        //font-size: x-large;
+        font-size: 1.4em;
+        opacity: .5;
+      }
+      .day-user {
+        position: absolute;
+        top: .2em;
+        left: .2em;
+        //font-size: small;
+        font-size: 1em;
+        opacity: .5;
+      }
+      &.last-day:not(:hover) {
+        background-color: lightcoral !important;
+      }
+    }
+  }
+}

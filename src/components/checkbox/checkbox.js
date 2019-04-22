@@ -1,7 +1,6 @@
 /**
- * bbn-checkbox component
+ * @file The component checkbox
  *
- * Created by BBN on 13/02/2017.
  */
 (($, bbn) => {
   "use strict";
@@ -22,9 +21,9 @@
         default: true
       },
       /**
-       * The value of the checkbox when unchecked.
-       * @props {Boolean} novalue
-       */
+      * The value of the checkbox when unchecked.
+      * @props {Boolean} novalue
+      */
       novalue: {
         default: null
       },
@@ -47,7 +46,7 @@
         }
       },
       /**
-       *
+       * @todo description
        * @props {String|Boolean|Number} modelValue
        */
       modelValue: {
@@ -87,15 +86,6 @@
        */
       label: {
         type: String,
-      },
-      /**
-       * @todo description
-       *
-       * @prop {Boolean} contrary
-       */
-      contrary: {
-        type: Boolean,
-        default: false
       },
       /**
        * Set to true for a checked checkbox.
@@ -194,7 +184,7 @@
         this.toggle();
       }
       if ( !this.checked && !this.state ){
-        this.$emit('input', this.novalue);
+        //this.$emit('input', this.novalue);
       }
     }
   });

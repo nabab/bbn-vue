@@ -1,7 +1,7 @@
 /**
  * Created by BBN on 15/02/2017.
  */
-(function($, bbn, kendo){
+(function(bbn){
   "use strict";
 
   Vue.component('bbn-splitter', {
@@ -146,7 +146,7 @@
        */
       availableSize(){
         let availableSize = this.currentSize;
-        $.each(this.resizers, (i, a) => {
+        bbn.fn.each(this.resizers, () => {
           availableSize -= this.resizerSize;
         });
         return availableSize;
@@ -227,7 +227,7 @@
        * @return {*}
        */
       realResizerClass(resizer){
-        if ( $.isFunction(this.resizerClass) ){
+        if (bbn.fn.isFunction(this.resizerClass) ){
           return this.resizerClass(resizer);
         }
         return this.resizerClass || '';
@@ -334,7 +334,7 @@
                   isNumber = true;
                 }
               }
-              let obj = $.extend({
+              let obj = bbn.fn.extend({
                 index: i,
                 value: value,
                 currentDiff: 0,
@@ -380,7 +380,7 @@
               nextc = this.getNextCollapsible(idx, tmp);
               // First collapsible
               if ( (prev !== false) || (prevc !== false) ){
-                bbn.fn.log("------ case 2", idx + ' position ' + currentPosition);
+                //bbn.fn.log("------ case 2", idx + ' position ' + currentPosition);
                 let o = {
                   position: currentPosition,
                   panec1: false,
@@ -422,7 +422,7 @@
                 ((prev === false) && next && !tmp[idx + 1].resizable) ||
                 ((prevc === false) && nextc && !tmp[idx + 1].collapsible)
               ){
-                bbn.fn.log("------ case 4", idx + ' position ' + currentPosition);
+                //bbn.fn.log("------ case 4", idx + ' position ' + currentPosition);
                 if (
                   pane.resizable &&
                   (prev === false) &&
@@ -531,7 +531,7 @@
           document.body.removeEventListener("touchcancel", this.resizeEnd);
           document.body.removeEventListener("mouseup", this.resizeEnd);
           document.body.removeEventListener("mouseleave", this.resizeEnd);
-          this.selfEmit();
+          this.selfEmit(true);
         }
       },
 
@@ -541,7 +541,7 @@
 
 
       resizeStart(e, rs){
-        bbn.fn.log(this.isResizable);
+        //bbn.fn.log(this.isResizable);
         if ( this.isResizable &&
           !this.isResizing &&
           this.panes[rs.panec1] && !this.panes[rs.panec1].collapsed &&
@@ -566,7 +566,7 @@
             max: pos2[this.currentSizeType.toLowerCase()] - this.minPaneSize - this.resizerSize
           };
           this.resizeCfg[this.currentOffsetType] = pos[this.currentOffsetType];
-          bbn.fn.log("START", this.resizeCfg, e, "------------");
+          //bbn.fn.log("START", this.resizeCfg, e, "------------");
         }
         /*
             setTimeout(() =>{
@@ -645,7 +645,7 @@
               bigger = collapsing ? toUpdate : toCollapse,
               diff1 = this.panes[smaller].savedDiff,
               diff2 = this.panes[bigger].savedDiff;
-          bbn.fn.log(toCollapse, toUpdate, smaller, bigger, diff1, diff2);
+          //bbn.fn.log(toCollapse, toUpdate, smaller, bigger, diff1, diff2);
           // Not a full collapse (=- double) but with a already collapsed pane
           if ( !full && (this.panes[toCollapse].collapsed || this.panes[toUpdate].collapsed) ){
             this.panes[smaller].addedSize = '';
@@ -694,7 +694,7 @@
               (this.currentOrientation === 'horizontal' ? 'right' : 'down') :
               (this.currentOrientation === 'horizontal' ? 'left' : 'up'),
             icon = (resizerIdx === 1) && this.panes[paneIdx].collapsed ? 'angle-double-' : 'angle-',
-            cls = 'bbn-p fa fa-' + icon + direction;
+            cls = 'bbn-p nf nf-fa-' + icon + direction;
         return cls;
         */
       }
@@ -726,4 +726,4 @@
     },
   });
 
-})(jQuery, bbn, kendo);
+})(bbn);

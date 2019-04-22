@@ -2,11 +2,11 @@
 
 <div :class="componentClass" id="app" v-bind="source">
 <div v-for="(s, idx) in source" :key="idx">
-    <div class="header k-header" 
+    <div class="header bbn-header" 
         @click="select(idx)" 
     >
       <slot name="header"></slot>
-      <i :class="['fa fa-2x', 'fa-angle-down', 'header-icon', {'rotate': selected === idx}]"></i>
+      <i :class="['nf nf-fa-2x', 'fa-angle_down', 'header-icon', {'rotate': selected === idx}]"></i>
       <div v-text="s.text" class="text"></div>
       <div v-if="s.buttons && (selected === idx)" class="buttons">
         <bbn-button v-for="(b, bidx) in s.buttons" :key="bidx" v-bind="s.buttons[bidx]" @click.stop.prevent="s.buttons[bidx].command"></bbn-button>

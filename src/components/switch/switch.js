@@ -55,11 +55,11 @@
       },
       onIcon: {
         type: String,
-        default: 'fas fa-play'
+        default: 'nf nf-fa-play'
       },
       offIcon: {
         type: String,
-        default: 'fas fa-stop'
+        default: 'nf nf-fa-stop'
       },
       noIcon: {
         type: Boolean,

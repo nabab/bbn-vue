@@ -45,8 +45,7 @@ ul.bbn-list-helper{
     //border-top: none!important;
     //border-left: none!important;
     //border-right: none!important;
-    padding-top: 3px;
-    padding-bottom: 3px;
+    overflow-x: hidden;
     clear: both;
     margin: 0;
     box-sizing: content-box;
@@ -55,8 +54,6 @@ ul.bbn-list-helper{
       padding-left: 3px;
     }
     div.node{
-      padding-left:6px;
-      padding-right:6px;
       //display: inline-block;
       //white-space: nowrap;
       height: auto;
@@ -88,6 +85,17 @@ ul.bbn-list-helper{
           padding-left: 0.3em;
           white-space: nowrap;
         }
+      }
+      .padding{
+        padding-left:6px;
+        padding-right:6px;
+      }
+      .padding-left{
+        padding-left:3px;
+      }
+      .v-padding{
+        padding-top: 3px;
+        padding-bottom: 3px;
       }
     }
     &.selected > div.node > div > span.selectable{

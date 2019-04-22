@@ -74,7 +74,8 @@
         currentScroll: 0,
         moveTimeout: 0,
         show: this.hidden === 'auto' ? false : !this.hidden,
-        scroll: this.initial
+        scroll: this.initial,
+        isReaching: false
       };
     },
     computed: {
@@ -167,6 +168,16 @@
       scrollContainer(position, animate, origin){
         if ( this.realContainer && this.contentSize ){
           this.currentScroll = position ? Math.round(this.contentSize * position / 100 * 10000) / 10000 : 0;
+          let ev = false;
+          if ( (position < this.position) && (this.currentScroll < 50) ){
+            ev = this.isVertical ? 'reachTop' : 'reachLeft';
+          }
+          else if ( (position > this.position) && (this.currentScroll > (this.contentSize - this.containerSize - 50)) ){
+            ev = this.isVertical ? 'reachBottom' : 'reachRight';
+          }
+          if ( ev ){
+            this.$emit(ev, ev, this);
+          }
           let prop = this.isVertical ? 'scrollTop' : 'scrollLeft';
           let anim = {};
           anim[prop] = this.currentScroll;
@@ -197,7 +208,6 @@
               this.realContainer[prop] = this.currentScroll;
             }
             this.position = position;
-            this.normalize();
           }
         }
       },
@@ -230,6 +240,9 @@
 
       // Emits scroll event
       normalize(){
+        if ( this.currentScroll !== this.realContainer['scroll' + (this.isVertical ? 'Top' : 'Left')] ){
+          this.realContainer['scroll' + (this.isVertical ? 'Top' : 'Left')] = this.currentScroll;
+        }
         let e = new Event('scroll');
         this.$emit('scroll', e, this.position);
       },
@@ -237,7 +250,7 @@
       // Gets the array of scrollable elements according to scrollAlso attribute
       scrollableElements(){
         let tmp = this.scrollAlso;
-        if ( $.isFunction(tmp) ){
+        if (bbn.fn.isFunction(tmp) ){
           tmp = tmp();
         }
         else if ( !Array.isArray(tmp) ){
@@ -255,9 +268,9 @@
       },
 
       // Calculates all the proportions based on content
-      onResize() {
+      onResize(){
         if ( this.realContainer ){
-          let tmp1 = (this.isVertical ? $(this.realContainer).height() : $(this.realContainer).width()) - bbn.fn.getScrollBarSize(),
+          let tmp1 = (this.isVertical ? this.realContainer.clientHeight : this.realContainer.clientWidth) - bbn.fn.getScrollBarSize(),
               tmp2 = this.realContainer.children[0] ? this.realContainer.children[0][this.isVertical ? 'clientHeight' : 'clientWidth'] : this.containerSize;
           if ( (tmp1 !== this.containerSize) || (tmp2 !== this.contentSize) ){
             this.containerSize = tmp1 > 0 ? tmp1 : 0;
@@ -266,7 +279,7 @@
             if ( this.containerSize && (this.contentSize - this.tolerance > this.containerSize) ){
               let old = this.size;
               this.size = this.containerSize / this.contentSize * 100;
-              this._changePosition(old ? Math.round(this.position * (old/this.size) * 10000)/10000 : 0);
+              this._changePosition(old ? Math.round(this.position * (this.size/old) * 10000)/10000 : 0);
             }
             else{
               this.size = 0;
@@ -281,7 +294,7 @@
       // Sets the variables when the content is scrolled with mouse
       adjust(e, position){
         if ( position === this.position ){
-          return
+          return;
         }
         this.keepCool(() => {
           let prop = this.isVertical ? 'scrollTop' : 'scrollLeft';
@@ -307,20 +320,21 @@
         if ( !this.realContainer && this.scroller ){
           this.realContainer = this.scroller.$refs.scrollContainer || false;
         }
-        if ( this.realContainer && this.scroller ){
+        if ( this.realContainer && !this.isInit ){
           this.onResize();
-          this.scroller.$off("resize", this.onResize);
-          this.scroller.$on("resize", this.onResize);
-          this.scroller.$off("scroll", this.adjust);
-          this.scrollTo(this.initial);
-          this.scroller.$on("scroll", this.adjust);
-          this.scroller.$off("mousemove", this.overContent);
-          this.scroller.$on("mousemove", this.overContent);
-          $.each(this.scrollableElements(), (i, a) => {
-            $(a).off("scroll", this.adjust);
-            $(a).off("mousemove", this.overContent);
-            $(a).scroll(this.adjust);
-            $(a).mousemove(this.overContent);
+          if ( this.scroller ){
+            this.scroller.$on("resize", this.onResize);
+            this.scrollTo(this.initial);
+            this.scroller.$on("scroll", this.adjust);
+            this.scroller.$on("mousemove", this.overContent);
+          }
+          else{
+            this.realContainer.addEventListener('scroll', this.adjust, {passive: true});
+            this.realContainer.addEventListener('mousemove', this.overContent, {passive: true});
+          }
+          bbn.fn.each(this.scrollableElements(), (a) => {
+            a.addEventListener('scroll', this.adjust, {passive: true});
+            a.addEventListener('mousemove', this.overContent, {passive: true});
           });
         }
       },
@@ -451,7 +465,12 @@
       },
       size(newVal){
         if ( newVal ){
-          this.animateBar();
+          //this.animateBar();
+        }
+      },
+      dragging(newVal){
+        if ( !newVal ){
+          setTimeout(this.normalize, 200);
         }
       }
     },
@@ -468,12 +487,21 @@
       this.ready = true;
     },
     beforeDestroy() {
-      $(this.realContainer).off("scroll", this.adjust);
-      $(this.realContainer).off("mousemove", this.overContent);
-      $.each(this.scrollableElements(), (i, a) => {
-        $(a).off("scroll", this.adjust);
-        $(a).off("mousemove", this.overContent);
-      });
+      if ( this.realContainer && this.isInit ){
+        if ( this.scroller ){
+          this.scroller.$off("resize", this.onResize);
+          this.scroller.$off("scroll", this.adjust);
+          this.scroller.$off("mousemove", this.overContent);
+        }
+        else{
+          this.realContainer.removeEventListener('scroll', this.adjust, {passive: true});
+          this.realContainer.removeEventListener('mousemove', this.overContent, {passive: true});
+        }
+        bbn.fn.each(this.scrollableElements(), (a) => {
+          a.removeEventListener('scroll', this.adjust, {passive: true});
+          a.removeEventListener('mousemove', this.overContent, {passive: true});
+        });
+      }
       document.removeEventListener("mousemove", this.onDrag);
       document.removeEventListener("touchmove", this.onDrag);
       document.removeEventListener("mouseup", this.stopDrag);

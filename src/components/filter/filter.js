@@ -1,7 +1,7 @@
 /**
  * Created by BBN on 10/02/2017.
  */
-(function($, bbn, kendo){
+(function($, bbn){
   "use strict";
 /**@todo add prefix for flexbox and inline flex http://ptb2.me/flexbox/ also for justify content and align items*/
   const
@@ -44,7 +44,6 @@
         case 'float':
         case 'decimal':
           return 'numeric';
-          return 'numeric';
         case 'date':
           return 'datepicker';
         case 'datetime':
@@ -68,6 +67,7 @@
     props: {
       value: {},
       operator: {},
+      operators: {},
       // Pre-existing conditions
       conditions: {
         type: Array,
@@ -137,16 +137,16 @@
         }
       },
       is_not_root(){
-        return $(this.$parent.$el).hasClass("bbn-filter-control");
+        return this.$parent.$el.classList.contains("bbn-filter-control");
       },
     },
     methods: {
       over(e){
-        $(e.target).css('color' , 'red');
+        e.target.style.color = 'red';
         $(e.target).parent().parent().find('.bbn-filter-main').eq(0).css('background-color', 'rgba(158,158,158, 0.3)' );
       },
       out(e){
-        $(e.target).css('color' , 'inherit');
+        e.target.style.color = null;
         $(e.target).parent().parent().find('.bbn-filter-main').eq(0).css('background-color', 'inherit');
       },
       setCondition(obj){
@@ -192,7 +192,7 @@
                 st += 'true';
               }
               else if ( f.source ){
-                if ( $.isArray(f.source) ){
+                if (bbn.fn.isArray(f.source) ){
                   st += bbn.fn.get_field(f.source, 'value', cd.value, 'text');
                 }
                 else if ( typeof f.source === 'object' ){
@@ -315,7 +315,7 @@
           },
           columns(){
             let r = [];
-            if ( $.isArray(this.fields) ){
+            if (bbn.fn.isArray(this.fields) ){
               $.each(this.fields, (i, a) => {
                 if ( a.field ){
                   r.push({
@@ -460,7 +460,7 @@
                     break;
                   case 'enum':
                     var tmp = eval('[' + c.extra + ']');
-                    if ( $.isArray(tmp) ){
+                    if (bbn.fn.isArray(tmp) ){
                       this.cfg.dataSource = $.map(tmp, function (a){
                         return {
                           text: a,
@@ -490,7 +490,6 @@
                 if ( this.$refs.value && this.$refs.value.widget ){
                   this.$refs.value.widget.destroy();
                   var $ele = $(this.$refs.value.$el);
-                  kendo.unbind($ele);
                   $ele.prependTo($ele.closest(".bbn-db-value")).nextAll().remove();
                 }
                 this.$nextTick(() =>{
@@ -506,4 +505,4 @@
     }
   });
 
-})(jQuery, bbn, kendo);
+})(jQuery, bbn);

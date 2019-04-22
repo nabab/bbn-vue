@@ -1,14 +1,44 @@
-<span :class="componentClass"
-      @keydown.enter="_pressEnter"
-      @keydown.space="_pressEnter"
-      @click="click($event)"
-      @focus="focus($event)"
-      @blur="blur($event)">
-  <input :value="value"
+<div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', 'bbn-reactive', {'bbn-disabled': !!disabled}]">
+  <div class="bbn-100">
+    <div class="bbn-flex-width">
+      <div class="bbn-flex-fill" @click.stop="clickContainer">
+        <input :disabled="disabled"
+               class="bbn-unselectable bbn-textbox bbn-no-border bbn-abs"
+               @keydown="keydown"
+               :required="required"
+               readonly="readonly"
+               :value="filterString ? '' : currentText">
+        <input v-if="filterable && !disabled && !readonly"
+               :placeholder="currentText ? '' : placeholder"
+               :disabled="disabled"
+               class="bbn-textbox bbn-no-border"
+               v-model="filterString"
+               :required="required"
+               :readonly="readonly"
+               @keydown="keydown"
+               :name="name">
+      </div>
+      <div>
+        <button class="bbn-p bbn-button bbn-reactive-block bbn-button-icon-only bbn-radius-right"
+                @click="isOpened = !isOpened"
+                :disabled="disabled">
+          <i :class="'nf nf-fa-caret_' + (isOpened ? 'up' : 'down')"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+  <input type="hidden"
+         v-model="value"
          ref="element"
-         :disabled="disabled"
-         :required="required"
-         :readonly="readonly"
-         :name="name"
-  >
-</span>
+         :name="name">
+  <bbn-floater v-if="ready"
+                :element="$el"
+                :visible="isOpened"
+                :min-width="currentWidth"
+                ref="list"
+                @select="select"
+                @close="isOpened = false"
+                @mounted="init"
+                :source="source">
+  </bbn-floater>
+</div>

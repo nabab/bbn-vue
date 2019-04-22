@@ -1,6 +1,6 @@
-<div :class="[{'k-widget': true, 'k-block': true}, componentClass]">
+<div :class="[{'bbn-widget': true, 'k-block': true}, componentClass]">
   <div class="bbn-flex-height">
-    
+
     <div class="bbn-block bbn-w-100 bbn-vpadded bbn-c" v-if="menus && menus.length">
       <bbn-dropdown v-model="currentMenu"
                     :source="menus"
@@ -14,11 +14,12 @@
                  v-model="searchExp"
                  style="width: 80%"
                  ref="search"
+                 autocomplete="off"
                  :placeholder="placeholder"
       ></bbn-input>
     </div>
     <div class="bbn-w-100 bbn-flex-fill">
-      <div class="bbn-full-screen">
+      <nav class="bbn-overlay">
         <bbn-tree :source="source"
                   :map="mapSrc"
                   :data="getData"
@@ -27,11 +28,11 @@
                   ref="tree"
                   @load="resizeScroll"
                   :filter-string="searchExp"
+                  :excluded-section-filter="true"
                   @select="go"
                   :menu="getMenu"
         ></bbn-tree>
-      </div>
+      </nav>
     </div>
   </div>
 </div>
-

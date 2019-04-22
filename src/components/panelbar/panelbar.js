@@ -84,13 +84,13 @@
           })
           return;
         }
-        if ( !$.isArray(this.opened) && bbn.fn.isNumber(this.opened)) {
+        if ( !bbn.fn.isArray(this.opened) && bbn.fn.isNumber(this.opened)) {
           //case multi true and opened number
           if ( this.opened < this.source.length ){
             this.selected.push(this.opened);
           }
         }
-        else if ( ( $.isArray(this.opened) ) && this.multi ){
+        else if ( (bbn.fn.isArray(this.opened) ) && this.multi ){
           this.selected = this.opened;
         }
       }

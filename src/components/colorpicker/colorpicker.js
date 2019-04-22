@@ -1,5 +1,7 @@
 /**
- * Created by BBN on 10/02/2017.
+ * @file bbn-colorpicker component
+ *
+ *
  */
 (($, bbn, kendo) => {
   "use strict";
@@ -71,7 +73,7 @@
       this.ready = true;
     },
     data(){
-      return $.extend({
+      return bbn.fn.extend({
         widgetName: "kendoColorPicker"
       }, bbn.vue.treatData(this));
     },

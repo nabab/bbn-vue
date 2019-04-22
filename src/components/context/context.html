@@ -8,4 +8,10 @@
 >
   <span v-if="content" v-html="content"></span>
   <slot v-else></slot>
+  <bbn-floater :element="$el"
+               :source="currentData"
+               :auto-hide="true"
+               v-if="showFloater"
+               @close="showFloater = false">
+  </bbn-floater>
 </component>

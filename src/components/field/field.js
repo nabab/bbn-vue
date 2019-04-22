@@ -1,7 +1,7 @@
 /**
  * Created by BBN on 15/02/2017.
  */
-(($, bbn) => {
+((bbn) => {
 
   "use strict";
   /**
@@ -29,7 +29,7 @@
       return {
         renderedComponent: false,
         renderedContent: '',
-        renderedOptions: $.extend(true, {}, this.options),
+        renderedOptions: bbn.fn.extend({}, this.options),
         currentValue: this.value === undefined ? (this.data && this.field ? this.data[this.field] || '' : '') : this.value
       }
     },
@@ -179,4 +179,4 @@
     }
   });
 
-})(jQuery, bbn, kendo);
+})(bbn);

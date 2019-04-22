@@ -1,7 +1,5 @@
 /**
- * bbn-autocomplete is an input field that provides suggestions on the typed text
- *
- * Created by BBN on 10/02/2017.
+ * @file An input field completely customizable that provides suggestions on the typed text
  */
 (function($, bbn, kendo){
   "use strict";
@@ -173,7 +171,6 @@
           virtual: this.virtual,
           height: this.height || undefined,
           select: e => {
-            bbn.fn.log("SELECT", e);
             let d = e.dataItem.toJSON();
             if ( [e.sender.options.dataValueField] ){
               if ( d[[e.sender.options.dataValueField]] === undefined ){

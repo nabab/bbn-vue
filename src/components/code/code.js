@@ -1,23 +1,12 @@
 /**
- * bbn-code component
- *
+ * @file An editor component based on code-mirror
  */
 
 
 (($, bbn) => {
   "use strict";
 
-  if ( bbn.vue.components.code.defaults === undefined ){
-    bbn.vue.components.code.defaults = {};
-  }
   const themes = ["3024-day","3024-night","ambiance-mobile","ambiance","base16-dark","base16-light","blackboard","cobalt","eclipse","elegant","erlang-dark","lesser-dark","mbo","midnight","monokai","neat","night","paraiso-dark","paraiso-light","pastel-on-dark","rubyblue","solarized","the-matrix","tomorrow-night-eighties","twilight","vibrant-ink","xq-dark","xq-light"];
-
-  const defaults = {
-    theme: 'pastel-on-dark'
-  };
-
-  bbn.vue.initDefaults(defaults, 'code');
-
 
   const baseCfg = {
     lineNumbers: true,
@@ -44,17 +33,17 @@
     ],
     extraKeys: {
       "Ctrl-Alt-S": function(cm){
-        if ( $.isFunction(cm.options.save) ){
+        if (bbn.fn.isFunction(cm.options.save) ){
           cm.options.save(cm);
         }
       },
       "Ctrl-S": function(cm){
-        if ( $.isFunction(cm.options.save) ){
+        if (bbn.fn.isFunction(cm.options.save) ){
           cm.options.save(cm);
         }
       },
       "Ctrl-Alt-T": function(cm){
-        if ( $.isFunction(cm.options.test) ){
+        if (bbn.fn.isFunction(cm.options.test) ){
           cm.options.test(cm);
         }
       },
@@ -161,19 +150,36 @@
     }
   };
 
-  let themeIndex = $.inArray(defaults.theme, themes);
+  let themeIndex = $.inArray(bbn.vue.defaults.code.defaultTheme, themes);
 
   Vue.component('bbn-code', {
-    mixins: [bbn.vue.basicComponent, bbn.vue.fullComponent],
+    /**
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.inputComponent
+     * @mixin bbn.vue.eventsComponent
+     */
+    mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent],
     props: {
+      /**
+       * The ecmascript version.
+       * @prop {Number} [6] ecma
+       */
       ecma: {
         type: Number,
         default: 6
       },
+      /**
+       * The language mode.
+       * @prop {String} [php] mode
+       */
       mode: {
         type: [String, Object],
         default: 'php'
       },
+      /**
+       * The theme to style the editor with.
+       * @prop {String} theme
+       */
       theme: {
         type: String,
       },
@@ -183,6 +189,11 @@
           return baseCfg;
         }
       },
+      /**
+       * Set to true shows a button to change the theme of the component.
+       * 
+       * @prop {Boolean} [false]
+       */
       themeButton: {
         type: Boolean,
         default: false
@@ -190,22 +201,33 @@
     },
 
     data: function(){
-      return $.extend({
+      return bbn.fn.extend({
         widgetName: "CodeMirror",
       }, bbn.vue.treatData(this));
     },
 
     computed: {
+      /**
+       * If the prop theme is not defined returns the defaultTheme.
+       * 
+       * @computed currentTheme
+       * @return {String}
+       */
       currentTheme(){
-        return this.theme ? this.theme : bbn.vue.components.code.defaults.theme;
+        return this.theme ? this.theme : this.defaultTheme;
       }
     },
 
     methods: {
-      // Gets the set of preset options for the given mode from const modes
+      /**
+       * Gets the set of preset options for the given mode from const modes.
+       * @method getMode
+       * @param {String} mode 
+       * @return {Boolean}
+       */
       getMode(mode){
         if ( modes[mode] ){
-          let o = $.extend({}, modes[mode]);
+          let o = bbn.fn.clone( modes[mode]);
           o.gutters = [
             "CodeMirror-linenumbers",
             "CodeMirror-foldgutter"
@@ -217,10 +239,15 @@
         }
         return false;
       },
-      // Gets the options for the editor
+      /**
+       * Gets the options for the editor.
+       * @method getOptions
+       * @fires getMode
+       * @return {Object}
+       */
       getOptions(){
         let tmp,
-            cfg = $.extend({}, baseCfg, {
+            cfg = bbn.fn.extend({}, baseCfg, {
               mode: this.mode,
               theme: this.currentTheme,
               value: this.value
@@ -229,13 +256,19 @@
           cfg.readOnly = true;
         }
         if ( tmp = this.getMode(this.mode) ){
-          $.extend(true, cfg, tmp);
+          bbn.fn.extend(true, cfg, tmp);
         }
-        bbn.fn.info("Codemirror config");
-        bbn.fn.log(cfg);
+        //bbn.fn.info("Codemirror config");
+        //bbn.fn.log(cfg);
         return cfg;
       },
-      //to place the cursor in a defined point
+      /**
+       * To place the cursor in a defined point.
+       * @method cursorPosition
+       * @param {*} lineCode 
+       * @param {*} position
+       * @return {Boolean} 
+       */
       cursorPosition(lineCode, position){
         let ctrl = false;
         if ( lineCode <= this.widget.doc.lineCount()-1 ){
@@ -253,7 +286,11 @@
           return false
         }
       },
-      // Returns an object with the selections, the marks (folding) and the value
+      /**
+       * Returns an object with the selections, the marks(folding) and the value.
+       * @method getState
+       * @return {Object | Boolean}
+       */
       getState(){
         if ( this.widget ){
           let doc = this.widget.getDoc(),
@@ -283,7 +320,12 @@
         }
         return false;
       },
-      //loading the state, such as loading last state saved
+      /**
+       * Loads the state, such as the last state saved.
+       * @method loadState
+       * @param {Object} obj
+       * @fires cursorPosition
+       */
       loadState( obj ){
         this.widget.focus();
         let doc = this.widget.getDoc();
@@ -303,15 +345,23 @@
           }
         }
       },
+      /**
+       * If the property themeButton is set to true changes the theme of the editor at click on the themeButton.
+       * @method nextTheme
+       */
       nextTheme(){
         themeIndex++;
         if ( themeIndex >= themes.length ){
           themeIndex = 0;
         }
-        bbn.vue.components.code.defaults.theme = themes[themeIndex];
-        //this.widget.setOption("theme", themes[themeIndex]);
+        bbn.vue.defaults.code.theme = themes[themeIndex];
+        //this.theme = themes[themeIndex];
+        this.widget.setOption("theme", themes[themeIndex]);
       },
-
+      /**
+       * 
+       * @param {*} level 
+       */  
       foldByLevel(level) {
         this.foldByNodeOrder(0);
         // initialize vars
@@ -415,13 +465,13 @@
         this.widget.getDoc().replaceRange("\n" + code + "\n", position);
       }
     },
-    mounted: function(){
-      bbn.fn.log(this.getOptions());
+    mounted(){
+      //bbn.fn.log(this.getOptions());
       if ( this.getRef('code') ){
         this.widget = CodeMirror(this.getRef('code'), this.getOptions());
         this.widget.on("change", (ins, bbb) => {
           bbn.fn.info("CODE CHANGE");
-          bbn.fn.log(arguments, this.widget);
+          //bbn.fn.log(arguments, this.widget);
           this.emitInput(this.widget.doc.getValue());
         });
         if ( this.mode === 'js' ){

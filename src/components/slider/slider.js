@@ -1,7 +1,7 @@
 /**
  * Created by BBN on 10/02/2017.
  */
-(function($, bbn, kendo){
+(function(bbn){
   "use strict";
 
   Vue.component('bbn-slider', {
@@ -28,14 +28,11 @@
       }
     },
     mounted: function(){
-      $(this.$children).each(function(){
-
-      })
       if ( this.$options.propsData.script ){
-        $(this.$el).data("script", this.$options.propsData.script);
+        //$(this.$el).data("script", this.$options.propsData.script);
       }
       this.ready = true;
     }
   });
 
-})(jQuery, bbn, kendo);
+})(bbn);

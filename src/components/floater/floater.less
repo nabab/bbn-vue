@@ -1,6 +1,23 @@
 div.bbn-floater{
   position: fixed !important;
   overflow: auto;
+  box-sizing: border-box;
   /** Popup zIndex: 7 */
   z-index: 100;
+  transition: visibility 0s, opacity 0.3s linear;
+  font-size: inherit;
+  > header{
+    white-space: nowrap;
+    padding-right: 3.6em;
+    .bbn-top-right{
+      height: 100%;
+      text-align: right;
+      line-height: 100%;
+      vertical-align: middle;
+      > div{
+        width: 1.8em;
+        float: left;
+      }
+    }
+  }
 }

@@ -3,30 +3,30 @@
        class="bbn-l k-widget bbn-gallery-toolbar"
   >
     <bbn-button :text="_('Upload')"
-                icon="fas fa-upload"
+                icon="nf nf-fa-upload"
                 @click="upload"
                 v-if="!isSelecting && upload"
     ></bbn-button>
     <bbn-button :text="_('Download')"
-                icon="fas fa-download"
+                icon="nf nf-fa-download"
                 @click="setSelecting('download')"
                 v-if="!isSelecting && download"
                 :disabled="!total"
     ></bbn-button>
     <bbn-button :text="_('Remove')"
-                icon="fas fa-trash-alt"
+                icon="nf nf-fa-trash"
                 @click="setSelecting('remove')"
                 v-if="!isSelecting && remove"
                 :disabled="!total"
     ></bbn-button>
     <bbn-button :text="_(selectingMode.toTitleCase())"
-                icon="fas fa-check"
+                icon="nf nf-fa-check"
                 @click="action"
                 v-if="isSelecting"
                 :disabled="!selected.length"
     ></bbn-button>
     <bbn-button :text="_('Cancel')"
-                icon="fas fa-times"
+                icon="nf nf-fa-times"
                 @click="setSelecting(false)"
                 v-if="isSelecting"
     ></bbn-button>
@@ -54,15 +54,15 @@
       <div class="bbn-block"
             v-if="pageable"
       >
-        <bbn-button icon="fas fa-angle-double-left"
+        <bbn-button icon="nf nf-fa-angle_double_left"
                     :notext="true"
-                    title="_('Go to the first page')"
+                    :title="_('Go to the first page')"
                     :disabled="isLoading || (currentPage == 1)"
                     @click="currentPage = 1"
         ></bbn-button>
-        <bbn-button icon="fas fa-angle-left"
+        <bbn-button icon="nf nf-fa-angle_left"
                     :notext="true"
-                    title="_('Go to the previous page')"
+                    :title="_('Go to the previous page')"
                     :disabled="isLoading || (currentPage == 1)"
                     @click="currentPage--"
         ></bbn-button>
@@ -75,15 +75,15 @@
                      :disabled="isLoading"
         ></bbn-numeric>
         {{_('of') + ' ' + numPages}}
-        <bbn-button icon="fas fa-angle-right"
+        <bbn-button icon="nf nf-fa-angle_right"
                     :notext="true"
-                    title="_('Go to the next page')"
+                    :title="_('Go to the next page')"
                     :disabled="isLoading || (currentPage == numPages)"
                     @click="currentPage++"
         ></bbn-button>
-        <bbn-button icon="fas fa-angle-double-right"
+        <bbn-button icon="nf nf-fa-angle_double_right"
                     :notext="true"
-                    title="_('Go to the last page')"
+                    :title="_('Go to the last page')"
                     @click="currentPage = numPages"
                     :disabled="isLoading || (currentPage == numPages)"
         ></bbn-button>
@@ -105,9 +105,9 @@
         ></span>
         &nbsp;
         <bbn-button v-if="isAjax"
-                    title="_('Refresh')"
+                    :title="_('Refresh')"
                     @click="updateData"
-                    icon="fas fa-sync"
+                    icon="nf nf-fa-refresh"
         ></bbn-button>
       </div>
     </div>

@@ -14,6 +14,14 @@
       filterString: {
         type: String
       },
+      children: {
+        type: String,
+        default: 'items'
+      },
+      excludedSectionFilter: {
+        type: Boolean,
+        default: false
+      },
       // The level until which the tree must be opened
       minExpandLevel: {
         type: Number,
@@ -222,7 +230,7 @@
             }
             if ( num ){
               o.num_children = num;
-              o.items = this._objectMapper(a);
+              o[this.children] = this._objectMapper(a);
             }
             res.push(o);
           })
@@ -245,7 +253,7 @@
             }
             if ( num ){
               o.num_children = num;
-              o.items = this._objectMapper(a);
+              o[this.children] = this._objectMapper(a);
             }
             res.push(o);
           });
@@ -267,8 +275,8 @@
           }
           bbn.fn.each(items, (a, i) => {
             let b = this.map(a, i, level);
-            if ( b.items ){
-              b.items = this._map(b.items, level);
+            if ( b[this.children] ){
+              b[this.children] = this._map(b[this.children], level);
             }
             res.push(b);
           });
@@ -354,7 +362,7 @@
         let root = context || this.$refs.root;
 
         if ( arr ){
-          if ( !$.isArray(arr) ){
+          if ( !bbn.fn.isArray(arr) ){
             arr = [arr];
           }
           arr = arr.map((v) => {
@@ -378,7 +386,7 @@
         if ( node.numChildren ){
           menu.push({
             text: node.isExpanded ? bbn._("Close") : bbn._("Open"),
-            icon: node.isExpanded ? 'fa fa-arrow-circle-up' : 'fa fa-arrow-circle-down',
+            icon: node.isExpanded ? 'nf nf-fa-arrow_circle_up' : 'nf nf-fa-arrow_circle_down',
             command: () => {
               node.isExpanded = !node.isExpanded;
             }
@@ -387,14 +395,14 @@
         if ( this.isAjax && node.numChildren && node.$refs.tree && node.$refs.tree[0].isLoaded ){
           menu.push({
             text: bbn._("Refresh"),
-            icon: 'fa fa-refresh',
+            icon: 'nf nf-fa-refresh',
             command: () => {
               this.reload(node);
             }
           })
         }
         if ( this.menu ){
-          let m2 = $.isFunction(this.menu) ? this.menu(node, idx) : this.menu;
+          let m2 =bbn.fn.isFunction(this.menu) ? this.menu(node, idx) : this.menu;
           if ( m2.length ){
             $.each(m2, function(i, a){
               menu.push({
@@ -429,7 +437,7 @@
         else if ( this.node ){
           r = this.node.data;
         }
-        else if ( $.isFunction(this.data) ){
+        else if (bbn.fn.isFunction(this.data) ){
           r = this.data();
         }
         else{
@@ -613,13 +621,13 @@
           }
         }
       },
-      
+
       mapper(fn, data){
         let res = [];
         $.each(data, (i, a) => {
           let tmp = fn(a);
-          if ( tmp.items ){
-            tmp.items = this.mapper(fn, tmp.items);
+          if ( tmp[this.children] ){
+            tmp[this.children] = this.mapper(fn, tmp[this.children]);
           }
           res.push(tmp);
         });
@@ -860,6 +868,10 @@
           filterString: {
             type: String
           },
+          excludedSectionFilter: {
+            type: Boolean,
+            default: false
+          },
           // True if the node is the one selected
           selected:{
             type: Boolean,
@@ -950,14 +962,15 @@
             animation: this.level > 0,
             isMounted: false,
             isMatch: true,
-            numMatches: 0
+            numMatches: 0,
+            excludedFilter: false
           }
         },
         computed: {
           iconStyle(){
             let style = {};
             if ( this.tree.iconColor ){
-              style.color = $.isFunction(this.tree.iconColor) ? this.tree.iconColor(this) : this.tree.iconColor;
+              style.color =bbn.fn.isFunction(this.tree.iconColor) ? this.tree.iconColor(this) : this.tree.iconColor;
             }
             return style;
           },
@@ -1159,6 +1172,9 @@
                   this.isExpanded = true;
                 }
                 else{
+                  if ( this.numChildren ){
+                    this.isExpanded = true;
+                  }
                   this.isSelected = true;
                   this.tree.$refs.scroll.scrollTo(0, this.$el);
                 }
@@ -1201,9 +1217,6 @@
               }, 500)
             }
             this.isMounted = true;
-            this.tree.$on('pathChange', () => {
-              this.checkPath();
-            });
             this.$nextTick(() => {
               this.checkPath();
             });
@@ -1279,11 +1292,46 @@
             }
             else{
               this.isMatch = bbn.fn.compare(this.text, newVal, 'icontains');
+
+              let childrens = this.findAll('bbn-tree-node'),
+                  ctrl = false;
+
               if ( this.isMatch ){
                 let vm = this;
-                while ( vm.parent && vm.parent.node ){
-                  vm.parent.node.numMatches++;
-                  vm = vm.parent;
+                if ( this.excludedSectionFilter && childrens.length ){
+                  ctrl = false;
+                  childrens.forEach( node => {
+                    if ( bbn.fn.compare(node.text, newVal, 'icontains') ){
+                      ctrl = true;
+                    }
+                    node.$set(node, 'excludedFilter',true);
+                  });
+                  // if ( !ctrl ){
+                  //   bbn.fn.each(this.findAll('bbn-tree-node'), node => {
+                  //     node.$set(node, 'excludedFilter', true);
+                  //   });
+                  // }
+                }
+                if ( vm.parent && vm.parent.node ){
+                  vm = vm.parent.node;
+                  while ( vm ){
+                    vm.numMatches++;
+                    vm = vm.parent.node;
+                  }
+                }
+              }
+              else if ( this.excludedSectionFilter  ){
+                ctrl = false;
+                if ( childrens.length ){
+                  bbn.fn.each(childrens, node => {
+                    if (  bbn.fn.compare(node.text, newVal, 'icontains') ){
+                      ctrl = true;
+                    }
+                    node.$set(node, 'excludedFilter',false);
+                  });
+                  if ( !ctrl ){
+                    this.$set(this,'excludedFilter',false);
+                  }
                 }
               }
             }

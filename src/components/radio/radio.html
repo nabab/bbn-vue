@@ -14,7 +14,7 @@
     >
       <input :value="d[sourceValue]"
              :name="name"
-             class="k-radio"
+             class="bbn-radio"
              type="radio"
              :disabled="disabled || d.disabled"
              :required="required"
@@ -22,7 +22,7 @@
              @change="changed(d[sourceValue], $event)"
              :checked="d[sourceValue] === modelValue"
       >
-      <label class="k-radio-label"
+      <label class="bbn-radio-label"
              v-html="render ? render(d) : d[sourceText]"
              :for="id + '_' + idx"
       ></label>

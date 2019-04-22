@@ -253,7 +253,7 @@
         let root = context || this.$refs.root;
 
         if ( arr ){
-          if ( !$.isArray(arr) ){
+          if ( !bbn.fn.isArray(arr) ){
             arr = [arr];
           }
           arr = arr.map((v) => {
@@ -277,7 +277,7 @@
         if ( node.numChildren ){
           menu.push({
             text: node.isExpanded ? bbn._("Close") : bbn._("Open"),
-            icon: node.isExpanded ? 'fa fa-arrow-circle-up' : 'fa fa-arrow-circle-down',
+            icon: node.isExpanded ? 'nf nf-fa-arrow_circle_up' : 'nf nf-fa-arrow_circle_down',
             command: () => {
               node.isExpanded = !node.isExpanded;
             }
@@ -286,14 +286,14 @@
         if ( this.isAjax && node.numChildren && node.$refs.tree && node.$refs.tree[0].isLoaded ){
           menu.push({
             text: bbn._("Refresh"),
-            icon: 'fa fa-refresh',
+            icon: 'nf nf-fa-refresh',
             command: () => {
               this.reload(node);
             }
           })
         }
         if ( this.menu ){
-          let m2 = $.isFunction(this.menu) ? this.menu(node, idx) : this.menu;
+          let m2 =bbn.fn.isFunction(this.menu) ? this.menu(node, idx) : this.menu;
           if ( m2.length ){
             $.each(m2, function(i, a){
               menu.push({
@@ -328,7 +328,7 @@
         else if ( this.node ){
           r = this.node.data;
         }
-        else if ( $.isFunction(this.data) ){
+        else if (bbn.fn.isFunction(this.data) ){
           r = this.data();
         }
         else{
@@ -849,7 +849,7 @@
           iconStyle(){
             let style = {};
             if ( this.tree.iconColor ){
-              style.color = $.isFunction(this.tree.iconColor) ? this.tree.iconColor(this) : this.tree.iconColor;
+              style.color =bbn.fn.isFunction(this.tree.iconColor) ? this.tree.iconColor(this) : this.tree.iconColor;
             }
             return style;
           },

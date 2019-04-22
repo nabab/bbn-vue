@@ -2,7 +2,13 @@
   "use strict";
   const
     isReservedTag = Vue.config.isReservedTag;
+  let loadingComponents = [];
   bbn.fn.autoExtend("vue", {
+    /**
+     * Retrives the closest popup component in the Vue tree
+     * @param vm Vue
+     * @returns Vue|false
+     */
     _retrievePopup(vm){
       if ( vm.$options && vm.$options._componentTag === 'bbn-popup' ){
         return vm;
@@ -10,17 +16,12 @@
       else if ( vm.getRef('popup') ){
         return vm.getRef('popup');
       }
-      else if ( vm.window && vm.window.popup ){
-        return vm.window.popup;
-      }
-      else if ( vm.tab && vm.tab.getRef('popup') ){
-        return vm.tab.getRef('popup');
-      }
-      return false;
+      return vm.$parent ? this._retrievePopup(vm.$parent) : false;
     },
     /**
      * Makes the dataSource variable suitable to be used by the kendo UI widget
-     * @param vm Vue object
+     * @todo Remove!
+     * @param vm Vue
      * @returns object
      */
     toKendoDataSource(vm){
@@ -78,7 +79,7 @@
                   dt[param] = vm.filterValue;
                 }
                 else if ( typeof(vm.filterValue) === 'object' ){
-                  $.extend(dt, vm.filterValue);
+                  bbn.fn.extend(dt, vm.filterValue);
                 }
                 else{
                   dt.value = vm.filterValue;
@@ -106,38 +107,31 @@
         return [];
       }
     },
-
-    initDefaults(defaults, cpName){
-      if ( !this.components[cpName] ){
-        throw new Error("Impossible to find the component " + cpName);
-      }
-      if ( typeof defaults !== 'object' ){
-        throw new Error("The default object sent is not an object " + cpName);
-      }
-      this.components[cpName].defaults = $.extend(true, defaults, this.components[cpName].defaults);
-    },
-
+    /**
+     * Checks whether the component uses kendo UI
+     * @todo Remove!
+     * @param vm Vue
+     * @returns Boolean
+     */
     isKendo(vm){
       return (vm.widgetName.indexOf("kendo") === 0);
     },
-
     /**
      * Supposed to give the data in an appropriate way
-     * @todo Remove or do something
+     * @todo Remove!
      * @param vm Vue object
      * @returns {{}}
      */
     treatData(vm){
-
       let cfg = {};
       if ( vm.$options.props.cfg && (vm.$options.props.cfg.default !== undefined) ){
-        $.extend(cfg, $.isFunction(vm.$options.props.cfg.default) ? vm.$options.props.cfg.default() : vm.$options.props.cfg.default);
+        bbn.fn.extend(cfg,bbn.fn.isFunction(vm.$options.props.cfg.default) ? vm.$options.props.cfg.default() : vm.$options.props.cfg.default);
       }
       $.each(vm.$options.propsData, (n, a) => {
         cfg[n] = a;
       });
       if ( vm.$options.propsData.cfg ){
-        $.extend(cfg,
+        bbn.fn.extend(cfg,
           typeof(vm.$options.propsData.cfg) === 'string' ?
             JSON.parse(vm.$options.propsData.cfg) :
             vm.$options.propsData.cfg
@@ -147,19 +141,24 @@
         widgetCfg: cfg
       };
     },
-
+    /**
+     * For components based on JQuery UI
+     * @todo Remove!
+     * @param Vue
+     * @param Object
+     */
     getOptions2(vm, obj){
       if ( !obj || (typeof(obj) !== 'object') ){
         obj = {};
       }
       let r = {};
-      return $.extend(obj, r, this.widgetOptions);
+      return bbn.fn.extend(obj || {}, r || {}, this.widgetOptions || {});
     },
-
     /**
-     *
-     * @param vm Vue object
-     * @returns {{}}
+     * For components based on JQuery UI
+     * @todo Remove!
+     * @param Vue
+     * @param Object
      */
     getOptions(vm, obj){
       if ( !obj || (typeof(obj) !== 'object') ){
@@ -177,7 +176,25 @@
       if ( r.name ){
         delete r.name;
       }
-      return $.extend(obj, r);
+      return bbn.fn.extend(obj, r);
+    },
+    /**
+     * Sets default object for a component, accessible through bbn.vue.defaults[cpName]
+     * @param Object defaults 
+     * @param String cpName 
+     */
+    initDefaults(defaults){
+      if ( typeof defaults !== 'object' ){
+        throw new Error("The default object sent for defaults is not an object");
+      }
+      bbn.fn.extend(true, bbn.vue.defaults, defaults);
+    },
+
+    setDefaults(defaults, cpName){
+      if ( typeof defaults !== 'object' ){
+        throw new Error("The default object sent is not an object " + cpName);
+      }
+      bbn.vue.defaults[cpName] = bbn.fn.extend(bbn.vue.defaults[cpName] || {}, defaults);
     },
 
     setComponentRule(url, prefix){
@@ -213,25 +230,56 @@
       }
     },
 
+    getStorageComponent(name){
+      if ( window.store ){
+        let tmp = window.store.get(name);
+        if ( tmp ){
+          tmp = JSON.parse(tmp);
+          return tmp.value;
+        }
+      }
+      return false;
+    },
+
+    setStorageComponent(name, obj){
+      if ( window.store ){
+        return window.store.set(name, JSON.stringify({
+          value: obj,
+          time: (new Date()).getTime()
+        }));
+      }
+      return false;
+    },
+
     queueComponent(name, url, mixins, resolve, reject){
       clearTimeout(this.queueTimer);
-      this.queue.push({
-        name: name,
-        url: url,
-        mixins: mixins,
-        resolve: resolve,
-        reject: reject
-      });
-      this.queueTimer = setTimeout(() => {
-        let todo = this.queue.splice(0, this.queue.length);
-        this.executeQueueItems(todo);
-        /*
-        bbn.fn.log("TODO", todo);
-        $.each(todo, (i, a) => {
-          this.executeQueueItem(a);
+      let def = false;//this.getStorageComponent(name);
+      if ( def ){
+        this._realDefineComponent(name, def, mixins);
+        this.queueTimer = setTimeout(() => {
+          resolve('ok1')
+          return 'ok2';
+        })
+      }
+      else{
+        this.queue.push({
+          name: name,
+          url: url,
+          mixins: mixins,
+          resolve: resolve,
+          reject: reject
         });
-        */
-      }, this.loadDelay)
+        this.queueTimer = setTimeout(() => {
+          let todo = this.queue.splice(0, this.queue.length);
+          this.executeQueueItems(todo);
+          /*
+          bbn.fn.log("TODO", todo);
+          $.each(todo, (i, a) => {
+            this.executeQueueItem(a);
+          });
+          */
+        }, this.loadDelay)
+      }
       return this.queueTimer
     },
 
@@ -298,6 +346,7 @@
               return data;
             }
           }
+          //bbn.fn.log(name, res);
           Vue.component(name, res);
           return true;
         }
@@ -311,11 +360,14 @@
         bbn.fn.iterate(items, (a) => {
           url += '/' + a.name;
         });
-        return bbn.fn.post(url, (d) => {
+        url += '?v=' + bbn.version;
+        return axios.get(url, {responseType:'json'}).then((d) => {
+          d = d.data;
           if ( d && d.success && d.components ){
             bbn.fn.iterate(items, (a, n) => {
               if ( d.components[n] && this._realDefineComponent(a.name, d.components[n], a.mixins) ){
-                a.resolve('ok');
+                //this.setStorageComponent(a.name, d.components[n]);
+                a.resolve('ok3');
               }
               else{
                 a.reject();
@@ -329,9 +381,10 @@
 
     executeQueueItem(a){
       if ( a.url ) {
-        return bbn.fn.post(a.url, (r) => {
+        return axios.get(a.url, {responseType:'json'}).then((r) => {
+          r = r.data;
           if ( this._realDefineComponent(a.name, r, a.mixins) ){
-            a.resolve('ok');
+            a.resolve('ok4');
             return;
           }
           a.reject();
@@ -351,96 +404,124 @@
       }
     },
 
+    _realDefineBBNComponent(name, r){
+      if ( r.html && r.html.length ){
+        $.each(r.html, (j, h) => {
+          if ( h && h.content ){
+            let id = 'bbn-tpl-component-' + name + (h.name === name ? '' : '-' + h.name),
+                $tpl = $('<script type="text/x-template" id="' + id + '"></script>');
+            $tpl.html(h.content);
+            document.body.appendChild($tpl[0]);
+          }
+        })
+      }
+      if ( r.css ){
+        $(document.head).append('<style>' + r.css + '</style>');
+      }
+      // When the script is in the storage
+      if ( typeof r.script === 'string' ){
+        r.script = eval(r.script);
+      }
+      let result = r.script();
+      if ( Vue.options.components['bbn-' + name] !== undefined ){
+        return true;
+      }
+      return false;
+    },
+
     /** Adds an array of components, calling them all at the same time, in a single script */
     executeQueueBBNItem(todo){
-      let url = bbn_root_url + bbn_root_dir + 'components/?components=' + $.map(todo, (a) => {
-        return a.name;
-      }).join(',');
-      if ( bbn.env.isDev ){
-        url += '&test=1';
-      }
-      if ( bbn.env.lang ){
-        url += '&lang=' + bbn.env.lang;
-      }
-      return bbn.fn.ajax(url, 'text')
-        .then(
-          // resolve from server
-          (res) => {
-            if ( res.data ){
-              // This executes the script returned by the server, which will return a new promise
-              let prom = eval(res.data);
-              //bbn.fn.log("THEN", res);
-              prom.then(
-                // resolve from executed script
-                (arr) => {
-                  // arr is the answer!
-                  if ( $.isArray(arr) ){
-                    $.each(arr, (i, r) => {
-                      let resolved = false;
-                      if ( (typeof(r) === 'object') && r.script && r.name ){
-                        let idx = bbn.fn.search(todo, {name: r.name});
-                        if ( idx > -1 ){
-                          let a = todo[idx];
-                          if ( r.html && r.html.length ){
-                            $.each(r.html, (j, h) => {
-                              if ( h && h.content ){
-                                let id = 'bbn-tpl-component-' + a.name + (h.name === a.name ? '' : '-' + h.name),
-                                    $tpl = $('<script type="text/x-template" id="' + id + '"></script>');
-                                $tpl.html(h.content);
-                                document.body.appendChild($tpl[0]);
-                              }
-                            })
-                          }
-                          if ( r.css ){
-                            $(document.head).append('<style>' + r.css + '</style>');
-                          }
-                          r.script();
-                          if ( (a.resolve !== undefined) && (Vue.options.components['bbn-' + a.name] !== undefined) ){
-                            a.resolve('ok');
-                            resolved = true;
+      if ( todo.length ){
+        let url = bbn_root_url + bbn_root_dir + 'components/?components=' + $.map(todo, (a) => {
+          return a.name;
+        }).join(',') + '&v=' + bbn.version;
+        if ( bbn.env.isDev ){
+          url += '&test=1';
+        }
+        if ( bbn.env.lang ){
+          url += '&lang=' + bbn.env.lang;
+        }
+        return bbn.fn.ajax(url, 'text')
+          .then(
+            // resolve from server
+            (res) => {
+              if ( res.data ){
+                // This executes the script returned by the server, which will return a new promise
+                let prom = eval(res.data);
+                //bbn.fn.log("THEN", res);
+                prom.then(
+                  // resolve from executed script
+                  (arr) => {
+                    // arr is the answer!
+                    if (bbn.fn.isArray(arr) ){
+                      $.each(arr, (i, r) => {
+                        let resolved = false;
+                        if ( (typeof(r) === 'object') && r.script && r.name ){
+                          let idx = bbn.fn.search(todo, {name: r.name});
+                          if ( idx > -1 ){
+                            resolved = this._realDefineBBNComponent(r.name, r);
+                            if ( resolved ){
+                              todo[idx].resolve(Vue.options.components['bbn-' + r.name]);
+                              /*
+                              // Replacing function(){} with () => {}, error otherwise
+                              r.script = '() => {' + r.script.toString().substr(11);
+                              this.setStorageComponent('bbn-' + r.name, r);
+                              */
+                            }
+                            else{
+                              todo[idx].reject();
+                            }
                           }
                         }
-                      }
-                      if ( !resolved ){
-                        a.reject();
-                      }
-                    })
+                      });
+                    }
+                    return prom;
+                  },
+                  // executed script has an error
+                  () => {
+                    bbn.fn.log("ERROR in the executed script from the server");
+                    throw new Error("Problem in the executed script from the server from " + url)
                   }
-                  return prom;
-                },
-                // executed script has an error
-                () => {
-                  bbn.fn.log("ERROR in the executed script from the server");
-                  throw new Error("Problem in the executed script from the server from " + url)
-                }
-              )
-
+                );
+              }
+              else{
+                bbn.fn.error(url);
+              }
+            },
+            // reject: no return from the server
+            () => {
+              bbn.fn.log("ERROR in executeQueueBBNItem");
+              throw new Error("Impossible to find the components from " + url)
             }
-            else{
-              bbn.fn.error(url);
-            }
-          },
-          // reject: no return from the server
-          () => {
-            bbn.fn.log("ERROR in executeQueueBBNItem");
-            throw new Error("Impossible to find the components from " + url)
-          }
-        )
+          );
+        }
     },
 
     queueComponentBBN(name, resolve, reject){
       if ( bbn.fn.search(this.queueBBN, {name: name}) === -1 ){
         clearTimeout(this.queueTimerBBN);
-        this.queueBBN.push({
-          name: name,
-          resolve: resolve || (function(){}),
-          reject: reject || (function(){})
-        });
-        this.queueTimerBBN = setTimeout(() => {
-          if ( this.queueBBN.length ){
-            this.executeQueueBBNItem(this.queueBBN.splice(0, this.queueBBN.length));
-          }
-        }, this.loadDelay);
+        let def = false;//this.getStorageComponent('bbn-' + name);
+        if ( def ){
+          this._realDefineBBNComponent(name, def);
+          this.queueTimer = setTimeout(() => {
+            if ( resolve ){
+              resolve('ok6');
+            }
+            return 'ok7';
+          })
+        }
+        else{
+          this.queueBBN.push({
+            name: name,
+            resolve: resolve || (function(){}),
+            reject: reject || (function(){})
+          });
+          this.queueTimerBBN = setTimeout(() => {
+            if ( this.queueBBN.length ){
+              this.executeQueueBBNItem(this.queueBBN.splice(0, this.queueBBN.length));
+            }
+          }, this.loadDelay);
+        }
       }
       return this.queueTimerBBN;
     },
@@ -453,17 +534,76 @@
       }
     },
 
-    defineComponents(){
-      if ( !this.loadedComponents.length && !this.isNodeJS ){
-        for ( let a in this.components ){
-          this.loadedComponents.push('bbn-' + a);
-          /** @var string bbn_root_url */
-          /** @var string bbn_root_dir */
-          Vue.component('bbn-' + a, (resolve, reject) => {
-            this.queueComponentBBN(a, resolve, reject);
+    unloadComponent(cpName){
+      if ( Vue.options.components[cpName] ){
+        let r = delete Vue.options.components[cpName];
+        let idx = this.parsedTags.indexOf(cpName);
+        if ( idx > -1 ){
+          this.parsedTags.splice(idx, 1);
+        }
+        let tpl = document.getElementById('bbn-tpl-component-' + cpName);
+        if ( tpl ){
+          tpl.remove();
+        }
+        return r;
+      }
+      return false;
+    },
+
+    // Looks if the given tag starts with one of the known prefixes,
+    // and it such case defines the component with the corresponding handler
+    loadComponentsByPrefix(tag){
+      let res = isReservedTag(tag);
+      // Tag is unknown and has never gone through this function
+      if ( tag && !res && (this.parsedTags.indexOf(tag) === -1) ){
+        this.parsedTags.push(tag);
+        let idx = -1;
+        /** @todo add an extended object of all the mixins for all related path */
+        let mixins = [];
+        // Looking for a corresponding prefix rule
+        bbn.fn.each(this.knownPrefixes, (a, i) => {
+          if ( a.prefix && (tag.indexOf(a.prefix) === 0) && a.handler && bbn.fn.isFunction(a.handler) ){
+            // Taking the longest (most precise) prefix's rule
+            if ( a.mixins ){
+              mixins = mixins.concat(a.mixins);
+            }
+            if ( idx > -1 ){
+              if ( this.knownPrefixes[i].prefix.length > this.knownPrefixes[idx].prefix.length ){
+                idx = i;
+              }
+            }
+            else{
+              idx = i;
+            }
+          }
+        });
+        // A rule has been found
+        if ( idx > -1 ){
+          Vue.component(tag, (resolve, reject) => {
+            this.knownPrefixes[idx].handler(tag, resolve, reject);
           });
         }
       }
+      return false;
+    },
+
+    addPrefix(prefix, handler, mixins){
+      if ( typeof prefix !== 'string' ){
+        throw new Error("Prefix must be a string!");
+        return;
+      }
+      if ( typeof handler !== 'function' ){
+        throw new Error("Handler must be a function!");
+        return;
+      }
+      if ( prefix.substr(-1) !== '-' ){
+        prefix += '-';
+      }
+      this.knownPrefixes.push({
+        prefix: prefix,
+        handler: handler,
+        mixins: mixins || []
+      });
     },
 
     resetDefBBN(cp){
@@ -583,7 +723,7 @@
       if ( !tmp && vm.$children ){
         for ( let i = 0; i < vm.$children.length; i++ ){
           if ( tmp = this.findByKey(vm.$children[i], key, selector, ar) ){
-            if ( $.isArray(ar) ){
+            if (bbn.fn.isArray(ar) ){
               ar.push(tmp);
             }
             else{
@@ -661,7 +801,7 @@
     },
 
     replaceArrays(oldArr, newArr, key){
-      if ( key && $.isArray(oldArr, newArr) ){
+      if ( key &&bbn.fn.isArray(oldArr, newArr) ){
         for ( let i = oldArr.length; i > 0; --i ){
           if ( bbn.fn.search(newArr, key, oldArr[i][key]) === -1 ){
             oldArr.splice(i, 1)
@@ -675,76 +815,41 @@
       }
     },
 
-    // Looks if the given tag starts with one of the known prefixes,
-    // and it such case defines the component with the corresponding handler
-    loadComponentsByPrefix(tag){
-      let res = isReservedTag(tag);
-      // Tag is unknown and has never gone through this function
-      if ( tag && !res && (this.parsedTags.indexOf(tag) === -1) ){
-        this.parsedTags.push(tag);
-        let idx = -1;
-        // Looking for a corresponding prefix rule
-        for (let i = 0; i < this.knownPrefixes.length; i++){
-          if (
-            this.knownPrefixes[i].prefix &&
-            (typeof this.knownPrefixes[i].handler === 'function') &&
-            (tag.indexOf(this.knownPrefixes[i].prefix) === 0)
-          ) {
-            // Taking the longest (most precise) prefix's rule
-            if ( idx > -1 ){
-              if ( this.knownPrefixes[i].prefix.length > this.knownPrefixes[idx].prefix.length ){
-                idx = i;
-              }
-            }
-            else{
-              idx = i;
-            }
+    extend(vm){
+      let deep = false;
+      let args = [];
+      bbn.fn.each (arguments, (a, i) => {
+        if ( i > 0 ){
+          if ( a === true ){
+            deep = true;
+          }
+          else{
+            args.push(a);
           }
         }
-        // A rule has been found
-        if ( idx > -1 ){
-          /*
-          let mixins = [];
-          bbn.fn.each(this.knownPrefixes, (o) => {
-            if ( tag.indexOf(o.prefix) === 0 ){
-              if ( o.mixins ){
-                if ( !bbn.fn.isArray(o.mixins) ){
-                  mixins.push(o.mixins)
-                }
-                else{
-                  bbn.fn.each(o.mixins, (m) => {
-                    mixins.push(m);
-                  })
-                }
-              }
+      });
+      if ( !args.length ){
+        throw new Error("No argument given");
+      }
+      let out = args.splice(0, 1)[0];
+      bbn.fn.each(args, (a) => {
+        if ( !bbn.fn.isObject(a) ){
+          throw new Error("Each argument for bbn.fn.extend must be an object, " + typeof(args[i]) + " given");
+        }
+        else{
+          bbn.fn.iterate(a, (o, n) => {
+            if ( deep && bbn.fn.isObject(o) && bbn.fn.isObject(out[n]) ){
+              bbn.fn.extend(true, out[n], o);
             }
-          })
-          */
-          Vue.component(tag, (resolve, reject) => {
-            this.knownPrefixes[idx].handler(tag, resolve, reject);
+            else if ( out[n] !== o ){
+              vm.$set(out[n], o);
+            }
           });
         }
-      }
-      return false;
+      })
+      return out;
     },
 
-    addPrefix(prefix, handler, mixins){
-      if ( typeof prefix !== 'string' ){
-        throw new Error("Prefix must be a string!");
-        return;
-      }
-      if ( typeof handler !== 'function' ){
-        throw new Error("Handler must be a function!");
-        return;
-      }
-      if ( prefix.substr(-1) !== '-' ){
-        prefix += '-';
-      }
-      this.knownPrefixes.push({
-        prefix: prefix,
-        handler: handler,
-        mixins: mixins || []
-      });
-    },
+
   })
 })(window.bbn);

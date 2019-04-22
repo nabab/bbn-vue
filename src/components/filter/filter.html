@@ -34,14 +34,14 @@
         <div class="bbn-filter-buttons"
              style="display: inline-flex;"
         >
-          <i class="bbn-p bbn-lg fa fa-minus-circle"
+          <i class="bbn-p bbn-lg nf nf-fa-minus_circle"
              @mouseover="over"
              @mouseout="out"
              :title="_('Delete this condition')"
              ref="minus"
              @click="delete_condition(condition)"
           > </i>
-          <i class="bbn-p bbn-lg fa fa-plus-circle"
+          <i class="bbn-p bbn-lg nf nf-fa-plus_circle"
              v-if="multi"
              @mouseover="$event.target.style.color = 'red'"
              @mouseout="$event.target.style.color = null"
@@ -135,14 +135,14 @@
                           @click="validate"
                           :title="_('Validate')"
                           ref="check"
-                          icon="fa fa-check">
+                          icon="nf nf-fa-check">
               </bbn-button>
               <bbn-button v-if="buttonDelete"
                           :disabled="!currentOperator"
                           @click="unset"
                           :title="_('Unset condition')"
                           ref="unset"
-                          icon="fa fa-times">
+                          icon="nf nf-fa-times">
               </bbn-button>
             </div>
           </div>

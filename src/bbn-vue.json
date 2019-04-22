@@ -12,6 +12,10 @@
       "active": true,
       "state": "stable"
     },
+    "calendar": {
+      "active": true,
+      "state": "dev"
+    },
     "chart": {
       "active": true,
       "state": "stable"
@@ -252,7 +256,7 @@
       "active": true,
       "state": "stable"
     },
-    "tabnav2": {
+    "tabnav": {
       "active": true,
       "state": "stable"
     },

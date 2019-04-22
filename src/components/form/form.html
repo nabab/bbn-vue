@@ -3,13 +3,14 @@
       :method="method"
       :autocomplete="autocomplete"
       :class="currentClass"
+      :style="currentStyle"
       @submit.prevent="submit"
       @keydown.enter.prevent.stop="submit()"
 >
   <div v-if="fixedFooter"
        :class="['bbn-w-100', {'bbn-flex-fill': scrollable}]"
   >
-    <bbn-scroll v-if="scrollable">
+    <component :is="scrollable ? 'bbn-scroll' : 'div'" ref="container">
       <div class="bbn-grid-fields bbn-padded" v-if="schema && schema.length">
         <template v-for="field in currentSchema"
                   v-if="field.field && !field.buttons && (field.editable !== false)"
@@ -37,44 +38,15 @@
         </template>
       </div>
       <slot></slot>
-    </bbn-scroll>
-    <template v-else>
-      <div class="bbn-grid-fields bbn-padded" v-if="schema && schema.length">
-        <template v-for="field in currentSchema"
-                  v-if="field.field && !field.buttons && (field.editable !== false)"
-        >
-          <component v-if="field.lineComponent"
-                     :is="field.lineComponent"
-                     :source="source"
-          ></component>
-          <template v-else>
-            <label v-html="field.title"
-                   :for="field.id"
-                   :title="field.ftitle || field.title || field.field"></label>
-            <component v-if="field.editor"
-                       :is="field.editor"
-                       v-bind="field.options"
-                       v-model="source[field.field]"
-            ></component>
-            <bbn-field v-else
-                       mode="write"
-                       v-model="source[field.field]"
-                       v-bind="field"
-            ></bbn-field>
-          </template>
-
-        </template>
-      </div>
-      <slot></slot>
-    </template>
+    </component>
   </div>
   <slot v-else></slot>
   <div v-if="hasFooter"
-       class="footer k-header">
+       class="footer bbn-header">
     <slot name="footer"></slot>
   </div>
   <div v-else-if="realButtons.length"
-       class="footer bbn-popup-footer k-button-group k-dialog-buttongroup k-dialog-button-layout-stretched bbn-flex-width bbn-lg">
+       class="footer bbn-popup-footer bbn-button-group bbn-flex-width bbn-lg">
     <template v-for="(button, i) in realButtons">
       <bbn-button v-if="button.command === 'reset'"
                   :disabled="!modified && !prefilled"
@@ -92,7 +64,7 @@
       <bbn-button v-else-if="button.command === 'submit'"
                   :key="i"
                   v-bind="button"
-                  :class="['bbn-flex-fill', {'k-primary': modified || prefilled}]"
+                  :class="['bbn-flex-fill', {'bbn-primary': modified || prefilled}, {'bbn-disabled': !modified || prefilled}]"
                   :disabled="(!modified && !prefilled) || isLoading"
                   @click="(modified && !prefilled) || prefilled ? submit(false) : false"
                   glowing="green"

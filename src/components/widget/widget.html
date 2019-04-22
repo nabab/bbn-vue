@@ -1,0 +1,124 @@
+<div :class="['bbn-widget', 'bbn-bordered', 'bbn-radius', 'bbn-alt-background', componentClass, full ? 'full' : '']">
+  <!-- HEADER -->
+  <div class="bbn-header bbn-bordered-bottom bbn-vxspadded bbn-unselectable">
+    <div class="bbn-flex-width">
+      <!-- BUTTONS LEFT -->
+      <div class="bbn-widget-button-left">
+        <i v-if="closable"
+            :title="_('Close')"
+            @click="close"
+            class="bbn-lg nf nf-fa-times"
+        ></i>
+        <bbn-context v-if="hasMenu"
+                      :source="finalMenu"
+        >
+          <i :title="_('Menu')"
+              class="bbn-lg nf nf-fa-caret_down"
+          > </i>
+        </bbn-context>
+        <i v-for="(b, idx) in realButtonsLeft"
+            :title="b.text"
+            @click="actionButton(b.action, uid)"
+            :class="['bbn-lg', b.icon]"
+        ></i>
+      </div>
+      <!-- TITLE -->
+      <div class="bbn-flex-fill">
+        <h3 :class="{'ui-sortable-handle': dashboard && dashboard.sortable}"
+            v-html="title"
+        ></h3>
+      </div>
+      <!-- BUTTONS RIGHT -->
+      <div class="bbn-widget-button-right">
+        <i v-for="(b, idx) in realButtonsRight"
+            :title="b.text"
+            @click="actionButton(b.action, uid)"
+            :class="['bbn-lg', b.icon]"
+        ></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="content bbn-padded">
+    <!-- COMPONENT -->
+    <component v-if="component"
+                :is="component"
+                :source="currentSource"
+                v-bind="options"
+    ></component>
+    <!-- HTML CONTENT -->
+    <div v-else-if="content"
+         v-html="content"
+    ></div>
+    <!-- LIST OF ITEMS -->
+    <ul v-else-if="currentItems.length">
+      <template v-for="(it, idx) in currentItems"
+                v-if="limit ? idx < limit : true"
+      >
+        <li :class="itemClass"
+            :style="itemStyle"
+            :key="idx"
+        >
+          <component v-if="itemComponent"
+                      :is="itemComponent"
+                      v-bind="options"
+                      :source="it"
+          ></component>
+          <span v-else
+                v-html="it"
+          ></span>
+        </li>
+        <div v-if="separator && currentItems[idx+1]"
+              v-html="separator"
+        ></div>
+      </template>
+    </ul>
+    <!-- NO DATA MESSAGE -->
+    <div v-else-if="!isLoading">
+      <slot>
+        <div v-html="noData" class="bbn-w-100 bbn-c bbn-padded"></div>
+      </slot>
+    </div>
+    <!-- GO FULL PAGE -->
+    <div v-if="zoomable && currentItems && currentItems.length"
+          class="content-buttons zoom bbn-unselectable"
+    >
+      <i class="nf nf-fa-arrows_alt"
+          @click="zoom"
+      ></i>
+    </div>
+    <!-- NAVIGATION IN LIST -->
+    <div v-if="currentPage"
+          class="nav bbn-unselectable"
+    >
+      <div class="content-buttons nav-first">
+        <i class="nf nf-fa-angle_double_left"
+            @click="nav('first')"
+            :style="{visibility: currentStart > 0 ? 'visible' : 'hidden'}"
+        ></i>
+      </div>
+      <div class="content-buttons nav-prev">
+        <i class="nf nf-fa-angle_left"
+            @click="nav('prev')"
+            :style="{visibility: currentStart > 0 ? 'visible' : 'hidden'}"
+        ></i>
+      </div>
+      <span v-text="currentPage + '/' + totalPages"></span>
+      <div class="content-buttons nav-next">
+        <i class="nf nf-fa-angle_right"
+            @click="nav('next')"
+            :style="{visibility: currentStart < (currentTotal-limit) ? 'visible' : 'hidden'}"
+        ></i>
+      </div>
+      <div class="content-buttons nav-last">
+        <i class="nf nf-fa-angle_double_right"
+            @click="nav('last')"
+            :style="{visibility: currentStart < (currentTotal-limit) ? 'visible' : 'hidden'}"
+        ></i>
+      </div>
+    </div>
+    <!-- LOADING -->
+    <bbn-loader v-if="isLoading"></bbn-loader>
+  </div>
+</div>

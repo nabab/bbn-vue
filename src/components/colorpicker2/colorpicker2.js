@@ -66,6 +66,7 @@
     computed:{
       //object for configuration colorpicker
       dataComponent(){
+        let cp = this;
         let obj = {
           preferredFormat: this.codeColor,
           togglePaletteOnly: this.onlyPalette,
@@ -80,7 +81,22 @@
           clickoutFiresChange: true,
           showButtons: this.buttons,
           allowEmpty: this.buttonEmpty,
-          flat: this.pannel
+          flat: this.pannel,
+          change(){
+            cp.emitInput(this.value);
+          },
+          move(){
+            cp.$emit('move');
+          },
+          hide(){
+            cp.$emit('hide');
+          },
+          show(){
+            cp.$emit('show');
+          },
+          beforeShow(){
+            cp.$emit('beforeShow');
+          }
         };
 
         //for palette
@@ -110,21 +126,6 @@
           }
         }
         //events
-        obj.change = (e) => {
-          vm.emitInput(e.sender.value());
-        };
-        obj.move = (color) => {
-          this.$emit('move', color);
-        }
-        obj.hide = (color) => {
-          this.$emit('show', color);
-        }
-        obj.show = (color) => {
-          this.$emit('show', color);
-        }
-        obj.beforeShow = (color) => {
-          this.$emit('beforeShow', color);
-        }
         return obj;
       }
     },

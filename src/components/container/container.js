@@ -15,7 +15,7 @@
    * @param {boolean} scrollable - Sets if the tabs' titles will be scrollable in case they have a greater width
    * than the page (true), or if they will be shown multilines (false, default).
    * @param {array} source - The tabs shown at init.
-   * @param {string} currentURL - The URL to which the tabnav currently corresponds (its selected tab).
+   * @param {string} current - The URL to which the tabnav currently corresponds (its selected tab).
    * @param {string} baseURL - The parent TabNav's URL (if any) on top of which the tabNav has been built.
    * @param {array} parents - The tabs shown at init.
    * @param {array} tabs - The tabs configuration and state.
@@ -26,31 +26,50 @@
 
   // Will hold all the current rendered components random names to avoid doubles
   let componentsList = [];
-
   Vue.component("bbn-container", {
     name: 'bbn-container',
-    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent, bbn.vue.viewComponent],
-
+    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent, bbn.vue.viewComponent, bbn.vue.observerComponent],
+    props: {
+      idx: {
+        type: Number
+      },
+    },
     data(){
       return {
+        isVisible: false,
         // The router to which belongs the container if any
         router: null,
-        // The content of the container will or not remain in memory when hidden
-        cached: false,
         // Should the conatiner be shown
         visible: false,
+        // Becomes true if the data changes and is unsaved
+        dirty: false,
         // Is the container a component???
         isComponent: null,
         fullScreen: false,
         // A random unique component name
         componentName: this.randomName(),
         popups: [],
+        isUnsaved: false,
         isComponentActive: false,
-        currentURL: this.url
+        isLoaded: !this.load || this.loaded,
+        isPinned: this.pinned,
+        isStatic: this.static,
+        currentIndex: this.idx,
+        currentURL: this.current || this.url
       };
     },
 
     methods: {
+      getFullCurrentURL(){
+        return this.router.getFullBaseURL() + this.currentURL;
+      },
+      getFullURL(){
+        return this.router.getFullBaseURL() + this.url;
+      },
+      setLoaded(val){
+        this.isLoaded = !!val;
+      },
+      // Generates a random name which will be used for the component
       randomName(){
         let n = bbn.fn.randomString(20, 15).toLowerCase();
         while ( componentsList.indexOf(n) > -1 ){
@@ -65,23 +84,22 @@
         this.visible = false
       },
       setCurrent(url){
-        const vm = this;
-        if ( url.indexOf(vm.url) === 0 ){
-          //vm.tabNav.activate(url);
+        if ( url.indexOf(this.url) === 0 ){
+          this.currentURL = url;
         }
       },
       setTitle(title){
-        if ( this.tabNav ){
-          this.tabNav.tabs[this.idx].title = title;
+        if ( this.router ){
+          this.router.views[this.currentIndex].title = title;
         }
       },
       setColor(bcolor, fcolor){
-        if ( this.tabNav ){
+        if ( this.router ){
           if ( bcolor ){
-            this.tabNav.tabs[this.idx].bcolor = bcolor;
+            this.router.$set(this.router.views[this.currentIndex], "bcolor", bcolor);
           }
           if ( fcolor ){
-            this.tabNav.tabs[this.idx].fcolor =  fcolor;
+            this.router.$set(this.router.views[this.currentIndex], "fcolor", fcolor);
           }
         }
       },
@@ -97,60 +115,27 @@
         }
         return false;
       },
+      enter(){
+        this.$parent.enter(this);
+      },
       reload(){
-        return this.tabNav.reload(this.idx);
-      },
-      activate(force){
-        return this.tabNav.activate(this.idx, force);
-      },
-      confirm(){
-        let p = this.popup();
-        if ( p ){
-          return p.confirm.apply(p, arguments)
-        }
-      },
-      alert(){
-        let p = this.popup();
-        if ( p ){
-          return p.alert.apply(p, arguments)
-        }
-      },
-      getSubTabNav(ele){
-        if ( ele === undefined ){
-          ele = this;
-        }
-
-        var recurse = function(el){
-          if ( el.$options && el.$options._componentTag && (el.$options._componentTag === "bbn-tabnav") ){
-            return el;
-          }
-          if ( el.$children ){
-            for ( var i = 0; i < el.$children.length; i++ ){
-              var r = recurse(el.$children[i]);
-              if ( r ){
-                return r;
-              }
-            }
-          }
-          return false;
-        };
-        return recurse(ele);
+        this.router.reload(this.currentIndex);
       },
       addMenu(obj){
         if (
           (this.idx > -1) &&
           obj.text &&
-          this.$parent.tabs &&
-          this.$parent.tabs[this.idx]
+          this.$parent.views &&
+          this.$parent.views[this.idx]
         ){
-          if ( this.$parent.tabs[this.idx].menu === undefined ){
-            this.$parent.tabs[this.idx].menu = [];
+          if ( this.$parent.views[this.idx].menu === undefined ){
+            this.$parent.views[this.idx].menu = [];
           }
-          let menu = this.$parent.tabs[this.idx].menu,
-              idx = bbn.fn.search($.isFunction(menu) ? menu() : menu, {text: obj.text});
+          let menu = this.$parent.views[this.idx].menu,
+              idx = bbn.fn.search(bbn.fn.isFunction(menu) ? menu() : menu, {text: obj.text});
           if ( idx === -1 ){
-            if ( $.isFunction(menu) ){
-              this.$parent.tabs[this.idx].menu = () => {
+            if (bbn.fn.isFunction(menu) ){
+              this.$parent.views[this.idx].menu = () => {
                 let items = menu() || [];
                 if ( bbn.fn.search(items, obj) === -1 ){
                   if ( !obj.key ){
@@ -179,17 +164,17 @@
       deleteMenu(key){
         if (
           (this.idx > -1) &&
-          this.$parent.tabs &&
-          this.$parent.tabs[this.idx]
+          this.$parent.views &&
+          this.$parent.views[this.idx]
         ){
-          let menu = this.$parent.tabs[this.idx].menu || [];
-          if ( $.isFunction(menu) ){
+          let menu = this.$parent.views[this.idx].menu || [];
+          if (bbn.fn.isFunction(menu) ){
             menu = () => {
               let items = menu() || [];
               let idx = bbn.fn.search(items, "key", key);
               if ( idx > -1 ){
                 items.splice(idx, 1);
-                this.$parent.tabs[this.idx].menu = items;
+                this.$parent.views[this.idx].menu = items;
                 this.$parent.$forceUpdate();
                 return true;
               }
@@ -199,7 +184,7 @@
             let idx = bbn.fn.search(menu, "key", key);
             if ( idx > -1 ){
               menu.splice(idx, 1);
-              this.$parent.tabs[this.idx].menu = menu;
+              this.$parent.views[this.idx].menu = menu;
               this.$parent.$forceUpdate();
               return true;
             }
@@ -207,48 +192,67 @@
         }
         return false;
       },
+      
       init(){
-        bbn.fn.info("INIT");
-        if ( this.script ){
-          bbn.fn.log("THERE IS SCRIPT for " + this.url);
-          res = typeof this.script === 'string' ? eval(this.script) : this.script;
-          // if evaluating the script property returns a function that will be onMount
-          if ( res ){
-            if ( $.isFunction(res) ){
-              this.onMount = res;
-              this.isComponent = false;
-            }
-            // Otherwise if it's an object we assume it is a component
-            else if ( typeof(res) === 'object' ){
-              this.isComponent = true;
+        if ( this.real || (this.isLoaded && !this.ready) ){
+          let res;
+          //bbn.fn.log("INITIATING CONTAINER " + this.url + " " + (this.script ? "(THERE IS A SCRIPT)" : ""));
+
+          if ( this.script ){
+            res = typeof this.script === 'string' ? eval(this.script) : this.script;
+            // if evaluating the script property returns a function that will be onMount
+            if ( res ){
+              if (bbn.fn.isFunction(res) ){
+                //bbn.fn.log("THERE IS SCRIPT for " + this.url + " AND IT IS A FUNCTION");
+                this.onMount = res;
+                this.isComponent = false;
+              }
+              // Otherwise if it's an object we assume it is a component
+              else if ( typeof(res) === 'object' ){
+                //bbn.fn.log("THERE IS SCRIPT for " + this.url + " AND IT IS AN OBJECT");
+                this.isComponent = true;
+              }
+              else{
+                //bbn.fn.log("THERE IS SCRIPT for " + this.url + " AND WTF???");
+              }
             }
           }
-        }
-        if ( this.isComponent ){
-          // We create a local component with a random name,
-          // the content as template
-          // and the object returned as component definition
-          // Adding also a few funciton to interact with the tab
-          bbn.fn.extend(res ? res : {}, {
-            template: '<div class="bbn-full-screen">' + this.content + '</div>',
-            /*
-            methods: {
-              getTab: () => {
-                return this;
-              },
-              addMenu: this.addMenu,
-              deleteMenu: this.deleteMenu
-            },
-            */
-            props: ['source']
-          });
-          // The local anonymous component gets defined
-          this.$options.components[this.componentName] = res;
-        }
-        else{
-          this.isComponent = false;
-        }
+          else if ( this.content ){
+            this.isComponent = false;
+          }
 
+          if ( this.isComponent ){
+            // We create a local component with a random name,
+            // the content as template
+            // and the object returned as component definition
+            // Adding also a few funciton to interact with the tab
+            let cont = this;
+            let o = bbn.fn.extend(true, res ? res : {}, {
+              template: '<div class="bbn-overlay">' + this.content + '</div>',
+              methods: {
+                getContainer(){
+                  return this.$parent;
+                },
+                getTab(){
+                  return this.$parent;
+                },
+                addMenu(){
+                  return this.$parent.addMenu.apply(this.$parent, arguments)
+                },
+                deleteMenu(){
+                  return this.$parent.deleteMenu.apply(this.$parent, arguments)
+                }
+              },
+              props: ['source']
+            });
+            // The local anonymous component gets defined
+            this.$options.components[this.componentName] = o;
+          }
+          else{
+            this.isComponent = false;
+          }
+          this.ready = true;
+        }
       }
     },
 
@@ -257,7 +261,7 @@
         componentsList.push(this.componentName);
       }
       else if ( this.isComponent === null ){
-        // The default onMount funciton is to do nothing.
+        // The default onMount function is to do nothing.
         this.onMount = () => {
           return false;
         };
@@ -266,17 +270,28 @@
     },
 
     mounted(){
+      // The router is needed
       this.router = this.closest('bbn-router');
-      if ( this.router ){
+      if ( !this.router ){
+        throw new Error(bbn._("bbn-container cannot be rendered without a bbn-router"));
+      }
+      if ( !this.router.isMounted ){
+        this.router.$on('ready', () => {
+          //this.init();
+          this.router.register(this);
+        });
+      }
+      else{
+        //this.init();
         this.router.register(this);
       }
-      if ( !this.load ){
-        this.ready = true;
-        this.init();
-      }
+      // 
+      // The container is registered
     },
 
     beforeDestroy(){
+      //bbn.fn.log("DESTROYING");
+      this.router.unregister(this);
       if ( this.isComponent ){
         let idx = componentsList.indexOf(this.componentName);
         if ( idx > -1 ){
@@ -286,6 +301,11 @@
     },
 
     watch: {
+      currentURL(newVal, oldVal){
+        if ( !newVal || (newVal.indexOf(this.url) !== 0) ){
+          this.currentURL = this.url;
+        }
+      },
       load(nv, ov){
         /** Why????
         if ( nv && this.$options.components[this.componentName] ){
@@ -309,6 +329,7 @@
       content(newVal, oldVal){
         if ( newVal ){
           this.isComponentActive = false;
+          /*
           setTimeout(() => {
             this.onMount = () => {
               return false;
@@ -316,7 +337,7 @@
             let res;
             if ( this.script ){
               res = typeof this.script === 'string' ? eval(this.script) : this.script;
-              if ( $.isFunction(res) ){
+              if (bbn.fn.isFunction(res) ){
                 this.onMount = res;
                 this.isComponent = false;
               }
@@ -324,10 +345,10 @@
                 this.isComponent = true;
               }
             }
-            if ( this.isComponent ){
+            else if ( this.source && this.content ){
               bbn.fn.extend(res ? res : {}, {
                 name: this.name,
-                template: '<div class="bbn-full-screen">' + this.content + '</div>',
+                template: '<div class="bbn-overlay">' + this.content + '</div>',
                 props: ['source']
               });
             }
@@ -336,6 +357,7 @@
             }
             this.isComponentActive = true;
           }, oldVal ? 200 : 0)
+          */
         }
       },
       fullScreen(newVal){
@@ -353,9 +375,6 @@
         this.$nextTick(() => {
           this.selfEmit(true)
         })
-      },
-      currentURL(newVal, oldVal){
-        this.$emit("change", newVal);
       }
     },
 

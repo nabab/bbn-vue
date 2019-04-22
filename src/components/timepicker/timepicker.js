@@ -93,13 +93,13 @@
       }
     },
     data: function(){
-      return $.extend({
+      return bbn.fn.extend({
         widgetName: "kendoMaskedTimePicker"
       }, bbn.vue.treatData(this));
     },
     mounted: function(){
       this.widget = $(this.$refs.element)
-        .kendoMaskedTimePicker($.extend(this.getOptions(), {
+        .kendoMaskedTimePicker(bbn.fn.extend(this.getOptions(), {
           change: (e) => {
             this.emitInput(kendo.toString(this.widget.value(), "HH:mm:ss"));
             return true;

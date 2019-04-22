@@ -3,7 +3,7 @@
   <div class="loader" v-if="loading">
     <bbn-loadicon></bbn-loadicon> Loading...
   </div>
-  
+
   <component v-else-if="isLoaded"
              :is="isRoot ? 'bbn-scroll' : 'div'"
              ref="scroll"
@@ -33,19 +33,28 @@
                        :source="it.items ? it.items : []"
                        :level="level"
                        :filter-string="tree.filterString"
+                       :excluded-section-filter="tree.excludedSectionFilter"
         >
-          <li :class="{
+          <!-- <li :class="{
                        'bbn-tree-node': true,
                        'bbn-unselectable': true,
                        selected: isSelected,
                        active: isActive,
                       }"
               v-show="isMatch || numMatches"
+          > -->
+          <li :class="{
+                       'bbn-tree-node': true,
+                       'bbn-unselectable': true,
+                       selected: isSelected,
+                       active: isActive,
+                      }"
+              v-show="isMatch || numMatches || excludedFilter"
           >
             <span :class="'node' + (component ? '' : ' no-component') + (cls ? ' ' + cls : '')"
                   @mouseover.stop="mouseOver"
             >
-              <span class="expander"
+              <span class="expander bbn-p"
                     @click="if ( numChildren && (level >= tree.minExpandLevel) ){
                       isExpanded = !isExpanded;
                     }"
@@ -56,10 +65,10 @@
                 <!-- If there are no children we leave the white space -->
                 <span v-if="!numChildren || (level < tree.minExpandLevel)"> </span>
                 <i v-else-if="isExpanded"
-                   class="fas fa-caret-down"
+                   class="nf nf-fa-caret_down"
                 ></i>
                 <i v-else
-                   class="fas fa-caret-right"
+                   class="nf nf-fa-caret_right"
                 ></i>
               </span>
               <span v-if="tree.checkable && tree.uid && (checkable !== false)">
@@ -102,7 +111,7 @@
                        :style="iconStyle"
                     ></i>
                     <i v-else
-                       class="fa fa-file"
+                       class="nf nf-fa-file"
                        :style="iconStyle"
                     ></i>
                   </span>

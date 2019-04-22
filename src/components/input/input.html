@@ -1,6 +1,5 @@
-<span :class="[componentClass, {'k-state-disabled': !!disabled}]">
+<span :class="[componentClass, 'bbn-textbox', {'bbn-disabled': !!disabled}]">
   <input v-if="type === 'email'"
-         class="k-textbox"
          :value="value"
          type="email"
          :name="name"
@@ -22,9 +21,9 @@
          @keyup="keyup"
          @mouseenter="over"
          @mouseleave="out"
+         tabindex="0"
   >
   <input v-else-if="type === 'hidden'"
-         class="k-textbox"
          :value="value"
          type="hidden"
          :name="name"
@@ -46,9 +45,9 @@
          @keyup="keyup"
          @mouseenter="over"
          @mouseleave="out"
+         tabindex="0"
   >
   <input v-else-if="type === 'month'"
-         class="k-textbox"
          :value="value"
          type="month"
          :name="name"
@@ -70,9 +69,9 @@
          @keyup="keyup"
          @mouseenter="over"
          @mouseleave="out"
+         tabindex="0"
   >
   <input v-else-if="type === 'number'"
-         class="k-textbox"
          :value="value"
          type="number"
          :name="name"
@@ -94,9 +93,9 @@
          @keyup="keyup"
          @mouseenter="over"
          @mouseleave="out"
+         tabindex="0"
   >
   <input v-else-if="type === 'tel'"
-         class="k-textbox"
          :value="value"
          type="tel"
          :name="name"
@@ -118,9 +117,9 @@
          @keyup="keyup"
          @mouseenter="over"
          @mouseleave="out"
+         tabindex="0"
   >
   <input v-else-if="type === 'url'"
-         class="k-textbox"
          :value="value"
          type="url"
          :name="name"
@@ -142,9 +141,9 @@
          @keyup="keyup"
          @mouseenter="over"
          @mouseleave="out"
+         tabindex="0"
   >
   <input v-else-if="type === 'password'"
-         class="k-textbox"
          :value="value"
          type="password"
          :name="name"
@@ -166,9 +165,9 @@
          @keyup="keyup"
          @mouseenter="over"
          @mouseleave="out"
+         tabindex="0"
   >
   <input v-else
-         class="k-textbox"
          :value="value"
          :name="name"
          ref="element"
@@ -181,13 +180,14 @@
          :autocomplete="autocomplete"
          :pattern="pattern"
          @input="emitInput($refs.element.value)"
-         @click="click"
-         @focus="focus"
-         @blur="blur"
-         @change="change"
-         @keydown="keydown"
-         @keyup="keyup"
-         @mouseenter="over"
-         @mouseleave="out"
+         @click.stop="click"
+         @focus.stop="focus"
+         @blur.stop="blur"
+         @change.stop="change"
+         @keydown.stop="keydown"
+         @keyup.stop="keyup"
+         @mouseenter.stop="over"
+         @mouseleave.stop="out"
+         tabindex="0"
   >
 </span>

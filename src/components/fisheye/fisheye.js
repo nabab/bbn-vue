@@ -73,7 +73,7 @@
 
     methods: {
       onClick(it){
-        if ( it.command && $.isFunction(it.command) ){
+        if ( it.command &&bbn.fn.isFunction(it.command) ){
           it.command();
         }
       },
@@ -121,7 +121,7 @@
         if ( vm.delUrl ){
           vm.binEle = $("#bbn_dock_menu_bin");
           if ( !vm.binEle.length ){
-            vm.binEle = $('<div id="bbn_dock_menu_bin" style="z-index: ' + vm.zIndex + '"><i class="fa fa-trash"></i> </div>').appendTo(document.body);
+            vm.binEle = $('<div id="bbn_dock_menu_bin" style="z-index: ' + vm.zIndex + '"><i class="nf nf-fa-trash"></i> </div>').appendTo(document.body);
           }
           if ( vm.droppableBin ){
             vm.droppableBin.droppable("destroy");

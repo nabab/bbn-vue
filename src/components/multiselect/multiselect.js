@@ -28,7 +28,7 @@
       }
     },
     data(){
-      return $.extend({
+      return bbn.fn.extend({
         widgetName: "kendoMultiSelect"
       }, bbn.vue.treatData(this));
     },
@@ -38,7 +38,7 @@
             vm = this;
         cfg.change = (e) => {
           vm.$emit("input", e.sender.value());
-          if ( $.isFunction(vm.change) ){
+          if (bbn.fn.isFunction(vm.change) ){
             vm.change(e.sender.value());
           }
         };

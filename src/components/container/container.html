@@ -1,12 +1,13 @@
 <div :class="[componentClass]"
      v-show="visible">
   <transition name="fade"
-              v-on:enter="$parent.enter"
+              v-on:enter="enter"
               v-on:after-enter="find('bbn-scroll') ? find('bbn-scroll').onResize() : (() => {})()"
   >
-    <div v-if="visible || cached"
+    <div v-if="ready && isLoaded && (visible || cached)"
+         v-show="visible"
          :class="{
-         'bbn-full-screen': !fullScreen,
+         'bbn-overlay': !fullScreen,
          'bbn-container-full-screen': fullScreen,
          'bbn-container-visible': visible
        }"
@@ -22,25 +23,26 @@
                  :is="component"
                  :source="source"
                  ref="component"
-                 v-bind="componentAttributes"
+                 v-bind="options"
       ></component>
       <!-- This is just HTML content -->
       <bbn-scroll v-else-if="scrollable && content">
         <div v-html="content"></div>
       </bbn-scroll>
       <div v-else-if="content"
-           v-html="content"
-           class="bbn-full-screen">
+           class="bbn-overlay">
+        <div class="bbn-100"
+             v-html="content"
+        ></div>
       </div>
       <!-- This is the slot -->
       <slot v-else></slot>
       <component is="style" v-if="css" scoped="scoped" v-html="css"></component>
       <i v-if="fullScreen"
-         class="far fa-times-circle bbns-tab-fullscreen-closer bbn-p"
+         class="nf nf-fa-times_circle bbns-tab-fullscreen-closer bbn-p"
          @click="fullScreen = false"
       ></i>
-      <bbn-popup v-if="popups.length"
-                 ref="popup"
+      <bbn-popup ref="popup"
                  :source="popups">
       </bbn-popup>
     </div>

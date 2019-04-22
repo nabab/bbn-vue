@@ -1,4 +1,4 @@
-<div class="bbn-appui bbn-observer bbn-full-screen"
+<div class="bbn-appui bbn-observer bbn-overlay"
      style="opacity: 0;">
   <div v-if="!cool"
        class="bbn-middle bbn-xl"
@@ -13,7 +13,7 @@
               :scrollable="false"
               ref="head"
               overflow="visible">
-      <div class="k-header bbn-100 bbn-flex-width">
+      <div class="bbn-header bbn-100 bbn-flex-width bbn-unselectable bbn-no-border">
         <!-- MENU BUTTON -->
         <div class="bbn-block bbn-h-100 bbn-middle bbn-menu-button-container"
              style="width: 70px">
@@ -21,8 +21,8 @@
                @keydown.enter="toggleMenu"
                @keydown.space="toggleMenu"
                @mousedown.prevent.stop="toggleMenu"
-               class="bbn-full-screen bbn-middle bbn-p">
-            <i ref="icon" class="fa fa-bars bbn-xxxl"> </i>
+               class="bbn-overlay bbn-middle bbn-p">
+            <i ref="icon" class="nf nf-fa-bars bbn-xxxl"> </i>
           </div>
         </div>
         <!-- SEARCHBAR -->
@@ -57,12 +57,12 @@
         <!-- LOGO -->
         <div class="bbn-block bbn-h-100 bbn-logo-container" style="width: 140px">
           <div class="apst-logo bbn-100 bbn-r">
-            <img :src="logoPath + '?t=2'" border="0" class="bbn-h-100 bbn-right-space">
+            <img :src="logo + '?t=2'" border="0" class="bbn-h-100 bbn-right-space">
           </div>
         </div>
         <!-- DEBUGGER? -->
         <div v-if="debug"
-             class="k-widget"
+             class="bbn-widget"
              :style="{
                position: 'absolute',
                top: '0px',
@@ -104,28 +104,31 @@
               :size="25"
               :scrollable="false"
               ref="foot"
-              class="k-header"
+              class="bbn-header bbn-bordered-top"
               overflow="visible">
-      <div class="bbn-w-50 bbn-h-100" v-if="loaders">
-        <bbn-loadbar ref="loading" :source="loaders"></bbn-loadbar>
-      </div>
-      <div class="bbn-h-100 bbn-vmiddle" style="float: right; width: 8rem;">
-        <bbn-chat v-if="plugins['appui-chat']"
-                  ref="chat"
-                  :url="plugins['appui-chat']"
-                  :user-id="app.user.id"
-                  :users="app.users"
-                  :online-users="usersOnline"
-                  :online="chatOnline"
-                  @send="sendChatMessage"
-                  :groups="app.groups">
-        </bbn-chat>
-      </div>
-      <div v-if="plugins['appui-task']"
-           class="bbn-h-100 bbn-vmiddle"
-           style="float: right; width: 8rem;"
-      >
-        <appui-task-tracker></appui-task-tracker>
+      <div class="bbn-flex-width bbn-h-100">
+        <div class="bbn-flex-fill bbn-h-100">
+          <bbn-loadbar v-if="loaders" ref="loading" :source="loaders"></bbn-loadbar>
+        </div>
+        <div v-if="plugins['appui-task']"
+            class="bbn-h-100 bbn-vmiddle"
+            style="width: 8rem;"
+        >
+          <appui-task-tracker></appui-task-tracker>
+        </div>
+        <div class="bbn-h-100 bbn-vmiddle" style="width: 8rem;">
+          <bbn-chat v-if="plugins['appui-chat']"
+                    ref="chat"
+                    :url="plugins['appui-chat']"
+                    :user-id="app.user.id"
+                    :users="app.users"
+                    :online-users="usersOnline"
+                    :online="chatOnline"
+                    @send="sendChatMessage"
+                    :groups="app.groups"
+          >
+          </bbn-chat>
+        </div>
       </div>
     </bbn-pane>
   </bbn-splitter>

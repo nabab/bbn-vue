@@ -20,7 +20,7 @@
       }
     },
     data(){
-      return $.extend({
+      return bbn.fn.extend({
         widgetName: "kendoMaskedTextBox"
       }, bbn.vue.treatData(this));
     },

@@ -110,7 +110,7 @@
     },
     data(){
       bbn.fn.log("VALUE", this.value);
-      return $.extend({
+      return bbn.fn.extend({
         currentValue: this.value === '' ? '{}' : this.value,
         widgetName: "jsoneditor"
       }, bbn.vue.treatData(this));

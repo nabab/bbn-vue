@@ -1,7 +1,7 @@
 /**
  * Created by BBN on 12/06/2017.
  */
-(function($, bbn, kendo){
+(function(bbn){
   "use strict";
 
   /**
@@ -32,13 +32,11 @@
       }
     },
     mounted: function(){
-      let $ele = $(this.$el);
-
       if ( this.disabled ){
-        $ele.addClass("k-state-disabled");
+        this.$el.classList.add("k-state-disabled");
       }
       this.ready = true;
     }
   });
 
-})(jQuery, bbn, kendo);
+})(bbn);

@@ -4,5 +4,6 @@
   "authors": [
     "Thomas Nabet <thomas.nabet@gmail.com>"
   ],
+  "components": ["router","container","context"],
   "license": "MIT"
 }

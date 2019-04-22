@@ -1,7 +1,7 @@
 <!-- HTML Document -->
 <bbn-splitter orientation="vertical" class="appui-ide-finder">
   <bbn-pane :size="40">
-    <div class="bbn-full-screen bbn-middle">
+    <div class="bbn-overlay bbn-middle">
       <div class="bbn-flex-width">
         <div class="bbn-hpadded">
           <bbn-input placeholder="<?=_('Host')?>" v-model="host" ref="host"></bbn-input>
@@ -13,7 +13,7 @@
           <bbn-input placeholder="<?=_('Password')?>" type="password" v-model="pass" ref="pass"></bbn-input>
         </div>
         <div class="bbn-hpadded">
-          <bbn-button ftitle="<?=_('Is connected')?>" :icon="'fas fa-lightbulb bbn-' + (isConnected ? 'green' : 'red')"
+          <bbn-button ftitle="<?=_('Is connected')?>" :icon="'nf nf-fa-lightbulb bbn-' + (isConnected ? 'green' : 'red')"
             @click="connect"></bbn-button>
         </div>
         <div class="bbn-flex-fill bbn-hpadded">
@@ -28,20 +28,20 @@
       <div v-for="(p, i) in dirs" class="bbn-flex-height" style="width: 25em; border-right: 2px dotted; float: left">
         <div class="bbn-flex-fill">
           <bbn-context :source="finderContextMenu" @click="select">
-            <div class="bbn-full-screen">
+            <div class="bbn-overlay">
               <bbn-tree :source="source" :data="getData(p)" :menu="itemsContextMenu" :key="'/' + p.path"
                 @load="updateInfo" @select="select">
               </bbn-tree>
             </div>
           </bbn-context>
         </div>
-        <div class="bbn-w-100 k-widget" style="height: 10em">
+        <div class="bbn-w-100 bbn-widget" style="height: 10em">
           <div :class="{
-                       'bbn-full-screen': true,
+                       'bbn-overlay': true,
                        'k-state-default': true,
                        'k-state-active': i === (numCols - 1)
                        }">
-            <div class="bbn-grid-fields k-header k-widget info-dirs">
+            <div class="bbn-grid-fields bbn-header bbn-widget info-dirs">
               <div v-text="_('Number of childs:')" v-if="p.num_dirs || p.num_files"></div>
               <div v-text="p.num_dirs + p.num_files" v-if="p.num_dirs || p.num_files"></div>
 
@@ -53,13 +53,13 @@
 
               <div v-text="_('Size:')"></div>
               <div v-if="!p.size">
-                <bbn-button icon="fas fa-database" @click="get_size(p)" title="<?=_(" Get dir size")?>"
+                <bbn-button icon="nf nf-fa-database" @click="get_size(p)" title="<?=_(" Get dir size")?>"
                   ></bbn-button>
               </div>
               <span v-text="p.size" v-else></span>
               <div v-text="_('Abort request')" v-if="isLoading"></div>
               <div>
-                <bbn-button icon="fas fa-times" @click="cancel" v-if="isLoading" :title="cancelTitle"></bbn-button>
+                <bbn-button icon="nf nf-fa-times" @click="cancel" v-if="isLoading" :title="cancelTitle"></bbn-button>
               </div>
             </div>
           </div>
@@ -67,7 +67,7 @@
       </div>
       <!-- File detail / Image preview -->
       <div v-if="currentFile" class="info-file-container bbn-flex-height">
-        <div class="bbn-grid-fields k-header k-widget">
+        <div class="bbn-grid-fields bbn-header bbn-widget">
           <span>
             <?=_('Filename:')?></span>
           <span v-text="currentFile ? currentFile.node.data.value : ''"></span>
@@ -108,7 +108,7 @@
 </bbn-splitter>
 <script type="text/x-template" id="form">
 	<bbn-form :source="source"
-            class="bbn-full-screen" 
+            class="bbn-overlay" 
             :buttons=[]
             :action="source.root + 'actions/finder/edit'"
 						@success="success"

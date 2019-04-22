@@ -1,7 +1,7 @@
 /**
  * Created by BBN on 13/02/2017.
  */
-(function($, bbn, kendo){
+(function($, bbn){
   "use strict";
   Vue.component('bbn-radio', {
     mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent, bbn.vue.dataSourceComponent],
@@ -94,4 +94,4 @@
 		}
   });
 
-})(jQuery, bbn, kendo);
+})(jQuery, bbn);

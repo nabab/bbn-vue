@@ -79,6 +79,7 @@
         }
       }
       return {
+        isChanging: false,
         tmpValue: null,
         isFocused: false,
         currentDecimals: decimals,
@@ -233,7 +234,11 @@
         }
         if ( !this.required && (newVal === '') ){
           if ( this.value ){
+            this.isChanging = true;
             this.$emit('input', null);
+            this.$nextTick(() => {
+              this.isChanging = false;
+            })
           }
           //dopo questo emit non dovrei avere this.value, invece nel log c'è ancora...
           return;
@@ -249,9 +254,11 @@
         // this.$emit('input', parseFloat(parseFloat(newVal).toFixed(this.currentDecimals)));
         let v = parseFloat(parseFloat(newVal).toFixed(this.currentDecimals));
         if ( this.value !== v ){
+          this.isChanging = true;
           this.$emit('input', v);
           this.$nextTick(() => {
             this.tmpValue = this.formattedValue;
+            this.isChanging = false;
           })
         }
       },
@@ -274,6 +281,13 @@
           this._changeTmpValue(v);
         }, 2000);
       },
+
+      value(v){
+        if ( !this.isChanging ){
+          this.tmpValue = v;
+        }
+      },
+
       isFocused(v){
         if ( v ){
           this.tmpValue = this.value ? (parseFloat(this.value) * (this.unit === '%' ? 100 : 1)).toFixed(this.decimals) : '';

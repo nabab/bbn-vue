@@ -5,7 +5,7 @@
   }
   .bbn-masonry{
     overflow: hidden;
-    div.bbns-widget{
+    > div.bbn-widget{
       display: grid;
       margin-bottom: 1em;
       width: 100%;
@@ -15,117 +15,14 @@
         -moz-column-span: all;
         column-span: all;
       }
-      div.content{
-        box-sizing: content-box;
-        hyphens: auto;
-        word-wrap: break-word;
-        display: inline-block;
-        float: left;
-        padding:  0.5em  0.5em 1.5em 0.5em;
-        width: ~"-webkit-calc(100% - 1em)";
-        width: ~"-moz-calc(100% - 1em)";
-        width: ~"calc(100% - 1em)";
-        position: relative;
-        overflow: hidden;
-      }
-      div.content-buttons{
-        cursor: pointer;
-        opacity: 0.5;
-      }
-      div.zoom{
-        right: 2px;
-        position: absolute;
-        bottom: 0px;
-      }
-      div.nav {
-        right: 50%;
-        margin-right: -25%;
-        width: 50%;
-        position: absolute;
-        bottom: 0px;
-        text-align: center;
-        > div{
-          display: inline-block;
-          margin: 0 2px;
-        }
-      }
-      div.content-buttons:hover, div.content-buttons:focus{
-        opacity: 1;
-      }
-      ul, li{
-        margin: 0;
-        padding: 0;
-        list-style: none;
-      }
-      li{
-        .bbn-grid-fields{
-          padding: 0;
-        }
-        padding: 0.4em 0.6em;
-        > span:nth-child(even){
-          float: right;
-          clear: right;
-          text-align: right;
-        }
-        > span:nth-child(odd){
-          float: left;
-          clear: left;
-        }
-        div.dropdownstats{
-          float: left;
-          clear: both;
-          width: 90%;
-          margin: 10px 6% 5px 4%;
-          span{
-            float: none;
-          }
-        }
-      }
-      div.k-header{
-        text-align: center;
-        margin-bottom: 3px;
-        > div{
-          overflow: hidden;
-        }
-        h1,h2,h3,h4,h5,h6{
-          padding: 0;
-          margin: 0 3em;
-        }
-        span.button{
-          display: inline-block;
-          position: absolute;
-          top: 3px;
-          i{
-            cursor: pointer;
-            opacity: 0.5;
-          }
-          a:hover i{
-            opacity: 1;
-          }
-          i:hover,i:focus {
-            opacity: 1;
-          }
-        }
-        span.button-left{
-          left: 3px;
-          float: left;
-          clear: left;
-          i{
-            margin-left: 2px;
-          }
-        }
-        span.button-right{
-          right: 3px;
-          float: right;
-          clear: right;
-          i{
-            margin-right: 2px;
-          }
-        }
-      }
     }
   }
-  div.bbn-dashboard-sortable div.bbns-widget div.k-header h5{
-    cursor: move;
+  .bbn-dashboard-sortable {
+    div.bbn-widget .bbn-header .ui-sortable-handle{
+      cursor: move;
+    }
+    .bbn-widget-placeholder{
+      min-height: 200px;
+    }
   }
 }

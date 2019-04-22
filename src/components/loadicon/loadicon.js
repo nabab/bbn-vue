@@ -1,7 +1,7 @@
 /**
  * Created by BBN on 07/01/2017.
  */
-;(function($, bbn, kendo){
+;(function($, bbn){
   "use strict";
 
   /**
@@ -17,4 +17,4 @@
     },
   });
 
-})(jQuery, bbn, kendo);
+})(jQuery, bbn);

@@ -1,5 +1,4 @@
-<div :class="[{'bbn-full-screen': true}, componentClass]"
->
+<div :class="currentClass" :style="currentStyle">
   <div class="bbn-scroll-container"
        :style="{
          right: scrollPos,
@@ -12,7 +11,8 @@
   >
     <div class="bbn-scroll-content"
          ref="scrollContent"
-         @mousemove="$emit('mousemove', $event)"
+         @mousemove="mousemove"
+         @ready.stop="waitReady"
          :style="{
            width: (axis === 'both') || (axis === 'x') ? 'auto' : '100%',
            height: (axis === 'both') || (axis === 'y') ? 'auto' : '100%'
@@ -29,6 +29,8 @@
                  :scrollAlso="scrollAlso"
                  :initial="currentX"
                  @scroll.passive="scrollHorizontal"
+                 @reachLeft="$emit($event)"
+                 @reachRight="$emit($event)"
   >
   </bbn-scrollbar>
   <bbn-scrollbar v-if="(axis === 'both') || (axis === 'y')"
@@ -39,6 +41,8 @@
                  :scrollAlso="scrollAlso"
                  :initial="currentY"
                  @scroll.passive="scrollVertical"
+                 @reachTop="$emit($event)"
+                 @reachBottom="$emit($event)"
   >
   </bbn-scrollbar>
 </div>

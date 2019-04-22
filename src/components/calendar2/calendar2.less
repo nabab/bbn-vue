@@ -1,0 +1,36 @@
+.bbn-calendar2 {
+  min-width: 210px !important; 
+  .bbn-calendar-header {
+    margin-bottom: 0;
+    min-height: unset;
+    .bbn-calendar-header-title {
+      font-size: 1em;
+    }
+  }
+  .bbn-calendar-container {
+    display: grid;
+    .bbn-calendar-labels {
+      text-align: center;
+      margin-bottom: .5em;
+      font-size: 1em;
+    }
+    .bbn-calendar-item-box {
+      position: relative;
+      border-radius: 0;
+      .bbn-calendar-item {
+        font-size: 1em;
+        opacity: .5;
+      }
+      .bbn-calendar-item-icon {
+        position: absolute;
+        top: .2em;
+        left: .2em;
+        font-size: 1em;
+        opacity: .5;
+      }
+      &.bbn-calendar-colored-item:not(:hover) {
+        background-color: lightcoral !important;
+      }
+    }
+  }
+}

@@ -4,6 +4,7 @@
          :required="required"
          @keyup="emitInput(widget.raw())"
          @blur="blur"
+         @change="change"
   >
   <input :value="value"
          ref="real_masked"

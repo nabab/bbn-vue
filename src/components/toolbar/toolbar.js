@@ -20,7 +20,7 @@
       }
     },
     data: function(){
-      return $.extend({
+      return bbn.fn.extend({
         widgetName: "kendoToolBar"
       }, bbn.vue.treatData(this));
     },

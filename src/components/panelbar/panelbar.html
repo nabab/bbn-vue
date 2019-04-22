@@ -1,10 +1,10 @@
 <div :class="componentClass" style="height:100%">
   <div v-if="source.length" class="k-block item-container" v-for="(i, idx) in source" :key="idx">
-    <div :class="['k-header', 'panel', 'bbn-p', {'k-state-selected': includes(selected, idx)}]" 
+    <div :class="['bbn-header', 'panel', 'bbn-p', {'k-state-selected': includes(selected, idx)}]" 
           :style="includes(selected, idx) ? {} : {'border-bottom': 'none'}"
     >
       <div class="arrow-container inline" @click="select(idx)">
-        <i :class="['fas fa-angle-right', 'header-icon', {'rotate': includes(selected, idx)}]"></i>
+        <i :class="['nf nf-fa-angle_right', 'header-icon', {'rotate': includes(selected, idx)}]"></i>
       </div>
       <div class="component" v-if="i.headerComponent">
         <component :is="i.headerComponent" v-bind="i.headerOptions"></component>

@@ -112,25 +112,25 @@
     computed: {
       ivalue(){
         return kendo.toString(
-          kendo.parseDate(this.value, $.isFunction(this.valueFormat) ? this.valueFormat(this.value) : this.valueFormat),
+          kendo.parseDate(this.value,bbn.fn.isFunction(this.valueFormat) ? this.valueFormat(this.value) : this.valueFormat),
           this.format
         );
       },
       fixedValue(){
         if ( this.value ){
-          return kendo.parseDate(this.value, $.isFunction(this.valueFormat) ? this.valueFormat(this.value) : this.valueFormat);
+          return kendo.parseDate(this.value,bbn.fn.isFunction(this.valueFormat) ? this.valueFormat(this.value) : this.valueFormat);
         }
         return false;
       }
     },
     data(){
-      return $.extend({
+      return bbn.fn.extend({
         widgetName: "kendoMaskedDateTimePicker"
       }, bbn.vue.treatData(this));
     },
     mounted(){
       const vm = this;
-      this.widget = $(this.$refs.element).kendoMaskedDateTimePicker($.extend({}, this.getOptions(), {
+      this.widget = $(this.$refs.element).kendoMaskedDateTimePicker(bbn.fn.extend({}, this.getOptions(), {
         format: this.format,
         parseFormats: this.parseFormats,
         mask: this.mask,
@@ -143,7 +143,7 @@
           change: () => {
             vm.emitInput(kendo.toString(
               vm.widget.value(),
-              $.isFunction(vm.valueFormat) ? vm.valueFormat(vm.widget.value()) : vm.valueFormat
+             bbn.fn.isFunction(vm.valueFormat) ? vm.valueFormat(vm.widget.value()) : vm.valueFormat
             ));
             return true;
           }

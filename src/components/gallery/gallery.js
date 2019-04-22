@@ -2,7 +2,7 @@
   "use strict";
 
   Vue.component('bbn-gallery', {
-    mixins: [bbn.vue.basicComponent],
+    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent],
     props: {
       source: {
         type: [Array, String],
@@ -175,11 +175,14 @@
             this.setSelecting(false);
           });
         }
+      },
+      onResize(){
+        this.width = this.$refs.gallery.offsetWidth;
       }
     },
     mounted(){
       this.$nextTick(() => {
-        this.width = this.$refs.gallery.offsetWidth;
+        this.onResize();
         if ( this.isAjax ){
           this.updateData();
         }
@@ -189,7 +192,7 @@
       galleryZoom: {
         name: 'gallery-zoom',
         template: `
-<div class="bbn-full-screen bbn-gallery-zoom">
+<div class="bbn-overlay bbn-gallery-zoom">
   <bbn-slideshow :source="source.item.col.gallery.currentData"
                  :show-info="source.item.col.gallery.info"
                  :arrows="true"
@@ -265,7 +268,7 @@
         v-text="source.overlay"
   ></span>
   <i v-if="col.gallery.zoomable && loaded && !col.gallery.isSelecting" 
-    class="bbn-gallery-zoverlay fas fa-search"
+    class="bbn-gallery-zoverlay nf nf-fa-search"
   ></i>
 </a>
             `,

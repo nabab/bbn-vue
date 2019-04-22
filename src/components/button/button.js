@@ -1,7 +1,7 @@
 /**
- * Created by BBN on 10/02/2017.
+ * @file A customizable button component
  */
-(function($, bbn, kendo){
+(function(bbn){
   "use strict";
 
   Vue.component('bbn-button', {
@@ -28,24 +28,24 @@
       text: {
         type: String,
       },
-       /**
-       * Set to false for no text on the button.
-       * 	
-       * @prop {Boolean} [false] notext
-       */
+      /**
+      * Set to false for no text on the button.
+      * 	
+      * @prop {Boolean} [false] notext
+      */
       notext: {
         type: Boolean,
         default: false
       },
-     /**
-      * The button links to a designated url.
-      *
-      *  @prop {String} url 
-      */
+      /**
+       * The button links to a designated url.
+       * 
+       * @prop {String} url
+       */
       url: {
         type: String
       },
-     /**
+      /**
       * The icon shown on the button. 
       * 
       *  @prop {String} icon 
@@ -53,14 +53,24 @@
       icon: {
         type: String,
       },
+      /**
+       * A second icon to display on the button above the main icon.
+       * 
+       * @prop {String} secondary
+       */
       secondary: {
         type: String
       },
+      /**
+       * If defined the prop secondary, defines the color of the second icon of the button.
+       * 
+       * @prop {String} secondaryColor
+       */
       secondaryColor: {
         type: String,
         default: null
       },
-     /** 
+      /** 
       * Specifies the type of button.
       *
       * @prop {String} type 
@@ -97,6 +107,16 @@
       }
     },
     computed: {
+      titleString(){
+        let st = '';
+        if ( this.notext && this.text ){
+          st += this.text;
+        }
+        if ( this.title ){
+          st += (st === '' ? '' : ' - ') + this.title;
+        }
+        return st;
+      },
       /**
        * Return if the button is disabled.
        *
@@ -126,4 +146,4 @@
     }
   });
 
-})(jQuery, bbn, kendo);
+})(bbn);

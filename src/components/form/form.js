@@ -3,7 +3,7 @@
  *
  * Created by BBN on 10/02/2017.
  */
-(function($, bbn, kendo){
+(function($, bbn){
   "use strict";
 
   Vue.component('bbn-form', {
@@ -160,7 +160,10 @@
        */
       // This is the proper data used in the form
       source: {
-        type: Object
+        type: Object,
+        default(){
+          return {}
+        }
       },
       /**
        * The additional data to be sent by the form.
@@ -215,14 +218,14 @@
     data(){
       let currentSchema = [];
       this.schema.map((a) => {
-        currentSchema.push($.extend({}, a, {id: a.id ? a.id : bbn.fn.randomString(20, 30)}))
+        currentSchema.push(bbn.fn.extend({}, a, {id: a.id ? a.id : bbn.fn.randomString(20, 30)}))
       });
       return {
         modified: false,
         popup: false,
         popupIndex: false,
         tab: false,
-        originalData: {},
+        originalData: bbn.fn.clone(this.source),    
         isPosted: false,
         isLoading: false,
         currentSchema: currentSchema
@@ -237,21 +240,21 @@
        */
       realButtons(){
         let r = [];
-        $.each(this.buttons.slice(), (i, a) => {
+        bbn.fn.each(this.buttons.slice(), (a) => {
           let t = typeof(a);
           if ( t === 'string' ){
             switch ( a ){
               case 'cancel':
                 r.push({
                   text: bbn._('Cancel'),
-                  icon: 'fa fa-times-circle',
+                  icon: 'nf nf-fa-times_circle',
                   command: 'cancel'
                 });
                 break;
               case 'reset':
                 r.push({
                   text: bbn._('Reset'),
-                  icon: 'fa fa-refresh',
+                  icon: 'nf nf-fa-refresh',
                   command: 'reset',
                   checkDisabled: true
                 });
@@ -259,7 +262,7 @@
               case 'submit':
                 r.push({
                   text: bbn._('Submit'),
-                  icon: 'fa fa-check-circle',
+                  icon: 'nf nf-fa-check_circle',
                   command: 'submit',
                   checkDisabled: true
                 });
@@ -291,14 +294,39 @@
        * @return {String}
        */
       currentClass(){
-        let st = 'k-edit-form-container ' + this.componentClass.join(' ');
-        if ( this.fixedFooter && this.scrollable ){
-          st += ' bbn-flex-height';
-        }
-        if ( this.fullScreen ){
-          st += ' bbn-full-screen';
+        let st = this.componentClass.join(' ');
+        if ( this.isMounted ){
+          if ( this.fixedFooter && this.scrollable ){
+            st += ' bbn-flex-height';
+          }
+          if ( this.fullScreen ){
+            st += ' bbn-overlay';
+          }
         }
         return st;
+      },
+      currentStyle(){
+        if ( !this.isMounted ){
+          return {};
+        }
+        let floater = this.closest('bbn-floater');
+        let ct = this.getRef('container');
+        if ( floater && ct ){
+          let width = this.scrollable && ct.isMounted ? ct.getRef('scrollContent').clientWidth : ct.clientWidth;
+          let height = this.scrollable && ct.isMounted ? ct.getRef('scrollContent').clientHeight : ct.clientHeight;
+          let ctWidth = floater.getContainerWidth();
+          let ctHeight = floater.getContainerHeight() - (floater.getRef('header').clientHeight || 0);
+          if ( width > ctWidth ){
+            width = ctWidth;
+          }
+          if ( height > ctHeight ){
+            height = ctHeight;
+          }
+          return {
+            width: width + 'px',
+            height: height + 'px'
+          };
+        }
       }
     },
     methods: {
@@ -314,23 +342,23 @@
         this.isPosted = true;
         this.isLoading = true;
         if ( this.action ){
-          bbn.fn[this.blank || this.self ? 'post_out' : 'post'](this.action, $.extend(true, {}, this.data, this.source), (d) => {
-            this.originalData = $.extend(true, {}, this.source);
+          bbn.fn[this.blank || this.self ? 'post_out' : 'post'](this.action, bbn.fn.extend(true, {}, this.data || {}, this.source || {}), (d) => {
+            this.originalData = bbn.fn.extend(true, {}, this.source || {});
             if ( this.successMessage && p ){
               p.alert(this.successMessage);
               bbn.fn.info(this.successMessage, p);
             }
-            let e = $.Event('success');
+            let e = new Event('success', {cancelable: true});
             this.$emit('success', d, e);
-            if ( this.sendModel ){
-              this.originalData = $.extend(true, {}, this.source);
+            if ( this.sendModel && this.source ){
+              this.originalData = bbn.fn.extend(true, {}, this.source || {});
             }
             this.modified = false;
             if ( this.tab && this.tab.tabNav ){
               this.tab.tabNav.tabs[this.tab.tabNav.selected].isUnsaved = this.modified;
             }
             this.isLoading = false;
-            if ( !e.isDefaultPrevented() ){
+            if ( !e.defaultPrevented ){
               let p = this.getPopup();
               if ( p ){
                 p.close();
@@ -342,18 +370,18 @@
           } : (this.self ? '_self' : '_blank'));
         }
         else{
-          this.originalData = $.extend(true, {}, this.source);
-          let e = $.Event('success');
+          this.originalData = bbn.fn.clone(this.source);
+          let e = new Event('success', {cancelable: true});
           this.$emit('success', this.source, e);
           if ( this.sendModel ){
-            this.originalData = $.extend(true, {}, this.source);
+            this.originalData = bbn.fn.clone(this.source);
           }
           this.modified = false;
           if ( this.tab && this.tab.tabNav ){
             this.tab.tabNav.tabs[this.tab.tabNav.selected].isUnsaved = this.modified;
           }
           this.isLoading = false;
-          if ( !e.isDefaultPrevented() ){
+          if ( !e.defaultPrevented ){
             let p = this.getPopup();
             if ( p ){
               p.close();
@@ -395,10 +423,10 @@
        * @return {Object}
        */
       getData(){
-        return this.sendModel ? this.source : bbn.fn.formdata(this.$el);
+        return this.source;//this.sendModel ? this.source : bbn.fn.formdata(this.$el);
       },
       isModified(){
-        return this.prefilled || !bbn.fn.isSame($.extend(true, {}, this.getData(this.$el) || {}), $.extend(true, {}, this.originalData));
+        return this.prefilled || !bbn.fn.isSame(bbn.fn.extend(true, {}, this.getData(this.$el) || {}), bbn.fn.extend(true, {}, this.originalData));
       },
       closePopup(window, ev){
         if ( this.window && this.$el ){
@@ -417,9 +445,9 @@
         }
       },
       cancel(){
-        let ev = $.Event('cancel');
+        let ev = new Event('cancel', {cancelable: true});
         this.$emit('cancel', ev, this);
-        if ( !ev.isDefaultPrevented() ){
+        if ( !ev.defaultPrevented ){
           this.reset();
           if ( this.window ){
             this.window.close();
@@ -431,11 +459,11 @@
             elems = bbn.vue.findAll(this, '.bbn-input-component'),
             cf = false;
         if ( Array.isArray(elems) ){
-          $.each(elems, (i, a) => {
-            if ( $.isFunction(a.isValid) && !a.isValid() ){
+          bbn.fn.each(elems, (a) => {
+            if (bbn.fn.isFunction(a.isValid) && !a.isValid() ){
               ok = false;
             }
-            if ( $.isFunction(a.validation) && !a.isValid() ){
+            if (bbn.fn.isFunction(a.validation) && !a.isValid() ){
               ok = false;
             }
             if ( !ok ){
@@ -450,14 +478,14 @@
           return false;
         }
         if ( !force ){
-          let ev = $.Event('submit');
+          let ev = new Event('submit', {cancelable: true});
           this.$emit('submit', ev, this);
-          if ( ev.isDefaultPrevented() ){
+          if ( ev.defaultPrevented ){
             return false;
           }
         }
         if ( this.confirmMessage ){
-          if ( $.isFunction(this.confirmMessage) ){
+          if (bbn.fn.isFunction(this.confirmMessage) ){
             cf = this.confirmMessage(this);
           }
           else{
@@ -479,21 +507,21 @@
       },
       reset(){
         this.isPosted = false;
-        $.each(this.originalData, (name, val) => {
+        bbn.fn.iterate(this.originalData, (val, name) => {
           this.$set(this.source, name, val);
         });
         this.$forceUpdate();
         return true;
       },
       reinit(){
-        this.originalData = $.extend(true, {}, this.getData());
+        this.originalData = JSON.parse(JSON.stringify(this.source));
         this.modified = this.isModified();
       },
       init(){
         if ( this.$options.propsData.script ){
           $(this.$el).data("script", this.$options.propsData.script);
         }
-        this.originalData = $.extend(true, {}, this.getData());
+        //this.originalData = bbn.fn.extend(true, {}, this.getData());
         this.$nextTick(() => {
           if ( !this.window ){
             this.window = bbn.vue.closest(this, "bbn-window");
@@ -521,16 +549,16 @@
       schema(){
         let currentSchema = [];
         this.schema.map((a) => {
-          currentSchema.push($.extend({}, a, {id: a.id ? a.id : bbn.fn.randomString(20, 30)}))
+          currentSchema.push(bbn.fn.extend({}, a, {id: a.id ? a.id : bbn.fn.randomString(20, 30)}))
         });
         this.currentSchema = currentSchema;
       },
       source: {
         deep: true,
         handler(newVal){
-          this.$emit('input', newVal);
-          bbn.fn.log("MODIFIED");
+          bbn.fn.log("BBN-FORM MODIFIED");
           this.modified = this.isModified();
+          //this.$emit('input', newVal);
           if ( this.tab && this.tab.tabNav ){
             this.tab.tabNav.tabs[this.tab.tabNav.selected].isUnsaved = this.modified;
           }
@@ -539,4 +567,4 @@
     }
   });
 
-})(jQuery, bbn, kendo);
+})(jQuery, bbn);

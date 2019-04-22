@@ -60,7 +60,7 @@
             uploading: bbn._('uploading'),
             uploadButton: bbn._('Upload a file'),
             clickHere: bbn._('Or click here to'),
-            pasteContainer: '<i class="fa fa-paste bbn-xl"></i> Ctrl+V',
+            pasteContainer: '<i class="nf nf-fa-paste bbn-xl"></i> Ctrl+V',
             dropHere: bbn._('Drop files here'),
             processingDropped: bbn._('Processing dropped files') + '...',
             retry: bbn._('Retry'),
@@ -79,7 +79,7 @@
       },
       icon: {
         type: String,
-        default: 'fas fa-upload'
+        default: 'nf nf-fa-upload'
       }
     },
     data(){

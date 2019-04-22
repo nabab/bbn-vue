@@ -1,7 +1,7 @@
 /**
  * Created by BBN on 07/01/2017.
  */
-(function($, bbn, kendo){
+(function($, bbn){
   "use strict";
 
   /**
@@ -124,7 +124,7 @@
         if ( cfg.timeout ){
           uncertain.delay = cfg.timeout;
         }
-        $.notifyBar($.extend({
+        $.notifyBar(bbn.fn.extend({
           html: '<div class="bbn-notification">' + vm._getHTML(cfg) + '</div>',
           cssClass: cfg.type,
           closeOnClick: false,
@@ -241,4 +241,4 @@
     },
 
   });
-})(window.jQuery, window.bbn, window.kendo);
+})(jQuery, bbn);

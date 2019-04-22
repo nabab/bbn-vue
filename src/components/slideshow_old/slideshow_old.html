@@ -1,0 +1,204 @@
+<div class="bbn-overlay">
+  <div v-if="ready"
+       :class="[
+       'bbn-100',
+       componentClass,
+       {'bbn-lpadded' : !fullSlide}
+  ]">
+    <div class="bbn-100 bbn-flex-width">
+      <!--arrow left-->
+      <div  v-if="arrows"
+            class="bbn-h-100 bbn-vmiddle bbn-slideshow-arrow-left"
+            style="padding-left: 2px;min-width: 30px; z-index:1000"
+            @mouseover="arrowsPreview('prev', true)"
+            @mouseleave="arrowsPreview('prev', false)"
+      >
+        <i  v-show="showArrowLeft"
+            :class="[arrowClass.left, 'iconImg', 'bbn-xxxl']"
+            @click="prev"
+            :style="{
+            visibility: (currentIndex === 0 && !loop)? 'hidden' : 'visible',
+            }"
+        ></i>
+      </div>
+
+      <div v-if="summary && items.length"
+           class="first bbn-flex-fill bbn-slide"
+           :style="{
+             display: currentIndex === 0 ? 'block' : 'none'
+           }">
+        <h2 v-text="_('Summary')"></h2>
+        <ol class="bbn-l bbn-lg">
+          <li v-for="(it, i) in items">
+            <a href="javascript:;" @click="currentIndex = i+1" v-text="it.title ? it.title : _('Untitled')"></a>
+          </li>
+        </ol>
+      </div>
+      <div class="bbn-l bbn-slideshow-count"
+           style="position: absolute; top: 0; left:0 z-index:10"
+           v-if="showCount"
+      >
+        <span class="bbn-xl" v-text="(currentIndex+1) + '/' + items.length"></span>
+      </div>
+
+      <div v-for="(it, i) in items"
+           :class="['bbn-flex-fill','slide', 'sliden' + (summary ? i + 1 : i).toString(), !summary && (i === 0) ? 'first' : '']"
+           :id="name + (summary ? i : i + 1).toString()"
+           :style="{display: currentIndex === (summary ? i + 1 : i) ? 'block' : 'none'}"
+      >
+        <div v-if="it.type === 'text'"
+            :ref="'slide' + i.toString()"
+            :class="['content', it.animation || '', it.cls || '', 'bbn-middle', 'bbn-m' ]">
+          <component v-if="it.component"
+                      :is="it.component"
+                      :content="it.content || ''"
+                      :data="it.data || {}"
+          ></component>
+          <component v-else-if="component"
+                      :is="component"
+                      :content="it.content || ''"
+                      :data="it.data || {}"
+          ></component>
+          <div v-else-if="it.content"
+                :ref="'slide' + i.toString()"
+                :class="[it.animation || '' ]"
+          >
+            <bbn-scroll v-if="scroll">
+              <div v-html="it.content"></div>
+            </bbn-scroll>
+            <div v-else v-html="it.content"></div>
+          </div>
+        </div>
+        <!--only image-->
+        <div v-else-if="it.type === 'img'"
+              :ref="'slide' + i.toString()"
+              :class="[it.animation || '', 'bbn-100', 'bbn-middle']"
+        >
+          <img :src="it.content"
+                :ref="'slide-img'+ i.toString()"
+                @load="aspectRatio(i)"
+                :class="['img' + i.toString()]"
+                :width="it.imageWidth || 'auto'"
+                :height="it.imageHeight || 'auto'"
+                :style="{
+                  marginLeft: it.imageLeftMargin || 0,
+                  marginTop: it.imageTopMargin || 0,
+                  visibility: it.showImg ? 'visible' : 'hidden' ,
+                }">
+        </div>
+        <bbn-checkbox v-if="checkbox && it.checkable"
+                      v-model="valuesCB[i]"
+                      :value="true"
+                      :novalue="false"
+                      :strict="true"
+                      :label="(typeof checkbox === 'string') ? checkbox : defaultTextCB"
+                      class="showagain"
+        ></bbn-checkbox>
+      </div>
+      <!--arrow next-->
+      <div v-if="arrows"
+           class="bbn-h-100 bbn-vmiddle bbn-slideshow-arrow-right"
+           style="padding-right: 2px; min-width: 30px; z-index:1000"
+           @mouseover="arrowsPreview('next', true)"
+           @mouseleave="arrowsPreview('next', false)"
+      >
+        <i v-show="showArrowRight"
+           :class="[arrowClass.right, 'iconImg', 'bbn-xxxl']"
+           @click="next"
+           :style="{
+              visibility: (currentIndex >= items.length - 1) && !loop ? 'hidden' : 'visible',
+            }"
+        ></i>
+      </div>
+    </div>
+    <div>
+      <!-- for info file-->
+      <div v-if="showInfo && items[currentIndex].info && items[currentIndex].info.length"
+           :style="{
+             position: 'absolute',
+             'z-index': 10,
+             bottom: preview ? '72px' : '12px'
+           }"
+           class="bbn-w-100 bbn-c bbn-slideshow-info"
+           v-html="items[currentIndex].info"></div>
+      <!--for pause and play -->
+      <div v-if="ctrl"
+           class="bbn-100 bbn-middle bbn-c"
+           style="position: absolute; top: 0; padding-bottom: 5vw;"
+           @mouseover="ctrlPreview(true)"
+           @mouseleave="ctrlPreview(false)"
+      >
+        <div v-if ="scrollInterval !== false"
+             style="min-width: 10px"
+             class="iconsCtrl bbn-w-20"
+        >
+          <i v-show="showCtrl"
+             class="nf nf-fa-pause iconImg  bbn-xxxl"
+             @click="stopAutoPlay"
+             style="opacity: 0.6"
+          ></i>
+        </div>
+        <div v-else
+             style="min-width: 10px"
+             class="bbn-w-20"
+        >
+          <i v-show="showCtrl"
+             class="nf nf-fa-play iconImg bbn-xxxl"
+             @click="startAutoPlay"
+             style="opacity: 0.6"
+          ></i>
+        </div>
+      </div>
+      <!--old arrows-->
+      <div v-if="items.length && !arrows && (preview === false)" class="navigation">
+        <div class="bbn-100">
+          <a href="javascript:;"
+             v-if="summary"
+             :title="_('Summary')"
+             @click="currentIndex = 0"
+             :style="{
+                visibility: currentIndex === 0 ? 'hidden' : 'visible'
+               }"
+             class="summary">
+          </a>
+          <a href="javascript:;"
+             @click="prev"
+             :title="_('Previous')"
+             :style="{
+                visibility: currentIndex === 0 ? 'hidden' : 'visible'
+               }"
+             class="prev">
+          </a>
+          <a href="javascript:;"
+             @click="next"
+             :title="_('Next')"
+             :style="{
+                visibility: currentIndex >= (summary ? items.length : items.length - 1) ? 'hidden' : 'visible'
+               }"
+             class="next">
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!--for miniature-->
+  <div class="bbn-w-100 bbn-c bbns-gallery-miniature"
+    style="position: absolute; bottom: 0; min-height: 80px"
+    v-if=" preview === true || preview === 'image' || preview === 'circle'"
+    @mouseover="miniaturePreview(true)"
+    @mouseleave="miniaturePreview(false)"
+  >
+    <bbns-gallery-miniature
+      v-show="showMiniature"
+      :items="items"
+      :type="preview"
+      :dimension="dimensionPreview"
+    ></bbns-gallery-miniature>
+  </div>
+  <div class="bbn-hidden" ref="slot">
+    <slot></slot>
+  </div>
+</div>

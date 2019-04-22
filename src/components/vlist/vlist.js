@@ -58,7 +58,7 @@
       let items = [],
           hasIcons = false;
       if ( this.source ){
-        items = $.isFunction(this.source) ? this.source() : this.source.slice();
+        items =bbn.fn.isFunction(this.source) ? this.source() : this.source.slice();
         if ( this.mapper ){
           $.map(items, (a) => {
             return this.mapper(a);
@@ -90,31 +90,21 @@
               tH = bbn.env.height;
           if ( right && ((right + this.currentWidth) >= tW) ){
             left = '';
-            right = (bbn.env.width - this.currentWidth) + 'px';
+            right = bbn.env.width - this.currentWidth;
           }
           else if ( left && ((left + this.currentWidth) >= tW) ){
             right = '';
-            left = (tW < this.currentWidth ? 0 : tW - this.currentWidth) + 'px';
+            left = tW < this.currentWidth ? 0 : tW - this.currentWidth;
           }
           if ( bottom && ((bottom + this.currentHeight) >= tH) ){
             top = '';
-            bottom = (tH - this.currentHeight) + 'px';
+            bottom = tH - this.currentHeight;
           }
           else if ( top && ((top + this.currentHeight) >= tH) ){
             bottom = '';
-            top = (tH - this.currentHeight) + 'px';
+            top = tH - this.currentHeight;
           }
         }
-        /*
-        bbn.fn.warning("GET STYLES");
-        bbn.fn.log({
-          left: left,
-          right: right,
-          top: top,
-          bottom: bottom,
-          maxHeight: this.maxHeight
-        });
-        */
         return {
           left: left ? left + 'px' : null,
           right: right ? right + 'px' : null,
@@ -230,7 +220,7 @@
             if ( typeof(this.items[idx].command) === 'string' ){
               bbn.fn.log("CLICK IS STRING", this);
             }
-            else if ( $.isFunction(this.items[idx].command) ){
+            else if (bbn.fn.isFunction(this.items[idx].command) ){
               bbn.fn.log("CLICK IS FUNCTION", this);
               this.items[idx].command(idx, JSON.parse(JSON.stringify(this.items[idx])));
             }

@@ -82,10 +82,10 @@
             menu = this;
         return [{
           text: bbn._('Create a shortcut'),
-          icon: 'fas fa-external-link-alt',
+          icon: 'nf nf-fa-external_link_alt',
           command(){
             if ( menu.shortcuts ){
-              let sc = $.isFunction(menu.shortcuts) ? menu.shortcuts() : menu.shortcuts;
+              let sc =bbn.fn.isFunction(menu.shortcuts) ? menu.shortcuts() : menu.shortcuts;
               if ( sc ){
                 sc.add(obj);
               }
@@ -97,7 +97,7 @@
       _position(){
         $(this.$el)
           .animate(
-            $.extend({
+            bbn.fn.extend({
               top: this.posTop + 'px',
               bottom: this.posBottom + 'px'
             }, this.posObject()),

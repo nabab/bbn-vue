@@ -1,6 +1,6 @@
 <div :class="[componentClass, 'bbn-w-100']">
-  <div class="bbn-upload k-widget" ref="upload"></div>
-  <div class="k-widget paste-container"
+  <div class="bbn-upload bbn-widget" ref="upload"></div>
+  <div class="bbn-widget paste-container"
        ref="pasteContainer"
 			 v-show="isEnabled"
   >
@@ -25,7 +25,7 @@
       >
         <span class="qq-upload-drop-area-text-selector"></span>
       </div>
-      <div :class="['qq-upload-button-selector', 'k-button', {'k-state-disabled': !isEnabled}]">
+      <div :class="['qq-upload-button-selector', 'bbn-button', {'k-state-disabled': !isEnabled}]">
         <i :class="icon" style="margin-right: 0.3rem"></i>
         <span v-text="text.uploadButton"></span>
       </div>
@@ -83,7 +83,7 @@
         </li>
       </ul>
 
-      <dialog class="qq-alert-dialog-selector k-widget">
+      <dialog class="qq-alert-dialog-selector bbn-widget">
         <div class="qq-dialog-message-selector"></div>
         <div class="qq-dialog-buttons">
           <bbn-button type="button"
@@ -93,7 +93,7 @@
         </div>
       </dialog>
 
-      <dialog class="qq-confirm-dialog-selector k-widget">
+      <dialog class="qq-confirm-dialog-selector bbn-widget">
         <div class="qq-dialog-message-selector"></div>
         <div class="qq-dialog-buttons">
           <bbn-button type="button"
@@ -101,13 +101,13 @@
                       v-text="text.no"
           ></bbn-button>
           <bbn-button type="button"
-                      class="qq-ok-button-selector k-primary"
+                      class="qq-obbn-button-selector k-primary"
                       v-text="text.yes"
           ></bbn-button>
         </div>
       </dialog>
 
-      <dialog class="qq-prompt-dialog-selector k-widget">
+      <dialog class="qq-prompt-dialog-selector bbn-widget">
         <div class="qq-dialog-message-selector"></div>
         <bbn-input type="text"></bbn-input>
         <div class="qq-dialog-buttons">
@@ -116,7 +116,7 @@
                   v-text="text.cancel"
           ></bbn-button>
           <bbn-button type="button"
-                  class="qq-ok-button-selector k-primary"
+                  class="qq-obbn-button-selector k-primary"
                   v-text="text.ok"
           ></bbn-button>
         </div>

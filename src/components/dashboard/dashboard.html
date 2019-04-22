@@ -1,4 +1,4 @@
-<div :class="['bbn-full-screen', componentClass]">
+<div :class="['bbn-overlay' , componentClass]">
   <component :is="scrollable ? 'bbn-scroll' : 'div'"
              ref="scroll"
              v-bind="scrollable ? {axis: 'y'} : {}"
@@ -16,125 +16,17 @@
                       :class="'bbn-masonry bbn-margin' + (sortable ? ' bbn-dashboard-sortable' : '')"
                       tag="div"
     >
-      <bbns-widget inline-template
-                   ref="widgets"
-                   v-for="(w, index) in widgets"
-                   v-if="!w.hidden"
-                   @loaded="onResize"
-                   v-bind="w"
-                   :options="w.options"
-                   :uid="w.key"
-                   :key="w.key"
-                   :index="index"
-                   :title="w.title ? w.title : (w.text ? w.text : '')"
-      >
-        <div :class="['k-block', 'bbns-widget', componentClass, full ? 'full' : '']">
-          <div class="k-header header">
-            <div class="bbn-full-screen">
-              <h5 :class="{
-                    'ui-sortable-handle': dashboard && dashboard.sortable
-                  }"
-                  v-html="title"
-              ></h5>
-            </div>
-            <span class="button button-left">
-              <i v-if="closable"
-                 :title="_('Close')"
-                 @click="close"
-                 class="fa fa-times"
-              ></i>
-              <bbn-context v-if="hasMenu"
-                           :source="finalMenu"
-              >
-                <i :title="_('Menu')"
-                   class="fas fa-caret-down"
-                > </i>
-              </bbn-context>
-              <i v-for="(b, idx) in realButtonsLeft"
-                 :title="b.text"
-                 @click="actionButton(b.action, uid)"
-                 :class="b.icon"
-              ></i>
-            </span>
-            <span class="button button-right">
-              <i v-for="(b, idx) in realButtonsRight"
-                 :title="b.text"
-                 @click="actionButton(b.action, uid)"
-                 :class="b.icon"
-              ></i>
-            </span>
-          </div>
-          <div class="content">
-            <component v-if="component"
-                       :is="component"
-                       :source="currentSource"
-                       v-bind="options"
-            ></component>
-            <div v-else-if="content"
-                 v-html="content"
-            ></div>
-            <ul v-else-if="currentItems.length">
-              <li v-for="(it, idx) in currentItems"
-                  v-if="limit ? idx < limit : true"
-                  :class="itemClass"
-                  :style="itemStyle"
-                  :key="idx"
-              >
-                <component v-if="itemComponent"
-                           :is="itemComponent"
-                           v-bind="options"
-                           :source="it"
-                ></component>
-                <span v-else
-                      v-html="it"
-                ></span>
-              </li>
-            </ul>
-            <div v-else-if="!isLoading">
-              <slot>
-                <div v-html="noData" class="bbn-w-100 bbn-c bbn-padded"></div>
-              </slot>
-            </div>
-            <div v-if="zoomable && currentItems && currentItems.length"
-                 class="content-buttons zoom bbn-unselectable"
-            >
-              <i class="fa fa-arrows-alt"
-                 @click="zoom"
-              ></i>
-            </div>
-            <div v-if="currentPage"
-                 class="nav bbn-unselectable"
-            >
-              <div class="content-buttons nav-first">
-                <i class="fa fa-angle-double-left"
-                   @click="nav('first')"
-                   :style="{visibility: currentStart > 0 ? 'visible' : 'hidden'}"
-                ></i>
-              </div>
-              <div class="content-buttons nav-prev">
-                <i class="fa fa-angle-left"
-                   @click="nav('prev')"
-                   :style="{visibility: currentStart > 0 ? 'visible' : 'hidden'}"
-                ></i>
-              </div>
-              <span v-text="currentPage + '/' + totalPages"></span>
-              <div class="content-buttons nav-next">
-                <i class="fa fa-angle-right"
-                   @click="nav('next')"
-                   :style="{visibility: currentStart < (currentTotal-limit) ? 'visible' : 'hidden'}"
-                ></i>
-              </div>
-              <div class="content-buttons nav-last">
-                <i class="fa fa-angle-double-right"
-                   @click="nav('last')"
-                   :style="{visibility: currentStart < (currentTotal-limit) ? 'visible' : 'hidden'}"
-                ></i>
-              </div>
-            </div>
-            <bbn-loader v-if="isLoading"></bbn-loader>
-          </div>
-        </div>
-      </bbns-widget>
+      <bbn-widget ref="widgets"
+                  v-for="(w, index) in widgets"
+                  v-if="!w.hidden"
+                  @loaded="onResize"
+                  v-bind="w"
+                  :options="w.options"
+                  :uid="w.key"
+                  :key="w.key"
+                  :index="index"
+                  :title="w.title ? w.title : (w.text ? w.text : '')"
+      ></bbn-widget>
     </transition-group>
   </component>
 </div>
