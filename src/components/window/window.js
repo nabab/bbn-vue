@@ -32,6 +32,14 @@
         type: Boolean,
         default: true
       },
+      draggable: {
+        type: Boolean,
+        default: false
+      },
+      resizable: {
+        type: Boolean,
+        default: true
+      },
       maximized: {
         type: Boolean,
         default: false
@@ -72,14 +80,6 @@
       },
       content: {
         type: String
-      },
-      draggable: {
-        type: Boolean,
-        default: false
-      },
-      resizable: {
-        type: Boolean,
-        default: true
       }
     },
     data(){

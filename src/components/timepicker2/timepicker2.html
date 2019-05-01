@@ -1,0 +1,47 @@
+<span :class="[componentClass, 'bbn-textbox']">
+  <bbn-masked :value="ivalue"
+              ref="element"
+              :disabled="disabled"
+              :readonly="readonly"
+              :required="required"
+              @click="click($event)"
+              @focus="focus($event)"
+              @blur="blur($event)"
+              @change="change($event)"
+              @keydown="keydown($event)"
+              @keyup="keyup($event)"
+              @mouseenter="over($event)"
+              @mouseleave="out($event)"      
+              :mask="mask"
+  ></bbn-masked>
+  <bbn-button icon="nf nf-fa-clock_o"
+              @click="isOpened = !isOpened"
+              :disabled="disabled || readonly"
+  ></bbn-button>
+  <bbn-floater v-if="isOpened && !disabled && !readonly"
+               :element="$el"
+               ref="floater"
+               @close="isOpened = false"
+               :min-width="showSecond ? 165 : 110"
+  >
+    <time-splitter inline-template 
+                   ref="timeSplitter"
+    >
+    <div class="bbn-c">
+      <bbn-dropdown :source="hours"
+                    v-model="hour"
+                    style="width: 50px"
+      ></bbn-dropdown>
+      <bbn-dropdown :source="minutes"
+                    v-model="minute"
+                    style="width: 50px"
+      ></bbn-dropdown>
+      <bbn-dropdown :source="minutes"
+                    v-model="second"
+                    style="width: 50px"
+                    v-if="comp.showSecond"
+      ></bbn-dropdown>    
+    </div>
+    </time-splitter>
+  </bbn-floater>
+</span>

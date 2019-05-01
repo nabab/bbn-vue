@@ -1,6 +1,13 @@
 /**
  * Created by BBN on 10/02/2017.
  */
+
+ /**
+  * @file bbbn-scrool is a component consisting of both horizontal and vertical bars, allowing the flow of content in both directions.
+  * 
+  * @copyright BBN Solutions
+  */
+
 (function($, bbn){
   "use strict";
   Vue.component('bbn-scroll', {
@@ -48,6 +55,7 @@
     },
     data() {
       return {
+        readyDelay: false,
         show: false,
         currentX: this.x,
         currentY: this.y,
@@ -188,17 +196,24 @@
           y.scrollTo('100%');
         }
       },
+      waitReady(){
+        if ( !this.ready ){
+          if ( this.readyDelay ){
+            clearTimeout(this.readyDelay);
+          }
+          this.readyDelay = setTimeout(() => {
+            this.ready = true;
+            this.readyDelay = false;
+          }, 50);
+        }
+        else{
+          this.onResize();
+          this.$emit("resize");
+        }
+      }
     },
     mounted(){
-      /** @todo WTF?? Obliged to execute the following hack to not have scrollLeft and scrollTop when we open a
-       *  popup a 2nd time.
-       */
-      /*
-      this.$refs.scrollContainer.style.position = 'relative';
-      setTimeout(() => {
-        this.$refs.scrollContainer.style.position = 'absolute';
-      }, 0)
-      */
+
       this.waitReady();
     },
     watch: {

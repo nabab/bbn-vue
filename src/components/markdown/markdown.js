@@ -1,8 +1,7 @@
 /**
- * Created by BBN Solutions.
- * User: Loredana Bruno
- * Date: 20/02/17
- * Time: 16.21
+ * @file bbn-markdown is a component that allows you to easily format the Markdown text.<br>It's an editor that enable you to create textual content, to insert lists, image management and hyperlinks.
+ * @author Loredana Bruno
+ * @copyright BBN Solutions
  */
 
 
@@ -108,7 +107,7 @@
       }
       this.ready = true;
     },
-    
+
   });
 
 })(jQuery, bbn, SimpleMDE);

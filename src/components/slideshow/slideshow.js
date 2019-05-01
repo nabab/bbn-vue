@@ -1,14 +1,28 @@
 /**
- * Created by BBN on 10/dd02/2017.
+ * @file bbn-slideshow is a highly configurable component, it also allows the display of reactive elements such as components, images, or texts; having full control of the transitions.
+ *
+ * @author Vito Fava
+ * @copyright BBN Solutions
  */
+
 (() => {
   "use strict";
   Vue.component('bbn-slideshow', {
     mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent],
     props: {
+      /**
+       * The content for slideshow.
+       *
+       * @prop {Array|Function|String}
+       */
       source: {
         type: [Array, Function, String]
       },
+      /**
+       * String to be mandatory inserted in case of source as string to define the individual slides
+       *
+       * @prop {String}
+       */
       separator: {
         type: String
       },
@@ -19,6 +33,11 @@
         type: [String, Boolean],
         default: false
       },
+      /**
+       * Set to true to have the number of slides and the number of the current one
+       *
+       * @prop {Boolean} [false] disabled
+       */
       summary: {
         type: Boolean,
         default: false
@@ -277,9 +296,12 @@
       },
       prev(){
         let idx = this.currentIndex;
-        if ( idx > 0 ){
+        if ( (idx > 0) && this.items[idx-1] ){
           if ( !this.items[idx-1].animation ){
-            this.getRef('slide' + (idx-1).toString()).style.animationName = 'slide_from_right';
+            let slide = this.getRef('slide' + (idx-1).toString());
+            if ( slide ){
+              slide.style.animationName = 'slide_from_right';
+            }
           }
           this.currentIndex--;
         }
@@ -298,14 +320,17 @@
         if ( this.summary ){
           idx--;
         }
-        if ( idx < (this.items.length -1) ){
+        if ( idx < (this.items.length -1) && this.items[idx+1] ){
 
           if ( !this.items[idx+1].animation ){
-            this.getRef('slide' + (idx+1).toString()).style.animationName = 'slide_from_left';
+            let slide = this.getRef('slide' + (idx-1).toString());
+            if ( slide ){
+              slide.style.animationName = 'slide_from_left';
+            }
           }
           this.currentIndex++;
         }
-        if ( this.loop &&  idx === (this.items.length - 1) ){
+        if ( this.loop && (idx === (this.items.length - 1)) ){
           this.currentIndex = 0;
         }
         if( this.autoPlay ){
@@ -407,7 +432,6 @@
       },
       currentIndex(val){
         this.$emit('changeSlide', val);
-
       }
     },
     components: {

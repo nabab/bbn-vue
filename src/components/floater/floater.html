@@ -45,7 +45,10 @@
     'bbn-flex-fill': ready && title,
     'bbn-h-100': ready && !title
   }">
-    <bbn-scroll :max-width="containerWidth" :max-height="containerHeight">
+    <bbn-scroll :max-width="containerWidth"
+                :max-height="containerHeight"
+                @ready="onResize"
+                @resize="onResize">
       <component v-if="component"
                 :is="component"
                 :source="source"
@@ -84,6 +87,7 @@
             ></i>
           </span>
           <bbn-floater v-if="children && li[children] && (currentSelected === idx) && getRef('li' + idx)"
+                      :level="level + 1"
                       :source="li[children]"
                       :element="getRef('li' + idx)"
                       orientation="horizontal">

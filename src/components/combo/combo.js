@@ -1,4 +1,10 @@
 /**
+ * @file bbn-combo is a component that allows to insert data but also proposes a list of possible choices to be inserted as input.
+ *
+ *
+ */
+
+/**
  * bbn-combo combines autocomplete and dropdown widgets.
  * Created by BBN on 10/02/2017.
  */

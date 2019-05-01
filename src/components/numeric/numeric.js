@@ -1,4 +1,10 @@
 /**
+ * @file bbn-numeric is a component that allows you to enter and modify specific numeric values ​​by typing or using the appropriate  buttons.<br>Only accept numerical values; correctly configuring it is possible to define a range of numbers that can be accepted.<br>You can change the value using the buttons and a defined step.
+ *
+ *
+ */
+
+/**
  * Created by BBN on 10/02/2017.
  */
 (function( bbn){
@@ -14,7 +20,7 @@
     props: {
       /**
        * Specify the number of decimals to be shown in the input, it doesn't affect the value of * the component
-       * 
+       *
        * @prop {String|Number} decimals
        */
       decimals: {
@@ -23,17 +29,17 @@
       },
       /**
        * The unit of measure of the value
-       * 
+       *
        * @prop {String} [''] unit
-       * 
+       *
        */
       unit: {
         type: String,
-        default: ''  
+        default: ''
       },
       /**
        * The max value of the component
-       * 
+       *
        * @prop {Number|String} max
        *
        */
@@ -42,7 +48,7 @@
       },
       /**
        * The min value of the component
-       * 
+       *
        * @prop {Number|String} min
        *
        */
@@ -51,7 +57,7 @@
       },
       /**
        * The step at which the value of the component change
-       * 
+       *
        * @prop {Number} [1] step
        *
        */
@@ -67,7 +73,7 @@
         type: Boolean,
         default: true
       },
-      
+
     },
     data(){
       let decimals = (this.unit === '%') ? parseInt(this.decimals) + 2 : this.decimals;
@@ -107,7 +113,7 @@
       },
       /**
        * The value rendered
-       * @computed formattedValue 
+       * @computed formattedValue
        * @return String
        */
       formattedValue(){
@@ -127,8 +133,8 @@
     methods: {
       /**
        * Called at keydown, defines some shortcuts for the component
-       * 
-       * 
+       *
+       *
        * @method _keydown
        * @param {object} e The event of keydown
        * @fires increment
@@ -167,7 +173,7 @@
       },
       /**
        * Select the value on the input when focused
-       * 
+       *
        * @method _focus
        * @param {object} e The event
        * @fires focus
@@ -201,11 +207,11 @@
       },
       /**
        * Increase the value of the component of 1 step
-       * 
+       *
        * @method increment
        * @fires changeValue
        */
-      
+
       increment(){
         if ( !this.readonly && !this.disabled ){
           this.changeValue((typeof this.value === 'string' ? parseFloat(this.value) : this.value) + this.step);
@@ -216,17 +222,17 @@
        * @method decrement
        * @fires changeValue
        */
-      
+
       decrement(){
         if (!this.readonly && !this.disabled) {
           this.changeValue((typeof this.value === 'string' ? parseFloat(this.value)  : this.value) - this.step);
         }
       },
       /**
-       * Change the value of the component 
-       * 
+       * Change the value of the component
+       *
        * @method changeValue
-       * @param {Number} newVal 
+       * @param {Number} newVal
        */
       changeValue(newVal){
         if ( this.valueTimeOut ) {
@@ -270,7 +276,7 @@
           this.changeValue(v);
         }
       }
-    
+
     },
     watch: {
       tmpValue(v){

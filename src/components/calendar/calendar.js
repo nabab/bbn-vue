@@ -1,5 +1,5 @@
 /**
- * @file bbn-calendar component
+ * @file The bbn-calendar component is a modern calendar, easy to implement, it allows you to select the date in an intuitive way with the possibility of inserting reminders and providing details of the day as events.
  *
  * @author Mirko Argentino
  * @copyright BBN Solutions
@@ -9,7 +9,7 @@
   "use strict";
 
   Vue.component('bbn-calendar', {
-    /** 
+    /**
      * @mixin bbn.vue.basicComponent
     */
     mixins: [bbn.vue.basicComponent],
@@ -17,7 +17,7 @@
       /**
        * The events data for every days.
        * If you set a string, an ajax call will be made to this url.
-       * 
+       *
        * @prop {String|Array} [[]] source
       */
       source: {
@@ -26,7 +26,7 @@
           return [];
         }
       },
-      /** 
+      /**
        * Supplementary data to send with the ajax call.
        * @prop {Object} [{}] data
       */
@@ -36,71 +36,71 @@
           return {}
         }
       },
-      /** 
+      /**
        * Set any calendar's day selectable.
-       * 
+       *
        * @prop {Boolean} [true] selectable
       */
       selectable: {
         type: Boolean,
         default: true
       },
-      /** 
+      /**
        * Set it to true if you want to select the date property value automatically.
-       * 
+       *
        * @prop {Boolean} [false] autoSelect
       */
       autoSelect: {
         type: Boolean,
         default: false
       },
-      /** 
+      /**
        * Shows/hides the arrows to change the month.
-       * 
+       *
        * @prop {Boolean} [true] arrowsMonth
       */
       arrowsMonth: {
         type: Boolean,
         default: true
       },
-      /** 
+      /**
        * Shows/hides the arrows to change the year.
-       * 
+       *
        * @prop {Boolean} [true] arrowsYear
       */
       arrowsYear: {
         type: Boolean,
         default: true
       },
-      /** 
+      /**
        * Shows the arrows as buttons (only icons also).
-       * 
+       *
        * @prop {Boolean} [true] arrowsButtons
       */
       arrowsButtons: {
         type: Boolean,
         default: true
       },
-      /** 
-       * 
-       * 
+      /**
+       *
+       *
        * @prop {String|Boolean} ['nf nf-fa-calendar_alt'] monthIcon
       */
       monthIcon: {
         type: [String, Boolean],
         default: 'nf nf-oct-calendar'
       },
-      /** 
+      /**
        * The initial date
-       * 
+       *
        * @prop {String} date
       */
       date: {
         type: String
       },
-      /** 
+      /**
        * Shows/hides the days of the next and previous month.
-       * 
+       *
        * @prop {Boolean} [false] extraDays
       */
       extraDays: {
@@ -108,8 +108,8 @@
         default: false
       },
       /**
-       * 
-       * 
+       *
+       *
        * @prop {Array} [[]] daysRange
        */
       daysRange: {
@@ -120,61 +120,61 @@
       },
       /**
        * Shows only the days with events
-       * 
+       *
        * @prop {Boolean} [false] onlyEvents
        */
       onlyEvents: {
         type: Boolean,
         default: false
       },
-      /** 
+      /**
        * Shows/hides the days'details.
-       * 
+       *
        * @prop {Boolean} [false] dayDetails
       */
       dayDetails: {
         type: Boolean,
         default: false
       },
-      /** 
+      /**
        * The icon used to indicate the presence of events in the day.
        * If you set it to false nothing will be shown.
-       * 
+       *
        * @prop {String|Boolean} ['nf nf-fa-user'] dayIcon
       */
       dayIcon: {
         type: [String, Boolean],
         default: 'nf nf-fa-calendar'
       },
-      /** 
+      /**
        * Shows/hides the padding of the days'cell.
-       * 
+       *
        * @prop {Boolean} [false] dayPadding
       */
       dayPadding: {
         type: Boolean,
         default: false
       },
-      /** 
+      /**
        * The component used for the items.
-       * 
+       *
        * @prop {Vue} detailsComponent
       */
       detailsComponent: {
         type: [Vue, Object, String]
       },
-      /** 
+      /**
        * The title for the day's details.
-       * 
+       *
        * @prop {Function|String} [''] titleDetails
       */
       titleDetails: {
         type: [Function, String],
         default: ''
       },
-      /** 
+      /**
        * The component used for the header.
-       * 
+       *
        * @prop {Vue|Object} headerComponent
       */
       headerComponent: {
@@ -184,42 +184,42 @@
     data(){
       let mom = this.date ? moment(this.date) : moment();
       return {
-        /** 
+        /**
          * Today as '2019-03-10' format.
-         * @data {String} [today] today 
+         * @data {String} [today] today
         */
         today: moment().format('YYYY-MM-DD'),
-        /** 
+        /**
          * The current month and year.
-         * @data {String} monthYear 
+         * @data {String} monthYear
         */
         monthYear: '',
-        /** 
+        /**
          * The weekdays initials.
-         * @data {Array} initials 
+         * @data {Array} initials
         */
         initials: Array.from({length: 7}, (v, i) => moment(mom).weekday(i).format('ddd')),
-        /** 
+        /**
          * The current date as Moment.js object.
-         * @data {Moment} currentDate 
+         * @data {Moment} currentDate
          */
         currentDate: mom,
-        /** 
+        /**
          * The days structures.
-         * @data {Array} [[]] days 
+         * @data {Array} [[]] days
         */
         days: [],
-        /** 
+        /**
          * The selected day as '2019-03-10' format.
-         * @data {String|Boolean} [false] 
+         * @data {String|Boolean} [false]
         */
         selected: this.selectable && this.autoSelect && this.date ? mom.format('YYYY-MM-DD') : false
       }
     },
     methods: {
-      /** 
-       * Makes the days' structure. 
-       * 
+      /**
+       * Makes the days' structure.
+       *
        * @method _makeDays
        * @param {Array} [undefined] events The events list.
        * @emits days
@@ -260,9 +260,9 @@
         this.$set(this, 'days', days);
         this.$emit('days', this.currentDate.format('YYYY-MM'));
       },
-      /** 
+      /**
        * Loads the days.
-       * 
+       *
        * @method loadDays
        * @param {Boolean} [undefined] force Force to load the days.
        * @emits loadDays
@@ -302,17 +302,17 @@
           this._makeDays();
         }
       },
-      /** 
+      /**
        * Sets the currenty month-year.
-       * 
+       *
        * @method setMonthYear
       */
       setMonthYear(){
         this.$set(this, 'monthYear', this.currentDate.format('MMMM YYYY'));
       },
-      /** 
+      /**
        * Loads the days and set the current month-year
-       * 
+       *
        * @method refresh
        * @fires loadDays
        * @fires setMonthYear
@@ -321,9 +321,9 @@
         this.loadDays();
         this.setMonthYear();
       },
-      /** 
+      /**
        * Moves the calendar to the next month.
-       * 
+       *
        * @method nextMonth
        * @emits nextMonth
        * @fires refresh
@@ -337,9 +337,9 @@
         }
         this.refresh();
       },
-      /** 
+      /**
        * Moves the calendar to the previous month.
-       * 
+       *
        * @method prevMonth
        * @emits prevMonth
        * @fires refresh
@@ -353,9 +353,9 @@
         }
         this.refresh();
       },
-      /** 
+      /**
        * Moves the calendar to the next year.
-       * 
+       *
        * @method nextYear
        * @emits nextYear
        * @fires refresh
@@ -369,9 +369,9 @@
         }
         this.refresh();
       },
-      /** 
+      /**
        * Moves the calendar to the previous year.
-       * 
+       *
        * @method prevYear
        * @emits prevYear
        * @fires refresh
@@ -385,9 +385,9 @@
         }
         this.refresh();
       },
-      /** 
-       * 
-       * 
+      /**
+       *
+       *
        * @method select
        * @param {String} day The selected day
        * @param {Boolean} [undefined] notEmit If true the emit will not be performed

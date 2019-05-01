@@ -82,7 +82,6 @@
            * @memberof basicComponent
            */
           ready: false,
-          readyDelay: false
         }, bbn.vue.defaults[this.$options.name.slice(4)] || {})
       },
       methods: {
@@ -91,17 +90,6 @@
             return bbn.vue[mixin + 'Component'][fn].apply(this);
           }
         },
-        waitReady(){
-          if ( !this.ready ){
-            if ( this.readyDelay ){
-              clearTimeout(this.readyDelay);
-            }
-            this.readyDelay = setTimeout(() => {
-              this.ready = true;
-              this.readyDelay = false;
-            }, 250);
-          }
-        }
       },
       /**
        * @memberof basicComponent

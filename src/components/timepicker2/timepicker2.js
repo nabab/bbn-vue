@@ -5,7 +5,7 @@
 (function($, bbn){
   "use strict";
 
-  Vue.component('bbn-datetimepicker2', {
+  Vue.component('bbn-timepicker2', {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.fullComponent
@@ -19,7 +19,7 @@
        */
       format: {
         type: String,
-        default: 'DD/MM/YYYY HH:mm'
+        default: 'HH:mm'
       },
       /**
        * The format of the value sent to the server.
@@ -29,7 +29,7 @@
       valueFormat: {
         type: [String, Function],
         default(){
-          return 'YYYY-MM-DD HH:mm';
+          return 'HH:mm';
         }
       },
       /**
@@ -39,7 +39,7 @@
        */
       mask: {
         type: String,
-        default: '00/00/0000 00:00'
+        default: '00:00'
       },
       /**
        * The max date allowed.
@@ -57,33 +57,14 @@
       min: {
         type: [Date, String]
       },
-      /**
-       * The dates disabled.
-       *
-       * @prop {Array|Function} disableDates
-       */
-      disableDates: {
-        type: [Array, Function]
-      },
-      /**
-       * Set to true to show the default footer in the component or set a costumized template for the footer.
-       *
-       * @prop {Boolean|Function|String} footer
-       */
-      footer: {
-        type: [Boolean, Function, String]
-      },
-      datesRange: {
-        type: Array,
-        default(){
-          return [];
-        }
+      showSecond: {
+        type: Boolean,
+        default: true
       }
     },
     data(){
       return {
-        isCalendarOpened: false,
-        isTimeOpened: false
+        isOpened: false
       }
     },
     computed: {
@@ -99,16 +80,17 @@
         return bbn.fn.isFunction(this.valueFormat) ? this.valueFormat(val) : this.valueFormat;
       },
       setValue(d){
-        let format = d ? this.getValueFormat(d) : false;
-        this.isCalendarOpened = false;
-        this.isTimeOpened = false;
+        let format = d ? this.getValueFormat(d) : false,
+            ts = this.$refs.timeSplitter;
+        this.isOpened = false;
+        if ( ts ){
+          ts.hour = format ? moment(d, format).hour() : null;
+          ts.minute = format ? moment(d, format).minute() : null;
+        }
         this.emitInput(format ? moment(d, format).format(format) : '');
         if ( !format ){
           this.$refs.element.widget.value('');
         }
-      },
-      updateCalendar(){
-        this.$refs.calendar.refresh();
       },
       change(event){
         let maskValue = this.$refs.element.widget.value(),
@@ -119,19 +101,10 @@
         if ( this.max && (value > this.max) ){
           value = this.max;
         }
-        if ( 
-          this.disableDates &&
-          (bbn.fn.isFunction(this.disableDates) && this.disableDates(value)) ||
-          (bbn.fn.isArray(this.disableDates) && this.disableDates.includes(value))
-        ){
-          this.setValue(false);
-        }
-        else {
-          this.setValue(value);
-          this.$nextTick(() => {
-            this.$emit('change', event);
-          });
-        }
+        this.setValue(value);
+        this.$nextTick(() => {
+          this.$emit('change', event);
+        });
       }
     },
     /**
@@ -140,22 +113,25 @@
      *
      */
     mounted(){
+      if ( this.value ){
+        this.setValue(this.value);
+      }
       this.ready = true;
     },
     watch: {
       /**
        * @watch min
-       * @fires updateCalendar
+       * @fires updateTime
        */
       min(){
-        this.updateCalendar();
+        this.updateTime();
       },
       /**
        * @watch max
-       * @fires updateCalendar
+       * @fires updateTime
        */
       max(){
-        this.updateCalendar();
+        this.updateTime();
       },
       /**
        * @watch valueFormat
@@ -170,16 +146,29 @@
         name: 'time-splitter',
         data(){
           return {
-            comp: bbn.vue.closest(this, 'bbn-datetimepicker2'),
+            comp: bbn.vue.closest(this, 'bbn-timepicker2'),
+            hours: Array.from({length: 24}, (v,i) => {
+              return {
+                text: i.toString().length === 1 ? '0' + i : i,
+                value: i
+              };
+            }),
+            minutes: Array.from({length: 60}, (v,i) => {
+              return {
+                text: i.toString().length === 1 ? '0' + i : i,
+                value: i
+              };
+            }),
             hour: null,
             minute: null,
+            second: null,
             hourReady: false,
             minuteReady: false
           }
         },
         computed: {
           checkScroll(){
-            return !!(this.hourReady && this.minuteReady && this.$refs.minuteActive && this.$refs.hourActive && this.comp && this.comp.$refs.timeFloater.ready);
+            return !!(this.hourReady && this.minuteReady && this.$refs.minuteActive && this.$refs.hourActive && this.comp && this.comp.$refs.floater.ready);
           }
         },
         methods: {

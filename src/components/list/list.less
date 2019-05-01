@@ -6,7 +6,7 @@ ul.bbn-list-helper{
   padding: 0;
   margin: 0;
   &.bbn-list-child {
-    padding-left: 16px;
+    //padding-left: 16px;
   }
   li{
     position: relative;
@@ -19,32 +19,42 @@ ul.bbn-list-helper{
   width: 100%;
   height: 100%;
   list-style: none;
+ 
+  ul.bbn-list-node.bordered {
+    &.border-ul{
+      border: 0.5px solid;
+    }
+    li.bbn-list-node{
+      &.bbn-state-hover.border-bottom{
+        border-bottom-width: 0.5px;
+        border-bottom-style: solid;
+      }
+      &:first-child {
+        border-top-width: .5px;
+      }
+      &:last-child{
+        border-bottom-width: 0;
+      }
+      border-bottom-width: .5px;
+      border-top-width: 0;
+      border-right: 0;
+      border-left: 0;
+      border-style: solid;
+    }
+    
+  }
+  
   ul{
     list-style: none;
     padding: 0;
     margin: 0;
+    border: 0;
+    
     li.k-state-hover {
       filter: brightness(1.2);
     }
-    &.bbn-list-child {
-      padding-left: 16px;
-    }
   }
-  /*
-  .bbn-list-toggle-enter-active, .bbn-list-toggle-leave-active{
-    transition: max-height 0.3s;
-    max-height: 500px;
-  }
-  .bbn-list-toggle-enter, .bbn-list-toggle-leave-to{
-    max-height: 0;
-  }
-  }
-  */
-  .bbn-list-node{
-    border: none;
-    //border-top: none!important;
-    //border-left: none!important;
-    //border-right: none!important;
+  li.bbn-list-node{
     overflow-x: hidden;
     clear: both;
     margin: 0;
@@ -69,8 +79,9 @@ ul.bbn-list-helper{
         }
         .expander{
           width: 18px;
-          height: 18px;
+          height: inherit;
           min-width: 18px;
+          //padding-left: 5px;
           i{
             cursor: pointer;
           }
@@ -87,11 +98,11 @@ ul.bbn-list-helper{
         }
       }
       .padding{
-        padding-left:6px;
+        //padding-left:6px;
         padding-right:6px;
       }
       .padding-left{
-        padding-left:3px;
+       // padding-left:3px;
       }
       .v-padding{
         padding-top: 3px;

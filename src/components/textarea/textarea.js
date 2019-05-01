@@ -1,5 +1,6 @@
 /**
- * Created by BBN on 12/06/2017.
+ * @file bbn-textareais a component with easy configuration, it represents a multiline text field, where one can assign an initial value among the various configurations, validate the content and give a maximum number of characters that it can accept. It is possible to define actions on the events triggered on it.
+ * @copyright BBN Solutions
  */
 (function(bbn){
   "use strict";

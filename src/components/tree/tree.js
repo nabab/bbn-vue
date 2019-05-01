@@ -1,6 +1,17 @@
 /**
  * Created by BBN on 10/02/2017.
  */
+
+
+/**
+ * @file bbn-tree is the component that is easily implemented by allowing data to be displayed hierarchically using a tree structure.<br>
+ *  The component can contain the data loaded only once or it can be created dynamically by making ajax calls, it also allows (after a correct configuration) to perform operations on them, for example drag & drop.
+ *
+ * @copyright BBN Solutions
+ *
+ */
+
+
 (function($, bbn){
   "use strict";
 

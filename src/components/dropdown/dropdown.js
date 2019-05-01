@@ -92,7 +92,7 @@
       select(item){
         if ( item && (item[this.sourceValue] !== undefined) ){
           this.emitInput(item[this.sourceValue]);
-          this.$emit('change');
+          this.$emit('change', item[this.sourceValue]);
         }
         this.isOpened = false;
       },

@@ -2,7 +2,7 @@
  * bbn-datepicker component
  * Created by BBN on 10/02/2017.
  */
-(function($, bbn, kendo){
+(function($, bbn){
   "use strict";
 
   Vue.component('bbn-datepicker2', {
@@ -149,7 +149,6 @@
      *
      */
     mounted(){
-      this.widget = {};
       this.ready = true;
     },
     watch: {
@@ -177,4 +176,4 @@
     }
   });
 
-})(jQuery, bbn, kendo);
+})(jQuery, bbn);

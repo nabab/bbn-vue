@@ -210,8 +210,8 @@
       onResize(){
         if ( this.currentVisible ){
             // Resetting
-          this.currentHeight = null;
-          this.currentWidth = null;
+          this.currentHeight = this.height || null;
+          this.currentWidth = this.width || null;
           this.currentScroll = false;
           return this.$nextTick(() => {
             // These are the limits of the space the DIV can occupy
@@ -365,12 +365,19 @@
                   left = ctWidth - coor.right - width + ctLeft;
                 }
               }
-              this.currentLeft = left + 'px';
-              this.currentTop = top + 'px';
-              this.currentHeight = height;
-              this.currentWidth = width;
-              this.currentScroll = scrollV || scrollH ? true : false;
+              if ( height > 30 ){
+                this.currentLeft = left + 'px';
+                this.currentTop = top + 'px';
+                this.currentHeight = height;
+                this.currentWidth = width;
+                this.currentScroll = scrollV || scrollH ? true : false;
+                this.$nextTick(() => {
+                  this.opacity = 1;
+                });
+              }
+              bbn.fn.log("GOING ALL THE WAY");
             }
+            bbn.fn.log("GOING PART OF THE WAY");
           });
         }
       },
@@ -419,12 +426,12 @@
         this.hide();
       },
       closeAll(){
-        let ancesters = this.ancesters('bbn-floater');
-        if ( ancesters.length ){
-          ancesters.pop().currentVisible = false;
-        }
-        else{
-          this.currentVisible = false;
+        this.currentVisible = false;
+        if ( this.level ){
+          let ancesters = this.ancesters('bbn-floater');
+          for ( let i = this.level; i >= 0; i-- ){
+            ancesters[i].currentVisible = false;
+          }
         }
       },
       select(idx){
@@ -469,12 +476,6 @@
     },
     mounted(){
       this.ready = true;
-      this.$nextTick(() => {
-        this.waitReady();
-        this.$nextTick(() => {
-          this.opacity = 1;
-        });
-      });
     },
     watch: {
       source: {

@@ -2,6 +2,17 @@
  * bbn-datepicker component
  * Created by BBN on 10/02/2017.
  */
+
+ /**
+  * @file bbn-datepicker is a component who combines both input and calendar and allows the user to enter or select a date value.<br>
+  *
+  * The calendar view is smooth, ensuring that all users are able to use by quickly finding the date they are looking for with the interface.<br>
+  *
+  * It allows the association of data in a bidirectional way.
+  *
+  * @copyright BBN Solutions
+  */
+ 
 (function($, bbn, kendo){
   "use strict";
 

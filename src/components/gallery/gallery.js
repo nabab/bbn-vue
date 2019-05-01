@@ -1,3 +1,12 @@
+/**
+ * @file bbn-gallery is a component for the purpose of presenting an extraordinary gallery of images on display in your websites or applications.<br>
+ *
+ *  It has a multitude of customizations to better present your gallery.
+ *
+ * @author Mirko Argentino
+ *
+ * @copyright BBN Solutions
+ */
 (($, bbn) => {
   "use strict";
 
@@ -153,7 +162,7 @@
         }
       },
       _map(data){
-        return this.map ? data.map(this.map) : data; 
+        return this.map ? data.map(this.map) : data;
       },
       setSelecting(mode){
         if ( typeof mode === 'string' ){
@@ -213,7 +222,7 @@
         name: 'gallery-col',
         template: `
 <div :style="colStyle">
-  <gallery-item v-for="(item, idx) in getSource(index)" 
+  <gallery-item v-for="(item, idx) in getSource(index)"
                 :source="item"
                 :key="'gallery-item-'+index+'-'+idx"
   ></gallery-item>
@@ -254,20 +263,20 @@
             name: 'gallery-item',
             template: `
 <a v-if="!col.gallery.isLoading"
-   :class="['bbn-p', {'k-primary': isSelected}]" 
+   :class="['bbn-p', {'k-primary': isSelected}]"
    @click="action"
    :style="aStyle"
 >
-  <img :src="isObj ? (source.thumb || source.content) : source" 
+  <img :src="isObj ? (source.thumb || source.content) : source"
        :style="imgStyle"
        @load="loaded = true"
        :class="{'bbn-gallery-item-selected': isSelected}"
   >
-  <span v-if="showOverlay && loaded" 
+  <span v-if="showOverlay && loaded"
         class="bbn-gallery-overlay k-widget"
         v-text="source.overlay"
   ></span>
-  <i v-if="col.gallery.zoomable && loaded && !col.gallery.isSelecting" 
+  <i v-if="col.gallery.zoomable && loaded && !col.gallery.isSelecting"
     class="bbn-gallery-zoverlay nf nf-fa-search"
   ></i>
 </a>

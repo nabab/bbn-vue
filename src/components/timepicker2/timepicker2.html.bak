@@ -1,0 +1,73 @@
+<span :class="[componentClass, 'bbn-textbox']">
+  <bbn-masked :value="ivalue"
+              ref="element"
+              :disabled="disabled"
+              :readonly="readonly"
+              :required="required"
+              @click="click($event)"
+              @focus="focus($event)"
+              @blur="blur($event)"
+              @change="change($event)"
+              @keydown="keydown($event)"
+              @keyup="keyup($event)"
+              @mouseenter="over($event)"
+              @mouseleave="out($event)"      
+              :mask="mask"
+  ></bbn-masked>
+  <bbn-button icon="nf nf-fa-clock_o"
+              @click="isOpened = !isOpened"
+              :disabled="disabled || readonly"
+  ></bbn-button>
+  <bbn-floater v-if="isOpened && !disabled && !readonly"
+               :element="$el"
+               ref="floater"
+               @close="isOpened = false"
+               :min-width="180"
+               :min-height="177"
+  >
+    <time-splitter inline-template 
+                   ref="timeSplitter"
+    >
+      <bbn-splitter orientation="horizontal">
+        <bbn-pane class="bbn-c bbn-border-color" style="border-right: 1px solid">
+          <bbn-scroll :hidden="true" 
+                      ref="hourScroll"
+                      @mounted="hourReady = true"
+          >
+            <div v-for="(a, i) in 24" 
+                :class="['bbn-p', 'bbn-text', 'bbn-vspadded', 'bbn-background-internal', {
+                  'bbn-bordered-bottom': i !== 23,
+                  'bbn-primary': hour === i
+                }]"
+                @click="setHour(i)"
+                :ref="hour === i ? 'hourActive' : undefined"
+            >
+              <strong v-text="i.toString().length === 1 ? '0' + i : i"
+                      style="opacity: .5"
+              ></strong>
+            </div>
+          </bbn-scroll>
+        </bbn-pane>
+        <bbn-pane class="bbn-c">
+          <bbn-scroll :hidden="true" 
+                      ref="minuteScroll"
+                      @mounted="minuteReady = true"
+          >
+            <div v-for="(a, i) in 60" 
+                :class="['bbn-p', 'bbn-text', 'bbn-vspadded', 'bbn-background-internal', {
+                  'bbn-bordered-bottom': i !== 59,
+                  'bbn-primary': minute === i
+                }]"
+                @click="setMinute(i)"
+                :ref="minute === i ? 'minuteActive' : undefined"
+            >
+              <strong v-text="i.toString().length === 1 ? '0' + i : i"
+                      style="opacity: .5"
+              ></strong>
+            </div>
+          </bbn-scroll>
+        </bbn-pane>
+      </bbn-splitter>    
+    </time-splitter>
+  </bbn-floater>
+</span>

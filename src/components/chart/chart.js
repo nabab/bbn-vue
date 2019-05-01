@@ -1,5 +1,6 @@
 /**
- * @file bbn-chart component
+ * @file bbn-chart component is a visual representation of data from the extreme implementation.<br>
+ * It allows large amounts of information to be condensed into an easy to understand visual format, allowing complex data to be displayed, interpreted and analyzed with detailed customization using one of these graphs: "bar", "pie", "line" and "donut".
  *
  * @author Mirko Argentino
  * @copyright BBN Solutions
@@ -128,9 +129,9 @@
         type: Boolean,
         default: false
       },
-      /** 
+      /**
        * Area's opacity adjustment
-       * 
+       *
        * @prop {Number|String} [0.1] areaOpacity
       */
       areaOpacity: {
@@ -1100,7 +1101,7 @@
           // Customize color
           this.setColor(chartData);
 
-          // Customize label color 
+          // Customize label color
           if ( (chartData.type === 'label') ){
             let color = false;
             if ( this.labelColor ){
@@ -1330,7 +1331,7 @@
        * Sets the colors to an element.
        *
        * @method setColor
-       * @param {Object} chartData 
+       * @param {Object} chartData
        * @fires getColorIdx
        */
       setColor(chartData){
@@ -1359,9 +1360,9 @@
           }
         }
       },
-      /** 
+      /**
        * Sets the area's opacity
-       * 
+       *
        * @method setAreaOpacity
        * @param {Object} chartData A Chartist.js SVG element
       */
@@ -1480,7 +1481,7 @@
     },
     watch: {
       /**
-       * @watch source 
+       * @watch source
        * @fires init
        */
       source(val){

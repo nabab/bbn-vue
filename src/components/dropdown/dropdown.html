@@ -3,7 +3,7 @@
     <div class="bbn-flex-width">
       <div class="bbn-flex-fill" @click.stop="clickContainer">
         <input :disabled="disabled"
-               class="bbn-unselectable bbn-textbox bbn-no-border bbn-abs"
+               class="bbn-unselectable bbn-textbox bbn-no-border bbn-abs bbn-top-left"
                @keydown="keydown"
                :required="required"
                readonly="readonly"
@@ -20,7 +20,7 @@
       </div>
       <div>
         <button class="bbn-p bbn-button bbn-reactive-block bbn-button-icon-only bbn-radius-right"
-                @click="isOpened = !isOpened"
+                @click.prevent.stop="isOpened = !isOpened"
                 :disabled="disabled">
           <i :class="'nf nf-fa-caret_' + (isOpened ? 'up' : 'down')"></i>
         </button>

@@ -1,5 +1,5 @@
 /**
- * Created by BBN on 15/02/2017.
+ * @file Is a configurable horizontal menu ideal to manage shortcuts.
  */
 (function($, bbn){
   "use strict";

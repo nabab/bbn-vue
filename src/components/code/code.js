@@ -1,5 +1,9 @@
 /**
- * @file An editor component based on code-mirror
+ * @file bbn-code is a text editor. He specializes in changing and creating the code of a specific supported language.<br>
+ *
+ * Among the various configurations the user can change the subject based on his own needs.
+ *
+ *  @copyright BBN Solutions
  */
 
 
@@ -191,7 +195,7 @@
       },
       /**
        * Set to true shows a button to change the theme of the component.
-       * 
+       *
        * @prop {Boolean} [false]
        */
       themeButton: {
@@ -209,7 +213,7 @@
     computed: {
       /**
        * If the prop theme is not defined returns the defaultTheme.
-       * 
+       *
        * @computed currentTheme
        * @return {String}
        */
@@ -222,7 +226,7 @@
       /**
        * Gets the set of preset options for the given mode from const modes.
        * @method getMode
-       * @param {String} mode 
+       * @param {String} mode
        * @return {Boolean}
        */
       getMode(mode){
@@ -265,9 +269,9 @@
       /**
        * To place the cursor in a defined point.
        * @method cursorPosition
-       * @param {*} lineCode 
+       * @param {*} lineCode
        * @param {*} position
-       * @return {Boolean} 
+       * @return {Boolean}
        */
       cursorPosition(lineCode, position){
         let ctrl = false;
@@ -359,9 +363,9 @@
         this.widget.setOption("theme", themes[themeIndex]);
       },
       /**
-       * 
-       * @param {*} level 
-       */  
+       *
+       * @param {*} level
+       */
       foldByLevel(level) {
         this.foldByNodeOrder(0);
         // initialize vars

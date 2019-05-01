@@ -10,7 +10,8 @@
   <div v-if="fixedFooter"
        :class="['bbn-w-100', {'bbn-flex-fill': scrollable}]"
   >
-    <component :is="scrollable ? 'bbn-scroll' : 'div'" ref="container">
+    <component :is="scrollable ? 'bbn-scroll' : 'div'"
+               ref="container">
       <div class="bbn-grid-fields bbn-padded" v-if="schema && schema.length">
         <template v-for="field in currentSchema"
                   v-if="field.field && !field.buttons && (field.editable !== false)"

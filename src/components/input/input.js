@@ -1,6 +1,12 @@
 /**
- * Created by BBN on 10/02/2017.
+ * @file bbn-input is a simple text field that can be used as an element of a module. From easy implementation.<br>
+ *
+ * Users can format the entered text or change it dynamically and apply controls on it.<br>
+ *
+ * It can be used in any applications where they have to deal with text information.
+ * @copyright BBN Solutions
  */
+
 (function($, bbn){
   "use strict";
 
@@ -96,7 +102,7 @@
           })
         }
       }
-			
+
 			if ( this.type === 'hidden' ){
 				$ele.hide();
 			}

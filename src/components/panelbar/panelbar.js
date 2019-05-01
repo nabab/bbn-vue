@@ -1,5 +1,5 @@
 /**
- * @file bbn-panelbar component
+ * @file bbn-panelbar it's a component that configures itself easily, it allows to visualize the data in a hierarchical way expandable to levels.<br>It can contain texts, html elements and even Vue components, the latter can be inserted both on its content but also as a header.<br>Those who use this component have the possibility to see schematically their data with the maximum simplicity of interpretation.
  *
  * @author Loredana Bruno
  * @copyright BBN Solutions
@@ -13,7 +13,7 @@
      * @mixin bbn.vue.localStorageComponent
      */
     mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent],
-    
+
     props: {
       /**
        * The height that all contents will take if the height is not specified in the item object
@@ -31,8 +31,8 @@
        */
       itemsClass: {
         type: [ Array, String ],
-        default: ''  
-      }, 
+        default: ''
+      },
       /**
        * The source of the component. The object item has property:
        * - header // the title on the header
@@ -56,7 +56,7 @@
       multi: {
         type: [ Boolean ],
         default: false
-      }, 
+      },
       /**
        * Specifies whether or not an index, an array of indexes, all items or none will be expanded
        *
@@ -111,12 +111,12 @@
         else{
           return false;
         }
-        
+
       },
       /**
        * Return whether or not the param i is a number
-       * @method isNumber 
-       * @param {Number} i 
+       * @method isNumber
+       * @param {Number} i
        * @return Boolean
        */
       isNumber(i){
@@ -126,7 +126,7 @@
        * Shows the content of selected items and emits the event select
        * @emits select
        * @method select
-       * @param {Number} idx 
+       * @param {Number} idx
        */
       select(idx){
         if ( this.multi ){
@@ -137,13 +137,13 @@
             this.selected.splice(this.selected.indexOf(idx), 1)
           }
         }
-        else { 
+        else {
           if ( this.selected.length ){
             this.selected.splice(0,1);
           }
           this.selected.push(idx)
         }
-        this.$emit('select', this.source[idx]) 
+        this.$emit('select', this.source[idx])
       }
 
     },
@@ -157,7 +157,7 @@
         }
       }
     },
-    
+
   });
 
 })(bbn);

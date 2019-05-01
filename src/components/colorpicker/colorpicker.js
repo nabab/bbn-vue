@@ -1,7 +1,13 @@
 /**
- * @file bbn-colorpicker component
+ * @file The bbn-colorpicker component has a field that shows the currently selected color.<br>
  *
+ * Clicking on the input field displays a colored table with a set of available colors.<br>
  *
+ * You can define a personal set of colors.<br>
+ *
+ * This component allows you to create an intuitive interface for color manipulations.
+ *
+ * @copyright BBN Solutions
  */
 (($, bbn, kendo) => {
   "use strict";
@@ -59,7 +65,7 @@
       getOptions(){
         const vm  = this;
         let cfg = bbn.vue.getOptions(vm);
-        cfg.change = (e) => {        
+        cfg.change = (e) => {
           vm.change(e);
           vm.emitInput(e.sender.value());
         };

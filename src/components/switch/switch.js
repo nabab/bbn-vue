@@ -1,6 +1,12 @@
 /**
  * Created by BBN on 13/02/2017.
  */
+
+ /**
+  * @file bbn-switch is a component with easy implementation and customization that allows the user to switch between selected and unselected states, defining the value and not value.
+  *  
+  * @copyright BBN Solutions
+  */
 (($, bbn) => {
   "use strict";
   Vue.component('bbn-switch', {

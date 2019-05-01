@@ -1,4 +1,13 @@
 /**
+ * @file bbn-list displays a list of data.
+ * <br>What represents can have a hierarchical structure.
+ * <br>It can be used as a menu to perform actions. Each bbn-list item can also be a custom component.
+ *
+ *
+ */
+
+
+/**
  * Created by BBN on 10/02/2017.
  */
 
@@ -39,12 +48,12 @@
       // the icon of the item when expanded
       expandedIcon: {
         type: String,
-        default: 'nf nf-fa-caret_down'
+        default: 'nf nf-fa-angle_down'
       },
       // the icon of the item when expandible but closed
       closedIcon: {
         type: String,
-        default: 'nf nf-fa-caret_right'
+        default: 'nf nf-fa-angle_right'
       },
       // A function for mapping the hierarchy data
       map: {
@@ -91,6 +100,11 @@
         type: Boolean,
         default: false
       },
+      // Set to true border the li
+      bordered: {
+        type: Boolean,
+        default: true
+      },
       // An array (or a function returning one) of elements for the node context menu
       menu: {
         type: [Array, Function]
@@ -126,6 +140,7 @@
     data() {
       let items = this.getItems();
       return {
+        isLastParent: false,
         over: false,
         // True when the data is currently loading in the hierarchy (unique to the root)
         isLoading: false,
@@ -195,7 +210,7 @@
       select(item, idx) {
         let path = [idx],
             cp = this;
-        if ((this.hierarchy.selectedNode === false) || ( this.hierarchy.selectedNode.text !== item.text) ) {
+        if ( (this.hierarchy.selectedNode === false) || ( this.hierarchy.selectedNode.text !== item.text) ) {
           this.selected = idx;
           while (cp.nodeIdx !== undefined) {
             path.unshift(cp.nodeIdx);
@@ -553,7 +568,7 @@
         }
       },
 
-    
+
     },
 
     // Definition of the root hierarchy and parent node
@@ -586,7 +601,7 @@
       }
       this.ready = true;
       //if the property opened is given it expands all items at the first level
-      
+
       this.$nextTick(()=>{
         if ( this.opened ){
           bbn.fn.each(this.source ,(v, i) => {
@@ -594,15 +609,21 @@
           });
         }
       })
-      
+
     },
 
     watch: {
       over(val) {
+        //to have bbn-state-hover on the li parent if the hover-item has no children
+       // alert('hover')
+        if ( !val.items || !val.items.length ){
+          this.isLastParent = true;
+        }
+        //bbn.fn.log(JSON.stringify(val),  this)
         if (val !== false) {
           this.hierarchy.overNode = val;
           this.hierarchy.$emit('mouseover', val);
-        } 
+        }
         else if (val === false) {
           this.hierarchy.overNode = false;
           this.hierarchy.$emit('mouseout', val);

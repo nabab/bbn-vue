@@ -55,9 +55,10 @@
                :class="['content', it.animation || '', it.cls || '', 'bbn-middle', 'bbn-m' ]"
           >
             <component v-if="it.component"
-                       :is="it.component"
-                       :content="it.content || ''"
+                       :is="it.component"                      
                        :data="it.data || {}"
+                       v-bind="it.attributes"
+                       :key="i"
             ></component>
             <component v-else-if="component"
                        :is="component"

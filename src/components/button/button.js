@@ -1,5 +1,5 @@
 /**
- * @file A customizable button component
+ * @file bbn-button is a very simple component to use; you can configure the appearance of the button to display only the text, icon or combination of both and allows you to define the actions to be performed.
  */
 (function(bbn){
   "use strict";
@@ -22,15 +22,15 @@
       },
       /**
       * The button's text.
-      * 	
+      *
       * @prop {String} text
-      */	
+      */
       text: {
         type: String,
       },
       /**
       * Set to false for no text on the button.
-      * 	
+      *
       * @prop {Boolean} [false] notext
       */
       notext: {
@@ -39,23 +39,23 @@
       },
       /**
        * The button links to a designated url.
-       * 
+       *
        * @prop {String} url
        */
       url: {
         type: String
       },
       /**
-      * The icon shown on the button. 
-      * 
-      *  @prop {String} icon 
+      * The icon shown on the button.
+      *
+      *  @prop {String} icon
       */
       icon: {
         type: String,
       },
       /**
        * A second icon to display on the button above the main icon.
-       * 
+       *
        * @prop {String} secondary
        */
       secondary: {
@@ -63,24 +63,24 @@
       },
       /**
        * If defined the prop secondary, defines the color of the second icon of the button.
-       * 
+       *
        * @prop {String} secondaryColor
        */
       secondaryColor: {
         type: String,
         default: null
       },
-      /** 
+      /**
       * Specifies the type of button.
       *
-      * @prop {String} type 
+      * @prop {String} type
       */
       type: {
         type: String,
       },
      /**
       * Set to true to disable the button.
-      * 
+      *
       * @prop {Boolean|Function} [false] disabled
       */
       disabled: {

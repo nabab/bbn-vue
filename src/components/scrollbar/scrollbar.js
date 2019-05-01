@@ -175,7 +175,7 @@
           else if ( (position > this.position) && (this.currentScroll > (this.contentSize - this.containerSize - 50)) ){
             ev = this.isVertical ? 'reachBottom' : 'reachRight';
           }
-          if ( ev ){
+          if ( ev && this.ready ){
             this.$emit(ev, ev, this);
           }
           let prop = this.isVertical ? 'scrollTop' : 'scrollLeft';

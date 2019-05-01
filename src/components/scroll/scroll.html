@@ -11,7 +11,7 @@
   >
     <div class="bbn-scroll-content"
          ref="scrollContent"
-         @mousemove="mousemove"
+         @mousemove.stop="mousemove"
          @ready.stop="waitReady"
          :style="{
            width: (axis === 'both') || (axis === 'x') ? 'auto' : '100%',
