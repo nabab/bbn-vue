@@ -1,7 +1,15 @@
 //backup countdown
-/**
- * Created by BBN on 13/02/2017.
- */
+ /**
+  * @file bbn-countdown component
+  *
+  * @description bbn-countdown is a component that, as the name explains, performs a countdown of a user-defined date, based on the unit measure of time also defined in the construction.
+  *
+  * @copyright BBN Solutions
+  *
+  * @author BBN Solutions
+  *
+  * @created 13/02/2017.
+  */
 
 
 /** @todo try this way
@@ -299,4 +307,3 @@
     }
   });
 })(jQuery, bbn);
-

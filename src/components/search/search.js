@@ -1,5 +1,13 @@
 /**
- * Created by BBN on 10/02/2017.
+ * @file bbn-search component
+ *
+ * @description this component is used to allow a search, filtering the tree-structured data
+ *
+ * @copyright BBN Solutions
+ *
+ * @author BBN Solutions
+ *
+ * @created 10/02/2017
  */
 (function(bbn){
   "use strict";

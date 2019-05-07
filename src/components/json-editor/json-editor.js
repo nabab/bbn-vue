@@ -1,16 +1,17 @@
 /**
- * @file bbn-json-editor is a very useful component because it allows the schematic visualization of the data in json format using types of structures, such as:
- * <br>'tree', 'text','object'.
- * <br>It also allows you to change the content and the structure of the initially supplied date
+ * @file bbn-json-editor component
+ *
+ * @description bbn-json-editor is a very useful component that allows the schematic visualization of data in JSON format using types of structures, such as: 'tree', 'text', 'object','code'.
+ * It also allows you to modify or insert the content and define a date structure.
+ *
+ * @author BBN Solutions
+ * 
+ * @copyright BBN Solutions
+ *
+ * @created 20/02/17
  */
 
 
-/**
- * Created by BBN Solutions.
- * User: Loredana Bruno
- * Date: 20/02/17
- * Time: 16.21
- */
 
 
 //Markdown editor use simpleMDe

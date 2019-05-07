@@ -1,6 +1,15 @@
 /**
- * Created by BBN on 10/02/2017.
+ * @file bbn-progessbar component
+ *
+ * @description The bbn-progessbar component is a bar that indicates the progress status, it can be customized as the user desires: vertical bar, horizontal, reverse mode or chunck type.
+ *
+ * @copyright BBN Solutions
+ *
+ * @author BBN Solutions
+ *
+ * @created 10/02/2017
  */
+
 (function($, bbn, kendo){
   "use strict";
 

@@ -1,6 +1,16 @@
 /**
- * Created by BBN on 10/02/2017.
+ * @file bbn-masked component
+ *
+ * @description bbn-masked is a useful component for those who want full control of data that needs to be processed.
+ * It represents an input that allows the user to insert the desired values  in a defined format.For example: the insertion of telephone number.
+ *
+ * @copyright BBN Solutions
+ *
+ * @author BBN Solutions
+ *
+ * @created 10/02/2017
  */
+
 (function($, bbn, kendo){
   "use strict";
 

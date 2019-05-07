@@ -1,4 +1,17 @@
 /**
+ * @file bbn-container component
+ *
+ * @description 
+ *
+ * @author BBN Solutions
+ *
+ * @copyright BBN Solutions
+ *
+ * @created 15/02/2017
+ */
+
+
+/**
  * Created by BBN on 15/02/2017.
  */
 (function($, bbn, Vue){
@@ -192,7 +205,7 @@
         }
         return false;
       },
-      
+
       init(){
         if ( this.real || (this.isLoaded && !this.ready) ){
           let res;
@@ -285,7 +298,7 @@
         //this.init();
         this.router.register(this);
       }
-      // 
+      //
       // The container is registered
     },
 

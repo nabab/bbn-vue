@@ -1,5 +1,13 @@
 /**
- * Created by BBN on 10/02/2017.
+ * @file bbn-slideshow component
+ *
+ * @description bbn-slideshow is a highly configurable component, it also allows the display of reactive elements such as components, images, or texts; having full control of the transitions.
+ *
+ * @copyright BBN Solutions
+ *
+ * @author Vito Fava
+ *
+ * @created 10/02/2017
  */
 (() => {
   "use strict";

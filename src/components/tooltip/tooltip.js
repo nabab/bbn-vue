@@ -1,6 +1,13 @@
 /**
- * Created by BBN on 15/02/2017.
+ * @file bbn-tooltip component
+ *
+ * @description the bbn-tooltip represents a display of information that is related to an element and which is displayed when is focused or clicked.
+ *
+ * @copyright BBN Solutions
+ *
+ * @author BBN Solutions
  */
+
 (function($, bbn){
   "use strict";
 

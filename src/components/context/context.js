@@ -1,17 +1,16 @@
 /**
- * Created by BBN on 15/02/2017.
+ * @file bbn-context component
+ *
+ * @description bbn-context is a menu that can be activated with a right click.
+ * You can define any item in the shortcut menu that may contain other own submenus that allow you to create layered structures.
+ * To explore the submenus you need to move the mouse to the context menu item.
+ * This easy-to-implement component allows us to create a shortcut menu.
+ *
+ * @copyright BBN Solutions
+ *
+ * @created 15/02/2017.
  */
 
- /**
-  * @file bbn-context is a menu that can be activated quickly with a right click.<br>
-  *
-  *  You can define the list of items that a drop-down menu will contain and each item on the shortcut menu can contain its own submenus that allows you to create multi-level structures.<br>
-  *
-  *  To explore the submenus it is necessary to move the mouse to the context menu item.<br>
-  *
-  *  This easy-to-implement component allows us to create a context menu that is also complex but easy to use.
-  * @copyright BBN Solutions
-  */
 (function(bbn){
   "use strict";
 

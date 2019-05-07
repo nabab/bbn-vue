@@ -1,12 +1,17 @@
 /**
- * @file bbn-numeric is a component that allows you to enter and modify specific numeric values ​​by typing or using the appropriate  buttons.<br>Only accept numerical values; correctly configuring it is possible to define a range of numbers that can be accepted.<br>You can change the value using the buttons and a defined step.
+ * @file bbn-numeric component
  *
+ * @description bbn-numeric is a component that allows you to enter and modify specific numeric values ​​by typing or using the appropriate  buttons.
+ * Only accept numerical values; correctly configuring it is possible to define a range of numbers that can be accepted.
+ * You can change the value using the buttons and a defined step.
  *
+ * @copyright BBN Solutions
+ *
+ * @author BBN Solutions
+ *
+ * @created 10/02/2017
  */
 
-/**
- * Created by BBN on 10/02/2017.
- */
 (function( bbn){
   "use strict";
 

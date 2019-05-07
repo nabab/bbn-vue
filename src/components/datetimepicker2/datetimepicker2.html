@@ -1,5 +1,5 @@
 <span :class="[componentClass, 'bbn-textbox']">
-    <bbn-masked :value="ivalue"
+    <bbn-masked :value="inputValue"
                 ref="element"
                 :disabled="disabled"
                 :readonly="readonly"
@@ -12,15 +12,15 @@
                 @keyup="keyup($event)"
                 @mouseenter="over($event)"
                 @mouseleave="out($event)"      
-                :mask="mask"
+                :mask="currentMask"
     ></bbn-masked>
     <bbn-button icon="nf nf-fa-calendar"
-                @click="isTimeOpened = false; isCalendarOpened = !isCalendarOpened"
+                @click="showCalendar"
                 :disabled="disabled || readonly"
                 class="bbn-datetimepicker-calendar"
     ></bbn-button>
     <bbn-button icon="nf nf-fa-clock_o"
-                @click="isCalendarOpened = false; isTimeOpened = !isTimeOpened"
+                @click="showTime"
                 :disabled="disabled || readonly"
                 class="bbn-datetimepicker-clock"
     ></bbn-button>
@@ -30,7 +30,7 @@
                  @close="isCalendarOpened = false"
     >
       <bbn-calendar2 :arrows-buttons="false"
-                     @selected="setValue"
+                     @selected="setDate"
                      :value="value"
                      :selection="true"
                      :auto-selection="true"                     
@@ -48,51 +48,142 @@
                  :element="$el"
                  ref="timeFloater"
                  @close="isTimeOpened = false"
+                 :min-width="showSecond ? 165 : 110"
+                 :min-height="scrollMode ? 170 : 46"
+                 hpos="right"
     >
-    <time-splitter inline-template 
-                   ref="timeSplitter"
+    <timepicker inline-template 
+                ref="timepicker"
+                @change="setTime"
     >
-      <bbn-splitter orientation="horizontal">
-        <bbn-pane class="bbn-c bbn-border-color" style="border-right: 1px solid">
-          <bbn-scroll :hidden="true" 
-                      ref="hourScroll"
-                      @mounted="hourReady = true"
-           >
-            <div v-for="(a, i) in 24" 
-                :class="['bbn-p', 'bbn-text', 'bbn-vspadded', 'bbn-background-internal', {
-                  'bbn-bordered-bottom': i !== 23,
-                  'bbn-primary': hour === i
-                }]"
-                @click="setHour(i)"
-                :ref="hour === i ? 'hourActive' : undefined"
-            >
-              <strong v-text="i.toString().length === 1 ? '0' + i : i"
-                      style="opacity: .5"
-              ></strong>
+      <div v-if="comp.scrollMode"
+           style="right: 18px; bottom: 18px; width: auto; height: auto"
+           class="bbn-overlay"
+      >
+        <bbn-splitter orientation="horizontal">
+          <bbn-pane class="bbn-c bbn-border-color" style="border-right: 1px solid">
+            <div class="bbn-flex-height">
+              <div v-text="_('Hour').substr(0,1)"
+                  title="_('Hour')"
+                  class="bbn-unselectable bbn-header"
+              ></div>
+              <div class="bbn-flex-fill">
+                <bbn-scroll :hidden="true" 
+                            ref="hourScroll"
+                            @mounted="hourReady = true"
+                >
+                  <div v-for="h in hours"
+                      :class="['bbn-p', 'bbn-text', 'bbn-vspadded', 'bbn-background-internal', {
+                        'bbn-bordered-bottom': h.value !== 23,
+                        'bbn-primary': hour === h.value
+                      }]"
+                      @click="setHour(h.value)"
+                      :ref="hour === h.value ? 'hourActive' : undefined"
+                  >
+                    <strong v-text="h.text"
+                            style="opacity: .5"
+                    ></strong>
+                  </div>
+                </bbn-scroll>
+              </div>
             </div>
-          </bbn-scroll>
-        </bbn-pane>
-        <bbn-pane class="bbn-c">
-          <bbn-scroll :hidden="true" 
-                      ref="minuteScroll"
-                      @mounted="minuteReady = true"
+          </bbn-pane>
+          <bbn-pane class="bbn-c">
+            <div class="bbn-flex-height">
+              <div v-text="_('Minute').substr(0,1)"
+                  title="_('Minute')"
+                  class="bbn-unselectable bbn-header"
+              ></div>
+              <div class="bbn-flex-fill">
+                <bbn-scroll :hidden="true" 
+                            ref="minuteScroll"
+                            @mounted="minuteReady = true"
+                >
+                  <div v-for="m in minsec" 
+                      :class="['bbn-p', 'bbn-text', 'bbn-vspadded', 'bbn-background-internal', {
+                        'bbn-bordered-bottom': m.value !== 59,
+                        'bbn-primary': minute === m.value
+                      }]"
+                      @click="setMinute(m.value)"
+                      :ref="minute === m.value ? 'minuteActive' : undefined"
+                  >
+                    <strong v-text="m.text"
+                            style="opacity: .5"
+                    ></strong>
+                  </div>
+                </bbn-scroll>
+              </div>
+            </div>
+          </bbn-pane>
+          <bbn-pane class="bbn-c bbn-border-color"
+                    v-if="comp.showSecond"
+                    style="border-left: 1px solid"
           >
-            <div v-for="(a, i) in 60" 
-                :class="['bbn-p', 'bbn-text', 'bbn-vspadded', 'bbn-background-internal', {
-                  'bbn-bordered-bottom': i !== 59,
-                  'bbn-primary': minute === i
-                }]"
-                @click="setMinute(i)"
-                :ref="minute === i ? 'minuteActive' : undefined"
-            >
-              <strong v-text="i.toString().length === 1 ? '0' + i : i"
-                      style="opacity: .5"
-              ></strong>
+            <div class="bbn-flex-height">
+              <div v-text="_('Second').substr(0,1)" 
+                    title="_('Second')"
+                    class="bbn-unselectable bbn-header"
+              ></div>
+              <div class="bbn-flex-fill">
+                <bbn-scroll :hidden="true" 
+                            ref="secondScroll"
+                            @mounted="secondReady = true"
+                >
+                  <div v-for="s in minsec" 
+                      :class="['bbn-p', 'bbn-text', 'bbn-vspadded', 'bbn-background-internal', {
+                        'bbn-bordered-bottom': s.value !== 59,
+                        'bbn-primary': second === s.value
+                      }]"
+                      @click="setSecond(s.value)"
+                      :ref="second === s.value ? 'secondActive' : undefined"
+                  >
+                    <strong v-text="s.text"
+                            style="opacity: .5"
+                    ></strong>
+                  </div>
+                </bbn-scroll>
+              </div>
             </div>
-          </bbn-scroll>
-        </bbn-pane>
-      </bbn-splitter>
-    </time-splitter>
+          </bbn-pane>
+        </bbn-splitter>
+      </div>
+      <div v-else
+           class="bbn-c"
+      >
+        <div class="bbn-iblock">
+          <div v-text="_('Hour').substr(0,1)"
+               title="_('Hour')"
+               class="bbn-unselectable bbn-header"
+          ></div>
+          <bbn-dropdown :source="hours"
+                        v-model="hour"
+                        style="width: 50px"
+          ></bbn-dropdown>
+        </div>
+        <div class="bbn-iblock">
+          <div v-text="_('Minute').substr(0,1)"
+               title="_('Minute')"
+               class="bbn-unselectable bbn-header"
+          ></div>
+          <bbn-dropdown :source="minsec"
+                        v-model="minute"
+                        style="width: 50px"
+          ></bbn-dropdown>
+        </div>
+        <div class="bbn-iblock"
+             v-if="comp.showSecond"
+        >
+          <div v-text="_('Second').substr(0,1)" 
+               title="_('Second')"
+               class="bbn-unselectable bbn-header"
+          ></div>
+          <bbn-dropdown :source="minsec"
+                        v-model="second"
+                        style="width: 50px"
+          ></bbn-dropdown>
+        </div>    
+      </div>
+    </timepicker>
   </bbn-floater>
 </span>
   

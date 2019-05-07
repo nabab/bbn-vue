@@ -1,5 +1,13 @@
 /**
- * @file The component checkbox
+ * @file bbn-checkbox component
+ *
+ * @description The bbn-checkbox component is a box that by clicking, it assigns a certain value and when we deselect it takes another.
+ * The values ​​that can be assumed in case of selection or not are  defined in the configuration of the component.
+ * In addition, we can customize it by using the properties at disposal.
+ *
+ * @copyright BBN Solutions
+ *
+ * @author BBN Solutions
  *
  */
 (($, bbn) => {

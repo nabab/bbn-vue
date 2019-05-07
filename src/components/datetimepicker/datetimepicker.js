@@ -1,15 +1,15 @@
-/**
- * Created by BBN on 10/02/2017.
- */
-
  /**
-  * @file bbn-datetimepicker is a component that combines input and calendar and allows the user to enter or select a date value and a timetable <br>
+  * @file bbn-datetimepicker component
   *
-  * The calendar display is smooth, ensuring that all users can quickly search for the date they are looking for with the interface.<br>
+  * @description bbn-datetimepicker is a component that combines input, calendar and drop-down list, to choose the time.
+  * Allows the user to enter or select a date and time value.
+  * The calendar display is smooth, ensuring that all users can quickly search for the date they are looking for with the interface.
+  * Allows the association of data in a bidirectional way.
+  * Choose a validation interval period and the format of the value to be entered.
   *
-  * It allows the association of data in a bidirectional way, to choose a validation range for the entered value format.
-  * 
   * @copyright BBN Solutions
+  *
+  * @author BBN Solutions
   */
 (function($, bbn, kendo){
   "use strict";

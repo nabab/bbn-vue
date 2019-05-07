@@ -1,6 +1,15 @@
 /**
- * Created by BBN on 15/02/2017.
+ * @file bbn-menu component
+ *
+ * @description The bbn-menu with a simple implementation displays a hierarchical list of elements grouped in boxes.
+ *
+ * @copyright BBN Solutions
+ *
+ * @author BBN Solutions
+ *
+ * @created 10/02/2017
  */
+
 (function($, bbn, kendo){
   "use strict";
 
@@ -12,7 +21,7 @@
       opened: {},
       sourceValue:{
         default: 'text'
-      } 
+      }
     },
     methods: {
       _enterLi(idx){
@@ -29,7 +38,7 @@
         }
       },
       onClose(){
-        //getRef('li' + selectedElement).blur(); selectedElement = -1;        
+        //getRef('li' + selectedElement).blur(); selectedElement = -1;
       },
     },
     data(){

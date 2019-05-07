@@ -1,6 +1,11 @@
 /**
- * bbn-datepicker component
- * Created by BBN on 10/02/2017.
+ * @file bbn-timepicker component
+ *
+ * @description bbn-timepicker is a component that can be customized allowing, in a  simple way, to select a single value from a predetermined set or manually, entering data in a time format.
+ *
+ * @author Mirko Argentino
+ *
+ * @copyright BBN Solutions
  */
 (function($, bbn){
   "use strict";
@@ -13,104 +18,181 @@
     mixins: [bbn.vue.basicComponent, bbn.vue.fullComponent],
     props: {
       /**
-       * The format of the date shown.
+       * The format of the time shown.
        *
-       * @prop {String} [DD/MM/YYYY] format
+       * @prop {String} format
        */
       format: {
-        type: String,
-        default: 'HH:mm'
+        type: String
       },
       /**
-       * The format of the value sent to the server.
+       * The format of the value.
        *
-       * @prop {String} [YYYY-MM-DD] valueFormat
+       * @prop {String} valueFormat
        */
       valueFormat: {
-        type: [String, Function],
-        default(){
-          return 'HH:mm';
-        }
+        type: [String, Function]
       },
       /**
-       * The mask for date input.
+       * The mask for the time input.
        *
-       * @prop {String} [00/00/0000] mask
+       * @prop {String} mask
        */
       mask: {
-        type: String,
-        default: '00:00'
+        type: String
       },
       /**
-       * The max date allowed.
+       * The maximum allowed value.
        *
-       * @prop {Date|String} max
+       * @prop {String} max
        */
       max: {
-        type: [Date, String]
+        type: String
       },
       /**
-       * The min date allowed.
+       * The minimum allowed value.
        *
-       * @prop {Date|String} min
+       * @prop {String} min
        */
       min: {
-        type: [Date, String]
+        type: String
       },
+      /**
+       * Show/hide the "seconds" selection.
+       *
+       * @prop {Boolean} [false] showSecond
+      */
       showSecond: {
         type: Boolean,
-        default: true
+        default: false
+      },
+      /**
+       * Show an alternative view for the time selection instead of the dropdowns.
+       *
+       * @prop {Boolean} [false] scrollMode
+      */
+      scrollMode: {
+        type: Boolean,
+        default: false
       }
     },
     data(){
       return {
+        /**
+         * Shows/hides the floater.
+         *
+         * @data {Boolean} [false] isOpened
+        */
         isOpened: false
       }
     },
     computed: {
-      ivalue(){
+      /**
+       * The current mask for the time input.
+       *
+       * @computed currentMask
+       * @return {String}
+       */
+      currentMask(){
+        return this.mask || (this.showSecond ? '00:00:00' : '00:00');
+      },
+      /**
+       * The current value format.
+       *
+       * @computed currentValueFormat
+       * @return {String}
+       */
+      currentValueFormat(){
+        return this.valueFormat || (this.showSecond ? 'HH:mm:ss' : 'HH:mm');
+      },
+      /**
+       * The current format shown on the input.
+       *
+       * @computed currentFormat
+       * @return {String}
+       */
+      currentFormat(){
+        return this.format || (this.showSecond ? 'HH:mm:ss' : 'HH:mm');
+      },
+      /**
+       * The current value shown on the input.
+       *
+       * @computed inputValue
+       * @fires getValueFormat
+       * @return {String}
+       */
+      inputValue(){
         if ( this.value ){
-          return moment(this.value, this.getValueFormat(this.value)).format(this.format);
+          return moment(this.value, this.getValueFormat(this.value)).format(this.currentFormat);
         }
-        return ''; 
+        return '';
       }
     },
     methods: {
+      /**
+       * Gets the correct value format.
+       *
+       * @method getValueFormat
+       * @param {String} val The value.
+       * @return {String}
+       */
       getValueFormat(val){
-        return bbn.fn.isFunction(this.valueFormat) ? this.valueFormat(val) : this.valueFormat;
+        return bbn.fn.isFunction(this.currentValueFormat) ? this.currentValueFormat(val) : this.currentValueFormat;
       },
-      setValue(d){
-        let format = d ? this.getValueFormat(d) : false,
-            ts = this.$refs.timeSplitter;
-        this.isOpened = false;
-        if ( ts ){
-          ts.hour = format ? moment(d, format).hour() : null;
-          ts.minute = format ? moment(d, format).minute() : null;
-        }
-        this.emitInput(format ? moment(d, format).format(format) : '');
+      /**
+       * Sets the value.
+       *
+       * @method setValue
+       * @param {String} val The value.
+       * @fires getValueFormat
+       * @emits input
+      */
+      setValue(val, format){
         if ( !format ){
+          format = val ? this.getValueFormat(val) : false;
+        }
+        let value = format && val ? moment(val, format).format(this.getValueFormat(val)) : '';
+        this.isOpened = false;
+        if ( value && this.min && (value < this.min) ){
+          value = this.min;
+        }
+        if ( value && this.max && (value > this.max) ){
+          value = this.max;
+        }
+        this.emitInput(value);
+        if ( !value ){
           this.$refs.element.widget.value('');
         }
       },
+      /**
+       * Triggered when the value changed by the input.
+       *
+       * @method change
+       * @param {$event} event Original event.
+       * @fires getValueFormat
+       * @fires setValue
+       * @emits change
+      */
       change(event){
-        let maskValue = this.$refs.element.widget.value(),
-            value = moment(maskValue, this.format).format(this.getValueFormat(maskValue));
-        if ( this.min && (value < this.min) ){
-          value = this.min;
-        }
-        if ( this.max && (value > this.max) ){
-          value = this.max;
-        }
-        this.setValue(value);
-        this.$nextTick(() => {
-          this.$emit('change', event);
-        });
+        setTimeout(() => {
+          let maskValue = this.$refs.element.widget.value(),
+              value = !!maskValue ? moment(maskValue, this.currentFormat).format(this.getValueFormat(maskValue)) : '';
+          if ( value && this.min && (value < this.min) ){
+            value = this.min;
+          }
+          if ( value && this.max && (value > this.max) ){
+            value = this.max;
+          }
+          this.setValue(value);
+          this.$nextTick(() => {
+            this.$emit('change', event);
+          });
+        }, 100);
       }
     },
     /**
      * @event mounted
-     * @fires getOptions
-     *
+     * @fires setValue
      */
     mounted(){
       if ( this.value ){
@@ -121,17 +203,17 @@
     watch: {
       /**
        * @watch min
-       * @fires updateTime
+       * @fires setValue
        */
       min(){
-        this.updateTime();
+        this.setValue(this.value);
       },
       /**
        * @watch max
-       * @fires updateTime
+       * @fires setValue
        */
       max(){
-        this.updateTime();
+        this.setValue(this.value);
       },
       /**
        * @watch valueFormat
@@ -142,59 +224,261 @@
       }
     },
     components: {
-      timeSplitter: {
-        name: 'time-splitter',
+      /**
+       * @component timepicker
+       */
+      timepicker: {
+        name: 'timepicker',
+        props: {
+          value: {
+            type: String,
+            default: ''
+          }
+        },
         data(){
           return {
+            /**
+             * The main component.
+             *
+             * @data {Vue} comp
+             * @memberof timepicker
+             */
             comp: bbn.vue.closest(this, 'bbn-timepicker2'),
-            hours: Array.from({length: 24}, (v,i) => {
+            /**
+             * Array used to make the minutes and the seconds.
+             *
+             * @data {Array} minsec
+             * @memberof timepicker
+             */
+            minsec: Array.from({length: 60}, (v,i) => {
               return {
                 text: i.toString().length === 1 ? '0' + i : i,
                 value: i
               };
             }),
-            minutes: Array.from({length: 60}, (v,i) => {
-              return {
-                text: i.toString().length === 1 ? '0' + i : i,
-                value: i
-              };
-            }),
+            /**
+             * The current hour.
+             *
+             * @data {String|null} [null] hour
+             * @memberof timepicker
+             */
             hour: null,
+            /**
+             * The current minute.
+             *
+             * @data {String|null} [null] minute
+             * @memberof timepicker
+             */
             minute: null,
+            /**
+             * The current second.
+             *
+             * @data {String|null} [null] second
+             * @memberof timepicker
+             */
             second: null,
+            /**
+             * Hours' scroll is ready.
+             *
+             * @data {Boolean} [false] hourReady
+             * @memberof timepicker
+             */
             hourReady: false,
-            minuteReady: false
+            /**
+             * Minutes' scroll is ready.
+             *
+             * @data {Boolean} [false] minuteReady
+             * @memberof timepicker
+             */
+            minuteReady: false,
+            /**
+             * Seconds' scroll is ready.
+             *
+             * @data {Boolean} [false] secondReady
+             * @memberof timepicker
+             */
+            secondReady: false,
+            /**
+             * The component is ready.
+             *
+             * @data {Boolean} [false] ready
+             * @memberof timepicker
+             */
+            ready: false
           }
         },
         computed: {
+          /**
+             * Array used to make the hours.
+             *
+             * @computed hours
+             * @memberof timepicker
+             * @fires comp.getValueFormat
+             * @return {Array}
+             */
+          hours(){
+            if ( this.comp ){
+              let min = this.comp.min ? moment(this.comp.min, this.comp.getValueFormat(this.comp.min)).format('HH') : false,
+                  max = this.comp.max  ? moment(this.comp.max, this.comp.getValueFormat(this.comp.max)).format('HH') : false;
+              return Array.from({length: 24}, (v,i) => {
+                return {
+                  text: i.toString().length === 1 ? '0' + i : i,
+                  value: i
+                };
+              }).filter((v) => {
+                return !((min && (v.value < min)) || (max && (v.value > max)))
+              })
+            }
+            return [];
+          },
+          /**
+           * Checks if all scrolls are ready.
+           *
+           * @computed checkScroll
+           * @memberof timepicker
+           * @return {Boolean}
+           */
           checkScroll(){
-            return !!(this.hourReady && this.minuteReady && this.$refs.minuteActive && this.$refs.hourActive && this.comp && this.comp.$refs.floater.ready);
+            return !!(
+              this.comp &&
+              this.comp.scrollMode &&
+              this.hourReady &&
+              this.minuteReady &&
+              this.$refs.minuteActive &&
+              this.$refs.hourActive &&
+              this.comp.$refs.floater.ready &&
+              (!this.comp.showSecond || (this.secondReady && this.$refs.secondActive))
+            );
           }
         },
         methods: {
+          /**
+           * Gets the current time value.
+           *
+           * @method getTime
+           * @memberof timepicker
+           */
+          getTime(){
+            if (
+              !bbn.fn.isNull(this.hour) &&
+              !bbn.fn.isNull(this.minute) &&
+              (!this.comp.showSecond || !bbn.fn.isNull(this.second) )
+            ){
+              let v = moment().minute(this.minute).hour(this.hour),
+                  f = 'HH:mm';
+              if ( this.comp.showSecond ){
+                v.second(this.second);
+                f += ':ss';
+              }
+              return v.format(f);
+            }
+            return '';
+          },
+          /**
+           * Sets the current hour.
+           *
+           * @method setHour
+           * @memberof timepicker
+           * @param {Number} h
+           * @emits change
+           */
           setHour(h){
             this.hour = h;
-            if ( !bbn.fn.isNull(this.minute) ){
-              let v = moment().minute(this.minute).hour(this.hour);
-              this.comp.setValue(v.format(this.comp.getValueFormat(v.format('HH:mm'))));
+            let time = this.getTime();
+            if ( !!time ){
+              this.$emit('change', time, 'HH:mm' + (this.comp.showSecond ? ':ss' : ''));
             }
           },
+          /**
+           * Sets the current minute.
+           *
+           * @method setMinute
+           * @memberof timepicker
+           * @param {Number} m
+           * @emits change
+           */
           setMinute(m){
             this.minute = m;
-            if ( !bbn.fn.isNull(this.hour) ){
-              let v = moment().minute(this.minute).hour(this.hour);
-              this.comp.setValue(v.format(this.comp.getValueFormat(v.format('HH:mm'))));
+            let time = this.getTime();
+            if ( !!time ){
+              this.$emit('change', time, 'HH:mm' + (this.comp.showSecond ? ':ss' : ''));
+            }
+          },
+          /**
+           * Sets the current second.
+           *
+           * @method setSecond
+           * @memberof timepicker
+           * @param {Number} s
+           * @emits change
+           */
+          setSecond(s){
+            this.second = s;
+            let time = this.getTime();
+            if ( !!time ){
+              this.$emit('change', time, 'HH:mm' + (this.comp.showSecond ? ':ss' : ''));
             }
           }
         },
+        /**
+         * @event beforeMount
+         * @memberof timepicker
+         * @fires comp.getValueFormat
+         */
         beforeMount(){
+          this.ready = false;
           if ( this.comp.value ){
-            let format = this.comp.getValueFormat(this.comp.value);
-            this.hour = format ? moment(this.comp.value, format).hour() : null;
-            this.minute = format ? moment(this.comp.value, format).minute() : null;
+            let format = this.comp.getValueFormat(this.comp.value),
+                mom = format ? moment(this.comp.value, format) : false;
+            this.hour = mom ? mom.hour() : null;
+            this.minute = mom ? mom.minute() : null;
+            this.second = mom && this.comp.showSecond ? mom.second() : null;
           }
         },
+        /**
+         * @event mounted
+         * @memberof timepicker
+         */
+        mounted(){
+          this.$nextTick(() => {
+            this.ready = true;
+          });
+        },
         watch: {
+          /**
+           * @watch hour
+           * @memberof timepicker
+           * @fires setHour
+          */
+          hour(newVal, oldVal){
+            if ( this.ready && (newVal !== oldVal) ){
+              this.setHour(newVal);
+            }
+          },
+          /**
+           * @watch minute
+           * @memberof timepicker
+           * @fires setMinute
+          */
+          minute(newVal, oldVal){
+            if ( this.ready && (newVal !== oldVal) ){
+              this.setMinute(newVal);
+            }
+          },
+          /**
+           * @watch second
+           * @memberof timepicker
+           * @fires setSecond
+          */
+          second(newVal, oldVal){
+            if ( this.ready && (newVal !== oldVal) && this.comp.showSecond ){
+              this.setSecond(newVal);
+            }
+          },
+          /**
+           * @watch checkScroll
+           * @memberof timepicker
+          */
           checkScroll(newVal){
             if ( newVal ){
               this.$nextTick(() => {
@@ -206,6 +490,10 @@
                   if ( !bbn.fn.isNull(this.minute) ){
                     this.getRef('minuteScroll').onResize();
                     this.getRef('minuteScroll').scrollTo(0, this.getRef('minuteActive'));
+                  }
+                  if ( !bbn.fn.isNull(this.second) ){
+                    this.getRef('secondScroll').onResize();
+                    this.getRef('secondScroll').scrollTo(0, this.getRef('secondActive'));
                   }
                 }, 300)
               })

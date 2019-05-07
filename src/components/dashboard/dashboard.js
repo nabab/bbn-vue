@@ -1,6 +1,16 @@
-/**
- * Created by BBN on 15/02/2017.
- */
+ /**
+  * @file bbn-dashboard component
+  *
+  * @description bbn-dashboard, represents a user's interface as a panel control, containing information blocks (bbn-widget component).
+  * This component gives users the possibility to easily choose the preferred position for the components inside the grid, by dragging and releasing the panels in the desired position.
+  *
+  * @author BBN Solutions
+  *
+  * @copyright BBN Solutions
+  *
+  * @created 15/02/2017.
+  */
+
 (function($, bbn){
   "use strict";
 
@@ -211,8 +221,8 @@
               items.push({
                 disabled: !this.closable || (this.widgets[idx].closable === false),
                 selected: !this.widgets[idx].hidden,
-                text: this.widgets[idx].text ? 
-                  this.widgets[idx].text : 
+                text: this.widgets[idx].text ?
+                  this.widgets[idx].text :
                   (this.widgets[idx].title ? this.widgets[idx].title : bbn._('Untitled')),
                 command: () => {
                   if ( this.widgets[idx].closable !== false ){

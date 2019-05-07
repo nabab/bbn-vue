@@ -1,6 +1,16 @@
 /**
- * Created by BBN on 15/02/2017.
+ * @file bbn-treemenu component
+ *
+ * @description The bbn-treemenu component is a vertical menu that shows a hierarchical list of elements, with the possibility of searching for the desired element.
+ * Very useful, it allows you to quickly find what the user is looking for, making it dynamic in the presentation, containing the items that satisfy the research.
+ *
+ * @copyright BBN Solutions
+ *
+ * @author BBN Solutions
+ * 
+ * @created 15/02/2017
  */
+
 (($, bbn) => {
   "use strict";
 

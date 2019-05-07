@@ -1,9 +1,12 @@
 /**
- * @file bbn-input is a simple text field that can be used as an element of a module. From easy implementation.<br>
+ * @file bbn-input component
  *
- * Users can format the entered text or change it dynamically and apply controls on it.<br>
+ * @description bbn-input is a simple text field that can be used as an element of a module, from simple implementation.
+ * Users can format the entered text or change it dynamically and apply controls on it.
+ * It can be used in all applications where textual information needs to be processed.
  *
- * It can be used in any applications where they have to deal with text information.
+ * @author BBN Solutions
+ * 
  * @copyright BBN Solutions
  */
 

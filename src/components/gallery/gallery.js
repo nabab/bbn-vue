@@ -1,11 +1,12 @@
 /**
- * @file bbn-gallery is a component for the purpose of presenting an extraordinary gallery of images on display in your websites or applications.<br>
+ * @file bbn-gallery component
  *
- *  It has a multitude of customizations to better present your gallery.
- *
- * @author Mirko Argentino
+ * @description bbn-gallery is a component for the purpose of presenting an extraordinary gallery of images on display in your websites or applications.
+ * It has a multitude of customizations to better present your gallery.
  *
  * @copyright BBN Solutions
+ *
+ * @author Mirko Argentino
  */
 (($, bbn) => {
   "use strict";
@@ -202,13 +203,13 @@
         name: 'gallery-zoom',
         template: `
 <div class="bbn-overlay bbn-gallery-zoom">
-  <bbn-slideshow :source="source.item.col.gallery.currentData"
-                 :show-info="source.item.col.gallery.info"
+  <bbn-slideshow :source="source.data"
+                 :show-info="source.info"
                  :arrows="true"
                  :show-count="true"
                  :full-slide="true"
-                 :initial-slide="source.item.idx"
-                 :preview="source.item.col.gallery.preview"
+                 :initial-slide="source.slide"
+                 :preview="source.preview"
   ></bbn-slideshow>
 </div>
                 `,
@@ -343,8 +344,11 @@
                       maximized: true,
                       component: this.col.gallery.$options.components.galleryZoom,
                       source: {
-                        source: this.source,
-                        item: this
+                        data: this.col.gallery.currentData,
+                        info: this.col.gallery.info,
+                        slide: this.idx,
+                        preview: this.col.gallery.preview
+
                       }
                     });
                   }

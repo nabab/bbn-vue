@@ -1,6 +1,15 @@
 /**
- * Created by BBN on 07/01/2017.
+ * @file bbn-loadicon component
+ *
+ * @description bbn-loadicon is a simple implementation component, which represents an icon displaying a waiting state.
+ *
+ * @copyright BBN Solutions
+ *
+ * @author  BBN Solutions
+ * 
+ * @created 07/01/2017
  */
+
 ;(function($, bbn){
   "use strict";
 

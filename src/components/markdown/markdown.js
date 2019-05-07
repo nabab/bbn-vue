@@ -1,7 +1,12 @@
 /**
- * @file bbn-markdown is a component that allows you to easily format the Markdown text.<br>It's an editor that enable you to create textual content, to insert lists, image management and hyperlinks.
- * @author Loredana Bruno
+ * @file bbn-markdown component
+ *
+ * @description bbn-markdown is a component that allows you to easily format the Markdown text.
+ * It's an editor that enable you to create textual content, to insert lists, image management and hyperlinks.
+ *
  * @copyright BBN Solutions
+ *
+ * @author BBN Solutions
  */
 
 

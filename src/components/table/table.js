@@ -1,6 +1,20 @@
 /**
- * @file Table component
+ * @file bbn-table component
+ *
+ * @description  bbn-table is a powerful component of wide configuration that offers vast customizations.
+ * The source obtains it by giving a url to retrieve data or directly supplying an array.
+ * It allows you to easily modify the content by entering new data in the input field corresponding to the type of column being defined.
+ * The table rows can be sorted by clicking on a column header.
+ * Table elements can be filtered with the help of a built-in filters in the column headings or using a multifilter panel and a reset by removing a filter or all filters with just one click.
+ * It's possible to create fixed areas that will keep their position by always having them available during scrolling.
+ * It gives the possibility to group the data.
+ * These are some examples of what can be done with this component, from the few configuration lines we can express considerable work complexity.
+ *
+ * @author BBN Solutions
+ *
+ * @copyright BBN Solutions
  */
+
 (function ($, bbn) {
   "use strict";
   const METHODS4BUTTONS = ['insert', 'select', 'edit', 'add', 'copy', 'delete'];
@@ -69,7 +83,7 @@
         default: false
       },
       /**
-       * Set to true shows a save icon that allows to save the current configuration of the table at the bottom right of the table. 
+       * Set to true shows a save icon that allows to save the current configuration of the table at the bottom right of the table.
        * @prop {Boolean} [false] saveable
        */
       saveable: {
@@ -213,7 +227,7 @@
         }
       },
       /**
-       * The index of the property to group by the table referred to the object of data of the row. 
+       * The index of the property to group by the table referred to the object of data of the row.
        * @prop {Number} groupBy
        */
       groupBy: {
@@ -222,7 +236,7 @@
       /**
        * @todo desc
        * @prop {Array|Function} expandedValues
-       * 
+       *
        */
       expandedValues: {
         type: [Array, Function]
@@ -361,7 +375,7 @@
          */
         limits: [10, 25, 50, 100, 250, 500],
         /**
-         * @data {String} editMode 
+         * @data {String} editMode
          */
         editMode: editable === true ? (this.editor ? 'popup' : 'inline') : (editable === 'popup' ? 'popup' : 'inline'),
         /**
@@ -987,12 +1001,12 @@
         bbn.fn.log("HELLO");
       },
       _scrollContainer(){
-        this.marginStyleSheet.innerHTML = "."  + this.cssRuleName + "{margin-top: " + 
+        this.marginStyleSheet.innerHTML = "."  + this.cssRuleName + "{margin-top: " +
         (this.container.scrollTop ? '-' + this.container.scrollTop + 'px' : '0') + '}';
       },
       /**
        * Adds the class 'bbn-table-tr-over' to the row of given idx on mouseenter and remove the class on mouse leave.
-       * 
+       *
        * @method _updateRowIndex
        * @fires getRef
        */
@@ -1011,10 +1025,10 @@
         });
         //this.currentIndex = idx;
       },
-      /** 
+      /**
        * Returns header's CSS object
        * @method _headStyles
-       * @param col 
+       * @param col
        * @return {Object}
        */
       _headStyles(col, groupIndex) {
@@ -1034,7 +1048,7 @@
         return [this.getRef('mainTitles')];
 
       },
-      /** 
+      /**
        * Returns body's CSS object
        * @method _bodyStyles
        * @param col
@@ -1074,10 +1088,10 @@
       },
       /**
        * Creates the object tmpRow.
-       * 
+       *
        * @method _addTmp
        * @todo
-       * @param {} data 
+       * @param {} data
        */
       _addTmp(data) {
         this._removeTmp().tmpRow = this._defaultRow(data);
@@ -1100,8 +1114,8 @@
       /**
        * Defines if the scroll in the table data part has to be hidden.
        * @method _scrollerHidden
-       * @param {Object} groupCol 
-       * @param {Number} idx 
+       * @param {Object} groupCol
+       * @param {Number} idx
        * @return {Boolean}
        */
       _scrollerHidden(groupCol, idx) {
@@ -1113,7 +1127,7 @@
       },
       /**
        * In a scrollable table, updates the viewport after scrolling the X axis.
-       * 
+       *
        * @method _updateViewport
        * @fires titleGroupsCells
        * @fires getRef
@@ -1212,13 +1226,13 @@
       },
       /**
        * Executes the command of the button
-       * 
+       *
        * @method _execCommand
-       * @param {Object} button 
-       * @param {Object} data 
-       * @param {Object} col 
-       * @param {Number} index 
-       * @param {*} ev 
+       * @param {Object} button
+       * @param {Object} data
+       * @param {Object} col
+       * @param {Number} index
+       * @param {*} ev
        */
       _execCommand(button, data, col, index, ev) {
         if (ev) {
@@ -1322,10 +1336,10 @@
       /**
        * Exports to csv and download the given filename.
        * @method exportCSV
-       * @param {String} filename 
-       * @param {*} valSep 
-       * @param {*} rowSep 
-       * @param {*} valEsc 
+       * @param {String} filename
+       * @param {*} valSep
+       * @param {*} rowSep
+       * @param {*} valEsc
        * @fires _export
        */
       exportCSV(filename, valSep, rowSep, valEsc) {
@@ -1354,13 +1368,13 @@
       },
       /**
        * Returns true if the given row is edited.
-       * @method isEdited 
+       * @method isEdited
        * @param {Object} data
        * @param {Object} col
        * @param {Number} idx
        * @fires isEditable
        * @return {Boolean}
-       * 
+       *
        */
       isEdited(data, col, idx) {
         return this.isEditable(data, col, idx) &&
@@ -1370,9 +1384,9 @@
       /**
        * @todo not used
        * @method isNullable
-       * @param {Object} row 
-       * @param {Object} col 
-       * @param {Number} index 
+       * @param {Object} row
+       * @param {Object} col
+       * @param {Number} index
        */
       isNullable(row, col, index) {
         if (bbn.fn.isFunction(col.nullable)) {
@@ -1496,7 +1510,7 @@
       },
       /**
        * Returns the options for the bind of the table filter.
-       * 
+       *
        * @method getFilterOptions
        * @fires getColFilters
        * @return {Object}
@@ -1564,10 +1578,10 @@
         return r;
       },
       /**
-       * Shows the filter of the column. 
+       * Shows the filter of the column.
        * @method showFilter
-       * @param {Object} col 
-       * @param {Event} ev 
+       * @param {Object} col
+       * @param {Event} ev
        */
       showFilter(col, ev) {
         //bbn.fn.log(ev);
@@ -1818,7 +1832,7 @@
       },
       /**
        * After the post in case of edit of the row, update the row in originalData.
-       * 
+       *
        * @method successEdit
        * @param {Object} d
        * @emit editSuccess
@@ -1871,7 +1885,7 @@
        * If the prop url of the table is defined makes a post to the url to update or insert the row, else fires the method saveRow to insert or update the row in originalData
        * @method saveInline
        * @fires saveRow
-       * 
+       *
        */
       saveInline() {
         if (this.tmpRow || this.editedRow) {
@@ -1889,8 +1903,8 @@
       },
       /**
        * @method isGroupedCell
-       * @param {Number} groupIndex 
-       * @param {Object} row 
+       * @param {Number} groupIndex
+       * @param {Object} row
        * @return {Boolean}
        */
       isGroupedCell(groupIndex, row) {
@@ -1997,7 +2011,7 @@
        * @method add
        * @param {Object} data
        * @todo
-       * 
+       *
        */
       add(data) {
         this.currentData.push(data);
@@ -2096,9 +2110,9 @@
           this.$emit('toggle', isSelected, this.currentData[row.index]);
         }
       },
-      /** 
+      /**
        * Refresh the current data set.
-       * 
+       *
        * @method updateData
        * @param withoutOriginal
        * @emit startloading
@@ -2126,7 +2140,7 @@
         });
       },
       /**
-       * Return true if the given row is changed from originalData. 
+       * Return true if the given row is changed from originalData.
        * @method isDirty
        * @param {Object} row
        * @param {Object} col
@@ -2496,7 +2510,7 @@
       },
       /**
        * Returns if the given row has td.
-       * 
+       *
        * @method hasTd
        * @param {Object} data
        * @param {Number} colIndex
@@ -2766,7 +2780,7 @@
         }, 'init', 100);
       },
       /**
-       * Prevents default if enter or tab keys are pressed. 
+       * Prevents default if enter or tab keys are pressed.
        * @method keydown
        * @param {Event} e
        */
@@ -2777,10 +2791,10 @@
       },
       /**
        * @todo it seems to don't work
-       * Show or hide the given column index. 
+       * Show or hide the given column index.
        * @method show
-       * @param {} colIndexes 
-       * @param {Boolean} hide 
+       * @param {} colIndexes
+       * @param {Boolean} hide
        * @fires setConfig
        * @fires init
        */
@@ -2806,7 +2820,7 @@
       },
       /**
        * If no editor is given to the table returns the correct component to edit the field basing on the column type.
-       * 
+       *
        * @method getEditableComponent
        * @param {Object} col
        * @param {Object} data

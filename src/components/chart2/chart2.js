@@ -1,10 +1,15 @@
 /**
- * Created by BBN Solutions.
- * User: Mirko Argentino
- * Date: 24/05/2017
- * Time: 15:45
+ * @file bbn-chart component
+ *
+ * @description bbn-chart component is a visual representation of data from the extreme implementation.
+ * It allows large amounts of information to be condensed into an easy to understand visual format, allowing complex data to be displayed, interpreted and analyzed with detailed customization using one of these graphs: "bar", "pie", "line" and "donut".
+ *
+ * @author Mirko Argentino
+ *
+ * @copyright BBN Solutions
+ *
+ * @created 24/05/2017
  */
-
 (($, bbn) => {
   "use strict";
 

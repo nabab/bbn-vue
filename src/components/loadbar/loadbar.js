@@ -1,6 +1,16 @@
 /**
- * Created by BBN on 07/01/2017.
+ * @file bbn-loadbar component
+ *
+ * @description bbn-loadbar component is a simple implementation component, it represents a bar with a display of wait state of a user-defined file.
+ * Next to the loading icon, you'll find the path of the file from which the response is expected.
+ *
+ * @copyright BBN Solutions
+ *
+ * @author BBN Solutions
+ *
+ * @created 15/02/2017
  */
+
 ;((bbn) => {
   "use strict";
 
@@ -51,7 +61,7 @@
       loadingItems(){
         return bbn.fn.filter(this.source, {loading: true})
       },
-      
+
       loadedItems(){
         return bbn.fn.filter(this.source, {loading: false})
       },
@@ -67,7 +77,7 @@
       currentItem(){
         return this.loadingItems.length ? this.loadingItems[0] : (this.loadedItems.length ? this.loadedItems[0] : false)
       },
-      
+
     },
     methods: {
       renderDuration(d){

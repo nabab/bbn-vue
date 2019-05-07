@@ -1,6 +1,12 @@
 /**
- * @file bbn-toolbar is a component that represents a toolbar. Very useful on a fairly large application, simplifying navigation, the dynamic bar changes automatically based on the width of the window.
+ * @file bbn-toolbar component
+ *
+ * @description bbn-toolbar is a component that represents a bar containing buttons. Each of them performs a user-defined action.
+ * Very useful for applications, simplifying navigation. Bbn-toolbar is responsive to its container.
+ *
  * @copyright BBN Solutions
+ *
+ * @author BBN Solutions
  */
 
 (function($, bbn, kendo){

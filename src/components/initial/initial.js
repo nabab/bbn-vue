@@ -1,7 +1,19 @@
 /**
- * Created by BBN on 28/03/2017.
  * Based on https://github.com/judesfernando/initial.js
  */
+
+ /**
+  * @file bbn-initial component
+  *
+  * @description bbn-initial is a component of simple implantation that allows stylistically to represent  the initials of a name as an avatars for a profile.
+  *
+  * @copyright BBN Solutions
+  *
+  * @author BBN Solutions
+  *
+  * @created 28/03/2017
+  */
+
 (function($, bbn){
   "use strict";
 

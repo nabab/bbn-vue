@@ -1,6 +1,14 @@
-/**
- * Created by BBN on 10/02/2017.
- */
+ /**
+  * @file bbn-grapes component
+  *
+  * @description
+  *
+  * @copyright BBN Solutions
+  *
+  * @author BBN Solutions
+  *
+  * @created 10/02/2017
+  */
 (function(){
   "use strict";
 

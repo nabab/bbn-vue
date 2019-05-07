@@ -1,5 +1,13 @@
 /**
- * Created by BBN on 10/02/2017.
+ * @file bbn-hierarchy component
+ *
+ * @description bbn-hierarchy is a component that shows the date hierarchically with a tree structure
+ *
+ * @copyright BBN Solutions
+ *
+ * @author BBN Solutions
+ *
+ * @created 10/02/2017
  */
 (function($, bbn){
   "use strict";

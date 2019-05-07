@@ -1,13 +1,14 @@
 /**
- * @file The bbn-colorpicker component has a field that shows the currently selected color.<br>
+ * @file bbn-colorpicker component
  *
- * Clicking on the input field displays a colored table with a set of available colors.<br>
- *
- * You can define a personal set of colors.<br>
- *
- * This component allows you to create an intuitive interface for color manipulations.
+ * @description The bbn-colorpicker component contains a field that shows the currently selected color.
+ * Clicking on the input field it displays a color chart, this set of colors can be customized by defining it in the "palette" property.
+ * This component allows you to create an intuitive interface for color manipulations
  *
  * @copyright BBN Solutions
+ *
+ * @author BBN Solutions
+ *
  */
 (($, bbn, kendo) => {
   "use strict";

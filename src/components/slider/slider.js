@@ -1,5 +1,11 @@
 /**
- * Created by BBN on 10/02/2017.
+ * @file bbn-slider component
+ *
+ * @description 
+ *
+ * @copyright BBN Solutions
+ *
+ * @author Vito Fava
  */
 (function(bbn){
   "use strict";

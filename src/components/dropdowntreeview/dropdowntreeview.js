@@ -1,6 +1,15 @@
 /**
- * Created by BBN on 13/06/2017.
+ * @file bbn-dropdowntreeview component
+ *
+ * @description bbn-dropdowntreeview is a component that represents the combination of a dropdown containing a tree structure hierarchical data.
+ *
+ * @copyright BBN Solutions
+ *
+ * @author BBN Solutions
+ *
+ * @created 13/06/2017.
  */
+
 (function($, bbn, kendo){
   "use strict";
 

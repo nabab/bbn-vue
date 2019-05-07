@@ -1,13 +1,15 @@
 /**
- * @file bbn-chat component allows the user to participate in chat sessions with other users online.
+ * @file bbn-chat component 
+ *
+ * @description bbn-chat component allows the user to participate in chat sessions with other users online.
  *
  * @author Thomas Nabet
+ *
  * @copyright BBN Solutions
+ *
+ * @created 10/02/2017.
  */
 
-/**
- * Created by BBN on 10/02/2017.
- */
 
 ((bbn, Vue) => {
   "use strict";

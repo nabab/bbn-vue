@@ -1,13 +1,16 @@
 /**
- * @file bbn-combo is a component that allows to insert data but also proposes a list of possible choices to be inserted as input.
+ * @file bbn-combo component
  *
+ * @description bbn-combo is a component that allows entering data by proposing a dynamic list of possible choices to be inserted as input.
+ * It's combines autocomplete and dropdown widgets.
  *
+ * @author BBN Solutions
+ *
+ * @copyright BBN Solutions
+ *
+ * @created 20/02/2017
  */
 
-/**
- * bbn-combo combines autocomplete and dropdown widgets.
- * Created by BBN on 10/02/2017.
- */
 (function($, bbn, kendo){
   "use strict";
 

@@ -1,11 +1,13 @@
-/**
- * Created by BBN on 13/02/2017.
- */
-
  /**
-  * @file bbn-switch is a component with easy implementation and customization that allows the user to switch between selected and unselected states, defining the value and not value.
-  *  
+  * @file bbn-switch component
+  *
+  * @description bbn-switch is a component with easy implementation and customization that allows the user to switch between selected and unselected states, defining the value and novalue in the appropriate properties.
+  *
   * @copyright BBN Solutions
+  *
+  * @author BBN Solutions
+  *
+  * @created 13/02/2017
   */
 (($, bbn) => {
   "use strict";

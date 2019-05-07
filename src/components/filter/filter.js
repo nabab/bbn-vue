@@ -1,6 +1,15 @@
-/**
- * Created by BBN on 10/02/2017.
- */
+ /**
+  * @file bbn-filter component
+  *
+  * @description bbn-filter represents a control panel made up of several elements as far as the application of more filters on a given content.
+  * Used on the "bbn-table" component
+  *
+  * @copyright BBN Solutions
+  *
+  * @author BBN Solutions
+  *
+  * @created 10/02/2017.
+  */
 (function($, bbn){
   "use strict";
 /**@todo add prefix for flexbox and inline flex http://ptb2.me/flexbox/ also for justify content and align items*/

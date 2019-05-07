@@ -1,6 +1,15 @@
 /**
- * Created by BBN on 15/02/2017.
+ * @file bbn-loader component
+ *
+ * @description The bbn-loader component has the purpose of graphically displaying a wait for the user with a simple implementation, asking to wait while something ends before being able to proceed.
+ *
+ * @copyright BBN Solutions
+ *
+ * @author BBN Solutions
+ *
+ * @created 15/02/2017
  */
+
 (function($, bbn){
   "use strict";
 

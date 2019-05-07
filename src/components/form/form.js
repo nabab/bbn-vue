@@ -1,8 +1,18 @@
 /**
- * component bbn-form
+ * @file bbn-form component
  *
- * Created by BBN on 10/02/2017.
+ * @description bbn-form is a component with great potential for data management.
+ * Simple and unambiguous in implementation, it allows you to quickly generate and process web forms based also on Ajax with a set of elements.
+ * The component provides, among other things, the possibility of distinguishing the constant data with those modified or inserted by the user before the predetermined action and then unifying them when sending.
+ * Furthermore, if you wish, you can define validation, custom control or process data before being sent to the back-end system.
+ * It simplifies the processing of data in the module and provides a ready-to-use mechanism for saving or not storing data on the server.
+ * Allowing the possibility to implement any action you want.
+ *
+ * @copyright BBN Solutions
+ *
+ * @author BBN Solutions
  */
+
 (function($, bbn){
   "use strict";
 
@@ -225,7 +235,7 @@
         popup: false,
         popupIndex: false,
         tab: false,
-        originalData: bbn.fn.clone(this.source),    
+        originalData: bbn.fn.clone(this.source),
         isPosted: false,
         isLoading: false,
         currentSchema: currentSchema

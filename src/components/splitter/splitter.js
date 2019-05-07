@@ -1,6 +1,16 @@
 /**
- * Created by BBN on 15/02/2017.
+ * @file bbn-splitter component
+ *
+ * @description bbn-splitter is a component that can interact dynamically, allowing the division of a layout into resizable areas.
+ * To do so it needs another component, the "bbn-pane" that represents the portion of the single area that the splitter contains.
+ *
+ * @copyright BBN Solutions
+ *
+ * @author BBN Solutions
+ * 
+ * @created 15/02/2017
  */
+
 (function(bbn){
   "use strict";
 
@@ -15,7 +25,7 @@
         default: 'auto'
       },
       /**
-       * @property {boolean} 
+       * @property {boolean}
        */
       resizable: {
         type: Boolean,
@@ -43,7 +53,7 @@
         default: 15
       },
       /**
-       * @property {string, function} a class name to add on the resizer element 
+       * @property {string, function} a class name to add on the resizer element
        */
       resizerClass: {
         type: [String, Function]
@@ -167,7 +177,7 @@
             lastVisibleResizer = false,
             tmp = this.panes.map((a) => {
                   /**
-                   * The additions of the 3 differences: 
+                   * The additions of the 3 differences:
                    * - currentDiff is the current difference while resizing
                    * - savedDiff is the original difference resulting from other resizings
                    * - tmpDiff is the temporary difference applied from other(s) collapsed pane(s)

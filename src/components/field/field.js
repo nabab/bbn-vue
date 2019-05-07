@@ -1,6 +1,14 @@
-/**
- * Created by BBN on 15/02/2017.
- */
+ /**
+  * @file bbn-field component
+  *
+  * @description bbn-field is a generic component with easy implantation, seen to have a generic component that turns into a well-defined value into other components assigned to the "type" property.
+  *
+  * @copyright BBN Solutions
+  *
+  * @author BBN Solutions
+  *
+  * @created 15/02/2017.
+  */
 ((bbn) => {
 
   "use strict";

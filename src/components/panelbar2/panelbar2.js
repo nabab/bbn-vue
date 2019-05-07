@@ -1,3 +1,15 @@
+/**
+ * @file bbn-panelbar component
+ *
+ * @description bbn-panelbar it's a component that configures itself easily, it allows to visualize the data in a hierarchical way expandable to levels.
+ * It can contain texts, html elements and even Vue components, the latter can be inserted both on its content but also as a header.
+ * Those who use this component have the possibility to see schematically their data with the maximum simplicity of interpretation.
+ *
+ * @copyright BBN Solutions
+ *
+ * @author Loredana Bruno
+ */
+
 (function (bbn) {
   "use strict";
 
@@ -19,7 +31,7 @@
       items: {
         type: [Array]
       },
-      
+
     },
     data() {
       return {
@@ -37,7 +49,7 @@
         }
         this.$emit('select', this.source[idx])
       },
-        
+
       toggle(idx){
         this.show = !this.show;
         if ( this.show === true ){
@@ -57,7 +69,7 @@
       leave: function (el) {
         //el.style.height = '0';
       }
-      
+
     },
     computed: {
       text() {
@@ -72,7 +84,7 @@
       }
     },
     watch: {
-      
+
     }
   });
 

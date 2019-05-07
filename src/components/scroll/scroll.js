@@ -1,11 +1,13 @@
-/**
- * Created by BBN on 10/02/2017.
- */
-
  /**
-  * @file bbbn-scrool is a component consisting of both horizontal and vertical bars, allowing the flow of content in both directions.
-  * 
+  * @file bbn-scroll component
+  *
+  * @description bbn-scrool is a component consisting of horizontal and vertical bars that allow the flow of content in both directions, if the container its smaller than the content, inserts and removes reactively vertical, horizontal bar or both.
+  *
   * @copyright BBN Solutions
+  *
+  * @author BBN Solutions
+  *
+  * @created 10/02/2017
   */
 
 (function($, bbn){

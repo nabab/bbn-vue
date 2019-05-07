@@ -1,14 +1,14 @@
 /**
- * @file bbn-list displays a list of data.
- * <br>What represents can have a hierarchical structure.
- * <br>It can be used as a menu to perform actions. Each bbn-list item can also be a custom component.
+ * @file bbn-list component
  *
+ * @description bbn-list displays a list of data.
+ * What represents can have a hierarchical structure.
+ * It can be used as a menu to perform actions.
+ * Each bbn-list item can also be a custom component.
  *
- */
-
-
-/**
- * Created by BBN on 10/02/2017.
+ * @copyright BBN Solutions
+ *
+ * @created 10/02/2017
  */
 
 

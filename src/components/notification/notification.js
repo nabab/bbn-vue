@@ -1,5 +1,13 @@
 /**
- * Created by BBN on 11/01/2017.
+ * @file bbn-notification component
+ *
+ * @description bbn-notification is a component that allows the display of a brief information message, for example to confirm the success of an action that has taken place.
+ *
+ * @author BBN Solutions
+ *
+ * @copyright BBN Solutions
+ *
+ * @created 11/01/2017
  */
 (function($, bbn, kendo){
   "use strict";

@@ -1,6 +1,18 @@
+
 /**
- * Created by BBN on 15/02/2017.
+ * @file bbn-popup component
+ *
+ * @description bbn-popup is a component very similar to a desktop window of an operating system.
+ * Inside you can show what you wish, even the components with its information.
+ * Its potential lies in the fact that it emphasizes with a particular attention that portion of information that we want to see, enclosed in a window that can be opened or closed upon request.
+ *
+ * @copyright BBN Solutions
+ *
+ * @author BBN Solutions
+ * 
+ * @created 15/02/2017
  */
+
 (function($, bbn){
   "use strict";
 

@@ -1,5 +1,11 @@
 /**
- * Created by BBN on 15/02/2017.
+ * @file bbn-floater component
+ *
+ * @description 
+ *
+ * @author BBN Solutions
+ *
+ * @copyright BBN Solutions
  */
 (function(Vue, bbn){
   "use strict";

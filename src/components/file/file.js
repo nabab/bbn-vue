@@ -1,6 +1,15 @@
-/**
- * Created by BBN on 13/06/2017.
- */
+ /**
+  * @file bbn-file component
+  *
+  * @description
+  *
+  * @copyright BBN Solutions
+  *
+  * @author BBN Solutions
+  *
+  * @created 13/06/2017.
+  */
+ 
 (($, bbn) => {
   "use strict";
 
@@ -164,7 +173,7 @@
                 file.event('progress', (sent, total) => {
                   this.progress = Math.round(sent / total * 100);
                 });
-                
+
                 file.sendTo(this.saveUrl, { xRequestedWith: 'XMLHttpRequest'});
                 bbn.fn.log(file);
                 this.files.push(file);

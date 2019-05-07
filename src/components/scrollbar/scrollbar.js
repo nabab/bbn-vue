@@ -1,5 +1,13 @@
 /**
- * Created by BBN on 10/07/2017.
+ * @file bbn-scrollbar component
+ *
+ * @description 
+ *
+ * @copyright BBN Solutions
+ *
+ * @author BBN Solutions
+ *
+ * @created 10/07/2017
  */
 (function($, bbn, Vue){
   "use strict";

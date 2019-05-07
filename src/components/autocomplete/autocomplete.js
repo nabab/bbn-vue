@@ -1,6 +1,13 @@
 /**
- * @file An input field completely customizable that provides suggestions on the typed text
+ * @file bbn-autocomplete component
+ *
+ * @description An input field completely customizable that provides suggestions on the typed text
+ *
+ * @copyright BBN Solutions
+ *
+ * @author BBN Solutions
  */
+
 (function($, bbn, kendo){
   "use strict";
 

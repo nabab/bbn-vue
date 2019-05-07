@@ -1,5 +1,12 @@
 /**
- * @file bbn-button is a very simple component to use; you can configure the appearance of the button to display only the text, icon or combination of both and allows you to define the actions to be performed.
+ * @file bbn-button component
+ *
+ * @description bbn-button is a very simple component to use; it is possible to configure the appearance of the button by defining its properties as desired, for example: displaying only text, the icon or the combination of both.
+ * Defines the actions to be performed.
+ *
+ * @copyright BBN Solutions
+ *
+ * @author BBN Solutions
  */
 (function(bbn){
   "use strict";

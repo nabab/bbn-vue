@@ -1,9 +1,13 @@
 /**
- * @file bbn-code is a text editor. He specializes in changing and creating the code of a specific supported language.<br>
+ * @file bbn-code component
  *
- * Among the various configurations the user can change the subject based on his own needs.
+ * @description bbn-code is a text editor.
+ * It specialized in editing the code of a supported language. 
+ * Provides various tools useful to the user, among the various configurations the user can change the theme according to his needs.
  *
- *  @copyright BBN Solutions
+ * @author BBN Solutions
+ *
+ * @copyright BBN Solutions
  */
 
 

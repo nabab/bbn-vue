@@ -1,6 +1,16 @@
 /**
- * Created by BBN on 15/02/2017.
+ * @file the bbn-pane component
+ *
+ * @description the bbn-pane is a component created to be operated by "bbn-splitter".
+ * It represents the portion of the single area of ​​the splitter that will contain what the user desires.
+ *
+ * @author BBN Solutions
+ *
+ * @copyright BBN Solutions
+ *
+ * @created 15/02/2017
  */
+
 (function($, bbn){
   "use strict";
 

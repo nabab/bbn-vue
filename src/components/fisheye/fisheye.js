@@ -1,5 +1,14 @@
 /**
- * @file Is a configurable horizontal menu ideal to manage shortcuts.
+ * @file bbn-fisheye component
+ *
+ * @description bbn-fisheye is a component that represents a horizontal menu consisting of a single line, ideal for managing shortcuts.
+ * The items are all in one level and are represented only by icons.
+ * Extremely easy to implement, each element can perform an action that we define as a link.
+ * Great for those who want a menu that is always available and easy to use when choosing the desired item.
+ *
+ * @author BBN Solutions
+ * 
+ * @copyright BBN Solutions
  */
 (function($, bbn){
   "use strict";

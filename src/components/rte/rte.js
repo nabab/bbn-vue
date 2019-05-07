@@ -1,6 +1,15 @@
 /**
- * Created by BBN on 11/01/2017.
+ * @file bbn-rte component
+ *
+ * @description bbn-rte is a component that provides users with a range of options to insert and format text as desired, automatically displaying them as a preview.
+ *
+ * @author BBN Solutions
+ *
+ * @copyright BBN Solutions
+ *
+ * @created 11/01/2017
  */
+
 (function($){
   "use strict";
 
@@ -38,7 +47,7 @@
             ['unorderedList', 'orderedList'],
             ['horizontalRule'],
             ['fullscreen'],
-            
+
           ];
         }
       },

@@ -1,6 +1,17 @@
 /**
- * Created by BBN on 18/07/2018.
+ * @file bbn-colorpicker component
+
+ * @description The bbn-colorpicker component contains a field that shows the currently selected color.
+ * Clicking on the input field it displays a color chart, this set of colors can be customized by defining it in the "palette" property.
+ * This component allows you to create an intuitive interface for color manipulations
+ *
+ * @copyright BBN Solutions
+ *
+ * @author BBN Solutions
+ *
+ * @created 18/07/2018
  */
+
 (($, bbn) => {
   "use strict";
   Vue.component('bbn-colorpicker2', {

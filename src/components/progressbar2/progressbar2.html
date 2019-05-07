@@ -1,0 +1,30 @@
+<div :class="componentClass" 
+      :style="orientationStyle"
+      type="type"
+>
+  <div :class="['bbn-widget', 'bbn-progressbar' , { 
+    'bbn-progressbar-horizontal' : (orientation === 'horizontal'),
+    'bbn-progressbar-vertical' : (orientation === 'vertical'),
+    'bbn-reverse-bar': reverse
+  }]" 
+       :value="value">
+    <div class="bbn-wrap" 
+         style="height: 100%;border: 0;"
+    >
+      <div class="bbn-progress-status" v-text="showValue ? (value + ( showUnit ? unit : '' ) ) : ''"></div>
+    </div>
+    <div class="bbn-state-selected"
+         :style="style"
+         v-if="type !== 'chunk'"
+    >
+      
+    </div>
+    
+    <div v-else class="chunk" 
+          :style="chunkStyle" 
+    >
+      <div :class="['block', {'bbn-state-selected': n <= selectedChunks}]" v-for="n in chunknumber"></div>
+    </div> 
+    
+  </div>
+</div>

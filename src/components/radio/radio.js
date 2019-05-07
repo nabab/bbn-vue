@@ -1,6 +1,17 @@
 /**
- * Created by BBN on 13/02/2017.
+ * @file bbn-radio component
+ *
+ * @description bbn-radio is a component that can be used as an interactive value choice, that can be activated or deactivated.
+ * This is very useful for selecting a particular choice from a certain range of options.
+ * In addition it's possible to easily customize the component, using the specific properties.
+ *
+ * @copyright BBN Solutions
+ *
+ * @author BBN Solutions
+ *
+ * @created 13/02/2017
  */
+
 (function($, bbn){
   "use strict";
   Vue.component('bbn-radio', {

@@ -1,6 +1,15 @@
-/**
- * Created by BBN on 13/06/2017.
- */
+ /**
+  * @file bbn-upload component
+  *
+  * @description bbn-upload is a component that allows users to send files from their file system by selecting it, using drag and drop or with keyboard shortcut, to the server that are configured to receive it.
+  *
+  * @author Mirko Argentino
+  *
+  * @copyright BBN Solutions
+  *
+  * @cretaed 13/06/2017
+  */
+
 (($, bbn) => {
   "use strict";
 

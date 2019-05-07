@@ -1,8 +1,11 @@
 /**
- * @file The bbn-calendar component is a modern calendar, easy to implement, it allows you to select the date in an intuitive way with the possibility of inserting reminders and providing details of the day as events.
+ * @file bbn-calendar component
+ *
+ * @description The bbn-calendar component is a modern calendar, easy to implement, it allows you to select the date in an intuitive way with the possibility of inserting reminders and providing details of the day as events.
+ *
+ * @copyright BBN Solutions
  *
  * @author Mirko Argentino
- * @copyright BBN Solutions
  */
 
 (($, bbn) => {

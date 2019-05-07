@@ -1,6 +1,15 @@
 /**
- * Created by BBN on 10/02/2017.
+ * @file bbn-operataor component
+ *
+ * @description 
+ *
+ * @copyright BBN Solutions
+ *
+ * @author BBN Solutions
+ *
+ * @created 10/02/2017
  */
+
 (function(bbn){
   "use strict";
   Vue.component('bbn-operator', {

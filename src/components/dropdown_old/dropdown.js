@@ -1,8 +1,15 @@
 /**
- * bbn-dropdown component
+ * @file bbn-dropdown component
  *
- * Created by BBN on 10/02/2017.
+ * @description the easy-to-implement bbn-dropdown component lets you choose a single default value from a user-supplied list.
+ *
+ * @copyright BBN Solutions
+ *
+ * @author BBN Solutions
+ *
+ * @created 10/02/2017.
  */
+
 (function($, bbn, kendo){
   "use strict";
 

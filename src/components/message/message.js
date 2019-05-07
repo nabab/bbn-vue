@@ -1,5 +1,13 @@
 /**
- * Created by BBN on 07/01/2017.
+ * @file bbn-message component
+ *
+ * @description 
+ *
+ * @copyright BBN Solutions
+ *
+ * @author BBN Solutions
+ *
+ * @created 10/01/2017
  */
 (function($, bbn){
   "use strict";

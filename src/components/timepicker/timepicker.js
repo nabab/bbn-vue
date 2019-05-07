@@ -1,6 +1,15 @@
 /**
- * Created by BBN on 10/02/2017.
+ * @file bbn-timepicker component
+ *
+ * @description bbn-timepicker is a component that can be customized allowing, in a  simple way, to select a single value from a predetermined set or manually, entering data in a time format.
+ *
+ * @copyright BBN Solutions
+ *
+ * @author BBN Solutions
+ *
+ * @created 103/02/2017.
  */
+
 (function($, bbn, kendo){
   "use strict";
 

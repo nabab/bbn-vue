@@ -1,6 +1,17 @@
 /**
- * Created by BBN on 10/02/2017.
+ * @file bbn-multiselect component
+ *
+ * @description bbn-multiselect represents a text box with a drop-down menu to select or  deselect multiple values ​​from the proposed and provided list.
+ * Based on what the user writes, the proposal menu becomes dynamic by returning the result filtered based on what it has been written up to that point.
+ * The data can be given either by supplying an array or a url, expecting a response.
+ * 
+ * @author BBN Solutions
+ *
+ * @copyright BBN Solutions
+ *
+ * @created 10/02/2017
  */
+
 (function($, bbn, kendo){
   "use strict";
 

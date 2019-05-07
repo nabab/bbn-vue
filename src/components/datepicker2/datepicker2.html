@@ -1,5 +1,5 @@
 <span :class="[componentClass, 'bbn-textbox']">
-  <bbn-masked :value="ivalue"
+  <bbn-masked :value="inputValue"
               ref="element"
               :disabled="disabled"
               :readonly="readonly"
@@ -12,7 +12,7 @@
               @keyup="keyup($event)"
               @mouseenter="over($event)"
               @mouseleave="out($event)"      
-              :mask="mask"
+              :mask="currentMask"
   ></bbn-masked>
   <bbn-button icon="nf nf-fa-calendar"
               @click="isOpened = !isOpened"
@@ -24,7 +24,7 @@
                @close="isOpened = false"
   >
     <bbn-calendar2 :arrows-buttons="false"
-                   @selected="setValue"
+                   @selected="setDate"
                    :value="value"
                    :selection="true"
                    :auto-selection="true"

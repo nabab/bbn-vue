@@ -1,5 +1,13 @@
 /**
- * Created by BBN on 15/02/2017.
+ * @file bbn-widget component
+ *
+ * @description bbn-widget designed to be used in the bbn-dashboard component, it represents a information container. This component can contain, for example: a list of information or a component. The usefulness of this easy-to-implement component is to group the information. Together with other  bbn-widget used in the "bbn-dashboard", provides the overview of the information the user wants to see.
+ *
+ * @copyrigth BBN Soutions
+ *
+ * @author BBN Solutions
+ *
+ * @created 15/02/2017.
  */
 (function($, bbn){
   "use strict";
