@@ -129,6 +129,8 @@
         return ret;
       },
       getPos(event, pos){
+        bbn.fn.log('aaaaaaaa', pos);
+        let originalPos = pos;
         if ( (pos < 0) ){
           pos = 0;
         }
@@ -145,7 +147,8 @@
             pos++;
           }
         }
-        return pos;
+        bbn.fn.log('bbbbbbbb', (pos < 0) || (pos > this.maxPos) ? originalPos : pos);
+        return (pos < 0) || (pos > this.maxPos) ? originalPos : pos;
       },
       keydown(event){
         bbn.fn.log('keydown', event);
@@ -164,15 +167,44 @@
           event.preventDefault();
           return;
         }
-        this.$refs.element.selectionEnd = this.getPos(event, this.$refs.element.selectionEnd);
+        let pos = this.getPos(event, this.$refs.element.selectionStart);
+        if ( 
+          event.shiftKey &&
+          (
+            (event.keyCode !== 35) ||
+            (event.keyCode !== 36) ||
+            (event.keyCode !== 37) ||
+            (event.keyCode === 39)
+          )
+        ){
+          this.$refs.element.selectionStart = pos;
+        }
+        else {
+          this.$refs.element.setSelectionRange(pos, pos);
+        }
       },
       keyup(event){
-        let pos = this.$refs.element.selectionEnd;
+        bbn.fn.log('keyup', event);
+        let pos = this.$refs.element.selectionStart;
         this.emitInput(this.raw());
         this.$nextTick(() => {
           this.setInputvalue();
           this.$nextTick(() => {
-            this.$refs.element.selectionEnd = this.getPos(event, pos);
+            pos = this.getPos(event, pos);
+            if ( 
+              event.shiftKey &&
+              (
+                (event.keyCode !== 35) ||
+                (event.keyCode !== 36) ||
+                (event.keyCode !== 37) ||
+                (event.keyCode === 39)
+              )
+            ){
+              this.$refs.element.selectionStart = pos;
+            }
+            else {
+              this.$refs.element.setSelectionRange(pos, pos);
+            }
           });
         });
       },
