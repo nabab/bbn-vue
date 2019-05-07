@@ -1,10 +1,14 @@
 /**
- * Created by BBN Solutions.
- * User: Mirko Argentino
- * Date: 24/05/2017
- * Time: 15:45
+ * @file bbn-video component
+ *
+ * @description bbn-video is a interface player that allows the execution and viewing of multimedia files.
+ *
+ * @copyrigth BBN Soutions
+ *
+ * @author Mirko Argentino
+ *
+ * @created 24/05/2017.
  */
-
 ((videojs) => {
   "use strict";
 

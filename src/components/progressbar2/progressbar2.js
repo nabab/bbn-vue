@@ -94,6 +94,12 @@
       showUnit: {
         type: Boolean,
         default: true
+      },
+      valuePosition: {
+        type: String,
+        default: 'right' 
+        //allowed values 'left', 'center', 'right', 'top', 'bottom'
+
       }
     },
     data(){
@@ -118,7 +124,15 @@
          * @data {Number} [0] selectedChunks
          */
         selectedChunks: 0,
-        chunkStyle : ''
+        /**
+         * Defines the style of the bar when type is set to 'chunk'
+         * @data {String} [''] chunkStyle
+         */
+        chunkStyle : '',
+        /**
+         * Defines the class for the alignment of the value in the bar depending on the orientation and on the prop valuePosition
+         */
+        realValuePosition: ''
       }
     },
     computed: {
@@ -143,7 +157,7 @@
           st += 'height:' + this.value  + '%;'
         }
         if ( this.barColor ){
-          st += 'background-color: ' + this.barColor + ';border-color: '+ this.barColor
+          st += 'background-color: ' + this.barColor + '!important;border-color: '+ this.barColor + '!important;'
         }
         return st;
       }
@@ -166,6 +180,15 @@
       let st = 'margin: auto;';
       if ( this.orientation === 'vertical' ){
         st += 'width: 1.9em; min-height: ' + this.height + 'px'
+        if ( this.valuePosition === 'right' ){
+          this.realValuePosition = 'top';
+        }
+        else{
+          this.realValuePosition = this.valuePosition;  
+        }
+      }
+      else {
+        this.realValuePosition = this.valuePosition;
       }
       this.orientationStyle = st;
       
@@ -187,7 +210,7 @@
             this.chunkStyle += 'grid-template-columns:repeat(' + this.chunknumber + ', 1fr);grid-template-rows: 1fr';
           }
           else{
-            this.chunkStyle += 'grid-template-rows:repeat(' + this.chunknumber + ',1fr);grid-template-columns: 1fr';
+            this.chunkStyle += 'grid-template-rows:repeat(' + this.chunknumber + ',1fr);grid-template-columns: 1fr; min-height: '+ this.height + 'px';
           }
         }
      }

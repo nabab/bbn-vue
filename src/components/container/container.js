@@ -1,7 +1,7 @@
 /**
  * @file bbn-container component
  *
- * @description 
+ * @description bbn-container is a component that can be used by a bbn-tabnav and not. It represents a container, uniquely identifiable, that contains what the user wants.
  *
  * @author BBN Solutions
  *
@@ -10,10 +10,6 @@
  * @created 15/02/2017
  */
 
-
-/**
- * Created by BBN on 15/02/2017.
- */
 (function($, bbn, Vue){
   "use strict";
 

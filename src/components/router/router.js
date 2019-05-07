@@ -1,5 +1,11 @@
 /**
- * Created by BBN on 15/02/2017.
+ * @file bbn-router component
+ *
+ * @description bbn-router is a component that allows and manages the navigation between the various containers of an application
+ *
+ * @copyright BBN Solutions
+ *
+ * @author BBN Solutions
  */
 (function($, bbn, Vue){
   "use strict";
@@ -31,7 +37,7 @@
         type: Boolean,
         default: true
       },
-      // 
+      //
       url: {
         type: String,
         default: ''
@@ -154,7 +160,7 @@
           if ( this.auto ){
             this.route(this.parseURL(this.parent ? this.router.getFullCurrentURL() : bbn.env.path), true);
           }
-    
+
         }
       },
       /**
@@ -793,7 +799,7 @@
         else{
           this.realRoute(url, st, true);
         }
-  
+
       },
 
       load(url, force){

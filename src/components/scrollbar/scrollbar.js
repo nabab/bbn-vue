@@ -1,7 +1,7 @@
 /**
  * @file bbn-scrollbar component
  *
- * @description 
+ * @description bbn-scroolbar represents the scroll bar of the content 'it is used by the bbn-scroll component appearing in case of passing of the mouse pointer
  *
  * @copyright BBN Solutions
  *

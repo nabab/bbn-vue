@@ -1,5 +1,13 @@
 /**
- * Created by BBN on 15/02/2017.
+ * @file bbn-window component
+ *
+ * @description The bbn-window is the container that allows the display of the content in an HTML modal window.
+ *
+ * @copyright BBN Solutions
+ *
+ * @author BBN Solutions
+ *
+ * @created 15/02/2017
  */
 (function(bbn){
   "use strict";

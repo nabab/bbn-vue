@@ -19,7 +19,8 @@
     props: {
       mask: {
         type: String,
-        required: true
+        required: true,
+        validator: val => !!val.length
       },
       promptChar: {
         type: String,
@@ -82,14 +83,10 @@
       }
     },
     computed: {
-      maxLength(){
-        let l = 0;
-        bbn.fn.each([...this.mask], (c, i) => {
-          if ( this.patterns[c] && this.patterns[c].pattern ){
-            l++;
-          }
-        });
-        return l;
+      maxLen(){
+        return [...this.mask].filter((c) => {
+          return this.patterns[c] && this.patterns[c].pattern;
+        }).length;
       },
       bannedPos(){
         let pos = [];
@@ -99,6 +96,9 @@
           }
         });
         return pos;
+      },
+      maxPos(){
+        return this.mask.length;
       }
     },
     methods: {
@@ -128,38 +128,53 @@
         });
         return ret;
       },
-      keydown(event){
-        bbn.fn.log('aaa', event);
-        let pos = this.$refs.element.selectionEnd;
+      getPos(event, pos){
+        if ( (pos < 0) ){
+          pos = 0;
+        }
+        else if ( pos > this.maxPos ){
+          pos = this.maxPos;
+        }
         if ( (event.keyCode === 8) || (event.keyCode === 37) ){
+          while ( (pos > 0) && this.bannedPos.includes(event.type === 'keydown' ? pos - 1 : pos) ){
             pos--;
+          }
         }
         else {
-          pos++;
+          while ( (pos < this.maxPos) && this.bannedPos.includes(pos) ){
+            pos++;
+          }
         }
-        if ( !this.patterns[this.mask.charAt(pos)] ){
-          this.$refs.element.selectionEnd = pos;
+        return pos;
+      },
+      keydown(event){
+        bbn.fn.log('keydown', event);
+        if ( 
+          (event.keyCode !== 8) &&
+          (event.keyCode !== 35) &&
+          (event.keyCode !== 36) &&
+          (event.keyCode !== 37) &&
+          (event.keyCode !== 39) &&
+          (
+            (this.value.length >= this.maxLen) || 
+            ((this.size !== undefined) && (this.value.length >= this.size)) ||
+            ((this.maxlength !== undefined) && (this.value.length >= this.maxlength))
+          )
+        ){
+          event.preventDefault();
+          return;
         }
+        this.$refs.element.selectionEnd = this.getPos(event, this.$refs.element.selectionEnd);
       },
       keyup(event){
-        let pos = this.$refs.element.selectionEnd,
-            val = this.raw(),
-            len = val.length;
-        this.emitInput(val);
+        let pos = this.$refs.element.selectionEnd;
+        this.emitInput(this.raw());
         this.$nextTick(() => {
           this.setInputvalue();
           this.$nextTick(() => {
-            if ( !this.patterns[this.mask.charAt(pos)] ){
-              if ( (event.keyCode === 8) || (event.keyCode === 37) ){
-                 pos--;
-              }
-              else {
-                pos++;
-              }
-            }
-            this.$refs.element.selectionEnd = pos;
-          })
-        })
+            this.$refs.element.selectionEnd = this.getPos(event, pos);
+          });
+        });
       },
       raw(){
         let ret = '',

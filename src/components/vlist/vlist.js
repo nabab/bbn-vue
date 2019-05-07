@@ -1,5 +1,13 @@
 /**
- * Created by BBN on 15/02/2017.
+ * @file bbn-vlist component
+ *
+ * @description bbn-vlist represents a vertical list of possible actions to be performed.This list can be nested hierarchically.
+ *
+ * @copyrigth BBN Soutions
+ *
+ * @author BBN Soutions
+ *
+ * @created 15/52/2017.
  */
 (function($, bbn){
   "use strict";
