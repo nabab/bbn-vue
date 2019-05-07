@@ -1,0 +1,107 @@
+.bbn-progressbar{
+  &.bbn-progressbar-wrap{
+    display: inline-block;
+    position: relative;
+    vertical-align: middle;
+    .bar-wrap{
+      position: absolute;
+      border: 1px solid transparent;
+      line-height: 2em;
+      height: 100%;
+    }
+    .chunk{
+      display: grid;
+      grid-gap: 1px;
+      
+    }
+    .bbn-progress-status{
+      z-index: 1;
+    }
+    &.bbn-progressbar-vertical{
+      width: 1.9em;
+     // min-height: 500px;
+      .bbn-wrap{
+        &.top{
+          .bbn-progress-status{
+            top:10px;
+          }
+        }
+        &.bottom{
+          .bbn-progress-status{
+            bottom: 10px;
+          }
+        }
+        &.center{
+          .bbn-progress-status{
+            bottom: 49%;
+          }
+        }
+        .bbn-progress-status{
+          position: absolute;
+          z-index: 999;
+          left: 0;
+          display: unset;
+          writing-mode: vertical-lr;
+          line-height: 1.9em;
+          
+        }
+      }
+      
+      .chunk {
+        height: 100%;
+        div.block{
+          width: 100%
+        }
+      }
+    }
+  
+    &.bbn-progressbar-horizontal{
+      &.bbn-reverse-bar{
+        /*.bbn-wrap{
+          left:10px;
+        }*/
+        
+      
+      }
+      .chunk {
+        width: 100%;
+        div.block{
+          height: 100%;
+        
+        }
+      }
+      height: 1.9em;
+      width: 100%;
+      .bbn-wrap{
+        position: absolute;
+        height: 100%;
+        width: 100%;
+
+        z-index: 999;
+        color: contrast();
+        //text-align: right;
+        line-height: 1.9em;
+        &.left{
+          .bbn-progress-status{
+            text-align: left;
+          }
+        }
+        &.center{
+          .bbn-progress-status{
+            text-align: center;
+          }
+          //position: relative;
+          //margin-left: auto;
+          //margin-right: auto;
+          //text-align: center;
+        }
+        &.right{
+          .bbn-progress-status{
+            text-align: right;
+          }
+          
+        }
+      }
+    }
+  }
+}

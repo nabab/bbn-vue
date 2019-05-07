@@ -1,11 +1,37 @@
 
+  <div :class="['bbn-widget', componentClass, 'bbn-progressbar-wrap', { 
+    'bbn-progressbar-horizontal' : (orientation === 'horizontal'),
+    'bbn-progressbar-vertical' : (orientation === 'vertical'),
+    'bbn-reverse-bar': reverse
+  }]" 
+    :style="orientationStyle"
+    type="type"
+  >
+    <div :class="['bbn-wrap', realValuePosition]" 
+         style="height: 100%;border: 0;"
+    >
+      <div :class="['bbn-progress-status', {'bbn-hspadded': (orientation === 'horizontal')}]" 
+            v-text="showValue ? (value + ( showUnit ? unit : '' ) ) : ''"
+            :style="textColor.length ? 'color: '+ textColor : ''"
+      ></div>
+    </div>
+    <div class="bbn-background-effect-primary bbn-overlay"
+         :style="style"
+         v-if="type !== 'chunk'"
+    >
+      
+    </div>
+    
+    <div v-else class="chunk bbn-overlay" 
+          :style="chunkStyle" 
+    >
+      <div :class="['block', {
+              'bbn-background-effect-primary': !barColor.length && ( ((!reverse) && (n <= selectedChunks)) || ((reverse) && (n > chunknumber - selectedChunks)))
+            }]" 
+            :style="barColor.length && ( ((!reverse) && (n <= selectedChunks)) || ((reverse) && (n > chunknumber - selectedChunks))) ? 'background-color:'+ barColor : ''"
+          v-for="n in chunknumber"></div>
+    </div> 
+    
+  </div>
 
 
-<span :class="componentClass">
-  <span :value="value"
-        :name="name"
-        ref="element"
-        :disabled="disabled"
-        style="width:100%"
-  ></span>
-</span>
