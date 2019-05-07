@@ -79,7 +79,8 @@
 
           }
         },
-        inputValue: ''
+        inputValue: '',
+        lastPosition: 0
       }
     },
     computed: {
@@ -103,7 +104,9 @@
     },
     methods: {
       setInputvalue(){
+        this.inputValue = '';
         this.inputValue = this.getInputValue();
+        this.$forceUpdate();
       },
       getInputValue(){
         let ret = '',
@@ -152,6 +155,9 @@
       },
       keydown(event){
         bbn.fn.log('keydown', event);
+        if ( event.keyCode === 16 ){
+          return;
+        }
         if ( 
           (event.keyCode !== 8) &&
           (event.keyCode !== 35) &&
@@ -171,22 +177,32 @@
         if ( 
           event.shiftKey &&
           (
-            (event.keyCode !== 35) ||
-            (event.keyCode !== 36) ||
-            (event.keyCode !== 37) ||
+            (event.keyCode === 35) ||
+            (event.keyCode === 36) ||
+            (event.keyCode === 37) ||
             (event.keyCode === 39)
           )
         ){
           this.$refs.element.selectionStart = pos;
         }
         else {
+          if ( this.isValidKey(event.keyCode) && !this.isValidChar(event.key, pos) ){
+            event.preventDefault();
+            return;
+          }
           this.$refs.element.setSelectionRange(pos, pos);
         }
       },
       keyup(event){
         bbn.fn.log('keyup', event);
-        let pos = this.$refs.element.selectionStart;
-        this.emitInput(this.raw());
+        let pos = this.$refs.element.selectionStart,
+            val = this.raw(),
+            oldVal = this.value;
+        
+        if ( event.keyCode === 16 ){
+          return;
+        }
+        this.emitInput(val);
         this.$nextTick(() => {
           this.setInputvalue();
           this.$nextTick(() => {
@@ -194,9 +210,9 @@
             if ( 
               event.shiftKey &&
               (
-                (event.keyCode !== 35) ||
-                (event.keyCode !== 36) ||
-                (event.keyCode !== 37) ||
+                (event.keyCode === 35) ||
+                (event.keyCode === 36) ||
+                (event.keyCode === 37) ||
                 (event.keyCode === 39)
               )
             ){
@@ -224,6 +240,24 @@
           });
         }
         return ret;
+      },
+      isValidChar(char, pos){
+        let k = this.mask.charAt(pos);
+        return this.patterns[k] && this.patterns[k].pattern && char.match(this.patterns[k].pattern);
+      },
+      isValidKey(keyCode){
+        switch ( keyCode ){
+          case 46: //Canc
+          case 39: //ArrowRight
+          case 37: //ArrowLeft
+          case 36: //Home
+          case 35: //End
+          case 16: //Shift
+          case 8: //Backspace
+            return false;
+          default:
+            return true;
+        }
       }
     },
     mounted(){
