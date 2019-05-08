@@ -1,7 +1,7 @@
 /**
  * @file bbn-window component
  *
- * @description The bbn-window is the container that allows the display of the content in an HTML modal window.
+ * @description The bbn-window is a component that represents a modal window in which it is possible to show the content.
  *
  * @copyright BBN Solutions
  *

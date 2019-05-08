@@ -1,7 +1,7 @@
 /**
  * @file bbn-router component
  *
- * @description bbn-router is a component that allows and manages the navigation between the various containers of an application
+ * @description bbn-router is a component that allows and manages the navigation (url) between the various containers of an application
  *
  * @copyright BBN Solutions
  *

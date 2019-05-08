@@ -1,8 +1,9 @@
  /**
   * @file bbn-filter component
   *
-  * @description bbn-filter represents a control panel made up of several elements as far as the application of more filters on a given content.
-  * Used on the "bbn-table" component
+  * @description bbn-filter represents a control panel composed of several elements.
+  * The purpose of this component is to apply more filters to a given content.
+  * Used on the "bbn-table" component.
   *
   * @copyright BBN Solutions
   *

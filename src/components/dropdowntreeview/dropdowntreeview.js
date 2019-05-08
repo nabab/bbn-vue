@@ -1,7 +1,7 @@
 /**
  * @file bbn-dropdowntreeview component
  *
- * @description bbn-dropdowntreeview is a component that represents the combination of a dropdown containing a tree structure hierarchical data.
+ * @description bbn-dropdowntreeview is an easy-to-implement component that represents the combination of a drop-down menu containing the hierarchical data of a tree structure.
  *
  * @copyright BBN Solutions
  *

@@ -1,7 +1,7 @@
 /**
  * @file bbn-floater component
  *
- * @description 
+ * @description bbn-floater is a component that represents a container that can be positioned as desired and it's possible to bound it to another element.
  *
  * @author BBN Solutions
  *

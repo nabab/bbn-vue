@@ -1,7 +1,7 @@
 /**
  * @file bbn-menu component
  *
- * @description The bbn-menu with a simple implementation displays a hierarchical list of elements grouped in boxes.
+ * @description The bbn menu with a simple implementation shows a hierarchical list of elements grouped in boxes that when clicked perform an action defined by the user .
  *
  * @copyright BBN Solutions
  *

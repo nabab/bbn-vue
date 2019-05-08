@@ -1,7 +1,7 @@
 /**
  * @file bbn-search component
  *
- * @description this component is used to allow a search, filtering the tree-structured data
+ * @description bbn-serach is a  component used for a search, filtering the tree-structured data
  *
  * @copyright BBN Solutions
  *

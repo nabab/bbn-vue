@@ -1,7 +1,7 @@
 /**
  * @file bbn-video component
  *
- * @description bbn-video is a interface player that allows the execution and viewing of multimedia files.
+ * @description bbn-video is an interface reader that allows the execution and visualization of video files.
  *
  * @copyrigth BBN Soutions
  *

@@ -1,6 +1,14 @@
-/**
- * Created by BBN on 15/02/2017.
- */
+ /**
+  * @file bbn-tabnav component
+  *
+  * @description bbn-tabnav is a component that manages various card containers (bbn-container) that may or not be static, in an organized way, based on the URL. This component allows several different nested bbn-tabnav based on a "base url".
+  *
+  * @copyright BBN Solutions
+  *
+  * @author BBN Solutions
+  *
+  * @created 15/02/2017
+  */
 (function($, bbn, Vue){
   "use strict";
 
@@ -533,7 +541,7 @@
                 component: {
                   props: ['source'],
                   template: `
-                  <bbn-slideshow :source="source.content" 
+                  <bbn-slideshow :source="source.content"
                                  class="bbn-bg-webblue bbn-white"
                                  separator="---slide---"></bbn-slideshow>`
                 },

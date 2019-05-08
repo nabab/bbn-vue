@@ -1,5 +1,11 @@
 /**
- * Created by BBN on 10/02/2017.
+ * @file bbn-browser component
+ *
+ * @description 
+ *
+ * @copyright BBN Solutions
+ *
+ * @author BBN Solutions
  */
 (function(bbn){
   "use strict";
@@ -71,11 +77,11 @@
     <div class="bbn-flex-fill">
       <iframe v-if="realURL" class="bbn-overlay" src="rawURL"></iframe>
       <div v-else class="bbn-overlay">
-        
+
       </div>
     </div>
   </div>
-</div>        
+</div>
         `,
         data(){
           return {

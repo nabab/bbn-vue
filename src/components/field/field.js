@@ -1,7 +1,8 @@
  /**
   * @file bbn-field component
   *
-  * @description bbn-field is a generic component with easy implantation, seen to have a generic component that turns into a well-defined value into other components assigned to the "type" property.
+  * @description bbn-field is a generic component of simple construction, its potential lies in the versatility of use, assigning to the property "type" a well-defined value, it becomes a "bbn" component.
+  * For example if we assign the value "numeric" to the property type, it will become "bbn-numeric"
   *
   * @copyright BBN Solutions
   *

@@ -1,7 +1,7 @@
 /**
  * @file bbn-hierarchy component
  *
- * @description bbn-hierarchy is a component that shows the date hierarchically with a tree structure
+ * @description bbn-hierarchy is a component that displays the data hierarchically with a tree structure
  *
  * @copyright BBN Solutions
  *

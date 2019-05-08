@@ -1,7 +1,8 @@
 /**
  * @file bbn-container component
  *
- * @description bbn-container is a component that can be used by a bbn-tabnav and not. It represents a container, uniquely identifiable, that contains what the user wants.
+ * @description bbn-container is a component that can be used or not by bbn-tabnav.
+ * Represents a uniquely identifiable container that includes what the user desires.
  *
  * @author BBN Solutions
  *
