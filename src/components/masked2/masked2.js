@@ -6,7 +6,7 @@
  *
  * @copyright BBN Solutions
  *
- * @author BBN Solutions
+ * @author Mirko Argentino
  *
  * @created 10/02/2017
  */
@@ -25,6 +25,10 @@
       promptChar: {
         type: String,
         default: '_'
+      },
+      escape: {
+        type: String,
+        default: '\\'
       }
     },
     data(){
@@ -84,6 +88,18 @@
       }
     },
     computed: {
+      reg(){
+        let r = '';
+        bbn.fn.each([...this.mask], (c, i) => {
+          if ( 
+            this.patterns[c] &&
+            this.patterns[c].pattern 
+          ){
+
+          }
+        });
+        return r;
+      },
       maxLen(){
         return [...this.mask].filter((c) => {
           return this.patterns[c] && this.patterns[c].pattern;
@@ -92,7 +108,11 @@
       bannedPos(){
         let pos = [];
         bbn.fn.each([...this.mask], (c, i) => {
-          if ( !this.patterns[c] ){
+          if ( 
+            !this.patterns[c] ||
+            (c === this.escape) ||
+            (this.patterns[c] && (this.mask[i - 1]) === this.escape)
+          ){
             pos.push(i);
           }
         });
@@ -103,6 +123,41 @@
       }
     },
     methods: {
+      isValidChar(char, pos){
+        let k = this.mask.charAt(pos);
+        return this.patterns[k] && this.patterns[k].pattern && char.match(this.patterns[k].pattern);
+      },
+      isSpecialKey(keyCode){
+        switch ( keyCode ){
+          case 8: //Backspace
+          case 16: //Shift
+          case 35: //End
+          case 36: //Home
+          case 37: //ArrowLeft
+          case 39: //ArrowRight
+          case 46: //Canc
+            return false;
+          default:
+            return true;
+        }
+      },
+      isArrowKey(keyCode){
+        switch ( keyCode ){
+          case 35: //End
+          case 36: //Home
+          case 37: //ArrowLeft
+          case 39: //ArrowRight
+            return true;
+          default:
+            return false;
+        }
+      },
+      isShiftKey(keyCode){
+        return keyCode === 16;
+      },
+      isControlKey(keyCode){
+        return keyCode === 17;
+      },
       setInputvalue(){
         this.inputValue = '';
         this.inputValue = this.getInputValue();
@@ -113,6 +168,10 @@
             idxValue = 0;
         bbn.fn.each([...this.mask], (c, i) => {
           if ( this.patterns[c] && this.patterns[c].pattern ){
+            if ( (this.mask[i-1] === this.escape) ){
+              ret += c;
+              return;
+            }
             if (
               this.value &&
               this.value.charAt(idxValue) &&
@@ -125,14 +184,13 @@
             }
             idxValue++;
           }
-          else {
+          else if ( c !== this.escape ){
             ret += c;
           }
         });
         return ret;
       },
       getPos(event, pos){
-        bbn.fn.log('aaaaaaaa', pos);
         let originalPos = pos;
         if ( (pos < 0) ){
           pos = 0;
@@ -150,43 +208,30 @@
             pos++;
           }
         }
-        bbn.fn.log('bbbbbbbb', (pos < 0) || (pos > this.maxPos) ? originalPos : pos);
         return (pos < 0) || (pos > this.maxPos) ? originalPos : pos;
       },
       keydown(event){
         bbn.fn.log('keydown', event);
-        if ( event.keyCode === 16 ){
-          return;
-        }
-        if ( 
-          (event.keyCode !== 8) &&
-          (event.keyCode !== 35) &&
-          (event.keyCode !== 36) &&
-          (event.keyCode !== 37) &&
-          (event.keyCode !== 39) &&
-          (
-            (this.value.length >= this.maxLen) || 
-            ((this.size !== undefined) && (this.value.length >= this.size)) ||
-            ((this.maxlength !== undefined) && (this.value.length >= this.maxlength))
-          )
-        ){
-          event.preventDefault();
-          return;
-        }
-        let pos = this.getPos(event, this.$refs.element.selectionStart);
-        if ( 
-          event.shiftKey &&
-          (
-            (event.keyCode === 35) ||
-            (event.keyCode === 36) ||
-            (event.keyCode === 37) ||
-            (event.keyCode === 39)
-          )
-        ){
-          this.$refs.element.selectionStart = pos;
-        }
-        else {
-          if ( this.isValidKey(event.keyCode) && !this.isValidChar(event.key, pos) ){
+        if ( !this.isShiftKey(event.keyCode) && !this.isControlKey(event.keyCode) ){
+          if ( 
+            (event.keyCode !== 8) &&
+            (event.keyCode !== 46) &&
+            !this.isArrowKey(event.keyCode) &&
+            (
+              (this.value.length >= this.maxLen) || 
+              ((this.size !== undefined) && (this.value.length >= this.size)) ||
+              ((this.maxlength !== undefined) && (this.value.length >= this.maxlength))
+            )
+          ){
+            event.preventDefault();
+            return;
+          }
+          let pos = this.getPos(event, this.$refs.element.selectionStart);
+          if ( event.shiftKey && this.isArrowKey(event.keyCode) ){
+            this.$refs.element.selectionStart = pos;
+            return;
+          }
+          if ( this.isSpecialKey(event.keyCode) && !this.isValidChar(event.key, pos) ){
             event.preventDefault();
             return;
           }
@@ -195,34 +240,45 @@
       },
       keyup(event){
         bbn.fn.log('keyup', event);
-        let pos = this.$refs.element.selectionStart,
-            val = this.raw(),
-            oldVal = this.value;
-        
-        if ( event.keyCode === 16 ){
-          return;
-        }
-        this.emitInput(val);
-        this.$nextTick(() => {
-          this.setInputvalue();
+        if ( !this.isShiftKey(event.keyCode) && !this.isControlKey(event.keyCode) ){
+          let pos = this.$refs.element.selectionStart;
+          this.emitInput(this.raw());
           this.$nextTick(() => {
-            pos = this.getPos(event, pos);
-            if ( 
-              event.shiftKey &&
-              (
-                (event.keyCode === 35) ||
-                (event.keyCode === 36) ||
-                (event.keyCode === 37) ||
-                (event.keyCode === 39)
-              )
-            ){
-              this.$refs.element.selectionStart = pos;
-            }
-            else {
-              this.$refs.element.setSelectionRange(pos, pos);
-            }
+            this.setInputvalue();
+            this.$nextTick(() => {
+              pos = this.getPos(event, pos);
+              if ( event.shiftKey && this.isArrowKey(event.keyCode) ){
+                this.$refs.element.selectionStart = pos;
+              }
+              else {
+                this.$refs.element.setSelectionRange(pos, pos);
+              }
+            });
           });
-        });
+        }
+      },
+      input(event){
+        bbn.fn.log('input', event)
+        let pos = this.$refs.element.selectionStart - 1;
+        if ( 
+          !bbn.fn.isNull(event.data) && 
+          this.isValidChar(event.data, pos) && 
+          (this.inputValue.charAt(pos) === this.promptChar) 
+        ){
+          event.preventDefault();
+          this.inputValue = this.inputValue.slice(0, pos) + event.data + this.inputValue.slice(pos + 1);
+          this.$nextTick(() => {
+            this.$refs.element.setSelectionRange(pos + 1, pos + 1);
+
+          })
+        }
+        /* else if ( bbn.fn.isNull(event.data) ){
+          this.inputValue = this.inputValue.slice(0, pos) + this.promptChar + this.inputValue.slice(pos + 1);
+          this.$nextTick(() => {
+            this.$refs.element.setSelectionRange(pos + 1, pos + 1);
+
+          })
+        } */
       },
       raw(){
         let ret = '',
@@ -240,24 +296,6 @@
           });
         }
         return ret;
-      },
-      isValidChar(char, pos){
-        let k = this.mask.charAt(pos);
-        return this.patterns[k] && this.patterns[k].pattern && char.match(this.patterns[k].pattern);
-      },
-      isValidKey(keyCode){
-        switch ( keyCode ){
-          case 46: //Canc
-          case 39: //ArrowRight
-          case 37: //ArrowLeft
-          case 36: //Home
-          case 35: //End
-          case 16: //Shift
-          case 8: //Backspace
-            return false;
-          default:
-            return true;
-        }
       }
     },
     mounted(){

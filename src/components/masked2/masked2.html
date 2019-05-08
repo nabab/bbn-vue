@@ -10,7 +10,8 @@
        	 @keyup="keyup"
        	 @mouseenter="over($event)"
        	 @mouseleave="out($event)"
-         :value="inputValue"
+				 :value="inputValue"
+				 @input="input"
   >
   <input :value="value"
          ref="real_masked"
