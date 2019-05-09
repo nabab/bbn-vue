@@ -46,7 +46,7 @@
 
       <div class="bbn-flex-fill bbn-flex-height">
         <div v-for="(it, i) in items"
-            :class="['bbn-flex-fill','slide', 'sliden' + (summary ? i + 1 : i).toString(), !summary && (i === 0) ? 'first' : '']"
+            :class="['bbn-flex-fill','slide', 'sliden' + (summary ? i + 1 : i).toString(), !summary && (i === 0) ? 'first' : '', items[i].class ? items[i].class : '']"
             :id="name + (summary ? i : i + 1).toString()"
             :style="{display: currentIndex === (summary ? i + 1 : i) ? 'block' : 'none'}"
         >

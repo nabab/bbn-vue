@@ -60,7 +60,7 @@
       props: {
         /**
          * The classes to add to the component.
-         * @prop {Array} [] componentClass
+         * @prop {Array} [[]] componentClass
          * @memberof basicComponent
          */
         componentClass: {
@@ -92,6 +92,7 @@
         },
       },
       /**
+       * If not defined, defines component's template
        * @memberof basicComponent
        * @event beforeCreate
        */
@@ -101,7 +102,7 @@
         }
       },
       /**
-       * Gives the class bbn-basic-component to the component
+       * Gives to the component the class bbn-basic-component
        * @event created
        * @memberof basicComponent
        */
@@ -112,6 +113,7 @@
         this.componentClass.push('bbn-basic-component');
       },
       /**
+       * Emits the event mounted
        * @event mounted
        * @emit mounted
        * @memberof basicComponent
@@ -122,6 +124,7 @@
       },
       watch: {
         /**
+         * Emits the event ready
          * @watch ready
          * @emit ready
          * @memberof basicComponent
@@ -199,7 +202,7 @@
         },
         /**
          * The classes to give to the component.
-         * @prop {Array} [] componentClass
+         * @prop {Array} [[]] componentClass
          * @memberof localStorageComponent
          */
         componentClass: {
@@ -562,7 +565,7 @@
         /**
          * The classes to give to the component.
          * @memberof eventsComponent
-         * @prop {Array} [] componentClass 
+         * @prop {Array} [[]] componentClass 
          */
         componentClass: {
           type: Array,
@@ -604,7 +607,7 @@
           this.$emit('blur', e)
         },
         /**
-         * Focuses the element.
+         * Emits the event focus
          * @method focus
          * @return {Function}
          * @memberof basicComponent
@@ -665,6 +668,7 @@
           }, 0)
         },
         /**
+         * Sets the prop isTouched to true
          * @method touchstart
          * @param e 
          * @memberof eventsComponent
@@ -804,7 +808,7 @@
         },
         /**
          * Defines the order of the columns in the table.
-         * @prop {Array|Object} [] order
+         * @prop {Array|Object} [[]] order
          * @memberof sourceArrayComponent
          */
         order: {
@@ -972,7 +976,7 @@
            */
           currentOrder: order,
           /**
-           * @data {Array} [] currentData
+           * @data {Array} [[]] currentData
            */
           currentData: [],
           /**
@@ -998,7 +1002,7 @@
           isAjax: typeof this.source === 'string',
           /**
            * @todo change name
-           * @data {Array} [] selectedRows
+           * @data {Array} [[]] selectedRows
            */
           selectedRows: this.selected || []
         }
@@ -1453,7 +1457,7 @@
         },
         /**
          * The classes to give to the component.
-         * @prop {Array} [] componentClass
+         * @prop {Array} [[]] componentClass
          * @memberof memoryComponent
          */
         componentClass: {
@@ -1561,7 +1565,7 @@
         },
         /**
          * The classes to give to the component.
-         * @prop {Array} [] componentClass  
+         * @prop {Array} [[]] componentClass  
          * @memberof inputComponent
          */
         componentClass: {
@@ -1741,7 +1745,7 @@
       props: {
         /**
         * The classes to give to the component.
-        * @prop {Array} [] componentClass   
+        * @prop {Array} [[]] componentClass   
         * @memberof optionComponent
         */
         componentClass: {
@@ -2598,7 +2602,7 @@
         return {
           /**
            * Integration of the functionnality is done through a watcher on this property
-           * @data {Array} observersCopy
+           * @data {Array} [[]] observersCopy
            * @memberof observerComponent
            */
           observersCopy: [],

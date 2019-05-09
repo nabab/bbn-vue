@@ -17,7 +17,9 @@
   Vue.component('bbn-colorpicker2', {
     mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent],
     props: {
-      //color
+      /**
+       * @prop {String} value
+       */
       value: {
         type: String,
       },
@@ -129,10 +131,10 @@
         //set text buttons
         if( this.textButtons !== undefined ){
           let btns = this.textButtons.slice();
-          if( btns[0].length && (btns[0] !== "") ){
+          if(btns[0] && btns[0].length && (btns[0] !== "") ){
             obj.cancelText = btns[0];
           }
-          if( btns[1].length ){
+          if( btns[1] && btns[1].length ){
             obj.chooseText = btns[1];
           }
         }
@@ -153,7 +155,6 @@
       },
       initComponent(){
         if ( this.widget ){
-          bbn.fn.log('heeeeeeeeeeeeeeeeeeeeeere')
           $(this.$refs.element).spectrum("destroy");
           this.widget = false;
         }

@@ -200,7 +200,7 @@
       /**
        * Set to true shows a button to change the theme of the component.
        *
-       * @prop {Boolean} [false]
+       * @prop {Boolean} [false] themeButton
        */
       themeButton: {
         type: Boolean,

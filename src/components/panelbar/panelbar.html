@@ -4,14 +4,14 @@
       <div :class="['bbn-header', 'panel', 'bbn-p', {'k-state-selected': includes(selected, idx)}]" 
             :style="includes(selected, idx) ? {} : {'border-bottom': 'none'}"
       >
-        <div class="arrow-container inline" @click="select(idx)">
-          <i :class="['nf nf-fa-angle_right', 'header-icon', {'rotate': includes(selected, idx)}]"></i>
+        <div class="arrow-container bbn-hspadded inline" @click="select(idx)">
+          <i :class="['nf nf-fa-angle_right', 'header-icon', 'bbn-large', 'bbn-b', {'rotate': includes(selected, idx)}]"></i>
         </div>
         <div class="component" v-if="i.headerComponent">
           <component :is="i.headerComponent" v-bind="i.headerOptions"></component>
         </div>
         
-        <div @click="select(idx)" v-else-if="i.header" v-html="i.header" :class="['content',  i.class , currentItemsClass]">
+        <div @click="select(idx)" v-else-if="i.header" v-html="i.header" :class="['content', 'bbn-hspadded',  i.class , currentItemsClass]">
         </div>
         
       </div>
