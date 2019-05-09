@@ -25,14 +25,11 @@
       promptChar: {
         type: String,
         default: '_'
-      },
-      escape: {
-        type: String,
-        default: '\\'
       }
     },
     data(){
       return {
+        escape: '\\',
         patterns: {
           // Digit. Accepts any digit between 0 and 9.
           0: {
@@ -83,11 +80,17 @@
 
           }
         },
-        inputValue: '',
-        lastPosition: 0
+        inputValue: ''
       }
     },
     computed: {
+      escapePos(){
+        let exp = Object.keys(this.patterns).map(p => {
+              return this.escape.repeat(p === '?' ? 4 : 2) + p;
+            }).join('|'),
+            reg = new RegExp(exp, 'g');
+        return [...this.mask.matchAll(reg)].map(e => e.index);
+      },
       reg(){
         let r = '';
         bbn.fn.each([...this.mask], (c, i) => {
@@ -106,13 +109,23 @@
         }).length;
       },
       bannedPos(){
+        let pos = [],
+            idx = 0;
+        bbn.fn.each([...this.mask], (c, i) => {
+          if ( (c !== this.escape) && (!this.patterns[c] || this.escapePos.includes(i - 1)) ){
+            if ( this.escapePos.includes(i - 1) ){
+              idx--;
+            }
+            pos.push(idx);
+          }
+          idx++;
+        });
+        return pos;
+      },
+      bannedPosRaw(){
         let pos = [];
         bbn.fn.each([...this.mask], (c, i) => {
-          if ( 
-            !this.patterns[c] ||
-            (c === this.escape) ||
-            (this.patterns[c] && (this.mask[i - 1]) === this.escape)
-          ){
+          if ( (c !== this.escape) && (!this.patterns[c] || this.escapePos.includes(i - 1)) ){
             pos.push(i);
           }
         });
@@ -127,7 +140,7 @@
         let k = this.mask.charAt(pos);
         return this.patterns[k] && this.patterns[k].pattern && char.match(this.patterns[k].pattern);
       },
-      isSpecialKey(keyCode){
+      isNotSpecialKey(keyCode){
         switch ( keyCode ){
           case 8: //Backspace
           case 16: //Shift
@@ -167,11 +180,7 @@
         let ret = '',
             idxValue = 0;
         bbn.fn.each([...this.mask], (c, i) => {
-          if ( this.patterns[c] && this.patterns[c].pattern ){
-            if ( (this.mask[i-1] === this.escape) ){
-              ret += c;
-              return;
-            }
+          if ( !this.escapePos.includes(i) && this.patterns[c] && this.patterns[c].pattern ){
             if (
               this.value &&
               this.value.charAt(idxValue) &&
@@ -179,12 +188,15 @@
             ){
               ret += this.value.charAt(idxValue);
             }
+            else if ( this.escapePos.includes(i - 1) ) {
+              ret += c;
+            }
             else {
               ret += this.promptChar;
             }
             idxValue++;
           }
-          else if ( c !== this.escape ){
+          else if ( !this.escapePos.includes(i) ){
             ret += c;
           }
         });
@@ -208,11 +220,12 @@
             pos++;
           }
         }
+        bbn.fn.log('originalpos', originalPos, 'pos', pos);
         return (pos < 0) || (pos > this.maxPos) ? originalPos : pos;
       },
       keydown(event){
         bbn.fn.log('keydown', event);
-        if ( !this.isShiftKey(event.keyCode) && !this.isControlKey(event.keyCode) ){
+        if ( !this.isShiftKey(event.keyCode) && !this.isControlKey(event.keyCode) && !this.isArrowKey(event.keyCode) ){
           if ( 
             (event.keyCode !== 8) &&
             (event.keyCode !== 46) &&
@@ -231,22 +244,25 @@
             this.$refs.element.selectionStart = pos;
             return;
           }
-          if ( this.isSpecialKey(event.keyCode) && !this.isValidChar(event.key, pos) ){
+          if ( this.isNotSpecialKey(event.keyCode) && !this.isValidChar(event.key, pos) ){
             event.preventDefault();
             return;
           }
           this.$refs.element.setSelectionRange(pos, pos);
+          bbn.fn.log('pos1', pos, this.$refs.element.selectionStart)
         }
       },
       keyup(event){
         bbn.fn.log('keyup', event);
         if ( !this.isShiftKey(event.keyCode) && !this.isControlKey(event.keyCode) ){
           let pos = this.$refs.element.selectionStart;
+          bbn.fn.log('pos2', pos)
           this.emitInput(this.raw());
           this.$nextTick(() => {
             this.setInputvalue();
             this.$nextTick(() => {
               pos = this.getPos(event, pos);
+              bbn.fn.log('pos3', pos)
               if ( event.shiftKey && this.isArrowKey(event.keyCode) ){
                 this.$refs.element.selectionStart = pos;
               }
@@ -285,14 +301,16 @@
             idxValue = 0,
             value = this.$refs.element.value;
         if ( value ){
-          bbn.fn.each([...this.mask], (c, i) => {
-            let char = value.charAt(idxValue);
-            if ( this.patterns[c] && this.patterns[c].pattern ){
-              if ( char && char.match(this.patterns[c].pattern) ){
-                ret += char;
+          bbn.fn.each([...value], (c, i) => {
+            if ( 
+              !this.bannedPos.includes(i) &&
+              this.patterns[this.mask[i]] &&
+              this.patterns[this.mask[i]].pattern
+            ){
+              if ( c.match(this.patterns[this.mask[i]].pattern) ){
+                ret += c;
               }
             }
-            idxValue++;
           });
         }
         return ret;
