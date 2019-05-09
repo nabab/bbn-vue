@@ -229,7 +229,7 @@
               bbn.fn.log("CLICK IS STRING", this);
             }
             else if (bbn.fn.isFunction(this.items[idx].command) ){
-              bbn.fn.log("CLICK IS FUNCTION", this);
+              bbn.fn.log("CLICK IS FUNCTION ???", this);
               this.items[idx].command(idx, JSON.parse(JSON.stringify(this.items[idx])));
             }
           }

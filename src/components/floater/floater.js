@@ -472,7 +472,7 @@
               bbn.fn.log("CLICK IS STRING", this);
             }
             else if (bbn.fn.isFunction(item.command) ){
-              bbn.fn.log("CLICK IS FUNCTION", this);
+              bbn.fn.log("CLICK IS FUNCTION", item.command, this);
               item.command(idx, item);
             }
           }

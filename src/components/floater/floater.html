@@ -61,7 +61,7 @@
           v-html="content"
       ></div>
       <ul v-else-if="filteredData.length"
-          class="bbn-menulist"
+          :class="'bbn-menulist ' + mode"
       >
         <li v-for="(li, idx) in filteredData"
             @click.stop.prevent="select(idx)"
@@ -77,8 +77,10 @@
           <component v-if="itemComponent" :is="itemComponent" :source="li" @mounted="selfEmit(true)"></component>
           <span v-else>
             <span class="bbn-icon-space" v-if="(mode === 'selection') || (mode === 'options')">
-              <i v-if="(mode === 'selection') && (li.selected)" class="nf nf-fa-check"></i>
-              <i v-else-if="mode === 'options'" class="nf nf-fa-check"></i>
+              <i v-if="(mode === 'selection') && (li.selected)"
+                class="nf nf-fa-check"></i>
+              <i v-else-if="mode === 'options'"
+                class="nf nf-fa-check"></i>
             </span>
             <span class="space" v-if="hasIcons">
               <i v-if="li.icon" :class="li.icon"></i>
@@ -86,7 +88,7 @@
             <span class="text" v-html="li.text"></span>
             <i v-if="li.items && li.items.length"
               class="nf nf-fa-chevron_right"
-              style="margin-left: 1em"
+              style="margin: 0 1em"
             ></i>
           </span>
           <bbn-floater v-if="children && li[children] && (currentSelected === idx) && getRef('li' + idx)"

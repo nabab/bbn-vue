@@ -316,6 +316,7 @@
         return st;
       },
       currentStyle(){
+        return {};
         if ( !this.isMounted ){
           return {};
         }
