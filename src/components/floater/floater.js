@@ -145,6 +145,18 @@
       };
     },
     computed: {
+      formattedWidth(){
+        if ( this.width ){
+          return this.width + (bbn.fn.isNumber(this.width) ? 'px' : '')
+        }
+        return this.currentWidth ? this.currentWidth + 'px' : 'auto';
+      },
+      formattedHeight(){
+        if ( this.height ){
+          return this.height + (bbn.fn.isNumber(this.height) ? 'px' : '')
+        }
+        return this.currentHeight ? this.currentHeight + 'px' : 'auto';
+      }
     },
     methods: {
       _getCoordinates(){
@@ -219,6 +231,7 @@
           this.currentHeight = this.height || null;
           this.currentWidth = this.width || null;
           this.currentScroll = false;
+          this.$forceUpdate();
           return this.$nextTick(() => {
             // These are the limits of the space the DIV can occupy
             let pos = this.getContainerPosition();
@@ -383,7 +396,6 @@
               }
               bbn.fn.log("GOING ALL THE WAY");
             }
-            bbn.fn.log("GOING PART OF THE WAY");
           });
         }
       },
@@ -441,31 +453,33 @@
         }
       },
       select(idx){
-        if ( !this.currentData[idx].disabled && !this.currentData[idx][this.children] ){
-          if ( this.mode === 'options' ){
-            this.currentData[idx].selected = !this.items[idx].selected;
-          }
-          else if ( (this.mode === 'selection') && !this.currentData[idx].selected ){
-            let prev = bbn.fn.search(this.currentData, "selected", true);
-            if ( prev > -1 ){
-              this.currentData[prev].selected = false;
-            }
-            this.currentData[idx].selected = true;
+        let item = this.filteredData[idx];
+        bbn.fn.log("SELECT", arguments, this.filteredData[idx]);
+        if ( item && !item.disabled && !item[this.children] ){
 
+          if ( this.mode === 'options' ){
+            item.selected = !item.selected;
           }
-          if ( this.currentData[idx].command ){
-            if ( typeof(this.currentData[idx].command) === 'string' ){
+          else if ( (this.mode === 'selection') && !item.selected ){
+            let prev = bbn.fn.search(this.filteredData, "selected", true);
+            if ( prev > -1 ){
+              this.filteredData[prev].selected = false;
+            }
+            item.selected = true;
+          }
+          if ( item.command ){
+            if ( typeof(item.command) === 'string' ){
               bbn.fn.log("CLICK IS STRING", this);
             }
-            else if (bbn.fn.isFunction(this.currentData[idx].command) ){
+            else if (bbn.fn.isFunction(item.command) ){
               bbn.fn.log("CLICK IS FUNCTION", this);
-              this.currentData[idx].command(idx, this.currentData[idx]);
+              item.command(idx, item);
             }
           }
           if ( this.mode !== 'options' ){
             this.closeAll();
           }
-          this.$emit("select", this.currentData[idx]);
+          this.$emit("select", item);
         }
       }
     },
@@ -492,8 +506,16 @@
           });
         }
       },
-      element(){
-        this.onResize();
+      element(newVal){
+        if ( newVal ){
+          this.currentVisible = false;
+
+          this.$nextTick(() => {
+            this.currentVisible = true;
+            bbn.fn.log("RESIZING FLOATER");
+            this.onResize();
+          })
+        }
       },
       currentVisible(newVal){
         this.$emit(newVal ? 'open' : 'close');

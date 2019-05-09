@@ -1,5 +1,6 @@
-<div :class="[{'bbn-100': true}, componentClass]"
+<div :class="[{'bbn-100': true, 'bbn-fullscreen': isFullScreen}, componentClass]"
      @keydown.enter.stop=""
+     @keydown.escape.stop="toggleFullScreen(false)"
 >
   <div class="bbn-100"
        ref="code"

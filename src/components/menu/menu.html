@@ -10,7 +10,6 @@
         :key="i"
         :tabindex="item.disabled ? '-1' : '0'"
         @focus="selectedElement = i"
-        @blur="selectedElement = -1"
         @mouseenter="_enterLi(i)"
         >
       <span v-html="item.text"></span>

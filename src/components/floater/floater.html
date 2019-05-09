@@ -1,19 +1,22 @@
-<div :class="[{
-  'bbn-reset': true,
-  'bbn-widget': true,
-  'bbn-flex-height': ready && title
-}, componentClass]"
-     v-if="currentVisible"
-     @mouseleave="blur"
-     :style="{
-      left: currentLeft,
-      top: currentTop,
-      width: currentWidth ? currentWidth + 'px' : 'auto',
-      height: currentHeight ? currentHeight + 'px' : 'auto',
-      opacity: opacity,
-      transition: 'height 0.3s ease-in-out',
-      overflow: 'hidden'
-    }">
+<div :class="[
+        {
+          'bbn-reset': true,
+          'bbn-widget': true,
+          'bbn-flex-height': ready && title
+        },
+        componentClass
+      ]"
+      v-if="currentVisible"
+      @mouseleave="blur"
+      :style="{
+        left: currentLeft,
+        top: currentTop,
+        width: formattedWidth,
+        height: formattedHeight,
+        opacity: opacity,
+        transition: 'height 0.3s ease-in-out',
+        overflow: 'hidden'
+      }">
   <header v-if="title"
           ref="header"
           class="bbn-header bbn-bordered-bottom bbn-unselectable">

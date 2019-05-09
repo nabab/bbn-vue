@@ -11,7 +11,7 @@
  */
 
 
-(($, bbn) => {
+((bbn) => {
   "use strict";
 
   const themes = ["3024-day","3024-night","ambiance-mobile","ambiance","base16-dark","base16-light","blackboard","cobalt","eclipse","elegant","erlang-dark","lesser-dark","mbo","midnight","monokai","neat","night","paraiso-dark","paraiso-light","pastel-on-dark","rubyblue","solarized","the-matrix","tomorrow-night-eighties","twilight","vibrant-ink","xq-dark","xq-light"];
@@ -158,7 +158,7 @@
     }
   };
 
-  let themeIndex = $.inArray(bbn.vue.defaults.code.defaultTheme, themes);
+  let themeIndex = themes.indexOf(bbn.vue.defaults.code.defaultTheme);
 
   Vue.component('bbn-code', {
     /**
@@ -208,10 +208,11 @@
       }
     },
 
-    data: function(){
-      return bbn.fn.extend({
+    data(){
+      return {
         widgetName: "CodeMirror",
-      }, bbn.vue.treatData(this));
+        isFullScreen: false
+      };
     },
 
     computed: {
@@ -320,7 +321,7 @@
             }
           }
           if ( selections ){
-            $.each(selections, function(i, a){
+            bbn.fn.each(selections, (a) => {
               res.selections.push({anchor: a.anchor, head: a.head});
             });
           }
@@ -471,6 +472,12 @@
               ch: state.char
             };
         this.widget.getDoc().replaceRange("\n" + code + "\n", position);
+      },
+      toggleFullScreen(isFS){
+        if ( isFS === undefined ){
+          isFS = !this.isFullScreen;
+        }
+        this.isFullScreen = !!isFS;
       }
     },
     mounted(){
@@ -478,8 +485,6 @@
       if ( this.getRef('code') ){
         this.widget = CodeMirror(this.getRef('code'), this.getOptions());
         this.widget.on("change", (ins, bbb) => {
-          bbn.fn.info("CODE CHANGE");
-          //bbn.fn.log(arguments, this.widget);
           this.emitInput(this.widget.doc.getValue());
         });
         if ( this.mode === 'js' ){
@@ -506,7 +511,7 @@
       mode(newVal){
         let mode = this.getMode(newVal);
         if ( mode ){
-          $.each(mode, (i, v) => {
+          bbn.fn.each(mode, (v, i) => {
             this.widget.setOption(i, v);
           });
         }
@@ -519,4 +524,4 @@
     }
   });
 
-})(jQuery, bbn);
+})(bbn);
