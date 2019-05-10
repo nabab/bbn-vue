@@ -18,73 +18,124 @@
   const NODE_PROPERTIES = ["selected", "selectedClass", "activeClass", "exp anded", "tooltip", "icon", "selectable", "text", "data", "cls", "component", "num", "source", "level", "items"];
 
   Vue.component('bbn-tree', {
+    /**
+     * @mixin bbn.vue.basicComponent 
+     * @mixin bbn.vue.localStorageComponent 
+     */
     mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent],
     // The events that will be emitted by this component
     _emitter: ['dragstart', 'drag', 'dragend', 'select', 'open'],
     props: {
+      /**
+       * @prop {String} filterString
+       */
       filterString: {
         type: String
       },
+      /**
+       * The name of the array containings tree's children
+       * @prop {String} ['items'] children
+       */
       children: {
         type: String,
         default: 'items'
       },
+      /**
+       *  @prop {Boolean} [false] excludedSectionFilter
+       */
       excludedSectionFilter: {
         type: Boolean,
         default: false
       },
-      // The level until which the tree must be opened
+      /**
+       * The level until which the tree must be opened
+       * @prop {Number} [0] minExpandLevel
+       */
       minExpandLevel: {
         type: Number,
         default: 0
       },
-      // True if the whole tree must be opened
+      /**
+       * True if the whole tree must be opened
+       * @prop {Boolean} [false] opened
+       */
       opened: {
         type: Boolean,
         default: false
       },
-      // A function for mapping the tree data
+      /**
+       * A function for mapping the tree data
+       * @prop {Function} map
+       */
       map: {
         type: Function,
       },
-      // The data to send to the server
+      /**
+       * The data to send to the server
+       * @prop {Object|Function} data
+       */
       data: {
         type: [Object, Function],
         default(){
           return {};
         }
       },
-      // An array of objects representing the nodes
+      /**
+       * An array of objects representing the nodes
+       * @prop {Array|String|Object|Function} source
+       */
       source: {
         Type: [Array, String, Object, Function]
       },
-      // Set to false if the source shouldn't be loaded at mount time
+      /**
+       * Set to false if the source shouldn't be loaded at mount time
+       * @prop {Boolean} [true] autoload
+       */
       autoload: {
         type: Boolean,
         default: true
       },
-      // The class given to the node (or a function returning the class name)
+      /**
+       * The class given to the node (or a function returning the class name)
+       * @prop {Function|String} cls
+       */
       cls: {
         type: [Function, String]
       },
-      // A component for the node
+      /**
+       *  A component for the node
+       * @prop {Function|String|Object} component
+       */
       component: {
         type: [Function, String, Object]
       },
-      // The data field used as UID
+      /**
+       * The data field used as UID
+       * @prop {String} uid
+       */
       uid: {
         Type: String
       },
-      // Set to true for having the nodes draggable
+      /**
+       * Set to true for having the nodes draggable
+       * @prop {Boolean} [false] draggable
+       */
       draggable: {
         type: Boolean,
         default: false
       },
+      /**
+       * @prop {Boolean} [false] checkable
+       */
       checkable: {
         type: Boolean,
         default: false
       },
-      // An array (or a function returning one) of elements for the node context menu
+      /**
+       * An array (or a function returning one) of elements for the node context menu
+       * @prop {Array|Function} menu
+       */
+
       menu: {
         type: [Array, Function]
       },

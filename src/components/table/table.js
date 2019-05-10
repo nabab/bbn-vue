@@ -218,7 +218,7 @@
       },
       /**
        * An array of objects with at least the property 'field' that can replace the html '<bbns-column></bbns-column>' or extend them.
-       * @prop {Array} [] columns
+       * @prop {Array} [[]] columns
        */
       columns: {
         type: Array,
@@ -243,7 +243,7 @@
       },
       /**
        * In a grouped table, if set to true defines that all rows will be expanded. If an array is given defines which row(s) of the table will be expanded.
-       * @prop {Boolean|Array} [] expanded
+       * @prop {Boolean|Array} [[]] expanded
        */
       expanded: {
         type: [Boolean, Array],
@@ -267,7 +267,7 @@
       },
       /**
        * @todo desc
-       * @prop {Object} [{tot: bbn._('Total'),med: bbn._('Average'),num: bbn._('Count'),max: bbn._('Maximum'),min: bbn._('Minimum')}] aggregateExp
+       * @prop {Object} [{tot: 'Total',med: 'Average',num: 'Count',max: 'Maximum',min: 'Minimum'}] aggregateExp
        */
       aggregateExp: {
         type: Object,
@@ -334,7 +334,7 @@
          */
         savedConfig: false,
         /**
-         * @data {Object} [] defaultConfig
+         * @data {Object} defaultConfig
          */
         defaultConfig: this.loadedConfig ? this.loadedConfig : {
           filters: this.filters,
@@ -363,7 +363,7 @@
          */
         currentHidden: this.hidden || [],
         /**
-         * @data {} [null] originalData
+         * @data [null] originalData
          */
         originalData: null,
         /**
@@ -395,7 +395,7 @@
          */
         editedIndex: false,
         /**
-         * @data {Array} cols
+         * @data {Array} [[]] cols
          */
         cols: [],
         /**
@@ -415,7 +415,7 @@
          */
         hiddenScroll: true,
         /**
-         * @data {Array} [] popups
+         * @data {Array} [[]] popups
          */
         popups: [],
         /**
@@ -423,7 +423,7 @@
          */
         isAggregated: false,
         /**
-         * @data {Array} [] aggregatedColumns
+         * @data {Array} [[]] aggregatedColumns
          */
         aggregatedColumns: [],
         /**
@@ -455,7 +455,7 @@
          */
         focusedRow: false,
         /**
-         * @data {} [null] viewport
+         * @data [null] viewport
          */
         viewport: null,
         /**
@@ -1051,8 +1051,8 @@
       /**
        * Returns body's CSS object
        * @method _bodyStyles
-       * @param col
-       * return {Object}
+       * @param col 
+       * @return {Object}
        */
       _bodyStyles(col) {
         return {};
@@ -1091,7 +1091,8 @@
        *
        * @method _addTmp
        * @todo
-       * @param {} data
+       * @param data
+       * @return {Object}
        */
       _addTmp(data) {
         this._removeTmp().tmpRow = this._defaultRow(data);
@@ -1232,7 +1233,7 @@
        * @param {Object} data
        * @param {Object} col
        * @param {Number} index
-       * @param {*} ev
+       * @param {Event} ev
        */
       _execCommand(button, data, col, index, ev) {
         if (ev) {
@@ -1374,7 +1375,6 @@
        * @param {Number} idx
        * @fires isEditable
        * @return {Boolean}
-       *
        */
       isEdited(data, col, idx) {
         return this.isEditable(data, col, idx) &&
@@ -2312,7 +2312,7 @@
       /**
        * Returns a dimension in pixels of the given param.
        * @method getWidth
-       * @param {Number|String} w
+       * @param {Number|String} w The width
        * @return {String}
        */
       getWidth(w) {
@@ -2793,8 +2793,9 @@
        * @todo it seems to don't work
        * Show or hide the given column index.
        * @method show
-       * @param {} colIndexes
+       * @param {Array} colIndexes
        * @param {Boolean} hide
+       * @fires $forceUpdate
        * @fires setConfig
        * @fires init
        */
@@ -2904,7 +2905,7 @@
       /**
        * Returns the html element of the given row index.
        * @method getTr
-       * @param i
+       * @param {Number} i
        */
       getTr(i) {
         let c = this.getRef('table');

@@ -159,7 +159,7 @@
        *
        * @method getOptions
        * @fires template
-       * @returns {*}
+       * @returns {Object}
        */
       getOptions(){
         let cfg = {

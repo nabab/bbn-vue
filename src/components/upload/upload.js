@@ -10,57 +10,106 @@
   * @cretaed 13/06/2017
   */
 
-(($, bbn) => {
+ (($, bbn) => {
   "use strict";
-
   Vue.component('bbn-upload', {
     //mixins: [bbn.vue.fullComponent],
+    /**
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.inputComponent
+     */
     mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent],
     props: {
+      /**
+       * The value of the component
+       * @prop {Array|String} [[]] value
+       */
       value: {
         type: [Array, String],
         default(){
          return [];
         }
       },
+      /**
+       * The url for the action save
+       * @prop {String} [null] saveUrl
+       */
       saveUrl: {
         type: String,
         default: null
       },
+      /**
+       * The url for the action delete
+       * @prop {String} [null] removeUrl
+       */
       removeUrl: {
         type: String,
         default: null
       },
+      /**
+       * 
+       * @prop {Boolean} [true] autoUpload
+       */
       autoUpload : {
         type: Boolean,
         default: true
       },
+      /**
+       * Set to true allows to upload multiple files
+       * @prop {Boolean} [true] multiple
+       */
       multiple: {
         type: Boolean,
         default: true
       },
+      /**
+       * Set to true disables the component
+       * @prop {Boolean} [false] disabled
+       */
       disabled: {
         type: Boolean,
         default: false
       },
+      /**
+       * Shows the preview image of the file upload
+       * @prop {Boolean} [true] thumbs
+       */
       thumbs: {
         type: Boolean,
         default: true
       },
+      /**
+       * If the prop thumb is set to false shows a text
+       * @prop {String} thumbnot
+       */
       thumbNot : {
         type: String
       },
+      /**
+       * The maxsize of the thumb
+       * @prop {Number} [60] maxSize
+       */
       maxSize: {
         type: Number,
         default: 60
       },
+      /**
+       * @prop {String} thumbWaiting
+       */
       thumbWaiting: {
         type: String
       },
+      /**
+       * @prop {Boolean} [false] json
+       */
       json: {
         type: Boolean,
         default: false
       },
+      /**
+       *An object of standart text linked to component's actions
+       * @prop {Object} text
+       */
       text: {
         type: Object,
         default(){
@@ -82,10 +131,18 @@
           }
         }
       },
+      /**
+       * The icon on the upload button
+       * @prop {String} ['nf nf-fa-upload'] icon
+       */
       icon: {
         type: String,
         default: 'nf nf-fa-upload'
       },
+      /**
+       * The array of accepted extension
+       * @prop {Array} [[]] extensions
+       */
       extensions: {
         type: Array,
         default(){
@@ -95,14 +152,31 @@
     },
     data(){
       return {
-				isEnabled: !this.disabled,
+        /**
+         * Return true if the upload is disabled
+         * @data {Boolean} isEnabled
+         */
+        isEnabled: !this.disabled,
+        /**
+         * @prop {Array} [[]] widgetValue
+         */
         widgetValue: []
       };
     },
     computed: {
+      /**
+       * If the component is enabled returns the text 'Drop files here' (if not customized in the prop text) 
+       * @computed dropHereText
+       * @return String
+       */
       dropHereText(){
         return this.isEnabled ? this.text.dropHere : '';
       },
+      /**
+       * Returns an array of the prop value independently of it's type
+       * @computed getSource
+       * @return Array|Boolean
+       */
       getSource(){
         let res;
         if ( (typeof this.value === 'string') && this.json ){
@@ -113,6 +187,11 @@
         }
         return Array.isArray(res) ? res : false;
       },
+      /**
+       * Normalize the value of the component
+       * @computed getValue
+       * @return Object
+       */
       getValue(){
         let files = $.map(this.widgetValue, (e) => {
           let s = bbn.fn.get_row(this.getSource, 'name', e.originalName);
@@ -129,6 +208,11 @@
         });
         return this.json ? JSON.stringify(files) : files;
       },
+      /**
+       * Gets the component's configuraton
+       * @computed getCfg
+       * @return Object
+       */
       getCfg(){
         let cfg = {
           element: this.getRef('upload'),
@@ -253,6 +337,11 @@
       }
     },
     methods: {
+      /**
+       * Enables or disables the component 
+       * @method enable
+       * @param {Number} val 
+       */
       enable(val){
 				if ( val !== this.isEnabled ){
 					this.isEnabled = val;
@@ -276,6 +365,9 @@
 
       }
     },
+    /**
+     * @event mounted
+     */
     mounted(){
       this.$nextTick(() => {
         if ( !this.window ){
@@ -295,18 +387,35 @@
       });
     },
     watch: {
+      /**
+       * @watch enabled
+       * @param {Boolean} val 
+       */
       enabled(val){
 				this.isEnabled = !val;
       },
+      /**
+       * @watch isEnabled
+       * @param {Boolean} val 
+       */
 			isEnabled(val){
 				this.enable(val);
-			},
+      },
+      /**
+       * @watch widgetValue
+       * @param val 
+       * @emits input
+       * @emits change
+       */
       widgetValue(val){
         this.$emit('input', this.getValue);
         this.$emit('change', this.getValue);
       }
     },
     components: {
+      /**
+       * @component bbn-uploader-prompt
+       */
       'bbn-uploader-prompt': {
         props: ['source'],
         template: `
@@ -324,6 +433,10 @@
 </bbn-form>
         `,
         methods: {
+          /**
+           * @method submit
+           * @memberof bbn-uploader-prompt
+           */
           submit(){
             this.$nextTick(() => {
               if ( this.source.val ){
