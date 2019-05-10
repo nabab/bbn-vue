@@ -12,16 +12,26 @@
  */
 
 (function($, bbn){
-  "use strict";
+  "use strict"
 
   Vue.component('bbn-masked2', {
     mixins: [bbn.vue.basicComponent, bbn.vue.fullComponent],
     props: {
+      /** 
+       * The mask pattern.
+       * 
+       * @prop {String} mask
+      */
       mask: {
         type: String,
         required: true,
         validator: val => !!val.length
       },
+      /** 
+       * The character used for the prompt.
+       * 
+       * @prop {String} ['_'] promptChar
+      */
       promptChar: {
         type: String,
         default: '_'
@@ -86,60 +96,97 @@
     computed: {
       escapePos(){
         let exp = Object.keys(this.patterns).map(p => {
-              return this.escape.repeat(p === '?' ? 4 : 2) + p;
+              return this.escape.repeat(p === '?' ? 4 : 2) + p
             }).join('|'),
-            reg = new RegExp(exp, 'g');
-        return [...this.mask.matchAll(reg)].map(e => e.index);
-      },
-      reg(){
-        let r = '';
-        bbn.fn.each([...this.mask], (c, i) => {
-          if ( 
-            this.patterns[c] &&
-            this.patterns[c].pattern 
-          ){
-
-          }
-        });
-        return r;
-      },
-      maxLen(){
-        return [...this.mask].filter((c) => {
-          return this.patterns[c] && this.patterns[c].pattern;
-        }).length;
+            reg = new RegExp(exp, 'g')
+        return [...this.mask.matchAll(reg)].map(e => e.index)
       },
       bannedPos(){
         let pos = [],
-            idx = 0;
+            idx = 0
         bbn.fn.each([...this.mask], (c, i) => {
-          if ( (c !== this.escape) && (!this.patterns[c] || this.escapePos.includes(i - 1)) ){
+          //if ( (c !== this.escape) && (!this.patterns[c] || this.escapePos.includes(i - 1)) ){
+          if ( !this.escapePos.includes(i) && (!this.patterns[c] || this.escapePos.includes(i - 1)) ){
             if ( this.escapePos.includes(i - 1) ){
-              idx--;
+              idx--
             }
-            pos.push(idx);
+            pos.push(idx)
           }
-          idx++;
+          idx++
         });
-        return pos;
+        return pos
       },
       bannedPosRaw(){
-        let pos = [];
+        let pos = []
         bbn.fn.each([...this.mask], (c, i) => {
-          if ( (c !== this.escape) && (!this.patterns[c] || this.escapePos.includes(i - 1)) ){
-            pos.push(i);
+          //if ( (c !== this.escape) && (!this.patterns[c] || this.escapePos.includes(i - 1)) ){
+          if ( !this.escapePos.includes(i) && (!this.patterns[c] || this.escapePos.includes(i - 1)) ){
+            pos.push(i)
           }
         });
-        return pos;
+        return pos
       },
+      posLink(){
+        let pos = {},
+            idx = 0
+        bbn.fn.each([...this.mask], (c, i) => {
+          //if ( c !== this.escape ){
+          if ( !this.escapePos.includes(i) ){
+            if ( this.escapePos.includes(i - 1) ){
+              idx--
+            }
+            pos[idx] = i
+          }
+          idx++
+        });
+        return pos
+      },
+      /**
+       * The maximum value length based on the mask.
+       * 
+       * @computed maxLeng
+       * @returns {Number}
+       */
+      maxLen(){
+        return [...this.mask].filter((c, i) => {
+          return !!(
+            !this.escapePos.includes(i - 1) &&
+            !this.bannedPosRaw.includes(i) &&
+            this.patterns[c] &&
+            this.patterns[c].pattern
+          )
+        }).length
+      },
+      /**
+       * The maximum position.
+       *
+       * @computed maxPos
+       * @returns {Number}
+       */
       maxPos(){
-        return this.mask.length;
+        return this.mask.length - this.escapePos.length
       }
     },
     methods: {
+      /**
+       * Checks if the given character is valid, based on the mask's pattern.
+       *
+       * @method isValidChar
+       * @param {String} char
+       * @param {Number} pos
+       * @returns {Boolean}
+       */
       isValidChar(char, pos){
-        let k = this.mask.charAt(pos);
-        return this.patterns[k] && this.patterns[k].pattern && char.match(this.patterns[k].pattern);
+        let k = this.mask.charAt(this.posLink[pos])
+        return !!(this.patterns[k] && this.patterns[k].pattern && char.match(this.patterns[k].pattern))
       },
+      /**
+       * Checks if the pressed key is not a special key.
+       * 
+       * @method isNotSpecialKey
+       * @param {Number} keyCode
+       * @returns {Boolean}
+       */
       isNotSpecialKey(keyCode){
         switch ( keyCode ){
           case 8: //Backspace
@@ -149,86 +196,104 @@
           case 37: //ArrowLeft
           case 39: //ArrowRight
           case 46: //Canc
-            return false;
+            return false
           default:
-            return true;
+            return true
         }
       },
+      /**
+       * Cheks if the pressed key is an arraow key.
+       *
+       * @method isArrowKey
+       * @param {Number} keyCode
+       * @returns {Boolean}
+       */
       isArrowKey(keyCode){
         switch ( keyCode ){
           case 35: //End
           case 36: //Home
           case 37: //ArrowLeft
           case 39: //ArrowRight
-            return true;
+            return true
           default:
-            return false;
+            return false
         }
       },
       isShiftKey(keyCode){
-        return keyCode === 16;
+        return keyCode === 16
       },
       isControlKey(keyCode){
-        return keyCode === 17;
+        return keyCode === 17
+      },
+      isBackspaceKey(keyCode){
+        return keyCode === 8
+      },
+      isCancKey(keyCode){
+        return keyCode === 46
       },
       setInputvalue(){
-        this.inputValue = '';
-        this.inputValue = this.getInputValue();
-        this.$forceUpdate();
+        this.inputValue = ''
+        this.inputValue = this.getInputValue()
+        this.$forceUpdate()
       },
       getInputValue(){
         let ret = '',
-            idxValue = 0;
+            idxValue = 0
         bbn.fn.each([...this.mask], (c, i) => {
-          if ( !this.escapePos.includes(i) && this.patterns[c] && this.patterns[c].pattern ){
+          if ( 
+            !this.escapePos.includes(i) &&
+            !this.bannedPosRaw.includes(i) &&
+            this.patterns[c] &&
+            this.patterns[c].pattern 
+          ){
             if (
               this.value &&
               this.value.charAt(idxValue) &&
               this.value.charAt(idxValue).match(this.patterns[c].pattern)
             ){
-              ret += this.value.charAt(idxValue);
+              ret += this.value.charAt(idxValue)
             }
             else if ( this.escapePos.includes(i - 1) ) {
-              ret += c;
+              ret += c
             }
             else {
-              ret += this.promptChar;
+              ret += this.promptChar
             }
-            idxValue++;
+            idxValue++
           }
           else if ( !this.escapePos.includes(i) ){
-            ret += c;
+            ret += c
           }
         });
-        return ret;
+        return ret
       },
       getPos(event, pos){
-        let originalPos = pos;
+        let originalPos = pos
         if ( (pos < 0) ){
-          pos = 0;
+          pos = 0
         }
         else if ( pos > this.maxPos ){
-          pos = this.maxPos;
+          pos = this.maxPos
         }
         if ( (event.keyCode === 8) || (event.keyCode === 37) ){
           while ( (pos > 0) && this.bannedPos.includes(event.type === 'keydown' ? pos - 1 : pos) ){
-            pos--;
+            pos--
           }
         }
         else {
           while ( (pos < this.maxPos) && this.bannedPos.includes(pos) ){
-            pos++;
+            pos++
           }
         }
-        bbn.fn.log('originalpos', originalPos, 'pos', pos);
-        return (pos < 0) || (pos > this.maxPos) ? originalPos : pos;
+        return (pos < 0) || (pos > this.maxPos) ? originalPos : pos
       },
       keydown(event){
-        bbn.fn.log('keydown', event);
+        bbn.fn.log('keydown', event)
         if ( !this.isShiftKey(event.keyCode) && !this.isControlKey(event.keyCode) && !this.isArrowKey(event.keyCode) ){
+          // Check max length
           if ( 
-            (event.keyCode !== 8) &&
-            (event.keyCode !== 46) &&
+            !this.isCancKey(event.keyCode) &&
+            !this.isBackspaceKey(event.keyCode) &&
             !this.isArrowKey(event.keyCode) &&
             (
               (this.value.length >= this.maxLen) || 
@@ -236,89 +301,91 @@
               ((this.maxlength !== undefined) && (this.value.length >= this.maxlength))
             )
           ){
-            event.preventDefault();
-            return;
+            event.preventDefault()
+            return
           }
           let pos = this.getPos(event, this.$refs.element.selectionStart);
+          // Cance and Backspace
+          if ( this.isCancKey(event.keyCode) || this.isBackspaceKey(event.keyCode) ){
+            event.preventDefault()
+            if ( this.isBackspaceKey(event.keyCode) && (pos > 0) ){
+              this.inputValue = this.inputValue.slice(0, pos - 1) + this.promptChar + this.inputValue.slice(pos)
+              this.$nextTick(() => {
+                this.$refs.element.setSelectionRange(pos - 1, pos - 1)
+              })
+              return
+            }
+            else if ( this.isCancKey(event.keyCode) && (pos < this.maxPos) ){
+              this.inputValue = this.inputValue.slice(0, pos) + this.promptChar + this.inputValue.slice(pos + 1)
+              this.$nextTick(() => {
+                this.$refs.element.setSelectionRange(pos, pos)
+              })
+              return
+            }
+          }
           if ( event.shiftKey && this.isArrowKey(event.keyCode) ){
-            this.$refs.element.selectionStart = pos;
-            return;
+            this.$refs.element.selectionStart = pos
+            return
           }
           if ( this.isNotSpecialKey(event.keyCode) && !this.isValidChar(event.key, pos) ){
-            event.preventDefault();
-            return;
+            event.preventDefault()
+            return
           }
-          this.$refs.element.setSelectionRange(pos, pos);
-          bbn.fn.log('pos1', pos, this.$refs.element.selectionStart)
+          this.$refs.element.setSelectionRange(pos, pos)
         }
       },
       keyup(event){
         bbn.fn.log('keyup', event);
         if ( !this.isShiftKey(event.keyCode) && !this.isControlKey(event.keyCode) ){
-          let pos = this.$refs.element.selectionStart;
-          bbn.fn.log('pos2', pos)
-          this.emitInput(this.raw());
+          let pos = this.$refs.element.selectionStart
+          this.emitInput(this.raw())
           this.$nextTick(() => {
-            this.setInputvalue();
+            //this.setInputvalue()
             this.$nextTick(() => {
-              pos = this.getPos(event, pos);
-              bbn.fn.log('pos3', pos)
+              pos = this.getPos(event, pos)
               if ( event.shiftKey && this.isArrowKey(event.keyCode) ){
-                this.$refs.element.selectionStart = pos;
+                this.$refs.element.selectionStart = pos
               }
               else {
-                this.$refs.element.setSelectionRange(pos, pos);
+                this.$refs.element.setSelectionRange(pos, pos)
               }
-            });
-          });
+            })
+          })
         }
       },
       input(event){
+        let pos = this.$refs.element.selectionStart
         bbn.fn.log('input', event)
-        let pos = this.$refs.element.selectionStart - 1;
-        if ( 
-          !bbn.fn.isNull(event.data) && 
-          this.isValidChar(event.data, pos) && 
-          (this.inputValue.charAt(pos) === this.promptChar) 
-        ){
-          event.preventDefault();
-          this.inputValue = this.inputValue.slice(0, pos) + event.data + this.inputValue.slice(pos + 1);
+        if ( (pos <= this.maxPos) && !bbn.fn.isNull(event.data) && this.isValidChar(event.data, pos - 1 ) ){
+          event.preventDefault()
+          this.inputValue = this.inputValue.slice(0, pos - 1) + event.data + this.inputValue.slice(pos)
           this.$nextTick(() => {
-            this.$refs.element.setSelectionRange(pos + 1, pos + 1);
-
+            this.$refs.element.setSelectionRange(pos, pos)
           })
         }
-        /* else if ( bbn.fn.isNull(event.data) ){
-          this.inputValue = this.inputValue.slice(0, pos) + this.promptChar + this.inputValue.slice(pos + 1);
-          this.$nextTick(() => {
-            this.$refs.element.setSelectionRange(pos + 1, pos + 1);
-
-          })
-        } */
       },
       raw(){
         let ret = '',
-            idxValue = 0,
-            value = this.$refs.element.value;
+            value = this.$refs.element.value
         if ( value ){
           bbn.fn.each([...value], (c, i) => {
             if ( 
               !this.bannedPos.includes(i) &&
-              this.patterns[this.mask[i]] &&
-              this.patterns[this.mask[i]].pattern
+              this.patterns[this.mask[this.posLink[i]]] &&
+              this.patterns[this.mask[this.posLink[i]]].pattern
             ){
-              if ( c.match(this.patterns[this.mask[i]].pattern) ){
-                ret += c;
+              if ( c.match(this.patterns[this.mask[this.posLink[i]]].pattern) ){
+                ret += c
               }
             }
           });
         }
-        return ret;
+        return ret
       }
     },
     mounted(){
-      this.setInputvalue();
-      this.ready = true;
+      this.setInputvalue()
+      this.ready = true
     }
   });
 
