@@ -1,14 +1,9 @@
 /**
  * @file bbn-masked component
- *
  * @description bbn-masked is a useful component for those who want full control of data that needs to be processed.
  * It represents an input that allows the user to insert the desired values  in a defined format.For example: the insertion of telephone number.
- *
  * @copyright BBN Solutions
- *
  * @author Mirko Argentino
- *
- * @created 10/02/2017
  */
 
 (function($, bbn){
@@ -18,9 +13,10 @@
     mixins: [bbn.vue.basicComponent, bbn.vue.fullComponent],
     props: {
       /** 
-       * The mask pattern.
+       * The mask pattern (required).
        * 
        * @prop {String} mask
+       * @required true
       */
       mask: {
         type: String,
@@ -39,7 +35,17 @@
     },
     data(){
       return {
+        /** 
+         * The symbol used as escape.
+         * 
+         * @data {String} ['\'] escape
+        */
         escape: '\\',
+        /** 
+         * The patterns list.
+         * 
+         * @data {Object} patterns
+        */
         patterns: {
           // Digit. Accepts any digit between 0 and 9.
           0: {
@@ -77,23 +83,34 @@
           'a': {
             pattern: '[0-9a-zA-Z\s]'
           },
-          // Decimal placeholder. The decimal separator will be gotten from the current culture.
+          // Decimal placeholder. The decimal separator will be gotten from the bbn.env.money property.
           '.': {
 
           },
-          // Thousands placeholder. The display character will be gotten from the current culture.
+          // Thousands placeholder. The display character will be gotten from the bbn.env.money property.
           ',': {
 
           },
-          // Currency symbol. The display character will be gotten from the current culture.
+          // Currency symbol. The display character will be gotten from the bbn.env.money property.
           '$': {
 
           }
         },
+        /** 
+         * The current input value.
+         * 
+         * @data inputValue {String} inoutValue
+        */
         inputValue: ''
       }
     },
     computed: {
+      /** 
+       * The list of the escape positions into the mask.
+       * 
+       * @computed escapePos
+       * @returns {Array}
+      */
       escapePos(){
         let exp = Object.keys(this.patterns).map(p => {
               return this.escape.repeat(p === '?' ? 4 : 2) + p
@@ -101,6 +118,13 @@
             reg = new RegExp(exp, 'g')
         return [...this.mask.matchAll(reg)].map(e => e.index)
       },
+      /** 
+       * The list of the banned positions into the mask.
+       * The position indexes are created without taking into account the positions with the escape symbol.
+       * 
+       * @computed bannedPos
+       * @returns {Array}
+      */
       bannedPos(){
         let pos = [],
             idx = 0
@@ -116,6 +140,13 @@
         });
         return pos
       },
+      /** 
+       * The list of the banned positions into the mask.
+       * The position indexes are created by considering the positions with the escape symbol.
+       * 
+       * @computed bannedPosRaw
+       * @returns {Array}
+      */
       bannedPosRaw(){
         let pos = []
         bbn.fn.each([...this.mask], (c, i) => {
@@ -126,6 +157,12 @@
         });
         return pos
       },
+      /** 
+       * The list of correspondence between positions in the mask (the new position after the escape symbols remove -> the original position).
+       * 
+       * @computed posLink
+       * @returns {Array}
+      */
       posLink(){
         let pos = {},
             idx = 0
@@ -181,24 +218,25 @@
         return !!(this.patterns[k] && this.patterns[k].pattern && char.match(this.patterns[k].pattern))
       },
       /**
-       * Checks if the pressed key is not a special key.
+       * Checks if the pressed key is a special key.
        * 
-       * @method isNotSpecialKey
+       * @method isSpecialKey
        * @param {Number} keyCode
        * @returns {Boolean}
        */
-      isNotSpecialKey(keyCode){
+      isSpecialKey(keyCode){
         switch ( keyCode ){
           case 8: //Backspace
+          case 9: // Tab
           case 16: //Shift
           case 35: //End
           case 36: //Home
           case 37: //ArrowLeft
           case 39: //ArrowRight
           case 46: //Canc
-            return false
-          default:
             return true
+          default:
+            return false
         }
       },
       /**
@@ -219,23 +257,74 @@
             return false
         }
       },
+      /**
+       * Checks if the pressed key is the "shift" key.
+       *
+       * @method isShiftKey
+       * @param {Number} keyCode
+       * @returns {Boolean}
+       */
       isShiftKey(keyCode){
         return keyCode === 16
       },
+      /**
+       * Checks if the pressed key is the "control" key.
+       *
+       * @method isControlKey
+       * @param {Number} keyCode
+       * @returns {Boolean}
+       */
       isControlKey(keyCode){
         return keyCode === 17
       },
+      /**
+       * Checks if the pressed key is the "backspace" key.
+       *
+       * @method isBackspaceKey
+       * @param {Number} keyCode
+       * @returns {Boolean}
+       */
       isBackspaceKey(keyCode){
         return keyCode === 8
       },
+      /**
+       * Checks if the pressed key is the "canc" key.
+       *
+       * @method isCancKey
+       * @param {Number} keyCode
+       * @returns {Boolean}
+       */
       isCancKey(keyCode){
         return keyCode === 46
       },
-      setInputvalue(){
+      /**
+       * Checks if the pressed key is the "tab" key.
+       *
+       * @method isTabKey
+       * @param {Number} keyCode
+       * @returns {Boolean}
+       */
+      isTabKey(keyCode){
+        return keyCode === 9
+      },
+      /**
+       * Sets the inputValue data property.
+       *
+       * @method setInputValue
+       * @fires getInputValue
+       * @fires $forceUpdate
+       */
+      setInputValue(){
         this.inputValue = ''
         this.inputValue = this.getInputValue()
         this.$forceUpdate()
       },
+      /**
+       * Gets the input value.
+       *
+       * @method getInputValue
+       * @returnsm {String}
+       */
       getInputValue(){
         let ret = '',
             idxValue = 0
@@ -267,6 +356,15 @@
         });
         return ret
       },
+      /** 
+       * Gets the correct cursor position.
+       * 
+       * @method getPos
+       * @param {Event} event The key event
+       * @param {Number} pos The original position
+       * @fires isBackspaceKey
+       * @returns {Number}
+      */
       getPos(event, pos){
         let originalPos = pos
         if ( (pos < 0) ){
@@ -275,7 +373,7 @@
         else if ( pos > this.maxPos ){
           pos = this.maxPos
         }
-        if ( (event.keyCode === 8) || (event.keyCode === 37) ){
+        if ( this.isBackspaceKey(event.keyCode) || (event.keyCode === 37) ){
           while ( (pos > 0) && this.bannedPos.includes(event.type === 'keydown' ? pos - 1 : pos) ){
             pos--
           }
@@ -287,14 +385,38 @@
         }
         return (pos < 0) || (pos > this.maxPos) ? originalPos : pos
       },
-      keydown(event){
+      /** 
+       * The method called on every key pressed (keydown event).
+       * 
+       * @method keydownEvent
+       * @param {Event} event
+       * @fires isShiftKey
+       * @fires isControlKey
+       * @fires isArrowKey
+       * @fires isCancKey
+       * @fires isBackspaceKey
+       * @fires getPos
+       * @fires isSpecialKey
+       * @fires isValidChar
+       * @fires emitInput
+       * @fires raw
+       * @fires setInputValue
+       * @fires keydown
+       * @emits input
+      */
+      keydownEvent(event){
         bbn.fn.log('keydown', event)
-        if ( !this.isShiftKey(event.keyCode) && !this.isControlKey(event.keyCode) && !this.isArrowKey(event.keyCode) ){
+        if ( 
+          !this.isShiftKey(event.keyCode) &&
+          !this.isControlKey(event.keyCode) &&
+          !this.isArrowKey(event.keyCode) &&
+          !this.isTabKey(event.keyCode) &&
+          !event.ctrlKey
+        ){
           // Check max length
           if ( 
             !this.isCancKey(event.keyCode) &&
             !this.isBackspaceKey(event.keyCode) &&
-            !this.isArrowKey(event.keyCode) &&
             (
               (this.value.length >= this.maxLen) || 
               ((this.size !== undefined) && (this.value.length >= this.size)) ||
@@ -304,66 +426,151 @@
             event.preventDefault()
             return
           }
+          // Get the correct cursor position
           let pos = this.getPos(event, this.$refs.element.selectionStart);
-          // Cance and Backspace
-          if ( this.isCancKey(event.keyCode) || this.isBackspaceKey(event.keyCode) ){
+          // Not special key and not valid char
+          if ( !this.isSpecialKey(event.keyCode) && !this.isValidChar(event.key, pos) ){
+            event.preventDefault()
+          }
+          else if ( 
+            !this.isSpecialKey(event.keyCode) &&
+            (this.inputValue.charAt(pos) !== this.promptChar)
+          ){
+            let val = this.raw(),
+                idx = 0
+            Array.from({length: pos + 1}, (v, i) => {
+              if ( !this.bannedPosRaw.includes(i) && !this.escapePos.includes(i) && (i !== 0) ){
+                idx++
+              }
+            })
+            val = val.slice(0, idx) + event.key + val.slice(idx)
+            this.emitInput(val)
+            this.$nextTick(() => {
+              this.setInputValue()
+              this.$nextTick(() => {
+                this.$refs.element.setSelectionRange(pos, pos)
+              })
+            })
+            event.preventDefault()
+          }
+          // Canc and Backspace
+          else if ( this.isCancKey(event.keyCode) || this.isBackspaceKey(event.keyCode) ){
             event.preventDefault()
             if ( this.isBackspaceKey(event.keyCode) && (pos > 0) ){
               this.inputValue = this.inputValue.slice(0, pos - 1) + this.promptChar + this.inputValue.slice(pos)
-              this.$nextTick(() => {
-                this.$refs.element.setSelectionRange(pos - 1, pos - 1)
-              })
-              return
+              pos--;
             }
             else if ( this.isCancKey(event.keyCode) && (pos < this.maxPos) ){
               this.inputValue = this.inputValue.slice(0, pos) + this.promptChar + this.inputValue.slice(pos + 1)
-              this.$nextTick(() => {
-                this.$refs.element.setSelectionRange(pos, pos)
-              })
-              return
             }
-          }
-          if ( event.shiftKey && this.isArrowKey(event.keyCode) ){
-            this.$refs.element.selectionStart = pos
-            return
-          }
-          if ( this.isNotSpecialKey(event.keyCode) && !this.isValidChar(event.key, pos) ){
-            event.preventDefault()
-            return
-          }
-          this.$refs.element.setSelectionRange(pos, pos)
-        }
-      },
-      keyup(event){
-        bbn.fn.log('keyup', event);
-        if ( !this.isShiftKey(event.keyCode) && !this.isControlKey(event.keyCode) ){
-          let pos = this.$refs.element.selectionStart
-          this.emitInput(this.raw())
-          this.$nextTick(() => {
-            //this.setInputvalue()
             this.$nextTick(() => {
-              pos = this.getPos(event, pos)
-              if ( event.shiftKey && this.isArrowKey(event.keyCode) ){
-                this.$refs.element.selectionStart = pos
-              }
-              else {
-                this.$refs.element.setSelectionRange(pos, pos)
-              }
+              this.emitInput(this.raw())
+              this.$nextTick(() => {
+                this.setInputValue()
+                this.$nextTick(() => {
+                  this.$refs.element.setSelectionRange(pos, pos)
+                })
+              })
             })
+          }
+          else if ( event.shiftKey && this.isArrowKey(event.keyCode) ){
+            this.$refs.element.selectionStart = pos
+          }
+          else {
+            this.$refs.element.setSelectionRange(pos, pos)
+          }
+        }
+        this.keydown(event)
+      },
+      /** 
+       * The method called on every key pressed (keyup event).
+       * 
+       * @method keyupEvent
+       * @param {Event} event
+       * @fires isShiftKey
+       * @fires isControlKey
+       * @fires getPos
+       * @fires isArrowKey
+       * @fires keyup
+      */
+      keyupEvent(event){
+        bbn.fn.log('keyup', event);
+        if ( 
+          !this.isShiftKey(event.keyCode) &&
+          !this.isControlKey(event.keyCode) &&
+          !this.isTabKey(event.keyCode) &&
+          !event.ctrlKey
+        ){
+          let pos = this.$refs.element.selectionStart
+          this.$nextTick(() => {
+            pos = this.getPos(event, pos)
+            if ( event.shiftKey && this.isArrowKey(event.keyCode) ){
+              this.$refs.element.selectionStart = pos
+            }
+            else {
+              this.$refs.element.setSelectionRange(pos, pos)
+            }
           })
         }
+        this.keyup(event)
       },
-      input(event){
+      /**
+       * The method called on input event.
+       * 
+       * @method inputEvent
+       * @param {Event} event
+       * @fires isValidChar
+       * @fires emitInput
+       * @fires raw
+       * @emits input
+       */
+      inputEvent(event){
         let pos = this.$refs.element.selectionStart
         bbn.fn.log('input', event)
-        if ( (pos <= this.maxPos) && !bbn.fn.isNull(event.data) && this.isValidChar(event.data, pos - 1 ) ){
-          event.preventDefault()
+        if ( 
+          (pos <= this.maxPos) &&
+          !bbn.fn.isNull(event.data) &&
+          this.isValidChar(event.data, pos - 1 ) &&
+          (this.inputValue.charAt(pos - 1) === this.promptChar)
+        ){
           this.inputValue = this.inputValue.slice(0, pos - 1) + event.data + this.inputValue.slice(pos)
           this.$nextTick(() => {
+            this.emitInput(this.raw())
             this.$refs.element.setSelectionRange(pos, pos)
           })
         }
       },
+      /**
+       * The method called on blur event.
+       * 
+       * @method blurEvent
+       * @param {Event} event
+       * @fires blur
+       */
+      blurEvent(event){
+        if ( !this.value ){
+          this.inputValue = '';
+        }
+        this.blur(event)
+      },
+      /**
+       * The method called on focus event.
+       *
+       * @method focusEvent
+       * @param {Event} event
+       * @fires setInputValue
+       * @fires focus
+       */
+      focusEvent(event){
+        this.setInputValue()
+        this.focus(event)
+      },
+      /**
+       * Gets the raw value.
+       *
+       * @method raw
+       * @returns {String}
+       */
       raw(){
         let ret = '',
             value = this.$refs.element.value
@@ -383,8 +590,14 @@
         return ret
       }
     },
+    /**
+     * @event mounted
+     * @fires setInputValue
+     */
     mounted(){
-      this.setInputvalue()
+      if ( this.value ){
+        this.setInputValue()
+      }
       this.ready = true
     }
   });
