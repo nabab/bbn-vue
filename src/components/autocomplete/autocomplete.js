@@ -136,7 +136,7 @@
        * Emits the filter value.
        *
        * @method autocompleteSearch
-       * @param e
+       * @param e The event
        * @fires emitInput
        */
       autocompleteSearch(e){
@@ -161,7 +161,7 @@
        * Creates the object cfg.
        *
        * @method getOptions
-       * @returns {*}
+       * @returns {Function}
        */
       getOptions(){
         let cfg = {

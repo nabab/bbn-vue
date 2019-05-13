@@ -125,6 +125,7 @@
         default: false
       },
       /**
+       * Set to true prepend a checkbox to the item
        * @prop {Boolean} [false] checkable
        */
       checkable: {
@@ -139,55 +140,90 @@
       menu: {
         type: [Array, Function]
       },
-      // An string (or a function returning one) for the icon's color
+      /**
+       * An string (or a function returning one) for the icon's color
+       * @prop {String|Function} iconColor
+       */
       iconColor: {
         type: [String, Function]
       },
-      // The value of the UID to send for the root tree
+      /**
+       * The value of the UID to send for the root tree
+       * @prop {String|Number} root
+       */
       root: {
         type: [String, Number]
       },
-      // The hierarchy level, root is 0, and for each generation 1 is added to the level
+      /**
+       * The hierarchy level, root is 0, and for each generation 1 is added to the level
+       * @prop {Number} [0] level
+       */
       level: {
         type: Number,
         default: 0
       },
-      // Other trees where nodes can be dropped on
+      /**
+       * Other trees where nodes can be dropped on
+       * @prop {Arrayu} [[]] droppables
+       */
       droppables: {
         type: Array,
         default(){
           return [];
         }
       },
+      /**
+       * Set to true allows to use an object for the tree items
+       * @prop {Boolean} [false] object
+       */
       object: {
         type: Boolean,
         default: false
       },
-      // If set to false a draggable tree will not be able to drop on itself
+      /**
+       * If set to false a draggable tree will not be able to drop on itself
+       * @prop {Boolean} [true] selfDrop
+       */
       selfDrop: {
         type: Boolean,
         default: true
       },
-      // Helper to transform data when passing from one tree to another
+      /**
+       * Helper to transform data when passing from one tree to another
+       * @prop {Function} trasferData
+       */
       transferData: {
         type: Function
       },
+      /**
+       * An array containing the expanded nodes idx
+       * @prop {Array} [[]] expanded
+       */
       expanded: {
         type: Array,
         default(){
           return [];
         }
       },
+      /**
+       * The opened path if there is one
+       * @prop {Array} [[]] path
+       */
       path: {
         type: Array,
         default(){
           return [];
         }
       },
+      /**
+       * Set to true allows to select multiple nodes in the tree
+       * @prop {Boolean} [true] multiselect
+       */
       multiselect: {
         type: Boolean,
         default: true
       },
+      //@todo never used selectedValues
       selectedValues: {
         type: [Array, String],
         default(){
@@ -219,46 +255,111 @@
         }
       }
       return {
-        // Only for the origin tree
+        /**
+         * Only for the origin tree
+         * @data {Boolean} [false] isRoot
+         */
         isRoot: false,
-        // The parent node if not root
+        /**
+         * The parent node if not root
+         * @data {Boolean} [false] node
+         */
         node: false,
-        // The parent tree if not root
+        /**
+         * The parent tree if not root
+         * @data {Boolean} [false] tree
+         */
         tree: false,
-        // The URL where to pick the data from if isAjax
+        /**
+         * The URL where to pick the data from if isAjax
+         * @data {String|Boolean} url
+         */
         url: typeof(this.source) === 'string' ? this.source : false,
-        // Is the data provided from the server side
+        /**
+         * Is the data provided from the server side
+         * @data {Boolean} [false] isAjax
+         */
         isAjax: isAjax,
-        // True when the data is currently loading in the tree (unique to the root)
+        /**
+         * True when the data is currently loading in the tree (unique to the root)
+         * @data {Boolean} [false] isFunction
+         */
         isFunction: isFunction,
-        // True when the data is currently loading in the tree (unique to the root)
+        /**
+         * True when the data is currently loading in the tree (unique to the root)
+         * @data {Boolean} [false] isLoading
+         */
         isLoading: false,
-        // True when the data is currently loading in the current tree
+        /**
+         * True when the data is currently loading in the current tree
+         * @data {Boolean} [false] loading
+         */
         loading: false,
-        // True once the data of the tree has been loaded
+        /**
+         * True once the data of the tree has been loaded
+         * @data {Boolean} [false] isLoaded
+         */
         isLoaded: false,
-        // True once the component is mounted
+        /**
+         * True once the component is mounted
+         * @data {Boolean} [false] isMounted
+         */
         isMounted: false,
-        // The actual list of items (nodes)
+        /**
+         * The actual list of items (nodes)
+         * @data {items} [Array] items
+         */
         items: items,
-        // The currently active node component object
+        /**
+         * The currently active node component object
+         * @data {Boolean} [false] activeNode
+         */
         activeNode: false,
-        // The currently selected node component object
+        /**
+         * The currently selected node component object
+         * @data {Boolean} [false] selectedNode
+         */
         selectedNode: false,
-        // The component node object over which the mouse is now
+        /**
+         * The component node object over which the mouse is now
+         * @data {overNode} [false] overNode
+         */
         overNode: false,
-        // dragging state, true if an element is being dragged
+        /**
+         * Dragging state, true if an element is being dragged
+         * @data {Boolean} [false] dragging
+         */
         dragging: false,
-        // Real dragging will start after the mouse's first move, useful to kow if we are in a select or drag context
+        /**
+         * Real dragging will start after the mouse's first move, useful to kow if we are in a select or drag context
+         * @data {Boolean} [false] realDragging
+         */
         realDragging: false,
+        /**
+         * An array containing the indexes of checked nodes
+         * @data {Array} [[]] checked
+         */
         checked: [],
+        /**
+         * An array containing the indexes of disabled checkbox
+         * @data {Array} [[]] disabled
+         */
         disabled: [],
+        /**
+         * An array containing the indexes of expanded nodes
+         * @data {Array} [[]] currentExpanded
+         */
         currentExpanded: [],
+        // @todo never used
         currentSelectedValues: []
       };
     },
 
     computed: {
+      /**
+       * @computed droppableTrees
+       * @return {Array}
+       */
       droppableTrees(){
         let r = this.selfDrop ? [this] : [];
         if ( this.droppables.length ){
@@ -271,7 +372,12 @@
     },
 
     methods: {
-
+      /**
+       * Normalize the list of items basing on it's type
+       * @method _objectMapper
+       * @param {Array|Object} items 
+       * @return {Object}
+       */
       _objectMapper(items){
         let res = [];
         if ( bbn.fn.isArray(items) ){
@@ -322,12 +428,20 @@
         }
         return res;
       },
-
+      /**
+       * A function to normalize the structure of items
+       * @method _map
+       * @param {Array|Function} items 
+       * @param {Number} level 
+       * @fires map
+       * @fires _map
+       * @return {Array}
+       */
       _map(items, level){
         if ( this.map ){
           let res = [];
           if ( !level ){
-            level = 1;
+            level = 1; 
           }
           else{
             level++;
@@ -346,7 +460,11 @@
         }
         return items.slice();
       },
-
+      /**
+       * Returns the items basing on the prop isAjax and isFunction
+       * @fires _map
+       * @return {Array}
+       */
       getItems(){
         let items = [];
         if ( !this.isAjax && !this.isFunction ){
@@ -354,6 +472,12 @@
         }
         return items;
       },
+      /**
+       * Resets the tree to the original configuration
+       * @method reset
+       * @fires load
+       * @fires getItems
+       */
       reset(){
         if ( this.isAjax ){
           this.isLoaded = false;
@@ -371,28 +495,46 @@
         })
       },
 
-      // Resize the root scroller
+      /**
+       * Resize the root scroller
+       * @method resize
+       */
       resize(){
         if ( this.tree.$refs.scroll ){
           this.tree.$refs.scroll.onResize();
         }
       },
 
-      // Make the root tree resize and emit an open event
+      /**
+       * Make the root tree resize and emit an open event
+       * @method onOpen
+       * @fires resize
+       * @emits open
+       */
       onOpen(){
         this.resize();
         this.$emit('open');
         this.tree.$emit('open', this);
       },
-
-      // Make the root tree resize and emit a close event
+      /**
+       * Make the root tree resize and emit a close event
+       * @method onClose
+       * @fires resize
+       * @emits close
+       */
       onClose(){
         this.resize();
         this.$emit('close');
         this.tree.$emit('close', this);
       },
 
-      // Find a node based on its props
+      /**
+       * Find a node based on its props
+       * @method _findNode
+       * @param {Object} props 
+       * @param {Object} node 
+       * @return {Object}
+       */
       _findNode(props, node){
         let ret = false;
         if ( node ){
@@ -419,7 +561,14 @@
         return ret;
       },
 
-      // Find a node based on path
+      /**
+       * Find a node based on path
+       * @method getNode
+       * @param {Array} arr 
+       * @param context 
+       * @fires _findNode
+       * @return {Object}
+       */
       getNode(arr, context){
         let root = context || this.$refs.root;
 
@@ -441,7 +590,14 @@
         }
       },
 
-      // Returns the menu of a given node
+      /**
+       * Returns the menu of a given node
+       * @method getMenu
+       * @param {Object} node 
+       * @fires reload
+       * @fires menu
+       * @return {Array}
+       */
       getMenu(node){
         let idx = $(node.$el).index();
         let menu = [];
@@ -464,7 +620,7 @@
           })
         }
         if ( this.menu ){
-          let m2 =bbn.fn.isFunction(this.menu) ? this.menu(node, idx) : this.menu;
+          let m2 = bbn.fn.isFunction(this.menu) ? this.menu(node, idx) : this.menu;
           if ( m2.length ){
             $.each(m2, function(i, a){
               menu.push({
@@ -480,8 +636,14 @@
         return menu;
       },
 
-      // Returns an object with the data to send for a given node
-      // If UID has been given obj will only have this prop other the whole data object
+      
+      /**
+       * Returns an object with the data to send for a given node.
+       * If UID has been given obj will only have this prop other the whole data object
+       * @method dataToSend
+       * @fires data
+       * @return {Object}
+       */
       dataToSend(){
         // The final object to send
         let r = {},
@@ -508,7 +670,12 @@
         return r;
       },
 
-      // Makes an object out of the given properties, adding to data all non existing props
+      /**
+       * Makes an object out of the given properties, adding to data all non existing props
+       * @method normalize
+       * @param {Object} obj 
+       * @return {Boolean|Object}
+       */
       normalize(obj){
         let r = {
           data: {}
@@ -529,7 +696,11 @@
         return false;
       },
 
-      // Manages the key navigation inside the tree
+      /**
+       * Manages the key navigation inside the tree
+       * @method keyNav
+       * @param {Event} e The event
+       */
       keyNav(e){
         e.preventDefault();
         e.stopImmediatePropagation();
@@ -653,7 +824,13 @@
         }
       },
 
-      // Reloads a node already loaded
+      /**
+       * Reloads a node already loaded
+       * @method reload
+       * @param {Object} node 
+       * @fires load
+       * 
+       */
       reload(node){
         if ( this.isAjax ){
           if ( !node ){
@@ -683,7 +860,13 @@
           }
         }
       },
-
+      /**
+       * @method mapper
+       * @param {Function} fn 
+       * @param {Array} data 
+       * @fires mapper
+       * @return {Array}
+       */
       mapper(fn, data){
         let res = [];
         $.each(data, (i, a) => {
@@ -696,7 +879,12 @@
         return res;
       },
 
-      // Loads a node
+      /**
+       * Loads a node
+       * @method load
+       * @fires dataToSend
+       * @emits load
+       */
       load(){
         // It must be Ajax and not being already in loading state
         if ( this.isAjax && !this.tree.isLoading && !this.isLoaded ){
@@ -722,7 +910,11 @@
           })
         }
       },
-
+      /**
+       * Opens the node corresponding to the prop 'path'
+       * @method openPath
+       * 
+       */
       openPath(){
         if ( this.path.length ){
           let path = this.path.slice(),
@@ -760,21 +952,33 @@
         }
       },
 
-      // Unselects the currently selected node
+      /**
+       * Unselects the currently selected node
+       * @method unselect
+       */
       unselect(){
         if ( this.tree.selectedNode ){
           this.tree.selectedNode.isSelected = false;
         }
       },
 
-      // Deactivate the active node
+      /**
+       * Deactivate the active node
+       * @method deactivateAll
+       */
       deactivateAll(){
         if ( this.tree.activeNode ){
           this.tree.activeNode.isActive = true;
         }
       },
 
-      // Returns true if the first argument node descends from the second
+      /**
+       * Returns true if the first argument node descends from the second
+       * @method isNodeOf
+       * @param {Object} childNode 
+       * @param {Object} parentNode 
+       * @return {Boolean}
+       */
       isNodeOf(childNode, parentNode){
         childNode = bbn.vue.closest(childNode, 'bbn-tree-node');
         while ( childNode ){
@@ -786,7 +990,13 @@
         return false;
       },
 
-      // Moves a node to or inside a tree
+      /**
+       *  Moves a node to or inside a tree
+       * @method move
+       * @param {Object} node 
+       * @param {Object} target 
+       * @param {Number} index 
+       */
       move(node, target, index){
         let idx = $(node.$el).index(),
             parent = node.parent;
@@ -859,7 +1069,11 @@
       },
       */
 
-      // Returns an object with all the unknown properties of the node component
+      /**
+       * Returns an object with all the unknown properties of the node component
+       * @param {Object} data 
+       * @return {Object}
+       */
       toData(data){
         let r = {};
         for ( let n in data ){
@@ -871,7 +1085,11 @@
       }
     },
 
-    // Definition of the root tree and parent node
+    /**
+     * Definition of the root tree and parent node
+     * @event created
+     * @fires _map
+     */
     created(){
       let cp = bbn.vue.closest(this, 'bbn-tree');
       if ( !cp ){
@@ -896,7 +1114,10 @@
         this.isLoaded = true;
       }
     },
-
+    /**
+     * @event mounted
+     * @fires load
+     */
     mounted(){
       if ( this.isRoot && this.autoload ){
         this.load();
@@ -908,15 +1129,29 @@
     },
 
     watch: {
+      /**
+       * @watch activeNode
+       * @param {Object} newVal 
+       */
       activeNode(newVal){
         if ( newVal ){
           this.$refs.scroll.scrollTo(0, newVal.$el);
         }
       },
+      /**
+       * @watch path
+       * @param newVal 
+       * @emits pathChange
+       */
       path(newVal){
         bbn.fn.log("Change path", newVal);
         this.$emit('pathChange');
       },
+      /**
+       * @watch source
+       * @fires reset
+       * @fires load
+       */
       source(){
         this.reset();
         this.load();
@@ -924,85 +1159,157 @@
     },
 
     components: {
+      /**
+       * @component bbn-tree-node
+       */
       'bbn-tree-node': {
         name: 'bbn-tree-node',
         props: {
+          /**
+           * @prop {String} filterString
+           * @memberof bbn-tree-node
+           */
           filterString: {
             type: String
           },
+          /**
+           * @prop {Boolean} [false] excludedSectionFilter
+           * @memberof bbn-tree-node
+           */
           excludedSectionFilter: {
             type: Boolean,
             default: false
           },
-          // True if the node is the one selected
+          /**
+           * True if the node is the one selected
+           * @prop {Boolean} [false] selected
+           * @memberof bbn-tree-node
+           */
           selected:{
             type: Boolean,
             default: false
           },
-          // True if the node is expanded (opened)
+          /**
+           * True if the node is expanded (opened)
+           * @prop {Boolean} [false] expanded
+           * @memberof bbn-tree-node
+           */
           expanded:{
             type: Boolean,
             default: false
           },
-          // A message to show as tooltip
+          /**
+           * A message to show as tooltip
+           * @prop {String} tooltip
+           * @memberof bbn-tree-node
+           */
           tooltip: {
             type: String
           },
-          // The icon - or not
+          /**
+           * The icon - or not
+           * @prop {Boolean|String} icon
+           * @memberof bbn-tree-node
+           */
           icon:{
             type: [Boolean, String]
           },
-          // True if the node is selectable
+          /**
+           * True if the node is selectable
+           * @prop {Boolean} [true] selectable
+           * @memberof bbn-tree-node
+           */
           selectable: {
             type: Boolean,
             default: true
           },
+          /**
+           * True if the node is checkable
+           * @prop {Boolean} [true] checkable
+           * @memberof bbn-tree-node
+           */
           checkable: {
             type: Boolean,
             default: true
           },
-          // The text inside the node, its title
+          /**
+           * The text inside the node, its title
+           * @prop {String} text
+           * @memberof bbn-tree-node
+           */
           text: {
             type: String
           },
-          // The data attached to the node
+          /**
+           * The data attached to the node
+           * @prop {Object} [{}] data
+           * @memberof bbn-tree-node
+           */
           data: {
             type: Object,
             default(){
               return {};
             }
           },
-          // The opened path if there is one
+          /**
+           * The opened path if there is one
+           * @prop {Array} [[]] path
+           * @memberof bbn-tree-node
+           */
           path: {
             type: Array,
             default(){
               return [];
             }
           },
-          // A class to give to the node
+          /**
+           * A class to give to the node
+           * @prop {String} cls
+           * @memberof bbn-tree-node
+           */
           cls: {
             type: [String]
           },
-          // A component for the node
+          /**
+           * A component for the node
+           * @prop {String|Function|Vue} component
+           * @memberof bbn-tree-node
+           */
           component: {
             type: [String, Function, Vue]
           },
-          // The number of children of the node
+          /**
+           * The number of children of the node
+           * @prop {Number} num
+           * @memberof bbn-tree-node
+           */
           num: {
             type: Number
           },
-          // The list of children from the node
+          /**
+           * The list of children from the node
+           * @prop {Array} [[]] source
+           * @memberof bbn-tree-node
+           */
           source: {
             type: Array,
             default(){
               return [];
             }
           },
-          // Node's level (see tree)
+          /**
+           * Node's level (see tree)
+           * @prop {Number} [1] level
+           * @memberof bbn-tree-node
+           */
           level: {
             type: Number,
             default: 1
           },
+          /**
+           * @prop {Number} idx
+           * @memberof bbn-tree-node
+           */
           idx: {
             type: Number
           }
@@ -1010,25 +1317,89 @@
 
         data: function(){
           return {
+            /**
+             * @data {Boolean} [false] double
+             * @memberof bbn-tree-node
+             */
             double: false,
-            // The parent tree
+            /**
+             * The parent tree
+             * @data {Boolean} [false] parent
+             * @memberof bbn-tree-node
+             */
             parent: false,
-            // The root tree
+            /**
+             * The root tree
+             * @data {Boolean} [false] tree
+             * @memberof bbn-tree-node
+             */
             tree: false,
-            // Sanitized list of items
+            /**
+             * Sanitized list of items
+             * @data {Array} items
+             * @memberof bbn-tree-node
+             */
             items: this.source.slice(),
+            /**
+             * True if the node is active
+             * @data {Boolean} [false] isActive
+             * @memberof bbn-tree-node
+             */
             isActive: false,
+            /**
+             * True if the node is selected
+             * @data {Boolean} isSelected
+             * @memberof bbn-tree-node
+             */
             isSelected: !!this.selected,
+            /**
+             * True if the node is expanded
+             * @data {Boolean} isExpanded
+             * @memberof bbn-tree-node
+             */
             isExpanded: this.expanded,
+            /**
+             * The number of children
+             * @data {Number} numChildren
+             * @memberof bbn-tree-node
+             */
             numChildren: this.num !== undefined ? this.num : this.source.length,
+            /**
+             * The animation of the node
+             * @data {Boolean} animation
+             * @memberof bbn-tree-node
+             */
             animation: this.level > 0,
+            /**
+             * True if the component bbn-tree-node is mounted
+             * @data {Boolean} [false] isMounted
+             * @memberof bbn-tree-node
+             */
             isMounted: false,
+            /**
+             * @data {Boolean} [false] isMatch
+             * @memberof bbn-tree-node
+             */
             isMatch: true,
+            /**
+             * @data {Number} [0] numMatches
+             * @memberof bbn-tree-node
+             */
             numMatches: 0,
+            /**
+             * @data {Boolean} [false] excludedFilter
+             * @memberof bbn-tree-node
+             */
             excludedFilter: false
           }
         },
         computed: {
+          /**
+           * The style of the item's icon
+           * @computed iconStyle
+           * @return {Object}
+           * @memberof bbn-tree-node
+           */
           iconStyle(){
             let style = {};
             if ( this.tree.iconColor ){
@@ -1036,17 +1407,39 @@
             }
             return style;
           },
+          /**
+           * @computed menu
+           * @return {Function}
+           * @memberof bbn-tree-node
+           */
           menu(){
             return this.getMenu()
           }
         },
         methods: {
+          /**
+           * Return true if the node is checked
+           * @method isChecked
+           * @memberof bbn-tree-node
+           */
           isChecked(){
            return $.inArray(this.data[this.tree.uid], this.tree.checked) > -1
           },
+          /**
+           * Return true if the node is disabled
+           * @method isDisabled
+           * @memberof bbn-tree-node
+           */
           isDisabled(){
             return $.inArray(this.data[this.tree.uid], this.tree.disabled) > -1
           },
+          /**
+           * Checks the node and emits the events check and uncheck
+           * @method checkNode
+           * @emits check
+           * @emits uncheck
+           * @memberof bbn-tree-node
+           */
           checkNode(val){
             if ( val && this.data[this.tree.uid] && ($.inArray(this.data[this.tree.uid], this.tree.checked) === -1) ){
               this.tree.checked.push(this.data[this.tree.uid]);
@@ -1060,6 +1453,12 @@
               }
             }
           },
+           /**
+           * Activate the node
+           * @method activate
+           * @fires activate
+           * @memberof bbn-tree-node
+           */
           activate(){
             let ev = $.Event('activate');
             this.tree.$emit('activate', this, ev);
@@ -1075,9 +1474,20 @@
           add(obj){
 
           },
+          /**
+           * Resize the parent tree
+           * @method tree.resize
+           * @memberof bbn-tree-node
+           */
           resize(){
             this.tree.resize();
           },
+          /**
+           * Gets the menu of the parent tree
+           * @method getMenu
+           * @memberof bbn-tree-node
+           * @fires tree.getMenu
+           */
           getMenu(){
             return this.tree.getMenu(this);
           },
@@ -1096,6 +1506,12 @@
               alert("afterEnter " + $(this.$refs.container).height());
             }
           },
+          /**
+           * Handles the start of dragging of the tree
+           * @method startDrag  
+           * @param {Event} e The event
+           * @memberof bbn-tree-node
+           */
           startDrag(e){
             if ( !this.double && this.tree.draggable ){
               e.preventDefault();
@@ -1112,6 +1528,14 @@
               $(document.body).on("mousemove", this.drag);
             }
           },
+          /**
+           * Handles the dragging of the node
+           * @method drag  
+           * @param {Event} e The event
+           * @emits tree.dragStart
+           * @emits  dragOver
+           * @memberof bbn-tree-node
+           */
           drag(e){
             bbn.fn.log("DS");
             e.stopImmediatePropagation();
@@ -1169,6 +1593,13 @@
               }
             }
           },
+          /**
+           * Handles the end of dragging
+           * @method endDrag
+           * @param {Event} e The event
+           * @emits tree.dragEnd
+           * @memberof bbn-tree-node
+           */
           endDrag(e){
             e.preventDefault();
             e.stopImmediatePropagation();
@@ -1212,9 +1643,18 @@
             }
             */
           },
+          /**
+           * Defines the parent tree overNode
+           * @method mouseOver
+           * @memberof bbn-tree-node
+           */
           mouseOver(){
             this.tree.overNode = this;
           },
+          /**
+           * @method checkPath
+           * @memberof bbn-tree-node
+           */
           checkPath(){
             if ( this.tree.path.length > this.level ){
               let item = this.tree.path.slice(this.level, this.level + 1)[0],
@@ -1243,6 +1683,7 @@
               }
             }
           },
+          // @todo never used
           getPath(numeric){
             let r = [],
                 parent = this;
@@ -1261,10 +1702,20 @@
             return r;
           }
         },
+        /**
+         * Defines the props tree and parent of the node
+         * @event created
+         * @memberof bbn-tree-node
+         */
         created(){
           this.parent = bbn.vue.closest(this, 'bbn-tree');
           this.tree = this.parent.tree || this.parent;
         },
+        /**
+         * @event mounted
+         * @fires checkPath
+         * @fires resize
+         */
         mounted(){
           if ( this.tree.opened ){
             this.isExpanded = true;
@@ -1306,6 +1757,11 @@
           })
         },
         watch: {
+          /**
+           * @watch double
+           * @param {Boolean} newVal 
+           * @memberof bbn-tree-node
+           */
           double(newVal){
             if ( newVal ){
               setTimeout(() => {
@@ -1313,6 +1769,14 @@
               }, 500);
             }
           },
+          /**
+           * @watch isExpanded
+           * @param {Boolean} newVal 
+           * @fires tree.load
+           * @fires resize
+           * @fires tree.isNodeOf
+           * @memberof bbn-tree-node
+           */
           isExpanded(newVal){
             if ( newVal ){
               if ( this.numChildren && !this.$refs.tree[0].isLoaded ){
@@ -1329,6 +1793,14 @@
               this.resize();
             }
           },
+          /**
+           * @watch isSelected
+           * @param {Boolean} newVal 
+           * @param {Boolean} oldVal 
+           * @emits tree.unselect
+           * @emits tree.select
+           * @memberof bbn-tree-node
+           */
           isSelected(newVal, oldVal){
             if ( newVal ){
               if ( this.tree.selectedNode ){
@@ -1340,6 +1812,13 @@
               this.tree.selectedNode = this;
             }
           },
+          /**
+           * @watch isActive
+           * @param {Boolean} newVal 
+           * @emits tree.activate
+           * @emits tree.deactivate
+           * @memberof bbn-tree-node
+           */
           isActive(newVal){
             if ( this.tree.activeNode ){
               this.tree.selectedNode.isActive = false;
@@ -1347,6 +1826,11 @@
             this.tree.activeNode = this;
             this.tree.$emit(newVal ? 'activate' : 'deactivate', this);
           },
+          /**
+           * @watch filterString
+           * @param {String} newVal 
+           * @memberof bbn-tree-node
+           */
           filterString(newVal){
             this.numMatches = 0;
             if ( !newVal ){
