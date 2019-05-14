@@ -607,7 +607,7 @@
         bbn.fn.log('paste', event)
         let text = event.clipboardData ? event.clipboardData.getData('text') : ''
         event.preventDefault()
-        bbn.fn.log('aaaa', this.raw(text))
+        this.emitInput(this.raw(text))
       },
       /**
        * Gets the raw value.
@@ -629,7 +629,7 @@
                 ret += c
               }
             }
-          });
+          })
         }
         return ret
       }
@@ -647,7 +647,6 @@
     watch: {
       value(newVal, oldVal){
         if ( newVal !== oldVal ){
-          bbn.fn.log('value', newVal, oldVal)
           this.setInputValue()
         }
       }
