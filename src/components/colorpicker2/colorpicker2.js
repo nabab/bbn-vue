@@ -4,7 +4,6 @@
  * @description The bbn-colorpicker component contains a field that shows the currently selected color.
  * Clicking on the input field it displays a color chart, this set of colors can be customized by defining it in the "palette" property.
  * This component allows you to create an intuitive interface for color manipulations
- *
  * @copyright BBN Solutions
  *
  * @author BBN Solutions
@@ -18,83 +17,123 @@
     mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent],
     props: {
       /**
+       * The value of the colorpicker
        * @prop {String} value
        */
       value: {
         type: String,
       },
-      pannel: {
+      /**
+       * @prop {Boolean} [false] panel
+       */
+      panel: {
         type: Boolean,
         default: false
       },
+      /**
+       * @prop {Boolean} [false] gradient
+       */
       //for opacity
       gradient: {
         type: Boolean,
         default: false
       },
-      //tracke coloer initial
+      /**
+       * Tracks initial color
+       * @prop {Boolean} [false] gradient
+       */
       initial: {
         type: Boolean,
         default: true
       },
-      //show code color in input
+      /**
+       * Set to true shows an input containing the code of the color
+       * @prop {Boolean} [false] showCode
+       */
       showCode: {
         type: Boolean,
         default: false
       },
-      //no pannel but only palette
+      /**
+       * If the array palette is defined, set to true shows the colors scheme instead of the panel
+       * @prop {Boolean} [false] onlyPalette
+       */
       onlyPalette:{
         type: Boolean,
         default: false
       },
-      //Array of arrays or simple array to which it contains the desired colors and can be written in rgb, hex or even just with the name
+      /**
+       * An array containing the list of colors (hex, rgb, rgba, color's name) to show if the prop onlyPalette is set to true. To create a schema with a defined number of columns an array of array can be given
+       * @prop {Array} palette
+       */
       palette:{
         type: Array
       },
-      //show or button
+      /**
+       * Set to true shows the button 'choose' and 'cancel'
+       * @prop {Boolean} [false] buttons
+       */
       buttons: {
         type: Boolean,
         default: true
       },
-      //teex name button
+      /**
+       * An array containing the text of the buttons
+       * @prop {Array} textButtons
+       */
       textButtons: {
         type: Array
       },
-      //if set atrue through the pannel we can define a palette of favorite colors that come from the selection of the pannel and not from an apalette that we have already passed
-      favorite:{
+      //if set atrue through the panel we can define a palette of favourite colors that come from the selection of the panel and not from an apalette that we have already passed
+      /**
+       * Set to true allows to create a palette of favourite colors coming from the selection of the panel
+       * @prop {Boolean} [false] favourite
+       */
+      favourite: {
         type: Boolean,
         default: false
       },
-      //button that calculates the selected color
+      /**
+       * Set to true shows a button to empty the selection
+       * @prop {Boolean} [false] buttonEmpty
+       */
       buttonEmpty:{
         type: Boolean,
         default: false
       },
-      //set the format that is displayed in the text box. type: hex, rgb, rgba, name , hsl , none (Depends on input - try changing formats with the text box)
+     
+      /**
+       * Defines the color code to use in the input that shows the value of colorpicker
+       * @prop {String} ['hex'] codeColor
+       */
       codeColor: {
         type: String,
         default: "hex"
       }
     },
     computed:{
-      //object for configuration colorpicker
+      /**
+       * The object of configuration of the colorpicker
+       * @computed dataComponent
+       * @return {Object}
+       */
       dataComponent(){
         let cp = this;
         let obj = {
           preferredFormat: this.codeColor,
           togglePaletteOnly: this.onlyPalette,
           showInput: this.showCode,
-          showPalette: this.favorite,
+          showPalette: this.favourite,
           showInitial: this.initial,
           showAlpha: this.gradient,
           replacerClassName: "k-widget k-colorpicker k-textbox",
           preferredFormat: this.codeColor,
           //container
-          //if set to false and I click outside the pannel does not keep the selected value as if it were a cancel
+          //if set to false and I click outside the panel does not keep the selected value as if it were a cancel
           clickoutFiresChange: true,
           showButtons: this.buttons,
           allowEmpty: this.buttonEmpty,
-          flat: this.pannel,
+          flat: this.panel,
           change(){
             cp.emitInput(this.value);
           },
@@ -115,7 +154,7 @@
         //for palette
         if ( this.palette !== undefined && this.palette.length ){
           obj.palette = this.palette;
-          if( this.pannel === true ){
+          if( this.panel === true ){
             obj.showPalette = true;
             obj.togglePaletteOnly = true;
           }
@@ -143,16 +182,33 @@
       }
     },
     methods: {
+      /**
+       * @method dragstart
+       * @param {Event} e The event
+       * @param {String} color 
+       * @emits dragstart
+       */
       dragstart(e, color){
         $(this.$refs.element).on("dragstart.spectrum" , (e, color)=>{
           this.$emit("dragstart", e, color);
         });
       },
+      /**
+       * @method dragstop
+       * @param {Event} e The event
+       * @param {String} color 
+       * @emits dragstop
+       */
       dragstop(e, color){
         $(this.$refs.element).on("dragstop.spectrum", (e, color)=>{
           this.$emit("dragstop", e, color);
         });
       },
+      /**
+       * Initializes the component
+       * @method initComponent
+       * 
+       */
       initComponent(){
         if ( this.widget ){
           $(this.$refs.element).spectrum("destroy");
@@ -168,9 +224,12 @@
           this.dragstop();
         }, 100);
       },
-      build(){
-        bbn.fn.log("colorpicker2 builder", this.$refs.element);
-      },
+      /**
+       * Converts hex to rgb colors
+       * @param {Number} r 
+       * @param {Number} g 
+       * @param {Number} b 
+       */
       fullColorToHex(r, g, b){
         var rgbToHex = rgb => {
           rgb = Math.round(rgb);
@@ -190,6 +249,10 @@
         return bbn.vue.getOptions(vm);
       }
     },
+    /**
+     * @event mounted
+     * @fires initComponent
+     */
     mounted(){
       this.$nextTick(() => {
         this.initComponent();
@@ -197,6 +260,12 @@
       this.ready = true;
     },
     watch:{
+      /**
+       * @watch dataComponent
+       * @param old 
+       * @param val 
+       * @fires initComponent
+       */
       dataComponent(old, val){
         if ( old !== val ){
           this.initComponent();

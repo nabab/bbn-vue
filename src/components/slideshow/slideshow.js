@@ -1,8 +1,6 @@
 /**
  * @file bbn-slideshow component
- *
  * @description bbn-slideshow is a highly configurable component, it also allows the display of reactive elements such as components, images, or texts; having full control of the transitions.
- *
  * @copyright BBN Solutions
  *
  * @author Vito Fava
@@ -16,106 +14,171 @@
     mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent],
     props: {
       /**
-       * The content for slideshow.
-       *
-       * @prop {Array|Function|String}
+       * The source of the slideshow
+       * @prop {Array|Function|String} source
        */
       source: {
         type: [Array, Function, String]
       },
       /**
-       * String to be mandatory inserted in case of source as string to define the individual slides
-       *
-       * @prop {String}
+       * If the type of the source is a string defines which character to use as separator between slides
+       * @prop {String} separator
        */
       separator: {
         type: String
       },
+      /**
+       * The component to use in each slide
+       * @prop {Object} component
+       */
       component: {
         type: Object
       },
+      /**
+       * Insert a checkbox in each slide
+       * @prop {String|Boolean} [false] checkbox
+       */
       checkbox: {
         type: [String, Boolean],
         default: false
       },
       /**
-       * Set to true to have the number of slides and the number of the current one
-       *
-       * @prop {Boolean} [false] disabled
+       * Set to true shows a list of all slides' title that can be used to navigate between them
+       * @prop {Boolean} [false] summary
        */
       summary: {
         type: Boolean,
         default: false
       },
       //for image
+      /**
+       * @prop {Boolean} [false] gallery
+       */
       gallery: {
         type: Boolean,
         default: false
       },
+      /**
+       * Set to true shows the list of previews of the slide
+       * @prop {Boolean|String} [false] preview
+       */
       preview:{
         type: [Boolean, String],
         default: false
       },
+      /**
+       * The dimension of the preview
+       * @prop {Number} [45] dimensionPreview
+       */
       dimensionPreview:{
         type: Number,
         default: 45
       },
+      /**
+       * Set to true enables the autoplay using the default autoplay time (5000ms). If a number is given, multiplied * 1000, will define the new autoplay time 
+       * @prop {Boolean|Number} [false] autoplay
+       */
       autoPlay:{
         type: [Boolean, Number],
         default: false
-      },// pause and start autoscroll
+      },
+      /**
+       * Shows the commands to start and stop autoplay
+       * @prop {Boolean|String} [false] ctrl
+       */
       ctrl:{
         type: [Boolean, String],
         default: false
-      }, //show or no show arrow
+      },
+      /**
+       * Set to true shows the arrow icons to move to next or previous slide. An object with 'left' and 'right' properties can be given to specify the css class for each arrow and to customize the icon.
+       * @prop {Bolean|Object} [false] arrows
+       */
       arrows:{
         type: [Boolean, Object],
         default: false
       },
+      //@todo not used
       navigation:{
         type: Boolean,
         default: false
       },
+      /**
+       * Set to true hides the preview images
+       * @prop {Boolean} [false] autoHidePreview
+       */
       autoHidePreview:{
         type: Boolean,
         default: false
       },
+      /**
+       * Set to true hides the arrow icons
+       * @prop {Boolean} [false] autoHideArrows
+       */
       autoHideArrows:{
         type: Boolean,
         default: false
       },
+      /**
+       * Set to true hides the command to start and stop the autoplay
+       * @prop {Boolean} [false] autoHideCtrl
+       */
       autoHideCtrl:{
         type: Boolean,
         default: false
       },
+      /**
+       * If set to true shows the slides in a loop
+       * @prop {Boolean} [false] loop
+       */
       loop:{
         type: Boolean,
         default: false
       },
+      /**
+       * Set to true shows the slide in the full page
+       * @prop {Boolean} [false] fullSlide
+       */
       fullSlide:{
         type: Boolean,
         default: false
       },
+      /**
+       * The index of the first slide to show
+       * @prop {Number} [0] initialSlide
+       */
       initialSlide:{
         type: Number,
         default: 0
       },
-     showCount:{
+      /**
+       * Set to true shows the number of the current slide and the total number of slides
+       * @prop {Boolean} [false] showCount
+       */
+      showCount:{
         type: Boolean,
         default: false
       },
+      /**
+       * Set to true shows the property info of the item
+       * @prop {Boolean} [false] showInfo
+       */
       showInfo:{
         type: Boolean,
         default: false
       },
-      //insert a scroll inside a slide
+      /**
+       * If the property content is given to the item, set to true insert the html content inside a scroll
+       * @prop {Boolean} [false] scroll
+       */
+      
       scroll: {
         type: Boolean,
         default: false
       }
     },
     data(){
-      let src      = [],
+      let src = [],
           valuesCB = {},
           isAjax   = false;
       if ( this.gallery ){
@@ -181,26 +244,82 @@
         }
       }
       return {
+        /**
+         * @data {String} name
+         */
         name: bbn.fn.randomString().toLowerCase(),
+        /**
+         * @data {Number} currentIndex
+         */
         currentIndex: this.initialSlide > src.length ? 0 : this.initialSlide,
+        /**
+         * @data {Array} items
+         */
         items: src,
+        /**
+         * True if the type of the prop source is string and the prop separator is false
+         * @data {Boolean} isAjax
+         */
         isAjax: isAjax,
+        /**
+         * @data {String} ['Don't show it again'] defaultTextCB
+         */
         defaultTextCB: bbn._("Don't show it again"),
+        /**
+         * @data valuesCB
+         */
         valuesCB: valuesCB,
+        /**
+         * @data {Number} [0] activeMiniature
+         */
         activeMiniature: 0,
+        /**
+         * 
+         * @data {Number} [5000] defaultAutoPlay
+         */
         defaultAutoPlay: 5000,
+        /**
+         * @data {Boolean} [false] scrollInterval
+         */
         scrollInterval: false,
+        /**
+         * @data {Boolean} [false] showMiniature
+         */
         showMiniature: this.autoHidePreview ? false : true,
+        /**
+         * @data {Boolean} [false] showArrowLeft
+         */
         showArrowLeft: this.autoHideArrows ? false : true,
+        /**
+         * @data {Boolean} [false] showArrowRight
+         */
         showArrowRight: this.autoHideArrows ? false : true,
+        /**
+         * @data {Boolean} [false] showCtrl
+         */
         showCtrl: this.autoHideCtrl ? false : true,
+         /**
+         * @data {Object} [{left: 'nf nf-fa-arrow_circle_left',right: 'nf nf-fa-arrow_circle_right'}] arrowClass
+         */
         arrowClass:{
           left:  'nf nf-fa-arrow_circle_left',
           right: 'nf nf-fa-arrow_circle_right',
         },
+        /**
+         * @data {Number} [0] imageWidth
+         */
         imageWidth: 0,
+        /**
+         * @data {Number} [0] imageHeight
+         */
         imageHeight: 0,
+        /**
+         * @data {Number} [0] imageLeftMargin
+         */
         imageLeftMargin: 0,
+        /**
+         * @data {Number} [0] imageTopMargin
+         */
         imageTopMargin: 0
       }
     },
@@ -208,6 +327,11 @@
       /*updateImage(ev, idx){
         this.ratio(idx);
       },*/
+      /**
+       * Handles the resize of the component
+       * @method onResize
+       * @fires aspectRatio
+       */
       onResize(){
         if ( bbn.fn.isArray(this.source) && this.source.length ){
           this.source.forEach((v, i)=>{
@@ -217,10 +341,21 @@
           });
         }
       },
+      /**
+       * Sets the property loaded to true
+       * @method afterLoad
+       * @param {Number} idx 
+       * @fires aspectRatio
+       */
       afterLoad(idx){
         this.$set(this.source[idx], 'loaded', true);
         this.aspectRatio(idx);
       },
+      /**
+       * Manages dimentions of the slides
+       * @method aspectRatio
+       * @param {Number} idx 
+       */
       aspectRatio(idx){
         this.$nextTick(()=>{
           let ctnRatio = this.lastKnownWidth/this.lastKnownHeight,
@@ -286,6 +421,10 @@
           }
         });
       },
+      /**
+       * Manages the slides' style
+       * @method createStyle
+       */
       createStyle(){
         let st = '',
             rules = [];
@@ -299,6 +438,12 @@
         });
         //$(this.$el).append('<style>' + st + '</style>');
       },
+      /**
+       * Shows the previous slide
+       * @method prev
+       * @fires stopAutoPlay
+       * @fires startAutoPlay
+       */
       prev(){
         let idx = this.currentIndex;
         if ( (idx > 0) && this.items[idx-1] ){
@@ -313,13 +458,19 @@
         if ( this.loop &&  idx === 0 ){
           this.currentIndex = this.items.length - 1;
         }
-        if( this.autoPlay ){
+        if ( this.autoPlay ){
           this.stopAutoPlay();
           this.$nextTick(()=>{
             this.startAutoPlay();
           });
         }
       },
+      /**
+       * Shows the next slide
+       * @method next
+       * @fires stopAutoPlay
+       * @fires startAutoPlay
+       */
       next(){
         let idx = this.currentIndex;
         if ( this.summary ){
@@ -345,6 +496,10 @@
           });
         }
       },
+      /**
+       * Starts the autoplay of slides
+       * @method startAutoPlay
+       */
       startAutoPlay(){
         this.scrollInterval = setInterval(()=>{
           if ( this.currentIndex < (this.items.length -1) ){
@@ -358,18 +513,30 @@
           }
         }, typeof(this.autoPlay) === 'number' ? this.autoPlay*1000 : this.defaultAutoPlay);
       },
+       /**
+       * Stops the autoplay of slides
+       * @method stopAutoPlay
+       */
       stopAutoPlay(){
         if ( this.scrollInterval ){
           clearInterval(this.scrollInterval);
           this.scrollInterval = false;
         }
       },
-      // for show or hide elements
+      /**
+       * Shows and hides moniatures
+       * @param {Boolean} val 
+       */
       miniaturePreview(val){
         if( this.autoHidePreview ){
           this.showMiniature = val;
         }
       },
+      /**
+       * Shows and hides arrows
+       * @param {String} direction 
+       * @param {Boolean} val 
+       */
       arrowsPreview(direction, val){
         if( this.autoHideArrows ){
           if( direction === 'next' ){
@@ -380,12 +547,21 @@
           }
         }
       },
+      /**
+       * Shows and hide the controller for autoplay
+       * @param {Boolean} val 
+       */
       ctrlPreview(val){
         if( this.autoHideCtrl ){
           this.showCtrl = val;
         }
       }
     },
+    /**
+     * @event mounted
+     * @fires createStyle
+     * @fires startAutoPlay
+     */
     mounted(){
       /** @todo WTF?? Obliged to execute the following hack to not have scrollLeft and scrollTop when we open a
        *  popup a 2nd time.
@@ -424,11 +600,24 @@
       })
     },
     watch: {
+      /**
+       * @watch show
+       * @param newVal 
+       * @param oldVal 
+       * @emits show
+       * @emits hide
+       */
       show(newVal, oldVal){
         if ( newVal != oldVal ){
           this.$emit(newVal ? "show" : "hide");
         }
       },
+      /**
+       * @watch valuesCB
+       * @emits check
+       * @emits uncheck
+       * 
+       */
       valuesCB: {
         deep: true,
         handler(newVal){
@@ -440,6 +629,9 @@
       }
     },
     components: {
+      /**
+       * @component miniature
+       */
       miniature: {
         template: `<div class="bbn-w-100 bbn-c bbn-middle">
             <template  v-for="(it, i) in items"
@@ -484,20 +676,36 @@
             </template>
           </div>`,
         props: {
+          /**
+           * @prop {Array} [] items
+           * @memberof miniature
+           */
          items:{
            type: Array,
            default(){
              return []
            }
          },
+         /**
+          * @prop {Boolean} [true] compare
+          * @memberof miniature
+          */
          comapare:{
            type: Boolean,
            default: true
          },
+          /**
+          * @prop {Boolean|String} ['image'] type
+          * @memberof miniature
+          */
          type:{
            type: [Boolean, String],
            default: 'image'
          },
+          /**
+          * @prop {Number} [45] dimension
+          * @memberof miniature
+          */
          dimension:{
            type: Number,
            default: 45
@@ -505,11 +713,23 @@
        },
         data(){
          return {
+           /**
+            * @data {Vue} mainComponent
+            */
            mainComponent: bbn.vue.closest(this, 'bbn-slideshow2')
 
          }
        },
         methods:{
+          /**
+           * @method clickMiniature
+           * 
+           * @param miniature 
+           * @param {Number} idx 
+           * @fires stopAutoPlay
+           * @fires startAutoPlay
+           * @memberof miniature
+           */
           clickMiniature(miniature, idx){
             this.mainComponent.activeMiniature = idx;
             this.mainComponent.currentIndex = idx;
@@ -521,6 +741,10 @@
             }
           }
         },
+        /**
+         * @event mounted
+         * @memberof miniature
+         */
         mounted(){
           $("div.zoom div.content").css("transform", "scale(0.2)")
           //$("div.zoom img").css("transform", "scale(0.2)")

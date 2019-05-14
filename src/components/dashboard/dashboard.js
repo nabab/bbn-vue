@@ -74,12 +74,12 @@
       },
       /**
        * The source of the dashboard
-       * @prop {Object} [{}] source
+       * @prop {Array} source
        */
       source: {},
       /**
        * The url for the post in case of actions on the dashboard's widget
-       * @prop {Object} [{}] url
+       * @prop {String} url
        */
       url: {},
       /**

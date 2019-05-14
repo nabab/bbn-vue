@@ -274,8 +274,8 @@
       /**
        * To place the cursor in a defined point.
        * @method cursorPosition
-       * @param {*} lineCode
-       * @param {*} position
+       * @param {Number} lineCode
+       * @param {Number} position
        * @return {Boolean}
        */
       cursorPosition(lineCode, position){
@@ -296,7 +296,7 @@
         }
       },
       /**
-       * Returns an object with the selections, the marks(folding) and the value.
+       * Returns an object with the selections, the marks (folding) and the value.
        * @method getState
        * @return {Object | Boolean}
        */

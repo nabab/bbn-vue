@@ -38,7 +38,7 @@
       /**
        * @todo description
        *
-       * @prop {} valueTemplate
+       * @prop valueTemplate
        */
       valueTemplate: {},
       /**
@@ -59,7 +59,7 @@
       /**
        * Use this prop to give native widget's properties.
        *
-       * @prop {Object} [{}] cfg
+       * @prop {Object} [{dataTextField: 'text',dataValueField: 'value',dataSource: []}] cfg
        */
       cfg: {
         type: Object,
@@ -99,7 +99,7 @@
        * Creates the object cfg.
        *
        * @method getOptions
-       * @returns {*}
+       * @returns {Object}
        */
       getOptions(){
         let cfg = bbn.fn.extend(bbn.vue.getOptions(this), {

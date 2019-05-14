@@ -17,40 +17,80 @@
    * Classic input with normalized appearance
    */
   Vue.component('bbn-fisheye', {
+    /**
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.optionComponent
+     */
     mixins: [bbn.vue.basicComponent, bbn.vue.optionComponent],
     props: {
+      /**
+       * The source of the component
+       * @prop {Array} [[]] source
+       */
       source: {
         type: Array,
         default(){
           return [];
         }
       },
+      /**
+       * An array of items fixed on the left of the component
+       * @prop {Array} [[]] fixedLeft
+       */
       fixedLeft: {
         type: Array,
         default(){
           return [];
         }
       },
+      /**
+       * An array of items fixed on the right of the component
+       * @prop {Array} [[]] fixedRight
+       */
       fixedRight: {
         type: Array,
         default(){
           return [];
         }
       },
+      /**
+       * The zIndex of the component
+       * @prop {Number} [1] zIndex
+       */
       zIndex: {
         type: Number,
         default: 1
       },
+      /**
+       * The url for the post of the action remove
+       * @prop {Object} [{}] delUrl
+       */
       delUrl: {},
+      /**
+       * The url for the post of the action insert
+       * @prop {Object} [{}] insUrl
+       */
       insUrl: {},
+      /**
+       * The position top
+       * @prop {Number|String} ['0px'] top
+       */
       top: {
         type: [Number, String],
         default: '0px'
       },
+      /**
+       * The position bottom
+       * @prop {Number|String} ['0px'] bottom
+       */
       bottom: {
         type: [Number, String],
         default: '0px'
       },
+      /**
+       * The horizontal position of the component
+       * @prop {String} ['0px'] position
+       */
       position: {
         type: String,
         default: 'left'
@@ -59,15 +99,35 @@
 
     data(){
       return {
+        /**
+         * 
+         * @data {Array} currentData 
+         */
         currentData: this.source.slice(),
+        /**
+         * @data {Boolean} [false] menu
+         */
         menu: false,
+        /**
+         * @data {Boolean} [false] widget
+         */
         widget: false,
+        /**
+         * @data {Boolean} [false] binEle
+         */
         binEle: false,
+        /**
+         * @data {Boolean} [false] droppableBin
+         */
         droppableBin: false
       };
     },
 
     computed: {
+      /**
+       * @computed items
+       * @return {Array}
+       */
       items(){
         let items = this.fixedLeft.slice();
         $.each(this.currentData, (i, a) => {
@@ -81,12 +141,21 @@
     },
 
     methods: {
+      /**
+       * Fires the method given to the item as 'command'
+       * @method onClick
+       * @param {Object} it 
+       */
       onClick(it){
-        if ( it.command &&bbn.fn.isFunction(it.command) ){
+        if ( it.command && bbn.fn.isFunction(it.command) ){
           it.command();
         }
       },
-
+      /**
+       * Adds the given object as a new item
+       * @method add
+       * @param {Object} obj 
+       */
       add(obj){
         if (
           this.insUrl &&
@@ -108,7 +177,10 @@
           });
         }
       },
-
+      /**
+       * Removes the given item from the component
+       * @param {Number|String} id 
+       */
       remove(id){
         if ( id && this.delUrl ){
           bbn.fn.post(this.delUrl, {id: id}, (d) => {
@@ -121,7 +193,11 @@
           });
         }
       },
-
+      /**
+       * Initializes the component
+       * @method setup
+       * @fires remove
+       */
       setup(){
         var vm = this,
             $ele = $(vm.$el);
@@ -185,6 +261,10 @@
         });
       },
     },
+    /**
+     * @event mounted
+     * @fires setup
+     */
     mounted: function(){
       this.setup();
       this.ready = true;
@@ -193,7 +273,10 @@
         this.widget.fisheye('refresh');
       }, 1000);
     },
-
+    /**
+     * @event updated
+     * @fires setup
+     */
     updated: function(){
       this.setup();
     }

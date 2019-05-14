@@ -12,6 +12,7 @@
          @mouseleave="out"
          :value="inputValue"
          @input="inputEvent"
+         @paste="pasteEvent"
   >
   <input :value="value"
          ref="real_masked"

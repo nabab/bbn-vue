@@ -16,108 +16,217 @@
   Vue.component('bbn-floater', {
     mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent, bbn.vue.sourceArrayComponent, bbn.vue.keepCoolComponent],
     props: {
+      /**
+       * @prop container
+       * 
+       */
       container: {},
+      /**
+       * The max width of the floater
+       * @prop {Number} maxWidth
+       */
       maxWidth: {
         type: Number
       },
+      /**
+       * The max height of the floater
+       * @prop {Number} maxHeight
+       */
       maxHeight: {
         type: Number
       },
+      /**
+       * The min width of the floater
+       * @prop {Number} minWidth
+       */
       minWidth: {
         type: Number
       },
+      /**
+       * The min height of the floater
+       * @prop {Number} maxHeight
+       */
       minHeight: {
         type: Number
       },
+      /**
+       * The width of the floater
+       * @prop {String|Number|Boolean} width
+       */
       width: {
         type: [String, Number, Boolean]
       },
+      /**
+       * The height of the floater
+       * @prop {String|Number|Boolean} height
+       */
       height: {
         type: [String, Number, Boolean]
       },
+      /**
+       * The position left
+       * @prop {Number} left
+       */
       left: {
         type: Number
       },
+      /**
+       * The position right
+       * @prop {Number} right
+       */
       right: {
         type: Number
       },
+      /**
+       * The position top
+       * @prop {Number} top
+       */
       top: {
         type: Number
       },
+      /**
+       * The position bottom
+       * @prop {Number} bottom
+       */
       bottom: {
         type: Number
       },
+      /**
+       * The source of the floater
+       * @prop {Function|Array|String|Object} source
+       */
       source: {
         type: [Function, Array, String, Object]
       },
+      /**
+       * The customized component to use in the floater
+       * @prop {Object|String} component
+       */
       component: {
         type: [Object, String]
       },
+      /**
+       * The html content of the floater
+       * @prop {String} [''] content
+       */
       content: {
         type: String,
         default: ''
       },
+      //@todo not used
       options: {
         type: Object
       },
+      /**
+       * The element to use in the render of the floater
+       * @prop {Element} element
+       */
       element: {
         type: Element
       },
+      /**
+       * The orientation
+       * @prop {String} ['vertical'] orientation
+       */
       orientation: {
         type: String,
         default: 'vertical'
       },
+      // @todo not used
       hpos: {
         type: String,
         default: 'left'
       },
+      // @todo not used
       vpos: {
         type: String,
         default: 'bottom'
       },
+      /**
+       * Defines the ability of the floater to be scrollable
+       * @prop {Boolean}  [false] scrollable
+       */
       scrollable: {
         type: Boolean,
         default: false
       },
+      /**
+       * Set to true shows the floater
+       * @prop {Boolean} [true] visible
+       */
       visible: {
         type: Boolean,
         default: true
       },
+      //@todo not used
       unique: {
         type: Boolean,
         default: false
       },
+      /**
+       * The mode of the component 
+       * @prop {String} ['free'] mode
+       */
       mode: {
         type: String,
         default: "free"
       },
+      //@todo not used
       parent: {
         default: false
       },
+      //@todo not used
       noIcon: {
         default: false
       },
-      // The hierarchy level, root is 0, and for each generation 1 is added to the level
+      /**
+       * The hierarchy level, root is 0, and for each generation 1 is added to the level
+       * @prop {Number} [0] level
+       */
       level: {
         type: Number,
         default: 0
       },
+      /**
+       * The component used for items
+       * @prop {Object} [{}] itemComponent
+       */
       itemComponent: {},
+      /**
+       * Set to true auto hide the component 
+       * @prop {Boolean} [false] autoHide
+       */
       autoHide: {
         type: Boolean,
         default: false
       },
+      /**
+       * The name of the array containings tree's children
+       * @prop {String} ['items'] children
+       */
       children: {
         type: String,
         default: 'items'
       },
+      /**
+       * The title in the header of the floater
+       * @psop {String} title
+       */
       title: {
         type: String
       },
+      /**
+       * Set to true shows the icon that allows to close the floater
+       * @prop {Boolean} [false] closable
+       */
       closable: {
         type: Boolean,
         default: false
       },
+      /**
+       * Set to true shows the icon that allows to maximize the window
+       * @prop {Boolean} [false] maximizable
+       */
       maximizable: {
         type: Boolean,
         default: false
@@ -125,32 +234,93 @@
     },
     data(){
       return {
+        /**
+         * @data [null] _scroller
+         */
         _scroller: null,
+        /**
+         * @data {Number} [0] currentIndex
+         */
         currentIndex: 0,
+        /**
+         * @data [null] currentTop
+         */
         currentTop: null,
+        /**
+         * @data [null] currentLeft
+         */
         currentLeft: null,
+        /**
+         * @data [null] currentHeight
+         */
         currentHeight: null,
+        /**
+         * @data [null] currentWidth
+         */
         currentWidth: null,
+        /**
+         * @data {Boolean} [false] currentScroll
+         */
         currentScroll: false,
+        /**
+         * @data {Boolean} currentVisible
+         */
         currentVisible: this.visible,
+        /**
+         * @data {Number} [0] currentWidth
+         */
         containerWidth: 0,
+        /**
+         * @data {Number} [0] currentHeight
+         */
         containerHeight: 0,
+        /**
+         * @data {Boolean} focused
+         */
         focused: bbn.env.focused || null,
+        /**
+         * @data {Number} [0] opacity
+         */
         opacity: 0,
+        /**
+         * @data {Number} [0] floaterHeight
+         */
         floaterHeight: 0,
+        /**
+         * @data {Number} [0] floaterWidth
+         */
         floaterWidth: 0,
+        /**
+         * @data {Boolean} [false] hasIcon
+         */
         hasIcons: false,
+        /**
+         * @data {Number} [-1] currentSelected
+         */
         currentSelected: -1,
+        /**
+         * @data {Boolean} [false] isMaximized
+         */
         isMaximized: false
       };
     },
     computed: {
+      /**
+       * Processes the prop width to define the correct misure unite
+       * @computed formattedWidth
+       * @return {String}
+       */
       formattedWidth(){
         if ( this.width ){
           return this.width + (bbn.fn.isNumber(this.width) ? 'px' : '')
         }
         return this.currentWidth ? this.currentWidth + 'px' : 'auto';
       },
+      /**
+       * Processes the prop height to define the correct misure unite
+       * @computed formattedHeight
+       * @return {String}
+       */
       formattedHeight(){
         if ( this.height ){
           return this.height + (bbn.fn.isNumber(this.height) ? 'px' : '')
@@ -159,6 +329,11 @@
       }
     },
     methods: {
+      /**
+       * Defines the position of the floater
+       * @method _getCoordinates
+       * @return {Object}
+       */
       _getCoordinates(){
         if ( this.element ){
           let coor = this.element.getBoundingClientRect(),
@@ -186,6 +361,10 @@
           };
         }
       },
+      /**
+       * Manages the items' icon
+       * @method _updateIconSituation
+       */
       _updateIconSituation(){
         let hasIcons = false;
         bbn.fn.each(this.currentData, (a) => {
@@ -198,7 +377,11 @@
           this.hasIcons = hasIcons;
         }
       },
-
+      /**
+       * Defines the position of the container
+       * @method getContainerPosition 
+       * @return {Object}
+       */
       getContainerPosition(){
         let obj = {};
         if ( this.container ){
@@ -213,18 +396,42 @@
           height: this.containerHeight
         };
       },
+      /**
+       * Defines the height of the container
+       * @method getContainerHeight
+       * @return {Number}
+       */
       getContainerHeight(){
         return this.getContainerPosition().height;
       },
+       /**
+       * Defines the width of the container
+       * @method getContainerWidth
+       * @return {Number}
+       */
       getContainerWidth(){
         return this.getContainerPosition().width;
       },
+      /**
+       * Shows the floater
+       * @method show
+       */
       show(){
         this.currentVisible = true;
       },
+      /**
+       * Hides the floater
+       * @method hide
+       */
       hide(){
         this.currentVisible = false;
       },
+      /**
+       * Handles the resize of the component
+       * @method onResize
+       * @fires getContainerPosition
+       * @fires _getCoordinates
+       */
       onResize(){
         if ( this.currentVisible ){
             // Resetting
@@ -399,6 +606,7 @@
           });
         }
       },
+      //@todo not used
       pressKey(e){
         bbn.fn.log("KEYPRESS");
         switch ( e.key ){
@@ -432,6 +640,11 @@
             break;
         }
       },
+      /**
+       * Close the floater if the prop autoHide is set to true
+       * @method blur
+       * @fires close
+       */
       blur(){
         //this.$emit('blur');
         if ( this.autoHide ){
@@ -440,9 +653,18 @@
       },
       over(idx){
       },
+      /**
+       * Closes the floater by hiding it
+       * @method close
+       * @param {Event} e 
+       */
       close(e){
         this.hide();
       },
+      /**
+       * Close all levels 
+       * @method closeAll
+       */
       closeAll(){
         this.currentVisible = false;
         if ( this.level ){
@@ -452,6 +674,13 @@
           }
         }
       },
+      /**
+       * Handles the selection of the floater's items
+       * @method select
+       * @param {Number} idx 
+       * @fires closeAll
+       * @emits select
+       */
       select(idx){
         let item = this.filteredData[idx];
         bbn.fn.log("SELECT", arguments, this.filteredData[idx]);
@@ -483,21 +712,34 @@
         }
       }
     },
+    /**
+     * @event created
+     * @fires _updateIconSituation
+     */
     created(){
       this.focused = bbn.env.focused;
       this.updateData().then(() => {
         this._updateIconSituation();
       });
     },
+    /**
+     * @event beforeDestroy
+     */
     beforeDestroy(){
       if ( this._scroller ){
         this._scroller.removeEventListener('scroll', this.resize);
       }
     },
+    /**
+     * @event mounted
+     */
     mounted(){
       this.ready = true;
     },
     watch: {
+      /**
+       * @watch source
+       */
       source: {
         deep: true,
         handler(){
@@ -506,6 +748,11 @@
           });
         }
       },
+      /**
+       * @watch element
+       * @param {Element} newVal
+       * @fires onResize 
+       */
       element(newVal){
         if ( newVal ){
           this.currentVisible = false;
@@ -517,6 +764,12 @@
           })
         }
       },
+      /**
+       * @watch currentVisible
+       * @param {Boolean} newVal 
+       * @emits open
+       * @emits close@fires onResize
+       */
       currentVisible(newVal){
         this.$emit(newVal ? 'open' : 'close');
         if ( newVal ){

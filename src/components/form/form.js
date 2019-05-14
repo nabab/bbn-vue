@@ -401,8 +401,7 @@
         }
       },
       /**
-       *
-       *
+       * Executes the command given to the button
        * @method _execCommand
        */
       _execCommand(button, ev){

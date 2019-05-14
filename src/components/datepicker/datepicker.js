@@ -1,10 +1,8 @@
  /**
   * @file bbn-datepicker component
-  *
   * @description bbn-datepicker is a component that combines input and calendar, allowing the user to enter or select a date value.
   * The calendar display is smooth, ensuring that all users can quickly search for the date they are looking for with the interface.
   * Allows the association of data in a bidirectional way and to choose a validation interval period and the format of the value to be entered.
-  *
   * @copyright BBN Solutions
   *
   * @author BBN Solutions
@@ -73,7 +71,7 @@
       /**
        * Use this prop to give native widget's properties.
        *
-       * @prop {Object} [{}] cfg
+       * @prop {Object} cfg
        */
       cfg: {
         type: Object

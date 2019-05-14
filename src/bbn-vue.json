@@ -104,6 +104,10 @@
       "active": true,
       "state": "stable"
     },
+    "floater": {
+      "active": true,
+      "state": "stable"
+    },
     "form": {
       "active": true,
       "state": "stable"

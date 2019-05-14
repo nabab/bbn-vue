@@ -428,6 +428,7 @@
        * @emits input
       */
       keydownEvent(event){
+        bbn.fn.log('keydown', event)
         if ( 
           !this.isShiftKey(event.keyCode) &&
           !this.isControlKey(event.keyCode) &&
@@ -528,6 +529,7 @@
        * @fires keyup
       */
       keyupEvent(event){
+        bbn.fn.log('keyup', event)
         if ( 
           !this.isShiftKey(event.keyCode) &&
           !this.isControlKey(event.keyCode) &&
@@ -558,6 +560,7 @@
        * @emits input
        */
       inputEvent(event){
+        bbn.fn.log('input', event)
         let pos = this.$refs.element.selectionStart
         if ( 
           (pos <= this.maxPos) &&
@@ -600,15 +603,21 @@
         })
         this.focus(event)
       },
+      pasteEvent(event){
+        bbn.fn.log('paste', event)
+        let text = event.clipboardData ? event.clipboardData.getData('text') : ''
+        event.preventDefault()
+        bbn.fn.log('aaaa', this.raw(text))
+      },
       /**
        * Gets the raw value.
        *
        * @method raw
        * @returns {String}
        */
-      raw(){
-        let ret = '',
-            value = this.$refs.element.value
+      raw(value){
+        let ret = ''
+        value = value !== undefined ? value : this.$refs.element.value
         if ( value ){
           bbn.fn.each([...value], (c, i) => {
             if ( 
@@ -634,6 +643,14 @@
         this.setInputValue()
       }
       this.ready = true
+    },
+    watch: {
+      value(newVal, oldVal){
+        if ( newVal !== oldVal ){
+          bbn.fn.log('value', newVal, oldVal)
+          this.setInputValue()
+        }
+      }
     }
   });
 

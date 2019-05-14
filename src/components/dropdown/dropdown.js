@@ -1,7 +1,7 @@
 /**
  * @file bbn-dropdown component
  *
- * @description the easy-to-implement bbn-dropdown component lets you choose a single default value from a user-supplied list.
+ * @description The easy-to-implement bbn-dropdown component lets you choose a single default value from a user-supplied list.
  *
  * @copyright BBN Solutions
  *
@@ -34,17 +34,17 @@
       /**
        * The template to costumize the dropdown menu.
        *
-       * @prop {} template
+       * @prop {Object} template
        */
       template: {},
       /**
        * @todo description
        *
-       * @prop {} valueTemplate
+       * @prop {Object} [{}] valueTemplate
        */
       valueTemplate: {},
       /**
-       * Define the groups for the dropdown menu.
+       * Defines the groups for the dropdown menu.
        * @prop {String} group
        */
       group: {
@@ -61,20 +61,49 @@
     },
     data(){
       return {
+        /**
+         * @data [null] _list
+         */
         _list: null,
+        /**
+         * @data {String} [''] filterString
+         */
         filterString: '',
+        /**
+         * @data [null] vlist
+         */
         vlist: null,
+        /**
+         * @data {Boolean} [false] isOpened
+         */
         isOpened: false,
+        /**
+         * @data {String} [''] currentText
+         */
         currentText: '',
+        /**
+         * @data {Number} [0] currentWidth
+         */
         currentWidth: 0,
+        /**
+         * @data {Number} [0] currentHeight
+         */
         currentHeight: 0
       };
     },
     methods: {
+      /**
+       * Handles the resize of the component
+       * @method onResize
+       */
       onResize(){
         this.currentWidth = this.$el.offsetWidth;
         this.currentHeight = this.$el.offsetHeight;
       },
+      /**
+       * @method enter
+       * @param element 
+       */
       enter(element){
         const height = bbn.fn.calculateHeight(element);
         bbn.fn.log(height);
@@ -83,7 +112,10 @@
           element.style.height = height;
         })
       },
-
+      /**
+       * @method leave
+       * @param element 
+       */
       leave(element){
         const height = getComputedStyle(element).height;
         element.style.height = height;
@@ -94,9 +126,18 @@
           element.style.height = 0;
         });
       },
+      /**
+       * @method init
+       */
       init(){
         this._list = this.getRef('list');
       },
+      /**
+       * Emits the event select 
+       * @method select
+       * @param {} item 
+       * @emit change
+       */
       select(item){
         if ( item && (item[this.sourceValue] !== undefined) ){
           this.emitInput(item[this.sourceValue]);
@@ -104,6 +145,11 @@
         }
         this.isOpened = false;
       },
+      /**
+       * @method  clickContainer
+       * @fires focus
+       * 
+       */
       clickContainer(){
         if ( this.isFocused ){
           this.isOpened = !this.isOpened;
@@ -195,9 +241,10 @@
     },
     mounted(){
       /**
-       * @todo description
        *
        * @event mounted
+       * @fires updateData
+       * @fires onResize
        * @return {Boolean}
        */
       this.updateData().then(() => {
@@ -212,9 +259,18 @@
       });
     },
     watch: {
+      /**
+       * @watch isOpened
+       * @param newVal 
+       */
       isOpened(newVal){
         this._list[newVal ? 'show' : 'hide']();
       },
+      /**
+       * @watch value
+       * @param newVal 
+       * @param oldVal 
+       */
       value(newVal, oldVal){
         let row = bbn.fn.get_row(this.currentData, this.sourceValue, newVal);
         bbn.fn.log(newVal, row);
@@ -222,6 +278,10 @@
           this.currentText = row[this.sourceText];
         }
       },
+      /**
+       * @watch filterString
+       * @param {String} nVal 
+       */
       filterString(nVal){
         if ( nVal ){
           if ( !this._list.currentFilters.conditions.length ){
