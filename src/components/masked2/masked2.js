@@ -85,15 +85,15 @@
           },
           // Decimal placeholder. The decimal separator will be gotten from the bbn.env.money property.
           '.': {
-
+            static: bbn.env && bbn.env.money && bbn.env.money.decimal ? bbn.env.money.decimal : '.'
           },
           // Thousands placeholder. The display character will be gotten from the bbn.env.money property.
           ',': {
-
+            static: bbn.env && bbn.env.money && bbn.env.money.thousands ? bbn.env.money.thousands : ','
           },
           // Currency symbol. The display character will be gotten from the bbn.env.money property.
           '$': {
-
+            static: bbn.env && bbn.env.money && bbn.env.money.currency ? bbn.env.money.currency : '€'
           }
         },
         /** 
@@ -129,8 +129,7 @@
         let pos = [],
             idx = 0
         bbn.fn.each([...this.mask], (c, i) => {
-          //if ( (c !== this.escape) && (!this.patterns[c] || this.escapePos.includes(i - 1)) ){
-          if ( !this.escapePos.includes(i) && (!this.patterns[c] || this.escapePos.includes(i - 1)) ){
+          if ( !this.escapePos.includes(i) && (!this.patterns[c] || this.patterns[c].static || this.escapePos.includes(i - 1)) ){
             if ( this.escapePos.includes(i - 1) ){
               idx--
             }
@@ -150,8 +149,7 @@
       bannedPosRaw(){
         let pos = []
         bbn.fn.each([...this.mask], (c, i) => {
-          //if ( (c !== this.escape) && (!this.patterns[c] || this.escapePos.includes(i - 1)) ){
-          if ( !this.escapePos.includes(i) && (!this.patterns[c] || this.escapePos.includes(i - 1)) ){
+          if ( !this.escapePos.includes(i) && (!this.patterns[c] || this.patterns[c].static || this.escapePos.includes(i - 1)) ){
             pos.push(i)
           }
         });
@@ -229,6 +227,7 @@
           case 8: //Backspace
           case 9: // Tab
           case 16: //Shift
+          case 18: //AltGraph
           case 35: //End
           case 36: //Home
           case 37: //ArrowLeft
@@ -351,7 +350,7 @@
             idxValue++
           }
           else if ( !this.escapePos.includes(i) ){
-            ret += c
+            ret += this.patterns[c] && this.patterns[c].static ? this.patterns[c].static : c
           }
         });
         return ret
@@ -385,6 +384,30 @@
         }
         return (pos < 0) || (pos > this.maxPos) ? originalPos : pos
       },
+      /**
+       * Finds and returns the start position and the end position of the value by two points of the inputValue.
+       * 
+       * @method getIdxRange
+       * @param {Number} start
+       * @param {Number} end
+       * @returns {String}
+       */
+      getIdxRange(start, end){
+        let val = this.raw(),
+            idxStart = -1,
+            idxEnd = -1
+        Array.from({length: end + 1}, (v, i) => {
+          if ( !this.bannedPos.includes(i) ){
+            if ( i <= start ){
+              idxStart++
+            }
+            if ( i <= end ){
+              idxEnd++
+            }
+          }
+        })
+        return {start: idxStart, end: idxEnd}
+      },
       /** 
        * The method called on every key pressed (keydown event).
        * 
@@ -405,7 +428,6 @@
        * @emits input
       */
       keydownEvent(event){
-        bbn.fn.log('keydown', event)
         if ( 
           !this.isShiftKey(event.keyCode) &&
           !this.isControlKey(event.keyCode) &&
@@ -432,23 +454,19 @@
           if ( !this.isSpecialKey(event.keyCode) && !this.isValidChar(event.key, pos) ){
             event.preventDefault()
           }
+          // Not special key and not equal to prompt char (input)
           else if ( 
             !this.isSpecialKey(event.keyCode) &&
             (this.inputValue.charAt(pos) !== this.promptChar)
           ){
             let val = this.raw(),
-                idx = 0
-            Array.from({length: pos + 1}, (v, i) => {
-              if ( !this.bannedPosRaw.includes(i) && !this.escapePos.includes(i) && (i !== 0) ){
-                idx++
-              }
-            })
-            val = val.slice(0, idx) + event.key + val.slice(idx)
+                p = this.getIdxRange(pos, pos).start
+            val = val.slice(0, p) + event.key + val.slice(p)
             this.emitInput(val)
             this.$nextTick(() => {
               this.setInputValue()
               this.$nextTick(() => {
-                this.$refs.element.setSelectionRange(pos, pos)
+                this.$refs.element.setSelectionRange(pos + 1, pos + 1)
               })
             })
             event.preventDefault()
@@ -456,22 +474,38 @@
           // Canc and Backspace
           else if ( this.isCancKey(event.keyCode) || this.isBackspaceKey(event.keyCode) ){
             event.preventDefault()
-            if ( this.isBackspaceKey(event.keyCode) && (pos > 0) ){
-              this.inputValue = this.inputValue.slice(0, pos - 1) + this.promptChar + this.inputValue.slice(pos)
-              pos--;
-            }
-            else if ( this.isCancKey(event.keyCode) && (pos < this.maxPos) ){
-              this.inputValue = this.inputValue.slice(0, pos) + this.promptChar + this.inputValue.slice(pos + 1)
-            }
-            this.$nextTick(() => {
-              this.emitInput(this.raw())
+            // Selection is a range
+            if ( this.$refs.element.selectionStart !== this.$refs.element.selectionEnd ){
+              let val = this.raw(),
+                  pos = this.$refs.element.selectionStart,
+                  p = this.getIdxRange(this.$refs.element.selectionStart, this.$refs.element.selectionEnd)
+              this.emitInput(val.slice(0, p.start) + val.slice(p.end))
               this.$nextTick(() => {
                 this.setInputValue()
                 this.$nextTick(() => {
                   this.$refs.element.setSelectionRange(pos, pos)
                 })
               })
-            })
+            }
+            // Normal backspace and canc
+            else {
+              if ( this.isBackspaceKey(event.keyCode) && (pos > 0) ){
+                this.inputValue = this.inputValue.slice(0, pos - 1) + this.promptChar + this.inputValue.slice(pos)
+                pos--;
+              }
+              else if ( this.isCancKey(event.keyCode) && (pos < this.maxPos) ){
+                this.inputValue = this.inputValue.slice(0, pos) + this.promptChar + this.inputValue.slice(pos + 1)
+              }
+              this.$nextTick(() => {
+                this.emitInput(this.raw())
+                this.$nextTick(() => {
+                  this.setInputValue()
+                  this.$nextTick(() => {
+                    this.$refs.element.setSelectionRange(pos, pos)
+                  })
+                })
+              })
+            }
           }
           else if ( event.shiftKey && this.isArrowKey(event.keyCode) ){
             this.$refs.element.selectionStart = pos
@@ -494,7 +528,6 @@
        * @fires keyup
       */
       keyupEvent(event){
-        bbn.fn.log('keyup', event);
         if ( 
           !this.isShiftKey(event.keyCode) &&
           !this.isControlKey(event.keyCode) &&
@@ -526,7 +559,6 @@
        */
       inputEvent(event){
         let pos = this.$refs.element.selectionStart
-        bbn.fn.log('input', event)
         if ( 
           (pos <= this.maxPos) &&
           !bbn.fn.isNull(event.data) &&
