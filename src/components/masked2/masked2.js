@@ -595,6 +595,9 @@
        */
       focusEvent(event){
         this.setInputValue()
+        this.$nextTick(() => {
+          this.$refs.element.setSelectionRange(0, 0)
+        })
         this.focus(event)
       },
       /**

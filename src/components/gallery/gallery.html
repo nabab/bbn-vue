@@ -2,34 +2,39 @@
   <div v-if="showToolbar" 
        class="bbn-l k-widget bbn-gallery-toolbar"
   >
-    <bbn-button :text="_('Upload')"
-                icon="nf nf-fa-upload"
-                @click="upload"
-                v-if="!isSelecting && upload"
-    ></bbn-button>
-    <bbn-button :text="_('Download')"
-                icon="nf nf-fa-download"
-                @click="setSelecting('download')"
-                v-if="!isSelecting && download"
-                :disabled="!total"
-    ></bbn-button>
-    <bbn-button :text="_('Remove')"
-                icon="nf nf-fa-trash"
-                @click="setSelecting('remove')"
-                v-if="!isSelecting && remove"
-                :disabled="!total"
-    ></bbn-button>
-    <bbn-button :text="_(selectingMode.toTitleCase())"
-                icon="nf nf-fa-check"
-                @click="action"
-                v-if="isSelecting"
-                :disabled="!selected.length"
-    ></bbn-button>
-    <bbn-button :text="_('Cancel')"
-                icon="nf nf-fa-times"
-                @click="setSelecting(false)"
-                v-if="isSelecting"
-    ></bbn-button>
+    <component v-if="toolbar && (isObject(toolbar) || isVue(toolbar))"
+               :is="toolbar"
+    ></component>
+    <template v-else>
+      <bbn-button :text="_('Upload')"
+                  icon="nf nf-fa-upload"
+                  @click="upload"
+                  v-if="!isSelecting && upload"
+      ></bbn-button>
+      <bbn-button :text="_('Download')"
+                  icon="nf nf-fa-download"
+                  @click="setSelecting('download')"
+                  v-if="!isSelecting && download"
+                  :disabled="!total"
+      ></bbn-button>
+      <bbn-button :text="_('Remove')"
+                  icon="nf nf-fa-trash"
+                  @click="setSelecting('remove')"
+                  v-if="!isSelecting && remove"
+                  :disabled="!total"
+      ></bbn-button>
+      <bbn-button :text="_(selectingMode.toTitleCase())"
+                  icon="nf nf-fa-check"
+                  @click="action"
+                  v-if="isSelecting"
+                  :disabled="!selected.length"
+      ></bbn-button>
+      <bbn-button :text="_('Cancel')"
+                  icon="nf nf-fa-times"
+                  @click="setSelecting(false)"
+                  v-if="isSelecting"
+      ></bbn-button>
+    </template>
   </div>
   <div ref="gallery" :class="{'bbn-flex-fill': scrollable}">
     <bbn-scroll v-if="scrollable">
