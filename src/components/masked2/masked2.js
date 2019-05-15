@@ -322,11 +322,13 @@
        * Gets the input value.
        *
        * @method getInputValue
-       * @returnsm {String}
+       * @param {String} value
+       * @returns {String}
        */
-      getInputValue(){
+      getInputValue(value){
         let ret = '',
             idxValue = 0
+        value = value === undefined ? this.value : value
         bbn.fn.each([...this.mask], (c, i) => {
           if ( 
             !this.escapePos.includes(i) &&
@@ -335,11 +337,11 @@
             this.patterns[c].pattern 
           ){
             if (
-              this.value &&
-              this.value.charAt(idxValue) &&
-              this.value.charAt(idxValue).match(this.patterns[c].pattern)
+              value &&
+              value.charAt(idxValue) &&
+              value.charAt(idxValue).match(this.patterns[c].pattern)
             ){
-              ret += this.value.charAt(idxValue)
+              ret += value.charAt(idxValue)
             }
             else if ( this.escapePos.includes(i - 1) ) {
               ret += c
@@ -359,12 +361,12 @@
        * Gets the correct cursor position.
        * 
        * @method getPos
-       * @param {Event} event The key event
        * @param {Number} pos The original position
+       * @param {Event} event The key event
        * @fires isBackspaceKey
        * @returns {Number}
       */
-      getPos(event, pos){
+      getPos(pos, event){
         let originalPos = pos
         if ( (pos < 0) ){
           pos = 0
@@ -372,7 +374,7 @@
         else if ( pos > this.maxPos ){
           pos = this.maxPos
         }
-        if ( this.isBackspaceKey(event.keyCode) || (event.keyCode === 37) ){
+        if ( event && (this.isBackspaceKey(event.keyCode) || (event.keyCode === 37)) ){
           while ( (pos > 0) && this.bannedPos.includes(event.type === 'keydown' ? pos - 1 : pos) ){
             pos--
           }
@@ -393,10 +395,10 @@
        * @returns {String}
        */
       getIdxRange(start, end){
-        let val = this.raw(),
+        let val = this.value,
             idxStart = -1,
             idxEnd = -1
-        Array.from({length: end + 1}, (v, i) => {
+        for ( let i = 0; i <= end; i++ ){
           if ( !this.bannedPos.includes(i) ){
             if ( i <= start ){
               idxStart++
@@ -405,8 +407,11 @@
               idxEnd++
             }
           }
-        })
-        return {start: idxStart, end: idxEnd}
+        }
+        return {
+          start: idxStart < 0 ? 0 : idxStart,
+          end: idxEnd
+        }
       },
       /** 
        * The method called on every key pressed (keydown event).
@@ -425,10 +430,10 @@
        * @fires raw
        * @fires setInputValue
        * @fires keydown
+       * @fires getIdxRange
        * @emits input
       */
       keydownEvent(event){
-        bbn.fn.log('keydown', event)
         if ( 
           !this.isShiftKey(event.keyCode) &&
           !this.isControlKey(event.keyCode) &&
@@ -436,10 +441,12 @@
           !this.isTabKey(event.keyCode) &&
           !event.ctrlKey
         ){
+          let isSelection = this.$refs.element.selectionStart !== this.$refs.element.selectionEnd
           // Check max length
           if ( 
             !this.isCancKey(event.keyCode) &&
             !this.isBackspaceKey(event.keyCode) &&
+            !isSelection &&
             (
               (this.value.length >= this.maxLen) || 
               ((this.size !== undefined) && (this.value.length >= this.size)) ||
@@ -450,19 +457,23 @@
             return
           }
           // Get the correct cursor position
-          let pos = this.getPos(event, this.$refs.element.selectionStart);
+          let pos = this.getPos(this.$refs.element.selectionStart, event);
           // Not special key and not valid char
           if ( !this.isSpecialKey(event.keyCode) && !this.isValidChar(event.key, pos) ){
             event.preventDefault()
           }
-          // Not special key and not equal to prompt char (input)
+          // Input
           else if ( 
             !this.isSpecialKey(event.keyCode) &&
-            (this.inputValue.charAt(pos) !== this.promptChar)
+            ((this.inputValue.charAt(pos) !== this.promptChar) || isSelection)
           ){
-            let val = this.raw(),
-                p = this.getIdxRange(pos, pos).start
-            val = val.slice(0, p) + event.key + val.slice(p)
+            let val = this.value,
+                p = this.getIdxRange(
+                  isSelection ? this.$refs.element.selectionStart : pos,
+                  isSelection ? this.$refs.element.selectionEnd - 1 : pos
+                )
+            p.end = isSelection ? p.end + 1 : p.start
+            val = val.slice(0, p.start) + event.key + val.slice(p.end)
             this.emitInput(val)
             this.$nextTick(() => {
               this.setInputValue()
@@ -475,12 +486,12 @@
           // Canc and Backspace
           else if ( this.isCancKey(event.keyCode) || this.isBackspaceKey(event.keyCode) ){
             event.preventDefault()
-            // Selection is a range
-            if ( this.$refs.element.selectionStart !== this.$refs.element.selectionEnd ){
-              let val = this.raw(),
+            // Delete from a selection
+            if ( isSelection ){
+              let val = this.value,
                   pos = this.$refs.element.selectionStart,
-                  p = this.getIdxRange(this.$refs.element.selectionStart, this.$refs.element.selectionEnd)
-              this.emitInput(val.slice(0, p.start) + val.slice(p.end))
+                  p = this.getIdxRange(this.$refs.element.selectionStart, this.$refs.element.selectionEnd - 1)
+              this.emitInput(val.slice(0, p.start) + val.slice(p.end + 1))
               this.$nextTick(() => {
                 this.setInputValue()
                 this.$nextTick(() => {
@@ -492,7 +503,7 @@
             else {
               if ( this.isBackspaceKey(event.keyCode) && (pos > 0) ){
                 this.inputValue = this.inputValue.slice(0, pos - 1) + this.promptChar + this.inputValue.slice(pos)
-                pos--;
+                pos--
               }
               else if ( this.isCancKey(event.keyCode) && (pos < this.maxPos) ){
                 this.inputValue = this.inputValue.slice(0, pos) + this.promptChar + this.inputValue.slice(pos + 1)
@@ -529,7 +540,6 @@
        * @fires keyup
       */
       keyupEvent(event){
-        bbn.fn.log('keyup', event)
         if ( 
           !this.isShiftKey(event.keyCode) &&
           !this.isControlKey(event.keyCode) &&
@@ -538,7 +548,7 @@
         ){
           let pos = this.$refs.element.selectionStart
           this.$nextTick(() => {
-            pos = this.getPos(event, pos)
+            pos = this.getPos(pos, event)
             if ( event.shiftKey && this.isArrowKey(event.keyCode) ){
               this.$refs.element.selectionStart = pos
             }
@@ -560,13 +570,13 @@
        * @emits input
        */
       inputEvent(event){
-        bbn.fn.log('input', event)
         let pos = this.$refs.element.selectionStart
         if ( 
           (pos <= this.maxPos) &&
           !bbn.fn.isNull(event.data) &&
           this.isValidChar(event.data, pos - 1 ) &&
-          (this.inputValue.charAt(pos - 1) === this.promptChar)
+          (this.inputValue.charAt(pos - 1) === this.promptChar) &&
+          (pos === this.$refs.element.selectionEnd)
         ){
           this.inputValue = this.inputValue.slice(0, pos - 1) + event.data + this.inputValue.slice(pos)
           this.$nextTick(() => {
@@ -603,11 +613,51 @@
         })
         this.focus(event)
       },
+      /** 
+       * The method called on paste event.
+       * 
+       * @method pasteEvent
+       * @param {Event} event
+       * @fires getPos
+       * @fires getIdxRange
+       * @fires clearText
+       * @fires emitInput
+      */
       pasteEvent(event){
-        bbn.fn.log('paste', event)
-        let text = event.clipboardData ? event.clipboardData.getData('text') : ''
+        let text = event.clipboardData ? event.clipboardData.getData('text') : '',
+            pos = this.getPos(this.$refs.element.selectionStart),
+            p = this.getIdxRange(0, pos),
+            val = this.value
         event.preventDefault()
-        this.emitInput(this.raw(text))
+        text = this.clearText(text, pos)
+        val = val.slice(p.start, p.end) + text + val.slice(p.end)
+        pos = p.end + text.length + 1
+        this.emitInput(val.slice(0, this.maxLen))
+        this.$nextTick(() => {
+          this.$refs.element.setSelectionRange(pos, pos)
+        })
+      },
+      /**
+       * Removes the invalid characters from a string.
+       * 
+       * @method clearText
+       * @param {String} text
+       * @param {Number} pos
+       * @fires isValidChar
+       * @fires getPos
+       * @returns {String}
+       */
+      clearText(text, pos){
+        let ret = ''
+        if ( text ){
+          bbn.fn.each([...text], (c, i) => {
+            if ( this.isValidChar(c, pos) ){
+              ret += c
+              pos = this.getPos(pos)
+            }
+          })
+        }
+        return ret
       },
       /**
        * Gets the raw value.
