@@ -131,7 +131,6 @@
         }
         return this;
       },
-
       fullBaseURL(){
         return this.router ? this.router.fullBaseURL : '';
       },
@@ -147,9 +146,6 @@
     },
 
     methods: {
-      update(){
-        this.$forceUpdate()
-      },
       observerEmit(newVal, obs){
         if ( bbn.vue.observerComponent.methods.observerEmit.apply(this, [newVal, obs]) ){
           let ele = $(".bbn-observer-" + obs.element, this.$el);
@@ -223,13 +219,23 @@
 
       onRoute(url){
         this.setConfig();
+        let i = this.history.indexOf(url);
+        if ( i > -1 ){
+          this.history.splice(i, 1);
+        }
+        this.history.unshift(url);
+        while ( this.history.length > this.historyMaxLength ){
+          this.history.pop();
+        }
         this.$emit('route', url);
       },
+
       route(url, force){
         if ( this.router ){
           this.router.route(url, force)
         }
       },
+
       routing(){
         this.setRouter();
         let idx = this.router.search(this.router.currentURL);
@@ -237,6 +243,7 @@
           this.selected = idx;
         }
       },
+      
       getTabColor(idx){
         if ( this.tabs[idx].fcolor ){
           return this.tabs[idx].fcolor;
@@ -428,6 +435,22 @@
 
       close(idx, force){
         let res = this.router ? this.router.remove(idx, force) : false;
+        if ( this.selected > idx ){
+          this.selected = this.selected - 1;
+        }
+        else if ( this.selected === idx ){
+          this.selected = false;
+          if ( this.views.length ){
+            $.each(this.history, (i, a) => {
+              let tmp = this.getIndex(a);
+              if ( tmp !== false ){
+                idx = tmp;
+                return false;
+              }
+            });
+            this.activateIndex(this.views[idx] ? idx : idx - 1);
+          }
+        }
         this.$nextTick(() => {
           this.setConfig();
         })

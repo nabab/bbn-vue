@@ -305,20 +305,20 @@
               }
             }
             let st = url ? this.getRoute(url) : '';
-            //bbn.fn.log("ROUTING FUNCTION EXECUTING FOR " + url + " (CORRESPONDING TO " + st + ")");
+            bbn.fn.log("ROUTING FUNCTION EXECUTING FOR " + url + " (CORRESPONDING TO " + st + ")");
             if ( !url ){
               return;
             }
             if ( !force && (this.currentURL === url) ){
-              //bbn.fn.log("SAME URL END ROUTING");
+              bbn.fn.log("SAME URL END ROUTING");
               return;
             }
-            if ( url && ((!st && this.autoload) || (this.urls[st] && this.urls[st].load && !this.urls[st].loaded)) ){
+            if ( url && ((!st && this.autoload) || (this.urls[st] && this.urls[st].load && !this.urls[st].isLoaded)) ){
               this.load(url);
             }
             // Otherwise the container is activated ie made visible
             else {
-              //bbn.fn.log("LOADED " + url);
+              bbn.fn.log("LOADED " + url);
               if ( !st && this.def && (!url || force)){
                 st = this.getRoute(this.def);
                 if ( st ){
@@ -690,22 +690,6 @@
                 v.idx = i;
               }
             });
-            if ( this.selected > idx ){
-              this.selected = this.selected - 1;
-            }
-            else if ( this.selected === idx ){
-              this.selected = false;
-              if ( this.views.length ){
-                $.each(this.history, (i, a) => {
-                  let tmp = this.getIndex(a);
-                  if ( tmp !== false ){
-                    idx = tmp;
-                    return false;
-                  }
-                });
-                this.activateIndex(this.views[idx] ? idx : idx - 1);
-              }
-            }
           }
           return true;
         }

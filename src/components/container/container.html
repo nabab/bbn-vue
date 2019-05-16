@@ -38,10 +38,11 @@
       <!-- This is the slot -->
       <slot v-else></slot>
       <component is="style" v-if="css" scoped="scoped" v-html="css"></component>
-      <i v-if="fullScreen"
-         class="nf nf-fa-times_circle bbns-tab-fullscreen-closer bbn-p"
-         @click="fullScreen = false"
-      ></i>
+      <span  v-if="fullScreen"
+             class="bbn-container-full-screen-closer bbn-xl bbn-p">
+        <i class="nf nf-fa-times_circle"
+           @click="fullScreen = false"></i>
+      </span>
       <bbn-popup ref="popup"
                  :source="popups">
       </bbn-popup>
