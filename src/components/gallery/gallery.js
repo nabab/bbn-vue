@@ -345,31 +345,34 @@
         if ( this.isAjax && !this.isLoading ){
           this.setSelecting(false);
           this.isLoading = true;
-          this.$nextTick(() => {
-            let data = {
-              limit: this.currentLimit,
-              start: this.start,
-              data: this.data
-            };
-            bbn.fn.post(this.source, data, result => {
-              this.isLoading = false;
-              if (
-                !result ||
-                result.error ||
-                ((result.success !== undefined) && !result.success)
-              ) {
-                appui.alert(result && result.error ? result.error : bbn._("Error while updating the data"));
-              }
-              else {
-                this.currentData = this._map(result.data || []);
-                this.total = result.total || result.data.length || 0;
-              }
-            });
+          let data = {
+            limit: this.currentLimit,
+            start: this.start,
+            data: this.data
+          };
+          return bbn.fn.post(this.source, data, result => {
+            this.isLoading = false;
+            if (
+              !result ||
+              result.error ||
+              ((result.success !== undefined) && !result.success)
+            ) {
+              appui.alert(result && result.error ? result.error : bbn._("Error while updating the data"));
+            }
+            else {
+              this.currentData = this._map(result.data || []);
+              this.total = result.total || result.data.length || 0;
+            }
           });
         }
-        else if ( bbn.fn.isArray(this.source) ){
-          this.currentData = this._map(this.source);
-          this.total = this.source.length;
+        else {
+          return new Promise((resolve, reject) => {
+            if ( bbn.fn.isArray(this.source) ){
+              this.currentData = this._map(this.source);
+              this.total = this.source.length;
+              resolve(this.currentData);
+            }
+          })
         }
       },
       /**

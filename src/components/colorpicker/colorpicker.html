@@ -1,9 +1,11 @@
 <span :class="componentClass">
   <input :value="value"
          class="bbn-colorpicker-input"
+         style="padding: 5px"
          :name="name"
          ref="element"
          :disabled="disabled"
+         :readonly="readonly"
          :required="required"
          @click="click($event)"
          @focus="focus($event)"

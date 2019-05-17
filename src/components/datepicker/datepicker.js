@@ -1,65 +1,16 @@
- /**
+/**
   * @file bbn-datepicker component
+  *
   * @description bbn-datepicker is a component that combines input and calendar, allowing the user to enter or select a date value.
   * The calendar display is smooth, ensuring that all users can quickly search for the date they are looking for with the interface.
   * Allows the association of data in a bidirectional way and to choose a validation interval period and the format of the value to be entered.
+  *
   * @copyright BBN Solutions
   *
-  * @author BBN Solutions
+  * @author Mirko Argentino
   */
-
-(function($, bbn, kendo){
+(function($, bbn){
   "use strict";
-
-  let ui = kendo.ui,
-      MaskedDatePicker = ui.Widget.extend({
-        init: function (element, options){
-          let that = this;
-          ui.Widget.fn.init.call(this, element, options);
-          $(element)
-            .kendoMaskedTextBox({
-              mask: options.mask
-            })
-            .kendoDatePicker({
-              format: options.format,
-              parseFormats: options.parseFormats,
-              max: options.max || undefined,
-              min: options.min || undefined,
-              depth: options.depth || undefined,
-              start: options.start || undefined,
-              value: options.value || undefined,
-              footer: options.footer !== undefined ? options.footer : undefined
-            })
-            .closest(".k-datepicker")
-            .add(element)
-            .removeClass("k-textbox");
-
-          that.element.data("kendoDatePicker").bind("change", function(){
-            that.trigger('change');
-          });
-        },
-        options: {
-          name: "MaskedDatePicker",
-          dateOptions: {}
-        },
-        events: [
-          'change'
-        ],
-        destroy: function(){
-          const that = this;
-          ui.Widget.fn.destroy.call(that);
-          kendo.destroy(that.element);
-        },
-        value: function(value){
-          const datepicker = this.element.data("kendoDatePicker");
-          if ( value === undefined ){
-            return datepicker.value();
-          }
-          datepicker.value(value);
-        }
-      });
-  ui.plugin(MaskedDatePicker);
-
 
   Vue.component('bbn-datepicker', {
     /**
@@ -69,87 +20,58 @@
     mixins: [bbn.vue.basicComponent, bbn.vue.fullComponent],
     props: {
       /**
-       * Use this prop to give native widget's properties.
-       *
-       * @prop {Object} cfg
-       */
-      cfg: {
-        type: Object
-      },
-      /**
        * The format of the date shown.
        *
-       * @prop {String} [dd/MM/yyyy] format
+       * @prop {String} format
        */
       format: {
-        type: String,
-        default: 'dd/MM/yyyy'
-      },
-      /**
-       * The format of the value sent to the server.
-       *
-       * @prop {String} [yyyy-MM-dd] valueFormat
-       */
-      valueFormat: {
-        type: [String, Function],
-        default(){
-          return 'yyyy-MM-dd';
-        }
-      },
-      /**
-       * Specifie a list of date formats to be used to parse the value.
-       *
-       * @prop {Array} [['yyyy-MM-dd', 'dd/MM/yyyy']] valueFormat
-       */
-      parseFormats: {
-        type: Array,
-        default(){
-          return ['yyyy-MM-dd', 'dd/MM/yyyy'];
-        }
-      },
-      /**
-       * The mask for date input.
-       *
-       * @prop {String} [00/00/0000] mask
-       */
-      mask: {
-        type: String,
-        default: '00/00/0000'
-      },
-      /**
-       * The max date allowed.
-       *
-       * @prop {Date|String} max
-       */
-      max: {
-        type: [Date, String]
-      },
-      /**
-       * The min date allowed.
-       *
-       * @prop {Date|String} min
-       */
-      min: {
-        type: [Date, String]
-      },
-      /**
-       * @todo description
-       *
-       * @prop {Array} dates
-       */
-      dates: {
-        type: Array
-      },
-      /**
-       * Define the rendered view of the calendar in the datepicker. Allowed values : month, year, decade, century.
-       *
-       * @prop {String} depth
-       */
-      depth: {
         type: String
       },
       /**
-       * The dates disabled.
+       * The format of the value.
+       *
+       * @prop {String} valueFormat
+       */
+      valueFormat: {
+        type: [String, Function]
+      },
+      /**
+       * The mask for the date input.
+       *
+       * @prop {String} mask
+       */
+      mask: {
+        type: String
+      },
+      /**
+       * The maximum allowed value.
+       *
+       * @prop {String} max
+       */
+      max: {
+        type: String
+      },
+      /**
+       * The minimum allowed value.
+       *
+       * @prop {String} min
+       */
+      min: {
+        type: String
+      },
+      /**
+       * The visualization type of the calendar.
+       * Types: "days", "weeks", "months", "years".
+       *
+       * @prop {String} ['days'] type
+      */
+      type: {
+        type: String,
+        default: 'days',
+        validator: (m) => ['days', 'weeks', 'months', 'years'].includes(m)
+      },
+      /**
+       * The disabled dates.
        *
        * @prop {Array|Function} disableDates
        */
@@ -157,165 +79,232 @@
         type: [Array, Function]
       },
       /**
-       * Set to true to show the default footer in the component or set a costumized template for the footer.
+       * Array of dates values to insert into a range.
        *
-       * @prop {Boolean|Function|String} footer
-       */
-      footer: {
-        type: [Boolean, Function, String]
-      },
-      /**
-       * @todo description, it seems not to work.
-       *
-       * @prop {Boolean} [false] inputReadonly
-       */
-      inputReadonly: {
-        type: Boolean,
-        default: false
-      },
-      /**
-       * The type of the datepicker.
-       *
-       * @prop {String} [''] type
-       */
-      type: {
-        type: String,
-        default: ''
-      },
-    },
-
-    computed: {
-
-      ivalue(){
-        return kendo.toString(
-          kendo.parseDate(this.value,bbn.fn.isFunction(this.valueFormat) ? this.valueFormat(this.value) : this.valueFormat),
-          this.format
-        );
-      },
-      fixedValue(){
-        if ( this.value ){
-          return kendo.parseDate(this.value,bbn.fn.isFunction(this.valueFormat) ? this.valueFormat(this.value) : this.valueFormat);
+       * @prop {Array} [[]] datesRange
+      */
+      datesRange: {
+        type: Array,
+        default(){
+          return [];
         }
-        return false;
       }
     },
     data(){
-      return bbn.fn.extend({
-        widgetName: "kendoMaskedDatePicker"
-      }, bbn.vue.treatData(this));
+      return {
+        /**
+         * Shows/hides the floater.
+         *
+         * @data {Boolean} [false] isOpened
+        */
+        isOpened: false
+      }
+    },
+    computed: {
+      /**
+       * The current mask for the date input.
+       *
+       * @computed currentMask
+       * @return {String}
+       */
+      currentMask(){
+        let mask = '';
+        switch ( this.type ){
+          case 'days':
+          case 'weeks':
+            mask = '00/00/0000';
+            break;
+          case 'months':
+            mask = '00/0000';
+            break;
+          case 'years':
+            mask = '0000';
+            break;
+        }
+        return this.mask || mask;
+      },
+      /**
+       * The current value format.
+       *
+       * @computed currentValueFormat
+       * @return {String}
+       */
+      currentValueFormat(){
+        let format = '';
+        switch ( this.type ){
+          case 'days':
+          case 'weeks':
+            format = 'YYYY-MM-DD';
+            break;
+          case 'months':
+            format = 'YYYY-MM';
+            break;
+          case 'years':
+            format = 'YYYY';
+            break;
+        }
+        return this.valueFormat || format;
+      },
+      /**
+       * The current format shown on the input.
+       *
+       * @computed currentFormat
+       * @return {String}
+       */
+      currentFormat(){
+        let format = '';
+        switch ( this.type ){
+          case 'days':
+          case 'weeks':
+            format = 'DD/MM/YYYY';
+            break;
+          case 'months':
+            format = 'MM/YYYY';
+            break;
+          case 'years':
+            format = 'YYYY';
+            break;
+        }
+        return this.format || format;
+      },
+      /**
+       * The current value shown on the input.
+       *
+       * @computed inputValue
+       * @fires getValueFormat
+       * @return {String}
+       */
+      inputValue(){
+        if ( this.value ){
+          return moment(this.value, this.getValueFormat(this.value)).format(this.currentFormat);
+        }
+        return '';
+      }
+    },
+    methods: {
+      /**
+       * Gets the correct value format.
+       *
+       * @method getValueFormat
+       * @param {String} val The value.
+       * @return {String}
+       */
+      getValueFormat(val){
+        return bbn.fn.isFunction(this.currentValueFormat) ? this.currentValueFormat(val) : this.currentValueFormat;
+      },
+      /**
+       * Sets the value from 'YYYY-MM-DD' formatted value.
+       *
+       * @method setDate
+       * @fires getValueFormat
+       * @fires setValue
+      */
+      setDate(val){
+        this.setValue(moment(val, 'YYYY-MM-DD').format(this.getValueFormat(val)));
+      },
+      /**
+       * Sets the value.
+       *
+       * @method setValue
+       * @param {String} val The value.
+       * @fires getValueFormat
+       * @emits input
+      */
+      setValue(val){
+        let format = !!val ? this.getValueFormat(val) : false,
+            value = format ? moment(val, format).format(format) : '';
+        this.isOpened = false;
+        if ( value && this.min && (value < this.min) ){
+          value = this.min;
+        }
+        if ( value && this.max && (value > this.max) ){
+          value = this.max;
+        }
+        this.emitInput(val);
+        if ( !value ){
+          this.$refs.element.widget.value('');
+        }
+      },
+      /**
+       * Updates the calendar.
+       *
+       * @method updateCalendar
+       * @fires calendar.refresh
+      */
+      updateCalendar(){
+        if ( this.$refs.calendar ){
+          this.$refs.calendar.refresh();
+        }
+      },
+      /**
+       * Triggered when the value changed by the input.
+       *
+       * @method change
+       * @param {$event} event Original event.
+       * @fires getValueFormat
+       * @fires disableDates
+       * @fires setValue
+       * @emits change
+      */
+      change(event){
+        setTimeout(() => {
+          let maskValue = this.$refs.element.widget.value(),
+              value = !!maskValue ? moment(maskValue, this.currentFormat).format(this.getValueFormat(maskValue)) : '';
+          if ( value && this.min && (value < this.min) ){
+            value = this.min;
+          }
+          if ( value && this.max && (value > this.max) ){
+            value = this.max;
+          }
+          if (
+            this.disableDates &&
+            (bbn.fn.isFunction(this.disableDates) && this.disableDates(value)) ||
+            (bbn.fn.isArray(this.disableDates) && this.disableDates.includes(value))
+          ){
+            this.setValue(false);
+          }
+          else {
+            this.setValue(value);
+            this.$nextTick(() => {
+              this.$emit('change', event);
+            });
+          }
+        }, 100);
+      }
     },
     /**
      * @event mounted
-     * @fires getOptions
-     *
      */
     mounted(){
-      const vm = this;
-      this.widget = $(this.$refs.element).kendoMaskedDatePicker(bbn.fn.extend({}, this.getOptions(), {
-        format: this.format,
-        parseFormats: this.parseFormats,
-        mask: this.mask,
-        min: this.min ? ( (typeof this.min === 'string') ? bbn.fn.date(this.min) : this.min) : undefined,
-        max: this.max ? ( (typeof this.max === 'string') ? bbn.fn.date(this.max) : this.max) : undefined,
-        depth: this.depth || undefined,
-        start: this.depth || undefined,
-        footer: this.footer === undefined ? this.footer : undefined,
-        value: this.fixedValue || undefined,
-        change: function(e){
-          vm.emitInput(kendo.toString(
-            vm.widget.value(),
-           bbn.fn.isFunction(vm.valueFormat) ? vm.valueFormat(vm.widget.value()) : vm.valueFormat
-          ));
-          return true;
-        }
-      })).data("kendoDatePicker");
-      if ( !this.readonly && this.inputReadonly ){
-        $(this.$refs.element).attr("readonly", true);
-      }
       this.ready = true;
     },
     watch: {
       /**
        * @watch min
-       * @fires widget.setOptions
+       * @fires setValue
+       * @fires updateCalendar
        */
-      min(newVal){
-       if ( newVal ){
-         if ( typeof newVal === 'string' ){
-           newVal = bbn.fn.date(newVal);
-         }
-         this.widget.setOptions({
-           min: newVal
-         });
-       }
+      min(){
+        this.setValue(this.value);
+        this.updateCalendar();
       },
       /**
        * @watch max
-       * @fires widget.setOptions
+       * @fires setValue
+       * @fires updateCalendar
        */
-      max(newVal){
-        if ( newVal ){
-          if ( typeof newVal === 'string' ){
-            newVal = bbn.fn.date(newVal);
-          }
-          this.widget.setOptions({
-            max: newVal
-          });
-        }
+      max(){
+        this.setValue(this.value);
+        this.updateCalendar();
       },
       /**
-       * @watch depth
-       * @fires widget.setOptions
+       * @watch valueFormat
+       * @fires setValue
        */
-      depth(newVal){
-        this.widget.setOptions({
-          depth: newVal,
-          start: newVal
-        });
-      },
-      /**
-       * @watch format
-       * @fires widget.setOptions
-       */
-      format(newVal){
-        this.widget.setOptions({
-          format: newVal
-        });
-      },
-      /**
-       * @watch parseFormats
-       * @fires widget.setOptions
-       */
-      parseFormats(newVal){
-        this.widget.setOptions({
-          parseFormats: newVal
-        });
-      },
-      /**
-       * @watch readonly
-       */
-      readonly(newVal){
-        this.widget.readonly(!!newVal);
-        if ( !newVal && this.inputReadonly ){
-          this.$nextTick(() => {
-            $(this.$refs.element).attr("readonly", true);
-          });
-        }
-      },
-      /**
-       * @watch inputReadonly
-       */
-      inputReadonly(newVal){
-        if ( !this.readonly ){
-          if ( newVal ){
-            $(this.$refs.element).attr("readonly", true);
-          }
-          else {
-            $(this.$refs.element).removeAttr("readonly");
-          }
-        }
+      valueFormat(){
+        this.setValue(this.value);
       }
     }
   });
 
-})(jQuery, bbn, kendo);
+})(jQuery, bbn);

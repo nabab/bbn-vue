@@ -8,7 +8,9 @@
          :checked="state"
          ref="element"
   >
-  <span :class="['slider', 'bbn-primary', {round: !!radius}]"
+  <span :class="['slider', 'bbn-primary', {
+          round: !!radius, 
+        }, cls]"
         tabindex="0"
         :for="id"
         @focus="focus"
@@ -17,7 +19,7 @@
         @keydown.space="toggle"
         @click="toggle"
   >
-    <span class="slider-button">
+    <span :class="['slider-button', sliderCls]">
 			<i :class="currentIcon"></i>
 		</span>
   </span>

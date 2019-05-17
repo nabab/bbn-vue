@@ -1,7 +1,14 @@
-.bbn-datetimepicker{
-  display: inline-block;
-  min-width: 2em;
-  .k-datetimepicker{
-    width: 100%;
+.bbn-datetimepicker {
+  display: inline-flex;
+  .bbn-button {
+    margin-top: 0;
+    &.bbn-datetimepicker-calendar {
+      border-radius: 0;
+    }
+  }
+  .bbn-calendar2 {
+    .bbn-widget:first-child {
+      border: 0;
+    }
   }
 }

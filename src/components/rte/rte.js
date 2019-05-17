@@ -30,6 +30,10 @@
         default: '100%',
         type: [String, Number]
       },
+      /**
+       * The buttons to show on the toolbar
+       * @prop {Array} [] buttons
+       */
       buttons: {
         type: Array,
         default(){

@@ -5,7 +5,7 @@
  *
  * @copyright BBN Solutions
  *
- * @author Mirko Argentino
+ * @author Mirko Argentino * 
  */
 
 (($, bbn) => {
@@ -14,8 +14,10 @@
   Vue.component('bbn-calendar', {
     /**
      * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.sourceArrayComponent
+     * @mixin bbn.vue.resizerComponent
     */
-    mixins: [bbn.vue.basicComponent],
+    mixins: [bbn.vue.basicComponent, bbn.vue.sourceArrayComponent, bbn.vue.resizerComponent],
     props: {
       /**
        * The events data for every days.
@@ -30,48 +32,49 @@
         }
       },
       /**
-       * Supplementary data to send with the ajax call.
-       * @prop {Object} [{}] data
-      */
-      data: {
-        type: Object,
-        default(){
-          return {}
-        }
-      },
-      /**
-       * Set any calendar's day selectable.
+       * The visualization mode.
+       * Types: "days", "weeks", "months", "years".
        *
-       * @prop {Boolean} [true] selectable
+       * @prop {String} ['days'] type
       */
-      selectable: {
-        type: Boolean,
-        default: true
+      type: {
+        type: String,
+        default: 'days',
+        validator: (m) => ['days', 'weeks', 'months', 'years'].includes(m)
       },
       /**
        * Set it to true if you want to select the date property value automatically.
        *
        * @prop {Boolean} [false] autoSelect
       */
-      autoSelect: {
+      autoSelection: {
         type: Boolean,
         default: false
       },
       /**
-       * Shows/hides the arrows to change the month.
+       * Se it to true if you wanto to select multi values.
        *
-       * @prop {Boolean} [true] arrowsMonth
+       * @prop {Boolean} [false] multiSelection
       */
-      arrowsMonth: {
+      multiSelection: {
         type: Boolean,
-        default: true
+        default: false
       },
       /**
-       * Shows/hides the arrows to change the year.
+       * The value.
        *
-       * @prop {Boolean} [true] arrowsYear
+       * @prop {String} [''] value
       */
-      arrowsYear: {
+      value: {
+        type: String,
+        default: ''
+      },
+      /**
+       * Shows/hides the arrows to change the period.
+       *
+       * @prop {Boolean} [true] arrowMonth
+      */
+      arrows: {
         type: Boolean,
         default: true
       },
@@ -85,16 +88,16 @@
         default: true
       },
       /**
+       * Icon to use before the title.
        *
-       *
-       * @prop {String|Boolean} ['nf nf-fa-calendar_alt'] monthIcon
+       * @prop {String|Boolean} ['nf nf-oct-calendar'] titleIcon
       */
-      monthIcon: {
+      titleIcon: {
         type: [String, Boolean],
         default: 'nf nf-oct-calendar'
       },
       /**
-       * The initial date
+       * The initial date.
        *
        * @prop {String} date
       */
@@ -102,27 +105,27 @@
         type: String
       },
       /**
-       * Shows/hides the days of the next and previous month.
+       * Shows/hides the items of the next and previous period.
        *
-       * @prop {Boolean} [false] extraDays
+       * @prop {Boolean} [false] extraItems
       */
-      extraDays: {
+      extraItems: {
         type: Boolean,
         default: false
       },
       /**
+       * Array of items to insert into a range.
        *
-       *
-       * @prop {Array} [[]] daysRange
+       * @prop {Array} [[]] itemsRange
        */
-      daysRange: {
+      itemsRange: {
         type: Array,
         default(){
           return [];
         }
       },
       /**
-       * Shows only the days with events
+       * Shows only items with events.
        *
        * @prop {Boolean} [false] onlyEvents
        */
@@ -131,289 +134,709 @@
         default: false
       },
       /**
-       * Shows/hides the days'details.
+       * Shows/hides the item's details.
        *
-       * @prop {Boolean} [false] dayDetails
+       * @prop {Boolean} [false] itemDetails
       */
-      dayDetails: {
+      itemDetails: {
         type: Boolean,
         default: false
       },
       /**
-       * The icon used to indicate the presence of events in the day.
+       * The icon used to indicate the presence of events in the item.
        * If you set it to false nothing will be shown.
        *
-       * @prop {String|Boolean} ['nf nf-fa-user'] dayIcon
+       * @prop {String|Boolean} ['nf nf-fa-user'] eventIcon
       */
-      dayIcon: {
+      eventIcon: {
         type: [String, Boolean],
         default: 'nf nf-fa-calendar'
       },
       /**
-       * Shows/hides the padding of the days'cell.
+       * Shows/hides the padding of the item's cell.
        *
-       * @prop {Boolean} [false] dayPadding
+       * @prop {Boolean} [false] itemPadding
       */
-      dayPadding: {
+      itemPadding: {
         type: Boolean,
         default: false
       },
       /**
        * The component used for the items.
        *
-       * @prop {Vue} detailsComponent
+       * @prop {Vue} itemComponent
       */
-      detailsComponent: {
+      itemComponent: {
         type: [Vue, Object, String]
       },
       /**
-       * The title for the day's details.
+       * The title for the item's details.
        *
-       * @prop {Function|String} [''] titleDetails
+       * @prop {Function|String} [''] itemTitle
       */
-      titleDetails: {
+      itemTitle: {
         type: [Function, String],
         default: ''
       },
       /**
        * The component used for the header.
        *
-       * @prop {Vue|Object} headerComponent
+       * @prop {Vue|Object|String} headerComponent
       */
       headerComponent: {
         type: [Vue, Object, String]
+      },
+      /**
+       * The labels type.
+       * Types: 'auto', 'letter', 'abbr', 'full', false.
+       *
+       * @prop {String|Boolean} ['auto'] labels
+      */
+      labels: {
+        type: [String, Boolean],
+        default: 'auto',
+        validator: (s) => ['auto', 'letter', 'abbr', 'full', false].includes(s)
+      },
+      /**
+       * The field used for the event's start.
+       *
+       * @prop {String} ['start'] startField
+      */
+      startField: {
+        type: String,
+        default: 'start'
+      },
+      /**
+       * The field used for the event's end.
+       *
+       * @prop {String} ['end'] endField
+      */
+      endField: {
+        type: String,
+        default: 'end'
+      },
+      /**
+       * The format used for the event's start.
+       *
+       * @prop {String} ['YYYY-MM-DD 00:00:00'] startFormat
+       */
+      startFormat: {
+        type: String,
+        default: 'YYYY-MM-DD 00:00:00'
+      },
+      /**
+       * The format used for the event's end.
+       *
+       * @prop {String} ['YYYY-MM-DD 23:59:59'] endFormat
+       */
+      endFormat: {
+        type: String,
+        default: 'YYYY-MM-DD 23:59:59'
+      },
+      /**
+       * The maximum allowed date.
+       *
+       * @prop {String} max
+       */
+      max: {
+        type: String
+      },
+      /**
+       * The minimum allowed date.
+       *
+       * @prop {String} min
+       */
+      min: {
+        type: String
+      },
+      /**
+       * The disabled dates.
+       *
+       * @prop {Array|Function} disableDates
+       */
+      disableDates: {
+        type: [Array, Function],
+        default(){
+          return [];
+        }
       }
     },
     data(){
-      let mom = this.date ? moment(this.date) : moment();
+      let mom = this.date ? moment(this.date, this.getCfg().valueFormat) : moment();
       return {
         /**
-         * Today as '2019-03-10' format.
+         * Today as 'YYYY-MM-DD' format.
+         *
          * @data {String} [today] today
         */
         today: moment().format('YYYY-MM-DD'),
         /**
-         * The current month and year.
-         * @data {String} monthYear
+         * The current calendar title.
+         *
+         * @data {String} [''] title
         */
-        monthYear: '',
+        title: '',
         /**
-         * The weekdays initials.
-         * @data {Array} initials
+         * The labels (text).
+         *
+         * @data {Array} [[]] currentLabels
         */
-        initials: Array.from({length: 7}, (v, i) => moment(mom).weekday(i).format('ddd')),
+        currentLabels: [],
         /**
-         * The current date as Moment.js object.
+         * The Moments objects of the labels.
+         *
+         * @data {Array} [[]] currentLabelsDates
+        */
+        currentLabelsDates: [],
+        /**
+         * The current date as Moment object.
+         *
          * @data {Moment} currentDate
          */
         currentDate: mom,
         /**
-         * The days structures.
-         * @data {Array} [[]] days
+         * The items structures.
+         *
+         * @data {Array} [[]] items
         */
-        days: [],
+        items: [],
         /**
-         * The selected day as '2019-03-10' format.
-         * @data {String|Boolean} [false]
+         * The component is ready.
+         *
+         * @data {Boolean} [false] ready
+         */
+        ready: false,
+        /**
+         * CSS style for the grid.
+         *
+         * @data {String} [''] gridStyle
         */
-        selected: this.selectable && this.autoSelect && this.date ? mom.format('YYYY-MM-DD') : false
+        gridStyle: '',
+        /**
+         * The current value.
+         *
+         * @data {String} [''] currentValue
+         */
+        currentValue: ''
+      }
+    },
+    computed: {
+      /**
+       * The current cfg.
+       *
+       * @computed currentCfg
+       * @fires getCfg
+       * @return {Object}
+      */
+      currentCfg(){
+        if ( this.type ){
+          return this.getCfg();
+        }
+        return {}
       }
     },
     methods: {
       /**
-       * Makes the days' structure.
+       * Make a calendar item's structure.
+       *
+       * @method _makeItem
+       * @param {String} txt The item's text
+       * @param {String} val The item's value
+       * @param {Boolean} hid If the item is hidden or not
+       * @param {Boolean} col If the item is colored or not
+       * @param {Boolean} dis If the item is disabled or not
+       * @param {Boolean} ext If the item is extra or not
+       * @return {Object}
+      */
+      _makeItem(txt, val, hid, col, dis, ext){
+        let events = this.filterEvents(val),
+            obj = {
+              text: txt,
+              value: val,
+              isCurrent: val === moment(this.today).format(this.currentCfg.valueFormat),
+              hidden: !!hid,
+              colored: !!col,
+              over: false,
+              events: events,
+              inRange: this.itemsRange.includes(val),
+              disabled: !!dis,
+              extra: !!ext
+            };
+        if (
+          (this.onlyEvents && !ev.length) ||
+          (this.min && (obj.value < this.min)) ||
+          (this.max && (obj.value > this.max))
+        ){
+          obj.hidden = true;
+        }
+        if ( this.disableDates ){
+          obj.disabled = bbn.fn.isFunction(this.disableDates) ? this.disableDates(obj.value) : this.disableDates.includes(obj.value);
+        }
+        return obj;
+      },
+      /**
+       * Makes the items' structure of "days" mode.
        *
        * @method _makeDays
-       * @param {Array} [undefined] events The events list.
-       * @emits days
+       * @fires _makeItem
+       * @return {Object}
       */
-      _makeDays(events){
-        let days = [],
+      _makeDays(){
+        let items = [],
             c = moment(this.currentDate.format('YYYY-MM-01'));
         for ( let i = 1; i <= 6; i++ ){
           if ( i > 1 ){
             c.add(6, 'd');
           }
-          days = days.concat(Array.from({length: 7}, (v, k) => {
+          items = items.concat(Array.from({length: 7}, (v, k) => {
             let w = c.weekday(k),
-                m = (w.get('month') + 1).toString(),
-                d = w.get('date').toString(),
-                f = `${w.get('year')}-${m.length === 1 ? '0' + m : m}-${d.length === 1 ? '0' + d : d}`,
-                ev = events && bbn.fn.isArray(events) ? events.filter(ev => {
-                  let start = moment(ev.start).format('YYYY-MM-DD'),
-                      end = moment(ev.end).format('YYYY-MM-DD');
-                  return (start <= f) && (end >= f);
-                }) : [],
-                isVisible = !this.extraDays && (w.get('month') !== this.currentDate.get('month')) ? false : true;
-            if ( this.onlyEvents && !ev.length ){
-              isVisible = false;
-            }
-            return {
-              day: w.get('date'),
-              fullDate: f,
-              isToday: f === this.today,
-              isLast: k === 6,
-              hover: false,
-              visible: isVisible,
-              events: ev,
-              inRange: this.daysRange.includes(f)
-            };
+                val = w.format(this.currentCfg.valueFormat),
+                isHidden = !this.extraItems && (w.get('month') !== this.currentDate.get('month')) ? true : false;
+            return this._makeItem(
+              w.get('date'),
+              val,
+              isHidden,
+              k === 6,
+              false,
+              this.extraItems && (w.get('month') !== this.currentDate.get('month'))
+            );
           }));
         }
-        this.$set(this, 'days', days);
-        this.$emit('days', this.currentDate.format('YYYY-MM'));
+        this.gridStyle = 'grid-template-columns: repeat(7, 1fr); grid-template-rows: max-content repeat(6, 1fr);';
+        this.currentLabelsDates = Array.from({length: 7}, (v, i) => moment(this.currentDate).weekday(i));
+        this.$set(this, 'items', items);
       },
       /**
-       * Loads the days.
+       * Makes the items' structure of "weeks" mode.
        *
-       * @method loadDays
-       * @param {Boolean} [undefined] force Force to load the days.
-       * @emits loadDays
-       * @fires _makeDays
+       * @method _makeWeeks
+       * @fires _makeItem
+       * @return {Object}
       */
-      loadDays(force){
+      _makeWeeks(){
+        let c = moment(this.currentDate),
+            items = Array.from({length: 7}, (v, k) => {
+              let w = c.weekday(k);
+              return this._makeItem(
+                w.get('date'),
+                w.format(this.currentCfg.valueFormat),
+                false,
+                k === 6,
+                false,
+                false
+              );
+            });
+        this.gridStyle = 'grid-template-columns: repeat(7, 1fr); grid-template-rows: max-content auto';
+        this.currentLabelsDates = Array.from({length: 7}, (v, i) => moment(this.currentDate).weekday(i));
+        this.$set(this, 'items', items);
+      },
+      /**
+       * Makes the items' structure of "months" mode.
+       *
+       * @method _makeMonths
+       * @fires _makeItem
+       * @return {Object}
+      */
+      _makeMonths(){
+        let c = moment(this.currentDate.format('YYYY-01-01')),
+            items = Array.from({length: 12}, (v, k) => {
+              let w = c.month(k);
+              return this._makeItem(
+                w.format('MMM'),
+                w.format(this.currentCfg.valueFormat),
+                !this.extraItems && (w.get('year') !== this.currentDate.get('year')),
+                false,
+                false,
+                this.extraItems && (w.get('year') !== this.currentDate.get('year'))
+              );
+            });
+        this.gridStyle = 'grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(4, 1fr);';
+        this.currentLabelsDates = [];
+        this.$set(this, 'items', items);
+      },
+      /**
+       * Makes the items' structure of "years" mode.
+       *
+       * @method _makeYears
+       * @fires _makeItem
+       * @return {Object}
+      */
+      _makeYears(){
+        let c = moment(this.currentDate.format('YYYY-01-01')),
+            year = c.format('YYYY'),
+            items = Array.from({length: 12}, (v, k) => {
+              let w = c.year(year - 6 + k);
+              return this._makeItem(
+                w.format('YYYY'),
+                w.format(this.currentCfg.valueFormat),
+                false,
+                false,
+                k === 0 || k === 11,
+                false
+              );
+            });
+        this.gridStyle = 'grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(4, 1fr);';
+        this.currentLabelsDates = [];
+        this.$set(this, 'items', items);
+      },
+      /**
+       * Returns the correct configuration based of the calendar type.
+       *
+       * @method getCfg
+       * @return {Object}
+       */
+      getCfg(type){
+        let m = type || this.type,
+            cfg = {};
+        switch ( m ){
+          case 'days':
+            bbn.fn.extend(cfg, {
+              make: this._makeDays,
+              step: [1, 'M'],
+              stepSkip: [1, 'y'],
+              stepText: bbn._('day'),
+              stepSkipText: bbn._('month'),
+              titleFormat: 'MMM YYYY',
+              valueFormat: 'YYYY-MM-DD',
+              labelsFormatDefault: 'ddd',
+              labelsFormatLetter: 'dd',
+              labelsFormatAbbr: 'ddd',
+              labelsFormatFull: 'dddd',
+              startFormat: 'YYYY-MM-01',
+              endFormat: () => {
+                return 'YYYY-MM-' + this.currentDate.daysInMonth()
+              },
+              startExtra: [7, 'd'],
+              endExtra: [15, 'd']
+            });
+            break;
+          case 'weeks':
+            bbn.fn.extend(cfg, {
+              make: this._makeWeeks,
+              step: [1, 'w'],
+              stepText: bbn._('week'),
+              titleFormat: 'MMM YYYY',
+              valueFormat: 'YYYY-MM-DD',
+              labelsFormatDefault: 'ddd',
+              labelsFormatLetter: 'dd',
+              labelsFormatAbbr: 'ddd',
+              labelsFormatFull: 'dddd',
+              startFormat: () => {
+                return moment(this.currentDate).weekday(0).format('YYYY-MM-DD');
+              },
+              endFormat: () => {
+                return moment(this.currentDate).weekday(6).format('YYYY-MM-DD');
+              }
+            });
+            break;
+          case 'months':
+            bbn.fn.extend(cfg, {
+              make: this._makeMonths,
+              step: [1, 'y'],
+              stepText: bbn._('year'),
+              titleFormat: 'YYYY',
+              valueFormat: 'YYYY-MM',
+              startFormat: 'YYYY-01-01',
+              endFormat: 'YYYY-12-31'
+            });
+            break;
+          case 'years':
+            bbn.fn.extend(cfg, {
+              make: this._makeYears,
+              step: [10, 'y'],
+              stepText: bbn._('decade'),
+              titleFormat: () => {
+                let from = this.currentDate.format('YYYY') - 5,
+                    to = from + 9;
+                return from + '-' + to;
+              },
+              valueFormat: 'YYYY',
+              startFormat: () => {
+                return (this.currentDate.format('YYYY') - 5) + '-01-01';
+              },
+              endFormat: () => {
+                return (this.currentDate.format('YYYY') + 4) + '-12-31';
+              }
+            });
+            break;
+        }
+        return cfg;
+      },
+      /**
+       * Returns the correct labels' format.
+       *
+       * @method getLabelsFormat
+       * @return {String|false}
+      */
+      getLabelsFormat(){
+        if ( this.labels ){
+          switch ( this.labels ){
+            case 'letter':
+              return this.currentCfg.labelsFormatLetter;
+            case 'abbr':
+              return this.currentCfg.labelsFormatAbbr;
+            case 'full':
+              return this.currentCfg.labelsFormatFull;
+            default:
+              if ( this.$refs.label && this.$refs.label[0] ){
+                let w = this.$refs.label[0].offsetWidth;
+                if ( w < 40 ){
+                  return this.currentCfg.labelsFormatLetter;
+                }
+                else if ( w < 100 ){
+                  return this.currentCfg.labelsFormatAbbr;
+                }
+                else {
+                  return this.currentCfg.labelsFormatFull;
+                }
+              }
+              return this.currentCfg.labelsFormatDefault;
+          }
+        }
+        return false;
+      },
+      /**
+       * Initializes the calendar.
+       *
+       * @method init
+       * @fires currentCfg.make
+       * @fires setLabels
+       */
+      init(){
+        if ( this.currentCfg && bbn.fn.isFunction(this.currentCfg.make) ){
+          if ( this.selection && this.autoSelection && this.currentCfg.valueFormat ){
+            this.currentValue = this.value ? moment(this.value, this.currentCfg.valueFormat).format(this.currentCfg.valueFormat) : '';
+            this.$emit('input', this.currentValue);
+          }
+          this.setTitle();
+          this.currentCfg.make();
+          this.$nextTick(() => {
+            this.setLabels(this.currentLabelsDates);
+          });
+        }
+      },
+      /**
+       * Filters the events.
+       *
+       * @method filterEvents
+       * @return {Array}
+      */
+      filterEvents(v){
+        if ( this.startField && this.endField ){
+          return this.currentData && bbn.fn.isArray(this.currentData) ? this.currentData.filter(ev => {
+            if ( ev[this.startField] && ev[this.endField] ){
+              let start = moment(ev[this.startField], this.startFormat).format(this.currentCfg.valueFormat),
+                  end = moment(ev[this.endField], this.endFormat).format(this.currentCfg.valueFormat);
+              return (start <= v) && (end >= v);
+            }
+            return false;
+          }) : []
+        }
+        return [];
+      },
+      /**
+       * Sets the calendar's title.
+       *
+       * @method setTitle
+       * @fires currentCfg.titleFormat
+      */
+      setTitle(){
+        if ( this.currentCfg && this.currentCfg.titleFormat ){
+          this.$set(this, 'title', bbn.fn.isFunction(this.currentCfg.titleFormat) ?
+            this.currentCfg.titleFormat() :
+            this.currentDate.format(this.currentCfg.titleFormat)
+          );
+        }
+      },
+      /**
+       * Refreshes the data
+       *
+       * @method refresh
+       * @fires updateData
+       * @fires init
+       * @emits dataLoad
+       * @emits dataLoaded
+      */
+      refresh(force){
         if ( !force ){
-          let ev = $.Event('loadDays');
-          this.$emit('loadDays', ev, this);
+          let ev = $.Event('dataLoad');
+          this.$emit('dataLoad', ev, this);
           if (ev.isDefaultPrevented()) {
             return false;
           }
         }
-        if ( this.source ){
-          if ( bbn.fn.isArray(this.source) ){
-            this._makeDays(this.source);
+        this.updateData().then((res) => {
+          this.$emit('dataLoaded', res, this.currentData, this);
+          this.init();
+        });
+      },
+      /**
+       * Moves the calendar to the next period.
+       *
+       * @method next
+       * @fires refresh
+       * @emits next
+      */
+      next(skip){
+        if ( this.currentCfg && this.currentCfg.step && bbn.fn.isFunction(this.currentCfg.make) ){
+          let check = moment(this.currentDate).add(...this.currentCfg[skip && this.currentCfg.stepSkip ? 'stepSkip' : 'step']);
+          if ( this.max && (check.format(this.currentCfg.valueFormat) > this.max) ){
+            this.currentDate = moment(this.max, this.currentCfg.valueFormat);
+          }
+          else{
+            this.currentDate.add(...this.currentCfg[skip && this.currentCfg.stepSkip ? 'stepSkip' : 'step']);
+          }
+          let ev = $.Event('next');
+          this.$emit('next', ev, this);
+          if (ev.isDefaultPrevented()) {
+            return false;
+          }
+          this.refresh();
+        }
+      },
+      /**
+       * Moves the calendar to the previous period.
+       *
+       * @method prev
+       * @fires refresh
+       * @emits prev
+      */
+      prev(skip){
+        if ( this.currentCfg && this.currentCfg.step && bbn.fn.isFunction(this.currentCfg.make) ){
+          let check = moment(this.currentDate).subtract(...this.currentCfg[skip && this.currentCfg.stepSkip ? 'stepSkip' : 'step']);
+          if ( this.min && (check.format(this.currentCfg.valueFormat) < this.min) ){
+            this.currentDate = moment(this.min, this.currentCfg.valueFormat);
           }
           else {
-            let start = moment(this.currentDate.format('YYYY-MM-01')),
-                end = moment(this.currentDate.format('YYYY-MM-') + this.currentDate.daysInMonth());
-            if ( this.extraDays ){
-              start = start.subtract(7, 'd');
-              end = end.add(15, 'd');
-            }
-            bbn.fn.post(this.source, bbn.fn.extend({}, this.data, {
-              start: start.format('YYYY-MM-DD 00:00:00'),
-              end: end.format('YYYY-MM-DD 23:59:59')
-            }), d => {
-              if ( d.data ){
-                this.$emit('loadedDays', d);
-                this._makeDays(d.data);
-              }
-            });
+            this.currentDate.subtract(...this.currentCfg[skip && this.currentCfg.stepSkip ? 'stepSkip' : 'step']);
           }
+          let ev = $.Event('prev');
+          this.$emit('prev', ev, this);
+          if (ev.isDefaultPrevented()) {
+            return false;
+          }
+          this.refresh();
         }
-        else {
-          this._makeDays();
-        }
       },
       /**
-       * Sets the currenty month-year.
-       *
-       * @method setMonthYear
-      */
-      setMonthYear(){
-        this.$set(this, 'monthYear', this.currentDate.format('MMMM YYYY'));
-      },
-      /**
-       * Loads the days and set the current month-year
-       *
-       * @method refresh
-       * @fires loadDays
-       * @fires setMonthYear
-      */
-      refresh(){
-        this.loadDays();
-        this.setMonthYear();
-      },
-      /**
-       * Moves the calendar to the next month.
-       *
-       * @method nextMonth
-       * @emits nextMonth
-       * @fires refresh
-      */
-      nextMonth(){
-        this.currentDate.add(1, 'M');
-        let ev = $.Event('nextMonth');
-        this.$emit('nextMonth', ev, this);
-        if (ev.isDefaultPrevented()) {
-          return false;
-        }
-        this.refresh();
-      },
-      /**
-       * Moves the calendar to the previous month.
-       *
-       * @method prevMonth
-       * @emits prevMonth
-       * @fires refresh
-      */
-      prevMonth(){
-        this.currentDate.subtract(1, 'M');
-        let ev = $.Event('prevMonth');
-        this.$emit('prevMonth', ev, this);
-        if (ev.isDefaultPrevented()) {
-          return false;
-        }
-        this.refresh();
-      },
-      /**
-       * Moves the calendar to the next year.
-       *
-       * @method nextYear
-       * @emits nextYear
-       * @fires refresh
-      */
-      nextYear(){
-        this.currentDate.add(1, 'y');
-        let ev = $.Event('nextYear');
-        this.$emit('nextYear', ev, this);
-        if (ev.isDefaultPrevented()) {
-          return false;
-        }
-        this.refresh();
-      },
-      /**
-       * Moves the calendar to the previous year.
-       *
-       * @method prevYear
-       * @emits prevYear
-       * @fires refresh
-      */
-      prevYear(){
-        this.currentDate.subtract(1, 'y');
-        let ev = $.Event('prevYear');
-        this.$emit('prevYear', ev, this);
-        if (ev.isDefaultPrevented()) {
-          return false;
-        }
-        this.refresh();
-      },
-      /**
-       *
+       * Change the current value after a selection.
        *
        * @method select
        * @param {String} day The selected day
-       * @param {Boolean} [undefined] notEmit If true the emit will not be performed
+       * @param {Boolean} [undefined] notEmit If true the 'selected' emit will not be performed
+       * @emits input
        * @emits selected
       */
-      select(day, notEmit){
-        if ( this.selectable && day ){
-          day = day === this.selected ? false : day;
-          this.$set(this, 'selected', day);
+      select(val, notEmit){
+        if ( this.selection && val ){
+          val = val === this.currentValue ? '' : val;
+          this.currentValue = val;
+          this.$emit('input', val);
           if ( !notEmit ){
-            this.$emit('selected', day, this);
+            this.$emit('selected', val, this);
           }
         }
+      },
+      /**
+       * Additionals data to sent with the ajax call.
+       *
+       * @method getPostData
+       * @return {Object}
+      */
+      getPostData(){
+        let start = moment(this.currentDate.format(bbn.fn.isFunction(this.currentCfg.startFormat) ?
+              this.currentCfg.startFormat() :
+              this.currentCfg.startFormat
+            )),
+            end = moment(this.currentDate.format(bbn.fn.isFunction(this.currentCfg.endFormat) ?
+              this.currentCfg.endFormat() :
+              this.currentCfg.endFormat
+            )),
+            data = {};
+        if ( this.extraItems ){
+          if ( this.currentCfg.startExtra ){
+            start.subtract(...this.currentCfg.startExtra);
+          }
+          if ( this.currentCfg.endExtra ){
+            start.add(...this.currentCfg.endExtra);
+          }
+        }
+        data[this.startField] = start.format(this.startFormat);
+        data[this.endField] = end.format(this.endFormat);
+        if ( this.data ){
+          bbn.fn.extend(data, bbn.fn.isFunction(this.data) ? this.data() : this.data);
+        }
+        return data;
+      },
+      /**
+       * Sets the labels.
+       *
+       * @method setLabels
+       * @fires getLabelsFormat
+      */
+      setLabels(d){
+        if ( bbn.fn.isArray(d) && d.length ){
+          this.currentLabels = d.map((l) => {
+            return l.format(this.getLabelsFormat());
+          });
+        }
+        else {
+          this.currentLabels = [];
+        }
+      },
+      /**
+       * Called on windows resize.
+       *
+       * @method onResize
+       * @fires setLabels
+      */
+      onResize(){
+        return new Promise((resolve, reject) => {
+          this.setLabels(this.currentLabelsDates);
+          resolve();
+        });
       }
     },
     /**
-     * The mounted event.
-     *
      * @event mounted
-     * @fires refresh
+     * @fires updateData
+     * @fires init
+     * @emits dataLoaded
     */
     mounted(){
-      this.refresh();
+      this.updateData().then((res) => {
+        this.$emit('dataLoaded');
+        this.init();
+        this.$nextTick(() => {
+          if ( !this.date && ( this.max || this.min) ){
+            if ( this.max && !this.min && (this.max < this.currentDate.format(this.currentCfg.valueFormat)) ){
+              this.currentDate = moment(this.max, this.currentCfg.valueFormat);
+            }
+            if ( this.min && !this.max && (this.min > this.currentDate.format(this.currentCfg.valueFormat)) ){
+              this.currentDate = moment(this.min, this.currentCfg.valueFormat);
+            }
+            this.currentCfg.make();
+            this.setTitle();
+          }
+          this.ready = true;
+        });
+      });
+    },
+    watch: {
+      /**
+       * @watch type
+       * @fires init
+      */
+      type(newVal){
+        this.init();
+      },
+      /**
+       * @watch currentLabelsDates
+       * @fires setLabels
+      */
+      currentLabelsDates(newVal){
+        this.setLabels(newVal);
+      }
     }
   })
 })(jQuery, bbn);

@@ -952,6 +952,10 @@
            */
           _1strun: false,
           /**
+           * @data {Boolean, Promise} [false] _dataPromise
+           */
+          _dataPromise: false,
+          /**
            * @data {Boolean} [false] auto If source is a URL and auto is set to true, component will fetch data at mount.
            */
           auto: true,
@@ -1213,11 +1217,12 @@
               if ( this.showable ){
                 data.fields = this.shownFields;
               }
-              return bbn.fn.post(this.source, data, (d) => {
+              this._dataPromise = bbn.fn.post(this.source, data, (d) => {
                 this.isLoading = false;
-                this.$emit('endloading');
+                this.$emit('endloading', d);
                 if ( d.data && bbn.fn.isArray(d.data) ){
                   this.currentData = this._map(d.data);
+                  bbn.fn.log("CQALENDAR", d.data, this.currentData);
                   this.total = d.total || d.data.length || 0;
                   /** @todo why? */
                   if (d.order) {
@@ -1241,8 +1246,11 @@
                     this.$emit('firstrun')
                   }
                 }
-              })
+                this._dataPromise = false;
+                return this.currentData;
+              });
             }
+            return this._dataPromise;
           }
           else{
             return new Promise((resolve, reject) => {
@@ -1274,7 +1282,7 @@
           }
         }
       },
-      created(){
+      beforeMount(){
         this.updateData();
       },
       watch: {
@@ -2430,7 +2438,7 @@
          * @memberof viewComponent
          */
         menu: {
-          type: [Array, Function]
+          type: [Array, Function, Boolean]
         },
         /**
          * Defines if the component is loaded.

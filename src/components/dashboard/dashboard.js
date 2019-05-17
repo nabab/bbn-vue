@@ -484,7 +484,7 @@
      * @fires updateMenu
      */
     mounted(){
-      this.onResize();
+      this.ready  = true;
       this.updateMenu();
     },
     /**

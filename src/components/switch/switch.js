@@ -52,6 +52,20 @@
         }
       },
       /**
+       * The class to add to the span
+       * @prop {String|Array} cls
+       */
+      cls: {
+        type: [String,Array]
+      },
+      /**
+       * The class to add to the switch button
+       * @prop {String|Array} sliderCls
+       */
+      sliderCls: {
+        type: [String,Array]
+      },
+      /**
        * @prop {String|Boolean|Number} [undefined] modelValue
        */
       modelValue: {
