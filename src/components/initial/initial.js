@@ -23,83 +23,162 @@
    * Initals
    */
   Vue.component('bbn-initial', {
+    /**
+     * @mixin bbn.vue.basicComponent
+     */
     mixins: [bbn.vue.basicComponent],
     props: {
+      /**
+       * The user id whose initials are to be represented
+       * @prop {String|Number} userId
+       */
       userId: {
         type: [String, Number]
       },
+      /**
+       * The user name whose initials are to be represented
+       * @prop {String} userNaqme
+       */
       userName: {
         type: String,
       },
+      //@todo not used
       email: {
         type: String,
       },
+      /**
+       * The width of the rectangle containing initials
+       * @prop {String|Number} width
+       */
       width: {
         type: [String, Number]
       },
+      /**
+       * The height of the rectangle containing initials
+       * @prop {String|Number} height
+       */
       height: {
         type: [String, Number]
       },
+      /**
+       * The dimensions to give to the component as width and height
+       * @prop {Number} [36] defaultSize
+       */
       defaultSize: {
         type: Number,
         default: 36
       },
+      /**
+       * The number of characters to show if the prop 'letter' is not specified
+       * @prop {Number} [2] charCount
+       */
       charCount: {
         type: Number,
         default: 2
       },
+      /**
+       * The color of the text
+       * @prop {String} ['#FFF'] textColor
+       */
       textColor: {
         type: [String],
         default: '#FFF'
       },
+      /**
+       * The text's font family
+       * @prop {String} fontFamily
+       */
       fontFamily:{
         type: String
       },
+      /**
+       * The rectangle's background-color
+       * @prop {String} color
+       */
       color: {
         type: String
       },
+      /**
+       * The font-size of the initials
+       * @prop {Number|String} fontSize
+       */
       fontSize: {
         type: [Number, String]
       },
+      /**
+       * The font-weight of the initials
+       * @prop {String|Number} [400] fontWeight
+       */
       fontWeight: {
         type: [Number, String],
         default: 400
       },
+      /**
+       * The letters to be shown in the component if no userName or userId is given
+       * @prop {String} letters
+       */
       letters: {
         type: String
       },
+      /**
+       * The border-radius of the main container
+       * @prop {Number|String} [3] radius
+       * 
+       */
       radius: {
-        type: Number,
+        type: [Number, String],
         default: 3
       },
+      /**
+       * The array of users
+       * @prop {Array} source
+       */
       source: {
         type: Array,
         default(){
           return window.appui && appui.app && appui.app.users ? appui.app.users : []
         }
       },
+      /**
+       * The name of the property containing the user's name in the array source
+       * @prop {String} nameField
+       */
       nameField: {
         type: String,
         default(){
           return window.appui && appui.app && appui.app.users ? 'text' : 'name'
         }
       },
+      /**
+       * The name of the property containing the user's id in the array source
+       * @prop {String} idField
+       */
       idField: {
         type: String,
         default(){
           return window.appui && appui.app && appui.app.users ? 'value' : 'id'
         }
       },
+      // @todo not used
       url: {
         type: String
       }
     },
     data(){
       return {
+        /**
+         * The user's name
+         * @data {String} name
+         */
         name: this.userName
       }
     },
     computed: {
+      /**
+       * Defines the style of the text basing on the props textColor, fontWeight, fontSize and fontFamily 
+       * @computed fontStyle
+       * @return {Object}
+       */
       fontStyle(){
         let o = {
           color: this.textColor,
@@ -111,6 +190,11 @@
         }
         return o;
       },
+      /**
+       * The letters to show in the component.
+       * @computed currentLetters
+       * @return {String}
+       */
       currentLetters(){
         let currentLetters = '',
             name = this.userName;
@@ -133,6 +217,11 @@
         }
         return this.charCount && !this.letters ? currentLetters.substr(0, this.charCount) : currentLetters;
       },
+      /**
+       * The color of the text
+       * @computed currentColor
+       * @return {String}
+       */
       currentColor(){
         let name = this.userName,
             col = this.color;
@@ -149,6 +238,11 @@
         }
         return col ? col : '#000'
       },
+      /**
+       * The fontSize
+       * @computed currentFontSize
+       * @return string
+       */
       currentFontSize(){
         let currentFontSize = this.fontSize;
         if ( !this.fontSize ){
@@ -157,14 +251,29 @@
         }
         return bbn.fn.isNumber(currentFontSize) ? currentFontSize + 'px' : currentFontSize;
       },
+      /**
+       * The final width of the component
+       * @computed currentWidth
+       * @return {String}
+       */
       currentWidth(){
         let w = this.width || this.height || this.defaultSize;
         return bbn.fn.isNumber(w) ? w + 'px' : w;
       },
+      /**
+       * The final height of the component
+       * @computed currentHeight
+       * @return {String}
+       */
       currentHeight(){
         let h = this.height || this.width || this.defaultSize;
         return bbn.fn.isNumber(h) ? h + 'px' : h;
       },
+      /**
+       * The final border-radius to be applied to the component
+       * @computed currentRadius
+       * @return {String}
+       */
       currentRadius(){
         return bbn.fn.isNumber(this.radius) ? this.radius + 'px' : this.radius;
       }

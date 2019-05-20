@@ -67,7 +67,7 @@
                       <span v-text="item.text ? item.text : '?'"
                             class="padding"></span>
                       <i :class="item.icon"
-                         style="margin-top: 1px"
+                         :style="'margin-top: 1px; color: ' + ( iconColor ? iconColor : '' )"
                          v-if="item.icon"
                       ></i>
                       
@@ -80,6 +80,7 @@
           <bbn-list v-if="isExpanded(i) && item.items && item.items.length"
                     :node-idx="i"
                     ref="hierarchy"
+                    :iconColor="iconColor"
                     :num="item.items ? item.items.length : null"
                     :source="item.items ? item.items : []"
                     :level="level + 1"

@@ -18,19 +18,40 @@
    * Classic input with normalized appearance
    */
   Vue.component('bbn-context', {
+    /**
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.sourceArrayComponent
+     */
     mixins: [bbn.vue.basicComponent, bbn.vue.sourceArrayComponent],
     props: {
+      /**
+       * The html tag used to render the prop content
+       * @prop {String} ['span'] tag
+       */
       tag: {
         type: String,
         default: 'span'
       },
+      /**
+       * Set to true shows the floating element containing the menu
+       * @prop {Boolean} [false] context
+       * 
+       */
       context: {
         type: Boolean,
         default: false
       },
+      /**
+       * The string on which to right click to open the menu
+       * @prop {String} content
+       */
       content: {
         type: String
       },
+      /**
+       * 
+       * @prop {String} ['free'] mode
+       */
       mode: {
         type: String,
         default: 'free'
@@ -38,10 +59,20 @@
     },
     data(){
       return {
+        /**
+         * When true shows the floating element of the menu
+         * @data {Boolean} [false] showFloater 
+         */
         showFloater: false
       };
     },
     methods: {
+      /**
+       * Basing on the type of event and on the prop context, shows or hides the floating element of the menu
+       * @method clickItem
+       * @param {Event} e 
+       * @fires updateData
+       */
       clickItem(e){
         if (
           (e.type === 'keydown') ||

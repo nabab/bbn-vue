@@ -240,7 +240,7 @@
        * Triggered when the value changed by the input.
        *
        * @method change
-       * @param {$event} event Original event.
+       * @param {Event} event Original event.
        * @fires getValueFormat
        * @fires disableDates
        * @fires setValue

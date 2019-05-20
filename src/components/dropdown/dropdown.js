@@ -34,13 +34,13 @@
       /**
        * The template to costumize the dropdown menu.
        *
-       * @prop {Object} template
+       * @prop template
        */
       template: {},
       /**
        * @todo description
        *
-       * @prop {Object} [{}] valueTemplate
+       * @prop valueTemplate
        */
       valueTemplate: {},
       /**

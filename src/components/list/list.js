@@ -18,144 +18,209 @@
   const NODE_PROPERTIES = ["selected", "selectedClass", "activeClass", "expanded", "tooltip", "icon", "selectable", "text", "data", "cls", "component", "num", "source", "level", "items"];
 
   Vue.component('bbn-list', {
+    /**
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.localStorageComponent
+     */
     mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent],
     // The events that will be emitted by this component
     _emitter: ['dragstart', 'drag', 'dragend', 'select', 'open'],
     props: {
-      // property to remove nf nf-fa-caret icons from all level of items of list
+      /**
+       * Set to false removes arrow icons from all levels of the list
+       * @prop {Boolean} [true] arrowIcons
+       */
       arrowIcons: {
         type: Boolean,
         default: true
       },
-      // a property to identify the index of the children in parent's childrens */
+      /**
+       * Identifies the index of the item in parent's children
+       * @prop {Number} nodeIdx
+       */
       nodeIdx: {
         type: Number
       },
+      /**
+       * The number of children
+       * @prop {Number} num
+       */
       num: {
         type: Number,
         // default: 0
       },
-      // The level until which the hierarchy must be opened
+      /**
+       * The level until which the hierarchy must be opened
+       * @prop {Number} [0] minExpandLevel
+       */
       minExpandLevel: {
         type: Number,
         default: 0
       },
-      // True if the whole hierarchy must be opened
+      /**
+       * True if the first level of the list must be expanded
+       * @prop {Boolean} false opened
+       */
       opened: {
         type: Boolean,
         default: false
       },
-      // the icon of the item when expanded
+      /**
+       * The icon representing an item expanded
+       * @prop {String} ['nf nf-fa-angle_down'] expandedIcon
+       */
       expandedIcon: {
         type: String,
         default: 'nf nf-fa-angle_down'
       },
-      // the icon of the item when expandible but closed
+      /**
+       * The icon representing an item expandible but not expanded
+       * @prop {String} ['nf nf-fa-angle_right'] closedIcon
+       */
       closedIcon: {
         type: String,
         default: 'nf nf-fa-angle_right'
       },
-      // A function for mapping the hierarchy data
+      /**
+       * A function for mapping the hierarchy data
+       * @prop {Function} map
+       */
       map: {
         type: Function,
       },
-      // The data to send to the server
+      /**
+       * The data to send 
+       * @prop {Object|Function} [{}] data
+       */ 
       data: {
         type: [Object, Function],
         default () {
           return {};
         }
       },
-      // An array of objects representing the nodes
+      /**
+       * An array of objects representing the nodes
+       * @prop {Array|String} source
+       */
       source: {
         Type: [Array, String]
       },
-      // Set to false if the source shouldn't be loaded at mount time
+      /**
+       * Set to false if the source shouldn't be loaded at mount time
+       * @prop {Boolean} [true] autoload 
+       */
       autoload: {
         type: Boolean,
         default: true
       },
-      selectable: {
-        type: Boolean,
-        default: false
-      },
-      unselectable: {
-        type: Boolean,
-        default: false
-      },
-      // The class given to the node (or a function returning the class name)
+      /**
+       * The class given to all the nodes of the first level (or a function returning the class name)
+       * @prop {String, Function} cls
+       */
       cls: {
         type: [Function, String]
       },
-      // A component for the node
+      /**
+       * The component to use to render the nodes
+       * @prop {Function|String|Object} component
+       * 
+       */
       component: {
         type: [Function, String, Object]
       },
-      // The data field used as UID
+      /**
+       * The data field used as UID
+       * @prop {String} uid
+       */
       uid: {
         Type: String
       },
-      // Set to true for having the nodes draggable
-      draggable: {
-        type: Boolean,
-        default: false
-      },
-      // Set to true border the li
+      /**
+       * If set to true the li element will be bordered
+       * @prop {Boolean} [true] bordered
+       */
       bordered: {
         type: Boolean,
         default: true
       },
-      // An array (or a function returning one) of elements for the node context menu
-      menu: {
-        type: [Array, Function]
-      },
-      // An string (or a function returning one) for the icon's color
+      /**
+       * A string (or a function returning one) for the icon's color
+       * @prop {String|Function} iconColor
+       */
       iconColor: {
         type: [String, Function]
       },
-      // The value of the UID to send for the root hierarchy
+      /**
+       * The value of the UID to send for the root hierarchy
+       * @prop {String|Number} root
+       */
       root: {
         type: [String, Number]
       },
-      // The hierarchy level, root is 0, and for each generation 1 is added to the level
+      /**
+       * The hierarchy level, root is 0, and for each generation 1 is added to the level
+       * @prop {Number} [0] level
+       */
       level: {
         type: Number,
         default: 0
       },
-      // Other hierarchys where nodes can be dropped on
-      droppables: {
-        type: Array,
-        default () {
-          return [];
-        }
-      },
-      // If set to false a draggable hierarchy will not be able to drop on itself
-      selfDrop: {
-        type: Boolean,
-        default: true
-      },
+ 
       value: {}
     },
 
     data() {
       let items = this.getItems();
       return {
+        /**
+         * @data {Boolean} [false] isLastParent
+         */
         isLastParent: false,
+        /**
+         * @prop {Boolean} [false] over
+         */
         over: false,
-        // True when the data is currently loading in the hierarchy (unique to the root)
+        /**
+         * True when the data is currently loading in the hierarchy (unique to the root)
+         * @prop {Boolean} [false] isLoading
+         */
         isLoading: false,
-        // True when the data is currently loading in the current hierarchy
+        /**
+         * True when the data is currently loading in the current hierarchy
+         * @data {Boolean} [false] loading
+         */
         loading: false,
+        /**
+         * @data {Boolean} [false] active
+         */
         active: false,
-        num_children: this.num !== undefined ? this.num : items.length,
+        /**
+         * @data {Number} num_children
+         */
+        num_children: items.length,
+        /**
+         * @data {Boolean} [false] styled
+         */
         styled: false,
-        // Only for the origin hierarchy
+        /**
+         * Only for the origin hierarchy
+         * @data {Boolean} [false] isRoot
+         */
         isRoot: false,
-        // The parent node if not root
+        /**
+         * The parent node if not root
+         * @data {Boolean} [false] node
+         */
         node: false,
-        // The parent hierarchy if not root
+        /**
+         * The parent hierarchy if not root
+         * @data {Boolean} [false] hierarchy
+         */
         hierarchy: false,
-        // The URL where to pick the data from if isAjax
+        /**
+         * The URL where to pick the data from if isAjax
+         * @data {String} url
+         */
         url: typeof (this.source) === 'string' ? this.source : false,
         // Is the data provided from the server side
         isAjax: typeof (this.source) === 'string',
@@ -192,15 +257,6 @@
         }
         return path;
       },
-      droppablehierarchys() {
-        let r = this.selfDrop ? [this] : [];
-        if (this.droppables && this.droppables.length) {
-          for (let a of this.droppables) {
-            r.push(a);
-          }
-        }
-        return r;
-      }
     },
 
     methods: {

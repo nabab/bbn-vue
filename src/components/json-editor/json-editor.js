@@ -1,7 +1,7 @@
 /**
  * @file bbn-json-editor component
  *
- * @description bbn-json-editor is a very useful component that allows the schematic visualization of data in JSON format using types of structures, such as: 'tree', 'text', 'object','code'.
+ * @description bbn-json-editor is a very useful component that allows the schematic visualization of data in JSON format using different types of structures, such as: 'tree', 'text', 'object','code'.
  * It also allows you to modify or insert the content and define a date structure.
  *
  * @author BBN Solutions
@@ -83,15 +83,31 @@
     'stringType': bbn._('Field type "string". Field type is not determined from the value, but always returned as string.')
   };
   Vue.component('bbn-json-editor', {
+    /**
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.fullComponent
+     */
     mixins: [bbn.vue.basicComponent, bbn.vue.fullComponent],
     props: {
+      /**
+       * The value of the json editor
+       * @prop {String} ['{}'] value
+       */
       value: {
         default: "{}"
       },
+      /**
+       * Defines the mode of json editor. Allowed values are 'tree', 'view', 'form', 'code', 'text'
+       * @prop {String} ['tree'] mode
+       */
       mode: {
         type: String,
         default: 'tree'
       },
+      /**
+       * The object of configuration
+       * @prop {Object} cfg
+       */
       cfg: {
         type: Object,
         default(){
@@ -119,11 +135,21 @@
     data(){
       bbn.fn.log("VALUE", this.value);
       return bbn.fn.extend({
+        /**
+         * @data {String} ['{}'] currentValue
+         */
         currentValue: this.value === '' ? '{}' : this.value,
         widgetName: "jsoneditor"
       }, bbn.vue.treatData(this));
     },
     methods: {
+      /**
+       * Gets the initial configuration of the component
+       * @method getOptions
+       * @emit change
+       * @emit input
+       * @return {Object}
+       */
       getOptions(){
         const vm = this;
         let cfg = bbn.vue.getOptions(vm);
@@ -147,21 +173,40 @@
         }
         return cfg;
       },
+      /**
+       * Initializes the component
+       * @fires getOptions
+       * @fires widget.setText
+       */
       init(){
         let cfg = this.getOptions();
         bbn.fn.log("VALUE", this.value);
         this.widget = new JSONEditor(this.$refs.element, cfg);
         this.widget.setText(this.value);
       },
+      /**
+       * Destroys and reinitializes the component
+       * @fires widget.destroy
+       * @fires init
+       */
       reinit(){
         this.widget.destroy();
         this.init();
       }
     },
+    /**
+     * @event mounted@fires init
+     */
     mounted(){
       this.init();
     },
     watch: {
+      /**
+       * @watch value
+       * @param {String} newVal 
+       * @fires widget.getText
+       * @fires widget.setText
+       */
       value(newVal){
         const vm = this;
         if ( vm.widget.getText() !== newVal ){
