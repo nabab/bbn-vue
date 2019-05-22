@@ -107,28 +107,13 @@
         default: false
       },
       /**
-       *An object of standart text linked to component's actions
+       * An object of text linked to component's actions
        * @prop {Object} text
        */
       text: {
         type: Object,
         default(){
-          return {
-            uploadButton: bbn._('Upload a file'),
-            pasteContainer: '<i class="nf nf-fa-paste bbn-xl"></i> Ctrl+V',
-            dropHere: bbn._('Drop files here'),
-            processingDropped: bbn._('Processing dropped files') + '...',
-            retry: bbn._('Retry'),
-            editFilename: bbn._('Edit filename'),
-            remove: bbn._('Delete'),
-            pause: bbn._('Pause'),
-            cont: bbn._('Continue'),
-            close: bbn._('Close'),
-            no: bbn._('No'),
-            yes: bbn._('Yes'),
-            cancel: bbn._('Cancel'),
-            ok: bbn._('OK')
-          }
+          return {}
         }
       },
       /**
@@ -148,12 +133,39 @@
         default(){
           return [];
         }
+      },
+      /**
+       * Set it to false if you want to disable the paste function.
+       * 
+       * @prop {Boolean} [true] paste
+       */
+      paste: {
+        type: Boolean,
+        default: true
+      },
+      /**
+       * Set it to false if you want to disable the drang&drop function.
+       * 
+       * @prop {Boolean} [true] dragDrop
+       */
+      dragDrop: {
+        type: Boolean,
+        default: true
+      },
+      /**
+       * Additiional data to send on the ajax call.
+       * 
+       * @prop {Object} data
+       */
+      data: {
+        type: Object
       }
     },
     data(){
       return {
         /**
-         * Return true if the upload is disabled
+         * Returns true if the upload is enabled.
+         * 
          * @data {Boolean} isEnabled
          */
         isEnabled: !this.disabled,
@@ -165,12 +177,36 @@
     },
     computed: {
       /**
+       * An object of standart text linked to component's actions.
+       * 
+       * @computed text
+       * @return Object
+       */
+      currentText(){
+        return bbn.fn.extend({
+          uploadButton: bbn._('Upload a file'),
+          pasteContainer: '<i class="nf nf-fa-paste bbn-xl"></i> Ctrl+V',
+          dropHere: bbn._('Drop files here'),
+          processingDropped: bbn._('Processing dropped files') + '...',
+          retry: bbn._('Retry'),
+          editFilename: bbn._('Edit filename'),
+          remove: bbn._('Delete'),
+          pause: bbn._('Pause'),
+          cont: bbn._('Continue'),
+          close: bbn._('Close'),
+          no: bbn._('No'),
+          yes: bbn._('Yes'),
+          cancel: bbn._('Cancel'),
+          ok: bbn._('OK')
+        }, this.text);
+      },
+      /**
        * If the component is enabled returns the text 'Drop files here' (if not customized in the prop text) 
        * @computed dropHereText
        * @return String
        */
       dropHereText(){
-        return this.isEnabled ? this.text.dropHere : '';
+        return this.isEnabled && this.dragDrop ? this.currentText.dropHere : '';
       },
       /**
        * Returns an array of the prop value independently of it's type
@@ -222,7 +258,8 @@
           request: {
             filenameParam: 'name',
             inputName: 'file',
-            endpoint: this.saveUrl || null
+            endpoint: this.saveUrl || null,
+            params: this.data || null
           },
           deleteFile: {
             endpoint: this.removeUrl || null,
@@ -231,11 +268,11 @@
             method: 'POST',
             confirmMessage: bbn._('Are you sure you want to delete') + " {filename}?"
           },
-          paste: {
+          paste: this.paste ? {
             targetElement: this.getRef('pasteContainer'),
             defaultName: 'image',
             promptForName: true
-          },
+          } : {},
           callbacks: {
 						onValidate: (d) => {
               const files = this.widget.getUploads({
@@ -269,7 +306,6 @@
               if ( responseJSON.file || responseJSON.fichier ){
                 let f = responseJSON.file || responseJSON.fichier;
                 if ( f.name !== name ){
-                  bbn.fn.log('aaaaa', name, responseJSON, xhr);
                   this.widget.setName(id, f.name);
                   //this.widgetValue = this.widget.getUploads({ status: [qq.status.UPLOAD_SUCCESSFUL] }) || [];
                 }
