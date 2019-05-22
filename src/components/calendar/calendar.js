@@ -262,7 +262,11 @@
       }
     },
     data(){
-      let mom = this.date ? moment(this.date, this.getCfg().valueFormat) : moment();
+      let mom = moment();
+      if ( this.date ){
+        let m = moment(this.date, this.getCfg().valueFormat);
+        mom = m.isValid() ? m : mom;
+      }
       return {
         /**
          * Today as 'YYYY-MM-DD' format.
