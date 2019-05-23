@@ -638,6 +638,32 @@
         })
       },
       /**
+       * The method called on cut event.
+       * 
+       * @method cutEvent
+       * @param {Event} event 
+       * @fires getPos
+       * @fires getIdxRange
+       * @fires clearText
+       * @fires emitInput
+       */
+      cutEvent(event){
+        let sel = document.getSelection(),
+            text = sel.toString(),
+            oriPos = this.$refs.element.selectionStart,
+            pos = this.getPos(oriPos),
+            p = this.getIdxRange(0, pos),
+            val = this.value
+        event.preventDefault()
+        document.execCommand('copy')
+        text = this.clearText(text, pos)
+        val = val.slice(p.start, p.end) + val.slice(p.end + text.length)
+        this.emitInput(val.slice(0, this.maxLen))
+        this.$nextTick(() => {
+          this.$refs.element.setSelectionRange(oriPos, oriPos)
+        })
+      },
+      /**
        * Removes the invalid characters from a string.
        * 
        * @method clearText
