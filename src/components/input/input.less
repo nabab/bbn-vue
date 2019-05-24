@@ -1,5 +1,23 @@
 .bbn-input{
   display: inline-block;
+     
+  .bbn-button{
+    display: inline;
+    margin-top: 0.2px;
+    &.right-button{
+      right: 0;
+    }
+    &.left-button{
+      left: 0;
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+      border-top-left-radius: inherit;
+      border-bottom-left-radius: inherit;
+    }
+    &:hover{
+      opacity: 0.7;
+    }
+  }
   input{
     width: 100%;
     font-size: inherit;

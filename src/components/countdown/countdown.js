@@ -176,7 +176,7 @@
                 diff[i - 1]--;
                 switch ( i ){
                   case 1:
-                    bbn.fn.log('1-diff[1]', diff[1])
+                    //bbn.fn.log('1-diff[1]', diff[1])
                     diff[1] = 11 + diff[1];
                     break;
                   case 2:
@@ -186,9 +186,9 @@
                     diff[3] = 24 + diff[3];
                     break;
                   case 4:
-                    bbn.fn.log('diff before', diff[4])
+                    //bbn.fn.log('diff before', diff[4])
                     diff[4] = 60 + diff[4];
-                    bbn.fn.log('diff before', diff[4])
+                    //bbn.fn.log('diff before', diff[4])
                     break;
                   case 5:
                     //because of diff[5] is a negative number
@@ -204,9 +204,9 @@
             if ( this.scaleIdx > i ){
               switch ( i ){
                 case 0:
-                  bbn.fn.log('2-diff[1]-before', diff[1], diff[0])
+                //  bbn.fn.log('2-diff[1]-before', diff[1], diff[0])
                   diff[1] += 12 * diff[i];
-                  bbn.fn.log('2-diff[1]-after', diff[1], diff[0])
+                //  bbn.fn.log('2-diff[1]-after', diff[1], diff[0])
                   break;
                 case 1:
                   diff[2] += 12 * diff[i];
@@ -235,27 +235,27 @@
                   }
                   else {
                     //diff[i] --
-                    bbn.fn.log('diff else month', diff[i], diff )
+                    //bbn.fn.log('diff else month', diff[i], diff )
                     //diff[i] = 24 + diff[i];
                   }
                   break;
 
                   case 2:
-                    bbn.fn.log('days before', diff[i])
+                    //bbn.fn.log('days before', diff[i])
                   if (( diff[i + 1] < 0  ) &&  ( diff[i] === 1)){
                     //bbn.fn.log('diff if days', diff[i], diff )
                     diff[i] = 0;
                   }
                   else if ( ( diff[i] <  0) && ( diff[i + 1] < 0  ) ) {
-                    bbn.fn.log('days',diff[i], diff)
+                   // bbn.fn.log('days',diff[i], diff)
                     diff[i] = bbn.fn.daysInMonth(d) + diff[i] -1
 
                     //bbn.fn.log('diff else days',diff[i], bbn.fn.daysInMonth(d))
                   }
                   else if ( ( diff[i] > 0 ) && ( diff[i + 1] === 0 ) ) {
-                      bbn.fn.log('this is the case', diff[i], diff)
-                      diff[i] = diff[i] - 1;
-                      bbn.fn.log(diff[i])
+                    //bbn.fn.log('this is the case', diff[i], diff)
+                    diff[i] = diff[i] - 1;
+                    //bbn.fn.log(diff[i])
                   }
                   else if ( diff[i] < 0 ) {
                     diff[i] = bbn.fn.daysInMonth(d) + diff[i]
@@ -263,7 +263,7 @@
                   break;
 
                 case 3:
-                  bbn.fn.log('diff hours', diff[3], diff)
+                  //bbn.fn.log('diff hours', diff[3], diff)
                   // case precisionIdx > i
                   if (( diff[i + 1] < 0  ) &&  ( diff[i] <= 1)){
                     diff[i] = 0;
@@ -303,7 +303,11 @@
       this.init();
     },
     beforeDestroy(){
-      clearInterval(this.interval);
+      alert('before destroy')
+      if(this.interval){
+        alert('interval')
+        clearInterval(this.interval);
+      }
     }
   });
 })(jQuery, bbn);

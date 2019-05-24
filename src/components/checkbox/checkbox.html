@@ -1,5 +1,4 @@
 <span :class="['bbn-iblock', componentClass]"
-      tabindex="0"
 >
   <input type="checkbox"
          :id="id"
@@ -11,6 +10,7 @@
          @change="toggle"
          :checked="state"
          ref="element"
+         tabindex="0"
   >
   <label class="bbn-checkbox-label"
          :for="id"

@@ -13,42 +13,75 @@
 
 ((bbn, Vue) => {
   "use strict";
-
   Vue.component('bbn-chat', {
+    /**
+     * @mixin bbn.vue.basicComponent 
+     * @mixin bbn.vue.localStorageComponent
+     * @mixin bbn.vue.resizerComponent  
+     */
     mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent, bbn.vue.resizerComponent],
     props: {
+      /**
+       * The id of the current user
+       * @prop {String} userId
+       */
       userId: {
         type: String,
       },
+      /**
+       * The array of all users (including offline ones)
+       * @prop {Array} [[]] users
+       */
       users: {
         type: Array,
         default(){
           return [];
         }
       },
+      //@todo not used
       groups: {
         type: Array,
         default(){
           return [];
         }
       },
+      /**
+       * The array of users currently online
+       * @prop {Array} [[]] onlineUsers
+       */
       onlineUsers: {
         type: Array,
         default(){
           return [];
         },
       },
+      /**
+       * True if the current user is online
+       * @prop {Boolean} [true] online
+       */
       online: {
         type: Boolean,
         default: true
       },
+      /**
+       * Set to true shows the list of avalaible users
+       * @prop {Boolean} [false] visible
+       */
       visible: {
         type: Boolean,
         default: false
       },
+      /**
+       * The url used for the actions of the chat
+       * @prop {String} url
+       */
       url: {
         type: String
       },
+      /**
+       * The array of opened windows 
+       * @prop {Array} [[]] windows
+       */
       windows: {
         type: Array,
         default(){
@@ -62,17 +95,50 @@
         data.push(bbn.fn.extend({}, w, {visible: false}));
       });
       return {
+        /**
+         * The value of the prop online
+         * @data {Boolean} currentOnline
+         */
         currentOnline: this.online,
+        /**
+         * The value of the prop visible
+         * @data {Boolean} currentVisible
+         */
         currentVisible: this.visible,
+        /**
+         * The value of the prop visible
+         * @data {Boolean} usersVisible
+         */
         usersVisible: this.visible,
+        //@todo not used
         currentFilter: '',
+        /**
+         * The chat windows currently opened
+         * @data {Array} currentWindows
+         */
         currentWindows: data,
+        /**
+         * The last message sent
+         * @data [null] lastMsg
+         */
         lastMsg: null,
+        /**
+         * @data [null] onlineUsersHash 
+         */
         onlineUsersHash: null,
+        /**
+         * The number of unread messages
+         * @data {Number} [0] unRead
+         */
         unread: 0
       }
     },
     computed: {
+      /**
+       * The array of online users without the current user
+       * @computed usersOnlineWithoutMe
+       * @return {Array}
+       */
       usersOnlineWithoutMe(){
         return this.onlineUsers.filter((a) => {
           return a !== this.userId;
@@ -80,6 +146,11 @@
           return bbn.fn.isObject(a) ? a : {value: a}
         })
       },
+      /**
+       * The array of visible windows
+       * @computed visibleWindows
+       * @return {Array}
+       */
       visibleWindows(){
         let res = [];
         this.currentWindows.map((val, idx) => {
@@ -91,16 +162,25 @@
       }
     },
     methods: {
+      /**
+      * Returns the method bbn.fn.get_field
+      * @method get_field
+      * @return {Function}
+      */
       get_field: bbn.fn.get_field,
-
+      //@todo not used
       isInScreen(i){
         return (300 * (i + 1) + 300) < this.lastKnownWidth;
       },
-
+      // @todo not used
       getMenuFn(){
         return [];
       },
-
+      /**
+       * Opens the chat window selected from the main list of online users
+       * @method chatTo
+       * @param {Array} users 
+       */
       chatTo(users){
         if ( !Array.isArray(users) ){
           users = [users];
@@ -146,13 +226,16 @@
           })
         }
       },
-
+      /**
+       * @method relay
+       * @param {Object} obj 
+       * @param {Number} idx 
+       * @emits send
+       */
       relay(obj, idx){
         this.$emit('send', obj, idx);
       },
-
-
-
+      //@todo not used
       getStyle(idx){
         let r = {},
             pos = this.usersVisible ? 300 : 0,
@@ -165,7 +248,12 @@
         }
         return {right: pos + 'px'}
       },
-
+      /**
+       * Return the current window object basing on the given chat id 
+       * @method chatById
+       * @param {String} idChat 
+       * @return {Boolean|Object}
+       */
       chatById(idChat){
         let idx = bbn.fn.search(this.currentWindows, {id: idChat});
         if ( idx > -1 ){
@@ -173,7 +261,11 @@
         }
         return false;
       },
-
+      /**
+       * Add a user to the given chat
+       * @param {String} idChat 
+       * @param {String} idUser 
+       */
       addUser(idChat, idUser){
         let chat = this.chatById(idChat);
         if ( chat && chat.participants.indexOf(idUser) === -1 ){
@@ -187,7 +279,7 @@
           })
         }
       },
-
+      //@todo not used
       receive(data){
         bbn.fn.log("RECEIVING THIS FOR CHAT", data);
         if ( data.hash ){
@@ -233,13 +325,24 @@
         }
       }
     },
+    /**
+     * @event mounted
+     */
     mounted(){
       this.ready = true;
     },
     watch: {
+      /**
+       * @watch online
+       * @param {Boolean} newVal 
+       */
       online(newVal){
         this.currentOnline = newVal;
       },
+      /**
+       * @watch currentVisible
+       * @param {Boolean} newVal 
+       */
       currentVisible(newVal){
         if ( newVal ){
           this.unread = 0;
@@ -247,33 +350,70 @@
       }
     },
     components: {
+      /**
+       * The chat window of each online user selected from the main list
+       * @component container
+       */
       container: {
         name: 'container',
+        /**
+         * @mixin bbn.vue.basicComponent
+         * @memberof container 
+         */
         mixins: [bbn.vue.basicComponent],
         props: {
+          /**
+           * @prop {Number} idx
+           * @memberof container 
+           */
           idx: {
             type: Number
           },
+          /**
+           * The user id 
+           * @prop {String} [''] userId
+           * @memberof container 
+           */
           userId: {
             type: String,
             default: ''
           },
+          /**
+           * The id of the current chat
+           * @prop {String} [''] chatId
+           * @memberof container 
+           */
           chatId: {
             type: String,
             default: ''
           },
+          /**
+           * The array of partecipants to the chat
+           * @prop {Array} [[]] partecipants
+           * @memberof container 
+           */
           participants: {
             type: Array,
             default(){
               return []
             }
           },
+          /** 
+           * The array of all messages and relative timestamp sent in a chat
+           * @prop {Array} [[]] messages
+           * @memberof container
+           */
           messages: {
             type: Array,
             default(){
               return []
             }
           },
+          /**
+           * The array of all users (including offline ones)
+           * @prop {Array} [[]] users
+           * @memberof container
+           */
           users: {
             type: Array,
             default(){
@@ -283,14 +423,35 @@
         },
         data(){
           return {
+            /**
+             * The current message
+             * @data {String} [''] currentMessage
+             * @memberof container
+             */
             currentMessage: '',
+            //@todo not used
             siteURL: bbn.env.host,
+            /**
+             * @data [null] chat 
+             * @memberof container
+             */
             chat: null
           }
         },
         methods: {
+          /**
+           * Returns the method bbn.fn.get_field
+           * @method get_field
+           * @memberof container
+           * @return {Function}
+           */
           get_field: bbn.fn.get_field,
-
+          /**
+           * Returns the source of the context menu of each chat window
+           * @method getMenuFn
+           * @memberof container
+           * @return {Array}
+           */
           getMenuFn(){
             let chat = this.$parent;
             let res = [];
@@ -342,7 +503,11 @@
             }
             return res;
           },
-
+          /**
+           * Closes the given chat window
+           * @param {Number} idx 
+           * @memberof container
+           */
           close(idx){
             if ( this.$parent.visibleWindows.length > 1 ){
               this.$parent.currentWindows[idx].visible = false;
@@ -351,11 +516,15 @@
               this.$parent.currentVisible = false;
             }
           },
-
+          //@todo not used
           scrollChat(){
             bbn.fn.log("SCROLL");
           },
-
+          /**
+           * Sends the current message 
+           * @method sendMessage
+           * @emits send
+           */
           sendMessage(){
             let obj = {
               users: this.participants,
@@ -368,11 +537,16 @@
             this.$emit('send', obj, this.idx);
             this.currentMessage = '';
           },
-
+          //@todo not used
           goto(url){
             bbn.fn.link(url)
           },
-
+          /**
+           * Handles the resize of the scroll in the chat window
+           * @method scrollEnd
+           * @memberof container
+           * 
+           */
           scrollEnd(){
             this.$nextTick(() => {
               let sc = this.getRef('scroll');
@@ -383,7 +557,12 @@
               }
             })
           },
-
+          /**
+           * The render of the message
+           * @param {String} msg 
+           * @return {String}
+           * @memberof container
+           */
           renderMsg(msg){
             msg = bbn.fn.html2text(msg);
             let matches = msg.match(/(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9]\.[^\s]{2,})/g);
@@ -400,11 +579,20 @@
             return msg;
           }
         },
+        /**
+         * @event mounted
+         * @fires scrollEnd
+         * @memberof container
+         */
         mounted(){
           this.scrollEnd();
           this.getRef('input').focus()
         },
-
+        /**
+         * @event updated
+         * @fires scrollEnd
+         * @memberof container
+         */
         updated(){
           this.scrollEnd();
         }

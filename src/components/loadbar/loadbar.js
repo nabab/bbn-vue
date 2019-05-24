@@ -18,12 +18,17 @@
    * Classic input with normalized appearance
    */
   Vue.component('bbn-loadbar', {
+    /**
+     * @mixin bbn.vue.basicComponent 
+     */
     mixins: [bbn.vue.basicComponent],
     props: {
+      //@todo not used
       encoded: {
         type: Boolean,
         default: true
       },
+      //@todo not used
       position: {
         type: Object,
         default(){
@@ -35,9 +40,14 @@
           };
         }
       },
+      /**
+       * The source of the component
+       * @prop {Array} source
+       */
       source: {
         type: Array
       },
+      //@todo not used
       history: {
         type: Number,
         default: 100
@@ -45,26 +55,57 @@
     },
     data(){
       return {
+        /**
+         * @data {Boolean} isLoading
+         */
         isLoading: false,
+        //@todo not used
         isSuccess: false,
+        //@todo not used
         isError: false,
+        /**
+         * @data {String} [''] text
+         */
         text: '',
+        //@todo not used
         id: false,
+        //@todo not used
         selected: 0,
+        //@todo not used
         numLoaded: 0,
+        /**
+         * @data {Boolean} [false] info
+         */
         info: false,
+         /**
+         * @data {Boolean} [false] interval
+         */
         interval: false,
+         /**
+         * @data {Boolean} [false] timeNow
+         */
         timeNow: false
       };
     },
     computed: {
+      /**
+       * @computed loadingItems 
+       * @return {Array}
+       */
       loadingItems(){
         return bbn.fn.filter(this.source, {loading: true})
       },
-
+       /**
+       * @computed loadedItems 
+       * @return {Array}
+       */
       loadedItems(){
         return bbn.fn.filter(this.source, {loading: false})
       },
+      /**
+       * @computed items
+       * @return {Array}
+       */
       items(){
         let items = [];
         bbn.fn.each(this.loadingItems, (a) => {
@@ -74,12 +115,22 @@
         })
         return items.concat(this.loadedItems)
       },
+      /** 
+       * @computed currentItem
+       * @return {Object|Boolean}
+      */
       currentItem(){
         return this.loadingItems.length ? this.loadingItems[0] : (this.loadedItems.length ? this.loadedItems[0] : false)
       },
 
     },
     methods: {
+      /**
+       * Return the duration in seconds or milliseconds of a request
+       * @method renderDuration
+       * @param {Number} d
+       * @return {Number}
+       */
       renderDuration(d){
         let tmp = d / 1000;
         if ( tmp < 10){
@@ -89,6 +140,11 @@
           return parseInt(tmp) + ' s';
         }
       },
+      /**
+       * Aborts the selected request
+       * @method cancel
+       * @param {Object} item 
+       */
       cancel(item){
         if ( item.loading ){
           this.getPopup().confirm(bbn._("Are you sure you want to abort this request?"), (d) => {
@@ -96,6 +152,7 @@
           })
         }
       },
+      //@todo not used
       deleteHistory(){
         let tmp = [];
         bbn.fn.each(this.data, (a) => {
@@ -106,12 +163,18 @@
         this.data = tmp;
       },
     },
+    /**
+     * @event mounted
+     */
     mounted(){
       this.interval = setInterval(() => {
         var date = new Date();
         this.timeNow = parseInt(date.getTime());
       }, 1000);
     },
+    /**
+     * @event beforeDestroy
+     */
     beforeDestroy() {
       clearInterval(this.interval)
     },

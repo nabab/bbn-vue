@@ -19,6 +19,10 @@
   $.trumbowyg.svgPath = bbn_root_url + 'lib/Trumbowyg/v2.5.1/dist/ui/icons.svg';
 
   Vue.component('bbn-rte', {
+    /**
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.inputComponent
+     */
     mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent],
     props: {
       pinned: {},
@@ -26,13 +30,17 @@
       left: {},
       bottom: {},
       right: {},
+      /**
+       * The height of the editor
+       * @prop {Number|String} ['100%'] height
+       */
       height:{
         default: '100%',
         type: [String, Number]
       },
       /**
        * The buttons to show on the toolbar
-       * @prop {Array} [] buttons
+       * @prop {Array} buttons
        */
       buttons: {
         type: Array,
@@ -55,6 +63,10 @@
           ];
         }
       },
+      /**
+       * The object of configuration
+       * @prop {Object} cfg
+       */
       cfg: {
         type: Object,
         default: function(){
@@ -70,16 +82,24 @@
     },
     data(){
       return {
+        /**
+         * The height to give to the editor depending on the value of the prop height
+         * @data {String} realHeight
+         */
         realHeight: typeof this.height === 'string' ? this.height : this.height + 'px'
       }
     },
     methods: {
+      //@todo not used
       changeHidden(e){
         bbn.fn.log("changeHidden", e);
         bbn.fn.log(e.target.value, this.value);
       }
     },
-
+    /**
+     * Initializes the component
+     * @event mounted
+     */
     mounted: function(){
       let cfg = this.getOptions(),
           $ele = $(this.$refs.element).css({minHeight: this.$el.clientHeight});
@@ -106,6 +126,10 @@
       this.ready = true;
     },
     watch: {
+      /**
+       * @watch value
+       * @param newVal 
+       */
       value(newVal){
         if ( this.widget.trumbowyg('html') !== newVal ){
           this.widget.trumbowyg('html', newVal);

@@ -17,31 +17,49 @@
    * Classic input with normalized appearance
    */
   Vue.component('bbn-loader', {
+    /**
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.resizerComponent 
+     */
     mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent],
     props: {
+      //@todo not used
       source: {
         type: [Object, Array],
         default: function(){
           return {};
         },
       },
+      /**
+       * The text below the loader icon
+       * @prop {String} ['Loading'] loadingText
+       */
       loadingText: {
-        types: [String],
+        type: String,
         default: 'Loading'
       },
+      /**
+       * The background color
+       * @prop {String} [''] bgColor
+       */
       bgColor: {
-        types: [String],
+        type: String,
         default: ''
       },
+      /**
+       * The size of the font. Allowed values are 's', 'm', 'l', 'xl'
+       * @prop {String} ['s'] fontSize
+       */
       fontSize: {
-        types: String,
+        type: String,
         default: 's'
       },
     },
     data(){
       return{
-        minHeight: false,
-        fontClass: 'bbn-small',
+        //@todo not used
+        minHeight: true,
+        //@todo not used
         height: false,
       }
     },
@@ -49,9 +67,11 @@
       if ( this.bgColor ){
         $(this.$el).css('background-color', this.bgColor)
       }
-      },
+     // alert(this.minHeight)
+    },
     methods: {
-      onResize(){
+      //@todo not used
+      /*onResize(){
         this.height = $(this.$el).height();
         //bbn.fn.log("HEIGHT", this.height);
         let currentFont = this.fontClass,
@@ -71,31 +91,30 @@
         if ( (currentFont !== this.fontClass) || (currentMinHeight !== this.minHeight) ){
           this.$forceUpdate();
         }
+      }*/
+    },
+    computed: {
+      /**
+       * The css class corresponding to the prop fontSize
+       * @computed fontClass
+       * @return {String}
+       */
+      fontClass(){
+        if ( this.fontSize === 's' ){
+          return 'bbn-small'
+        }
+        else if ( this.fontSize === 'm' ){
+          return 'bbn-medium'
+        }
+        else if ( this.fontSize === 'l' ){
+          return  'bbn-large'
+        }
+        else if ( this.fontSize === 'xl' ){
+          return  'bbn-xl'
+        }
+    
       }
     },
-
-    watch: {
-      fontSize(val){
-        if ( val === 's' ){
-          this.fontClass = 'bbn-small'
-        }
-        else if ( val === 'm' ){
-          this.fontClass = 'bbn-medium'
-        }
-        else if ( val === 'l' ){
-          this.fontClass = 'bbn-large'
-        }
-        else if ( val === 'xl' ){
-          this.fontClass = 'bbn-xl'
-        }
-      },
-      bgColor(val){
-        if ( val ){
-          $(this.$el).css('background-color', val)
-        }
-      },
-
-    }
 
   });
 

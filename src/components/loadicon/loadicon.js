@@ -17,12 +17,19 @@
    * Classic input with normalized appearance
    */
   Vue.component('bbn-loadicon', {
+    /**
+     * @mixin bbn.vue.basicComponent 
+     */
     mixins: [bbn.vue.basicComponent],
     props: {
+      /**
+       * The size of the icon container
+       * @prop {Number} [16] size
+       */
       size: {
         type: Number,
         default: 16
-      }
+      },
     },
   });
 

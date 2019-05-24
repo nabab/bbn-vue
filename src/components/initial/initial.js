@@ -37,7 +37,7 @@
       },
       /**
        * The user name whose initials are to be represented
-       * @prop {String} userNaqme
+       * @prop {String} userName
        */
       userName: {
         type: String,

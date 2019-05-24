@@ -10,45 +10,117 @@
  * @copyright BBN Solutions
  */
 
-(function($, bbn){
+(function(bbn){
   "use strict";
 
   /**
    * Classic input with normalized appearance
    */
   Vue.component("bbn-input", {
+    /**
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.eventsComponent
+     * @mixin bbn.vue.inputComponent
+     */
     mixins: [bbn.vue.basicComponent, bbn.vue.eventsComponent, bbn.vue.inputComponent],
     props: {
-      autocomplete: {},
+      /**
+       * Specifies whether or not the input field should have autocomplete enabled. Acctept boolean of string 'on', 'off'
+       * @prop {Boolean|String} [true] autocomplete
+       */
+      autocomplete: {
+        type: [Boolean,String],
+        default: true
+      },
+      /**
+       * The type of the input
+       * @prop {String} type
+       */
       type: {
         type: String,
+        default: 'text'
       },
+      /**
+       * The icon of the button on the left of  the input
+       * @prop {String} buttonLeft
+       */
       buttonLeft: {
         type: String
       },
+      /**
+       * The icon of the button on the right of  the input
+       * @prop {String} buttonRight
+       */
       buttonRight: {
         type: String
       },
-      actionLeft: {},
-      actionRight: {},
-      autoHideLeft: {},
-      autoHideRight: {},
+      /**
+       * The action of the left button
+       * @prop {Function} actionLeft
+       */
+      actionLeft: {
+        type: Function,
+      },
+      /**
+       * The action of the right button
+       * @prop {Function} actionLeft
+       */
+      actionRight: {
+        type: Function,
+      },
+      /**
+       * Hides left button 
+       * @prop {Boolean} [false] autoHideLeft
+       */
+      autoHideLeft: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * Hides right button
+       * @prop {Boolean} [false] autoHideRight
+       */
+      autoHideRight: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * The input's attribute pattern 
+       * @prop {String} pattern
+       */
       pattern: {
         type: String
       },
-      cfg:{
-        type: Object,
-        default: function(){
-          return {
-            autocomplete: true,
-            type: "text"
-          }
-        }
-      },
+      size:{
+        type: [String,Number],
+      }
     },
     data(){
       return {
-        currentValue: this.value
+        /**
+         * @todo not used
+         */
+        currentValue: this.value,
+        /**
+         * The prop autocomplete normalized
+         * @data {String} [''] currentAutocomplete
+         */
+        currentAutocomplete: '',
+        /**
+         * The prop size normalized
+         * @data {String} [''] currentSize
+         */
+        currentSize:'',
+        /**
+         * The action for the button left
+         * @data {Function} currentActionLeft
+         */
+        currentActionLeft: ()=>{},
+        /**
+         * The action for the button right
+         * @data {Function} currentActionRight
+         */
+        currentActionRight: ()=>{},
       }
     },
     methods: {
@@ -56,60 +128,45 @@
         this.emitInput('');
       }
     },
-    mounted: function(){
-      let $ele = $(this.$el),
-          cfg = this.cfg;
-
-      // button left
-      if ( cfg.buttonLeft ){
-        let $al = $('<a class="k-icon ' + cfg.buttonLeft + ( cfg.autoHideLeft ? ' bbn-invisible' : '' ) + '"></a>');
-        $ele.addClass("k-space-left").append($al);
-        if ( cfg.actionLeft ){
-          $al.click((e) => {
-            if (bbn.fn.isFunction(cfg.actionLeft) ){
-              cfg.actionLeft(e, this);
-            }
-            else if (bbn.fn.isFunction(this[cfg.actionLeft]) ){
-              this[cfg.actionLeft](e, this);
-            }
-          });
+    /**
+     * 
+     * @event created
+     */
+    created(){
+      if ( typeof(this.autocomplete) === 'boolean' ){
+        if ( this.autocomplete ){
+          this.currentAutocomplete = 'on';
         }
-        if ( cfg.autoHideLeft ){
-          $ele.hover(function(){
-            $al.css({opacity: 0.5});
-          }, function(){
-            $al.css({opacity: null});
-          })
+        else{
+          this.currentAutocomplete = 'off'
         }
       }
-
-      // button right
-      if ( cfg.buttonRight ){
-        var $ar = $('<a class="k-icon ' + cfg.buttonRight + ( cfg.autoHideRight ? ' bbn-invisible' : '' ) + '"></a>');
-        $ele.addClass("k-space-right").append($ar);
-        if ( cfg.actionRight ){
-          $ar.click((e) => {
-            if (bbn.fn.isFunction(cfg.actionRight) ){
-              cfg.actionRight(e, this);
-            }
-            else if (bbn.fn.isFunction(this[cfg.actionRight]) ){
-              this[cfg.actionRight](e, this);
-            }
-          });
-        }
-        if ( cfg.autoHideRight ){
-          $ele.hover(() => {
-            $ar.css({opacity: 0.5});
-          }, () => {
-            $ar.css({opacity: null});
-          })
+      else if ( bbn.fn.isString(this.autocomplete) ){
+        if ( ( this.autocomplete === 'on' ) || ( this.autocomplete === 'off' ) ){
+          this.currentAutocomplete = this.autocomplete;
         }
       }
+      if ( this.size ){
+        if ( bbn.fn.isNumber(this.size) ){
+          this.currentSize = this.size + 'px';
+        }
+        else if ( bbn.fn.isString(this.size) ){
+          this.currentSize = this.size;
+        }
+      }
+      if ( this.buttonRight ){
+        if ( bbn.fn.isFunction(this.actionRight) ){
+          this.currentActionRight = this.actionRight;
+        }
+      }
+      
+      if ( this.buttonLeft ){
+        if ( bbn.fn.isFunction(this.actionLeft) ){
+          this.currentActionLeft = this.actionLeft;
+        }
+      }
+    },
 
-			if ( this.type === 'hidden' ){
-				$ele.hide();
-			}
-    }
   });
 
-})(jQuery, bbn);
+})(bbn);

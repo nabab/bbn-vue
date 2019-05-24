@@ -15,8 +15,16 @@
   "use strict";
 
   Vue.component('bbn-markdown', {
+    /**
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.fullComponent 
+     */
     mixins: [bbn.vue.basicComponent, bbn.vue.fullComponent],
     props: {
+      /**
+       * The object of configuration
+       * @prop {Object} cfg
+       */
       cfg: {
         type: Object,
         default(){
@@ -45,9 +53,11 @@
           };
         }
       },
+      //@todo not used
       toolbar: {
         type: Array
       },
+      //@todo not used
       hideIcons: {
         type: Array
       }
@@ -58,9 +68,6 @@
       }, bbn.vue.treatData(this));
     },
     methods: {
-      test: function () {
-        bbn.fn.log("test");
-      },
       disableWidget(v){
         this.widget.codemirror.setOption('disableInput', !!v);
         if ( !v && !this.readonly ){

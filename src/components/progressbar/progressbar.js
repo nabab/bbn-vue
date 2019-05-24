@@ -6,10 +6,14 @@
  * @created 10/02/2017
  */
 
-(function($, bbn, kendo){
+(function(bbn){
   "use strict";
 
   Vue.component('bbn-progressbar', {
+    /**
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.fullComponent
+     */
     mixins: [bbn.vue.basicComponent, bbn.vue.fullComponent],
     props: {
       /**
@@ -116,6 +120,14 @@
         type: Boolean,
         default: true
       },
+      /**
+       * Defines of how many degrees the progressbar has to be rotated
+       * @prop {Number} [0] rotate
+       */
+      rotate: {
+        type: Number,
+        default: 0
+      },
       valuePosition: {
         type: String,
         default: 'right' 
@@ -153,7 +165,7 @@
         /**
          * Defines the class for the alignment of the value in the bar depending on the orientation and on the prop valuePosition
          */
-        realValuePosition: ''
+        realValuePosition: '', 
       }
     },
     computed: {
@@ -212,10 +224,9 @@
         this.realValuePosition = this.valuePosition;
         st += 'height: 1.9em; width: ' + (bbn.fn.isNumber(this.width) ? ( this.width  + 'px') : this.width);
       }
-      this.orientationStyle = st;
+      this.orientationStyle = st += ';';
       
       if ( this.type === 'chunk' ){
-        
         this.chunknumber = ( this.max - this.min ) / this.step, 
         this.selectedChunks = this.value / this.chunknumber;
       }
@@ -225,18 +236,21 @@
       if ( this.min && ( this.value < this.min ) ){
         this.emitInput(this.min);
       }
-     },
-     watch: {
-       chunknumber(val){
-          if ( this.orientation === 'horizontal' ){
-            this.chunkStyle += 'grid-template-columns:repeat(' + this.chunknumber + ', 1fr);grid-template-rows: 1fr';
-          }
-          else{
-            this.chunkStyle += 'grid-template-rows:repeat(' + this.chunknumber + ',1fr);grid-template-columns: 1fr; min-height: '+ this.height + 'px';
-          }
+      if ( this.rotate && bbn.fn.isNumber(this.rotate) ){
+        this.orientationStyle += 'transform: rotate('+ this.rotate + 'deg)'
+      }
+    },
+    watch: {
+      chunknumber(val){
+        if ( this.orientation === 'horizontal' ){
+          this.chunkStyle += 'grid-template-columns:repeat(' + this.chunknumber + ', 1fr);grid-template-rows: 1fr';
         }
-     }
+        else{
+          this.chunkStyle += 'grid-template-rows:repeat(' + this.chunknumber + ',1fr);grid-template-columns: 1fr; min-height: '+ this.height + 'px';
+        }
+      }
+    }
     
   });
 
-})(jQuery, bbn, kendo);
+})(bbn);
