@@ -97,7 +97,19 @@
          *
          * @data {Boolean} [false] isOpened
         */
-        isOpened: false
+        isOpened: false,
+        /** 
+         * Indicates if the bbn-masked is mounted.
+         * 
+         * @data {Boolean} [false] maskedMounted
+        */
+        maskedMounted: false,
+        /** 
+         * The current value shown on the input.
+         * 
+         * @data {String} [''] inputValue
+        */
+        inputValue: ''
       }
     },
     computed: {
@@ -174,12 +186,12 @@
        * @fires getValueFormat
        * @return {String}
        */
-      inputValue(){
-        if ( this.value ){
-          return moment(this.value, this.getValueFormat(this.value)).format(this.currentFormat);
+      /* inputValue(){
+        if ( this.value && this.maskedMounted ){
+          return this.$refs.element.raw(moment(this.value, this.getValueFormat(this.value)).format(this.currentFormat));
         }
         return '';
-      }
+      } */
     },
     methods: {
       /**
@@ -222,7 +234,7 @@
         }
         this.emitInput(val);
         if ( !value ){
-          this.$refs.element.widget.value('');
+          this.inputValue = '';
         }
       },
       /**
@@ -236,40 +248,37 @@
           this.$refs.calendar.refresh();
         }
       },
-      /**
-       * Triggered when the value changed by the input.
-       *
-       * @method change
-       * @param {Event} event Original event.
+      /** 
+       * The method called on input blur event.
+       * 
+       * @method inputChanged
        * @fires getValueFormat
        * @fires disableDates
        * @fires setValue
        * @emits change
       */
-      change(event){
-        setTimeout(() => {
-          let maskValue = this.$refs.element.widget.value(),
-              value = !!maskValue ? moment(maskValue, this.currentFormat).format(this.getValueFormat(maskValue)) : '';
-          if ( value && this.min && (value < this.min) ){
-            value = this.min;
-          }
-          if ( value && this.max && (value > this.max) ){
-            value = this.max;
-          }
-          if (
-            this.disableDates &&
-            (bbn.fn.isFunction(this.disableDates) && this.disableDates(value)) ||
-            (bbn.fn.isArray(this.disableDates) && this.disableDates.includes(value))
-          ){
-            this.setValue(false);
-          }
-          else {
-            this.setValue(value);
-            this.$nextTick(() => {
-              this.$emit('change', event);
-            });
-          }
-        }, 100);
+      inputChanged(){
+        let newVal = this.$refs.element.inputValue,
+            value = !!newVal ? moment(newVal, this.currentFormat).format(this.getValueFormat(newVal)) : '';
+        if ( value && this.min && (value < this.min) ){
+          value = this.min;
+        }
+        if ( value && this.max && (value > this.max) ){
+          value = this.max;
+        }
+        if (
+          this.disableDates &&
+          (bbn.fn.isFunction(this.disableDates) && this.disableDates(value)) ||
+          (bbn.fn.isArray(this.disableDates) && this.disableDates.includes(value))
+        ){
+          this.setValue(false);
+        }
+        else {
+          this.setValue(value);
+          this.$nextTick(() => {
+            this.$emit('change', event);
+          });
+        }
       }
     },
     /**
@@ -285,7 +294,7 @@
        * @fires updateCalendar
        */
       min(){
-        this.setValue(this.value);
+        this.setValue(this.value.toString());
         this.updateCalendar();
       },
       /**
@@ -294,7 +303,7 @@
        * @fires updateCalendar
        */
       max(){
-        this.setValue(this.value);
+        this.setValue(this.value.toString());
         this.updateCalendar();
       },
       /**
@@ -302,7 +311,28 @@
        * @fires setValue
        */
       valueFormat(){
-        this.setValue(this.value);
+        this.setValue(this.value.toString());
+      },
+      /**
+       * @watch maskedMounted
+       * @fires getValueFormat
+       */
+      maskedMounted(newVal){
+        if ( newVal ){
+          this.inputValue = this.$refs.element.raw(moment(this.value.toString(), this.getValueFormat(this.value.toString())).format(this.currentFormat)); 
+        }
+      },
+      /** 
+       * @watch value
+       * @fires getValueFormat
+       * @fires updateCalendar
+      */
+      value(newVal){
+        let mom = moment(newVal.toString(), this.getValueFormat(newVal.toString()));
+        this.inputValue = newVal && this.$refs.element && mom.isValid() ? 
+          this.$refs.element.raw(mom.format(this.currentFormat)) : 
+          ''; 
+        this.updateCalendar();
       }
     }
   });

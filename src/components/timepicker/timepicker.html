@@ -1,18 +1,12 @@
 <span :class="[componentClass, 'bbn-textbox']">
-  <bbn-masked :value="inputValue"
+  <bbn-masked v-model="inputValue"
               ref="element"
               :disabled="disabled"
               :readonly="readonly"
               :required="required"
-              @click="click($event)"
-              @focus="focus($event)"
-              @blur="blur($event)"
-              @change="change($event)"
-              @keydown="keydown($event)"
-              @keyup="keyup($event)"
-              @mouseenter="over($event)"
-              @mouseleave="out($event)"      
               :mask="currentMask"
+              @mounted="maskedMounted = true"
+              @blur="inputChanged"
   ></bbn-masked>
   <bbn-button icon="nf nf-fa-clock_o"
               @click="isOpened = !isOpened"
@@ -31,7 +25,7 @@
                 @change="setValue"
     >
       <div v-if="comp.scrollMode"
-           style="right: 18px; bottom: 18px; width: auto; height: auto"
+           style="width: auto; height: auto"
            class="bbn-overlay"
       >
         <bbn-splitter orientation="horizontal">

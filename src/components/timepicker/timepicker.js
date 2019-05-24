@@ -83,7 +83,19 @@
          *
          * @data {Boolean} [false] isOpened
         */
-        isOpened: false
+        isOpened: false,
+        /** 
+         * Indicates if the bbn-masked is mounted.
+         * 
+         * @data {Boolean} [false] maskedMounted
+        */
+        maskedMounted: false,
+        /** 
+         * The current value shown on the input.
+         * 
+         * @data {String} [''] inputValue
+        */
+        inputValue: ''
       }
     },
     computed: {
@@ -113,19 +125,6 @@
        */
       currentFormat(){
         return this.format || (this.showSecond ? 'HH:mm:ss' : 'HH:mm');
-      },
-      /**
-       * The current value shown on the input.
-       *
-       * @computed inputValue
-       * @fires getValueFormat
-       * @return {String}
-       */
-      inputValue(){
-        if ( this.value ){
-          return moment(this.value, this.getValueFormat(this.value)).format(this.currentFormat);
-        }
-        return '';
       }
     },
     methods: {
@@ -161,7 +160,7 @@
         }
         this.emitInput(value);
         if ( !value ){
-          this.$refs.element.widget.value('');
+          this.inputValue = '';
         }
       },
       /**
@@ -173,21 +172,19 @@
        * @fires setValue
        * @emits change
       */
-      change(event){
-        setTimeout(() => {
-          let maskValue = this.$refs.element.widget.value(),
-              value = !!maskValue ? moment(maskValue, this.currentFormat).format(this.getValueFormat(maskValue)) : '';
-          if ( value && this.min && (value < this.min) ){
-            value = this.min;
-          }
-          if ( value && this.max && (value > this.max) ){
-            value = this.max;
-          }
-          this.setValue(value);
-          this.$nextTick(() => {
-            this.$emit('change', event);
-          });
-        }, 100);
+      inputChanged(){
+        let newVal = this.$refs.element.inputValue,
+            value = !!newVal ? moment(newVal, this.currentFormat).format(this.getValueFormat(newVal)) : '';
+        if ( value && this.min && (value < this.min) ){
+          value = this.min;
+        }
+        if ( value && this.max && (value > this.max) ){
+          value = this.max;
+        }
+        this.setValue(value);
+        this.$nextTick(() => {
+          this.$emit('change', event);
+        });
       }
     },
     /**
@@ -206,21 +203,41 @@
        * @fires setValue
        */
       min(){
-        this.setValue(this.value);
+        this.setValue(this.value.toString());
       },
       /**
        * @watch max
        * @fires setValue
        */
       max(){
-        this.setValue(this.value);
+        this.setValue(this.value.toString());
       },
       /**
        * @watch valueFormat
        * @fires setValue
        */
       valueFormat(){
-        this.setValue(this.value);
+        this.setValue(this.value.toString());
+      },
+      /**
+       * @watch maskedMounted
+       * @fires getValueFormat
+       */
+      maskedMounted(newVal){
+        if ( newVal ){
+          this.inputValue = this.$refs.element.raw(moment(this.value.toString(), this.getValueFormat(this.value.toString())).format(this.currentFormat)); 
+        }
+      },
+      /** 
+       * @watch value
+       * @fires getValueFormat
+       * @fires updateCalendar
+      */
+      value(newVal){
+        let mom = moment(newVal.toString(), this.getValueFormat(newVal.toString()));
+        this.inputValue = newVal && this.$refs.element && mom.isValid() ? 
+          this.$refs.element.raw(mom.format(this.currentFormat)) : 
+          '';
       }
     },
     components: {

@@ -1,15 +1,27 @@
-<span :class="componentClass">
+<span :class="[componentClass, 'bbn-textbox']">
   <input ref="element"
          :disabled="disabled"
          :required="required"
-         @keyup="emitInput(widget.raw())"
-         @blur="blur"
+         @click="click"
+         @focus="focusEvent"
+         @blur="blurEvent"
          @change="change"
+         @keydown="keydownEvent"
+         @keyup="keyupEvent"
+         @mouseenter="over"
+         @mouseleave="out"
+         :value="inputValue"
+         @input="inputEvent"
+         @paste="pasteEvent"
+         @cut="cutEvent"
   >
   <input :value="value"
          ref="real_masked"
          :name="name"
          :disabled="disabled"
          type="hidden"
+         :size="size"
+         :maxlength="maxlength"
+         :required="required"
   >
 </span>
