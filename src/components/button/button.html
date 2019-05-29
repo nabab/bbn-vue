@@ -1,6 +1,6 @@
 <button :class="[{'bbn-button-icon-only': notext}, componentClass]"
         ref="element"
-        @click.prevent.stop="click($event)"
+        @click.stop="click($event)"
         @focus="focus($event)"
         @blur="blur($event)"
         @keydown.stop="keydown($event)"

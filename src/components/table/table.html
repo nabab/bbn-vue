@@ -17,7 +17,7 @@
                       class="bbn-hsmargin"
                       :key="i"
                       v-bind="button"
-                      @click="_execCommand(button, i)"
+                      @click.prevent.stop="_execCommand(button, i)"
           ></bbn-button>
         </div>
       </div>

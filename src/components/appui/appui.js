@@ -355,7 +355,7 @@
       }
     },
     beforeCreate(){
-      bbn.vue.preloadBBN(['tabnav', 'button', 'table', 'popup', 'autocomplete', 'chat', 'combo', 'context', 'treemenu', 'tree', 'loadicon', 'scroll', 'scroll-x', 'scroll-y', 'input', 'numeric', 'dropdown', 'loader', 'initial', 'chart', 'radio', 'checkbox', 'fisheye']);
+      bbn.vue.preloadBBN(['tabnav', 'button', 'table', 'popup', 'autocomplete', 'chat', 'combo', 'context', 'treemenu', 'tree', 'loadicon', 'scroll', 'scroll-x', 'scroll-y', 'input', 'numeric', 'dropdown', 'loader', 'initial', 'chart', 'radio', 'checkbox', 'fisheye', 'window']);
     },
     created(){
       if ( window.appui ){

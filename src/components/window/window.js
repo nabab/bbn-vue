@@ -61,6 +61,12 @@
       footer: {
         type: [Function, String, Object]
       },
+      buttons: {
+        type: Array,
+        default(){
+          return [];
+        }
+      },
       beforeClose: {
         type: Function
       },
@@ -87,6 +93,9 @@
         type: String
       },
       content: {
+        type: String
+      },
+      mode: {
         type: String
       }
     },
@@ -165,7 +174,12 @@
         let ok = true;
         if ( !force ){
           let beforeCloseEvent = new Event('beforeClose', {cancelable: true});
-          this.popup.$emit('beforeClose', beforeCloseEvent, this);
+          if ( this.popup ){
+            this.popup.$emit('beforeClose', beforeCloseEvent, this);
+          }
+          else{
+            this.$emit('beforeClose', beforeCloseEvent, this);
+          }
           if ( beforeCloseEvent.defaultPrevented ){
             return;
           }

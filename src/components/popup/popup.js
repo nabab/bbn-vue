@@ -252,46 +252,43 @@
         return bbn.fn.search(this.items, {uid: uid});
       },
 
-      alert(o){
-        if ( typeof(arguments[0]) !== 'object' ){
-          let options = {},
-              has_msg = false,
-              has_title = false,
-              has_width = false,
-              has_callback = false,
-              i;
-          o = {};
-          for ( i = 0; i < arguments.length; i++ ){
-            if ( !has_msg && (typeof(arguments[i]) === 'string') ){
-              o.content = arguments[i];
-              has_msg = 1;
+      alert(){
+        let has_msg = false,
+            has_title = false,
+            has_width = false,
+            has_callback = false,
+            okText,
+            onOpen,
+            onClose,
+            i,
+            o = {};
+        for ( i = 0; i < arguments.length; i++ ){
+          if ( !has_msg && (typeof(arguments[i]) === 'string') ){
+            o.content = arguments[i];
+            has_msg = 1;
+          }
+          else if ( bbn.fn.isDimension(arguments[i]) || (arguments[i] === 'auto') ){
+            if ( has_width ){
+              o.height = arguments[i];
             }
-            else if ( bbn.fn.isDimension(arguments[i]) || (arguments[i] === 'auto') ){
-              if ( has_width ){
-                o.height = arguments[i];
-              }
-              else{
-                o.width = arguments[i];
-                has_width = 1;
-              }
+            else{
+              o.width = arguments[i];
+              has_width = 1;
             }
-            else if ( !has_title && (typeof arguments[i] === 'string') ){
-              o.title = arguments[i];
+          }
+          else if ( !has_title && (typeof arguments[i] === 'string') ){
+            o.title = arguments[i];
+          }
+          else if ( typeof arguments[i] === 'string' ){
+            okText = arguments[i];
+          }
+          else if (bbn.fn.isFunction(arguments[i]) ){
+            if ( has_callback ){
+              onClose = arguments[i];
             }
-            else if ( typeof arguments[i] === 'string' ){
-              o.okText = arguments[i];
-            }
-            else if (bbn.fn.isFunction(arguments[i]) ){
-              if ( has_callback ){
-                o.close = arguments[i];
-              }
-              else{
-                o.open = arguments[i];
-                has_callback = 1;
-              }
-            }
-            else if ( typeof arguments[i] === 'object' ){
-              o.options = arguments[i];
+            else{
+              onOpen = arguments[i];
+              has_callback = 1;
             }
           }
         }
@@ -302,42 +299,32 @@
           if ( !o.title ){
             o.title = this.alertTitle;
           }
-          if ( !o.okText ){
-            o.okText = this.okText;
+          if ( !okText ){
+            okText = this.okText;
           }
           o.content = '<div class="bbn-lpadded bbn-large bbn-c" style="min-width: 30em">' + o.content + '</div>';
-          o.footer = {
-            template: `
-      <div class="bbn-button-group bbn-flex-width">
-        <bbn-button @click="click()"
-                    icon="nf nf-fa-check_circle"
-                    text="` + this.okText + `"
-                    class="bbn-flex-fill bbn-primary"
-                    tabindex="0"
-                    ref="click"
-        ></bbn-button>
-      </div>
-`,
-            data(){
-              return {
-                window: false
+          o.buttons = [{
+            text: okText,
+            cls: 'bbn-primary',
+            icon: 'nf nf-fa-check_circle',
+            command($ev, btn){
+              if ( onClose ){
+                onClose($ev, btn);
               }
-            },
-            methods: {
-              click(){
-                this.window.close(true);
-              },
-            },
-            mounted(){
-              this.window = bbn.vue.closest(this, 'bbn-window');
-              setTimeout(() => {
-                let ele = this.getRef('click');
-                if ( ele ){
-                  ele.$el.focus();
-                }
-              }, 50)
+              btn.closest('bbn-window').close();
             }
-          };
+          }];
+          /*
+          mounted(){
+            this.window = bbn.vue.closest(this, 'bbn-window');
+            setTimeout(() => {
+              let ele = this.getRef('click');
+              if ( ele ){
+                ele.$el.focus();
+              }
+            }, 50)
+          }
+          */
           this.open(bbn.fn.extend(o, {
             maximizable: false,
             closable: false,
@@ -348,117 +335,83 @@
         }
       },
 
-      confirm(o){
+      confirm(){
         let onYes = false,
-            onNo = false;
-        if ( typeof(o) !== 'object' ){
-          o = {title: false};
-          let options = {},
-              has_msg = false,
-              has_yes = false,
-              has_width = false,
-              i;
-          for ( i = 0; i < arguments.length; i++ ){
-            if ( !has_msg && (typeof(arguments[i]) === 'string') ){
-              o.content = arguments[i];
-              has_msg = 1;
+            onNo = false,
+            yesText = bbn._('Yes'),
+            noText = bbn._('No'),
+            o = {},
+            options = {},
+            has_msg = false,
+            has_yes = false,
+            has_width = false,
+            i;
+        for ( i = 0; i < arguments.length; i++ ){
+          if ( !has_msg && (typeof(arguments[i]) === 'string') ){
+            o.content = arguments[i];
+            has_msg = 1;
+          }
+          else if ( bbn.fn.isDimension(arguments[i]) || (arguments[i] === 'auto') ){
+            if ( has_width ){
+              o.height = arguments[i];
             }
-            else if ( bbn.fn.isDimension(arguments[i]) || (arguments[i] === 'auto') ){
-              if ( has_width ){
-                o.height = arguments[i];
-              }
-              else{
-                o.width = arguments[i];
-                has_width = 1;
-              }
+            else{
+              o.width = arguments[i];
+              has_width = 1;
             }
-            else if ( (typeof arguments[i] === 'string') ){
-              if ( !has_yes ){
-                o.yesText = arguments[i];
-                has_yes = true;
-              }
-              else{
-                o.noText = arguments[i];
-              }
+          }
+          else if ( (typeof arguments[i] === 'string') ){
+            if ( !has_yes ){
+              yesText = arguments[i];
+              has_yes = true;
             }
-            else if (bbn.fn.isFunction(arguments[i]) ){
-              if ( onYes ){
-                onNo = arguments[i];
-              }
-              else{
-                onYes = arguments[i];
-              }
+            else{
+              noText = arguments[i];
             }
-            else if ( typeof(arguments[i]) === 'object' ){
-              options = arguments[i];
+          }
+          else if (bbn.fn.isFunction(arguments[i]) ){
+            if ( onYes ){
+              onNo = arguments[i];
             }
+            else{
+              onYes = arguments[i];
+            }
+          }
+          else if ( typeof(arguments[i]) === 'object' ){
+            options = arguments[i];
           }
         }
         bbn.fn.log(arguments, "CONFIRM", o);
-        if ( typeof(o) === 'object' ){
+        if ( (typeof(o) === 'object') && onYes ){
           if ( !o.content ){
             o.content = this.confirmMessage;
           }
           if ( !o.title ){
             o.title = this.confirmTitle;
           }
-          if ( !o.yesText ){
-            o.yesText = this.yesText;
-          }
-          if ( !o.noText ){
-            o.noText = this.noText;
-          }
           o.content = '<div class="bbn-lpadded bbn-medium">' + o.content + '</div>';
-          o.footer = {
-            template: `
-      <div class="bbn-button-group bbn-flex-width">
-        <bbn-button @click="yes()"
-                    icon="nf nf-fa-check_circle"
-                    text="` + o.yesText + `"
-                    class="bbn-flex-fill bbn-primary"
-                    tabindex="0"
-                    ref="yes"
-        ></bbn-button>
-        <bbn-button @click="no()"
-                    icon="nf nf-fa-times_circle"
-                    text="` + o.noText + `"
-                    class="bbn-flex-fill"
-                    tabindex="0"
-                    ref="no"
-        ></bbn-button>
-      </div>
-`,
-            data(){
-              return {
-                window: false
-              }
-            },
-            methods: {
-              yes(){
-                bbn.fn.log(this.window);
-                this.window.close(true);
-                if ( onYes ){
-                  onYes();
-                }
-              },
-              no(){
-                this.window.close(true);
-                if ( onNo ){
-                  onNo();
-                }
-              },
-            },
-            mounted(){
-              this.window = bbn.vue.closest(this, 'bbn-window');
-              setTimeout(() => {
-                this.$refs.no.$el.focus();
-              }, 50)
+          o.buttons = [{
+            text: yesText,
+            cls: 'bbn-primary',
+            icon: 'nf nf-fa-check_circle',
+            command($ev, btn){
+              onYes($ev, btn);
+              btn.closest('bbn-window').close();
             }
-          };
+          }, {
+            text: noText,
+            icon: 'nf nf-fa-times_circle',
+            command($ev, btn){
+              if ( onNo ){
+                onNo($ev, btn);
+              }
+              btn.closest('bbn-window').close();
+            }
+          }];
           this.open(bbn.fn.extend(o, {
             resizable: false,
             maximizable: false,
-            closable: true
+            closable: false
           }));
         }
       },
@@ -474,11 +427,14 @@
           }
           if ( this.popups[idx] ){
             //return bbn.vue.getChildByKey(this.$children[0], this.popups[idx].uid);
-            return bbn.vue.getChildByKey(this, this.popups[idx].uid);
+            return bbn.vue.getChildByKey(this, idx);
           }
         }
         return false;
       }
+    },
+    beforeCreate(){
+      bbn.vue.preloadBBN(['window']);
     },
     mounted(){
       bbn.fn.each(this.popups, a => this.open(a))

@@ -216,6 +216,23 @@
         type: String
       },
       /**
+       * The footer of the floater
+       * @psop {String} footer
+       */
+      footer: {
+        type: String
+      },
+      /**
+       * The buttons in the footer
+       * @psop {Array} buttons
+       */
+      buttons: {
+        type: Array,
+        default(){
+          return [];
+        }
+      },
+      /**
        * Set to true shows the icon that allows to close the floater
        * @prop {Boolean} [false] closable
        */
@@ -228,6 +245,14 @@
        * @prop {Boolean} [false] maximizable
        */
       maximizable: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * If set to true opens and closes with opacity aimation
+       * @prop {Boolean} [false] maximizable
+       */
+      animation: {
         type: Boolean,
         default: false
       }
@@ -301,7 +326,11 @@
         /**
          * @data {Boolean} [false] isMaximized
          */
-        isMaximized: false
+        isMaximized: false,
+        scrollMaxHeight: 0,
+        scrollMinWidth: 0,
+        currentButtons: this.buttons.slice(),
+        mountedComponents: []
       };
     },
     computed: {
@@ -311,10 +340,13 @@
        * @return {String}
        */
       formattedWidth(){
+        if ( this.isMaximized ){
+          return '100%';
+        }
         if ( this.width ){
           return this.width + (bbn.fn.isNumber(this.width) ? 'px' : '')
         }
-        return this.currentWidth ? this.currentWidth + 'px' : 'auto';
+        return this.currentWidth ? this.currentWidth + 'px' : '100%';
       },
       /**
        * Processes the prop height to define the correct misure unite
@@ -322,10 +354,33 @@
        * @return {String}
        */
       formattedHeight(){
+        if ( this.isMaximized ){
+          return '100%';
+        }
         if ( this.height ){
           return this.height + (bbn.fn.isNumber(this.height) ? 'px' : '')
         }
-        return this.currentHeight ? this.currentHeight + 'px' : 'auto';
+        return this.currentHeight ? this.currentHeight + 'px' : '100%';
+      },
+      currentStyle(){
+        let s = {
+          left: this.isMaximized ? 0 : this.currentLeft,
+          top: this.isMaximized ? 0 : this.currentTop,
+          width: this.isMaximized ? '100%' : (this.width ? this.formattedWidth : 'auto'),
+          height: this.formattedHeight,
+          opacity: this.opacity,
+          overflow: 'hidden'
+        };
+        if ( this.animation ){
+          s.transition = 'opacity 0.3s ease-in-out';
+        }
+        if ( this.maxWidth ){
+          s.maxWidth = this.maxWidth + (bbn.fn.isNumber(this.maxWidth) ? 'px' : '')
+        }
+        if ( this.maxHeight ){
+          s.maxHeight = this.maxHeight + (bbn.fn.isNumber(this.maxHeight) ? 'px' : '')
+        }
+        return s;
       }
     },
     methods: {
@@ -338,6 +393,7 @@
         if ( this.element ){
           let coor = this.element.getBoundingClientRect(),
               isHorizontal = this.orientation === 'horizontal';
+          /*
           if ( !this._scroller ){
             let scroll = bbn.fn.getScrollParent(this.$el);
             if ( scroll ){
@@ -345,6 +401,7 @@
               this._scroller.addEventListener('scroll', this.onResize);
             }
           }
+          */
           return {
             top: isHorizontal ? coor.top : coor.bottom,
             bottom: this.containerHeight - (isHorizontal ? coor.bottom : coor.top),
@@ -402,7 +459,7 @@
        * @return {Number}
        */
       getContainerHeight(){
-        return this.getContainerPosition().height;
+        return this.containerHeight || 'auto';
       },
        /**
        * Defines the width of the container
@@ -410,7 +467,7 @@
        * @return {Number}
        */
       getContainerWidth(){
-        return this.getContainerPosition().width;
+        return this.containerWidth || 'auto';
       },
       /**
        * Shows the floater
@@ -426,6 +483,28 @@
       hide(){
         this.currentVisible = false;
       },
+      updateComponents(){
+        bbn.fn.each(this.getComponents(), (a) => {
+          if ( a.$vnode.componentOptions && a.$vnode.componentOptions.tag ){
+            if ( this.mountedComponents.indexOf(a.$vnode.componentOptions.tag) === -1 ){
+              this.mountedComponents.push(a.$vnode.componentOptions.tag);
+            }
+          }
+        })
+      },
+      scrollResize(){
+        if ( !this.getRef('scroll').ready ){
+          this.onResize();
+          this.updateComponents();
+        }
+        else{
+          let nb = this.mountedComponents.length;
+          this.updateComponents();
+          if ( nb !== this.mountedComponents.length ){
+            this.onResize();
+          }
+        }
+      },
       /**
        * Handles the resize of the component
        * @method onResize
@@ -433,22 +512,76 @@
        * @fires _getCoordinates
        */
       onResize(){
-        if ( this.currentVisible ){
+        if ( this.currentVisible && this.isMounted ){
             // Resetting
+          bbn.fn.log("FLOATER RESIZE " + this._uid);
           this.currentHeight = this.height || null;
           this.currentWidth = this.width || null;
           this.currentScroll = false;
+
           this.$forceUpdate();
-          return this.$nextTick(() => {
-            // These are the limits of the space the DIV can occupy
+          let scroll = this.getRef('scroll');
+          if ( !scroll || (!scroll.naturalHeight && !this.height) || (!scroll.naturalWidth && !this.width) ){
+            return new Promise((resolve, reject) => {
+              setTimeout(() => {
+                resolve();
+              }, 1);
+            });
+          }
+          return new Promise((resolve, reject) => {
             let pos = this.getContainerPosition();
+            // These are the limits of the space the DIV can occupy
             let ctHeight = pos.height;
             let ctWidth = pos.width;
             let ctTop = pos.top;
             let ctLeft = pos.left;
-            // The natural container size
-            this.floaterWidth = this.$el.offsetWidth;
-            this.floaterHeight = this.$el.offsetHeight;
+            let scrollMaxHeight = ctHeight;
+            let scrollMinWidth = 0;
+            let outHeight = 0;
+            if ( this.title ){
+              let header = this.getRef('header');
+              if ( header ){
+                scrollMaxHeight -= header.clientHeight;
+                scrollMinWidth += header.clientWidth;
+                outHeight += header.clientHeight;
+                bbn.fn.log("HEADER", outHeight);
+              }
+            }
+            if ( this.footer ){
+              let footer = this.getRef('footer');
+              if ( footer ){
+                scrollMaxHeight -= footer.clientHeight;
+                outHeight += footer.clientHeight;
+                if ( footer.clientWidth > scrollMinWidth ){
+                  scrollMinWidth = footer.clientWidth;
+                }
+              }
+            }
+            if ( this.buttons ){
+              let footer = this.getRef('buttons');
+              if ( footer ){
+                outHeight += footer.clientHeight;
+                bbn.fn.log("BUTTONS", outHeight);
+                scrollMaxHeight -= footer.clientHeight;
+              }
+            }
+            this.scrollMaxHeight = scrollMaxHeight;
+            this.scrollMinWidth = scrollMinWidth;
+            let p;
+            if ( this.width ){
+              this.floaterWidth = this.$el.clientWidth;
+            }
+            else{
+              // The natural container size
+              this.floaterWidth = scroll.naturalWidth;
+            }
+            if ( this.height ){
+              this.floaterHeight = this.$el.clientHeight;
+            }
+            else{
+              // The natural container size
+              this.floaterHeight = scroll.naturalHeight + outHeight;
+            }
             bbn.fn.log(this.$el);
             bbn.fn.log("FLOATER: W -> " + this.floaterWidth + " / H -> " + this.floaterHeight);
             // The coordinates of the target position
@@ -459,7 +592,7 @@
               let scrollH = false;
               // HEIGHT
               let top = null;
-              // Natural height
+              // Natural or defined height
               let height = this.floaterHeight;
               if ( this.minHeight && (this.minHeight > height) ){
                 height = this.minHeight;
@@ -526,7 +659,7 @@
 
               // WIDTH
               let left = null;
-              // Natural width
+              // Natural or defined width
               let width = this.floaterWidth;
               if ( this.minWidth && (this.minWidth > width) ){
                 width = this.minWidth;
@@ -591,7 +724,7 @@
                   left = ctWidth - coor.right - width + ctLeft;
                 }
               }
-              if ( height > 30 ){
+              if ( height ){
                 this.currentLeft = left + 'px';
                 this.currentTop = top + 'px';
                 this.currentHeight = height;
@@ -658,8 +791,34 @@
        * @method close
        * @param {Event} e 
        */
-      close(e){
-        this.hide();
+      close(force){
+        let ok = true;
+        if ( !force ){
+          let beforeCloseEvent = new Event('beforeClose', {cancelable: true});
+          if ( this.popup ){
+            this.popup.$emit('beforeClose', beforeCloseEvent, this);
+          }
+          else{
+            this.$emit('beforeClose', beforeCloseEvent, this);
+          }
+          if ( beforeCloseEvent.defaultPrevented ){
+            return;
+          }
+          if ( this.beforeClose && (this.beforeClose(this) === false) ){
+            return;
+          }
+          bbn.fn.each(this.closingFunctions, (a) => {
+            a(this, beforeCloseEvent);
+          });
+        }
+        let closeEvent = new Event('close', {cancelable: true});
+        this.$el.style.display = 'block';
+        this.$nextTick(() => {
+          this.$emit("close", this, closeEvent);
+          if ( this.afterClose ){
+            this.afterClose(this);
+          }
+        })
       },
       /**
        * Close all levels 
@@ -670,7 +829,10 @@
         if ( this.level ){
           let ancesters = this.ancesters('bbn-floater');
           for ( let i = this.level; i >= 0; i-- ){
-            ancesters[i].currentVisible = false;
+            if ( ancesters[i] ){
+              bbn.fn.log(ancesters, i, ancesters[i]);
+              ancesters[i].currentVisible = false;
+            }
           }
         }
       },
@@ -774,6 +936,9 @@
         this.$emit(newVal ? 'open' : 'close');
         if ( newVal ){
           this.onResize();
+        }
+        else{
+          this.opacity = 0;
         }
       }
     }

@@ -122,6 +122,12 @@
         this.isMounted = true;
         this.$emit('mounted', this);
       },
+      destroy(){
+        if ( this.isMounted ){
+          this.isMounted = false;
+        }
+        this.$emit('destroyed', this);
+      },
       watch: {
         /**
          * Emits the event ready

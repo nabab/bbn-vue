@@ -52,15 +52,6 @@
        */
       fields: {},
       /**
-       * Set to true to enable full screen mode.
-       *
-       * @prop {Boolean} [false] fullScreen
-       */
-      fullScreen: {
-        type: Boolean,
-        default: false
-      },
-      /**
        * Set to true to make a post_out instead of a post when the form is submitted.
        *
        * @prop {Boolean} [false] blank
@@ -150,15 +141,15 @@
        */
       scrollable: {
         type: Boolean,
-        default: true
+        default: false
       },
       /**
        * The buttons shown on the form.
        *
-       * @prop {Array} ['cancel', 'submit'] buttons
+       * @prop {Boolean|Array} ['cancel', 'submit'] buttons
        */
       buttons: {
-        type: Array,
+        type: [Boolean, Array],
         default(){
           return ['cancel', 'submit'];
         }
@@ -191,7 +182,7 @@
        */
       fixedFooter: {
         type: Boolean,
-        default: true
+        default: false
       },
       /**
        * The form schema generating the inputs.
@@ -223,6 +214,16 @@
        */
       validation: {
         type: Function
+      },
+      /**
+       * If true will consider itself as unique element of a floater and will have its buttons incorporated in it 
+       * whereas if undefined will 
+       *
+       * @prop {Boolean|String} windowed
+       */
+      windowed: {
+        type: [Boolean, String],
+        default: 'auto'
       }
     },
     data(){
@@ -230,7 +231,12 @@
       this.schema.map((a) => {
         currentSchema.push(bbn.fn.extend({}, a, {id: a.id ? a.id : bbn.fn.randomString(20, 30)}))
       });
+      let isWindowed = this.windowed;
+      if ( isWindowed === 'auto' ){
+        isWindowed = this.closest('bbn-floater');
+      }
       return {
+        isWindowed: !!isWindowed,
         modified: false,
         popup: false,
         popupIndex: false,
@@ -238,7 +244,8 @@
         originalData: bbn.fn.clone(this.source),
         isPosted: false,
         isLoading: false,
-        currentSchema: currentSchema
+        currentSchema: currentSchema,
+        isPosting: false
       };
     },
     computed: {
@@ -250,42 +257,50 @@
        */
       realButtons(){
         let r = [];
-        bbn.fn.each(this.buttons.slice(), (a) => {
-          let t = typeof(a);
-          if ( t === 'string' ){
-            switch ( a ){
-              case 'cancel':
-                r.push({
-                  text: bbn._('Cancel'),
-                  icon: 'nf nf-fa-times_circle',
-                  command: 'cancel'
-                });
-                break;
-              case 'reset':
-                r.push({
-                  text: bbn._('Reset'),
-                  icon: 'nf nf-fa-refresh',
-                  command: 'reset',
-                  checkDisabled: true
-                });
-                break;
-              case 'submit':
-                r.push({
-                  text: bbn._('Submit'),
-                  icon: 'nf nf-fa-check_circle',
-                  command: 'submit',
-                  checkDisabled: true
-                });
-                break;
+        if ( this.buttons ){
+          bbn.fn.each(this.buttons.slice(), (a) => {
+            let t = typeof(a);
+            if ( t === 'string' ){
+              switch ( a ){
+                case 'cancel':
+                  r.push({
+                    text: bbn._('Cancel'),
+                    icon: 'nf nf-fa-times_circle',
+                    command: () => {
+                      this.cancel();
+                    }
+                  });
+                  break;
+                case 'reset':
+                  r.push({
+                    text: bbn._('Reset'),
+                    icon: 'nf nf-fa-refresh',
+                    command: () => {
+                      this.reset();
+                    },
+                    disabled: !this.modified && !this.prefilled
+                  });
+                  break;
+                case 'submit':
+                  r.push({
+                    text: bbn._('Submit'),
+                    icon: 'nf nf-fa-check_circle',
+                    command: () => {
+                      this.submit();
+                    },
+                    disabled: !this.canSubmit
+                  });
+                  break;
+              }
             }
-          }
-          else if ( t === 'object' ){
-            if ( (typeof a.command === 'string') && bbn.fn.isFunction(this[a.command]) ){
-              a.command = this[a.command];
+            else if ( t === 'object' ){
+              if ( (typeof a.command === 'string') && bbn.fn.isFunction(this[a.command]) ){
+                a.command = this[a.command];
+              }
+              r.push(a);
             }
-            r.push(a);
-          }
-        });
+          });
+        }
         return r;
       },
       /**
@@ -298,6 +313,15 @@
         return this.$slots.footer && this.$slots.footer.length;
       },
       /**
+       * Returns true if the form can be submitted.
+       *
+       * @computed canSubmit
+       * @return {Boolean}
+       */
+      canSubmit(){
+        return this.action && (this.isModified() || this.prefilled);
+      },
+      /**
        * Based on the prop fixedFooter and fullScreen, a string is returned containing the classes for the form template.
        *
        * @computed currentClass
@@ -306,10 +330,11 @@
       currentClass(){
         let st = this.componentClass.join(' ');
         if ( this.isMounted ){
-          if ( this.fixedFooter && this.scrollable ){
+          if ( !this.isWindowed && (this.hasFooter || this.realButtons.length || this.footer) && this.scrollable ){
+            bbn.fn.log("IS NOT WINDOWED");
             st += ' bbn-flex-height';
           }
-          if ( this.fullScreen ){
+          if ( !this.isWindowed && this.scrollable ){
             st += ' bbn-overlay';
           }
         }
@@ -552,6 +577,15 @@
         return this.$el.reportValidity();
       }
     },
+    beforeMount(){
+      if ( this.isWindowed ){
+        let popup = this.closest('bbn-floater');
+        if ( popup ){
+          this.popup = popup;
+          this.popup.currentButtons = this.realButtons;
+        }
+      }
+    },
     mounted(){
       this.init();
     },
@@ -573,6 +607,12 @@
             this.tab.tabNav.tabs[this.tab.tabNav.selected].isUnsaved = this.modified;
           }
         }
+      },
+      canSubmit(){
+        if ( this.popup ){
+          this.popup.currentButtons = this.realButtons;
+        }
+        bbn.fn.log("canSubmit")
       }
     }
   });

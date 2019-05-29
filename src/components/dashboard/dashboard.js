@@ -321,6 +321,7 @@
           }
           this.menu = [];
           let items = [];
+          let i = 0;
           bbn.fn.each(this.originalSource, (a) => {
             let idx = bbn.fn.search(this.widgets, {uid: a.uid});
             if ( idx > -1 ){
@@ -333,9 +334,11 @@
                 command: () => {
                   if ( this.widgets[idx].closable !== false ){
                     this.toggleWidget(a.uid);
+                    this.$forceUpdate();
                   }
                 }
-              })
+              });
+              i++;
             }
           });
           this.menu.push(tab.addMenu({

@@ -14,6 +14,11 @@
 (($, bbn) => {
   "use strict";
   Vue.component('bbn-colorpicker', {
+    /**
+     * @mixin bbn.vue.basicComponent 
+     * @mixin bbn.vue.inputComponent
+     * @mixin bbn.vue.eventsComponent
+     */
     mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent],
     props: {
       /**
@@ -135,6 +140,7 @@
           allowEmpty: this.buttonEmpty,
           flat: this.panel,
           change(){
+            //cp.$emit('change', this.value);
             cp.emitInput(this.value);
           },
           move(){
@@ -274,6 +280,11 @@
       },
       "$props.disabled"(val){
         this.initComponent();
+      },
+      value(oldVal, newVal){
+        /*if( newVal !== oldVal ){
+          this.$emit('change', newVal)
+        }*/
       }
     }
   });

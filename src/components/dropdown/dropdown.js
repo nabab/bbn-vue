@@ -254,6 +254,9 @@
             this.currentText = row[this.sourceText];
           }
         }
+        if ( !this.currentText && !this.nullable && this.filteredData.length ){
+          this.emitInput(this.filteredData[0][this.sourceValue]);
+        }
         this.onResize();
         this.ready = true;
       });

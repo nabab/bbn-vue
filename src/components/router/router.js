@@ -445,6 +445,9 @@
 
       changeURL(url, title, replace){
         //bbn.fn.log("CHANGE URL TO " + url);
+        if ( !bbn.env.isInit ){
+          return;
+        }
         if ( this.parent ){
           this.parent.changeURL(this.baseURL + url, title, replace);
         }
@@ -723,7 +726,7 @@
             obj.loaded = true;
           }
           obj.events = {};
-          if ( !obj.menu ){
+          if ( obj.menu === undefined ){
             obj.menu = [];
           }
           index = this.search(obj.url);
@@ -974,34 +977,27 @@
 
     watch: {
       currentURL(newVal, oldVal){
-        this.$nextTick(() => {
-          if ( this.activeContainer ){
-            this.changeURL(newVal, this.activeContainer.title);
-          }
-          else if ( this.isLoading ){
-            this.changeURL(newVal, bbn._("Loading"));
-          }
-          let idx = this.search(newVal);
-          if ( idx !== false ){
-            this.selected = idx;
-          }
-          this.$emit('change', newVal);
-        });
-        this.$emit('route', newVal);
+        if ( this.ready ){
+          this.$nextTick(() => {
+            if ( this.activeContainer ){
+              this.changeURL(newVal, this.activeContainer.title);
+            }
+            else if ( this.isLoading ){
+              this.changeURL(newVal, bbn._("Loading"));
+            }
+            let idx = this.search(newVal);
+            if ( idx !== false ){
+              this.selected = idx;
+            }
+            this.$emit('change', newVal);
+          });
+          this.$emit('route', newVal);
+        }
       },
       url(newVal){
         if ( this.ready ){
           //bbn.fn.log("ROUTER change URL", newVal);
           this.route(newVal);
-        }
-      },
-      isUnsaved(val){
-        if ( this.parentTab &&
-          this.parentTab.tabNav &&
-          this.parentTab.tabNav.views &&
-          this.parentTab.tabNav.views[this.parentTab.tabNav.selected]
-        ){
-          this.parentTab.tabNav.views[this.parentTab.tabNav.selected].isUnsaved = val;
         }
       }
     }

@@ -4,11 +4,10 @@
       :autocomplete="autocomplete"
       :class="currentClass"
       :style="currentStyle"
-      @submit.prevent="submit"
-      @keydown.enter.prevent.stop="submit()"
+      @submit.prevent="() => {}"
+      @keydown.enter.prevent.stop="submit"
 >
-  <div v-if="fixedFooter"
-       :class="['bbn-w-100', {'bbn-flex-fill': scrollable}]"
+  <div :class="['bbn-w-100', {'bbn-flex-fill': scrollable}]"
   >
     <component :is="scrollable ? 'bbn-scroll' : 'div'"
                ref="container">
@@ -41,42 +40,15 @@
       <slot></slot>
     </component>
   </div>
-  <slot v-else></slot>
-  <div v-if="hasFooter"
+  <div v-if="hasFooter && !popup"
        class="footer bbn-header">
     <slot name="footer"></slot>
   </div>
-  <div v-else-if="realButtons.length"
+  <div v-else-if="!isWindowed && realButtons.length"
        class="footer bbn-popup-footer bbn-button-group bbn-flex-width bbn-lg">
-    <template v-for="(button, i) in realButtons">
-      <bbn-button v-if="button.command === 'reset'"
-                  :disabled="!modified && !prefilled"
-                  :key="i"
-                  class="bbn-flex-fill"
-                  v-bind="button"
-                  @click="reset()"
-      ></bbn-button>
-      <bbn-button v-else-if="button.command === 'cancel'"
-                  :key="i"
-                  v-bind="button"
-                  class="bbn-flex-fill"
-                  @click="cancel()"
-      ></bbn-button>
-      <bbn-button v-else-if="button.command === 'submit'"
-                  :key="i"
-                  v-bind="button"
-                  :class="['bbn-flex-fill', {'bbn-primary': modified || prefilled}, {'bbn-disabled': !modified || prefilled}]"
-                  :disabled="(!modified && !prefilled) || isLoading"
-                  @click="(modified && !prefilled) || prefilled ? submit(false) : false"
-                  glowing="green"
-      ></bbn-button>
-      <bbn-button v-else
-                  :key="i"
-                  v-bind="button"
-                  class="bbn-flex-fill"
-                  @click="_execCommand(button, $event)"
-                  :disabled="button.checkDisabled && !modified && !prefilled"
-      ></bbn-button>
-    </template>
+    <bbn-button v-for="(button, i) in realButtons"
+                :key="i"
+                v-bind="button">
+    </bbn-button>
   </div>
 </form>

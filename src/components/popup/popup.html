@@ -4,7 +4,7 @@
 >
   <bbn-window v-if="showPopup"
               v-for="(popup, i) in popups"
-              :key="popup.uid"
+              :key="i"
               :ref="popup.uid"
               :index="i"
               v-bind="popup"

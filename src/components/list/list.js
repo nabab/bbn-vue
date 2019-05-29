@@ -278,6 +278,7 @@
         else{
           this.selected = false;
           this.hierarchy.selectedNode = false;
+          this.hierarchy.selected= false;
           return this.hierarchy.$emit('unselect', item, idx, path );
         }
       },

@@ -111,6 +111,9 @@
       glowingColor: {
         type: String,
         default: '#c4a300'
+      },
+      command: {
+        type: Function
       }
     },
     computed: {
@@ -143,12 +146,21 @@
        * @emit click
        */
       click(e){
+        bbn.fn.log("CLICK", this.url, this.command, e.defaultPrevented);
         if ( this.url ){
           bbn.fn.link(this.url);
         }
         else{
-          this.$emit('click', e);
+          this.$emit('click', e, this);
+          if ( !e.defaultPrevented && this.command ){
+            this.command(e, this);
+          }
         }
+      }
+    },
+    watch: {
+      isDisabled(){
+        bbn.fn.log("IS DUISABLED HAS CHANGED");
       }
     }
   });

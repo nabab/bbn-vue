@@ -8,22 +8,16 @@
       ]"
       v-if="currentVisible"
       @mouseleave="blur"
-      :style="{
-        left: currentLeft,
-        top: currentTop,
-        width: formattedWidth,
-        height: formattedHeight,
-        opacity: opacity,
-        transition: 'height 0.3s ease-in-out',
-        overflow: 'hidden'
-      }">
+      :style="currentStyle">
   <header v-if="title"
           ref="header"
           class="bbn-header bbn-bordered-bottom bbn-unselectable">
-    <h3 v-html="title"
-        class="bbn-flex-fill bbn-no-margin bbn-spadded"
-        ref="title">
-    </h3>
+    <div class="bbn-block" style="padding-right: 8em">
+      <h3 v-html="title"
+          class="bbn-flex-fill bbn-no-margin bbn-spadded"
+          ref="title">
+      </h3>
+    </div>
     <div class="bbn-top-right bbn-p bbn-lg">
       <div class="bbn-h-100 bbn-middle bbn-reactive"
           @click.stop.prevent="isMaximized = !isMaximized"
@@ -43,15 +37,16 @@
       </div>
     </div>
   </header>
-  <div :class="{
-    'bbn-w-100': true,
-    'bbn-flex-fill': ready && title,
-    'bbn-h-100': ready && !title
-  }">
+  <div :style="{width: width ? '100%' : formattedWidth}" :class="{
+    'bbn-flex-fill': footer || title || (buttons && buttons.length),
+    'bbn-h-100': !title && !footer && (!buttons || !buttons.length)
+  }"
+        v-if="isMounted">
     <bbn-scroll :max-width="containerWidth"
-                :max-height="containerHeight"
-                @ready="onResize"
-                @resize="onResize">
+                :max-height="scrollMaxHeight"
+                :min-width="scrollMinWidth"
+                ref="scroll"
+                @resize="scrollResize">
       <component v-if="component"
                 :is="component"
                 :source="source"
@@ -93,6 +88,7 @@
           </span>
           <bbn-floater v-if="children && li[children] && (currentSelected === idx) && getRef('li' + idx)"
                       :level="level + 1"
+                      :mode="li.mode || 'free'"
                       :source="li[children]"
                       :element="getRef('li' + idx)"
                       orientation="horizontal">
@@ -102,4 +98,17 @@
       <h3 v-else v-text="noData"></h3>
     </bbn-scroll>
   </div>
+  <footer v-if="footer"
+          v-html="footer"
+          class="bbn-w-100"
+          ref="footer">
+  </footer>
+  <footer v-else-if="currentButtons.length"
+          class="bbn-button-group"
+          ref="buttons">
+    <bbn-button v-for="(b, i) in currentButtons"
+                :key="i"
+                v-bind="b">
+    </bbn-button>
+  </footer>
 </div>

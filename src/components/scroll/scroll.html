@@ -1,27 +1,29 @@
-<div :class="currentClass" :style="currentStyle">
-  <div class="bbn-scroll-container"
-       :style="{
-         right: scrollPos,
-         bottom: scrollPos,
-         'padding-right': containerPadding,
-         'padding-bottom': containerPadding
+<div :class="elementClass"
+     :style="elementStyle">
+  <div :class="{'bbn-scroll-container': true, 'bbn-abs': !isMeasuring}"
+       :style="isMeasuring ? {} : {
+         right: hasScrollX ? scrollPos : 0,
+         bottom: hasScrollY ? scrollPos : 0,
+         'padding-right': hasScrollX ? containerPadding : 0,
+         'padding-bottom': hasScrollY ? containerPadding : 0
        }"
        ref="scrollContainer"
        @scroll.passive="onScroll"
   >
-    <div class="bbn-scroll-content"
+    <div :class="{'bbn-scroll-content': !isMeasuring}"
          ref="scrollContent"
          @mousemove.stop="mousemove"
          @ready.stop="waitReady"
-         :style="{
-           width: (axis === 'both') || (axis === 'x') ? 'auto' : '100%',
-           height: (axis === 'both') || (axis === 'y') ? 'auto' : '100%'
+         @destroyed="init"
+         :style="isMeasuring ? {} : {
+           width: hasScrollX ? 'auto' : '100%',
+           height: hasScrollY ? 'auto' : '100%'
          }"
     >
       <slot></slot>
     </div>
   </div>
-  <bbn-scrollbar v-if="(axis === 'both') || (axis === 'x')"
+  <bbn-scrollbar v-if="hasScrollX"
                  :hidden="hiddenX"
                  orientation="horizontal"
                  ref="xScroller"
@@ -33,7 +35,7 @@
                  @reachRight="$emit($event)"
   >
   </bbn-scrollbar>
-  <bbn-scrollbar v-if="(axis === 'both') || (axis === 'y')"
+  <bbn-scrollbar v-if="hasScrollY"
                  :hidden="hiddenY"
                  orientation="vertical"
                  ref="yScroller"

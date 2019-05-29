@@ -21,6 +21,18 @@
       maxHeight: {
         type: Number
       },
+      minWidth: {
+        type: Number
+      },
+      minHeight: {
+        type: Number
+      },
+      width: {
+        type: Number
+      },
+      height: {
+        type: Number
+      },
       classes: {
         type: String,
         default: ""
@@ -65,8 +77,26 @@
         containerPadding: (bbn.fn.getScrollBarSize() ? bbn.fn.getScrollBarSize() : '0') + 'px',
         hiddenX: (this.hidden === true) || ((this.hidden === 'x')),
         hiddenY: (this.hidden === true) || ((this.hidden === 'y')),
-        currentWidth: null,
-        currentHeight: null
+        currentWidth: this.width || null,
+        currentHeight: this.height || null,
+        naturalWidth: 0,
+        naturalHeight: 0,
+        /**
+         * @data {Boolean} [false] isMeasuring
+         */
+        isMeasuring: false,
+        /**
+         * @data {Boolean} [false] hasScroll
+         */
+        hasScroll: false,
+        /**
+         * @data {Boolean} [false] hasScrollX
+         */
+        hasScrollX: false,
+        /**
+         * @data {Boolean} [false] hasScrollY
+         */
+        hasScrollY: false
       }
     },
     computed: {
@@ -76,7 +106,7 @@
        * @computed currentClass
        * @return {String}
        */
-      currentClass(){
+      elementClass(){
         let st = this.componentClass.join(' ');
         if ( !this.currentWidth ){
           st += ' bbn-overlay';
@@ -86,12 +116,42 @@
         }
         return st;
       },
-      currentStyle(){
+      elementStyle(){
+        let cfg = {
+          maxWidth: '100%',
+          maxHeight: '100%'
+        };
+        /*
         if ( this.currentWidth ){
-          return {
-            width: this.currentWidth + 'px',
-            height: this.currentHeight + 'px'
-          };
+          cfg.width = (this.currentWidth < this.lastKnownWidth ? this.currentWidth : this.lastKnownWidth) + 'px';
+        }
+        if ( this.currentHeight ){
+          cfg.height = (this.currentHeight < this.lastKnownHeight ? this.currentHeight : this.lastKnownHeight) + 'px';
+        }
+        */
+        return cfg;
+      },
+      containerClass(){
+        if ( this.isMeasuring ){
+          return '';
+        }
+        return '';
+      },
+      containerStyle(){
+        if ( this.isMeasuring ){
+          return {};
+        }
+        return {};
+      },
+      contentClass(){
+        if ( this.isMeasuring ){
+          return '';
+        }
+        return '';
+      },
+      contentStyle(){
+        if ( this.isMeasuring ){
+          return {};
         }
         return {};
       }
@@ -102,13 +162,39 @@
           this.$emit('mousemove', e);
         }, 'mousemove', 50);
       },
+      getNaturalDimensions(){
+        this.isMeasuring = true;
+        return new Promise((resolve, reject) => {
+          this.$nextTick().then(() => {
+            let d = {width: this.getRef('scrollContent').clientWidth, height: this.getRef('scrollContent').clientHeight};
+            if ( !d.width || !d.height ){
+              let sc = this.find('bbn-scroll');
+              if ( sc ){
+                sc.getNaturalDimensions().then((d) => {
+                  this.naturalWidth = sc.naturalWidth;
+                  this.naturalHeight = sc.naturalHeight;
+                  this.isMeasuring = false;
+                  resolve(d);
+                })
+              }
+              else{
+                this.isMeasuring = false;
+                resolve(d);
+              }
+            }
+            else{
+              this.naturalWidth = d.width;
+              this.naturalHeight = d.height;
+              this.isMeasuring = false;
+              resolve(d);
+            }
+          })
+        })
+      },
       onScroll(e){
         this.keepCool(() => {
           this.$emit('scroll', e)
         })
-      },
-      testready(){
-        bbn.fn.log("HEY I AM READY", this.$el);
       },
       scrollTo(x, y, animate){
         if ( !y && (typeof x === HTMLElement) ){
@@ -132,24 +218,45 @@
         this.$emit('scrolly', ev, top);
       },
 
-      onResize(){
-        if ( !this.lastKnownWidth || !this.lastKnownHeight ){
-          this.currentWidth = this.getRef('scrollContent').clientWidth;
-          if ( this.maxWidth && (this.currentWidth > this.maxWidth) ){
-            this.currentWidth = this.maxWidth;
-          }
-          this.currentHeight = this.getRef('scrollContent').clientHeight;
-          if ( this.maxHeight && (this.currentHeight > this.maxHeight) ){
-            this.currentHeight = this.maxHeight;
-          }
+      update(){
+
+      },
+
+      onResize(force){
+        if ( !this.ready && this.readyDelay ){
+          return false;
         }
-        return this.$nextTick(() => {
-          if ( this.$refs.xScroller ){
-            this.$refs.xScroller.onResize();
-          }
-          if ( this.$refs.yScroller ){
-            this.$refs.yScroller.onResize();
-          }
+        bbn.fn.log("SCROLL RESIZE " + this._uid);
+        return new Promise((resolve, reject) => {
+          this.getNaturalDimensions().then(() => {
+            bbn.fn.log("NAT", this.naturalWidth, this.naturalHeight);
+            this.$nextTick().then(() => {
+              if ( (this.axis === 'both') || (this.axis === 'x') && (this.$el.clientWidth < this.naturalWidth) ){
+                if ( this.$refs.xScroller ){
+                  this.$refs.xScroller.onResize();
+                }
+                this.hasScrollX = true;
+              }
+              else{
+                this.hasScrollX = false;
+              }
+              if ( (this.axis === 'both') || (this.axis === 'y') && (this.$el.clientHeight < this.naturalHeight) ){
+                if ( this.$refs.yScroller ){
+                  this.$refs.yScroller.onResize();
+                }
+                this.hasScrollY = true;
+              }
+              else{
+                this.hasScrollY = false;
+              }
+              this.hasScroll = this.hasScrollY || this.hasScrollX;
+              this.$emit('resize');
+              if ( !this.ready && !this.readyDelay ){
+                this.ready = true;
+              }
+              resolve();
+            });          
+          });
         });
       },
 
@@ -173,6 +280,9 @@
         if ( y ){
           y.scrollTo('100%');
         }
+      },
+      init(){
+        this.onResize();
       },
 
       scrollStartX(){
@@ -199,36 +309,29 @@
         }
       },
       waitReady(){
+        bbn.fn.log("IS READY ? ", this.ready);
         if ( !this.ready ){
-          if ( this.readyDelay ){
+          if ( this.readyDelay !== false ){
             clearTimeout(this.readyDelay);
           }
           this.readyDelay = setTimeout(() => {
-            this.ready = true;
             this.readyDelay = false;
-          }, 50);
+          }, 100);
         }
         else{
-          this.onResize();
-          this.$emit("resize");
+          this.keepCool(() => {
+            this.onResize();
+          }, "init", 250);
         }
       }
     },
     mounted(){
-
       this.waitReady();
     },
     watch: {
       readyDelay(newVal){
         if ( newVal === false ){
           this.onResize();
-        }
-      },
-      show(newVal, oldVal){
-        if ( !this.hidden ){
-          if ( newVal != oldVal ){
-            this.$emit(newVal ? "show" : "hide");
-          }
         }
       }
     }

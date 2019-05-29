@@ -217,6 +217,12 @@
         }
       },
 
+      update(){
+        if ( this.isMounted ){
+          this.$forceUpdate();
+        }
+      },
+
       onRoute(url){
         this.setConfig();
         let i = this.history.indexOf(url);
@@ -224,6 +230,7 @@
           this.history.splice(i, 1);
         }
         this.history.unshift(url);
+        bbn.fn.log("ADDING "+ url, this.history);
         while ( this.history.length > this.historyMaxLength ){
           this.history.pop();
         }
@@ -243,7 +250,7 @@
           this.selected = idx;
         }
       },
-      
+
       getTabColor(idx){
         if ( this.tabs[idx].fcolor ){
           return this.tabs[idx].fcolor;
@@ -440,15 +447,15 @@
         }
         else if ( this.selected === idx ){
           this.selected = false;
-          if ( this.views.length ){
-            $.each(this.history, (i, a) => {
-              let tmp = this.getIndex(a);
+          if ( this.router.views.length ){
+            bbn.fn.each(this.history, (a) => {
+              let tmp = this.router.getIndex(a);
               if ( tmp !== false ){
                 idx = tmp;
                 return false;
               }
             });
-            this.activateIndex(this.views[idx] ? idx : idx - 1);
+            this.router.activateIndex(this.router.views[idx] ? idx : idx - 1);
           }
         }
         this.$nextTick(() => {
@@ -508,13 +515,13 @@
       },
 
       getMenuFn(idx){
-        if ( !this.router || !this.router.views[idx] ){
+        if ( !this.router || !this.router.views[idx]  || (this.router.views[idx].menu === false) ){
           return false;
         }
         let items = [],
             tmp = ((bbn.fn.isFunction(this.router.views[idx].menu) ? this.router.views[idx].menu() : this.router.views[idx].menu) || []).slice(),
             others = false;
-        $.each(this.router.views, (i, a) => {
+        bbn.fn.each(this.router.views, (a, i) => {
           if ( (i !== idx) && !a.static ){
             others = true;
             return false;
