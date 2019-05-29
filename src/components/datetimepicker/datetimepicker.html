@@ -25,11 +25,11 @@
     >
       <bbn-calendar :arrows-buttons="false"
                      @selected="setDate"
-                     :value="value"
+                     :value="value ? value.toString() : ''"
                      :selection="true"
                      :auto-selection="true"                     
                      ref="calendar"
-                     :date="value"
+                     :date="value ? value.toString() : ''"
                      :min="min"
                      :max="max"
                      :extra-items="true"

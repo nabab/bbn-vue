@@ -243,7 +243,9 @@
         if ( value && this.max && (value > this.max) ){
           value = this.max;
         }
-        this.emitInput(value);
+        if ( value !== this.value ){
+          this.emitInput(value);
+        }
         if ( !value ){
           this.inputValue = '';
         }
@@ -287,7 +289,9 @@
         else {
           this.setValue(value);
           this.$nextTick(() => {
-            this.$emit('change', event);
+            if ( this.value !== value ){
+              this.$emit('change', event);
+            }
           });
         }
       }
@@ -332,7 +336,8 @@
        */
       maskedMounted(newVal){
         if ( newVal ){
-          this.inputValue = this.$refs.element.raw(moment(this.value.toString(), this.getValueFormat(this.value.toString())).format(this.currentFormat)); 
+          let val = this.value ? this.value.toString() : '';
+          this.inputValue = this.$refs.element.raw(moment(val, this.getValueFormat(val)).format(this.currentFormat)); 
         }
       },
       /** 

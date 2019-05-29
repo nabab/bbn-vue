@@ -328,7 +328,7 @@
       getInputValue(value){
         let ret = '',
             idxValue = 0
-        value = (value === undefined ? (this.value === undefined ? '' : this.value) : value).toString()
+        value = (value === undefined ? (!!this.value ? this.value : '') : value).toString()
         bbn.fn.each([...this.mask], (c, i) => {
           if ( 
             !this.escapePos.includes(i) &&
@@ -395,7 +395,7 @@
        * @returns {String}
        */
       getIdxRange(start, end){
-        let val = this.value.toString(),
+        let val = !!this.value ? this.value.toString() : '',
             idxStart = -1,
             idxEnd = -1
         for ( let i = 0; i <= end; i++ ){
@@ -692,7 +692,7 @@
        */
       raw(value){
         let ret = ''
-        value = (value !== undefined ? value : this.$refs.element.value).toString()
+        value = (value !== undefined ? value : (this.$refs.element.value || '')).toString()
         if ( value ){
           bbn.fn.each([...value], (c, i) => {
             if ( 
