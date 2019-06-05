@@ -4,3 +4,4 @@ logs
 .history/
 .idea/
 _DS_STORE*
+src/components/old/
