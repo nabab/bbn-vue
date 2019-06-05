@@ -21,24 +21,7 @@
     mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent],
 
     props: {
-      /**
-       * The height that all contents will take if the height is not specified in the item object
-       *
-       * @prop {Number|String} [''] itemsHeight
-       */
-      itemsHeight: {
-        type: [Number, String],
-        default: ''
-      },
-      /**
-       * The class or classes that all items will take
-       *
-       * @prop {Array|String} [''] itemsClass
-       */
-      itemsClass: {
-        type: [ Array, String ],
-        default: ''
-      },
+     
       /**
        * The source of the component. The object item has property:
        * - header // the title on the header
@@ -54,116 +37,88 @@
       source: {
         type: [ Array ]
       },
-      /**
-       * Set to true allows to select multiple items
-       *
-       * @prop {Boolean} [false] multi
-       */
-      multi: {
-        type: [ Boolean ],
-        default: false
+      scrollable: {
+        type: Boolean,
+        default: true
+      },
+      align: {
+        type: String,
+        default: 'center'
       },
       /**
-       * Specifies whether or not an index, an array of indexes, all items or none will be expanded
+       * Specifies whether or not an index will be expanded
        *
-       * @prop {Boolean|Number|Array} [false] opened
+       * @prop {Number} opened
        */
       opened: {
-        type: [Boolean, Number, Array],
-        default: false
+        type: [Number],
+      },
+      /**
+       * The component to be rendered on each header if not specified for the single item in the source
+       * @prop {String} headerComponent
+       */
+      headerComponent: {
+        type: String
+      },
+      /**
+       * The object of properties to bind with the headerComponent
+       * @prop {Object} headerOptions
+       * 
+       */
+      headerOptions: {
+        type: Object
+      },
+      /**
+       * the component to be rendered in each content slot if not specified for the single item in the source
+       * @prop {String} component
+       */
+      component: {
+        type: String
+      },
+      /**
+       * the object of properties to bind with the component in the content slot
+       * @prop {Object} componentOptions
+       */
+      componentOptions :{
+        type: Object
       }
     },
     data(){
       return {
-        isArray: bbn.fn.isArray,
-        selected: []
+        /**
+         * The index of the selected item
+         * @data {Number} [null] selected
+         */
+        selected: null,
       };
     },
      /**
+      * Select the index of item defined by the prop opened
       * @event mounted
       */
     mounted(){
-      if ( this.opened !== false ){
-        if ( this.multi && ( this.opened === true  ) ) {
-          bbn.fn.each( this.source, (v, i) => {
-            this.selected.push(i);
-          })
-          return;
-        }
-        if ( !bbn.fn.isArray(this.opened) && bbn.fn.isNumber(this.opened)) {
-          //case multi true and opened number
-          if ( this.opened < this.source.length ){
-            this.selected.push(this.opened);
-          }
-        }
-        else if ( (bbn.fn.isArray(this.opened) ) && this.multi ){
-          this.selected = this.opened;
-        }
+      if ( this.opened ){
+        this.selected = this.opened;
       }
     },
     methods: {
-      /**
-       * Return if an item is contained in the array of selected items
-       *
-       * @method includes
-       * @param {Array} arr
-       * @param {Number} i
-       * @return Boolean
-       */
-      includes(arr, i){
-        if ( bbn.fn.isArray(this.selected)){
-          return arr.includes(i)
-        }
-        else{
-          return false;
-        }
-
-      },
-      /**
-       * Return whether or not the param i is a number
-       * @method isNumber
-       * @param {Number} i
-       * @return Boolean
-       */
-      isNumber(i){
-        return bbn.fn.isNumber(i)
-      },
-      /**
+     /**
        * Shows the content of selected items and emits the event select
        * @emits select
        * @method select
        * @param {Number} idx
        */
       select(idx){
-        if ( this.multi ){
-          if ( !this.includes(this.selected, idx) ) {
-            this.selected.push(idx);
-          }
-          else {
-            this.selected.splice(this.selected.indexOf(idx), 1)
-          }
-        }
-        else {
-          if ( this.selected.length ){
-            this.selected.splice(0,1);
-          }
-          this.selected.push(idx)
-        }
-        this.$emit('select', this.source[idx])
-      }
-
-    },
-    computed: {
-      currentItemsClass(){
-        if ( bbn.fn.isArray(this.itemsClass) ){
-          return this.itemsClass.join(' ');
+        if ( this.selected !== idx ){
+          this.selected = idx;
+          this.$emit('select', idx, this.source[idx])
         }
         else{
-          return this.itemsClass;
+          this.selected = null;
         }
       }
-    },
 
+    },
   });
 
 })(bbn);

@@ -1,67 +1,49 @@
 .bbn-panelbar{
-  .k-block{
+  .bbn-header{
+    border-top: none;
+    border-right: none;
+    border-left: none;
     border-radius: 0;
-    /*.bbn-header{
-      border: none;
-      border-radius: 0;
-      margin-bottom: 0;
-    }*/
-    .bbn-header.panel{
-      border-top: none;
-      border-right: none;
-      border-left: none;
-      border-radius: 0;
-      margin-bottom: 0;
-      width: 100%;
-      .arrow-container{
-        position: absolute;
-        left: 10px;
-       // margin-left: 1rem;
+    margin-bottom: 0;
+    width: 100%;
+    .arrow-container{
+      width: 3em;
+      height: 100%;
+      // margin-left: 1rem;
+    }
+    .title{
+      margin-right: 3em;
+      margin-left: 3em;
+      .right-padded{
+        padding-right: 1em;
       }
-      .component, .content{
-        //width: 100%;
-        margin-left: 25px;
-        margin-right: 25px;
-
-      }
-      .buttons{
-        button{
-          border: 0;
-        }
+    }
+    .selected, .content{
+      //height: 100%;
+      transition: all 2s;
+      transition: height 0.8s;
+    }
+    .buttons{
+      button{
+        border: 0;
       }
     }
   }
+  
   .header-icon {
     display: inline-block;
-    /*position: absolute;
-    top: 5px;
-    left: 8px;*/
     transform: rotate(0deg);
-    transition-duration: 0.3s;
+    transition-duration: 0.8s;
   }
   .header-icon.rotate {
     transform: rotate(90deg);
-    transition-duration: 0.3s;
+    transition-duration: 0.8s;
   }
 
-  .item-slot{
-    height: 0;
-    
-    &.selected{
-      //height: 100%;
-      transition: height 2s;
-    }
 
-  }
   .inline{
-    display: inline-block;
+    display: inline;
   }
   
   
 }
-.show-content-active, .show-content-active {
-    transition: all 2s ease;
-  }
-  .show-content-enter, .show-content-leave-to /* .fade-leave-active below version 2.1.8 */ {
-    display: none;
-  }

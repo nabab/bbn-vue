@@ -1,31 +1,100 @@
-<div :class="[componentClass, 'bbn-overlay']" style="height:100%">
-  <bbn-scroll>
-    <div v-if="source.length" class="k-block item-container" v-for="(i, idx) in source" :key="idx">
-      <div :class="['bbn-header', 'panel', 'bbn-p', {'k-state-selected': includes(selected, idx)}]" 
-            :style="includes(selected, idx) ? {} : {'border-bottom': 'none'}"
+<div :class="[componentClass, 'bbn-overlay', {
+  'bbn-flex-height': scrollable
+}]">
+  <template v-for="(s, idx) in source">
+
+    <div class="bbn-header bbn-padded"
+    >
+      <div class="arrow-container bbn-hspadded bbn-p bbn-middle bbn-block" @click="select(idx)">
+        <i :class="['nf nf-fa-angle_right', 'header-icon', 'bbn-large',  {'rotate': selected === idx}]"></i>
+      </div>
+
+      <div :class="['bbn-p', 'title', 'bbn-vmiddle',{
+              'bbn-c': (align === 'center'),
+              'bbn-l': (align === 'left'),
+              'bbn-r': (align === 'right')
+            }]"
       >
-        <div class="arrow-container bbn-hspadded inline" @click="select(idx)">
-          <i :class="['nf nf-fa-angle_right', 'header-icon', 'bbn-large', 'bbn-b', {'rotate': includes(selected, idx)}]"></i>
+        <div v-html="s.header" 
+             @click="select(idx)"
+             :class="{
+               'inline': s.headerComponent,
+               'right-padded': s.headerComponent || headerComponent
+             }"
+        >
         </div>
-        <div class="component" v-if="i.headerComponent">
-          <component :is="i.headerComponent" v-bind="i.headerOptions"></component>
-        </div>
-        
-        <div @click="select(idx)" v-else-if="i.header" v-html="i.header" :class="['content', 'bbn-hspadded',  i.class , currentItemsClass]">
-        </div>
-        
+
+        <component v-if="s.headerComponent" 
+                  :is="s.headerComponent" 
+                  v-bind="source[idx]['headerOptions']"
+        ></component>
+
+        <component v-if="headerComponent && !s.headerComponent" 
+                   :is="headerComponent" 
+                   v-bind="headerOptions"
+        ></component>
+
       </div>
-
-      <div v-if="( i.content || i.component ) && ( includes(selected, idx) ) " 
-          :class="['item-slot', {'selected': includes(selected, idx)}]"
-          :style="i.height ? ( 'height:' + i.height + (isNumber(i.height) ? 'px' : '')) : (!i.height && itemsHeight !== '') ? ('height:' + itemsHeight + (isNumber(itemsHeight) ? 'px' : '')) : 'height: auto' ">
-        <component :is="i.component" ref="component" v-if="i.component" v-bind="source[idx]['options']"></component>
-        <div v-else-if="i.content" v-html="i.content"></div>
-
-      </div>
-
+     
     </div>
 
-  </bbn-scroll>
+    <div :class="['bbn-content', 'selected',{
+                    'bbn-flex-fill': scrollable
+                }]"
+          v-show="selected === idx"
+    >
+      <component :is="scrollable ? 'bbn-scroll' : 'div'">
+        
+        <div v-if="!s.component && !component" 
+             v-html="s.content" 
+             class="bbn-padded content"
+        ></div>
+
+        <div v-else-if="s.component && !component"
+             class="bbn-padded content">
+          <component :is="s.component"
+                     v-bind="source[idx]['options']">
+          </component>  
+        </div>
+        
+        <div v-else-if="!s.component && component"
+             class="bbn-padded content">
+          <component :is="component"
+                     v-bind="componentOptions">
+          </component>  
+        </div>
+       
+      </component>
+    </div>
+  </template>
+  
+
+  <!---div v-if="source.length" class="k-block item-container" v-for="(i, idx) in source" :key="idx">
+    <div :class="['bbn-header', 'panel', 'bbn-p', {'k-state-selected': includes(selected, idx)}]" 
+          :style="includes(selected, idx) ? {} : {'border-bottom': 'none'}"
+    >
+      <div class="arrow-container bbn-hspadded inline" @click="select(idx)">
+        <i :class="['nf nf-fa-angle_right', 'header-icon', 'bbn-large', 'bbn-b', {'rotate': includes(selected, idx)}]"></i>
+      </div>
+      <div class="component" v-if="i.headerComponent">
+        <component :is="i.headerComponent" v-bind="i.headerOptions"></component>
+      </div>
+      
+      <div @click="select(idx)" v-else-if="i.header" v-html="i.header" :class="['content', 'bbn-hspadded',  i.class , currentItemsClass]">
+      </div>
+      
+    </div>
+
+    <div v-if="( i.content || i.component ) && ( includes(selected, idx) ) " 
+        :class="['item-slot', {'selected': includes(selected, idx)}]"
+        :style="i.height ? ( 'height:' + i.height + (isNumber(i.height) ? 'px' : '')) : (!i.height && itemsHeight !== '') ? ('height:' + itemsHeight + (isNumber(itemsHeight) ? 'px' : '')) : 'height: auto' ">
+      <component :is="i.component" ref="component" v-if="i.component" v-bind="source[idx]['options']"></component>
+      <div v-else-if="i.content" v-html="i.content"></div>
+
+    </div-->
+
+  </div>
+
+  
 
 </div>
