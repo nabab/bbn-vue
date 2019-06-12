@@ -1,10 +1,25 @@
 .bbn-toolbar{
-  overflow: visible;
-  .k-input:before{
-    display: none !important;
+  &.bbn-h-100{
+    text-align: center;
+    .bbn-toolbar-horizontal-separator{
+      display: block;
+    }
+    .bbn-toolbar-separator{
+      display: block;
+    }    
   }
-  width: 100%;
-  .slot{
-    display: none;
+  .bbn-toolbar-separator {
+    display: inline;
+    margin: 1em;
+    &:before{
+      content: '\0399';
+    }
+  }
+  .bbn-toolbar-horizontal-separator{
+    display: inline;
+    margin: 1em;
+    &:before{
+      content: '\2014';
+    }
   }
 }

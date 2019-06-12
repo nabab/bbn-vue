@@ -3,16 +3,16 @@
 }]">
   <template v-for="(s, idx) in source">
 
-    <div class="bbn-header bbn-padded"
+    <div class="bbn-header bbn-padded bbn-vmiddle"
     >
       <div class="arrow-container bbn-hspadded bbn-p bbn-middle bbn-block" @click="select(idx)">
         <i :class="['nf nf-fa-angle_right', 'header-icon', 'bbn-large',  {'rotate': selected === idx}]"></i>
       </div>
 
       <div :class="['bbn-p', 'title', 'bbn-vmiddle',{
-              'bbn-c': (align === 'center'),
-              'bbn-l': (align === 'left'),
-              'bbn-r': (align === 'right')
+              'center': (align === 'center'),
+              'start': (align === 'left'),
+              'end': (align === 'right')
             }]"
       >
         <div v-html="s.header" 
@@ -47,23 +47,24 @@
         
         <div v-if="!s.component && !component" 
              v-html="s.content" 
-             class="bbn-padded content"
+             class="content"
         ></div>
 
-        <div v-else-if="s.component && !component"
-             class="bbn-padded content">
-          <component :is="s.component"
-                     v-bind="source[idx]['options']">
-          </component>  
-        </div>
+       
         
         <div v-else-if="!s.component && component"
-             class="bbn-padded content">
+             class="content">
           <component :is="component"
                      v-bind="componentOptions">
           </component>  
         </div>
-       
+        
+        <div v-else-if="(s.component)"
+            class="content">
+          <component :is="s.component"
+                     v-bind="source[idx]['componentOptions']">
+          </component>  
+        </div>
       </component>
     </div>
   </template>

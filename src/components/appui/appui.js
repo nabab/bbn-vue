@@ -298,6 +298,7 @@
             if ( navigator.serviceWorker.controller ){
               if ( navigator.serviceWorker.controller.state === 'redundant' ){
                 bbn.fn.info("SERVICE REDONDANT");
+                /*
                 if ( confirm(
                   bbn._("The application has been updated but you still use an old version.") + "\n" +
                   bbn._("You need to refresh the page to upgrade.") + "\n" +
@@ -305,6 +306,7 @@
                 ) ){
                   document.location.reload();
                 }
+                */
               }
               else{
                 bbn.fn.info("ALL OK");

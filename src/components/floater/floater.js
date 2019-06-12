@@ -255,6 +255,10 @@
       animation: {
         type: Boolean,
         default: false
+      },
+      latency: {
+        type: Number,
+        default: 25
       }
     },
     data(){
@@ -447,8 +451,8 @@
         this.containerWidth = obj.width || bbn.env.width;
         this.containerHeight = obj.height || bbn.env.height;
         return {
-          top: obj.top || 0,
-          left: obj.left || 0,
+          top: 0,
+          left: 0,
           width: this.containerWidth,
           height: this.containerHeight
         };
@@ -586,156 +590,154 @@
             bbn.fn.log("FLOATER: W -> " + this.floaterWidth + " / H -> " + this.floaterHeight);
             // The coordinates of the target position
             let coor = this._getCoordinates();
-            if ( coor ){
-              // No scroll by default
-              let scrollV = false;
-              let scrollH = false;
-              // HEIGHT
-              let top = null;
-              // Natural or defined height
-              let height = this.floaterHeight;
-              if ( this.minHeight && (this.minHeight > height) ){
-                height = this.minHeight;
-              }
-              if ( this.maxHeight && (this.maxHeight < height) ){
-                height = this.maxHeight;
+            // No scroll by default
+            let scrollV = false;
+            let scrollH = false;
+            // HEIGHT
+            let top = null;
+            // Natural or defined height
+            let height = this.floaterHeight;
+            if ( this.minHeight && (this.minHeight > height) ){
+              height = this.minHeight;
+            }
+            if ( this.maxHeight && (this.maxHeight < height) ){
+              height = this.maxHeight;
+              scrollV = true;
+            }
+            if ( ctHeight < height ){
+              height = ctHeight;
+              scrollV = true;
+            }
+            if ( !coor.top && !coor.bottom ){
+              coor.top = coor.bottom = (ctHeight - height) / 2;
+            }
+            else if ( !coor.top && coor.bottom ){
+              coor.top = ctHeight - coor.bottom - height;
+            }
+            else if ( coor.top && !coor.bottom ){
+              coor.bottom = ctHeight - coor.top - height;
+            }
+            if ( coor.top < ctTop ){
+              coor.top = ctTop;
+            }
+            if ( this.element ){
+              if ( coor.top + height > ctHeight ){
+                let isTopBigger = coor.top > coor.bottom;
                 scrollV = true;
-              }
-              if ( ctHeight < height ){
-                height = ctHeight;
-                scrollV = true;
-              }
-              if ( !coor.top && !coor.bottom ){
-                coor.top = coor.bottom = (ctHeight - height) / 2;
-              }
-              else if ( !coor.top && coor.bottom ){
-                coor.top = ctHeight - coor.bottom - height;
-              }
-              else if ( coor.top && !coor.bottom ){
-                coor.bottom = ctHeight - coor.top - height;
-              }
-              if ( coor.top < ctTop ){
-                coor.top = ctTop;
-              }
-              if ( this.element ){
-                if ( coor.top + height > ctHeight ){
-                  let isTopBigger = coor.top > coor.bottom;
-                  scrollV = true;
-                  if ( isTopBigger ){
-                    if ( coor.bottom + height > ctHeight ){
-                      top = ctTop;
-                      height = ctHeight - coor.bottom;
-                    }
-                    else{
-                      top = ctHeight - coor.bottom - height + ctTop;
-                    }
+                if ( isTopBigger ){
+                  if ( coor.bottom + height > ctHeight ){
+                    top = ctTop;
+                    height = ctHeight - coor.bottom;
                   }
                   else{
-                    height = ctHeight - coor.top;
+                    top = ctHeight - coor.bottom - height + ctTop;
                   }
                 }
-              }
-              else if ( (coor.top + height > ctHeight) || (coor.bottom + height > ctHeight) ){
-                if ( this.top ){
+                else{
                   height = ctHeight - coor.top;
                 }
-                else{
-                  height = ctHeight - coor.bottom;
-                  coor.top = 0;
-                }
-                scrollV = true;
               }
-              if ( top === null ){
-                if ( coor.top ){
-                  top = coor.top + ctTop;
-                }
-                else if ( scrollV ){
-                  top = ctTop;
-                }
-                else{
-                  top = ctHeight - (coor.bottom | 0) - height + ctTop;
-                }
+            }
+            else if ( (coor.top + height > ctHeight) || (coor.bottom + height > ctHeight) ){
+              if ( this.top ){
+                height = ctHeight - coor.top;
               }
+              else{
+                height = ctHeight - coor.bottom;
+                coor.top = 0;
+              }
+              scrollV = true;
+            }
+            if ( top === null ){
+              if ( coor.top ){
+                top = coor.top + ctTop;
+              }
+              else if ( scrollV ){
+                top = ctTop;
+              }
+              else{
+                top = ctHeight - (coor.bottom | 0) - height + ctTop;
+              }
+            }
 
-              // WIDTH
-              let left = null;
-              // Natural or defined width
-              let width = this.floaterWidth;
-              if ( this.minWidth && (this.minWidth > width) ){
-                width = this.minWidth;
-              }
-              if ( this.maxWidth && (this.maxWidth < width) ){
-                width = this.maxWidth;
-                scrollH = true;
-              }
-              if ( ctWidth < width ){
-                width = ctWidth;
-                scrollH = true;
-              }
-              if ( !coor.left && !coor.right ){
-                coor.left = coor.right = (ctWidth - width) / 2;
-              }
-              else if ( !coor.left && coor.right ){
-                coor.left = ctWidth - coor.right - width;
-              }
-              else if ( coor.left && !coor.right ){
-                coor.right = ctWidth - coor.left - width;
-              }
-              if ( coor.left < ctLeft ){
-                coor.left = ctLeft;
-              }
+            // WIDTH
+            let left = null;
+            // Natural or defined width
+            let width = this.floaterWidth;
+            if ( this.minWidth && (this.minWidth > width) ){
+              width = this.minWidth;
+            }
+            if ( this.maxWidth && (this.maxWidth < width) ){
+              width = this.maxWidth;
+              scrollH = true;
+            }
+            if ( ctWidth < width ){
+              width = ctWidth;
+              scrollH = true;
+            }
+            if ( !coor.left && !coor.right ){
+              coor.left = coor.right = (ctWidth - width) / 2;
+            }
+            else if ( !coor.left && coor.right ){
+              coor.left = ctWidth - coor.right - width;
+            }
+            else if ( coor.left && !coor.right ){
+              coor.right = ctWidth - coor.left - width;
+            }
+            if ( coor.left < ctLeft ){
+              coor.left = ctLeft;
+            }
 
-              if ( this.element ){
-                if ( coor.left + width > ctWidth ){
-                  let isLeftBigger = coor.left > coor.right;
-                  scrollH = true;
-                  if ( isLeftBigger ){
-                    if ( coor.right + width > ctWidth ){
-                      left = ctLeft;
-                      width = ctWidth - coor.right;
-                    }
-                    else{
-                      left = ctWidth - coor.right - width + ctLeft;
-                    }
+            if ( this.element ){
+              if ( coor.left + width > ctWidth ){
+                let isLeftBigger = coor.left > coor.right;
+                scrollH = true;
+                if ( isLeftBigger ){
+                  if ( coor.right + width > ctWidth ){
+                    left = ctLeft;
+                    width = ctWidth - coor.right;
                   }
                   else{
-                    width = ctWidth - coor.left;
+                    left = ctWidth - coor.right - width + ctLeft;
                   }
                 }
-              }
-              else if ( (coor.left + width > ctWidth) || (coor.right + width > ctWidth) ){
-                if ( this.left ){
+                else{
                   width = ctWidth - coor.left;
                 }
-                else{
-                  width = ctWidth - coor.right;
-                  coor.left = 0;
-                }
-                scrollH = true;
               }
-              if ( left === null ){
-                if ( coor.left ){
-                  left = coor.left + ctLeft;
-                }
-                else if ( scrollH ){
-                  left = ctLeft;
-                }
-                else{
-                  left = ctWidth - coor.right - width + ctLeft;
-                }
-              }
-              if ( height ){
-                this.currentLeft = left + 'px';
-                this.currentTop = top + 'px';
-                this.currentHeight = height;
-                this.currentWidth = width;
-                this.currentScroll = scrollV || scrollH ? true : false;
-                this.$nextTick(() => {
-                  this.opacity = 1;
-                });
-              }
-              bbn.fn.log("GOING ALL THE WAY");
             }
+            else if ( (coor.left + width > ctWidth) || (coor.right + width > ctWidth) ){
+              if ( this.left ){
+                width = ctWidth - coor.left;
+              }
+              else{
+                width = ctWidth - coor.right;
+                coor.left = 0;
+              }
+              scrollH = true;
+            }
+            if ( left === null ){
+              if ( coor.left ){
+                left = coor.left + ctLeft;
+              }
+              else if ( scrollH ){
+                left = ctLeft;
+              }
+              else{
+                left = ctWidth - coor.right - width + ctLeft;
+              }
+            }
+            if ( height ){
+              this.currentLeft = left + 'px';
+              this.currentTop = top + 'px';
+              this.currentHeight = height;
+              this.currentWidth = width;
+              this.currentScroll = scrollV || scrollH ? true : false;
+              this.$nextTick(() => {
+                this.opacity = 1;
+              });
+            }
+            bbn.fn.log("GOING ALL THE WAY");
           });
         }
       },

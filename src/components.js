@@ -218,6 +218,11 @@
           }
         }
       },
+      data(){
+        return {
+          storageChangeDate: '2019-01-01 00:00:00'
+        };
+      },
       computed: {
         /**
          * @memberof localStorageComponent
@@ -1014,7 +1019,8 @@
            * @todo change name
            * @data {Array} [[]] selectedRows
            */
-          selectedRows: this.selected || []
+          selectedRows: this.selected || [],
+          isNullable: this.nullable
         }
       },
       computed: {
@@ -1065,7 +1071,18 @@
          * @param data
          */
         _map(data) {
-          return (this.map && bbn.fn.isArray(data) ? data.map(this.map) : (data || [])).slice();
+          if ( bbn.fn.isArray(data) ){
+            if ( data.length && !bbn.fn.isObject(data[0]) && this.sourceValue && this.sourceText ){
+              data = data.map((a) => {
+                let o = {};
+                o[this.sourceValue] = a;
+                o[this.sourceText] = a;
+                return o;
+              });
+            }
+            return (this.map ? data.map(this.map) : data).slice();
+          }
+          return [];
         },
         /**
          * Compares the values of the given row basing on the where operator and value.
@@ -1205,87 +1222,114 @@
           return {};
         },
         updateData(){
-          if ( this.isAjax ){
-            if ( !this.isLoading ){
-              this.isLoading = true;
-              this.$emit('startloading');
-              let data = {
-                limit: this.currentLimit,
-                start: this.start,
-                data: this.getPostData()
-              };
-              if ( this.sortable ){
-                data.order = this.currentOrder;
-              }
-              if ( this.filterable ){
-                data.filters = this.currentFilters;
-              }
-              if ( this.showable ){
-                data.fields = this.shownFields;
-              }
-              this._dataPromise = bbn.fn.post(this.source, data, (d) => {
-                this.isLoading = false;
-                this.$emit('endloading', d);
-                if ( d.data && bbn.fn.isArray(d.data) ){
-                  this.currentData = this._map(d.data);
-                  bbn.fn.log("CQALENDAR", d.data, this.currentData);
-                  this.total = d.total || d.data.length || 0;
-                  /** @todo why? */
-                  if (d.order) {
-                    this.currentOrder.splice(0, this.currentOrder.length);
-                    this.currentOrder.push({
-                      field: d.order,
-                      dir: (d.dir || '').toUpperCase() === 'DESC' ? 'DESC' : 'ASC'
-                    });
-                  }
-                  /** @todo Observer part to dissociate */
-                  if (d.observer && bbn.fn.isFunction(this.observerCheck) && this.observerCheck()) {
-                    this._observerReceived = d.observer.value;
-                    this.observerID = d.observer.id;
-                    this.observerValue = d.observer.value;
-                    if ( !this._1strun ){
-                      this.observerWatch();
-                    }
-                  }
-                  if ( !this._1strun ){
-                    this._1strun = true;
-                    this.$emit('firstrun')
-                  }
-                }
-                this._dataPromise = false;
-                return this.currentData;
-              });
-            }
+          if ( this.isLoading && this._dataPromise ){
             return this._dataPromise;
           }
-          else{
-            return new Promise((resolve, reject) => {
-              if ( bbn.fn.isArray(this.source) ){
-                this.currentData = this._map(this.source);
-                this.total = this.currentData.length;
+          this._dataPromise = new Promise((resolve, reject) => {
+            let prom;
+            if ( this.isAjax ){
+              if ( !this.isLoading ){
+                this.isLoading = true;
+                this.$emit('startloading');
+                let data = {
+                  limit: this.currentLimit,
+                  start: this.start,
+                  data: this.getPostData()
+                };
+                if ( this.sortable ){
+                  data.order = this.currentOrder;
+                }
+                if ( this.filterable ){
+                  data.filters = this.currentFilters;
+                }
+                if ( this.showable ){
+                  data.fields = this.shownFields;
+                }
+                prom = bbn.fn.post(this.source, data)
               }
-              else if ( bbn.fn.isFunction(this.source) ){
-                this.currentData = this._map(this.source(this.sourceIndex));
-                this.total = this.currentData.length;
-              }
-              else if ( bbn.fn.isObject(this.source) ){
-                let ar = [];
-                bbn.fn.iterate(this.source, (a, n) => {
-                  let o = {};
-                  o[this.sourceValue] = n;
-                  o[this.sourceText] = a;
-                  ar.push(o);
+            }
+            else{
+              prom = new Promise((resolve2) => {
+                let data = [];
+                let total = 0;
+                if ( bbn.fn.isArray(this.source) ){
+                  data = this._map(this.source);
+                }
+                else if ( bbn.fn.isFunction(this.source) ){
+                  data = this._map(this.source(this.sourceIndex));
+                }
+                else if ( bbn.fn.isObject(this.source) ){
+                  bbn.fn.iterate(this.source, (a, n) => {
+                    let o = {};
+                    o[this.sourceValue] = n;
+                    o[this.sourceText] = a;
+                    data.push(o);
+                  });
+                }
+                resolve2({
+                  data: data,
+                  total: data.length
                 });
-                this.currentData = ar;
+              });
+            }
+            prom.then((d) => {
+              if ( this.isLoading ){
+                if ( d.status !== 200 ){
+                  d.data = undefined;
+                }
+                else{
+                  d = d.data;
+                }
+                this.isLoading = false;
               }
-              this.total = this.currentData.length;
-              if ( !this._1strun ){
-                this._1strun = true;
-                this.$emit('firstrun')
+              if ( d.data !== undefined ){
+                if ( this.isNullable ){
+                  let hasNull = false;
+                  bbn.fn.each(d.data, (a) => {
+                    if ( a[this.sourceValue] === undefined ){
+                      hasNull = true;
+                      return false;
+                    }
+                    else if ( !a[this.sourceValue] ){
+                      hasNull = true;
+                      return false;
+                    }
+                  });
+                  if ( !hasNull ){
+                    let o = {};
+                    o[this.sourceText] = ' ';
+                    o[this.sourceValue] = null;
+                    d.data.unshift(o);
+                  }
+                }
+                this.currentData = d.data;
+                this.total = d.total || 0;
+                if (d.order) {
+                  this.currentOrder.splice(0, this.currentOrder.length);
+                  this.currentOrder.push({
+                    field: d.order,
+                    dir: (d.dir || '').toUpperCase() === 'DESC' ? 'DESC' : 'ASC'
+                  });
+                }
+                /** @todo Observer part to dissociate */
+                if (d.observer && bbn.fn.isFunction(this.observerCheck) && this.observerCheck()) {
+                  this._observerReceived = d.observer.value;
+                  this.observerID = d.observer.id;
+                  this.observerValue = d.observer.value;
+                  if ( !this._1strun ){
+                    this.observerWatch();
+                  }
+                }
+                if ( !this._1strun ){
+                  this._1strun = true;
+                  this.$emit('firstrun')
+                }
               }
               resolve(this.currentData);
+              //this._dataPromise = false;
             });
-          }
+          });
+          return this._dataPromise;
         }
       },
       beforeMount(){
@@ -2807,22 +2851,28 @@
          */
         keepCool(fn, idx, timeout){
           if ( !idx ){
-            idx = 'default'
+            idx = 'default';
           }
           let t = (new Date()).getTime();
           if ( !this.coolTimer[idx] || (this.coolTimer[idx] < (t - (timeout || this.coolInterval))) ){
             this.coolTimer[idx] = (new Date()).getTime();
-            fn();
-          }
-          else{
-            setTimeout(() => {
-              let t = (new Date()).getTime();
-              if ( this.coolTimer[idx] < (t - (timeout || this.coolInterval)) ){
-                this.coolTimer[idx] = t;
+            return new Promise((resolve) => {
+              setTimeout(() => {
                 fn();
-              }
-            }, this.coolInterval);
+                resolve();
+              });
+            })
           }
+          else if ( this.coolTimeout === null ){
+            this.coolTimeout = new Promise((resolve) => {
+              setTimeout(() => {
+                this.coolTimeout = null;
+                this.keepCool(fn, idx, timeout);
+                resolve();
+              }, timeout || this.coolInterval);
+            });
+          }
+          return this.coolTimeout;
         }
       }
     },

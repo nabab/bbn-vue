@@ -1244,7 +1244,8 @@
         if (button.command) {
           if (bbn.fn.isFunction(button.command)) {
             return button.command(data, col, index);
-          } else if (typeof (button.command) === 'string') {
+          }
+          else if (typeof (button.command) === 'string') {
             switch (button.command) {
               case 'csv':
                 return this.exportCSV();
@@ -1380,19 +1381,6 @@
         return this.isEditable(data, col, idx) &&
           (this.editMode === 'inline') &&
           (this.currentSet[idx].index === this.editedIndex);
-      },
-      /**
-       * @todo not used
-       * @method isNullable
-       * @param {Object} row
-       * @param {Object} col
-       * @param {Number} index
-       */
-      isNullable(row, col, index) {
-        if (bbn.fn.isFunction(col.nullable)) {
-          return col.nullable(row, col, index)
-        }
-        return col.nullable === true;
       },
       /**
        * @todo descriprion
@@ -1612,7 +1600,7 @@
           component: {
             template: `
 <div class="bbn-table-column-picker bbn-full-screen">
-  <bbn-form ref="scroll" :source="formData" @success="applyColumnsShown">
+  <bbn-form ref="scroll" :source="formData" @success="applyColumnsShown" :prefilled="true">
     <div class="bbn-padded">
       <ul v-if="source.titleGroups">
         <li v-for="(tg, idx) in source.titleGroups">
@@ -2246,19 +2234,22 @@
         if (!this.isLoading) {
           this.keepCool(() => {
             if (this.groupCols[0].cols.length || this.groupCols[2].cols.length) {
-              bbn.fn.each(this.getRef('table').tBodies[0].rows, (row) => {
-                let todo = [row];
-                row.style.height = 'auto';
-                bbn.fn.each(row.cells, (cell) => {
-                  if ( cell.classList.contains('bbn-table-fixed-cell') ){
-                    cell.style.height = 'auto';
-                    todo.push(cell);
-                  }
+              let ele = this.getRef('table');
+              if ( ele && ele.tBodies ){
+                bbn.fn.each(ele.tBodies[0].rows, (row) => {
+                  let todo = [row];
+                  row.style.height = 'auto';
+                  bbn.fn.each(row.cells, (cell) => {
+                    if ( cell.classList.contains('bbn-table-fixed-cell') ){
+                      cell.style.height = 'auto';
+                      todo.push(cell);
+                    }
+                  });
+                  this.$nextTick(() => {
+                    bbn.fn.adjustHeight(todo);
+                  })
                 });
-                this.$nextTick(() => {
-                  bbn.fn.adjustHeight(todo);
-                })
-              });
+              }
             }
           }, 'updateTable', 100);
         }
@@ -2680,7 +2671,7 @@
             });
 
             let clientWidth = this.$el.clientWidth,
-                toFill = clientWidth - tot;
+                toFill = clientWidth - tot - 1;
             // We must arrive to 100% minimum
             if (toFill > 0) {
               if (numUnknown) {

@@ -6,7 +6,7 @@
         },
         componentClass
       ]"
-      v-if="currentVisible"
+      v-if="currentVisible && (content || component || filteredData.length || $slots.default)"
       @mouseleave="blur"
       :style="currentStyle">
   <header v-if="title"
@@ -45,6 +45,7 @@
     <bbn-scroll :max-width="containerWidth"
                 :max-height="scrollMaxHeight"
                 :min-width="scrollMinWidth"
+                :latency="latency"
                 ref="scroll"
                 @resize="scrollResize">
       <component v-if="component"
@@ -56,7 +57,7 @@
           v-html="content"
       ></div>
       <ul v-else-if="filteredData.length"
-          :class="'bbn-menulist ' + mode"
+          :class="'bbn-floater-list bbn-menulist ' + mode"
       >
         <li v-for="(li, idx) in filteredData"
             @click.stop.prevent="select(idx)"

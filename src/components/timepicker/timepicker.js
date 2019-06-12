@@ -151,7 +151,6 @@
           format = val ? this.getValueFormat(val) : false;
         }
         let value = format && val ? moment(val, format).format(this.getValueFormat(val)) : '';
-        this.isOpened = false;
         if ( value && this.min && (value < this.min) ){
           value = this.min;
         }
@@ -164,6 +163,7 @@
         if ( !value ){
           this.inputValue = '';
         }
+        this.isOpened = false;
       },
       /**
        * Triggered when the value changed by the input.

@@ -220,27 +220,36 @@
         }
       },
 
-      // When the users jumps by clicking the scrollbar
+      /**
+       * When the users jumps by clicking the scrollbar while a double click will activate tillEnd.
+       **/
       jump(e, tillEnd) {
         if ( this.realContainer ){
-          let isRail = e.target === this.$refs.scrollRail;
+          let isRail = e.target === this.$el;
           if ( isRail ){
             let position = this.$refs.scrollSlider.getBoundingClientRect();
-            // Calculate the horizontal Movement
-            let movement = (this.isVertical ? e.pageY : e.pageX) - position[this.isVertical ? 'top' : 'left'];
-            if ( tillEnd ){
-              this._changePosition(movement > 0 ? 100 : 0, true);
-            }
-            else{
-              let centerize = 0;
-              if ( Math.abs(movement) > (this.realSize - 20) ){
-                movement = movement > 0 ? (this.realSize - 20) : - (this.realSize - 20);
+            // Calculate the Movement
+            let clickPoint = this.isVertical ? e.pageY : e.pageX;
+            let isBefore = clickPoint < position[this.isVertical ? 'top' : 'left'];
+            let isAfter = clickPoint > position[this.isVertical ? 'bottom' : 'right'];
+            if ( isBefore || isAfter ){
+              let movement = isBefore ?
+                      position[this.isVertical ? 'top' : 'left'] - clickPoint :
+                      clickPoint - (position[this.isVertical ? 'top' : 'left']) - (position[this.isVertical ? 'height' : 'width']);
+              if ( tillEnd ){
+                this._changePosition(isAfter ? 100 : 0, true);
               }
               else{
-                centerize = (movement > 0 ? 1 : -1) * this.size;
+                let centerize = 0;
+                if ( movement > (this.realSize - 20) ){
+                  movement = (this.realSize - 20) * (isBefore ? 1 : -1);
+                }
+                else{
+                  centerize = (isBefore ? -1 : 1) * this.size;
+                }
+                let movementPercentage = movement / this.containerSize * 100 + centerize;
+                this._changePosition(this.position + movementPercentage, true);
               }
-              let movementPercentage = movement / this.containerSize * 100 + centerize;
-              this._changePosition(this.position + movementPercentage, true);
             }
           }
         }
@@ -334,15 +343,15 @@
             this.scroller.$on("resize", this.onResize);
             this.scrollTo(this.initial);
             this.scroller.$on("scroll", this.adjust);
-            this.scroller.$on("mousemove", this.overContent);
+            //this.scroller.$on("mousemove", this.overContent);
           }
           else{
             this.realContainer.addEventListener('scroll', this.adjust, {passive: true});
-            this.realContainer.addEventListener('mousemove', this.overContent, {passive: true});
+            //this.realContainer.addEventListener('mousemove', this.overContent, {passive: true});
           }
           bbn.fn.each(this.scrollableElements(), (a) => {
             a.addEventListener('scroll', this.adjust, {passive: true});
-            a.addEventListener('mousemove', this.overContent, {passive: true});
+            //a.addEventListener('mousemove', this.overContent, {passive: true});
           });
         }
       },

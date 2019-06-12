@@ -327,18 +327,19 @@
     created(){
       this.updateButtons();
     },
-    mounted(){
+    beforeMount(){
       this.dashboard = bbn.vue.closest(this, "bbn-dashboard");
+    },
+    mounted(){
       if ( this.dashboard && this.dashboard.sortable ){
         if ( $(this.$el).closest(".bbn-masonry").hasClass("ui-sortable") ){
           $(this.$el).closest(".bbn-masonry").sortable('refresh')
         }
       }
       this.load();
-
       this.$nextTick(() => {
         this.onResize();
-      })
+      });
     },
     updated(){
       if ( this.dashboard ){

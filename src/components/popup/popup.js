@@ -85,7 +85,7 @@
       popups(){
         let r = [];
         bbn.fn.each(this.items, (a, i) => {
-          r.push(this.getObject(bbn.fn.extend({index: i}, a)));
+          r.push(this.getObject(bbn.fn.extendOut(a, {index: i})));
         });
         return r;
       },
@@ -223,8 +223,7 @@
         }
       },
 
-      getObject(from){
-        let a = bbn.fn.clone( from);
+      getObject(a){
         if ( !a.uid ){
           a.uid = 'bbn-popup-' + bbn.fn.timestamp().toString()
         }

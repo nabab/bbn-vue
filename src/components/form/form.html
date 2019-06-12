@@ -7,9 +7,10 @@
       @submit.prevent="() => {}"
       @keydown.enter.prevent.stop="submit"
 >
-  <div :class="['bbn-w-100', {'bbn-flex-fill': scrollable}]"
+  <div :class="['bbn-w-100', {'bbn-flex-fill': scrollable, 'bbn-100': !scrollable}]"
   >
     <component :is="scrollable ? 'bbn-scroll' : 'div'"
+               :class="scrollable ? 'bbn-block' : ''"
                ref="container">
       <div class="bbn-grid-fields bbn-padded" v-if="schema && schema.length">
         <template v-for="field in currentSchema"

@@ -1,31 +1,27 @@
-<div :class="['bbn-overlay' , componentClass]">
+<div :class="['bbn-overlay' , componentClass, {'bbn-unselectable': isSorting}]"
+     @mouseleave="isSorting = false"
+     @touchend="isSorting = false"
+     @dragend="isSorting = false"
+     @mouseup="isSorting = false">
   <component :is="scrollable ? 'bbn-scroll' : 'div'"
              ref="scroll"
              v-bind="scrollable ? {axis: 'y'} : {}"
              :class="{
-               'bbn-w-100': scrollable,
                'bbn-100': !scrollable
-             }"
-  >
-    <transition-group name="custom-classes-transition"
-                      :duration="{enter: isRefreshing ? 0 : 500, leave: isRefreshing ? 0 : 500}"
-                      enter-active-class="animated zoomIn"
-                      leave-active-class="animated zoomOut"
-                      @leave="onResize"
-                      :class="'bbn-masonry bbn-margin' + (sortable ? ' bbn-dashboard-sortable' : '')"
-                      tag="div"
-    >
-      <bbn-widget ref="widgets"
-                  v-for="(w, index) in widgets"
-                  v-if="!w.hidden"
+             }">
+    <div :class="'bbn-masonry bbn-margin' + (sortable ? ' bbn-dashboard-sortable' : '')">
+      <bbn-widget v-for="(w) in currentWidgets"
+                  ref="widgets"                  
                   @loaded="onResize"
                   v-bind="w"
                   :options="w.options"
                   :uid="w.key"
                   :key="w.key"
-                  :index="index"
+                  :index="w.index"
+                  @mouseenter="sortTargetIndex = w.index"
+                  @sortstart="isSorting = true; sortOriginIndex = w.index; sortTargetIndex = null"
                   :title="w.title ? w.title : (w.text ? w.text : '')"
       ></bbn-widget>
-    </transition-group>
+    </div>
   </component>
 </div>

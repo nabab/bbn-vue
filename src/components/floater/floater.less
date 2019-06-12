@@ -20,7 +20,14 @@ div.bbn-floater{
       }
     }
   }
-  ul{
+  > footer.bbn-button-group{
+    button{
+      padding-top: 0.3em;
+      padding-bottom: 0.3em;
+    }
+
+  }
+  ul.bbn-floater-list{
     &.options{
       > li{
         .space{
@@ -38,6 +45,7 @@ div.bbn-floater{
       }
     }
     > li{
+      min-height: 1em;
       &.bbn-disabled{
         opacity: 0.7;
         .k-link{

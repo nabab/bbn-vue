@@ -1,21 +1,15 @@
-<transition name="custom-classes-transition"
-            enter-active-class="animated fadeIn"
-            leave-active-class="animated fadeOut"
+<div :class="componentClass"
+      :style="{opacity: !show || !size ? 0 : 1}"
+      v-if="isVisible"
+      @click="jump($event)"
+      @dblclick="jump($event, true)"
+      @mouseenter="inSlider"
+      @mouseleave="outSlider"
 >
-  <div :class="componentClass"
-       v-if="isVisible"
-       v-show="show && size"
-       @click="jump"
-       @dblclick="jump($event, true)"
-       ref="scrollRail"
-       @mouseenter="inSlider"
-       @mouseleave="outSlider"
-  >
-    <div class="bbn-scroll-slider bbn-primary"
-         :style="style"
-         ref="scrollSlider"
-         @touchstart="startDrag"
-         @mousedown="startDrag">
-    </div>
+  <div class="bbn-scroll-slider bbn-primary"
+        :style="style"
+        ref="scrollSlider"
+        @touchstart="startDrag"
+        @mousedown="startDrag">
   </div>
-</transition>
+</div>

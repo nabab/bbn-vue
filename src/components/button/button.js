@@ -60,6 +60,16 @@
       icon: {
         type: String,
       },
+      /** 
+       * The icon(s) position (left or right).
+       * 
+       * @prop {String} ['left'] iconPosition
+      */
+      iconPosition: {
+        type: String,
+        default: 'left',
+        validator: (p) => ['left', 'right'].includes(p)
+      },
       /**
        * A second icon to display on the button above the main icon.
        *
@@ -84,6 +94,7 @@
       */
       type: {
         type: String,
+        default: 'button'
       },
      /**
       * Set to true to disable the button.

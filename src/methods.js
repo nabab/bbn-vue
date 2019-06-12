@@ -399,7 +399,9 @@
       }
       if ( bbn.fn.isArray(todo) ){
         bbn.fn.each(todo, (a) => {
-          this.queueComponentBBN(a);
+          if ( Vue.options.components['bbn-' + a] === undefined ){
+            this.queueComponentBBN(a);
+          }
         })
       }
     },
@@ -454,7 +456,7 @@
                   (arr) => {
                     // arr is the answer!
                     if (bbn.fn.isArray(arr) ){
-                      $.each(arr, (i, r) => {
+                      bbn.fn.each(arr, (r) => {
                         let resolved = false;
                         if ( (typeof(r) === 'object') && r.script && r.name ){
                           let idx = bbn.fn.search(todo, {name: r.name});
@@ -775,7 +777,7 @@
       if ( !Array.isArray(ar) ){
         ar = [];
       }
-      $.each(vm.$children, (i, obj) => {
+      bbn.fn.each(vm.$children, (obj) => {
         ar.push(obj)
         if ( !only_children && obj.$children ){
           this.getComponents(obj, ar);

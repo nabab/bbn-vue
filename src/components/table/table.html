@@ -1,5 +1,5 @@
 <div :class="[{'bbn-overlay': scrollable}, componentClass]">
-  <div :class="{'bbn-overlay': scrollable, 'bbn-flex-height': scrollable}"
+  <div :class="{'bbn-overlay': scrollable, 'bbn-flex-height': scrollable, 'bbn-block': !scrollable}"
        :style="scrollable && groupCols.length ? {} : {
          width: totalWidth
        }"
@@ -449,4 +449,5 @@
       <span v-text="_('Open the full filter')"></span>
     </div>
   </div>
+  <bbn-popup ref="popup"></bbn-popup>
 </div>

@@ -117,7 +117,7 @@
         btns: this.buttons
       });
       setTimeout(() => {
-        $(this.$el).find('.trumbowyg-box').addClass('bbn-flex-height').find('.trumbowyg-editor').addClass('bbn-flex-fill').css({height: 'auto'});
+        $(this.$el).find('.trumbowyg-box').addClass('bbn-flex-height').find('.trumbowyg-editor').addClass('bbn-flex-fill bbn-content').css({height: 'auto'});
       }, 1000)
       bbn.fn.log("WID", this.widget.trumbowyg('getOptions'));
       $ele.on("tbwchange tbwpaste", (e) => {

@@ -41,6 +41,9 @@
             "value": "moonlight",
             "text": "Moonlight"
           }, {
+            "value": "mirko",
+            "text": "Mirko"
+          }, {
             "value": "turquoise-light2",
             "text": "Turquoise light variant"
           }, {

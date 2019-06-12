@@ -225,7 +225,6 @@
       setValue(val){
         let format = !!val ? this.getValueFormat(val) : false,
             value = format ? moment(val, format).format(format) : '';
-        this.isOpened = false;
         if ( value && this.min && (value < this.min) ){
           value = this.min;
         }
@@ -238,6 +237,7 @@
         if ( !value ){
           this.inputValue = '';
         }
+        this.isOpened = false;
       },
       /**
        * Updates the calendar.

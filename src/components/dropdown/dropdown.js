@@ -51,6 +51,13 @@
         type: String
       },
       /**
+       * If set to true the dropdown is not autofilled if empty
+       * @prop {Boolean} nullable
+       */
+      nullable: {
+        default: null
+      },
+      /**
        * The placeholder of the dropdown.
        *
        * @prop {String} placeholder
@@ -60,6 +67,10 @@
       },
     },
     data(){
+      let isNullable = !!this.nullable;
+      if ( this.nullable === null ){
+        isNullable = this.required ? false : !!this.placeholder;
+      }
       return {
         /**
          * @data [null] _list
@@ -88,7 +99,8 @@
         /**
          * @data {Number} [0] currentHeight
          */
-        currentHeight: 0
+        currentHeight: 0,
+        isNullable: isNullable
       };
     },
     methods: {
@@ -110,7 +122,7 @@
         element.style.height = 0;
         setTimeout(() => {
           element.style.height = height;
-        })
+        });
       },
       /**
        * @method leave
@@ -151,10 +163,8 @@
        * 
        */
       clickContainer(){
-        if ( this.isFocused ){
-          this.isOpened = !this.isOpened;
-        }
-        else {
+        this.isOpened = !this.isOpened;
+        if ( !this.isFocused ){
           this.focus();
         }
       },
@@ -167,72 +177,74 @@
        *
        */
       keydown(e){
-        bbn.fn.log(e);
-        if ( !this.filteredData.length || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey ){
+        if ( !this.filteredData.length || e.altKey || e.ctrlKey || e.metaKey ){
           return;
         }
         if ( e.key === ' '){
           this.isOpened = !this.isOpened;
         }
-        else if ( e.key.match(/^[A-z0-9]{1}$/) ){
-          let filtered = bbn.fn.filter(this.filteredData, {
-            conditions: [
-              {
-                field: this.sourceText,
-                operator: 'startswith',
-                value: e.key
-              }
-            ],
-            logic: 'AND'
-          });
-          if ( filtered.length ){
-            let values = filtered.map((a) => {
-              return a[this.sourceValue];
-            });
-            // We check if we already have one selected
-            let idx = values.indexOf(this.value);
-            if ( ((values.length - 1) > idx) && (idx > -1) ){
-              // If so we take the next one
-              idx++;
-            }
-            else{
-              idx = 0;
-            }
-            if ( values[idx] !== this.value ){
-              this.select(values[idx]);
-            }
+        if ( e.key === 'Escape'){
+          if ( this.currentFilters.conditions.length ){
+            this.currentFilters.conditions.splice(0, this.currentFilters.conditions.length);
           }
         }
+        else if ( e.key.match(/^[A-z0-9]{1}$/) ){
+          this.currentFilters.conditions.splice(0, this.currentFilters.conditions.length ? 1 : 0, {
+            field: this.sourceText,
+            operator: 'startswith',
+            value: e.key
+          });
+          this.$nextTick(() => {
+            if ( this.filteredData.length ){
+              let values = this.filteredData.map((a) => {
+                return a[this.sourceValue];
+              });
+              // We check if we already have one selected
+              let idx = values.indexOf(this.value);
+              if ( ((values.length - 1) > idx) && (idx > -1) ){
+                // If so we take the next one
+                idx++;
+              }
+              else{
+                idx = 0;
+              }
+              if ( values[idx] !== this.value ){
+                this.select(this.filteredData[idx]);
+              }
+            }
+          });
+        }
         else if ( bbn.var.keys.upDown.indexOf(e.keyCode) > -1 ){
+          e.preventDefault();
           let idx = bbn.fn.search(this.filteredData, this.sourceValue, this.value);
           switch ( e.keyCode ){
             // Arrow down
             case 40:
               if ( this.filteredData[idx+1] ){
-                this.select(this.filteredData[idx+1][this.sourceValue]);
+                this.select(this.filteredData[idx+1]);
               }
               break;
             // Arrow Up
             case 38:
             if ( this.filteredData[idx-1] ){
-                this.select(this.filteredData[idx-1][this.sourceValue]);
+                this.select(this.filteredData[idx-1]);
               }
               break;
             // Page down (10)
             case 34:
-              this.select(this.filteredData[this.filteredData[idx+10] ? idx + 10 : this.filteredData.length - 1][this.sourceValue]);
+              this.select(this.filteredData[this.filteredData[idx+10] ? idx + 10 : this.filteredData.length - 1]);
               break;
             // Page up (10)
             case 33:
-              this.select(this.filteredData[this.filteredData[idx-10] ? idx-10 : 0][this.sourceValue]);
+              this.select(this.filteredData[this.filteredData[idx-10] ? idx-10 : 0]);
               break;
             // End
             case 35:
-              this.select(this.filteredData[this.filteredData.length - 1][this.sourceValue]);
+              this.select(this.filteredData[this.filteredData.length - 1]);
               break;
             // Home
             case 36:
-              this.select(this.filteredData[0][this.sourceValue]);
+              this.select(this.filteredData[0]);
               break;
 
           }
@@ -254,7 +266,7 @@
             this.currentText = row[this.sourceText];
           }
         }
-        if ( !this.currentText && !this.nullable && this.filteredData.length ){
+        if ( !this.currentText && !this.isNullable && this.filteredData.length ){
           this.emitInput(this.filteredData[0][this.sourceValue]);
         }
         this.onResize();
@@ -263,20 +275,12 @@
     },
     watch: {
       /**
-       * @watch isOpened
-       * @param newVal 
-       */
-      isOpened(newVal){
-        this._list[newVal ? 'show' : 'hide']();
-      },
-      /**
        * @watch value
        * @param newVal 
        * @param oldVal 
        */
       value(newVal, oldVal){
         let row = bbn.fn.get_row(this.currentData, this.sourceValue, newVal);
-        bbn.fn.log(newVal, row);
         if ( row ){
           this.currentText = row[this.sourceText];
         }

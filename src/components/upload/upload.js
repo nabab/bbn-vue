@@ -446,6 +446,9 @@
       widgetValue(val){
         this.$emit('input', this.getValue);
         this.$emit('change', this.getValue);
+      },
+      data(val){
+        this.widget.setParams(val);
       }
     },
     components: {

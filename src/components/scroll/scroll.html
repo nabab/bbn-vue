@@ -1,5 +1,6 @@
 <div :class="elementClass"
-     :style="elementStyle">
+     :style="elementStyle"
+>
   <div :class="{'bbn-scroll-container': true, 'bbn-abs': !isMeasuring}"
        :style="isMeasuring ? {} : {
          right: hasScrollX ? scrollPos : 0,
@@ -12,7 +13,6 @@
   >
     <div :class="{'bbn-scroll-content': !isMeasuring}"
          ref="scrollContent"
-         @mousemove.stop="mousemove"
          @ready.stop="waitReady"
          @destroyed="init"
          :style="isMeasuring ? {} : {

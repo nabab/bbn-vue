@@ -319,7 +319,7 @@
        * @return {Boolean}
        */
       canSubmit(){
-        return this.action && (this.isModified() || this.prefilled);
+        return (this.action && this.isModified() || this.prefilled);
       },
       /**
        * Based on the prop fixedFooter and fullScreen, a string is returned containing the classes for the form template.
@@ -461,7 +461,7 @@
         return this.source;//this.sendModel ? this.source : bbn.fn.formdata(this.$el);
       },
       isModified(){
-        return this.prefilled || !bbn.fn.isSame(bbn.fn.extend(true, {}, this.getData(this.$el) || {}), bbn.fn.extend(true, {}, this.originalData));
+        return this.prefilled || !bbn.fn.isSame(this.source, this.originalData);
       },
       closePopup(window, ev){
         if ( this.window && this.$el ){
@@ -543,7 +543,9 @@
       reset(){
         this.isPosted = false;
         bbn.fn.iterate(this.originalData, (val, name) => {
-          this.$set(this.source, name, val);
+          if ( this.source[name] !== val ){
+            this.$set(this.source, name, val);
+          }
         });
         this.$forceUpdate();
         return true;

@@ -260,6 +260,35 @@
     },
 
     methods: {
+      link(item, idx){
+        let path = [idx],
+            cp = this;
+        if ( (this.hierarchy.selectedNode === false) || ( this.hierarchy.selectedNode.text !== item.text) ) {
+          this.selected = idx;
+          while (cp.nodeIdx !== undefined) {
+            path.unshift(cp.nodeIdx);
+            cp = cp.$parent;
+          }
+          this.hierarchy.selectedNode = item;
+          this.hierarchy.$emit('link', item);
+          bbn.fn.log(this.hierarchy.selectedNode, this.hierarchy.selectedNode.text)
+          
+        }
+      },
+      getClasses(i, item){
+        let obj = {
+          'bbn-bordered-internal': this.hierarchy.bordered,
+          'bbn-list-node': true,
+          'bbn-w-100': true,
+          'bbn-unselectable': true,
+          'selected': this.selected === i,
+          'v-padding': !this.component,
+          'bbn-state-hover': this.isSame(this.hierarchy.overNode, item) && (this.hierarchy.selectedNode.text !== item.text),
+          'bbn-state-selected': (this.selected === i) && this.isSame(this.hierarchy.selectedNode, item),
+          'border-bottom': (i === this.items.length - 1) && this.isRoot
+        }
+        return obj;
+      },
       isSame(obj, ob) {
         return bbn.fn.numProperties(bbn.fn.diffObj(obj, ob)) === 0;
       },
@@ -273,6 +302,7 @@
             cp = cp.$parent;
           }
           this.hierarchy.selectedNode = item;
+          bbn.fn.log(this.hierarchy.selectedNode, this.hierarchy.selectedNode.text)
           return this.hierarchy.$emit('select', item, idx, path );
         }
         else{
@@ -304,7 +334,6 @@
           this.expanded.splice(idx, 1)
           this.hierarchy.$emit('close', i, this.items[i]);
         }
-
       },
 
       addExpanded(i) {
@@ -317,15 +346,25 @@
 
       },
 
-      toggleExpanded(i) {
-
-        let idx = this.expanded.indexOf(i);
-        if (idx > -1) {
-          this.removeExpanded(i);
-        } else {
-          this.addExpanded(i);
-          //this.hierarchy.$emit('open', i, this.items[i]);
+      toggleExpanded(i, item, e) {
+        bbn.fn.log('ddd',arguments)
+        if ( item.items ){
+          let idx = this.expanded.indexOf(i);
+          if (idx > -1) {
+            this.removeExpanded(i);
+          }
+          else {
+            this.addExpanded(i);
+            //this.hierarchy.$emit('open', i, this.items[i]);
+          }
         }
+        else if (!item.items.length && !item.url) {
+          this.select(item, idx)
+          
+          bbn.fn.log('8888888888888888888',arguments)
+        }
+       
+        
       },
 
       isExpanded(i) {
@@ -651,6 +690,7 @@
     },
 
     mounted() {
+      
       if (this.isRoot && this.autoload) {
         this.load();
       } else if (this.isExpanded) {

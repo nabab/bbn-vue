@@ -129,8 +129,18 @@
         /**
          * @prop {Array} [[]] hidden
          */
-        hidden: []
+        hidden: [],
+        sortTargetIndex: null,
+        sortOriginIndex: null,
+        isSorting: false
       };
+    },
+    computed: {
+      currentWidgets(){
+        return bbn.fn.filter(this.widgets, (a) => {
+          return !a.hidden;
+        });
+      }
     },
     methods: {
       /**
@@ -211,45 +221,53 @@
             return false;
           }
         });
-        if ( this.sortable && !$ele.hasClass("ui-sortable") ){
-          let oldIdx = false;
-          $ele.sortable({
-            placeholder: "bbn-widget bbn-bg-grey bbn-widget-placeholder",
-            opacity: 0.5,
-            forcePlaceholderSize: true,
-            handle: ".bbn-header .ui-sortable-handle",
-            start: (e, ui) => {
-              oldIdx = ui.item.index();
-            },
-            stop: (e, ui) => {
-              if ( oldIdx > -1 ){
-                let newIdx = ui.item.index();
-                if ( this.widgets[oldIdx] && this.widgets[oldIdx].key && (newIdx !== oldIdx) ){
-                  if ( this.url ){
-                    try {
-                      bbn.fn.post(this.url + 'move', {
-                        id: this.widgets[oldIdx].key,
-                        index: newIdx
-                      }, (d) => {
-                        if ( d.success ){
-                          this.move(oldIdx, newIdx);
-                        }
-                        else{
-                          $ele.sortable("cancel");
-                        }
-                      });
+        if ( this.sortable ){
+          /*
+          if ( !$ele.hasClass("ui-sortable") ){
+            let oldIdx = false;
+            $ele.sortable({
+              placeholder: "bbn-widget bbn-bg-grey bbn-widget-placeholder",
+              opacity: 0.5,
+              forcePlaceholderSize: true,
+              handle: ".bbn-header .bbn-sortable-handle",
+              start: (e, ui) => {
+                bbn.fn.log("SORTIONG");
+                oldIdx = ui.item.index();
+              },
+              stop: (e, ui) => {
+                if ( oldIdx > -1 ){
+                  let newIdx = ui.item.index();
+                  if ( this.widgets[oldIdx] && this.widgets[oldIdx].key && (newIdx !== oldIdx) ){
+                    if ( this.url ){
+                      try {
+                        bbn.fn.post(this.url + 'move', {
+                          id: this.widgets[oldIdx].key,
+                          index: newIdx
+                        }, (d) => {
+                          if ( d.success ){
+                            this.move(oldIdx, newIdx);
+                          }
+                          else{
+                            $ele.sortable("cancel");
+                          }
+                        });
+                      }
+                      catch (e){
+                        throw new Error(bbn._("Impossible to find the index"));
+                      }
                     }
-                    catch (e){
-                      throw new Error(bbn._("Impossible to find the index"));
+                    else{
+                      this.move(oldIdx, newIdx);
                     }
-                  }
-                  else{
-                    this.move(oldIdx, newIdx);
                   }
                 }
               }
-            }
-          })
+            });
+          }
+          else{
+            $ele.sortable('refresh');
+          }
+          */
         }
         $ele.css({
           "-moz-column-count": num,
@@ -279,32 +297,22 @@
        */
       move(oldIdx, newIdx){
         // Correcting the index counting the hidden widgets
-        $.each(this.widgets, (i, a) => {
-          if ( a.hidden ){
-            if ( i <= oldIdx ){
-              oldIdx++;
-            }
-            if ( i <= newIdx ){
-              newIdx++;
-            }
-            if ( (i > oldIdx) && (i > newIdx) ){
-              return false;
-            }
-          }
-        });
+        this.$set(this.widgets[oldIdx], "index", newIdx);
         bbn.fn.move(this.widgets, oldIdx, newIdx);
-        $.each(this.widgets, (i, a) => {
+        bbn.fn.each(this.widgets, (a, i) => {
           if ( i !== a.index ){
-            this.updateWidget(this.widgets[i].uid, {index: i});
+            this.$set(this.widgets[i], "index", i);
           }
         });
         if ( this.storageFullName ){
           let cps = bbn.vue.findAll(this.$root, 'bbn-dashboard');
+          /*
           $.each(cps, (i, cp) => {
             if ( (cp !== this) && (cp.storageFullName === this.storageFullName) ){
               cp.moveWidgets(oldIdx, newIdx);
             }
           })
+          */
         }
       },
       /**
@@ -347,6 +355,14 @@
             icon: 'nf nf-mdi-widgets',
             // We keep the original source order
             items: items
+          }));
+          this.menu.push(tab.addMenu({
+            text: bbn._("Widgets"),
+            mode: 'options',
+            icon: 'nf nf-mdi-widgets',
+            command: () => {
+              tab.getPopup().confirm(bbn._("Etes-vous sur de vouloir réínitialiser la vue et perdre vos réglages?"))
+            }
           }));
         }
       },
@@ -405,7 +421,7 @@
        * @returns {Object}
        */
       normalize(obj_orig){
-        let obj = bbn.fn.clone(obj_orig);
+        let obj = obj_orig || {};
         obj.hidden = !!obj.hidden;
         if ( !obj.key ){
           obj.key = obj.uid ? obj.uid : bbn.vue.makeUID();
@@ -424,12 +440,25 @@
        */
       add(obj, idx){
         if ( (idx === undefined) || (idx < 0) || (obj.key >= this.widgets.length) ){
+          obj.index = this.widgets.length;
           this.order.push(obj.key);
           this.widgets.push(obj);
         }
         else{
+          this.widgets.each((a) => {
+            if ( a.index >= idx ){
+              a.index++;
+            }
+          });
+          obj.index = idx;
           this.order.splice(idx, 0, obj.key);
           this.widgets.splice(idx, 0, obj);
+        }
+        if ( obj.storageFullName ){
+          let tmp = this.getStorage(obj.storageFullName, true);
+          if ( tmp ){
+            bbn.fn.extend(obj, tmp);
+          }
         }
         return obj;
       },
@@ -465,19 +494,7 @@
         this.originalSource.push(this.normalize(obj));
       });
       let cfg = [];
-
-      $.each(this.originalSource, (i, obj) => {
-        let tmp = this.getStorage(obj.storageFullName, true);
-        if ( tmp ){
-          bbn.fn.extend(this.originalSource[i], tmp);
-        }
-        else if ( (obj.index === undefined) || !bbn.fn.isNumber(obj.index) ){
-          this.originalSource[i].index = 10000+i;
-        }
-        cfg.push(tmp);
-      });
-      let widgets = bbn.fn.order(this.originalSource.slice(), "index");
-      $.each(widgets, (i, obj) => {
+      $.each(bbn.fn.order(this.originalSource.slice(), "index"), (i, obj) => {
         this.add(obj);
       });
     },
@@ -488,6 +505,7 @@
      */
     mounted(){
       this.ready  = true;
+      this.onResize();
       this.updateMenu();
     },
     /**
@@ -497,6 +515,27 @@
     updated(){
       this.selfEmit(true);
     },
+    watch: {
+      sortTargetIndex(newVal){
+        if (
+          this.sortable &&
+          this.isSorting &&
+          (this.sortOriginIndex !== newVal) &&
+          this.widgets[this.sortOriginIndex] &&
+          this.widgets[this.sortTargetIndex]
+        ){
+          let o = this.sortOriginIndex;
+          this.sortOriginIndex = newVal;
+          this.move(o, newVal);
+        }
+      },
+      isSorting(newVal){
+        if ( !newVal ){
+          this.sortTargetIndex = null;
+        }
+
+      }
+    }
   });
 
 })(jQuery, bbn);

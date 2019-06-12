@@ -1,6 +1,13 @@
-<div :class="componentClass">
-  <div class="slot">
-    <slot></slot>
-  </div>
+<div :class="['bbn-header',componentClass, {
+  'bbn-w-100': (orientation === 'horizontal'),
+  'bbn-h-100': (orientation === 'vertical'),
+  'bbn-vmiddle':(orientation === 'horizontal'),
+}]"
+     :style="style" 
+   
+>
+  <template>
+    <slot>
+    </slot>
+  </template> 
 </div>
-

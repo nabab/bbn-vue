@@ -1,4 +1,5 @@
-<div :class="['bbn-widget', 'bbn-bordered', 'bbn-radius', 'bbn-alt-background', componentClass, full ? 'full' : '']">
+<div :class="['bbn-widget', 'bbn-bordered', 'bbn-radius', 'bbn-alt-background', componentClass, full ? 'full' : '']"
+     @mouseenter="$emit('mouseenter')">
   <!-- HEADER -->
   <div class="bbn-header bbn-bordered-bottom bbn-vxspadded bbn-unselectable">
     <div class="bbn-flex-width">
@@ -24,8 +25,11 @@
       </div>
       <!-- TITLE -->
       <div class="bbn-flex-fill">
-        <h3 :class="{'ui-sortable-handle': dashboard && dashboard.sortable}"
+        <h3 :style="dashboard && dashboard.sortable ? 'cursor: move' : ''"
             v-html="title"
+            @mousedown="$emit('sortstart')"
+            @touchstart="$emit('sortstart')"
+            @dragstart="$emit('sortstart')"
         ></h3>
       </div>
       <!-- BUTTONS RIGHT -->

@@ -135,7 +135,7 @@
         return this.router ? this.router.fullBaseURL : '';
       },
       currentURL(){
-        return this.router ? this.router.fullBaseURL : '';
+        return this.router ? this.router.currentURL : '';
       },
       unsavedTabs(){
         return this.router ? this.router.dirtyContainers : [];
@@ -249,6 +249,7 @@
         if ( (idx !== false) && (idx !== this.selected) ){
           this.selected = idx;
         }
+        this.$emit('change', this.currentURL);
       },
 
       getTabColor(idx){
