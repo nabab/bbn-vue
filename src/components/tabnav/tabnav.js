@@ -9,7 +9,7 @@
   *
   * @created 15/02/2017
   */
-(function($, bbn, Vue){
+(function(bbn, Vue){
   "use strict";
 
   /**
@@ -167,7 +167,7 @@
           baseURL: fullURL,
           views: []
         };
-        $.each(this.tabs, (i, obj) => {
+        bbn.fn.each(this.tabs, (obj, i) => {
           if ( obj.url && obj.load ){
             let res = {
               url: obj.url,
@@ -909,4 +909,4 @@
     }
   });
 
-})(jQuery, bbn, Vue);
+})(bbn, Vue);

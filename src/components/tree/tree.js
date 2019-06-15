@@ -1460,7 +1460,7 @@
            * @memberof bbn-tree-node
            */
           activate(){
-            let ev = $.Event('activate');
+            let ev = new Event('activate');
             this.tree.$emit('activate', this, ev);
           },
           remove(){
@@ -1546,9 +1546,9 @@
               if ( this.tree.selectedNode ){
                 this.tree.selectedNode.isSelected = false;
               }
-              let ev = $.Event("dragStart");
+              let ev = new Event("dragStart");
               this.tree.$emit("dragStart", this, ev);
-              if ( !ev.isDefaultPrevented() ){
+              if (!ev.defaultPrevented) {
                 this.tree.realDragging = true;
                 let helper = this.tree.$refs.helper;
                 helper.innerHTML = this.$el.outerHTML;
@@ -1579,12 +1579,15 @@
                   });
                 }
                 if ( ok ){
-                  let ev = $.Event("dragOver");
+                  let ev = new Event("dragOver", {cancelable: true});
                   a.$emit("dragOver", this, ev, a.overNode);
-                  if ( !ev.isDefaultPrevented() ){
-                    $(a.overNode.$el)
-                      .children("span.node")
-                      .addClass("dropping");
+                  if (!ev.defaultPrevented) {
+                    bbn.fn.each(a.overNode.$el.chilNodes, (ele) => {
+                      if ((ele.tagName === 'SPAN') && (ele.classList.contains('node'))) {
+                        ele.classList.add('dropping');
+                        return false;
+                      }
+                    })
                   }
                 }
                 else{
@@ -1614,9 +1617,9 @@
                     !a.isNodeOf(a.overNode, this.tree.dragging)
                   ){
                     $(a.overNode.$el).children("span.node").removeClass("dropping");
-                    let ev = $.Event("dragEnd");
+                    let ev = new Event("dragEnd", {cancelable: true});
                     a.tree.$emit("dragEnd", ev, this, a.overNode);
-                    if ( !ev.isDefaultPrevented() ){
+                    if ( !ev.defaultPrevented ){
                       if ( a === this.tree ){
                         this.tree.move(this, a.overNode);
                       }
@@ -1625,7 +1628,7 @@
                 }
               }
               else{
-                let ev = $.Event("dragEnd");
+                let ev = new Event("dragEnd");
                 this.tree.$emit("dragEnd", this, ev);
               }
             }
@@ -1807,7 +1810,7 @@
                 this.tree.selectedNode.isSelected = false;
                 this.tree.$emit('unselect', this);
               }
-              let ev = $.Event('select');
+              let ev = new Event('select');
               this.tree.$emit('select', this, ev);
               this.tree.selectedNode = this;
             }

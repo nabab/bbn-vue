@@ -12,7 +12,7 @@
  */
 
 
-(function ($, bbn) {
+(function (bbn) {
   "use strict";
 
   const NODE_PROPERTIES = ["selected", "selectedClass", "activeClass", "expanded", "tooltip", "icon", "selectable", "text", "data", "cls", "component", "num", "source", "level", "items"];
@@ -395,7 +395,7 @@
         let items = [];
         if (bbn.fn.isArray(this.source)) {
           if (this.map) {
-            $.each(this.source, (i, a) => {
+            bbn.fn.each(this.source, (a, i) => {
               items.push(this.map(a));
             })
           } else {
@@ -471,7 +471,7 @@
         if (obj.text || obj.icon) {
           for (let n in obj) {
             if (obj.hasOwnProperty(n) && (typeof n === 'string')) {
-              if ($.inArray(n, NODE_PROPERTIES) > -1) {
+              if (NODE_PROPERTIES.indexOf(this.normalize) > -1) {
                 r[n] = obj[n];
               } else {
                 r.data[n] = obj[n];
@@ -492,7 +492,7 @@
             min = 1,
             max = this.hierarchy.activeNode.$parent.$children.length - 1,
             parent = this.hierarchy.activeNode.$parent;
-          $.each(this.hierarchy.activeNode.$parent.$children, (i, a) => {
+          bbn.fn.each(this.hierarchy.activeNode.$parent.$children, (i, a) => {
             if (a === this.hierarchy.activeNode) {
               idx = i;
               return false;
@@ -550,7 +550,7 @@
                 while ((p.level > 0) && !p.$children[idx + 1]) {
                   c = p;
                   p = p.$parent;
-                  $.each(p.$children, (i, a) => {
+                  bbn.fn.each(p.$children, (a, i) => {
                     if (a === c) {
                       idx = i;
                       return false;
@@ -632,7 +632,7 @@
 
       mapper(fn, data) {
         let res = [];
-        $.each(data, (i, a) => {
+        bbn.fn.each(data, (a, i) => {
           let tmp = fn(a);
           if (tmp.items) {
             tmp.items = this.mapper(fn, tmp.items);
@@ -733,4 +733,4 @@
     }
   });
 
-})(jQuery, bbn);
+})(bbn);

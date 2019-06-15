@@ -660,10 +660,10 @@
       remove(misc, force){
         let idx = this.getIndex(misc);
         if ( (idx > -1) && !this.views[idx].slot ){
-          let ev = $.Event('close');
+          let ev = new Event('close', {cancelable: true});
           if ( this.isDirty &&
             this.views[idx].dirty &&
-            !ev.isDefaultPrevented() &&
+            !ev.defaultPrevented &&
             !force
           ){
             ev.preventDefault();
@@ -685,7 +685,7 @@
           else if ( !force ){
             this.$emit('close', idx, ev);
           }
-          if ( !ev.isDefaultPrevented() || force ){
+          if ( !ev.defaultPrevented || force ){
             let t = this.views.splice(idx, 1);
             delete this.urls[t.url];
             bbn.fn.each(this.views, (v, i) => {

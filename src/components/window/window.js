@@ -165,7 +165,7 @@
           this.closingFunctions = [];
         }
         else{
-          this.closingFunctions = $.grep(this.closingFunctions, (f) => {
+          this.closingFunctions = bbn.fn.filter(this.closingFunctions, (f) => {
             return fn !== f;
           })
         }

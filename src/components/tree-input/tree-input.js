@@ -1,12 +1,12 @@
 /**
  * Created by BBN on 10/02/2017.
  */
-(function($, bbn){
+(function(bbn){
   "use strict";
 
   var src = function(url, id){
     return bbn.fn.post(url + '/' + id).promise().then(function(d){
-      return $.map(d.data, function(v){
+      return bbn.fn.map(d.data, function(v){
         var r = {
           title: v.text,
           /** @todo apply a function on the icons for removing all which only have 'cogs' (without nf nf-fa-) */
@@ -100,4 +100,4 @@
     }
   });
 
-})(jQuery, bbn);
+})(bbn);

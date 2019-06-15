@@ -68,7 +68,7 @@
       if ( this.source ){
         items =bbn.fn.isFunction(this.source) ? this.source() : this.source.slice();
         if ( this.mapper ){
-          $.map(items, (a) => {
+          bbn.fn.map(items, (a) => {
             return this.mapper(a);
           })
         }

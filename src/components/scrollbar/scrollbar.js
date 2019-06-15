@@ -9,7 +9,7 @@
  *
  * @created 10/07/2017
  */
-(function($, bbn, Vue){
+(function(bbn, Vue){
   "use strict";
 
   Vue.component('bbn-scrollbar', {
@@ -190,7 +190,7 @@
           let anim = {};
           anim[prop] = this.currentScroll;
           if ( animate ){
-            $.each(this.scrollableElements(), (i, a) => {
+            bbn.fn.each(this.scrollableElements(), (a, i) => {
               if (
                 (a !== this.realContainer) &&
                 (a !== origin) &&
@@ -207,7 +207,7 @@
             }
           }
           else {
-            $.each(this.scrollableElements(), (i, a) => {
+            bbn.fn.each(this.scrollableElements(), (a, i) => {
               if ( (a !== this.realContainer) && (a !== origin) && (a[prop] !== this.currentScroll) ){
                 a[prop] = this.currentScroll;
               }
@@ -526,4 +526,4 @@
     },
   });
 
-})(window.jQuery, window.bbn, window.Vue);
+})(window.bbn, window.Vue);

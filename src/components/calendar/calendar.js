@@ -663,9 +663,9 @@
       */
       refresh(force){
         if ( !force ){
-          let ev = $.Event('dataLoad');
+          let ev = new Event('dataLoad', {cancelable: true});
           this.$emit('dataLoad', ev, this);
-          if (ev.isDefaultPrevented()) {
+          if (ev.defaultPrevented) {
             return false;
           }
         }
@@ -690,9 +690,9 @@
           else{
             this.currentDate.add(...this.currentCfg[skip && this.currentCfg.stepSkip ? 'stepSkip' : 'step']);
           }
-          let ev = $.Event('next');
+          let ev = new Event('next', {cancelable: true});
           this.$emit('next', ev, this);
-          if (ev.isDefaultPrevented()) {
+          if (ev.defaultPrevented) {
             return false;
           }
           this.refresh();
@@ -714,9 +714,9 @@
           else {
             this.currentDate.subtract(...this.currentCfg[skip && this.currentCfg.stepSkip ? 'stepSkip' : 'step']);
           }
-          let ev = $.Event('prev');
+          let ev = new Event('prev');
           this.$emit('prev', ev, this);
-          if (ev.isDefaultPrevented()) {
+          if (ev.defaultPrevented) {
             return false;
           }
           this.refresh();

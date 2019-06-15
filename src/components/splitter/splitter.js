@@ -291,7 +291,7 @@
        */
       updatePositions(){
         /*
-        $.each(this.panes, (i, pane) => {
+        bbn.fn.each(this.panes, (pane, i) => {
           this.$children[pane.index].$el.style.gridColumn = this.currentOrientation === 'horizontal' ? pane.position : 1;
           this.$children[pane.index].$el.style.gridRow = this.currentOrientation === 'vertical' ? pane.position : 1;
         })

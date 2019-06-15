@@ -5,3 +5,4 @@ logs
 .idea/
 _DS_STORE*
 src/components/old/
+*.DS_Store

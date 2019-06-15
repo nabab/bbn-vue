@@ -59,7 +59,7 @@
     basicComponent: {
       props: {
         /**
-         * The classes to add to the component.
+         * The classes added to the component.
          * @prop {Array} [[]] componentClass
          * @memberof basicComponent
          */
@@ -207,7 +207,7 @@
           type: String
         },
         /**
-         * The classes to give to the component.
+         * The classes added to the component.
          * @prop {Array} [[]] componentClass
          * @memberof localStorageComponent
          */
@@ -329,7 +329,7 @@
         }
       },
       /**
-       * Gives the class bbn-local-storage-component to the component.
+       * Adds the class bbn-local-storage-component to the component.
        * @event created
        * @memberof localStorageComponent
        */
@@ -446,7 +446,7 @@
     dataEditorComponent: {
       props: {
         /**
-         * The classes to give to the component.
+         * The classes added to the component.
          * @prop {Array} componentClass
          * @memberof dataEditorComponent
          */
@@ -559,7 +559,7 @@
         }
       },
       /**
-       * Gives the class 'bbn-data-editor-component' to the component.
+       * Adds the class 'bbn-data-editor-component' to the component.
        * @event created
        * @memberof dataEditorComponent
        */
@@ -574,7 +574,7 @@
     eventsComponent: {
       props: {
         /**
-         * The classes to give to the component.
+         * The classes added to the component.
          * @memberof eventsComponent
          * @prop {Array} [[]] componentClass 
          */
@@ -723,7 +723,7 @@
         }
       },
       /**
-       * Gives the class 'bbn-events-component' to the component.
+       * Adds the class 'bbn-events-component' to the component.
        * @event created
        * @memberof eventsComponent
        */
@@ -1424,7 +1424,7 @@
           default: false
         },
         /**
-         * The classes to give to the component.
+         * The classes added to the component.
          * @prop {Array} componentClass
          * @memberof dataSourceComponent
          */
@@ -1492,7 +1492,7 @@
         }
       },
       /**
-       * Gives the class 'bbn-datasource-component' to the component.
+       * Adds the class 'bbn-datasource-component' to the component.
        * @event created
        * @memberof dataSourceComponent
        */
@@ -1514,7 +1514,7 @@
           type: [Object, Function]
         },
         /**
-         * The classes to give to the component.
+         * The classes added to the component.
          * @prop {Array} [[]] componentClass
          * @memberof memoryComponent
          */
@@ -1526,7 +1526,7 @@
         }
       },
       /**
-       * Gives the class 'bbn-memory-component' to the component.
+       * Adds the class 'bbn-memory-component' to the component.
        * @event created
        * @memberof memoryComponent
        */
@@ -1622,7 +1622,7 @@
           type: String
         },
         /**
-         * The classes to give to the component.
+         * The classes added to the component.
          * @prop {Array} [[]] componentClass  
          * @memberof inputComponent
          */
@@ -1734,7 +1734,7 @@
         }
       },
       /**
-       * Gives the class 'bbn-input-component' to the component.
+       * Adds the class 'bbn-input-component' to the component.
        * @event created
        * @memberof inputComponent
        */
@@ -1802,7 +1802,7 @@
     optionComponent: {
       props: {
         /**
-        * The classes to give to the component.
+        * The classes added to the component.
         * @prop {Array} [[]] componentClass   
         * @memberof optionComponent
         */
@@ -1824,7 +1824,7 @@
         },
       },
       /**
-       * Gives the class 'bbn-option-component' to the component.
+       * Adds the class 'bbn-option-component' to the component.
        * @event created
        * @memberof optionComponent
        */
@@ -1859,7 +1859,7 @@
           }
         },
         /**
-         * The classes to give to the component.
+         * The classes added to the component.
          * @prop {Array} componentClass
          * @memberof widgetComponent
          */
@@ -1871,7 +1871,7 @@
         }
       },
       /**
-       * Gives the class 'bbns-widget-component' to the component.
+       * Adds the class 'bbns-widget-component' to the component.
        * @event created
        * @memberof widgetComponent
        */
@@ -1932,7 +1932,7 @@
     resizerComponent: {
       props: {
         /**
-         * The classes to give to the component.
+         * The classes added to the component.
          * @prop {Array} componentClass
          * @memberof resizerComponent
          */
@@ -2082,7 +2082,7 @@
         }
       },
       /**
-       * Gives the class 'bbn-resizer-component' to the component.
+       * Adds the class 'bbn-resizer-component' to the component.
        * @event created
        * @memberof resizerComponent
        */
@@ -2112,7 +2112,7 @@
      */
     closeComponent: {
       /**
-       * Gives the class 'bbn-close-component' to the component.
+       * Adds the class 'bbn-close-component' to the component.
        * @event created
        * @memberof closeComponent
        */
@@ -2195,7 +2195,7 @@
           type: String
         },
         /**
-         * The classes to give to the component.
+         * The classes added to the component.
          * @prop {String|Function} cls
          * @memberof fieldComponent
          */
@@ -2434,12 +2434,12 @@
         },
         /**
          * Defines if the component has to be cached.
-         * @prop {Boolean} [true] cached
+         * @prop {Boolean} [false] cached
          * @memberof viewComponent
          */
         cached: {
           type: Boolean,
-          default: true
+          default: false
         },
         /**
          * Defines if the component has to be scrollable.
@@ -2781,7 +2781,7 @@
         }
       },
       /**
-       * Gives the classes 'bbn-observer-component', 'bbn-observer', 'bbn-observer-' + this.observerUID to the component
+       * Adds the classes 'bbn-observer-component', 'bbn-observer', 'bbn-observer-' + this.observerUID to the component
        * @event created
        * @memberof observerComponent
        */
@@ -2932,7 +2932,7 @@
         }
       },
       /**
-       * Gives the class 'bbn-url-component' to the component
+       * Adds the class 'bbn-url-component' to the component
        * @event created 
        * @memberof urlComponent
        */
