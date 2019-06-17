@@ -10,7 +10,7 @@
   * @created 13/06/2017.
   */
  
-(($, bbn) => {
+((bbn) => {
   "use strict";
 
   Vue.component('bbn-file', {
@@ -201,4 +201,4 @@
     }
   });
 
-})(jQuery, bbn);
+})(bbn);

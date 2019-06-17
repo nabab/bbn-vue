@@ -11,7 +11,7 @@
  *
  * @author Mirko Argentino
  */
-(function($, bbn){
+(function(bbn){
   "use strict";
 
   Vue.component('bbn-datetimepicker', {
@@ -628,4 +628,4 @@
     }
   });
 
-})(jQuery, bbn);
+})(bbn);

@@ -9,7 +9,7 @@
  *
  * @created 15/52/2017.
  */
-(function($, bbn){
+(function(bbn){
   "use strict";
 
   /**
@@ -294,4 +294,4 @@
     }
   });
 
-})(jQuery, bbn);
+})(bbn);

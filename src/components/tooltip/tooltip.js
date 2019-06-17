@@ -8,7 +8,7 @@
  * @author BBN Solutions
  */
 
-(function($, bbn){
+(function(bbn){
   "use strict";
 
   /**
@@ -90,4 +90,4 @@
     }
   });
 
-})(jQuery, bbn);
+})(bbn);

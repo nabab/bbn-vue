@@ -7,7 +7,8 @@
         componentClass
       ]"
       v-if="currentVisible && (content || component || filteredData.length || $slots.default)"
-      @mouseleave="blur"
+      @mouseleave="leave"
+      @mouseenter="isOver = true"
       :style="currentStyle">
   <header v-if="title"
           ref="header"
@@ -68,7 +69,8 @@
             :class="{
               'bbn-reactive': true,
               'bbn-disabled': !!li.disabled,
-              'bbn-state-selected': !!li.selected
+              'bbn-state-selected': !!li.selected,
+              'bbn-state-active': currentSelected === idx
             }">
           <component v-if="itemComponent" :is="itemComponent" :source="li" @mounted="selfEmit(true)"></component>
           <span v-else>

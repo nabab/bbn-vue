@@ -234,7 +234,7 @@
         if ( vm.num && !vm.isShown ){
           for ( var n in vm.todo ){
             if ( vm.todo[n].items.length ){
-              $.each(vm.todo[n].items, function(i, v){
+              bbn.fn.each(vm.todo[n].items, function(v, i){
                 vm.show(v, v.type);
               });
               delete vm.todo[n];

@@ -6,7 +6,7 @@
  * @author Mirko Argentino
  */
 
-(function($, bbn){
+(function(bbn){
   "use strict"
 
   Vue.component('bbn-masked', {
@@ -728,4 +728,4 @@
     }
   });
 
-})(jQuery, bbn);
+})(bbn);

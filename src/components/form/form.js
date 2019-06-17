@@ -13,7 +13,7 @@
  * @author BBN Solutions
  */
 
-(function($, bbn){
+(function(bbn){
   "use strict";
 
   Vue.component('bbn-form', {
@@ -619,4 +619,4 @@
     }
   });
 
-})(jQuery, bbn);
+})(bbn);

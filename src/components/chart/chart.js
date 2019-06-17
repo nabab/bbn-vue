@@ -11,7 +11,7 @@
  * @created 24/05/2017
  */
 
-(($, bbn) => {
+((bbn) => {
   "use strict";
 
   Vue.component('bbn-chart', {
@@ -670,7 +670,7 @@
        */
       legendFixed(){
         if ( Array.isArray(this.legend) && (typeof this.legend[0] === 'object') ){
-          return $.map(this.legend, (l) => {
+          return bbn.fn.map(this.legend, (l) => {
             return l.text || null;
           });
         }
@@ -686,7 +686,7 @@
        */
       legendTitles(){
         if ( Array.isArray(this.legend) && (typeof this.legend[0] === 'object') ){
-          return $.map(this.legend, (l, i) => {
+          return bbn.fn.map(this.legend, (l) => {
             return l.title || (l.text || null) ;
           });
         }
@@ -1236,7 +1236,7 @@
                 text = '';
             if ( lb.length ){
               text = '<tspan>' + lb[0] + '</tspan>';
-              $.each(lb, (i, v) => {
+              bbn.fn.each(lb, (v, i) => {
                 if ( i > 0 ){
                   text += '<tspan dy="' + yOffset + '" x="' + chartData.x + '">' + v + '</tspan>';
                   chartData.y -= yOffset;
@@ -1402,8 +1402,8 @@
         return color.element._node.parentElement.className.baseVal.replace('ct-series ', '').slice(-1).charCodeAt()-97;
       },
       /*trasformData(){
-        $.each(this.source.series, (i, v) => {
-          this.source.series[i] = $.map(v, (el, idx) => {
+        bbn.fn.each(this.source.series, (v, i) => {
+          this.source.series[i] = bbn.fn.map(v, (el, idx) => {
             if ( (typeof el !== 'object') && this.source.labels[idx] ){
               return {
                 x: this.source.labels[idx],
@@ -1417,7 +1417,7 @@
       },
       getLabelsLength(){
         let length = 0;
-        $.each(this.source.series, (i,v) => {
+        bbn.fn.each(this.source.series, (v,i) => {
           length = v.length > length ? v.length : length;
         });
         return length;
@@ -1504,4 +1504,4 @@
       });
     }
   });
-})(jQuery, bbn);
+})(bbn);

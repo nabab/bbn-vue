@@ -15,7 +15,7 @@
  * @copyright BBN Solutions
  */
 
-(function ($, bbn) {
+(function (bbn) {
   "use strict";
   const METHODS4BUTTONS = ['insert', 'select', 'edit', 'add', 'copy', 'delete'];
 
@@ -3110,4 +3110,4 @@
     }
   });
 
-})(window.jQuery, bbn);
+})(bbn);

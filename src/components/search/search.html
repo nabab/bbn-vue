@@ -1,10 +1,14 @@
-<div :class="componentClass" style="width: 80%">
-  <bbn-input  :value="value"
-              ref="element"
-              style="width: 100%"
-              button-left="nf nf-fa-times"
-              action-left="clear"
-              :auto-hide-left="true"
-              button-right="nf nf-fa-search"
-  ></bbn-input>
+<div :class="componentClass">
+  <div class="bbn-block bbn-h-100 bbn-vmiddle">
+    <div class="bbn-global-search bbn-vmiddle bbn-lg">
+      <bbn-dropdown :autocomplete="true"
+                    :autobind="false"
+                    :source="source"
+                    source-value="sourceValue"
+                    source-text="sourceText"
+                    :component="component"
+                    :template="template">
+      </bbn-dropdown>
+    </div>
+  </div>
 </div>

@@ -10,7 +10,7 @@
   * @created 10/02/2017
   */
 
-(function($, bbn){
+(function(bbn){
   "use strict";
   Vue.component('bbn-scroll', {
     /**
@@ -366,14 +366,62 @@
        * @fires $refs.yScroller.scrollTo
        */
       scrollTo(x, y, animate){
-        if ( !y && (typeof x === HTMLElement) ){
+        if (!this.hasScroll || !this.ready) {
+          return;
+        }
+        if (!y && ((typeof x === HTMLElement) || bbn.fn.isVue(x))) {
           y = x;
         }
+        let todo = [];
         if ( this.$refs.xScroller && (x !== undefined) && (x !== null) ){
           this.$refs.xScroller.scrollTo(x, animate);
         }
+        else if (this.hasScrollX) {
+          todo.push('Left');
+        }
         if ( this.$refs.yScroller && (y !== undefined) && (y !== null) ){
           this.$refs.yScroller.scrollTo(y, animate);
+        }
+        else if (this.hasScrollY) {
+          todo.push('Top');
+        }
+        if (todo.length) {
+          let ct = this.getRef('scrollContainer');
+          let ele = x;
+          if (bbn.fn.isVue(x)) {
+            ele = x.$el;
+          }
+          let $ct = ele.offsetParent;
+          bbn.fn.each(todo, (a) => {
+            let witness;
+            let num = ele['offset' + a];
+            while ($ct && (witness !== $ct) && ($ct !== this.getRef('scrollContent'))){
+              if ($ct === document.body) {
+                break;
+              }
+              else {
+                num += $ct['offset' + a];
+                $ct = $ct.offsetParent;
+              }
+              witness = $ct;
+            }
+            num -= 20;
+            if ( num < 0 ){
+              num = 0;
+            }
+            let position;
+            bbn.fn.log("NUM: " + num + " (" + a + ")");
+            ct['scroll' + a] = num;
+            /*
+            let next = 100 / this.contentSize * num;
+            if ( next > (100 - this.size) ){
+              position = 100 - this.size;
+            }
+            else if ( (next > 0) ){
+              position = next;
+            }
+            */
+          });
         }
       },
       /**
@@ -511,16 +559,28 @@
        */
       scrollStartX(){
         let x = this.getRef('xScroller');
-        this.$refs.xScroller.scrollTo(0);
+        if (x) {
+          x.scrollTo(0);
+        }
+        else {
+          this.getRef('scrollContainer').scrollLeft = 0;
+        }
       },
       /**
        * Scroll the y axis to the position 0
        * @method scrollStartY
        * @fires this.$refs.yScroller.scrollTo
        */
-      scrollStartY(){
-        let y = this.getRef('yScroller');
-        this.$refs.yScroller.scrollTo(0);
+      scrollStartY() {
+        if (this.hasScrollY) {
+          let y = this.getRef('yScroller');
+          if (y) {
+            y.scrollTo(0);
+          }
+          else {
+            this.getRef('scrollContainer').scrollTop = 0;
+          }
+        }
       },
       /**
        * Scroll the x axis to the end
@@ -532,7 +592,10 @@
         if ( x ){
           x.scrollTo('100%');
         }
-      },
+        else {
+          this.getRef('scrollContainer').scrollLeft = this.getRef('scrollContainer').scrollWidth;
+        }
+    },
        /**
        * Scroll the y axis to the end
        * @method scrollEndY
@@ -588,4 +651,4 @@
     }
   });
 
-})(jQuery, bbn);
+})(bbn);

@@ -11,7 +11,7 @@
   *
   * @created 10/02/2017.
   */
-(function($, bbn){
+(function(bbn){
   "use strict";
 /**@todo add prefix for flexbox and inline flex http://ptb2.me/flexbox/ also for justify content and align items*/
   const
@@ -326,7 +326,7 @@
           columns(){
             let r = [];
             if (bbn.fn.isArray(this.fields) ){
-              $.each(this.fields, (i, a) => {
+              bbn.fn.each(this.fields, (a, i) => {
                 if ( a.field ){
                   r.push({
                     text: a.ftitle ? a.ftitle : (a.title ? a.title : a.field),
@@ -471,7 +471,7 @@
                   case 'enum':
                     var tmp = eval('[' + c.extra + ']');
                     if (bbn.fn.isArray(tmp) ){
-                      this.cfg.dataSource = $.map(tmp, function (a){
+                      this.cfg.dataSource = bbn.fn.map(tmp, function (a){
                         return {
                           text: a,
                           value: a
@@ -515,4 +515,4 @@
     }
   });
 
-})(jQuery, bbn);
+})(bbn);

@@ -8,7 +8,7 @@
  * @author Mirko Argentino * 
  */
 
-(($, bbn) => {
+((bbn) => {
   "use strict";
 
   Vue.component('bbn-calendar', {
@@ -843,4 +843,4 @@
       }
     }
   })
-})(jQuery, bbn);
+})(bbn);

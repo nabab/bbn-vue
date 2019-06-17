@@ -7,7 +7,7 @@
  *
  * @copyright BBN Solutions
  */
-(function($, bbn){
+(function(bbn){
   "use strict";
 
   Vue.component('bbn-timepicker', {
@@ -526,4 +526,4 @@
     }
   });
 
-})(jQuery, bbn);
+})(bbn);

@@ -12,7 +12,7 @@
  * @created 10/02/2017
  */
 
-(function($, bbn, kendo){
+(function(bbn, kendo){
   "use strict";
 
   Vue.component('bbn-multiselect', {
@@ -99,4 +99,4 @@
     }
   });
 
-})(jQuery, bbn, kendo);
+})(bbn, kendo);

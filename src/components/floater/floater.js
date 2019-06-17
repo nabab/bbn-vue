@@ -334,7 +334,9 @@
         scrollMaxHeight: 0,
         scrollMinWidth: 0,
         currentButtons: this.buttons.slice(),
-        mountedComponents: []
+        mountedComponents: [],
+        isOver: false,
+        mouseLeaveTimeout: false
       };
     },
     computed: {
@@ -522,7 +524,6 @@
           this.currentHeight = this.height || null;
           this.currentWidth = this.width || null;
           this.currentScroll = false;
-
           this.$forceUpdate();
           let scroll = this.getRef('scroll');
           if ( !scroll || (!scroll.naturalHeight && !this.height) || (!scroll.naturalWidth && !this.width) ){
@@ -780,13 +781,20 @@
        * @method blur
        * @fires close
        */
-      blur(){
-        //this.$emit('blur');
-        if ( this.autoHide ){
-          this.close();
+      leave(){
+        this.isOver = false;
+        if ( this.mouseLeaveTimeout !== false ){
+          clearTimeout(this.mouseLeaveTimeout);
         }
-      },
-      over(idx){
+        this.mouseLeaveTimeout = setTimeout(() => {
+          if ( !this.isOver ){
+            this.$emit('mouseleave');
+            if ( this.autoHide ){
+              this.close();
+            }
+          }
+          this.mouseLeaveTimeout = false;
+        }, 10);
       },
       /**
        * Closes the floater by hiding it
@@ -912,6 +920,19 @@
           });
         }
       },
+      filteredData(){
+        if ( this.ready ){
+          this.$nextTick(() => {
+            let sc = this.getRef('scroll');
+            if ( sc ) {
+              sc.onResize();
+            }
+            this.$nextTick(() => {
+              this.onResize();
+            });
+          });
+        }
+      },
       /**
        * @watch element
        * @param {Element} newVal
@@ -941,6 +962,14 @@
         }
         else{
           this.opacity = 0;
+        }
+      },
+      currentSelected(newVal, oldVal) {
+        if (newVal >= 0) {
+          let sc = this.getRef('scroll');
+          if ( sc && !this.isOver ){
+            sc.scrollTo(this.getRef('li' + newVal));
+          }
         }
       }
     }

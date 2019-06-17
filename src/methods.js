@@ -33,7 +33,7 @@
         let type = typeof(src),
             isArray = Array.isArray(src);
         if ( (type === 'object') && !isArray ){
-          $.each(src, (n, a) => {
+          bbn.fn.each(src, (a, n) => {
             let tmp = {};
             tmp[text] = (typeof a) === 'string' ? a : n;
             tmp[value] = n;
@@ -44,7 +44,7 @@
           });
         }
         else if ( isArray && src.length && (typeof(src[0]) !== 'object') ){
-          res = $.map(src, (a) => {
+          res = bbn.fn.map(src, (a) => {
             let tmp = {};
             tmp[text] = a;
             tmp[value] = a;
@@ -127,7 +127,7 @@
       if ( vm.$options.props.cfg && (vm.$options.props.cfg.default !== undefined) ){
         bbn.fn.extend(cfg,bbn.fn.isFunction(vm.$options.props.cfg.default) ? vm.$options.props.cfg.default() : vm.$options.props.cfg.default);
       }
-      $.each(vm.$options.propsData, (n, a) => {
+      bbn.fn.each(vm.$options.propsData, (a, n) => {
         cfg[n] = a;
       });
       if ( vm.$options.propsData.cfg ){
@@ -274,7 +274,7 @@
           this.executeQueueItems(todo);
           /*
           bbn.fn.log("TODO", todo);
-          $.each(todo, (i, a) => {
+          bbn.fn.each(todo, (a, i) => {
             this.executeQueueItem(a);
           });
           */
@@ -408,7 +408,7 @@
 
     _realDefineBBNComponent(name, r){
       if ( r.html && r.html.length ){
-        $.each(r.html, (j, h) => {
+        bbn.fn.each(r.html, (h, j) => {
           if ( h && h.content ){
             let id = 'bbn-tpl-component-' + name + (h.name === name ? '' : '-' + h.name),
                 $tpl = $('<script type="text/x-template" id="' + id + '"></script>');
@@ -434,7 +434,7 @@
     /** Adds an array of components, calling them all at the same time, in a single script */
     executeQueueBBNItem(todo){
       if ( todo.length ){
-        let url = bbn_root_url + bbn_root_dir + 'components/?components=' + $.map(todo, (a) => {
+        let url = bbn_root_url + bbn_root_dir + 'components/?components=' + bbn.fn.map(todo, (a) => {
           return a.name;
         }).join(',') + '&v=' + bbn.version;
         if ( bbn.env.isDev ){

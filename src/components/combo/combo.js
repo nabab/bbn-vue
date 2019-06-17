@@ -11,7 +11,7 @@
  * @created 20/02/2017
  */
 
-(function($, bbn, kendo){
+(function(bbn, kendo){
   "use strict";
 
   kendo.ui.ComboBox.prototype.options.autoWidth = true;
@@ -213,4 +213,4 @@
       this.ready = true;
     }
   });
-})(jQuery, bbn, kendo);
+})(bbn, kendo);

@@ -15,7 +15,7 @@
 
 
 //Markdown editor use simpleMDe
-(function($, bbn, JSONEditor){
+(function(bbn, JSONEditor){
   "use strict";
   let lang = {
     'array': bbn._('Array'),
@@ -216,4 +216,4 @@
     }
   });
 
-})(jQuery, bbn, JSONEditor);
+})(bbn, JSONEditor);

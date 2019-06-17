@@ -10,7 +10,7 @@
   * @cretaed 13/06/2017
   */
 
- (($, bbn) => {
+ ((bbn) => {
   "use strict";
   Vue.component('bbn-upload', {
     //mixins: [bbn.vue.fullComponent],
@@ -229,7 +229,7 @@
        * @return Object
        */
       getValue(){
-        let files = $.map(this.widgetValue, (e) => {
+        let files = bbn.fn.map(this.widgetValue, (e) => {
           let s = bbn.fn.get_row(this.getSource, 'name', e.originalName);
           return bbn.fn.extend(s || {}, {
             name: e.name,
@@ -489,4 +489,4 @@
     }
   });
 
-})(jQuery, bbn);
+})(bbn);

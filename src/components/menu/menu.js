@@ -10,7 +10,7 @@
  * @created 10/02/2017
  */
 
-(function($, bbn, kendo){
+(function(bbn, kendo){
   "use strict";
 
   Vue.component('bbn-menu', {
@@ -48,4 +48,4 @@
     },
   });
 
-})(jQuery, bbn, kendo);
+})(bbn, kendo);

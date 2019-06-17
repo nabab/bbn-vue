@@ -10,7 +10,7 @@
  * @created 07/01/2017
  */
 
-;(function($, bbn){
+(function(bbn){
   "use strict";
 
   /**
@@ -33,4 +33,4 @@
     },
   });
 
-})(jQuery, bbn);
+})(bbn);

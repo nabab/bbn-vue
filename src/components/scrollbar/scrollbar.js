@@ -196,14 +196,17 @@
                 (a !== origin) &&
                 (a[prop] !== this.currentScroll)
               ){
-                $(a).animate(anim, "fast");
+                bbn.fn.iterate(anim, (v, k) => {
+                  a.style[k] = v;
+                });
               }
             });
             if ( (origin !== this.realContainer) && (this.realContainer[prop] !== this.currentScroll) ){
-              $(this.realContainer).animate(anim, "fast", () => {
-                this.position = position;
-                this.normalize();
+              bbn.fn.iterate(anim, (v, k) => {
+                this.realContainer.style[k] = v;
               });
+              this.position = position;
+              this.normalize();
             }
           }
           else {
@@ -335,7 +338,7 @@
       // Sets all event listeners
       initContainer(){
         if ( !this.realContainer && this.scroller ){
-          this.realContainer = this.scroller.$refs.scrollContainer || false;
+          this.realContainer = this.scroller.getRef('scrollContainer');
         }
         if ( this.realContainer && !this.isInit ){
           this.onResize();

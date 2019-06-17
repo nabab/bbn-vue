@@ -2,7 +2,7 @@
  * Created by BBN on 15/02/2017.
  */
 
-(function($, bbn){
+(function(bbn){
   "use strict";
 
   let app;
@@ -479,7 +479,7 @@
                     </div>
                   </div>`;
               }
-            }
+            };
           },
           eventsCfg(){
             let def = {
@@ -526,4 +526,4 @@
     }
   });
 
-})(window.jQuery, window.bbn);
+})(window.bbn);

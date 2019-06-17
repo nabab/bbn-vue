@@ -9,7 +9,7 @@
  *
  * @created 11/01/2017
  */
-(function($, bbn, kendo){
+(function(bbn, kendo){
   "use strict";
 
   /**
@@ -221,4 +221,4 @@
       }).data("kendoNotification");
     },
   });
-})(window.jQuery, window.bbn, window.kendo);
+})(window.bbn, window.kendo);

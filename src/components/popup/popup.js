@@ -13,7 +13,7 @@
  * @created 15/02/2017
  */
 
-(function($, bbn){
+(function(bbn){
   "use strict";
 
   /**
@@ -446,4 +446,4 @@
     }
   });
 
-})(jQuery, bbn);
+})(bbn);

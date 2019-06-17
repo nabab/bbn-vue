@@ -20,7 +20,7 @@
  console.log(formatted);*/
 
 
-(function($, bbn){
+(function(bbn){
   "use strict";
 
   const VALUES = [{
@@ -131,7 +131,7 @@
         let d = new Date(),
           tNow = d.getTime();
         if ( tNow > this.time ){
-          $.each(VALUES, (i, a) => {
+          bbn.fn.each(VALUES, (a, i) => {
             this[a.name] = 0;
           });
         }
@@ -310,4 +310,4 @@
       }
     }
   });
-})(jQuery, bbn);
+})(bbn);

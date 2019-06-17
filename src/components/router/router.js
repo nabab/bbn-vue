@@ -7,7 +7,7 @@
  *
  * @author BBN Solutions
  */
-(function($, bbn, Vue){
+(function(bbn, Vue){
   "use strict";
 
   /**
@@ -668,10 +668,10 @@
           ){
             ev.preventDefault();
             this.confirm(this.confirmLeave, () => {
-              $.each(this.unsavedTabs, (i, t) => {
+              bbn.fn.each(this.unsavedTabs, (t, i) => {
                 let forms = bbn.vue.findAll(this.getVue(t.idx), 'bbn-form');
                 if ( Array.isArray(forms) && forms.length ){
-                  $.each(forms, (k, f) => {
+                  bbn.fn.each(forms, (f, k) => {
                     f.reset();
                   });
                 }
@@ -1003,4 +1003,4 @@
     }
   });
 
-})(jQuery, bbn, Vue);
+})(bbn, Vue);

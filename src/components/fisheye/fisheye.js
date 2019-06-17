@@ -10,7 +10,7 @@
  * 
  * @copyright BBN Solutions
  */
-(function($, bbn){
+(function(bbn){
   "use strict";
 
   /**
@@ -130,10 +130,10 @@
        */
       items(){
         let items = this.fixedLeft.slice();
-        $.each(this.currentData, (i, a) => {
+        bbn.fn.each(this.currentData, (a, i) => {
           items.push(a);
         });
-        $.each(this.fixedRight, (i, a) => {
+        bbn.fn.each(this.fixedRight, (a, i) => {
           items.push(a);
         });
         return items;
@@ -282,4 +282,4 @@
     }
   });
 
-})(jQuery, bbn);
+})(bbn);

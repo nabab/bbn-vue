@@ -9,7 +9,7 @@
  *
  * @created 15/02/2017.
  */
-(function($, bbn){
+(function(bbn){
   "use strict";
 
   var limits = [5, 10, 15, 20, 25, 30, 40, 50];
@@ -187,7 +187,7 @@
         }
         if ( this.limit ){
           let items = [];
-          $.each(limits, (i, a) => {
+          bbn.fn.each(limits, (a, i) => {
             items.push({
               text: a.toString() + " " + bbn._("Items"),
               selected: a === this.limit,
@@ -369,4 +369,4 @@
     }
   });
 
-})(jQuery, bbn);
+})(bbn);

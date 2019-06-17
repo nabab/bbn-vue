@@ -10,7 +10,7 @@
  * @created 15/02/2017
  */
 
-(function($, bbn, Vue){
+(function(bbn, Vue){
   "use strict";
 
   /**
@@ -557,4 +557,4 @@
 
   });
 
-})(jQuery, bbn, Vue);
+})(bbn, Vue);

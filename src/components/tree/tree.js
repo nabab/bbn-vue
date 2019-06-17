@@ -12,7 +12,7 @@
  */
 
 
-(function($, bbn){
+(function(bbn){
   "use strict";
 
   const NODE_PROPERTIES = ["selected", "selectedClass", "activeClass", "exp anded", "tooltip", "icon", "selectable", "text", "data", "cls", "component", "num", "source", "level", "items"];
@@ -542,10 +542,10 @@
             node.isExpanded = true;
           }
           if ( node.$children && node.numChildren && node.isExpanded && Object.keys(props) ){
-            $.each(node.$children, (i, n) => {
+            bbn.fn.each(node.$children, (n, i) => {
               if ( n.data ){
                 let tmp = {};
-                $.each(Object.keys(props), (j, k) => {
+                bbn.fn.each(Object.keys(props), (k, j) => {
                   if ( n.data[k] === undefined ){
                     return true;
                   }
@@ -583,7 +583,7 @@
             return v;
           });
           let node = false;
-          $.each(arr, (i, v) => {
+          bbn.fn.each(arr, (v, i) => {
             node = this._findNode(v, root);
           });
           return node;
@@ -622,7 +622,7 @@
         if ( this.menu ){
           let m2 = bbn.fn.isFunction(this.menu) ? this.menu(node, idx) : this.menu;
           if ( m2.length ){
-            $.each(m2, function(i, a){
+            bbn.fn.each(m2, function(a,i){
               menu.push({
                 text: a.text,
                 icon: a.icon ? a.icon : '',
@@ -683,7 +683,7 @@
         if ( obj.text || obj.icon ){
           for ( let n in obj ){
             if ( obj.hasOwnProperty(n) && (typeof n === 'string') ){
-              if ( $.inArray(n, NODE_PROPERTIES) > -1 ){
+              if ( NODE_PROPERTIES.indexOf(n) > -1 ){
                 r[n] = obj[n];
               }
               else{
@@ -709,7 +709,7 @@
               min = 1,
               max = this.tree.activeNode.$parent.$children.length - 1,
               parent = this.tree.activeNode.$parent;
-          $.each(this.tree.activeNode.$parent.$children, (i, a) => {
+          bbn.fn.each(this.tree.activeNode.$parent.$children, (a, i) => {
             if ( a === this.tree.activeNode ){
               idx = i;
               return false;
@@ -770,7 +770,7 @@
                 while ( (p.level > 0) && !p.$children[idx+1] ){
                   c = p;
                   p = p.$parent;
-                  $.each(p.$children, (i, a) => {
+                  bbn.fn.each(p.$children, (a, i) => {
                     if ( a === c ){
                       idx = i;
                       return false;
@@ -869,7 +869,7 @@
        */
       mapper(fn, data){
         let res = [];
-        $.each(data, (i, a) => {
+        bbn.fn.each(data, (a, i) => {
           let tmp = fn(a);
           if ( tmp[this.children] ){
             tmp[this.children] = this.mapper(fn, tmp[this.children]);
@@ -933,7 +933,7 @@
           }
           bbn.fn.log("OopenPath", path, idx, criteria, this.items);
           if ( idx > -1 ){
-            $.each(this.items, (i, a) => {
+            bbn.fn.each(this.items, (a, i) => {
               if ( i !== idx ){
                 this.$set(this.items[idx], "path", []);
               }
@@ -1077,7 +1077,7 @@
       toData(data){
         let r = {};
         for ( let n in data ){
-          if ( $.inArray(n, NODE_PROPERTIES) === -1 ){
+          if ( NODE_PROPERTIES.indexOf(n) === -1 ){
             r[n] = data[n];
           }
         }
@@ -1423,7 +1423,7 @@
            * @memberof bbn-tree-node
            */
           isChecked(){
-           return $.inArray(this.data[this.tree.uid], this.tree.checked) > -1
+           return this.tree.checked.indexOf(this.data[this.tree.uid])  > -1
           },
           /**
            * Return true if the node is disabled
@@ -1431,7 +1431,7 @@
            * @memberof bbn-tree-node
            */
           isDisabled(){
-            return $.inArray(this.data[this.tree.uid], this.tree.disabled) > -1
+            return this.tree.disabled.indexOf(this.data[this.tree.uid]) > -1
           },
           /**
            * Checks the node and emits the events check and uncheck
@@ -1441,12 +1441,12 @@
            * @memberof bbn-tree-node
            */
           checkNode(val){
-            if ( val && this.data[this.tree.uid] && ($.inArray(this.data[this.tree.uid], this.tree.checked) === -1) ){
+            if ( val && this.data[this.tree.uid] && (this.tree.checked.indexOf(this.data[this.tree.uid]) === -1) ){
               this.tree.checked.push(this.data[this.tree.uid]);
               this.tree.$emit('check', this.data[this.tree.uid]);
             }
             else if ( !val ){
-              let tmp = $.inArray(this.data[this.tree.uid], this.tree.checked);
+              let tmp = this.tree.checked.indexOf(this.data[this.tree.uid]);
               if ( tmp > -1 ){
                 this.tree.checked.splice(tmp, 1);
                 this.tree.$emit('uncheck', this.data[this.tree.uid]);
@@ -1518,7 +1518,7 @@
               e.stopImmediatePropagation();
               this.tree.dragging = this;
               if ( this.tree.droppableTrees.length ){
-                $.each(this.tree.droppableTrees, (i, a) => {
+                bbn.fn.each(this.tree.droppableTrees, (a, i) => {
                   if ( a !== this.tree ){
                     a.dragging = this;
                   }
@@ -1890,4 +1890,4 @@
     }
   });
 
-})(jQuery, bbn);
+})(bbn);

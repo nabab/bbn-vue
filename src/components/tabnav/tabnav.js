@@ -9,7 +9,7 @@
   *
   * @created 15/02/2017
   */
-(function(bbn, Vue){
+(function(Vue){
   "use strict";
 
   /**
@@ -605,7 +605,7 @@
           }
         });
         if ( tmp && tmp.length ){
-          $.each(tmp, (i, a ) => {
+          bbn.fn.each(tmp, (a, i) => {
             items.push(a)
           })
         }
@@ -909,4 +909,4 @@
     }
   });
 
-})(bbn, Vue);
+})(Vue);

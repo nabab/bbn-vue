@@ -11,7 +11,7 @@
   * @created 15/02/2017.
   */
 
-(function($, bbn){
+(function(bbn){
   "use strict";
 
   var limits = [5, 10, 15, 20, 25, 30, 40, 50];
@@ -206,8 +206,8 @@
        * 
        */
       onResize(){
-        let $ele = $(".bbn-masonry:first", this.$el),
-            actualWidth = $ele.innerWidth(),
+        let ele = this.$el.querySelector(".bbn-masonry"),
+            actualWidth = parseInt(window.getComputedStyle(ele).width),
             num = 1,
             steps = [800, 1150, 1550, 2200, 3000, 3800];
         bbn.fn.each(steps, (step, i) => {
@@ -269,7 +269,7 @@
           }
           */
         }
-        $ele.css({
+        bbn.fn.addStyle(ele, {
           "-moz-column-count": num,
           "-webkit-column-count": num,
           "column-count": num
@@ -283,7 +283,7 @@
        */  
       moveWidgets(oldIdx, newIdx){
         bbn.fn.move(this.widgets, oldIdx, newIdx);
-        $.each(this.widgets, (i, a) => {
+        bbn.fn.each(this.widgets, (a, i) => {
           if ( i !== a.index ){
             this.widgets[i].index = i;
           }
@@ -307,7 +307,7 @@
         if ( this.storageFullName ){
           let cps = bbn.vue.findAll(this.$root, 'bbn-dashboard');
           /*
-          $.each(cps, (i, cp) => {
+          bbn.fn.each(cps, (cp, i) => {
             if ( (cp !== this) && (cp.storageFullName === this.storageFullName) ){
               cp.moveWidgets(oldIdx, newIdx);
             }
@@ -378,7 +378,7 @@
             params = {id: key, cfg: cfg},
             no_save = ['items', 'num', 'start', 'index'];
         if ( idx > -1 ){
-          $.each(no_save, function(i, a){
+          bbn.fn.each(no_save, function(a, i){
             if ( cfg[a] !== undefined ){
               delete params.cfg[a];
             }
@@ -490,11 +490,11 @@
           }
         }
       }
-      $.each(this.source, (i, obj) => {
+      bbn.fn.each(this.source, (obj, i) => {
         this.originalSource.push(this.normalize(obj));
       });
       let cfg = [];
-      $.each(bbn.fn.order(this.originalSource.slice(), "index"), (i, obj) => {
+      bbn.fn.each(bbn.fn.order(this.originalSource.slice(), "index"), (obj, i) => {
         this.add(obj);
       });
     },
@@ -538,4 +538,4 @@
     }
   });
 
-})(jQuery, bbn);
+})(bbn);

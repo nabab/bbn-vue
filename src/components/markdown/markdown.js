@@ -11,7 +11,7 @@
 
 
 //Markdown editor use simpleMDe
-(function($, bbn, SimpleMDE){
+(function(bbn, SimpleMDE){
   "use strict";
 
   Vue.component('bbn-markdown', {
@@ -122,4 +122,4 @@
 
   });
 
-})(jQuery, bbn, SimpleMDE);
+})(bbn, SimpleMDE);

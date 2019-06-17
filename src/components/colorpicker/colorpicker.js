@@ -11,7 +11,7 @@
  * @created 18/07/2018
  */
 
-(($, bbn) => {
+((bbn) => {
   "use strict";
   Vue.component('bbn-colorpicker', {
     /**
@@ -288,4 +288,4 @@
       }
     }
   });
-})(jQuery, bbn);
+})(bbn);
