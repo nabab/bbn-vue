@@ -2,10 +2,8 @@
  * @file bbn-context component
  *
  * @description bbn-context is a menu that can be activated with a right click.
- * You can define any item in the shortcut menu that may contain other own submenus that allow you to create layered structures.
- * To explore the submenus you need to move the mouse to the context menu item.
- * This easy-to-implement component allows us to create a shortcut menu.
- *
+ * The source of the menu can have a tree structure.
+ * 
  * @copyright BBN Solutions
  *
  * @created 15/02/2017.
@@ -25,7 +23,7 @@
     mixins: [bbn.vue.basicComponent, bbn.vue.sourceArrayComponent],
     props: {
       /**
-       * The html tag used to render the prop content
+       * The html tag used to render the property content
        * @prop {String} ['span'] tag
        */
       tag: {
@@ -33,7 +31,7 @@
         default: 'span'
       },
       /**
-       * Set to true shows the floating element containing the menu
+       * Set to true to show the floating element containing the menu
        * @prop {Boolean} [false] context
        * 
        */
@@ -42,7 +40,7 @@
         default: false
       },
       /**
-       * The string on which to right click to open the menu
+       * The text that can be right clicked to open the menu
        * @prop {String} content
        */
       content: {
@@ -60,7 +58,7 @@
     data(){
       return {
         /**
-         * When true shows the floating element of the menu
+         * True if the floating element of the menu is opened 
          * @data {Boolean} [false] showFloater 
          */
         showFloater: false
@@ -68,7 +66,7 @@
     },
     methods: {
       /**
-       * Basing on the type of event and on the prop context, shows or hides the floating element of the menu
+       * Based on the type of event and on the property context, shows or hides the floating element of the menu
        * @method clickItem
        * @param {Event} e 
        * @fires updateData

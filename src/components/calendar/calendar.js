@@ -1,7 +1,7 @@
 /**
  * @file bbn-calendar component
  *
- * @description The bbn-calendar component is a modern calendar, easy to implement, it allows you to select the date in an intuitive way with the possibility of inserting reminders and providing details of the day as events.
+ * @description The bbn-calendar component is a calendar that allows you to interact with dates by providing details, inserting reminders and creating events.
  *
  * @copyright BBN Solutions
  *
@@ -20,8 +20,8 @@
     mixins: [bbn.vue.basicComponent, bbn.vue.sourceArrayComponent, bbn.vue.resizerComponent],
     props: {
       /**
-       * The events data for every days.
-       * If you set a string, an ajax call will be made to this url.
+       * The array of events for each day.
+       * When a string is set, an ajax call will be made to the corresponding url.
        *
        * @prop {String|Array} [[]] source
       */
@@ -33,7 +33,7 @@
       },
       /**
        * The visualization mode.
-       * Types: "days", "weeks", "months", "years".
+       * Allowed values: days, weeks, months and years
        *
        * @prop {String} ['days'] type
       */
@@ -43,16 +43,16 @@
         validator: (m) => ['days', 'weeks', 'months', 'years'].includes(m)
       },
       /**
-       * Set it to true if you want to select the date property value automatically.
+       * Set to true to autoselect the date property value.
        *
        * @prop {Boolean} [false] autoSelect
-      */
+       */
       autoSelection: {
         type: Boolean,
         default: false
       },
       /**
-       * Se it to true if you wanto to select multi values.
+       * Set to true to select multiple values.
        *
        * @prop {Boolean} [false] multiSelection
       */
@@ -70,10 +70,10 @@
         default: ''
       },
       /**
-       * Shows/hides the arrows to change the period.
+       * Set to false to display only icons instead of arrow buttons.
        *
-       * @prop {Boolean} [true] arrowMonth
-      */
+       * @prop {Boolean} [true] arrows
+       */
       arrows: {
         type: Boolean,
         default: true
@@ -88,7 +88,7 @@
         default: true
       },
       /**
-       * Icon to use before the title.
+       * The icon displayed before the title.
        *
        * @prop {String|Boolean} ['nf nf-oct-calendar'] titleIcon
       */
@@ -105,7 +105,7 @@
         type: String
       },
       /**
-       * Shows/hides the items of the next and previous period.
+       * Shows/hides the dates of the next and previous period in the current visualization.
        *
        * @prop {Boolean} [false] extraItems
       */
@@ -125,7 +125,7 @@
         }
       },
       /**
-       * Shows only items with events.
+       * Shows only dates with events.
        *
        * @prop {Boolean} [false] onlyEvents
        */
@@ -134,7 +134,7 @@
         default: false
       },
       /**
-       * Shows/hides the item's details.
+       * Shows/hides the date's details.
        *
        * @prop {Boolean} [false] itemDetails
       */
@@ -144,7 +144,7 @@
       },
       /**
        * The icon used to indicate the presence of events in the item.
-       * If you set it to false nothing will be shown.
+       * If set to false, nothing will be shown.
        *
        * @prop {String|Boolean} ['nf nf-fa-user'] eventIcon
       */
@@ -188,7 +188,7 @@
       },
       /**
        * The labels type.
-       * Types: 'auto', 'letter', 'abbr', 'full', false.
+       * Types: auto, letter, abbr, full, false.
        *
        * @prop {String|Boolean} ['auto'] labels
       */
@@ -201,7 +201,7 @@
        * The field used for the event's start.
        *
        * @prop {String} ['start'] startField
-      */
+       */
       startField: {
         type: String,
         default: 'start'
@@ -287,19 +287,19 @@
         */
         currentLabels: [],
         /**
-         * The Moments objects of the labels.
+         * The Moment objects of the labels.
          *
          * @data {Array} [[]] currentLabelsDates
         */
         currentLabelsDates: [],
         /**
-         * The current date as Moment object.
+         * The current date as a Moment object.
          *
          * @data {Moment} currentDate
          */
         currentDate: mom,
         /**
-         * The items structures.
+         * The items' structures.
          *
          * @data {Array} [[]] items
         */
@@ -326,7 +326,7 @@
     },
     computed: {
       /**
-       * The current cfg.
+       * The current configuration.
        *
        * @computed currentCfg
        * @fires getCfg
@@ -341,7 +341,7 @@
     },
     methods: {
       /**
-       * Make a calendar item's structure.
+       * Makes a calendar item's structure.
        *
        * @method _makeItem
        * @param {String} txt The item's text
@@ -379,7 +379,7 @@
         return obj;
       },
       /**
-       * Makes the items' structure of "days" mode.
+       * Makes the items' structure in "days" mode.
        *
        * @method _makeDays
        * @fires _makeItem
@@ -459,7 +459,7 @@
         this.$set(this, 'items', items);
       },
       /**
-       * Makes the items' structure of "years" mode.
+       * Makes the items' structure in "years" mode.
        *
        * @method _makeYears
        * @fires _makeItem
@@ -484,7 +484,7 @@
         this.$set(this, 'items', items);
       },
       /**
-       * Returns the correct configuration based of the calendar type.
+       * Returns the correct configuration based on the calendar type.
        *
        * @method getCfg
        * @return {Object}
@@ -675,7 +675,7 @@
         });
       },
       /**
-       * Moves the calendar to the next period.
+       * Changes the current calendar view to the next period.
        *
        * @method next
        * @fires refresh
@@ -699,7 +699,7 @@
         }
       },
       /**
-       * Moves the calendar to the previous period.
+       * Changes the current calendar view to the previous period.
        *
        * @method prev
        * @fires refresh
@@ -723,11 +723,11 @@
         }
       },
       /**
-       * Change the current value after a selection.
+       * Changes the current value after a selection.
        *
        * @method select
        * @param {String} day The selected day
-       * @param {Boolean} [undefined] notEmit If true the 'selected' emit will not be performed
+       * @param {Boolean} [undefined] notEmit If true, the 'selected' emit will not be performed
        * @emits input
        * @emits selected
       */
@@ -789,7 +789,7 @@
         }
       },
       /**
-       * Called on windows resize.
+       * Handles the resize 
        *
        * @method onResize
        * @fires setLabels

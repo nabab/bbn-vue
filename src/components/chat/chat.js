@@ -1,7 +1,7 @@
 /**
  * @file bbn-chat component 
  *
- * @description bbn-chat component allows the user to participate in chat sessions with other users online.
+ * @description bbn-chat component allows the user to communicate in chat sessions with other users online.
  *
  * @author Thomas Nabet
  *
@@ -29,7 +29,7 @@
         type: String,
       },
       /**
-       * The array of all users (including offline ones)
+       * The array of all users
        * @prop {Array} [[]] users
        */
       users: {
@@ -135,7 +135,7 @@
     },
     computed: {
       /**
-       * The array of online users without the current user
+       * The array of online users excluding the current user
        * @computed usersOnlineWithoutMe
        * @return {Array}
        */
@@ -177,7 +177,7 @@
         return [];
       },
       /**
-       * Opens the chat window selected from the main list of online users
+       * Opens the chat window selected from the list of online users
        * @method chatTo
        * @param {Array} users 
        */

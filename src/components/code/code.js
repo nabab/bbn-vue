@@ -2,8 +2,8 @@
  * @file bbn-code component
  *
  * @description bbn-code is a text editor.
- * It specialized in editing the code of a supported language. 
- * Provides various tools useful to the user, among the various configurations the user can change the theme according to his needs.
+ * It specializes in editing the code of a supported language. 
+ * Various tools are provided to the users, which can be configured to their liking.
  *
  * @author BBN Solutions
  *
@@ -185,7 +185,7 @@
         default: 'php'
       },
       /**
-       * The theme to style the editor with.
+       * Defines the style of the editor.
        * @prop {String} theme
        */
       theme: {
@@ -198,7 +198,7 @@
         }
       },
       /**
-       * Set to true shows a button to change the theme of the component.
+       * Set to true to display a button that can change the theme of the component.
        *
        * @prop {Boolean} [false] themeButton
        */
@@ -217,7 +217,7 @@
 
     computed: {
       /**
-       * If the prop theme is not defined returns the defaultTheme.
+       * If the property theme is not defined, the default theme is returned.
        *
        * @computed currentTheme
        * @return {String}
@@ -229,7 +229,7 @@
 
     methods: {
       /**
-       * Gets the set of preset options for the given mode from const modes.
+       * Gets the preset options for the given mode from the constant modes.
        * @method getMode
        * @param {String} mode
        * @return {Boolean}
@@ -272,7 +272,7 @@
         return cfg;
       },
       /**
-       * To place the cursor in a defined point.
+       * Places the cursor at a defined point.
        * @method cursorPosition
        * @param {Number} lineCode
        * @param {Number} position
@@ -296,7 +296,7 @@
         }
       },
       /**
-       * Returns an object with the selections, the marks (folding) and the value.
+       * Returns an object with the selections, marks, folding and value.
        * @method getState
        * @return {Object | Boolean}
        */
@@ -355,7 +355,7 @@
         }
       },
       /**
-       * If the property themeButton is set to true changes the theme of the editor at click on the themeButton.
+       * If the property themeButton is set to true, clicking the button will change the theme of the editor.
        * @method nextTheme
        */
       nextTheme(){

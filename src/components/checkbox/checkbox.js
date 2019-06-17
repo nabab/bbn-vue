@@ -88,7 +88,7 @@
         default: false
       },
       /**
-       * The accompaning label for the checkbox
+       * The accompanying label for the checkbox
        *
        * @prop {String} label
        */
@@ -153,7 +153,7 @@
     },
     methods: {
       /**
-       * Emit a change when the state of the checkbox changes
+       * Emits a change when the state of the checkbox changes
        *
        * @method toggle
        * @emits input

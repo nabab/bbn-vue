@@ -1,8 +1,7 @@
 /**
  * @file bbn-container component
  *
- * @description bbn-container is a component that can be used or not by bbn-tabnav.
- * Represents a uniquely identifiable container that includes what the user desires.
+ * @description bbn-container is a uniquely identified container component that can be used by bbn-tabnav.
  *
  * @author BBN Solutions
  *
@@ -38,48 +37,130 @@
   let componentsList = [];
   Vue.component("bbn-container", {
     name: 'bbn-container',
+    /**
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.resizerComponent
+     * @mixin bbn.vue.viewComponent
+     * @mixin bbn.vue.observerComponent
+     */
     mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent, bbn.vue.viewComponent, bbn.vue.observerComponent],
     props: {
+      /**
+       * The index of the container
+       * @prop {Number} idx
+       */
       idx: {
         type: Number
       },
     },
     data(){
       return {
+        /**
+         * True if the container is visible
+         * @data {Boolean} [false] isVisible
+         */
         isVisible: false,
-        // The router to which belongs the container if any
+        /**
+         * The router to which belongs the container if any
+         * @data [null] router
+         */
         router: null,
-        // Should the conatiner be shown
+        /**
+         * Should the conatiner be shown
+         * @data {Boolean} [false] visible
+         */
         visible: false,
-        // Becomes true if the data changes and is unsaved
+        /**
+         * Becomes true if the data changes and is unsaved
+         * @data {Boolan} [false] dirty
+         */
         dirty: false,
-        // Is the container a component???
+        /**
+         * Is the container a component???
+         * @data [null] isComponent
+         */
         isComponent: null,
+        /**
+         * True if the container is fullscreen
+         * @data {Boolean} [false] fullScreen
+         */
         fullScreen: false,
-        // A random unique component name
+        /**
+         * A random unique component name
+         * @data {String} [this.randomName()] componentName
+         */
         componentName: this.randomName(),
+        /**
+         * The array containing popup objects
+         * @data {Array} [[]] popups
+         */
         popups: [],
+        /**
+         * @todo not used
+         */
         isUnsaved: false,
+        /**
+         * @todo not used
+         */
         isComponentActive: false,
+        /**
+         * True if the component loading is finished
+         * @data {Boolean} isLoaded
+         */
         isLoaded: !this.load || this.loaded,
+        /**
+         * True if the container is pinned
+         * @data {Boolean} isPinned
+         */
         isPinned: this.pinned,
+        /**
+         * True if the container is static
+         * @data {Boolean} isStatic
+         */
         isStatic: this.static,
+        /**
+         * The index of the container
+         * @data {Number} currentIndex
+         */
         currentIndex: this.idx,
+        /**
+         * The current url
+         * @data {String} currentURL
+         */
         currentURL: this.current || this.url
       };
     },
 
     methods: {
+      /**
+       * Returns the full current url
+       * @method getFullCurrentURL
+       * @return {String}
+       */
       getFullCurrentURL(){
         return this.router.getFullBaseURL() + this.currentURL;
       },
+       /**
+       * Returns the full url
+       * @method getFullURL
+       * @return {String}
+       */
       getFullURL(){
         return this.router.getFullBaseURL() + this.url;
       },
+      /**
+       * Sets the value of the property loaded to the given val
+       * @method setLoaded
+       * @param {Boolean} val 
+       */
       setLoaded(val){
         this.isLoaded = !!val;
       },
-      // Generates a random name which will be used for the component
+      /**
+       * Generates a random name which will be used for the component
+       * @method randomName
+       * @return {String}
+       */
       randomName(){
         let n = bbn.fn.randomString(20, 15).toLowerCase();
         while ( componentsList.indexOf(n) > -1 ){
@@ -87,22 +168,46 @@
         }
         return n;
       },
+      /**
+       * Shows the container
+       * @method show
+       */
       show(){
         this.visible = true
       },
+      /**
+       * Hides the container
+       * @method hide
+       */
       hide(){
         this.visible = false
       },
+      /**
+       * Sets the current url 
+       * @method setCurrent
+       * @param {String} url 
+       */
       setCurrent(url){
         if ( url.indexOf(this.url) === 0 ){
           this.currentURL = url;
         }
       },
+      /**
+       * Sets the title of the container
+       * @method setTitle
+       * @param {String} title 
+       */
       setTitle(title){
         if ( this.router ){
           this.router.views[this.currentIndex].title = title;
         }
       },
+      /**
+       * Sets the color
+       * @method setColor
+       * @param {String} bcolor 
+       * @param {String} fcolor 
+       */
       setColor(bcolor, fcolor){
         if ( this.router ){
           if ( bcolor ){
@@ -113,10 +218,20 @@
           }
         }
       },
+      /**
+       * Gets the object popup
+       * @method popup
+       * @return {Object}
+       */
       popup(){
         let popup = this.getPopup();
         return arguments.length ? popup.open.apply(popup, arguments) : popup;
       },
+      /**
+       * Gets the children's component
+       * @method getComponent
+       * @return {Object|Boolean}
+       */
       getComponent(){
         for ( let i = 0; i < this.$children.length; i++ ){
           if ( this.$children[i].$options._componentTag !== 'bbn-popup' ){
@@ -125,12 +240,26 @@
         }
         return false;
       },
+      /**
+       * Fires the parent's method enter
+       * @method enter
+       * @fires $parent.enter
+       */
       enter(){
         this.$parent.enter(this);
       },
+      /**
+       * Fires the parent's method reload
+       * @method reload
+       * @fires $parent.reload
+       */
       reload(){
         this.router.reload(this.currentIndex);
       },
+      /**
+       * Handles the configuration of the container's menu
+       * @param {Object} obj 
+       */
       addMenu(obj){
         if (
           (this.idx > -1) &&
@@ -171,6 +300,11 @@
         }
         return false;
       },
+      /**
+       * Deletes the given key from the container's menu
+       * @method deleteMenu
+       * @param {String} key 
+       */
       deleteMenu(key){
         if (
           (this.idx > -1) &&
@@ -202,7 +336,10 @@
         }
         return false;
       },
-
+      /**
+       * Initializes the component
+       * @method init
+       */
       init(){
         if ( this.real || (this.isLoaded && !this.ready) ){
           let res;
@@ -265,7 +402,9 @@
         }
       }
     },
-
+    /**
+     * @event created 
+     */
     created(){
       if ( this.isComponent ){
         componentsList.push(this.componentName);
@@ -278,7 +417,10 @@
         let res;
       }
     },
-
+    /**
+     * @event mounted
+     * @fires router.register
+     */
     mounted(){
       // The router is needed
       this.router = this.closest('bbn-router');
@@ -298,7 +440,10 @@
       //
       // The container is registered
     },
-
+    /**
+     * @event beforeDestroy
+     * @fires router.unregister
+     */
     beforeDestroy(){
       //bbn.fn.log("DESTROYING");
       this.router.unregister(this);
@@ -311,6 +456,11 @@
     },
 
     watch: {
+      /**
+       * @watch currentUrl
+       * @param {String} newVal 
+       * @param {String} oldVal 
+       */
       currentURL(newVal, oldVal){
         if ( !newVal || (newVal.indexOf(this.url) !== 0) ){
           this.currentURL = this.url;
@@ -326,6 +476,12 @@
         }
          */
       },
+      /**
+       * @watch visible
+       * @param {Boolean} nv 
+       * @param {Boolean} ov 
+       * @fires selfEmit
+       */
       visible(nv, ov){
         this.$nextTick(() => {
           this.$emit(nv ? 'view' : 'unview', this);
@@ -336,6 +492,11 @@
           }
         })
       },
+      /**
+       * @watch content
+       * @param {Boolean} newVal 
+       * @param {Boolean} oldVal 
+       */
       content(newVal, oldVal){
         if ( newVal ){
           this.isComponentActive = false;
@@ -370,6 +531,12 @@
           */
         }
       },
+      /**
+       * If true adds the event listener keydown, else removes the event listener
+       * @watch fullScreen
+       * @param {Boolean} newVal 
+       * @fires selfEmit
+       */
       fullScreen(newVal){
         let fn = (e) => {
           if ( e.keyCode === 27 ){

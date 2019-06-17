@@ -1,8 +1,8 @@
 /**
  * @file bbn-chart component
  *
- * @description bbn-chart component is a visual representation of data from the extreme implementation.
- * It allows large amounts of information to be condensed into an easy to understand visual format, allowing complex data to be displayed, interpreted and analyzed with detailed customization using one of these graphs: "bar", "pie", "line" and "donut".
+ * @description  The bbn-chart component is a graphical representation of data.  
+ * It allows large amounts of information to be condensed into an easily understandable visual format where complex data can be displayed, interpreted and analyzed with detailed customization using one of these graphs: "bar", "pie", "line" and "donut".
  *
  * @author Mirko Argentino
  *
@@ -81,7 +81,7 @@
         default: '100%'
       },
       /**
-       * Set to true shows the value points on the line chart.
+       * Set to true to show the value points on the line chart.
        *
        * @prop {Boolean} [true] showPoint
        */
@@ -90,7 +90,7 @@
         default: true
       },
       /**
-       * Set to true shows the grid line on the chart.
+       * Set to true to show the grid line on the chart.
        *
        * @prop {Boolean} [true] showLine
        */
@@ -99,7 +99,7 @@
         default: true
       },
       /**
-       * Set to true shows a smooth line on the line chart.
+       * Set to true to show a smooth line on the line chart.
        *
        * @prop {Boolean} [false] lineSmooth
        */
@@ -108,7 +108,7 @@
         default: false
       },
       /**
-       * Set to true to create a donut pie chart. If you give an integer it will be used as the donut width.
+       * Set to true to create a donut pie chart. Integers can be given to determine the donut width.
        *
        * @prop {Boolean|Number} [false] donut
        */
@@ -117,8 +117,7 @@
         default: false
       },
       /**
-       * Set it to false if you do not want the drawing of the chart to take the full width available.
-       *
+       * Set to false to prevent the chart from occupying the full width of its container
        * @prop {Boolean} [true] fullWidth
        */
       fullWidth: {

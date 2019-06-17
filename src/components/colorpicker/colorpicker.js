@@ -1,9 +1,9 @@
+//* This component allows you to create an intuitive interface for color manipulations
+
 /**
  * @file bbn-colorpicker component
-
  * @description The bbn-colorpicker component contains a field that shows the currently selected color.
- * Clicking on the input field it displays a color chart, this set of colors can be customized by defining it in the "palette" property.
- * This component allows you to create an intuitive interface for color manipulations
+ * Clicking on the input field it displays a color chart. The set of colors can be customized using the palette property.
  * @copyright BBN Solutions
  *
  * @author BBN Solutions
@@ -44,15 +44,15 @@
         default: false
       },
       /**
-       * Tracks initial color
-       * @prop {Boolean} [false] gradient
+       * Tracks the initial color
+       * @prop {Boolean} [false] initial
        */
       initial: {
         type: Boolean,
         default: true
       },
       /**
-       * Set to true shows an input containing the code of the color
+       * Set to true to show an input containing the color code
        * @prop {Boolean} [false] showCode
        */
       showCode: {
@@ -60,7 +60,7 @@
         default: false
       },
       /**
-       * If the array palette is defined, set to true shows the colors scheme instead of the panel
+       * If the array palette is defined, set to true to show only the given list of colors
        * @prop {Boolean} [false] onlyPalette
        */
       onlyPalette:{
@@ -68,14 +68,14 @@
         default: false
       },
       /**
-       * An array containing the list of colors (hex, rgb, rgba, color's name) to show if the prop onlyPalette is set to true. To create a schema with a defined number of columns an array of array can be given
+       * An array containing the list of colors by hex, rgb, rgba or the color's name 
        * @prop {Array} palette
        */
       palette:{
         type: Array
       },
       /**
-       * Set to true shows the button 'choose' and 'cancel'
+       * Set to true to show the button 'choose' and 'cancel'
        * @prop {Boolean} [false] buttons
        */
       buttons: {
@@ -91,7 +91,7 @@
       },
       //if set atrue through the panel we can define a palette of favourite colors that come from the selection of the panel and not from an apalette that we have already passed
       /**
-       * Set to true allows to create a palette of favourite colors coming from the selection of the panel
+       * Set to true to create a palette of selected favourite colors
        * @prop {Boolean} [false] favourite
        */
       favourite: {
@@ -99,7 +99,7 @@
         default: false
       },
       /**
-       * Set to true shows a button to empty the selection
+       * Set to true sto how a button that empties the selection when clicked
        * @prop {Boolean} [false] buttonEmpty
        */
       buttonEmpty:{
@@ -108,7 +108,7 @@
       },
      
       /**
-       * Defines the color code to use in the input that shows the value of colorpicker
+       * Defines the color code
        * @prop {String} ['hex'] codeColor
        */
       codeColor: {
@@ -211,7 +211,7 @@
         });
       },
       /**
-       * Initializes the component
+       * Starts the configuration of the component
        * @method initComponent
        * 
        */
