@@ -213,8 +213,8 @@
           }
           vm.droppableBin = vm.binEle.droppable({
             accept: "li",
-            hoverClass: "k-state-hover",
-            activeClass: "k-state-active",
+            hoverClass: "bbn-state-hover",
+            activeClass: "bbn-state-active",
             drop: (e, ui) => {
               this.remove(ui.draggable.attr("data-id"))
             }
