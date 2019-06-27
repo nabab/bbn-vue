@@ -1,124 +1,36 @@
-ul.bbn-list-helper{
-  position: absolute;
-  z-index: 1000;
-  opacity: 0.7;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  &.bbn-list-child {
-    //padding-left: 16px;
-  }
-  li{
-    position: relative;
-  }
-}
-.bbn-list {
-  position: relative;
-  float: left;
-  overflow: hidden;
-  width: 100%;
-  height: 100%;
-  list-style: none;
- 
-  ul.bbn-list-node.bordered {
-    &.border-ul{
-      border: 0.5px solid;
-    }
-    li.bbn-list-node{
-      &.bbn-state-hover.border-bottom{
-        border-bottom-width: 0.5px;
-        border-bottom-style: solid;
-      }
-      &:first-child {
-        border-top-width: .5px;
-      }
-      &:last-child{
-        border-bottom-width: 0;
-      }
-      border-bottom-width: .5px;
-      border-top-width: 0;
-      border-right: 0;
-      border-left: 0;
-      border-style: solid;
-    }
-    
-  }
-  
-  ul{
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    border: 0;
-    
-    li.k-state-hover {
-      filter: brightness(1.2);
-    }
-  }
-  li.bbn-list-node{
-    overflow-x: hidden;
-    clear: both;
-    margin: 0;
-    box-sizing: content-box;
-    div.text-container {
-      padding-right: 3px;
-      padding-left: 3px;
-    }
-    div.node{
-      //display: inline-block;
-      //white-space: nowrap;
-      height: auto;
-      //min-height: 18px;
-      &.dropping{
-        background-color: green;
-        color: white;
-      }
-      &.no-component{
-        .selectable{
-          cursor: pointer;
-          padding: 1px;
-        }
-        .expander{
-          width: 18px;
-          height: inherit;
-          min-width: 18px;
-          //padding-left: 5px;
-          i{
-            cursor: pointer;
-          }
-        }
-        .icon{
-          width: 18px;
-          i{
-            font-size: 18px;
-          }
-        }
-        .title{
-          padding-left: 0.3em;
-          white-space: nowrap;
+.bbn-list{
+  &.options{
+    > li{
+      &.bbn-disabled{
+        opacity: 1;
+        .space {
+          opacity: 0.5;
         }
       }
-      .padding{
-        //padding-left:6px;
-        padding-right:6px;
-      }
-      .padding-left{
-       // padding-left:3px;
-      }
-      .v-padding{
-        padding-top: 3px;
-        padding-bottom: 3px;
-      }
     }
-    &.selected > div.node > div > span.selectable{
-      border: 1px solid blue;
-      padding: 0;
-      background-color: blue;
-      color: white;
+  }
+  > li{
+    box-sizing: border-box;
+    min-height: 1em;
+    white-space: nowrap;
+    &.bbn-disabled{
+      opacity: 0.7;
     }
-    &.active > div.node > div > span.selectable{
-      border: 1px dotted #CCC !important;
-      padding: 0;
-      color: white;
+    .space{
+      display: inline-block;
+      width: 1.8em;
+      text-align: left;
+    }
+    .text{
+      i{
+        margin-right: 1em;
+      }
+      &.bbn-disabled i{
+        opacity: 0.5;
+      }
+      &.hidden i{
+        opacity: 0 !important;
+      }
     }
   }
 }

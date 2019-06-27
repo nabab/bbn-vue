@@ -1,14 +1,36 @@
-<div :class="componentClass">
-  <div class="bbn-block bbn-h-100 bbn-vmiddle">
-    <div class="bbn-global-search bbn-vmiddle bbn-lg">
-      <bbn-dropdown :autocomplete="true"
-                    :autobind="false"
-                    :source="source"
-                    source-value="sourceValue"
-                    source-text="sourceText"
-                    :component="component"
-                    :template="template">
-      </bbn-dropdown>
-    </div>
-  </div>
+<div :class="[componentClass, 'bbn-iblock']"
+     @mouseleave="leave"
+     :style="{width: specialWidth}"
+     @focusin="isActive = true"
+     @focusout="isActive = false"
+>
+  <bbn-input :placeholder="currentPlaceholder"
+              class="bbn-xl"
+              :style="{width: specialWidth, transition: 'width 0.5s'}"
+              ref="input"
+              @focus="focus"
+              @blur="blur"
+              @keydown="keydown"
+              autocomplete="off"
+              v-model="filterString"
+              :loading="isAjax && isLoading"
+              button-right="nf nf-fa-search">
+  </bbn-input>
+  <bbn-floater v-if="!disabled && !readonly && isOpened"
+               :element="$el"
+               :max-height="maxHeight"
+               :min-width="$el.offsetWidth"
+               ref="list"
+               :source-value="sourceValue"
+               :source-text="sourceText"
+               :item-component="realComponent"
+               @select="select"
+               :selected="[value]"
+               @close="isOpened = false"
+               :source="filteredData">
+  </bbn-floater>
+  <input type="hidden"
+         v-model="value"
+         ref="element"
+         :name="name">
 </div>

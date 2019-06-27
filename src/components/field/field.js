@@ -1,8 +1,12 @@
- /**
+/*bbn-field is a generic component of simple construction, its potential lies in the versatility of use, assigning to the property "type" a well-defined value, it becomes a "bbn" component.
+  * For example if we assign the value "numeric" to the property type, it will become "bbn-numeric"*/
+
+/**
   * @file bbn-field component
   *
-  * @description bbn-field is a generic component of simple construction, its potential lies in the versatility of use, assigning to the property "type" a well-defined value, it becomes a "bbn" component.
-  * For example if we assign the value "numeric" to the property type, it will become "bbn-numeric"
+  * @description 
+  * 
+  * bbn-field is a versatile component that adapts itself to the type of the data given by the user. 
   *
   * @copyright BBN Solutions
   *
@@ -36,9 +40,25 @@
     },
     data(){
       return {
+        /**
+         * The component to render in bbn-field.
+         * @data {Boolean|String} renderedComponent 
+         */
         renderedComponent: false,
+        /**
+         * The content to render.
+         * @data renderedContent 
+         */
         renderedContent: '',
+        /**
+         * The options to bind the component with.
+         * @data {Object} renderedOptions
+         */
         renderedOptions: bbn.fn.extend({}, this.options),
+        /**
+         * The current value.
+         * @data currentValue 
+         */
         currentValue: this.value === undefined ? (this.data && this.field ? this.data[this.field] || '' : '') : this.value
       }
     },
@@ -60,7 +80,7 @@
         }
       },
       /**
-       * If the value of the component is undefined then it returns this.data[this.field]. Otherwise it returns the value
+       * The actual value of the component.
        *
        * @computed actualValue
        * @return {Object}
@@ -71,6 +91,12 @@
       }
     },
     methods: {
+      /**
+       * Initializes the component.
+       * @method init
+       * @fires render
+       * @fires renderData
+       */
       init(){
         if ( this.field ){
           if ( (this.mode === 'write') && this.editable ){
@@ -166,23 +192,39 @@
       },
     },
     watch:{
+      /**
+       * @watch currentValue
+       * @param val 
+       */
       currentValue(val){
         if ( (this.mode === 'write') && (val !== this.actualValue) ){
           this.$emit('input', val);
         }
         this.init();
       },
+      /**
+       * @watch actualValue
+       * @param val 
+       */
       actualValue(val){
         if ( val !== this.currentValue ){
           this.currentValue = this.actualValue;
         }
       },
+      /**
+       * @watch value
+       * @param val 
+       */
       value(val, oldVal){
         if(val !== oldVal){
           this.init();
         }
       }
     },
+    /**
+     * @event created
+     * @fires init
+     */
     created(){
       this.init();
     }

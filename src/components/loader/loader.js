@@ -65,9 +65,9 @@
     },
     mounted(){
       if ( this.bgColor ){
-        $(this.$el).css('background-color', this.bgColor)
+        // @jquery $(this.$el).css('background-color', this.bgColor)
+        this.$el.style.backgroundColor = this.bgColor;
       }
-     // alert(this.minHeight)
     },
     methods: {
       //@todo not used

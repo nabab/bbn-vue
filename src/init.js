@@ -7,7 +7,7 @@
     return bbn.vue.loadComponentsByPrefix(tag, context)
   };
 
-  bbn.vue.fullComponent = bbn.fn.extendOut({}, bbn.vue.inputComponent, bbn.vue.optionComponent, bbn.vue.eventsComponent, bbn.vue.widgetComponent);
+  bbn.vue.fullComponent = bbn.fn.extend(true, {}, bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent);
 
   bbn.vue.addPrefix('bbn', (tag, resolve, reject) => {
     bbn.vue.queueComponentBBN(tag.substr(4), resolve, reject);

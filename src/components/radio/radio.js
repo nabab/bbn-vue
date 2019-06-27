@@ -1,9 +1,7 @@
 /**
  * @file bbn-radio component
  *
- * @description bbn-radio is a component that can be used as an interactive value choice, that can be activated or deactivated.
- * This is very useful for selecting a particular choice from a certain range of options.
- * In addition it's possible to easily customize the component, using the specific properties.
+ * @description bbn-radio is a component that can be used to select a particular choice from a range of options.
  *
  * @copyright BBN Solutions
  *
@@ -20,24 +18,18 @@
      * @mixin bbn.vue.basicComponent 
      * @mixin bbn.vue.inputComponent
      * @mixin bbn.vue.eventsComponent
-     * @mixin bbn.vue.dataSourceComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent, bbn.vue.dataSourceComponent],
+    mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent],
     props: {
       /**
-       * The value of the radio
-       * @prop value
-       */
-      value: {},
-      /**
-       * The separator to insert between the radio buttons
+       * The separator that can be inserted between the radio buttons.
        * @prop {String} separator
        */
       separator: {
         type: String
       },
       /**
-       * Set to true arranges radio buttons vertically
+       * Set to true to arrange the radio buttons vertically.
        * @prop {Boolean} [false] vertical
        */
 			vertical: {
@@ -45,14 +37,14 @@
 				default: false
       },
       /** 
-       * If the property vertical is set to false, defines the number of columns used to render the component
+       * If the property vertical is set to false, defines the number of columns used to render the component.
        * @prop {Number} step
        */
       step: {
         type: Number
       },
       /**
-       * The id of the radio input
+       * The id of the radio input.
        * @prop {String} [bbn.fn.randomString(10, 25)]  id
        */
       id: {
@@ -62,31 +54,7 @@
         }
       },
       /**
-       * Defines if the input is required
-       * @prop {Boolean} [false] required
-       */
-      required: {
-        type: Boolean,
-        default: false
-      },
-      /**
-       * Defines if the radio input has to be disabled
-       * @prop {Boolean} [false] disabled
-       */
-      disabled: {
-        type: Boolean,
-        default: false
-      },
-      /**
-       * The name of the input
-       * @prop {String} [null] name
-       */
-      name: {
-        type: String,
-        default: null
-      },
-      /**
-       * A function defining how to render each radio label instead of showing the text
+       * A function rendering each radio label.
        * @prop {Function} render
        * 
        */
@@ -94,7 +62,7 @@
         type: Function
       },
       /**
-       * The name of the property in the item object to be used as text
+       * The name of the property in the item object used as a text.
        * @prop {String} ['text'] sourceText
        */
       sourceText: {
@@ -102,7 +70,7 @@
         default: 'text'
       },
       /**
-       * The name of the property in the item object to be used as value
+       * The name of the property in the item object used as a value
        * @prop {String} ['text'] sourceValue
        */
       sourceValue: {
@@ -110,7 +78,7 @@
         default: 'value'
       },
       /**
-       * The source of the component
+       * The source of the component.
        * @prop {Array} [[{text:'Yes', value:1},{text:'No', value:0}]] source
        */
       source: {
@@ -126,6 +94,7 @@
         }
       },
       /**
+       * The real value used in the input emit.
        * @prop {String|Boolean|Number} [undefined] modelValue
        */
       modelValue: {
@@ -139,7 +108,7 @@
     },
     computed: {
       /**
-       * Returns the html string for the separator between radio buttons in case the prop 'separator' is not defined or the component has the prop 'vertical' set to true
+       * Returns the html string for the separator between the radio buttons if the property 'separator' is not defined or if the component has the property 'vertical' set to true.
        * @computed getSeparator
        * return {String}
        */
@@ -166,7 +135,7 @@
         this.$emit('change', val);
       },
       /**
-       * Basing on the prop 'step' returns the style of the component
+       * Returns the component's style based on the property 'step'.
        * @method getStyle
        */
       getStyle(){

@@ -1,12 +1,20 @@
-<span :class="componentClass">
-  <input :value="value"
-         :name="name"
-         ref="element"
-         @input="update($event.target.value)"
-         @click="click($event)"
-         @focus="focus($event)"
-         @blur="blur($event)"
-         :disabled="disabled"
-         :required="required"
-  >
-</span>
+<div :class="[componentClass, 'bbn-w-100', 'bbn-textbox']"
+     tabindex="0"
+     @keydown.stop="keydown($event)"
+     style="min-height: 6.5em">
+  <input type="hidden"
+          ref="element"
+          v-model="value">
+  <div class="bbn-overlay">
+    <bbn-scroll ref="scroll">
+      <bbn-list :source="source"
+                :selection="true"
+                :uid="sourceValue"
+                ref="list"
+                :selected="value"
+                :component="realComponent"
+                @select="select">
+      </bbn-list>
+    </bbn-scroll>
+  </div>
+</div>

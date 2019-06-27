@@ -1,11 +1,9 @@
 /**
  * @file bbn-datetimepicker component
  *
- * @description bbn-datetimepicker is a component that combines input, calendar and drop-down list, to choose the time.
- * Allows the user to enter or select a date and time value.
- * The calendar display is smooth, ensuring that all users can quickly search for the date they are looking for with the interface.
- * Allows the association of data in a bidirectional way.
- * Choose a validation interval period and the format of the value to be entered.
+ * @description bbn-datetimepicker is a component that allows the user to choose a time and date.
+ * The interval period and the value format are easuly customizable.
+ * 
  *
  * @copyright BBN Solutions
  *
@@ -17,12 +15,13 @@
   Vue.component('bbn-datetimepicker', {
     /**
      * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.fullComponent
+     * @mixin bbn.vue.inputComponent
+     * @mixin bbn.vue.eventsComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.fullComponent],
+    mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent],
     props: {
       /**
-       * The format of the date shown.
+       * The format of the date and time displayed in the user interface.
        *
        * @prop {String} format
        */
@@ -30,7 +29,7 @@
         type: String
       },
       /**
-       * The format of the value sent to the server.
+       * The format of the date and time sent to the server.
        *
        * @prop {String} valueFormat
        */
@@ -70,7 +69,7 @@
         type: [Array, Function]
       },
       /**
-       * Array of dates values to insert into a range.
+       * The array of date values insertable into a range.
        *
        * @prop {Array} [[]] datesRange
       */
@@ -81,7 +80,7 @@
         }
       },
       /**
-       * Show/hide the "seconds" selection.
+       * Shows/hides the seconds selection.
        *
        * @prop {Boolean} [false] showSecond
       */
@@ -90,7 +89,7 @@
         default: false
       },
       /**
-       * Show an alternative view for the time selection instead of the dropdowns.
+       * Shows an alternative view for the time selection instead of the dropdowns.
        *
        * @prop {Boolean} [false] scrollMode
       */
@@ -158,7 +157,7 @@
     },
     methods: {
       /**
-       * Shows|hides the calendar's floater.
+       * Shows/hides the calendar's floater.
        *
        * @method showCalendar
        */
@@ -169,7 +168,7 @@
         });
       },
       /**
-       * Shows|hides the time's floater
+       * Shows/hides the time's floater
        *
        * @method showTime
        */
@@ -208,7 +207,7 @@
         this.setValue(val.format(this.getValueFormat(val)));
       },
       /**
-       * Sets the value from 'HH:mm'|'HH:mm:ss' formatted value.
+       * Sets the value format from 'HH:mm' to 'HH:mm:ss'.
        *
        * @method setTime
        * @fires getValueFormat
@@ -262,7 +261,7 @@
         }
       },
       /** 
-       * The method called on input blur event.
+       * The method initialized by the input blur event.
        * 
        * @method inputChanged
        * @fires getValueFormat
@@ -298,7 +297,6 @@
     },
     /**
      * @event mounted
-     * @fires getOptions
      *
      */
     mounted(){
@@ -369,7 +367,7 @@
              */
             comp: bbn.vue.closest(this, 'bbn-datetimepicker'),
             /**
-             * Array used to make the minutes and the seconds.
+             * The array used to make the minutes and the seconds.
              *
              * @data {Array} minsec
              * @memberof timepicker
@@ -381,7 +379,7 @@
               };
             }),
             /**
-             * The current hour.
+             * The current hour
              *
              * @data {String|null} [null] hour
              * @memberof timepicker
@@ -402,28 +400,28 @@
              */
             second: null,
             /**
-             * Hours' scroll is ready.
+             * True when the hours scroll is ready.
              *
              * @data {Boolean} [false] hourReady
              * @memberof timepicker
              */
             hourReady: false,
             /**
-             * Minutes' scroll is ready.
+             * True when the minutes scroll is ready.
              *
              * @data {Boolean} [false] minuteReady
              * @memberof timepicker
              */
             minuteReady: false,
             /**
-             * Seconds' scroll is ready.
+             * True when the seconds scroll is ready.
              *
              * @data {Boolean} [false] secondReady
              * @memberof timepicker
              */
             secondReady: false,
             /**
-             * The component is ready.
+             * True when the component is ready.
              *
              * @data {Boolean} [false] ready
              * @memberof timepicker
@@ -433,7 +431,7 @@
         },
         computed: {
           /**
-             * Array used to make the hours.
+             * The array used to make the hours.
              *
              * @computed hours
              * @memberof timepicker

@@ -1,10 +1,11 @@
-<component :is="tag"
-           :class="componentClass"
-           tabindex="-1"
-           @click.prevent.stop="clickItem"
-           @contextmenu.prevent.stop="clickItem"
-           @keydown.space.enter.prevent="clickItem"
-           @mousedown.prevent.stop="() => {return false}"
+<bbn-context :tag="tag"
+            :class="componentClass"
+            tabindex="-1"
+            :source="items"
+            @click.prevent.stop="clickItem"
+            @contextmenu.prevent.stop="clickItem"
+            @keydown.space.enter.prevent="clickItem"
+            @mousedown.prevent.stop="() => {return false}"
 >
   <slot></slot>
-</component>
+</bbn-context>

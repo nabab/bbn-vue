@@ -16,7 +16,7 @@
       <div class="bbn-header bbn-100 bbn-flex-width bbn-unselectable bbn-no-border">
         <!-- MENU BUTTON -->
         <div class="bbn-block bbn-h-100 bbn-middle bbn-menu-button-container"
-             style="width: 70px">
+             style="width: 70px; margin-right: 70px">
           <div tabindex="0"
                @keydown.enter="toggleMenu"
                @keydown.space="toggleMenu"
@@ -26,29 +26,35 @@
           </div>
         </div>
         <!-- SEARCHBAR -->
-        <div v-if="searchBar"
-             class="bbn-block bbn-h-100 bbn-vmiddle"
-             style="width: 70px">
-          <div class="bbn-global-search bbn-vmiddle bbn-lg">
-            <search-bar id="recherche"
-                        ref="searchBar"
-                        :source="searchBar"
-            ></search-bar>
-          </div>
+        <div class="bbn-abs bbn-h-100 bbn-vspadded"
+             style="left: 70px; right: 140px; top: auto; z-index: 4">
+          <bbn-search source="adherents"
+                      :placeholder="searchBar.placeholderFocused"
+                      ref="search"
+                      @select="searchBar.select"
+                      component="apst-search-item"
+                      v-model="searchBar.value"
+                      :source-value="searchBar.sourceValue"
+                      :source-text="searchBar.sourceText"
+                      :min-length="searchBar.minLength"
+          >
+          </bbn-search>
         </div>
-        <!-- CENTRAL PART -->
-        <div class="bbn-h-100 bbn-splitter-top-center bbn-flex-fill">
+<!-- CENTRAL PART -->
+        <div class="bbn-h-100 bbn-splitter-top-center bbn-flex-fill ">
           <!-- FISHEYE -->
           <bbn-fisheye v-if="plugins['appui-menu']"
-                       :del-url="plugins['appui-menu'] + '/shortcuts/delete'"
-                       :ins-url="plugins['appui-menu'] + '/shortcuts/insert'"
-                       :min-index="3"
-                       :z-index="3"
+                       style="z-index: 3"
+                       :class="{
+                         'bbn-invisible': $refs.search && $refs.search.isFocused,
+                         'bbn-spadded': true
+                        }"
+                       :removable="true"
+                       @remove="removeShortcut"
                        ref="fisheye"
                        :source="shortcuts"
                        :fixed-left="leftShortcuts"
-                       :fixed-right="rightShortcuts"
-                       @ready="fisheyeMounted = true">
+                       :fixed-right="rightShortcuts">
           </bbn-fisheye>
           <div v-else>
             Not a menu
@@ -139,8 +145,9 @@
                 :menus="menus"
                 :current="currentMenu"
                 :top="50"
-                style="width: 400px"
-                :shortcuts="$refs.fisheye"
+                style="width: 35em"
+                :shortcuts="true"
+                @shortcut="addShortcut"
                 @ready="menuMounted = true">
   </bbn-treemenu>
   <!-- POPUPS -->
@@ -149,18 +156,7 @@
              :z-index="14">
   </bbn-popup>
   <!-- NOTIFICATIONS -->
-  <bbn-notification ref="notification"></bbn-notification>
-  <!-- FLOATING LISTS -->
-  <bbn-vlist v-for="(li, idx) in vlist"
-             :key="idx"
-             :left="li.left"
-             :top="li.top"
-             :right="li.right"
-             :bottom="li.bottom"
-             @close="vlist.splice(idx, 1)"
-             :source="li.items"
-             :unique="li.unique ? true : false">
-  </bbn-vlist>
+  <bbn-notification ref="notification" :z-index="15"></bbn-notification>
   <!-- APP COMPONENT -->
   <component ref="app" :is="appComponent"></component>
 </div>

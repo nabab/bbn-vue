@@ -436,7 +436,6 @@
             st += '.bbn-slideshow .slideswitch[id="' + this.name + i.toString() + '"]:target ~ #' + this.name + i.toString() + ' .' + it.animation + ' {animation-name:' + it.animation + ' !important;animation-duration: ' + (it.duration || this.duration || '0.5') + 's;' + ( it.animation === 'flip' ? 'backface-visibility: hidden;' : '')+ '}';
           }
         });
-        //$(this.$el).append('<style>' + st + '</style>');
       },
       /**
        * Shows the previous slide
@@ -575,7 +574,20 @@
       if ( !this.isAjax && !this.items.length && this.getRef('slot').innerHTML.trim() ){
         if ( this.separator ){
           this.items = this.getRef('slot').innerHTML.split(this.separator).map((txt, i) => {
-            let title = $('<div/>').html(txt).find("h1,h2,h3,h4,h5").eq(0).text();
+      
+          //@jquery let title = $('<div/>').html(txt).find("h1,h2,h3,h4,h5").eq(0).text();
+      
+            let el = document.createElement('div'),
+              title = '';
+            el.innerHTML = txt;
+            if ( el ){
+              let titles = el.querySelectorAll('h1,h2,h3,h4,h5');
+              if ( titles.length ){
+                bbn.fn.each(titles, (v, i) => {
+                 let title = v.innerText.trim();
+                })
+              }
+            }
             return {content: txt, type: 'text', title: title};
           });
         }
@@ -746,9 +758,12 @@
          * @memberof miniature
          */
         mounted(){
-          $("div.zoom div.content").css("transform", "scale(0.2)")
+          //@jquery $("div.zoom div.content").css("transform", "scale(0.2)")
           //$("div.zoom img").css("transform", "scale(0.2)")
-          $("div.zoom div.content").find("img").css("transform", "scale(0.1)")
+          //@jquery $("div.zoom div.content").find("img").css("transform", "scale(0.1)")
+          this.$el.querySelector('div.zoom div.content').style.transform = 'scale(0.2)';
+          this.$el.querySelector('div.zoom div.content').querySelector('img').style.transform = 'scale(0.1)';
+
         }
       }
     }

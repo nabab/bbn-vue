@@ -124,7 +124,7 @@
         default: '#c4a300'
       },
       command: {
-        type: Function
+        type: [Function, String]
       }
     },
     computed: {
@@ -157,7 +157,6 @@
        * @emit click
        */
       click(e){
-        bbn.fn.log("CLICK", this.url, this.command, e.defaultPrevented);
         if ( this.url ){
           bbn.fn.link(this.url);
         }
@@ -167,11 +166,6 @@
             this.command(e, this);
           }
         }
-      }
-    },
-    watch: {
-      isDisabled(){
-        bbn.fn.log("IS DUISABLED HAS CHANGED");
       }
     }
   });

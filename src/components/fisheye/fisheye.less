@@ -1,67 +1,69 @@
 .bbn-fisheye {
   text-align: center;
-  height: 50px;
   position: relative;
   overflow: visible;
-  &.ready{
-    opacity: 1 !important;
-  }
-  &.active{
-    color: white;
-    background-color: green;
-    opacity: 0.4;
-  }
+  transition: opacity 0.3s;
   ul{
+    display: inline-block;
     list-style: none;
     padding: 0;
     margin: 0;
-    position: absolute;
-    li {
-      text-align: center;
-      font-weight: bold;
-      text-decoration: none;
-      color: inherit;
-      width: 24px;
-      position: absolute;
-      display: block;
-      margin-top: 8px;
-      padding: 5px;
-      span{
-        display: none;
-        position: absolute;
-        left: 50%;
-        top: 150%;
-        -webkit-transform: translate(-50%, -50%);
-        -moz-transform: translate(-50%, -50%);
-        transform: translate(-50%, -50%);
-        color: #FFF;
-        white-space: nowrap;
-        font-size: 36px;
-        text-shadow: 0 0 0.3em #000;
+    white-space: nowrap;
+    line-height: 100%;
+    vertical-align: middle;
+    box-sizing: border-box;
+    height: 100%;
+    li{
+      vertical-align: middle;
+      display: inline-block;
+      backface-visibility: hidden;
+      transition: all 0.2s ease-in-out;
+      transform: translateZ(0);
+      padding: 0.5em;
+      box-sizing: border-box;
+      a{
+        color: inherit;
       }
       i{
         display: inline-block;
-        border: none;
-        font-size: 24px;
+        backface-visibility: hidden;
+        transition: all 0.2s ease-in-out;
+        transform: translateZ(0);
+        font-size: 2em;
+        &:hover{
+          transform: scale(1.5);
+        }
       }
-      a{
-        color: inherit !important;
+      &:hover{
+        transform: scale(1.4);
       }
     }
   }
-}
-#bbn_dock_menu_bin{
-  overflow: visible;
-  float: left;
-  height: auto;
-  width: 100px;
-  position: absolute;
-  top: 250px;
-  left: 50%;
-  margin-left: -50px;
-  display: none;
-  text-align: center;
-}
-#bbn_dock_menu_bin i{
-  font-size: 96px;
+  .bbn-fisheye-text{
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    top: 150%;
+    white-space: nowrap;
+    color: #FFF;
+    font-size: 3em;
+    text-shadow: 0 0 0.3em #000;
+  }
+  .bbn-fisheye-bin{
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    top: 15em;
+    text-shadow: 0 0 0.8em #000;
+    white-space: nowrap;
+    color: #FFF;
+    span{
+      display: inline-block;
+      min-width: 8em;
+      min-height: 8em;
+    }
+    i {
+      font-size: 8em;
+    }
+  }
 }

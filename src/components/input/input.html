@@ -1,49 +1,54 @@
-<span :class="[componentClass, 'bbn-textbox', {
-								'bbn-disabled': !!disabled,
-								'button-left' : buttonLeft,
-								'button-right' : buttonRight,
-								'bbn-invisible' : (type === 'hidden'),
-								'bbn-flex-width' : (buttonLeft || buttonRight)
-							}]"
-			:style="(currentSize !== '') ? 'width:' + currentSize : '' "
+<div :class="[
+	componentClass, 'bbn-textbox', {
+		'bbn-disabled': !!disabled,
+		'button-left' : buttonLeft,
+		'button-right' : buttonRight,
+		'bbn-invisible' : (type === 'hidden'),
+	}]"
+	:style="(currentSize !== '') ? 'width:' + currentSize : '' "
 >
-
-	<bbn-button v-if="buttonLeft"
-							 :icon="buttonLeft" 
-							 @click="currentActionLeft"
-							 :class="['left-button', {
-									'bbn-invisible' : autoHideLeft
-							 }]"
-	></bbn-button>
-	<input :value="value"
-         :type="type"
-         :name="name"
-         ref="element"
-         :readonly="readonly"
-         :disabled="disabled"
-         :required="required"
-         :placeholder="placeholder"
-         :maxlength="maxlength"
-         :autocomplete="currentAutocomplete"
-         :pattern="pattern"
-         @input="emitInput($refs.element.value)"
-         @click="click"
-         @focus="focus"
-         @blur="blur"
-         @change="change"
-         @keydown="keydown"
-         @keyup="keyup"
-         @mouseenter="over"
-         @mouseleave="out"
-				 tabindex="0"
-				 :class="{'bbn-flex-fill' : (buttonLeft || buttonRight)}"
-	>
-	<bbn-button v-if="buttonRight"
-						  :icon="buttonRight" 
-							@click="currentActionRight"
-							:class="['right-button', {
-								'bbn-invisible' : autoHideRight
-							}]"
-	></bbn-button>
-  
-</span>
+  <div :class="{
+    'bbn-w-100': (!buttonLeft && !buttonRight),
+    'bbn-flex-width' : (buttonLeft || buttonRight)
+  }">
+    <bbn-button v-if="buttonLeft"
+          :icon="buttonLeft" 
+          @click="currentActionLeft"
+          tabindex="-1"
+          :class="['bbn-button-left', {
+            'bbn-invisible' : autoHideLeft
+          }]"
+    ></bbn-button>
+    <input :value="value"
+          :type="type"
+          :name="name"
+          ref="element"
+          :readonly="readonly"
+          :disabled="disabled"
+          :required="required"
+          :placeholder="placeholder"
+          :maxlength="maxlength"
+          :autocomplete="currentAutocomplete"
+          :pattern="pattern"
+          @input="emitInput($refs.element.value)"
+          @click="click"
+          @focus="focus"
+          @blur="blur"
+          @change="change"
+          @keydown="keydown"
+          @keyup="keyup"
+          @mouseenter="over"
+          @mouseleave="out"
+          :tabindex="tabindex"
+          :class="{'bbn-flex-fill' : (buttonLeft || buttonRight)}"
+    >
+    <bbn-loadicon v-if="loading"></bbn-loadicon>
+    <bbn-button v-if="buttonRight"
+                :icon="buttonRight"
+                tabindex="-1"
+                @click="currentActionRight"
+                :class="['bbn-button-right', 'bbn-m', {
+                  'bbn-invisible' : autoHideRight
+                }]"
+    ></bbn-button></div>
+</div>

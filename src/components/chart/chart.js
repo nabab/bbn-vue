@@ -17,9 +17,8 @@
   Vue.component('bbn-chart', {
     /**
      * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.optionComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.optionComponent],
+    mixins: [bbn.vue.basicComponent],
     props: {
       /**
        * The component's data.
@@ -117,7 +116,7 @@
         default: false
       },
       /**
-       * Set to false to prevent the chart from occupying the full width of its container
+       * Set to false to prevent the chart from occupying the full width of its container.
        * @prop {Boolean} [true] fullWidth
        */
       fullWidth: {
@@ -134,7 +133,7 @@
         default: false
       },
       /**
-       * Area's opacity adjustment
+       * Area's opacity adjustment.
        *
        * @prop {Number|String} [0.1] areaOpacity
       */
@@ -612,12 +611,19 @@
         if ( this.legend ){
           plugins.push(Chartist.plugins.legend({
             onClick(a, b){
-              const $rect = $("div.rect", b.target);
+              /* @jquery const $rect = $("div.rect", b.target);
               if ( $rect.hasClass('inactive') ){
                 $rect.removeClass('inactive');
               }
               else {
                 $rect.addClass('inactive');
+              }*/
+              const rect = b.target.querySelector('div.rect');
+              if ( rect.classList.contains('inactive') ){
+                rect.classList.remove('inactive');
+              }
+              else {
+                rect.classList.add('inactive');
               }
             },
             removeAll: true,
@@ -988,7 +994,8 @@
             else if ( this.labelColorY && (chartData.axis.units.pos === 'y') ){
               color = this.labelColorY;
             }
-            $(chartData.element._node.children[0]).css('color', color);
+            //@jquery $(chartData.element._node.children[0]).css('color', color);
+            chartData.element._node.children[0].style.color = color;
           }
 
           // Animation
@@ -1092,7 +1099,7 @@
       },
       /**
        * Sets animations and colors whilst drawing the bar chart.
-	   *
+	     *
        * @method barDraw
        * @fires setGridColor
        * @fires setColor
@@ -1118,7 +1125,8 @@
               color = this.labelColorY;
             }
             if ( color ){
-              $(chartData.element._node.children[0]).css('color', color);
+              //@jquery $(chartData.element._node.children[0]).css('color', color);
+              chartData.element._node.children[0].color = color;
             }
           }
 
@@ -1229,6 +1237,7 @@
             idDef = bbn.fn.randomString(),
             defs = false;
         this.widget.on('draw', (chartData) => {
+          
           let tmp = 1;
           // Insert linebreak to labels
           if ( chartData.type === 'label' ){
@@ -1325,7 +1334,13 @@
                 x: chartData.center.x,
                 y: chartData.center.y
               };
+              /* @jquery
               $(chartData.group._node.parentNode).prepend('<defs><radialGradient id="' + idDef + '" r="122.5" gradientUnits="userSpaceOnUse" cx="' + defs.x + '" cy="' + defs.y + '"><stop offset="0.05" style="stop-color:#fff;stop-opacity:0.65;"></stop><stop offset="0.55" style="stop-color:#fff;stop-opacity: 0;"></stop><stop offset="0.85" style="stop-color:#fff;stop-opacity: 0.25;"></stop></radialGradient></defs>');
+              */
+               let content = '<radialGradient id="' + idDef + '" r="122.5" gradientUnits="userSpaceOnUse" cx="' + defs.x + '" cy="' + defs.y + '"><stop offset="0.05" style="stop-color:#fff;stop-opacity:0.65;"></stop><stop offset="0.55" style="stop-color:#fff;stop-opacity: 0;"></stop><stop offset="0.85" style="stop-color:#fff;stop-opacity: 0.25;"></stop></radialGradient>',
+                   el = document.createElement('defs');
+                   el.innerHTML = content;
+              chartData.group._node.parentNode.insertAdjacentElement('afterbegin', el)
             }
             chartData.element._node.outerHTML += '<path d="' + chartData.element._node.attributes.d.nodeValue + '" stroke="none" fill="url(#' + idDef + ')"></path>';
           }
@@ -1365,7 +1380,7 @@
         }
       },
       /**
-       * Sets the area's opacity
+       * Sets the area's opacity.
        *
        * @method setAreaOpacity
        * @param {Object} chartData A Chartist.js SVG element
@@ -1432,6 +1447,7 @@
           // Set the right colors to legend
           if ( this.legend ){
             let colors = [];
+            /* @jquery 
             $("g.ct-series", this.widget.container).each((i,v) => {
               if ( this.isBar ){
                 colors.push($("line.ct-bar", v).first().css('stroke'));
@@ -1444,33 +1460,79 @@
                   ){
                     colors.push($(p).css($(p).hasClass('ct-slice-pie') ? 'fill' : 'stroke'));
                   }
+                  bbn.fn.log($(p))
+                })
+
+              }
+            });*/
+            
+            
+            bbn.fn.each( this.widget.container.querySelectorAll('g.ct-series'), (v, i) => {
+              if ( this.isBar ){
+                colors.push(v.querySelector('line.ct-bar').style.stroke);
+              }
+              else {
+                bbn.fn.each(v.querySelectorAll('path'), (p, k) => {
+                  if ( p.classList.contains('ct-line') ||
+                    p.classList.contains('ct-slice-pie') ||
+                    p.classList.contains('ct-slice-donut')
+                  ){
+                    colors.push(p.classList.contains('ct-slice-pie') ? getComputedStyle(p).fill : getComputedStyle(p).stroke);
+                  }
                 })
               }
-            });
+            })
             setTimeout(() => {
               if ( this.isPie && this.legendPosition ){
-                $("ul.ct-legend.ct-legend-inside", this.widget.container).removeClass("ct-legend-inside");
+                //@jquery $("ul.ct-legend.ct-legend-inside", this.widget.container).removeClass("ct-legend-inside");
+                
+                if ( this.widget.container.querySelector('ul.ct-legend.ct-legend-inside') && this.widget.container.querySelector('ul.ct-legend.ct-legend-inside').classList.contains('ct-legend-inside') ){
+                  this.widget.container.querySelector('ul.ct-legend.ct-legend-inside').classList.remove('ct-legend-inside')
+                }
               }
+              /* @jquery
               let legendHeight = $('ul.ct-legend:not(.ct-legend-inside)', this.widget.container).height(),
                   svgHeight = $('svg', this.widget.container).height(),
                   contHeight = $(this.widget.container).height();
+              */
+             let legendHeight = this.widget.container.querySelector('ul.ct-legend.ct-legend:not(.ct-legend-inside)').clientHeight,
+                  svgHeight = this.widget.container.querySelector('svg').clientHeight,
+                  contHeight = this.widget.container.clientHeight;
+
               if ( (legendHeight + svgHeight) > contHeight ){
                 this.widget.update(false, {height: contHeight - legendHeight}, true);
                 return;
               }
+              /* @jquery
               $("ul.ct-legend li", this.widget.container).each((i, v) => {
                 if ( Array.isArray(this.legendTitles) ){
                   $(v).attr('title', this.legendTitles[i]);
                 }
                 if ( !$("div.rect", v).length ){
+                  bbn.fn.log('before prepend', $(v),$(v).parent())
                   $(v).prepend('<div class="rect" style="background-color: ' + colors[i] +'; border-color: ' + colors[i] + '"></div>');
+                  bbn.fn.log('after prepend', $(v),$(v).parent())
+                }
+              });*/
+              bbn.fn.each(this.widget.container.querySelectorAll('ul.ct-legend li'), (v, i) => {
+                if ( Array.isArray(this.legendTitles) ){
+                  v.setAttribute('title', this.legendTitles[i]);
+                }
+                if ( !v.querySelector('div.rect') ){
+                  let content = '<div class="rect" style="background-color: ' + colors[i] +'; border-color: ' + colors[i] + '"></div>',
+                      el = document.createElement('div');
+                  el.innerHTML = content;
+                  v.insertAdjacentElement('afterbegin', el)
                 }
               });
             }, 100);
           }
           // Set the right colors to point labels
           if ( !this.isPie && (this.labelColor || this.labelColorY) ){
-            $("g.ct-series text.ct-label", this.widget.container).css('stroke', this.labelColorY || this.labelColor);
+            // @jquery $("g.ct-series text.ct-label").css('stroke', this.labelColorY || this.labelColor);
+            if(this.widget.container.querySelector('g.ct-series text.ct-label')){
+              this.widget.container.querySelector('g.ct-series text.ct-label').style.stroke = this.labelColorY || this.labelColor;
+            }
           }
           // Reset zoom
           /*if ( this.zoom && this.isLine ){

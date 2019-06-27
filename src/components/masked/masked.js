@@ -1,7 +1,7 @@
 /**
  * @file bbn-masked component
- * @description bbn-masked is a useful component for those who want full control of data that needs to be processed.
- * It represents an input that allows the user to insert the desired values  in a defined format.For example: the insertion of telephone number.
+ * @description bbn-masked is a component that allows the full control of data to be processed.
+ * It represents an input box that allows the user to insert values in a given format.
  * @copyright BBN Solutions
  * @author Mirko Argentino
  */
@@ -10,10 +10,15 @@
   "use strict"
 
   Vue.component('bbn-masked', {
-    mixins: [bbn.vue.basicComponent, bbn.vue.fullComponent],
+	/**
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.inputComponent
+     * @mixin bbn.vue.eventsComponent
+     */
+    mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent],
     props: {
       /** 
-       * The mask pattern (required).
+       * The required mask pattern.
        * 
        * @prop {String} mask
        * @required true
@@ -36,7 +41,7 @@
     data(){
       return {
         /** 
-         * The symbol used as escape.
+         * The escape symbol.
          * 
          * @data {String} ['\'] escape
         */
@@ -59,11 +64,11 @@
           '#': {
             pattern: '[0-9\s\\+\\-]'
           },
-          // Letter. Restricts input to letters a-z and A-Z. This rule is equivalent to [a-zA-Z] in regular expressions.
+          // Letter. Restricts the input to letters a-z and A-Z. This rule is equivalent to [a-zA-Z] in regular expressions.
           'L': {
             pattern: '[a-zA-Z]'
           },
-          // Letter or space. Restricts input to letters a-z and A-Z. This rule is equivalent to [a-zA-Z] in regular expressions.
+          // Letter or space. Restricts the input to letters a-z and A-Z. This rule is equivalent to [a-zA-Z] in regular expressions.
           '?': {
             pattern: '[a-zA-Z\s]'
           },
@@ -79,19 +84,19 @@
           'A': {
             pattern: '[0-9a-zA-Z]'
           },
-          // Alphanumeric or space. Accepts letters, digits and space only.
+          // Alphanumeric or space. Accepts letters, digits and spaces only.
           'a': {
             pattern: '[0-9a-zA-Z\s]'
           },
-          // Decimal placeholder. The decimal separator will be gotten from the bbn.env.money property.
+          // Decimal placeholder. The decimal separator will be generated from the bbn.env.money property.
           '.': {
             static: bbn.env && bbn.env.money && bbn.env.money.decimal ? bbn.env.money.decimal : '.'
           },
-          // Thousands placeholder. The display character will be gotten from the bbn.env.money property.
+          // Thousands placeholder. The display character will be generated from the bbn.env.money property.
           ',': {
             static: bbn.env && bbn.env.money && bbn.env.money.thousands ? bbn.env.money.thousands : ','
           },
-          // Currency symbol. The display character will be gotten from the bbn.env.money property.
+          // Currency symbol. The display character will be generated from the bbn.env.money property.
           '$': {
             static: bbn.env && bbn.env.money && bbn.env.money.currency ? bbn.env.money.currency : '€'
           }
@@ -106,7 +111,7 @@
     },
     computed: {
       /** 
-       * The list of the escape positions into the mask.
+       * The list of escape positions in the mask.
        * 
        * @computed escapePos
        * @returns {Array}
@@ -119,8 +124,8 @@
         return [...this.mask.matchAll(reg)].map(e => e.index)
       },
       /** 
-       * The list of the banned positions into the mask.
-       * The position indexes are created without taking into account the positions with the escape symbol.
+       * The list of banned positions in the mask.
+       * The position indexes are created without considering the positions with the escape symbol.
        * 
        * @computed bannedPos
        * @returns {Array}
@@ -140,7 +145,7 @@
         return pos
       },
       /** 
-       * The list of the banned positions into the mask.
+       * The list of banned positions in the mask.
        * The position indexes are created by considering the positions with the escape symbol.
        * 
        * @computed bannedPosRaw
@@ -156,7 +161,7 @@
         return pos
       },
       /** 
-       * The list of correspondence between positions in the mask (the new position after the escape symbols remove -> the original position).
+       * A list of relations between positions in the mask.
        * 
        * @computed posLink
        * @returns {Array}
@@ -177,7 +182,7 @@
         return pos
       },
       /**
-       * The maximum value length based on the mask.
+       * The maximum value length calculated from the mask.
        * 
        * @computed maxLeng
        * @returns {Number}
@@ -239,7 +244,7 @@
         }
       },
       /**
-       * Cheks if the pressed key is an arraow key.
+       * Cheks if the pressed key is an arrow key.
        *
        * @method isArrowKey
        * @param {Number} keyCode
@@ -307,7 +312,7 @@
         return keyCode === 9
       },
       /**
-       * Sets the inputValue data property.
+       * Sets the data property 'inputValue'.
        *
        * @method setInputValue
        * @fires getInputValue
@@ -387,7 +392,7 @@
         return (pos < 0) || (pos > this.maxPos) ? originalPos : pos
       },
       /**
-       * Finds and returns the start position and the end position of the value by two points of the inputValue.
+       * Finds and returns the start and the end position of the value by two points of the inputValue.
        * 
        * @method getIdxRange
        * @param {Number} start

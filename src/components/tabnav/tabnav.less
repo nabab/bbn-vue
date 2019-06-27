@@ -10,16 +10,18 @@ div.bbn-tabnav {
   zoom: 1;
   &.bbn-tabnav-scrollable{
     > div.bbn-tabnav-container{
-      > ul.bbn-tabnav-tabs{
-        margin: 0 2.5em !important;
-        white-space: nowrap;
-        overflow: hidden;
+      div.bbn-tabnav-ul-container{
+        padding: 0 2.5em !important;
+        ul.bbn-tabnav-tabs:first-child{
+          white-space: nowrap;
+          overflow: hidden;
+        }
       }
     }
   }
   > div.bbn-tabnav-container{
     height: 100%;
-    > ul.bbn-tabnav-tabs{
+    ul.bbn-tabnav-tabs:first-child{
       margin: 0;
       padding: 0;
       position: relative;
@@ -101,7 +103,7 @@ div.bbn-tabnav {
         &.bbn-tabnav-static div.bbn-tabnav-icons i.bbn-tab-close {
           display: none
         }
-        &.bbn-state-active {
+        &.bbn-tabnav-active {
           div.bbn-tabnav-icons i.bbn-tab-menu {
             display: block
           }

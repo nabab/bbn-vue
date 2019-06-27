@@ -13,11 +13,12 @@
                 @click="showCalendar"
                 :disabled="disabled || readonly"
                 class="bbn-datetimepicker-calendar"
+                tabindex="-1"
     ></bbn-button>
     <bbn-button icon="nf nf-fa-clock_o"
                 @click="showTime"
                 :disabled="disabled || readonly"
-                class="bbn-datetimepicker-clock"
+                class="bbn-datetimepicker-clock bbn-button-right"
     ></bbn-button>
     <bbn-floater v-if="isCalendarOpened && !disabled && !readonly"
                  :element="$el"

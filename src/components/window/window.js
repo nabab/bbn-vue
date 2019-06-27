@@ -115,7 +115,7 @@
         popup: false,
         maxHeight: null,
         maxWidth: null,
-        containerCSS: {}
+        containerCSS: {opacity: 0}
       }
     },
 
@@ -147,6 +147,7 @@
       onResize(){
         let o = this.getContainerPosition();
         this.containerCSS = {
+          opacity: 1,
           top: o.top + 'px',
           left: o.left + 'px',
           width: o.width + 'px',

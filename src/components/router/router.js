@@ -158,7 +158,7 @@
         if ( !this.isInit && (this.numRegistered === this.views.length) ){
           this.isInit = true;
           if ( this.auto ){
-            this.route(this.parseURL(this.parent ? this.router.getFullCurrentURL() : bbn.env.path), true);
+            this.route(this.getDefaultURL(), true);
           }
 
         }
@@ -305,12 +305,12 @@
               }
             }
             let st = url ? this.getRoute(url) : '';
-            bbn.fn.log("ROUTING FUNCTION EXECUTING FOR " + url + " (CORRESPONDING TO " + st + ")");
+            //bbn.fn.log("ROUTING FUNCTION EXECUTING FOR " + url + " (CORRESPONDING TO " + st + ")");
             if ( !url ){
               return;
             }
             if ( !force && (this.currentURL === url) ){
-              bbn.fn.log("SAME URL END ROUTING");
+              //bbn.fn.log("SAME URL END ROUTING");
               return;
             }
             if ( url && ((!st && this.autoload) || (this.urls[st] && this.urls[st].load && !this.urls[st].isLoaded)) ){
@@ -318,7 +318,7 @@
             }
             // Otherwise the container is activated ie made visible
             else {
-              bbn.fn.log("LOADED " + url);
+              //bbn.fn.log("LOADED " + url);
               if ( !st && this.def && (!url || force)){
                 st = this.getRoute(this.def);
                 if ( st ){
@@ -448,6 +448,9 @@
         if ( !bbn.env.isInit ){
           return;
         }
+        if ( url !== this.currentURL ){
+          this.currentURL = url;
+        }
         if ( this.parent ){
           this.parent.changeURL(this.baseURL + url, title, replace);
         }
@@ -537,8 +540,13 @@
         if ( (this.fullBaseURL === (fullURL + '/'))  || (fullURL === '') ){
           return '';
         }
-        if ( this.fullBaseURL && (fullURL.indexOf(this.fullBaseURL) === 0) ){
-          fullURL = fullURL.substr(this.fullBaseURL.length);
+        if ( this.fullBaseURL ){
+          if (fullURL.indexOf(this.fullBaseURL) === 0){
+            fullURL = fullURL.substr(this.fullBaseURL.length);
+          }
+          else{
+            fullURL = '';
+          }
         }
         //bbn.fn.log("PARSING " + url + ' INTO ' + fullURL + ' with a baseURL like this: ' + this.fullBaseURL);
         return fullURL;
@@ -633,12 +641,13 @@
           else if ( typeof(misc) === 'object' ){
             // Vue
             if ( misc.$el ){
-              misc = $(misc.$el);
+              // @jquery misc = $(misc.$el);
+              misc = misc.$el;
             }
             // Not jQuery
-            else if ( misc instanceof jQuery ){
+            /* else if ( misc instanceof jQuery ){
               misc = misc[0];
-            }
+            }*/
             if ( misc.tagName ){
               bbn.fn.each(this.$children, (ct) => {
                 if (
@@ -825,7 +834,7 @@
               delete d.data;
             }
             if ( (d.url !== d.current) && this.urls[d.current] ){
-              bbn.fn.log("DELETING VIEW CASE");
+              //bbn.fn.log("DELETING VIEW CASE");
               this.views.splice(this.urls[d.current].idx, 1);
               delete this.urls[d.current];
             }
@@ -897,6 +906,22 @@
         }
       },
 
+      getDefaultURL(){
+        // If there is a parent router we automatically give the proper baseURL
+        if ( this.url ){
+          return this.url;
+        }
+        else if ( this.parentContainer && (this.parentContainer.currentURL !== this.parentContainer.url) ){
+          return this.parentContainer.currentURL.substr(this.parentContainer.url.length + 1);
+        }
+        if ( this.def ){
+          return this.def;
+        }
+        else{
+          return this.parseURL(bbn.env.path);
+        }
+      },
+
       getTitle(idx){
         let cp = this,
             res = '';
@@ -933,21 +958,11 @@
       this.parent = this.parents.length ? this.parents[0] : false;
       // The root
       this.router = this.parents.length ? this.parents[this.parents.length-1] : this;
-      let url;
-      // If there is a parent router we automatically give the proper baseURL
       if ( this.parent ){
         this.parentContainer = this.closest('bbn-container');
         this.baseURL = this.setBaseURL(this.parentContainer.url);
-        url = this.parentContainer.currentURL !== this.parentContainer.url ? this.parentContainer.currentURL.substr(this.parentContainer.url.length + 1) : '';
-        //bbn.fn.log("URL FROM PARENT: " + url + " (FROM " + this.parentContainer.url + ")");
       }
-      else{
-        url = this.parseURL(bbn.env.path);
-      }
-      if ( !url && this.url ){
-        url = this.url;
-        //bbn.fn.log("URL FROM PROP", url);
-      }
+      let url = this.getDefaultURL();
       // Adding bbns-tab from the slot
       if ( this.$slots.default ){
         for ( let node of this.$slots.default ){
@@ -986,12 +1001,13 @@
               this.changeURL(newVal, bbn._("Loading"));
             }
             let idx = this.search(newVal);
-            if ( idx !== false ){
+            if ((idx !== false) && (this.selected !== idx)){
               this.selected = idx;
             }
             this.$emit('change', newVal);
           });
           this.$emit('route', newVal);
+          
         }
       },
       url(newVal){

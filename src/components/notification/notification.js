@@ -9,20 +9,24 @@
  *
  * @created 11/01/2017
  */
-(function(bbn, kendo){
+((bbn) => {
   "use strict";
 
   /**
    * Classic input with normalized appearance
    */
   Vue.component('bbn-notification', {
-    mixins: [bbn.vue.basicComponent, bbn.vue.optionComponent],
+    mixins: [bbn.vue.basicComponent],
     props: {
+      delay: {
+        type: Number,
+        default: 5000
+      },
       pinned: {},
-      top: {},
-      left: {},
-      bottom: {},
-      right: {},
+      position: {
+        type: String,
+        default: 'bottom-left'
+      },
       successMessage: {
         type: [String, Function],
         default: bbn._('Success')
@@ -34,191 +38,146 @@
       errorMessage: {
         type: [String, Function],
         default: bbn._('Error')
-      },
-      cfg: {
-        type: Object,
-        default: function(){
-          return {
-            pinned: true,
-            top: null,
-            left: null,
-            bottom: 5,
-            right: 5,
-          }
-        }
       }
     },
     data: function(){
-      return {
-        tplCfg: {
-          info: {
-            cls: 'groupe',
-            icon: 'info'
-          },
-          success: {
-            cls: 'adherent',
-            icon: 'flag-checkered'
-          },
-          warning: {
-            cls: 'prospect',
-            icon: 'warning'
-          },
-          error: {
-            cls: 'radie',
-            icon: 'bomb'
-          }
+      let bits = this.position.split('-');
+      let pos = {
+        v: {
+          top: false,
+          bottom: true
         },
+        h: {
+          left: false,
+          right: true
+        }
+      };
+      bbn.fn.each(bits, (bit) => {
+        bbn.fn.iterate(pos, (o, dir) => {
+          if ( o[bit.toLowerCase()] ){
+            bbn.fn.iterate(o, (b, k) => {
+              if ( bit === k ){
+                pos[dir][k] = true;
+              }
+              else{
+                pos[dir][k] = false;
+              }
+            });
+          }
+        });
+      });
+      return {
+        items: [],
+        isTop: pos.v.top,
+        isLeft: pos.h.left,
+        positions: {}
       };
     },
     methods: {
-      template: function (obj, type){
-        var vm = this;
-        if ( typeof(obj) === 'object' ){
-          if ( obj.type ){
-            type = obj.type;
-          }
-          var cfg = vm.tplCfg;
-          return '<div class="bbn-notification k-notification-wrap ' +
-            '">' +
-/*            ( type && cfg[type] ? '<div class="bbn-notification-close k-i-close k-button" title="' + bbn.lng.close + '"><i class="nf nf-fa-times"> </i></div>' : '' ) +
-            ( type && cfg[type] ? '<i class="bbn-notification-icon nf nf-fa-' + cfg[type].icon + '"> </i>' : '<span class="bbn-notification-icon loader"><span class="loader-inner"></span></span> ' ) + */
-            ( obj.title ? '<span class="bbn-b">' + obj.title + '</span><hr>' : '' ) +
-            ( obj.content ? obj.content : ( obj.text ? obj.text : bbn.lng.loading ) ) +
-            '</div>';
-        }
-        bbn.fn.log("Bad argument for notification template");
-      },
-      _sanitize(obj, type){
+      _sanitize(obj, type, timeout){
         if ( typeof obj === 'string' ){
-          obj = {text: obj};
+          obj = {content: obj};
         }
         else if ( !obj ){
           obj = {};
         }
-        if ( !obj.text ){
-          obj.text =bbn.fn.isFunction(this[type + 'Message']) ? this[type + 'Message'](obj) : this[type + 'Message']
+        obj.type = type;
+        if ( !obj.type ){
+          obj.type = 'info';
         }
-        if ( !obj.text ){
-          obj.text = '';
+        if ( !obj.content && this[type + 'Message'] ){
+          obj.content = bbn.fn.isFunction(this[type + 'Message']) ? this[type + 'Message'](obj) : this[type + 'Message']
         }
-        return obj;
-      },
-      success: function (obj, timeout){
-        return this.show(this._sanitize(obj, "success"), "success", timeout ? timeout : 2000);
-      },
-      error: function (obj, timeout){
-        return this.show(this._sanitize(obj, "error"), "error", timeout ? timeout : 5000);
-      },
-      warning: function (obj, timeout){
-        return this.show(this._sanitize(obj, "warning"), "warning", timeout ? timeout : 5000);
-      },
-      show: function (obj, type, timeout){
-        if ( typeof(obj) === 'string' ){
-          obj = {content: obj};
+        if ( !obj.content ){
+          obj.content = '';
         }
-        if ( typeof(obj) === 'object' ){
-          this.widget.show(obj, type);
-          if ( timeout ){
-            var id = this.setID(),
-                t  = this;
-            setTimeout(function (){
-              t.deleteFromID(id);
-            }, timeout < 50 ? timeout * 1000 : timeout);
+        if ( timeout && !obj.delay ){
+          obj.delay = timeout > 500 ? timeout : timeout * 1000;
+        }
+        else{
+          obj.pinned = true;
+        }
+      return obj;
+      },
+      add(o){
+        let id = (new Date()).getTime();
+        o.id = id;
+        this.items.push(o);
+        if ( o.delay ){
+          setTimeout(() => {
+            let idx = bbn.fn.search(this.items, {id: id});
+            if ( idx > -1 ){
+              this.items.splice(idx, 1);
+            }
+          }, o.delay);
+        }
+      },
+      _updatePositions(){
+        let p = {};
+        let top = 0;
+        bbn.fn.each(this.items, (a) => {
+          p[a.id] = top;
+          let cp = this.getRef('it' + a.id);
+          if (cp) {
+            top += cp.$el.getBoundingClientRect().height;
           }
-        }
-        else{
-          this.widget.show({content: bbn.lng.loading}, "loading");
-        }
+        });
+        bbn.fn.iterate(bbn.fn.diffObj(this.positions, p), (a, k) => {
+          let v = undefined;
+          if (a.type === 'updated') {
+            v = a.newData;
+          }
+          else if (a.type === 'created') {
+            v = a.data;
+          }
+          this.$set(this.positions, k, v);
+          let cp = this.getRef('it' + k);
+          if (cp) {
+            setTimeout(() => {
+              cp.onResize();
+            }, 100);
+          }
+        });
       },
-      info: function (obj, timeout){
-        return this.show(obj, "info", timeout);
-      },
-      setID: function (id){
-        if ( !id ){
-          id = (new Date()).getMilliseconds();
-        }
-        this.widget.getNotifications().last().data("bbn-id", id);
-        return id;
-      },
-      getFromID: function (id){
-        return this.widget.getNotifications().filter(function (){
-          return $(this).data("bbn-id") === id;
-        }).first();
-      },
-      deleteFromID: function (id){
-        var ele   = this.getFromID(id),
-            close = ele.find(".bbn-notification-close");
-        if ( close.length ){
-          close.click();
-        }
-        else{
-          ele.parent().fadeOut("fast", function (){
-            $(this).remove();
-          });
+      close(id){
+        let idx = bbn.fn.search(this.items, {id: id});
+        if ( idx > -1 ){
+          this.items.splice(idx, 1);
         }
       },
-      deleteAll: function (){
-        this.widget.hide();
+      success(o, timeout){
+        if ( !timeout ){
+          timeout = this.delay;
+        }
+        o = this._sanitize(o, 'success', timeout);
+        this.add(o);
+      },
+      error(o, timeout){
+        o = this._sanitize(o, 'error', timeout);
+        this.add(o);
+      },
+      warning(o, timeout){
+        o = this._sanitize(o, 'warning', timeout);
+        this.add(o);
+      },
+      show(o, type, timeout){
+        o = this._sanitize(o, type, timeout);
+        this.add(o);
+      },
+      info(o, timeout){
+        o = this._sanitize(o, 'info', timeout);
+        this.add(o);
+      },
+    },
+    beforeMount(){
+      this._updatePositions();
+    },
+    watch: {
+      items(){
+        this.$nextTick(() => {
+          this._updatePositions();
+        });
       }
-    },
-    mounted: function(){
-      var vm = this,
-          cfg = vm.getOptions();
-      vm.widget = $(vm.$el).kendoNotification({
-        autoHideAfter: 0,
-        hide: function(e) {
-          e.preventDefault();
-          var $p = e.element.parent(),
-              h = $p.outerHeight(true) + 4;
-          $p.nextAll(".k-animation-container").each(function () {
-            var n = $(vm.$el);
-            n.animate({top: (parseFloat(n.css('top')) + h) + 'px'});
-          });
-          setTimeout(function () {
-            $p.remove();
-          }, 500);
-        },
-        position: {
-          pinned: cfg.pinned,
-          top: cfg.top,
-          left: cfg.left,
-          bottom: cfg.bottom,
-          right: cfg.right
-        },
-        hideOnClick: true,
-        button: true,
-        templates: [{
-          // define a custom template for the built-in "info" notification type
-          type: "info",
-          template: function (d) {
-            return vm.template(d, "info");
-          }
-        }, {
-          // define a custom template for the built-in "success" notification type
-          type: "success",
-          template: function (d) {
-            return vm.template(d, "success");
-          }
-        }, {
-          // define a custom template for the built-in "warning" notification type
-          type: "warning",
-          template: function (d) {
-            return vm.template(d, "warning");
-          }
-        }, {
-          // define a custom template for the built-in "error" notification type
-          type: "error",
-          template: function (d) {
-            return vm.template(d, "error");
-          }
-        }, {
-          // define a custom template for the built-in "loading" notification type
-          type: "loading",
-          template: function (d) {
-            return vm.template(d, "loading");
-          }
-        }]
-      }).data("kendoNotification");
-    },
+    }
   });
-})(window.bbn, window.kendo);
+})(window.bbn);

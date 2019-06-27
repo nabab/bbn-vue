@@ -43,10 +43,11 @@
         }
       },
       /**
-       * @prop {Function|Vue} shortcuts
+       * @prop {Boolean} shortcuts
        */
       shortcuts: {
-        type: [Function, Vue]
+        type: Boolean,
+        default: false
       },
       /**
        * The position top
@@ -162,21 +163,14 @@
           icon: node.icon,
           text: node.text,
           id: node.data.id
-        },
-            menu = this;
+        };
         return [{
           text: bbn._('Create a shortcut'),
           icon: 'nf nf-fa-external_link_alt',
-          command(){
-            if ( menu.shortcuts ){
-              let sc =bbn.fn.isFunction(menu.shortcuts) ? menu.shortcuts() : menu.shortcuts;
-              if ( sc ){
-                sc.add(obj);
-              }
-            }
-
+          command: () => {
+            this.$emit('shortcut', obj);
           }
-        }]
+        }];
       },
       /**
        * Defines the position of the component 
@@ -271,7 +265,7 @@
        * @fires hide
        */
       go(node, event){
-        bbn.fn.log(node);
+        //bbn.fn.log(node);
         event.preventDefault();
         if ( node && node.data && (node.data.link || node.data.url) ){
           bbn.fn.link(node.data.link || node.data.url);
@@ -312,7 +306,6 @@
         let $t = $(e.target);
         if ( this.isOpened &&
           !$t.closest(".bbn-treemenu").length &&
-          !$t.closest(".k-list-container").length &&
           !$t.closest(".bbn-menu-button").length
         ){
           e.preventDefault();

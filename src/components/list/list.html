@@ -1,135 +1,61 @@
-<div :class="componentClass" v-on="isRoot ? {keydown: keyNav} : {}">
-  <div class="loader" v-if="hierarchy.loading">
-    Loading...
-  </div>
-  <component v-else-if="isLoaded" :is="isRoot ? 'bbn-scroll' : 'div'" ref="scroll">
-    <transition name="bbn-list-toggle">
-      <ul class="bbn-list-node" v-show="items && items.length" :class="{
-            'bbn-w-100': true,
-            'bbn-list-child': !!level,
-             root: isRoot,
-             'bordered': hierarchy.bordered,
-             'border-ul': isRoot,
-             'bbn-border-color': hierarchy.bordered,
-          }"
-          
-      >
-        <li v-for="(item, i) in items"
-           :key="i"
-           v-show="isMatch(item) || getNumMatches(item)" 
-           @mouseover.stop="over = item"
-           @mouseout.stop="over = false"
-           :class="{
-             'bbn-bordered-internal': hierarchy.bordered,
-             'bbn-list-node': true,
-             'bbn-w-100': true,
-             'bbn-unselectable': true,
-             'selected': selected === i,
-             'v-padding': !component,
-             'bbn-state-hover': isSame(hierarchy.overNode, item) && (hierarchy.selectedNode.text !== item.text),
-             'bbn-state-selected': (selected === i) && isSame(hierarchy.selectedNode, item),
-             'border-bottom': (i === items.length - 1) && isRoot
-           }">
-          <slot v-if="!item.items" name="item"
-                v-bind="item"
-                >
-            <div :class="[cls,{
-                    'bbn-iblock': true,
-                    'bbn-medium': isRoot && !cls,
-                    'bbn-100':true
-                  }]"
-                  @click="!item.url ? select(item, i) : ''"  >
-              <a v-if="item.url && !item.items" 
-                  @mousedown="link(item, i)"
-                  :href="item.url"         
-                  v-text="item.text"
-                  class="bbn-100"
-                  :style="'padding-left:' + (level * 16) +'px' "
-              ></a>
-              
-              <span v-if="(item.text && !item.url)"
-                    v-text="(item.text && !item.url)? item.text : '?'"
-                    :style="'padding-left:' + (level * 16) +'px' "
-              ></span>
-              <i :class="item.icon"
-                  :style="'margin-top: 1px; color: ' + ( iconColor ? iconColor : '' )"
-                  v-if="item.icon"
-              ></i>
-              
-            </div>
-          </slot> 
-          <div :class="'bbn-w-100 node' + (component ? '' : ' no-component') + (item.cls ? ' ' + item.cls : '') + (styled ? 'bbn-state-default' : '')"
-                v-if="item.items"
-                :style="'padding-left:' + (level * 16) +'px' "
-                @click.stop="item.items ? toggleExpanded(i, item) : select(item, i)"
-          >
-            <div class="bbn-flex-width">
-              <div class="expander bbn-block bbn-c bbn-middle">
-                <!-- If there are no children we leave the white space -->
-                <span v-show="!item.items || (level < minExpandLevel) || !hierarchy.arrowIcons"> </span>
-                <i v-show="(item.items || item.num) && isExpanded(i) && hierarchy.arrowIcons"
-                    :class="['padding-left ', hierarchy.expandedIcon]"
-                ></i>
-                <i v-show="(item.items || item.num) && !isExpanded(i) && hierarchy.arrowIcons"
-                    :class="['padding-left ', hierarchy.closedIcon]"
-                ></i>
-              </div>
-              <div class="bbn-flex-fill">
-              
-                <component v-if="component"
-                           :is="component"
-                           :source="item">
-                </component>
-                <span v-text="item.text ? item.text : '?'"
-                ></span>
-                <!--slot v-else name="item"
-                      v-bind="item">
-                  <div :class="[cls,{
-                          'bbn-iblock': true,
-                          'bbn-medium': isRoot && !cls,
-                        }]">
-                    <a v-if="item.url && !item.items" 
-                       :href="item.url"         
-                       v-text="item.text"
-                       class="bbn-100"
-                       :style="'padding-left:' + (level * 16) +'px' "
-                    ></a>
-                   
-                    <span v-if="(item.text && !item.url)"
-                          v-text="(item.text && !item.url)? item.text : '?'"
-                          
-                    ></span>
-                    <i :class="item.icon"
-                        :style="'margin-top: 1px; color: ' + ( iconColor ? iconColor : '' )"
-                        v-if="item.icon"
-                    ></i>
-                    
-                  </div>
-                </slot-->
-              </div>
-            </div>
-          </div>
-        
-          <bbn-list v-if="isExpanded(i) && item.items && item.items.length"
-                    :node-idx="i"
-                    ref="hierarchy"
-                    :iconColor="iconColor"
-                    :num="item.items ? item.items.length : null"
-                    :source="item.items ? item.items : []"
-                    :level="level + 1"
-                    :arrowIcons="false">
-          </bbn-list>
-        </li>
-      </ul>
-    </transition>
-    <!--<div class="bbn-list-helper-container"
-         v-if="draggable && isRoot"
-         ref="helperContainer">
-      <ul class="bbn-list-helper"
-          ref="helper"
-          v-show="!!hierarchy.realDragging"
-      ></ul>
-    </div>-->
-  </component>
-  <h2 v-else-if="isRoot" v-html="_('No items') + '...'"></h2>
-</div>
+<ul if="filteredData.length"
+    :class="[componentClass, 'bbn-floater-list', 'bbn-menulist', mode]"
+    @mouseleave="mouseleave"
+>
+  <li v-for="(li, idx) in filteredData"
+      @mouseenter="mouseenter($event, idx)"
+      :ref="'li' + idx"
+      :key="idx"
+      @click="select(idx)"
+      :class="{
+        'bbn-no-padding': !!component,
+        'bbn-state-default': true,
+        'bbn-disabled': !component && !!li.data.disabled,
+        'bbn-state-selected': isSelected(idx),
+        'bbn-state-hover': overIdx === idx
+      }">
+    <component v-if="realComponent"
+              :is="realComponent"
+              :source="li.data"
+              @mounted="selfEmit(true)">
+    </component>
+    <component v-else
+               :is="li.data.url && !li.data[children] ? 'a' : 'span'"
+               @click.prevent="() => {}"
+               class="bbn-w-100"
+               :href="li.data.url || null">
+      <span class="space" v-if="selection || (mode === 'options')">
+        <i v-if="li.selected"
+          class="nf nf-fa-check"></i>
+      </span>
+      <span class="space" v-if="hasIcons">
+        <i v-if="li.data.icon" :class="li.data.icon"></i>
+      </span>
+      <span class="text" v-html="li.data.text"></span>
+      <i v-if="li[children] && li[children].length"
+        class="bbn-abs nf nf-fa-chevron_right"
+        style="right: 1em"
+      ></i>
+    </component>
+    <bbn-floater v-if="isOpened && children &&
+                        (origin === 'floater') &&
+                        li.data[children] &&
+                        (overIdx === idx) &&
+                        getRef('li' + idx)"
+                :uid="uid"
+                :level="level + 1"
+                :mode="li.data.mode || 'free'"
+                :source="li.data[children]"
+                :element="getRef('li' + idx)"
+                orientation="horizontal">
+    </bbn-floater>
+    <bbn-list v-else-if="(origin !== 'floater') &&
+                          children && li.data[children] &&
+                          getRef('li' + idx)"
+              :level="level + 1"
+              :mode="li.data.mode || 'free'"
+              :uid="uid"
+              :source="li.data[children]">
+    </bbn-list>
+  </li>
+</ul>

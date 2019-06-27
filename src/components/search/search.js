@@ -1,81 +1,68 @@
 /**
  * @file bbn-search component
  *
- * @description bbn-serach is a  component used for a search, filtering the tree-structured data
+ * @description The easy-to-implement bbn-dropdown component allows you to choose a single value from a user-supplied list.
  *
  * @copyright BBN Solutions
  *
  * @author BBN Solutions
  *
- * @created 10/02/2017
+ * @created 10/02/2017.
  */
+
+
 (function(bbn){
   "use strict";
 
   Vue.component('bbn-search', {
     /**
      * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.eventsComponent
      * @mixin bbn.vue.inputComponent
      * @mixin bbn.vue.resizerComponent
-     * @mixin bbn.vue.sourceArrayComponent
+     * @mixin bbn.vue.listComponent
+     * @mixin bbn.vue.keynavComponent
      * @mixin bbn.vue.urlComponent
+     * @mixin bbn.vue.dropdownComponent
       */
-     mixins: [
+    mixins: [
       bbn.vue.basicComponent,
-      bbn.vue.sourceArrayComponent
+      bbn.vue.eventsComponent,
+      bbn.vue.inputComponent,
+      bbn.vue.resizerComponent,
+      bbn.vue.listComponent,
+      bbn.vue.keynavComponent,
+      bbn.vue.urlComponent,
+      bbn.vue.dropdownComponent
     ],
     props: {
-      textValue: {
-        type: String,
-        default: ''
+      filtselection: {
+        default: false
+      },
+      filterable: {
+        default: true
+      },
+      autobind: {
+        default: true
+      },
+      nullable: {
+        default: false
       },
       minLength: {
         type: Number,
-        default: 0
+        default: 1
       },
-      /**
-       * A component for each element of the list.
-       *
-       * @prop component
-       */
-      component: {},
-      /**
-       * The template to costumize the dropdown menu.
-       *
-       * @prop template
-       */
-      template: {},
-      /**
-       * @todo description
-       *
-       * @prop valueTemplate
-       */
-      valueTemplate: {},
-      /**
-       * Defines the groups for the dropdown menu.
-       * @prop {String} group
-       */
-      group: {
-        type: String
-      },
-      /**
-       * If set to true the dropdown is not autofilled if empty
-       * @prop {Boolean} nullable
-       */
-      nullable: {
-        default: null
-      },
-      /**
-       * The placeholder of the dropdown.
-       *
-       * @prop {String} placeholder
-       */
-      placeholder: {
-        type: String
-      },
-      autocomplete: {
-        type: Boolean,
+      leftIcon: {
         default: false
+      },
+      rightIcon: {
+        default: 'nf nf-fa-search'
+      },
+      minWidth: {
+        default: '4em'
+      },
+      maxWidth: {
+        default: '100%'
       },
       delay: {
         type: Number,
@@ -84,97 +71,124 @@
     },
     data(){
       return {
-        search: '',
-        style: this.source.style || {},
-        isExpanded: false,
-        currentWidth: '70px'
+        /**
+         * @data {String} [''] filterString
+         */
+        filterString: this.textValue || '',
+        filterTimeout: false,
+        specialWidth: this.minWidth,
+        currentPlaceholder: '?'
       };
     },
-    computed: {
-      ui(){
-        return this.closest('bbn-appui');
-      },
-      cfg(){
-        if ( this.source && Object.keys(this.source).length ){
-          let cfg = bbn.fn.extend(true, {}, this.source);
-          if ( cfg.focus !== undefined ){
-            delete cfg.focus;
-          }
-          if ( cfg.blur !== undefined ){
-            delete cfg.blur;
-          }
-          if ( cfg.change !== undefined ){
-            delete cfg.change;
-          }
-          if ( cfg.style !== undefined ){
-            delete cfg.style;
-          }
-          return cfg;
+    methods: {
+      click(){
+        if (!this.disabled) {
+          this.getRef('input').focus();
         }
-        return {
-          delay: 500,
-          sourceText: 'text',
-          sourceValue: 'value',
-          clearButton: false,
-          suggest: true,
-          source: [],
-          placeholder: '?',
-          placeholderFocused: bbn._("Search.."),
-          icon: 'nf nf-fa-search',
-          minLength: 1,
-          height: bbn.env.height - 100,
-          template(d){
-            return `
-              <div class="bbn-hpadded bbn-nl">
-                <div class="bbn-block-left">
-                  <h3>${d.text}</em></h3>
-                </div>
-                <div class="bbn-block-right bbn-h-100 bbn-r" style="display: table">
-                  <span style="display: table-cell; vertical-align: middle">${d.value}</span>
-                </div>
-              </div>`;
-          }
-        };
       },
-      eventsCfg(){
-        let def = {
-          focus: (e) => {
-            if ( !this.isExpanded ){
-              let pane = this.closest('bbn-pane'),
-                  w = pane.$children[0].$el.clientWidth + pane.$children[1].$el.clientWidth - 40;
-              this.$refs.search.$refs.element.placeholder = this.cfg.placeholderFocused;
-              this.$set(this.style, 'width', w + 'px');
-              this.isExpanded = true;
-            }
-          },
-          blur: (e) => {
-            if ( this.isExpanded ){
-              this.$set(this.style, 'width', this.source.style && this.source.style.width ? this.source.style.width : '30px');
-              this.isExpanded = false;
-              this.$refs.search.$refs.element.placeholder = this.cfg.placeholder;
-              this.search = '';
-            }
-          },
-          change: (id) => {
-            if (id && !(id instanceof Event)) {
-              setTimeout(() => {
-                document.activeElement.blur();
-              }, 15);
-            }
-          }
-        };
-        return {
-          focus: this.source.focus || def.focus,
-          blur: this.source.blur || def.blur,
-          change: this.source.change || def.change
-        };
+      focus(){
+        this.isFocused = true;
+        this.specialWidth = this.maxWidth;
+        this.currentPlaceholder = this.placeholder;
       },
-      currentStyle(){
-        return bbn.fn.extend({
-          'z-index': 10,
-          transition: 'width 400ms',
-          width: '30px'
-        }, (this.source.style || {}), this.style);
+      blur(){
+        this.isFocused = false;
+        this.specialWidth = this.minWidth;
+        this.filterString = '';
+        this.currentPlaceholder = '?';
+      },
+      /**
+       * @method leave
+       * @param element 
+       */
+      leave(){
+        if ( this.isOpened && !this.getRef('list').isOver ){
+          this.isOpened = false;
+        }
+      },
+      /**
+       * Emits the event 'select' 
+       * @method select
+       * @param {} item 
+       * @emit change
+       */
+      select(item, idx, dataIndex){
+        if ( item && (item[this.sourceValue] !== undefined) ){
+          let ev = new Event('select', {cancelable: true});
+          this.$emit('select', ev, item, idx, dataIndex);
+          if ( !ev.defaultPrevented ){
+            this.currentText = item[this.sourceText];
+            this.filterString = item[this.sourceText];
+            this.emitInput(item[this.sourceValue]);
+            this.$emit('change', item[this.sourceValue]);
+            this.$nextTick(() => {
+              this.getRef('input').focus();
+            });
+          }
+          this.isOpened = false;
+        }
+      },
+      /**
+       * States the role of the enter key on the dropdown menu.
+       *
+       * @method _pressEnter
+       * @fires widget.select
+       * @fires widget.open
+       *
+       */
+      keydown(e){
+        if ((e.key === ' ') || this.commonKeydown(e)) {
+          return;
+        }
+        if (e.key === 'Escape') {
+          this.resetDropdown();
+        }
+        else if (bbn.var.keys.upDown.includes(e.keyCode)) {
+          this.keynav(e);
+        }
+      },
+    },
+    watch: {
+      /**
+       * @watch filterString
+       * @param {String} v 
+       */
+      filterString(v){
+        if (!this.ready) {
+          this.ready = true;
+        }
+        clearTimeout(this.filterTimeout);
+        if (v !== this.currentText) {
+          this.isOpened = false;
+          this.filterTimeout = setTimeout(() => {
+            this.filterTimeout = false;
+            // We don't relaunch the source if the component has been left
+            if ( this.isActive ){
+              if (v && (v.length >= this.minLength)) {
+                this.currentFilters.conditions.splice(0, this.currentFilters.conditions.length ? 1 : 0, {
+                  field: this.sourceText,
+                  operator: 'startswith',
+                  value: v
+                });
+                this.$nextTick(() => {
+                  if (!this.isOpened){
+                    this.isOpened = true;
+                    
+                  }
+                  else{
+                    let list = this.find('bbn-scroll');
+                    if ( list ){
+                      list.onResize();
+                    }
+                  }
+                });
+              }
+              else {
+                this.unfilter();
+              }
+            }
+          }, 10);
+        }
       }
     }
   });

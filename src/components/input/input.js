@@ -1,9 +1,7 @@
 /**
  * @file bbn-input component
  *
- * @description bbn-input is a simple text field that can be used as an element of a module, from simple implementation.
- * Users can format the entered text or change it dynamically and apply controls on it.
- * It can be used in all applications where textual information needs to be processed.
+ * @description bbn-input is a simple text field.
  *
  * @author BBN Solutions
  * 
@@ -25,7 +23,15 @@
     mixins: [bbn.vue.basicComponent, bbn.vue.eventsComponent, bbn.vue.inputComponent],
     props: {
       /**
-       * Specifies whether or not the input field should have autocomplete enabled. Acctept boolean of string 'on', 'off'
+       * Specifies whether a loading icon isshown inside the input field.
+       * @prop {Boolean} [false] loading
+       */
+      loading: {
+        type: [Boolean],
+        default: false
+      },
+      /**
+       * Specifies whether or not the input field should have autocomplete enabled. Accepts boolean or the strings 'on' or 'off'.
        * @prop {Boolean|String} [true] autocomplete
        */
       autocomplete: {
@@ -33,7 +39,7 @@
         default: true
       },
       /**
-       * The type of the input
+       * The type of the input.
        * @prop {String} type
        */
       type: {
@@ -41,35 +47,35 @@
         default: 'text'
       },
       /**
-       * The icon of the button on the left of  the input
+       * The button's icon on the left of the input.
        * @prop {String} buttonLeft
        */
       buttonLeft: {
         type: String
       },
       /**
-       * The icon of the button on the right of  the input
+       * The button's icon on the right of the input.
        * @prop {String} buttonRight
        */
       buttonRight: {
         type: String
       },
       /**
-       * The action of the left button
+       * The action performed by the left button.
        * @prop {Function} actionLeft
        */
       actionLeft: {
         type: Function,
       },
       /**
-       * The action of the right button
-       * @prop {Function} actionLeft
+       * The action performed by the right button.
+       * @prop {Function} actionRight
        */
       actionRight: {
         type: Function,
       },
       /**
-       * Hides left button 
+       * Hides the left button. 
        * @prop {Boolean} [false] autoHideLeft
        */
       autoHideLeft: {
@@ -77,7 +83,7 @@
         default: false
       },
       /**
-       * Hides right button
+       * Hides the right button.
        * @prop {Boolean} [false] autoHideRight
        */
       autoHideRight: {
@@ -85,87 +91,60 @@
         default: false
       },
       /**
-       * The input's attribute pattern 
+       * The input's attribute 'pattern'. 
        * @prop {String} pattern
        */
       pattern: {
         type: String
       },
+      /**
+       * The size of the input.
+       * @prop {String|Number} size
+       */
       size:{
         type: [String,Number],
       }
     },
     data(){
+      let currentAutocomplete = 'off';
+      if (this.autocomplete === true) {
+        currentAutocomplete = 'on';
+      }
+      else if (this.autocomplete.toLowerCase && ['on', 'off'].includes(this.autocomplete.toLowerCase())) {
+        currentAutocomplete = this.autocomplete;
+      }
       return {
         /**
          * @todo not used
          */
         currentValue: this.value,
         /**
-         * The prop autocomplete normalized
+         * The property 'autocomplete' normalized.
          * @data {String} [''] currentAutocomplete
          */
-        currentAutocomplete: '',
+        currentAutocomplete: currentAutocomplete,
         /**
-         * The prop size normalized
+         * The property 'size' normalized.
          * @data {String} [''] currentSize
          */
-        currentSize:'',
+        currentSize: this.size ? bbn.fn.formatSize(this.size) : '',
         /**
-         * The action for the button left
+         * The action performed by the left button.
          * @data {Function} currentActionLeft
          */
-        currentActionLeft: ()=>{},
+        currentActionLeft: bbn.fn.isFunction(this.actionLeft) ? this.actionLeft : ()=>{},
         /**
-         * The action for the button right
+         * The action performed by the right button.
          * @data {Function} currentActionRight
          */
-        currentActionRight: ()=>{},
+        currentActionRight: bbn.fn.isFunction(this.actionRight) ? this.actionRight : ()=>{},
       }
     },
     methods: {
       clear: function(){
         this.emitInput('');
       }
-    },
-    /**
-     * 
-     * @event created
-     */
-    created(){
-      if ( typeof(this.autocomplete) === 'boolean' ){
-        if ( this.autocomplete ){
-          this.currentAutocomplete = 'on';
-        }
-        else{
-          this.currentAutocomplete = 'off'
-        }
-      }
-      else if ( bbn.fn.isString(this.autocomplete) ){
-        if ( ( this.autocomplete === 'on' ) || ( this.autocomplete === 'off' ) ){
-          this.currentAutocomplete = this.autocomplete;
-        }
-      }
-      if ( this.size ){
-        if ( bbn.fn.isNumber(this.size) ){
-          this.currentSize = this.size + 'px';
-        }
-        else if ( bbn.fn.isString(this.size) ){
-          this.currentSize = this.size;
-        }
-      }
-      if ( this.buttonRight ){
-        if ( bbn.fn.isFunction(this.actionRight) ){
-          this.currentActionRight = this.actionRight;
-        }
-      }
-      
-      if ( this.buttonLeft ){
-        if ( bbn.fn.isFunction(this.actionLeft) ){
-          this.currentActionLeft = this.actionLeft;
-        }
-      }
-    },
+    }
 
   });
 

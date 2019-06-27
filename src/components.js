@@ -107,7 +107,7 @@
        * @memberof basicComponent
        */
       created(){
-        if ( this.$options.name && (this.componentClass.indexOf(this.$options.name) === -1) ){
+        if (this.$options.name && !this.componentClass.includes(this.$options.name)){
           this.componentClass.push(this.$options.name);
         }
         this.componentClass.push('bbn-basic-component');
@@ -140,6 +140,270 @@
             let ev = new Event('ready', {bubbles: true});
             this.$el.dispatchEvent(ev);
             this.$emit('ready', this);
+          }
+        }
+      }
+    },
+    dropdownComponent: {
+      props: {
+        /**
+         * @todo description
+         *
+         * @prop textValue
+         */
+        textValue: {
+          type: String,
+          default: ''
+        },
+        /**
+         * @todo description
+         *
+         * @prop valueTemplate
+         */
+        valueTemplate: {},
+        /**
+         * Defines the groups for the dropdown menu.
+         * @prop {String} group
+         */
+        group: {
+          type: String
+        },
+        /**
+         * @todo description
+         *
+         * @prop valueTemplate
+         */
+        mode: {
+          type: String,
+          default: 'selection'
+        },
+        /**
+         * @todo description
+         *
+         * @prop valueTemplate
+         */
+        maxHeight: {
+          type: [Number, String]
+        }
+      },
+      data(){
+        return {
+          iconUp: 'nf nf-fa-caret_up',
+          iconDown: 'nf nf-fa-caret_down',
+          /**
+           * @data {Boolean} [false] isOpened
+           */
+          isOpened: false,
+          /**
+           * @data {String} [''] currentText
+           */
+          currentText: this.textValue || '',
+          /**
+           * @data {Number} [0] currentWidth
+           */
+          currentWidth: 0,
+          /**
+           * @data {Number} [0] currentHeight
+           */
+          currentHeight: 0,
+          isActive: false
+        };
+      },
+      computed: {
+        currentTextValue(){
+          if ( this.value && this.sourceValue && this.sourceText && this.currentData.length ){
+            let idx = bbn.fn.search(this.currentData, (a) => {
+              return a.data[this.sourceValue] === this.value;
+            });
+            if ( idx > -1 ){
+              return this.currentData[idx].data[this.sourceText];
+            }
+          }
+          else if ( this.textValue ){
+            return this.textValue;
+          }
+          return '';
+        }
+      },
+      methods: {
+        selectAll() {
+          let input = this.getRef('input');
+          if (input) {
+            input.setSelectionRange(0, input.value.length);
+          }
+        },
+        /**
+         * Handles the resize of the component
+         * @method onResize
+         */
+        onResize(){
+          this.currentWidth = this.$el.offsetWidth;
+          this.currentHeight = this.$el.offsetHeight;
+        },
+        /**
+         * Manages the click
+         * @method onResize
+         */
+        click(){
+          if (!this.disabled && this.filteredData.length) {
+            this.isOpened = !this.isOpened;
+            this.getRef('input').focus();
+          }
+        },
+        /**
+         * @method leave
+         * @param element 
+         */
+        leave(){
+          if ( this.isOpened && !this.getRef('list').isOver ){
+            this.isOpened = false;
+          }
+        },
+        /**
+         * Emits the event 'select' 
+         * @method select
+         * @param {} item 
+         * @emit change
+         */
+        select(item){
+          if ( item && (item[this.uid || this.sourceValue] !== undefined) ){
+            this.emitInput(item[this.uid || this.sourceValue]);
+            this.$emit('change', item[this.uid || this.sourceValue]);
+          }
+          this.isOpened = false;
+        },
+        commonKeydown(e){
+          if (!this.filteredData.length || e.altKey || e.ctrlKey || e.metaKey) {
+            return;
+          }
+          if (e.key === 'Tab') {
+            let list = this.find('bbn-list');
+            if ( list && (list.overIdx > -1)) {
+              if ( !this.value ){
+                this.emitInput(list.filteredData[list.overIdx].data[this.uid || this.sourceValue]);
+                return true;
+              }
+            }
+            this.resetDropdown();
+            return true;
+          }
+          else if (
+            this.isOpened && (
+              bbn.var.keys.confirm.includes(e.which) || (e.key === ' ')
+            )
+          ){
+            e.preventDefault();
+            let list = this.find('bbn-list');
+            if (list && (list.overIdx > -1)) {
+              this.select(list.filteredData[list.overIdx].data);
+            }
+            else if (this.isNullable) {
+              this.selfEmit('');
+            }
+            return true;
+          }
+          return false;
+        },
+        resetDropdown(){
+          this.currentText = this.currentTextValue;
+          this.unfilter();
+          if ( this.isOpened ){
+            this.isOpened = false;
+          }
+        },
+        afterUpdate(){
+          if (!this.ready) {
+            this.ready = true;
+          }
+        },
+
+        unfilter(){
+          this.currentFilters.conditions.splice(0, this.currentFilters.conditions.length);
+        }
+      },
+      watch: {
+        /**
+         * @watch value
+         * @param newVal 
+         */
+        value(){
+          this.$nextTick(() => {
+            this.currentText = this.currentTextValue;
+          });
+        },
+        source(){
+          this.updateData().then(() => {
+            if ( this.filteredData.length ) {
+              this.onResize();
+            }
+          });
+        }
+      }
+    },
+    keynavComponent: {
+      methods: {
+        /**
+         * States the role of the enter button on the dropdown menu.
+         *
+         * @method keynav
+         * @fires widget.select
+         * @fires widget.open
+         *
+         */
+        keynav(e){
+          if (this.filteredData.length && bbn.var.keys.upDown.includes(e.keyCode)) {
+            e.preventDefault();
+            if ( !this.isOpened ){
+              this.isOpened = true;
+              return;
+            }
+            let list = this.find('bbn-list');
+            if (list) {
+              list.isOver = false;
+              let idx = this.valueIndex;
+              let d = list.filteredData;
+              if (list.overIdx > -1) {
+                idx = list.overIdx;
+              }
+              switch ( e.keyCode ){
+                // Arrow down
+                case 40:
+                  list.overIdx = d[idx+1] !== undefined ? idx+1 : 0;
+                  break;
+                // Arrow Up
+                case 38:
+                  list.overIdx = d[idx-1] !== undefined ? idx-1 : d.length - 1;
+                  break;
+                // Page down (10)
+                case 34:
+                  if (list.overIdx >= (d.length - 1)) {
+                    list.overIdx = 0;
+                  }
+                  else{
+                    list.overIdx = d[idx+10] ? idx+10 : d.length - 1;
+                  }
+                  break;
+                // Page up (10)
+                case 33:
+                  if (list.overIdx <= 0) {
+                    list.overIdx = d.length - 1;
+                  }
+                  else{
+                    list.overIdx = d[idx-10] ? idx-10 : 0;
+                  }
+                  break;
+                // End
+                case 35:
+                  list.overIdx = d.length - 1;
+                  break;
+                // Home
+                case 36:
+                  list.overIdx = 0;
+                  break;
+    
+              }
+              list.$forceUpdate();
+            }
           }
         }
       }
@@ -205,17 +469,6 @@
          */
         storageFullName: {
           type: String
-        },
-        /**
-         * The classes added to the component.
-         * @prop {Array} [[]] componentClass
-         * @memberof localStorageComponent
-         */
-        componentClass: {
-          type: Array,
-          default(){
-            return [];
-          }
         }
       },
       data(){
@@ -733,14 +986,14 @@
     },
     /**
      * Data source component
-     * @component sourceArrayComponent
+     * @component listComponent
      */
-    sourceArrayComponent: {
+    listComponent: {
       props: {
         /**
          * A function to transform the data.
          * @prop {Function} map
-         * @memberof sourceArrayComponent
+         * @memberof listComponent
          */
         map: {
           type: Function
@@ -748,16 +1001,25 @@
         /**
          * The limit of rows to be shown in a page of the table.
          * @prop {Number} [25] limit
-         * @memberof sourceArrayComponent
+         * @memberof listComponent
          */
         limit: {
           type: Number,
           default: 25
         },
         /**
+         * Set to true will automatically update the data before mount.
+         * @prop {Boolean} [false] autobind
+         * @memberof listComponent
+         */
+        autobind: {
+          type: Boolean,
+          default: true
+        },
+        /**
          * Set to true allows the table to divide itself in different pages basing on the property limit.
          * @prop {Boolean} [false] pageable
-         * @memberof sourceArrayComponent
+         * @memberof listComponent
          */
         pageable: {
           type: Boolean,
@@ -766,7 +1028,7 @@
         /**
          * Set to true allows table's columns to be sortable.
          * @prop {Boolean} [false] sortable
-         * @memberof sourceArrayComponent
+         * @memberof listComponent
          */
         sortable: {
           type: Boolean,
@@ -775,7 +1037,7 @@
         /**
          * Set to true allows the columns of the table to be filtered. A filter icon will appear at the top of each column.The property can be given to each column to define different behaviour.
          * @prop {Boolean} [false] filterable
-         * @memberof sourceArrayComponent
+         * @memberof listComponent
          */
         filterable: {
           type: Boolean,
@@ -784,7 +1046,7 @@
         /**
          * Set to true enable the multifilter of the table. An icon will appear on the bottom right of the table. By clicking on the icon a popup with the multifilter will open.
          * @prop {Boolean} [false] multifilter
-         * @memberof sourceArrayComponent
+         * @memberof listComponent
          */
         multifilter: {
           type: Boolean,
@@ -793,7 +1055,7 @@
         /**
          * In case of Ajax table, set to true will make an Ajax call for the data when changing page of the table.
          * @prop {Boolean} [true] serverPaging
-         * @memberof sourceArrayComponent
+         * @memberof listComponent
          */
         serverPaging: {
           type: Boolean,
@@ -802,7 +1064,7 @@
         /**
          * In case of Ajax table, set to true will make an Ajax call for the sorting of the table.
          * @prop {Boolean} [true] serverSorting
-         * @memberof sourceArrayComponent
+         * @memberof listComponent
          */
         serverSorting: {
           type: Boolean,
@@ -811,7 +1073,7 @@
         /**
          * In case of Ajax table, set to true will make an Ajax call for the filter of the table.
          * @prop {Boolean} [true] serverFiltering
-         * @memberof sourceArrayComponent
+         * @memberof listComponent
          */
         serverFiltering: {
           type: Boolean,
@@ -820,7 +1082,7 @@
         /**
          * Defines the order of the columns in the table.
          * @prop {Array|Object} [[]] order
-         * @memberof sourceArrayComponent
+         * @memberof listComponent
          */
         order: {
           type: [Array, Object],
@@ -831,7 +1093,7 @@
         /**
          * Defines the filters of the table.
          * @prop {Object} [{logic: 'AND',conditions: []}] filters
-         * @memberof sourceArrayComponent
+         * @memberof listComponent
          */
         filters: {
           type: Object,
@@ -845,15 +1107,18 @@
         /**
          * If the prop selection is set to true defines which rows have to be selected.
          * @prop {Array} selected
-         * @memberof sourceArrayComponent
+         * @memberof listComponent
          */
         selected: {
-          type: Array
+          type: Array,
+          default(){
+            return [];
+          }
         },
         /**
          * Set to true shows a checkbox in each rows in the first column of the table.
          * @prop {Boolean|Function} selection
-         * @memberof sourceArrayComponent
+         * @memberof listComponent
          */
         selection: {
           type: [Boolean, Function],
@@ -862,7 +1127,7 @@
         /**
          * Given to a column that has the property type set to 'money' defines the currency.
          * @prop {String} currency
-         * @memberof sourceArrayComponent
+         * @memberof listComponent
          */
         currency: {
           type: String
@@ -870,7 +1135,7 @@
         /**
          * The data sent in the ajax call.
          * @prop {String|Function} [{}] data
-         * @memberof sourceArrayComponent
+         * @memberof listComponent
          */
         data: {
           type: [Object, Function],
@@ -881,19 +1146,19 @@
         /**
          * Defines the message to show when the table has no data.
          * @prop {String} ['No data...'] noData
-         * @memberof sourceArrayComponent
+         * @memberof listComponent
          */
         noData: {
           type: String,
           default: bbn._('No data') + '...'
         },
         uid: {
-          type: [String, Number, Array]
+          type: String
         },
         /**
          * The source of the component.
          * @prop {Array|Object|String|Function} source
-         * @memberof sourceArrayComponent
+         * @memberof listComponent
          */
         source: {
           type: [Array, Object, String, Function],
@@ -904,7 +1169,7 @@
         /**
          * The name of the property to be used as text.
          * @prop {String} ['text'] sourceText
-         * @memberof sourceArrayComponent
+         * @memberof listComponent
          */
         sourceText: {
           type: String,
@@ -913,7 +1178,7 @@
         /**
          * The name of the property to be used as value.
          * @prop {String} ['value'] sourceValue
-         * @memberof sourceArrayComponent
+         * @memberof listComponent
          */
         sourceValue: {
           type: String,
@@ -922,31 +1187,34 @@
         /**
          * If source is a function this index can be passed to the function.
          * @prop {Number} sourceIndex
-         * @memberof sourceArrayComponent
+         * @memberof listComponent
          */
         sourceIndex: {
           type: Number
         },
         /**
-         * @prop {Boolean} [false] nullable
-         * @memberof sourceArrayComponent
-         */
-        nullable: {
-          type: Boolean,
-          default: false
-        },
-        /**
          * The name of the property to use for children of hierarchical source
          * @prop {String} [items] children
-         * @memberof sourceArrayComponent
+         * @memberof listComponent
          */
         children: {
           type: String,
           default: 'items'
-        }
+        },
+        /**
+         * A component for each element of the list.
+         *
+         * @prop component
+         */
+        component: {},
+        /**
+         * The template to costumize the dropdown menu.
+         *
+         * @prop template
+         */
+        template: {},
       },
       data(){
-        let src = [];
         let order = this.order;
         if (this.sortable && this.order && (typeof this.order === 'object') && !Array.isArray(this.order)) {
           order = [];
@@ -966,6 +1234,14 @@
            * @data {Boolean, Promise} [false] _dataPromise
            */
           _dataPromise: false,
+          /**
+           * @data {Boolean, Promise} [false] _futurePromise
+           */
+          _futurePromise: false,
+          /**
+           * @data {Boolean, Promise} [false] _futurePromise
+           */
+          _futurePromiseTime: 0,
           /**
            * @data {Boolean} [false] auto If source is a URL and auto is set to true, component will fetch data at mount.
            */
@@ -1019,11 +1295,28 @@
            * @todo change name
            * @data {Array} [[]] selectedRows
            */
-          selectedRows: this.selected || [],
-          isNullable: this.nullable
-        }
+          currentSelected: this.selected.slice(),
+          isFilterable: this.filterable,
+          hasSelection: !!this.selection
+        };
       },
       computed: {
+        hasComponent(){
+          return this.component || this.template ? true : false;
+        },
+        realComponent(){
+          let cp = this.component || null;
+          if (!cp && this.template) {
+            cp = {
+              props: ['source'],
+              data(){
+                return this.source;
+              },
+              template: this.template
+            };
+          }
+          return cp;
+        },
         /**
          * Return the number of pages of the table.
          * @computed numPages
@@ -1042,27 +1335,54 @@
           get() {
             return Math.ceil((this.start + 1) / this.currentLimit);
           },
-          set(val) {
-            this.start = val > 1 ? (val - 1) * this.currentLimit : 0;
-            this.updateData();
+          set(val, oldVal) {
+            if ( this.ready && oldVal) {
+              this.start = val > 1 ? (val - 1) * this.currentLimit : 0;
+              this.updateData();
+            }
           }
         },
         filteredData(){
-          if (
-            this.currentData.length &&
-            this.currentFilters &&
-            this.currentFilters.conditions &&
-            this.currentFilters.conditions.length &&
-            (!this.serverFiltering || !this.isAjax)
+          if (this.currentData.length && this.currentFilters &&
+                                this.currentFilters.conditions &&
+                                this.currentFilters.conditions.length &&
+                                (!this.serverFiltering || !this.isAjax)
           ) {
             return bbn.fn.filter(this.currentData, (a) => {
-              return this._checkConditionsOnValue(this.currentFilters, a);
+              return this._checkConditionsOnItem(this.currentFilters, a.data);
             });
           }
           else{
             return this.currentData;
           }
-        }
+        },
+        valueIndex(){
+          if ( this.value || (this.selected && this.selected.length) ){
+            let v = this.value || this.selected[0];
+            if ( this.uid ){
+              return bbn.fn.search(this.filteredData, (a) => {
+                return a.data[this.uid] === v;
+              });
+            }
+            else if ( this.sourceValue ){
+              return bbn.fn.search(this.filteredData, (a) => {
+                return a.data[this.sourceValue] === v;
+              });
+            }
+          }
+          return -1;
+        },
+        isAutobind(){
+          let autobind = true;
+          if (
+            (this.autobind === false) ||
+            (this.isAjax && this.autocomplete && (this.filterString.length < this.minLength))
+          ){
+            autobind = false;
+          }
+          return autobind;
+        },
+
       },
       methods: {
         /**
@@ -1087,12 +1407,12 @@
         /**
          * Compares the values of the given row basing on the where operator and value.
          *  
-         * @method _checkConditionsOnValue
+         * @method _checkConditionsOnItem
          * @param {Object} where 
          * @param {Object} row 
          * @return {Boolean}
          */
-        _checkConditionsOnValue(where, row) {
+        _checkConditionsOnItem(where, row) {
           let pass = false;
           if (where.conditions && where.logic && (typeof row === 'object')) {
             pass = where.logic !== 'OR';
@@ -1100,14 +1420,16 @@
               let cond = where.conditions[i],
                 res = true;
               if (cond.conditions && cond.logic) {
-                res = this._checkConditionsOnValue(cond, row);
-              } else if (cond.field && cond.operator) {
+                res = this._checkConditionsOnItem(cond, row);
+              }
+              else if (cond.field && cond.operator) {
                 res = bbn.fn.compare(row[cond.field], cond.value || null, cond.operator);
               }
               if (!res && where.logic !== 'OR') {
                 pass = false;
                 break;
-              } else if (res && where.logic === 'OR') {
+              }
+              else if (res && where.logic === 'OR') {
                 pass = true;
                 break;
               }
@@ -1130,13 +1452,15 @@
           if (filter && filter.field && filter.operator) {
             if (this.multi) {
               this.currentFilters.conditions.push(filter);
-            } else if (filter.field) {
+            }
+            else if (filter.field) {
               let idx = bbn.fn.search(this.currentFilters.conditions, {
                 field: filter.field
               });
               if (idx > -1) {
                 this.currentFilters.conditions.splice(idx, 1, filter);
-              } else {
+              }
+              else {
                 this.currentFilters.conditions.push(filter);
               }
             }
@@ -1196,7 +1520,7 @@
          * @method unsetFilter
          */
         unsetFilter() {
-          this.currentFilters = bbn.fn.clone( this.filters);
+          this.currentFilters = bbn.fn.clone(this.filters);
           this.currentFilter = false;
           this.editedFilter = false;
         },
@@ -1221,119 +1545,172 @@
           }
           return {};
         },
+        beforeUpdate(){
+          return true;
+        },
+        afterUpdate(){
+          return true;
+        },
         updateData(){
-          if ( this.isLoading && this._dataPromise ){
+          if (this.beforeUpdate() !== false) {
+
+            if ( this.isLoading && this._dataPromise ){
+              if ( !this._futurePromise ){
+                this._futurePromise = new Promise((resolve, reject) => {
+                  setTimeout(() => {
+                    this._futurePromise = false;
+                    this.updateData().then(() => {
+                      resolve(this.currentData);
+                    });
+                  }, 1000);
+                });
+              }
+              return this._futurePromise;
+            }
+            this._dataPromise = new Promise((resolve, reject) => {
+              let prom;
+              if ( this.isAjax ){
+                if ( !this.isLoading ){
+                  this.isLoading = true;
+                  this.$emit('startloading');
+                  let data = {
+                    limit: this.currentLimit,
+                    start: this.start,
+                    data: this.getPostData()
+                  };
+                  if ( this.sortable ){
+                    data.order = this.currentOrder;
+                  }
+                  if ( this.isFilterable ){
+                    data.filters = this.currentFilters;
+                  }
+                  if ( this.showable ){
+                    data.fields = this.shownFields;
+                  }
+                  prom = bbn.fn.post(this.source, data)
+                }
+              }
+              else{
+                prom = new Promise((resolve2) => {
+                  let data = [];
+                  let total = 0;
+                  if ( bbn.fn.isArray(this.source) ){
+                    if (this.source.length && this.source[this.source.length -1]._bbn){
+                      data = this.source;
+                    }
+                    else{
+                      data = this._map(this.source);
+                    }
+                  }
+                  else if ( bbn.fn.isFunction(this.source) ){
+                    data = this._map(this.source(this.sourceIndex));
+                  }
+                  else if ( bbn.fn.isObject(this.source) ){
+                    bbn.fn.iterate(this.source, (a, n) => {
+                      let o = {};
+                      o[this.sourceValue] = n;
+                      o[this.sourceText] = a;
+                      data.push(o);
+                    });
+                  }
+                  resolve2({
+                    data: data,
+                    total: data.length
+                  });
+                });
+              }
+              prom.then((d) => {
+                if ( this.isLoading ){
+                  this.isLoading = false;
+                  if ( !d ){
+                    return;
+                  }
+                  if ( d.status !== 200 ){
+                    d.data = undefined;
+                  }
+                  else{
+                    d = d.data;
+                  }
+                }
+                if ( bbn.fn.isArray(d.data) ){
+                  if (d.data.length && d.data[0]._bbn){
+                    this.currentData = d.data;
+                  }
+                  else{
+                    if ( this.isNullable ){
+                      let hasNull = false;
+                      bbn.fn.each(d.data, (a) => {
+                        if ( a[this.sourceValue] === undefined ){
+                          hasNull = true;
+                          return false;
+                        }
+                        else if ( !a[this.sourceValue] ){
+                          hasNull = true;
+                          return false;
+                        }
+                      });
+                      if ( !hasNull ){
+                        let o = {};
+                        o[this.sourceText] = '';
+                        o[this.sourceValue] = null;
+                        d.data.unshift(o);
+                      }
+                    }
+                    this.currentData = bbn.fn.map(d.data, (a, i) => {
+                      let o = {
+                        data: a,
+                        index: i,
+                        _bbn: true
+                      };
+                      if ( this.children && a[this.children] && a[this.children].length ){
+                        o.opened = true;
+                      }
+                      if (this.hasSelection){
+                        if ( this.uid ){
+                          o.selected = this.selected.includes(a[this.uid]);
+                        }
+                        else if ( this.sourceValue ){
+                          o.selected = this.selected.includes(a[this.sourceValue]);
+                        }
+                      }
+                      return o;
+                    });
+                  }
+                  this.total = d.total || 0;
+                  if (d.order) {
+                    this.currentOrder.splice(0, this.currentOrder.length);
+                    this.currentOrder.push({
+                      field: d.order,
+                      dir: (d.dir || '').toUpperCase() === 'DESC' ? 'DESC' : 'ASC'
+                    });
+                  }
+                  /** @todo Observer part to dissociate */
+                  if (d.observer && bbn.fn.isFunction(this.observerCheck) && this.observerCheck()) {
+                    this._observerReceived = d.observer.value;
+                    this.observerID = d.observer.id;
+                    this.observerValue = d.observer.value;
+                    if ( !this._1strun ){
+                      this.observerWatch();
+                    }
+                  }
+                  if ( !this._1strun ){
+                    this._1strun = true;
+                    this.$emit('firstrun');
+                  }
+                }
+                this.afterUpdate();
+                resolve(this.currentData);
+                //this._dataPromise = false;
+              });
+            });
             return this._dataPromise;
           }
-          this._dataPromise = new Promise((resolve, reject) => {
-            let prom;
-            if ( this.isAjax ){
-              if ( !this.isLoading ){
-                this.isLoading = true;
-                this.$emit('startloading');
-                let data = {
-                  limit: this.currentLimit,
-                  start: this.start,
-                  data: this.getPostData()
-                };
-                if ( this.sortable ){
-                  data.order = this.currentOrder;
-                }
-                if ( this.filterable ){
-                  data.filters = this.currentFilters;
-                }
-                if ( this.showable ){
-                  data.fields = this.shownFields;
-                }
-                prom = bbn.fn.post(this.source, data)
-              }
-            }
-            else{
-              prom = new Promise((resolve2) => {
-                let data = [];
-                let total = 0;
-                if ( bbn.fn.isArray(this.source) ){
-                  data = this._map(this.source);
-                }
-                else if ( bbn.fn.isFunction(this.source) ){
-                  data = this._map(this.source(this.sourceIndex));
-                }
-                else if ( bbn.fn.isObject(this.source) ){
-                  bbn.fn.iterate(this.source, (a, n) => {
-                    let o = {};
-                    o[this.sourceValue] = n;
-                    o[this.sourceText] = a;
-                    data.push(o);
-                  });
-                }
-                resolve2({
-                  data: data,
-                  total: data.length
-                });
-              });
-            }
-            prom.then((d) => {
-              if ( this.isLoading ){
-                if ( d.status !== 200 ){
-                  d.data = undefined;
-                }
-                else{
-                  d = d.data;
-                }
-                this.isLoading = false;
-              }
-              if ( d.data !== undefined ){
-                if ( this.isNullable ){
-                  let hasNull = false;
-                  bbn.fn.each(d.data, (a) => {
-                    if ( a[this.sourceValue] === undefined ){
-                      hasNull = true;
-                      return false;
-                    }
-                    else if ( !a[this.sourceValue] ){
-                      hasNull = true;
-                      return false;
-                    }
-                  });
-                  if ( !hasNull ){
-                    let o = {};
-                    o[this.sourceText] = ' ';
-                    o[this.sourceValue] = null;
-                    d.data.unshift(o);
-                  }
-                }
-                this.currentData = d.data;
-                this.total = d.total || 0;
-                if (d.order) {
-                  this.currentOrder.splice(0, this.currentOrder.length);
-                  this.currentOrder.push({
-                    field: d.order,
-                    dir: (d.dir || '').toUpperCase() === 'DESC' ? 'DESC' : 'ASC'
-                  });
-                }
-                /** @todo Observer part to dissociate */
-                if (d.observer && bbn.fn.isFunction(this.observerCheck) && this.observerCheck()) {
-                  this._observerReceived = d.observer.value;
-                  this.observerID = d.observer.id;
-                  this.observerValue = d.observer.value;
-                  if ( !this._1strun ){
-                    this.observerWatch();
-                  }
-                }
-                if ( !this._1strun ){
-                  this._1strun = true;
-                  this.$emit('firstrun')
-                }
-              }
-              resolve(this.currentData);
-              //this._dataPromise = false;
-            });
-          });
-          return this._dataPromise;
         }
       },
       beforeMount(){
-        this.updateData();
+        if ( this.isAutobind ){
+          this.updateData();
+        }
       },
       watch: {
         /**
@@ -1379,126 +1756,6 @@
           }
         }
       }
-    },
-    /**
-     * Data source component
-     * @component dataSourceComponent
-     */
-    dataSourceComponent: {
-      props: {
-        /**
-         * The source of the component.
-         * @prop {Array|Object|String|Function} source
-         * @memberof dataSourceComponent
-         */
-        source: {
-          type: [Array, Object, String, Function],
-          default(){
-            return [];
-          }
-        },
-        /**
-         * The name of the property to be used as text.
-         * @prop {String} ['text'] sourceText
-         * @memberof dataSourceComponent
-         */
-        sourceText: {
-          type: String,
-          default: "text"
-        },
-        /**
-         * The name of the property to be used as value.
-         * @prop {String} ['value'] sourceValue
-         * @memberof dataSourceComponent
-         */
-        sourceValue: {
-          type: String,
-          default: "value"
-        },
-        /**
-         * @prop {Boolean} [false] nullable
-         * @memberof dataSourceComponent
-         */
-        nullable: {
-          type: Boolean,
-          default: false
-        },
-        /**
-         * The classes added to the component.
-         * @prop {Array} componentClass
-         * @memberof dataSourceComponent
-         */
-        componentClass: {
-          type: Array,
-          default(){
-            return [];
-          }
-        },
-      },
-      methods: {
-        /**
-         * Returns the object of configuration for the given obj.
-         * @memberof dataSourceComponent
-         * @method getOptions
-         * @fires bbn.vue.getOptions2
-         * @param {Object} obj 
-         * @return {Object}
-         */
-        getOptions(obj){
-          let cfg = bbn.vue.getOptions2(this, obj);
-          cfg.dataTextField = this.sourceText || this.widgetOptions.dataTextField || 'text';
-          cfg.dataValueField = this.sourceValue || this.widgetOptions.dataValueField || 'value';
-          cfg.dataSource = this.dataSource;
-          return cfg;
-        },
-        /**
-         * Returns the object of configuration for the given obj.
-         * @method getOptions2
-         * @fires bbn.vue.getOptions2
-         * @param {Object} obj 
-         * @return {Object}
-         * @memberof dataSourceComponent
-         */
-        getOptions2(obj){
-          let cfg = bbn.vue.getOptions2(this, obj);
-          if ( this.widgetOptions.dataTextField || this.sourceText ){
-            cfg.dataTextField = this.widgetOptions.dataTextField || this.sourceText;
-          }
-          if ( this.widgetOptions.dataValueField || this.sourceValue ){
-            cfg.dataValueField = this.widgetOptions.dataValueField || this.sourceValue;
-          }
-          cfg.dataSource = this.dataSource;
-          return cfg;
-        }
-      },
-      computed: {
-        /**
-         * @computed datasource
-         * @memberof dataSourceComponent
-         */
-        dataSource(){
-          return bbn.vue.toKendoDataSource(this)
-        }
-      },
-      watch:{
-        /**
-         * @watch source
-         * @memberof dataSourceComponent
-         */
-        source: function(newDataSource){
-          if ( this.widget ){
-            this.widget.setDataSource(this.dataSource);
-          }
-        }
-      },
-      /**
-       * Adds the class 'bbn-datasource-component' to the component.
-       * @event created
-       * @memberof dataSourceComponent
-       */
-      created(){
-        this.componentClass.push('bbn-datasource-component');
-      },
     },
     /**
      * Memory component
@@ -1615,22 +1872,20 @@
         },
         /**
          * The type of the component.
-         * @prop {String} type
+         * @prop {Number} tabindex
          * @memberof inputComponent
          */
-        type: {
-          type: String
+        tabindex: {
+          type: Number,
+          default: 0
         },
         /**
-         * The classes added to the component.
-         * @prop {Array} [[]] componentClass  
-         * @memberof inputComponent
+         * @prop {Boolean} [false] nullable
+         * @memberof listComponent
          */
-        componentClass: {
-          type: Array,
-          default(){
-            return [];
-          }
+        nullable: {
+          type: Boolean,
+          default: false
         }
       },
       methods: {
@@ -1663,7 +1918,8 @@
          */
         isValid(val){
           const elem = this.$refs.element,
-                $elem = $(this.$el),
+               // @jquery $elem = $(this.$el),
+                $elem = this.$el,
                 customMessage = this.$el.hasAttribute('validationMessage') ? this.$el.getAttribute('validationMessage') : false;
           // Get validity
           if ( elem && elem.validity ){
@@ -1722,15 +1978,26 @@
                 mess = bbn._('Please match the requested format.');
               }
               this.$emit('error', customMessage || mess);
-              $elem.css('border', '1px solid red');
+              // @jquery $elem.css('border', '1px solid red');
+              $elem.style.border = '1px solid red';
               this.$on('blur', () => {
-                $elem.css('border', 'none');
+                //@jquery $elem.css('border', 'none');
+                $elem.style.border  = 'none'
                 $elem.focus();
               });
               return false;
             }
           }
           return true;
+        },
+      },
+      computed: {
+        isNullable(){
+          let isNullable = !!this.nullable;
+          if ( this.nullable === null ){
+            isNullable = this.required ? false : !!this.placeholder;
+          }
+          return isNullable;
         }
       },
       /**
@@ -1742,35 +2009,6 @@
         this.componentClass.push('bbn-input-component');
       },
       watch:{
-        /**
-         * @watch disabled
-         * @param newVal 
-         * @memberof inputComponent
-         */
-        disabled(newVal){
-          if ( this.widget &&bbn.fn.isFunction(this.widget.enable) ){
-            this.widget.enable(!newVal);
-          }
-          else if ( this.widget && this.widgetName &&bbn.fn.isFunction(this.widget[this.widgetName]) ){
-            this.widget[this.widgetName](newVal ? "disable" : "enable");
-          }
-          else if ( $(this.$el).is("input") ){
-            if ( newVal ){
-              $(this.$el).attr("disabled", true).addClass("k-state-disabled");
-            }
-            else{
-              $(this.$el).attr("disabled", false).removeClass("k-state-disabled");
-            }
-          }
-          else if ( this.$refs.input ){
-            if ( newVal ){
-              $(this.$refs.input).attr("disabled", true).addClass("k-state-disabled");
-            }
-            else{
-              $(this.$refs.input).attr("disabled", false).removeClass("k-state-disabled");
-            }
-          }
-        },
         /**
          * @watch value
          * @param newVal 
@@ -1793,136 +2031,6 @@
         cfg(){
 
         }
-      }
-    },
-    /**
-     * Option component
-     * @component optionComponent
-     */
-    optionComponent: {
-      props: {
-        /**
-        * The classes added to the component.
-        * @prop {Array} [[]] componentClass   
-        * @memberof optionComponent
-        */
-        componentClass: {
-          type: Array,
-          default(){
-            return [];
-          }
-        }
-      },
-      methods: {
-        /**
-         * @method getOptions
-         * @fires bbn.vue.getOptions
-         * @memberof optionComponent
-         */
-        getOptions(){
-          return bbn.vue.getOptions(this);
-        },
-      },
-      /**
-       * Adds the class 'bbn-option-component' to the component.
-       * @event created
-       * @memberof optionComponent
-       */
-      created(){
-        this.componentClass.push('bbn-option-component');
-      }
-    },
-    /**
-     * Widget component
-     * @component widgetComponent
-     */
-    widgetComponent: {
-      props: {
-        /**
-         * @prop {Object} [{}] cfg
-         * @memberof widgetComponent
-         */
-        cfg: {
-          type: Object,
-          default(){
-            return {};
-          }
-        },
-        /**
-         * @prop {Object} [{}] widgetOptions
-         * @memberof widgetComponent
-         */
-        widgetOptions: {
-          type: Object,
-          default(){
-            return {};
-          }
-        },
-        /**
-         * The classes added to the component.
-         * @prop {Array} componentClass
-         * @memberof widgetComponent
-         */
-        componentClass: {
-          type: Array,
-          default(){
-            return [];
-          }
-        }
-      },
-      /**
-       * Adds the class 'bbns-widget-component' to the component.
-       * @event created
-       * @memberof widgetComponent
-       */
-      created(){
-        this.componentClass.push('bbns-widget-component');
-      },
-       /**
-       * @event beforeDestroy
-       * @memberof widgetComponent
-       */
-      beforeDestroy(){
-        //bbn.fn.log("Default destroy");
-        //this.destroy();
-      },
-      methods: {
-        destroy(){
-          const vm = this;
-          /*
-          if ( vm.widget &&bbn.fn.isFunction(vm.widget.destroy) ){
-            vm.widget.destroy();
-            vm.widget = false;
-            if ( vm.$refs.element ){
-              let $ele = $(vm.$refs.element).removeAttr("style");
-              while ( $ele.parent()[0] !== vm.$el ){
-                $ele.unwrap();
-              }
-              bbn.fn.log("Moving element", $ele);
-              if ( vm.widgetName ){
-                $ele.removeAttr("data-role").removeAttr("style").removeData(this.widgetName);
-              }
-            }
-            else if ( this.widgetName ){
-              $(this.$el).removeData(this.widgetName);
-            }
-            if ( this.$refs.input ){
-              $(this.$refs.input).appendTo(this.$el)
-            }
-            $(this.$el).children().not("[class^='bbn-']").remove();
-          }
-          */
-        },
-        /**
-         * @method build
-         * @memberof widgetComponent
-         */
-        build(){
-          bbn.fn.info("CLASSIC BUILD");
-        },
-        getWidgetCfg(){
-          const vm = this;
-        },
       }
     },
     /**
@@ -1968,7 +2076,13 @@
            * @data {Boolean} [false] lastKnownWidth
            * @memberof resizerComponent
            */
-          lastKnownWidth: false
+          lastKnownWidth: false,
+          /**
+           * Should be set to true during the resize execution.
+           * @data {Boolean} [false] isResizing
+           * @memberof resizerComponent
+           */
+          isResizing: false
         };
       },
       methods: {
@@ -1993,8 +2107,10 @@
           // This class will allow to recognize the element to listen to
           this.parentResizer = this.closest(".bbn-resize-emitter", true);
           // Setting initial dimensions
-          this.lastKnownHeight = this.parentResizer ? Math.round($(this.$el.parentNode).innerHeight()) : bbn.env.height;
-          this.lastKnownWidth = this.parentResizer ? Math.round($(this.$el.parentNode).innerWidth()) : bbn.env.width;
+          //@jquery this.lastKnownHeight = this.parentResizer ? Math.round($(this.$el.parentNode).innerHeight()) : bbn.env.height;
+          //@jquery this.lastKnownWidth = this.parentResizer ? Math.round($(this.$el.parentNode).innerWidth()) : bbn.env.width;
+          this.lastKnownHeight = this.parentResizer ? Math.round(this.$el.parentNode.clientHeight) : bbn.env.height;
+          this.lastKnownWidth = this.parentResizer ? Math.round(this.$el.parentNode.clientWidth) : bbn.env.width;
           // Creating the callback function which will be used in the timeout in the listener
           this.resizeEmitter = (force) => {
             // Removing previous timeout
@@ -2011,8 +2127,11 @@
                   return;
                 }
                 let resize = false,
-                    h      = this.parentResizer ? Math.round($(this.$el.parentNode).innerHeight()) : bbn.env.height,
-                    w      = this.parentResizer ? Math.round($(this.$el.parentNode).innerWidth()) : bbn.env.width;
+                    // @jquery h = this.parentResizer ? Math.round($(this.$el.parentNode).innerHeight()) : bbn.env.height,
+                    // @jquery w = this.parentResizer ? Math.round($(this.$el.parentNode).innerWidth()) : bbn.env.width;
+                    h = this.parentResizer ? Math.round(this.$el.parentNode.clientHeight) : bbn.env.height,
+                    w = this.parentResizer ? Math.round(this.$el.parentNode.clientWidth) : bbn.env.width;
+
                 if ( h && (this.lastKnownHeight !== h) ){
                   this.lastKnownHeight = h;
                   resize = 1;
@@ -2036,7 +2155,10 @@
           }
           else{
             //bbn.fn.log("SETTING EVENT FOR WINDOW", this.$el);
-            $(window).on("resize", (force) => {
+            /* @jquery $(window).on("resize", (force) => {
+              this.resizeEmitter(force)
+            });*/
+            window.addEventListener("resize", (force) => {
               this.resizeEmitter(force)
             });
           }
@@ -2055,7 +2177,8 @@
             }
             else{
               //bbn.fn.log("UNSETTING EVENT FOR WINDOW", this.$el);
-              $(window).off("resize", this.resizeEmitter);
+              //@jquery $(window).off("resize", this.resizeEmitter);
+              window.removeEventListener("resize", this.resizeEmitter);
             }
           }
         },
@@ -2919,7 +3042,7 @@
               (this.currentURL ? bbn.fn.get_field(this.source, this.sourceValue, this.currentURL, this.sourceText) + ' < ' : '') + document.title,
               {
                 script: () => {
-                  bbn.fn.log("EXEC SCRIPT");
+                  //bbn.fn.log("updateUrl & EXEC SCRIPT");
                   let idx = bbn.fn.search(this.source, this.sourceValue, this.currentURL);
                   if ( idx > -1 ){
                     this.widget.select(idx);

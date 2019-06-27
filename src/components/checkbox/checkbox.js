@@ -23,20 +23,23 @@
     props: {
       value: {
       /**
-       * The value of the checkbox
+       * The value of the checkbox.
+       * 
        * @props {Boolean} [true] value
        */
         default: true
       },
       /**
-      * The value of the checkbox when unchecked
+      * The value of the checkbox when unchecked.
+      * 
       * @props {Boolean} novalue
       */
       novalue: {
         default: null
       },
       /**
-       * The name of the component checkbox
+       * The name of the component checkbox.
+       * 
        * @props {String} name
        */
       name: {
@@ -44,7 +47,8 @@
         default: null
       },
       /**
-       * The id of the checkbox
+       * The id of the checkbox.
+       * 
        * @props {String} id
        */
       id: {
@@ -62,7 +66,8 @@
         default: undefined
       },
       /**
-       * Set to true to have required checkbox selection
+       * Set to true to have required checkbox selection.
+       * 
        * @props {Boolean} [false] required
        */
       required: {
@@ -70,7 +75,8 @@
         default: false
       },
       /**
-       * Set to true to disable the checkbox
+       * Set to true to disable the checkbox.
+       * 
        *
        * @prop {Boolean} [false] disabled
        */
@@ -79,7 +85,7 @@
         default: false
       },
       /**
-       * Set to true for a readonly checkbox
+       * Set to true for a readonly checkbox.
        *
        * @prop {Boolean} [false] readonly
        */
@@ -88,7 +94,7 @@
         default: false
       },
       /**
-       * The accompanying label for the checkbox
+       * The accompanying label for the checkbox.
        *
        * @prop {String} label
        */
@@ -96,7 +102,7 @@
         type: String,
       },
       /**
-       * Set to true for a checked checkbox
+       * Set to true for a checked checkbox.
        *
        * @prop {Boolean} [false] checked
        */
@@ -125,7 +131,7 @@
     },
     computed: {
       /**
-       * Returns the state of the checkbox
+       * Returns the state of the checkbox.
        *
        * @computed state
        * @return {Boolean}
@@ -153,7 +159,7 @@
     },
     methods: {
       /**
-       * Emits a change when the state of the checkbox changes
+       * Emits a change when the state of the checkbox changes.
        *
        * @method toggle
        * @emits input

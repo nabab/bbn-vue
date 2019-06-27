@@ -16,10 +16,8 @@
   Vue.component('bbn-toolbar', {
     /**
      * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.optionComponent
-     * @mixin bbn.vue.widgetComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.optionComponent, bbn.vue.widgetComponent],
+    mixins: [bbn.vue.basicComponent],
     props: {
       items: {
         type: Array

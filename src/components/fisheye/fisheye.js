@@ -1,10 +1,9 @@
 /**
  * @file bbn-fisheye component
  *
- * @description bbn-fisheye is a component that represents a horizontal menu consisting of a single line, ideal for managing shortcuts.
- * The items are all in one level and are represented only by icons.
- * Extremely easy to implement, each element can perform an action that we define as a link.
- * Great for those who want a menu that is always available and easy to use when choosing the desired item.
+ * @description bbn-fisheye is a component that represents a horizontal menu, ideal for managing shortcuts.
+ * The structure of data cannot be hierarchical.
+ * Each element is represented by an icon capable of performing an action.
  *
  * @author BBN Solutions
  * 
@@ -19,9 +18,9 @@
   Vue.component('bbn-fisheye', {
     /**
      * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.optionComponent
+     * @mixin bbn.vue.listComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.optionComponent],
+    mixins: [bbn.vue.basicComponent, bbn.vue.listComponent],
     props: {
       /**
        * The source of the component
@@ -32,6 +31,10 @@
         default(){
           return [];
         }
+      },
+      removable: {
+        type: Boolean,
+        default: false
       },
       /**
        * An array of items fixed on the left of the component
@@ -61,49 +64,14 @@
         type: Number,
         default: 1
       },
-      /**
-       * The url for the post of the action remove
-       * @prop {Object} [{}] delUrl
-       */
-      delUrl: {},
-      /**
-       * The url for the post of the action insert
-       * @prop {Object} [{}] insUrl
-       */
-      insUrl: {},
-      /**
-       * The position top
-       * @prop {Number|String} ['0px'] top
-       */
-      top: {
-        type: [Number, String],
-        default: '0px'
+      itemWidth: {
+        type: Number,
+        default: 24
       },
-      /**
-       * The position bottom
-       * @prop {Number|String} ['0px'] bottom
-       */
-      bottom: {
-        type: [Number, String],
-        default: '0px'
-      },
-      /**
-       * The horizontal position of the component
-       * @prop {String} ['0px'] position
-       */
-      position: {
-        type: String,
-        default: 'left'
-      }
     },
 
     data(){
       return {
-        /**
-         * 
-         * @data {Array} currentData 
-         */
-        currentData: this.source.slice(),
         /**
          * @data {Boolean} [false] menu
          */
@@ -113,28 +81,49 @@
          */
         widget: false,
         /**
-         * @data {Boolean} [false] binEle
+         * @data {Boolean} [false] overBin
          */
-        binEle: false,
+        overBin: false,
         /**
          * @data {Boolean} [false] droppableBin
          */
-        droppableBin: false
+        droppableBin: false,
+        timeout: false,
+        binTimeout: false,
+        visibleBin: false,
+        visibleText: -1,
+        itemFullWidth: 0,
+        draggedIdx: -1
       };
     },
 
     computed: {
-      /**
-       * @computed items
-       * @return {Array}
-       */
       items(){
-        let items = this.fixedLeft.slice();
-        bbn.fn.each(this.currentData, (a, i) => {
-          items.push(a);
+        let items = [];
+        let i = 0;
+        bbn.fn.each(this.fixedLeft, (a) => {
+          items.push({
+            data: a,
+            fixed: true,
+            index: i
+          });
+          i++;
         });
-        bbn.fn.each(this.fixedRight, (a, i) => {
-          items.push(a);
+        bbn.fn.each(this.filteredData, (a) => {
+          items.push({
+            data: a.data,
+            fixed: false,
+            index: i
+          });
+          i++;
+        });
+        bbn.fn.each(this.fixedRight, (a) => {
+          items.push({
+            data: a,
+            fixed: true,
+            index: i
+          });
+          i++;
         });
         return items;
       }
@@ -142,7 +131,7 @@
 
     methods: {
       /**
-       * Fires the method given to the item as 'command'
+       * Fires the command given to the item 
        * @method onClick
        * @param {Object} it 
        */
@@ -151,134 +140,59 @@
           it.command();
         }
       },
-      /**
-       * Adds the given object as a new item
-       * @method add
-       * @param {Object} obj 
-       */
-      add(obj){
-        if (
-          this.insUrl &&
-          (typeof(obj) === 'object') &&
-          obj.url &&
-          obj.icon &&
-          obj.text &&
-          obj.id
-        ){
-          bbn.fn.post(this.insUrl, {id: obj.id}, (d) => {
-            if ( d.success ){
-              obj.id_option = obj.id;
-              obj.id = d.id;
-              this.currentData.push(obj);
-            }
-            else{
-              new Error(bbn._("The shortcut has failed to be inserted"));
-            }
-          });
+      mouseover(idx){
+        if ( this.visibleText !== idx ){
+          clearTimeout(this.timeout);
+          this.visibleText = -1;
+          this.timeout = setTimeout(() => {
+            this.visibleText = idx;
+          }, 500);
         }
       },
-      /**
-       * Removes the given item from the component
-       * @param {Number|String} id 
-       */
-      remove(id){
-        if ( id && this.delUrl ){
-          bbn.fn.post(this.delUrl, {id: id}, (d) => {
-            if ( d.success ){
-              let idx = bbn.fn.search(this.currentData, "id", id);
-              if ( idx > -1 ){
-                this.currentData.splice(idx, 1)
-              }
-            }
-          });
+      mouseout(){
+        clearTimeout(this.timeout);
+        this.visibleText = -1;
+      },
+      dragleave(e){
+        setTimeout(() => {
+          this.overBin = false;
+        }, 500);
+      },
+      dragstart(idx, e){
+        if ( this.removable && e.dataTransfer ){
+          e.dataTransfer.allowedEffect = 'move';
+          e.dataTransfer.dropEffect = 'move';
+          this.draggedIdx = idx;
+          this.visibleBin = true;
+        }
+        else{
+          e.preventDefault();
         }
       },
-      /**
-       * Initializes the component
-       * @method setup
-       * @fires remove
-       */
-      setup(){
-        var vm = this,
-            $ele = $(vm.$el);
-
-        // Bin management
-        if ( vm.delUrl ){
-          vm.binEle = $("#bbn_dock_menu_bin");
-          if ( !vm.binEle.length ){
-            vm.binEle = $('<div id="bbn_dock_menu_bin" style="z-index: ' + vm.zIndex + '"><i class="nf nf-fa-trash"></i> </div>').appendTo(document.body);
-          }
-          if ( vm.droppableBin ){
-            vm.droppableBin.droppable("destroy");
-          }
-          vm.droppableBin = vm.binEle.droppable({
-            accept: "li",
-            hoverClass: "bbn-state-hover",
-            activeClass: "bbn-state-active",
-            drop: (e, ui) => {
-              this.remove(ui.draggable.attr("data-id"))
-            }
-          });
-
-          if ( vm.draggable ){
-            vm.draggable.destroy();
-          }
-          vm.draggable = $ele.find("li[data-id!='']").draggable({
-            helper: function (e, ui) {
-              var t = $(e.currentTarget),
-                  i = t.find("i"),
-                  r = $('<div id="bbn_menu2dock_helper"/>');
-              r.append(i[0].outerHTML);
-              return r;
-            },
-            cursorAt: {top: 1, left: 0},
-            zIndex: vm.zIndex,
-            scroll: false,
-            containment: "window",
-            appendTo: 'body',
-            start: function (e, ui) {
-              vm.binEle.show();
-            },
-            stop: function (e, ui) {
-              vm.binEle.hide();
-            }
-          }).data("draggable");
-
-          if ( vm.widget ){
-            vm.widget.fisheye("destroy");
-          }
+      dragend(idx, e){
+        if ( this.removable ){
+          this.visibleBin = false;
+          this.draggedIdx = -1;
         }
-
-        if ( $ele.hasClass("ui-fisheye") ){
-          $ele.fisheye("destroy");
-        }
-
-        vm.widget = $ele.fisheye({
-          items: 'li',
-          itemsText: 'span',
-          container: 'ul',
-          valign: 'top'
-        });
       },
+      drop(e){
+        if ( this.items[this.draggedIdx] ){
+          e.preventDefault();
+          this.$emit('remove', this.items[this.draggedIdx].data, e);
+        }
+      }
     },
     /**
      * @event mounted
      * @fires setup
      */
-    mounted: function(){
-      this.setup();
+    mounted(){
       this.ready = true;
-      setTimeout(() => {
-        $(this.$el).trigger('mousemove');
-        this.widget.fisheye('refresh');
-      }, 1000);
     },
-    /**
-     * @event updated
-     * @fires setup
-     */
-    updated: function(){
-      this.setup();
+    watch: {
+      source(){
+        this.updateData();
+      }
     }
   });
 

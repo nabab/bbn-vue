@@ -9,7 +9,8 @@
   <span v-if="content" v-html="content"></span>
   <slot v-else></slot>
   <bbn-floater :element="$el"
-               :source="currentData"
+               :source="filteredData"
+               children="items"
                :auto-hide="true"
                v-if="showFloater"
                @close="showFloater = false">

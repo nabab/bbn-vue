@@ -89,7 +89,6 @@
         width: 0,
         height: 0,
         popups: [],
-        vlist: [],
         polling: false,
         pollingTimeout: 0,
         prePollingTimeout: 0,
@@ -102,10 +101,10 @@
         isMounted: false,
         debug: false,
         isOverDebug: false,
-        fisheyeMounted: false,
         menuMounted: false,
         app: false,
-        cool: false
+        cool: false,
+        searchString: ''
       }
     },
     computed: {
@@ -184,7 +183,7 @@
       },
 
       notify(obj, type, timeout){
-        return this.$refs.notification.show(obj, type, timeout);
+        return this.$refs.notification.add(type, obj, timeout);
       },
 
       error(obj, timeout){
@@ -267,10 +266,9 @@
 
 
       receive(data){
-        bbn.fn.info("RECEIVE 5/5");
-        bbn.fn.log(data);
+        //bbn.fn.log(data);
         if ( data.chat && bbn.fn.numProperties(data.chat) && this.getRef('chat') ){
-          bbn.fn.log("THERE IS A CHAT SO I SEND IT TO THE CHAT");
+          //bbn.fn.log("THERE IS A CHAT SO I SEND IT TO THE CHAT");
           this.getRef('chat').receive(data.chat);
         }
         else if ( data.data ){
@@ -280,7 +278,7 @@
                 let arr = bbn.fn.filter(this.observers, {id: b.id});
                 for ( let a of arr ){
                   if ( a.value !== b.result ){
-                    bbn.fn.log("EMITTING OBS", a);
+                    //bbn.fn.log("EMITTING OBS", a);
                     this.observerEmit(b.result, a);
                     a.value = b.result;
                   }
@@ -353,6 +351,30 @@
             this.poller = false;
           });
           */
+        }
+      },
+      addShortcut(data){
+        if ( this.plugins['appui-menu'] && data.id ){
+          let idx = bbn.fn.search(this.shortcuts, {id: data.id});
+          if ( idx === -1 ){
+            bbn.fn.post(this.plugins['appui-menu'] + '/shortcuts/insert', data, (d) => {
+              if ( d.success ){
+                this.shortcuts.push(data);
+              }
+            });
+          }
+        }
+      },
+      removeShortcut(data){
+        if ( this.plugins['appui-menu'] && data.id ){
+          bbn.fn.post(this.plugins['appui-menu'] + '/shortcuts/delete', data, (d) => {
+            if ( d.success ){
+              let idx = bbn.fn.search(this.shortcuts, {id: data.id});
+              if ( idx > -1 ){
+                this.shortcuts.splice(idx, 1);
+              }
+            }
+          });
         }
       }
     },

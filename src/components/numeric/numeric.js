@@ -12,19 +12,19 @@
  * @created 10/02/2017
  */
 
-(function( bbn){
+(function(bbn){
   "use strict";
 
   Vue.component('bbn-numeric', {
     /**
      * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.optionComponent
+     * @mixin bbn.vue.eventsComponent
      * @mixin bbn.vue.inputComponent
      */
     mixins: [bbn.vue.basicComponent, bbn.vue.eventsComponent, bbn.vue.inputComponent],
     props: {
       /**
-       * Specify the number of decimals to be shown in the input, it doesn't affect the value of * the component
+       * Specify the number of decimals to be shown in the input, it doesn't affect the value of * the component.
        *
        * @prop {String|Number} decimals
        */
@@ -33,7 +33,7 @@
         default: 0
       },
       /**
-       * The unit of measure of the value
+       * The unit of measure of the value.
        *
        * @prop {String} [''] unit
        *
@@ -43,7 +43,7 @@
         default: ''
       },
       /**
-       * The max value of the component
+       * The max value of the component.
        *
        * @prop {Number|String} max
        *
@@ -52,7 +52,7 @@
         type: [Number, String]
       },
       /**
-       * The min value of the component
+       * The min value of the component.
        *
        * @prop {Number|String} min
        *
@@ -61,7 +61,7 @@
         type: [Number, String]
       },
       /**
-       * The step at which the value of the component change
+       * The step at which the value of the component change.
        *
        * @prop {Number} [1] step
        *
@@ -71,7 +71,7 @@
         default: 1
       },
       /**
-       * Set to true shows the arrow buttons of the component
+       * Set to true shows the arrow buttons of the component.
        * @props {Boolean} [true] spinners
        */
       spinners: {
@@ -90,16 +90,35 @@
         }
       }
       return {
+        /**
+         * True if the input is changing.
+         * @data {Boolean} [false] isChanging
+         */
         isChanging: false,
+        /**
+         * @data tmpValue
+         */
         tmpValue: null,
+        /**
+         * True if the input is focused.
+         * @data {Boolan} [false] isFocused
+         */
         isFocused: false,
+        /**
+         * The current decimals.
+         * @data currentDecimals
+         */
         currentDecimals: decimals,
+        /**
+         * The value of the timeout.
+         * @data {Boolean} [false] valueTimeOut
+         */
         valueTimeOut: false
       }
     },
     computed: {
       /**
-       * The pattern of the input
+       * The pattern of the input.
        * @computed pattern
        */
       pattern(){
@@ -117,7 +136,7 @@
         return new RegExp(p);
       },
       /**
-       * The value rendered
+       * The value rendered.
        * @computed formattedValue
        * @return String
        */
@@ -137,7 +156,7 @@
     },
     methods: {
       /**
-       * Called at keydown, defines some shortcuts for the component
+       * Called at keydown, defines some shortcuts for the component.
        *
        *
        * @method _keydown
@@ -177,7 +196,7 @@
         this.keydown(e);
       },
       /**
-       * Select the value on the input when focused
+       * Select the value on the input when focused.
        *
        * @method _focus
        * @param {object} e The event
@@ -211,7 +230,7 @@
         return this.value.toString().indexOf('.') > -1
       },
       /**
-       * Increase the value of the component of 1 step
+       * Increase the value of the component of 1 step.
        *
        * @method increment
        * @fires changeValue
@@ -223,7 +242,7 @@
         }
       },
       /**
-       * Decrease the value of the component of 1 step
+       * Decrease the value of the component of 1 step.
        * @method decrement
        * @fires changeValue
        */
@@ -234,7 +253,7 @@
         }
       },
       /**
-       * Change the value of the component
+       * Change the value of the component.
        *
        * @method changeValue
        * @param {Number} newVal
@@ -273,6 +292,12 @@
           })
         }
       },
+      /**
+       * @method _changeTmpValue
+       * @param v 
+       * @param force 
+       * @fires changeValue
+       */
       _changeTmpValue(v, force){
         if ( force || this.pattern.test(v.toString()) ){
           if ( this.unit === '%' ){
@@ -284,6 +309,11 @@
 
     },
     watch: {
+      /**
+       * @watch tmpValue
+       * @param v 
+       * @fires _changeTmpValue
+       */
       tmpValue(v){
         if ( this.valueTimeOut ) {
           clearTimeout(this.valueTimeOut);
@@ -292,13 +322,20 @@
           this._changeTmpValue(v);
         }, 2000);
       },
-
+      /**
+       * @watch value
+       * @param v 
+       */
       value(v){
         if ( !this.isChanging ){
           this.tmpValue = v;
         }
       },
-
+      /**
+       * @watch isFocused
+       * @param v 
+       * @fires _changeTmpValue
+       */
       isFocused(v){
         if ( v ){
           this.tmpValue = this.value ? (parseFloat(this.value) * (this.unit === '%' ? 100 : 1)).toFixed(this.decimals) : '';
@@ -308,8 +345,24 @@
         }
       }
     },
+    /**
+     * @event beforeMount 
+     */
     beforeMount(){
       this.tmpValue = this.formattedValue;
+    },
+    mounted(){
+      //elaborare this.min e this.max dati come stringa basandomi su this.decimals, creare currentMin al momento del mounted
+      /*if ( this.min ){
+        if ( bbn.fn.isString(this.min) ){
+          if ( this.decimals ){
+            this.min = parseFloat(this.min).toFixed(this.decimals)
+          }
+          else{
+            this.min = parseInt(this.min)
+          }
+        }
+      }*/
     }
   });
 

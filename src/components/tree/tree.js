@@ -23,8 +23,6 @@
      * @mixin bbn.vue.localStorageComponent 
      */
     mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent],
-    // The events that will be emitted by this component
-    _emitter: ['dragstart', 'drag', 'dragend', 'select', 'open'],
     props: {
       /**
        * @prop {String} filterString
@@ -599,8 +597,18 @@
        * @return {Array}
        */
       getMenu(node){
-        let idx = $(node.$el).index();
-        let menu = [];
+        // @jquery
+        // let idx = $(node.$el).index(),
+        let idx = -1,
+            menu = [];
+        if ( node.$el && node.$el.parentNode.children.length ){
+          bbn.fn.each(node.$el.parentNode.children, (v, i)=>{
+            if ( v === node.$el){
+              idx = parseInt(i);
+            }
+          })
+        }
+        
         if ( node.numChildren ){
           menu.push({
             text: node.isExpanded ? bbn._("Close") : bbn._("Open"),
@@ -715,7 +723,7 @@
               return false;
             }
           });
-          bbn.fn.log("keyNav", idx, max, e.key);
+          //bbn.fn.log("keyNav", idx, max, e.key);
           switch ( e.key ){
             case 'Enter':
             case ' ':
@@ -761,7 +769,7 @@
                 this.tree.activeNode.$children[1].isActive = true;
               }
               else if ( idx < max ){
-                bbn.fn.log("ORKING");
+                //bbn.fn.log("ORKING");
                 parent.$children[idx+1].isActive = true;
               }
               else {
@@ -931,7 +939,7 @@
           else if ( typeof(criteria) === 'number' ){
             idx = criteria;
           }
-          bbn.fn.log("OopenPath", path, idx, criteria, this.items);
+          //bbn.fn.log("OopenPath", path, idx, criteria, this.items);
           if ( idx > -1 ){
             bbn.fn.each(this.items, (a, i) => {
               if ( i !== idx ){
@@ -998,8 +1006,18 @@
        * @param {Number} index 
        */
       move(node, target, index){
-        let idx = $(node.$el).index(),
+        // @jquery
+        //let idx = $(node.$el).index(),
+        let idx = -1,
             parent = node.parent;
+        if ( node.$el && node.$el.parentNode.children.length ){
+          bbn.fn.each(node.$el.parentNode.children, (v, i)=>{
+            if ( v === node.$el){
+              idx = parseInt(i);
+            }
+          })
+          
+        }
         if ( idx > -1 ){
           if ( !target.numChildren ){
             target.numChildren = 1;
@@ -1144,7 +1162,7 @@
        * @emits pathChange
        */
       path(newVal){
-        bbn.fn.log("Change path", newVal);
+        //bbn.fn.log("Change path", newVal);
         this.$emit('pathChange');
       },
       /**
@@ -1276,7 +1294,7 @@
            * @memberof bbn-tree-node
            */
           component: {
-            type: [String, Function, Vue]
+            type: [String, Function, Vue, Object]
           },
           /**
            * The number of children of the node
@@ -1493,17 +1511,17 @@
           },
           beforeEnter(){
             if ( this.animation ){
-              alert("beforeEnter " + $(this.$refs.container).height());
+              //alert("beforeEnter " + $(this.$refs.container).height());
             }
           },
           enter(){
             if ( this.animation ){
-              alert("enter " + $(this.$refs.container).height());
+              //alert("enter " + $(this.$refs.container).height());
             }
           },
           afterEnter(){
             if ( this.animation ){
-              alert("afterEnter " + $(this.$refs.container).height());
+              //alert("afterEnter " + $(this.$refs.container).height());
             }
           },
           /**
@@ -1524,8 +1542,13 @@
                   }
                 });
               }
-              $(document.body).one('mouseup', this.endDrag);
-              $(document.body).on("mousemove", this.drag);
+              let fn = (e) => {
+                this.endDrag(e);
+                document.removeEventListener('mouseup', fn);
+              };
+              document.addEventListener('mouseup', fn);
+              //$(document.body).on("mousemove", this.drag);
+              document.addEventListener('mousemove', this.drag);
             }
           },
           /**
@@ -1537,10 +1560,10 @@
            * @memberof bbn-tree-node
            */
           drag(e){
-            bbn.fn.log("DS");
+            //bbn.fn.log("DS", e);
             e.stopImmediatePropagation();
             e.preventDefault();
-            this.tree.$refs.helper.style.left = (e.pageX + 20) + 'px';
+            this.tree.$refs.helper.style.left = e.pageX + 'px';
             this.tree.$refs.helper.style.top = e.pageY + 'px';
             if ( !this.tree.realDragging ){
               if ( this.tree.selectedNode ){
@@ -1550,15 +1573,27 @@
               this.tree.$emit("dragStart", this, ev);
               if (!ev.defaultPrevented) {
                 this.tree.realDragging = true;
-                let helper = this.tree.$refs.helper;
-                helper.innerHTML = this.$el.outerHTML;
-                $(helper).appendTo(document.body);
+                let helper = this.tree.getRef('helper');
+                if ( helper ) {
+                  helper.innerHTML = this.$el.outerHTML;
+                }
               }
             }
             else{
+              /* 
+              @jquery
               for ( let a of this.tree.droppableTrees ){
                 $(a.$el).find(".dropping").removeClass("dropping");
+              }*/
+              if ( this.tree.droppableTrees.length ){
+                bbn.fn.each(this.tree.droppableTrees, (a) => {
+                  let v = a && a.$el ? a.$el.querySelector('.dropping') : null;
+                  if ( v && v.classList ){
+                    v.classList.remove('dropping');
+                  }
+                });
               }
+              
               let ok = false;
               for ( let a of this.tree.droppableTrees ){
                 if (
@@ -1567,6 +1602,9 @@
                   !a.isNodeOf(a.overNode, this.tree.dragging) &&
                   (!a.overNode.$refs.tree || (a.overNode.$refs.tree[0] !== this.parent))
                 ){
+                  
+                  /*
+                  @jquery
                   let $t = $(e.target);
                   $t.parents().each((i, b) => {
                     if ( b === a.overNode.$el ){
@@ -1576,7 +1614,25 @@
                     else if ( b === this.$el ){
                       return false;
                     }
-                  });
+                  });*/
+                  let t = e.target,
+                      parents = [];
+                    
+                  while (t) {
+                    parents.unshift(t);
+                    t = t.parentNode;
+                  }
+                  if ( parents.length ){
+                    bbn.fn.each(parents, (b, i) => {
+                      if ( b === a.overNode.$el ){
+                        ok = 1;
+                        return false;
+                      }
+                      else if ( b === this.$el ){
+                        return false;
+                      }
+                    })
+                  }
                 }
                 if ( ok ){
                   let ev = new Event("dragOver", {cancelable: true});
@@ -1607,7 +1663,7 @@
             e.preventDefault();
             e.stopImmediatePropagation();
             if ( this.tree.realDragging ){
-              $(this.tree.$refs.helper).appendTo(this.tree.$refs.helperContainer).empty();
+              this.tree.getRef('helper').innerHTML = '';
               this.tree.realDragging = false;
               if ( this.tree.droppableTrees.length ){
                 for ( let a of this.tree.droppableTrees ){
@@ -1616,7 +1672,13 @@
                     (this.tree.dragging !== a.overNode) &&
                     !a.isNodeOf(a.overNode, this.tree.dragging)
                   ){
-                    $(a.overNode.$el).children("span.node").removeClass("dropping");
+                    //@jquery
+                    //$(a.overNode.$el).children("span.node").removeClass("dropping");
+                    if( a.overNode.$el.querySelector('span.node') && a.overNode.$el.querySelector('span.node').classList ){
+                      if ( a.overNode.$el.querySelector('span.node').classList.contains('dropping') ){
+                        a.overNode.$el.querySelector('span.node').classList.remove('dropping')
+                      }
+                    }
                     let ev = new Event("dragEnd", {cancelable: true});
                     a.tree.$emit("dragEnd", ev, this, a.overNode);
                     if ( !ev.defaultPrevented ){
@@ -1632,7 +1694,7 @@
                 this.tree.$emit("dragEnd", this, ev);
               }
             }
-            $(document.body).off("mousemove", this.drag);
+            document.removeEventListener('mousemove', this.drag);
             for ( let a of this.tree.droppableTrees ){
               a.dragging = false;
             }

@@ -2,100 +2,107 @@
        'bbn-tabnav-scrollable': scrollable
      }, componentClass]"
 >
-  <div class="bbn-tabnav-container bbn-flex-height">
-    <ul ref="tabgroup"
-        v-if="tabs"
-        :class="{
-        'bbn-header': true,
-        'bbn-tabnav-tabs': true,
-        'bbn-bordered-bottom': true
-      }"
-    >
-      <li v-for="(tab, tabIndex) in tabs"
-          :ref="'tab-' + tabIndex"
-          :style="{
-          backgroundColor: tab.bcolor || null,
-          color: tab.fcolor || null
-        }"
-          :data-index="tabIndex"
-          :class="[{
-          'bbn-iblock': true,
-          'bbn-bordered': true,
-          'bbn-radius-top': true,
-          'bbn-state-default': true,
-          'bbn-unselectable': true,
-          'bbn-tabnav-static': !!tab.static,
-          'bbn-state-default': true,
-          'bbn-state-active': tabIndex === selected,
-          'bbn-disabled': tab.disabled,
-          'bbn-tabnav-alarm': tab.alarm
-        }, tab.cls || '']"
-          @click="!tab.disabled && (tabIndex !== selected) ? (selected = tabIndex) : (() => {})()"
-      >
-        <div class="bbn-tabnav-badge-container bbn-middle"
-              v-if="(tabIndex !== selected) && numProperties(tab.events)">
-          <span class="bbn-badge bbn-small bbn-bg-red" v-text="numProperties(tab.events)"></span>
-        </div>
-        <div class="bbn-tabnav-tab-loader bbn-border-text" 
-              :style="{borderColor: tab.fcolor || null}"
-              v-show="tab.loading">
-        </div>
-        <component :is="!tab.disabled && (tab.menu !== false) && (tabIndex === selected) ? 'bbn-context' : 'div'"
-                    v-bind="!tab.disabled && (tabIndex === selected) ? {
-                      context: true,
-                      source: getMenuFn,
-                      sourceIndex: tabIndex,
-                      tag: 'div'
-                    } : {}"
-                    :class="['bbn-tabnav-tab', 'bbn-iblock', {'bbn-tabnav-unsaved': tab.isUnsaved}]"
-                    :ref="'title-' + tabIndex"
-                    :style="{
-                      color: tab.fcolor ? tab.fcolor : null
-                    }"
-                    tabindex="0"
-                    @keydown.space.enter.prevent.stop="tabIndex !== selected ? activateIndex(tabIndex) : (() => {})()"
-                    @keydown.right.down.prevent.stop="getRef('menu-' + tabIndex) ? getRef('menu-' + tabIndex).$el.focus() : (getRef('closer-' + tabIndex) ? getRef('closer-' + tabIndex).focus() : null)"
-        >
-          <i v-if="tab.icon"
-            :title="tab.title"
-            :class="tab.icon + (tab.notext ? ' bbn-xl' : '')">
-          </i>
-          <span v-if="!tab.notext && tab.title"
-                class="bbn-tab-text"
-                :title="getFullTitle(tab)"
-                v-html="tab.title.length > maxTitleLength ? cutTitle(tab.title) : tab.title">
-          </span>
-        </component>
-        <div class="bbn-tabnav-selected"
-              :ref="'selector-' + tabIndex"
-              v-show="tabIndex === selected"
-              :style="{
-              backgroundColor: getTabColor(tabIndex)
+  <div class="bbn-tabnav-container bbn-flex-height bbn-flex-width">
+    <div style="height: 2.4em" class="bbn-flex-fill bbn-tabnav-ul-container">
+      <div class="bbn-100">
+        <bbn-scroll axis="x" :container="true" :hidden="true" ref="horizontal-scroll">
+          <ul ref="tabgroup"
+              v-if="tabs"
+              :class="{
+              'bbn-header': true,
+              'bbn-tabnav-tabs': true,
+              'bbn-bordered-bottom': true
             }"
-        ></div>
-        <i v-if="!tab.static && !tab.pinned"
-            class="nf nf-fa-times bbn-p bbn-tab-close bbn-tabnav-icon"
-            tabindex="-1"
-            :ref="'closer-' + tabIndex"
-            @keydown.left.down.prevent.stop="getRef('menu-' + tabIndex) ? getRef('menu-' + tabIndex).$el.focus() : null"
-            @keydown.space.enter.prevent.stop="close(tabIndex)"
-            @click.stop.prevent="close(tabIndex)"></i>
-        <bbn-context v-if="(tab.menu !== false) && (tabIndex === selected)"
-                      class="nf nf-fa-caret_down bbn-tab-menu bbn-tabnav-icon bbn-p"
-                      tabindex="-1"
-                      tag="i"
-                      :source="getMenuFn"
-                      :source-index="tabIndex"
-                      :ref="'menu-' + tabIndex"
-        ></bbn-context>
-      </li>
-    </ul>
+          >
+            <li v-for="(tab, tabIndex) in tabs"
+                :ref="'tab-' + tabIndex"
+                :style="{
+                backgroundColor: tab.bcolor || null,
+                color: tab.fcolor || null
+              }"
+                :data-index="tabIndex"
+                :class="[{
+                'bbn-iblock': true,
+                'bbn-bordered': true,
+                'bbn-radius-top': true,
+                'bbn-state-default': true,
+                'bbn-unselectable': true,
+                'bbn-tabnav-static': !!tab.static,
+                'bbn-background-effect-internal': tabIndex === selected,
+                'bbn-tabnav-active': true,
+                'bbn-disabled': tab.disabled,
+                'bbn-tabnav-alarm': tab.alarm
+              }, tab.cls || '']"
+                @click="!tab.disabled && (tabIndex !== selected) ? (selected = tabIndex) : (() => {})()"
+            >
+              <div class="bbn-tabnav-badge-container bbn-middle"
+                    v-if="(tabIndex !== selected) && numProperties(tab.events)">
+                <span class="bbn-badge bbn-small bbn-bg-red" v-text="numProperties(tab.events)"></span>
+              </div>
+              <div class="bbn-tabnav-tab-loader bbn-border-text" 
+                    :style="{borderColor: tab.fcolor || null}"
+                    v-show="tab.loading">
+              </div>
+              <component :is="!tab.disabled && (tab.menu !== false) && (tabIndex === selected) ? 'bbn-context' : 'div'"
+                          v-bind="!tab.disabled && (tabIndex === selected) ? {
+                            context: true,
+                            source: getMenuFn,
+                            sourceIndex: tabIndex,
+                            tag: 'div'
+                          } : {}"
+                          :class="['bbn-tabnav-tab', 'bbn-iblock', {'bbn-tabnav-unsaved': tab.isUnsaved}]"
+                          :ref="'title-' + tabIndex"
+                          :style="{
+                            color: tab.fcolor ? tab.fcolor : null
+                          }"
+                          tabindex="0"
+                          @keydown.space.enter.prevent.stop="tabIndex !== selected ? activateIndex(tabIndex) : (() => {})()"
+                          @keydown.right.down.prevent.stop="getRef('menu-' + tabIndex) ? getRef('menu-' + tabIndex).$el.focus() : (getRef('closer-' + tabIndex) ? getRef('closer-' + tabIndex).focus() : null)"
+              >
+                <i v-if="tab.icon"
+                  :title="tab.title"
+                  :class="tab.icon + (tab.notext ? ' bbn-xl' : '')">
+                </i>
+                <span v-if="!tab.notext && tab.title"
+                      class="bbn-tab-text"
+                      :title="getFullTitle(tab)"
+                      v-html="tab.title.length > maxTitleLength ? cutTitle(tab.title) : tab.title">
+                </span>
+              </component>
+              <div class="bbn-tabnav-selected"
+                    :ref="'selector-' + tabIndex"
+                    v-show="tabIndex === selected"
+                    :style="{
+                    backgroundColor: getTabColor(tabIndex)
+                  }"
+              ></div>
+              <i v-if="!tab.static && !tab.pinned"
+                  class="nf nf-fa-times bbn-p bbn-tab-close bbn-tabnav-icon"
+                  tabindex="-1"
+                  :ref="'closer-' + tabIndex"
+                  @keydown.left.down.prevent.stop="getRef('menu-' + tabIndex) ? getRef('menu-' + tabIndex).$el.focus() : null"
+                  @keydown.space.enter.prevent.stop="close(tabIndex)"
+                  @click.stop.prevent="close(tabIndex)"></i>
+              <bbn-context v-if="(tab.menu !== false) && (tabIndex === selected)"
+                            class="nf nf-fa-caret_down bbn-tab-menu bbn-tabnav-icon bbn-p"
+                            tabindex="-1"
+                            tag="i"
+                            :source="getMenuFn"
+                            :source-index="tabIndex"
+                            :ref="'menu-' + tabIndex"
+              ></bbn-context>
+            </li>
+          </ul>
+        </bbn-scroll>
+      </div>
+    </div>
     <bbn-router ref="router"
                 v-if="isMounted"
                 @ready="init"
                 @route="onRoute"
                 @change="routing"
                 @update="update"
+                :def="url"
                 :autoload="autoload"
                 :source="initSource"
                 :root="root"

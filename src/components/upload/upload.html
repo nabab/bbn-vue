@@ -7,7 +7,7 @@
     <span v-html="currentText.pasteContainer"></span>
   </div>
   <div ref="ui_template" v-if="!ready">
-    <div class="qq-uploader-selector qq-uploader qq-gallery bbn-vmiddle k-block"
+    <div class="qq-uploader-selector qq-uploader qq-gallery bbn-vmiddle bbn-block"
          v-bind="{'qq-drop-area-text': dropHereText}"
     >
       <div class="qq-total-progress-bar-container-selector qq-total-progress-bar-container">
@@ -25,7 +25,7 @@
       >
         <span class="qq-upload-drop-area-text-selector"></span>
       </div>
-      <div :class="['qq-upload-button-selector', 'bbn-button', {'k-state-disabled': !isEnabled}]">
+      <div :class="['qq-upload-button-selector', 'bbn-button', {'bbn-state-disabled': !isEnabled}]">
         <i :class="icon" style="margin-right: 0.3rem"></i>
         <span v-text="currentText.uploadButton"></span>
       </div>
@@ -101,7 +101,7 @@
                       v-text="currentText.no"
           ></bbn-button>
           <bbn-button type="button"
-                      class="qq-obbn-button-selector k-primary"
+                      class="qq-obbn-button-selector bbn-primary"
                       v-text="currentText.yes"
           ></bbn-button>
         </div>
@@ -116,7 +116,7 @@
                   v-text="currentText.cancel"
           ></bbn-button>
           <bbn-button type="button"
-                  class="qq-obbn-button-selector k-primary"
+                  class="qq-obbn-button-selector bbn-primary"
                   v-text="currentText.ok"
           ></bbn-button>
         </div>

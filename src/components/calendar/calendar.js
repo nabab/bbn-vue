@@ -2,10 +2,8 @@
  * @file bbn-calendar component
  *
  * @description The bbn-calendar component is a calendar that allows you to interact with dates by providing details, inserting reminders and creating events.
- *
  * @copyright BBN Solutions
- *
- * @author Mirko Argentino * 
+ * @author Mirko Argentino 
  */
 
 ((bbn) => {
@@ -14,10 +12,10 @@
   Vue.component('bbn-calendar', {
     /**
      * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.sourceArrayComponent
+     * @mixin bbn.vue.listComponent
      * @mixin bbn.vue.resizerComponent
     */
-    mixins: [bbn.vue.basicComponent, bbn.vue.sourceArrayComponent, bbn.vue.resizerComponent],
+    mixins: [bbn.vue.basicComponent, bbn.vue.listComponent, bbn.vue.resizerComponent],
     props: {
       /**
        * The array of events for each day.
@@ -33,7 +31,7 @@
       },
       /**
        * The visualization mode.
-       * Allowed values: days, weeks, months and years
+       * Allowed values: days, weeks, months and years.
        *
        * @prop {String} ['days'] type
       */
@@ -628,9 +626,9 @@
       filterEvents(v){
         if ( this.startField && this.endField ){
           return this.currentData && bbn.fn.isArray(this.currentData) ? this.currentData.filter(ev => {
-            if ( ev[this.startField] && ev[this.endField] ){
-              let start = moment(ev[this.startField], this.startFormat).format(this.currentCfg.valueFormat),
-                  end = moment(ev[this.endField], this.endFormat).format(this.currentCfg.valueFormat);
+            if ( ev.data[this.startField] && ev.data[this.endField] ){
+              let start = moment(ev.data[this.startField], this.startFormat).format(this.currentCfg.valueFormat),
+                  end = moment(ev.data[this.endField], this.endFormat).format(this.currentCfg.valueFormat);
               return (start <= v) && (end >= v);
             }
             return false;
@@ -789,7 +787,7 @@
         }
       },
       /**
-       * Handles the resize 
+       * Handles the resize. 
        *
        * @method onResize
        * @fires setLabels

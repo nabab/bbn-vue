@@ -16,10 +16,9 @@
 
   Vue.component('bbn-markdown', {
     /**
-     * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.fullComponent 
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.fullComponent],
+    mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent],
     props: {
       /**
        * The object of configuration
@@ -28,29 +27,7 @@
       cfg: {
         type: Object,
         default(){
-          return {
-            autoDownloadFontAwesome: false,
-            spellChecker: false,
-            indentWithTabs: true,
-            initialValue: '',
-            insertTexts: {
-              horizontalRule: ["", "\n\n-----\n\n"],
-              image: ["![](http://", ")"],
-              link: ["[", "](http://)"],
-              table: ["", "\n\n| Column 1 | Column 2 | Column 3 |\n| -------- | -------- | -------- |\n| Text     | Text      | Text     |\n\n"],
-            },
-            renderingConfig: {
-              singleLineBreaks: true,
-              codeSyntaxHighlighting: true,
-            },
-            status: false,
-            tabSize: 2,
-            toolbarTips: true,
-            shortcuts: {
-              drawTable: "Cmd-Alt-T"
-            },
-
-          };
+          return {};
         }
       },
       //@todo not used
@@ -63,9 +40,29 @@
       }
     },
     data(){
-      return bbn.fn.extend({
+      return {
         widgetName: "SimpleMDE",
-      }, bbn.vue.treatData(this));
+        autoDownloadFontAwesome: this.cfg.autoDownloadFontAwesome || false,
+        spellChecker: this.cfg.spellChecker || false,
+        indentWithTabs: this.cfg.indentWithTabs === undefined ? true : this.cfg.indentWithTabs,
+        initialValue: this.cfg.initialValue || '',
+        insertTexts: {
+          horizontalRule: ["", "\n\n-----\n\n"],
+          image: ["![](http://", ")"],
+          link: ["[", "](http://)"],
+          table: ["", "\n\n| Column 1 | Column 2 | Column 3 |\n| -------- | -------- | -------- |\n| Text     | Text      | Text     |\n\n"],
+        },
+        renderingConfig: {
+          singleLineBreaks: true,
+          codeSyntaxHighlighting: true,
+        },
+        status: false,
+        tabSize: this.cfg.tabSize || 2,
+        toolbarTips: true,
+        shortcuts: {
+          drawTable: "Cmd-Alt-T"
+        }
+      };
     },
     methods: {
       disableWidget(v){
@@ -107,7 +104,7 @@
       });
       this.widget = new SimpleMDE(bbn.fn.extend({
         element: this.$refs.element
-      }, this.getOptions()));
+      }, this.$data));
       this.widget.codemirror.on("change", () => {
         this.emitInput(this.widget.value());
       });

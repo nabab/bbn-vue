@@ -40,7 +40,7 @@
     },
     mounted: function(){
       if ( this.disabled ){
-        this.$el.classList.add("k-state-disabled");
+        this.$el.classList.add("bbn-state-disabled");
       }
       this.ready = true;
     }

@@ -24,13 +24,19 @@
     props: {
       /**
        * The size of the icon container
-       * @prop {Number} [16] size
+       * @prop {Number|String} [16] size
        */
       size: {
-        type: Number,
+        type: [Number, String],
         default: 16
       },
     },
+    computed: {
+      currentSize(){
+        return bbn.fn.formatSize(this.size);
+      }
+
+    }
   });
 
 })(bbn);

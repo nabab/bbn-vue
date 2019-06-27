@@ -170,6 +170,7 @@
     props: {
       /**
        * The ecmascript version.
+       * 
        * @prop {Number} [6] ecma
        */
       ecma: {
@@ -178,6 +179,7 @@
       },
       /**
        * The language mode.
+       * 
        * @prop {String} [php] mode
        */
       mode: {
@@ -186,7 +188,9 @@
       },
       /**
        * Defines the style of the editor.
+       * 
        * @prop {String} theme
+       * 
        */
       theme: {
         type: String,
@@ -210,7 +214,14 @@
 
     data(){
       return {
+        /**
+         * @todo not used
+         */
         widgetName: "CodeMirror",
+        /**
+         * True if the editor is fullscreen.
+         * @data {Boolan} [false] isFullScreen
+         */
         isFullScreen: false
       };
     },
@@ -230,6 +241,7 @@
     methods: {
       /**
        * Gets the preset options for the given mode from the constant modes.
+       * 
        * @method getMode
        * @param {String} mode
        * @return {Boolean}
@@ -250,6 +262,7 @@
       },
       /**
        * Gets the options for the editor.
+       * 
        * @method getOptions
        * @fires getMode
        * @return {Object}
@@ -273,6 +286,7 @@
       },
       /**
        * Places the cursor at a defined point.
+       * 
        * @method cursorPosition
        * @param {Number} lineCode
        * @param {Number} position
@@ -297,6 +311,7 @@
       },
       /**
        * Returns an object with the selections, marks, folding and value.
+       * 
        * @method getState
        * @return {Object | Boolean}
        */
@@ -331,6 +346,7 @@
       },
       /**
        * Loads the state, such as the last state saved.
+       * 
        * @method loadState
        * @param {Object} obj
        * @fires cursorPosition
@@ -368,7 +384,7 @@
         this.widget.setOption("theme", themes[themeIndex]);
       },
       /**
-       *
+       * Folds the given level.
        * @param {*} level
        */
       foldByLevel(level) {
@@ -380,7 +396,12 @@
         var range = this.widget.getViewport();
         this.foldByLevelRec(cursor, range, level);
       },
-
+      /**
+       * @method foldByLevelRec
+       * @param {*} cursor 
+       * @param {*} range 
+       * @param {*} level 
+       */
       foldByLevelRec(cursor, range, level) {
         if (level > 0) {
           var searcher = this.widget.getSearchCursor("<", cursor, false);
@@ -413,7 +434,11 @@
           }
         }
       },
-
+      /**
+       * Folds the given node.
+       * @method foldByNodeOrder
+       * @param {Number} node 
+       */
       foldByNodeOrder(node) {
         // 0 - fold all
         this.unfoldAll();
@@ -427,15 +452,27 @@
           }
         }
       },
+      /**
+       * Folds all nodes.
+       * @method foldAll
+       * @fires foldByNodeOrder
+       */
       foldAll(){
         this.foldByNodeOrder(0);
       },
-
+      /**
+       * Undfolds all nodes.
+       * @method unfoldAll
+       */
       unfoldAll() {
         for (var i = 0; i < this.widget.lineCount() ; i++) {
           this.widget.foldCode({ line: i, ch: 0 }, null, "unfold");
         }
       },
+      /**
+       * Initializes the component
+       * @method initTern
+       */
       initTern(){
         if ( (bbn.vue.tern === undefined) && (this.mode === 'js') ){
           let getURL = (url, c) => {
@@ -451,15 +488,20 @@
             };
           };
           getURL("//ternjs.net/defs/ecmascript.json", (err, code) => {
-            if (err) throw new Error("Request for ecmascript.json: " + err);
-            if ( this.widget ){
-              bbn.vue.tern = new CodeMirror.TernServer({defs: [JSON.parse(code)]});
+            if (err) {
+              throw new Error("Request for ecmascript.json: " + err);
             }
-            this.widget.on("cursorActivity", function(cm) { bbn.vue.tern.updateArgHints(cm); });
+            if ( this.widget && code ){
+              bbn.vue.tern = new CodeMirror.TernServer({defs: [JSON.parse(code)]});
+              this.widget.on("cursorActivity", function(cm) { bbn.vue.tern.updateArgHints(cm); });
+            }
           });
         }
       },
-      //add block of text in editor
+      /**
+       * Adds a block of text in the editor.
+       * @param {String} code 
+       */
       addSnippet(code){
         if ( code === undefined ){
           code = "";
@@ -473,6 +515,10 @@
             };
         this.widget.getDoc().replaceRange("\n" + code + "\n", position);
       },
+      /**
+       * Toggles the fullscreen.
+       * @param {Boolean} isFS 
+       */
       toggleFullScreen(isFS){
         if ( isFS === undefined ){
           isFS = !this.isFullScreen;
@@ -480,6 +526,10 @@
         this.isFullScreen = !!isFS;
       }
     },
+    /**
+     * @event mounted
+     * @fires initTern
+     */
     mounted(){
       //bbn.fn.log(this.getOptions());
       if ( this.getRef('code') ){
@@ -505,9 +555,17 @@
     },
 
     watch: {
+      /**
+       * @watch currentTheme
+       * @param {String} newVal 
+       */
       currentTheme(newVal){
         this.widget.setOption("theme", newVal);
       },
+      /**
+       * @watch mode
+       * @param {String} newVal 
+       */
       mode(newVal){
         let mode = this.getMode(newVal);
         if ( mode ){
@@ -516,6 +574,11 @@
           });
         }
       },
+      /**
+       * @watch value
+       * @param {String} newVal 
+       * @param {String} oldVal 
+       */
       value(newVal, oldVal){
         if ( (newVal !== oldVal) && ( newVal !== this.widget.getValue()) ){
           this.widget.setValue(newVal);

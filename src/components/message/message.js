@@ -16,7 +16,7 @@
    * Classic input with normalized appearance
    */
   Vue.component('bbn-message', {
-    mixins: [bbn.vue.basicComponent, bbn.vue.optionComponent],
+    mixins: [bbn.vue.basicComponent],
     props:{
       position: {},
       cfg: {

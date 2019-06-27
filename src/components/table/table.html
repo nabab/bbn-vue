@@ -163,7 +163,7 @@
               <col v-for="col in currentColumns" :style="{width: col.realWidth}">
             </colgroup>
             <tbody>
-              <tr v-for="(d, i) in currentSet"
+              <tr v-for="(d, i) in items"
                   :key="i"
                   :index="d.index"
                   :tabindex="0"

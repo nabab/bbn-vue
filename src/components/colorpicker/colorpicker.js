@@ -22,7 +22,8 @@
     mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent],
     props: {
       /**
-       * The value of the colorpicker
+       * The value of the colorpicker.
+       * 
        * @prop {String} value
        */
       value: {
@@ -36,6 +37,7 @@
         default: false
       },
       /**
+       * 
        * @prop {Boolean} [false] gradient
        */
       //for opacity
@@ -44,7 +46,7 @@
         default: false
       },
       /**
-       * Tracks the initial color
+       * Tracks the initial color.
        * @prop {Boolean} [false] initial
        */
       initial: {
@@ -52,7 +54,7 @@
         default: true
       },
       /**
-       * Set to true to show an input containing the color code
+       * Set to true to show an input containing the color code.
        * @prop {Boolean} [false] showCode
        */
       showCode: {
@@ -60,7 +62,8 @@
         default: false
       },
       /**
-       * If the array palette is defined, set to true to show only the given list of colors
+       * If the array palette is defined, set to true to show only the given list of colors.
+       * 
        * @prop {Boolean} [false] onlyPalette
        */
       onlyPalette:{
@@ -68,14 +71,16 @@
         default: false
       },
       /**
-       * An array containing the list of colors by hex, rgb, rgba or the color's name 
+       * An array containing the list of colors by hex, rgb, rgba or the color's name.
+       *  
        * @prop {Array} palette
        */
       palette:{
         type: Array
       },
       /**
-       * Set to true to show the button 'choose' and 'cancel'
+       * Set to true to show the button 'choose' and 'cancel'.
+       * 
        * @prop {Boolean} [false] buttons
        */
       buttons: {
@@ -83,7 +88,8 @@
         default: true
       },
       /**
-       * An array containing the text of the buttons
+       * An array containing the text of the buttons.
+       * 
        * @prop {Array} textButtons
        */
       textButtons: {
@@ -91,7 +97,8 @@
       },
       //if set atrue through the panel we can define a palette of favourite colors that come from the selection of the panel and not from an apalette that we have already passed
       /**
-       * Set to true to create a palette of selected favourite colors
+       * Set to true to create a palette of selected favourite colors.
+       * 
        * @prop {Boolean} [false] favourite
        */
       favourite: {
@@ -99,7 +106,8 @@
         default: false
       },
       /**
-       * Set to true sto how a button that empties the selection when clicked
+       * Set to true sto how a button that empties the selection when clicked.
+       * 
        * @prop {Boolean} [false] buttonEmpty
        */
       buttonEmpty:{
@@ -108,7 +116,8 @@
       },
      
       /**
-       * Defines the color code
+       * Defines the color code.
+       * 
        * @prop {String} ['hex'] codeColor
        */
       codeColor: {
@@ -118,7 +127,8 @@
     },
     computed:{
       /**
-       * The object of configuration of the colorpicker
+       * The object of configuration of the colorpicker.
+       * 
        * @computed dataComponent
        * @return {Object}
        */
@@ -131,7 +141,7 @@
           showPalette: this.favourite,
           showInitial: this.initial,
           showAlpha: this.gradient,
-          replacerClassName: "k-widget k-colorpicker k-textbox",
+          replacerClassName: "bbn-vmiddle bbn-textbox",
           preferredFormat: this.codeColor,
           //container
           //if set to false and I click outside the panel does not keep the selected value as if it were a cancel
@@ -211,7 +221,7 @@
         });
       },
       /**
-       * Starts the configuration of the component
+       * Starts the configuration of the component.
        * @method initComponent
        * 
        */
@@ -231,7 +241,8 @@
         }, 100);
       },
       /**
-       * Converts hex to rgb colors
+       * Converts hex to rgb colors.
+       * 
        * @param {Number} r 
        * @param {Number} g 
        * @param {Number} b 

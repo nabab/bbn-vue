@@ -12,6 +12,8 @@
   <bbn-button icon="nf nf-fa-clock_o"
               @click="isOpened = !isOpened"
               :disabled="disabled || readonly"
+              tabindex="-1"
+              class="bbn-button-right"
   ></bbn-button>
   <bbn-floater v-if="isOpened && !disabled && !readonly"
                :element="$el"

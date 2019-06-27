@@ -8,39 +8,28 @@
          @click.stop="click">
       <input :disabled="disabled"
               class="bbn-unselectable bbn-textbox bbn-no-border bbn-abs bbn-top-left"
+              @keydown.stop="keydownInput"
+              ref="input"
               :required="required"
-              :readonly="readonly"
+              readonly="readonly"
               :placeholder="placeholder"
-              :tabindex="-1"
-              autocorrect="off"
-              autocapitalize="off"
-              spellcheck="false"
+              :tabindex="autocomplete || disabled || readonly ? -1 : 0"
               :value="filterString ? '' : currentText">
-      <input v-if="!disabled && !readonly"
+      <input v-if="autocomplete && !disabled && !readonly"
               tabindex="0"
               class="bbn-textbox bbn-no-border"
               v-model="filterString"
-              ref="input"
+              ref="filter"
               @focus="selectAll"
               autocomplete="off"
               :required="required"
               :readonly="readonly"
-              @keydown.stop="keydown"
+              @keydown.stop="keydownFilter"
               @change="ready = true"
-              autocorrect="off"
-              autocapitalize="off"
-              spellcheck="false"
               :name="name">
     </div>
-    <div class="bbn-list-component-button">
-      <div v-if="isAjax && isLoading"
-           class="bbn-middle">
-        <bbn-loadicon size="1.2em"
-                      tabindex="-1">
-        </bbn-loadicon>
-      </div>
-      <bbn-button v-else
-                  :icon="isOpened && !disabled && !readonly && filteredData.length ? iconUp : iconDown"
+    <div>
+      <bbn-button :icon="'nf nf-fa-caret_' + (isOpened && !disabled && !readonly && filteredData.length ? 'up' : 'down')"
                   class="bbn-p bbn-button-right"
                   @click.prevent.stop="click"
                   tabindex="-1"
@@ -55,10 +44,9 @@
   <bbn-floater v-if="!disabled && !readonly && isOpened"
                :element="$el"
                :max-height="maxHeight"
-               :min-width="$el.clientWidth"
+               :min-width="currentWidth"
                ref="list"
-               :source-value="sourceValue"
-               :source-text="sourceText"
+               :uid="sourceValue"
                :item-component="realComponent"
                @select="select"
                :selected="[value]"

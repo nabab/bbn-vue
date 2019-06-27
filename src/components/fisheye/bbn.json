@@ -4,8 +4,5 @@
   "authors": [
     "Thomas Nabet <thomas.nabet@gmail.com>"
   ],
-  "license": "MIT",
-  "dependencies": {
-    "fisheye": ">=2.0"
-  }
+  "license": "MIT"
 }

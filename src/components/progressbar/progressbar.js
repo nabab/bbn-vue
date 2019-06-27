@@ -11,10 +11,9 @@
 
   Vue.component('bbn-progressbar', {
     /**
-     * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.fullComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.fullComponent],
+    mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent],
     props: {
       /**
        * The value to be represented by the bar

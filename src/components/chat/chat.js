@@ -29,7 +29,7 @@
         type: String,
       },
       /**
-       * The array of all users
+       * The array of all users.
        * @prop {Array} [[]] users
        */
       users: {
@@ -46,7 +46,7 @@
         }
       },
       /**
-       * The array of users currently online
+       * The array of users currently online.
        * @prop {Array} [[]] onlineUsers
        */
       onlineUsers: {
@@ -56,7 +56,7 @@
         },
       },
       /**
-       * True if the current user is online
+       * True if the current user is online.
        * @prop {Boolean} [true] online
        */
       online: {
@@ -64,7 +64,7 @@
         default: true
       },
       /**
-       * Set to true shows the list of avalaible users
+       * Set to true shows the list of avalaible users.
        * @prop {Boolean} [false] visible
        */
       visible: {
@@ -72,7 +72,7 @@
         default: false
       },
       /**
-       * The url used for the actions of the chat
+       * The url used for the actions of the chat.
        * @prop {String} url
        */
       url: {
@@ -96,29 +96,34 @@
       });
       return {
         /**
-         * The value of the prop online
+         * The value of the prop online.
+         * 
          * @data {Boolean} currentOnline
          */
         currentOnline: this.online,
         /**
-         * The value of the prop visible
+         * The value of the prop visible.
+         * 
          * @data {Boolean} currentVisible
          */
         currentVisible: this.visible,
         /**
-         * The value of the prop visible
+         * The value of the prop visible.
+         * 
          * @data {Boolean} usersVisible
          */
         usersVisible: this.visible,
         //@todo not used
         currentFilter: '',
         /**
-         * The chat windows currently opened
+         * The chat windows currently opened.
+         * 
          * @data {Array} currentWindows
          */
         currentWindows: data,
         /**
-         * The last message sent
+         * The last message sent.
+         * 
          * @data [null] lastMsg
          */
         lastMsg: null,
@@ -127,7 +132,8 @@
          */
         onlineUsersHash: null,
         /**
-         * The number of unread messages
+         * The number of unread messages.
+         * 
          * @data {Number} [0] unRead
          */
         unread: 0
@@ -135,7 +141,8 @@
     },
     computed: {
       /**
-       * The array of online users excluding the current user
+       * The array of online users excluding the current user.
+       * 
        * @computed usersOnlineWithoutMe
        * @return {Array}
        */
@@ -163,7 +170,8 @@
     },
     methods: {
       /**
-      * Returns the method bbn.fn.get_field
+      * Returns the method bbn.fn.get_field.
+      * 
       * @method get_field
       * @return {Function}
       */
@@ -177,7 +185,8 @@
         return [];
       },
       /**
-       * Opens the chat window selected from the list of online users
+       * Opens the chat window selected from the list of online users.
+       * 
        * @method chatTo
        * @param {Array} users 
        */
@@ -249,7 +258,8 @@
         return {right: pos + 'px'}
       },
       /**
-       * Return the current window object basing on the given chat id 
+       * Return the current window object basing on the given chat id.
+       *  
        * @method chatById
        * @param {String} idChat 
        * @return {Boolean|Object}
@@ -262,7 +272,8 @@
         return false;
       },
       /**
-       * Add a user to the given chat
+       * Add a user to the given chat.
+       * 
        * @param {String} idChat 
        * @param {String} idUser 
        */
@@ -351,7 +362,8 @@
     },
     components: {
       /**
-       * The chat window of each online user selected from the main list
+       * The chat window of each online user selected from the main list.
+       * 
        * @component container
        */
       container: {
@@ -370,7 +382,8 @@
             type: Number
           },
           /**
-           * The user id 
+           * The user id. 
+           * 
            * @prop {String} [''] userId
            * @memberof container 
            */
@@ -379,7 +392,8 @@
             default: ''
           },
           /**
-           * The id of the current chat
+           * The id of the current chat.
+           * 
            * @prop {String} [''] chatId
            * @memberof container 
            */
@@ -388,7 +402,8 @@
             default: ''
           },
           /**
-           * The array of partecipants to the chat
+           * The array of partecipants to the chat.
+           * 
            * @prop {Array} [[]] partecipants
            * @memberof container 
            */
@@ -399,7 +414,8 @@
             }
           },
           /** 
-           * The array of all messages and relative timestamp sent in a chat
+           * The array of all messages and relative timestamp sent in a chat.
+           * 
            * @prop {Array} [[]] messages
            * @memberof container
            */
@@ -410,7 +426,8 @@
             }
           },
           /**
-           * The array of all users (including offline ones)
+           * The array of all users (including offline ones).
+           * 
            * @prop {Array} [[]] users
            * @memberof container
            */
@@ -424,7 +441,8 @@
         data(){
           return {
             /**
-             * The current message
+             * The current message.
+             * 
              * @data {String} [''] currentMessage
              * @memberof container
              */
@@ -440,14 +458,16 @@
         },
         methods: {
           /**
-           * Returns the method bbn.fn.get_field
+           * Returns the method bbn.fn.get_field.
+           * 
            * @method get_field
            * @memberof container
            * @return {Function}
            */
           get_field: bbn.fn.get_field,
           /**
-           * Returns the source of the context menu of each chat window
+           * Returns the source of the context menu of each chat window.
+           * 
            * @method getMenuFn
            * @memberof container
            * @return {Array}
@@ -504,7 +524,8 @@
             return res;
           },
           /**
-           * Closes the given chat window
+           * Closes the given chat window.
+           * 
            * @param {Number} idx 
            * @memberof container
            */
@@ -521,7 +542,8 @@
             bbn.fn.log("SCROLL");
           },
           /**
-           * Sends the current message 
+           * Sends the current message.
+           *  
            * @method sendMessage
            * @emits send
            */
@@ -542,7 +564,8 @@
             bbn.fn.link(url)
           },
           /**
-           * Handles the resize of the scroll in the chat window
+           * Handles the resize of the scroll in the chat window.
+           * 
            * @method scrollEnd
            * @memberof container
            * 
@@ -558,7 +581,8 @@
             })
           },
           /**
-           * The render of the message
+           * The render of the message.
+           * 
            * @param {String} msg 
            * @return {String}
            * @memberof container

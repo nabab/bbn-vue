@@ -1,8 +1,8 @@
  /**
   * @file bbn-dashboard component
   *
-  * @description bbn-dashboard, represents a user's interface as a panel control, containing information blocks (bbn-widget component).
-  * This component gives users the possibility to easily choose the preferred position for the components inside the grid, by dragging and releasing the panels in the desired position.
+  * @description bbn-dashboard represents a user's interface containing bbn-widgets.
+  * Details of widgets, such as data and positions, can be easily managed.
   *
   * @author BBN Solutions
   *
@@ -49,7 +49,7 @@
         default: true
       },
       /**
-       * Set to true allows to close the closable widgets in the dashboard
+       * Set to true makes the widgets inside the dashboard closeable.
        * @prop {Boolean} [true] closable
        */
       closable: {
@@ -57,7 +57,7 @@
         default: true
       },
       /**
-       * Set to true allows to sort the widgets in the dashboard
+       * Set to true makes the widgets in the dashboard sortable.
        * @prop {Boolean} [true] sortable
        */
       sortable: {
@@ -65,7 +65,7 @@
         default: true
       }, 
       /**
-       * Set to true allows the dashboard to be scrollable
+       * Set to true makes the dashboard scrollable.
        * @prop {Boolean} [true] scrollable
        */
       scrollable: {
@@ -73,12 +73,12 @@
         default: true
       },
       /**
-       * The source of the dashboard
+       * The source of the dashboard.
        * @prop {Array} source
        */
       source: {},
       /**
-       * The url for the post in case of actions on the dashboard's widget
+       * The url for the post, in case of actions on the dashboard's widgets.
        * @prop {String} url
        */
       url: {},
@@ -89,7 +89,7 @@
         type: Object
       },
       /**
-       * The object of configuration of the dashboard
+       * The object of configuration of the dashboard.
        * @prop {Object} cfg
        */
       cfg: {
@@ -130,12 +130,25 @@
          * @prop {Array} [[]] hidden
          */
         hidden: [],
+        /**
+         * @data sortTargetIndex
+         */
         sortTargetIndex: null,
+        /**
+         * @data sortOriginIndex
+         */
         sortOriginIndex: null,
+        /**
+         * @data {Boolean} [false] isSorting
+         */
         isSorting: false
       };
     },
     computed: {
+      /**
+       * @computed currentWidgets
+       * @return {Array}
+       */
       currentWidgets(){
         return bbn.fn.filter(this.widgets, (a) => {
           return !a.hidden;
@@ -144,7 +157,7 @@
     },
     methods: {
       /**
-       * Sets the configuration of the dashboard
+       * Sets the configuration of the dashboard.
        * @method setConfig
        * @param uid 
        * @param {Object} config 
@@ -156,7 +169,7 @@
         }, uid);
       },
       /**
-       * Gets the widget corresponding to the given key
+       * Gets the widget corresponding to the given key.
        * @method getWidget
        * @param {Number} key 
        */
@@ -167,7 +180,7 @@
         }
       },
       /**
-       * Hides the widget corresponding to the given key
+       * Hides the widget corresponding to the given key.
        * @method hideWidget
        * @param {Number} key 
        * @fires toggleWidget
@@ -176,7 +189,7 @@
         return this.toggleWidget(key, true);
       },
       /**
-       * Shows the widget corresponding to the given key
+       * Shows the widget corresponding to the given key.
        * @method hideWidget
        * @param {Number} key 
        * @fires toggleWidget
@@ -185,7 +198,7 @@
         return this.toggleWidget(key, false);
       },
       /**
-       * Toggle the property hidden of the widget corrensponding to the given key
+       * Toggles the property 'hidden' of the widget corresponding to the given key.
        * @method toggleWidget
        * @param {Number} key 
        * @param {Boolean} hidden 
@@ -201,7 +214,7 @@
         });
       },
       /**
-       * Handles the resize of the component
+       * Handles the resize of the component.
        * @method onResize
        * 
        */
@@ -276,7 +289,7 @@
         });
       },
       /**
-       * Move the widget from the old idx to the new idx
+       * Move the widget from the old index to the new index
        * @method moveWidgets
        * @param {Number} oldIdx 
        * @param {Number} newIdx 
@@ -290,7 +303,7 @@
         });
       },
       /**
-       * Move the widget from the old idx to the new idx considering the hidden widgets
+       * Move the widget from the old index to the new index considering the hidden widgets.
        * @method move
        * @param {Number} oldIdx 
        * @param {Number} newIdx 
@@ -316,8 +329,9 @@
         }
       },
       /**
-       * Updates the menu of the container parent basing on the props menu and selectable of the component dashboard
+       * Updates the menu of the parent container.
        * @method updateMenu
+       * @fires deleteMenu
        */
       updateMenu(){
         let tab = this.closest("bbn-container");
@@ -353,9 +367,9 @@
             text: bbn._("Widgets"),
             mode: 'options',
             icon: 'nf nf-mdi-widgets',
-            // We keep the original source order
             items: items
           }));
+          /*
           this.menu.push(tab.addMenu({
             text: bbn._("Widgets"),
             mode: 'options',
@@ -364,10 +378,11 @@
               tab.getPopup().confirm(bbn._("Etes-vous sur de vouloir réínitialiser la vue et perdre vos réglages?"))
             }
           }));
+          */
         }
       },
       /**
-       * Updates the given widget basing on the given cfg object
+       * Updates the given widget based on the given configuration object.
        * @method updateWidget
        * @param {Number} key 
        * @param {Object} cfg 
@@ -401,7 +416,7 @@
         new Error("No corresponding widget found for key " + key);
       },
       /**
-       * Sets the storage of the given widget
+       * Sets the storage of the given widget.
        * @method setWidgetStorage
        * @param {Number} idx 
        * @fires setStorage
@@ -415,7 +430,7 @@
         }, this.widgets[idx].storageFullName, true);
       },
       /**
-       * Normalizes the properties of the given object
+       * Normalizes the properties of the given object.
        * @method normalize
        * @param {Object} obj_orig 
        * @returns {Object}
@@ -433,13 +448,13 @@
         return obj;
       },
       /**
-       * Adds the given widget 
+       * Adds the given widget.
        * @method add
        * @param {Object} obj 
        * @param {Number} idx 
        */
       add(obj, idx){
-        if ( (idx === undefined) || (idx < 0) || (obj.key >= this.widgets.length) ){
+        if ( (idx === undefined) || (idx < 0) || (idx >= this.widgets.length) ){
           obj.index = this.widgets.length;
           this.order.push(obj.key);
           this.widgets.push(obj);
@@ -463,7 +478,7 @@
         return obj;
       },
       /**
-       * Handles the resize of the scroll
+       * Handles the resize of the scroll.
        * @method resizeScroll
        */  
       resizeScroll(){
@@ -473,13 +488,14 @@
       }
     },
     /**
+     * Adds bbns-tab from the slot.
      * @event created
      * @fires normalize
      * @fires getStorage
      * @fires add
      */
     created(){
-      // Adding bbns-tab from the slot
+      // Adding bbns-tab from the slot.
       if ( this.$slots.default ){
         for ( let node of this.$slots.default ){
           if (
@@ -493,7 +509,6 @@
       bbn.fn.each(this.source, (obj, i) => {
         this.originalSource.push(this.normalize(obj));
       });
-      let cfg = [];
       bbn.fn.each(bbn.fn.order(this.originalSource.slice(), "index"), (obj, i) => {
         this.add(obj);
       });
@@ -516,6 +531,11 @@
       this.selfEmit(true);
     },
     watch: {
+      /**
+       * @watch sortTargetIndex
+       * @param newVal 
+       * @fires move
+       */
       sortTargetIndex(newVal){
         if (
           this.sortable &&
@@ -529,6 +549,10 @@
           this.move(o, newVal);
         }
       },
+      /**
+       * @watch isSorting
+       * @param {Boolean} newVal 
+       */
       isSorting(newVal){
         if ( !newVal ){
           this.sortTargetIndex = null;

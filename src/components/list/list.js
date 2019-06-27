@@ -1,736 +1,539 @@
 /**
- * @file bbn-list component
+ * @file bbn-floater component
  *
- * @description bbn-list displays a list of data.
- * What represents can have a hierarchical structure.
- * It can be used as a menu to perform actions.
- * Each bbn-list item can also be a custom component.
+ * @description bbn-floater is a component that represents a container that can be bound to another element.
+ *
+ * @author BBN Solutions
  *
  * @copyright BBN Solutions
- *
- * @created 10/02/2017
  */
-
-
-(function (bbn) {
+(function(Vue, bbn){
   "use strict";
-
-  const NODE_PROPERTIES = ["selected", "selectedClass", "activeClass", "expanded", "tooltip", "icon", "selectable", "text", "data", "cls", "component", "num", "source", "level", "items"];
-
+  /**
+   * Classic input with normalized appearance
+   */
+  let isClicked = false;
   Vue.component('bbn-list', {
-    /**
-     * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.localStorageComponent
-     */
-    mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent],
-    // The events that will be emitted by this component
-    _emitter: ['dragstart', 'drag', 'dragend', 'select', 'open'],
+    mixins: [bbn.vue.basicComponent, bbn.vue.listComponent, bbn.vue.keynavComponent],
     props: {
       /**
-       * Set to false removes arrow icons from all levels of the list
-       * @prop {Boolean} [true] arrowIcons
+       * @prop container
+       * 
        */
-      arrowIcons: {
-        type: Boolean,
-        default: true
-      },
+      origin: {},
       /**
-       * Identifies the index of the item in parent's children
-       * @prop {Number} nodeIdx
+       * The maximum width of the floater.
+       * @prop {Number} maxWidth
        */
-      nodeIdx: {
+      maxWidth: {
         type: Number
       },
       /**
-       * The number of children
-       * @prop {Number} num
+       * The maximum height of the floater.
+       * @prop {Number} maxHeight
        */
-      num: {
-        type: Number,
-        // default: 0
+      maxHeight: {
+        type: Number
       },
       /**
-       * The level until which the hierarchy must be opened
-       * @prop {Number} [0] minExpandLevel
+       * The minimum width of the floater.
+       * @prop {Number} minWidth
        */
-      minExpandLevel: {
-        type: Number,
-        default: 0
+      minWidth: {
+        type: Number
       },
       /**
-       * True if the first level of the list must be expanded
-       * @prop {Boolean} false opened
+       * The minimum height of the floater.
+       * @prop {Number} maxHeight
        */
-      opened: {
+      minHeight: {
+        type: Number
+      },
+      /**
+       * The width of the floater.
+       * @prop {String|Number|Boolean} width
+       */
+      width: {
+        type: [String, Number, Boolean]
+      },
+      /**
+       * The height of the floater.
+       * @prop {String|Number|Boolean} height
+       */
+      height: {
+        type: [String, Number, Boolean]
+      },
+      /**
+       * The position 'left'.
+       * @prop {Number} left
+       */
+      left: {
+        type: Number
+      },
+      /**
+       * The position 'right'.
+       * @prop {Number} right
+       */
+      right: {
+        type: Number
+      },
+      /**
+       * The position 'top'.
+       * @prop {Number} top
+       */
+      top: {
+        type: Number
+      },
+      /**
+       * The position 'bottom'.
+       * @prop {Number} bottom
+       */
+      bottom: {
+        type: Number
+      },
+      /**
+       * The source of the floater.
+       * @prop {Function|Array|String|Object} source
+       */
+      source: {
+        type: [Function, Array, String, Object]
+      },
+      /**
+       * The html content of the floater.
+       * @prop {String} [''] content
+       */
+      content: {
+        type: String,
+        default: ''
+      },
+      //@todo not used
+      options: {
+        type: Object
+      },
+      /**
+       * The element used in the render of the floater.
+       * @prop {Element} element
+       */
+      element: {
+        type: Element
+      },
+      /**
+       * The floater's orientation.
+       * @prop {String} ['vertical'] orientation
+       */
+      orientation: {
+        type: String,
+        default: 'vertical'
+      },
+      // @todo not used
+      hpos: {
+        type: String,
+        default: 'left'
+      },
+      // @todo not used
+      vpos: {
+        type: String,
+        default: 'bottom'
+      },
+      /**
+       * Defines the ability of the floater to be scrollable.
+       * @prop {Boolean}  [false] scrollable
+       */
+      scrollable: {
         type: Boolean,
         default: false
       },
       /**
-       * The icon representing an item expanded
-       * @prop {String} ['nf nf-fa-angle_down'] expandedIcon
+       * Set to true to show the floater.
+       * @prop {Boolean} [true] visible
        */
-      expandedIcon: {
-        type: String,
-        default: 'nf nf-fa-angle_down'
-      },
-      /**
-       * The icon representing an item expandible but not expanded
-       * @prop {String} ['nf nf-fa-angle_right'] closedIcon
-       */
-      closedIcon: {
-        type: String,
-        default: 'nf nf-fa-angle_right'
-      },
-      /**
-       * A function for mapping the hierarchy data
-       * @prop {Function} map
-       */
-      map: {
-        type: Function,
-      },
-      /**
-       * The data to send 
-       * @prop {Object|Function} [{}] data
-       */ 
-      data: {
-        type: [Object, Function],
-        default () {
-          return {};
-        }
-      },
-      /**
-       * An array of objects representing the nodes
-       * @prop {Array|String} source
-       */
-      source: {
-        Type: [Array, String]
-      },
-      /**
-       * Set to false if the source shouldn't be loaded at mount time
-       * @prop {Boolean} [true] autoload 
-       */
-      autoload: {
+      visible: {
         type: Boolean,
         default: true
       },
-      /**
-       * The class given to all the nodes of the first level (or a function returning the class name)
-       * @prop {String, Function} cls
-       */
-      cls: {
-        type: [Function, String]
-      },
-      /**
-       * The component to use to render the nodes
-       * @prop {Function|String|Object} component
-       * 
-       */
-      component: {
-        type: [Function, String, Object]
-      },
-      /**
-       * The data field used as UID
-       * @prop {String} uid
-       */
-      uid: {
-        Type: String
-      },
-      /**
-       * If set to true the li element will be bordered
-       * @prop {Boolean} [true] bordered
-       */
-      bordered: {
+      //@todo not used.
+      unique: {
         type: Boolean,
-        default: true
+        default: false
       },
       /**
-       * A string (or a function returning one) for the icon's color
-       * @prop {String|Function} iconColor
+       * The mode of the component.
+       * @prop {String} ['free'] mode
        */
-      iconColor: {
-        type: [String, Function]
+      mode: {
+        type: String,
+        default: "free"
+      },
+      //@todo not used
+      parent: {
+        default: false
+      },
+      //@todo not used
+      noIcon: {
+        default: false
       },
       /**
-       * The value of the UID to send for the root hierarchy
-       * @prop {String|Number} root
-       */
-      root: {
-        type: [String, Number]
-      },
-      /**
-       * The hierarchy level, root is 0, and for each generation 1 is added to the level
+       * The hierarchical level, root is 0, and for each generation 1 is added to the level.
        * @prop {Number} [0] level
        */
       level: {
         type: Number,
         default: 0
       },
- 
-      value: {}
+      /**
+       * Set to true to auto-hide the component.
+       * @prop {Boolean} [false] autoHide
+       */
+      autoHide: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * The array containings the tree's children.
+       * @prop {String} ['items'] children
+       */
+      children: {
+        type: String,
+        default: 'items'
+      },
+      /**
+       * The title of the floater's header.
+       * @psop {String} title
+       */
+      title: {
+        type: String
+      },
+      /**
+       * The footer of the floater.
+       * @psop {String} footer
+       */
+      footer: {
+        type: String
+      },
+      /**
+       * The buttons in the footer.
+       * @psop {Array} buttons
+       */
+      buttons: {
+        type: Array,
+        default(){
+          return [];
+        }
+      },
+      /**
+       * Set to true to show the icon that allows the closing of the floater.
+       * @prop {Boolean} [false] closable
+       */
+      closable: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * Set to true to show the icon that allows the maximization of the window.
+       * @prop {Boolean} [false] maximizable
+       */
+      maximizable: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * Set to true to open and close the window with opacity animation.
+       * @prop {Boolean} [false] maximizable
+       */
+      animation: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * The latency of the floater.
+       * @prop {Number} [25] latency
+       */
+      latency: {
+        type: Number,
+        default: 25
+      },
+      expanded: {
+        type: Array,
+        default(){
+          return [];
+        }
+      }
     },
-
-    data() {
-      let items = this.getItems();
+    data(){
       return {
         /**
-         * @data {Boolean} [false] isLastParent
+         * @data {Number} [0] currentIndex
          */
-        isLastParent: false,
+        currentIndex: 0,
         /**
-         * @prop {Boolean} [false] over
+         * @data [null] currentTop
          */
-        over: false,
+        currentTop: null,
         /**
-         * True when the data is currently loading in the hierarchy (unique to the root)
-         * @prop {Boolean} [false] isLoading
+         * @data [null] currentLeft
          */
-        isLoading: false,
+        currentLeft: null,
         /**
-         * True when the data is currently loading in the current hierarchy
-         * @data {Boolean} [false] loading
+         * @data [null] currentHeight
          */
-        loading: false,
+        currentHeight: null,
         /**
-         * @data {Boolean} [false] active
+         * @data [null] currentWidth
          */
-        active: false,
+        currentWidth: null,
         /**
-         * @data {Number} num_children
+         * @data {Boolean} [false] currentScroll
          */
-        num_children: items.length,
+        currentScroll: false,
         /**
-         * @data {Boolean} [false] styled
+         * @data {Boolean} currentVisible
          */
-        styled: false,
+        currentVisible: this.visible,
         /**
-         * Only for the origin hierarchy
-         * @data {Boolean} [false] isRoot
+         * @data {Number} [0] currentWidth
          */
-        isRoot: false,
+        containerWidth: 0,
         /**
-         * The parent node if not root
-         * @data {Boolean} [false] node
+         * @data {Number} [0] currentHeight
          */
-        node: false,
+        containerHeight: 0,
         /**
-         * The parent hierarchy if not root
-         * @data {Boolean} [false] hierarchy
+         * @data {Boolean} focused
          */
-        hierarchy: false,
+        focused: bbn.env.focused || null,
         /**
-         * The URL where to pick the data from if isAjax
-         * @data {String} url
+         * @data {Number} [0] opacity
          */
-        url: typeof (this.source) === 'string' ? this.source : false,
-        // Is the data provided from the server side
-        isAjax: typeof (this.source) === 'string',
-        // True once the data of the hierarchy has been loaded
-        isLoaded: false,
-        // True once the component is mounted
-        isMounted: false,
-        // The actual list of items (nodes)
-        items: items,
-        // The currently active item
-        activeItem: [],
-        // The currently selected node component object
-        selected: false,
-        // The component node object over which the mouse is now
-        overNode: false,
-        // dragging state, true if an element is being dragged
-        dragging: false,
-        // Real dragging will start after the mouse's first move, useful to kow if we are in a select or drag context
-        realDragging: false,
-        expanded: [],
-        selectedNode: false,
-        checked: [],
-        disabled: [],
+        opacity: 0,
+        /**
+         * @data {Number} [0] floaterHeight
+         */
+        floaterHeight: 0,
+        /**
+         * @data {Number} [0] floaterWidth
+         */
+        floaterWidth: 0,
+        /**
+         * @data {Boolean} [false] hasIcon
+         */
+        hasIcons: false,
+        /**
+         * @data {Number} [-1] currentSelected
+         */
+        currentSelected: -1,
+        /**
+         * @data {Boolean} [false] isMaximized
+         */
+        isMaximized: false,
+        scrollMaxHeight: 0,
+        scrollMinWidth: 0,
+        currentButtons: this.buttons.slice(),
+        mountedComponents: [],
+        isOver: false,
+        /**
+         * The index (on filteredData) on which is the mouse cursor or the keyboard navigation
+         * @data {Number} [-1] overItem
+         * @memberof listComponent
+         */
+        overIdx: null,
+        mouseLeaveTimeout: false,
+        isOpened: true,
+        scroll: null,
+        hasScroll: false
       };
     },
-
     computed: {
-      item_path() {
-        let path = [],
-          cp = this;
-        while (cp.nodeIdx !== undefined) {
-          path.unshift(cp.nodeIdx);
-          cp = cp.$parent;
+      /**
+       * Normalizes the property 'width'.
+       * @computed formattedWidth
+       * @return {String}
+       */
+      formattedWidth(){
+        if ( this.isMaximized ){
+          return '100%';
         }
-        return path;
+        if ( this.width ){
+          return this.width + (bbn.fn.isNumber(this.width) ? 'px' : '')
+        }
+        return this.currentWidth ? this.currentWidth + 'px' : '100%';
       },
+      /**
+       * Normalizes the property 'height'.
+       * @computed formattedHeight
+       * @return {String}
+       */
+      formattedHeight(){
+        if ( this.isMaximized ){
+          return '100%';
+        }
+        if ( this.height ){
+          return this.height + (bbn.fn.isNumber(this.height) ? 'px' : '')
+        }
+        return this.currentHeight ? this.currentHeight + 'px' : '100%';
+      },
+      /**
+       * An object of css property to apply to the floater.
+       * @computed currentStyle
+       * @return {Object}
+       */
+      currentStyle(){
+        let s = {
+          left: this.isMaximized ? 0 : this.currentLeft,
+          top: this.isMaximized ? 0 : this.currentTop,
+          width: this.isMaximized ? '100%' : (this.width ? this.formattedWidth : 'auto'),
+          height: this.formattedHeight,
+          opacity: this.opacity,
+          overflow: 'hidden'
+        };
+        if ( this.animation ){
+          s.transition = 'opacity 0.3s ease-in-out';
+        }
+        if ( this.maxWidth ){
+          s.maxWidth = this.maxWidth + (bbn.fn.isNumber(this.maxWidth) ? 'px' : '')
+        }
+        if ( this.maxHeight ){
+          s.maxHeight = this.maxHeight + (bbn.fn.isNumber(this.maxHeight) ? 'px' : '')
+        }
+        return s;
+      }
     },
-
     methods: {
-      link(item, idx){
-        let path = [idx],
-            cp = this;
-        if ( (this.hierarchy.selectedNode === false) || ( this.hierarchy.selectedNode.text !== item.text) ) {
-          this.selected = idx;
-          while (cp.nodeIdx !== undefined) {
-            path.unshift(cp.nodeIdx);
-            cp = cp.$parent;
+      /**
+       * Manages the icon of the items.
+       * @method _updateIconSituation
+       */
+      _updateIconSituation(){
+        let hasIcons = false;
+        bbn.fn.each(this.currentData, (a) => {
+          if ( a.icon ){
+            hasIcons = true;
+            return false;
           }
-          this.hierarchy.selectedNode = item;
-          this.hierarchy.$emit('link', item);
-          bbn.fn.log(this.hierarchy.selectedNode, this.hierarchy.selectedNode.text)
-          
+        });
+        if ( hasIcons !== this.hasIcons ){
+          this.hasIcons = hasIcons;
         }
       },
-      getClasses(i, item){
-        let obj = {
-          'bbn-bordered-internal': this.hierarchy.bordered,
-          'bbn-list-node': true,
-          'bbn-w-100': true,
-          'bbn-unselectable': true,
-          'selected': this.selected === i,
-          'v-padding': !this.component,
-          'bbn-state-hover': this.isSame(this.hierarchy.overNode, item) && (this.hierarchy.selectedNode.text !== item.text),
-          'bbn-state-selected': (this.selected === i) && this.isSame(this.hierarchy.selectedNode, item),
-          'border-bottom': (i === this.items.length - 1) && this.isRoot
-        }
-        return obj;
-      },
-      isSame(obj, ob) {
-        return bbn.fn.numProperties(bbn.fn.diffObj(obj, ob)) === 0;
-      },
-      select(item, idx) {
-        let path = [idx],
-            cp = this;
-        if ( (this.hierarchy.selectedNode === false) || ( this.hierarchy.selectedNode.text !== item.text) ) {
-          this.selected = idx;
-          while (cp.nodeIdx !== undefined) {
-            path.unshift(cp.nodeIdx);
-            cp = cp.$parent;
-          }
-          this.hierarchy.selectedNode = item;
-          bbn.fn.log(this.hierarchy.selectedNode, this.hierarchy.selectedNode.text)
-          return this.hierarchy.$emit('select', item, idx, path );
+      mouseenter(e, idx){
+        if ( !this.isOver ){
+          // if the list appears under the nouse while it is inactive
+          e.target.addEventListener('mousemove', () => {
+            this.overIdx = idx;
+            this.isOver = true;
+          }, {once: true});
         }
         else{
-          this.selected = false;
-          this.hierarchy.selectedNode = false;
-          this.hierarchy.selected= false;
-          return this.hierarchy.$emit('unselect', item, idx, path );
+          this.overIdx = idx;
+          this.isOver = true;
         }
       },
-     /* select(item, idx) {
-
-        let path = [idx],
-            cp = this;
-        this.selected = idx;
-        while (cp.nodeIdx !== undefined) {
-          path.unshift(cp.nodeIdx);
-          cp = cp.$parent;
-        }
-
-        bbn.fn.log('select', item, idx, this.selected)
-
-        return this.hierarchy.$emit('select', item, idx, path, );
-      },*/
-
-
-      removeExpanded(i) {
-        let idx = this.expanded.indexOf(i);
-        if ((idx > -1) && this.items[i]) {
-          this.expanded.splice(idx, 1)
-          this.hierarchy.$emit('close', i, this.items[i]);
-        }
+      mouseleave(){
+        this.isOver = false;
+        this.overIdx = this.valueIndex;
       },
-
-      addExpanded(i) {
-        let idx = this.expanded.indexOf(i);
-        // this.$emit('open', i);
-        if ((idx === -1) && this.items[i] && this.items[i].items && this.items[i].items.length) {
-          this.expanded.push(i);
-          this.hierarchy.$emit('open', i, this.items[i]);
-        }
-
-      },
-
-      toggleExpanded(i, item, e) {
-        bbn.fn.log('ddd',arguments)
-        if ( item.items ){
-          let idx = this.expanded.indexOf(i);
-          if (idx > -1) {
-            this.removeExpanded(i);
+      isSelected(idx){
+        let r = false;
+        if ( this.filteredData[idx] ){
+          if ( this.selection ){
+            if (this.filteredData[idx].selected && (this.mode !== 'options')){
+              r = true;
+            }
           }
-          else {
-            this.addExpanded(i);
-            //this.hierarchy.$emit('open', i, this.items[i]);
+          else if ( this.selected.length && this.sourceValue){
+            r = this.selected.includes(this.filteredData[idx].data[this.sourceValue]);
           }
-        }
-        else if (!item.items.length && !item.url) {
-          this.select(item, idx)
-          
-          bbn.fn.log('8888888888888888888',arguments)
-        }
-       
-        
-      },
-
-      isExpanded(i) {
-        return this.expanded.indexOf(i) > -1;
-      },
-
-      isMatch(item) {
-        return true;
-      },
-
-      getNumMatches(item) {
-        return 1;
-      },
-      /** emit the event mouseover and add the class k-state-selected'*/
-      activate(i, item, target) {
-        this.active = i;
-        let path = [i],
-          cp = this;
-        while (cp.nodeIdx !== undefined) {
-          path.unshift(cp.nodeIdx);
-          cp = cp.$parent;
-        }
-        this.hierarchy.activeItem = path;
-        this.hierarchy.$emit('mouseover', i, item, path);
-      },
-
-      getItems() {
-        let items = [];
-        if (bbn.fn.isArray(this.source)) {
-          if (this.map) {
-            bbn.fn.each(this.source, (a, i) => {
-              items.push(this.map(a));
-            })
-          } else {
-            items = this.source.slice();
-          }
-        } else {
-          items = [];
-        }
-        return items;
-      },
-      reset() {
-        if (this.isAjax) {
-          this.load();
-        } else {
-          this.items = this.getItems();
-          this.$forceUpdate();
-        }
-      },
-
-      // Resize the root scroller
-      resize() {
-        if (this.hierarchy.$refs.scroll) {
-          this.hierarchy.$refs.scroll.onResize();
-        }
-      },
-
-
-      /** @todo onOpen and onClose don't work*/
-      // Make the root hierarchy resize and emit an open event
-      onOpen() {
-        this.resize();
-        this.$emit('open');
-        this.hierarchy.$emit('open', this);
-      },
-
-      // Make the root hierarchy resize and emit a close event
-      onClose() {
-        this.resize();
-        this.$emit('close');
-        this.hierarchy.$emit('close', this);
-      },
-
-
-      // Returns an object with the data to send for a given node
-      // If UID has been given obj will only have this prop other the whole data object
-      dataToSend() {
-        // The final object to send
-        let r = {},
-          uid = this.uid || this.hierarchy.uid;
-        // If the uid field is defined
-        if (uid) {
-          // If an item has been given we send the corresponding data, or otherwise an empty string
-          if (this.node) {
-            r[uid] = this.node.data && this.node.data[uid] ? this.node.data[uid] : '';
-          } else if (this.isRoot) {
-            r[uid] = this.root ? this.root : '';
-          }
-        } else if (this.node) {
-          r = this.node.data;
-        } else if (bbn.fn.isFunction(this.data)) {
-          r = this.data();
-        } else {
-          r = this.data;
         }
         return r;
       },
-
-      // Makes an object out of the given properties, adding to data all non existing props
-      normalize(obj) {
-        let r = {
-          data: {}
-        };
-        if (obj.text || obj.icon) {
-          for (let n in obj) {
-            if (obj.hasOwnProperty(n) && (typeof n === 'string')) {
-              if (NODE_PROPERTIES.indexOf(this.normalize) > -1) {
-                r[n] = obj[n];
-              } else {
-                r.data[n] = obj[n];
+      /**
+       * Handles the selection of the floater's items.
+       * @method select
+       * @param {Number} idx 
+       * @fires closeAll
+       * @emits select
+       */
+      select(idx){
+        let item = this.filteredData[idx] || null;
+        if ( item && item.data && !item.data.disabled ){
+          this.currentIndex = idx;
+          if ( item.data[this.children] && item.data[this.children].length ){
+            this.isOpened = !this.isOpened;
+          }
+          else{
+            if ( (this.mode === 'selection') && !item.selected ){
+              let prev = bbn.fn.get_row(this.filteredData, "selected", true);
+              if ( prev ){
+                this.currentData[prev.index].selected = false;
+              }
+              item.selected = true;
+            }
+            else {
+              item.selected = !item.selected;
+            }
+            if ( item.data.command ){
+              if ( typeof(item.data.command) === 'string' ){
+                if ( bbn.fn.isFunction(this[item.data.command]) ){
+                  this[item.data.command]();
+                }
+              }
+              else if (bbn.fn.isFunction(item.command) ){
+                item.data.command(idx, item.data);
               }
             }
-          }
-          return r;
-        }
-        return false;
-      },
-
-      // Manages the key navigation inside the hierarchy
-      keyNav(e) {
-        e.preventDefault();
-        e.stopImmediatePropagation();
-        if (this.hierarchy.activeNode) {
-          let idx = false,
-            min = 1,
-            max = this.hierarchy.activeNode.$parent.$children.length - 1,
-            parent = this.hierarchy.activeNode.$parent;
-          bbn.fn.each(this.hierarchy.activeNode.$parent.$children, (i, a) => {
-            if (a === this.hierarchy.activeNode) {
-              idx = i;
-              return false;
+            else if ( item.data.url ) {
+              bbn.fn.link(item.data.url);
             }
-          });
-          bbn.fn.log("keyNav", idx, max, e.key);
-          switch (e.key) {
-            case 'Enter':
-            case ' ':
-              this.hierarchy.activeNode.isSelected = !this.hierarchy.activeNode.isSelected;
-              break;
-            case 'PageDown':
-            case 'End':
-              if (this.hierarchy.activeNode) {
-                this.hierarchy.activeNode.isActive = false;
-              }
-              let node = this.$refs.root;
-              while (node.$children.length && node.isExpanded) {
-                node = node.$children[node.$children.length - 1];
-              }
-              node.isActive = true;
-              break;
-
-            case 'PageUp':
-            case 'Home':
-              if (this.hierarchy.activeNode) {
-                this.hierarchy.activeNode.isActive = false;
-              }
-              if (this.$refs.root.$children[1]) {
-                this.$refs.root.$children[1].isActive = true;
-              }
-              break;
-
-            case 'ArrowLeft':
-              if (this.hierarchy.activeNode.isExpanded) {
-                this.hierarchy.activeNode.isExpanded = false;
-              } else if (this.hierarchy.activeNode.$parent !== this.$refs.root) {
-                this.hierarchy.activeNode.$parent.isActive = true;
-              }
-              break;
-            case 'ArrowRight':
-              if (!this.hierarchy.activeNode.isExpanded) {
-                this.hierarchy.activeNode.isExpanded = true;
-              }
-              break;
-            case 'ArrowDown':
-              if (this.hierarchy.activeNode.isExpanded && (this.hierarchy.activeNode.items.length > 1)) {
-                this.hierarchy.activeNode.$children[1].isActive = true;
-              } else if (idx < max) {
-                bbn.fn.log("ORKING");
-                parent.$children[idx + 1].isActive = true;
-              } else {
-                let c = this.hierarchy.activeNode,
-                  p = this.hierarchy.activeNode.$parent;
-                while ((p.level > 0) && !p.$children[idx + 1]) {
-                  c = p;
-                  p = p.$parent;
-                  bbn.fn.each(p.$children, (a, i) => {
-                    if (a === c) {
-                      idx = i;
-                      return false;
-                    }
-                  });
-                }
-                if (p.$children[idx + 1]) {
-                  p.$children[idx + 1].isActive = true;
-                }
-              }
-              break;
-            case 'ArrowUp':
-              if (idx > min) {
-                if (parent.$children[idx - 1].isExpanded && parent.$children[idx - 1].items.length) {
-                  let p = parent.$children[idx - 1],
-                    c = p.$children[p.$children.length - 1];
-                  while (c.isExpanded && c.items.length) {
-                    p = c;
-                    c = p.$children[p.$children.length - 1];
-                  }
-                  c.isActive = true;
-                } else {
-                  parent.$children[idx - 1].isActive = true;
-                }
-              } else {
-                if (parent !== this.$refs.root) {
-                  parent.isActive = true;
-                }
-                /*
-                let c = this.hierarchy.activeNode.$parent,
-                    p = c.$parent,
-                    idx = false;
-
-
-                while ( p.$children[idx-1] && p.$children[idx-1].isExpanded && p.$children[idx-1].items.length ){
-                  p = p.$children[idx-1];
-                  idx = p.$children.length - 1;
-                }
-                if ( p.$children[idx-1] ){
-                  p.$children[idx-1].isActive = true;
-                }
-                */
-              }
-              break;
-          }
-        } else if (this.hierarchy.selectedNode) {
-          this.hierarchy.activeNode = this.hierarchy.selectedNode;
-        }
-      },
-
-      // Reloads a node already loaded
-      reload(node) {
-        if (this.isAjax) {
-          if (!node) {
-            if (this.isRoot) {
-              this.items = [];
-              this.isLoaded = false;
-              this.$nextTick(() => {
-                this.load();
-              })
-            } else {
-              this.node.isExpanded = false;
-              this.node.$refs.hierarchy[0].isLoaded = false;
-              this.node.$forceUpdate();
-              this.$nextTick(() => {
-                this.node.isExpanded = true;
-              })
-            }
-          } else if (node.$refs.hierarchy) {
-            node.isExpanded = false;
-            node.$refs.hierarchy[0].isLoaded = false;
-            node.$forceUpdate();
-            this.$nextTick(() => {
-              node.isExpanded = true;
-            })
+            this.$emit("select", item.data, idx, item.index);
           }
         }
-      },
-
-      mapper(fn, data) {
-        let res = [];
-        bbn.fn.each(data, (a, i) => {
-          let tmp = fn(a);
-          if (tmp.items) {
-            tmp.items = this.mapper(fn, tmp.items);
-          }
-          res.push(tmp);
-        });
-        return res;
-      },
-
-      // Loads a node
-      load() {
-        // It must be Ajax and not being already in loading state
-        if (this.isAjax && !this.hierarchy.isLoading && !this.isLoaded) {
-          this.hierarchy.isLoading = true;
-          this.loading = true;
-          this.hierarchy.$emit('beforeLoad', this.dataToSend());
-          bbn.fn.post(this.hierarchy.url, this.dataToSend(), (res) => {
-            this.hierarchy.isLoading = false;
-            this.loading = false;
-            if (res.data) {
-              if (this.hierarchy.map) {
-                this.items = this.mapper(this.hierarchy.map, res.data);
-              } else {
-                this.items = res.data;
-              }
-            }
-            this.isLoaded = true;
-          })
-        }
-      },
-
-
-    },
-
-    // Definition of the root hierarchy and parent node
-    created() {
-      let cp = bbn.vue.closest(this, 'bbn-list');
-      if (!cp) {
-        this.isRoot = true;
-        this.node = false;
-        this.hierarchy = this;
-      } else {
-        while (cp && cp.level) {
-          cp = bbn.vue.closest(cp, 'bbn-list');
-        }
-        if (cp && !cp.level) {
-          this.hierarchy = cp;
-          this.isAjax = this.hierarchy.isAjax;
-        }
-        this.node = bbn.vue.closest(this, 'bbn-list-node');
-      }
-      if (!this.isAjax || this.items.length) {
-        this.isLoaded = true;
       }
     },
-
-    mounted() {
-      
-      if (this.isRoot && this.autoload) {
-        this.load();
-      } else if (this.isExpanded) {
-        this.load();
+    /**
+     * @event mounted
+     */
+    mounted(){
+      if (this.$parent.$options && (this.$parent.$options._componentTag === 'bbn-scroll')) {
+        this.hasScroll = true;
       }
       this.ready = true;
-      //if the property opened is given it expands all items at the first level
-
-      this.$nextTick(()=>{
-        if ( this.opened ){
-          bbn.fn.each(this.source ,(v, i) => {
-            this.addExpanded(i)
-          });
-        }
-      })
-
+      setTimeout(() => {
+        this.overIdx = this.valueIndex;
+      }, 50);
     },
-
     watch: {
-      over(val) {
-        //to have bbn-state-hover on the li parent if the hover-item has no children
-       // alert('hover')
-        if ( !val.items || !val.items.length ){
-          this.isLastParent = true;
-        }
-        //bbn.fn.log(JSON.stringify(val),  this)
-        if (val !== false) {
-          this.hierarchy.overNode = val;
-          this.hierarchy.$emit('mouseover', val);
-        }
-        else if (val === false) {
-          this.hierarchy.overNode = false;
-          this.hierarchy.$emit('mouseout', val);
+      /**
+       * @watch source
+       */
+      source: {
+        deep: true,
+        handler(){
+          this.updateData();
         }
       },
-      source() {
-        this.reset();
-        this.load();
+      /**
+       * @watch currentOver
+       * @param {Boolean} newVal 
+       */
+      overIdx(newVal, oldVal) {
+        if (
+          this.hasScroll &&
+          (newVal >= 0)
+        ) {
+          if ( oldVal === null ){
+            setTimeout(() => {
+              this.$parent.scrollTo(this.getRef('li' + newVal), true);
+            }, 100);
+          }
+          else if (!this.isOver) {
+            this.$parent.scrollTo(this.getRef('li' + newVal));
+          }
+        }
+      },
+      selected(){
+        this.updateData();
       }
     }
+
   });
 
-})(bbn);
+})(window.Vue, window.bbn);

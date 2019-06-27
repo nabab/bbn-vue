@@ -9,21 +9,21 @@
  * @created 15/02/2017.
  */
 
-(function(bbn){
+((bbn) => {
   "use strict";
 
   /**
-   * Classic input with normalized appearance
+   * Classic input with normalized appearance.
    */
   Vue.component('bbn-context', {
     /**
      * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.sourceArrayComponent
+     * @mixin bbn.vue.listComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.sourceArrayComponent],
+    mixins: [bbn.vue.basicComponent, bbn.vue.listComponent],
     props: {
       /**
-       * The html tag used to render the property content
+       * The html tag used to render the property content.
        * @prop {String} ['span'] tag
        */
       tag: {
@@ -31,7 +31,7 @@
         default: 'span'
       },
       /**
-       * Set to true to show the floating element containing the menu
+       * Set to true to show the floating element containing the menu.
        * @prop {Boolean} [false] context
        * 
        */
@@ -40,7 +40,7 @@
         default: false
       },
       /**
-       * The text that can be right clicked to open the menu
+       * The text that can be right clicked to open the menu.
        * @prop {String} content
        */
       content: {
@@ -53,12 +53,16 @@
       mode: {
         type: String,
         default: 'free'
+      },
+      children: {
+        type: String,
+        default: 'items'
       }
     },
     data(){
       return {
         /**
-         * True if the floating element of the menu is opened 
+         * True if the floating element of the menu is opened.
          * @data {Boolean} [false] showFloater 
          */
         showFloater: false
@@ -66,7 +70,7 @@
     },
     methods: {
       /**
-       * Based on the type of event and on the property context, shows or hides the floating element of the menu
+       * Based on the type of event and on the property context, shows or hides the floating element of the menu.
        * @method clickItem
        * @param {Event} e 
        * @fires updateData

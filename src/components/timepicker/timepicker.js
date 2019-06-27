@@ -1,8 +1,9 @@
 /**
  * @file bbn-timepicker component
  *
- * @description bbn-timepicker is a component that can be customized allowing, in a  simple way, to select a single value from a predetermined set or manually, entering data in a time format.
- *
+ * @description bbn-timepicker is a component that allowes the user to choose a time value.
+ * This component allows the association of data in a bidirectional way and allows the users to choose a validation interval period and the format of the value entered.
+  
  * @author Mirko Argentino
  *
  * @copyright BBN Solutions
@@ -12,13 +13,12 @@
 
   Vue.component('bbn-timepicker', {
     /**
-     * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.fullComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.fullComponent],
+    mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent],
     props: {
       /**
-       * The format of the time shown.
+       * The format of the time displayed.
        *
        * @prop {String} format
        */
@@ -58,7 +58,7 @@
         type: String
       },
       /**
-       * Show/hide the "seconds" selection.
+       * Shows/hides the "seconds" selection.
        *
        * @prop {Boolean} [false] showSecond
       */
@@ -67,7 +67,7 @@
         default: false
       },
       /**
-       * Show an alternative view for the time selection instead of the dropdowns.
+       * Sets to true to show a list view for the time selection instead of the dropdowns.
        *
        * @prop {Boolean} [false] scrollMode
       */
@@ -85,13 +85,13 @@
         */
         isOpened: false,
         /** 
-         * Indicates if the bbn-masked is mounted.
+         * Indicates if the bbn-masked component is mounted.
          * 
          * @data {Boolean} [false] maskedMounted
         */
         maskedMounted: false,
         /** 
-         * The current value shown on the input.
+         * The current value displayed on the input.
          * 
          * @data {String} [''] inputValue
         */
@@ -118,7 +118,7 @@
         return this.valueFormat || (this.showSecond ? 'HH:mm:ss' : 'HH:mm');
       },
       /**
-       * The current format shown on the input.
+       * The current format displayed on the input.
        *
        * @computed currentFormat
        * @return {String}
@@ -166,7 +166,7 @@
         this.isOpened = false;
       },
       /**
-       * Triggered when the value changed by the input.
+       * Triggered when the value is changed by the input.
        *
        * @method change
        * @param {$event} event Original event.
@@ -267,7 +267,7 @@
              */
             comp: bbn.vue.closest(this, 'bbn-timepicker'),
             /**
-             * Array used to make the minutes and the seconds.
+             * The array used to make the minutes and the seconds.
              *
              * @data {Array} minsec
              * @memberof timepicker
@@ -300,21 +300,21 @@
              */
             second: null,
             /**
-             * Hours' scroll is ready.
+             * The hours scroll is ready.
              *
              * @data {Boolean} [false] hourReady
              * @memberof timepicker
              */
             hourReady: false,
             /**
-             * Minutes' scroll is ready.
+             * The minutes scroll is ready.
              *
              * @data {Boolean} [false] minuteReady
              * @memberof timepicker
              */
             minuteReady: false,
             /**
-             * Seconds' scroll is ready.
+             * The seconds scroll is ready.
              *
              * @data {Boolean} [false] secondReady
              * @memberof timepicker
@@ -331,7 +331,7 @@
         },
         computed: {
           /**
-             * Array used to make the hours.
+             * The array used to make the hours.
              *
              * @computed hours
              * @memberof timepicker

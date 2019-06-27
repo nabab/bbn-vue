@@ -4,6 +4,8 @@
 >
   <textarea ref="element"
             class="textarea"
+            @tbwchange.native="emitInput($event.target.value)"
+            @tbwpaste.native="emitInput($event.target.value)"
             :value="value"
             :required="required"
             :readonly="readonly"

@@ -1,9 +1,10 @@
 <div :class="[componentClass, 'bbn-background']">
-  <bbn-scroll v-if="!currentHidden && ready && scrollable">
+  <bbn-scroll v-if="scrollable" v-show="!isCollapsed">
     <slot></slot>
   </bbn-scroll>
-  <div v-else-if="!currentHidden && ready"
-       class="bbn-overlay" :style="{overflow: overflow}">
+  <div v-else v-show="!isCollapsed"
+       class="bbn-overlay"
+       :style="{overflow: overflow}">
     <slot></slot>
   </div>
 </div>

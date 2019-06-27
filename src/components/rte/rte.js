@@ -92,8 +92,8 @@
     methods: {
       //@todo not used
       changeHidden(e){
-        bbn.fn.log("changeHidden", e);
-        bbn.fn.log(e.target.value, this.value);
+        //bbn.fn.log("changeHidden", e);
+        //bbn.fn.log(e.target.value, this.value);
       }
     },
     /**
@@ -101,8 +101,7 @@
      * @event mounted
      */
     mounted: function(){
-      let cfg = this.getOptions(),
-          $ele = $(this.$refs.element).css({minHeight: this.$el.clientHeight});
+      let $ele = $(this.$refs.element).css({minHeight: this.$el.clientHeight});
       /*
       if ( this.height ){
         $(this.$el).css('height', this.height);
@@ -119,7 +118,7 @@
       setTimeout(() => {
         $(this.$el).find('.trumbowyg-box').addClass('bbn-flex-height').find('.trumbowyg-editor').addClass('bbn-flex-fill bbn-content').css({height: 'auto'});
       }, 1000)
-      bbn.fn.log("WID", this.widget.trumbowyg('getOptions'));
+      //bbn.fn.log("WID", this.widget.trumbowyg('getOptions'));
       $ele.on("tbwchange tbwpaste", (e) => {
         this.emitInput(e.target.value)
       });

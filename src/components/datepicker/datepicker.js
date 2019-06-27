@@ -1,9 +1,8 @@
 /**
   * @file bbn-datepicker component
   *
-  * @description bbn-datepicker is a component that combines input and calendar, allowing the user to enter or select a date value.
-  * The calendar display is smooth, ensuring that all users can quickly search for the date they are looking for with the interface.
-  * Allows the association of data in a bidirectional way and to choose a validation interval period and the format of the value to be entered.
+  * @description bbn-datepicker is a component that combines input and calendar, allowing the user to choose a date value.
+  * This component allows the association of data in a bidirectional way and allows the users to choose a validation interval period and the format of the value entered.
   *
   * @copyright BBN Solutions
   *
@@ -14,13 +13,12 @@
 
   Vue.component('bbn-datepicker', {
     /**
-     * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.fullComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.fullComponent],
+    mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent],
     props: {
       /**
-       * The format of the date shown.
+       * The format of the date displayed.
        *
        * @prop {String} format
        */
@@ -60,8 +58,8 @@
         type: String
       },
       /**
-       * The visualization type of the calendar.
-       * Types: "days", "weeks", "months", "years".
+       * The visualization mode.
+       * Allowed values: days, weeks, months and years.
        *
        * @prop {String} ['days'] type
       */
@@ -79,7 +77,7 @@
         type: [Array, Function]
       },
       /**
-       * Array of dates values to insert into a range.
+       * Array of date values insertable into a range.
        *
        * @prop {Array} [[]] datesRange
       */
@@ -105,7 +103,7 @@
         */
         maskedMounted: false,
         /** 
-         * The current value shown on the input.
+         * The current value displayed in the input.
          * 
          * @data {String} [''] inputValue
         */
@@ -158,7 +156,7 @@
         return this.valueFormat || format;
       },
       /**
-       * The current format shown on the input.
+       * The current format displayed in the input.
        *
        * @computed currentFormat
        * @return {String}
@@ -180,7 +178,7 @@
         return this.format || format;
       },
       /**
-       * The current value shown on the input.
+       * The current value displayed in the input.
        *
        * @computed inputValue
        * @fires getValueFormat
@@ -205,7 +203,7 @@
         return bbn.fn.isFunction(this.currentValueFormat) ? this.currentValueFormat(val) : this.currentValueFormat;
       },
       /**
-       * Sets the value from 'YYYY-MM-DD' formatted value.
+       * Sets the value to the 'YYYY-MM-DD' format.
        *
        * @method setDate
        * @fires getValueFormat
@@ -251,7 +249,7 @@
         }
       },
       /** 
-       * The method called on input blur event.
+       * The method called by the input blur event.
        * 
        * @method inputChanged
        * @fires getValueFormat

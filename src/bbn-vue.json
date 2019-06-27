@@ -299,10 +299,6 @@
     "video": {
       "active": true,
       "state": "stable"
-    },
-    "vlist": {
-      "active": true,
-      "state": "stable"
     }
   }
 }  

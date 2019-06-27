@@ -2,7 +2,7 @@
  /**
   * @file bbn-countdown component
   *
-  * @description bbn-countdown is a component that, as the name explains, performs a countdown of a user-defined date, based on the unit measure of time also defined in the construction.
+  * @description bbn-countdown is a component that performs a countdown of a user-defined date, based on the measure of time defined in the construction.
   *
   * @copyright BBN Solutions
   *
@@ -47,54 +47,129 @@
   }];
 
   Vue.component('bbn-countdown', {
+    /**
+     * @mixin bbn.vue.basicComponent  
+     */
     mixins: [bbn.vue.basicComponent],
     props: {
+      /**
+       * The precision of the countdown.
+       * @prop {precision} ['second'] precision
+       */
       precision: {
         type: String,
         default: 'second'
       },
+      /**
+       * The scale of the countdown.
+       * @prop {precision} ['year'] scale
+       */
       scale: {
         type: String,
         default: 'year'
       },
+      /**
+       * The target date.
+       * @prop {Date|String|Function} target
+       */
       target: {
         type: [Date, String, Function]
       },
-      showZero: {
-        type: Boolean,
-        default: false
-      }
     },
     data(){
       return {
+        /**
+         * The index of the 'precision' property in the array of the constant VALUES.
+         * @data {Number} [5] precisionIdx
+         */
         precisionIdx: bbn.fn.search(VALUES, "name", this.precision),
+        /**
+         * The index of the 'scale' property in the array of the constant VALUES.
+         * @data {Number} [5] precisionIdx
+         */
         scaleIdx: bbn.fn.search(VALUES, "name", this.scale),
+        /**
+         * The target date normalized.
+         * @data {String} realTarget
+         */
         realTarget: bbn.fn.date(bbn.fn.isFunction(this.target) ? this.target() : this.target),
+        /**
+         * The target year.
+         * @data {Boolean} targetYear
+         */
         targetYear: false,
+        /**
+         * The target month.
+         * @data {Boolean} targetMonth
+         */
         targetMonth: false,
+        /**
+         * The target day.
+         * @data {Boolean} targetDay
+         */
         targetDay: false,
+        /**
+         * The target hour.
+         * @data {Boolean} targetHour
+         */
         targetHour: false,
+        /**
+         * The target minute.
+         * @data {Boolean} targetMinute
+         */
         targetMinute: false,
+        /**
+         * The target second.
+         * @data {Boolean} targetSecond
+         */
         targetSecond: false,
+        /**
+         * The target millisecond.
+         * @data {Boolean} targetMillisecond
+         */
         targetMillisecond: false,
-        year: false,
+       /* year: false,
         month: false,
         day: false,
         hour: false,
         minute: false,
         second: false,
-        millisecond: false,
+        millisecond: false,*/
+        /**
+         * The interval of the countdown.
+         * @data {Number} [0] interval
+         */
         interval: 0,
+        /**
+         * The timestamp of the real target date.
+         * @data {Boolean|Number} time
+         */
         time: false
       };
     },
     methods: {
+      /**
+       * Checks if the component has been correctly set up.
+       * @method check
+       * @return {Boolean}
+       */
       check(){
         return this.realTarget &&
           (this.precisionIdx > -1) &&
           (this.scaleIdx > -1) &&
           (this.precisionIdx > this.scaleIdx);
       },
+      /**
+       * Initializes the component.
+       * @fires getTime
+       * @fires getFullYear
+       * @fires getMonth
+       * @fires getDate
+       * @fires getHours
+       * @fires getMinutes
+       * @fires getSeconds
+       * @fires getMilliseconds
+       */
       init(){
         clearInterval(this.interval);
         if ( this.check() ){
@@ -127,6 +202,18 @@
           this.interval = setInterval(this.update, timeout);
         }
       },
+      /**
+       * Udates the component.
+       * @method update
+       * @fires getFullYear
+       * @fires getMonth
+       * @fires getDate
+       * @fires getHours
+       * @fires getMinutes
+       * @fires getSeconds
+       * @fires getMilliseconds 
+       *
+       */
       update(){
         let d = new Date(),
           tNow = d.getTime();
@@ -299,9 +386,16 @@
         }
       }
     },
+    /**
+     * @event created 
+     * @fires init
+     */
     created(){
       this.init();
     },
+    /**
+     * @event beforeDestroy
+     */
     beforeDestroy(){
       alert('before destroy')
       if(this.interval){

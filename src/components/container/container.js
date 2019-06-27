@@ -56,42 +56,50 @@
     data(){
       return {
         /**
-         * True if the container is visible
+         * True if the container is visible.
+         * 
          * @data {Boolean} [false] isVisible
          */
         isVisible: false,
         /**
-         * The router to which belongs the container if any
+         * The router which the container belongs to if it exists.
+         * 
          * @data [null] router
          */
         router: null,
         /**
-         * Should the conatiner be shown
+         * True if the container shows.
+         * 
          * @data {Boolean} [false] visible
          */
         visible: false,
         /**
-         * Becomes true if the data changes and is unsaved
+         * True if the data changes and is unsaved.
+         * 
          * @data {Boolan} [false] dirty
          */
         dirty: false,
         /**
-         * Is the container a component???
+         * True if the container is a componenent.
+         * 
          * @data [null] isComponent
          */
         isComponent: null,
         /**
-         * True if the container is fullscreen
+         * True if the container is fullscreen.
+         * 
          * @data {Boolean} [false] fullScreen
          */
         fullScreen: false,
         /**
-         * A random unique component name
+         * A random unique component name.
+         * 
          * @data {String} [this.randomName()] componentName
          */
         componentName: this.randomName(),
         /**
-         * The array containing popup objects
+         * The array containing popup objects.
+         * 
          * @data {Array} [[]] popups
          */
         popups: [],
@@ -104,27 +112,32 @@
          */
         isComponentActive: false,
         /**
-         * True if the component loading is finished
+         * True when the component finishes loading.
+         * 
          * @data {Boolean} isLoaded
          */
         isLoaded: !this.load || this.loaded,
         /**
-         * True if the container is pinned
+         * True if the container is pinned.
+         * 
          * @data {Boolean} isPinned
          */
         isPinned: this.pinned,
         /**
-         * True if the container is static
+         * True if the container is static.
+         * 
          * @data {Boolean} isStatic
          */
         isStatic: this.static,
         /**
-         * The index of the container
+         * The index of the container.
+         * 
          * @data {Number} currentIndex
          */
         currentIndex: this.idx,
         /**
-         * The current url
+         * The current url.
+         * 
          * @data {String} currentURL
          */
         currentURL: this.current || this.url
@@ -133,7 +146,8 @@
 
     methods: {
       /**
-       * Returns the full current url
+       * Returns the full current url.
+       * 
        * @method getFullCurrentURL
        * @return {String}
        */
@@ -141,7 +155,8 @@
         return this.router.getFullBaseURL() + this.currentURL;
       },
        /**
-       * Returns the full url
+       * Returns the full url.
+       * 
        * @method getFullURL
        * @return {String}
        */
@@ -149,7 +164,8 @@
         return this.router.getFullBaseURL() + this.url;
       },
       /**
-       * Sets the value of the property loaded to the given val
+       * Sets the value of the property loaded to the given val.
+       * 
        * @method setLoaded
        * @param {Boolean} val 
        */
@@ -157,7 +173,8 @@
         this.isLoaded = !!val;
       },
       /**
-       * Generates a random name which will be used for the component
+       * Generates a random name used for the component.
+       * 
        * @method randomName
        * @return {String}
        */
@@ -169,21 +186,24 @@
         return n;
       },
       /**
-       * Shows the container
+       * Shows the container.
+       * 
        * @method show
        */
       show(){
         this.visible = true
       },
       /**
-       * Hides the container
+       * Hides the container.
+       * 
        * @method hide
        */
       hide(){
         this.visible = false
       },
       /**
-       * Sets the current url 
+       * Sets the current url.
+       * 
        * @method setCurrent
        * @param {String} url 
        */
@@ -193,7 +213,8 @@
         }
       },
       /**
-       * Sets the title of the container
+       * Sets the title of the container.
+       * 
        * @method setTitle
        * @param {String} title 
        */
@@ -203,7 +224,8 @@
         }
       },
       /**
-       * Sets the color
+       * Sets the color.
+       * 
        * @method setColor
        * @param {String} bcolor 
        * @param {String} fcolor 
@@ -219,7 +241,8 @@
         }
       },
       /**
-       * Gets the object popup
+       * Gets the popup object.
+       *  
        * @method popup
        * @return {Object}
        */
@@ -228,7 +251,8 @@
         return arguments.length ? popup.open.apply(popup, arguments) : popup;
       },
       /**
-       * Gets the children's component
+       * Gets the child component.
+       * 
        * @method getComponent
        * @return {Object|Boolean}
        */
@@ -241,7 +265,8 @@
         return false;
       },
       /**
-       * Fires the parent's method enter
+       * Fires the parent's method enter.
+       * 
        * @method enter
        * @fires $parent.enter
        */
@@ -249,7 +274,8 @@
         this.$parent.enter(this);
       },
       /**
-       * Fires the parent's method reload
+       * Fires the parent's method reload.
+       * 
        * @method reload
        * @fires $parent.reload
        */
@@ -257,7 +283,8 @@
         this.router.reload(this.currentIndex);
       },
       /**
-       * Handles the configuration of the container's menu
+       * Handles the configuration of the container's menu.
+       * 
        * @param {Object} obj 
        */
       addMenu(obj){
@@ -271,8 +298,8 @@
             this.$parent.views[this.idx].menu = [];
           }
           let menu = this.$parent.views[this.idx].menu,
-              idx = bbn.fn.search(bbn.fn.isFunction(menu) ? menu() : menu, {text: obj.text});
-          if ( idx === -1 ){
+              idx = bbn.fn.isFunction(menu) ? -1 : bbn.fn.search(menu, {text: obj.text});
+          if (idx === -1) {
             if (bbn.fn.isFunction(menu) ){
               this.$parent.views[this.idx].menu = () => {
                 let items = menu() || [];
@@ -289,7 +316,7 @@
               if ( !obj.key ){
                 obj.key = bbn.fn.randomInt(99999,99999999999);
               }
-              menu.push(obj)
+              menu.push(obj);
             }
           }
           else{
@@ -301,7 +328,8 @@
         return false;
       },
       /**
-       * Deletes the given key from the container's menu
+       * Deletes the given key from the container's menu.
+       * 
        * @method deleteMenu
        * @param {String} key 
        */
@@ -337,7 +365,8 @@
         return false;
       },
       /**
-       * Initializes the component
+       * Initializes the component.
+       * 
        * @method init
        */
       init(){
@@ -532,7 +561,8 @@
         }
       },
       /**
-       * If true adds the event listener keydown, else removes the event listener
+       * If true adds the event listener keydown, or else removes the event listener.
+       * 
        * @watch fullScreen
        * @param {Boolean} newVal 
        * @fires selfEmit

@@ -189,8 +189,9 @@
           let prop = this.isVertical ? 'scrollTop' : 'scrollLeft';
           let anim = {};
           anim[prop] = this.currentScroll;
-          if ( animate ){
-            bbn.fn.each(this.scrollableElements(), (a, i) => {
+          /** @todo doesn't work */
+          if ( animate && false ){
+            bbn.fn.each(this.scrollableElements(), (a) => {
               if (
                 (a !== this.realContainer) &&
                 (a !== origin) &&
@@ -210,7 +211,7 @@
             }
           }
           else {
-            bbn.fn.each(this.scrollableElements(), (a, i) => {
+            bbn.fn.each(this.scrollableElements(), (a) => {
               if ( (a !== this.realContainer) && (a !== origin) && (a[prop] !== this.currentScroll) ){
                 a[prop] = this.currentScroll;
               }
@@ -422,52 +423,52 @@
       },
       scrollTo(val, animate){
         let num = null;
-        let witness;
-        let prop = this.isVertical ? 'top' : 'left';
-        if ( bbn.fn.isVue(val) ){
-          if ( val.$el ){
-            let $container = $(val.$el).offsetParent();
-            num = $(val.$el).position()[prop];
-            while ( $container[0] && (witness !== $container[0]) && ($container[0] !== this.scroller.$refs.scrollContent) ){
-              if ( $container[0] === document.body ){
-                break;
-              }
-              else{
-                num += $container.position()[prop];
-                $container = $container.offsetParent();
-              }
-              witness = $container[0];
-            }
-            num -= 20;
-          }
-        }
-        else if ( val instanceof HTMLElement ){
-          let $container = $(val).offsetParent();
-          num = $(val).position()[prop];
-          while ( $container[0] && (witness !== $container[0]) && ($container[0] !== this.scroller.$refs.scrollContent) ){
-            if ( $container[0] === document.body ){
-              break;
-            }
-            else{
-              num += $container.position()[prop];
-              $container = $container.offsetParent();
-            }
-            witness = $container[0];
-          }
-          num -= 20;
-        }
-        else if ( bbn.fn.isPercent(val) ){
+        let ele;
+        let prop = this.isVertical ? 'Top' : 'Left';
+        if ( bbn.fn.isPercent(val) ){
           num = Math.round(parseFloat(val) * this.contentSize / 100);
         }
-        else if ( typeof(val) === 'number' ){
+        else if ( bbn.fn.isNumber(val) ){
           num = val;
         }
+        else if ( bbn.fn.isVue(val) && val.$el ){
+          ele = val.$el;
+        }
+        else if ( bbn.fn.isDom(val) ){
+          ele = val;
+        }
+        if ( ele ){
+          let $ct = ele.offsetParent;
+          let witness;
+          num = ele['offset' + prop];
+          while ($ct && (witness !== $ct) && ($ct !== this.realContainer)){
+            if ($ct === document.body) {
+              break;
+            }
+            else {
+              num += parseFloat($ct['offset' + prop]);
+              $ct = $ct.offsetParent;
+            }
+            witness = $ct;
+          }
+          num -= 20;
+          if ( num < 0 ){
+            num = 0;
+          }
+        }
+        bbn.fn.log(num);
         if ( num !== null ){
           if ( num < 0 ){
             num = 0;
           }
+          /*
+          else if ( num > 100 ){
+            num = 100;
+          }
+          */
           this._changePosition(100 / this.contentSize * num, animate);
           this.animateBar();
+          //this.realContainer['scroll' + prop] = num;
         }
       },
 

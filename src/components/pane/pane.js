@@ -53,8 +53,8 @@
     },
     data(){
       return {
-        currentHidden: this.collapsed,
-        checker: false
+        checker: false,
+        isCollapsed: this.collapsed
       };
     },
     watch:{

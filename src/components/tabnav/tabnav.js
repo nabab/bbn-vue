@@ -230,7 +230,7 @@
           this.history.splice(i, 1);
         }
         this.history.unshift(url);
-        bbn.fn.log("ADDING "+ url, this.history);
+        //bbn.fn.log("ADDING "+ url, this.history);
         while ( this.history.length > this.historyMaxLength ){
           this.history.pop();
         }
@@ -263,7 +263,16 @@
         return 'black';
       },
       scrollTabs(dir){
-        let ul = this.$refs.tabgroup;
+        /*let ul = this.$refs.tabgroup, 
+            scroll = this.getRef('horizontal-scroll'),
+            newPos;
+        if ( dir === 'left'){
+          newPos = this.lastKnownWidth - 100 < 0 ? 0 : this.lastKnownWidth - 100;
+        }
+        else if ( dir === 'right' ){
+           newPos = this.lastKnownWidth + 100 < 0 ? 0 : this.lastKnownWidth + 100;
+        }
+        scroll.scrollTo(newPos, 0, true);*/
         if ( ul.scrollWidth > ul.clientWidth ){
           let total = ul.scrollWidth,
               visible = ul.clientWidth,
@@ -855,9 +864,9 @@
         bbn.fn.each(cfg.views, (a) => {
           let idx = bbn.fn.search(res, {url: a.url});
           if ( idx > -1 ){
-            bbn.fn.log("INSIDE", JSON.stringify(res[idx]));
+            //bbn.fn.log("INSIDE", JSON.stringify(res[idx]));
             bbn.fn.extend(res[idx], a);
-            bbn.fn.log(JSON.stringify(res[idx]));
+            //bbn.fn.log(JSON.stringify(res[idx]));
             //res.splice(idx, 1, a);
           }
           else{

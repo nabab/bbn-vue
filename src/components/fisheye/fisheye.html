@@ -1,12 +1,40 @@
-<div :class="componentClass">
-  <ul ref="ul"
+<div :class="componentClass"
+     :style="{zIndex: zIndex}">
+  <ul ref="container"
+      class="bbn-p"
       :style="{zIndex: zIndex}"
   >
-    <li v-for="it in items" :data-id="it.id ? it.id : ''">
-      <a :href="it.url ? it.url : 'javascript:;'" @click="onClick(it)">
-        <i :class="it.icon"></i>
+    <li v-for="it in items"
+        :key="it.index"
+        :draggable="!it.fixed"
+        @mouseover="mouseover(it.index)"
+        @mouseout="mouseout(it.index)"
+        @dragstart="dragstart(it.index, $event)"
+        @dragend="dragend(it.index, $event)"
+      >
+      <a :href="it.data.url ? it.data.url : 'javascript:;'"
+         class="bbn-iblock"
+         draggable="false"
+         @click="onClick(it.data, it.index)">
+        <i :class="it.data.icon"></i>
       </a>
-      <span v-html="it.text"></span>
     </li>
   </ul>
+  <div class="bbn-fisheye-bin"
+       v-if="visibleBin">
+    <i :class="{
+        nf: true,
+        'nf-fa-trash': true,
+        'bbn-red': overBin
+    }"
+       @dragenter.prevent="overBin = true"
+       @dragover.prevent="() => {}"
+       @dragleave="dragleave($event)"
+       @drop="drop($event)"
+></i>
+  </div>
+  <div class="bbn-fisheye-text"
+       v-if="visibleText > -1"
+       v-html="items[visibleText].data[sourceText]">
+  </div>
 </div>

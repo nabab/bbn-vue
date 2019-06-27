@@ -211,10 +211,6 @@
          */
         contentHeight: 0,
         /**
-         * Defines if the scroll is inside a component bbn-window
-         */
-        inWindow: false,
-        /**
          * @data {Boolean} [false] isMeasuring
          */
         isMeasuring: false,
@@ -229,7 +225,8 @@
         /**
          * @data {Boolean} [false] hasScrollY
          */
-        hasScrollY: false
+        hasScrollY: false,
+        promise: false
       }
     },
     computed: {
@@ -255,8 +252,8 @@
        */
       elementStyle(){
         let cfg = {
-          maxWidth: '100%',
-          maxHeight: '100%'
+          maxWidth: this.maxWidth ? bbn.fn.formatSize(this.maxWidth) : '100%',
+          maxHeight: this.maxHeight ? bbn.fn.formatSize(this.maxHeight) : '100%'
         };
         /*
         if ( this.currentWidth ){
@@ -369,59 +366,24 @@
         if (!this.hasScroll || !this.ready) {
           return;
         }
-        if (!y && ((typeof x === HTMLElement) || bbn.fn.isVue(x))) {
+        if (y === undefined) {
           y = x;
         }
-        let todo = [];
-        if ( this.$refs.xScroller && (x !== undefined) && (x !== null) ){
+        if (
+          this.hasScrollX &&
+          (x !== undefined) &&
+          (x !== null) &&
+          this.$refs.xScroller
+        ) {
           this.$refs.xScroller.scrollTo(x, animate);
         }
-        else if (this.hasScrollX) {
-          todo.push('Left');
-        }
-        if ( this.$refs.yScroller && (y !== undefined) && (y !== null) ){
+        if (
+          this.hasScrollY &&
+          (y !== undefined) &&
+          (y !== null) &&
+          this.$refs.yScroller
+        ) {
           this.$refs.yScroller.scrollTo(y, animate);
-        }
-        else if (this.hasScrollY) {
-          todo.push('Top');
-        }
-        if (todo.length) {
-          let ct = this.getRef('scrollContainer');
-          let ele = x;
-          if (bbn.fn.isVue(x)) {
-            ele = x.$el;
-          }
-          let $ct = ele.offsetParent;
-          bbn.fn.each(todo, (a) => {
-            let witness;
-            let num = ele['offset' + a];
-            while ($ct && (witness !== $ct) && ($ct !== this.getRef('scrollContent'))){
-              if ($ct === document.body) {
-                break;
-              }
-              else {
-                num += $ct['offset' + a];
-                $ct = $ct.offsetParent;
-              }
-              witness = $ct;
-            }
-            num -= 20;
-            if ( num < 0 ){
-              num = 0;
-            }
-            let position;
-            bbn.fn.log("NUM: " + num + " (" + a + ")");
-            ct['scroll' + a] = num;
-            /*
-            let next = 100 / this.contentSize * num;
-            if ( next > (100 - this.size) ){
-              position = 100 - this.size;
-            }
-            else if ( (next > 0) ){
-              position = next;
-            }
-            */
-          });
         }
       },
       /**
@@ -459,60 +421,72 @@
        */
       onResize(force){
         if ( !this.ready && this.readyDelay ){
-          return false;
-        }
-        return new Promise((resolve) => {
-          this.getNaturalDimensions().then(() => {
-            bbn.fn.log("NAT", this.naturalWidth, this.naturalHeight);
-            this.$nextTick().then(() => {
-              if ( (this.axis === 'both') || (this.axis === 'x') && (this.$el.clientWidth < this.naturalWidth) ){
-                if ( this.$refs.xScroller ){
-                  this.$refs.xScroller.onResize();
-                }
-                this.hasScrollX = true;
-              }
-              else{
-                this.hasScrollX = false;
-              }
-              if ( (this.axis === 'both') || (this.axis === 'y') && (this.$el.clientHeight < this.naturalHeight) ){
-                if ( this.$refs.yScroller ){
-                  this.$refs.yScroller.onResize();
-                }
-                this.hasScrollY = true;
-              }
-              else{
-                this.hasScrollY = false;
-              }
-              this.hasScroll = this.hasScrollY || this.hasScrollX;
-              let container = this.getRef('scrollContainer');
-              let content = this.getRef('scrollContent');
-              this.containerWidth = container.clientHeight;
-              this.containerHeight = container.clientHeight;
-              this.contentWidth = content.clientHeight;
-              this.contentHeight = content.clientHeight;
-              if ( this.naturalWidth && (this.naturalWidth < this.contentWidth) ){
-                this.contentWidth = this.naturalWidth;
-              }
-              if ( this.naturalHeight && (this.naturalHeight < this.contentHeight) ){
-                this.contentHeight = this.naturalHeight;
-              }
-              if ( this.currentX > this.contentWidth ){
-                this.currentX = 0;
-              }
-              if ( this.currentY > this.contentHeight ){
-                this.currentY = 0;
-              }
-              container.scrollLeft = this.currentX;
-              container.scrollTop = this.currentY;
-              this.$emit('resize');
-              if ( !this.ready && !this.readyDelay ){
-                this.ready = true;
-              }
-              bbn.fn.log("SCROLL RESIZE " + this._uid);
+          return new Promise((resolve) => {
+            setTimeout(() => {
               resolve();
+            }, 1);
+          });
+        }
+        if ( this.promise ){
+          return this.promise;
+        }
+        this.promise = new Promise((resolve) => {
+          this.getNaturalDimensions().then(() => {
+            this.$nextTick().then(() => {
+              /** @todo Replace with a keepCool - to fix */
+              setTimeout(() => {
+                if ( (this.axis === 'both') || (this.axis === 'x') && (this.$el.clientWidth < this.naturalWidth) ){
+                  if ( this.$refs.xScroller ){
+                    this.$refs.xScroller.onResize();
+                  }
+                  this.hasScrollX = true;
+                }
+                else{
+                  this.hasScrollX = false;
+                }
+                if ( (this.axis === 'both') || (this.axis === 'y') && (this.$el.clientHeight < this.naturalHeight) ){
+                  if ( this.$refs.yScroller ){
+                    this.$refs.yScroller.onResize();
+                  }
+                  this.hasScrollY = true;
+                }
+                else{
+                  this.hasScrollY = false;
+                }
+                this.hasScroll = this.hasScrollY || this.hasScrollX;
+                let container = this.getRef('scrollContainer');
+                let content = this.getRef('scrollContent');
+                if ( container ){
+                  this.containerWidth = container.clientWidth;
+                  this.containerHeight = container.clientHeight;
+                  this.contentWidth = content.clientWidth;
+                  this.contentHeight = content.clientHeight;
+                  if ( this.naturalWidth && (this.naturalWidth < this.contentWidth) ){
+                    this.contentWidth = this.naturalWidth;
+                  }
+                  if ( this.naturalHeight && (this.naturalHeight < this.contentHeight) ){
+                    this.contentHeight = this.naturalHeight;
+                  }
+                  if ( this.currentX > this.contentWidth ){
+                    this.currentX = 0;
+                  }
+                  if ( this.currentY > this.contentHeight ){
+                    this.currentY = 0;
+                  }
+                  container.scrollLeft = this.currentX;
+                  container.scrollTop = this.currentY;
+                  this.$emit('resize');
+                  if ( !this.ready && !this.readyDelay ){
+                    this.ready = true;
+                  }
+                }
+                this.promise = false;
+                resolve();
+              }, 25);
             });          
           });
         });
+        return this.promise;
       },
       /**
        * @method scrollStart
@@ -613,7 +587,6 @@
        * @fires onResize
        */
       waitReady(){
-        bbn.fn.log("IS READY ? ", this.ready);
         if ( !this.ready ){
           if ( this.readyDelay !== false ){
             clearTimeout(this.readyDelay);
@@ -634,7 +607,6 @@
      * @fires waitReady
      */
     mounted(){
-      this.inWindow = !!this.closest('bbn-window');
       this.waitReady();
     },
     watch: {

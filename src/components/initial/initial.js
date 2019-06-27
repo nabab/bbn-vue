@@ -5,7 +5,7 @@
  /**
   * @file bbn-initial component
   *
-  * @description bbn-initial is a component of simple implantation that allows stylistically to represent  the initials of a name as an avatars for a profile.
+  * @description bbn-initial is a component that represents the initials of a name as an avatar for a profile.
   *
   * @copyright BBN Solutions
   *
@@ -29,14 +29,14 @@
     mixins: [bbn.vue.basicComponent],
     props: {
       /**
-       * The user id whose initials are to be represented
+       * The user id whose initials will be represented.
        * @prop {String|Number} userId
        */
       userId: {
         type: [String, Number]
       },
       /**
-       * The user name whose initials are to be represented
+       * The username whose initials will be represented.
        * @prop {String} userName
        */
       userName: {
@@ -47,21 +47,21 @@
         type: String,
       },
       /**
-       * The width of the rectangle containing initials
+       * The width of the rectangle containing the initials.
        * @prop {String|Number} width
        */
       width: {
         type: [String, Number]
       },
       /**
-       * The height of the rectangle containing initials
+       * The height of the rectangle containing the initials.
        * @prop {String|Number} height
        */
       height: {
         type: [String, Number]
       },
       /**
-       * The dimensions to give to the component as width and height
+       * The dimensions given to the component as width and height.
        * @prop {Number} [36] defaultSize
        */
       defaultSize: {
@@ -69,7 +69,7 @@
         default: 36
       },
       /**
-       * The number of characters to show if the prop 'letter' is not specified
+       * The number of characters shown if the property 'letter' is not specified.
        * @prop {Number} [2] charCount
        */
       charCount: {
@@ -77,7 +77,7 @@
         default: 2
       },
       /**
-       * The color of the text
+       * The color of the text.
        * @prop {String} ['#FFF'] textColor
        */
       textColor: {
@@ -85,28 +85,28 @@
         default: '#FFF'
       },
       /**
-       * The text's font family
+       * The text's font family.
        * @prop {String} fontFamily
        */
       fontFamily:{
         type: String
       },
       /**
-       * The rectangle's background-color
+       * The rectangle's background color.
        * @prop {String} color
        */
       color: {
         type: String
       },
       /**
-       * The font-size of the initials
+       * The font-size of the initials.
        * @prop {Number|String} fontSize
        */
       fontSize: {
         type: [Number, String]
       },
       /**
-       * The font-weight of the initials
+       * The font-weight of the initials.
        * @prop {String|Number} [400] fontWeight
        */
       fontWeight: {
@@ -114,14 +114,14 @@
         default: 400
       },
       /**
-       * The letters to be shown in the component if no userName or userId is given
+       * The letters shown in the component if neither the userName or the userId are given.
        * @prop {String} letters
        */
       letters: {
         type: String
       },
       /**
-       * The border-radius of the main container
+       * The border-radius of the main container.
        * @prop {Number|String} [3] radius
        * 
        */
@@ -130,7 +130,7 @@
         default: 3
       },
       /**
-       * The array of users
+       * The array of users.
        * @prop {Array} source
        */
       source: {
@@ -140,7 +140,7 @@
         }
       },
       /**
-       * The name of the property containing the user's name in the array source
+       * The name of the property containing the user's name in the array source.
        * @prop {String} nameField
        */
       nameField: {
@@ -150,7 +150,7 @@
         }
       },
       /**
-       * The name of the property containing the user's id in the array source
+       * The name of the property containing the user's id in the array source.
        * @prop {String} idField
        */
       idField: {
@@ -167,7 +167,7 @@
     data(){
       return {
         /**
-         * The user's name
+         * The user's name.
          * @data {String} name
          */
         name: this.userName
@@ -175,7 +175,7 @@
     },
     computed: {
       /**
-       * Defines the style of the text basing on the props textColor, fontWeight, fontSize and fontFamily 
+       * Defines the style of the text based on the properties 'textColor', 'fontWeight', 'fontSize' and 'fontFamily'.
        * @computed fontStyle
        * @return {Object}
        */
@@ -191,7 +191,7 @@
         return o;
       },
       /**
-       * The letters to show in the component.
+       * The letters that will be shown in the component.
        * @computed currentLetters
        * @return {String}
        */
@@ -218,7 +218,7 @@
         return this.charCount && !this.letters ? currentLetters.substr(0, this.charCount) : currentLetters;
       },
       /**
-       * The color of the text
+       * The color of the text.
        * @computed currentColor
        * @return {String}
        */
@@ -239,7 +239,7 @@
         return col ? col : '#000'
       },
       /**
-       * The fontSize
+       * The font-size.
        * @computed currentFontSize
        * @return string
        */
@@ -252,7 +252,7 @@
         return bbn.fn.isNumber(currentFontSize) ? currentFontSize + 'px' : currentFontSize;
       },
       /**
-       * The final width of the component
+       * The final width of the component.
        * @computed currentWidth
        * @return {String}
        */
@@ -261,7 +261,7 @@
         return bbn.fn.isNumber(w) ? w + 'px' : w;
       },
       /**
-       * The final height of the component
+       * The final height of the component.
        * @computed currentHeight
        * @return {String}
        */
@@ -270,7 +270,7 @@
         return bbn.fn.isNumber(h) ? h + 'px' : h;
       },
       /**
-       * The final border-radius to be applied to the component
+       * The final border-radius that will be applied to the component.
        * @computed currentRadius
        * @return {String}
        */

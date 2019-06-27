@@ -1,7 +1,7 @@
  /**
   * @file bbn-upload component
   *
-  * @description bbn-upload is a component that allows users to send files from their file system by selecting it, using drag and drop or with keyboard shortcut, to the server that are configured to receive it.
+  * @description bbn-upload is a component that allows users to send files from their file system by selecting it, using drag and drop or with a keyboard shortcut.
   *
   * @author Mirko Argentino
   *
@@ -13,15 +13,13 @@
  ((bbn) => {
   "use strict";
   Vue.component('bbn-upload', {
-    //mixins: [bbn.vue.fullComponent],
     /**
-     * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.inputComponent
      */
     mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent],
     props: {
       /**
-       * The value of the component
+       * The value of the component.
        * @prop {Array|String} [[]] value
        */
       value: {
@@ -31,7 +29,7 @@
         }
       },
       /**
-       * The url for the action save
+       * The URL for the action 'save'.
        * @prop {String} [null] saveUrl
        */
       saveUrl: {
@@ -39,7 +37,7 @@
         default: null
       },
       /**
-       * The url for the action delete
+       * The URL for the action 'delete'.
        * @prop {String} [null] removeUrl
        */
       removeUrl: {
@@ -47,7 +45,7 @@
         default: null
       },
       /**
-       * 
+       * Set to true to automatically upload selected files.
        * @prop {Boolean} [true] autoUpload
        */
       autoUpload : {
@@ -55,7 +53,7 @@
         default: true
       },
       /**
-       * Set to true allows to upload multiple files
+       * Set to true to allow the upload of multiple files.
        * @prop {Boolean} [true] multiple
        */
       multiple: {
@@ -63,7 +61,7 @@
         default: true
       },
       /**
-       * Set to true disables the component
+       * Set to true to disable the component.
        * @prop {Boolean} [false] disabled
        */
       disabled: {
@@ -71,7 +69,7 @@
         default: false
       },
       /**
-       * Shows the preview image of the file upload
+       * Shows the preview image of the file uploaded.
        * @prop {Boolean} [true] thumbs
        */
       thumbs: {
@@ -79,14 +77,14 @@
         default: true
       },
       /**
-       * If the prop thumb is set to false shows a text
+       * If the property 'thumbs' is set to false, a text is shown.
        * @prop {String} thumbnot
        */
       thumbNot : {
         type: String
       },
       /**
-       * The maxsize of the thumb
+       * The maximum size of the thumb.
        * @prop {Number} [60] maxSize
        */
       maxSize: {
@@ -94,12 +92,14 @@
         default: 60
       },
       /**
+	   * The text shown during the file's transfer.
        * @prop {String} thumbWaiting
        */
       thumbWaiting: {
         type: String
       },
       /**
+	   * Set to true to convert the value as JSON.
        * @prop {Boolean} [false] json
        */
       json: {
@@ -107,7 +107,7 @@
         default: false
       },
       /**
-       * An object of text linked to component's actions
+       * An object to customize the default text.
        * @prop {Object} text
        */
       text: {
@@ -117,7 +117,7 @@
         }
       },
       /**
-       * The icon on the upload button
+       * The icon displayed on the upload button.
        * @prop {String} ['nf nf-fa-upload'] icon
        */
       icon: {
@@ -125,7 +125,7 @@
         default: 'nf nf-fa-upload'
       },
       /**
-       * The array of accepted extension
+       * The array of accepted extensions.
        * @prop {Array} [[]] extensions
        */
       extensions: {
@@ -135,7 +135,7 @@
         }
       },
       /**
-       * Set it to false if you want to disable the paste function.
+       * Set to false to disable the 'paste' function.
        * 
        * @prop {Boolean} [true] paste
        */
@@ -144,7 +144,7 @@
         default: true
       },
       /**
-       * Set it to false if you want to disable the drang&drop function.
+       * Set to false to disable the 'drang&drop' function.
        * 
        * @prop {Boolean} [true] dragDrop
        */
@@ -153,7 +153,7 @@
         default: true
       },
       /**
-       * Additiional data to send on the ajax call.
+       * Additional data sent with the ajax call.
        * 
        * @prop {Object} data
        */
@@ -177,7 +177,7 @@
     },
     computed: {
       /**
-       * An object of standart text linked to component's actions.
+       * An object of default text.
        * 
        * @computed text
        * @return Object
@@ -201,7 +201,7 @@
         }, this.text);
       },
       /**
-       * If the component is enabled returns the text 'Drop files here' (if not customized in the prop text) 
+       * If the component is enabled, returns the text 'Drop files here' (if not customized in the 'text' property).
        * @computed dropHereText
        * @return String
        */
@@ -209,7 +209,7 @@
         return this.isEnabled && this.dragDrop ? this.currentText.dropHere : '';
       },
       /**
-       * Returns an array of the prop value independently of it's type
+       * Returns the current value. If it is in the JSON format, it's converted.
        * @computed getSource
        * @return Array|Boolean
        */
@@ -224,7 +224,7 @@
         return Array.isArray(res) ? res : false;
       },
       /**
-       * Normalize the value of the component
+       * Normalizes the value of the component.
        * @computed getValue
        * @return Object
        */
@@ -245,7 +245,7 @@
         return this.json ? JSON.stringify(files) : files;
       },
       /**
-       * Gets the component's configuraton
+       * Gets the component's configuration.
        * @computed getCfg
        * @return Object
        */
@@ -374,7 +374,7 @@
     },
     methods: {
       /**
-       * Enables or disables the component 
+       * Enables or disables the component.
        * @method enable
        * @param {Number} val 
        */
@@ -388,13 +388,13 @@
               $sel = $("div.qq-uploader-selector", this.$el);
         if ( val ){
           $inp.removeAttr('disabled');
-          $inp.parent().removeClass('k-state-disabled');
+          $inp.parent().removeClass('bbn-state-disabled');
           $pas.show();
           $sel.attr('qq-drop-area-text', this.dropHereText);
         }
         else {
           $inp.attr('disabled', 'disabled');
-          $inp.parent().addClass('k-state-disabled');
+          $inp.parent().addClass('bbn-state-disabled');
           $pas.hide();
           $sel.attr('qq-drop-area-text', this.dropHereText);
         }
@@ -428,14 +428,14 @@
        * @param {Boolean} val 
        */
       enabled(val){
-				this.isEnabled = !val;
+	    this.isEnabled = !val;
       },
       /**
        * @watch isEnabled
        * @param {Boolean} val 
        */
-			isEnabled(val){
-				this.enable(val);
+		isEnabled(val){
+			this.enable(val);
       },
       /**
        * @watch widgetValue

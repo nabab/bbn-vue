@@ -54,26 +54,7 @@
           ((e.type === 'contextmenu') && this.context) ||
           ((e.type === 'click') && !this.context)
         ){
-          let vlist = this.$root.vlist || (window.appui ? window.appui.vlist : undefined);
           this.items = this.getItems();
-          if ( this.items.length && (vlist !== undefined) ){
-            let x, y;
-            if ( (e.type === 'keydown') || (!e.clientX && !e.clientY) ){
-              let pos = this.$el.getBoundingClientRect();
-              x = pos.x + Math.round(pos.width / 2);
-              y = pos.y + Math.round(pos.height / 2);
-            }
-            else{
-              x = (x = e.clientX ? e.clientX : this.$el.offsetLeft) < 5 ? 0 : x - 5;
-              y = (y = e.clientY ? e.clientY : this.$el.offsetTop) < 5 ? 0 : y - 5;
-            }
-            vlist.push({
-              mode: this.mode,
-              items: this.items,
-              left: x,
-              top: y
-            });
-          }
         }
       },
     },

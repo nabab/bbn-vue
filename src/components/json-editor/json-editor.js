@@ -1,8 +1,8 @@
 /**
  * @file bbn-json-editor component
  *
- * @description bbn-json-editor is a very useful component that allows the schematic visualization of data in JSON format using different types of structures, such as: 'tree', 'text', 'object','code'.
- * It also allows you to modify or insert the content and define a date structure.
+ * @description bbn-json-editor is a component that allows the schematic visualization of data in JSON format using different types of structures, such as: 'tree', 'text', 'object' and 'code'.
+ * It also allows the modification or insertion of content.
  *
  * @author BBN Solutions
  * 
@@ -84,20 +84,19 @@
   };
   Vue.component('bbn-json-editor', {
     /**
-     * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.fullComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.fullComponent],
+    mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent],
     props: {
       /**
-       * The value of the json editor
+       * The value of the json editor.
        * @prop {String} ['{}'] value
        */
       value: {
         default: "{}"
       },
       /**
-       * Defines the mode of json editor. Allowed values are 'tree', 'view', 'form', 'code', 'text'
+       * Defines the mode of the json editor. Allowed values are 'tree', 'view', 'form', 'code' and 'text'.
        * @prop {String} ['tree'] mode
        */
       mode: {
@@ -105,87 +104,131 @@
         default: 'tree'
       },
       /**
-       * The object of configuration
+       * The object of configuration.
        * @prop {Object} cfg
        */
       cfg: {
         type: Object,
         default(){
-          return {
-            onEditable: null,
-            onError: null,
-            onModeChange: null,
-            escapeUnicode: false,
-            sortObjectKeys: false,
-            history: true,
-            mode: "tree",
-            modes: ["tree", "view", "form", "code", "text"],
-            name: null,
-            schema: null,
-            schemaRefs: null,
-            search: true,
-            indentation: 2,
-            theme: null,
-            templates: [],
-            autocomplete: null,
-          };
+          return {};
         }
       }
     },
     data(){
-      bbn.fn.log("VALUE", this.value);
-      return bbn.fn.extend({
+      return {
         /**
+         * The current value.
          * @data {String} ['{}'] currentValue
          */
         currentValue: this.value === '' ? '{}' : this.value,
-        widgetName: "jsoneditor"
-      }, bbn.vue.treatData(this));
+        widgetName: "jsoneditor",
+        /**
+         * The mode of the component.
+         * @data {String} mode
+         */
+        currentMode: this.readonly ? 'view' : (this.mode || "tree"),
+      };
     },
     methods: {
       /**
-       * Gets the initial configuration of the component
-       * @method getOptions
+       * Gets the initial configuration of the component.
+       * @method getCfg
        * @emit change
        * @emit input
        * @return {Object}
        */
-      getOptions(){
-        const vm = this;
-        let cfg = bbn.vue.getOptions(vm);
-        if ( bbn.env.lang ){
-          cfg.language = bbn.env.lang;
-          cfg.languages = {};
-          cfg.languages[bbn.env.lang] = lang;
-        }
-        bbn.fn.log(cfg, typeof(cfg));
-        if ( vm.readonly ){
-          cfg.modes = [];
-          cfg.mode = 'view';
-        }
-        else{
+      getCfg(){
+        let cfg = {
+          /**
+           * @data onEditable
+           */
+          onEditable: this.cfg.onEditable || null,
+          /**
+           * @data onError
+           */
+          onError: this.cfg.onError || null,
+          /**
+           * @data onModeChange 
+           */
+          onModeChange: this.cfg.onModeChange || null,
+          /**
+           * @data escapeUnicode 
+           */
+          escapeUnicode: this.cfg.escapeUnicode || false,
+          /**
+           * @data sortObjectKeys 
+           */
+          sortObjectKeys: this.cfg.sortObjectKeys || false,
+          /**
+           * @data history
+           */
+          history: this.cfg.history || true,
+          /**
+           * The mode of the component.
+           * @data {String} mode
+           */
+          mode: this.readonly ? 'view' : this.currentMode,
+          /**
+           * @data {Array} modes
+           */
+          modes: this.readonly ? ['view'] : ["tree", "view", "form", "code", "text"],
+          /**
+           * @data schema
+           */
+          schema: this.cfg.schema || null,
+          /**
+           * @data schemaRefs
+           */
+          schemaRefs: this.cfg.schemaRefs || null,
+          /**
+           * @data search
+           */
+          search: this.cfg.search !== undefined ? this.cfg.search : true,
+          /**
+           * @data {Number} indentation
+           */
+          indentation: this.cfg.indentation || 2,
+          /**
+           * @data theme
+           */
+          theme: this.cfg.theme || null,
+          /**
+           * @data {Array} templates
+           */
+          templates: this.cfg.templates || [],
+          /**
+           * @data autocomplete
+           */
+          autocomplete: this.cfg.autocomplete || null,
+          /**
+           * The code of the language used in the component.
+           * @data {String} ['en'] language
+           */
+          language: bbn.env.lang || 'en'
+        };
+        if ( !this.readonly ){
           cfg.onChange = () => {
-            var v = vm.widget.getText();
-            vm.$refs.input.value = v;
-            vm.$emit("change", v);
-            vm.$emit("input", v);
+            var v = this.widget.getText();
+            this.$refs.input.value = v;
+            this.$emit("change", v);
+            this.$emit("input", v);
           };
         }
         return cfg;
       },
       /**
-       * Initializes the component
-       * @fires getOptions
+       * Initializes the component.
+       * @fires getCfg
        * @fires widget.setText
        */
       init(){
-        let cfg = this.getOptions();
+        let cfg = this.getCfg();
         bbn.fn.log("VALUE", this.value);
         this.widget = new JSONEditor(this.$refs.element, cfg);
         this.widget.setText(this.value);
       },
       /**
-       * Destroys and reinitializes the component
+       * Destroys and reinitializes the component.
        * @fires widget.destroy
        * @fires init
        */
@@ -208,9 +251,8 @@
        * @fires widget.setText
        */
       value(newVal){
-        const vm = this;
-        if ( vm.widget.getText() !== newVal ){
-          vm.widget.setText(newVal);
+        if ( this.widget.getText() !== newVal ){
+          this.widget.setText(newVal);
         }
       }
     }

@@ -1,6 +1,6 @@
 <div :class="[componentClass, {'bbn-flex-height': scrollable}]">
-  <div v-if="showToolbar" 
-       class="bbn-l k-widget bbn-gallery-toolbar"
+  <div v-if="isToolbarShown" 
+       class="bbn-l bbn-widget bbn-gallery-toolbar"
   >
     <component v-if="toolbar && (isObject(toolbar) || isVue(toolbar))"
                :is="toolbar"
@@ -55,7 +55,7 @@
     </div>
   </div>
   <div v-if="pageable || isAjax">
-    <div class="bbn-gallery-pager k-widget k-floatwrap" ref="pager">
+    <div class="bbn-gallery-pager bbn-widget" ref="pager">
       <div class="bbn-block"
             v-if="pageable"
       >
@@ -92,7 +92,7 @@
                     @click="currentPage = numPages"
                     :disabled="isLoading || (currentPage == numPages)"
         ></bbn-button>
-        <span class="k-pager-sizes k-label">
+        <span class="bbn-hsmargin">
         <bbn-dropdown :source="limits"
                       v-model.number="currentLimit"
                       @change="currentPage = 1"

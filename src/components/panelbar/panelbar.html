@@ -70,8 +70,8 @@
   </template>
   
 
-  <!---div v-if="source.length" class="k-block item-container" v-for="(i, idx) in source" :key="idx">
-    <div :class="['bbn-header', 'panel', 'bbn-p', {'k-state-selected': includes(selected, idx)}]" 
+  <!---div v-if="source.length" class="bbn-block item-container" v-for="(i, idx) in source" :key="idx">
+    <div :class="['bbn-header', 'panel', 'bbn-p', {'bbn-state-selected': includes(selected, idx)}]" 
           :style="includes(selected, idx) ? {} : {'border-bottom': 'none'}"
     >
       <div class="arrow-container bbn-hspadded inline" @click="select(idx)">

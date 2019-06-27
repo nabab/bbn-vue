@@ -1,8 +1,9 @@
+// It has a multitude of customizations to better your gallery.
 /**
  * @file bbn-gallery component
  *
- * @description bbn-gallery is a component for the purpose of presenting an extraordinary gallery of images on display in your websites or applications.
- * It has a multitude of customizations to better present your gallery.
+ * @description bbn-gallery is a component that displays a collection of images.
+ *
  *
  * @copyright BBN Solutions
  *
@@ -30,7 +31,7 @@
         }
       },
       /**
-       * Set to true allows the component to have a scroll.
+       * Set to true to allow the component to have a scroll.
        * 
        * @prop {Boolean} [true] scrollable
        */
@@ -39,7 +40,7 @@
         default: true
       },
       /**
-       * The custom component for the toolbar.
+       * The alternative component for the toolbar.
        * 
        * @props {Vue|Object|Boolean} toolbar
        */
@@ -48,7 +49,7 @@
         default: true
       },
       /**
-       * Set to true shows the button for the download in the toolbar.
+       * Set to true to show the download button in the toolbar.
        * 
        * @prop {Boolean} [true] download
        */
@@ -65,7 +66,7 @@
         default: false
       },
       /**
-       * Set to true allows the gallery to be zoomable.
+       * Set to true to allow the gallery to be magnifiable.
        * 
        * @prop {Boolean} [false] zoomable
        */
@@ -74,7 +75,7 @@
         default: false
       },
       /**
-       * Set to true allows the gallery to be pageable.
+       * Set to true to allow the gallery to be pageable.
        * 
        * @prop {Boolean} [false] pageable
        */
@@ -83,7 +84,7 @@
         default: false
       },
       /**
-       * Set to true shows infos on the footer of the gallery.
+       * Set to true to show info on the gallery's footer.
        * 
        * @prop {Boolean} [false] info
        */
@@ -110,7 +111,7 @@
         default: 20
       },
       /**
-       * The minimum number of columns.
+       * The minimum number of columns allowed.
        * 
        * @prop {Number} [1] minCol
        */
@@ -119,7 +120,7 @@
         default: 1
       },
       /**
-       * The maximum number of columns.
+       * The maximum number of columns allowed.
        * 
        * @prop {Number} maxCol
        */
@@ -145,7 +146,7 @@
         default: 'center'
       },
       /**
-       * The limit of items.
+       * The limit of items allowed.
        * 
        * @prop {Number} [25] limit
        */
@@ -162,7 +163,7 @@
         type: Function
       },
       /**
-       * Additional data to sent with the ajax call.
+       * Additional data sent with the ajax call.
        * 
        * @prop {Object} [{}] data
        */
@@ -173,7 +174,7 @@
         }
       },
       /**
-       * The function called on click on the upload button of the toolbar.
+       * The function called when the toolbar's upload button is clicked.
        * 
        * @prop {Function} upload
        */
@@ -181,7 +182,7 @@
         type: Function
       },
       /**
-       * The function called on click on the download button of the toolbar.
+       * The function called when the toolbar's download button is clicked.
        * 
        * @prop {Function} download
        */
@@ -189,14 +190,14 @@
         type: Function
       },
       /**
-       * The function called on click on the remove button of the toolbar.
+       * The function called when the toolbar's remove button is clicked.
        * @prop {Function} remove
        */
       remove: {
         type: Function
       },
       /**
-       * Shows preview on the slideshow when the item is zoomed.
+       * Displays a preview of items below the slideshow.
        * 
        * @prop {Boolean} [true] preview
        */
@@ -214,19 +215,19 @@
          */
         width: 0,
         /**
-         * True if the component is set on selecting mode.
+         * True if the gallery is on selection mode.
          * 
          * @data {Boolean} [false] isSelecting
          */
         isSelecting:  false,
         /**
-         * True if the component is loading data.
+         * True if the gallery is loading data.
          * 
          * @data {Boolean} [false] isLoading
          */
         isLoading: false,
         /**
-         * True if the source of the component is a string and the component makes an ajax call for it's source.
+         * True if the source of the component is a string and an ajax call is made.
          * 
          * @data {Boolean} isAjax
          */
@@ -244,25 +245,25 @@
          */
         currentLimit: this.limit,
         /**
-         * The start item in a pageable gallery.
+         * The starting item in a pageable gallery.
          * 
          * @data {Number} [0] start
          */
         start: 0,
         /**
-         * The total of items.
+         * The total number of items.
          * 
          * @data {Number} [0] total
          */
         total: 0,
         /**
-         * The source of the dropdown to define the limit of items shown in the page.
+         * The source of the dropdown component defining the limit of items shown on the page.
          * 
          * @data {Array} [10, 25, 50, 100, 250, 500] limits 
          */
         limits: [10, 25, 50, 100, 250, 500],
         /**
-         * The mode of selection.
+         * The selection mode.
          * 
          * @prop {Boolean|String} [false] selectingMode
          */
@@ -295,7 +296,7 @@
         return Math.ceil(this.total / this.currentLimit);
       },
       /**
-       * The number of page.
+       * The number of the current page.
        * 
        * @computed currentPage
        * @return {Number}
@@ -310,12 +311,12 @@
         }
       },
       /**
-       * True if the toolbar needs to be shown.
+       * True if the toolbar is shown.
        * 
-       * @computed showToolbar
+       * @computed isToolbarShown
        * @return {Boolean}
        */
-      showToolbar(){
+      isToolbarShown(){
         return !!(this.toolbar && (this.upload || this.download || this.delete));
       }
     },
@@ -335,7 +336,7 @@
       */
      isVue: bbn.fn.isVue,
       /**
-       * Updates the data of the component.
+       * Updates the component's data.
        * 
        * @method updateData
        * @fires setSelecting
@@ -375,8 +376,10 @@
           })
         }
       },
+      // Calls the function if the property map is defined.
+      
       /**
-       * If a function for the prop map is defined calls the function on the given array data.
+       * If the function 'map' is defined if triggers the map of the source
        * 
        * @method _map
        * @param {Array} data 
@@ -402,7 +405,7 @@
         }
       },
       /**
-       * Manages actions basing on the data property selectingMode.
+       * Manages actions based on the data property selectingMode.
        * 
        * @method action
        * @fires setSelecting
@@ -459,7 +462,7 @@
                 `,
         props: {
           /**
-           * The source of the component gallery-zoom.
+           * The source of the component 'gallery-zoom'.
            * 
            * @prop {String|Object} source
            * @memberof gallery-zoom
@@ -483,7 +486,7 @@
 </div>`,
         props: {
           /**
-           * The source of the component gallery-col.
+           * The source of the component 'gallery-col'.
            * 
            * @prop {Array} [[]] source
            * @memberof gallery-col
@@ -533,7 +536,7 @@
         },
         methods: {
           /**
-           * Gets the data of the column.
+           * Gets the column's data.
            * 
            * @method getSource
            * @param {Number} idx
@@ -555,7 +558,7 @@
             name: 'gallery-item',
             template: `
 <a v-if="!col.gallery.isLoading"
-   :class="['bbn-p', {'k-primary': isSelected}]"
+   :class="['bbn-p', {'bbn-primary': isSelected}]"
    @click="action"
    :style="aStyle"
 >
@@ -565,7 +568,7 @@
        :class="{'bbn-gallery-item-selected': isSelected}"
   >
   <span v-if="showOverlay && loaded"
-        class="bbn-gallery-overlay k-widget"
+        class="bbn-gallery-overlay bbn-widget"
         v-text="source.overlay"
   ></span>
   <i v-if="col.gallery.zoomable && loaded && !col.gallery.isSelecting"
@@ -575,7 +578,7 @@
             `,
             props: {
               /**
-               * The source of the compoment gallery-item.
+               * The source of the compoment 'gallery-item'.
                * 
                * @prop {String|Object} source
                * @memberof gallery-item
@@ -601,7 +604,8 @@
                  */
                 selected: false,
                 /**
-                 * The index of the item in the currentData of the component bbn-gallery.
+                 * The index of the item in the currentData of the component 'bbn-gallery'.
+				 *
                  * @data [null] idx
                  * @memberof gallery-item
                  */
@@ -610,7 +614,7 @@
             },
             computed: {
               /**
-               * The parent gallery-col component.
+               * The parent component 'gallery-col'.
                * 
                * @computed col
                * @memberof gallery-item
@@ -620,7 +624,7 @@
                 return this.closest('gallery-col');
               },
               /**
-               * The object for the style of the item.
+               * The style object of the item.
                * 
                * @computed aStyle
                * @memberof gallery-item
@@ -634,7 +638,7 @@
                 return style;
               },
               /**
-               * The object for the style of the image.
+               * The style object of the image.
                * 
                * @computed imgStyle
                * @memberof gallery-item
@@ -660,7 +664,7 @@
                 return bbn.fn.isObject(this.source);
               },
               /**
-               * If true shows the overlay.
+               * If true, shows the overlay.
                * 
                * @computed showOverlay
                * @return {Boolean}
@@ -682,7 +686,7 @@
             },
             methods: {
               /**
-               * Menages the actions.
+               * Manages the actions.
                * 
                * @methods action
                * @memberof gallery-item
@@ -718,7 +722,7 @@
                 }
               },
               /**
-               * Returns the index of the item in the currentData of the component bbn-gallery.
+               * Returns the index of the item in the currentData of the component 'bbn-gallery'.
                * 
                * @methods getIdx
                * @memberof gallery-item
@@ -736,7 +740,7 @@
               }
             },
             /**
-             * Defines the property of data 'idx'.
+             * Defines the 'idx' property of the data.
              * 
              * @event mounted
              * @memberof gallery-item

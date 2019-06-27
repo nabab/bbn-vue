@@ -2,11 +2,12 @@
         {
           'bbn-reset': true,
           'bbn-widget': true,
-          'bbn-flex-height': ready && title
+          'bbn-flex-height': ready && title,
+          'bbn-invisible': !isResized
         },
         componentClass
       ]"
-      v-if="currentVisible && (content || component || filteredData.length || $slots.default)"
+      v-if="isVisible"
       @mouseleave="leave"
       @mouseenter="isOver = true"
       :style="currentStyle">
@@ -43,11 +44,9 @@
     'bbn-h-100': !title && !footer && (!buttons || !buttons.length)
   }"
         v-if="isMounted">
-    <bbn-scroll :max-width="containerWidth"
-                :max-height="scrollMaxHeight"
-                :min-width="scrollMinWidth"
-                :latency="latency"
+    <bbn-scroll :latency="latency"
                 ref="scroll"
+                :height="scrollHeight"
                 @resize="scrollResize">
       <component v-if="component"
                 :is="component"
@@ -57,47 +56,20 @@
       <div v-else-if="!!content" 
           v-html="content"
       ></div>
-      <ul v-else-if="filteredData.length"
-          :class="'bbn-floater-list bbn-menulist ' + mode"
+      <bbn-list v-else-if="filteredData.length"
+                :mode="mode"
+                :source="filteredData"
+                :component="itemComponent"
+                :template="template"
+                :uid="uid"
+                :selected="selected"
+                :class="'bbn-floater-list bbn-menulist ' + mode"
+                origin="floater"
+                @select="select"
+                :source-value="sourceValue"
+                :source-text="sourceText"
       >
-        <li v-for="(li, idx) in filteredData"
-            @click.stop.prevent="select(idx)"
-            @mouseenter="currentSelected = idx"
-            @mouseleave="currentSelected = -1"
-            :ref="'li' + idx"
-            :key="idx"
-            :class="{
-              'bbn-reactive': true,
-              'bbn-disabled': !!li.disabled,
-              'bbn-state-selected': !!li.selected,
-              'bbn-state-active': currentSelected === idx
-            }">
-          <component v-if="itemComponent" :is="itemComponent" :source="li" @mounted="selfEmit(true)"></component>
-          <span v-else>
-            <span class="bbn-icon-space" v-if="(mode === 'selection') || (mode === 'options')">
-              <i v-if="(mode === 'selection') && (li.selected)"
-                class="nf nf-fa-check"></i>
-              <i v-else-if="mode === 'options'"
-                class="nf nf-fa-check"></i>
-            </span>
-            <span class="space" v-if="hasIcons">
-              <i v-if="li.icon" :class="li.icon"></i>
-            </span>
-            <span class="text" v-html="li.text"></span>
-            <i v-if="li.items && li.items.length"
-              class="nf nf-fa-chevron_right"
-              style="margin: 0 1em"
-            ></i>
-          </span>
-          <bbn-floater v-if="children && li[children] && (currentSelected === idx) && getRef('li' + idx)"
-                      :level="level + 1"
-                      :mode="li.mode || 'free'"
-                      :source="li[children]"
-                      :element="getRef('li' + idx)"
-                      orientation="horizontal">
-          </bbn-floater>
-        </li>
-      </ul>
+      </bbn-list>
       <h3 v-else v-text="noData"></h3>
     </bbn-scroll>
   </div>

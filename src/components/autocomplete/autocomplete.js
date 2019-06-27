@@ -1,245 +1,190 @@
 /**
  * @file bbn-autocomplete component
  *
- * @description An input field completely customizable that provides suggestions on the typed text
+ * @description The autocomplete component allows you to choose a single value from a list.
  *
  * @copyright BBN Solutions
  *
  * @author BBN Solutions
+ *
+ * @created 10/02/2017.
  */
 
-(function($, bbn, kendo){
-  "use strict";
 
-  kendo.ui.AutoComplete.prototype.options.autoWidth = true;
+(function(bbn){
+  "use strict";
+  bbn.vue.loadComponentsByPrefix('bbn-dropdown');
 
   Vue.component('bbn-autocomplete', {
-    mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent, bbn.vue.dataSourceComponent],
+    /**
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.eventsComponent
+     * @mixin bbn.vue.inputComponent
+     * @mixin bbn.vue.resizerComponent
+     * @mixin bbn.vue.listComponent
+     * @mixin bbn.vue.keynavComponent
+     * @mixin bbn.vue.urlComponent
+     * @mixin bbn.vue.dropdownComponent
+      */
+    mixins: [
+      bbn.vue.basicComponent,
+      bbn.vue.eventsComponent,
+      bbn.vue.inputComponent,
+      bbn.vue.resizerComponent,
+      bbn.vue.listComponent,
+      bbn.vue.keynavComponent,
+      bbn.vue.urlComponent,
+      bbn.vue.dropdownComponent
+    ],
     props: {
-      /**
-       * The id of the autocomplete.
-       *
-       * @prop {String} id
-       */
-      id: {
-        type: String
+      filterable: {
+        default: true
       },
-      /**
-       * The delay before the suggestion.
-       *
-       * @prop {Number} [200] delay
-       */
+      minLength: {
+        type: Number,
+        default: 0
+      },
       delay: {
         type: Number,
-        default: 200
-      },
-      /**
-       * Set it to true for the clear button to be shown.
-       *
-       * @prop {Boolean} [false] clearButton
-       */
-      clearButton: {
-        type: Boolean,
-        default: true
-      },
-      /**
-       * State the type of filter, the allowed values are 'contains', 'startswith' and 'endswith'.
-       *
-       * @prop {String} [startswith] filter
-       */
-      filter: {
-        type: String,
-        default: "startswith"
-      },
-      /**
-       * The number of letters required before the suggestion appears.
-       *
-       * @prop {Number} minLength
-       */
-      minLength: {
-        type: Number
-      },
-      /**
-       * @prop {Boolean} [false] force
-       */
-      force: {
-        type: Boolean,
-        default: false
-      },
-      /**
-       * Set to false to show all the items after the input is cleared.
-       *
-       * @prop {Boolean} [false] enforceMinLength
-       *
-       */
-      enforceMinLength: {
-        type: Boolean,
-        default: false
-      },
-      /**
-       * Set to true for the first suggestion to be the value of the input.
-       *
-       * @prop {Boolean} [false] suggest
-       */
-      suggest: {
-        type: Boolean,
-        default: false
-      },
-      /**
-       * Set to true for the first item of the suggestions to be highlighted.
-       *
-       * @prop {Boolean} [true] highlightFirst
-       */
-      highlightFirst: {
-        type: Boolean,
-        default: true
-      },
-      /**
-       * Set to true to ignore the typed text case.
-       *
-       * @prop {Boolean} [true] ignoreCase
-       */
-      ignoreCase: {
-        type: Boolean,
-        default: true
-      },
-      /**
-       * The template to costumize the autocomplete box.
-       *
-       * @prop {Function} template
-       */
-      template: {
-        type: [Function]
-      },
-      /**
-       * Enables the virtualization feature of the autocomplete.
-       *
-       * @prop {Boolean|Function} template
-       */
-      virtual: {
-        type: [Boolean, Object],
-        default: false
-      }
-      ,
-      height: {
-        type: Number
+        default: 500
       }
     },
     data(){
       return {
-        widgetName: 'kendoAutoComplete',
-        filterValue: '',
+        /**
+         * @data {String} [''] filterString
+         */
+        filterString: this.textValue || '',
+        filterTimeout: false
       };
     },
     methods: {
-      /**
-       * Emits the filter value.
-       *
-       * @method autocompleteSearch
-       * @param e The event
-       * @fires emitInput
-       */
-      autocompleteSearch(e){
-        this.filterValue = e.target.value;
-        if ( !this.force ){
-          this.emitInput(this.filterValue);
-        }
-      },
-      /**
-       * Sets the height of the suggestions list.
-       *
-       * @method listHeight
-       * @returns {number}
-       */
-      listHeight(){
-        let $ele = $(this.$refs.element),
-            pos = $ele.offset(),
-            h = $ele.height();
-        return pos ? $(window).height() - pos.top - h - 30 : 0;
-      },
-      /**
-       * Creates the object cfg.
-       *
-       * @method getOptions
-       * @returns {Function}
-       */
-      getOptions(){
-        let cfg = {
-          valuePrimitive: true,
-          dataSource: this.dataSource,
-          dataTextField: this.sourceText,
-          dataValueField: this.sourceValue,
-          delay: this.delay,
-          filter: this.filter,
-          suggest: this.suggest,
-          clearButton: this.clearButton,
-          ignoreCase: this.ignoreCase,
-          highlightFirst: this.highlightFirst,
-          virtual: this.virtual,
-          height: this.height || undefined,
-          select: e => {
-            let d = e.dataItem.toJSON();
-            if ( [e.sender.options.dataValueField] ){
-              if ( d[[e.sender.options.dataValueField]] === undefined ){
-                throw new Error("The value field \"" + e.sender.options.dataValueField + "\" doesn't exist in the dataItem");
-              }
-              d = d[[e.sender.options.dataValueField]];
-            }
-            this.emitInput(d);
-            this.$emit('change', d);
+      click(){
+        if (!this.disabled) {
+          this.getRef('input').focus();
+          if (this.filteredData.length) {
+            this.isOpened = !this.isOpened;
           }
-        };
-        if ( this.template ){
-          cfg.template = e => {
-            return this.template(e);
-          };
         }
-        if ( cfg.dataSource && !Array.isArray(cfg.dataSource) ){
-          cfg.dataSource.options.serverFiltering = true;
-          cfg.dataSource.options.serverGrouping = true;
-        }
-        return bbn.vue.getOptions2(this, cfg);
-      }
-    },
-    /**
-     * @event mounted
-     * @fires getOptions
-     * @fires listHeight
-     */
-    mounted(){
-      let $ele = $(this.$refs.element);
-      this.widget = $ele.kendoAutoComplete(this.getOptions()).data("kendoAutoComplete");
-      this.ready = true;
-      /** @todo You have to remove this event onDestroy */
-      $(window).resize(() => {
-        this.widget.setOptions({
-          height: this.listHeight()
-        });
-      });
-    },
-    computed: {
+      },
       /**
-       * The kendo datasource of the widget.
-       *
-       * @computed dataSource
-       * @return {Array}
+       * @method leave
+       * @param element 
        */
-      dataSource(){
-        if ( this.source ){
-          return bbn.vue.toKendoDataSource(this);
+      leave(){
+        if ( this.isOpened && !this.getRef('list').isOver ){
+          this.isOpened = false;
         }
-        return [];
+        this.filterString = '';
+      },
+      /**
+       * Emits the event 'select' 
+       * @method select
+       * @param {} item 
+       * @emit change
+       */
+      select(item){
+        if ( item && (item[this.sourceValue] !== undefined) ){
+          this.emitInput(item[this.sourceValue]);
+          this.$emit('change', item[this.sourceValue]);
+          this.currentText = item[this.sourceText];
+          this.filterString = item[this.sourceText];
+          this.$nextTick(() => {
+            this.getRef('input').focus();
+          });
+        }
+        this.isOpened = false;
+      },
+      resetDropdown(){
+        this.currentText = this.currentTextValue;
+        this.filterString = this.currentTextValue;
+        this.unfilter();
+        if ( this.isOpened ){
+          this.isOpened = false;
+        }
+      },
+      keydown(e){
+        if ((e.key === ' ') || this.commonKeydown(e)) {
+          return;
+        }
+        if (e.key === 'Escape') {
+          this.resetDropdown();
+        }
+        else if (bbn.var.keys.upDown.includes(e.keyCode)) {
+          this.keynav(e);
+        }
+      },
+    },
+    mounted(){
+      /**
+       *
+       * @event mounted
+       * @fires updateData
+       * @fires onResize
+       * @return {Boolean}
+       */
+      if ( this.isAutobind ){
+        this.updateData().then(() => {
+          if ( this.value !== undefined ){
+            let row = bbn.fn.get_row(this.currentData, (a) => {
+              return a.data[this.sourceValue] === this.value;
+            });
+            if ( row ){
+              this.currentText = row.data[this.sourceText];
+            }
+          }
+          if ( !this.currentText && !this.isNullable && this.filteredData.length ){
+            this.emitInput(this.filteredData[0][this.sourceValue]);
+          }
+        });
       }
     },
     watch: {
       /**
-       * @watch source
-       * @fires setDataSource
+       * @watch filterString
+       * @param {String} v 
        */
-      dataSource(newDataSource){
-        this.widget.setDataSource(newDataSource);
+      filterString(v){
+        if (!this.ready) {
+          this.ready = true;
+        }
+        clearTimeout(this.filterTimeout);
+        if (v !== this.currentText) {
+          this.isOpened = false;
+          this.filterTimeout = setTimeout(() => {
+            this.filterTimeout = false;
+            // We don't relaunch the source if the component has been left
+            if ( this.isActive ){
+              if (v && (v.length >= this.minLength)) {
+                this.currentFilters.conditions.splice(0, this.currentFilters.conditions.length ? 1 : 0, {
+                  field: this.sourceText,
+                  operator: 'startswith',
+                  value: v
+                });
+                this.$nextTick(() => {
+                  if (!this.isOpened){
+                    this.isOpened = true;
+                    
+                  }
+                  else{
+                    let list = this.find('bbn-scroll');
+                    if ( list ){
+                      list.onResize();
+                    }
+                  }
+                });
+              }
+              else {
+                this.unfilter();
+              }
+            }
+          }, 10);
+        }
+        else if ( !v ){
+          this.unfilter();
+        }
       }
     }
   });
 
-})(jQuery, bbn, kendo);
+})(bbn);

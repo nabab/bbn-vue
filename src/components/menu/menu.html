@@ -8,19 +8,23 @@
         role="menuitem"
         :ref="'li' + i"
         :key="i"
-        :tabindex="item.disabled ? '-1' : '0'"
-        @focus="selectedElement = i"
+        :tabindex="item.data.disabled ? '-1' : '0'"
+        @focus="overIdx = i"
+        @click="overIdx = i"
         @mouseenter="_enterLi(i)"
         >
-      <span v-html="item.text"></span>
-      <span v-if="item.icon" class="k-icon k-i-arrow-60-down k-menu-expand-arrow"></span>
+      <span v-html="item.data.text"></span>
+      <span v-if="item.data[children]" class="nf nf-fa-chevron_down"></span>
     </li>
   </ul>
-  <bbn-floater v-if="selectedElement > -1"
-               children="items"
+  <bbn-floater v-for="(item, i) in filteredData"
+               v-if="overIdx === i"
+               :key="i"
+               :min-width="getRef('li' + i).clientWidth"
+               :children="children"
                :auto-hide="true"
-               :element="getRef('li' + selectedElement)"
+               :element="getRef('li' + i)"
                @close="onClose"
-               :source="filteredData[selectedElement].items">
+               :source="item.data[children]">
   </bbn-floater>
 </div>

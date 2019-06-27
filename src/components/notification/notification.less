@@ -1,48 +1,14 @@
 /* LESS Document */
 .bbn-notification{
-  font-size: small;
-  text-align: left;
-  padding: 2em 3em!important;
-  text-align: center;
-  font-size: small;
-  .date{
-    //color:grey
+  .bbn-floater{
+    transition: top 0.5s ease 0s;
   }
-  .bbn-notification-close {
-    line-height: 0.7em;
-    padding: 0;
-    cursor: pointer;
+  .bbn-notification-content{
+    white-space: nowrap;
+  }
+  .bbn-notification-closer{
     position: absolute;
-    top: 1px;
-    right: 1px;
-  }
-  .bbn-notification-icon {
-    font-size: 24px;
-    line-height: 24px;
-    margin-right: 10px;
-  }
-  .bbn-notification-info{
-    text-align: right;
-    margin-top: 0.5em;
-    opacity: 0.8;
-  }
-  /** loader */
-  .loader {
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-    border-color: inherit;
-    border-width: 4px;
-    border-style: solid;
-    top: 50%;
-    animation: loader 4s infinite ease;
-    margin-right: 15px;
-  }
-  .loader-inner {
-    vertical-align: top;
-    display: inline-block;
-    width: 100%;
-    background-color: #FBFBFB;
-    animation: loader-inner 4s infinite ease-in;
+    top: 2px;
+    right: 2px;
   }
 }

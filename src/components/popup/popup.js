@@ -380,7 +380,6 @@
             options = arguments[i];
           }
         }
-        bbn.fn.log(arguments, "CONFIRM", o);
         if ( (typeof(o) === 'object') && onYes ){
           if ( !o.content ){
             o.content = this.confirmMessage;

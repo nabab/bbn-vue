@@ -1,12 +1,9 @@
 /**
  * @file bbn-form component
  *
- * @description bbn-form is a component with great potential for data management.
- * Simple and unambiguous in implementation, it allows you to quickly generate and process web forms based also on Ajax with a set of elements.
- * The component provides, among other things, the possibility of distinguishing the constant data with those modified or inserted by the user before the predetermined action and then unifying them when sending.
- * Furthermore, if you wish, you can define validation, custom control or process data before being sent to the back-end system.
- * It simplifies the processing of data in the module and provides a ready-to-use mechanism for saving or not storing data on the server.
- * Allowing the possibility to implement any action you want.
+ * @description bbn-form is a component that allows you to quickly generate and process web forms.
+ * 
+ * Validation and custom control can be defined before data is sent to the back-end system.
  *
  * @copyright BBN Solutions
  *
@@ -24,8 +21,8 @@
     mixins: [bbn.vue.basicComponent],
     props: {
       /**
-       *
-       * @prop {Boolean} [false] autocomplete
+       *@tood not used
+       * @ {Boolean} [false] autocomplete
        */
       autocomplete: {
         type: Boolean,
@@ -61,7 +58,7 @@
         default: false
       },
       /**
-       *
+       * Set to true to give the attribute target the value '_self'.
        * @prop {Boolean} [false] self
        */
 			self: {
@@ -69,7 +66,7 @@
         default: false
       },
       /**
-       * A confirm popup with a costumized message shown before the form is submitted.
+       * A confirmation popup with a costumized message shown before the form is submitted.
        *
        * @prop {String|Function} confirmMessage
        */
@@ -77,7 +74,7 @@
         type: [String, Function]
       },
       /**
-       * A confirm popup with a costumized message shown before leaving the form.
+       * A confirmation popup with a costumized message shown before leaving the form.
        *
        * @prop {String|Function} confirmLeave
        */
@@ -94,7 +91,7 @@
         type: String
       },
       /**
-       * A method called after a correct form submission.
+       * A method called after a form is correctly submitted.
        *
        * @prop {Function} success
        */
@@ -102,15 +99,15 @@
         type: Function
       },
       /**
-       * A method called after a failed form submission.
+       * A method called after a form submission fails.
        *
        * @prop {Function} failure
-       */
+       */ 
       failure: {
         type: Function
       },
       /**
-       * A popup with a costumized message shown after a correct form submission.
+       * A popup with a costumized message shown after a form is correctly submitted.
        *
        * @prop {String|Function} successMessage
        */
@@ -118,7 +115,7 @@
         type: [String, Function]
       },
       /**
-       * A popup with a costumized message shown after a failed form submission.
+       * A popup with a costumized message shown after a form submission fails.
        *
        * @prop {String|Function} failureMessage
        */
@@ -126,7 +123,7 @@
         type: [String, Function]
       },
       /**
-       * The method of submission of the form.
+       * The form's method of submission.
        *
        * @prop {String} [post] method
        */
@@ -176,7 +173,7 @@
         type: Object
       },
       /**
-       * Set to true to have the form's footer fixed.
+       * Set to true to fix the form's footer.
        *
        * @prop {Boolean} [true] fixedFooter
        */
@@ -185,7 +182,7 @@
         default: false
       },
       /**
-       * The form schema generating the inputs.
+       * The form's schema generating the inputs.
        *
        * @prop {Array} [[]] schema
        */
@@ -208,7 +205,7 @@
         default: true
       },
       /**
-       * Checks the fields data before submitting the form.
+       * Checks the fields' data before submitting the form.
        *
        * @prop {Function} validation
        */
@@ -216,8 +213,8 @@
         type: Function
       },
       /**
-       * If true will consider itself as unique element of a floater and will have its buttons incorporated in it 
-       * whereas if undefined will 
+       * If true, will consider itself as a unique element of a floater and will have its buttons incorporated in it 
+       * whereas if undefined will.
        *
        * @prop {Boolean|String} windowed
        */
@@ -236,8 +233,20 @@
         isWindowed = this.closest('bbn-floater');
       }
       return {
+        /**
+         * True if the property windowed is true.
+         * @data {Boolean} isWindowed
+         */
         isWindowed: !!isWindowed,
+        /**
+         * True if the form has been modified.
+         * @data {Boolean} [false] modified
+         */
         modified: false,
+        /**
+         * True if the form has been modified.
+         * @data {Boolean} [false] popup
+         */
         popup: false,
         popupIndex: false,
         tab: false,
@@ -322,7 +331,7 @@
         return (this.action && this.isModified() || this.prefilled);
       },
       /**
-       * Based on the prop fixedFooter and fullScreen, a string is returned containing the classes for the form template.
+       * Based on the properties 'fixedFooter' and 'fullScreen', a string is returned containing the classes for the form's template.
        *
        * @computed currentClass
        * @return {String}
@@ -331,7 +340,6 @@
         let st = this.componentClass.join(' ');
         if ( this.isMounted ){
           if ( !this.isWindowed && (this.hasFooter || this.realButtons.length || this.footer) && this.scrollable ){
-            bbn.fn.log("IS NOT WINDOWED");
             st += ' bbn-flex-height';
           }
           if ( !this.isWindowed && this.scrollable ){
@@ -367,7 +375,7 @@
     },
     methods: {
       /**
-       * Defines the form behaviour when submitted.
+       * Defines the form behavior when submitted.
        *
        * @method _post
        * @fires getPopup
@@ -426,7 +434,7 @@
         }
       },
       /**
-       * Executes the command given to the button
+       * Executes the command given to the button.
        * @method _execCommand
        */
       _execCommand(button, ev){
@@ -452,7 +460,7 @@
         return res;
       },
       /**
-       * Based on the prop sendModel, the source of the form or an object of the data contained in the form's fields is returned.
+       * Based on the prop 'sendModel', either the source of the form or an object of data contained in the form's fields is returned.
        *
        * @method getData
        * @return {Object}
@@ -460,9 +468,21 @@
       getData(){
         return this.source;//this.sendModel ? this.source : bbn.fn.formdata(this.$el);
       },
+      /**
+       * Returns true if the form has been modified or if the value of the property 'prefilled' is true.
+       * @method isModified
+       * @return {Boolean}
+       */
       isModified(){
         return this.prefilled || !bbn.fn.isSame(this.source, this.originalData);
       },
+      /**
+       * Closes the popup containing the form.
+       * @method 
+       * @param {Vue} window 
+       * @param {Event} ev 
+       * @fires isModified
+       */
       closePopup(window, ev){
         if ( this.window && this.$el ){
           if ( !this.isPosted && this.confirmLeave && this.isModified() ){
@@ -479,6 +499,12 @@
           }
         }
       },
+      /**
+       * Cancels the changes and closes the window containing the form.
+       * @method cancel
+       * @fires reset
+       * @fires window.close
+       */
       cancel(){
         let ev = new Event('cancel', {cancelable: true});
         this.$emit('cancel', ev, this);
@@ -489,6 +515,14 @@
           }
         }
       },
+      /**
+       * Submits the form.
+       * @method submit
+       * @param {Boolean} force 
+       * @fires validation
+       * @fires _post
+       * @emits submit
+       */
       submit(force){
         let ok = true,
             elems = bbn.vue.findAll(this, '.bbn-input-component'),
@@ -540,6 +574,11 @@
           this._post();
         }
       },
+      /**
+       * Resets the original data of the form.
+       * @method reset 
+       * return {Boolean}
+       */
       reset(){
         this.isPosted = false;
         bbn.fn.iterate(this.originalData, (val, name) => {
@@ -550,13 +589,25 @@
         this.$forceUpdate();
         return true;
       },
+      /**
+       * Reinitializes the form.
+       * @method reinit
+       * 
+       */
       reinit(){
         this.originalData = JSON.parse(JSON.stringify(this.source));
         this.modified = this.isModified();
       },
+      /**
+       * Initializes the form.
+       * @method init 
+       * 
+       */
       init(){
         if ( this.$options.propsData.script ){
-          $(this.$el).data("script", this.$options.propsData.script);
+          //$(this.$el).data("script", this.$options.propsData.script);
+          this.$el.dataset.script = this.$options.propsData.script;
+         
         }
         //this.originalData = bbn.fn.extend(true, {}, this.getData());
         this.$nextTick(() => {
@@ -569,16 +620,28 @@
           if ( !this.tab ){
             this.tab = bbn.vue.closest(this, ".bbns-tab");
           }
-          $(":input:visible:first", this.$el).focus();
+          // @jquery $(":input:visible:first", this.$el).focus();
+          this.$el.querySelector('input:not([hidden])').focus()
         });
       },
+      /**
+       * @method checkValidity
+       * @fires $el.checkValidity
+       */
       checkValidity(){
         return this.$el.checkValidity();
       },
+      /**
+       * @method reportValidity
+       * @fires $el.reportValidity
+       */
       reportValidity() {
         return this.$el.reportValidity();
       }
     },
+    /**
+     * @event beforeMount
+     */
     beforeMount(){
       if ( this.isWindowed ){
         let popup = this.closest('bbn-floater');
@@ -588,10 +651,17 @@
         }
       }
     },
+    /**
+     * @event mounted
+     * @fires init
+     */
     mounted(){
       this.init();
     },
     watch: {
+      /**
+       * @watch schema
+       */
       schema(){
         let currentSchema = [];
         this.schema.map((a) => {
@@ -599,10 +669,13 @@
         });
         this.currentSchema = currentSchema;
       },
+      /**
+       * @watch source
+       */
       source: {
         deep: true,
         handler(newVal){
-          bbn.fn.log("BBN-FORM MODIFIED");
+          //bbn.fn.log("BBN-FORM MODIFIED");
           this.modified = this.isModified();
           //this.$emit('input', newVal);
           if ( this.tab && this.tab.tabNav ){
@@ -610,11 +683,13 @@
           }
         }
       },
+      /**
+       * @watch canSubmit
+       */
       canSubmit(){
         if ( this.popup ){
           this.popup.currentButtons = this.realButtons;
         }
-        bbn.fn.log("canSubmit")
       }
     }
   });

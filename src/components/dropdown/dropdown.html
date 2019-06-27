@@ -1,45 +1,56 @@
-<div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', 'bbn-reactive', {'bbn-disabled': !!disabled}]"
-     @focus=""
+<div :class="[componentClass, 'bbn-iblock', 'bbn-reactive', 'bbn-textbox', {'bbn-disabled': !!disabled}]"
+     @mouseleave="leave"
+     @focusin="isActive = true"
+     @focusout="isActive = false"
 >
   <div class="bbn-flex-width bbn-h-100">
-    <div class="bbn-flex-fill" @click.stop="isOpened = !isOpened">
+    <div class="bbn-flex-fill"
+         @click.stop="click">
       <input :disabled="disabled"
               class="bbn-unselectable bbn-textbox bbn-no-border bbn-abs bbn-top-left"
               @keydown.stop="keydown"
-              :required="required"
-              readonly="readonly"
-              :placeholder="placeholder"
-              :value="filterString ? '' : currentText">
-      <input v-if="filterable && !disabled && !readonly"
-              tabindex="0"
-              :disabled="disabled"
-              class="bbn-textbox bbn-no-border"
-              v-model="filterString"
+              ref="input"
+              autocorrect="off"
+              autocapitalize="off"
+              spellcheck="false"
               :required="required"
               :readonly="readonly"
-              @keydown.stop="keydown"
-              :name="name">
+              :placeholder="placeholder"
+              :tabindex="disabled || readonly ? -1 : 0"
+              :value="currentText"
+              @focus="selectAll"
+              autocomplete="off">
     </div>
-    <div>
-      <button class="bbn-p bbn-button bbn-reactive-block bbn-button-icon-only bbn-radius-right bbn-h-100"
-              @click.prevent.stop="isOpened = !isOpened"
-              tabindex="-1"
-              :disabled="disabled">
-        <i :class="'nf nf-fa-caret_' + (isOpened ? 'up' : 'down')"></i>
-      </button>
+    <div class="bbn-list-component-button">
+      <div v-if="isAjax && isLoading"
+           class="bbn-middle">
+        <bbn-loadicon size="1.2em"
+                      tabindex="-1">
+        </bbn-loadicon>
+      </div>
+      <bbn-button v-else
+                  :icon="isOpened && !disabled && !readonly && filteredData.length ? iconUp : iconDown"
+                  class="bbn-p bbn-button-right"
+                  @click.prevent.stop="click"
+                  tabindex="-1"
+                  :disabled="disabled">
+      </bbn-button>
     </div>
   </div>
   <input type="hidden"
          v-model="value"
          ref="element"
          :name="name">
-  <bbn-floater v-if="isOpened"
+  <bbn-floater v-if="isMounted && !disabled && !readonly && isOpened"
                :element="$el"
-               :min-width="currentWidth"
+               :max-height="maxHeight"
+               :min-width="$el.clientWidth"
                ref="list"
+               :uid="sourceValue"
+               :item-component="realComponent"
                @select="select"
+               :selected="[value]"
                @close="isOpened = false"
-               @mounted="init"
                :source="filteredData">
   </bbn-floater>
 </div>

@@ -31,12 +31,12 @@
      * @mixin bbn.vue.observerCompone
      * @mixin bbn.vue.keepCoolComponent
      * @mixin bbn.vue.dataComponent
-     * @mixin bbn.vue.sourceArrayComponent
+     * @mixin bbn.vue.listComponent
      */
     mixins: [
       bbn.vue.basicComponent,
       bbn.vue.resizerComponent,
-      bbn.vue.sourceArrayComponent,
+      bbn.vue.listComponent,
       bbn.vue.dataEditorComponent,
       bbn.vue.localStorageComponent,
       bbn.vue.observerComponent,
@@ -71,6 +71,10 @@
        * @prop {Boolean} [false] resizable
        */
       resizable: {
+        type: Boolean,
+        default: false
+      },
+      autobind: {
         type: Boolean,
         default: false
       },
@@ -427,10 +431,6 @@
          */
         aggregatedColumns: [],
         /**
-         * @data {Boolean} [false] currentOverTr
-         */
-        currentOverTr: false,
-        /**
          * @data {Boolean} [false] updaterTimeout
          */
         updaterTimeout: false,
@@ -630,14 +630,14 @@
       },
       /**
        * Return an array of objects containing the data of the row and other information about the current view of the table.
-       * @computed currentSet
+       * @computed items
        * @fires _checkConditionsOnValue
        * @fires expandedValues
        * @fires _updateViewport
        * @fires isExpanded
        * @return {Array}
        */
-      currentSet() {
+      items() {
         if (!this.cols.length) {
           return [];
         }
@@ -660,12 +660,7 @@
           aggregates = {},
           aggregateModes = [],
           i = 0,
-          data = this.filteredData.slice().map((item, index) => {
-            return {
-              index: index,
-              data: item
-            }
-          });
+          data = this.filteredData;
         // Aggregated
         if (this.isAggregated) {
           aggregateModes = bbn.fn.isArray(this.aggregate) ? this.aggregate : [this.aggregate];
@@ -843,7 +838,7 @@
               o.expander = true;
             }
             if (this.selection && (!bbn.fn.isFunction(this.selection) || this.selection(o))) {
-              o.selected = this.selectedRows.indexOf(data[i].index) > -1;
+              o.selected = this.currentSelected.indexOf(data[i].index) > -1;
               o.selection = true;
               groupNumCheckboxes++;
               if (o.selected) {
@@ -1209,7 +1204,7 @@
         let cols = {};
         let res = [];
         bbn.fn.each(this.currentData, (a) => {
-          let o = bbn.fn.clone(a);
+          let o = bbn.fn.clone(a.data);
           let row = [];
           bbn.fn.each(this.cols, (b) => {
             if (!b.hidden && !b.buttons && b.field) {
@@ -1289,11 +1284,11 @@
        * @param {Number} index
        */
       _delete(index) {
-        if (this.currentSet[index] && this.currentData[this.currentSet[index].index]) {
+        if (this.items[index] && this.currentData[this.items[index].index]) {
           let ev = new Event('delete');
-          index = this.currentSet[index].index;
+          index = this.items[index].index;
           if (this.url) {
-            bbn.fn.post(this.url, bbn.fn.extend({}, this.data, this.currentData[index], {
+            bbn.fn.post(this.url, bbn.fn.extend({}, this.data, this.currentData[index].data, {
               action: 'delete'
             }), (d) => {
               if (d.success) {
@@ -1301,7 +1296,7 @@
                 if (this.originalData) {
                   this.originalData.splice(index, 1);
                 }
-                this.$emit('delete', this.currentData[index], ev);
+                this.$emit('delete', this.currentData[index].data, ev);
                 appui.success(bbn._('Deleted successfully'))
               } else {
                 this.alert(bbn._("Impossible to delete the row"))
@@ -1312,7 +1307,7 @@
             if (this.originalData) {
               this.originalData.splice(index, 1);
             }
-            this.$emit('delete', this.currentData[index], ev);
+            this.$emit('delete', this.currentData[index].data, ev);
           }
         }
       },
@@ -1380,7 +1375,7 @@
       isEdited(data, col, idx) {
         return this.isEditable(data, col, idx) &&
           (this.editMode === 'inline') &&
-          (this.currentSet[idx].index === this.editedIndex);
+          (this.items[idx].index === this.editedIndex);
       },
       /**
        * @todo descriprion
@@ -1737,8 +1732,8 @@
         this.originalRow = bbn.fn.clone(row);
         // EditedRow exists from now on the time of the edition
         this.editedRow = row;
-        if (this.currentSet[index]) {
-          this.editedIndex = this.currentSet[index].index;
+        if (this.items[index]) {
+          this.editedIndex = this.items[index].index;
         }
         if (this.editMode === 'popup') {
           if (typeof (winOptions) === 'string') {
@@ -1853,7 +1848,10 @@
         this.$emit('saverow', this.tmpRow || this.editedRow, ev);
         if (!ev.defaultPrevented) {
           if (this.tmpRow) {
-            this.currentData.push(bbn.fn.clone(this.tmpRow));
+            this.currentData.push({
+              data: bbn.fn.clone(this.tmpRow),
+              index: this.currentData.length
+            });
             if (this.originalData) {
               this.originalData.push(bbn.fn.clone(this.tmpRow));
             }
@@ -1861,7 +1859,7 @@
           }
           // Update
           else if (this.editedRow) {
-            this.currentData.splice(this.editedIndex, 1, bbn.fn.clone(this.editedRow));
+            this.$set(this.currentData[this.editedIndex], 'data', bbn.fn.clone(this.editedRow));
             if (this.originalData) {
               this.originalData.splice(this.editedIndex, 1, bbn.fn.clone(this.editedRow));
             }
@@ -1982,7 +1980,9 @@
        */
       remove(where) {
         let idx;
-        while ((idx = bbn.fn.search(this.currentData, where)) > -1) {
+        while ((idx = bbn.fn.search(this.currentData, a => {
+          return bbn.fn.compareConditions(a.data, where);
+        })) > -1) {
           this.currentData.splice(idx, 1);
         }
         this.$forceUpdate();
@@ -2002,7 +2002,10 @@
        *
        */
       add(data) {
-        this.currentData.push(data);
+        this.currentData.push({
+          data: data,
+          index: this.currentData.length
+        });
       },
       /**
        * Fires the method _delete to delete the row.
@@ -2015,7 +2018,7 @@
       delete(index, confirm) {
         if (this.currentData[index]) {
           let ev = new Event('delete', {cancelable: true});
-          this.$emit('beforeDelete', this.currentData[index], ev);
+          this.$emit('beforeDelete', this.currentData[index].data, ev);
           if (!ev.defaultPrevented) {
             if (confirm === undefined) {
               confirm = this.confirmMessage;
@@ -2073,29 +2076,29 @@
        * @emit toggle
        */
       checkSelection(index) {
-        let row = this.currentSet[index];
+        let row = this.items[index];
         if (row && this.groupable && row.group) {
           if (row.expanded) {
             bbn.fn.fori((d, i) => {
               if (d && d.selection && (d.data[this.cols[this.group].field] === row.value)) {
                 this.checkSelection(i)
               }
-            }, this.currentSet, index + row.num, index + 1)
+            }, this.items, index + row.num, index + 1)
           }
           return;
         }
         if (row && row.selection) {
-          let idx = this.selectedRows.indexOf(row.index),
+          let idx = this.currentSelected.indexOf(row.index),
             isSelected = false;
           if (idx > -1) {
             this.$emit('unselect', row.data);
-            this.selectedRows.splice(idx, 1);
+            this.currentSelected.splice(idx, 1);
           } else {
             this.$emit('select', row.data);
-            this.selectedRows.push(row.index);
+            this.currentSelected.push(row.index);
             isSelected = true;
           }
-          this.$emit('toggle', isSelected, this.currentData[row.index]);
+          this.$emit('toggle', isSelected, this.currentData[row.index].data);
         }
       },
       /**
@@ -2118,9 +2121,11 @@
         this.editedRow = false;
         this.editedIndex = false;
         this.$forceUpdate();
-        return bbn.vue.sourceArrayComponent.methods.updateData.apply(this, [withoutOriginal]).then(() => {
+        return bbn.vue.listComponent.methods.updateData.apply(this, [withoutOriginal]).then(() => {
           if (this.editable) {
-            this.originalData = JSON.parse(JSON.stringify(this.currentData));
+            this.originalData = JSON.parse(JSON.stringify(this.currentData.map((a) => {
+              return a.data;
+            })));
           }
           setTimeout(() => {
             this.init();
@@ -2167,7 +2172,7 @@
         if (!this.originalData) {
           return false;
         }
-        return JSON.stringify(this.currentData[idx]) !== JSON.stringify(this.originalData[idx])
+        return JSON.stringify(this.currentData[idx].data) !== JSON.stringify(this.originalData[idx])
       },
       /**
        * Returns true if the given column is sorted.
@@ -2278,7 +2283,7 @@
           this._removeTmp();
         } else if (this.editedRow && this.originalRow) {
           if (this.currentData[this.editedIndex]) {
-            this.currentData[this.editedIndex] = this.originalRow;
+            this.currentData[this.editedIndex].data = this.originalRow;
           }
         }
         this.originalRow = false;
@@ -2456,9 +2461,9 @@
             (this.group !== false) &&
             this.cols[this.group] &&
             this.cols[this.group].field &&
-            (this.currentData[idx][this.cols[this.group].field] !== undefined)
+            (this.currentData[idx].data[this.cols[this.group].field] !== undefined)
           ) {
-            let groupValue = this.currentData[idx][this.cols[this.group].field],
+            let groupValue = this.currentData[idx].data[this.cols[this.group].field],
               groupIndex = this.currentExpandedValues.indexOf(groupValue);
             if (groupIndex > -1) {
               this.currentExpandedValues.splice(groupIndex, 1);
@@ -2497,7 +2502,7 @@
        * @return {Boolean}
        */
       isSelected(index) {
-        return this.selection && (this.selectedRows.indexOf(index) > -1);
+        return this.selection && (this.currentSelected.indexOf(index) > -1);
       },
       /**
        * Returns if the given row has td.
@@ -2926,7 +2931,6 @@
        * @param {Number} idx
        */
       focusRow(ev, idx) {
-        //bbn.fn.log(ev);
         if (ev.target.tagName !== 'BUTTON') {
           this.focusedRow = idx;
         }
@@ -3078,8 +3082,8 @@
        * @emit change
        */
       focusedRow(newIndex, oldIndex) {
-        if (this.currentSet[oldIndex] !== undefined) {
-          let idx = this.currentSet[oldIndex].index;
+        if (this.items[oldIndex] !== undefined) {
+          let idx = this.items[oldIndex].index;
           if (
             this.editable &&
             (this.editMode === 'inline') &&
@@ -3087,21 +3091,25 @@
             this.isModified(idx)
           ) {
             //this.$forceUpdate();
-            this.$emit('change', this.currentSet[oldIndex].data, idx);
+            this.$emit('change', this.items[oldIndex].data, idx);
             //this.save();
           }
         }
-        if (this.currentSet[newIndex] !== undefined) {
+        if (this.items[newIndex] !== undefined) {
           if (
             this.editable &&
             (this.editMode === 'inline') &&
-            !this.currentSet[newIndex].group
+            !this.items[newIndex].group
           ) {
             let comeFromAfter = newIndex === oldIndex - 1;
             this.$nextTick(() => {
-              this.edit(this.currentSet[newIndex].data, null, newIndex);
+              this.edit(this.items[newIndex].data, null, newIndex);
               this.$nextTick(() => {
-                $("input:visible:" + (comeFromAfter ? 'last' : 'first'), this.getTr(newIndex)).focus();
+                //@jquery $("input:visible:" + (comeFromAfter ? 'last' : 'first'), this.getTr(newIndex)).focus();
+                if ( this.getTr(newIndex).querySelectorAll('input:not([hidden])').length ){
+                  this.getTr(newIndex).querySelectorAll('input:not([hidden])')[ comeFromAfter ? 0 : (this.getTr(newIndex).querySelectorAll('input:not([hidden])').length -1) ]
+                }
+                
               })
             })
           }

@@ -10,42 +10,42 @@
  * @created 10/02/2017
  */
 
-(function(bbn, kendo){
+(function(bbn){
   "use strict";
 
   Vue.component('bbn-menu', {
-    mixins: [bbn.vue.basicComponent, bbn.vue.sourceArrayComponent],
+    mixins: [bbn.vue.basicComponent, bbn.vue.listComponent],
     props: {
       orientation: {},
       direction: {},
       opened: {},
       sourceValue:{
         default: 'text'
+      },
+      children: {
+        type: String,
+        default: 'items'
       }
+    },
+    data(){
+      return {
+        overIdx: -1
+      };
     },
     methods: {
       _enterLi(idx){
-        if ( (this.selectedElement > -1) && (this.selectedElement !== idx) ){
-          this.selectedElement = idx;
+        if ( (this.overIdx > -1) && (this.overIdx !== idx) ){
+          this.overIdx = idx;
           this.getRef('li' + idx).focus();
         }
       },
       onLeave(){
-        if ( this.selectedElement > -1 ){
-          let idx = this.selectedElement;
-          this.selectedElement = -1;
-          this.getRef('li' + idx).blur();
-        }
+        this.overIdx = -1;
       },
       onClose(){
         //getRef('li' + selectedElement).blur(); selectedElement = -1;
       },
-    },
-    data(){
-      return {
-        selectedElement: -1
-      }
-    },
+    }
   });
 
-})(bbn, kendo);
+})(bbn);

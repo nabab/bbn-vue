@@ -15,7 +15,7 @@
   "use strict";
 
   Vue.component('bbn-splitter', {
-    mixins: [bbn.vue.basicComponent, bbn.vue.optionComponent, bbn.vue.resizerComponent],
+    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent],
     props: {
       /**
        * The orientation of the splitter ('horizontal', 'vertical', 'auto')
@@ -416,6 +416,7 @@
                 resizable: resizable,
                 collapsible: collapsible,
                 isResizable: collapsible || resizable,
+                pane: pane
               }, props);
               tmp.push(obj);
             }
@@ -772,7 +773,10 @@
             this.panes[smaller].tmpDiff = 0;
             this.panes[bigger].tmpDiff =  0;
             this.panes[smaller].collapsed = false;
+            this.panes[smaller].pane.isCollapsed = false;
             this.panes[bigger].collapsed =  false;
+            this.panes[bigger].pane.isCollapsed = false;
+
           }
           // The other is also collapsed and the double arrow is clicked: switching
           else if ( full && (this.panes[toUpdate].collapsed === collapsing) ){
@@ -783,6 +787,8 @@
             }
             this.panes[bigger].collapsed = false;
             this.panes[smaller].collapsed = true;
+            this.panes[bigger].pane.isCollapsed = false;
+            this.panes[smaller].pane.isCollapsed = true;
           }
           else{
             if ( this.panes[toCollapse].size && this.panes[toUpdate].size ){
@@ -794,7 +800,11 @@
             this.panes[bigger].tmpDiff = diff1 - this.resizerSize;
             this.panes[smaller].tmpDiff = 0;
             this.panes[toCollapse].collapsed =  collapsing;
+            this.panes[toCollapse].pane.isCollapsed =  collapsing;
           }
+          this.$nextTick(() => {
+            this.selfEmit();
+          });
         }
       },
       //@todo not used
@@ -846,7 +856,6 @@
         bbn.fn.warning(newVal);
         if ( (newVal !== oldVal) && (newVal !== this.currentOrientation) ){
           this.currentOrientation = newVal === 'auto' ? this.getOrientation() : newVal;
-          this.init();
         }
       },
       /**
