@@ -126,10 +126,18 @@
     _realDefineComponent(name, r, mixins){
       if ( r && r.script ){
         if ( r.css ){
-          $(document.head).append('<style>' + r.css + '</style>');
+          // @jquery $(document.head).append('<style>' + r.css + '</style>');
+          let el = document.createElement('style');
+          el.innerHTML = r.css;
+          document.head.insertAdjacentElement('beforeend', el)
         }
         if ( r.content ){
-          $(document.body).append('<script type="text/x-template" id="bbn-tpl-component-' + name + '">' + r.content + '</script>');
+          //@jquery $(document.body).append('<script type="text/x-template" id="bbn-tpl-component-' + name + '">' + r.content + '</script>');
+          let script = document.createElement('script');
+          script.innerHTML = r.content;
+          script.setAttribute('id', 'bbn-tpl-component-' + name);
+          script.setAttribute('type', 'text/x-template');
+          document.body.insertAdjacentElement('beforeend', script)
         }
         let data = r.data || {};
         let res = eval(r.script);
@@ -251,14 +259,22 @@
         bbn.fn.each(r.html, (h) => {
           if ( h && h.content ){
             let id = 'bbn-tpl-component-' + name + (h.name === name ? '' : '-' + h.name),
-                $tpl = $('<script type="text/x-template" id="' + id + '"></script>');
-            $tpl.html(h.content);
-            document.body.appendChild($tpl[0]);
+                // @jquery $tpl = $('<script type="text/x-template" id="' + id + '"></script>');
+            //@jquery $tpl.html(h.content);
+            script = document.createElement('script');
+            script.innerHTML = h.content;
+            script.setAttribute('id', id);
+            script.setAttribute('type', 'text/x-template');
+            //@jquery document.body.appendChild($tpl[0]);
+            document.body.appendChild(script);
           }
         })
       }
       if ( r.css ){
-        $(document.head).append('<style>' + r.css + '</style>');
+        //@jquery $(document.head).append('<style>' + r.css + '</style>');
+        let el = document.createElement('style');
+          el.innerHTML = r.css;
+          document.head.insertAdjacentElement('beforeend', el)
       }
       // When the script is in the storage
       if ( typeof r.script === 'string' ){
@@ -487,6 +503,7 @@
     is(vm, selector){
       if ( selector && vm ){
         if ( vm.$el && $(vm.$el).is(selector) ){
+      //@change  if ( vm.$el && (vm.$el.tagName === selector) ){
           return true;
         }
         if ( vm.$vnode && vm.$vnode.componentOptions && (vm.$vnode.componentOptions.tag === selector) ){
@@ -600,11 +617,14 @@
     },
 
     findAll(vm, selector, only_children){
+      
+      
       let vms = this.getComponents(vm, only_children),
           res = [];
       for ( let i = 0; i < vms.length; i++ ){
         if (
-          $(vms[i].$el).is(selector) ||
+         $(vms[i].$el).is(selector) ||
+          
           (vms[i].$vnode.componentOptions && (vms[i].$vnode.componentOptions.tag === selector))
         ){
           res.push(vms[i]);

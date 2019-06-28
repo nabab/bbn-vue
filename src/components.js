@@ -2109,15 +2109,16 @@
           // Setting initial dimensions
           //@jquery this.lastKnownHeight = this.parentResizer ? Math.round($(this.$el.parentNode).innerHeight()) : bbn.env.height;
           //@jquery this.lastKnownWidth = this.parentResizer ? Math.round($(this.$el.parentNode).innerWidth()) : bbn.env.width;
-          this.lastKnownHeight = this.parentResizer ? Math.round(this.$el.parentNode.clientHeight) : bbn.env.height;
-          this.lastKnownWidth = this.parentResizer ? Math.round(this.$el.parentNode.clientWidth) : bbn.env.width;
+          this.lastKnownHeight = (this.parentResizer && this.$el.parentNode) ? Math.round(this.$el.parentNode.clientHeight) : bbn.env.height;
+          this.lastKnownWidth = (this.parentResizer && this.$el.parentNode) ? Math.round(this.$el.parentNode.clientWidth) : bbn.env.width;
           // Creating the callback function which will be used in the timeout in the listener
           this.resizeEmitter = (force) => {
             // Removing previous timeout
             clearTimeout(resizeTimeout);
             // Creating a new one
             resizeTimeout = setTimeout(() => {
-              if ( $(this.$el).is(":visible") ){
+              //@jquery if ( $(this.$el).is(":visible") ){
+              if ( this.$el.offsetLeft !== 0 ){
                 // Checking if the parent hasn't changed (case where the child is mounted before)
                 let tmp = this.closest(".bbn-resize-emitter", true);
                 if ( tmp !== this.parentResizer ){
@@ -2129,8 +2130,8 @@
                 let resize = false,
                     // @jquery h = this.parentResizer ? Math.round($(this.$el.parentNode).innerHeight()) : bbn.env.height,
                     // @jquery w = this.parentResizer ? Math.round($(this.$el.parentNode).innerWidth()) : bbn.env.width;
-                    h = this.parentResizer ? Math.round(this.$el.parentNode.clientHeight) : bbn.env.height,
-                    w = this.parentResizer ? Math.round(this.$el.parentNode.clientWidth) : bbn.env.width;
+                    h = (this.parentResizer && this.$el.parentNode) ? Math.round(this.$el.parentNode.clientHeight) : bbn.env.height,
+                    w = (this.parentResizer && this.$el.parentNode) ? Math.round(this.$el.parentNode.clientWidth) : bbn.env.width;
 
                 if ( h && (this.lastKnownHeight !== h) ){
                   this.lastKnownHeight = h;

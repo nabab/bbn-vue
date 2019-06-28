@@ -69,20 +69,24 @@
         this.widget.codemirror.setOption('disableInput', !!v);
         if ( !v && !this.readonly ){
           this.widget.codemirror.setOption('readOnly', false);
-          $("div.editor-toolbar", this.$el).show();
+          //@jquery $("div.editor-toolbar", this.$el).show();
+           this.$el.querySelector("div.editor-toolbar").display =  'block'
         }
         else {
           this.widget.codemirror.setOption('readOnly', true);
-          $("div.editor-toolbar", this.$el).hide();
+          //@jquery $("div.editor-toolbar", this.$el).hide();
+          this.$el.querySelector("div.editor-toolbar").display =  'none'
         }
       },
       readonlyWidget(v){
         this.widget.codemirror.setOption('readOnly', !!v);
         if ( !v && !this.disabled ){
-          $("div.editor-toolbar", this.$el).show();
+          //@jquery $("div.editor-toolbar", this.$el).show();
+          this.$el.querySelector("div.editor-toolbar").display =  'block'
         }
         else {
-          $("div.editor-toolbar", this.$el).hide();
+          //@jquery $("div.editor-toolbar", this.$el).hide();
+          this.$el.querySelector("div.editor-toolbar").display =  'none'
         }
       }
     },
@@ -96,12 +100,12 @@
     },
     mounted(){
       const vm = this;
-      let cfg = bbn.fn.extend(vm.getOptions(), {
+      /*let cfg = bbn.fn.extend(vm.getOptions(), {
         change: function(e){
           vm.emitInput(vm.widget.value());
           return true
         }
-      });
+      });*/
       this.widget = new SimpleMDE(bbn.fn.extend({
         element: this.$refs.element
       }, this.$data));

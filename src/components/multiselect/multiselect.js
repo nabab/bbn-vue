@@ -109,16 +109,6 @@
 
     },
     data(){
-      let cp = this.component || null;
-      if (!cp && this.template) {
-        cp = {
-          props: ['source'],
-          data(){
-            return this.source;
-          },
-          template: this.template
-        };
-      }
       return {
         isFocused: false,
         search: '',
@@ -126,7 +116,6 @@
         isOpened: true,
         currentWidth: this.minWidth,
         currentPlaceholder: '?',
-        realComponent: cp,
         hasSelection: true
       };
     },

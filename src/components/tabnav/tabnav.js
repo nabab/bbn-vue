@@ -148,7 +148,8 @@
     methods: {
       observerEmit(newVal, obs){
         if ( bbn.vue.observerComponent.methods.observerEmit.apply(this, [newVal, obs]) ){
-          let ele = $(".bbn-observer-" + obs.element, this.$el);
+        //@jquery  let ele = $(".bbn-observer-" + obs.element, this.$el);
+        let ele = this.$el.querySelector(".bbn-observer-" + obs.element)
           if ( ele.length ){
             let idx = this.router.getIndex(ele[0]);
             if ( idx !== false ){
@@ -263,17 +264,34 @@
         return 'black';
       },
       scrollTabs(dir){
-        /*let ul = this.$refs.tabgroup, 
+        let ul = this.$refs.tabgroup, 
             scroll = this.getRef('horizontal-scroll'),
+            scrollContainer = scroll.getRef('scrollContainer'),
             newPos;
-        if ( dir === 'left'){
+           
+        if ( ul.clientWidth > scrollContainer.clientWidth ){
+          if ( dir === 'right' ){
+            //newPos = scroll.lastKnownWidth - 100;
+            newPos = newPos = scroll.currentX + 100;
+          }
+          if ( (dir === 'left')  && (scroll.currentX !== 0)){
+            if (scroll.currentX - 100 > 0){
+              newPos = scroll.currentX - 100;
+            }
+            else{
+              newPos = 1;
+            }
+          }
+        scroll.scrollTo(newPos, 0, true);
+        }
+       /* if ( dir === 'left'){
           newPos = this.lastKnownWidth - 100 < 0 ? 0 : this.lastKnownWidth - 100;
         }
         else if ( dir === 'right' ){
            newPos = this.lastKnownWidth + 100 < 0 ? 0 : this.lastKnownWidth + 100;
         }
         scroll.scrollTo(newPos, 0, true);*/
-        if ( ul.scrollWidth > ul.clientWidth ){
+        /*if ( ul.scrollWidth > ul.clientWidth ){
           let total = ul.scrollWidth,
               visible = ul.clientWidth,
               position = ul.scrollLeft,
@@ -290,7 +308,7 @@
               scrollLeft: newPos
             })
           }
-        }
+        }*/
       },
       cutTitle(title){
         return bbn.fn.shorten(title, 20)
@@ -572,11 +590,19 @@
             icon: "nf nf-mdi-help_circle_outline",
             command: () => {
               let tab = this.getVue(idx),
-                  span = $('<span/>').html(this.router.views[idx].title),
-                  title = span.text();
+                  //@jquery span = $('<span/>').html(this.router.views[idx].title),
+                  span = document.createElement('span');
+              span.innerHTML =  this.router.views[idx].title;
+              //@jquery title = span.text();
+              let title = span.innerText;
+              if ( !title && span.querySelector("[title]").length ){
+                title = span.querySelector("[title]").getAttribute("title");
+              }
+              
+              /* @jquery
               if ( !title && span.find("[title]").length ){
                 title = span.find("[title]").attr("title");
-              }
+              }*/
               tab.getPopup().open({
                 component: {
                   props: ['source'],
@@ -693,7 +719,7 @@
         }
         return this;
       },
-
+      /**@todo not used */
       setColorSelector(col, idx){
         if ( (idx = this.getIndex(idx)) !== false ) {
           let vm = this,
@@ -706,6 +732,7 @@
             if (!bbn.fn.isColor(col)) {
               col = vm.fThemeColor;
             }
+            
             $("div.ui-tabNav-tabSelected", tab[0]).css("backgroundColor", col);
             if (window.tinycolor) {
               if ( !vm.colorIsDone ){
@@ -717,7 +744,7 @@
           }
         }
       },
-
+      /**@todo not used */
       setColor(bcol, fcol, idx, dontSetSelector) {
         let vm = this;
         if ( (idx = vm.getIndex(idx)) !== false ) {

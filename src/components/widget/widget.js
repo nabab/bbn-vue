@@ -332,9 +332,13 @@
     },
     mounted(){
       if ( this.dashboard && this.dashboard.sortable ){
+        /* @jquery
         if ( $(this.$el).closest(".bbn-masonry").hasClass("ui-sortable") ){
           $(this.$el).closest(".bbn-masonry").sortable('refresh')
-        }
+        }*/
+        /*if ( this.$el.closest('.bbn-masonry') && this.$el.closest('.bbn-masonry').classList.contains('ui-sortable'){
+          $(this.$el).closest(".bbn-masonry").sortable('refresh')
+        }*/
       }
       this.load();
       this.$nextTick(() => {

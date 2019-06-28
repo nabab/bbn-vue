@@ -1145,9 +1145,13 @@
               tot = 0;
             bbn.fn.each(cols, (a) => {
               if (tot + a.realWidth > x) {
+                /* @jquery
                 $(".bbn-table-title-group", this.getRef('mainTitles')).css({
                   left: tot < x ? x - tot : 0
-                });
+                });*/
+                if ( this.getRef('mainTitles') && this.getRef('mainTitles').querySelector('.bbn-table-title-group') ){
+                  this.getRef('mainTitles').querySelector('.bbn-table-title-group').style.left = tot < x ? x - tot : 0;
+                }
                 return false;
               }
               tot += a.realWidth;
