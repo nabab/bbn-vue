@@ -101,7 +101,7 @@
        */
       width: {
         type: [Number||String],
-        default: 500
+        //default: 500
       },
       /**
        * Set to true shows the value on the bar
@@ -219,9 +219,9 @@
           this.realValuePosition = this.valuePosition;  
         }
       }
-      else if ( this.orientation === 'horizontal' ){
+      else if ( (this.orientation === 'horizontal') && (this.width) ){
         this.realValuePosition = this.valuePosition;
-        st += 'height: 1.9em; width: ' + (bbn.fn.isNumber(this.width) ? ( this.width  + 'px') : this.width);
+        st += 'height: 1.9em; min-width: ' + (bbn.fn.isNumber(this.width) ? ( this.width  + 'px') : this.width);
       }
       this.orientationStyle = st += ';';
       

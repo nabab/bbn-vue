@@ -73,6 +73,7 @@
     },
     data(){
       return {
+        opacity: 0,
         pollerObject: {
           chat: true,
           message: null,
@@ -399,13 +400,12 @@
         this.app = this.$refs.app;
         this.ready = true;
         setTimeout(() => {
-          $(this.$el).animate({opacity: 1}, 'slow', () => {
-            this.$emit('resize');
-            setTimeout(() => {
-              this.poll();
-            }, 2000)
-          })
-        }, 2000);
+          this.opacity = 1;
+          this.$emit('resize');
+          setTimeout(() => {
+            this.poll();
+          }, 1000);
+        }, 1000);
       }
     },
     watch: {

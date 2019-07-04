@@ -103,6 +103,13 @@
     },
 
     computed: {
+      scrollCfg(){
+        return this.scrollable ? {
+          axis: 'x',
+          container: true,
+          hidden: true
+        } : {};
+      },
       tabs(){
         return this.router ? this.router.views : [];
       },
@@ -148,15 +155,14 @@
     methods: {
       observerEmit(newVal, obs){
         if ( bbn.vue.observerComponent.methods.observerEmit.apply(this, [newVal, obs]) ){
-        //@jquery  let ele = $(".bbn-observer-" + obs.element, this.$el);
-        let ele = this.$el.querySelector(".bbn-observer-" + obs.element)
-          if ( ele.length ){
-            let idx = this.router.getIndex(ele[0]);
+          let ele = this.$el.querySelector(".bbn-observer-" + obs.element);
+          if ( ele ){
+            let idx = this.router.getIndex(ele);
             if ( idx !== false ){
               this.router.$set(this.router.views[idx].events, 'bbnObs' + obs.element + obs.id, newVal);
               this.$nextTick(() => {
                 this.$forceUpdate();
-              })
+              });
             }
           }
         }

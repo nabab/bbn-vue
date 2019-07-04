@@ -294,7 +294,7 @@
        */
       loadedConfig: {
         type: Object
-      }
+      },
     },
     data() {
       let editable = bbn.fn.isFunction(this.editable) ? this.editable() : this.editable;
@@ -479,7 +479,8 @@
         currentScrollTop: 0,
         marginStyleSheet: null,
         cssRuleName: bbn.fn.randomString().toLowerCase(),
-        initStarted: false
+        initStarted: false,
+        inTable: null
       };
     },
     computed: {
@@ -671,7 +672,7 @@
               min: false,
               max: false,
               groups: []
-            }
+            };
           });
         }
         // Paging locally
@@ -727,7 +728,7 @@
               if (col.source && col.field) {
                 bbn.fn.each(data, (d, i) => {
                   d.data[col.field] = tmpData[col.field][d.index];
-                })
+                });
               }
             });
           } else {
@@ -1757,6 +1758,7 @@
             title: bbn._('Row edition'),
             width: 700
           }, winOptions ? winOptions : {});
+          bbn.fn.log("WIN OPTIONS", winOptions);
           // A component is given as global editor (form)
           if (this.editor) {
             popup.component = this.editor;
@@ -2176,7 +2178,7 @@
         if (!this.originalData) {
           return false;
         }
-        return JSON.stringify(this.currentData[idx].data) !== JSON.stringify(this.originalData[idx])
+        return JSON.stringify(this.currentData[idx]) !== JSON.stringify(this.originalData[idx])
       },
       /**
        * Returns true if the given column is sorted.
@@ -2680,7 +2682,7 @@
             });
 
             let clientWidth = this.$el.clientWidth,
-                toFill = clientWidth - tot - 1;
+            toFill = this.lastKnownWidth - tot - 1;
             // We must arrive to 100% minimum
             if (toFill > 0) {
               if (numUnknown) {
@@ -3011,8 +3013,9 @@
      */
     mounted() {
       this.container = this.getRef('container');
-      this.marginStyleSheet = document.createElement('style')
+      this.marginStyleSheet = document.createElement('style');
       document.body.appendChild(this.marginStyleSheet);
+      this.isTable = !!this.closest('bbn-table');
       this.init();
       this.updateData().then(() => {
         this.ready = true;

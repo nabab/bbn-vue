@@ -7,7 +7,7 @@
       @submit.prevent="() => {}"
       @keydown.enter.prevent.stop="submit"
 >
-  <div :class="['bbn-w-100', {'bbn-flex-fill': scrollable, 'bbn-100': !scrollable}]"
+  <div :class="[{'bbn-flex-fill': scrollable, 'bbn-w-100': scrollable}]"
   >
     <component :is="scrollable ? 'bbn-scroll' : 'div'"
                :class="scrollable ? 'bbn-block' : ''"

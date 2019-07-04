@@ -3,9 +3,11 @@
      }, componentClass]"
 >
   <div class="bbn-tabnav-container bbn-flex-height bbn-flex-width">
-    <div style="height: 2.4em" class="bbn-flex-fill bbn-tabnav-ul-container">
+    <div class="bbn-flex-fill bbn-tabnav-ul-container">
       <div class="bbn-100">
-        <bbn-scroll axis="x" :container="true" :hidden="true" ref="horizontal-scroll">
+        <component :is="scrollable ? 'bbn-scroll' : 'div'"
+                   ref="horizontal-scroll"
+                   v-bind="scrollCfg">
           <ul ref="tabgroup"
               v-if="tabs"
               :class="{
@@ -93,7 +95,7 @@
               ></bbn-context>
             </li>
           </ul>
-        </bbn-scroll>
+        </component>
       </div>
     </div>
     <bbn-router ref="router"

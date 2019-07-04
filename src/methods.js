@@ -501,13 +501,12 @@
     },
 
     is(vm, selector){
-      if ( selector && vm ){
-        if ( vm.$el && $(vm.$el).is(selector) ){
-      //@change  if ( vm.$el && (vm.$el.tagName === selector) ){
-          return true;
-        }
+      if (selector && vm) {
         if ( vm.$vnode && vm.$vnode.componentOptions && (vm.$vnode.componentOptions.tag === selector) ){
           return true;
+        }
+        if (vm.$el && bbn.fn.isFunction(vm.$el.matches)) {
+          return vm.$el.matches(selector);
         }
       }
       return false;
@@ -617,16 +616,10 @@
     },
 
     findAll(vm, selector, only_children){
-      
-      
       let vms = this.getComponents(vm, only_children),
           res = [];
       for ( let i = 0; i < vms.length; i++ ){
-        if (
-         $(vms[i].$el).is(selector) ||
-          
-          (vms[i].$vnode.componentOptions && (vms[i].$vnode.componentOptions.tag === selector))
-        ){
+        if ( this.is(vms[i], selector) ){
           res.push(vms[i]);
         }
       }

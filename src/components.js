@@ -1919,7 +1919,6 @@
         isValid(val){
           const elem = this.$refs.element,
                // @jquery $elem = $(this.$el),
-                $elem = this.$el,
                 customMessage = this.$el.hasAttribute('validationMessage') ? this.$el.getAttribute('validationMessage') : false;
           // Get validity
           if ( elem && elem.validity ){
@@ -1979,11 +1978,11 @@
               }
               this.$emit('error', customMessage || mess);
               // @jquery $elem.css('border', '1px solid red');
-              $elem.style.border = '1px solid red';
+              this.$el.style.border = '1px solid red';
               this.$on('blur', () => {
                 //@jquery $elem.css('border', 'none');
-                $elem.style.border  = 'none'
-                $elem.focus();
+                this.$el.style.border  = 'none'
+                this.$el.focus();
               });
               return false;
             }
@@ -2109,59 +2108,56 @@
           // Setting initial dimensions
           //@jquery this.lastKnownHeight = this.parentResizer ? Math.round($(this.$el.parentNode).innerHeight()) : bbn.env.height;
           //@jquery this.lastKnownWidth = this.parentResizer ? Math.round($(this.$el.parentNode).innerWidth()) : bbn.env.width;
-          this.lastKnownHeight = (this.parentResizer && this.$el.parentNode) ? Math.round(this.$el.parentNode.clientHeight) : bbn.env.height;
-          this.lastKnownWidth = (this.parentResizer && this.$el.parentNode) ? Math.round(this.$el.parentNode.clientWidth) : bbn.env.width;
+          let offsetParent = this.$el.offsetParent;
+          this.lastKnownHeight = (this.parentResizer && offsetParent) ? Math.round(offsetParent.clientHeight) : bbn.env.height;
+          this.lastKnownWidth = (this.parentResizer && offsetParent) ? Math.round(offsetParent.clientWidth) : bbn.env.width;
           // Creating the callback function which will be used in the timeout in the listener
-          this.resizeEmitter = (force) => {
+          this.resizeEmitter = () => {
             // Removing previous timeout
             clearTimeout(resizeTimeout);
             // Creating a new one
             resizeTimeout = setTimeout(() => {
-              //@jquery if ( $(this.$el).is(":visible") ){
-              if ( this.$el.offsetLeft !== 0 ){
-                // Checking if the parent hasn't changed (case where the child is mounted before)
-                let tmp = this.closest(".bbn-resize-emitter", true);
-                if ( tmp !== this.parentResizer ){
-                  // In that case we reset
-                  this.unsetResizeEvent();
-                  this.setResizeEvent();
-                  return;
-                }
-                let resize = false,
-                    // @jquery h = this.parentResizer ? Math.round($(this.$el.parentNode).innerHeight()) : bbn.env.height,
-                    // @jquery w = this.parentResizer ? Math.round($(this.$el.parentNode).innerWidth()) : bbn.env.width;
-                    h = (this.parentResizer && this.$el.parentNode) ? Math.round(this.$el.parentNode.clientHeight) : bbn.env.height,
-                    w = (this.parentResizer && this.$el.parentNode) ? Math.round(this.$el.parentNode.clientWidth) : bbn.env.width;
+              if ( this.isMounted && this.$el.parentNode ){
+                //@jquery if ( $(this.$el).is(":visible") ){
+                if ( this.$el.offsetLeft !== 0 ){
+                  // Checking if the parent hasn't changed (case where the child is mounted before)
+                  let tmp = this.closest(".bbn-resize-emitter", true);
+                  if ( tmp !== this.parentResizer ){
+                    // In that case we reset
+                    this.unsetResizeEvent();
+                    this.setResizeEvent();
+                    return;
+                  }
+                  let resize = false;
+                  let offsetParent = this.$el.offsetParent;
+                  // @jquery h = this.parentResizer ? Math.round($(this.$el.parentNode).innerHeight()) : bbn.env.height,
+                  // @jquery w = this.parentResizer ? Math.round($(this.$el.parentNode).innerWidth()) : bbn.env.width;
+                  let h = (this.parentResizer && offsetParent) ? Math.round(offsetParent.clientHeight) : bbn.env.height;
+                  let w = (this.parentResizer && offsetParent) ? Math.round(offsetParent.clientWidth) : bbn.env.width;
 
-                if ( h && (this.lastKnownHeight !== h) ){
-                  this.lastKnownHeight = h;
-                  resize = 1;
-                }
-                if ( w && (this.lastKnownWidth !== w) ){
-                  this.lastKnownWidth = w;
-                  resize = 1;
-                }
-                if ( resize || force ){
-                  this.onResize();
-                  this.$emit("resize", force);
+                  bbn.fn.log("RESIZE EVENT", w, this.lastKnownWidth);
+
+                  if ( h && (this.lastKnownHeight !== h) ){
+                    this.lastKnownHeight = h;
+                    resize = 1;
+                  }
+                  if ( w && (this.lastKnownWidth !== w) ){
+                    this.lastKnownWidth = w;
+                    resize = 1;
+                  }
+                  if (resize) {
+                    this.onResize();
+                    this.$emit("resize");
+                  }
                 }
               }
             }, 0);
           };
           if ( this.parentResizer ){
-            //bbn.fn.log("SETTING EVENT FOR PARENT", this.$el, this.parentResizer);
-            this.parentResizer.$on("resize", (force) => {
-              this.resizeEmitter(force)
-            });
+            this.parentResizer.$on("resize", this.resizeEmitter);
           }
           else{
-            //bbn.fn.log("SETTING EVENT FOR WINDOW", this.$el);
-            /* @jquery $(window).on("resize", (force) => {
-              this.resizeEmitter(force)
-            });*/
-            window.addEventListener("resize", (force) => {
-              this.resizeEmitter(force)
-            });
+            window.addEventListener("resize", this.resizeEmitter);
           }
           this.resizeEmitter();
         },

@@ -430,6 +430,7 @@
           }
         }
         tmp = this.getDimensions(this.maxWidth, this.maxHeight);
+        bbn.fn.log("getDimensions", this.maxWidth, this.maxHeight, tmp);
         if (tmp.width) {
           maxWidth.push(tmp.width);
         }
@@ -932,13 +933,14 @@
           width: 0,
           height: 0
         };
-        if (this.$el) {
+        let parent = this.container || this.$root.$el;
+        if ( parent ){
           let el = document.createElement('div');
-          el.style.position = 'static';
-          el.style.width = width || '0px';
-          el.style.height = height || '0px';
+          el.style.position = 'absolute';
+          el.style.width = width ? bbn.fn.formatSize(width) : '0px';
+          el.style.height = height ? bbn.fn.formatSize(height) : '0px';
           try {
-            this.$el.insertAdjacentElement('beforeend', el);
+            parent.insertAdjacentElement('beforeend', el);
             r = {
               width: el.clientWidth,
               height: el.clientHeight

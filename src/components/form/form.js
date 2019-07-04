@@ -621,8 +621,15 @@
             this.tab = bbn.vue.closest(this, ".bbns-tab");
           }
           // @jquery $(":input:visible:first", this.$el).focus(); non trovo come fare 'input:not([hidden])' su più elementi
-          if ( this.$el.querySelector('input,select,textarea,button') ){
-            this.$el.querySelector('input,select,textarea,button').focus()
+          let focusable = null;
+          bbn.fn.each(this.$el.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"]'), (a) => {
+            if (a.offsetHeight && a.offsetWidth) {
+              focusable = a;
+              return false;
+            }
+          });
+          if ( focusable ){
+            focusable.focus();
           }
         });
       },

@@ -6,6 +6,6 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "Trumbowyg": ">=v2.5.1"
+    "Trumbowyg": ">=v2.5.1"    	
   }
 }

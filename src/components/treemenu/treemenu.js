@@ -179,19 +179,14 @@
        * 
        */
       _position(){
-        $(this.$el)
-          .animate(
-            bbn.fn.extend({
-              top: this.posTop + 'px',
-              bottom: this.posBottom + 'px'
-            }, this.posObject()),
-            200,
-            () => {
-              if ( this.isOpened ){
-                this.getRef('search').focus();
-              }
-            }
-          );
+        this.$el.style.top = this.posTop + 'px';
+        this.$el.style.bottom = this.posBottom + 'px';
+        this.$el.style[this.position === 'right' ? 'right' : 'left'] = this.isOpened ? 0 : -(this.$el.clientWidth + 40);
+        this.$nextTick(() => {
+          if ( this.isOpened ){
+            this.getRef('search').focus();
+          }
+        });
       },
       /**
        * Defines position and width of the component
@@ -200,7 +195,7 @@
        */
       posObject(){
         let o = {};
-        o[this.position === 'right' ? 'right' : 'left'] = this.isOpened ? 0 : -($(this.$el).width() + 40);
+        o[this.position === 'right' ? 'right' : 'left'] = this.isOpened ? 0 : -(this.$el.clientWidth + 40);
         return o;
       },
       /**
@@ -303,10 +298,10 @@
        * @fires toggle
        */
       checkMouseDown(e){
-        let $t = $(e.target);
+        bbn.fn.log("checkMouseDown", this.isOpened);
         if ( this.isOpened &&
-          !$t.closest(".bbn-treemenu").length &&
-          !$t.closest(".bbn-menu-button").length
+          !e.target.closest(".bbn-treemenu") &&
+          !e.target.closest(".bbn-menu-button")
         ){
           e.preventDefault();
           e.stopImmediatePropagation();

@@ -192,6 +192,14 @@
       }
     },
     /**
+     * @event beforeCreate
+     */
+    beforeCreate(){
+      if ( bbn.env && bbn.env.lang && (bbn.env.lang !== moment.locale()) ){
+        moment.locale(bbn.env.lang);
+      }
+    },
+    /**
      * @event mounted
      * @fires setValue
      */

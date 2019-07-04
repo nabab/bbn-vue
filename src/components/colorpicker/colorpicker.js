@@ -231,11 +231,17 @@
           this.widget = false;
         }
         setTimeout(() => {
-          this.widget = $(this.$refs.element).spectrum(this.dataComponent);
+          /* @jquery
           $('div').removeClass('sp-replacer');
           $('div.k-widget').css("padding", "3px");
           $('div.sp-dd').css("cursor","pointer");
-          $('div.sp-container').css("z-index","1");
+          $('div.sp-container').css("z-index","1");*/
+          this.widget = $(this.$refs.element).spectrum(this.dataComponent);
+          this.$el.querySelector('.sp-replacer').classList.remove('sp-replacer')
+          this.$el.querySelector('div.sp-dd').style.cursor = 'pointer';
+          if ( this.$el.querySelector('div.sp-container') ){
+            this.$el.querySelector('div.sp-container').style.zIndex = 1;
+          }
           this.dragstart();
           this.dragstop();
         }, 100);

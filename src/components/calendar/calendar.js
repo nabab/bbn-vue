@@ -385,7 +385,9 @@
       */
       _makeDays(){
         let items = [],
-            c = moment(this.currentDate.format('YYYY-MM-01'));
+            c = moment(this.currentDate.format('YYYY-MM-01')),
+            sunday = moment(c).day('Sunday').weekday();
+
         for ( let i = 1; i <= 6; i++ ){
           if ( i > 1 ){
             c.add(6, 'd');
@@ -398,7 +400,7 @@
               w.get('date'),
               val,
               isHidden,
-              k === 6,
+              k === sunday,
               false,
               this.extraItems && (w.get('month') !== this.currentDate.get('month'))
             );
@@ -417,13 +419,14 @@
       */
       _makeWeeks(){
         let c = moment(this.currentDate),
+            sunday = moment(c).day('Sunday').weekday(),
             items = Array.from({length: 7}, (v, k) => {
               let w = c.weekday(k);
               return this._makeItem(
                 w.get('date'),
                 w.format(this.currentCfg.valueFormat),
                 false,
-                k === 6,
+                k === sunday,
                 false,
                 false
               );
@@ -680,6 +683,7 @@
        * @emits next
       */
       next(skip){
+        skip = typeof skip === 'boolean' ? skip : false;
         if ( this.currentCfg && this.currentCfg.step && bbn.fn.isFunction(this.currentCfg.make) ){
           let check = moment(this.currentDate).add(...this.currentCfg[skip && this.currentCfg.stepSkip ? 'stepSkip' : 'step']);
           if ( this.max && (check.format(this.currentCfg.valueFormat) > this.max) ){
@@ -704,6 +708,7 @@
        * @emits prev
       */
       prev(skip){
+        skip = typeof skip === 'boolean' ? skip : false;
         if ( this.currentCfg && this.currentCfg.step && bbn.fn.isFunction(this.currentCfg.make) ){
           let check = moment(this.currentDate).subtract(...this.currentCfg[skip && this.currentCfg.stepSkip ? 'stepSkip' : 'step']);
           if ( this.min && (check.format(this.currentCfg.valueFormat) < this.min) ){
@@ -797,6 +802,14 @@
           this.setLabels(this.currentLabelsDates);
           resolve();
         });
+      }
+    },
+    /**
+     * @event beforeCreate
+     */
+    beforeCreate(){
+      if ( bbn.env && bbn.env.lang && (bbn.env.lang !== moment.locale()) ){
+        moment.locale(bbn.env.lang);
       }
     },
     /**

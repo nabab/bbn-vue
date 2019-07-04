@@ -449,5 +449,5 @@
       <span v-text="_('Open the full filter')"></span>
     </div>
   </div>
-  <bbn-popup ref="popup"></bbn-popup>
+  <bbn-popup ref="popup" v-if="inTable === false"></bbn-popup>
 </div>
