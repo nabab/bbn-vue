@@ -416,11 +416,6 @@
             anim.width = this.size + '%';
             anim.left = this.position + '%';
           }
-
-          /*$(this.$refs.scrollSlider).animate(anim, () => {
-            //the line below was already commented so I commented the method to don't have error. 
-            //this.dragging = false;
-          })*/
         }
       },
       scrollTo(val, animate){

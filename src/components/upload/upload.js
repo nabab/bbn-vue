@@ -383,34 +383,17 @@
 					this.isEnabled = val;
 					return true;
 				}
-        /* @jquery
-        const $inp = $("input[name=file]", this.$el),
-              $pas = $("div.paste-container", this.$el),
-              $sel = $("div.qq-uploader-selector", this.$el);*/
-
         const inp = this.$el.querySelector('input[name=file]'),
               pas = this.$el.querySelector('div.paste-container'),
               sel = this.$el.querySelector('div.qq-uploader-selector');      
               
         if ( val ){
-          
-          /*
-           @jquery  $inp.removeAttr('disabled');
-          $inp.parent().removeClass('bbn-state-disabled');
-          $pas.show();
-          $sel.attr('qq-drop-area-text', this.dropHereText);*/
           inp.removeAttribute('disabled')
           inp.parentElement.classList.remove('bbn-state-disabled');
           pas.style.display = 'block';
           sel.setAttribute('qq-drop-area-text', this.dropHereText);
         }
         else {
-          /*
-          @jquery 
-          $inp.attr('disabled', 'disabled');
-          $inp.parent().addClass('bbn-state-disabled');
-          $pas.hide();
-          $sel.attr('qq-drop-area-text', this.dropHereText);*/
           inp.setAttribute('disabled', 'disabled');
           inp.parentElement.classList.add('bbn-state-disabled');
           pas.style.display = 'none';

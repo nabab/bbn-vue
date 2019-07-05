@@ -231,14 +231,13 @@
           this.widget = false;
         }
         setTimeout(() => {
-          /* @jquery
-          $('div').removeClass('sp-replacer');
-          $('div.k-widget').css("padding", "3px");
-          $('div.sp-dd').css("cursor","pointer");
-          $('div.sp-container').css("z-index","1");*/
           this.widget = $(this.$refs.element).spectrum(this.dataComponent);
-          this.$el.querySelector('.sp-replacer').classList.remove('sp-replacer')
-          this.$el.querySelector('div.sp-dd').style.cursor = 'pointer';
+          if ( this.$el.querySelector('.sp-replacer') && this.$el.querySelector('.sp-replacer').classList.contains('sp-replacer')){
+            this.$el.querySelector('.sp-replacer').classList.remove('sp-replacer')
+          }
+          if ( this.$el.querySelector('div.sp-dd') ){
+            this.$el.querySelector('div.sp-dd').style.cursor = 'pointer';
+          }
           if ( this.$el.querySelector('div.sp-container') ){
             this.$el.querySelector('div.sp-container').style.zIndex = 1;
           }

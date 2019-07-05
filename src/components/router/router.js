@@ -641,13 +641,8 @@
           else if ( typeof(misc) === 'object' ){
             // Vue
             if ( misc.$el ){
-              // @jquery misc = $(misc.$el);
               misc = misc.$el;
             }
-            // Not jQuery
-            /* else if ( misc instanceof jQuery ){
-              misc = misc[0];
-            }*/
             if ( misc.tagName ){
               bbn.fn.each(this.$children, (ct) => {
                 if (

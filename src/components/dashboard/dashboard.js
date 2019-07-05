@@ -219,10 +219,12 @@
        * 
        */
       onResize(){
+        
         let ele = this.$el.querySelector(".bbn-masonry"),
             actualWidth = parseInt(window.getComputedStyle(ele).width),
             num = 1,
             steps = [800, 1150, 1550, 2200, 3000, 3800];
+            bbn.fn.log('Resize dashboard', actualWidth)
         bbn.fn.each(steps, (step, i) => {
           if ( this.max && (this.max <= num) ){
             return false;
@@ -282,11 +284,13 @@
           }
           */
         }
+        
         bbn.fn.addStyle(ele, {
           "-moz-column-count": num,
           "-webkit-column-count": num,
           "column-count": num
         });
+        
       },
       /**
        * Move the widget from the old index to the new index

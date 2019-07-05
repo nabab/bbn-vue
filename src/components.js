@@ -1919,6 +1919,7 @@
         isValid(val){
           const elem = this.$refs.element,
                // @jquery $elem = $(this.$el),
+                $elem = this.$el,
                 customMessage = this.$el.hasAttribute('validationMessage') ? this.$el.getAttribute('validationMessage') : false;
           // Get validity
           if ( elem && elem.validity ){
@@ -1978,11 +1979,11 @@
               }
               this.$emit('error', customMessage || mess);
               // @jquery $elem.css('border', '1px solid red');
-              this.$el.style.border = '1px solid red';
+              $elem.style.border = '1px solid red';
               this.$on('blur', () => {
                 //@jquery $elem.css('border', 'none');
-                this.$el.style.border  = 'none'
-                this.$el.focus();
+                $elem.style.border  = 'none'
+                $elem.focus();
               });
               return false;
             }

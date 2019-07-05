@@ -596,19 +596,14 @@
             icon: "nf nf-mdi-help_circle_outline",
             command: () => {
               let tab = this.getVue(idx),
-                  //@jquery span = $('<span/>').html(this.router.views[idx].title),
                   span = document.createElement('span');
               span.innerHTML =  this.router.views[idx].title;
-              //@jquery title = span.text();
               let title = span.innerText;
               if ( !title && span.querySelector("[title]").length ){
                 title = span.querySelector("[title]").getAttribute("title");
               }
               
-              /* @jquery
-              if ( !title && span.find("[title]").length ){
-                title = span.find("[title]").attr("title");
-              }*/
+             
               tab.getPopup().open({
                 component: {
                   props: ['source'],
@@ -725,6 +720,7 @@
         }
         return this;
       },
+      //the method getIndex is commented, maybe setColor() and setColorSelector() are no more used
       /**@todo not used */
       setColorSelector(col, idx){
         if ( (idx = this.getIndex(idx)) !== false ) {
@@ -738,7 +734,6 @@
             if (!bbn.fn.isColor(col)) {
               col = vm.fThemeColor;
             }
-            
             $("div.ui-tabNav-tabSelected", tab[0]).css("backgroundColor", col);
             if (window.tinycolor) {
               if ( !vm.colorIsDone ){

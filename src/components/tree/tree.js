@@ -597,8 +597,6 @@
        * @return {Array}
        */
       getMenu(node){
-        // @jquery
-        // let idx = $(node.$el).index(),
         let idx = -1,
             menu = [];
         if ( node.$el && node.$el.parentNode.children.length ){
@@ -1006,8 +1004,6 @@
        * @param {Number} index 
        */
       move(node, target, index){
-        // @jquery
-        //let idx = $(node.$el).index(),
         let idx = -1,
             parent = node.parent;
         if ( node.$el && node.$el.parentNode.children.length ){
@@ -1547,7 +1543,6 @@
                 document.removeEventListener('mouseup', fn);
               };
               document.addEventListener('mouseup', fn);
-              //$(document.body).on("mousemove", this.drag);
               document.addEventListener('mousemove', this.drag);
             }
           },
@@ -1580,11 +1575,6 @@
               }
             }
             else{
-              /* 
-              @jquery
-              for ( let a of this.tree.droppableTrees ){
-                $(a.$el).find(".dropping").removeClass("dropping");
-              }*/
               if ( this.tree.droppableTrees.length ){
                 bbn.fn.each(this.tree.droppableTrees, (a) => {
                   let v = a && a.$el ? a.$el.querySelector('.dropping') : null;
@@ -1602,19 +1592,6 @@
                   !a.isNodeOf(a.overNode, this.tree.dragging) &&
                   (!a.overNode.$refs.tree || (a.overNode.$refs.tree[0] !== this.parent))
                 ){
-                  
-                  /*
-                  @jquery
-                  let $t = $(e.target);
-                  $t.parents().each((i, b) => {
-                    if ( b === a.overNode.$el ){
-                      ok = 1;
-                      return false;
-                    }
-                    else if ( b === this.$el ){
-                      return false;
-                    }
-                  });*/
                   let t = e.target,
                       parents = [];
                     
@@ -1672,8 +1649,6 @@
                     (this.tree.dragging !== a.overNode) &&
                     !a.isNodeOf(a.overNode, this.tree.dragging)
                   ){
-                    //@jquery
-                    //$(a.overNode.$el).children("span.node").removeClass("dropping");
                     if( a.overNode.$el.querySelector('span.node') && a.overNode.$el.querySelector('span.node').classList ){
                       if ( a.overNode.$el.querySelector('span.node').classList.contains('dropping') ){
                         a.overNode.$el.querySelector('span.node').classList.remove('dropping')

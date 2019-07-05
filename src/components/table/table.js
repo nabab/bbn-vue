@@ -1146,10 +1146,6 @@
               tot = 0;
             bbn.fn.each(cols, (a) => {
               if (tot + a.realWidth > x) {
-                /* @jquery
-                $(".bbn-table-title-group", this.getRef('mainTitles')).css({
-                  left: tot < x ? x - tot : 0
-                });*/
                 if ( this.getRef('mainTitles') && this.getRef('mainTitles').querySelector('.bbn-table-title-group') ){
                   this.getRef('mainTitles').querySelector('.bbn-table-title-group').style.left = tot < x ? x - tot : 0;
                 }
@@ -3112,7 +3108,6 @@
             this.$nextTick(() => {
               this.edit(this.items[newIndex].data, null, newIndex);
               this.$nextTick(() => {
-                //@jquery $("input:visible:" + (comeFromAfter ? 'last' : 'first'), this.getTr(newIndex)).focus();
                 if ( this.getTr(newIndex).querySelectorAll('input:not([hidden])').length ){
                   this.getTr(newIndex).querySelectorAll('input:not([hidden])')[ comeFromAfter ? 0 : (this.getTr(newIndex).querySelectorAll('input:not([hidden])').length -1) ]
                 }

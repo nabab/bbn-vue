@@ -33,10 +33,7 @@
         }
       }
     },
-    mounted: function(){
-      if ( this.$options.propsData.script ){
-        //$(this.$el).data("script", this.$options.propsData.script);
-      }
+    mounted(){
       this.ready = true;
     }
   });

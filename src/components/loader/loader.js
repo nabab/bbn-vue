@@ -65,7 +65,6 @@
     },
     mounted(){
       if ( this.bgColor ){
-        // @jquery $(this.$el).css('background-color', this.bgColor)
         this.$el.style.backgroundColor = this.bgColor;
       }
     },

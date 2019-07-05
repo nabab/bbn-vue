@@ -100,8 +100,7 @@
      * Initializes the component
      * @event mounted
      */
-    mounted: function(){
-      //@jquery let $ele = $(this.$refs.element).css({minHeight: this.$el.clientHeight});
+    mounted(){
       let $ele = $(this.$refs.element);
 
       this.$refs.element.style.minHeight = this.$el.clientHeight;
@@ -115,21 +114,12 @@
         btns: this.buttons
       });
       setTimeout(() => {
-        // @jquery $(this.$el).find('.trumbowyg-box').addClass('bbn-flex-height').find('.trumbowyg-editor').addClass('bbn-flex-fill bbn-content').css({height: 'auto'});
         let box = this.$el.querySelector('.trumbowyg-box'),
           editor = box.querySelector('.trumbowyg-editor');;
         box.classList.add('bbn-flex-height');
         editor.classList.add('bbn-flex-fill', 'bbn-content')
         editor.style.height = 'auto';
       }, 1000)
-   
-      
-      /* @jquery needed, alternative doesn't work
-      this.$refs.element.addEventListener(
-        "tbwchange tbwpaste", (e) => {
-        this.emitInput(e.target.value)
-      })
-      */
       $ele.on("tbwchange tbwpaste", (e) => {
         this.emitInput(e.target.value)
       });

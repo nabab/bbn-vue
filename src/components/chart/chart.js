@@ -611,13 +611,6 @@
         if ( this.legend ){
           plugins.push(Chartist.plugins.legend({
             onClick(a, b){
-              /* @jquery const $rect = $("div.rect", b.target);
-              if ( $rect.hasClass('inactive') ){
-                $rect.removeClass('inactive');
-              }
-              else {
-                $rect.addClass('inactive');
-              }*/
               const rect = b.target.querySelector('div.rect');
               if ( rect.classList.contains('inactive') ){
                 rect.classList.remove('inactive');
@@ -994,7 +987,6 @@
             else if ( this.labelColorY && (chartData.axis.units.pos === 'y') ){
               color = this.labelColorY;
             }
-            //@jquery $(chartData.element._node.children[0]).css('color', color);
             chartData.element._node.children[0].style.color = color;
           }
 
@@ -1125,7 +1117,6 @@
               color = this.labelColorY;
             }
             if ( color ){
-              //@jquery $(chartData.element._node.children[0]).css('color', color);
               chartData.element._node.children[0].color = color;
             }
           }
@@ -1334,10 +1325,7 @@
                 x: chartData.center.x,
                 y: chartData.center.y
               };
-              /* @jquery
-              $(chartData.group._node.parentNode).prepend('<defs><radialGradient id="' + idDef + '" r="122.5" gradientUnits="userSpaceOnUse" cx="' + defs.x + '" cy="' + defs.y + '"><stop offset="0.05" style="stop-color:#fff;stop-opacity:0.65;"></stop><stop offset="0.55" style="stop-color:#fff;stop-opacity: 0;"></stop><stop offset="0.85" style="stop-color:#fff;stop-opacity: 0.25;"></stop></radialGradient></defs>');
-              */
-               let content = '<radialGradient id="' + idDef + '" r="122.5" gradientUnits="userSpaceOnUse" cx="' + defs.x + '" cy="' + defs.y + '"><stop offset="0.05" style="stop-color:#fff;stop-opacity:0.65;"></stop><stop offset="0.55" style="stop-color:#fff;stop-opacity: 0;"></stop><stop offset="0.85" style="stop-color:#fff;stop-opacity: 0.25;"></stop></radialGradient>',
+              let content = '<radialGradient id="' + idDef + '" r="122.5" gradientUnits="userSpaceOnUse" cx="' + defs.x + '" cy="' + defs.y + '"><stop offset="0.05" style="stop-color:#fff;stop-opacity:0.65;"></stop><stop offset="0.55" style="stop-color:#fff;stop-opacity: 0;"></stop><stop offset="0.85" style="stop-color:#fff;stop-opacity: 0.25;"></stop></radialGradient>',
                    el = document.createElement('defs');
                    el.innerHTML = content;
               chartData.group._node.parentNode.insertAdjacentElement('afterbegin', el)
@@ -1447,24 +1435,7 @@
           // Set the right colors to legend
           if ( this.legend ){
             let colors = [];
-            /* @jquery 
-            $("g.ct-series", this.widget.container).each((i,v) => {
-              if ( this.isBar ){
-                colors.push($("line.ct-bar", v).first().css('stroke'));
-              }
-              else {
-                $("path", v).each((k, p) => {
-                  if ( $(p).hasClass('ct-line') ||
-                    $(p).hasClass('ct-slice-pie') ||
-                    $(p).hasClass('ct-slice-donut')
-                  ){
-                    colors.push($(p).css($(p).hasClass('ct-slice-pie') ? 'fill' : 'stroke'));
-                  }
-                  bbn.fn.log($(p))
-                })
-
-              }
-            });*/
+            
             
             
             bbn.fn.each( this.widget.container.querySelectorAll('g.ct-series'), (v, i) => {
@@ -1484,17 +1455,11 @@
             })
             setTimeout(() => {
               if ( this.isPie && this.legendPosition ){
-                //@jquery $("ul.ct-legend.ct-legend-inside", this.widget.container).removeClass("ct-legend-inside");
-                
                 if ( this.widget.container.querySelector('ul.ct-legend.ct-legend-inside') && this.widget.container.querySelector('ul.ct-legend.ct-legend-inside').classList.contains('ct-legend-inside') ){
                   this.widget.container.querySelector('ul.ct-legend.ct-legend-inside').classList.remove('ct-legend-inside')
                 }
               }
-              /* @jquery
-              let legendHeight = $('ul.ct-legend:not(.ct-legend-inside)', this.widget.container).height(),
-                  svgHeight = $('svg', this.widget.container).height(),
-                  contHeight = $(this.widget.container).height();
-              */
+              
              let legendHeight = this.widget.container.querySelector('ul.ct-legend.ct-legend:not(.ct-legend-inside)').clientHeight,
                   svgHeight = this.widget.container.querySelector('svg').clientHeight,
                   contHeight = this.widget.container.clientHeight;
@@ -1503,17 +1468,7 @@
                 this.widget.update(false, {height: contHeight - legendHeight}, true);
                 return;
               }
-              /* @jquery
-              $("ul.ct-legend li", this.widget.container).each((i, v) => {
-                if ( Array.isArray(this.legendTitles) ){
-                  $(v).attr('title', this.legendTitles[i]);
-                }
-                if ( !$("div.rect", v).length ){
-                  bbn.fn.log('before prepend', $(v),$(v).parent())
-                  $(v).prepend('<div class="rect" style="background-color: ' + colors[i] +'; border-color: ' + colors[i] + '"></div>');
-                  bbn.fn.log('after prepend', $(v),$(v).parent())
-                }
-              });*/
+              
               bbn.fn.each(this.widget.container.querySelectorAll('ul.ct-legend li'), (v, i) => {
                 if ( Array.isArray(this.legendTitles) ){
                   v.setAttribute('title', this.legendTitles[i]);
@@ -1529,7 +1484,6 @@
           }
           // Set the right colors to point labels
           if ( !this.isPie && (this.labelColor || this.labelColorY) ){
-            // @jquery $("g.ct-series text.ct-label").css('stroke', this.labelColorY || this.labelColor);
             if(this.widget.container.querySelector('g.ct-series text.ct-label')){
               this.widget.container.querySelector('g.ct-series text.ct-label').style.stroke = this.labelColorY || this.labelColor;
             }

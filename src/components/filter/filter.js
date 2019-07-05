@@ -220,7 +220,6 @@
        */
       over(e){
         e.target.style.color = 'red';
-        // @jquery $(e.target).parent().parent().find('.bbn-filter-main').eq(0).css('background-color', 'rgba(158,158,158, 0.3)' );
         e.target.parentElement.parentElement.querySelector('.bbn-filter-main').style.backgroundColor = 'rgba(158,158,158, 0.3)';
       },
       /**
@@ -231,8 +230,6 @@
        */
       out(e){
         e.target.style.color = null;
-        
-        // @jquery $(e.target).parent().parent().find('.bbn-filter-main').eq(0).css('background-color', 'inherit');
         e.target.parentElement.parentElement.querySelector('.bbn-filter-main').style.backgroundColor = 'inherit';
       },
       /**

@@ -574,10 +574,7 @@
       if ( !this.isAjax && !this.items.length && this.getRef('slot').innerHTML.trim() ){
         if ( this.separator ){
           this.items = this.getRef('slot').innerHTML.split(this.separator).map((txt, i) => {
-      
-          //@jquery let title = $('<div/>').html(txt).find("h1,h2,h3,h4,h5").eq(0).text();
-      
-            let el = document.createElement('div'),
+          let el = document.createElement('div'),
               title = '';
             el.innerHTML = txt;
             if ( el ){
@@ -758,9 +755,6 @@
          * @memberof miniature
          */
         mounted(){
-          //@jquery $("div.zoom div.content").css("transform", "scale(0.2)")
-          //$("div.zoom img").css("transform", "scale(0.2)")
-          //@jquery $("div.zoom div.content").find("img").css("transform", "scale(0.1)")
           this.$el.querySelector('div.zoom div.content').style.transform = 'scale(0.2)';
           this.$el.querySelector('div.zoom div.content').querySelector('img').style.transform = 'scale(0.1)';
 
