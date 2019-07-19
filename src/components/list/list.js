@@ -14,7 +14,7 @@
    */
   let isClicked = false;
   Vue.component('bbn-list', {
-    mixins: [bbn.vue.basicComponent, bbn.vue.listComponent, bbn.vue.keynavComponent],
+    mixins: [bbn.vue.basicComponent, bbn.vue.listComponent, bbn.vue.keynavComponent, bbn.vue.resizerComponent],
     props: {
       /**
        * @prop container
