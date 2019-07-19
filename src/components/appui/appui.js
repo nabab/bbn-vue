@@ -99,7 +99,6 @@
         notifications: [],
         menuOpened: false,
         poller: false,
-        isMounted: false,
         debug: false,
         isOverDebug: false,
         menuMounted: false,
@@ -380,7 +379,31 @@
       }
     },
     beforeCreate(){
-      bbn.vue.preloadBBN(['tabnav', 'button', 'table', 'popup', 'autocomplete', 'chat', 'combo', 'context', 'treemenu', 'tree', 'loadicon', 'scroll', 'scroll-x', 'scroll-y', 'input', 'numeric', 'dropdown', 'loader', 'initial', 'chart', 'radio', 'checkbox', 'fisheye', 'window']);
+      /*
+      bbn.vue.preloadBBN([
+        'container',
+        'router',
+        'tabnav',
+        'popup',
+        'autocomplete',
+        'chat',
+        'combo',
+        'context',
+        'treemenu',
+        'tree',
+        'loadicon',
+        'scroll',
+        'scrollbar',
+        'input',
+        'numeric',
+        'dropdown',
+        'initial',
+        'chart',
+        'radio',
+        'checkbox',
+        'window'
+      ]);
+      */
     },
     created(){
       if ( window.appui ){
@@ -390,6 +413,62 @@
         this.cool = true;
         this.componentClass.push('bbn-observer');
         window.appui = this;
+        bbn.fn.init({
+          fn: {
+            defaultAjaxErrorFunction(jqXHR, textStatus, errorThrown) {
+              /** @todo */
+              appui.error({title: textStatus, content: errorThrown}, 4);
+              return false;
+            },
+
+            defaultPreLinkFunction(url) {
+              let router = appui.getRef('tabnav');
+              if ( router && bbn.fn.isFunction(router.route) ){
+                router.route(url);
+              }
+              return false;
+            },
+
+            defaultAlertFunction(ele) {
+              /** @todo */
+              appui.alert.apply(appui, arguments);
+            },
+            
+            defaultStartLoadingFunction(url, id, data) {
+              if ( window.appui && appui.status ){
+                appui.loaders.unshift(bbn.env.loadersHistory[0]);
+                while ( appui.loaders.length > bbn.env.maxLoadersHistory ){
+                  appui.loaders.pop();
+                }
+              }
+            },
+            
+            defaultEndLoadingFunction(url, timestamp, data, res) {
+              if ( window.appui && appui.status ){
+                let history = bbn.fn.get_row(bbn.env.loadersHistory, {url: url, start: timestamp});
+                let loader = bbn.fn.get_row(appui.loaders, {url: url, start: timestamp});
+                if ( loader ){
+                  if (  history ){
+                    bbn.fn.iterate(history, (val, prop) => {
+                      if ( loader[prop] !== val ){
+                        loader[prop] = val;
+                      }
+                    });
+                  }
+                  else{
+                    loader.loading = false;
+                  }
+                }
+                //appui.$refs.loading.end(url, id, data, res);
+              }
+            },
+
+            defaultResizeFunction(){
+              bbn.fn.log("EMITTING FROM APPUI");
+              appui.selfEmit(true);
+            }
+          }
+        });
         bbn.fn.each(this.plugins, (p, i) => {
 
         })

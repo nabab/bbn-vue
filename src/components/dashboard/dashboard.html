@@ -3,14 +3,16 @@
      @touchend="isSorting = false"
      @dragend="isSorting = false"
      @mouseup="isSorting = false">
-  <component :is="scrollable ? 'bbn-scroll' : 'div'"
-             ref="scroll"
-             v-bind="scrollable ? {axis: 'y'} : {}"
-             :class="{
-               'bbn-100': !scrollable
-             }">
-    <div :class="'bbn-masonry bbn-margin' + (sortable ? ' bbn-dashboard-sortable' : '')">
-      <bbn-widget v-for="(w) in currentWidgets"
+  <bbn-scroll :scrollable="scrollable"
+              ref="scroll"
+              v-bind="scrollable ? {axis: 'y'} : {}"
+              @ready="onResize"
+              :class="{
+                'bbn-100': !scrollable
+              }">
+    <div :class="'bbn-masonry bbn-margin' + (sortable ? ' bbn-dashboard-sortable' : '')"
+         ref="container">
+      <bbn-widget v-for="w in currentWidgets"
                   ref="widgets"                  
                   @loaded="onResize"
                   v-bind="w"
@@ -23,5 +25,5 @@
                   :title="w.title ? w.title : (w.text ? w.text : '')"
       ></bbn-widget>
     </div>
-  </component>
+  </bbn-scroll>
 </div>

@@ -196,7 +196,7 @@
        * @fires setValue
       */
       setDate(val){
-        val = moment(val, 'YYYY-MM-DD');
+        val = moment(val, 'YYYY-MM-DD').isValid() ? moment(val, 'YYYY-MM-DD') : '';
         if ( this.value ){
           let mom = moment(this.value.toString(), this.getValueFormat(this.value.toString()));
           val.hour(mom.hour()).minute(mom.minute());
@@ -317,7 +317,7 @@
        * @fires updateCalendar
        */
       min(){
-        this.setValue(this.value.toString());
+        this.setValue(this.value !== undefined ? this.value.toString() : '');
         this.updateCalendar();
       },
       /**
@@ -326,7 +326,7 @@
        * @fires updateCalendar
        */
       max(){
-        this.setValue(this.value.toString());
+        this.setValue(this.value !== undefined ? this.value.toString() : '');
         this.updateCalendar();
       },
       /**
@@ -334,7 +334,7 @@
        * @fires setValue
        */
       valueFormat(){
-        this.setValue(this.value.toString());
+        this.setValue(this.value !== undefined ? this.value.toString() : '');
       },
       /**
        * @watch maskedMounted

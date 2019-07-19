@@ -25,7 +25,7 @@
       >
         <span class="qq-upload-drop-area-text-selector"></span>
       </div>
-      <div :class="['qq-upload-button-selector', 'bbn-button', {'bbn-state-disabled': !isEnabled}]">
+      <div :class="['qq-upload-button-selector', 'bbn-button', {'bbn-disabled': !isEnabled}]">
         <i :class="icon" style="margin-right: 0.3rem"></i>
         <span v-text="currentText.uploadButton"></span>
       </div>

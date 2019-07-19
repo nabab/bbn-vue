@@ -210,7 +210,7 @@
        * @fires setValue
       */
       setDate(val){
-        this.setValue(moment(val, 'YYYY-MM-DD').format(this.getValueFormat(val)));
+        this.setValue(moment(val, 'YYYY-MM-DD').isValid() ? moment(val, 'YYYY-MM-DD').format(this.getValueFormat(val)) : '');
       },
       /**
        * Sets the value.
@@ -304,7 +304,7 @@
        * @fires updateCalendar
        */
       min(){
-        this.setValue(this.value.toString());
+        this.setValue(this.value !== undefined ? this.value.toString() : '');
         this.updateCalendar();
       },
       /**
@@ -313,7 +313,7 @@
        * @fires updateCalendar
        */
       max(){
-        this.setValue(this.value.toString());
+        this.setValue(this.value !== undefined ? this.value.toString() : '');
         this.updateCalendar();
       },
       /**
@@ -321,7 +321,7 @@
        * @fires setValue
        */
       valueFormat(){
-        this.setValue(this.value.toString());
+        this.setValue(this.value !== undefined ? this.value.toString() : '');
       },
       /**
        * @watch maskedMounted

@@ -35,6 +35,13 @@
       bbn.vue.urlComponent,
       bbn.vue.dropdownComponent
     ],
+    computed: {
+      currentIcon(){
+        return this.isOpened && !this.disabled && !this.readonly && this.filteredData.length ?
+            this.iconUp : this.iconDown;
+        //isOpened && !disabled && !readonly && filteredData.length ? iconUp : iconDown
+      },
+    },
     methods: {
       /**
        * States the role of the enter key on the dropdown menu.
@@ -67,8 +74,7 @@
             this.isOpened = true;
           }
         }
-      },
-
+      }
     },
     mounted(){
       /**
@@ -87,12 +93,18 @@
               this.currentText = row.data[this.sourceText];
             }
           }
-          if ( !this.currentText && !this.isNullable && this.filteredData.length ){
-            this.emitInput(this.filteredData[0].data[this.sourceValue]);
-          }
+          this.ready = true;
         });
       }
     },
+    watch: {
+      // When clearing from bbn-input
+      currentText(newVal){
+        if ( !newVal && this.ready && this.value && this.isNullable){
+          this.emitInput('');
+        }
+      }
+    }
   });
 
 })(bbn);

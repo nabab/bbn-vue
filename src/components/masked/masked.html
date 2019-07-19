@@ -1,4 +1,4 @@
-<span :class="[componentClass, 'bbn-textbox']">
+<span :class="[componentClass, 'bbn-textbox', {'bbn-disabled': !!disabled}]">
   <input ref="element"
          :disabled="disabled"
          :required="required"

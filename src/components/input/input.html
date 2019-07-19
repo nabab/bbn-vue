@@ -4,16 +4,17 @@
 		'button-left' : buttonLeft,
 		'button-right' : buttonRight,
 		'bbn-invisible' : (type === 'hidden'),
+    'bbn-input-nullable': nullable
 	}]"
 	:style="(currentSize !== '') ? 'width:' + currentSize : '' "
 >
   <div :class="{
     'bbn-w-100': (!buttonLeft && !buttonRight),
-    'bbn-flex-width' : (buttonLeft || buttonRight)
+    'bbn-flex-width' : (buttonLeft || buttonRight || nullable)
   }">
     <bbn-button v-if="buttonLeft"
           :icon="buttonLeft" 
-          @click="currentActionLeft"
+          @click="$emit('clickLeftButton')"
           tabindex="-1"
           :class="['bbn-button-left', {
             'bbn-invisible' : autoHideLeft
@@ -40,13 +41,18 @@
           @mouseenter="over"
           @mouseleave="out"
           :tabindex="tabindex"
-          :class="{'bbn-flex-fill' : (buttonLeft || buttonRight)}"
+          :class="{'bbn-flex-fill' : (buttonLeft || buttonRight || isNullable)}"
     >
     <bbn-loadicon v-if="loading"></bbn-loadicon>
+    <div v-else-if="nullable && hasValue && !readonly && !disabled"
+         class="bbn-block bbn-h-100 bbn-input-nullable-container">
+      <i class="nf nf-fa-times_circle bbn-p"
+         @mousedown.prevent.stop="clear"></i>
+    </div>
     <bbn-button v-if="buttonRight"
                 :icon="buttonRight"
                 tabindex="-1"
-                @click="currentActionRight"
+                @click="$emit('clickRightButton')"
                 :class="['bbn-button-right', 'bbn-m', {
                   'bbn-invisible' : autoHideRight
                 }]"

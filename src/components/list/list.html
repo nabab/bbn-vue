@@ -17,7 +17,7 @@
     <component v-if="realComponent"
               :is="realComponent"
               :source="li.data"
-              @mounted="selfEmit(true)">
+              @hook:mounted="selfEmit(true)">
     </component>
     <component v-else
                :is="li.data.url && !li.data[children] ? 'a' : 'span'"

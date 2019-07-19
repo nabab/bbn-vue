@@ -221,7 +221,7 @@
         this.currentItems = [];
         this.$nextTick(() => {
           this.load();
-        })
+        });
       },
       load(){
         if ( this.url ){
@@ -259,15 +259,15 @@
               }
             }
             else if ( typeof d === 'object' ){
-              this.currentSource = d
+              this.currentSource = d;
             }
             this.$nextTick(() => {
               this.isLoading = false;
               this.$emit("loaded");
               this.onResize();
               this.selfEmit(true);
-            })
-          })
+            });
+          });
         }
       },
       nav(arg){

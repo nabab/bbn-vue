@@ -45,13 +45,12 @@
                     :style="{borderColor: tab.fcolor || null}"
                     v-show="tab.loading">
               </div>
-              <component :is="!tab.disabled && (tab.menu !== false) && (tabIndex === selected) ? 'bbn-context' : 'div'"
-                          v-bind="!tab.disabled && (tabIndex === selected) ? {
+              <bbn-context v-bind="{
                             context: true,
                             source: getMenuFn,
                             sourceIndex: tabIndex,
                             tag: 'div'
-                          } : {}"
+                          }"
                           :class="['bbn-tabnav-tab', 'bbn-iblock', {'bbn-tabnav-unsaved': tab.isUnsaved}]"
                           :ref="'title-' + tabIndex"
                           :style="{
@@ -70,7 +69,7 @@
                       :title="getFullTitle(tab)"
                       v-html="tab.title.length > maxTitleLength ? cutTitle(tab.title) : tab.title">
                 </span>
-              </component>
+              </bbn-context>
               <div class="bbn-tabnav-selected"
                     :ref="'selector-' + tabIndex"
                     v-show="tabIndex === selected"
@@ -99,7 +98,7 @@
       </div>
     </div>
     <bbn-router ref="router"
-                v-if="isMounted"
+                v-if="initSource !== null"
                 @ready="init"
                 @route="onRoute"
                 @change="routing"

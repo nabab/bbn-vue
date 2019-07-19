@@ -13,6 +13,7 @@
 
 ((bbn, Vue) => {
   "use strict";
+
   Vue.component('bbn-chat', {
     /**
      * @mixin bbn.vue.basicComponent 
@@ -178,7 +179,7 @@
       get_field: bbn.fn.get_field,
       //@todo not used
       isInScreen(i){
-        return (300 * (i + 1) + 300) < this.lastKnownWidth;
+        return (300 * (i + 1) + 300) < this.lastKnownCtWidth;
       },
       // @todo not used
       getMenuFn(){

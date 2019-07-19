@@ -6,11 +6,11 @@
            @keydown.space.enter.prevent.stop="clickItem"
            @mousedown.prevent.stop="() => {return false}"
 >
-  <span v-if="content" v-html="content"></span>
-  <slot v-else></slot>
+  <slot></slot>
   <bbn-floater :element="$el"
                :source="filteredData"
-               children="items"
+               :children="items"
+               :content="content"
                :auto-hide="true"
                v-if="showFloater"
                @close="showFloater = false">

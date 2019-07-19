@@ -187,14 +187,6 @@
          */
         naturalHeight: 0,
         /**
-         * @data {Number} [0] naturalWidth
-         */
-        naturalWidth: 0,
-        /**
-         * @data {Number} [0] naturalHeight
-         */
-        naturalHeight: 0,
-        /**
          * @data {Number} [0] containerWidth
          */
         containerWidth: 0,
@@ -227,7 +219,7 @@
          */
         hasScrollY: false,
         promise: false
-      }
+      };
     },
     computed: {
       /**
@@ -257,22 +249,13 @@
         };
         /*
         if ( this.currentWidth ){
-          cfg.width = (this.currentWidth < this.lastKnownWidth ? this.currentWidth : this.lastKnownWidth) + 'px';
+          cfg.width = (this.currentWidth < this.lastKnownCtWidth ? this.currentWidth : this.lastKnownCtWidth) + 'px';
         }
         if ( this.currentHeight ){
-          cfg.height = (this.currentHeight < this.lastKnownHeight ? this.currentHeight : this.lastKnownHeight) + 'px';
+          cfg.height = (this.currentHeight < this.lastKnownCtHeight ? this.currentHeight : this.lastKnownCtHeight) + 'px';
         }
         */
         return cfg;
-      },
-      /**
-       * @todo not used
-       */
-      containerClass(){
-        if ( this.isMeasuring ){
-          return '';
-        }
-        return '';
       },
       /**
        * @todo not used
@@ -281,16 +264,12 @@
         if ( this.isMeasuring ){
           return {};
         }
-        return {};
-      },
-      /**
-       * @todo not used
-       */
-      contentClass(){
-        if ( this.isMeasuring ){
-          return '';
-        }
-        return '';
+        return {
+          right: this.hasScrollX ? this.scrollPos : 0,
+          bottom: this.hasScrollY ? this.scrollPos : 0,
+          paddingRight: this.hasScrollX ? this.containerPadding : 0,
+          paddingBottom: this.hasScrollY ? this.containerPadding : 0
+        };
       },
       /**
        * @todo not used
@@ -299,7 +278,10 @@
         if ( this.isMeasuring ){
           return {};
         }
-        return {};
+        return {
+          width: (this.axis === 'x') || (this.axis === 'both') ? 'auto' : '100%',
+          height: (this.axis === 'y') || (this.axis === 'both') ? 'auto' : '100%'
+        };
       }
     },
     methods: {
@@ -427,7 +409,9 @@
             }, 1);
           });
         }
-        if ( this.promise ){
+        let container = this.$el;
+        let content = this.getRef('scrollContent');
+        if (this.promise || !container || !content){
           return this.promise;
         }
         this.promise = new Promise((resolve) => {
@@ -435,7 +419,23 @@
             this.$nextTick().then(() => {
               /** @todo Replace with a keepCool - to fix */
               setTimeout(() => {
-                if ( (this.axis === 'both') || (this.axis === 'x') && (this.$el.clientWidth < this.naturalWidth) ){
+                let containerWidth = container.clientWidth;
+                let containerHeight = container.clientHeight;
+                let contentWidth = content.scrollWidth || content.clientWidth;
+                let contentHeight = content.scrollHeight || content.clientHeight;
+                if ( this.naturalWidth && (this.naturalWidth < this.contentWidth) ) {
+                  this.contentWidth = this.naturalWidth;
+                }
+                else{
+                  this.contentWidth = contentWidth;
+                }
+                if ( this.naturalHeight && (this.naturalHeight < this.contentHeight) ) {
+                  this.contentHeight = this.naturalHeight;
+                }
+                else{
+                  this.contentHeight = contentHeight;
+                }
+                if ( (this.axis === 'both') || (this.axis === 'x') && (this.contentWidth > containerWidth) ){
                   if ( this.$refs.xScroller ){
                     this.$refs.xScroller.onResize();
                   }
@@ -444,7 +444,7 @@
                 else{
                   this.hasScrollX = false;
                 }
-                if ( (this.axis === 'both') || (this.axis === 'y') && (this.$el.clientHeight < this.naturalHeight) ){
+                if ((this.axis === 'both') || (this.axis === 'y') && (this.contentHeight > containerHeight)){
                   if ( this.$refs.yScroller ){
                     this.$refs.yScroller.onResize();
                   }
@@ -454,36 +454,23 @@
                   this.hasScrollY = false;
                 }
                 this.hasScroll = this.hasScrollY || this.hasScrollX;
-                let container = this.getRef('scrollContainer');
-                let content = this.getRef('scrollContent');
-                if ( container ){
-                  this.containerWidth = container.clientWidth;
-                  this.containerHeight = container.clientHeight;
-                  this.contentWidth = content.clientWidth;
-                  this.contentHeight = content.clientHeight;
-                  if ( this.naturalWidth && (this.naturalWidth < this.contentWidth) ){
-                    this.contentWidth = this.naturalWidth;
-                  }
-                  if ( this.naturalHeight && (this.naturalHeight < this.contentHeight) ){
-                    this.contentHeight = this.naturalHeight;
-                  }
-                  if ( this.currentX > this.contentWidth ){
-                    this.currentX = 0;
-                  }
-                  if ( this.currentY > this.contentHeight ){
-                    this.currentY = 0;
-                  }
-                  container.scrollLeft = this.currentX;
-                  container.scrollTop = this.currentY;
-                  this.$emit('resize');
-                  if ( !this.ready && !this.readyDelay ){
-                    this.ready = true;
-                  }
+                if ( this.currentX > this.contentWidth ) {
+                  this.currentX = 0;
+                }
+                if ( this.currentY > this.contentHeight ) {
+                  this.currentY = 0;
+                }
+                container.scrollLeft = this.currentX;
+                container.scrollTop = this.currentY;
+                this.$emit('resize');
+                this.setResizeMeasures();
+                if ( !this.ready && !this.readyDelay ){
+                  this.ready = true;
                 }
                 this.promise = false;
                 resolve();
               }, 25);
-            });          
+            });
           });
         });
         return this.promise;
@@ -619,7 +606,25 @@
         if ( newVal === false ){
           this.onResize();
         }
-      }
+      },
+      lastKnownWidth(newVal){
+        this.containerWidth = newVal;
+      },
+      lastKnownHeight(newVal){
+        this.containerHeight = newVal;
+      },
+      containerWidth(){
+        let x = this.getRef('xScroller');
+        if ( x ){
+          x.onResize()
+        }
+      },
+      containerHeight(){
+        let y = this.getRef('yScroller');
+        if ( y ){
+          y.onResize()
+        }
+      },
     }
   });
 

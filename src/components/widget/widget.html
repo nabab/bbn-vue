@@ -45,10 +45,14 @@
 
   <!-- MAIN CONTENT -->
   <div class="content bbn-padded">
+    <div v-if="isLoading" style="min-height: 15em">
+      <bbn-loader></bbn-loader>
+    </div>
     <!-- COMPONENT -->
-    <component v-if="component"
+    <component v-else-if="component"
                 :is="component"
                 :source="currentSource"
+                @hook:mounted="$emit('loaded')"
                 v-bind="options"
     ></component>
     <!-- HTML CONTENT -->
@@ -58,7 +62,7 @@
     <!-- LIST OF ITEMS -->
     <ul v-else-if="currentItems.length">
       <template v-for="(it, idx) in currentItems"
-                v-if="limit ? idx < limit : true"
+                v-if="idx < limit"
       >
         <li :class="itemClass"
             :style="itemStyle"
@@ -79,7 +83,7 @@
       </template>
     </ul>
     <!-- NO DATA MESSAGE -->
-    <div v-else-if="!isLoading">
+    <div v-else>
       <slot>
         <div v-html="noData" class="bbn-w-100 bbn-c bbn-padded"></div>
       </slot>
@@ -123,6 +127,5 @@
       </div>
     </div>
     <!-- LOADING -->
-    <bbn-loader v-if="isLoading"></bbn-loader>
   </div>
 </div>

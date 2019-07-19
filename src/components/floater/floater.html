@@ -10,6 +10,7 @@
       v-if="isVisible"
       @mouseleave="leave"
       @mouseenter="isOver = true"
+      @click.stop=""
       :style="currentStyle">
   <header v-if="title"
           ref="header"
@@ -21,20 +22,20 @@
       </h3>
     </div>
     <div class="bbn-top-right bbn-p bbn-lg">
-      <div class="bbn-h-100 bbn-middle bbn-reactive"
+      <div v-if="maximizable !== false"
+          class="bbn-h-100 bbn-middle bbn-reactive"
           @click.stop.prevent="isMaximized = !isMaximized"
           tabindex="0"
           :title="_('Full screen')">
-        <i v-if="maximizable !== false"
-          :class="'nf nf-mdi-window_' + (isMaximized ? 'restore' : 'maximize')">
+        <i :class="'nf nf-mdi-window_' + (isMaximized ? 'restore' : 'maximize')">
         </i>
       </div>
-      <div class="bbn-h-100 bbn-middle bbn-reactive"
-          @click.stop.prevent="close"
+      <div v-if="closable !== false"
+          class="bbn-h-100 bbn-middle bbn-reactive"
+          @click.stop.prevent="close()"
           tabindex="0"
           :title="_('Close')">
-        <i v-if="closable !== false"
-          class="nf nf-fa-times">
+        <i class="nf nf-fa-times">
         </i>
       </div>
     </div>
@@ -42,8 +43,8 @@
   <div :style="{width: width ? '100%' : formattedWidth}" :class="{
     'bbn-flex-fill': footer || title || (buttons && buttons.length),
     'bbn-h-100': !title && !footer && (!buttons || !buttons.length)
-  }"
-        v-if="isMounted">
+  }">
+        <!--v-if="isMounted">-->
     <bbn-scroll :latency="latency"
                 ref="scroll"
                 :height="scrollHeight"
@@ -58,6 +59,7 @@
       ></div>
       <bbn-list v-else-if="filteredData.length"
                 :mode="mode"
+                :suggest="suggest"
                 :source="filteredData"
                 :component="itemComponent"
                 :template="template"

@@ -61,7 +61,6 @@
       },
     },
     data(){
-      let baseURL = this.setBaseURL(this.root);
       return {
         // Number of conatainers registered - as they say it
         numRegistered: 0,
@@ -360,20 +359,14 @@
             this.$emit("route1", this);
           }
           this.activate(url, this.urls[st]);
-          this.urls[st].currentURL = url;
           if ( this.urls[st] ){
+            this.urls[st].currentURL = url;
             this.urls[st].init();
             let child = this.urls[st].find('bbn-router');
             if ( child ){
               //bbn.fn.log("CHILD ROUTER ROUTING: " + url.substr(st.length + 1));
               child.route(url.substr(st.length + 1), force)
             }
-            else{
-              //this.$emit("route", url);
-            }
-          }
-          else{
-            //this.$emit("route", url);
           }
         }
       },
@@ -450,6 +443,10 @@
         }
         if ( url !== this.currentURL ){
           this.currentURL = url;
+        }
+        // Changing the current property of the view cascades on the container's currentURL
+        if (this.views[this.selected] && (url.indexOf(this.views[this.selected].url) === 0)){
+          this.$set(this.views[this.selected], 'current', url);
         }
         if ( this.parent ){
           this.parent.changeURL(this.baseURL + url, title, replace);
@@ -686,10 +683,8 @@
               });
             });
           }
-          else if ( !force ){
-            this.$emit('close', idx, ev);
-          }
-          if ( !ev.defaultPrevented || force ){
+          this.$emit('close', idx, ev);
+          if (force || !ev.defaultPrevented) {
             let t = this.views.splice(idx, 1);
             delete this.urls[t.url];
             bbn.fn.each(this.views, (v, i) => {
@@ -749,6 +744,7 @@
             }
             bbn.fn.iterate(obj, (a, n) => {
               if ( o[n] !== a ){
+                // Each new property must be set with $set
                 this.$set(o, n, a)
               }
             });
@@ -758,9 +754,10 @@
             obj.idx = idx === undefined ? this.views.length : idx;
             bbn.fn.iterate(this.getDefaultView(), (a, n) => {
               if ( obj[n] === undefined ){
+                // Each new property must be set with $set
                 this.$set(obj, n, a);
               }
-            })
+            });
             this.views.push(obj);
           }
         }

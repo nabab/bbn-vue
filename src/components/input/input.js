@@ -61,20 +61,6 @@
         type: String
       },
       /**
-       * The action performed by the left button.
-       * @prop {Function} actionLeft
-       */
-      actionLeft: {
-        type: Function,
-      },
-      /**
-       * The action performed by the right button.
-       * @prop {Function} actionRight
-       */
-      actionRight: {
-        type: Function,
-      },
-      /**
        * Hides the left button. 
        * @prop {Boolean} [false] autoHideLeft
        */
@@ -141,11 +127,10 @@
       }
     },
     methods: {
-      clear: function(){
+      clear(){
         this.emitInput('');
       }
     }
-
   });
 
 })(bbn);

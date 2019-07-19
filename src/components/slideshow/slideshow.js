@@ -358,7 +358,7 @@
        */
       aspectRatio(idx){
         this.$nextTick(()=>{
-          let ctnRatio = this.lastKnownWidth/this.lastKnownHeight,
+          let ctnRatio = this.lastKnownCtWidth/this.lastKnownCtHeight,
               img = this.getRef('slide-img' + idx.toString()),
               imgW = img.naturalWidth,
               imgH = img.naturalHeight,
@@ -407,12 +407,12 @@
           }
           if ( mode === 'stretch' ){
 
-            this.$set(this.items[idx], 'imageWidth',  this.lastKnownWidth + 'px');
-            this.$set(this.items[idx], 'imageHeight', this.lastKnownHeight + 'px');
+            this.$set(this.items[idx], 'imageWidth',  this.lastKnownCtWidth + 'px');
+            this.$set(this.items[idx], 'imageHeight', this.lastKnownCtHeight + 'px');
             this.$set(this.items[idx], 'showImg', true);
 
-            //this.items[idx].imageWidth = this.lastKnownWidth + 'px';
-            //this.items[idx].imageHeight = this.lastKnownHeight + 'px';
+            //this.items[idx].imageWidth = this.lastKnownCtWidth + 'px';
+            //this.items[idx].imageHeight = this.lastKnownCtHeight + 'px';
             //this.items[idx].showImg =  true;
           }
           if ( mode === "original" ){

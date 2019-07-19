@@ -73,11 +73,6 @@
       data(){
         return bbn.fn.extend({
           /**
-           * @data {Boolean} [false] isMounted
-           * @memberof basicComponent
-           */
-          isMounted: false,
-          /**
            * @data {Boolean} [false] ready
            * @memberof basicComponent
            */
@@ -111,22 +106,6 @@
           this.componentClass.push(this.$options.name);
         }
         this.componentClass.push('bbn-basic-component');
-      },
-      /**
-       * Emits the event mounted
-       * @event mounted
-       * @emit mounted
-       * @memberof basicComponent
-       */
-      mounted(){
-        this.isMounted = true;
-        this.$emit('mounted', this);
-      },
-      destroy(){
-        if ( this.isMounted ){
-          this.isMounted = false;
-        }
-        this.$emit('destroyed', this);
       },
       watch: {
         /**
@@ -184,6 +163,10 @@
          */
         maxHeight: {
           type: [Number, String]
+        },
+        suggest: {
+          type: Boolean,
+          default: false
         }
       },
       data(){
@@ -227,7 +210,7 @@
       },
       methods: {
         selectAll() {
-          let input = this.getRef('input');
+          let input = this.getRef('bbn-input');
           if (input) {
             input.setSelectionRange(0, input.value.length);
           }
@@ -245,9 +228,10 @@
          * @method onResize
          */
         click(){
-          if (!this.disabled && this.filteredData.length) {
+          if (!this.disabled && this.filteredData.length && bbn.fn.isDom(this.$el)) {
             this.isOpened = !this.isOpened;
-            this.getRef('input').focus();
+            this.$el.querySelector('input:not([type=hidden])').focus();
+            //this.getRef('input').getRef('element').focus();
           }
         },
         /**
@@ -1336,7 +1320,7 @@
             return Math.ceil((this.start + 1) / this.currentLimit);
           },
           set(val, oldVal) {
-            if ( this.ready && oldVal) {
+            if ( this.ready ) {
               this.start = val > 1 ? (val - 1) * this.currentLimit : 0;
               this.updateData();
             }
@@ -1595,15 +1579,10 @@
                   let data = [];
                   let total = 0;
                   if ( bbn.fn.isArray(this.source) ){
-                    if (this.source.length && this.source[this.source.length -1]._bbn){
-                      data = this.source;
-                    }
-                    else{
-                      data = this._map(this.source);
-                    }
+                    data = this.source;
                   }
                   else if ( bbn.fn.isFunction(this.source) ){
-                    data = this._map(this.source(this.sourceIndex));
+                    data = this.source(this.sourceIndex);
                   }
                   else if ( bbn.fn.isObject(this.source) ){
                     bbn.fn.iterate(this.source, (a, n) => {
@@ -1637,25 +1616,7 @@
                     this.currentData = d.data;
                   }
                   else{
-                    if ( this.isNullable ){
-                      let hasNull = false;
-                      bbn.fn.each(d.data, (a) => {
-                        if ( a[this.sourceValue] === undefined ){
-                          hasNull = true;
-                          return false;
-                        }
-                        else if ( !a[this.sourceValue] ){
-                          hasNull = true;
-                          return false;
-                        }
-                      });
-                      if ( !hasNull ){
-                        let o = {};
-                        o[this.sourceText] = '';
-                        o[this.sourceValue] = null;
-                        d.data.unshift(o);
-                      }
-                    }
+                    d.data = this._map(d.data);
                     this.currentData = bbn.fn.map(d.data, (a, i) => {
                       let o = {
                         data: a,
@@ -1700,6 +1661,7 @@
                 }
                 this.afterUpdate();
                 resolve(this.currentData);
+                this.$emit('dataloaded');
                 //this._dataPromise = false;
               });
             });
@@ -1888,6 +1850,20 @@
           default: false
         }
       },
+      data(){
+        return {
+          hasValue: !!this.value
+        };
+      },
+      computed: {
+        isNullable(){
+          let isNullable = !!this.nullable;
+          if ( this.nullable === null ){
+            isNullable = this.required ? false : !!this.placeholder;
+          }
+          return isNullable;
+        }
+      },
       methods: {
         /**
          * Emits the event input.
@@ -1991,15 +1967,6 @@
           return true;
         },
       },
-      computed: {
-        isNullable(){
-          let isNullable = !!this.nullable;
-          if ( this.nullable === null ){
-            isNullable = this.required ? false : !!this.placeholder;
-          }
-          return isNullable;
-        }
-      },
       /**
        * Adds the class 'bbn-input-component' to the component.
        * @event created
@@ -2026,6 +1993,9 @@
                 this.widget.value = newVal;
               }
             }
+          }
+          if ( !!newVal !== this.hasValue ){
+            this.hasValue = !!newVal;
           }
         },
         cfg(){
@@ -2078,6 +2048,18 @@
            */
           lastKnownWidth: false,
           /**
+           * The container height.
+           * @data {Boolean} [false] lastKnownCtHeight
+           * @memberof resizerComponent
+           */
+          lastKnownCtHeight: false,
+          /**
+           * The container width.
+           * @data {Boolean} [false] lastKnownCtWidth
+           * @memberof resizerComponent
+           */
+          lastKnownCtWidth: false,
+          /**
            * Should be set to true during the resize execution.
            * @data {Boolean} [false] isResizing
            * @memberof resizerComponent
@@ -2094,6 +2076,31 @@
         onResize(){
           return;
         },
+        setResizeMeasures(){
+          let resize = false;
+          let h = this.$el ? Math.round(this.$el.clientHeight) : 0;
+          let w = this.$el ? Math.round(this.$el.clientWidth) : 0;
+          let offsetParent = this.$el.parentNode;
+          let ctH = (this.parentResizer && offsetParent) ? Math.round(offsetParent.clientHeight) : bbn.env.height;
+          let ctW = (this.parentResizer && offsetParent) ? Math.round(offsetParent.clientWidth) : bbn.env.width;
+          if ( h && (this.lastKnownHeight !== h) ){
+            this.lastKnownHeight = h;
+            resize = true;
+          }
+          if ( w && (this.lastKnownWidth !== w) ){
+            this.lastKnownWidth = w;
+            resize = true;
+          }
+          if ( ctH && (this.lastKnownCtHeight !== ctH) ){
+            this.lastKnownCtHeight = ctH;
+            resize = true;
+          }
+          if ( ctW && (this.lastKnownCtWidth !== ctW) ){
+            this.lastKnownCtWidth = ctW;
+            resize = true;
+          }
+          return resize;
+        },
         /**
          * Defines the resize emitter and emits the event resize.
          * @method setResizeEvent
@@ -2107,20 +2114,15 @@
           // This class will allow to recognize the element to listen to
           this.parentResizer = this.closest(".bbn-resize-emitter", true);
           // Setting initial dimensions
-          //@jquery this.lastKnownHeight = this.parentResizer ? Math.round($(this.$el.parentNode).innerHeight()) : bbn.env.height;
-          //@jquery this.lastKnownWidth = this.parentResizer ? Math.round($(this.$el.parentNode).innerWidth()) : bbn.env.width;
-          let offsetParent = this.$el.offsetParent;
-          this.lastKnownHeight = (this.parentResizer && offsetParent) ? Math.round(offsetParent.clientHeight) : bbn.env.height;
-          this.lastKnownWidth = (this.parentResizer && offsetParent) ? Math.round(offsetParent.clientWidth) : bbn.env.width;
+          this.setResizeMeasures();
           // Creating the callback function which will be used in the timeout in the listener
           this.resizeEmitter = () => {
             // Removing previous timeout
             clearTimeout(resizeTimeout);
             // Creating a new one
             resizeTimeout = setTimeout(() => {
-              if ( this.isMounted && this.$el.parentNode ){
-                //@jquery if ( $(this.$el).is(":visible") ){
-                if ( this.$el.offsetLeft !== 0 ){
+              if ( this.$el.parentNode ){
+                if ( this.$el.offsetWidth !== 0 ){
                   // Checking if the parent hasn't changed (case where the child is mounted before)
                   let tmp = this.closest(".bbn-resize-emitter", true);
                   if ( tmp !== this.parentResizer ){
@@ -2129,26 +2131,12 @@
                     this.setResizeEvent();
                     return;
                   }
-                  let resize = false;
-                  let offsetParent = this.$el.offsetParent;
-                  // @jquery h = this.parentResizer ? Math.round($(this.$el.parentNode).innerHeight()) : bbn.env.height,
-                  // @jquery w = this.parentResizer ? Math.round($(this.$el.parentNode).innerWidth()) : bbn.env.width;
-                  let h = (this.parentResizer && offsetParent) ? Math.round(offsetParent.clientHeight) : bbn.env.height;
-                  let w = (this.parentResizer && offsetParent) ? Math.round(offsetParent.clientWidth) : bbn.env.width;
-
-                  bbn.fn.log("RESIZE EVENT", w, this.lastKnownWidth);
-
-                  if ( h && (this.lastKnownHeight !== h) ){
-                    this.lastKnownHeight = h;
-                    resize = 1;
-                  }
-                  if ( w && (this.lastKnownWidth !== w) ){
-                    this.lastKnownWidth = w;
-                    resize = 1;
-                  }
-                  if (resize) {
+                  if (this.setResizeMeasures()) {
                     this.onResize();
                     this.$emit("resize");
+                    this.$nextTick(() => {
+                      this.setResizeMeasures();
+                    });
                   }
                 }
               }
@@ -2217,6 +2205,7 @@
        */
       mounted(){
         this.setResizeEvent();
+        this.$on('ready', this.setResizeEvent);
       },
       /**
        * @event beforeDestroy

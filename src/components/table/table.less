@@ -84,10 +84,7 @@
                 overflow: hidden;
                 box-sizing: border-box;
                 border-top: 0px;
-                > div{
-                  //padding: 0.5em;
-                  overflow: hidden;
-                }
+                padding: 0;
                 &.bbn-table-fixed-cell{
                   position: absolute;
                   top: auto;
@@ -98,27 +95,32 @@
                     border-left: 0;
                   }
                 }
-                > .bbn-table-expander{
-                  line-height: 1em;
-                  i:focus{
-                    outline: 0;
+                > div{
+                  overflow: hidden;
+                  min-height: 100%;
+                  min-width: 100%;
+                  box-sizing: border-box;
+                  > .bbn-table-expander{
+                    line-height: 1em;
+                    i:focus{
+                      color: red;
+                      outline: 0;
+                    }
                   }
-                }
-                .bbn-table-dirty{
-                  position:absolute;
-                  width:0;
-                  height:0;
-                  border-style:solid;
-                  border-width: 3px;
-                  border-color:red transparent transparent red;
-                  padding:0;
-                  margin: -1px 0 0 -1px;
-                }
-                .bbn-table-dirty:before{
-                  content:"\a0";
-                  display:inline-block;
-                  width:0;
-                  float:left
+                  .bbn-table-dirty{
+                    width:0px;
+                    height:0px;
+                    border-style:solid;
+                    border-width: 3px;
+                    border-color:red transparent transparent red;
+                    padding:0;
+                  }
+                  .bbn-table-dirty:before{
+                    content:"\a0";
+                    display:inline-block;
+                    width:0;
+                    float:left
+                  }
                 }
               }
             }

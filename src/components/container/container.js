@@ -35,6 +35,7 @@
 
   // Will hold all the current rendered components random names to avoid doubles
   let componentsList = [];
+
   Vue.component("bbn-container", {
     name: 'bbn-container',
     /**
@@ -297,8 +298,8 @@
           if ( this.$parent.views[this.idx].menu === undefined ){
             this.$parent.views[this.idx].menu = [];
           }
-          let menu = this.$parent.views[this.idx].menu,
-              idx = bbn.fn.isFunction(menu) ? -1 : bbn.fn.search(menu, {text: obj.text});
+          let menu = this.$parent.views[this.idx].menu || [],
+              idx = bbn.fn.isFunction(menu) ? -1 : bbn.fn.search(menu || [], {text: obj.text});
           if (idx === -1) {
             if (bbn.fn.isFunction(menu) ){
               this.$parent.views[this.idx].menu = () => {
@@ -323,6 +324,7 @@
             obj.key = menu[idx].key;
             menu.splice(idx, 1, obj);
           }
+          this.$parent.views[this.idx].menu = menu;
           return obj.key;
         }
         return false;
@@ -456,7 +458,7 @@
       if ( !this.router ){
         throw new Error(bbn._("bbn-container cannot be rendered without a bbn-router"));
       }
-      if ( !this.router.isMounted ){
+      if ( !this.router.ready ){
         this.router.$on('ready', () => {
           //this.init();
           this.router.register(this);
@@ -485,6 +487,11 @@
     },
 
     watch: {
+      current(newVal){
+        if (newVal.indexOf(this.url) === 0){
+          this.currentURL = newVal;
+        }
+      },
       /**
        * @watch currentUrl
        * @param {String} newVal 

@@ -185,7 +185,7 @@
        * @psop {String} footer
        */
       footer: {
-        type: String
+        type: [Function, String, Object]
       },
       /**
        * The buttons in the footer.
@@ -228,10 +228,37 @@
       latency: {
         type: Number,
         default: 25
+      },
+      onOpen: {
+        type: Function
+      },
+      beforeClose: {
+        type: Function
+      },
+      onClose: {
+        type: Function
+      },
+      afterClose: {
+        type: Function
+      },
+      index: {
+        type: Number
+      },
+      uid: {
+        type: String
+      },
+      suggest: {
+        type: Boolean,
+        default: false
       }
     },
     data() {
+      let fns = [];
+      if ( this.onClose ){
+        fns.push(this.onClose);
+      }
       return {
+        closingFunctions: fns,
         /**
          * @data [null] currentTop
          */
@@ -312,10 +339,6 @@
          * @data {Boolean} [false] hasIcon
          */
         hasIcons: false,
-        /**
-         * @data {Number} [-1] currentSelected
-         */
-        currentSelected: -1,
         /**
          * @data {Boolean} [false] isMaximized
          */
@@ -522,7 +545,7 @@
       getContainerPosition() {
         let obj = {};
         if (this.container) {
-          obj = (bbn.fn.isObject(this.container) ? this.container : this.$el.offsetParent).getBoundingClientRect();
+          obj = (bbn.fn.isDom(this.container) ? this.container : this.$el.offsetParent).getBoundingClientRect();
         }
         return {
           top: 0,
@@ -575,6 +598,23 @@
           }
         }
       },
+      addClose(fn){
+        for ( let i = 0; i < arguments.length; i++ ){
+          if ( typeof arguments[i] === 'function' ){
+            this.closingFunctions.push(arguments[i])
+          }
+        }
+      },
+      removeClose(fn){
+        if ( !fn ){
+          this.closingFunctions = [];
+        }
+        else{
+          this.closingFunctions = bbn.fn.filter(this.closingFunctions, (f) => {
+            return fn !== f;
+          })
+        }
+      },
       /**
        * Handles the resize of the component.
        * @method onResize
@@ -583,7 +623,7 @@
        */
       onResize() {
         // Should be triggered by the inner scroll once mounted
-        if (this.isVisible && this.isMounted && !this.isResizing && bbn.fn.isDom(this.$el)) {
+        if (this.isVisible && bbn.fn.isDom(this.$el) && !this.isResizing && bbn.fn.isDom(this.$el)) {
           if ( !this.ready ){
             this.init();
             this.ready = true;
@@ -611,6 +651,7 @@
           this.scrollWidth = null;
           this.currentScroll = false;
           this.$forceUpdate();
+          this.init();
           return new Promise((resolve) => {
             this.$nextTick(() => {
               // These are the limits of the space the DIV can occupy
@@ -785,6 +826,13 @@
                 resolve();
                 this.isResizing = false;
                 this.isResized = true;
+                this.setResizeMeasures();
+                this.$nextTick(() => {
+                  if (scroll) {
+                    bbn.fn.log("SCROLLER EXSISTS");
+                    scroll.setResizeMeasures();
+                  }
+                })
               });
             });
           });
@@ -866,10 +914,11 @@
           bbn.fn.each(this.closingFunctions, (a) => {
             a(this, beforeCloseEvent);
           });
+          if (beforeCloseEvent.defaultPrevented) {
+            return;
+          }
         }
-        let closeEvent = new Event('close', {
-          cancelable: true
-        });
+        let closeEvent = new Event('close');
         this.$el.style.display = 'block';
         this.$nextTick(() => {
           this.$emit("close", this, closeEvent);
@@ -963,14 +1012,6 @@
       this.updateData().then(() => {
         this._updateIconSituation();
       });
-    },
-    /**
-     * @event beforeDestroy
-     */
-    beforeDestroy() {
-      if (this._scroller) {
-        this._scroller.removeEventListener('scroll', this.resize);
-      }
     },
     watch: {
       /**

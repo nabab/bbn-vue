@@ -2,23 +2,14 @@
      :style="elementStyle"
 >
   <div :class="{'bbn-scroll-container': true, 'bbn-abs': !isMeasuring}"
-       :style="isMeasuring ? {} : {
-         right: hasScrollX ? scrollPos : 0,
-         bottom: hasScrollY ? scrollPos : 0,
-         'padding-right': hasScrollX ? containerPadding : 0,
-         'padding-bottom': hasScrollY ? containerPadding : 0
-       }"
+       :style="containerStyle"
        ref="scrollContainer"
        @scroll.passive="onScroll"
   >
     <div :class="{'bbn-scroll-content': !isMeasuring}"
          ref="scrollContent"
          @ready.stop="waitReady"
-         @destroyed="init"
-         :style="isMeasuring ? {} : {
-           width: hasScrollX ? 'auto' : '100%',
-           height: hasScrollY ? 'auto' : '100%'
-         }"
+         :style="contentStyle"
     >
       <slot></slot>
     </div>

@@ -485,13 +485,13 @@
     },
     computed: {
       containerWidth(){
-        if ( !this.groupCols || !this.groupCols[1] || !this.groupCols[1].width || !this.lastKnownWidth ){
+        if ( !this.groupCols || !this.groupCols[1] || !this.groupCols[1].width || !this.lastKnownCtWidth ){
           return '0px';
         }
-        return (this.lastKnownWidth - this.groupCols[0].width - this.groupCols[2].width) + 'px';
+        return (this.lastKnownCtWidth - this.groupCols[0].width - this.groupCols[2].width) + 'px';
       },
       totalWidth(){
-        if ( !this.groupCols || !this.groupCols[1] || !this.groupCols[1].width || !this.lastKnownWidth ){
+        if ( !this.groupCols || !this.groupCols[1] || !this.groupCols[1].width || !this.lastKnownCtWidth ){
           return '0px';
         }
         return (this.groupCols[0].width + this.groupCols[1].width + this.groupCols[2].width) + 'px';
@@ -510,7 +510,7 @@
        * @return {Boolean}
        */
       hasToolbar() {
-        return this.toolbarButtons.length || (typeof this.toolbar === 'function') || (typeof this.toolbar === 'object');
+        return this.toolbarButtons.length || bbn.fn.isObject(this.toolbar);
       },
       /**
        * If the computed isBatch is true, return an array of modified rows.
@@ -1313,17 +1313,6 @@
         }
       },
       /**
-       * Returns the ref mainTitles.
-       * @method getMainTitlesContainer
-       * @return {Array}
-       */
-      getMainTitlesContainer() {
-        if (this.isMounted) {
-          return [this.getRef('mainTitles')]
-        }
-        return []
-      },
-      /**
        * Fires the metod updateData to refresh the current data set.
        * @method reload
        * @fires updateData
@@ -1591,12 +1580,15 @@
         let table = this;
         this.getPopup().open({
           title: bbn._("Columns' picker"),
-          width: '90%',
           height: '90%',
+          width: '90%',
           component: {
             template: `
-<div class="bbn-table-column-picker bbn-full-screen">
-  <bbn-form ref="scroll" :source="formData" @success="applyColumnsShown" :prefilled="true">
+<div class="bbn-table-column-picker">
+  <bbn-form ref="scroll"
+            :source="formData"
+            :scrollable="true"
+            @success="applyColumnsShown">
     <div class="bbn-padded">
       <ul v-if="source.titleGroups">
         <li v-for="(tg, idx) in source.titleGroups">
@@ -2174,7 +2166,17 @@
         if (!this.originalData) {
           return false;
         }
-        return JSON.stringify(this.currentData[idx]) !== JSON.stringify(this.originalData[idx])
+        let data = [];
+        let orig;
+        if ( idx === undefined ){
+          bbn.fn.each(this.currentData, (a) => data.push(a.data));
+          orig = this.originalData;
+        }
+        else{
+          data = this.currentData[idx].data;
+          orig = this.originalData[idx];
+        }
+        return JSON.stringify(data) !== JSON.stringify(orig);
       },
       /**
        * Returns true if the given column is sorted.
@@ -2597,7 +2599,7 @@
                   }
                   if ( a.width ){
                     if ((typeof (a.width) === 'string') && (a.width.substr(-1) === '%')) {
-                      a.realWidth = Math.round(this.lastKnownWidth * parseFloat(a.width) / 100);
+                      a.realWidth = Math.round(this.lastKnownCtWidth * parseFloat(a.width) / 100);
                     }
                     else {
                       a.realWidth = parseFloat(a.width);
@@ -2678,7 +2680,7 @@
             });
 
             let clientWidth = this.$el.clientWidth,
-            toFill = this.lastKnownWidth - tot - 1;
+            toFill = this.lastKnownCtWidth - tot - 1;
             // We must arrive to 100% minimum
             if (toFill > 0) {
               if (numUnknown) {
@@ -2950,7 +2952,28 @@
         }
       },
       saveEditedRow() {},
-      cancelEditedRow() {}
+      cancelEditedRow() {},
+      clickCell() {
+        bbn.fn.log("click cell");
+      },
+      focusout(idx) {
+        this.focused = false;
+        setTimeout(() => {
+          if (!this.focused) {
+            this.focusedRow = false;
+            bbn.fn.log("focusout");
+          }
+        }, 50);
+      },
+      focusin(idx, e) {
+        if (e.target.tagName !== 'BUTTON') {
+          this.focused = true;
+          if (this.focusedRow !== idx) {
+            this.focusedRow = idx;
+          }
+        }
+        bbn.fn.log(e);
+      }
     },
     /**
      * @event created
@@ -3085,35 +3108,41 @@
        * @emit change
        */
       focusedRow(newIndex, oldIndex) {
-        if (this.items[oldIndex] !== undefined) {
-          let idx = this.items[oldIndex].index;
-          if (
-            this.editable &&
-            (this.editMode === 'inline') &&
-            (this.editedIndex === idx) &&
-            this.isModified(idx)
-          ) {
-            //this.$forceUpdate();
-            this.$emit('change', this.items[oldIndex].data, idx);
-            //this.save();
+        if (
+          this.editable &&
+          (this.editMode === 'inline')
+        ) {
+          if (this.items[oldIndex] !== undefined) {
+            let idx = this.items[oldIndex].index;
+            if (
+              (this.editedIndex === idx) &&
+              this.isModified(idx)
+            ) {
+              //this.$forceUpdate();
+              this.$emit('change', this.items[oldIndex].data, idx);
+              //this.save();
+            }
           }
-        }
-        if (this.items[newIndex] !== undefined) {
-          if (
-            this.editable &&
-            (this.editMode === 'inline') &&
-            !this.items[newIndex].group
-          ) {
+          if (this.items[newIndex] && !this.items[newIndex].group) {
             let comeFromAfter = newIndex === oldIndex - 1;
             this.$nextTick(() => {
               this.edit(this.items[newIndex].data, null, newIndex);
               this.$nextTick(() => {
-                if ( this.getTr(newIndex).querySelectorAll('input:not([hidden])').length ){
-                  this.getTr(newIndex).querySelectorAll('input:not([hidden])')[ comeFromAfter ? 0 : (this.getTr(newIndex).querySelectorAll('input:not([hidden])').length -1) ]
+                let nextInputs = this.getTr(newIndex).querySelectorAll('input');
+                let nextInput;
+                bbn.fn.each(nextInputs, (a) => {
+                  if ( a.offsetWidth ){
+                    nextInput = a;
+                    if (!comeFromAfter) {
+                      return false;
+                    }
+                  }
+                });
+                if ( nextInput ){
+                  nextInput.focus();
                 }
-                
-              })
-            })
+              });
+            });
           }
         }
       },

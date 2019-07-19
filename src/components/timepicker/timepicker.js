@@ -215,21 +215,21 @@
        * @fires setValue
        */
       min(){
-        this.setValue(this.value.toString());
+        this.setValue(this.value !== undefined ? this.value.toString() : '');
       },
       /**
        * @watch max
        * @fires setValue
        */
       max(){
-        this.setValue(this.value.toString());
+        this.setValue(this.value !== undefined ? this.value.toString() : '');
       },
       /**
        * @watch valueFormat
        * @fires setValue
        */
       valueFormat(){
-        this.setValue(this.value.toString());
+        this.setValue(this.value !== undefined ? this.value.toString() : '');
       },
       /**
        * @watch maskedMounted

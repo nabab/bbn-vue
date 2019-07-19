@@ -93,11 +93,10 @@
         slotSource: [],
         history: [],
         parents: [],
-        initSource: [],
+        initSource: null,
         parentTab: false,
         selected: false,
         visible: true,
-        routerMounted: false,
         router: null
       };
     },
@@ -225,7 +224,7 @@
       },
 
       update(){
-        if ( this.isMounted ){
+        if ( this.initSource !== null ){
           this.$forceUpdate();
         }
       },
@@ -237,7 +236,6 @@
           this.history.splice(i, 1);
         }
         this.history.unshift(url);
-        //bbn.fn.log("ADDING "+ url, this.history);
         while ( this.history.length > this.historyMaxLength ){
           this.history.pop();
         }
@@ -270,6 +268,7 @@
         return 'black';
       },
       scrollTabs(dir){
+       
         let ul = this.$refs.tabgroup, 
             scroll = this.getRef('horizontal-scroll'),
             scrollContainer = scroll.getRef('scrollContainer'),
@@ -277,7 +276,7 @@
            
         if ( ul.clientWidth > scrollContainer.clientWidth ){
           if ( dir === 'right' ){
-            //newPos = scroll.lastKnownWidth - 100;
+            //newPos = scroll.lastKnownCtWidth - 100;
             newPos = newPos = scroll.currentX + 100;
           }
           if ( (dir === 'left')  && (scroll.currentX !== 0)){
@@ -291,10 +290,10 @@
         scroll.scrollTo(newPos, 0, true);
         }
        /* if ( dir === 'left'){
-          newPos = this.lastKnownWidth - 100 < 0 ? 0 : this.lastKnownWidth - 100;
+          newPos = this.lastKnownCtWidth - 100 < 0 ? 0 : this.lastKnownCtWidth - 100;
         }
         else if ( dir === 'right' ){
-           newPos = this.lastKnownWidth + 100 < 0 ? 0 : this.lastKnownWidth + 100;
+           newPos = this.lastKnownCtWidth + 100 < 0 ? 0 : this.lastKnownCtWidth + 100;
         }
         scroll.scrollTo(newPos, 0, true);*/
         /*if ( ul.scrollWidth > ul.clientWidth ){
@@ -476,11 +475,12 @@
 
       close(idx, force){
         let res = this.router ? this.router.remove(idx, force) : false;
-        if ( this.selected > idx ){
-          this.selected = this.selected - 1;
+        if (res && (this.router.selected > idx)) {
+          this.router.selected = this.router.selected - 1;
+          this.selected = this.router.selected;
         }
-        else if ( this.selected === idx ){
-          this.selected = false;
+        else if (res && (this.selected === idx)) {
+          this.router.selected = false;
           if ( this.router.views.length ){
             bbn.fn.each(this.history, (a) => {
               let tmp = this.router.getIndex(a);

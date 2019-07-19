@@ -148,6 +148,28 @@
         currentMenu: this.current
       };
     },
+    computed: {
+      /**
+       * Defines position and width of the component
+       * @method elementStyle 
+       * @return {Object}
+       */
+      elementStyle(){
+        let o = {
+          top: '0px',
+          bottom: '0px'
+        };
+        let prop = this.position === 'right' ? 'right' : 'left';
+        o[prop] = 0;
+        if (!this.ready) {
+          o.opacity = 0;
+        }
+        else if (!this.isOpened) {
+          o[prop] = -(this.$el.clientWidth + 40) + 'px';
+        }
+        return o;
+      }
+    },
     methods: {
       /**
        * Creates the menu of the given node
@@ -189,23 +211,13 @@
         });
       },
       /**
-       * Defines position and width of the component
-       * @method posObject 
-       * @return {Object}
-       */
-      posObject(){
-        let o = {};
-        o[this.position === 'right' ? 'right' : 'left'] = this.isOpened ? 0 : -(this.$el.clientWidth + 40);
-        return o;
-      },
-      /**
        * Shows the component
        * @method show
        * @fires _position
        */
       show(){
         this.isOpened = true;
-        this._position();
+        //this._position();
       },
       /**
        * Hides the component
@@ -217,7 +229,7 @@
           return;
         }
         this.isOpened = false;
-        this._position();
+        //this._position();
       },
       /**
        * Shows/Hides the component
@@ -331,7 +343,7 @@
      */
     mounted(){
       this.onResize();
-      this._position();
+      //this._position();
       this.ready = true;
     },
     /**

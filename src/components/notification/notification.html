@@ -6,6 +6,7 @@
                :bottom="isTop || (positions[it.id] === undefined) ? undefined : positions[it.id]"
                :left="isLeft ? 0 : undefined"
                title=""
+               :scrollable="false"
                :right="isLeft ? undefined : 0">
     <div :class="{
         'bbn-notification-content': true,
@@ -20,27 +21,26 @@
         'bbn-b': it.type === 'error',
         'bbn-bg-blue': it.content && (it.type === 'info')
     }">
-        <span v-if="it.content"
-              v-html="it.content">
-        </span>
-        <span v-else-if="it.type === 'success'"
-              v-html="successMessage">
-        </span>
-        <span v-else-if="it.type === 'warning'"
-              v-html="warningMessage">
-        </span>
-        <span v-else-if="it.type === 'error'"
-              v-html="errorMessage">
-        </span>
-        <div :class="{
-            'bbn-notification-closer': true,
-            'bbn-p': true,
-            'bbn-lg': true,
-            'bbn-white': !!it.type
-        }"
-            @click="close(it.id)">
-            <i class="nf nf-fa-times"></i>
-        </div>
+      <span v-if="it.content"
+            v-html="it.content">
+      </span>
+      <span v-else-if="it.type === 'success'"
+            v-html="successMessage">
+      </span>
+      <span v-else-if="it.type === 'warning'"
+            v-html="warningMessage">
+      </span>
+      <span v-else-if="it.type === 'error'"
+            v-html="errorMessage">
+      </span>
+      <div :class="{
+          'bbn-notification-closer': true,
+          'bbn-p': true,
+          'bbn-white': !!it.type
+      }"
+          @click="close(it.id)">
+          <i class="bbn-lg nf nf-fa-times"></i>
+      </div>
     </div>
   </bbn-floater>
 </div>

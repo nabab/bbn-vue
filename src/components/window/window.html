@@ -16,7 +16,7 @@
               :content="content"
               :source="source"
               :container="$el"
-              @close="close"
+              @beforeClose="floaterClose"
               :latency="500"
               @keydown.esc.prevent.stop="close">
     <slot></slot>

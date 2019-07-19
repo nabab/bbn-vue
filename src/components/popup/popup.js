@@ -227,6 +227,9 @@
         if ( !a.uid ){
           a.uid = 'bbn-popup-' + bbn.fn.timestamp().toString()
         }
+        if ( a.closable === undefined ){
+          a.closable = true;
+        }
         if ( !a.title && this.untitled ){
           a.title = this.untitled;
         }
@@ -310,12 +313,12 @@
               if ( onClose ){
                 onClose($ev, btn);
               }
-              btn.closest('bbn-window').close();
+              btn.closest('bbn-floater').close();
             }
           }];
           /*
           mounted(){
-            this.window = bbn.vue.closest(this, 'bbn-window');
+            this.window = bbn.vue.closest(this, 'bbn-floater');
             setTimeout(() => {
               let ele = this.getRef('click');
               if ( ele ){
@@ -394,7 +397,7 @@
             icon: 'nf nf-fa-check_circle',
             command($ev, btn){
               onYes($ev, btn);
-              btn.closest('bbn-window').close();
+              btn.closest('bbn-floater').close();
             }
           }, {
             text: noText,
@@ -403,7 +406,7 @@
               if ( onNo ){
                 onNo($ev, btn);
               }
-              btn.closest('bbn-window').close();
+              btn.closest('bbn-floater').close();
             }
           }];
           this.open(bbn.fn.extend(o, {
@@ -430,9 +433,6 @@
         }
         return false;
       }
-    },
-    beforeCreate(){
-      bbn.vue.preloadBBN(['window']);
     },
     mounted(){
       bbn.fn.each(this.popups, a => this.open(a))

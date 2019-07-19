@@ -76,7 +76,11 @@
        * The source of the dashboard.
        * @prop {Array} source
        */
-      source: {},
+      source: {
+        default(){
+          return [];
+        }
+      },
       /**
        * The url for the post, in case of actions on the dashboard's widgets.
        * @prop {String} url
@@ -150,9 +154,9 @@
        * @return {Array}
        */
       currentWidgets(){
-        return bbn.fn.filter(this.widgets, (a) => {
+        return this.widgets && this.widgets.length ? bbn.fn.filter(this.widgets, (a) => {
           return !a.hidden;
-        });
+        }) : [];
       }
     },
     methods: {
@@ -176,7 +180,7 @@
       getWidget(key){
         let idx = bbn.fn.search(this.widgets, {key: key});
         if ( idx > -1 ){
-          return bbn.vue.closest(this, ".bbn-container");
+          return this.closest("bbn-container");
         }
       },
       /**
@@ -206,12 +210,14 @@
        * @fires updateMenu
        */
       toggleWidget(key, hidden){
-        let idx = bbn.fn.search(this.widgets, {key: key});
-        this.updateWidget(key, {
-          hidden: hidden === undefined ? !this.widgets[idx].hidden : hidden
-        }).then(() => {
-          this.updateMenu();
-        });
+        if ( this.widgets ){
+          let idx = bbn.fn.search(this.widgets, {key: key});
+          this.updateWidget(key, {
+            hidden: hidden === undefined ? !this.widgets[idx].hidden : hidden
+          }).then(() => {
+            this.updateMenu();
+          });
+        }
       },
       /**
        * Handles the resize of the component.
@@ -219,78 +225,32 @@
        * 
        */
       onResize(){
-        
-        let ele = this.$el.querySelector(".bbn-masonry"),
-            actualWidth = parseInt(window.getComputedStyle(ele).width),
-            num = 1,
-            steps = [800, 1150, 1550, 2200, 3000, 3800];
-            bbn.fn.log('Resize dashboard', actualWidth)
-        bbn.fn.each(steps, (step, i) => {
-          if ( this.max && (this.max <= num) ){
-            return false;
+        let ele = this.getRef('container');
+        if (ele) {
+          let actualWidth = parseInt(window.getComputedStyle(ele).width),
+              num = 1,
+              steps = [800, 1150, 1550, 2200, 3000, 3800];
+              bbn.fn.log('Resize dashboard', actualWidth);
+          bbn.fn.each(steps, (step, i) => {
+            if ( this.max && (this.max <= num) ){
+              return false;
+            }
+            if ( actualWidth >= step ){
+              num++;
+            }
+            else{
+              return false;
+            }
+          });
+          bbn.fn.addStyle(ele, {
+            "-moz-column-count": num,
+            "-webkit-column-count": num,
+            "column-count": num
+          });
+          if ( this.scrollable ){
+            this.getRef('scroll').onResize();
           }
-          if ( actualWidth >= step ){
-            num++;
-          }
-          else{
-            return false;
-          }
-        });
-        if ( this.sortable ){
-          /*
-          if ( !$ele.hasClass("ui-sortable") ){
-            let oldIdx = false;
-            $ele.sortable({
-              placeholder: "bbn-widget bbn-bg-grey bbn-widget-placeholder",
-              opacity: 0.5,
-              forcePlaceholderSize: true,
-              handle: ".bbn-header .bbn-sortable-handle",
-              start: (e, ui) => {
-                bbn.fn.log("SORTIONG");
-                oldIdx = ui.item.index();
-              },
-              stop: (e, ui) => {
-                if ( oldIdx > -1 ){
-                  let newIdx = ui.item.index();
-                  if ( this.widgets[oldIdx] && this.widgets[oldIdx].key && (newIdx !== oldIdx) ){
-                    if ( this.url ){
-                      try {
-                        bbn.fn.post(this.url + 'move', {
-                          id: this.widgets[oldIdx].key,
-                          index: newIdx
-                        }, (d) => {
-                          if ( d.success ){
-                            this.move(oldIdx, newIdx);
-                          }
-                          else{
-                            $ele.sortable("cancel");
-                          }
-                        });
-                      }
-                      catch (e){
-                        throw new Error(bbn._("Impossible to find the index"));
-                      }
-                    }
-                    else{
-                      this.move(oldIdx, newIdx);
-                    }
-                  }
-                }
-              }
-            });
-          }
-          else{
-            $ele.sortable('refresh');
-          }
-          */
         }
-        
-        bbn.fn.addStyle(ele, {
-          "-moz-column-count": num,
-          "-webkit-column-count": num,
-          "column-count": num
-        });
-        
       },
       /**
        * Move the widget from the old index to the new index
@@ -348,31 +308,33 @@
           this.menu = [];
           let items = [];
           let i = 0;
-          bbn.fn.each(this.originalSource, (a) => {
-            let idx = bbn.fn.search(this.widgets, {uid: a.uid});
-            if ( idx > -1 ){
-              items.push({
-                disabled: !this.closable || (this.widgets[idx].closable === false),
-                selected: !this.widgets[idx].hidden,
-                text: this.widgets[idx].text ?
-                  this.widgets[idx].text :
-                  (this.widgets[idx].title ? this.widgets[idx].title : bbn._('Untitled')),
-                command: () => {
-                  if ( this.widgets[idx].closable !== false ){
-                    this.toggleWidget(a.uid);
-                    this.$forceUpdate();
+          if ( this.widgets ){
+            bbn.fn.each(this.originalSource, (a) => {
+              let idx = bbn.fn.search(this.widgets, {uid: a.uid});
+              if ( idx > -1 ){
+                items.push({
+                  disabled: !this.closable || (this.widgets[idx].closable === false),
+                  selected: !this.widgets[idx].hidden,
+                  text: this.widgets[idx].text ?
+                    this.widgets[idx].text :
+                    (this.widgets[idx].title ? this.widgets[idx].title : bbn._('Untitled')),
+                  command: () => {
+                    if ( this.widgets[idx].closable !== false ){
+                      this.toggleWidget(a.uid);
+                      this.$forceUpdate();
+                    }
                   }
-                }
-              });
-              i++;
-            }
-          });
-          this.menu.push(tab.addMenu({
-            text: bbn._("Widgets"),
-            mode: 'options',
-            icon: 'nf nf-mdi-widgets',
-            items: items
-          }));
+                });
+                i++;
+              }
+            });
+            this.menu.push(tab.addMenu({
+              text: bbn._("Widgets"),
+              mode: 'options',
+              icon: 'nf nf-mdi-widgets',
+              items: items
+            }));
+          }
           /*
           this.menu.push(tab.addMenu({
             text: bbn._("Widgets"),
@@ -391,12 +353,12 @@
        * @param {Number} key 
        * @param {Object} cfg 
        * @fires setWidgetStorage
-       */  
+       */
       updateWidget(key, cfg){
-        let idx = bbn.fn.search(this.widgets, 'key', key),
+        let idx = bbn.fn.search(this.widgets || [], 'key', key),
             params = {id: key, cfg: cfg},
             no_save = ['items', 'num', 'start', 'index'];
-        if ( idx > -1 ){
+        if (idx > -1) {
           bbn.fn.each(no_save, function(a, i){
             if ( cfg[a] !== undefined ){
               delete params.cfg[a];

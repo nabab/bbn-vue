@@ -4,7 +4,7 @@
                 :readonly="readonly"
                 :required="required"
                 :mask="currentMask"
-                @mounted="maskedMounted = true"
+                @hook:mounted="maskedMounted = true"
                 @blur="inputChanged"
                 v-model="inputValue"
                 class="bbn-flex-fill"
@@ -35,7 +35,7 @@
                      :min="min"
                      :max="max"
                      :extra-items="true"
-                     @mounted="$refs.calendarFloater.onResize()"
+                     @hook:mounted="$refs.calendarFloater.onResize()"
                      :disable-dates="disableDates"
                      :items-range="datesRange"
       ></bbn-calendar>
@@ -66,7 +66,7 @@
               <div class="bbn-flex-fill">
                 <bbn-scroll :hidden="true" 
                             ref="hourScroll"
-                            @mounted="hourReady = true"
+                            @hook:mounted="hourReady = true"
                 >
                   <div v-for="h in hours"
                       :class="['bbn-p', 'bbn-text', 'bbn-vspadded', 'bbn-background-internal', {
@@ -93,7 +93,7 @@
               <div class="bbn-flex-fill">
                 <bbn-scroll :hidden="true" 
                             ref="minuteScroll"
-                            @mounted="minuteReady = true"
+                            @hook:mounted="minuteReady = true"
                 >
                   <div v-for="m in minsec" 
                       :class="['bbn-p', 'bbn-text', 'bbn-vspadded', 'bbn-background-internal', {
@@ -123,7 +123,7 @@
               <div class="bbn-flex-fill">
                 <bbn-scroll :hidden="true" 
                             ref="secondScroll"
-                            @mounted="secondReady = true"
+                            @hook:mounted="secondReady = true"
                 >
                   <div v-for="s in minsec" 
                       :class="['bbn-p', 'bbn-text', 'bbn-vspadded', 'bbn-background-internal', {

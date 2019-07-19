@@ -40,7 +40,7 @@
         default: false
       },
       /**
-       * The text that can be right clicked to open the menu.
+       * The content of the context menu.
        * @prop {String} content
        */
       content: {

@@ -65,6 +65,9 @@
         type: Boolean,
         default: false
       },
+      target: {
+        type: String
+      },
       /**
        * A confirmation popup with a costumized message shown before the form is submitted.
        *
@@ -254,7 +257,9 @@
         isPosted: false,
         isLoading: false,
         currentSchema: currentSchema,
-        isPosting: false
+        isPosting: false,
+        window: null,
+        isInit: false
       };
     },
     computed: {
@@ -338,11 +343,14 @@
        */
       currentClass(){
         let st = this.componentClass.join(' ');
-        if ( this.isMounted ){
-          if ( !this.isWindowed && (this.hasFooter || this.realButtons.length || this.footer) && this.scrollable ){
+        if (this.isInit) {
+          if ( this.isWindowed ){
             st += ' bbn-flex-height';
           }
-          if ( !this.isWindowed && this.scrollable ){
+          else if ( (this.hasFooter || this.realButtons.length || this.footer) && this.scrollable ){
+            st += ' bbn-flex-height';
+          }
+          if ( this.scrollable ){
             st += ' bbn-overlay';
           }
         }
@@ -350,14 +358,15 @@
       },
       currentStyle(){
         return {};
-        if ( !this.isMounted ){
+        if (!this.isInit) {
           return {};
         }
         let floater = this.closest('bbn-floater');
         let ct = this.getRef('container');
+        let ctn = ct ? ct.getRef('scrollContent') : false;
         if ( floater && ct ){
-          let width = this.scrollable && ct.isMounted ? ct.getRef('scrollContent').clientWidth : ct.clientWidth;
-          let height = this.scrollable && ct.isMounted ? ct.getRef('scrollContent').clientHeight : ct.clientHeight;
+          let width = this.scrollable && ctn ? ctn.clientWidth : ct.clientWidth;
+          let height = this.scrollable && ctn ? ctn.clientHeight : ct.clientHeight;
           let ctWidth = floater.getContainerWidth();
           let ctHeight = floater.getContainerHeight() - (floater.getRef('header').clientHeight || 0);
           if ( width > ctWidth ){
@@ -386,7 +395,7 @@
         this.isPosted = true;
         this.isLoading = true;
         if ( this.action ){
-          bbn.fn[this.blank || this.self ? 'post_out' : 'post'](this.action, bbn.fn.extend(true, {}, this.data || {}, this.source || {}), (d) => {
+          bbn.fn[this.blank || this.self || this.target ? 'post_out' : 'post'](this.action, bbn.fn.extend(true, {}, this.data || {}, this.source || {}), (d) => {
             this.originalData = bbn.fn.extend(true, {}, this.source || {});
             if ( this.successMessage && p ){
               p.alert(this.successMessage);
@@ -408,10 +417,10 @@
                 p.close();
               }
             }
-          }, !this.blank && !this.self ? (xhr, textStatus, errorThrown) => {
+          }, !this.blank && !this.self && !this.target ? (xhr, textStatus, errorThrown) => {
             this.$emit('failure', xhr, textStatus, errorThrown);
               this.isLoading = false;
-          } : (this.self ? '_self' : '_blank'));
+          } : (this.self ? '_self' : (this.blank ? '_blank' : this.target)));
         }
         else{
           this.originalData = bbn.fn.clone(this.source);
@@ -525,7 +534,7 @@
        */
       submit(force){
         let ok = true,
-            elems = bbn.vue.findAll(this, '.bbn-input-component'),
+            elems = this.findAll('.bbn-input-component'),
             cf = false;
         if ( Array.isArray(elems) ){
           bbn.fn.each(elems, (a) => {
@@ -612,7 +621,7 @@
         //this.originalData = bbn.fn.extend(true, {}, this.getData());
         this.$nextTick(() => {
           if ( !this.window ){
-            this.window = bbn.vue.closest(this, "bbn-window");
+            this.window = bbn.vue.closest(this, "bbn-floater");
             if ( this.window ){
               this.window.addClose(this.closePopup);
             }
@@ -630,6 +639,7 @@
           if ( focusable ){
             focusable.focus();
           }
+          this.isInit = true;
         });
       },
       /**
@@ -683,7 +693,7 @@
       source: {
         deep: true,
         handler(newVal){
-          //bbn.fn.log("BBN-FORM MODIFIED");
+          bbn.fn.log("BBN-FORM MODIFIED");
           this.modified = this.isModified();
           //this.$emit('input', newVal);
           if ( this.tab && this.tab.tabNav ){

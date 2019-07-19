@@ -270,7 +270,7 @@
        * @return {String}
        */
       getOrientation(){
-        return this.lastKnownWidth > this.lastKnownHeight ? 'horizontal' : 'vertical';
+        return this.lastKnownCtWidth > this.lastKnownCtHeight ? 'horizontal' : 'vertical';
       },
       /**
        * Handles the resize of the splitter
@@ -634,14 +634,15 @@
           this.panes[this.resizeCfg.resizer.pane1].savedDiff = this.panes[this.resizeCfg.resizer.pane1].savedDiff + diff;
           this.panes[this.resizeCfg.resizer.pane2].savedDiff = this.panes[this.resizeCfg.resizer.pane2].savedDiff - diff;
           this.isResizing = false;
-          this.resizeCfg = null;
           document.body.removeEventListener("touchmove", this.resizeDrag);
           document.body.removeEventListener("mousemove", this.resizeDrag);
           document.body.removeEventListener("touchend", this.resizeEnd);
           document.body.removeEventListener("touchcancel", this.resizeEnd);
           document.body.removeEventListener("mouseup", this.resizeEnd);
           document.body.removeEventListener("mouseleave", this.resizeEnd);
-          this.selfEmit(true);
+          this.panes[this.resizeCfg.resizer.pane1].pane.selfEmit(true);
+          this.panes[this.resizeCfg.resizer.pane2].pane.selfEmit(true);
+          this.resizeCfg = null;
         }
       },
 

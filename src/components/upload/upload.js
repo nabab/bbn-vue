@@ -389,15 +389,23 @@
               
         if ( val ){
           inp.removeAttribute('disabled')
-          inp.parentElement.classList.remove('bbn-state-disabled');
-          pas.style.display = 'block';
-          sel.setAttribute('qq-drop-area-text', this.dropHereText);
+          inp.parentElement.classList.remove('bbn-disabled');
+          if ( this.paste ){
+            pas.style.display = 'block';
+          }
+          if ( this.dragDrop ){
+            sel.setAttribute('qq-drop-area-text', this.dropHereText);
+          }
         }
         else {
           inp.setAttribute('disabled', 'disabled');
-          inp.parentElement.classList.add('bbn-state-disabled');
-          pas.style.display = 'none';
-          sel.setAttribute('qq-drop-area-text', this.dropHereText);
+          inp.parentElement.classList.add('bbn-disabled');
+          if ( this.paste ){
+            pas.style.display = 'none';
+          }
+          if ( this.dragDrop ){
+            sel.setAttribute('qq-drop-area-text', this.dropHereText);
+          }
         }
 
       }
@@ -408,7 +416,7 @@
     mounted(){
       this.$nextTick(() => {
         if ( !this.window ){
-          this.window = bbn.vue.closest(this, "bbn-window");
+          this.window = bbn.vue.closest(this, "bbn-floater");
         }
         if ( !this.tab ){
           this.tab = bbn.vue.closest(this, "bbns-tab");
@@ -428,7 +436,7 @@
        * @watch enabled
        * @param {Boolean} val 
        */
-      enabled(val){
+      disabled(val){
 	      this.isEnabled = !val;
       },
       /**

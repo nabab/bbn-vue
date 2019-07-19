@@ -132,7 +132,7 @@
       this.$nextTick(() => {
         /*
         if ( !this.window ){
-          this.window = bbn.vue.closest(this, "bbn-window");
+          this.window = bbn.vue.closest(this, "bbn-floater");
         }
         if ( !this.tab ){
           this.tab = bbn.vue.closest(this, "bbns-tab");

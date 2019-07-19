@@ -100,25 +100,25 @@
             <!-- Condition creation line -->
             <div v-if="columns.length > 1"
                  class="bbn-block padding bbn-db-column">
-              <bbn-combo :source="columns"
+              <bbn-dropdown :source="columns"
                          v-model="currentField"
                          name="field[]"
                          :placeholder="_('Pick a field')"
                          ref="column"
-              ></bbn-combo>
+              ></bbn-dropdown>
             </div>
             <div v-else-if="field"
                  class="bbn-block padding bbn-db-column"
                  v-html="currentTitle"
             ></div>
             <div class="bbn-block padding bbn-db-operator">
-              <bbn-operator name="operator[]"
+              <bbn-dropdown name="operator[]"
                             :disabled="!currentField"
-                            :type="currentType"
                             v-model="currentOperator"
-                            :is-null="currentFullField.nullable"
+                            :suggests="true"
+                            :source="operators"
                             ref="operator"
-              ></bbn-operator>
+              ></bbn-dropdown>
             </div>
             <div :class="(no_value ? 'bbn-hidden ' : '') + 'bbn-block padding bbn-db-value'">
               <component v-if="type && currentComponent"

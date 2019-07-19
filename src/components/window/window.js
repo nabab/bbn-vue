@@ -52,6 +52,12 @@
         type: Boolean,
         default: false
       },
+      onOpen: {
+        type: Function
+      },
+      beforeClose: {
+        type: Function
+      },
       onClose: {
         type: Function
       },
@@ -66,12 +72,6 @@
         default(){
           return [];
         }
-      },
-      beforeClose: {
-        type: Function
-      },
-      open: {
-        type: Function
       },
       source: {
         type: Object,
@@ -171,25 +171,34 @@
           })
         }
       },
-      close(force){
+      floaterClose(e, floater){
+        this.close(false, e);
+      },
+      close(force, ev){
         let ok = true;
+        if ( !ev ){
+          ev = new Event('beforeClose', {cancelable: true});
+        }
         if ( !force ){
-          let beforeCloseEvent = new Event('beforeClose', {cancelable: true});
           if ( this.popup ){
-            this.popup.$emit('beforeClose', beforeCloseEvent, this);
+            this.popup.$emit('beforeClose', ev, this);
           }
           else{
-            this.$emit('beforeClose', beforeCloseEvent, this);
-          }
-          if ( beforeCloseEvent.defaultPrevented ){
-            return;
+            this.$emit('beforeClose', ev, this);
           }
           if ( this.beforeClose && (this.beforeClose(this) === false) ){
             return;
           }
-          bbn.fn.each(this.closingFunctions, (a) => {
-            a(this, beforeCloseEvent);
-          });
+        }
+        /*
+        bbn.fn.each(this.closingFunctions, (a) => {
+          if (!ev.defaultPrevented) {
+            a(this, ev);
+          }
+        });
+        */
+        if (!force && bbn.fn.isObject(ev) && ev.defaultPrevented) {
+          return;
         }
         let closeEvent = new Event('close', {cancelable: true});
         this.$el.style.display = 'block';
@@ -205,11 +214,9 @@
       this.popup = this.closest('bbn-popup');
     },
     mounted(){
-      this.onResize();
       this.ready = true;
-      this.$el.style.display = 'block';
+      /*
       if ( this.resizable ){
-        /*
         $(this.getRef('window')).resizable({
           handles: "se",
           containment: ".bbn-popup",
@@ -217,11 +224,11 @@
             this.selfEmit(true);
           }
         });
-        */
       }
+      */
       this.onResize();
-      /*
       // It shouldn't be centered if it's draggable
+      /*
       if ( this.draggable ){
         $(this.getRef('window')).draggable({
           handle: 'header > h4',

@@ -13,8 +13,7 @@
 
 (function(bbn){
   "use strict";
-  bbn.vue.loadComponentsByPrefix('bbn-dropdown');
-
+  
   Vue.component('bbn-autocomplete', {
     /**
      * @mixin bbn.vue.basicComponent

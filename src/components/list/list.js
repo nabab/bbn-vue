@@ -257,6 +257,10 @@
         default(){
           return [];
         }
+      },
+      suggest: {
+        type: Boolean,
+        default: false
       }
     },
     data(){
@@ -335,7 +339,7 @@
          * @data {Number} [-1] overItem
          * @memberof listComponent
          */
-        overIdx: null,
+        overIdx: this.suggest ? 0 : null,
         mouseLeaveTimeout: false,
         isOpened: true,
         scroll: null,
@@ -429,7 +433,7 @@
       },
       mouseleave(){
         this.isOver = false;
-        this.overIdx = this.valueIndex;
+        this.overIdx = this.suggest ? 0 : null;
       },
       isSelected(idx){
         let r = false;
@@ -497,7 +501,7 @@
       }
       this.ready = true;
       setTimeout(() => {
-        this.overIdx = this.valueIndex;
+        this.overIdx = this.suggest ? 0 : null;
       }, 50);
     },
     watch: {

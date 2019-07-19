@@ -4,7 +4,7 @@
        class="bbn-middle bbn-xl"
        v-text="_('Appui is already defined') + '... :('">
   </div>
-  <bbn-splitter v-else-if="isMounted"
+  <bbn-splitter v-else-if="ready"
                 orientation="vertical"
                 ref="splitter">
     <!-- HEADER -->
@@ -28,12 +28,24 @@
         <!-- SEARCHBAR -->
         <div class="bbn-abs bbn-h-100 bbn-vspadded"
              style="left: 70px; right: 140px; top: auto">
-          <bbn-search source="adherents"
+          <!--<bbn-search source="adherents"
                       :placeholder="searchBar.placeholderFocused"
                       ref="search"
                       @select="searchBar.select"
                       component="apst-search-item"
                       v-model="searchBar.value"
+                      :source-value="searchBar.sourceValue"
+                      :source-text="searchBar.sourceText"
+                      :min-length="searchBar.minLength"
+          >
+          </bbn-search>-->
+          <bbn-search :source="searchBar.source"
+                      :placeholder="searchBar.placeholderFocused"
+                      ref="search"
+                      @select="searchBar.select"
+                      :component="searchBar.component"
+                      v-model="searchBar.value"
+                      :suggest="true"
                       :source-value="searchBar.sourceValue"
                       :source-text="searchBar.sourceText"
                       :min-length="searchBar.minLength"
