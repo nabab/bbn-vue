@@ -366,8 +366,8 @@
             };
         if (
           (this.onlyEvents && !ev.length) ||
-          (this.min && (obj.value < this.min)) ||
-          (this.max && (obj.value > this.max))
+          (this.min && (obj.value < moment(this.min).format(this.currentCfg.valueFormat))) ||
+          (this.max && (obj.value > moment(this.max).format(this.currentCfg.valueFormat)))
         ){
           obj.hidden = true;
         }

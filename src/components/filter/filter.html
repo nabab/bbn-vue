@@ -115,7 +115,8 @@
               <bbn-dropdown name="operator[]"
                             :disabled="!currentField"
                             v-model="currentOperator"
-                            :suggests="true"
+                            :suggest="true"
+                            :required="true"
                             :source="operators"
                             ref="operator"
               ></bbn-dropdown>

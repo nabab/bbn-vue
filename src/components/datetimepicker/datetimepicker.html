@@ -22,6 +22,7 @@
     ></bbn-button>
     <bbn-floater v-if="isCalendarOpened && !disabled && !readonly"
                  :element="$el"
+                 :auto-hide="200"
                  ref="calendarFloater"
                  @close="isCalendarOpened = false"
     >
@@ -47,6 +48,7 @@
                  :min-width="showSecond ? 165 : 110"
                  :min-height="scrollMode ? 170 : 46"
                  hpos="right"
+                 :auto-hide="200"
     >
     <timepicker inline-template 
                 ref="timepicker"

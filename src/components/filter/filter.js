@@ -210,13 +210,6 @@
       is_not_root(){
         return this.$parent.$el.classList.contains("bbn-filter-control");
       },
-      operators(){
-        let ops = this.currentField && this.currentType && this.editorOperators[this.currentType] ? this.editorOperators[this.currentType] : [];
-        if ( this.currentFullField.nullable ){
-          bbn.fn.extend(true, ops, this.editorNullOps);
-        }
-        return ops;
-      },
     },
     methods: {
       /**
@@ -551,13 +544,11 @@
            * @return {Object}
            */
           operators(){
-            let cfg = this.editorGetComponentOptions({
-              field: this.currentField,
-              type: this.currentType,
-              value: this.currentValue
-            });
-            return this.currentType && this.editorOperators[cfg.type || this.currentType] ?
-              this.editorOperators[cfg.type || this.currentType] : [];
+            let ops = this.currentField && this.currentType && this.editorOperators[this.currentType] ? this.editorOperators[this.currentType] : [];
+            if ( this.currentFullField.nullable ){
+              bbn.fn.extend(true, ops, this.editorNullOps);
+            }
+            return ops;
           },
           /**
            * True if the filter form has no value.

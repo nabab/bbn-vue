@@ -197,14 +197,14 @@
       */
       setDate(val){
         val = moment(val, 'YYYY-MM-DD').isValid() ? moment(val, 'YYYY-MM-DD') : '';
-        if ( this.value ){
+        if ( this.value && val ){
           let mom = moment(this.value.toString(), this.getValueFormat(this.value.toString()));
           val.hour(mom.hour()).minute(mom.minute());
           if ( this.showSecond ){
             val.second(mom.second());
           }
         }
-        this.setValue(val.format(this.getValueFormat(val)));
+        this.setValue(val ? val.format(this.getValueFormat(val)) : '');
       },
       /**
        * Sets the value format from 'HH:mm' to 'HH:mm:ss'.

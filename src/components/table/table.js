@@ -18,6 +18,8 @@
 (function (bbn) {
   "use strict";
   const METHODS4BUTTONS = ['insert', 'select', 'edit', 'add', 'copy', 'delete'];
+  let leaveFilterTimeout = false;
+  let hasFilter = false;
 
   /**
    * Classic input with normalized appearance
@@ -340,12 +342,12 @@
         /**
          * @data {Object} defaultConfig
          */
-        defaultConfig: this.loadedConfig ? this.loadedConfig : {
+        defaultConfig: bbn.fn.extend({
           filters: this.filters,
           limit: this.limit,
           order: this.order,
           hidden: this.hidden || null,
-        },
+        }, this.loadedConfig || {}),
         /**
          * @data {Boolean} [false] editedFilter
          */
@@ -1332,7 +1334,7 @@
       exportCSV(filename, valSep, rowSep, valEsc) {
         let data = bbn.fn.toCSV(this._export(), valSep, rowSep, valEsc);
         if (!filename) {
-          filename = 'export-' + (new Date()).getSQL(true).replace('/:/g', '-') + '.csv';
+          filename = 'export-' + bbn.fn.dateSQL().replace('/:/g', '-') + '.csv';
         }
         bbn.fn.download(filename, data, 'csv');
       },
@@ -1425,6 +1427,18 @@
           });
           return cells;
         }
+      },
+      _enterFilter(){
+        hasFilter = true;
+      },
+      _leaveFilter(){
+        hasFilter = false;
+        clearTimeout(leaveFilterTimeout);
+        leaveFilterTimeout = setTimeout(() => {
+          if (!hasFilter) {
+            this.currentFilter = false
+          }
+        }, 200);
       },
       /**
        * Returns true if the table has currentFilters defined for the given column.
@@ -1929,7 +1943,9 @@
       setConfig(cfg, no_storage) {
         if (cfg === false) {
           cfg = bbn.fn.clone(this.defaultConfig);
-        } else if (cfg === true) {
+          bbn.fn.log("DEFAUKT")
+        }
+        else if (cfg === true) {
           cfg = this.getConfig();
         }
         if (cfg && cfg.limit) {
@@ -1964,7 +1980,7 @@
             this.setStorage(this.currentConfig);
           }
 
-          //this.$forceUpdate();
+          this.$forceUpdate();
         }
       },
       /**
@@ -2337,7 +2353,6 @@
           this.setConfig(false);
         }
         this.$nextTick(() => {
-          this.initReady = true;
           this.init();
         })
       },
@@ -2921,11 +2936,11 @@
        */
       defaultObject() {
         let o = {};
-        for (var n in bbn.vue.fieldComponent) {
-          if (bbn.vue.fieldComponent[n].default !== undefined) {
-            o[n] = bbn.vue.fieldComponent[n].default;
+        bbn.fn.iterate(bbn.vue.fieldComponent.props, (v, n) => {
+          if (v.default !== undefined) {
+            o[n] = bbn.fn.isFunction(v.default) ? v.default() : v.default;
           }
-        }
+        })
         return o;
       },
       /**
@@ -3077,6 +3092,11 @@
         handler() {
           //bbn.fn.log("watch columns");
           //this.selfEmit();
+        }
+      },
+      currentFilter(v){
+        if (!v) {
+          hasFilter = false;
         }
       },
       /**

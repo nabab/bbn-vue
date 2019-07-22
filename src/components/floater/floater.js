@@ -170,7 +170,7 @@
        * @prop {Boolean} [false] autoHide
        */
       autoHide: {
-        type: Boolean,
+        type: [Number, Boolean],
         default: false
       },
       /**
@@ -887,7 +887,7 @@
             }
           }
           this.mouseLeaveTimeout = false;
-        }, 10);
+        }, bbn.fn.isNumber(this.autoHide) ? this.autoHide : 10);
       },
       /**
        * Closes the floater by hiding it.

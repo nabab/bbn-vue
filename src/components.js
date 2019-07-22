@@ -315,6 +315,11 @@
             this.currentText = this.currentTextValue;
           });
         },
+        ready(v){
+          if (v && this.suggest && !this.value && this.filteredData.length) {
+            this.emitInput(this.filteredData[0].data[this.sourceValue]);
+          }
+        },
         source(){
           this.updateData().then(() => {
             if ( this.filteredData.length ) {

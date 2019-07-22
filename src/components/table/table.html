@@ -155,7 +155,7 @@
                 maxWidth: scrollable ? '100%' : null,
                 maxHeight: scrollable ? '100%' : null
               }">
-          <div v-if="isLoading" class="bbn-overlay bbn-middle">
+          <div v-if="isLoading && initReady" class="bbn-overlay bbn-middle">
             <h1 v-text="_('Loading') + '...'"></h1>
           </div>
           <table v-else-if="currentColumns.length"
@@ -224,7 +224,7 @@
                     v-for="(col, index) in currentColumns"
                     @click="clickCell"
                     :class="[
-                      col.cls || '',
+                      currentClass(col, d.data, i),
                       col.fixed ? cssRuleName + ' bbn-table-fixed-cell bbn-table-cell-' +
                         (col.isRight ? 'right' : 'left')
                         : ''
@@ -402,10 +402,13 @@
         </span>
       </div>
       <div class="bbn-block" style="float: right">
-        <span v-if="pageable && currentData.length"
+        <span v-if="filteredData.length && pageable && isAjax"
               v-text="_('Display items') + ' ' + (start+1) + '-' + (start + currentLimit > total ? total : start + currentLimit) + ' ' + _('of') + ' ' + total"
         ></span>
-        <span v-else
+        <span v-if="filteredData.length && pageable && !isAjax"
+              v-text="_('Display items') + ' ' + (start+1) + '-' + (start + currentLimit > filteredData.length ? filteredData.length : start + currentLimit) + ' ' + _('of') + ' ' + filteredData.length"
+        ></span>
+        <span v-else-if="filteredData.length"
               v-text="total ? _('Total') + ': ' + total + ' ' + _('items') : _('No item')"
         ></span>
         &nbsp;
@@ -418,7 +421,7 @@
         <bbn-button v-if="filterable || showable"
                     :disabled="!isChanged"
                     :title="_('Reset to original configuration')"
-                    @click="reset"
+                    @click="reset(false)"
                     icon="nf nf-fa-undo"
         ></bbn-button>
         <bbn-button v-if="showable"
@@ -443,7 +446,8 @@
   </div>
   <div v-if="currentFilter"
        class="bbn-table-floating-filter bbn-widget"
-       @mouseleave="currentFilter = false"
+       @mouseleave="_leaveFilter"
+       @mouseenter="_enterFilter"
        :style="{
         left: floatingFilterX + 'px',
         top: floatingFilterY + 'px'
