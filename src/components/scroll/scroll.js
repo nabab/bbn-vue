@@ -126,6 +126,10 @@
       latency: {
         type: Number,
         default: 25
+      },
+      scrollable: {
+        type: Boolean,
+        default: true
       }
     },
     data() {
@@ -261,7 +265,7 @@
        * @todo not used
        */
       containerStyle(){
-        if ( this.isMeasuring ){
+        if ( this.isMeasuring || !this.scrollable ){
           return {};
         }
         return {
@@ -275,7 +279,7 @@
        * @todo not used
        */
       contentStyle(){
-        if ( this.isMeasuring ){
+        if ( this.isMeasuring || !this.scrollable ){
           return {};
         }
         return {
@@ -294,30 +298,39 @@
         this.isMeasuring = true;
         return new Promise((resolve, reject) => {
           this.$nextTick().then(() => {
-            let d = {width: this.getRef('scrollContent').clientWidth, height: this.getRef('scrollContent').clientHeight};
-            if ( !d.width || !d.height ){
-              let sc = this.find('bbn-scroll');
-              if ( sc ){
-                sc.getNaturalDimensions().then((d) => {
-                  this.naturalWidth = sc.naturalWidth;
-                  this.naturalHeight = sc.naturalHeight;
+            if (this.scrollable) {
+              let d = {width: this.getRef('scrollContent').clientWidth, height: this.getRef('scrollContent').clientHeight};
+              if ( !d.width || !d.height ){
+                let sc = this.find('bbn-scroll');
+                if ( sc ){
+                  sc.getNaturalDimensions().then((d) => {
+                    this.naturalWidth = sc.naturalWidth;
+                    this.naturalHeight = sc.naturalHeight;
+                    this.isMeasuring = false;
+                    resolve(d);
+                  })
+                }
+                else{
                   this.isMeasuring = false;
                   resolve(d);
-                })
+                }
               }
               else{
+                this.naturalWidth = d.width;
+                this.naturalHeight = d.height;
                 this.isMeasuring = false;
                 resolve(d);
               }
             }
             else{
-              this.naturalWidth = d.width;
-              this.naturalHeight = d.height;
+              let p = this.$el.offsetParent || this.$el.parentNode;
+              this.naturalWidth = p.clientWidth;
+              this.naturalHeight = p.clientHeight;
               this.isMeasuring = false;
-              resolve(d);
+              resolve({width: this.naturalWidth, height: this.naturalHeight});
             }
-          })
-        })
+          });
+        });
       },
       /**
        * @method onScroll
@@ -325,6 +338,9 @@
        * @emits scroll
        */
       onScroll(e){
+        if ( !this.scrollable ){
+          return;
+        }
         let x = this.getRef('scrollContainer').scrollLeft;
         if ( x !== this.currentX ){
           this.currentX = x;
@@ -435,33 +451,35 @@
                 else{
                   this.contentHeight = contentHeight;
                 }
-                if ( (this.axis === 'both') || (this.axis === 'x') && (this.contentWidth > containerWidth) ){
-                  if ( this.$refs.xScroller ){
-                    this.$refs.xScroller.onResize();
+                if ( this.scrollable ){
+                  if ( (this.axis === 'both') || (this.axis === 'x') && (this.contentWidth > containerWidth) ){
+                    if ( this.$refs.xScroller ){
+                      this.$refs.xScroller.onResize();
+                    }
+                    this.hasScrollX = true;
                   }
-                  this.hasScrollX = true;
-                }
-                else{
-                  this.hasScrollX = false;
-                }
-                if ((this.axis === 'both') || (this.axis === 'y') && (this.contentHeight > containerHeight)){
-                  if ( this.$refs.yScroller ){
-                    this.$refs.yScroller.onResize();
+                  else{
+                    this.hasScrollX = false;
                   }
-                  this.hasScrollY = true;
+                  if ((this.axis === 'both') || (this.axis === 'y') && (this.contentHeight > containerHeight)){
+                    if ( this.$refs.yScroller ){
+                      this.$refs.yScroller.onResize();
+                    }
+                    this.hasScrollY = true;
+                  }
+                  else{
+                    this.hasScrollY = false;
+                  }
+                  this.hasScroll = this.hasScrollY || this.hasScrollX;
+                  if ( this.currentX > this.contentWidth ) {
+                    this.currentX = 0;
+                  }
+                  if ( this.currentY > this.contentHeight ) {
+                    this.currentY = 0;
+                  }
+                  container.scrollLeft = this.currentX;
+                  container.scrollTop = this.currentY;
                 }
-                else{
-                  this.hasScrollY = false;
-                }
-                this.hasScroll = this.hasScrollY || this.hasScrollX;
-                if ( this.currentX > this.contentWidth ) {
-                  this.currentX = 0;
-                }
-                if ( this.currentY > this.contentHeight ) {
-                  this.currentY = 0;
-                }
-                container.scrollLeft = this.currentX;
-                container.scrollTop = this.currentY;
                 this.$emit('resize');
                 this.setResizeMeasures();
                 if ( !this.ready && !this.readyDelay ){

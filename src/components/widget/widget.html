@@ -62,7 +62,7 @@
     <!-- LIST OF ITEMS -->
     <ul v-else-if="currentItems.length">
       <template v-for="(it, idx) in currentItems"
-                v-if="idx < limit"
+                v-if="limit ? idx < limit : true"
       >
         <li :class="itemClass"
             :style="itemStyle"

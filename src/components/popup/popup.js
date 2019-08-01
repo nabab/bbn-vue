@@ -95,6 +95,7 @@
     },
 
     methods: {
+      randomString: bbn.fn.randomString,
       open(obj){
         let d = {};
         if ( typeof(obj) !== 'object' ){
@@ -134,7 +135,7 @@
         }
         if ( d ){
           if ( !d.uid ){
-            d.uid = 'bbn-popup-' + bbn.fn.timestamp().toString()
+            d.uid = 'bbn-popup-' + bbn.fn.timestamp().toString();
           }
           d.index = this.items.length;
           this.items.push(d);
@@ -396,23 +397,28 @@
             cls: 'bbn-primary',
             icon: 'nf nf-fa-check_circle',
             command($ev, btn){
-              onYes($ev, btn);
               btn.closest('bbn-floater').close();
+              setTimeout(() => {
+                onYes($ev, btn);
+              }, 0)
             }
           }, {
             text: noText,
             icon: 'nf nf-fa-times_circle',
             command($ev, btn){
-              if ( onNo ){
-                onNo($ev, btn);
-              }
               btn.closest('bbn-floater').close();
+              if ( onNo ){
+                setTimeout(() => {
+                  onNo($ev, btn);
+                }, 0)
+              }
             }
           }];
           this.open(bbn.fn.extend(o, {
             resizable: false,
             maximizable: false,
-            closable: false
+            closable: false,
+            scrollable: false
           }));
         }
       },

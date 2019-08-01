@@ -63,7 +63,7 @@
             this.style += 'height:' + this. currentSize + ';';
           }
           else{
-            this.style += 'height:inherit;' 
+            this.style += '' 
           }
           
           

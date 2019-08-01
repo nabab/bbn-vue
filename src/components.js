@@ -1792,7 +1792,7 @@
          * @memberof inputComponent
          */
         required: {
-          type: [Boolean, Function],
+          type: [Boolean, Function, String],
           default: false
         },
         /**
@@ -1897,79 +1897,97 @@
          * @return {Boolean}
          * @memberof inputComponent
          */
-        isValid(val){
-          const elem = this.$refs.element,
-               // @jquery $elem = $(this.$el),
-                $elem = this.$el,
-                customMessage = this.$el.hasAttribute('validationMessage') ? this.$el.getAttribute('validationMessage') : false;
-          // Get validity
-          if ( elem && elem.validity ){
-            let validity = elem.validity,
-                // Default message
-                mess = bbn._('The value you entered for this field is invalid.');
-            // If valid or disabled, return true
-            if ( elem.disabled || validity.valid ){
-              return true;
-            }
-            if ( !validity.valid ){
-              // If field is required and empty
-              if ( validity.valueMissing ){
-                mess = bbn._('Please fill out this field.');
-              }
-              // If not the right type
-              else if ( validity.typeMismatch ){
-                switch ( elem.type ){
-                  // Email
-                  case 'email':
-                    mess = bbn._('Please enter a valid email address.');
-                    break;
-                  // URL
-                  case 'url':
-                    mess = bbn._('Please enter a valid URL.');
-                    break;
+        isValid(e){
+          const $this = bbn.fn.isVue(e) ? e : this,
+                ele = $this.$refs.element || false,
+                inp = $this.$refs.input || false,
+                customMessage = $this.$el.hasAttribute('validationMessage') ? $this.$el.getAttribute('validationMessage') : false;
+          let check = (elem) => {
+                if ( elem && elem.validity ){
+                  let validity = elem.validity,
+                      $elem = $this.$el,
+                      // Default message
+                      mess = bbn._('The value you entered for this field is invalid.'),
+                      specificCase = false;
+                  // If valid or disabled, return true
+                  if ( elem.disabled || validity.valid ){
+                    if ( (!!elem.required || !!elem.readOnly) && !elem.value ){
+                      specificCase = true;
+                    }
+                    else {
+                      return true;
+                    }
+                  }
+                  
+                  if ( !validity.valid || specificCase ){
+                    // If field is required and empty
+                    if ( validity.valueMissing || specificCase ){
+                      mess = bbn._('Please fill out this field.');
+                    }
+                    // If not the right type
+                    else if ( validity.typeMismatch ){
+                      switch ( elem.type ){
+                        // Email
+                        case 'email':
+                          mess = bbn._('Please enter a valid email address.');
+                          break;
+                        // URL
+                        case 'url':
+                          mess = bbn._('Please enter a valid URL.');
+                          break;
+                      }
+                    }
+                    // If too short
+                    else if ( validity.tooShort ){
+                      mess = bbn._('Please lengthen this text to ') + elem.getAttribute('minLength') + bbn._(' characters or more. You are currently using ') + elem.value.length + bbn._(' characters.');
+                    }
+                    // If too long
+                    else if ( validity.tooLong ){
+                      mess = bbn._('Please shorten this text to no more than ') + elem.getAttribute('maxLength') + bbn._(' characters. You are currently using ') + elem.value.length + bbn._(' characters.');
+                    }
+                    // If number input isn't a number
+                    else if ( validity.badInput ){
+                      mess = bbn._('Please enter a number.');
+                    }
+                    // If a number value doesn't match the step interval
+                    else if ( validity.stepMismatch ){
+                      mess = bbn._('Please select a valid value.');
+                    }
+                    // If a number field is over the max
+                    else if ( validity.rangeOverflow ){
+                      mess = bbn._('Please select a value that is no more than ') + elem.getAttribute('max') + '.';
+                    }
+                    // If a number field is below the min
+                    else if ( validity.rangeUnderflow ){
+                      mess = bbn._('Please select a value that is no less than ') + elem.getAttribute('min') + '.';
+                    }
+                    // If pattern doesn't match
+                    else if (validity.patternMismatch) {
+                      // If pattern info is included, return custom error
+                      mess = bbn._('Please match the requested format.');
+                    }
+                    this.$emit('error', customMessage || mess);
+                    let border = $elem.style.border;
+                    // @jquery $elem.css('border', '1px solid red');
+                    $elem.style.border = '1px solid red';
+                    this.$on('blur', () => {
+                      //@jquery $elem.css('border', 'none');
+                      $elem.style.border  = border;
+                      $elem.focus();
+                    });
+                    return false;
+                  }
                 }
-              }
-              // If too short
-              else if ( validity.tooShort ){
-                mess = bbn._('Please lengthen this text to ') + elem.getAttribute('minLength') + bbn._(' characters or more. You are currently using ') + elem.value.length + bbn._(' characters.');
-              }
-              // If too long
-              else if ( validity.tooLong ){
-                mess = bbn._('Please shorten this text to no more than ') + elem.getAttribute('maxLength') + bbn._(' characters. You are currently using ') + elem.value.length + bbn._(' characters.');
-              }
-              // If number input isn't a number
-              else if ( validity.badInput ){
-                mess = bbn._('Please enter a number.');
-              }
-              // If a number value doesn't match the step interval
-              else if ( validity.stepMismatch ){
-                mess = bbn._('Please select a valid value.');
-              }
-              // If a number field is over the max
-              else if ( validity.rangeOverflow ){
-                mess = bbn._('Please select a value that is no more than ') + elem.getAttribute('max') + '.';
-              }
-              // If a number field is below the min
-              else if ( validity.rangeUnderflow ){
-                mess = bbn._('Please select a value that is no less than ') + elem.getAttribute('min') + '.';
-              }
-              // If pattern doesn't match
-              else if (validity.patternMismatch) {
-                // If pattern info is included, return custom error
-                mess = bbn._('Please match the requested format.');
-              }
-              this.$emit('error', customMessage || mess);
-              // @jquery $elem.css('border', '1px solid red');
-              $elem.style.border = '1px solid red';
-              this.$on('blur', () => {
-                //@jquery $elem.css('border', 'none');
-                $elem.style.border  = 'none'
-                $elem.focus();
-              });
-              return false;
-            }
-          }
-          return true;
+              },
+              getLastElement = (elem) => {
+                if ( bbn.fn.isVue(elem) && elem.$refs && elem.$refs.element ){
+                  return getLastElement(elem.$refs.element);
+                }
+                return elem;
+              },
+            okEle = ele ? check(getLastElement(ele)) : false,
+            okInp = inp ? check(getLastElement(inp)) : false;
+          return ele || inp ? !!(okEle || okInp) : true;
         },
       },
       /**

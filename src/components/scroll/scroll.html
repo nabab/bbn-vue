@@ -1,12 +1,12 @@
 <div :class="elementClass"
      :style="elementStyle"
 >
-  <div :class="{'bbn-scroll-container': true, 'bbn-abs': !isMeasuring}"
+  <div :class="{'bbn-scroll-container': scrollable, 'bbn-abs': !isMeasuring, 'bbn-overlay': !isMeasuring && !scrollable}"
        :style="containerStyle"
        ref="scrollContainer"
        @scroll.passive="onScroll"
   >
-    <div :class="{'bbn-scroll-content': !isMeasuring}"
+    <div :class="{'bbn-scroll-content': !isMeasuring, 'bbn-overlay': !scrollable}"
          ref="scrollContent"
          @ready.stop="waitReady"
          :style="contentStyle"

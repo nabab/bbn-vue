@@ -134,7 +134,7 @@
        */
       scrollable: {
         type: Boolean,
-        default: false
+        default: true
       },
       /**
        * Set to true to show the floater.
@@ -1012,6 +1012,22 @@
       this.updateData().then(() => {
         this._updateIconSituation();
       });
+    },
+    /**
+     * @event mounted
+     */
+    mounted(){
+      this.$nextTick(() => {
+        bbn.fn.log("SEARCHING FOR SCROLL");
+        let scroll = this.element ? this.closest('bbn-scroll') : false;
+        if (scroll) {
+          bbn.fn.log("SCROLL EXISTS!");
+          scroll.$once('scroll', () => {
+            bbn.fn.log("SCROLLING");
+            this.closeAll();
+          });
+        }
+      })
     },
     watch: {
       /**

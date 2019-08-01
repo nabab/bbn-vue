@@ -47,6 +47,7 @@
         <!--v-if="isMounted">-->
     <bbn-scroll :latency="latency"
                 ref="scroll"
+                :scrollable="scrollable"
                 :height="scrollHeight"
                 @resize="scrollResize">
       <component v-if="component"

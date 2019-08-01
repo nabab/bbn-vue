@@ -1,15 +1,15 @@
 <div :class="[
 	componentClass, 'bbn-textbox', {
 		'bbn-disabled': !!disabled,
-		'button-left' : buttonLeft,
-		'button-right' : buttonRight,
+		'bbn-input-button-left' : !!buttonLeft,
+		'bbn-input-button-right' : !!buttonRight,
 		'bbn-invisible' : (type === 'hidden'),
-    'bbn-input-nullable': nullable
+    'bbn-input-nullable': isNullable
 	}]"
 	:style="(currentSize !== '') ? 'width:' + currentSize : '' "
 >
   <div :class="{
-    'bbn-w-100': (!buttonLeft && !buttonRight),
+    'bbn-w-100': (!buttonLeft && !buttonRight && !nullable),
     'bbn-flex-width' : (buttonLeft || buttonRight || nullable)
   }">
     <bbn-button v-if="buttonLeft"
@@ -44,7 +44,7 @@
           :class="{'bbn-flex-fill' : (buttonLeft || buttonRight || isNullable)}"
     >
     <bbn-loadicon v-if="loading"></bbn-loadicon>
-    <div v-else-if="nullable && hasValue && !readonly && !disabled"
+    <div v-else-if="isNullable && hasValue && !readonly && !disabled"
          class="bbn-block bbn-h-100 bbn-input-nullable-container">
       <i class="nf nf-fa-times_circle bbn-p"
          @mousedown.prevent.stop="clear"></i>
@@ -53,8 +53,10 @@
                 :icon="buttonRight"
                 tabindex="-1"
                 @click="$emit('clickRightButton')"
-                :class="['bbn-button-right', 'bbn-m', {
-                  'bbn-invisible' : autoHideRight
-                }]"
+                :class="[
+                  'bbn-button-right',
+                  'bbn-m',
+                  {'bbn-invisible' : autoHideRight}
+                ]"
     ></bbn-button></div>
 </div>

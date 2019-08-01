@@ -1602,6 +1602,7 @@
   <bbn-form ref="scroll"
             :source="formData"
             :scrollable="true"
+            :prefilled="true"
             @success="applyColumnsShown">
     <div class="bbn-padded">
       <ul v-if="source.titleGroups">
@@ -1647,7 +1648,7 @@
                 table: table,
                 formData: {
                   changed: false
-                },
+                },                
                 shownCols: shownColumns
               }
             },
@@ -1711,7 +1712,7 @@
                 handler() {
                   this.formData.changed = true;
                 }
-              }
+              }              
             }
           },
           source: {
@@ -1789,8 +1790,7 @@
                 }
               },
               template: `
-<bbn-form class="bbn-full-screen"
-          action="` + table.url + `"
+<bbn-form action="` + table.url + `"
           :schema="fields"
           :source="data"
           :data="obj"

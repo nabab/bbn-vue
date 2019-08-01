@@ -269,6 +269,22 @@
             });
           });
         }
+        else {
+          let items = this.items.slice();
+          if ( this.limit && 
+            ((items.length > this.currentStart) && (items.length > this.limit))
+          ){
+            items = items.splice(this.currentStart, this.limit); 
+          }
+
+          this.$set(this, 'currentItems', items); 
+          this.$nextTick(() => {
+            this.isLoading = false;
+            this.$emit("loaded");
+            this.onResize();
+            this.selfEmit(true);
+          });
+        }
       },
       nav(arg){
         let newStart = false;

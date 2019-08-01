@@ -43,8 +43,10 @@
       </span>
     </div>
     <bbn-list :source="usersOnlineWithoutMe"
-              class="bbn-flex-fill">
-      <div class="bbn-w-100 bbn-p"
+              class="bbn-flex-fill"
+              :component="$options.components.user"
+    >
+      <!-- <div class="bbn-w-100 bbn-p"
            style="overflow: auto"
            slot="item"
            slot-scope="item"
@@ -58,7 +60,7 @@
         <span class="bbn-large"
               v-text="get_field(users, 'value', item.value, 'text')">
         </span>
-      </div>
+      </div> -->
     </bbn-list>
   </div>
   <container v-for="(chat, i) in visibleWindows"

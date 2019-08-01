@@ -591,7 +591,8 @@
       reset(){
         this.isPosted = false;
         bbn.fn.iterate(this.originalData, (val, name) => {
-          if ( this.source[name] !== val ){
+          //if ( this.source[name] !== val ){
+          if ( !bbn.fn.isSame(this.source[name], val) ){
             this.$set(this.source, name, val);
           }
         });

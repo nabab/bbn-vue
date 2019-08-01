@@ -143,15 +143,27 @@
       formattedValue(){
         if ( this.value !== null ) {
           if ( !this.isFocused ){
-            return bbn.fn.money(this.value * (this.unit === '%' ? 100 : 1), '', this.unit, '', '.', ' ', this.unit === '%' ? this.decimals : this.currentDecimals)
+            if ( this.respectMinMax(this.value) ){
+              bbn.fn.error('if '+ bbn.fn.money(this.value * (this.unit === '%' ? 100 : 1), '', this.unit, '', '.', ' ', this.unit === '%' ? this.decimals : this.currentDecimals))
+              return bbn.fn.money(this.value * (this.unit === '%' ? 100 : 1), '', this.unit, '', '.', ' ', this.unit === '%' ? this.decimals : this.currentDecimals)
+            }
+            
           }
           else {
-            return (this.unit === '%' ? parseFloat(this.value) * 100 : parseFloat(this.value)).toFixed(this.decimals)
+            if ( this.respectMinMax(this.value) ){
+              bbn.fn.error('else ' + (this.unit === '%' ? parseFloat(this.value) * 100 : parseFloat(this.value)).toFixed(this.decimals))
+              return (this.unit === '%' ? parseFloat(this.value) * 100 : parseFloat(this.value)).toFixed(this.decimals)
+            }
+           
+            else{
+              return null;
+            }
+            
           }
         }
-        else{
-          return ''
-        }
+        /*else if ( this.value === ''){
+          return null
+        }*/
       }
     },
     methods: {
@@ -205,7 +217,7 @@
       _focus(e){
         this.isFocused = true;
         this.$nextTick(() => {
-          e.target.setSelectionRange(0, e.target.value.toString().length, e.target.value);
+          //e.target.setSelectionRange(0, e.target.value.toString().length, e.target.value);
         })
         this.focus(e);
       },
@@ -238,7 +250,21 @@
 
       increment(){
         if ( !this.readonly && !this.disabled ){
-          this.changeValue((typeof this.value === 'string' ? parseFloat(this.value) : this.value) + this.step);
+          bbn.fn.log('INCREMENT')
+          if ( this.value !== ''){
+            bbn.fn.warning('increment ' + this.value + '/' + this.changeValue((typeof this.value === 'string' ? parseFloat(this.value) : this.value) + this.step))
+            this.changeValue((typeof this.value === 'string' ? parseFloat(this.value) : this.value) + this.step);
+          }
+          else{
+            if ( this.min ){
+              bbn.fn.error(this.min)
+              this.changeValue((typeof this.min === 'string' ? parseFloat(this.min) : this.min))
+            }
+            else { 
+              this.formattedValue = null
+            }
+          }
+          
         }
       },
       /**
@@ -248,8 +274,39 @@
        */
 
       decrement(){
-        if (!this.readonly && !this.disabled) {
-          this.changeValue((typeof this.value === 'string' ? parseFloat(this.value)  : this.value) - this.step);
+        if ( this.value !== ''){
+          if (!this.readonly && !this.disabled) {
+            this.changeValue((typeof this.value === 'string' ? parseFloat(this.value)  : this.value) - this.step);
+          }
+        }
+        else{
+          if ( this.min ){
+
+            this.changeValue((typeof this.min === 'string' ? parseFloat(this.min)  : this.min));
+          }
+          else{
+            this.formattedValue = null;
+          }
+        }  
+        
+      },
+      respectMinMax(v){
+        if ( this.min || this.max ){
+          if ( this.min && (parseFloat(v) >= this.min )){
+            return true;
+          }
+          else if ( this.min && (parseFloat(v) < this.min )) {
+            return false;
+          }
+          if ( this.max && (parseFloat(v) <= this.max )){
+            return true;
+          }
+          else if ( this.max && (parseFloat(v) > this.max )){
+            return false
+          }
+        }
+        else if ( !this.min && !this.max ){
+          return true;
         }
       },
       /**
@@ -262,7 +319,9 @@
         if ( this.valueTimeOut ) {
           clearTimeout(this.valueTimeOut);
         }
-        if ( !this.required && (newVal === '') ){
+        
+        if (newVal === ''){
+         
           if ( this.value ){
             this.isChanging = true;
             this.$emit('input', null);
@@ -274,16 +333,16 @@
           return;
         }
         if (
-          (this.max !== undefined) && (newVal > this.max) ||
-          (this.min !== undefined) && (newVal < this.min) ||
+          
           !this.pattern.test(newVal)
         ){
+          bbn.fn.error('in change value before return')
           return false;
         }
         // WORKING
         // this.$emit('input', parseFloat(parseFloat(newVal).toFixed(this.currentDecimals)));
         let v = parseFloat(parseFloat(newVal).toFixed(this.currentDecimals));
-        if ( this.value !== v ){
+        if ( (this.value !== v) && this.respectMinMax(v) ){
           this.isChanging = true;
           this.$emit('input', v);
           this.$nextTick(() => {
@@ -299,11 +358,13 @@
        * @fires changeValue
        */
       _changeTmpValue(v, force){
-        if ( force || this.pattern.test(v.toString()) ){
-          if ( this.unit === '%' ){
-            v = (parseFloat(v)/100).toFixed(this.currentDecimals)
+        if ( bbn.fn.isNumber(v) ){
+          if ( force || this.pattern.test(v.toString()) ){
+            if ( this.unit === '%' ){
+              v = (parseFloat(v)/100).toFixed(this.currentDecimals)
+            }
+            this.changeValue(v);
           }
-          this.changeValue(v);
         }
       }
 
@@ -315,21 +376,32 @@
        * @fires _changeTmpValue
        */
       tmpValue(v){
+        bbn.fn.warning('WATCH ON TMP VALUE ' + v)
         if ( this.valueTimeOut ) {
           clearTimeout(this.valueTimeOut);
         }
-        this.valueTimeOut = setTimeout(() => {
-          this._changeTmpValue(v);
-        }, 2000);
+        if ( v && this.respectMinMax(v)){
+          bbn.fn.error('respecting')
+           this.valueTimeOut = setTimeout(() => {
+            this._changeTmpValue(v);
+          }, 2000);
+        }
       },
       /**
        * @watch value
        * @param v 
        */
       value(v){
+        bbn.fn.happy('WATCH ON VALUE '+ v)
         if ( !this.isChanging ){
-          this.tmpValue = v;
+          if ( this.respectMinMax(v) ){
+            this.tmpValue = v;
+          }
+          else if(!this.respectMinMax(v)){
+            this.tmpValue = null;
+          }
         }
+
       },
       /**
        * @watch isFocused
@@ -338,10 +410,16 @@
        */
       isFocused(v){
         if ( v ){
+          bbn.fn.warning('focused')
           this.tmpValue = this.value ? (parseFloat(this.value) * (this.unit === '%' ? 100 : 1)).toFixed(this.decimals) : '';
         }
-        else{
-          this._changeTmpValue(this.tmpValue, true);
+        else if ( !v ){
+          
+          if ( this.respectMinMax(v)){
+            this._changeTmpValue(this.tmpValue, true);
+            bbn.fn.warning('wrooong')
+          }
+          
         }
       }
     },

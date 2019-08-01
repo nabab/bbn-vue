@@ -145,7 +145,8 @@
         /**
          * @data {Boolean} [false] isSorting
          */
-        isSorting: false
+        isSorting: false,
+        currentSlots: []
       };
     },
     computed: {
@@ -365,18 +366,31 @@
             }
           });
           if ( bbn.fn.countProperties(params.cfg) ){
-            return bbn.fn.post(this.url + 'save', params, (d) => {
-              if ( d.data && d.data.success ){
-                for ( let n in params.cfg ){
-                  this.$set(this.widgets[idx], n, params.cfg[n]);
+            if ( this.url !== undefined ){
+              return bbn.fn.post(this.url + 'save', params, (d) => {
+                if ( d.data && d.data.success ){
+                  for ( let n in params.cfg ){
+                    this.$set(this.widgets[idx], n, params.cfg[n]);
+                  }
+                  this.setWidgetStorage(idx);
+                  if ( params.cfg.hidden !== undefined ){
+                    this.updateMenu();
+                  }
+                  this.$forceUpdate();
                 }
-                this.setWidgetStorage(idx);
-                if ( params.cfg.hidden !== undefined ){
-                  this.updateMenu();
-                }
-                this.$forceUpdate();
+              });
+            }
+            else{              
+              for ( let n in cfg ){
+                this.$set(this.widgets[idx], n, cfg[n]);
               }
-            });
+              this.setWidgetStorage(idx);
+              if ( cfg.hidden !== undefined ){
+                this.updateMenu();
+              }
+              this.$forceUpdate();             
+            }
+            
           }
         }
         new Error("No corresponding widget found for key " + key);
@@ -418,6 +432,7 @@
        * @method add
        * @param {Object} obj 
        * @param {Number} idx 
+       * @returns {Object}
        */
       add(obj, idx){
         if ( (idx === undefined) || (idx < 0) || (idx >= this.widgets.length) ){
@@ -451,33 +466,52 @@
         if ( this.$refs.scroll ){
           this.$refs.scroll.onResize()
         }
+      },
+      /**
+       * Adds bbns-widget from the slot.
+       * @method init
+       * @fires normalize
+       * @fires add
+       */
+      init(){
+        this.originalSource = [];
+        this.widgets = [];
+        // Adding bbns-widget from the slot.
+        if ( this.$slots.default ){
+          for ( let node of this.$slots.default ){
+            if (
+              node &&
+              (node.tag === 'bbns-widget')
+            ){
+              this.originalSource.push(this.normalize(node.data.attrs));
+            }
+          }
+        }
+        bbn.fn.each(this.source, (obj, i) => {
+          this.originalSource.push(this.normalize(obj));
+        });
+        bbn.fn.each(bbn.fn.order(this.originalSource.slice(), "index"), (obj, i) => {
+          this.add(obj);
+        });
+      },
+      /**
+       * Sets the currentSlots property based to the widgets' visibility into the slots.
+       * @method setCurrentSlots
+       */
+      setCurrentSlots(){
+        this.currentSlots = this.$slots.default ? this.$slots.default.filter(node => {
+          return !!node.tag;
+        }) : [];
       }
     },
     /**
-     * Adds bbns-tab from the slot.
      * @event created
-     * @fires normalize
-     * @fires getStorage
-     * @fires add
+     * @fires init
+     * @fires setCurrentSlots
      */
     created(){
-      // Adding bbns-tab from the slot.
-      if ( this.$slots.default ){
-        for ( let node of this.$slots.default ){
-          if (
-            node &&
-            (node.tag === 'bbns-widget')
-          ){
-            this.originalSource.push(this.normalize(node.data.attrs));
-          }
-        }
-      }
-      bbn.fn.each(this.source, (obj, i) => {
-        this.originalSource.push(this.normalize(obj));
-      });
-      bbn.fn.each(bbn.fn.order(this.originalSource.slice(), "index"), (obj, i) => {
-        this.add(obj);
-      });
+      this.init();
+      this.setCurrentSlots();
     },
     /**
      * @event mounted
@@ -488,18 +522,30 @@
       this.ready  = true;
       this.onResize();
       this.updateMenu();
+      /**
+       * @watch currentSlotrs
+       * @fires init
+       * @fires updateMenu
+       */
+      this.$watch('currentSlots', (newVal, oldVal) => {
+        if ( !bbn.fn.isSame(newVal, oldVal) ){
+          this.init();
+          this.updateMenu();
+        }
+      });
     },
     /**
      * @event updated
      * @fires selfEmit
+     * @fires setCurrentSlots
      */
     updated(){
-      this.selfEmit(true);
+      this.selfEmit(true); 
+      this.setCurrentSlots();
     },
     watch: {
       /**
        * @watch sortTargetIndex
-       * @param newVal 
        * @fires move
        */
       sortTargetIndex(newVal){
@@ -517,13 +563,11 @@
       },
       /**
        * @watch isSorting
-       * @param {Boolean} newVal 
        */
       isSorting(newVal){
         if ( !newVal ){
           this.sortTargetIndex = null;
         }
-
       }
     }
   });

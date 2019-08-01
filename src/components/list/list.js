@@ -480,7 +480,7 @@
                   this[item.data.command]();
                 }
               }
-              else if (bbn.fn.isFunction(item.command) ){
+              else if (bbn.fn.isFunction(item.data.command) ){
                 item.data.command(idx, item.data);
               }
             }

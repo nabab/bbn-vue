@@ -76,7 +76,7 @@
   </span>
 </span-->
 
-<div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', 'bbn-reactive', {'bbn-disabled': !!disabled}]">
+<div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', {'bbn-disabled': !!disabled}]">
   <div class="bbn-flex-width bbn-h-100">
     <div class="bbn-flex-fill">
         <input class="bbn-state-default" 
@@ -98,11 +98,9 @@
                 @change="change"
       >
       <input type="hidden"
-             ref="input"
              :value="value"
              role="spinbutton"
-             class="k-input" 
-             style="display: none;"
+             class="bbn-input" 
       >
     </div>
     <div :class="['bbn-h-100', 'buttons', {'bbn-disabled' : readonly}]">

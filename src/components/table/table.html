@@ -17,7 +17,7 @@
                       class="bbn-hsmargin"
                       :key="i"
                       v-bind="button"
-                      @click.prevent.stop="_execCommand(button, i)"
+                      @click.prevent.stop="_execCommand(button, i)"zz
           ></bbn-button>
         </div>
       </div>
@@ -148,7 +148,7 @@
                 width: containerWidth,
                 overflowX: groupCols[0].width + groupCols[1].width + groupCols[2].width > lastKnownCtWidth ? 'scroll' : 'hidden',
                 marginLeft: groupCols[0].width + 'px',
-                marginRight: scrollable ? (groupCols[2].width - containerPadding) + 'px' : groupCols[2].width,
+                marginRight: (scrollable ? groupCols[2].width - containerPadding : groupCols[2].width) + 'px',
                 marginBottom: scrollable ? '-' + containerPadding + 'px' : 0,
                 paddingRight: scrollable ? containerPadding : 0,
                 paddingBottom: scrollable ? containerPadding : 0,
@@ -374,10 +374,10 @@
               class="bbn-iblock bbn-c"
               style="margin-right: 0.5em; width: 6em"></span>
         <bbn-numeric v-else
-                      v-model="currentPage"
-                      :min="1"
-                      :max="numPages"
-                      style="margin-right: 0.5em; width: 6em"
+                     v-model="currentPage"
+                     :min="1"
+                     :max="numPages"
+                     style="margin-right: 0.5em; width: 6em"
         ></bbn-numeric>
         <span v-text="_('of') + ' ' + numPages" style="margin-right: 0.25em"></span>
         <bbn-button icon="nf nf-fa-angle_right"

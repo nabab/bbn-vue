@@ -612,11 +612,13 @@
           plugins.push(Chartist.plugins.legend({
             onClick(a, b){
               const rect = b.target.querySelector('div.rect');
-              if ( rect.classList.contains('inactive') ){
-                rect.classList.remove('inactive');
-              }
-              else {
-                rect.classList.add('inactive');
+              if ( rect ){
+                if ( rect.classList.contains('inactive') ){
+                  rect.classList.remove('inactive');
+                }
+                else {
+                  rect.classList.add('inactive');
+                }
               }
             },
             removeAll: true,
@@ -1434,57 +1436,73 @@
         this.widget.on('created', (chartData) => {
           // Set the right colors to legend
           if ( this.legend ){
-            let colors = [];
+            let colors = [], 
+                ctSeries = this.widget.container.querySelectorAll('g.ct-series');
+            
+
             
             
-            
-            bbn.fn.each( this.widget.container.querySelectorAll('g.ct-series'), (v, i) => {
-              if ( this.isBar ){
-                colors.push(v.querySelector('line.ct-bar').style.stroke);
-              }
-              else {
-                bbn.fn.each(v.querySelectorAll('path'), (p, k) => {
-                  if ( p.classList.contains('ct-line') ||
-                    p.classList.contains('ct-slice-pie') ||
-                    p.classList.contains('ct-slice-donut')
-                  ){
-                    colors.push(p.classList.contains('ct-slice-pie') ? getComputedStyle(p).fill : getComputedStyle(p).stroke);
+            if ( ctSeries.length ){
+              bbn.fn.each( ctSeries, (v, i) => {
+                let bar = v.querySelector('line.ct-bar');
+                if ( this.isBar && bar ){
+                  colors.push(bar.style.stroke);
+                }
+                else {
+                  let paths = v.querySelectorAll('path');
+                  if ( paths.length ){
+                    bbn.fn.each(paths, (p, k) => {
+                      if ( p.classList.contains('ct-line') ||
+                        p.classList.contains('ct-slice-pie') ||
+                        p.classList.contains('ct-slice-donut')
+                      ){
+                        colors.push(p.classList.contains('ct-slice-pie') ? getComputedStyle(p).fill : getComputedStyle(p).stroke);
+                      }
+                    })
                   }
-                })
-              }
-            })
+                }
+              })
+            }
             setTimeout(() => {
               if ( this.isPie && this.legendPosition ){
-                if ( this.widget.container.querySelector('ul.ct-legend.ct-legend-inside') && this.widget.container.querySelector('ul.ct-legend.ct-legend-inside').classList.contains('ct-legend-inside') ){
+                if ( this.widget.container && this.widget.container.querySelector('ul.ct-legend.ct-legend-inside') && this.widget.container.querySelector('ul.ct-legend.ct-legend-inside').classList.contains('ct-legend-inside') ){
                   this.widget.container.querySelector('ul.ct-legend.ct-legend-inside').classList.remove('ct-legend-inside')
                 }
               }
-              
-             let legendHeight = this.widget.container.querySelector('ul.ct-legend.ct-legend:not(.ct-legend-inside)').clientHeight,
-                  svgHeight = this.widget.container.querySelector('svg').clientHeight,
-                  contHeight = this.widget.container.clientHeight;
+              if ( this.widget.container && this.widget.container.querySelector('ul.ct-legend.ct-legend:not(.ct-legend-inside)') ){
+                let legendHeight = this.widget.container.querySelector('ul.ct-legend.ct-legend:not(.ct-legend-inside)').clientHeight,
+                svgHeight = this.widget.container.querySelector('svg').clientHeight,
+                contHeight = this.widget.container.clientHeight;
 
-              if ( (legendHeight + svgHeight) > contHeight ){
-                this.widget.update(false, {height: contHeight - legendHeight}, true);
-                return;
+                if ( this.widget.container.querySelector('svg') && (legendHeight + svgHeight) > contHeight ){
+                  this.widget.update(false, {height: contHeight - legendHeight}, true);
+                  return;
+                }
+              }
+           
+              
+              if ( this.widget.container && this.widget.container.querySelectorAll('ul.ct-legend li')){
+                let li = this.widget.container.querySelectorAll('ul.ct-legend li');
+                if ( li.length ){
+                  bbn.fn.each(li, (v, i) => {
+                    if ( Array.isArray(this.legendTitles) ){
+                      v.setAttribute('title', this.legendTitles[i]);
+                    }
+                    if ( !v.querySelector('div.rect') ){
+                      let content = '<div class="rect" style="background-color: ' + colors[i] +'; border-color: ' + colors[i] + '"></div>',
+                          el = document.createElement('div');
+                      el.innerHTML = content;
+                      v.insertAdjacentElement('afterbegin', el)
+                    }
+                  });
+                }
               }
               
-              bbn.fn.each(this.widget.container.querySelectorAll('ul.ct-legend li'), (v, i) => {
-                if ( Array.isArray(this.legendTitles) ){
-                  v.setAttribute('title', this.legendTitles[i]);
-                }
-                if ( !v.querySelector('div.rect') ){
-                  let content = '<div class="rect" style="background-color: ' + colors[i] +'; border-color: ' + colors[i] + '"></div>',
-                      el = document.createElement('div');
-                  el.innerHTML = content;
-                  v.insertAdjacentElement('afterbegin', el)
-                }
-              });
             }, 100);
           }
           // Set the right colors to point labels
           if ( !this.isPie && (this.labelColor || this.labelColorY) ){
-            if(this.widget.container.querySelector('g.ct-series text.ct-label')){
+            if ( this.widget.container && this.widget.container.querySelector('g.ct-series text.ct-label') ){
               this.widget.container.querySelector('g.ct-series text.ct-label').style.stroke = this.labelColorY || this.labelColor;
             }
           }

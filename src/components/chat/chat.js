@@ -621,6 +621,35 @@
         updated(){
           this.scrollEnd();
         }
+      },
+      user: {
+        template: `
+<div class="bbn-w-100 bbn-p"
+      style="overflow: auto"
+      @click="cp.chatTo([source.value])">
+  <bbn-initial :user-id="source.value"
+               :user-name="userName"
+               :width="16"
+               :height="16"
+               style="padding-right: 3px"
+  ></bbn-initial>
+  <span class="bbn-large"
+        v-text="userName">
+  </span>
+</div>
+        `,
+        props: {
+          source: {
+            type: Object
+          }
+        },
+        data(){
+          let cp = this.closest("bbn-chat");
+          return {
+            cp: cp,
+            userName: bbn.fn.get_field(cp.users, 'value', this.source.value, 'text')
+          }
+        }
       }
     }
   });
