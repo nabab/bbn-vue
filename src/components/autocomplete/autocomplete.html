@@ -10,7 +10,7 @@
               class="bbn-unselectable bbn-textbox bbn-no-border bbn-abs bbn-top-left"
               :required="required"
               :readonly="readonly"
-              :placeholder="placeholder"
+              :placeholder="filterString ? '' : placeholder"
               :tabindex="-1"
               autocorrect="off"
               autocapitalize="off"

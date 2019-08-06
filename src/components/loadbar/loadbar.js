@@ -84,7 +84,8 @@
          /**
          * @data {Boolean} [false] timeNow
          */
-        timeNow: false
+        timeNow: false,
+        link: ''
       };
     },
     computed: {
@@ -145,9 +146,9 @@
        * @method cancel
        * @param {Object} item 
        */
-      cancel(item){
-        if ( item.loading ){
-          this.getPopup().confirm(bbn._("Are you sure you want to abort this request?"), (d) => {
+      cancel(){
+        if ( this.loading ){
+          bbn.fn.confirm(bbn._("Are you sure you want to abort this request?"), (d) => {
             bbn.fn.abort(item.key)
           })
         }
@@ -162,6 +163,17 @@
         });
         this.data = tmp;
       },
+      go(){
+        if (this.link) {
+          bbn.fn.link(this.link);
+        }
+      },
+      focusInput(){
+        let input = this.find('bbn-input');
+        if (input) {
+          input.getRef('element').focus();
+        }
+      }
     },
     /**
      * @event mounted
@@ -178,6 +190,18 @@
     beforeDestroy() {
       clearInterval(this.interval)
     },
+    watch: {
+      items(){
+        if (this.info) {
+          this.$nextTick(() => {
+            let f = this.getRef('floater');
+            if (f) {
+              f.onResize();
+            }
+          })
+        }
+      }
+    }
   });
 
 })(bbn);

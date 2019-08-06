@@ -672,7 +672,7 @@
             }
           }
           else if ( cfg.source ){
-            let idx = bbn.fn.search(cfg.source, {value: v});
+            let idx = bbn.fn.search(bbn.fn.isFunction(cfg.source) ? cfg.source() : cfg.source, {value: v});
             return idx > -1 ? cfg.source[idx].text : '-';
           }
           else {

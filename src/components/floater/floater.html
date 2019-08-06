@@ -1,13 +1,15 @@
 <div :class="[
         {
           'bbn-reset': true,
-          'bbn-widget': true,
+          'bbn-bordered': true,
+          'bbn-background-internal': true,
           'bbn-flex-height': ready && title,
           'bbn-invisible': !isResized
         },
         componentClass
       ]"
       v-if="isVisible"
+      @resize.stop="onResize"
       @mouseleave="leave"
       @mouseenter="isOver = true"
       @click.stop=""
@@ -40,10 +42,13 @@
       </div>
     </div>
   </header>
-  <div :style="{width: width ? '100%' : formattedWidth}" :class="{
-    'bbn-flex-fill': footer || title || (buttons && buttons.length),
-    'bbn-h-100': !title && !footer && (!buttons || !buttons.length)
-  }">
+  <div :class="{
+         'bbn-flex-fill': footer || title || (buttons && buttons.length),
+         'bbn-h-100': !title && !footer && (!buttons || !buttons.length)
+       }"
+       :style="{
+         width: width ? '100%' : formattedWidth
+       }">
         <!--v-if="isMounted">-->
     <bbn-scroll :latency="latency"
                 ref="scroll"

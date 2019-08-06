@@ -104,22 +104,26 @@
       >
     </div>
     <div :class="['bbn-h-100', 'buttons', {'bbn-disabled' : readonly}]">
-      <div :class="['bbn-p', 'bbn-reactive-block', 'bbn-middle',{
-        'bbn-disabled': (max !== undefined) && (value >= max)
+      <div :class="['bbn-reactive-block', 'bbn-middle',{
+        'bbn-disabled': disableIncrease,
+        'bbn-p': disableIncrease,
+        'no-pointer-events' : disableIncrease
         }]"
             @click="increment"
             unselectable="on"
             tabindex="-1"
-            :disabled="disabled">
+            :disabled="value >= max">
         <i class="nf nf-fa-caret_up"></i>
       </div>
-      <div :class="['bbn-p', 'bbn-reactive-block', 'bbn-middle',{
-        'bbn-disabled': (min !== undefined) && (value <= min)
+      <div :class="['bbn-reactive-block', 'bbn-middle',{
+        'bbn-disabled': disableDecrease,
+        'bbn-p' :disableDecrease,
+        'no-pointer-events' : disableDecrease
         }]"
            @click="decrement"
            unselectable="on"
            tabindex="-1"
-           :disabled="disabled">
+           >
         <i class="nf nf-fa-caret_down"></i>
       </div>
     </div>

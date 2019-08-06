@@ -1874,15 +1874,15 @@
             this.editedRow = false;
           }
         }
-      },
+      },      
       /**
        * If the prop url of the table is defined makes a post to the url to update or insert the row, else fires the method saveRow to insert or update the row in originalData
        * @method saveInline
        * @fires saveRow
        *
-       */
+       */      
       saveInline() {
-        if (this.tmpRow || this.editedRow) {
+        if (this.tmpRow || this.editedRow) {          
           if (this.url) {
             let o = bbn.fn.extend({}, this.data, this.tmpRow || this.editedRow, {
               action: this.tmpRow ? 'insert' : 'update'
@@ -1894,7 +1894,7 @@
             this.saveRow()
           }
         }
-      },
+      },      
       /**
        * @method isGroupedCell
        * @param {Number} groupIndex
@@ -1943,7 +1943,6 @@
       setConfig(cfg, no_storage) {
         if (cfg === false) {
           cfg = bbn.fn.clone(this.defaultConfig);
-          bbn.fn.log("DEFAUKT")
         }
         else if (cfg === true) {
           cfg = this.getConfig();
@@ -2184,12 +2183,12 @@
         }
         let data = [];
         let orig;
-        if ( idx === undefined ){
+        if ( this.filteredData[idx] === undefined ){
           bbn.fn.each(this.currentData, (a) => data.push(a.data));
           orig = this.originalData;
         }
         else{
-          data = this.currentData[idx].data;
+          data = this.filteredData[idx].data;
           orig = this.originalData[idx];
         }
         return JSON.stringify(data) !== JSON.stringify(orig);
@@ -3007,7 +3006,8 @@
             (node.componentOptions.tag === 'bbns-column')
           ) {
             this.addColumn(bbn.fn.extend({}, def, node.componentOptions.propsData));
-          } else if (
+          }
+          else if (
             (node.tag === 'bbns-column') &&
             node.data && node.data.attrs
           ) {
@@ -3037,7 +3037,9 @@
       this.initialConfig = this.jsonConfig;
       this.savedConfig = this.jsonConfig;
       let cfg = this.getStorage();
-      this.setConfig(cfg ? cfg : false, true);
+      if (cfg) {
+        this.setConfig(cfg, true);
+      }
     },
     /**
      * After the initialization of the component sets the property ready on true.

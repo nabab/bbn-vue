@@ -290,12 +290,18 @@
 
       // Calculates all the proportions based on content
       onResize(){
-        bbn.fn.log(this.scroller ? "CROLLE YES / " + this.scroller['container' + (this.isVertical ? 'Height' : 'Width')] : "NO SCROLLER");
+        //bbn.fn.log(this.scroller ? "CROLLE YES / " + this.scroller['container' + (this.isVertical ? 'Height' : 'Width')] : "NO SCROLLER");
         if ( this.realContainer ){
           let tmp1 = (this.isVertical ? this.realContainer.clientHeight : this.realContainer.clientWidth) - bbn.fn.getScrollBarSize(),
               tmp2 = this.realContainer.children[0] ? this.realContainer.children[0][this.isVertical ? 'clientHeight' : 'clientWidth'] : this.containerSize;
+          if ( tmp1 < 20 ){
+            this.containerSize = 0;
+            this.contentSize = 0;
+            this.size = 0;
+            return;
+          }
+          //bbn.fn.log(tmp1 + '/' + this.containerSize, tmp2 + '/' + this.contentSize);
           if ( (tmp1 !== this.containerSize) || (tmp2 !== this.contentSize) ){
-        bbn.fn.log("YOUPA");
             this.containerSize = tmp1 > 0 ? tmp1 : 0;
             this.contentSize = tmp2 > 0 ? tmp2 : 0;
             // The scrollbar is only visible if needed, i.e. the content is larger than the container
@@ -455,7 +461,7 @@
             num = 0;
           }
         }
-        bbn.fn.log(num);
+        //bbn.fn.log(num);
         if ( num !== null ){
           if ( num < 0 ){
             num = 0;
@@ -504,7 +510,6 @@
       document.addEventListener("mouseup", this.stopDrag);
       document.addEventListener("touchend", this.stopDrag);
       this.onResize();
-      this.ready = true;
     },
     beforeDestroy() {
       if ( this.realContainer && this.isInit ){

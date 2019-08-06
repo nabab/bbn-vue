@@ -4,6 +4,14 @@
     throw new Error("Impossible to find the library bbn-vue")
   }
   Vue.mixin({
+    data(){
+      return {
+        /**
+         * @data _currentPopup
+         */
+        _currentPopup: null
+      };
+    },
     computed: {
       /**
        * Return the object of the currentPopup.
@@ -11,16 +19,15 @@
        * @return {Object}
        */
       currentPopup(){
-        if ( this && !this._currentPopup ){
+        if ( !this._currentPopup ){
           let e = bbn.vue._retrievePopup(this);
           if ( e ){
             this._currentPopup = e;
           }
           else{
-            let vm = this
-            while ( 1 ){
-              vm = vm.$parent;
-              if ( vm && vm._currentPopup ){
+            let vm = this;
+            while (vm = vm.$parent) {
+              if ( vm._currentPopup ){
                 this._currentPopup = vm._currentPopup;
                 break;
               }
@@ -31,25 +38,17 @@
                   break;
                 }
               }
-              if ( !vm || (vm === this.$root) ){
+              if (vm === this.$root) {
                 break;
               }
             }
           }
         }
-        if ( this && this._currentPopup ){
+        if ( this._currentPopup ){
           return this._currentPopup;
         }
         throw new Error(bbn._('Impossible to find a popup instance. Add a bbn-popup in your root element'))
       }
-    },
-    data(){
-      return {
-        /**
-         * @data _currentPopup
-         */
-        _currentPopup: null
-      };
     },
     methods: {
       /**

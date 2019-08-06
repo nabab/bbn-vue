@@ -90,6 +90,7 @@
         }
       }
       return {
+        initialValue : null,
         /**
          * True if the input is changing.
          * @data {Boolean} [false] isChanging
@@ -117,6 +118,22 @@
       }
     },
     computed: {
+      disableDecrease(){
+        if((this.min !== undefined) && ((this.value - this.step ) < this.min)){
+          return true;
+        }
+        else {
+          return false;
+        }
+      },
+      disableIncrease(){
+        if((this.max !== undefined) && ((this.value + this.step ) > this.max)){
+          return true;
+        }
+        else {
+          return false;
+        }
+      },
       /**
        * The pattern of the input.
        * @computed pattern
@@ -143,27 +160,17 @@
       formattedValue(){
         if ( this.value !== null ) {
           if ( !this.isFocused ){
-            if ( this.respectMinMax(this.value) ){
-              bbn.fn.error('if '+ bbn.fn.money(this.value * (this.unit === '%' ? 100 : 1), '', this.unit, '', '.', ' ', this.unit === '%' ? this.decimals : this.currentDecimals))
-              return bbn.fn.money(this.value * (this.unit === '%' ? 100 : 1), '', this.unit, '', '.', ' ', this.unit === '%' ? this.decimals : this.currentDecimals)
-            }
-            
+            bbn.fn.happy(bbn.fn.money(this.value * (this.unit === '%' ? 100 : 1), '', this.unit, '', '.', ' ', this.unit === '%' ? this.decimals : this.currentDecimals))
+            return bbn.fn.money(this.value * (this.unit === '%' ? 100 : 1), '', this.unit, '', '.', ' ', this.unit === '%' ? this.decimals : this.currentDecimals)
           }
           else {
-            if ( this.respectMinMax(this.value) ){
-              bbn.fn.error('else ' + (this.unit === '%' ? parseFloat(this.value) * 100 : parseFloat(this.value)).toFixed(this.decimals))
-              return (this.unit === '%' ? parseFloat(this.value) * 100 : parseFloat(this.value)).toFixed(this.decimals)
-            }
-           
-            else{
-              return null;
-            }
-            
+            bbn.fn.warning((this.unit === '%' ? parseFloat(this.value) * 100 : parseFloat(this.value)).toFixed(this.decimals))
+            return (this.unit === '%' ? parseFloat(this.value) * 100 : parseFloat(this.value)).toFixed(this.decimals)
           }
         }
-        /*else if ( this.value === ''){
-          return null
-        }*/
+        else{
+          return ''
+        }
       }
     },
     methods: {
@@ -197,13 +204,14 @@
         }
         //page up - increase the step of 10 unit
         if (e.keyCode === 33) {
-          let tmp = parseFloat(this.value) + 10 * this.step;
+          let step = 10 * this.step,
+          tmp = parseFloat(this.value) + ((this.unit === '%')  ? step/100 : step);
           this.changeValue(tmp);
         }
         //page down - decrease the step of 10 unit
         if (e.keyCode === 34) {
-          let tmp = parseFloat(this.value) - 10 * this.step;
-          this.changeValue(tmp);
+          let step = 10 * this.step,
+          tmp = parseFloat(this.value) - ((this.unit === '%')  ? step/100 : step);
         }
         this.keydown(e);
       },
@@ -217,7 +225,7 @@
       _focus(e){
         this.isFocused = true;
         this.$nextTick(() => {
-          //e.target.setSelectionRange(0, e.target.value.toString().length, e.target.value);
+          e.target.setSelectionRange(0, e.target.value.toString().length, e.target.value);
         })
         this.focus(e);
       },
@@ -250,21 +258,7 @@
 
       increment(){
         if ( !this.readonly && !this.disabled ){
-          bbn.fn.log('INCREMENT')
-          if ( this.value !== ''){
-            bbn.fn.warning('increment ' + this.value + '/' + this.changeValue((typeof this.value === 'string' ? parseFloat(this.value) : this.value) + this.step))
-            this.changeValue((typeof this.value === 'string' ? parseFloat(this.value) : this.value) + this.step);
-          }
-          else{
-            if ( this.min ){
-              bbn.fn.error(this.min)
-              this.changeValue((typeof this.min === 'string' ? parseFloat(this.min) : this.min))
-            }
-            else { 
-              this.formattedValue = null
-            }
-          }
-          
+          this.changeValue((typeof this.value === 'string' ? parseFloat(this.value) : this.value) + (  (this.unit === '%') ? this.step / 100 : this.step ) );
         }
       },
       /**
@@ -274,24 +268,93 @@
        */
 
       decrement(){
-        if ( this.value !== ''){
-          if (!this.readonly && !this.disabled) {
-            this.changeValue((typeof this.value === 'string' ? parseFloat(this.value)  : this.value) - this.step);
+        if (!this.readonly && !this.disabled) {
+          this.changeValue((typeof this.value === 'string' ? parseFloat(this.value)  : this.value) - (  (this.unit === '%') ? this.step / 100 : this.step ));
+        }
+      },
+      /**
+       * Change the value of the component.
+       *
+       * @method changeValue
+       * @param {Number} newVal
+       */
+      changeValue(newVal){
+        if ( this.valueTimeOut ) {
+          clearTimeout(this.valueTimeOut);
+        }
+        if ( !this.required && (newVal === '') ){
+          if ( this.value ){
+            this.isChanging = true;
+            this.$emit('input', null);
+            this.$nextTick(() => {
+              this.isChanging = false;
+            })
+          }
+          //dopo questo emit non dovrei avere this.value, invece nel log c'è ancora...
+          return;
+        }
+        /*if (
+          (this.max !== undefined) && (newVal > this.max) ||
+          (this.min !== undefined) && (newVal < this.min) ||
+          !this.pattern.test(newVal)
+        ){
+          return false;
+        }*/
+        // WORKING
+        // this.$emit('input', parseFloat(parseFloat(newVal).toFixed(this.currentDecimals)));
+        let v = parseFloat(parseFloat(newVal).toFixed(this.currentDecimals));
+        if ( this.value !== v){
+          if ( this.respectMinMax(v) ){
+           // alert('0')
+            this.isChanging = true;
+            this.$emit('input', v);
+            this.$nextTick(() => {
+              this.tmpValue = this.formattedValue;
+              
+              this.isChanging = false;
+            })
+          }
+          else if ( !this.respectMinMax(v) ){
+            bbn.fn.happy(this.formattedValue)
+            
+            this.isChanging = false;
+            let tmp = null;
+              
+              if ((this.max !== undefined) && (v > this.max)){
+                tmp = this.max;
+              }
+              else if ( (this.min !== undefined) &&  ( v < this.min ) ){
+                tmp = this.min
+              }
+              else {
+                tmp = this.initialValue.replace(/\s/g,'');
+              }
+            this.$nextTick( () => {
+              
+              this.$emit('input', parseFloat(tmp));
+              this.tmpValue =  tmp;
+            } )
           }
         }
-        else{
-          if ( this.min ){
-
-            this.changeValue((typeof this.min === 'string' ? parseFloat(this.min)  : this.min));
+      
+      },
+      /**
+       * @method _changeTmpValue
+       * @param v 
+       * @param force 
+       * @fires changeValue
+       */
+      _changeTmpValue(v, force){
+        if ( force || this.pattern.test(v.toString()) ){
+          if ( this.unit === '%' ){
+            v = (parseFloat(v)/100).toFixed(this.currentDecimals)
           }
-          else{
-            this.formattedValue = null;
-          }
-        }  
-        
+          this.changeValue(v);
+          bbn.fn.error(v)
+        }
       },
       respectMinMax(v){
-        if ( this.min || this.max ){
+        if ( ((this.min !== undefined ) && !this.max) || (!this.min && (this.max !== undefined))){
           if ( this.min && (parseFloat(v) >= this.min )){
             return true;
           }
@@ -305,68 +368,18 @@
             return false
           }
         }
-        else if ( !this.min && !this.max ){
+        else if ( (this.min !== undefined ) && ( this.max !== undefined )){
+          if ( (parseFloat(v) >= this.min ) &&  (parseFloat(v) <= this.max )){
+            return true
+          }
+          else{
+            return false;
+          }
+        }
+        else if ( (this.min === undefined ) && (this.max === undefined) ){
           return true;
         }
       },
-      /**
-       * Change the value of the component.
-       *
-       * @method changeValue
-       * @param {Number} newVal
-       */
-      changeValue(newVal){
-        if ( this.valueTimeOut ) {
-          clearTimeout(this.valueTimeOut);
-        }
-        
-        if (newVal === ''){
-         
-          if ( this.value ){
-            this.isChanging = true;
-            this.$emit('input', null);
-            this.$nextTick(() => {
-              this.isChanging = false;
-            })
-          }
-          //dopo questo emit non dovrei avere this.value, invece nel log c'è ancora...
-          return;
-        }
-        if (
-          
-          !this.pattern.test(newVal)
-        ){
-          bbn.fn.error('in change value before return')
-          return false;
-        }
-        // WORKING
-        // this.$emit('input', parseFloat(parseFloat(newVal).toFixed(this.currentDecimals)));
-        let v = parseFloat(parseFloat(newVal).toFixed(this.currentDecimals));
-        if ( (this.value !== v) && this.respectMinMax(v) ){
-          this.isChanging = true;
-          this.$emit('input', v);
-          this.$nextTick(() => {
-            this.tmpValue = this.formattedValue;
-            this.isChanging = false;
-          })
-        }
-      },
-      /**
-       * @method _changeTmpValue
-       * @param v 
-       * @param force 
-       * @fires changeValue
-       */
-      _changeTmpValue(v, force){
-        if ( bbn.fn.isNumber(v) ){
-          if ( force || this.pattern.test(v.toString()) ){
-            if ( this.unit === '%' ){
-              v = (parseFloat(v)/100).toFixed(this.currentDecimals)
-            }
-            this.changeValue(v);
-          }
-        }
-      }
 
     },
     watch: {
@@ -376,32 +389,21 @@
        * @fires _changeTmpValue
        */
       tmpValue(v){
-        bbn.fn.warning('WATCH ON TMP VALUE ' + v)
         if ( this.valueTimeOut ) {
           clearTimeout(this.valueTimeOut);
         }
-        if ( v && this.respectMinMax(v)){
-          bbn.fn.error('respecting')
-           this.valueTimeOut = setTimeout(() => {
-            this._changeTmpValue(v);
-          }, 2000);
-        }
+        this.valueTimeOut = setTimeout(() => {
+          this._changeTmpValue(v);
+        }, 2000);
       },
       /**
        * @watch value
        * @param v 
        */
       value(v){
-        bbn.fn.happy('WATCH ON VALUE '+ v)
         if ( !this.isChanging ){
-          if ( this.respectMinMax(v) ){
-            this.tmpValue = v;
-          }
-          else if(!this.respectMinMax(v)){
-            this.tmpValue = null;
-          }
+          this.tmpValue = v;
         }
-
       },
       /**
        * @watch isFocused
@@ -410,16 +412,11 @@
        */
       isFocused(v){
         if ( v ){
-          bbn.fn.warning('focused')
           this.tmpValue = this.value ? (parseFloat(this.value) * (this.unit === '%' ? 100 : 1)).toFixed(this.decimals) : '';
         }
-        else if ( !v ){
-          
-          if ( this.respectMinMax(v)){
-            this._changeTmpValue(this.tmpValue, true);
-            bbn.fn.warning('wrooong')
-          }
-          
+        else{
+          this._changeTmpValue(this.tmpValue, true);
+          bbn.fn.warning('here  ' + this.tmpValue + ' /' +this.formattedValue)
         }
       }
     },
@@ -427,9 +424,12 @@
      * @event beforeMount 
      */
     beforeMount(){
+      this.initialValue = this.formattedValue;
       this.tmpValue = this.formattedValue;
+      
     },
     mounted(){
+      
       //elaborare this.min e this.max dati come stringa basandomi su this.decimals, creare currentMin al momento del mounted
       /*if ( this.min ){
         if ( bbn.fn.isString(this.min) ){

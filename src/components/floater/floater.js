@@ -13,8 +13,10 @@
    * Classic input with normalized appearance
    */
   let isClicked = false;
+  //bbn.vue.preloadBBN(['scroll', 'list', 'button']);
   Vue.component('bbn-floater', {
-    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent, bbn.vue.listComponent, bbn.vue.keepCoolComponent],
+    name: 'bbn-floater',
+    mixins: [bbn.vue.basicComponent, bbn.vue.listComponent, bbn.vue.resizerComponent, bbn.vue.keepCoolComponent],
     props: {
       /**
        * @prop container
@@ -223,11 +225,11 @@
       },
       /**
        * The latency of the floater.
-       * @prop {Number} [25] latency
+       * @prop {Number} [125] latency
        */
       latency: {
         type: Number,
-        default: 25
+        default: 125
       },
       onOpen: {
         type: Function
@@ -349,6 +351,7 @@
         mountedComponents: [],
         isOver: false,
         mouseLeaveTimeout: false,
+        scrollResizeTimeout: false,
         isResizing: null,
         isResized: false,
         isInit: false
@@ -416,12 +419,12 @@
         return s;
       },
       isVisible(){
-        return this.currentVisible && (
+        return !!(this.currentVisible && (
           this.content || 
           this.component || 
           this.filteredData.length || 
           this.$slots.default
-        );
+        ));
       }
     },
     methods: {
@@ -453,7 +456,6 @@
           }
         }
         tmp = this.getDimensions(this.maxWidth, this.maxHeight);
-        bbn.fn.log("getDimensions", this.maxWidth, this.maxHeight, tmp);
         if (tmp.width) {
           maxWidth.push(tmp.width);
         }
@@ -587,16 +589,27 @@
        * @fires updateComponents
        */
       scrollResize() {
-        if (!this.getRef('scroll').ready) {
-          this.onResize();
-          this.updateComponents();
-        } else {
-          let nb = this.mountedComponents.length;
-          this.updateComponents();
-          if (nb !== this.mountedComponents.length) {
-            this.onResize();
-          }
+        if (this.scrollResizeTimeout !== false) {
+          clearTimeout(this.scrollResizeTimeout);
         }
+        this.scrollResizeTimeout = setTimeout(() => {
+          this.scrollResizeTimeout = false;
+          let sc = this.getRef('scroll');
+          if (!sc || !sc.ready) {
+            this.scrollResize();
+          }
+          else {
+            let nb = this.mountedComponents.length;
+            this.updateComponents();
+            if (nb !== this.mountedComponents.length) {
+              sc.initSize();
+              this.isResized = true;
+            }
+            else{
+              this.onResize();
+            }
+          }
+        }, this.latency + 10);
       },
       addClose(fn){
         for ( let i = 0; i < arguments.length; i++ ){
@@ -623,7 +636,7 @@
        */
       onResize() {
         // Should be triggered by the inner scroll once mounted
-        if (this.isVisible && bbn.fn.isDom(this.$el) && !this.isResizing && bbn.fn.isDom(this.$el)) {
+        if (this.isResized && this.isVisible && bbn.fn.isDom(this.$el) && !this.isResizing && bbn.fn.isDom(this.$el)) {
           if ( !this.ready ){
             this.init();
             this.ready = true;
@@ -631,7 +644,7 @@
           this.isResizing = true;
           // Resetting
           let scroll = this.getRef('scroll');
-          if (!scroll || (!scroll.naturalHeight && !this.height) || (!scroll.naturalWidth && !this.width)) {
+          if (!scroll || !scroll.ready || (!scroll.naturalHeight && !this.height) || (!scroll.naturalWidth && !this.width)) {
             return new Promise((resolve) => {
               setTimeout(() => {
                 this.isResizing = false;
@@ -651,7 +664,6 @@
           this.scrollWidth = null;
           this.currentScroll = false;
           this.$forceUpdate();
-          this.init();
           return new Promise((resolve) => {
             this.$nextTick(() => {
               // These are the limits of the space the DIV can occupy
@@ -821,18 +833,22 @@
                     left = pos.width - coor.right - width + pos.left;
                   }
                 }
+                if (left < 0) {
+                  left = 0;
+                }
+                if (top < 0) {
+                  top = 0;
+                }
                 this.currentLeft = left + 'px';
                 this.currentTop = top + 'px';
                 resolve();
                 this.isResizing = false;
-                this.isResized = true;
-                this.setResizeMeasures();
                 this.$nextTick(() => {
                   if (scroll) {
-                    bbn.fn.log("SCROLLER EXSISTS");
+                    //bbn.fn.log("SCROLLER EXSISTS");
                     scroll.setResizeMeasures();
                   }
-                })
+                });
               });
             });
           });
@@ -919,7 +935,8 @@
           }
         }
         let closeEvent = new Event('close');
-        this.$el.style.display = 'block';
+        this.hide();
+        //this.$el.style.display = 'block';
         this.$nextTick(() => {
           this.$emit("close", this, closeEvent);
           if (this.afterClose) {
@@ -953,10 +970,10 @@
       select(item, idx, dataIndex) {
         //bbn.fn.log("SELECT", arguments, this.filteredData[idx]);
         if (item && !item.disabled && !item[this.children]) {
-
           if (this.mode === 'options') {
             item.selected = !item.selected;
-          } else if ((this.mode === 'selection') && !item.selected) {
+          }
+          else if ((this.mode === 'selection') && !item.selected) {
             let prev = bbn.fn.search(this.filteredData, "selected", true);
             if (prev > -1) {
               this.filteredData[prev].selected = false;
@@ -966,15 +983,20 @@
           if (item.command) {
             if (typeof (item.command) === 'string') {
               bbn.fn.log("CLICK IS STRING", this);
-            } else if (bbn.fn.isFunction(item.command)) {
+            }
+            else if (bbn.fn.isFunction(item.command)) {
               //bbn.fn.log("CLICK IS FUNCTION", item.command, this);
               item.command(idx, item);
             }
           }
+          let ev = new Event('select', {cancelable: true});
+          this.$emit("select", item, idx, dataIndex, ev);
+          if (ev.defaultPrevented){
+            return;
+          }
           if (this.mode !== 'options') {
             this.closeAll();
           }
-          this.$emit("select", item, idx, dataIndex);
         }
       },
       getDimensions(width, height) {
@@ -983,11 +1005,11 @@
           height: 0
         };
         let parent = this.container || this.$root.$el;
-        if ( parent ){
+        if (parent && (width || height)) {
           let el = document.createElement('div');
           el.style.position = 'absolute';
-          el.style.width = width ? bbn.fn.formatSize(width) : '0px';
-          el.style.height = height ? bbn.fn.formatSize(height) : '0px';
+          el.style.width = width ? bbn.fn.formatSize(width) : 'auto';
+          el.style.height = height ? bbn.fn.formatSize(height) : 'auto';
           try {
             parent.insertAdjacentElement('beforeend', el);
             r = {
@@ -1018,16 +1040,13 @@
      */
     mounted(){
       this.$nextTick(() => {
-        bbn.fn.log("SEARCHING FOR SCROLL");
         let scroll = this.element ? this.closest('bbn-scroll') : false;
         if (scroll) {
-          bbn.fn.log("SCROLL EXISTS!");
           scroll.$once('scroll', () => {
-            bbn.fn.log("SCROLLING");
             this.closeAll();
           });
         }
-      })
+      });
     },
     watch: {
       /**
@@ -1046,9 +1065,10 @@
           this.$nextTick(() => {
             let sc = this.getRef('scroll');
             if (sc) {
-              sc.onResize();
+              sc.initSize();
             }
             this.$nextTick(() => {
+              bbn.fn.log("CHANGE FILTERED DATA");
               this.onResize();
             });
           });
@@ -1060,13 +1080,14 @@
        * @fires onResize 
        */
       element(newVal) {
-        if (newVal) {
+        if (newVal && this.ready) {
           this.currentVisible = false;
 
           this.$nextTick(() => {
             this.currentVisible = true;
+            bbn.fn.log("CHANGE ELEMENT");
             this.onResize();
-          })
+          });
         }
       },
       /**
@@ -1079,9 +1100,11 @@
       currentVisible(newVal) {
         this.$emit(newVal ? 'open' : 'close');
         if (newVal) {
+          bbn.fn.log("CHANGE VISIBLE");
           this.onResize();
-        } else {
-          this.opacity = 0;
+        }
+        else {
+          this.isResized = false;
         }
       },
     }

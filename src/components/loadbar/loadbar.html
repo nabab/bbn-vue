@@ -1,4 +1,4 @@
-<div :class="[{'bbn-100': true, 'bbn-unselectable': true}, componentClass]" @click="info = true">
+<div :class="[{'bbn-reset': true, 'bbn-100': true, 'bbn-unselectable': true}, componentClass]" @click="info = !info">
   <span class="content">
     <!--span class="buttons" v-if="data.length">
       <i :title="_('History informations')"
@@ -61,12 +61,25 @@
       <span class="text" v-text="currentItem.url"></span>
     </a>
   </span>
-  <transition name="fade">
-    <!--div class="bbn-loadbar-floater bbn-widget" v-if="info && items.length" @mouseenter="info = true" @mouseleave="info = false"-->
-    <div class="bbn-loadbar-floater bbn-widget" v-if="info && items.length" @mouseenter="info = true" @mouseleave="info = false">
-      <header class="bbn-header bbn-w-100 bbn-c bbn-m" v-text="_('Requests\' history')"></header>
-      <div class="bbn-w-100 bbn-padded">
-        <ul class="bbn-reset">
+  <bbn-floater v-if="info && items.length"
+               :element="$el"
+               ref="floater"
+               :auto-hide="true"
+               :title="_('Requests\' history')"
+               :source="items"
+               :closable="true"
+               :scrollable="true"
+               @select.prevent="cancel"
+               @close="info = false"
+               @ready="focusInput"
+               max-height="60vw">
+      <div class="bbn-content bbn-w-100 bbn-padded">
+        <bbn-input class="bbn-w-100"
+                   button-right="nf nf-mdi-send"
+                   v-model="link"
+                   @keydown.enter="go"
+                   @clickRightButton="go"></bbn-input>
+        <ul class="bbn-reset bbn-w-100">
           <li v-for="it of items" @click="cancel(it)">
             <div>
               <span class="bbn-loadbar-state">
@@ -89,6 +102,6 @@
           </li>
         </ul>
       </div>
-    </div>
-  </transition>
+
+  </bbn-floater>
 </div>

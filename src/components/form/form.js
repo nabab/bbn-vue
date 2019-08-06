@@ -573,7 +573,6 @@
             let popup = this.getPopup();
             if ( popup ){
               popup.confirm(cf, () => {
-                popup.close();
                 this._post();
               });
             }

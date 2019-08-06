@@ -331,7 +331,7 @@
           this.open(bbn.fn.extend(o, {
             maximizable: false,
             closable: false,
-            scrollable: false,
+            scrollable: true,
             resizable: false
           }));
 
@@ -418,7 +418,7 @@
             resizable: false,
             maximizable: false,
             closable: false,
-            scrollable: false
+            scrollable: true
           }));
         }
       },
