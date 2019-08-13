@@ -51,7 +51,7 @@
                             sourceIndex: tabIndex,
                             tag: 'div'
                           }"
-                          :class="['bbn-tabnav-tab', 'bbn-iblock', {'bbn-tabnav-unsaved': tab.isUnsaved}]"
+                          :class="['bbn-tabnav-tab', 'bbn-iblock', {'bbn-tabnav-unsaved': tab.unsaved}]"
                           :ref="'title-' + tabIndex"
                           :style="{
                             color: tab.fcolor ? tab.fcolor : null

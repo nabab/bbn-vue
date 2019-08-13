@@ -17,7 +17,7 @@
                       class="bbn-hsmargin"
                       :key="i"
                       v-bind="button"
-                      @click.prevent.stop="_execCommand(button, i)"zz
+                      @click.prevent.stop="_execCommand(button, i)"
           ></bbn-button>
         </div>
       </div>
@@ -330,20 +330,16 @@
           bottom: '0px'
         }">
           <bbn-scrollbar v-if="!isLoading && scrollable && ready"
-              :hidden="false"
-              orientation="horizontal"
-              ref="xScroller"
-              :scrollAlso="_getScrollers"
-              :container="getRef('container')"
-              >
+                         orientation="horizontal"
+                         ref="xScroller"
+                         :scrollAlso="_getScrollers"
+                         :container="getRef('container')">
           </bbn-scrollbar>
         </div>
         <bbn-scrollbar v-if="!isLoading && scrollable && ready"
-                      :hidden="false"
                       orientation="vertical"
                       ref="yScroller"
-                      :container="getRef('container')"
-                      >
+                      :container="getRef('container')">
         </bbn-scrollbar>
 
       </div>

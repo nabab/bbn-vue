@@ -109,7 +109,7 @@
         return this.containerSize ? this.containerSize / 100 * this.size : 0;
       },
       isVisible(){
-        return !this.hidden &&
+        return (this.hidden !== true) &&
           this.realContainer &&
           this.containerSize &&
           (this.contentSize > (this.containerSize + bbn.fn.getScrollBarSize() + 2))
@@ -325,23 +325,21 @@
         if ( position === this.position ){
           return;
         }
-        this.keepCool(() => {
-          let prop = this.isVertical ? 'scrollTop' : 'scrollLeft';
-          if (
-            e && e.target &&
-            this.realContainer &&
-            !this.dragging &&
-            (e.target[prop] !== this.currentScroll)
-          ){
-            if ( e.target[prop] ){
-              this._changePosition(Math.round(e.target[prop] / this.contentSize * 1000000)/10000, false, false, e.target);
-            }
-            else{
-              this._changePosition(0);
-            }
+        let prop = this.isVertical ? 'scrollTop' : 'scrollLeft';
+        if (
+          e && e.target &&
+          this.realContainer &&
+          !this.dragging &&
+          (e.target[prop] !== this.currentScroll)
+        ){
+          if ( e.target[prop] ){
+            this._changePosition(Math.round(e.target[prop] / this.contentSize * 1000000)/10000, false, false, e.target);
           }
-          this.overContent();
-        }, 'adjust')
+          else{
+            this._changePosition(0);
+          }
+        }
+        this.overContent();
       },
 
       // Sets all event listeners
@@ -351,7 +349,7 @@
         }
         if ( this.realContainer && !this.isInit ){
           this.onResize();
-          if ( this.scroller ){
+          if ( !this.container && this.scroller ){
             this.scroller.$on("resize", this.onResize);
             this.scrollTo(this.initial);
             this.scroller.$on("scroll", this.adjust);
@@ -498,6 +496,11 @@
         if ( !newVal ){
           setTimeout(this.normalize, 200);
         }
+      },
+      show(v){
+        if (v) {
+          this.onResize();
+        }
       }
     },
     created(){
@@ -513,7 +516,7 @@
     },
     beforeDestroy() {
       if ( this.realContainer && this.isInit ){
-        if ( this.scroller ){
+        if ( !this.container && this.scroller ){
           this.scroller.$off("resize", this.onResize);
           this.scroller.$off("scroll", this.adjust);
           this.scroller.$off("mousemove", this.overContent);

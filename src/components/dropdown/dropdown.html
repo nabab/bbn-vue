@@ -1,9 +1,12 @@
-<div :class="[componentClass, 'bbn-iblock']"
+<div :class="[componentClass, 'bbn-iblock', 'bbn-background-internal']"
      @mouseleave="leave"
      @focusin="isActive = true"
      @focusout="isActive = false"
      :title="currentText || placeholder || null"
 >
+  <div v-html="currentText"
+       class="bbn-dropdown-content bbn-xspadded bbn-100 bbn-top-left">
+  </div>
   <bbn-input :disabled="disabled"
               @keydown.prevent.stop="keydown"
               @click.stop="click"
@@ -18,7 +21,8 @@
               v-model="currentText"
               :button-right="currentIcon"
               @clickRightButton="click"
-              autocomplete="off"></bbn-input>
+              autocomplete="off">
+  </bbn-input>
   <input type="hidden"
          v-model="value"
          ref="element"
@@ -35,6 +39,9 @@
                :latency="25"
                :selected="[value]"
                @close="isOpened = false"
-               :source="filteredData">
+               :source="filteredData"
+               :source-text="sourceText"
+               :source-value="sourceValue"
+               >
   </bbn-floater>
 </div>

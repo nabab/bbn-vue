@@ -231,16 +231,7 @@
       this.schema.map((a) => {
         currentSchema.push(bbn.fn.extend({}, a, {id: a.id ? a.id : bbn.fn.randomString(20, 30)}))
       });
-      let isWindowed = this.windowed;
-      if ( isWindowed === 'auto' ){
-        isWindowed = this.closest('bbn-floater');
-      }
       return {
-        /**
-         * True if the property windowed is true.
-         * @data {Boolean} isWindowed
-         */
-        isWindowed: !!isWindowed,
         /**
          * True if the form has been modified.
          * @data {Boolean} [false] modified
@@ -250,7 +241,6 @@
          * True if the form has been modified.
          * @data {Boolean} [false] popup
          */
-        popup: false,
         popupIndex: false,
         tab: false,
         originalData: bbn.fn.clone(this.source),
@@ -259,17 +249,84 @@
         currentSchema: currentSchema,
         isPosting: false,
         window: null,
-        isInit: false
+        isInit: false,
+        realButtons: this.getRealButtons()
       };
     },
     computed: {
+      /**
+       * Returns true if the form has a footer.
+       *
+       * @computed hasFooter
+       * @return {Boolean}
+       */
+      hasFooter(){
+        return this.$slots.footer && this.$slots.footer.length;
+      },
+      /**
+       * Returns true if the form can be submitted.
+       *
+       * @computed canSubmit
+       * @return {Boolean}
+       */
+      canSubmit(){
+        return this.isModified() || this.prefilled;
+      },
+      /**
+       * Based on the properties 'fixedFooter' and 'fullScreen', a string is returned containing the classes for the form's template.
+       *
+       * @computed currentClass
+       * @return {String}
+       */
+      currentClass(){
+        let st = this.componentClass.join(' ');
+        if (this.isInit) {
+          if ( this.window ){
+            st += ' bbn-flex-height';
+          }
+          else if ( (this.hasFooter || this.realButtons.length || this.footer) && this.scrollable ){
+            st += ' bbn-flex-height';
+          }
+          if ( this.scrollable ){
+            st += ' bbn-overlay';
+          }
+        }
+        return st;
+      },
+      currentStyle(){
+        return {};
+        if (!this.isInit) {
+          return {};
+        }
+        let floater = this.closest('bbn-floater');
+        let ct = this.getRef('container');
+        let ctn = ct ? ct.getRef('scrollContent') : false;
+        if ( floater && ct ){
+          let width = this.scrollable && ctn ? ctn.clientWidth : ct.clientWidth;
+          let height = this.scrollable && ctn ? ctn.clientHeight : ct.clientHeight;
+          let ctWidth = floater.getContainerWidth();
+          let ctHeight = floater.getContainerHeight() - (floater.getRef('header').clientHeight || 0);
+          if ( width > ctWidth ){
+            width = ctWidth;
+          }
+          if ( height > ctHeight ){
+            height = ctHeight;
+          }
+          return {
+            width: width + 'px',
+            height: height + 'px'
+          };
+        }
+      }
+    },
+    methods: {
       /**
        * Returns an array containing the form's buttons.
        *
        * @computed realButtons
        * @return {Array}
        */
-      realButtons(){
+      getRealButtons(){
         let r = [];
         if ( this.buttons ){
           bbn.fn.each(this.buttons.slice(), (a) => {
@@ -318,72 +375,6 @@
         return r;
       },
       /**
-       * Returns true if the form has a footer.
-       *
-       * @computed hasFooter
-       * @return {Boolean}
-       */
-      hasFooter(){
-        return this.$slots.footer && this.$slots.footer.length;
-      },
-      /**
-       * Returns true if the form can be submitted.
-       *
-       * @computed canSubmit
-       * @return {Boolean}
-       */
-      canSubmit(){
-        return (this.action && this.isModified() || this.prefilled);
-      },
-      /**
-       * Based on the properties 'fixedFooter' and 'fullScreen', a string is returned containing the classes for the form's template.
-       *
-       * @computed currentClass
-       * @return {String}
-       */
-      currentClass(){
-        let st = this.componentClass.join(' ');
-        if (this.isInit) {
-          if ( this.isWindowed ){
-            st += ' bbn-flex-height';
-          }
-          else if ( (this.hasFooter || this.realButtons.length || this.footer) && this.scrollable ){
-            st += ' bbn-flex-height';
-          }
-          if ( this.scrollable ){
-            st += ' bbn-overlay';
-          }
-        }
-        return st;
-      },
-      currentStyle(){
-        return {};
-        if (!this.isInit) {
-          return {};
-        }
-        let floater = this.closest('bbn-floater');
-        let ct = this.getRef('container');
-        let ctn = ct ? ct.getRef('scrollContent') : false;
-        if ( floater && ct ){
-          let width = this.scrollable && ctn ? ctn.clientWidth : ct.clientWidth;
-          let height = this.scrollable && ctn ? ctn.clientHeight : ct.clientHeight;
-          let ctWidth = floater.getContainerWidth();
-          let ctHeight = floater.getContainerHeight() - (floater.getRef('header').clientHeight || 0);
-          if ( width > ctWidth ){
-            width = ctWidth;
-          }
-          if ( height > ctHeight ){
-            height = ctHeight;
-          }
-          return {
-            width: width + 'px',
-            height: height + 'px'
-          };
-        }
-      }
-    },
-    methods: {
-      /**
        * Defines the form behavior when submitted.
        *
        * @method _post
@@ -412,9 +403,8 @@
             }
             this.isLoading = false;
             if ( !e.defaultPrevented ){
-              let p = this.getPopup();
-              if ( p ){
-                p.close();
+              if ( this.window ){
+                this.window.close();
               }
             }
           }, !this.blank && !this.self && !this.target ? (xhr, textStatus, errorThrown) => {
@@ -431,13 +421,14 @@
           }
           this.modified = false;
           if ( this.tab && this.tab.tabNav ){
-            this.tab.tabNav.tabs[this.tab.tabNav.selected].isUnsaved = this.modified;
+
+            /** @todo Fix this */
+            this.$set(this.tab.router.views[this.tab.tabNav.selected], 'unsaved', this.modified);
           }
           this.isLoading = false;
           if ( !e.defaultPrevented ){
-            let p = this.getPopup();
-            if ( p ){
-              p.close();
+            if ( this.window ){
+              this.window.close();
             }
           }
         }
@@ -450,6 +441,20 @@
         if ( button.command ){
           button.command(this.source, this, ev)
         }
+      },
+      updateButtons(){
+        if (this.realButtons.length) {
+          this.realButtons.splice(0, this.realButtons.length);
+        }
+        this.$nextTick(() => {
+          let b = this.getRealButtons();
+          bbn.fn.each(b, (a) => {
+            this.realButtons.push(a);
+          });
+          if ( this.window ){
+            this.window.currentButtons = this.realButtons;
+          }
+        })
       },
       /**
        * Compares the actual data with the original data of the form to identify the differences.
@@ -501,7 +506,9 @@
             this.getPopup().confirm(this.confirmLeave, () => {
               if ( this.reset() ){
                 this.$nextTick(() => {
-                  this.window.close(true);
+                  if (this.window) {
+                    this.window.close(true);
+                  }
                 });
               }
             })
@@ -569,13 +576,10 @@
           else{
             cf = this.confirmMessage;
           }
-          if ( cf ){
-            let popup = this.getPopup();
-            if ( popup ){
-              popup.confirm(cf, () => {
-                this._post();
-              });
-            }
+          if (cf && this.window) {
+            this.window.confirm(cf, () => {
+              this._post();
+            });
           }
         }
         if ( !cf ){
@@ -620,16 +624,17 @@
         }
         //this.originalData = bbn.fn.extend(true, {}, this.getData());
         this.$nextTick(() => {
+          this.updateButtons();
+          let focusable = null;
           if ( !this.window ){
-            this.window = bbn.vue.closest(this, "bbn-floater");
+            this.window = this.closest("bbn-floater");
             if ( this.window ){
               this.window.addClose(this.closePopup);
             }
           }
           if ( !this.tab ){
-            this.tab = bbn.vue.closest(this, ".bbns-tab");
+            this.tab = this.closest("bbn-container");
           }
-          let focusable = null;
           bbn.fn.each(this.$el.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"]'), (a) => {
             if (a.offsetHeight && a.offsetWidth) {
               focusable = a;
@@ -655,18 +660,6 @@
        */
       reportValidity() {
         return this.$el.reportValidity();
-      }
-    },
-    /**
-     * @event beforeMount
-     */
-    beforeMount(){
-      if ( this.isWindowed ){
-        let popup = this.closest('bbn-floater');
-        if ( popup ){
-          this.popup = popup;
-          this.popup.currentButtons = this.realButtons;
-        }
       }
     },
     /**
@@ -705,8 +698,19 @@
        * @watch canSubmit
        */
       canSubmit(){
-        if ( this.popup ){
-          this.popup.currentButtons = this.realButtons;
+        this.updateButtons();
+      },
+      modified(v){
+        let ct = this.window || this.tab;
+        if (this.window) {
+          if ((v && !this.window.dirty) || (!v && this.window.dirty)) {
+            this.window.dirty = !this.window.dirty;
+          }
+        }
+        if (this.tab) {
+          if ((v && !this.tab.dirty) || (!v && this.tab.dirty)) {
+            this.tab.dirty = !this.tab.dirty;
+          }
         }
       }
     }

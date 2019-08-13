@@ -225,11 +225,11 @@
       },
       /**
        * The latency of the floater.
-       * @prop {Number} [125] latency
+       * @prop {Number} [50] latency
        */
       latency: {
         type: Number,
-        default: 125
+        default: 50
       },
       onOpen: {
         type: Function
@@ -844,6 +844,7 @@
                 resolve();
                 this.isResizing = false;
                 this.$nextTick(() => {
+                  this.setResizeMeasures();
                   if (scroll) {
                     //bbn.fn.log("SCROLLER EXSISTS");
                     scroll.setResizeMeasures();
@@ -967,9 +968,17 @@
        * @fires closeAll
        * @emits select
        */
-      select(item, idx, dataIndex) {
+      select(item, idx, dataIndex, ev) {
         //bbn.fn.log("SELECT", arguments, this.filteredData[idx]);
         if (item && !item.disabled && !item[this.children]) {
+          let ev = new Event('select', {cancelable: true});
+          this.$emit("select", item, idx, dataIndex, ev);
+          if (ev.defaultPrevented) {
+            return;
+          }
+          if (this.mode !== 'options') {
+            this.closeAll();
+          }
           if (this.mode === 'options') {
             item.selected = !item.selected;
           }
@@ -989,14 +998,6 @@
               item.command(idx, item);
             }
           }
-          let ev = new Event('select', {cancelable: true});
-          this.$emit("select", item, idx, dataIndex, ev);
-          if (ev.defaultPrevented){
-            return;
-          }
-          if (this.mode !== 'options') {
-            this.closeAll();
-          }
         }
       },
       getDimensions(width, height) {
@@ -1010,6 +1011,7 @@
           el.style.position = 'absolute';
           el.style.width = width ? bbn.fn.formatSize(width) : 'auto';
           el.style.height = height ? bbn.fn.formatSize(height) : 'auto';
+          bbn.fn.log("getDimensions", width, height)
           try {
             parent.insertAdjacentElement('beforeend', el);
             r = {
@@ -1040,11 +1042,15 @@
      */
     mounted(){
       this.$nextTick(() => {
-        let scroll = this.element ? this.closest('bbn-scroll') : false;
-        if (scroll) {
-          scroll.$once('scroll', () => {
-            this.closeAll();
-          });
+        let ancesters = this.ancesters('bbn-floater');
+        if (this.element) {
+          let ct = ancesters.length ? ancesters[ancesters.length-1] : this;
+          let scroll = ct.closest('bbn-scroll');
+          if (scroll) {
+            scroll.$once('scroll', () => {
+              this.closeAll();
+            });
+          }
         }
       });
     },

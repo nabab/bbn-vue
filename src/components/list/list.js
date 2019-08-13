@@ -458,6 +458,7 @@
        */
       select(idx){
         let item = this.filteredData[idx] || null;
+        let ev = new Event('select', {cancelable: true});
         if ( item && item.data && !item.data.disabled ){
           this.currentIndex = idx;
           if ( item.data[this.children] && item.data[this.children].length ){
@@ -487,7 +488,7 @@
             else if ( item.data.url ) {
               bbn.fn.link(item.data.url);
             }
-            this.$emit("select", item.data, idx, item.index);
+            this.$emit("select", item.data, idx, item.index, ev);
           }
         }
       }
@@ -519,18 +520,8 @@
        * @param {Boolean} newVal 
        */
       overIdx(newVal, oldVal) {
-        if (
-          this.hasScroll &&
-          (newVal >= 0)
-        ) {
-          if ( oldVal === null ){
-            setTimeout(() => {
-              this.$parent.scrollTo(this.getRef('li' + newVal), true);
-            }, 100);
-          }
-          else if (!this.isOver) {
-            this.$parent.scrollTo(this.getRef('li' + newVal));
-          }
+        if (this.hasScroll && newVal && !this.isOver) {
+          this.$parent.scrollTo(this.getRef('li' + newVal));
         }
       },
       selected(){

@@ -589,6 +589,9 @@
         this.$nextTick(() => {
           this.selfEmit(true)
         })
+      },
+      dirty(){
+        this.router.retrieveDirtyContainers()
       }
     },
 

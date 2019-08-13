@@ -31,8 +31,8 @@
             ></component>
             <bbn-field v-else
                        mode="write"
-                       v-model="source[field.field]"
                        v-bind="field"
+                       v-model="source[field.field]"
             ></bbn-field>
           </template>
 
@@ -45,7 +45,7 @@
        class="footer bbn-header">
     <slot name="footer"></slot>
   </div>
-  <div v-else-if="!isWindowed && realButtons.length"
+  <div v-else-if="!window && realButtons.length"
        class="footer bbn-popup-footer bbn-button-group bbn-flex-width bbn-lg">
     <bbn-button v-for="(button, i) in realButtons"
                 :key="i"

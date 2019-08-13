@@ -85,6 +85,32 @@
             return bbn.vue[mixin + 'Component'][fn].apply(this);
           }
         },
+        exportComponent(full, level){
+          let lv = level || 0;
+          let st = bbn.fn.repeat('  ', lv) + '<' + this.$options._componentTag;
+          bbn.fn.iterate(this.$options.propsData, (a, n) => {
+            if (n === 'value') {
+              st += ' v-model=""';
+            }
+            else if ( !bbn.fn.isFunction(a) && !bbn.fn.isObject(a) && !bbn.fn.isArray(a) ){
+              st += ' ';
+              if (typeof(a) !== 'string') {
+                st += ':';
+              }
+              st += bbn.fn.camelToCss(n) + '=' + '"' + a + '"';
+            }
+          });
+          st += '>' + "\n";
+          if (full) {
+            bbn.fn.each(this.$children, (a) => {
+              if ( a.exportComponent !== undefined ){
+                st += a.exportComponent(true, lv+1);
+              }
+            });
+          }
+          st += bbn.fn.repeat('  ', lv) + '</' + this.$options._componentTag + '>' + "\n";
+          return st;
+        }
       },
       /**
        * If not defined, defines component's template
@@ -249,10 +275,14 @@
          * @param {} item 
          * @emit change
          */
-        select(item){
+        select(item, idx, dataIndex, e){
+              bbn.fn.log("ccc", e);
           if ( item && (item[this.uid || this.sourceValue] !== undefined) ){
-            this.emitInput(item[this.uid || this.sourceValue]);
-            this.$emit('change', item[this.uid || this.sourceValue]);
+            if (!e || !e.defaultPrevented) {
+              bbn.fn.log("rrrrrrrrrrr");
+              this.emitInput(item[this.uid || this.sourceValue]);
+              this.$emit('change', item[this.uid || this.sourceValue]);
+            }
           }
           this.isOpened = false;
         },
@@ -673,7 +703,7 @@
           }
           else if ( cfg.source ){
             let idx = bbn.fn.search(bbn.fn.isFunction(cfg.source) ? cfg.source() : cfg.source, {value: v});
-            return idx > -1 ? cfg.source[idx].text : '-';
+            return idx > -1 ? cfg.source[idx][this.sourceText] : '-';
           }
           else {
             return v || '';
@@ -3000,8 +3030,8 @@
             this.coolTimeout = new Promise((resolve) => {
               setTimeout(() => {
                 this.coolTimeout = null;
-                this.keepCool(fn, idx, timeout);
                 resolve();
+                this.keepCool(fn, idx, timeout);
               }, timeout || this.coolInterval);
             });
           }

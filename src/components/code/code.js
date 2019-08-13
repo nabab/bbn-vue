@@ -487,7 +487,7 @@
               c(e);
             };
           };
-          getURL("//ternjs.net/defs/ecmascript.json", (err, code) => {
+          getURL("https://raw.githubusercontent.com/ternjs/tern/master/defs/ecmascript.json", (err, code) => {
             if (err) {
               throw new Error("Request for ecmascript.json: " + err);
             }

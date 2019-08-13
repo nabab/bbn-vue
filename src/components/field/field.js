@@ -59,7 +59,7 @@
          * The current value.
          * @data currentValue 
          */
-        currentValue: this.value === undefined ? (this.data && this.field ? this.data[this.field] || '' : '') : this.value
+        currentValue: this.value
       }
     },
     computed: {
@@ -87,7 +87,11 @@
        */
 
       actualValue(){
-        return this.value === undefined ? (this.data && this.field ? this.data[this.field] || '' : undefined) : this.value;
+        let v = this.value;
+        if (this.type === 'json' && (bbn.fn.isObject(v) || bbn.fn.isArray(v))) {
+          v = JSON.stringify(v);
+        }
+        return v === undefined ? (this.data && this.field ? this.data[this.field] || '' : undefined) : v;
       }
     },
     methods: {
@@ -141,6 +145,9 @@
                   break;
                 case "json":
                   this.renderedComponent = 'bbn-json-editor';
+                  if (!bbn.fn.isString(this.value)) {
+                    this.renderedOptions.value = this.value ? JSON.stringify(this.value) : '';
+                  }
                   break;
                 case "bool":
                 case "boolean":
@@ -200,7 +207,7 @@
         if ( (this.mode === 'write') && (val !== this.actualValue) ){
           this.$emit('input', val);
         }
-        this.init();
+        //this.init();
       },
       /**
        * @watch actualValue

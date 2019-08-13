@@ -2597,6 +2597,7 @@
           });
           this.initStarted = true;
           this.$nextTick(() => {
+            this.setResizeMeasures();
             bbn.fn.each(this.cols, (a, i) => {
               if (!a.hidden && (!this.groupable || (this.group !== i))) {
                 a.index = i;
@@ -3052,10 +3053,22 @@
       this.marginStyleSheet = document.createElement('style');
       document.body.appendChild(this.marginStyleSheet);
       this.isTable = !!this.closest('bbn-table');
-      this.init();
-      this.updateData().then(() => {
-        this.ready = true;
-      });
+      let floater = this.closest('bbn-floater');
+      if (floater) {
+        floater.$on('ready', () => {
+          this.init();
+          this.updateData().then(() => {
+            this.ready = true;
+            floater.onResize();
+          });
+        })
+      }
+      else{
+        this.init();
+        this.updateData().then(() => {
+          this.ready = true;
+        });
+      }
     },
     /**
      * @event updated

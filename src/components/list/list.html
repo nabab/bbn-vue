@@ -22,21 +22,23 @@
     <component v-else
                :is="li.data.url && !li.data[children] ? 'a' : 'span'"
                @click.prevent="() => {}"
-               class="bbn-w-100"
+               class="bbn-w-100 bbn-vxspadded bbn-hspadded"
                :href="li.data.url || null">
       <span class="space" v-if="selection || (mode === 'options')">
-        <i v-if="li.selected"
+        <i v-if="li.data.selected"
           class="nf nf-fa-check"></i>
       </span>
       <span class="space" v-if="hasIcons">
         <i v-if="li.data.icon" :class="li.data.icon"></i>
       </span>
-      <span class="text" v-html="li.data.text"></span>
-      <i v-if="li[children] && li[children].length"
-        class="bbn-abs nf nf-fa-chevron_right"
-        style="right: 1em"
-      ></i>
+      <span class="text" v-html="li.data[sourceText]"></span>
     </component>
+    <div v-if="!realComponent && li.data[children] && li.data[children].length"
+         class="bbn-block bbn-abs bbn-vxspadded bbn-hspadded"
+         style="right: 0px"
+    >
+      <i class="nf nf-fa-chevron_right"></i>
+    </div>
     <bbn-floater v-if="isOpened && children &&
                         (origin === 'floater') &&
                         li.data[children] &&
@@ -50,7 +52,8 @@
                 orientation="horizontal">
     </bbn-floater>
     <bbn-list v-else-if="(origin !== 'floater') &&
-                          children && li.data[children] &&
+                          children &&
+                          li.data[children] &&
                           getRef('li' + idx)"
               :level="level + 1"
               :mode="li.data.mode || 'free'"

@@ -101,7 +101,8 @@
         // False until the first routing
         isInit: false,
         // The index of the currently selected view
-        selected: null
+        selected: null,
+        dirtyContainers: []
       };
     },
 
@@ -119,19 +120,6 @@
           vm = vm.parents[0];
         }
         return base;
-      },
-      // Array of unsaved views
-      dirtyContainers(){
-        let r = []
-        bbn.fn.iterate(this.urls, (v) => {
-          if ( v.dirty ){
-            r.push({
-              idx: v.idx,
-              url: v.url
-            });
-          }
-        });
-        return r;
       },
       // Returns true if there are any unsaved views
       isDirty(){
@@ -172,6 +160,21 @@
         if ( cp.url && this.urls[cp.url] ){
           delete this.urls[cp.url];
         }
+      },
+
+      retrieveDirtyContainers(){
+      // Array of unsaved views
+        let r = []
+        bbn.fn.iterate(this.urls, (v) => {
+          if ( v.dirty ){
+            r.push({
+              idx: v.idx,
+              url: v.url
+            });
+          }
+        });
+        this.dirtyContainers = r;
+        this.dirty = this.dirtyContainers.length > 0;
       },
 
       /**
@@ -242,6 +245,7 @@
           selected: null,
           css: '',
           advert: null,
+          unsaved: false,
           help: null,
           imessages: [],
           script: null,

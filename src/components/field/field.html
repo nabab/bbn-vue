@@ -3,7 +3,7 @@
            v-bind="renderedOptions"
            v-model="currentValue"
            :class="componentClass"
-           @input=""
+           @input="$emit('input', currentValue)"
 
 >
   <div v-if="renderedContent" v-html="renderedContent"></div>
