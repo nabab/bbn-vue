@@ -702,8 +702,18 @@
             }
           }
           else if ( cfg.source ){
-            let idx = bbn.fn.search(bbn.fn.isFunction(cfg.source) ? cfg.source() : cfg.source, {value: v});
-            return idx > -1 ? cfg.source[idx][this.sourceText] : '-';
+            if (cfg.source.length) {
+              if (!bbn.fn.isObject(cfg.source[0])) {
+                let idx = cfg.source.indexOf(v);
+                return idx > -1 ? cfg.source[idx] : '-';
+              }
+              else{
+                let filter = {};
+                filter[this.sourceValue || 'value'] = v;
+                let idx = bbn.fn.search(bbn.fn.isFunction(cfg.source) ? cfg.source() : cfg.source, filter);
+                return idx > -1 ? cfg.source[idx][this.sourceText || 'text'] : '-';
+              }
+            }
           }
           else {
             return v || '';
@@ -1027,6 +1037,15 @@
           default: 25
         },
         /**
+         * @data {Array} {[10, 25, 50, 100, 250, 500]} limits
+         */
+        limits: {
+          type: Array,
+          default(){
+            return [10, 25, 50, 100, 250, 500];
+          },
+        },
+        /**
          * Set to true will automatically update the data before mount.
          * @prop {Boolean} [false] autobind
          * @memberof listComponent
@@ -1266,6 +1285,10 @@
            */
           auto: true,
           /**
+           * @data {String} [false] currentTemplate
+           */
+          currentTemplate: this.template,
+          /**
            * @data {Boolean} [false] currentIndex
            */
           currentIndex: false,
@@ -1316,22 +1339,42 @@
            */
           currentSelected: this.selected.slice(),
           isFilterable: this.filterable,
-          hasSelection: !!this.selection
+          hasSelection: !!this.selection,
+          /**
+           * @data [null] originalData
+           */
+          originalData: null,
         };
       },
       computed: {
+        currentLimits(){
+          if (!this.pageable){
+            return [];
+          }
+          let pass = false;
+          return bbn.fn.filter(this.limits.sort(), (a) => {
+            if ( a > this.total ){
+              if ( !pass ){
+                pass = true;
+                return true;
+              }
+              return false;
+            }
+            return true;
+          });
+        },
         hasComponent(){
-          return this.component || this.template ? true : false;
+          return this.component || this.currentTemplate ? true : false;
         },
         realComponent(){
           let cp = this.component || null;
-          if (!cp && this.template) {
+          if (!cp && this.currentTemplate) {
             cp = {
               props: ['source'],
               data(){
                 return this.source;
               },
-              template: this.template
+              template: this.currentTemplate
             };
           }
           return cp;
@@ -1649,6 +1692,7 @@
                 if ( bbn.fn.isArray(d.data) ){
                   if (d.data.length && d.data[0]._bbn){
                     this.currentData = d.data;
+                    this.updateIndexes();
                   }
                   else{
                     d.data = this._map(d.data);
@@ -1702,7 +1746,116 @@
             });
             return this._dataPromise;
           }
-        }
+        },
+        updateIndexes(){
+          if (this.currentData.length) {
+            bbn.fn.each(this.currentData, (a, i) => {
+              if (a.index !== i) {
+                this.$set(this.currentData[i], 'index', i);
+                //a.index = i;
+              }
+            });
+          }
+        },
+        /**
+         * Deletes the row defined by param index.
+         * @method realDelete
+         * @emit delete
+         * @param {Number} index
+         */
+        realDelete(index) {
+          if (this.currentData[index]) {
+            let ev = new Event('delete');
+            if (this.url) {
+              bbn.fn.post(this.url, bbn.fn.extend({}, this.data, this.currentData[index].data, {
+                action: 'delete'
+              }), (d) => {
+                if (d.success) {
+                  let data = this.currentData[index].data;
+                  this.currentData.splice(index, 1);
+                  this.updateIndexes();
+                  this.$emit('delete', data, ev);
+                  if (appui) {
+                    appui.success(bbn._('Deleted successfully'))
+                  }
+                }
+                else {
+                  this.alert(bbn._("Impossible to delete the row"))
+                }
+              })
+            } else {
+              this.currentData.splice(index, 1);
+              if (this.originalData) {
+                this.originalData.splice(index, 1);
+              }
+              this.updateIndexes();
+              this.$emit('delete', this.currentData[index].data, ev);
+            }
+          }
+        },
+        /**
+         * Add the given row to currentData
+         * @method add
+         * @param {Object} data
+         * @todo
+         *
+         */
+        add(data) {
+          this.currentData.push({
+            data: data,
+            index: this.currentData.length
+          });
+        },
+        /**
+         * Fires the method realDelete to delete the row.
+         * @method delete
+         * @param {Number} index
+         * @param {Strimg} confirm
+         * @fires realDelete
+         * @emit beforeDelete
+         */
+        delete(index, confirm) {
+          if (this.filteredData[index]) {
+            let ev = new Event('delete', {cancelable: true});
+            this.$emit('beforeDelete', this.filteredData[index].data, ev);
+            if (!ev.defaultPrevented) {
+              if (confirm === undefined) {
+                confirm = this.confirmMessage;
+              }
+              if (confirm) {
+                this.confirm(confirm, () => {
+                  this.realDelete(this.filteredData[index].index);
+                });
+              }
+              else {
+                this.realDelete(this.filteredData[index].index);
+              }
+            }
+          }
+        },
+        /**
+         * Fires the metod updateData to refresh the current data set.
+         * @method reload
+         * @fires updateData
+         */
+        reload() {
+          return this.updateData();
+        },
+        /**
+         * Removes the row defined by the where param from currentData
+         * @method remove
+         * @param {Object} where
+         */
+        remove(where) {
+          let idx;
+          while ((idx = bbn.fn.search(this.filteredData, a => {
+            bbn.fn.log("COMPOARE", a.data);
+            return bbn.fn.compareConditions(a.data, where);
+          })) > -1) {
+            this.realDelete(this.filteredData[idx].index, 1);
+          }
+          this.$forceUpdate();
+        },
       },
       beforeMount(){
         if ( this.isAutobind ){
@@ -1749,6 +1902,16 @@
                 this.setConfig(true);
               }
               this.$forceUpdate();
+            }
+          }
+        },
+        source: {
+          deep: true,
+          handler(){
+            if (this.ready) {
+              /*
+              this.updateData();
+              */
             }
           }
         }
@@ -2802,6 +2965,14 @@
             return {}
           }
         },
+        disabled: {
+          type: [Boolean, Function],
+          default: false
+        },
+        hidden: {
+          type: [Boolean, Function],
+          default: false
+        }
       }
     },
     /**

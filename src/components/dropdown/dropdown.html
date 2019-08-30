@@ -4,25 +4,27 @@
      @focusout="isActive = false"
      :title="currentText || placeholder || null"
 >
-  <div v-html="currentText"
-       class="bbn-dropdown-content bbn-xspadded bbn-100 bbn-top-left">
+  <div class="bbn-rel">
+    <div v-html="currentText"
+         class="bbn-dropdown-content bbn-xspadded bbn-100 bbn-top-left">
+    </div>
+    <bbn-input :disabled="disabled"
+                @keydown.prevent.stop="keydown"
+                @click.stop="click"
+                ref="input"
+                autocorrect="off"
+                autocapitalize="off"
+                spellcheck="false"
+                :required="required"
+                :nullable="isNullable"
+                :placeholder="placeholder"
+                :tabindex="disabled ? -1 : 0"
+                v-model="currentText"
+                :button-right="currentIcon"
+                @clickRightButton="click"
+                autocomplete="off">
+    </bbn-input>
   </div>
-  <bbn-input :disabled="disabled"
-              @keydown.prevent.stop="keydown"
-              @click.stop="click"
-              ref="input"
-              autocorrect="off"
-              autocapitalize="off"
-              spellcheck="false"
-              :required="required"
-              :nullable="isNullable"
-              :placeholder="placeholder"
-              :tabindex="disabled ? -1 : 0"
-              v-model="currentText"
-              :button-right="currentIcon"
-              @clickRightButton="click"
-              autocomplete="off">
-  </bbn-input>
   <input type="hidden"
          v-model="value"
          ref="element"

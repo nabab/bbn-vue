@@ -134,7 +134,7 @@
           let cp = this.getRef('it' + k);
           if (cp) {
             setTimeout(() => {
-              cp.onResize();
+              cp.onResize(true);
             }, 100);
           }
         });

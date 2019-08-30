@@ -146,10 +146,10 @@
        * @method cancel
        * @param {Object} item 
        */
-      cancel(){
-        if ( this.loading ){
-          bbn.fn.confirm(bbn._("Are you sure you want to abort this request?"), (d) => {
-            bbn.fn.abort(item.key)
+      cancel(item){
+        if (item.loading) {
+          this.confirm(bbn._("Are you sure you want to abort this request?"), (d) => {
+            bbn.fn.abort(item.key);
           })
         }
       },

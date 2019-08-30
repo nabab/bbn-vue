@@ -59,6 +59,10 @@
           return [];
         }
       },
+      single: {
+        type: Boolean,
+        default: false
+      }
     },
     data(){
       return {
@@ -366,11 +370,13 @@
           if ( this.urls[st] ){
             this.urls[st].currentURL = url;
             this.urls[st].init();
-            let child = this.urls[st].find('bbn-router');
-            if ( child ){
-              //bbn.fn.log("CHILD ROUTER ROUTING: " + url.substr(st.length + 1));
-              child.route(url.substr(st.length + 1), force)
-            }
+            this.$nextTick(() => {
+              let child = this.urls[st].find('bbn-router');
+              if ( child ){
+                //bbn.fn.log("CHILD ROUTER ROUTING: " + url.substr(st.length + 1));
+                child.route(url.substr(st.length + 1), force)
+              }
+            })
           }
         }
       },
@@ -754,8 +760,17 @@
             });
           }
           else{
-            obj.selected = false;
-            obj.idx = idx === undefined ? this.views.length : idx;
+            if (this.single) {
+              if (this.views.length){
+                this.views.splice(0, this.views.length);
+              }
+              obj.selected = true;
+              obj.idx = this.views.length;
+            }
+            else{
+              obj.selected = false;
+              obj.idx = idx === undefined ? this.views.length : idx;
+            }
             bbn.fn.iterate(this.getDefaultView(), (a, n) => {
               if ( obj[n] === undefined ){
                 // Each new property must be set with $set
@@ -799,16 +814,36 @@
           this.isLoading = true;
           let finalURL = this.fullBaseURL + url;
           let idx = this.search(url);
+          let toAdd = false;
           //bbn.fn.log("START LOADING FN FOR IDX " + idx + " ON URL " + finalURL);
           if ( idx !== false ){
             //bbn.fn.log("INDEX RETRIEVED BEFORE LOAD: " + idx.toString(), this.views[idx].slot, this.views[idx].loading);
             if ( this.views[idx].loading || (!force && !this.views[idx].load) ){
               return;
             }
-            this.views[idx].loading = true;
+            if (force){
+              toAdd = true;
+              this.views.splice(idx, 1);
+            }
           }
           else{
-            this.add({url: url, title: bbn._('Loading'), load: true, loading: true, visible: true, real: false, current: url, error: false, loaded: false});
+            toAdd = true;
+            idx = this.views.length;
+          }
+          if (toAdd){
+            this.$nextTick(() => {
+              this.add({
+                url: url,
+                title: bbn._('Loading'),
+                load: true,
+                loading: true,
+                visible: true,
+                real: false,
+                current: url,
+                error: false,
+                loaded: false
+              }, idx);
+            });
           }
           this.$emit('update', this.views);
           return bbn.fn.post(finalURL, {_bbn_baseURL: this.fullBaseURL}, (d) => {
@@ -956,7 +991,11 @@
       this.router = this.parents.length ? this.parents[this.parents.length-1] : this;
       if ( this.parent ){
         this.parentContainer = this.closest('bbn-container');
-        this.baseURL = this.setBaseURL(this.parentContainer.url);
+        let uri = this.parentContainer.url;
+        if (this.root && (uri !== this.root) && (uri.indexOf(this.root) === 0) ){
+          uri = this.root;
+        }
+        this.baseURL = this.setBaseURL(uri);
       }
       let url = this.getDefaultURL();
       // Adding bbns-tab from the slot
@@ -1016,3 +1055,4 @@
   });
 
 })(bbn, Vue);
+

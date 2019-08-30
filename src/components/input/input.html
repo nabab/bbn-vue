@@ -16,9 +16,12 @@
           :icon="buttonLeft" 
           @click="$emit('clickLeftButton')"
           tabindex="-1"
-          :class="['bbn-button-left', {
-            'bbn-invisible' : autoHideLeft
-          }]"
+          :class="[
+            'bbn-button-left',
+            'bbn-no-vborder',
+            'bbn-m',
+            {'bbn-invisible' : autoHideLeft}
+          ]"
     ></bbn-button>
     <input :value="value"
           :type="type"
@@ -33,6 +36,7 @@
           :pattern="pattern"
           @input="emitInput($refs.element.value)"
           @click="click"
+          @paste="$emit('paste', $event)"
           @focus="focus"
           @blur="blur"
           @change="change"
@@ -55,6 +59,7 @@
                 @click="$emit('clickRightButton')"
                 :class="[
                   'bbn-button-right',
+                  'bbn-no-vborder',
                   'bbn-m',
                   {'bbn-invisible' : autoHideRight}
                 ]"

@@ -10,6 +10,7 @@
           @keydown="keydown($event)"
           @keydown.enter.stop=""
           @keyup="keyup($event)"
+          @paste="$emit('paste', $event)"
           :disabled="disabled"
           :required="required"
           :placeholder="placeholder"

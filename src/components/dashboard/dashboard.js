@@ -147,7 +147,8 @@
          */
         isSorting: false,
         currentSlots: [],
-        resizeTimeout: false
+        resizeTimeout: false,
+        numCols: 1
       };
     },
     computed: {
@@ -227,36 +228,27 @@
        * 
        */
       onResize(){
-        if (this.resizeTimeout !== false) {
-          clearTimeout(this.resizeTimeout);
-        }
-        this.resizeTimeout = setTimeout(() => {
-          let ele = this.getRef('container');
-          if (ele) {
-            let actualWidth = parseInt(window.getComputedStyle(ele).width),
-                num = 1,
-                steps = [800, 1150, 1550, 2200, 3000, 3800];
-            bbn.fn.each(steps, (step, i) => {
-              if ( this.max && (this.max <= num) ){
-                return false;
-              }
-              if ( actualWidth >= step ){
-                num++;
-              }
-              else{
-                return false;
-              }
-            });
-            bbn.fn.addStyle(ele, {
-              "-moz-column-count": num,
-              "-webkit-column-count": num,
-              "column-count": num
-            });
-            if ( this.scrollable ){
-              this.getRef('scroll').onResize();
+        let ele = this.getRef('container');
+        if (ele) {
+          let actualWidth = parseInt(window.getComputedStyle(ele).width),
+              num = 1,
+              steps = [800, 1150, 1550, 2200, 3000, 3800];
+          bbn.fn.each(steps, (step, i) => {
+            if ( this.max && (this.max <= num) ){
+              return false;
             }
+            if ( actualWidth >= step ){
+              num++;
+            }
+            else{
+              return false;
+            }
+          });
+          if ( this.numCols !== num ){
+            this.numCols = num;
           }
-        }, 100);
+          this.resizeScroll();
+        }
       },
       /**
        * Move the widget from the old index to the new index
@@ -468,8 +460,8 @@
        * @method resizeScroll
        */  
       resizeScroll(){
-        if ( this.$refs.scroll ){
-          this.$refs.scroll.onResize()
+        if ( this.scrollable && this.$refs.scroll ){
+          this.getRef('scroll').onResize();
         }
       },
       /**

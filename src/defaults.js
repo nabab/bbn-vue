@@ -4,6 +4,7 @@
     defaults: {
       appui: {
         pollable: false,
+        clipboard: false,
         header: false,
         status: false,
         tabnav: false,

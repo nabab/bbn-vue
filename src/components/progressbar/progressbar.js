@@ -32,7 +32,7 @@
       },
       /**
        * The minimum value of the bar
-       * @prop {Number} [0]
+       * @prop {Number} [0] min
        */
       min: {
         type: Number,

@@ -110,7 +110,9 @@
   };
   Vue.component('bbn-json-editor', {
     /**
-     * @mixin bbn.vue.fullComponent
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.inputComponent
+     * @mixin bbn.vue.eventsComponent
      */
     mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent],
     props: {

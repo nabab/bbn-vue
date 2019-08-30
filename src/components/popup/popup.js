@@ -78,7 +78,7 @@
       return {
         type: false,
         items: []
-      }
+      };
     },
 
     computed: {
@@ -211,7 +211,7 @@
               delete d.url;
               delete d.data;
               if ( !d.uid ){
-                d.uid = 'bbn-popup-' + bbn.fn.timestamp().toString()
+                d.uid = 'bbn-popup-' + bbn.fn.timestamp().toString();
               }
               d.index = this.items.length;
               this.items.push(d);

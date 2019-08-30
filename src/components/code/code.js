@@ -55,6 +55,12 @@
           cm.options.test(cm);
         }
       },
+      "F11": function(cm) {
+        cm.setOption("fullScreen", !cm.getOption("fullScreen"));
+      },
+      "Esc": function(cm) {
+        if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
+      }
     }
   };
 
@@ -534,6 +540,19 @@
       //bbn.fn.log(this.getOptions());
       if ( this.getRef('code') ){
         this.widget = CodeMirror(this.getRef('code'), this.getOptions());
+
+        this.widget.on("keyup", (cm, event) => {
+          if (
+            /*Enables keyboard navigation in autocomplete list*/
+            !cm.state.completionActive &&
+            !event.ctrlKey && !event.altKey &&
+            (event.keyCode > 64) &&
+            (event.keyCode < 91) 
+          ){// only when a letter key is pressed
+                  CodeMirror.commands.autocomplete(cm, null, {completeSingle: false});
+              }
+          });
+
         this.widget.on("change", (ins, bbb) => {
           this.emitInput(this.widget.doc.getValue());
         });

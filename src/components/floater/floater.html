@@ -9,10 +9,10 @@
         componentClass
       ]"
       v-if="isVisible"
-      @resize.stop="onResize"
+      @resize.stop="onResize()"
       @mouseleave="leave"
       @mouseenter="isOver = true"
-      @click.stop=""
+      @click.stop
       :style="currentStyle">
   <header v-if="title"
           ref="header"

@@ -1,4 +1,4 @@
-<div :class="[{'bbn-overlay': scrollable}, componentClass]">
+<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scrollable}, componentClass]">
   <div :class="{'bbn-overlay': scrollable, 'bbn-flex-height': scrollable, 'bbn-block': !scrollable}"
        :style="scrollable && groupCols.length ? {} : {
          width: totalWidth
@@ -31,8 +31,6 @@
 
 
     <div :class="{
-      'bbn-widget': true,
-      'bbn-no-border': true,
       'bbn-table-titles': true,
       'bbn-table-titles-group': !!titleGroups,
       'bbn-unselectable': true
@@ -51,7 +49,7 @@
               }"
               :ref="groupCol.name + 'Titles'"
         >
-          <table class="bbn-table-t" :style="{width: groupCol.width + 'px'}">
+          <table class="bbn-widget bbn-no-border bbn-table-t" :style="{width: groupCol.width + 'px'}">
             <colgroup>
               <col v-for="(col, i) in groupCol.cols"
                   v-show="!col.hidden"
@@ -274,12 +272,14 @@
                                       :notext="true"
                                       @focusin.stop=""
                                       @click.prevent.stop="saveInline"
+                                      style="margin: 0 .1em"
                           ></bbn-button>
                           <bbn-button :text="_('Cancel')"
                                       icon="nf nf-fa-times"
                                       :notext="true"
                                       @focusin.stop=""
                                       @click.prevent.stop="cancel"
+                                      style="margin: 0 .1em"
                           ></bbn-button>
                         </div>
                         <component v-else-if="(editMode === 'inline') && col.field && (col.editable !== false)"
@@ -313,6 +313,7 @@
                                     @focusin.prevent.stop="() => {}"
                                     @focusout.prevent.stop="() => {}"
                                     @click.prevent.stop="_execCommand(button, d.data, col, i, $event)"
+                                    style="margin: 0 .1em"
                         ></bbn-button>
                       </div>
                       <div v-else v-html="render(d.data, col, i)"></div>

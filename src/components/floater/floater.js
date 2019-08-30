@@ -634,9 +634,9 @@
        * @fires getContainerPosition
        * @fires _getCoordinates
        */
-      onResize() {
+      onResize(force) {
         // Should be triggered by the inner scroll once mounted
-        if (this.isResized && this.isVisible && bbn.fn.isDom(this.$el) && !this.isResizing && bbn.fn.isDom(this.$el)) {
+        if (this.isResized && this.isVisible && bbn.fn.isDom(this.$el) && !this.isResizing) {
           if ( !this.ready ){
             this.init();
             this.ready = true;
@@ -671,6 +671,7 @@
               this.containerWidth = pos.width;
               this.containerHeight = pos.height;
               if (
+                !force &&
                 (oldContainerWidth === this.containerWidth) &&
                 (oldContainerHeight === this.containerHeight) &&
                 (oldScrollWidth === scroll.naturalWidth) &&
@@ -989,6 +990,8 @@
             }
             item.selected = true;
           }
+          /*
+          @todo bbn-list does it already
           if (item.command) {
             if (typeof (item.command) === 'string') {
               bbn.fn.log("CLICK IS STRING", this);
@@ -998,6 +1001,7 @@
               item.command(idx, item);
             }
           }
+          */
         }
       },
       getDimensions(width, height) {
@@ -1025,6 +1029,10 @@
           el.remove();
         }
         return r;
+      },
+      updatePosition(){
+        this.init();
+        this.onResize();
       }
     },
     /**
@@ -1055,6 +1063,18 @@
       });
     },
     watch: {
+      left(){
+        this.updatePosition();
+      },
+      right(){
+        this.updatePosition();
+      },
+      top(){
+        this.updatePosition();
+      },
+      bottom(){
+        this.updatePosition();
+      },
       /**
        * @watch source
        */

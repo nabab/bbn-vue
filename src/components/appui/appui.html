@@ -125,15 +125,18 @@
               class="bbn-header bbn-bordered-top"
               overflow="visible">
       <div class="bbn-flex-width bbn-h-100">
+        <!-- LOADBAR -->
         <div class="bbn-flex-fill bbn-h-100">
           <bbn-loadbar v-if="loaders" ref="loading" :source="loaders"></bbn-loadbar>
         </div>
+        <!-- TASK TRACKER -->
         <div v-if="plugins['appui-task']"
             class="bbn-h-100 bbn-vmiddle"
             style="width: 8rem;"
         >
           <appui-task-tracker></appui-task-tracker>
         </div>
+        <!-- CHAT -->
         <div class="bbn-h-100 bbn-vmiddle" style="width: 8rem;">
           <bbn-chat v-if="plugins['appui-chat']"
                     ref="chat"
@@ -146,6 +149,17 @@
                     :groups="app.groups"
           >
           </bbn-chat>
+        </div>
+        <!-- CLIPBOARD BUTTON -->
+        <div v-if="clipboard"
+             @click.stop="getRef('clipboard').toggle()"
+             ref="clipboardButton"
+             :class="['bbn-appui-clipboard-button bbn-h-100 bbn-vmiddle bbn-block bbn-c bbn-hpadded bbn-p']">
+          <i class="nf nf-fa-clipboard bbn-m" tabindex="-1"></i>
+          <input class="bbn-invisible bbn-overlay bbn-p"
+                 @click.stop="getRef('clipboard').toggle()"
+                 @keydown.space.enter.prevent="getRef('clipboard').toggle()"
+                 @drop.prevent.stop="getRef('clipboard').copy($event); getRef('clipboard').show()">
         </div>
       </div>
     </bbn-pane>
@@ -162,6 +176,14 @@
                 @shortcut="addShortcut"
                 @ready="menuMounted = true">
   </bbn-treemenu>
+  <!-- CLIPBOARD SLIDER -->
+  <bbn-clipboard v-if="clipboard"
+                 :storage="true"
+                 ref="clipboard"
+                 :source="clipboardContent"
+                 style="z-index: 13">
+  </bbn-clipboard>
+
   <!-- POPUPS -->
   <bbn-popup :source="popups"
              ref="popup"

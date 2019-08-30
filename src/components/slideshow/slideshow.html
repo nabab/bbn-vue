@@ -38,7 +38,9 @@
         <h2 v-text="_('Summary')"></h2>
         <ol class="bbn-l bbn-lg">
           <li v-for="(it, i) in items">
-            <a href="javascript:;" @click="currentIndex = i+1" v-text="it.title ? it.title : _('Untitled')"></a>
+            <a href="javascript:;"
+               @click="currentIndex = i+1"
+               v-text="it.title ? it.title : _('Untitled')"></a>
           </li>
         </ol>
       </div>
@@ -139,65 +141,65 @@
       </div>
     </div>
 
-    <div>
-      <div v-if="ctrl"
-           class="bbn-100 bbn-middle bbn-c"
-           style="position: absolute; top: 0; padding-bottom: 5vw;"
-           @mouseover="ctrlPreview(true)"
-           @mouseleave="ctrlPreview(false)"
+    <div v-if="ctrl"
+          class="bbn-100 bbn-middle bbn-c"
+          style="position: absolute; top: 0; padding-bottom: 5vw;"
+          @mouseover="ctrlPreview(true)"
+          @mouseleave="ctrlPreview(false)"
+    >
+      <div v-if ="scrollInterval !== false"
+            style="min-width: 10px"
+            class="iconsCtrl bbn-w-20"
       >
-        <div v-if ="scrollInterval !== false"
-             style="min-width: 10px"
-             class="iconsCtrl bbn-w-20"
-        >
-          <i v-show="showCtrl"
-             class="nf nf-fa-pause iconImg  bbn-xxxl"
-             @click="stopAutoPlay"
-             style="opacity: 0.6"
-          ></i>
-        </div>
-        <div v-else
-             style="min-width: 10px"
-             class="bbn-w-20"
-        >
-          <i v-show="showCtrl"
-             class="nf nf-fa-play iconImg bbn-xxxl"
-             @click="startAutoPlay"
-             style="opacity: 0.6"
-          ></i>
-        </div>
+        <i v-show="showCtrl"
+            class="nf nf-fa-pause iconImg  bbn-xxxl"
+            @click="stopAutoPlay"
+            style="opacity: 0.6"
+        ></i>
       </div>
-      <!--old arrows-->
-      <div v-if="items.length && !arrows && (preview === false)" class="navigation">
-        <div class="bbn-100">
-          <a href="javascript:;"
-             v-if="summary"
-             :title="_('Summary')"
-             @click="currentIndex = 0"
-             :style="{
-                visibility: currentIndex === 0 ? 'hidden' : 'visible'
-               }"
-             class="summary">
-          </a>
-          <a href="javascript:;"
-             @click="prev"
-             :title="_('Previous')"
-             :style="{
-                visibility: currentIndex === 0 ? 'hidden' : 'visible'
-               }"
-             class="prev">
-          </a>
-          <a href="javascript:;"
-             @click="next"
-             :title="_('Next')"
-             :style="{
-                visibility: currentIndex >= (summary ? items.length : items.length - 1) ? 'hidden' : 'visible'
-               }"
-             class="next">
-          </a>
-        </div>
+      <div v-else
+            style="min-width: 10px"
+            class="bbn-w-20"
+      >
+        <i v-show="showCtrl"
+            class="nf nf-fa-play iconImg bbn-xxxl"
+            @click="startAutoPlay"
+            style="opacity: 0.6"
+        ></i>
       </div>
-
+    </div>
+    <!--old arrows-->
+    <div v-if="items.length && !arrows && (preview === false)" class="navigation">
+      <div class="bbn-100">
+        <a href="javascript:;"
+            v-if="summary"
+            :title="_('Summary')"
+            @click="currentIndex = 0"
+            :style="{
+              visibility: currentIndex === 0 ? 'hidden' : 'visible'
+              }"
+            class="summary">
+            <i class="nf nf-fa-align_justify"></i>
+        </a>
+        <a href="javascript:;"
+            @click="prev"
+            :title="_('Previous')"
+            :style="{
+              visibility: currentIndex === 0 ? 'hidden' : 'visible'
+              }"
+            class="prev">
+            <i class="nf nf-fa-arrow_circle_left"></i>
+        </a>
+        <a href="javascript:;"
+            @click="next"
+            :title="_('Next')"
+            :style="{
+              visibility: currentIndex >= (summary ? items.length : items.length - 1) ? 'hidden' : 'visible'
+              }"
+            class="next">
+            <i class="nf nf-fa-arrow_circle_right"></i>
+        </a>
+      </div>
     </div>
   </div>
   <div class="bbn-hidden" ref="slot">

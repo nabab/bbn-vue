@@ -1,6 +1,7 @@
 <div :class="[componentClass]"
      v-show="visible">
   <transition name="fade"
+              v-if="!hidden"
               v-on:enter="enter"
               v-on:after-enter="find('bbn-scroll') ? find('bbn-scroll').onResize() : (() => {})()"
   >

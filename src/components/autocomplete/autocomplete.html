@@ -41,7 +41,7 @@
       </div>
       <bbn-button v-else
                   :icon="isOpened && !disabled && !readonly && filteredData.length ? iconUp : iconDown"
-                  class="bbn-p bbn-button-right"
+                  class="bbn-p bbn-button-right bbn-no-vborder"
                   @click.prevent.stop="click"
                   tabindex="-1"
                   :disabled="disabled">

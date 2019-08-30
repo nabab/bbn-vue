@@ -369,17 +369,9 @@
          */
         currentHidden: this.hidden || [],
         /**
-         * @data [null] originalData
-         */
-        originalData: null,
-        /**
          * @data {Boolean|Number} [false] group
          */
         group: this.groupBy === undefined ? false : this.groupBy,
-        /**
-         * @data {Array} {[10, 25, 50, 100, 250, 500]} limits
-         */
-        limits: [10, 25, 50, 100, 250, 500],
         /**
          * @data {String} editMode
          */
@@ -496,7 +488,7 @@
         if ( !this.groupCols || !this.groupCols[1] || !this.groupCols[1].width || !this.lastKnownCtWidth ){
           return '0px';
         }
-        return (this.groupCols[0].width + this.groupCols[1].width + this.groupCols[2].width) + 'px';
+        return (this.groupCols[0].width + this.groupCols[1].width + this.groupCols[2].width + 1) + 'px';
       },
       /**
        * Return true if the table isn't ajax, is editable and the edit mode is 'inline'.
@@ -1281,48 +1273,6 @@
         } : bbn.vue.emptyComponent
       },
       /**
-       * Deletes the row defined by param index.
-       * @method _delete
-       * @emit delete
-       * @param {Number} index
-       */
-      _delete(index) {
-        if (this.items[index] && this.currentData[this.items[index].index]) {
-          let ev = new Event('delete');
-          index = this.items[index].index;
-          if (this.url) {
-            bbn.fn.post(this.url, bbn.fn.extend({}, this.data, this.currentData[index].data, {
-              action: 'delete'
-            }), (d) => {
-              if (d.success) {
-                this.currentData.splice(index, 1);
-                if (this.originalData) {
-                  this.originalData.splice(index, 1);
-                }
-                this.$emit('delete', this.currentData[index].data, ev);
-                appui.success(bbn._('Deleted successfully'))
-              } else {
-                this.alert(bbn._("Impossible to delete the row"))
-              }
-            })
-          } else {
-            this.currentData.splice(index, 1);
-            if (this.originalData) {
-              this.originalData.splice(index, 1);
-            }
-            this.$emit('delete', this.currentData[index].data, ev);
-          }
-        }
-      },
-      /**
-       * Fires the metod updateData to refresh the current data set.
-       * @method reload
-       * @fires updateData
-       */
-      reload() {
-        return this.updateData();
-      },
-      /**
        * Exports to csv and download the given filename.
        * @method exportCSV
        * @param {String} filename
@@ -1983,64 +1933,11 @@
         }
       },
       /**
-       * Removes the row defined by the where param from currentData
-       * @method remove
-       * @param {Object} where
-       */
-      remove(where) {
-        let idx;
-        while ((idx = bbn.fn.search(this.currentData, a => {
-          return bbn.fn.compareConditions(a.data, where);
-        })) > -1) {
-          this.currentData.splice(idx, 1);
-        }
-        this.$forceUpdate();
-      },
-      /**
        * Save the current configuration.
        * @method save
        */
       save() {
         this.savedConfig = this.jsonConfig;
-      },
-      /**
-       * Add the given row to currentData
-       * @method add
-       * @param {Object} data
-       * @todo
-       *
-       */
-      add(data) {
-        this.currentData.push({
-          data: data,
-          index: this.currentData.length
-        });
-      },
-      /**
-       * Fires the method _delete to delete the row.
-       * @method delete
-       * @param {Number} index
-       * @param {Strimg} confirm
-       * @fires _delete
-       * @emit beforeDelete
-       */
-      delete(index, confirm) {
-        if (this.currentData[index]) {
-          let ev = new Event('delete', {cancelable: true});
-          this.$emit('beforeDelete', this.currentData[index].data, ev);
-          if (!ev.defaultPrevented) {
-            if (confirm === undefined) {
-              confirm = this.confirmMessage;
-            }
-            if (confirm) {
-              this.confirm(confirm, () => {
-                this._delete(index);
-              })
-            } else {
-              this._delete(index);
-            }
-          }
-        }
       },
       /**
        * Adds the given data to the object tmpRow and opens the popup with the form to insert the row.
@@ -2614,7 +2511,7 @@
                   }
                   if ( a.width ){
                     if ((typeof (a.width) === 'string') && (a.width.substr(-1) === '%')) {
-                      a.realWidth = Math.round(this.lastKnownCtWidth * parseFloat(a.width) / 100);
+                      a.realWidth = Math.floor(this.lastKnownCtWidth * parseFloat(a.width) / 100);
                     }
                     else {
                       a.realWidth = parseFloat(a.width);
@@ -2694,12 +2591,12 @@
               tot += a.sum;
             });
 
-            let clientWidth = this.$el.clientWidth,
-            toFill = this.lastKnownCtWidth - tot - 1;
+            let clientWidth = this.lastKnownCtWidth,
+            toFill = clientWidth - tot - 1;
             // We must arrive to 100% minimum
             if (toFill > 0) {
               if (numUnknown) {
-                let newWidth = Math.round(
+                let newWidth = Math.floor(
                   (toFill) /
                   numUnknown *
                   100
@@ -2732,7 +2629,7 @@
                   num--;
                   ignore++;
                 }
-                let bonus = Math.round(toFill / num * 100) / 100;
+                let bonus = Math.floor(toFill / num * 100) / 100;
                 let maxPreAggregatedWidth = 0;
                 bbn.fn.each(this.cols, (a, i) => {
                   if ( !a.hidden && (i >= ignore) ){
@@ -2765,7 +2662,7 @@
                     c.left = sum;
                   }
                   else if ( i === 2 ){
-                    c.left = clientWidth - a.width + sum + 1;
+                    c.left = clientWidth - a.width + sum;
                   }
                   sum += c.realWidth;
                 }

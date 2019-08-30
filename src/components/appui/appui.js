@@ -104,7 +104,9 @@
         menuMounted: false,
         app: false,
         cool: false,
-        searchString: ''
+        searchString: '',
+        clipboardContent: [],
+        observerTimeout: false
       }
     },
     computed: {
@@ -117,6 +119,24 @@
       }
     },
     methods: {
+      addToClipboard(e){
+        bbn.fn.getEventData(e).then((data) => {
+          bbn.fn.log("ADDI", data);
+          this.clipboardContent.push(data);
+        });
+        return true;
+
+      },
+      copy(e){
+        if (this.clipboard) {
+          let type = e.type;
+          bbn.fn.getEventData(e).then((data) => {
+            this.clipboardContent.push(data);
+            bbn.fn.log("DATA FROM " + type, data);
+          });
+        }
+        return true;
+      },
       route(url, force){
         this.getRef('tabnav').route(url, force)
       },
@@ -308,10 +328,10 @@
               }
               else{
                 bbn.fn.info("ALL OK");
-                navigator.serviceWorker.controller.postMessage(bbn.fn.extend({
+                navigator.serviceWorker.controller.postMessage(bbn.fn.extendOut({
                   observers: this.observers
                 }, this.pollerObject));
-                this.observersCopy = this.observers.slice();
+                this.observersCopy = this.observers.slice().map(o => bbn.fn.clone(o));
               }
             }
             else{
@@ -502,14 +522,30 @@
         this.pollerObject.usersHash = newVal;
         this.poll();
       },
-      /*
       observers: {
         deep: true,
         handler(){
-          this.poll();
+          if ( this.observerTimeout ){
+            clearTimeout(this.observerTimeout);
+          }
+          this.observerTimeout = setTimeout(() => {
+            this.poll();
+          }, 1000);
         }
       },
-      */
+     clipboardContent: {
+       deep: true,
+       handler(){
+         let cpb = this.getRef('clipboardButton');
+         bbn.fn.log("AWATCH", cpb);
+         if (cpb) {
+          cpb.style.backgroundColor = 'red';
+          setTimeout(() => {
+            cpb.style.backgroundColor = null;
+          }, 250);
+         }
+       }
+     }
     },
     components: {
       searchBar: {

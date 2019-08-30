@@ -18,6 +18,7 @@
           >
             <li v-for="(tab, tabIndex) in tabs"
                 :ref="'tab-' + tabIndex"
+                v-show="!tab.hidden"
                 :style="{
                 backgroundColor: tab.bcolor || null,
                 color: tab.fcolor || null

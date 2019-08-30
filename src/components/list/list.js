@@ -343,7 +343,8 @@
         mouseLeaveTimeout: false,
         isOpened: true,
         scroll: null,
-        hasScroll: false
+        hasScroll: false,
+        currentComponent: null
       };
     },
     computed: {
@@ -449,6 +450,10 @@
         }
         return r;
       },
+      remove(idx){
+        bbn.fn.log(this.currentData, idx);
+        this.realDelete(idx);
+      },
       /**
        * Handles the selection of the floater's items.
        * @method select
@@ -465,30 +470,32 @@
             this.isOpened = !this.isOpened;
           }
           else{
-            if ( (this.mode === 'selection') && !item.selected ){
-              let prev = bbn.fn.get_row(this.filteredData, "selected", true);
-              if ( prev ){
-                this.currentData[prev.index].selected = false;
+            this.$emit("select", item.data, idx, item.index, ev);
+            if (!ev.defaultPrevented) {
+              if ( (this.mode === 'selection') && !item.selected ){
+                let prev = bbn.fn.get_row(this.filteredData, "selected", true);
+                if ( prev ){
+                  this.currentData[prev.index].selected = false;
+                }
+                item.selected = true;
               }
-              item.selected = true;
-            }
-            else {
-              item.selected = !item.selected;
-            }
-            if ( item.data.command ){
-              if ( typeof(item.data.command) === 'string' ){
-                if ( bbn.fn.isFunction(this[item.data.command]) ){
-                  this[item.data.command]();
+              else {
+                item.selected = !item.selected;
+              }
+              if ( item.data.command ){
+                if ( typeof(item.data.command) === 'string' ){
+                  if ( bbn.fn.isFunction(this[item.data.command]) ){
+                    this[item.data.command]();
+                  }
+                }
+                else if (bbn.fn.isFunction(item.data.command) ){
+                  item.data.command(idx, item.data);
                 }
               }
-              else if (bbn.fn.isFunction(item.data.command) ){
-                item.data.command(idx, item.data);
+              else if ( item.data.url ) {
+                bbn.fn.link(item.data.url);
               }
             }
-            else if ( item.data.url ) {
-              bbn.fn.link(item.data.url);
-            }
-            this.$emit("select", item.data, idx, item.index, ev);
           }
         }
       }
@@ -497,13 +504,30 @@
      * @event mounted
      */
     mounted(){
-      if (this.$parent.$options && (this.$parent.$options._componentTag === 'bbn-scroll')) {
-        this.hasScroll = true;
+      bbn.fn.log("CREATED");
+      this.currentComponent = this.realComponent;
+      if (!this.component && !this.template && this.$slots.default) {
+        let tpl = this.getRef('slot').innerHTML;
+        if (tpl) {
+          this.currentTemplate = tpl;
+          this.currentComponent = {
+            props: ['source'],
+            data(){
+              return this.source;
+            },
+            template: this.currentTemplate
+          };
+        }
       }
-      this.ready = true;
-      setTimeout(() => {
-        this.overIdx = this.suggest ? 0 : null;
-      }, 50);
+      this.$nextTick(() => {
+        if (this.$parent.$options && (this.$parent.$options._componentTag === 'bbn-scroll')) {
+          this.hasScroll = true;
+        }
+        this.ready = true;
+        setTimeout(() => {
+          this.overIdx = this.suggest ? 0 : null;
+        }, 50);
+      });
     },
     watch: {
       /**
@@ -532,3 +556,4 @@
   });
 
 })(window.Vue, window.bbn);
+
