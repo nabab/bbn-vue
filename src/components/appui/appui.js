@@ -174,7 +174,7 @@
       get_field: bbn.fn.get_field,
 
       toggleMenu(){
-        let menu = this.getRef('menu');
+        let menu = this.getRef('slider');
         if ( menu ){
           menu.toggle();
         }

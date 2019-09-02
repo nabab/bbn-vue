@@ -50,48 +50,10 @@
         default: false
       },
       /**
-       * The position top
-       * @prop {Number} [0] top
-       */
-      top: {
-        type: Number,
-        default: 0
-      },
-      /**
-       * The position bottom
-       * @prop {Number} [0] bottom
-       */
-      bottom: {
-        type: Number,
-        default: 0
-      },
-      /**
-       * The horizontal position
-       * @prop {String} ['left'] position
-       */
-      position: {
-        type: String,
-        default: 'left'
-      },
-      
-      /**
-       * Set to true to have  tree's items expanded
-       * @prop {Boolean} [false] opened
-       */
-      opened: {
-        type: Boolean,
-        default: false
-      },
-      /**
        * Set to false hide the search input
        * @prop {Boolean}  [false] search
        */
       search: {
-        type: Boolean,
-        default: true
-      },
-      //@todo not used
-      hideable: {
         type: Boolean,
         default: true
       },
@@ -116,15 +78,6 @@
          * @data {String} [''] searchExp
          */
         searchExp: '',
-        /**
-         * Returns the value of the prop opened 
-         * @data {Boolaen} isOpened
-         */
-        isOpened: this.opened,
-        /**
-         * @data {Boolean}  [false] hasBeenOpened
-         */
-        hasBeenOpened: false,
         /**
          * @data {Number} posTop
          */
@@ -195,57 +148,6 @@
         }];
       },
       /**
-       * Defines the position of the component 
-       * @methos _position 
-       * @fires posObject
-       * 
-       */
-      _position(){
-        this.$el.style.top = this.posTop + 'px';
-        this.$el.style.bottom = this.posBottom + 'px';
-        this.$el.style[this.position === 'right' ? 'right' : 'left'] = this.isOpened ? 0 : -(this.$el.clientWidth + 40);
-        this.$nextTick(() => {
-          if ( this.isOpened ){
-            this.getRef('search').focus();
-          }
-        });
-      },
-      /**
-       * Shows the component
-       * @method show
-       * @fires _position
-       */
-      show(){
-        this.isOpened = true;
-        //this._position();
-      },
-      /**
-       * Hides the component
-       * @method hide
-       * @fires _position
-       */
-      hide(){
-        if ( !this.hideable ){
-          return;
-        }
-        this.isOpened = false;
-        //this._position();
-      },
-      /**
-       * Shows/Hides the component
-       * @method toggle
-       * @fires hide
-       * @fires show
-       */
-      toggle(){
-        if ( this.isOpened ){
-          this.hide();
-        }
-        else{
-          this.show();
-        }
-      },
-      /**
        * Maps the source of the tree
        * @method mapSrc
        * @param {Object} data 
@@ -304,37 +206,6 @@
       getData(){
         return {menu: this.currentMenu};
       },
-      /**
-       * @method checkMouseDown
-       * @param {Event} e 
-       * @fires toggle
-       */
-      checkMouseDown(e){
-        bbn.fn.log("checkMouseDown", this.isOpened);
-        if ( this.isOpened &&
-          !e.target.closest(".bbn-treemenu") &&
-          !e.target.closest(".bbn-menu-button")
-        ){
-          e.preventDefault();
-          e.stopImmediatePropagation();
-          this.toggle();
-        }
-      },
-      /**
-       * Adds or removes the event listener for mousedown and touchstart
-       * @method _setEvents
-       * @param add 
-       */
-      _setEvents(add){
-        if ( add ){
-          document.addEventListener('mousedown', this.checkMouseDown);
-          document.addEventListener('touchstart', this.checkMouseDown);
-        }
-        else{
-          document.removeEventListener('mousedown', this.checkMouseDown);
-          document.removeEventListener('touchstart', this.checkMouseDown);
-        }
-      }
     },
     /**
      * @event mounted
@@ -346,39 +217,7 @@
       //this._position();
       this.ready = true;
     },
-    /**
-     * @event created
-     * @fires _setEvents
-     */
-    created(){
-      this._setEvents();
-    },
-    /**
-     * @event destroyed
-     * @fires _setEvents
-     */
-    destroyed(){
-      this._setEvents();
-    },
     watch: {
-      /**
-       * @watch isOpened
-       * @param {Boolean} newVal 
-       * @fires tree.load
-       * @fires _setEvents
-       */
-      isOpened(newVal){
-        if ( newVal ){
-          if ( !this.hasBeenOpened ){
-            this.hasBeenOpened = true;
-            this.$refs.tree.load();
-          }
-          this._setEvents(true);
-        }
-        else{
-          this._setEvents();
-        }
-      },
       /**
        * @watch currentMenu
        * @fires reset

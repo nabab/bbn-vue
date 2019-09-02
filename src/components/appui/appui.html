@@ -165,17 +165,22 @@
     </bbn-pane>
   </bbn-splitter>
   <!-- TREEMENU -->
-  <bbn-treemenu v-if="plugins['appui-menu']"
-                :source="plugins['appui-menu'] + '/data'"
-                ref="menu"
-                :menus="menus"
-                :current="currentMenu"
-                :top="50"
-                style="width: 35em"
-                :shortcuts="true"
-                @shortcut="addShortcut"
-                @ready="menuMounted = true">
-  </bbn-treemenu>
+  <bbn-slider orientation="left"
+              ref="slider"
+              style="z-index: 7"
+              close-button="top-right">
+    <bbn-treemenu v-if="plugins['appui-menu']"
+                  :source="plugins['appui-menu'] + '/data'"
+                  ref="menu"
+                  :menus="menus"
+                  :current="currentMenu"
+                  :top="50"
+                  style="width: 35em"
+                  :shortcuts="true"
+                  @shortcut="addShortcut"
+                  @ready="menuMounted = true">
+    </bbn-treemenu>
+  </bbn-slider>
   <!-- CLIPBOARD SLIDER -->
   <bbn-clipboard v-if="clipboard"
                  :storage="true"

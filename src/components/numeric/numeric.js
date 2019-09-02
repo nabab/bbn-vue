@@ -89,8 +89,15 @@
           decimals++;
         }
       }
+      let v = this.value;
+      if ( !v ){
+        v = this.nullable ? '' : parseFloat(0).toFixed(decimals);
+      }
+      else{
+        v = bbn.fn.money(this.value * (this.unit === '%' ? 100 : 1), '', this.unit, '', '.', ' ', this.unit === '%' ? this.decimals : decimals);
+      }
       return {
-        initialValue : null,
+        initialValue : this.value,
         /**
          * True if the input is changing.
          * @data {Boolean} [false] isChanging
@@ -99,7 +106,7 @@
         /**
          * @data tmpValue
          */
-        tmpValue: null,
+        tmpValue: v,
         /**
          * True if the input is focused.
          * @data {Boolan} [false] isFocused
@@ -118,6 +125,9 @@
       }
     },
     computed: {
+      isChanged(){
+        return this.initialValue !== this.value;
+      },
       disableDecrease(){
         if((this.min !== undefined) && ((this.value - this.step ) < this.min)){
           return true;
@@ -160,16 +170,14 @@
       formattedValue(){
         if ( this.value !== null ) {
           if ( !this.isFocused ){
-            bbn.fn.happy(bbn.fn.money(this.value * (this.unit === '%' ? 100 : 1), '', this.unit, '', '.', ' ', this.unit === '%' ? this.decimals : this.currentDecimals))
             return bbn.fn.money(this.value * (this.unit === '%' ? 100 : 1), '', this.unit, '', '.', ' ', this.unit === '%' ? this.decimals : this.currentDecimals)
           }
           else {
-            bbn.fn.warning((this.unit === '%' ? parseFloat(this.value) * 100 : parseFloat(this.value)).toFixed(this.decimals))
             return (this.unit === '%' ? parseFloat(this.value) * 100 : parseFloat(this.value)).toFixed(this.decimals)
           }
         }
         else{
-          return ''
+          return '0'
         }
       }
     },
@@ -258,7 +266,7 @@
 
       increment(){
         if ( !this.readonly && !this.disabled ){
-          this.changeValue((typeof this.value === 'string' ? parseFloat(this.value) : this.value) + (  (this.unit === '%') ? this.step / 100 : this.step ) );
+          this.changeValue((this.value || 0) + ((this.unit === '%') ? this.step / 100 : this.step));
         }
       },
       /**
@@ -269,7 +277,7 @@
 
       decrement(){
         if (!this.readonly && !this.disabled) {
-          this.changeValue((typeof this.value === 'string' ? parseFloat(this.value)  : this.value) - (  (this.unit === '%') ? this.step / 100 : this.step ));
+          this.changeValue((this.value || 0) - ((this.unit === '%') ? this.step / 100 : this.step));
         }
       },
       /**
@@ -285,7 +293,7 @@
         if ( !this.required && (newVal === '') ){
           if ( this.value ){
             this.isChanging = true;
-            this.$emit('input', null);
+            this.$emit('input', this.nullable ? null : 0);
             this.$nextTick(() => {
               this.isChanging = false;
             })
@@ -302,38 +310,42 @@
         }*/
         // WORKING
         // this.$emit('input', parseFloat(parseFloat(newVal).toFixed(this.currentDecimals)));
-        let v = parseFloat(parseFloat(newVal).toFixed(this.currentDecimals));
+        let v = this.nullable && !newVal ? null : (newVal ? parseFloat(parseFloat(newVal).toFixed(this.currentDecimals)) : 0);
         if ( this.value !== v){
-          if ( this.respectMinMax(v) ){
-           // alert('0')
-            this.isChanging = true;
-            this.$emit('input', v);
-            this.$nextTick(() => {
-              this.tmpValue = this.formattedValue;
-              
-              this.isChanging = false;
-            })
+          if ( this.nullable && !v ){
+            this.$emit('input', null);
+            this.tmpValue = '';
           }
-          else if ( !this.respectMinMax(v) ){
-            bbn.fn.happy(this.formattedValue)
-            
-            this.isChanging = false;
-            let tmp = null;
-              
-              if ((this.max !== undefined) && (v > this.max)){
+          else{
+            if ( this.respectMinMax(v) ){
+              alert(v)
+              this.isChanging = true;
+              this.$emit('input', v);
+              bbn.fn.error(this.tmpValue, this.formattedValue)
+              this.$nextTick(() => {
+                this.tmpValue = this.formattedValue;
+                
+                this.isChanging = false;
+              })
+            }
+            else {
+              this.isChanging = false;
+              let tmp = null;
+              if ( (this.max !== undefined) && (v > this.max) ){
                 tmp = this.max;
               }
               else if ( (this.min !== undefined) &&  ( v < this.min ) ){
                 tmp = this.min
               }
               else {
-                tmp = this.initialValue.replace(/\s/g,'');
+                tmp = this.tmpValue.replace(/\s/g,'');
               }
-            this.$nextTick( () => {
-              
-              this.$emit('input', parseFloat(tmp));
-              this.tmpValue =  tmp;
-            } )
+              this.$nextTick( () => {
+                this.$emit('input', parseFloat(tmp));
+                this.tmpValue =  tmp;
+               
+              })
+            }
           }
         }
       
@@ -345,16 +357,21 @@
        * @fires changeValue
        */
       _changeTmpValue(v, force){
-        if ( force || this.pattern.test(v.toString()) ){
+        if ( v === null ){
+          if ( !this.nullable ){
+            return;
+          }
+          this.changeValue(null);
+        }
+        else if ( force || this.pattern.test(v.toString()) ){
           if ( this.unit === '%' ){
             v = (parseFloat(v)/100).toFixed(this.currentDecimals)
           }
           this.changeValue(v);
-          bbn.fn.error(v)
         }
       },
       respectMinMax(v){
-        if ( ((this.min !== undefined ) && !this.max) || (!this.min && (this.max !== undefined))){
+        if ( (( this.min || ( this.min === 0 ) ) && (this.max === undefined) ) || (!this.min && (this.max || (this.max === 0)))){
           if ( this.min && (parseFloat(v) >= this.min )){
             return true;
           }
@@ -368,7 +385,7 @@
             return false
           }
         }
-        else if ( (this.min !== undefined ) && ( this.max !== undefined )){
+        else if ( (this.min  || ( this.min === 0 ) ) && ( this.max || ( this.max === 0 ) )){
           if ( (parseFloat(v) >= this.min ) &&  (parseFloat(v) <= this.max )){
             return true
           }
@@ -411,37 +428,18 @@
        * @fires _changeTmpValue
        */
       isFocused(v){
+        
         if ( v ){
           this.tmpValue = this.value ? (parseFloat(this.value) * (this.unit === '%' ? 100 : 1)).toFixed(this.decimals) : '';
+          bbn.fn.warning('watch focused '+this.tmpValue)
         }
         else{
           this._changeTmpValue(this.tmpValue, true);
-          bbn.fn.warning('here  ' + this.tmpValue + ' /' +this.formattedValue)
         }
       }
     },
-    /**
-     * @event beforeMount 
-     */
-    beforeMount(){
-      this.initialValue = this.formattedValue;
-      this.tmpValue = this.formattedValue;
-      
-    },
-    mounted(){
-      
-      //elaborare this.min e this.max dati come stringa basandomi su this.decimals, creare currentMin al momento del mounted
-      /*if ( this.min ){
-        if ( bbn.fn.isString(this.min) ){
-          if ( this.decimals ){
-            this.min = parseFloat(this.min).toFixed(this.decimals)
-          }
-          else{
-            this.min = parseInt(this.min)
-          }
-        }
-      }*/
-    }
+    
+    
   });
 
 })(bbn);
