@@ -88,7 +88,7 @@
                     'bbn-red': hasFilter(col)
                   }"
                   v-if="filterable && (col.filterable !== false) && !col.buttons && col.field"
-                  @click="showFilter(col, $event)"
+                  @click="filterElement = $event.target; currentFilter = col;showFilter(col, $event)"
                 ></i>
                 <div v-if="col.isExpander" :title="_('Expand all')">
                   <!-- @todo an icon for expanding all/none -->
@@ -138,7 +138,11 @@
     </div>
 
     <div :class="{'bbn-flex-fill': scrollable, 'bbn-table-main': true, 'bbn-w-100': true}">
-      <div :class="{'bbn-overlay': scrollable, 'bbn-block': !scrollable}">
+      <div :class="{'bbn-overlay': scrollable, 'bbn-block': !scrollable}"
+           :style="{
+             bottom: scrollable ? '-' + containerPadding : '0px',
+             height: scrollable ? 'auto' : '100%'
+           }">
         <div class="bbn-table-container"
               ref="container"
               @scroll.passive="_scrollContainer"
@@ -147,7 +151,7 @@
                 overflowX: groupCols[0].width + groupCols[1].width + groupCols[2].width > lastKnownCtWidth ? 'scroll' : 'hidden',
                 marginLeft: groupCols[0].width + 'px',
                 marginRight: (scrollable ? groupCols[2].width - containerPadding : groupCols[2].width) + 'px',
-                marginBottom: scrollable ? '-' + containerPadding + 'px' : 0,
+                marginBottom: scrollable ? '-' + containerPadding : 0,
                 paddingRight: scrollable ? containerPadding : 0,
                 paddingBottom: scrollable ? containerPadding : 0,
                 maxWidth: scrollable ? '100%' : null,
@@ -183,12 +187,12 @@
                         width: currentColumns[0].realWidth
                       }">
                     <div @click="toggleExpanded(d.index)"
-                         class="bbn-table-expander bbn-lg bbn-p bbn-unselectable"
+                         class="bbn-table-expander bbn-p bbn-unselectable bbn-spadded"
                          v-if="d.expander"
                          @keydown.space="toggleExpanded(d.index)"
                          tabindex="0"
                          >
-                      <i :class="'nf nf-fa-caret_' + (isExpanded(d) ? 'down' : 'right') + ' bbn-unselectable'"
+                      <i :class="'nf nf-fa-caret_' + (isExpanded(d) ? 'down' : 'right') + ' bbn-lg'"
                       ></i>
                     </div>
                   </td>
@@ -328,7 +332,7 @@
           position: 'absolute',
           left: groupCols[0].width + 'px',
           right: groupCols[2].width + 'px',
-          bottom: '0px'
+          bottom: scrollable ? containerPadding : '0px'
         }">
           <bbn-scrollbar v-if="!isLoading && scrollable && ready"
                          orientation="horizontal"
@@ -441,15 +445,16 @@
 
     </div>
   </div>
-  <div v-if="currentFilter"
-       class="bbn-table-floating-filter bbn-widget"
-       @mouseleave="_leaveFilter"
-       @mouseenter="_enterFilter"
-       :style="{
-        left: floatingFilterX + 'px',
-        top: floatingFilterY + 'px'
-       }"
-  >
+  <bbn-floater v-if="currentFilter"
+               class="bbn-table-floating-filter bbn-widget"
+               :element="filterElement"
+               @close="currentFilter = false"
+               :auto-hide="true"
+               :width="600"
+               :height="200"
+               :scrollable="false"
+               :left="floatingFilterX"
+               :top="floatingFilterY">
     <bbn-filter v-bind="getFilterOptions()"
                 @set="onSetFilter"
                 @unset="unsetCurrentFilter"
@@ -460,6 +465,6 @@
       <i class="zmdi zmdi-filter-list"></i>
       <span v-text="_('Open the full filter')"></span>
     </div>
-  </div>
+  </bbn-floater>
   <bbn-popup ref="popup" v-if="inTable === false"></bbn-popup>
 </div>

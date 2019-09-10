@@ -265,8 +265,9 @@
          * @param element 
          */
         leave(){
-          if ( this.isOpened && !this.getRef('list').isOver ){
-            this.isOpened = false;
+          let lst = this.getRef('list');
+          if ( lst ){
+            lst.leave();
           }
         },
         /**
@@ -276,10 +277,8 @@
          * @emit change
          */
         select(item, idx, dataIndex, e){
-              bbn.fn.log("ccc", e);
           if ( item && (item[this.uid || this.sourceValue] !== undefined) ){
             if (!e || !e.defaultPrevented) {
-              bbn.fn.log("rrrrrrrrrrr");
               this.emitInput(item[this.uid || this.sourceValue]);
               this.$emit('change', item[this.uid || this.sourceValue]);
             }
@@ -1163,6 +1162,15 @@
           default: false
         },
         /**
+         * Set to true selecting an item will unselect any other selected item.
+         * @prop {Boolean} multiple
+         * @memberof listComponent
+         */
+        multiple: {
+          type: Boolean,
+          default: false
+        },
+        /**
          * Given to a column that has the property type set to 'money' defines the currency.
          * @prop {String} currency
          * @memberof listComponent
@@ -1344,6 +1352,14 @@
            * @data [null] originalData
            */
           originalData: null,
+          /**
+           * @data {String} filterString
+           */
+          filterString: this.textValue || '',
+          /**
+           * @data {false, Number} filterTimeout
+           */
+          filterTimeout: false,
         };
       },
       computed: {
@@ -1435,14 +1451,13 @@
           return -1;
         },
         isAutobind(){
-          let autobind = true;
           if (
             (this.autobind === false) ||
             (this.isAjax && this.autocomplete && (this.filterString.length < this.minLength))
           ){
-            autobind = false;
+            return false;
           }
-          return autobind;
+          return true;
         },
 
       },
@@ -2104,7 +2119,8 @@
                       specificCase = false;
                   // If valid or disabled, return true
                   if ( elem.disabled || validity.valid ){
-                    if ( (!!elem.required || !!elem.readOnly) && !elem.value ){
+                    //if ( (!!elem.required || !!elem.readOnly) && !elem.value ){
+                    if ( !!elem.required && !elem.value ){
                       specificCase = true;
                     }
                     else {

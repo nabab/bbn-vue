@@ -898,14 +898,18 @@
           clearTimeout(this.mouseLeaveTimeout);
         }
         this.mouseLeaveTimeout = setTimeout(() => {
-          if (!this.isOver) {
-            this.$emit('mouseleave');
-            if (this.autoHide) {
-              this.close();
-            }
+          if (!this.isOver && this.autoHide){
+            this.close();
           }
           this.mouseLeaveTimeout = false;
-        }, bbn.fn.isNumber(this.autoHide) ? this.autoHide : 10);
+        }, bbn.fn.isNumber(this.autoHide) ? this.autoHide : 500);
+      },
+      mouseleave(){
+        let e = new Event('mouseleave', {cancelable: true});
+        this.$emit('mouseleave', e);
+        if (!e.defaultPrevented){
+          this.leave();
+        }
       },
       /**
        * Closes the floater by hiding it.
@@ -1133,6 +1137,11 @@
           this.isResized = false;
         }
       },
+      isOver(v){
+        if (v && this.mouseLeaveTimeout){
+          clearTimeout(this.mouseLeaveTimeout);
+        }
+      }
     }
 
   });

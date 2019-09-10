@@ -48,15 +48,6 @@
         default: 500
       }
     },
-    data(){
-      return {
-        /**
-         * @data {String} [''] filterString
-         */
-        filterString: this.textValue || '',
-        filterTimeout: false
-      };
-    },
     methods: {
       click(){
         if (!this.disabled) {

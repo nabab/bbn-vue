@@ -474,7 +474,8 @@
         marginStyleSheet: null,
         cssRuleName: bbn.fn.randomString().toLowerCase(),
         initStarted: false,
-        inTable: null
+        inTable: null,
+        filterElement: null
       };
     },
     computed: {
@@ -1378,18 +1379,6 @@
           return cells;
         }
       },
-      _enterFilter(){
-        hasFilter = true;
-      },
-      _leaveFilter(){
-        hasFilter = false;
-        clearTimeout(leaveFilterTimeout);
-        leaveFilterTimeout = setTimeout(() => {
-          if (!hasFilter) {
-            this.currentFilter = false
-          }
-        }, 200);
-      },
       /**
        * Returns true if the table has currentFilters defined for the given column.
        * @method hasFilter
@@ -2064,7 +2053,7 @@
        */
       currentClass(column, data, index) {
         if (column.cls) {
-          return bbn.fn.isFunction(column.cls) ? column.cls(data, index) : column.cls;
+          return bbn.fn.isFunction(column.cls) ? column.cls(data, index, column) : column.cls;
         }
         return '';
       },

@@ -10,7 +10,7 @@
       ]"
       v-if="isVisible"
       @resize.stop="onResize()"
-      @mouseleave="leave"
+      @mouseleave="mouseleave"
       @mouseenter="isOver = true"
       @click.stop
       :style="currentStyle">
@@ -70,6 +70,7 @@
                 :component="itemComponent"
                 :template="template"
                 :uid="uid"
+                :children="children"
                 :selected="selected"
                 :class="'bbn-floater-list bbn-menulist ' + mode"
                 origin="floater"

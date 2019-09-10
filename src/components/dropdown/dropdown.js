@@ -74,6 +74,12 @@
             this.isOpened = true;
           }
         }
+      },
+      leave(){
+        let lst = this.getRef('list');
+        if (lst) {
+          lst.leave();
+        }
       }
     },
     mounted(){

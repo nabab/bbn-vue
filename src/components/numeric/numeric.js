@@ -126,10 +126,10 @@
     },
     computed: {
       isChanged(){
-        return this.initialValue !== this.value;
+        return this.initialValue !== this.value;        
       },
       disableDecrease(){
-        if((this.min !== undefined) && ((this.value - this.step ) < this.min)){
+        if((this.min !== undefined) && ((parseFloat(this.value) - this.step ) < this.min)){
           return true;
         }
         else {
@@ -137,7 +137,7 @@
         }
       },
       disableIncrease(){
-        if((this.max !== undefined) && ((this.value + this.step ) > this.max)){
+        if((this.max !== undefined) && ((parseFloat(this.value) + this.step ) > this.max)){
           return true;
         }
         else {
@@ -173,7 +173,8 @@
             return bbn.fn.money(this.value * (this.unit === '%' ? 100 : 1), '', this.unit, '', '.', ' ', this.unit === '%' ? this.decimals : this.currentDecimals)
           }
           else {
-            return (this.unit === '%' ? parseFloat(this.value) * 100 : parseFloat(this.value)).toFixed(this.decimals)
+            
+            return (this.unit === '%' ? parseFloat(this.value) * 100 : parseFloat(this.value)).toFixed(this.decimals) + ( this.unit === '%' ? '%' : '')
           }
         }
         else{
@@ -220,6 +221,7 @@
         if (e.keyCode === 34) {
           let step = 10 * this.step,
           tmp = parseFloat(this.value) - ((this.unit === '%')  ? step/100 : step);
+          this.changeValue(tmp);
         }
         this.keydown(e);
       },
@@ -266,7 +268,7 @@
 
       increment(){
         if ( !this.readonly && !this.disabled ){
-          this.changeValue((this.value || 0) + ((this.unit === '%') ? this.step / 100 : this.step));
+          this.changeValue((parseFloat(this.value) || 0) + ((this.unit === '%') ? this.step / 100 : this.step));
         }
       },
       /**
@@ -277,7 +279,7 @@
 
       decrement(){
         if (!this.readonly && !this.disabled) {
-          this.changeValue((this.value || 0) - ((this.unit === '%') ? this.step / 100 : this.step));
+          this.changeValue((parseFloat(this.value) || 0) - ((this.unit === '%') ? this.step / 100 : this.step));
         }
       },
       /**
@@ -291,38 +293,32 @@
           clearTimeout(this.valueTimeOut);
         }
         if ( !this.required && (newVal === '') ){
-          if ( this.value ){
+          //if ( this.value ){
             this.isChanging = true;
-            this.$emit('input', this.nullable ? null : 0);
+            this.tmpValue = this.nullable ? null : ''
+            //alert('ishere')
+            this.$emit('input', this.nullable ? null : '');
             this.$nextTick(() => {
               this.isChanging = false;
             })
-          }
-          //dopo questo emit non dovrei avere this.value, invece nel log c'è ancora...
+          //}
           return;
         }
-        /*if (
-          (this.max !== undefined) && (newVal > this.max) ||
-          (this.min !== undefined) && (newVal < this.min) ||
-          !this.pattern.test(newVal)
-        ){
-          return false;
-        }*/
-        // WORKING
-        // this.$emit('input', parseFloat(parseFloat(newVal).toFixed(this.currentDecimals)));
         let v = this.nullable && !newVal ? null : (newVal ? parseFloat(parseFloat(newVal).toFixed(this.currentDecimals)) : 0);
+        
         if ( this.value !== v){
           if ( this.nullable && !v ){
             this.$emit('input', null);
             this.tmpValue = '';
           }
           else{
+             bbn.fn.happy('isnow ' + v )
             if ( this.respectMinMax(v) ){
-              alert(v)
               this.isChanging = true;
               this.$emit('input', v);
-              bbn.fn.error(this.tmpValue, this.formattedValue)
+             
               this.$nextTick(() => {
+                
                 this.tmpValue = this.formattedValue;
                 
                 this.isChanging = false;
@@ -331,19 +327,20 @@
             else {
               this.isChanging = false;
               let tmp = null;
-              if ( (this.max !== undefined) && (v > this.max) ){
-                tmp = this.max;
+              
+              if ((this.max !== undefined) && (v > this.max)){
+                tmp = parseFloat(this.max).toFixed(this.currentDecimals);
               }
               else if ( (this.min !== undefined) &&  ( v < this.min ) ){
-                tmp = this.min
+                tmp = parseFloat(this.min).toFixed(this.currentDecimals);
               }
               else {
-                tmp = this.tmpValue.replace(/\s/g,'');
+                //tmp = this.tmpValue.replace(/\s/g,'');
+                tmp = v.toFixed(this.currentDecimals);
               }
               this.$nextTick( () => {
                 this.$emit('input', parseFloat(tmp));
                 this.tmpValue =  tmp;
-               
               })
             }
           }
@@ -417,10 +414,12 @@
        * @watch value
        * @param v 
        */
-      value(v){
-        if ( !this.isChanging ){
+      value(v){       
+        this.tmpValue = v;  
+        
+        /*if ( !this.isChanging ){
           this.tmpValue = v;
-        }
+        }*/       
       },
       /**
        * @watch isFocused
@@ -428,10 +427,9 @@
        * @fires _changeTmpValue
        */
       isFocused(v){
-        
+        bbn.fn.warning('watch focused '+v)
         if ( v ){
           this.tmpValue = this.value ? (parseFloat(this.value) * (this.unit === '%' ? 100 : 1)).toFixed(this.decimals) : '';
-          bbn.fn.warning('watch focused '+this.tmpValue)
         }
         else{
           this._changeTmpValue(this.tmpValue, true);

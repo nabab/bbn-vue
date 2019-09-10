@@ -19,7 +19,7 @@
       ></bbn-input>
     </div>
     <div class="bbn-w-100 bbn-flex-fill">
-      <nav class="bbn-overlay">
+      <div class="bbn-overlay">
         <bbn-tree :source="source"
                   :map="mapSrc"
                   :data="getData"
@@ -31,8 +31,9 @@
                   :excluded-section-filter="true"
                   @select="go"
                   :menu="getMenu"
+                  @ready="readyTree"                 
         ></bbn-tree>
-      </nav>
+      </div>
     </div>
   </div>
 </div>

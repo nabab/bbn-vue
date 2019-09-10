@@ -533,19 +533,19 @@
           }, 1000);
         }
       },
-     clipboardContent: {
-       deep: true,
-       handler(){
-         let cpb = this.getRef('clipboardButton');
-         bbn.fn.log("AWATCH", cpb);
-         if (cpb) {
-          cpb.style.backgroundColor = 'red';
-          setTimeout(() => {
-            cpb.style.backgroundColor = null;
-          }, 250);
-         }
-       }
-     }
+      clipboardContent: {
+        deep: true,
+        handler(){
+          let cpb = this.getRef('clipboardButton');
+          bbn.fn.log("AWATCH", cpb);
+          if (cpb) {
+            cpb.style.backgroundColor = 'red';
+            setTimeout(() => {
+              cpb.style.backgroundColor = null;
+            }, 250);
+          }
+        }
+      }
     },
     components: {
       searchBar: {

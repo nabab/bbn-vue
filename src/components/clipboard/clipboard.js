@@ -85,6 +85,10 @@
         }];
         bbn.fn.log("ADDING", data);
         if (data.files.length) {
+          // No need for a list of files if there is only one
+          if ( data.files.length === 1 ){
+            ar = [];
+          }
           bbn.fn.each(data.files, (o) => {
             uid++;
             let stype = 'text';
@@ -103,11 +107,9 @@
                 stype = bits[1] || bits[0];
               }
               else{
-                stype = o.type;
+                stype = o.type.length > 15 ? bbn._('Other') : o.type;
               }
-              ar[0].content = o.data;
             }
-            bbn.fn.upload('core/upload', {type: 'clipboard', file: o.data}, res => bbn.fn.log('success', res), res => bbn.fn.log('failure', res), res => bbn.fn.log('progress', res));
             ar.push({
               dt: dt,
               uid: uid,
@@ -152,6 +154,24 @@
           this.items.unshift(a);
         });
         if (added.length) {
+          bbn.fn.each(added, o => {
+            bbn.fn.upload('core/upload', {
+              type: 'clipboard',
+              file: o.data
+            },
+            // success
+            res => {
+              bbn.fn.log('success', res);
+            },
+            // failure
+            res => {
+              bbn.fn.log('failure', res);
+            },
+            // progress
+            res => {
+              bbn.fn.log('progress', res)
+            });
+          });
           this.$emit('add', added);
         }
         this.$forceUpdate();

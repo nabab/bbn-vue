@@ -3,7 +3,7 @@
 >
   <div class="bbn-widget bbn-flex-height"
   >
-    <div class="bbn-calendar-header bbn-header">
+    <div class="bbn-calendar-header bbn-header bbn-xspadded">
       <component v-if="headerComponent"
                  :is="headerComponent"
       ></component>
@@ -75,11 +75,17 @@
              :class="['bbn-calendar-item-box', 'bbn-box', {
                'bbn-p': selection && !item.disabled,               
                'bbn-spadded': !itemDetails && itemPadding,
-               'bbn-state-active': item.isCurrent && (!item.inRange || (item.inRange && item.over)),
+
+               //'bbn-state-active': item.isCurrent && (!item.inRange || (item.inRange && item.over)),
+               'bbn-tertiary': item.isCurrent && (!item.inRange || (item.inRange && item.over)),
+
                'bbn-background-effect-primary': item.isCurrent && item.inRange,
                'bbn-state-hover': selection && item.over && !item.disabled,
                'bbn-primary': selection && (item.value === currentValue),
-               'bbn-calendar-colored-item': item.colored && !item.hidden,
+
+               //'bbn-calendar-colored-item': item.colored && !item.hidden,
+               'bbn-secondary': item.colored && !item.hidden && !item.extra,
+
                'bbn-alt-background-effect': !item.hidden && item.inRange && !item.isCurrent,
                'bbn-disabled': item.disabled,
                'bbn-alt-background': extraItems && item.extra
@@ -93,10 +99,10 @@
                class="bbn-flex-height"
                style="position: relative" 
           >
-            <div :class="['bbn-r', 'bbn-unselectable', 'bbn-calendar-item', {'bbn-white': item.colored}]"
+            <div :class="['bbn-r', 'bbn-unselectable', 'bbn-calendar-item', {'bbn-tertiary-text': item.colored && !item.extra}]"
                  style="margin-right: .2em"
             >
-              <strong v-text="item.text"></strong>
+              <span v-text="item.text"></span>
             </div>
             <component v-if="itemComponent"
                        :is="itemComponent"
@@ -109,8 +115,8 @@
             <i v-if="item.events && item.events.length && eventIcon"
                :class="[eventIcon, 'bbn-unselectable', 'bbn-calendar-item-icon']"
             ></i>
-            <div :class="['bbn-100', 'bbn-middle', 'bbn-unselectable', 'bbn-calendar-item', {'bbn-white': item.colored}]">
-              <strong v-text="item.text"></strong>
+            <div :class="['bbn-100', 'bbn-middle', 'bbn-unselectable', 'bbn-calendar-item', {'bbn-tertiary-text': item.colored && !item.extra}]">
+              <span v-text="item.text"></span>
             </div>
           </template>
         </div>

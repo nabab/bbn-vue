@@ -12,7 +12,7 @@
     <bbn-button icon="nf nf-fa-calendar"
                 @click="showCalendar"
                 :disabled="disabled || readonly"
-                class="bbn-datetimepicker-calendar bbn-no-vborder"
+                class="bbn-datetimepicker-calendar bbn-no-vborder bbn-no-border-right"
                 tabindex="-1"
     ></bbn-button>
     <bbn-button icon="nf nf-fa-clock_o"
@@ -63,7 +63,7 @@
             <div class="bbn-flex-height">
               <div v-text="_('Hour').substr(0,1)"
                   title="_('Hour')"
-                  class="bbn-unselectable bbn-header"
+                  class="bbn-unselectable bbn-header bbn-no-border-top bbn-no-hborder"
               ></div>
               <div class="bbn-flex-fill">
                 <bbn-scroll :hidden="true" 
@@ -90,7 +90,7 @@
             <div class="bbn-flex-height">
               <div v-text="_('Minute').substr(0,1)"
                   title="_('Minute')"
-                  class="bbn-unselectable bbn-header"
+                  class="bbn-unselectable bbn-header bbn-no-border-top bbn-no-hborder"
               ></div>
               <div class="bbn-flex-fill">
                 <bbn-scroll :hidden="true" 
@@ -120,7 +120,7 @@
             <div class="bbn-flex-height">
               <div v-text="_('Second').substr(0,1)" 
                     title="_('Second')"
-                    class="bbn-unselectable bbn-header"
+                    class="bbn-unselectable bbn-header bbn-no-border-top bbn-no-hborder"
               ></div>
               <div class="bbn-flex-fill">
                 <bbn-scroll :hidden="true" 

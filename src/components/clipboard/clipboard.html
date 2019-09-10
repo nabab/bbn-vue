@@ -1,5 +1,5 @@
 <bbn-slider :orientation="orientation"
-            class="bbn-clipboard"
+            :class="[componentClass]"
             ref="slider"
             close-button="bottom-right"
 >
@@ -45,6 +45,7 @@
                           :command="() => {closest('bbn-list').$emit('remove', source)}">
               </bbn-button>
               <span :class="{
+                'bbn-iblock': true,
                 'bbn-green': stype === 'html',
                 'bbn-red': stype === 'javascript',
                 'bbn-purple': type.indexOf('application/') === 0,
@@ -52,11 +53,12 @@
                 'bbn-orange': ['css', 'less', 'scss'].includes(stype),
                 'bbn-darkgrey': stype === 'text',
                 'bbn-pink': stype && (stype.indexOf('image/') === 0)
-              }" v-text="stype" style="padding-left: 1em"></span>
+              }" v-text="stype" style="padding-left: 1em; line-height: 100%; vertical-align: middle"></span>
             </div>
             <div :title="text"
-                v-text="text"
-                class="bbn-clipboard-text bbn-block-right bbn-flex-fill"></div>
+                 class="bbn-clipboard-text bbn-block-right bbn-flex-fill bbn-r"
+                 v-text="text"></span>
+            </div>
           </div>
         </bbn-list>
       </bbn-scroll>

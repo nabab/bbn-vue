@@ -57,6 +57,7 @@
           <!-- FISHEYE -->
           <bbn-fisheye v-if="plugins['appui-menu']"
                        style="z-index: 3"
+                       v-show="'?' !== searchBar.value"
                        :class="{
                          'bbn-invisible': $refs.search && $refs.search.isFocused,
                          'bbn-spadded': true
@@ -151,7 +152,7 @@
           </bbn-chat>
         </div>
         <!-- CLIPBOARD BUTTON -->
-        <div v-if="clipboard"
+        <div v-if="plugins['appui-clipboard'] && clipboard"
              @click.stop="getRef('clipboard').toggle()"
              ref="clipboardButton"
              :class="['bbn-appui-clipboard-button bbn-h-100 bbn-vmiddle bbn-block bbn-c bbn-hpadded bbn-p']">
@@ -165,13 +166,14 @@
     </bbn-pane>
   </bbn-splitter>
   <!-- TREEMENU -->
-  <bbn-slider orientation="left"
+  <bbn-slider v-if="plugins['appui-menu']"
+              orientation="left"
               ref="slider"
-              style="z-index: 7"
               close-button="top-right">
-    <bbn-treemenu v-if="plugins['appui-menu']"
-                  :source="plugins['appui-menu'] + '/data'"
+    <bbn-treemenu :source="plugins['appui-menu'] + '/data'"
+                  v-if="$refs.slider && $refs.slider.hasBeenOpened"
                   ref="menu"
+                  @select="$refs.slider.hide()"
                   :menus="menus"
                   :current="currentMenu"
                   :top="50"
@@ -182,7 +184,7 @@
     </bbn-treemenu>
   </bbn-slider>
   <!-- CLIPBOARD SLIDER -->
-  <bbn-clipboard v-if="clipboard"
+  <bbn-clipboard v-if="plugins['appui-clipboard'] && clipboard"
                  :storage="true"
                  ref="clipboard"
                  :source="clipboardContent"

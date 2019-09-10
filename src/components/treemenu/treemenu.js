@@ -98,7 +98,7 @@
         /**
          * @data current
          */
-        currentMenu: this.current
+        currentMenu: null
       };
     },
     computed: {
@@ -178,7 +178,7 @@
         event.preventDefault();
         if ( node && node.data && (node.data.link || node.data.url) ){
           bbn.fn.link(node.data.link || node.data.url);
-          this.hide();
+          this.$emit('select', node, event);
         }
       },
       /**
@@ -206,6 +206,11 @@
       getData(){
         return {menu: this.currentMenu};
       },
+      readyTree(){        
+        this.$nextTick(() => {
+          this.currentMenu = this.current;
+        })
+      }
     },
     /**
      * @event mounted
@@ -215,15 +220,17 @@
     mounted(){
       this.onResize();
       //this._position();
-      this.ready = true;
+      this.ready = true;      
     },
     watch: {
       /**
        * @watch currentMenu
        * @fires reset
        */
-      currentMenu(){
-        this.reset()
+      currentMenu(val){
+        if ( (val !== null) && (this.$refs.tree !== undefined) ){         
+          this.reset();         
+        }        
       }
     }
   });

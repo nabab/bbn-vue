@@ -91,11 +91,11 @@
       /**
        * Shows an alternative view for the time selection instead of the dropdowns.
        *
-       * @prop {Boolean} [false] scrollMode
+       * @prop {Boolean} [true] scrollMode
       */
       scrollMode: {
         type: Boolean,
-        default: false
+        default: true
       }
     },
     data(){

@@ -7,9 +7,10 @@
   <bbn-input :placeholder="currentPlaceholder"
               class="bbn-xl"
               :style="{width: specialWidth, transition: 'width 0.5s'}"
+              type="search"
               ref="input"
-              @focus="focus"
-              @blur="blur"
+              @focus="searchFocus"
+              @blur="searchBlur"
               @keydown="keydown"
               :nullable="nullable"
               autocomplete="off"
@@ -17,18 +18,20 @@
               :loading="isAjax && isLoading"
               button-right="nf nf-fa-search">
   </bbn-input>
-  <bbn-floater v-if="!disabled && !readonly && isOpened"
+  <bbn-floater v-if="filteredData.length && !disabled && !readonly && isOpened"
                :element="$el"
                :max-height="maxHeight"
                :min-width="$el.offsetWidth"
                ref="list"
-               :source-value="sourceValue"
+               @mouseleave.prevent
+               :auto-hide="true"
                :suggest="suggest"
-               :source-text="sourceText"
                :item-component="realComponent"
+               :children="null"
                @select="select"
-               :selected="[value]"
-               @close="isOpened = false"
+               @close="searchClose"
+               :source-text="sourceText"
+               :source-value="sourceValue"
                :source="filteredData">
   </bbn-floater>
   <input type="hidden"

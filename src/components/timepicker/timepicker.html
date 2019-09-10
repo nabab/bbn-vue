@@ -19,7 +19,7 @@
                :element="$el"
                ref="floater"
                @close="isOpened = false"
-               :min-width="showSecond ? 165 : 110"
+               :width="showSecond ? 165 : 110"
                :min-height="scrollMode ? 170 : 46"
                hpos="right"
   >
@@ -36,7 +36,7 @@
             <div class="bbn-flex-height">
               <div v-text="_('Hour').substr(0,1)"
                   title="_('Hour')"
-                  class="bbn-unselectable bbn-header"
+                  class="bbn-unselectable bbn-header bbn-no-hborder bbn-no-border-top"
               ></div>
               <div class="bbn-flex-fill">
                 <bbn-scroll :hidden="true" 
@@ -63,7 +63,7 @@
             <div class="bbn-flex-height">
               <div v-text="_('Minute').substr(0,1)"
                   title="_('Minute')"
-                  class="bbn-unselectable bbn-header"
+                  class="bbn-unselectable bbn-header bbn-no-border-top bbn-no-hborder"
               ></div>
               <div class="bbn-flex-fill">
                 <bbn-scroll :hidden="true" 
@@ -93,7 +93,7 @@
             <div class="bbn-flex-height">
               <div v-text="_('Second').substr(0,1)" 
                     title="_('Second')"
-                    class="bbn-unselectable bbn-header"
+                    class="bbn-unselectable bbn-header bbn-no-hborder bbn-no-border-top"
               ></div>
               <div class="bbn-flex-fill">
                 <bbn-scroll :hidden="true" 

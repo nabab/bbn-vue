@@ -212,13 +212,21 @@
        * @fires updateWidget
        * @fires updateMenu
        */
-      toggleWidget(key, hidden){
+      /*toggleWidget(key, hidden){
         if ( this.widgets ){
           let idx = bbn.fn.search(this.widgets, {key: key});
           this.updateWidget(key, {
             hidden: hidden === undefined ? !this.widgets[idx].hidden : hidden
           }).then(() => {
             this.updateMenu();
+          });
+        }
+      },*/
+      toggleWidget(key, hidden){
+        if ( this.widgets ){
+          let idx = bbn.fn.search(this.widgets, {key: key});
+          this.updateWidget(key, {
+            hidden: hidden === undefined ? !this.widgets[idx].hidden : hidden
           });
         }
       },
@@ -352,7 +360,7 @@
        * @param {Object} cfg 
        * @fires setWidgetStorage
        */
-      updateWidget(key, cfg){
+      /*updateWidget(key, cfg){
         let idx = bbn.fn.search(this.widgets || [], 'key', key),
             params = {id: key, cfg: cfg},
             no_save = ['items', 'num', 'start', 'index'];
@@ -362,6 +370,7 @@
               delete params.cfg[a];
             }
           });
+          
           if ( bbn.fn.countProperties(params.cfg) ){
             if ( this.url !== undefined ){
               return bbn.fn.post(this.url + 'save', params, (d) => {
@@ -388,6 +397,54 @@
               this.$forceUpdate();             
             }
             
+          }
+        }
+        new Error("No corresponding widget found for key " + key);
+      },*/
+      updateWidget(key, cfg){        
+        let idx = bbn.fn.search(this.widgets || [], 'key', key),
+            params = {id: key, cfg: cfg},
+            no_save = ['items', 'num', 'start', 'index'];
+        if (idx > -1) {
+          bbn.fn.each(no_save, function(a, i){
+            if ( cfg[a] !== undefined ){
+              delete params.cfg[a];
+            }
+          });
+          
+          if ( bbn.fn.countProperties(params.cfg) ){
+            if ( this.url !== undefined ){
+              return bbn.fn.post(this.url + 'save', params, (d) => {
+                if ( d.data && d.data.success ){
+                  for ( let n in params.cfg ){
+                    this.$set(this.widgets[idx], n, params.cfg[n]);
+                  }
+                  this.$nextTick(()=>{
+                    this.setWidgetStorage(idx);
+                  });
+                  this.$nextTick(()=>{
+                    if ( params.cfg.hidden !== undefined ){
+                      this.updateMenu();
+                    }
+                  });
+                  this.$nextTick(()=>{
+                    this.$forceUpdate();
+                  });
+                }
+              }).then(()=>{
+                this.updateMenu();
+              });
+            }
+            else{              
+              for ( let n in cfg ){
+                this.$set(this.widgets[idx], n, cfg[n]);
+              }
+              this.setWidgetStorage(idx);
+              if ( cfg.hidden !== undefined ){
+                this.updateMenu();
+              }
+              this.$forceUpdate();             
+            }            
           }
         }
         new Error("No corresponding widget found for key " + key);
@@ -564,6 +621,12 @@
       isSorting(newVal){
         if ( !newVal ){
           this.sortTargetIndex = null;
+        }
+      },
+      source: {
+        deep: true,
+        handler(){
+          this.init();
         }
       }
     }

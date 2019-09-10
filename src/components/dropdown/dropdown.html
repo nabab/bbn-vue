@@ -35,10 +35,12 @@
                :max-height="maxHeight"
                :min-width="$el.clientWidth"
                ref="list"
+               @mouseleave.prevent
+               :auto-hide="true"
                :uid="sourceValue"
                :item-component="realComponent"
                @select="select"
-               :latency="25"
+               :children="null"
                :selected="[value]"
                @close="isOpened = false"
                :source="filteredData"

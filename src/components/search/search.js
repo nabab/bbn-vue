@@ -67,44 +67,37 @@
       delay: {
         type: Number,
         default: 500
+      },
+      shortPlaceholder: {
+        type: String,
+        default: '?'
       }
     },
     data(){
       return {
-        /**
-         * @data {String} [''] filterString
-         */
-        filterString: this.textValue || '',
-        filterTimeout: false,
         specialWidth: this.minWidth,
-        currentPlaceholder: '?'
+        currentPlaceholder: this.shortPlaceholder,
+        timeout: null
       };
     },
     methods: {
-      click(){
-        if (!this.disabled) {
-          this.getRef('input').focus();
-        }
-      },
-      focus(){
+      searchFocus(){
+        clearTimeout(this.timeout);
         this.isFocused = true;
         this.specialWidth = this.maxWidth;
         this.currentPlaceholder = this.placeholder;
       },
-      blur(){
-        this.isFocused = false;
-        this.specialWidth = this.minWidth;
-        this.filterString = '';
-        this.currentPlaceholder = '?';
+      searchBlur(){
+        clearTimeout(this.timeout);
+        this.timeout = setTimeout(() => {
+          this.isFocused = false;
+          this.specialWidth = this.minWidth;
+          this.filterString = '';
+          this.currentPlaceholder = '?';
+        }, 250);
       },
-      /**
-       * @method leave
-       * @param element 
-       */
-      leave(){
-        if ( this.isOpened && !this.getRef('list').isOver ){
-          this.isOpened = false;
-        }
+      searchClose(){
+        this.isOpened = false;
       },
       /**
        * Emits the event 'select' 
