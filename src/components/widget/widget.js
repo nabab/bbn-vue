@@ -178,7 +178,7 @@
         let tmp = this.menu.slice();
         if ( this.url ){
           tmp.unshift({
-            text: bbn._("Reload"),
+            text: '<i class="nf nf-fa-refresh"></i>' + bbn._("Reload"),
             icon: "nf nf-fa-refresh",
             command: () => {
               this.reload();

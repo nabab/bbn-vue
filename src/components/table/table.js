@@ -475,7 +475,8 @@
         cssRuleName: bbn.fn.randomString().toLowerCase(),
         initStarted: false,
         inTable: null,
-        filterElement: null
+        filterElement: null,
+        hasHorizontalScroll: false
       };
     },
     computed: {
@@ -3067,6 +3068,20 @@
           }
         }
       },
+      initStarted(v){
+        if ( !v ){
+          setTimeout(() => {
+            let hs = false;
+            if ( this.scrollable ){
+              let hb = this.getRef('xScroller');
+              if (hb && hb.isActive){
+                hs = true;
+              }
+            }
+            this.hasHorizontalScroll = hs;
+          }, 250);
+        }
+      }
     }
   });
 

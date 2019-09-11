@@ -140,7 +140,7 @@
     <div :class="{'bbn-flex-fill': scrollable, 'bbn-table-main': true, 'bbn-w-100': true}">
       <div :class="{'bbn-overlay': scrollable, 'bbn-block': !scrollable}"
            :style="{
-             bottom: scrollable ? '-' + containerPadding : '0px',
+             bottom: hasHorizontalScroll ? '-' + containerPadding : '0px',
              height: scrollable ? 'auto' : '100%'
            }">
         <div class="bbn-table-container"
@@ -332,7 +332,7 @@
           position: 'absolute',
           left: groupCols[0].width + 'px',
           right: groupCols[2].width + 'px',
-          bottom: scrollable ? containerPadding : '0px'
+          bottom: hasHorizontalScroll ? containerPadding : '0px'
         }">
           <bbn-scrollbar v-if="!isLoading && scrollable && ready"
                          orientation="horizontal"

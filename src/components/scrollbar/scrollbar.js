@@ -83,7 +83,8 @@
         moveTimeout: 0,
         show: this.hidden === 'auto' ? false : !this.hidden,
         scroll: this.initial,
-        isReaching: false
+        isReaching: false,
+        isActive: false
       };
     },
     computed: {
@@ -109,12 +110,8 @@
         return this.containerSize ? this.containerSize / 100 * this.size : 0;
       },
       isVisible(){
-        return (this.hidden !== true) &&
-          this.realContainer &&
-          this.containerSize &&
-          (this.contentSize > (this.containerSize + bbn.fn.getScrollBarSize() + 2))
+        return (this.hidden !== true) && this.isActive;
       },
-
     },
     methods: {
       /**
@@ -313,6 +310,7 @@
             else{
               this.size = 0;
             }
+            this.isActive = this.contentSize > (this.containerSize + bbn.fn.getScrollBarSize() + 2);
           }
         }
         else{

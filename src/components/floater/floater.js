@@ -425,6 +425,9 @@
           this.filteredData.length || 
           this.$slots.default
         ));
+      },
+      isHorizontal(){
+        return this.orientation === 'horizontal';
       }
     },
     methods: {
@@ -475,8 +478,9 @@
           let coord = this.element.getBoundingClientRect();
           if (this.isHorizontal) {
             maxHeight.push(Math.max(coord.y + coord.height, bbn.env.height - coord.y));
-          } else {
-            maxHeight.push(Math.max(coord.y, bbn.env.height - coord.y + coord.height));
+          }
+          else {
+            maxHeight.push(Math.max(coord.y, bbn.env.height - coord.y - coord.height));
           }
         }
         if (this.left) {
@@ -507,7 +511,7 @@
       _getCoordinates() {
         if (this.element) {
           let coor = this.element.getBoundingClientRect(),
-            isHorizontal = this.orientation === 'horizontal';
+            isHorizontal = this.isHorizontal;
           return {
             top: isHorizontal ? coor.top : coor.bottom,
             bottom: this.containerHeight - (isHorizontal ? coor.bottom : coor.top),

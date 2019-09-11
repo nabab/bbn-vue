@@ -12,6 +12,7 @@
       @resize.stop="onResize()"
       @mouseleave="mouseleave"
       @mouseenter="isOver = true"
+      @keyup.esc="close"
       @click.stop
       :style="currentStyle">
   <header v-if="title"
