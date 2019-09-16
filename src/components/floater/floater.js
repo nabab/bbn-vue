@@ -16,83 +16,21 @@
   //bbn.vue.preloadBBN(['scroll', 'list', 'button']);
   Vue.component('bbn-floater', {
     name: 'bbn-floater',
-    mixins: [bbn.vue.basicComponent, bbn.vue.listComponent, bbn.vue.resizerComponent, bbn.vue.keepCoolComponent],
+    mixins: [
+      bbn.vue.basicComponent,
+      bbn.vue.listComponent,
+      bbn.vue.resizerComponent,
+      bbn.vue.keepCoolComponent,
+      bbn.vue.toggleComponent,
+      bbn.vue.dimensionsComponent,
+      bbn.vue.positionComponent
+    ],
     props: {
       /**
        * @prop container
        * 
        */
       container: {},
-      /**
-       * The maximum width of the floater.
-       * @prop {Number|String} maxWidth
-       */
-      maxWidth: {
-        type: [Number, String]
-      },
-      /**
-       * The maximum height of the floater.
-       * @prop {Number|String} maxHeight
-       */
-      maxHeight: {
-        type: [Number, String]
-      },
-      /**
-       * The minimum width of the floater.
-       * @prop {Number|String} minWidth
-       */
-      minWidth: {
-        type: [Number, String]
-      },
-      /**
-       * The minimum height of the floater.
-       * @prop {Number|String} maxHeight
-       */
-      minHeight: {
-        type: [Number, String]
-      },
-      /**
-       * The width of the floater.
-       * @prop {String|Number|Boolean} width
-       */
-      width: {
-        type: [String, Number, Boolean]
-      },
-      /**
-       * The height of the floater.
-       * @prop {String|Number|Boolean} height
-       */
-      height: {
-        type: [String, Number, Boolean]
-      },
-      /**
-       * The position 'left'.
-       * @prop {Number} left
-       */
-      left: {
-        type: Number
-      },
-      /**
-       * The position 'right'.
-       * @prop {Number} right
-       */
-      right: {
-        type: Number
-      },
-      /**
-       * The position 'top'.
-       * @prop {Number} top
-       */
-      top: {
-        type: Number
-      },
-      /**
-       * The position 'bottom'.
-       * @prop {Number} bottom
-       */
-      bottom: {
-        type: Number
-      },
       /**
        * The html content of the floater.
        * @prop {String} [''] content
@@ -119,16 +57,6 @@
       orientation: {
         type: String,
         default: 'vertical'
-      },
-      // @todo not used
-      hpos: {
-        type: String,
-        default: 'left'
-      },
-      // @todo not used
-      vpos: {
-        type: String,
-        default: 'bottom'
       },
       /**
        * Defines the ability of the floater to be scrollable.
@@ -278,30 +206,6 @@
          */
         realWidth: null,
         /**
-         * @data [null] currentHeight
-         */
-        currentHeight: null,
-        /**
-         * @data [null] currentWidth
-         */
-        currentWidth: null,
-        /**
-         * @data [null] currentHeight
-         */
-        currentMinHeight: null,
-        /**
-         * @data [null] currentWidth
-         */
-        currentMinWidth: null,
-        /**
-         * @data [null] currentHeight
-         */
-        currentMaxHeight: null,
-        /**
-         * @data [null] currentWidth
-         */
-        currentMaxWidth: null,
-        /**
          * @data {Boolean} [false] currentScroll
          */
         scrollWidth: null,
@@ -321,10 +225,6 @@
          * @data {Number} [0] currentHeight
          */
         containerHeight: 0,
-        /**
-         * @data {Boolean} focused
-         */
-        focused: bbn.env.focused || null,
         /**
          * @data {Number} [0] opacity
          */
@@ -1041,6 +941,12 @@
       updatePosition(){
         this.init();
         this.onResize();
+      },
+      onFocus(){
+        if ( this.currentButtons.length ){
+          //bbn.fn.log("onFocus", this.getRef('buttons'), this.getRef('button' + (this.currentButtons.length - 1)));
+          this.getRef('button' + (this.currentButtons.length - 1)).$el.focus();
+        }
       }
     },
     /**
@@ -1048,7 +954,6 @@
      * @fires _updateIconSituation
      */
     created() {
-      this.focused = bbn.env.focused;
       this.updateData().then(() => {
         this._updateIconSituation();
       });
@@ -1122,23 +1027,6 @@
             bbn.fn.log("CHANGE ELEMENT");
             this.onResize();
           });
-        }
-      },
-      /**
-       * @watch currentVisible
-       * @param {Boolean} newVal 
-       * @emits open
-       * @emits close
-       * @fires onResize
-       */
-      currentVisible(newVal) {
-        this.$emit(newVal ? 'open' : 'close');
-        if (newVal) {
-          bbn.fn.log("CHANGE VISIBLE");
-          this.onResize();
-        }
-        else {
-          this.isResized = false;
         }
       },
       isOver(v){

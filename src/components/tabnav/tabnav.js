@@ -158,7 +158,7 @@
           if ( ele ){
             let idx = this.router.getIndex(ele);
             if ( idx !== false ){
-              this.router.$set(this.router.views[idx].events, 'bbnObs' + obs.element + obs.id, newVal);
+              this.$set(this.tabs[idx].events, 'bbnObs' + obs.element + obs.id, newVal);
               this.$nextTick(() => {
                 this.$forceUpdate();
               });
@@ -211,6 +211,7 @@
           let parent = this.closest('bbn-container');
           let fullURL = parent ? parent.getFullURL() : this.storageName;
           this.setStorage(cfg, fullURL);
+          this.$forceUpdate();
         }
       },
 
@@ -481,7 +482,7 @@
         }
         else if (res && (this.selected === idx)) {
           this.router.selected = false;
-          if ( this.router.views.length ){
+          if ( this.tabs.length ){
             bbn.fn.each(this.history, (a) => {
               let tmp = this.router.getIndex(a);
               if ( tmp !== false ){
@@ -489,7 +490,7 @@
                 return false;
               }
             });
-            this.router.activateIndex(this.router.views[idx] ? idx : idx - 1);
+            this.router.activateIndex(this.tabs[idx] ? idx : idx - 1);
           }
         }
         this.$nextTick(() => {
@@ -549,19 +550,19 @@
       },
 
       getMenuFn(idx){
-        if ( !this.router || !this.router.views[idx]  || (this.router.views[idx].menu === false) ){
+        if ( !this.router || !this.tabs[idx]  || (this.tabs[idx].menu === false) ){
           return false;
         }
         let items = [],
-            tmp = ((bbn.fn.isFunction(this.router.views[idx].menu) ? this.router.views[idx].menu() : this.router.views[idx].menu) || []).slice(),
+            tmp = ((bbn.fn.isFunction(this.tabs[idx].menu) ? this.tabs[idx].menu() : this.router.views[idx].menu) || []).slice(),
             others = false;
-        bbn.fn.each(this.router.views, (a, i) => {
+        bbn.fn.each(this.tabs, (a, i) => {
           if ( (i !== idx) && !a.static ){
             others = true;
             return false;
           }
         });
-        if ( !this.router.views[idx].help ){
+        if ( !this.tabs[idx].help ){
           let sub = this.getSubTabNav(idx);
           if ( sub && sub.tabs && sub.tabs.length ){
             let helps = [];
@@ -576,20 +577,20 @@
               }
             });
             if ( helps.length === 1 ){
-              this.router.views[idx].help = helps[0].content;
+              this.tabs[idx].help = helps[0].content;
             }
             else if ( helps.length ){
-              this.router.views[idx].help = '';
+              this.tabs[idx].help = '';
               let slide1 = '';
               helps.forEach((a) => {
                 slide1 += '<h1><a href="#' + a.anchor + '">' + a.title + '</a></h1>\n';
-                this.router.views[idx].help += '---slide---' + '\n<a name="' + a.anchor + '">\n' + a.content;
+                this.tabs[idx].help += '---slide---' + '\n<a name="' + a.anchor + '">\n' + a.content;
               });
-              this.router.views[idx].help = slide1 + this.router.views[idx].help;
+              this.tabs[idx].help = slide1 + this.tabs[idx].help;
             }
           }
         }
-        if ( this.router.views[idx].help ){
+        if ( this.tabs[idx].help ){
           items.push({
             text: bbn._("Help"),
             key: "help",
@@ -597,7 +598,7 @@
             command: () => {
               let tab = this.getVue(idx),
                   span = document.createElement('span');
-              span.innerHTML =  this.router.views[idx].title;
+              span.innerHTML =  this.tabs[idx].title;
               let title = span.innerText;
               if ( !title && span.querySelector("[title]").length ){
                 title = span.querySelector("[title]").getAttribute("title");
@@ -612,7 +613,7 @@
                                  separator="---slide---"></bbn-slideshow>`
                 },
                 source: {
-                  content: this.router.views[idx].help
+                  content: this.tabs[idx].help
                 },
                 title: '<i class="bbn-large nf nf-mdi-help_circle_outline"> </i> <span class="bbn-iblock">' + title + '</span>',
                 width: '90%',
@@ -644,18 +645,20 @@
             items.push(a)
           })
         }
-        if ( this.router.views[idx].icon && this.router.views[idx].title ){
+        if ( this.tabs[idx].icon && this.tabs[idx].title ){
           items.push({
-            text: this.router.views[idx].notext ? bbn._("Show text") : bbn._("Show only icon"),
+            text: this.tabs[idx].notext ? bbn._("Show text") : bbn._("Show only icon"),
             key: "notext",
-            icon: this.router.views[idx].notext ? "nf nf-fa-font" : "nf nf-fa-font_awesome",
+            icon: this.tabs[idx].notext ? "nf nf-fa-font" : "nf nf-fa-font_awesome",
             command: () => {
-              this.router.views[idx].notext = !this.router.views[idx].notext;
+              bbn.fn.log(this.tabs[idx]);
+              this.tabs[idx].notext = !this.tabs[idx].notext;
+              this.$forceUpdate();
             }
           });
         }
-        if ( !this.router.views[idx].static ){
-          if ( !this.router.views[idx].pinned ){
+        if ( !this.tabs[idx].static ){
+          if ( !this.tabs[idx].pinned ){
             items.push({
               text: bbn._("Pin"),
               key: "pin",
@@ -694,7 +697,7 @@
             }
           })
         }
-        if ( others && !this.router.views[idx].static ){
+        if ( others && !this.tabs[idx].static ){
           items.push({
             text: bbn._("Close All"),
             key: "close_all",
@@ -913,8 +916,8 @@
     watch: {
       selected(newVal, oldVal){
         if ( this.tabs[oldVal] ){
-          bbn.fn.iterate(this.router.views[oldVal].events, (a, n) => {
-            delete this.router.views[oldVal].events[n];
+          bbn.fn.iterate(this.tabs[oldVal].events, (a, n) => {
+            delete this.tabs[oldVal].events[n];
           });
         }
         if ( this.tabs[newVal] && this.ready ){

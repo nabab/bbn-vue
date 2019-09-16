@@ -149,6 +149,112 @@
         }
       }
     },
+    dimensionsComponent: {
+      props: {
+        /**
+        * The maximum width of the component.
+        * @prop {Number|String} maxWidth
+        */
+        maxWidth: {
+          type: [Number, String]
+        },
+        /**
+        * The maximum height of the component.
+        * @prop {Number|String} maxHeight
+        */
+        maxHeight: {
+          type: [Number, String]
+        },
+        /**
+        * The minimum width of the component.
+        * @prop {Number|String} minWidth
+        */
+        minWidth: {
+          type: [Number, String]
+        },
+        /**
+        * The minimum height of the component.
+        * @prop {Number|String} maxHeight
+        */
+        minHeight: {
+          type: [Number, String]
+        },
+        /**
+        * The width of the component.
+        * @prop {String|Number|Boolean} width
+        */
+        width: {
+          type: [String, Number, Boolean]
+        },
+        /**
+        * The height of the component.
+        * @prop {String|Number|Boolean} height
+        */
+        height: {
+          type: [String, Number, Boolean]
+        },
+      },
+      data(){
+        return {
+          /**
+          * @data [null] currentHeight
+          */
+          currentHeight: null,
+          /**
+          * @data [null] currentWidth
+          */
+          currentWidth: null,
+          /**
+          * @data [null] currentHeight
+          */
+          currentMinHeight: null,
+          /**
+          * @data [null] currentWidth
+          */
+          currentMinWidth: null,
+          /**
+          * @data [null] currentHeight
+          */
+          currentMaxHeight: null,
+          /**
+          * @data [null] currentWidth
+          */
+          currentMaxWidth: null,
+        };
+      }
+    },
+    positionComponent: {
+      props: {
+        /**
+        * The position 'left'.
+        * @prop {Number} left
+        */
+        left: {
+          type: Number
+        },
+        /**
+        * The position 'right'.
+        * @prop {Number} right
+        */
+        right: {
+          type: Number
+        },
+        /**
+        * The position 'top'.
+        * @prop {Number} top
+        */
+        top: {
+          type: Number
+        },
+        /**
+        * The position 'bottom'.
+        * @prop {Number} bottom
+        */
+        bottom: {
+          type: Number
+        },
+      }
+    },
     dropdownComponent: {
       props: {
         /**
@@ -430,14 +536,46 @@
      * Focus Component
      * @component focusComponent
      */
-    focusComponent: {
+    toggleComponent: {
+      props: {
+        visible: {
+          type: Boolean,
+          default: true
+        }
+      },
       data(){
         return {
           /**
-           * @data {Boolean} focusedComponent
-           * @memberof focusComponent
+           * @data {Element} prevFocused
+           * @memberof toggleComponent
            */
-          focusedComponent: bbn.env.focused
+          prevFocused: bbn.env.focused,
+          currentVisible: this.visible,
+          focusable: null,
+          hasBeenOpened: false
+        };
+      },
+      methods: {
+        show(){
+          this.currentVisible = true;
+        },
+        hide(){
+          this.currentVisible = false;
+        },
+        toggle(){
+          this.currentVisible = !this.currentVisible;
+        },
+        switchFocus(v){
+          if ( v ){
+            if ( this.focusable && this.focusable.focus ){
+              bbn.fn.log("BEFORE FOCUS", this.focusable);
+              this.focusable.focus();
+            }
+          }
+          else if ( this.prevFocused ){
+            bbn.fn.log("BEFORE FOCUS", this.prevFocused);
+            this.prevFocused.focus();
+          }
         }
       },
       /**
@@ -445,15 +583,43 @@
        * @memberof focusComponent
        */
       mounted(){
-        this.$el.focus();
+        this.$nextTick(() => {
+          if ( !this.focusable ){
+            this.focusable = this.$el;
+          }
+          if ( this.currentVisible ){
+            this.switchFocus(true);
+          }
+        });
       },
       /**
        * @event beforeDestroy
        * @memberof focusComponent
        */
       beforeDestroy(){
-        if ( this.focusedComponent ){
-          this.focusedComponent.focus();
+        bbn.fn.log("BEFORE DESTROY", this.prevFocused);
+        this.switchFocus(false);
+      },
+      watch: {
+        currentVisible(v){
+          if ( v ){
+            if ( !this.hasBeenOpened ){
+              this.hasBeenOpened = true;
+            }
+            if ( bbn.env.focused && (bbn.env.focused !== this.prevFocused) ){
+              this.prevFocused = bbn.env.focused;
+            }
+          }
+          this.$emit(v ? 'open' : 'close');
+          if ( this.onResize !== undefined ){
+            if ( v ){
+              this.onResize();
+            }
+            else{
+              this.isResized = false;
+            }
+          }
+          this.switchFocus(v);
         }
       }
     },
@@ -535,6 +701,12 @@
         hasStorage(){
           return (this.storage || (this.storageFullName || (this.storageName !== 'default'))) && !!this._storage;
         },
+        storageDefaultName(){
+          if ( !this.storage ){
+            return false;
+          }
+          return this._getStorageRealName();
+        }
       },
       methods: {
         /**
@@ -638,7 +810,7 @@
                   return v ? (new moment(v)).format(cfg.format) : '-';
                 }
                 else{
-                  return v ? bbn.fn.fdate(v) : '-';
+                  return v ? bbn.fn.fdate(v, true) : '-';
                 }
                 break;
               case "date":
@@ -1313,6 +1485,10 @@
            */
           currentLimit: this.limit,
           /**
+           * @data {Number} [0] currentStart
+           */
+          currentStart: this.start,
+          /**
            * @data {Object} currentOrder
            */
           currentOrder: order,
@@ -1623,7 +1799,9 @@
           return {};
         },
         beforeUpdate(){
-          return true;
+          let e = new Event('beforeUpdate', {cancelable: true});
+          this.$emit('beforeUpdate', e);
+          return e.defaultPrevented ? false : true;
         },
         afterUpdate(){
           return true;
@@ -1664,7 +1842,7 @@
                   if ( this.showable ){
                     data.fields = this.shownFields;
                   }
-                  prom = bbn.fn.post(this.source, data)
+                  prom = this.post(this.source, data)
                 }
               }
               else{
@@ -1782,12 +1960,13 @@
           if (this.currentData[index]) {
             let ev = new Event('delete');
             if (this.url) {
-              bbn.fn.post(this.url, bbn.fn.extend({}, this.data, this.currentData[index].data, {
+              this.post(this.url, bbn.fn.extend({}, this.data, this.currentData[index].data, {
                 action: 'delete'
               }), (d) => {
                 if (d.success) {
                   let data = this.currentData[index].data;
                   this.currentData.splice(index, 1);
+                  this.total--;
                   this.updateIndexes();
                   this.$emit('delete', data, ev);
                   if (appui) {
@@ -1800,6 +1979,7 @@
               })
             } else {
               this.currentData.splice(index, 1);
+              this.total--;
               if (this.originalData) {
                 this.originalData.splice(index, 1);
               }

@@ -1,7 +1,8 @@
 <div :class="['bbn-overlay' , componentClass, {'bbn-unselectable': isSorting}]"
-     @mouseleave="isSorting = false"
+     @mouseleave="sortTargetIndex = null; isSorting = false"
      @touchend="isSorting = false"
      @dragend="isSorting = false"
+     @mousemove="dragging"
      @mouseup="isSorting = false">
   <bbn-scroll :scrollable="scrollable"
               ref="scroll"
@@ -18,17 +19,35 @@
               'column-count': numCols
             }">
       <bbn-widget v-for="w in currentWidgets"
-                  ref="widgets"                  
+                  :ref="'widget_' + w.key"
                   @loaded="resizeScroll"
                   v-bind="w"
                   :options="w.options"
                   :uid="w.key"
+                  @close="hideWidget(w.key)"
                   :key="w.key"
                   :index="w.index"
-                  @mouseenter="sortTargetIndex = w.index"
+                  @mouseenter="mouseEnterWidget(w.index)"
+                  :class="{'bbn-selected-border': 
+                    sortOriginIndex > w.index ?
+                      (sortOriginIndex !== w.index) &&
+                      (w.index === sortTargetIndex) :
+                      (sortTargetIndex !== null) &&
+                      (w.index - 1 === sortTargetIndex) &&
+                      (sortOriginIndex !== w.index)
+                  }"
                   @sortstart="isSorting = true; sortOriginIndex = w.index; sortTargetIndex = null"
                   :title="w.title ? w.title : (w.text ? w.text : '')"
       ></bbn-widget>
     </div>
+    <div class="bbn-widget bbn-sort-helper"
+         ref="sortHelper"
+         :style="{
+           display: isSorting ? 'block' : 'none',
+           width: sortHelperWidth + 'px',
+           height: sortHelperHeight + 'px',
+           left: sortHelperX + 'px',
+           top: sortHelperY + 'px'
+         }"></div>
   </bbn-scroll>
 </div>

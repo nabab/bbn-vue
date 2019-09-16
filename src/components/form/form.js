@@ -386,7 +386,7 @@
         this.isPosted = true;
         this.isLoading = true;
         if ( this.action ){
-          bbn.fn[this.blank || this.self || this.target ? 'post_out' : 'post'](this.action, bbn.fn.extend(true, {}, this.data || {}, this.source || {}), (d) => {
+          this[this.blank || this.self || this.target ? 'post_out' : 'post'](this.action, bbn.fn.extend(true, {}, this.data || {}, this.source || {}), (d) => {
             this.originalData = bbn.fn.extend(true, {}, this.source || {});
             if ( this.successMessage && p ){
               p.alert(this.successMessage);

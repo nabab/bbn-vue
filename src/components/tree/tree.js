@@ -897,7 +897,7 @@
           this.tree.isLoading = true;
           this.loading = true;
           this.tree.$emit('beforeLoad', this.dataToSend());
-          bbn.fn.post(this.tree.url, this.dataToSend(), (res) => {
+          this.post(this.tree.url, this.dataToSend(), (res) => {
             this.tree.isLoading = false;
             this.loading = false;
             if ( res.data ){

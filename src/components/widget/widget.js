@@ -212,7 +212,6 @@
         this.realButtonsRight = bbn.fn.isFunction(this.buttonsRight) ? this.buttonsRight() : this.buttonsRight;
       },
       close(){
-        this.dashboard.updateWidget(this.uid, {hidden: !this.hidden});
         this.$emit("close", this.uid, this);
       },
       zoom(){
@@ -234,7 +233,7 @@
             params.limit = this.limit;
             params.start = this.currentStart;
           }
-          return bbn.fn.post(this.url, params, (d) => {
+          return this.post(this.url, params, (d) => {
             if ( d.data !== undefined ){
               this.currentItems = d.data;
               if ( d.limit && (this.limit !== d.limit) ){

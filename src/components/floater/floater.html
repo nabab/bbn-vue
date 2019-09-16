@@ -9,6 +9,8 @@
         componentClass
       ]"
       v-if="isVisible"
+      tabindex="0"
+      @focus="onFocus"
       @resize.stop="onResize()"
       @mouseleave="mouseleave"
       @mouseenter="isOver = true"
@@ -93,6 +95,8 @@
           ref="buttons">
     <bbn-button v-for="(b, i) in currentButtons"
                 :key="i"
+                :ref="'button' + i"
+                @ready="t => focusable = t"
                 v-bind="b">
     </bbn-button>
   </footer>

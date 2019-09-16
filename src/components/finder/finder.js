@@ -108,7 +108,7 @@
        */
       get_size(p){
         let idx = bbn.fn.search(this.dirs, 'name', p.name);
-        bbn.fn.post(this.root + 'actions/finder/dirsize', {
+        this.post(this.root + 'actions/finder/dirsize', {
           path: p.path,
           origin: ( (this.mode === 'ftp') || (this.mode === 'ssh')) ? this.origin : ''
         }, (d) => {
@@ -190,7 +190,7 @@
                 ext = node.data.value.slice(- val);
               }
               
-              bbn.fn.post(this.root + 'actions/finder/file', {
+              this.post(this.root + 'actions/finder/file', {
                 node: node.data,
                 path: this.currentPath,
                 origin: this.origin,
@@ -322,7 +322,7 @@
           let trees = this.findAll('bbn-tree'), 
           path = '';
           this.confirm(bbn._(st), () => {
-            bbn.fn.post(this.root + 'actions/finder/paste', {
+            this.post(this.root + 'actions/finder/paste', {
               node: this.copied.data,
               origin: ( (this.mode === 'ftp') || (this.mode === 'ssh') ) ? this.origin : '',
               old_dir: this.oldDir,
@@ -350,7 +350,7 @@
       },
       //if mode === 'nextcloud' download the file
       download(n){
-        bbn.fn.post(this.root + 'actions/finder/download', {
+        this.post(this.root + 'actions/finder/download', {
           value: n.data.value,
           file: n.data.file,
           path: this.currentPath !== n.data.value + '/' ? this.currentPath : '',
@@ -415,7 +415,7 @@
             st += node.data.value;
           }
           
-          bbn.fn.post(this.root + 'actions/finder/delete', {
+          this.post(this.root + 'actions/finder/delete', {
             path: st, 
             origin: this.origin
           }, (d) => {

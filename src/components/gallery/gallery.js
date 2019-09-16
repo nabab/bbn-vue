@@ -351,7 +351,7 @@
             start: this.start,
             data: this.data
           };
-          return bbn.fn.post(this.source, data, result => {
+          return this.post(this.source, data, result => {
             this.isLoading = false;
             if (
               !result ||

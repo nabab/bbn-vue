@@ -11,25 +11,24 @@
   "use strict";
 
   Vue.component('bbn-slider', {
-    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent],
+    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent, bbn.vue.toggleComponent],
     props: {
       orientation: {
         type: String,
         default: 'left'
       },
-      opened: {
-        type: Boolean,
-        default: false
-      },
       closeButton: {
         type: [Boolean, String],
         default: true
+      },
+      visible: {
+        type: Boolean,
+        default: false
       }
     },
     data(){
       return {
         hasBeenOpened: false,
-        isOpened: this.opened,
         opacity: 0,
         currentSize: 0,
         top: null,
@@ -53,7 +52,7 @@
             o['box-shadow'] = '5px 0 5px 0 !important';
             o.width = 'auto';
             o.top = 0;
-            o.left = this.isOpened ? 0 : -this.currentSize + 'px';
+            o.left = this.currentVisible ? 0 : -this.currentSize + 'px';
             o.transition = 'left 0.5s';
             break;
           case 'right':
@@ -62,7 +61,7 @@
             o['box-shadow'] = '-5px 0 5px 0 !important';
             o.width = 'auto';
             o.top = 0;
-            o.right = this.isOpened ? 0 : -this.currentSize + 'px';
+            o.right = this.currentVisible ? 0 : -this.currentSize + 'px';
             o.transition = 'right 0.5s';
             break;
           case 'top':
@@ -70,7 +69,7 @@
             o['-moz-box-shadow'] = '0 5px 0 5px !important';
             o['box-shadow'] = '0 5px 0 5px !important';
             o.left = 0;
-            o.top = this.isOpened ? 0 : -this.currentSize + 'px';
+            o.top = this.currentVisible ? 0 : -this.currentSize + 'px';
             o.transition = 'top 0.5s';
             break;
           case 'bottom':
@@ -78,7 +77,7 @@
             o['-moz-box-shadow'] = '0 -5px 0 5px !important';
             o['box-shadow'] = '0 -5px 0 5px !important';
             o.left = 0;
-            o.bottom = this.isOpened ? 0 : -this.currentSize + 'px';
+            o.bottom = this.currentVisible ? 0 : -this.currentSize + 'px';
             o.transition = 'bottom 0.5s';
             break;
         }
@@ -101,25 +100,22 @@
           document.removeEventListener('touchstart', this.checkMouseDown);
         }
       },
-      getSize(){
-        return this.$el.getBoundingClientRect()[this.isVertical ? 'width' : 'height'];
-      },
-      updateSize(){
-        let s = this.getSize();
-        if (s !== this.currentSize) {
+      onResize(){
+        let s = this.$el.getBoundingClientRect()[this.isVertical ? 'width' : 'height'];
+        if ((s !== this.currentSize) && (s > 20)){
           this.currentSize = s + 7;
         }
       },
       show(){
-        this.updateSize();
-        this.isOpened = true;
+        this.onResize();
+        this.currentVisible = true;
       },
       hide(){
-        this.updateSize();
-        this.isOpened = false;
+        //this.updateSize();
+        this.currentVisible = false;
       },
       toggle(){
-        if (this.isOpened) {
+        if (this.currentVisible) {
           this.hide();
         }
         else{
@@ -127,8 +123,8 @@
         }
       },
       checkMouseDown(e){
-        bbn.fn.log("checkMouseDown", this.isOpened);
-        if ( this.isOpened &&
+        bbn.fn.log("checkMouseDown", this.currentVisible);
+        if ( this.currentVisible &&
           !e.target.closest(".bbn-treemenu") &&
           !e.target.closest(".bbn-menu-button")
         ){
@@ -153,38 +149,27 @@
       this._setEvents();
     },
     mounted(){
+      this.onResize();
+      this.ready = true;
       this.$nextTick(() => {
-        if (this.isOpened) {
-          this.show();
-        }
-        else{
-          this.hide();
-        }
         this.opacity = 1;
-        this.ready = true;
       });
     },
     watch: {
       /**
-       * @watch isOpened
+       * @watch currentVisible
        * @param {Boolean} newVal 
        * @fires tree.load
        * @fires _setEvents
        */
-      isOpened(newVal){
-        if ( newVal ){
-          if ( !this.hasBeenOpened ){
-            this.hasBeenOpened = true;
-            this.$emit('init');
-          }
-          this._setEvents(true);
-        }
-        else{
-          this._setEvents();
-        }
+      currentVisible(newVal){
+        this._setEvents(!!newVal);
       },
       currentSize(v){
         this.$el.style[this.isVertical ? 'width' : 'height'] = v;
+      },
+      opacity(v){
+        bbn.fn.log("OPACITY: " + v);
       }
     }
   });

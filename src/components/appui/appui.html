@@ -1,5 +1,5 @@
 <div class="bbn-appui bbn-observer bbn-overlay"
-     :style="{opacity: opacity}">
+     :style="{opacity: opacity,}">
   <div v-if="!cool"
        class="bbn-middle bbn-xl"
        v-text="_('Appui is already defined') + '... :('">
@@ -13,7 +13,13 @@
               :scrollable="false"
               ref="head"
               overflow="visible">
-      <div class="bbn-header bbn-100 bbn-flex-width bbn-unselectable bbn-no-border">
+      <div :class="{
+        'bbn-header': true,
+        'bbn-100': true,
+        'bbn-flex-width': true,
+        'bbn-unselectable': true,
+        'bbn-no-border': true,
+      }">
         <!-- MENU BUTTON -->
         <div class="bbn-block bbn-h-100 bbn-middle bbn-menu-button-container"
              style="width: 70px; margin-right: 70px">
@@ -130,10 +136,20 @@
         <div class="bbn-flex-fill bbn-h-100">
           <bbn-loadbar v-if="loaders" ref="loading" :source="loaders"></bbn-loadbar>
         </div>
+        <div v-if="app.user.isDev"
+             class="bbn-h-100 bbn-vmiddle"
+             style="width: 3em;">
+          <i class="{
+                  nf: true,
+                  'nf-mdi-flag_outline': true,
+                  'bbn-p': true,
+                  'bbn-struck': !colorEnvVisible
+                  }"></i>
+        </div>
         <!-- TASK TRACKER -->
         <div v-if="plugins['appui-task']"
             class="bbn-h-100 bbn-vmiddle"
-            style="width: 8rem;"
+            style="width: 3em;"
         >
           <appui-task-tracker></appui-task-tracker>
         </div>
@@ -169,6 +185,7 @@
   <bbn-slider v-if="plugins['appui-menu']"
               orientation="left"
               ref="slider"
+              style="width: 35em"
               close-button="top-right">
     <bbn-treemenu :source="plugins['appui-menu'] + '/data'"
                   v-if="$refs.slider && $refs.slider.hasBeenOpened"
@@ -177,7 +194,6 @@
                   :menus="menus"
                   :current="currentMenu"
                   :top="50"
-                  style="width: 35em"
                   :shortcuts="true"
                   @shortcut="addShortcut"
                   @ready="menuMounted = true">

@@ -1,0 +1,10 @@
+<div :class="[componentClass, 'bbn-overlay']">
+  <bbn-frame :url="src"
+             :communication="true"
+             class="bbn-100 bbn-no-border"
+             :sandbox="null"
+             ref="frame"
+             @load="onload"
+             @message="readMessage"></bbn-frame>
+  <input type="hidden" :value="value">
+</div>

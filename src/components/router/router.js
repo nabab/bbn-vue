@@ -846,7 +846,7 @@
             });
           }
           this.$emit('update', this.views);
-          return bbn.fn.post(finalURL, {_bbn_baseURL: this.fullBaseURL}, (d) => {
+          return this.post(finalURL, {_bbn_baseURL: this.fullBaseURL}, (d) => {
             this.isLoading = false;
             //this.remove(url);
             if ( d.url ){

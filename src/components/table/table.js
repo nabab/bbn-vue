@@ -1673,6 +1673,9 @@
         if (!this.editable) {
           throw new Error("The table is not editable, you cannot use the edit function in bbn-table");
         }
+        if ( !winOptions ){
+          winOptions = {};
+        }
         if (!row) {
           this._addTmp();
           row = this.tmpRow;
@@ -1827,7 +1830,7 @@
             let o = bbn.fn.extend({}, this.data, this.tmpRow || this.editedRow, {
               action: this.tmpRow ? 'insert' : 'update'
             });
-            bbn.fn.post(this.url, o, (d) => {
+            this.post(this.url, o, (d) => {
               this.successEdit(d);
             })
           } else {

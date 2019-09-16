@@ -278,11 +278,24 @@
        * @fires getOrientation
        */
       onResize(){
-        if ( this.orientation === 'auto' ){
-          let o = this.getOrientation();
-          if ( o !== this.currentOrientation ){
-            this.currentOrientation = o;
+        if ( !this.isResizing ){
+          this.isResizing = true;
+          if ( this.orientation === 'auto' ){
+            let o = this.getOrientation();
+            if ( o !== this.currentOrientation ){
+              this.currentOrientation = o;
+            }
           }
+          /** @todo so far only fuckin way to make it re-render the right dimensions */
+          let w = this.$el.style.width;
+          let h = this.$el.style.height;
+          this.$el.style.width = '100%';
+          this.$el.style.height = '100%';
+          setTimeout(() => {
+            this.$el.style.width = w;
+            this.$el.style.height = h;
+            this.isResizing = false;
+          }, 100)
         }
       },
       /**

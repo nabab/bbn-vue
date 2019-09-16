@@ -92,6 +92,12 @@
       loadedConfig: {
         type: Object
       },
+      order: {
+        type: Array,
+        default(){
+          return [];
+        }
+      },
       /**
        * The object of configuration of the dashboard.
        * @prop {Object} cfg
@@ -127,9 +133,9 @@
          */
         widgets: [],
         /**
-         * @prop {Array} [[]] order
+         * @prop {Array} [[]] currentOrder
          */
-        order: [],
+        currentOrder: this.order.slice(),
         /**
          * @prop {Array} [[]] hidden
          */
@@ -146,6 +152,12 @@
          * @data {Boolean} [false] isSorting
          */
         isSorting: false,
+        sortTimeout: false,
+        sortingElement: false,
+        sortHelperWidth: 0,
+        sortHelperHeight: 0,
+        sortHelperX: 0,
+        sortHelperY: 0,
         currentSlots: [],
         resizeTimeout: false,
         numCols: 1
@@ -174,6 +186,13 @@
           order: config.order,
           hidden: config.hidden
         }, uid);
+      },
+      closeWidget(uid, widget){
+        let ev = new Event('close', {cancelable: true});
+        this.$emit('close', uid, widget);
+        if ( !ev.defaultPrevented ){
+          this.updateWidget(uid, {hidden: true});
+        }
       },
       /**
        * Gets the widget corresponding to the given key.
@@ -279,24 +298,22 @@
        * @param {Number} newIdx 
        */
       move(oldIdx, newIdx){
-        // Correcting the index counting the hidden widgets
-        this.$set(this.widgets[oldIdx], "index", newIdx);
-        bbn.fn.move(this.widgets, oldIdx, newIdx);
-        bbn.fn.each(this.widgets, (a, i) => {
-          if ( i !== a.index ){
-            this.$set(this.widgets[i], "index", i);
-          }
-        });
-        if ( this.storageFullName ){
-          let cps = bbn.vue.findAll(this.$root, 'bbn-dashboard');
-          /*
-          bbn.fn.each(cps, (cp, i) => {
-            if ( (cp !== this) && (cp.storageFullName === this.storageFullName) ){
-              cp.moveWidgets(oldIdx, newIdx);
+        bbn.fn.log("MOVING...");
+        if ( this.widgets[oldIdx] && this.widgets[newIdx] ){
+          bbn.fn.move(this.widgets, oldIdx, newIdx);
+          let order = [];
+          bbn.fn.each(this.widgets, (a, i) => {
+            if ( i !== a.index ){
+              this.updateWidget(a.key, {index: i});
             }
-          })
-          */
+            order.push(a.key);
+          });
+          this.currentOrder = order;
+          this.$emit('order', this.currentOrder);
+          bbn.fn.log(this.currentOrder, order);
+          return true;
         }
+        return false;
       },
       /**
        * Updates the menu of the parent container.
@@ -373,7 +390,7 @@
           
           if ( bbn.fn.countProperties(params.cfg) ){
             if ( this.url !== undefined ){
-              return bbn.fn.post(this.url + 'save', params, (d) => {
+              return this.post(this.url + 'save', params, (d) => {
                 if ( d.data && d.data.success ){
                   for ( let n in params.cfg ){
                     this.$set(this.widgets[idx], n, params.cfg[n]);
@@ -401,6 +418,11 @@
         }
         new Error("No corresponding widget found for key " + key);
       },*/
+      mouseEnterWidget(idx){
+        if ( this.isSorting && (idx !== this.sortOriginIndex) ){
+          this.sortTargetIndex = idx > this.sortOriginIndex ? idx - 1 : idx;
+        }
+      },
       updateWidget(key, cfg){        
         let idx = bbn.fn.search(this.widgets || [], 'key', key),
             params = {id: key, cfg: cfg},
@@ -411,39 +433,44 @@
               delete params.cfg[a];
             }
           });
-          
+          //bbn.fn.log("INDEX OK", idx, params);
           if ( bbn.fn.countProperties(params.cfg) ){
-            if ( this.url !== undefined ){
-              return bbn.fn.post(this.url + 'save', params, (d) => {
-                if ( d.data && d.data.success ){
-                  for ( let n in params.cfg ){
-                    this.$set(this.widgets[idx], n, params.cfg[n]);
-                  }
-                  this.$nextTick(()=>{
-                    this.setWidgetStorage(idx);
-                  });
-                  this.$nextTick(()=>{
-                    if ( params.cfg.hidden !== undefined ){
-                      this.updateMenu();
-                    }
-                  });
-                  this.$nextTick(()=>{
-                    this.$forceUpdate();
-                  });
+            let success = () => {
+              bbn.fn.iterate(params.cfg, (a, k) => {
+                this.$set(this.widgets[idx], k, a);
+              });
+              this.$nextTick(()=>{
+                this.setWidgetStorage(idx);
+                if ( params.cfg.hidden !== undefined ){
+                  this.updateMenu();
                 }
-              }).then(()=>{
-                this.updateMenu();
+                if ( this.hasStorage ){
+                  let cps = bbn.vue.findAll(this.$root, 'bbn-dashboard');
+                  bbn.fn.each(cps, (cp, i) => {
+                    if ( (cp !== this) && (cp.storageFullName === this.storageFullName) ){
+                      bbn.fn.iterate(params.cfg, (a, k) => {
+                        if ( cp.widgets[idx][k] !== a ){
+                          cp.$set(cp.widgets[idx], k, a);
+                        }
+                      });
+                      if ( params.cfg.hidden !== undefined ){
+                        cp.updateMenu();
+                      }
+                    }
+                  })
+                }
+                
+              });
+            };
+            if ( this.url !== undefined ){
+              return this.post(this.url + 'save', params, (d) => {
+                if ( d.data && d.data.success ){
+                  success();
+                }
               });
             }
             else{              
-              for ( let n in cfg ){
-                this.$set(this.widgets[idx], n, cfg[n]);
-              }
-              this.setWidgetStorage(idx);
-              if ( cfg.hidden !== undefined ){
-                this.updateMenu();
-              }
-              this.$forceUpdate();             
+              success();
             }            
           }
         }
@@ -489,9 +516,15 @@
        * @returns {Object}
        */
       add(obj, idx){
+        let checkIdx = bbn.fn.search(this.widgets, {key: obj.key});
+        if ( checkIdx > -1 ){
+          return this.widgets[checkIdx];
+        }
         if ( (idx === undefined) || (idx < 0) || (idx >= this.widgets.length) ){
+          if ( obj.hidden === undefined ){
+            obj.hidden = false;
+          }
           obj.index = this.widgets.length;
-          this.order.push(obj.key);
           this.widgets.push(obj);
         }
         else{
@@ -501,7 +534,6 @@
             }
           });
           obj.index = idx;
-          this.order.splice(idx, 0, obj.key);
           this.widgets.splice(idx, 0, obj);
         }
         if ( obj.storageFullName ){
@@ -544,7 +576,7 @@
         bbn.fn.each(this.source, (obj, i) => {
           this.originalSource.push(this.normalize(obj));
         });
-        bbn.fn.each(bbn.fn.order(this.originalSource.slice(), "index"), (obj, i) => {
+        bbn.fn.each(this.originalSource, (obj, i) => {
           this.add(obj);
         });
       },
@@ -556,6 +588,16 @@
         this.currentSlots = this.$slots.default ? this.$slots.default.filter(node => {
           return !!node.tag;
         }) : [];
+      },
+      dragging(e){
+        if ( this.isSorting ){
+          let w = e.clientX - Math.round(this.sortHelperWidth / 2);
+          if ( w < 0 ){
+            w = 1;
+          }
+          this.sortHelperX = w;
+          this.sortHelperY = e.clientY;
+        }
       }
     },
     /**
@@ -603,24 +645,45 @@
        * @fires move
        */
       sortTargetIndex(newVal){
-        if (
-          this.sortable &&
-          this.isSorting &&
-          (this.sortOriginIndex !== newVal) &&
-          this.widgets[this.sortOriginIndex] &&
-          this.widgets[this.sortTargetIndex]
-        ){
-          let o = this.sortOriginIndex;
-          this.sortOriginIndex = newVal;
-          this.move(o, newVal);
-        }
       },
       /**
        * @watch isSorting
        */
       isSorting(newVal){
         if ( !newVal ){
+          if (
+            this.sortable &&
+            (this.sortOriginIndex !== this.sortTargetIndex) &&
+            this.widgets[this.sortOriginIndex] &&
+            this.widgets[this.sortTargetIndex]
+          ){
+            let ev = new Event('move', {cancelable: true});
+            this.$emit('move', ev, this.sortOriginIndex, this.sortTargetIndex);
+            if ( !ev.defaultPrevented ){
+              if (
+                this.move(this.sortOriginIndex, this.sortTargetIndex) &&
+                this.storageFullName
+              ){
+                let cps = bbn.vue.findAll(this.$root, 'bbn-dashboard');
+                bbn.fn.each(cps, (cp, i) => {
+                  if ( (cp !== this) && (cp.storageFullName === this.storageFullName) ){
+                    cp.move(this.sortOriginIndex, this.sortTargetIndex);
+                  }
+                })
+              }
+            }
+          }
           this.sortTargetIndex = null;
+        }
+        else if (this.widgets[this.sortOriginIndex]) {
+          let w = this.widgets[this.sortOriginIndex];
+          this.sortingElement = this.getRef('widget_' + w.key);
+          let pos = this.sortingElement.$el.getBoundingClientRect();
+          this.sortHelperWidth = pos.width;
+          this.sortHelperHeight = pos.height;
+          this.sortHelperX = (pos.left - Math.round(this.sortHelperWidth / 2));
+          this.sortHelperY = pos.top;
+          this.getRef('sortHelper').innerHTML = this.sortingElement.$el.innerHTML;
         }
       },
       source: {

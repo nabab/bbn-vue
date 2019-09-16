@@ -205,6 +205,12 @@
         if ( popup ){
           popup.alert.apply(popup, arguments)
         }
+      },
+      post(){
+        return bbn.vue.post(this, arguments);
+      },
+      post_out(){
+        return bbn.vue.post_out(this, arguments);
       }
     }
   });

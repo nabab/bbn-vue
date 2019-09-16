@@ -188,7 +188,7 @@
           d = obj;
         }
         if ( d.url ){
-          bbn.fn.post(d.url, d.data || {}, (r) => {
+          this.post(d.url, d.data || {}, (r) => {
             if ( r.content || r.title ){
               if ( r.script ){
                 let tmp = eval(r.script);

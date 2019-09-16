@@ -94,7 +94,7 @@
     <div v-else-if="isImage && !isLoading" 
           class="bbn-flex-fill bbn-c bbn-padded"
     >
-      <img :src="source.root + 'actions/finder/image/' +  encodedURL">
+      <img :src="root + 'actions/finder/image/' +  encodedURL">
     </div>
     <div v-else-if="currentFile.info && !currentFile.info.content && !isImage && !isLoading"
           class="bbn-padded bbn-medium bbn-b"

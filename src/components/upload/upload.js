@@ -164,15 +164,23 @@
     data(){
       return {
         /**
-         * Returns true if the upload is enabled.
+         * True if the upload is enabled.
          * 
          * @data {Boolean} isEnabled
          */
         isEnabled: !this.disabled,
         /**
-         * @prop {Array} [[]] widgetValue
+         * @data {Array} [[]] widgetValue
          */
-        widgetValue: []
+        widgetValue: [],
+        /** 
+         * @data {Boolean} [false] isInit
+        */
+        isInit: false,
+        /** 
+         * @data {Numeric} [0] initCounter
+        */
+        initCounter: 0
       };
     },
     computed: {
@@ -302,15 +310,32 @@
               }
               return true;
             },
-            onComplete: (id, name, responseJSON, xhr) => {
+            onComplete: (id, name, responseJSON, xhr) => {   
+              let f = false;           
               if ( responseJSON.file || responseJSON.fichier ){
-                let f = responseJSON.file || responseJSON.fichier;
-                if ( f.name !== name ){
-                  this.widget.setName(id, f.name);
-                  //this.widgetValue = this.widget.getUploads({ status: [qq.status.UPLOAD_SUCCESSFUL] }) || [];
-                }
+                f = responseJSON.file || responseJSON.fichier;
+              }
+              else if (
+                responseJSON.data && 
+                (responseJSON.data.file || responseJSON.data.fichier)
+              ){
+                f = responseJSON.data.file || responseJSON.data.fichier;
+              }
+              if ( f && f.name !== name ){
+                this.widget.setName(id, f.name);
+                //this.widgetValue = this.widget.getUploads({ status: [qq.status.UPLOAD_SUCCESSFUL] }) || [];
               }
               this.$emit('success', id, name, responseJSON, xhr);
+            },
+            onAllComplete: (succeeded, failed) => {
+              if ( this.isInit && this.initCounter ){
+                this.initCounter--;
+                this.isInit = !!this.initCounter;
+              }
+              else {
+                this.isInit = false;
+                this.$emit('complete', succeeded, failed);
+              }
             },
             onError: (id, name, errorReason, xhr) => {
               this.$emit('error', id, name, errorReason, xhr);
@@ -385,11 +410,13 @@
 				}
         const inp = this.$el.querySelector('input[name=file]'),
               pas = this.$el.querySelector('div.paste-container'),
-              sel = this.$el.querySelector('div.qq-uploader-selector');      
+              sel = this.$el.querySelector('div.qq-uploader-selector'),
+              list = this.$el.querySelector('ul.qq-upload-list-selector');      
               
         if ( val ){
           inp.removeAttribute('disabled')
           inp.parentElement.classList.remove('bbn-disabled');
+          list.style.display = 'block';
           if ( this.paste ){
             pas.style.display = 'block';
           }
@@ -400,6 +427,7 @@
         else {
           inp.setAttribute('disabled', 'disabled');
           inp.parentElement.classList.add('bbn-disabled');
+          list.style.display = 'none';
           if ( this.paste ){
             pas.style.display = 'none';
           }
@@ -422,7 +450,9 @@
           this.tab = bbn.vue.closest(this, "bbns-tab");
         }
         this.widget = new qq.FineUploader(this.getCfg);
-        if ( this.value && this.getSource ){
+        if ( this.value && this.getSource.length ){
+          this.isInit = true;
+          this.initCounter = this.getSource.length;
           this.widget.addInitialFiles(this.getSource);
         }
         if ( this.disabled ){

@@ -27,7 +27,8 @@
         items: this.source,
         search: '',
         isSetting: false,
-        uid: null
+        uid: null,
+        isOpened: false
       };
     },
     computed: {

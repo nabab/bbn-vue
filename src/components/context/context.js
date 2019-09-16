@@ -20,7 +20,11 @@
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.listComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.listComponent],
+    mixins: [
+      bbn.vue.basicComponent,
+      bbn.vue.listComponent,
+      bbn.vue.dimensionsComponent
+    ],
     props: {
       /**
        * The html tag used to render the property content.
@@ -57,7 +61,7 @@
       children: {
         type: String,
         default: 'items'
-      }
+      },
     },
     data(){
       return {

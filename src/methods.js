@@ -705,6 +705,34 @@
       return out;
     },
 
+    getContainerURL(vm){
+      let container = vm.closest('bbn-container');
+      if ( container ){
+        return container.getFullCurrentURL();
+      }
+      return null;
+    },
+
+    post(vm, args){
+      let cfg = bbn.fn.treat_vars(args);
+      let url = bbn.vue.getContainerURL(vm);
+      if ( !url && bbn.env.path ){
+        url = bbn.env.path;
+      }
+      if ( cfg.obj && url ){
+        cfg.obj = bbn.fn.extend({}, cfg.obj, {_bbn_referer: url});
+      }
+      return bbn.fn.post(cfg);
+    },
+
+    post_out(vm, action, params, successFn, target){
+      let url = bbn.vue.getContainerURL(vm);
+      if ( url && params && bbn.fn.isObject(params) ){
+        params = bbn.fn.extend({}, params, {_bbn_referer: url});
+      }
+      return bbn.fn.post_out(action, params, successFn, target);
+    }
+
 
   })
 })(window.bbn);

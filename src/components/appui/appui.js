@@ -106,7 +106,8 @@
         cool: false,
         searchString: '',
         clipboardContent: [],
-        observerTimeout: false
+        observerTimeout: false,
+        colorEnvVisible: true
       }
     },
     computed: {
@@ -157,7 +158,7 @@
           };
           this.poll();
           /*
-          bbn.fn.post('chat/actions/message', obj, (d) => {
+          this.post('chat/actions/message', obj, (d) => {
             if ( d.success && d.id_chat ){
               if ( !obj.id ){
                 let chat = this.getRef('chat');
@@ -377,7 +378,7 @@
         if ( this.plugins['appui-menu'] && data.id ){
           let idx = bbn.fn.search(this.shortcuts, {id: data.id});
           if ( idx === -1 ){
-            bbn.fn.post(this.plugins['appui-menu'] + '/shortcuts/insert', data, (d) => {
+            this.post(this.plugins['appui-menu'] + '/shortcuts/insert', data, (d) => {
               if ( d.success ){
                 this.shortcuts.push(data);
               }
@@ -387,7 +388,7 @@
       },
       removeShortcut(data){
         if ( this.plugins['appui-menu'] && data.id ){
-          bbn.fn.post(this.plugins['appui-menu'] + '/shortcuts/delete', data, (d) => {
+          this.post(this.plugins['appui-menu'] + '/shortcuts/delete', data, (d) => {
             if ( d.success ){
               let idx = bbn.fn.search(this.shortcuts, {id: data.id});
               if ( idx > -1 ){

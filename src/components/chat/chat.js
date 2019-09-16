@@ -281,7 +281,7 @@
       addUser(idChat, idUser){
         let chat = this.chatById(idChat);
         if ( chat && chat.participants.indexOf(idUser) === -1 ){
-          bbn.fn.post(this.url + '/actions/add_user', {id_chat: idChat, id_user: idUser}, (d) => {
+          this.post(this.url + '/actions/add_user', {id_chat: idChat, id_user: idUser}, (d) => {
             if ( d.success ){
               chat.participants.push(idUser);
             }

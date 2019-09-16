@@ -52,6 +52,7 @@
                             sourceIndex: tabIndex,
                             tag: 'div'
                           }"
+                          min-width="10em"
                           :class="['bbn-tabnav-tab', 'bbn-iblock', {'bbn-tabnav-unsaved': tab.unsaved}]"
                           :ref="'title-' + tabIndex"
                           :style="{
@@ -88,6 +89,7 @@
               <bbn-context v-if="(tab.menu !== false) && (tabIndex === selected)"
                             class="nf nf-fa-caret_down bbn-tab-menu bbn-tabnav-icon bbn-p"
                             tabindex="-1"
+                            min-width="10em"
                             tag="i"
                             :source="getMenuFn"
                             :source-index="tabIndex"

@@ -2,8 +2,11 @@
             :class="[componentClass]"
             ref="slider"
             close-button="bottom-right"
+            :visible="false"
+            @open="isOpened = true"
+            @close="isOpened = false"
 >
-  <div class="bbn-h-100 bbn-flex-height bbn-vpadded">
+  <div class="bbn-h-100 bbn-flex-height bbn-vpadded" v-if="isOpened">
     <div class="bbn-xl bbn-c bbn-w-100 bbn-vpadded" v-if="!items.length">
       <i class="nf nf-fa-clipboard"></i> &nbsp; 
       <span v-text="_('Clipboard is empty')"></span>
@@ -65,11 +68,11 @@
     </div>
     <div class="bbn-w-100 bbn-padded">
       <input class="bbn-textbox bbn-w-100 bbn-large"
-              @paste.prevent="copy"
-              ref="paster"
-              @drop.prevent.stop="copy"
-              @keyup.prevent
-              :placeholder="_('Paste or drop something...')">
+             @paste.prevent="copy"
+             ref="paster"
+             @drop.prevent.stop="copy"
+             @keyup.prevent
+             :placeholder="_('Paste or drop something...')">
     </div>
   </div>
 </bbn-slider>

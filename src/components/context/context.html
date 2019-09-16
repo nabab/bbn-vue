@@ -9,6 +9,12 @@
   <slot></slot>
   <bbn-floater :element="$el"
                :source="filteredData"
+               :width="width"
+               :height="height"
+               :minWidth="minWidth"
+               :minHeight="minHeight"
+               :maxWidth="maxWidth"
+               :maxHeight="maxHeight"
                children="items"
                :content="content"
                :auto-hide="true"
