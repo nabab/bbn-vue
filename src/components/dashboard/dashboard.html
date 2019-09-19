@@ -18,8 +18,9 @@
               '-webkit-column-count': numCols,
               'column-count': numCols
             }">
-      <bbn-widget v-for="w in currentWidgets"
+      <bbn-widget v-for="w in widgets"
                   :ref="'widget_' + w.key"
+                  v-if="!w.hidden"
                   @loaded="resizeScroll"
                   v-bind="w"
                   :options="w.options"

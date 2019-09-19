@@ -4,7 +4,7 @@
       :autocomplete="autocomplete"
       :class="currentClass"
       :style="currentStyle"
-      @submit.prevent="() => {}"
+      @submit.prevent
       @keydown.enter.prevent.stop="submit"
 >
   <div :class="[{'bbn-flex-fill': scrollable, 'bbn-w-100': scrollable}]"

@@ -869,6 +869,15 @@
               this.views.splice(this.urls[d.current].idx, 1);
               delete this.urls[d.current];
             }
+            if ( !d.title || (d.title === bbn._('Loading')) ){
+              let title = bbn._('Untitled');
+              let num = 1;
+              while ( bbn.fn.search(this.views, {title: title}) > -1 ){
+                num++;
+                title = bbn._('Untitled') + ' ' + num;
+              }
+              d.title = title;
+            }
             this.$nextTick(() => {
               this.add(bbn.fn.extend(d, {slot: false, loading: false, load: true, real: false, loaded: true}));
               setTimeout(() => {
@@ -899,6 +908,13 @@
             */
           }, (xhr, textStatus, errorThrown) => {
             this.isLoading = false;
+            this.alert(textStatus);
+            let idx = this.search(this.parseURL(finalURL));
+            if ( idx > -1 ){
+              let url = this.views[idx].url;
+              this.views.splice(this.urls[url].idx, 1);
+              delete this.urls[url];
+            }
             /*
             if ( this.isValidIndex(idx) ){
               this.views[idx].state = xhr.status;

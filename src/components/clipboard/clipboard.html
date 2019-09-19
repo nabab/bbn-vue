@@ -24,31 +24,26 @@
     <div class="bbn-flex-fill" @drop.prevent.stop="copy">
       <bbn-scroll axis="y">
         <bbn-list :source="items" uid="uid" @remove="remove">
-          <div class="bbn-flex-width" v-pre>
-            <div class="bbn-clipboard-buttons bbn-block-left">
-              <bbn-context :source="[
-                {text: _('Copy plain text'), icon: 'nf nf-mdi-cursor_text', command: () => {closest('bbn-clipboard').setClipboard(uid, 'plain')}},
-                {text: _('Copy rich text'), icon: 'nf nf-mdi-code_tags', disabled: !content, command: () => {closest('bbn-clipboard').setClipboard(uid, 'html')}},
-                {text: _('Copy as image'), icon: 'nf nf-fa-image', disabled: !type || (type.indexOf('image/')) !== 0, command: () => {closest('bbn-clipboard').setClipboard(uid, 'image')}},
-                {text: _('Save'), icon: 'nf nf-fa-file_o', command: () => {closest('bbn-clipboard').save(uid)}},
-                {text: _('Save as...'), icon: 'nf nf-fa-file_o', command: () => {closest('bbn-clipboard').saveAs(uid)}},
-              ]">
-                <bbn-button icon="nf nf-fa-clipboard"
-                            :notext="true"
-                            :text="_('Copy to clipboard')">
-                </bbn-button>
-              </bbn-context>
-              <bbn-button icon="nf nf-fa-share"
-                          :notext="true"
-                          text="_('Share')">
-              </bbn-button>
-              <bbn-button icon="nf nf-fa-trash_o"
-                          :notext="true"
-                          :text="_('Remove')"
-                          :command="() => {closest('bbn-list').$emit('remove', source)}">
-              </bbn-button>
-              <span :class="{
-                'bbn-iblock': true,
+          <div class="bbn-w-100" v-pre>
+            <bbn-context tag="div"
+                         class="bbn-flex-width"
+                         :source="[
+              {text: _('Copy plain text'), icon: 'nf nf-mdi-cursor_text', command: () => {closest('bbn-clipboard').setClipboard(uid, 'plain')}},
+              {text: _('Copy rich text'), icon: 'nf nf-mdi-code_tags', disabled: !content, command: () => {closest('bbn-clipboard').setClipboard(uid, 'html')}},
+              {text: _('Copy as image'), icon: 'nf nf-fa-image', disabled: !type || (type.indexOf('image/')) !== 0, command: () => {closest('bbn-clipboard').setClipboard(uid, 'image')}},
+              {text: _('Save'), icon: 'nf nf-fa-file_o', command: () => {closest('bbn-clipboard').save(uid)}},
+              {text: _('Save as...'), icon: 'nf nf-fa-file_o', command: () => {closest('bbn-clipboard').saveAs(uid)}},
+              {text: _('Share'), icon: 'nf nf-fa-share', command: () => {}},
+              {text: _('Remove'), icon: 'nf nf-fa-trash_o', command: () => {}},
+            ]">
+              <div :title="text"
+                  class="bbn-clipboard-text bbn-block-left bbn-flex-fill"
+                  v-text="text"></span>
+              </div>
+              <div :class="{
+                'bbn-block-right': true,
+                'bbn-narrow': true,
+                'bbn-r': true,
                 'bbn-green': stype === 'html',
                 'bbn-red': stype === 'javascript',
                 'bbn-purple': type.indexOf('application/') === 0,
@@ -56,12 +51,10 @@
                 'bbn-orange': ['css', 'less', 'scss'].includes(stype),
                 'bbn-darkgrey': stype === 'text',
                 'bbn-pink': stype && (stype.indexOf('image/') === 0)
-              }" v-text="stype" style="padding-left: 1em; line-height: 100%; vertical-align: middle"></span>
-            </div>
-            <div :title="text"
-                 class="bbn-clipboard-text bbn-block-right bbn-flex-fill bbn-r"
-                 v-text="text"></span>
-            </div>
+              }"
+                   v-text="stype">
+              </div>
+            </bbn-context>
           </div>
         </bbn-list>
       </bbn-scroll>

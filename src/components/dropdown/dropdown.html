@@ -9,7 +9,7 @@
          class="bbn-dropdown-content bbn-xspadded bbn-100 bbn-top-left">
     </div>
     <bbn-input :disabled="disabled"
-                @keydown.prevent.stop="keydown"
+                @keydown.stop="keydown"
                 @click.stop="click"
                 ref="input"
                 autocorrect="off"

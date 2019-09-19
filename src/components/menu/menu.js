@@ -45,6 +45,9 @@
       onClose(){
         //getRef('li' + selectedElement).blur(); selectedElement = -1;
       },
+      /*onDataLoaded(){         
+        this.$emit('onDataLoaded', this);
+      }*/
     }
   });
 

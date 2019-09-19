@@ -344,7 +344,8 @@
         isOpened: true,
         scroll: null,
         hasScroll: false,
-        currentComponent: null
+        currentComponent: null,
+        tmpDisabled: false
       };
     },
     computed: {
@@ -462,6 +463,13 @@
        * @emits select
        */
       select(idx){
+        if ( this.tmpDisabled === idx ){
+          return;
+        }
+        this.tmpDisabled = idx;
+        setTimeout(() => {
+          this.tmpDisabled = false;
+        }, 1000);
         let item = this.filteredData[idx] || null;
         let ev = new Event('select', {cancelable: true});
         if ( item && item.data && !item.data.disabled ){

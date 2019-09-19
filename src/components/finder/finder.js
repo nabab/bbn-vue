@@ -101,6 +101,18 @@
       },
     },
     methods: {
+      refresh(name){
+        let trees = this.findAll('bbn-tree');
+        if ( trees.length ){
+          let tree = bbn.fn.filter(trees, (a) => {
+            return a.data.name === name;
+          })
+          if ( tree.length ){
+            tree[0].reload();
+          }
+        }
+        
+      },
       /**
        * get the size of the current tree (the selected folder of the previous tree)
        * 
@@ -110,7 +122,7 @@
         let idx = bbn.fn.search(this.dirs, 'name', p.name);
         this.post(this.root + 'actions/finder/dirsize', {
           path: p.path,
-          origin: ( (this.mode === 'ftp') || (this.mode === 'ssh')) ? this.origin : ''
+          origin: this.origin
         }, (d) => {
             if ( d.success ){
               this.dirs[idx].size = d.size;
@@ -271,13 +283,13 @@
             command: (node) => {
               this.download(node)
             }
-          }, {
+          }/*, {
             icon: 'nf nf-fa-trash_alt',
             text: bbn._('Delete'),
             command: (node) => {
               this.delete(node)
             }
-          },  
+          }*/,  
         ]
         if ( n.data.dir && (this.copied !== false) ) {
           objContext.push({
@@ -318,23 +330,27 @@
           value = n.data.value;
         }
         if ( (typeof(n) === 'string' || n.data.dir ) && this.copied ) {
-           let st = bbn._('Do you want to paste') + ' ' + this.copied.data.value + ' ' + bbn._('into') + ' ' + value + '?';
+          let st = bbn._('Do you want to paste') + ' ' + this.copied.data.value + ' ' + bbn._('into') + ' ' + value + '?';
           let trees = this.findAll('bbn-tree'), 
           path = '';
           this.confirm(bbn._(st), () => {
             this.post(this.root + 'actions/finder/paste', {
               node: this.copied.data,
-              origin: ( (this.mode === 'ftp') || (this.mode === 'ssh') ) ? this.origin : '',
+              origin: this.origin,
               old_dir: this.oldDir,
               new_dir: this.currentPath
             }, (d) => {
               if ( d.success ){
+                bbn.fn.happy('pasted')
+                bbn.fn.log(n.tree.items)
                 bbn.fn.each(trees, (v, i) => {
+                  bbn.fn.log(n,( v.data.name === n.data.value ), v.data.name ,n.data.value )
                   if ( v.data.name === n.data.value ){
+                    bbn.fn.log(v.source)
                     v.reload();
                   }  
                 });
-                appui.success(this.copied.data.value + ' ' + bbn._('successfully pasted into' + n.data.value));
+                appui.success(this.copied.data.value + ' ' + bbn._('successfully pasted into ' + n.data.value));
               }
               else{
                 appui.error(bbn._('Something went wrong'));
@@ -350,12 +366,14 @@
       },
       //if mode === 'nextcloud' download the file
       download(n){
-        this.post(this.root + 'actions/finder/download', {
+        this.post_out(this.root + 'actions/finder/download', {
           value: n.data.value,
           file: n.data.file,
           path: this.currentPath !== n.data.value + '/' ? this.currentPath : '',
+          origin: this.origin,
           destination: this.origin + 'download/' + moment().format('x') + '/'
-        }, (d) => {
+        })
+        /*, (d) => {
           if ( d.success ){
             this.alert(n.data.value + ' ' + bbn._('has been correctly downloaded in the folder' + ' ' + d.dest))
             appui.success(bbn._('Success'))
@@ -363,7 +381,7 @@
           else {
             appui.error(bbn._('Something went wrong when downloading the file'))
           }  
-        })
+        }*/
       },
       /**
        * edits the name of the current selected node

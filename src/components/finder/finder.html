@@ -30,6 +30,7 @@
                     }"
       >
         <div class="bbn-grid-fields bbn-finder-info-dirs">
+          <div class="bbn-grid-full bbn-l"><i class="nf nf-fa-refresh bbn-xs bbn-p" @click="refresh(p.name)" :title="_('Refresh tree')"></i></div>
           <div v-text="_('Number of childs:')" v-if="p.num_dirs || p.num_files"></div>
           <div v-text="p.num_dirs + p.num_files" v-if="p.num_dirs || p.num_files"></div>
 

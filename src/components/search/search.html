@@ -11,6 +11,7 @@
               ref="input"
               @focus="searchFocus"
               @blur="searchBlur"
+              @keydown.esc.prevent="isOpened ? isOpened = false : searchBlur() && getRef('input').getRef('element').blur()"
               @keydown="keydown"
               :nullable="nullable"
               autocomplete="off"

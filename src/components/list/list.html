@@ -15,7 +15,7 @@
         :class="{
           'bbn-no-padding': !!component,
           'bbn-state-default': true,
-          'bbn-disabled': !component && !!li.data.disabled,
+          'bbn-disabled': (tmpDisabled === idx) || (!component && !!li.data.disabled),
           'bbn-state-selected': isSelected(idx),
           'bbn-state-hover': overIdx === idx
         }">

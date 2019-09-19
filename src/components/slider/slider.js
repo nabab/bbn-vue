@@ -123,7 +123,6 @@
         }
       },
       checkMouseDown(e){
-        bbn.fn.log("checkMouseDown", this.currentVisible);
         if ( this.currentVisible &&
           !e.target.closest(".bbn-treemenu") &&
           !e.target.closest(".bbn-menu-button")
@@ -167,9 +166,6 @@
       },
       currentSize(v){
         this.$el.style[this.isVertical ? 'width' : 'height'] = v;
-      },
-      opacity(v){
-        bbn.fn.log("OPACITY: " + v);
       }
     }
   });

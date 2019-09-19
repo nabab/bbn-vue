@@ -994,9 +994,11 @@
       source: {
         deep: true,
         handler() {
-          this.updateData().then(() => {
-            this._updateIconSituation();
-          });
+          if ( this.currentData.length ){
+            this.updateData().then(() => {
+              this._updateIconSituation();
+            });
+          }
         }
       },
       filteredData() {

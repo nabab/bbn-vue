@@ -46,7 +46,8 @@
                  ref="timeFloater"
                  @close="isTimeOpened = false"
                  :min-width="showSecond ? 165 : 110"
-                 :min-height="scrollMode ? 170 : 46"
+                 :height="400"
+                 :scrollable="false"
                  hpos="right"
                  :auto-hide="200"
     >
@@ -71,9 +72,9 @@
                             @hook:mounted="hourReady = true"
                 >
                   <div v-for="h in hours"
-                      :class="['bbn-p', 'bbn-text', 'bbn-vspadded', 'bbn-background-internal', {
+                      :class="['bbn-p', 'bbn-text', 'bbn-vspadded', 'bbn-reactive', {
                         'bbn-bordered-bottom': h.value !== 23,
-                        'bbn-primary': hour === h.value
+                        'bbn-state-selected': hour === h.value
                       }]"
                       @click="setHour(h.value)"
                       :ref="hour === h.value ? 'hourActive' : undefined"
@@ -98,9 +99,9 @@
                             @hook:mounted="minuteReady = true"
                 >
                   <div v-for="m in minsec" 
-                      :class="['bbn-p', 'bbn-text', 'bbn-vspadded', 'bbn-background-internal', {
+                      :class="['bbn-p', 'bbn-text', 'bbn-vspadded', 'bbn-reactive', {
                         'bbn-bordered-bottom': m.value !== 59,
-                        'bbn-primary': minute === m.value
+                        'bbn-state-selected': minute === m.value
                       }]"
                       @click="setMinute(m.value)"
                       :ref="minute === m.value ? 'minuteActive' : undefined"

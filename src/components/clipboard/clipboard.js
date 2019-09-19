@@ -193,7 +193,7 @@
       },
       updateSlider(){
         this.$nextTick(() => {
-          this.getRef('slider').updateSize();
+          this.getRef('slider').onResize();
         });
       },
       clear(){

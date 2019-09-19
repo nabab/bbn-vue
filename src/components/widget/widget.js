@@ -18,7 +18,12 @@
    */
   Vue.component('bbn-widget', {
     name: 'bbn-widget',
-    mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent, bbn.vue.observerComponent, bbn.vue.resizerComponent],
+    mixins: [
+      bbn.vue.basicComponent,
+      bbn.vue.localStorageComponent,
+      bbn.vue.observerComponent,
+      bbn.vue.resizerComponent
+    ],
     props: {
       uid: {},
       content: {
@@ -369,11 +374,13 @@
       limit(newVal){
         this.load();
       },
+      /*
       hidden(newVal){
         if ( !newVal ){
           this.load();
         }
       },
+      */
       observerValue(newVal){
         if ( (newVal !== this._observerReceived) && !this.editedRow ){
           this.load();

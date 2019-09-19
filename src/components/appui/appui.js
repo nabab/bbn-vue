@@ -485,14 +485,15 @@
             },
 
             defaultResizeFunction(){
-              bbn.fn.log("EMITTING FROM APPUI");
               appui.selfEmit(true);
             }
           }
         });
+        /*
         bbn.fn.each(this.plugins, (p, i) => {
 
         })
+        */
       }
     },
     mounted(){

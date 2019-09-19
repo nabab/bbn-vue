@@ -129,17 +129,13 @@
          */
         isRefreshing: false,
         /**
-         * @prop {Array} [[]] widgets
+         * @data {Array} [[]] widgets
          */
         widgets: [],
         /**
-         * @prop {Array} [[]] currentOrder
+         * @data {Array} [[]] currentOrder
          */
         currentOrder: this.order.slice(),
-        /**
-         * @prop {Array} [[]] hidden
-         */
-        hidden: [],
         /**
          * @data sortTargetIndex
          */
@@ -164,14 +160,14 @@
       };
     },
     computed: {
-      /**
-       * @computed currentWidgets
-       * @return {Array}
-       */
-      currentWidgets(){
-        return this.widgets && this.widgets.length ? bbn.fn.filter(this.widgets, (a) => {
-          return !a.hidden;
-        }) : [];
+      originalOrder(){
+        return bbn.fn.map(this.originalSource, d => d.key);
+      },
+      isOrderChanged(){
+        if ( !this.originalOrder ){
+          return false;
+        }
+        return JSON.stringify(this.originalOrder) !== JSON.stringify(this.currentOrder);
       }
     },
     methods: {
@@ -183,8 +179,7 @@
        */
       setConfig(uid, config){
         this.setStorage({
-          order: config.order,
-          hidden: config.hidden
+          order: config.order
         }, uid);
       },
       closeWidget(uid, widget){
@@ -223,30 +218,14 @@
       showWidget(key){
         return this.toggleWidget(key, false);
       },
-      /**
-       * Toggles the property 'hidden' of the widget corresponding to the given key.
-       * @method toggleWidget
-       * @param {Number} key 
-       * @param {Boolean} hidden 
-       * @fires updateWidget
-       * @fires updateMenu
-       */
-      /*toggleWidget(key, hidden){
-        if ( this.widgets ){
-          let idx = bbn.fn.search(this.widgets, {key: key});
-          this.updateWidget(key, {
-            hidden: hidden === undefined ? !this.widgets[idx].hidden : hidden
-          }).then(() => {
-            this.updateMenu();
-          });
-        }
-      },*/
       toggleWidget(key, hidden){
         if ( this.widgets ){
-          let idx = bbn.fn.search(this.widgets, {key: key});
-          this.updateWidget(key, {
-            hidden: hidden === undefined ? !this.widgets[idx].hidden : hidden
-          });
+          let w = bbn.fn.get_row(this.widgets, {key: key});
+          if ( w && (w.closable !== false) ){
+            this.updateWidget(key, {
+              hidden: hidden === undefined ? !w.hidden : hidden
+            });
+          }
         }
       },
       /**
@@ -282,7 +261,7 @@
        * @method moveWidgets
        * @param {Number} oldIdx 
        * @param {Number} newIdx 
-       */  
+       */
       moveWidgets(oldIdx, newIdx){
         bbn.fn.move(this.widgets, oldIdx, newIdx);
         bbn.fn.each(this.widgets, (a, i) => {
@@ -298,19 +277,27 @@
        * @param {Number} newIdx 
        */
       move(oldIdx, newIdx){
-        bbn.fn.log("MOVING...");
         if ( this.widgets[oldIdx] && this.widgets[newIdx] ){
           bbn.fn.move(this.widgets, oldIdx, newIdx);
           let order = [];
           bbn.fn.each(this.widgets, (a, i) => {
             if ( i !== a.index ){
-              this.updateWidget(a.key, {index: i});
+              a.index = i;
             }
             order.push(a.key);
           });
           this.currentOrder = order;
-          this.$emit('order', this.currentOrder);
-          bbn.fn.log(this.currentOrder, order);
+          if ( this.url ){
+            return this.post(this.url + 'order', {order: order}, (d) => {
+              if ( d && d.data && d.data.success ){
+                appui.success();
+              }
+              else{
+                appui.error();
+              }
+            });
+          }
+          this.$emit('sort', this.currentOrder);
           return true;
         }
         return false;
@@ -333,19 +320,16 @@
           let i = 0;
           if ( this.widgets ){
             bbn.fn.each(this.originalSource, (a) => {
-              let idx = bbn.fn.search(this.widgets, {uid: a.uid});
-              if ( idx > -1 ){
+              let w = bbn.fn.get_row(this.widgets, {uid: a.uid});
+              if ( w ){
                 items.push({
-                  disabled: !this.closable || (this.widgets[idx].closable === false),
-                  selected: !this.widgets[idx].hidden,
-                  text: this.widgets[idx].text ?
-                    this.widgets[idx].text :
-                    (this.widgets[idx].title ? this.widgets[idx].title : bbn._('Untitled')),
+                  disabled: !this.closable || (w.closable === false),
+                  selected: !w.hidden,
+                  text: w.text ?
+                    w.text :
+                    (w.title ? w.title : bbn._('Untitled')),
                   command: () => {
-                    if ( this.widgets[idx].closable !== false ){
-                      this.toggleWidget(a.uid);
-                      this.$forceUpdate();
-                    }
+                    this.toggleWidget(w.uid);
                   }
                 });
                 i++;
@@ -357,67 +341,42 @@
               icon: 'nf nf-mdi-widgets',
               items: items
             }));
-          }
-          /*
-          this.menu.push(tab.addMenu({
-            text: bbn._("Widgets"),
-            mode: 'options',
-            icon: 'nf nf-mdi-widgets',
-            command: () => {
-              tab.getPopup().confirm(bbn._("Etes-vous sur de vouloir réínitialiser la vue et perdre vos réglages?"))
+            this.menu.push(tab.addMenu({
+              text: bbn._("Show every widget"),
+              icon: 'nf nf-mdi-check_circle',
+              command: () => {
+                bbn.fn.each(this.widgets, w => {
+                  if ( w.hidden ){
+                    this.showWidget(w.uid);
+                  }
+                });
+              }
+            }));
+            this.menu.push(tab.addMenu({
+              text: bbn._("Hide every widget"),
+              icon: 'nf nf-mdi-checkbox_blank_circle',
+              command: () => {
+                bbn.fn.each(this.widgets, w => {
+                  if ( !w.hidden ){
+                    this.hideWidget(w.uid);
+                  }
+                });
+              }
+            }));
+            if ( this.isOrderChanged ){
+              this.menu.push(tab.addMenu({
+                text: bbn._("Reset widgets order"),
+                icon: 'nf nf-fa-sort_numeric_asc',
+                command:() => {
+                  this.currentOrder.splice(0, this.currentOrder.length);
+                  this.initWidgets();
+                  this.$emit('sort', this.currentOrder);
+                }
+              }));
             }
-          }));
-          */
+          }
         }
       },
-      /**
-       * Updates the given widget based on the given configuration object.
-       * @method updateWidget
-       * @param {Number} key 
-       * @param {Object} cfg 
-       * @fires setWidgetStorage
-       */
-      /*updateWidget(key, cfg){
-        let idx = bbn.fn.search(this.widgets || [], 'key', key),
-            params = {id: key, cfg: cfg},
-            no_save = ['items', 'num', 'start', 'index'];
-        if (idx > -1) {
-          bbn.fn.each(no_save, function(a, i){
-            if ( cfg[a] !== undefined ){
-              delete params.cfg[a];
-            }
-          });
-          
-          if ( bbn.fn.countProperties(params.cfg) ){
-            if ( this.url !== undefined ){
-              return this.post(this.url + 'save', params, (d) => {
-                if ( d.data && d.data.success ){
-                  for ( let n in params.cfg ){
-                    this.$set(this.widgets[idx], n, params.cfg[n]);
-                  }
-                  this.setWidgetStorage(idx);
-                  if ( params.cfg.hidden !== undefined ){
-                    this.updateMenu();
-                  }
-                  this.$forceUpdate();
-                }
-              });
-            }
-            else{              
-              for ( let n in cfg ){
-                this.$set(this.widgets[idx], n, cfg[n]);
-              }
-              this.setWidgetStorage(idx);
-              if ( cfg.hidden !== undefined ){
-                this.updateMenu();
-              }
-              this.$forceUpdate();             
-            }
-            
-          }
-        }
-        new Error("No corresponding widget found for key " + key);
-      },*/
       mouseEnterWidget(idx){
         if ( this.isSorting && (idx !== this.sortOriginIndex) ){
           this.sortTargetIndex = idx > this.sortOriginIndex ? idx - 1 : idx;
@@ -433,39 +392,47 @@
               delete params.cfg[a];
             }
           });
-          //bbn.fn.log("INDEX OK", idx, params);
           if ( bbn.fn.countProperties(params.cfg) ){
-            let success = () => {
-              bbn.fn.iterate(params.cfg, (a, k) => {
+            bbn.fn.iterate(params.cfg, (a, k) => {
+              if ( this.widgets[idx][k] === undefined ){
                 this.$set(this.widgets[idx], k, a);
-              });
-              this.$nextTick(()=>{
-                this.setWidgetStorage(idx);
-                if ( params.cfg.hidden !== undefined ){
-                  this.updateMenu();
-                }
-                if ( this.hasStorage ){
-                  let cps = bbn.vue.findAll(this.$root, 'bbn-dashboard');
-                  bbn.fn.each(cps, (cp, i) => {
-                    if ( (cp !== this) && (cp.storageFullName === this.storageFullName) ){
-                      bbn.fn.iterate(params.cfg, (a, k) => {
-                        if ( cp.widgets[idx][k] !== a ){
-                          cp.$set(cp.widgets[idx], k, a);
-                        }
-                      });
-                      if ( params.cfg.hidden !== undefined ){
-                        cp.updateMenu();
+              }
+              else{
+                this.widgets[idx][k] = a;
+              }
+            });
+            this.$nextTick(()=>{
+              this.setWidgetStorage(idx);
+              if ( params.cfg.hidden !== undefined ){
+                this.updateMenu();
+              }
+              if ( this.hasStorage ){
+                let cps = bbn.vue.findAll(this.$root, 'bbn-dashboard');
+                bbn.fn.each(cps, (cp, i) => {
+                  if ( (cp !== this) && (cp.storageFullName === this.storageFullName) ){
+                    bbn.fn.iterate(params.cfg, (a, k) => {
+                      if ( cp.widgets[idx][k] === undefined ){
+                        cp.$set(cp.widgets[idx], k, a);
                       }
+                      else if ( cp.widgets[idx][k] !== a ){
+                        cp.widgets[idx][k] = a;
+                      }
+                    });
+                    if ( params.cfg.hidden !== undefined ){
+                      cp.updateMenu();
                     }
-                  })
-                }
-                
-              });
-            };
+                  }
+                })
+              }
+              
+            });
             if ( this.url !== undefined ){
               return this.post(this.url + 'save', params, (d) => {
-                if ( d.data && d.data.success ){
-                  success();
+                if ( d && d.data && d.data.success ){
+                  appui.success();
+                }
+                else{
+                  appui.error();
                 }
               });
             }
@@ -482,12 +449,22 @@
        * @param {Number} idx 
        * @fires setStorage
        */
+      getWidgetStorage(idx){
+        if ( this.widgets[idx] ){
+          this.getStorage(this.widgets[idx].storageFullName, true);
+        }
+      },
+      /**
+       * Sets the storage of the given widget.
+       * @method setWidgetStorage
+       * @param {Number} idx 
+       * @fires setStorage
+       */
       setWidgetStorage(idx){
         this.setStorage({
           uid: this.widgets[idx].uid,
           hidden: this.widgets[idx].hidden,
-          limit: this.widgets[idx].limit,
-          index: this.widgets[idx].index
+          limit: this.widgets[idx].limit
         }, this.widgets[idx].storageFullName, true);
       },
       /**
@@ -527,7 +504,7 @@
           obj.index = this.widgets.length;
           this.widgets.push(obj);
         }
-        else{
+        else if ( idx < this.widgets.length ){
           this.widgets.each((a) => {
             if ( a.index >= idx ){
               a.index++;
@@ -537,9 +514,9 @@
           this.widgets.splice(idx, 0, obj);
         }
         if ( obj.storageFullName ){
-          let tmp = this.getStorage(obj.storageFullName, true);
+          let tmp = this.getWidgetStorage(idx);
           if ( tmp ){
-            bbn.fn.extend(obj, tmp);
+            //bbn.fn.extend(obj, tmp);
           }
         }
         return obj;
@@ -561,7 +538,6 @@
        */
       init(){
         this.originalSource = [];
-        this.widgets = [];
         // Adding bbns-widget from the slot.
         if ( this.$slots.default ){
           for ( let node of this.$slots.default ){
@@ -573,11 +549,24 @@
             }
           }
         }
-        bbn.fn.each(this.source, (obj, i) => {
-          this.originalSource.push(this.normalize(obj));
+        bbn.fn.each(this.source, (w, i) => {
+          this.originalSource.push(this.normalize(w));
         });
-        bbn.fn.each(this.originalSource, (obj, i) => {
-          this.add(obj);
+        this.initWidgets();
+        this.updateMenu();
+      },
+      initWidgets(){
+        this.widgets = [];
+        bbn.fn.each(this.currentOrder, id => {
+          let w = bbn.fn.get_row(this.originalSource, {key: id});
+          if ( w ){
+            this.add(w);
+          }
+        })
+        bbn.fn.each(this.originalSource, (w, i) => {
+          if ( this.currentOrder.indexOf(w.key) === -1 ){
+            this.add(w);
+          }
         });
       },
       /**
@@ -617,16 +606,14 @@
     mounted(){
       this.ready  = true;
       this.onResize();
-      this.updateMenu();
       /**
-       * @watch currentSlotrs
+       * @watch currentSlots
        * @fires init
        * @fires updateMenu
        */
       this.$watch('currentSlots', (newVal, oldVal) => {
         if ( !bbn.fn.isSame(newVal, oldVal) ){
           this.init();
-          this.updateMenu();
         }
       });
     },

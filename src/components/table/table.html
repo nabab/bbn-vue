@@ -160,6 +160,9 @@
           <div v-if="isLoading && initReady" class="bbn-overlay bbn-middle">
             <h1 v-text="_('Loading') + '...'"></h1>
           </div>
+          <div v-else-if="!filteredData.length" class="bbn-overlay bbn-middle">
+            <h1 v-text="noData"></h1>
+          </div>
           <table v-else-if="currentColumns.length"
                  ref="table"
                 :style="{width: groupCols[1].width + 'px'}">

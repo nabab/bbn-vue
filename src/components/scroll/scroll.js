@@ -600,7 +600,7 @@
        * @fires keepCool
        * @fires onResize
        */
-      waitReady(){
+      waitReady(cp){
         if ( !this.ready ){
           if ( this.readyDelay !== false ){
             clearTimeout(this.readyDelay);
@@ -609,10 +609,13 @@
             this.readyDelay = false;
           }, this.latency);
         }
-        else{
-          this.keepCool(() => {
-            this.onResize();
-          }, "init", this.latency * 2);
+        else {
+          bbn.fn.log("ready", cp);
+          if ( !cp || !cp.$options || (cp.$options.name !== 'bbn-floater') ){
+            this.keepCool(() => {
+              this.onResize();
+            }, "init", this.latency * 2);
+          }
         }
       }
     },

@@ -52,6 +52,14 @@
        *
        */
       keydown(e){
+        if ( e.key === 'Tab' ){
+          if ( this.isOpened ){
+            e.preventDefault();
+            this.isOpened = false;
+          }
+          return;
+        }
+        e.preventDefault();
         if ( this.commonKeydown(e) ){
           return;
         }
