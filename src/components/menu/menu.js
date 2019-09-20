@@ -48,6 +48,9 @@
       /*onDataLoaded(){         
         this.$emit('onDataLoaded', this);
       }*/
+    },
+    mounted(){
+      this.ready = true;
     }
   });
 

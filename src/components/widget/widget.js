@@ -144,6 +144,10 @@
       separator: {
         type: String,
         default: ''
+      },
+      showable: {
+        type: Boolean,
+        default: true
       }
     },
     data(){

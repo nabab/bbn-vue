@@ -321,7 +321,7 @@
           if ( this.widgets ){
             bbn.fn.each(this.originalSource, (a) => {
               let w = bbn.fn.get_row(this.widgets, {uid: a.uid});
-              if ( w ){
+              if ( w && w.showable ){
                 items.push({
                   disabled: !this.closable || (w.closable === false),
                   selected: !w.hidden,
@@ -481,6 +481,9 @@
         }
         if ( !obj.uid ){
           obj.uid = obj.key;
+        }
+        if ( obj.showable === undefined ){
+          obj.showable = true;
         }
         obj.storageFullName = (this.storageFullName || this._getStorageRealName()) + '-' + obj.key;
         return obj;
