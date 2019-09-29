@@ -374,9 +374,9 @@
               let child = this.urls[st].find('bbn-router');
               if ( child ){
                 //bbn.fn.log("CHILD ROUTER ROUTING: " + url.substr(st.length + 1));
-                child.route(url.substr(st.length + 1), force)
+                child.route(url.substr(st.length + 1), force);
               }
-            })
+            });
           }
         }
       },

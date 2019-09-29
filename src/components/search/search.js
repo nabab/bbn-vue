@@ -59,7 +59,7 @@
         default: 'nf nf-fa-search'
       },
       minWidth: {
-        default: '4em'
+        default: '4.2em'
       },
       maxWidth: {
         default: '100%'
@@ -180,7 +180,7 @@
                 this.unfilter();
               }
             }
-          }, 10);
+          }, this.delay);
         }
       }
     }

@@ -10,8 +10,9 @@
    * Classic input with normalized appearance
    */
 
-  let fields = ['host', 'user', 'pass'];
-  let filesRules = {
+  let fields = ['host', 'user', 'pass'],
+  
+  filesRules = {
     pdf: 'nf nf-mdi-file_pdf bbn-red',
     php: 'nf nf-mdi-language_php bbn-blue',
     doc: 'nf nf-mdi-file_word bbn-blue',
@@ -35,7 +36,9 @@
     gif: 'nf nf-mdi-file_image bbn-pink',
     tiff: 'nf nf-mdi-file_image bbn-brown',
     json: 'nf nf-mdi-json bbn-red'
-  };
+  },
+  imageExt = ['jpeg', 'png', 'jpg', 'tiff', 'gif'];
+
   Vue.component('bbn-finder', {
     mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent],
     props: {
@@ -61,6 +64,12 @@
     },
     data(){
       return {
+        // takes the value of the path when the upload is clicked from the context menu - used to show / hide bbn-upload
+        uploading: false,
+        //v-model of bbn-upload
+        uploaded: [],
+        //defined when the button new folder/file is clicked on the bottom of the tree
+        currentContextPath: '',
         isConnected: false,
         data: [],
         host: '',
@@ -86,7 +95,15 @@
       }
     },
     computed: {
-      
+      mapUploaded(){
+        if ( this.uploaded.length ){
+          return bbn.fn.map( this.uploaded, (a) => {
+            a.name = a.name.replace(' ', '_')
+            return a
+          })
+        }
+        return [];
+      },
       currentPath(){
         return this.dirs.map((a) => {return a.name ? a.name + '/' : '';}).join('');
       },
@@ -101,6 +118,33 @@
       },
     },
     methods: {
+     
+      //abort the current request
+      abortRequest(i){
+        bbn.fn.happy(i)
+        let loadUrl = this.closest('bbn-appui').find('bbn-loadbar').currentItem.url;
+        if ( bbn.fn.isNumber(i) && ( loadUrl === 'ide/finder') ){
+          bbn.fn.abort(this.closest('bbn-appui').find('bbn-loadbar').currentItem.key);
+          appui.success(bbn._('Current request aborted'))
+          this.currentFile = false;
+          this.dirs.splice(i, 1);
+        }
+        else if ( loadUrl.indexOf('ide/actions/finder/file') === 0 ){
+          this.currentFile = false;
+          this.isLoading = false;
+          bbn.fn.abort(this.closest('bbn-appui').find('bbn-loadbar').currentItem.key);
+        }
+      },
+      // at click on the button of the new folder/ file on the bottom of the tree defines the property path of the current tree. Is the only way to know the current context 
+      context(a, button){
+        this.currentContextPath = button.closest('bbn-context').data.path;
+      },
+      //closes the preview of the file
+      closePreview(){
+        this.currentFile = false;
+        this.isLoading = false;
+      },
+      //refresh the tree data
       refresh(name){
         let trees = this.findAll('bbn-tree');
         if ( trees.length ){
@@ -130,7 +174,7 @@
             else { 
               appui.error(bbn._('Something went wrong'));
             }
-          });
+        });
       },
       add(path){
         let fpath = path;
@@ -201,33 +245,40 @@
                 let val = node.data.value.length - idx;
                 ext = node.data.value.slice(- val);
               }
-              
-              this.post(this.root + 'actions/finder/file', {
-                node: node.data,
-                path: this.currentPath,
-                origin: this.origin,
-                ext: ext,
-                width: 450,
-                height: 300,
-              }, (d) => {
-                if ( d.success && d.info ) {
-                  this.currentFile = {
-                    node: node,
-                    height: d.info.height ? d.info.height : '',
-                    width: d.info.width ? d.info.width : '',
-                    info: d.info,
-                    ext: ext, 
+
+              //isImage
+              if ( !imageExt.includes(ext) ){
+                this.post( this.root + 'actions/finder/file', {
+                  node: node.data,
+                  path: this.currentPath,
+                  origin: this.origin,
+                  ext: ext,
+                  width: 450,
+                  height: 300,
+                }, (d) => {
+                  if ( d.success && d.info ) {
+                    this.currentFile = {
+                      node: node,
+                      height: d.info.height ? d.info.height : '',
+                      width: d.info.width ? d.info.width : '',
+                      info: d.info,
+                      ext: ext, 
+                    }
+                  
+                    if ( d.info.is_image ){
+                      this.isImage = true;
+                    }
                   }
-                 
-                  if ( d.info.is_image ){
-                    this.isImage = true;
+                  else {
+                    appui.error(bbn._('Something went wrong while loading the file infos'));
                   }
-                }
-                else {
-                  appui.error(bbn._('Something went wrong while loading the file infos'));
-                }
-                this.isLoading = false;
-              });
+                  this.isLoading = false;
+                });
+              }
+              else {
+                return 
+                bbn.fn.post_out(this.root + 'actions/finder/image/' + this.encodedURL)
+              }
             }
           }
         }
@@ -236,7 +287,7 @@
         bbn.fn.log(node);
         let bits = node.text.split('.');
         let ext = bits[bits.length-1];
-        if (node.dir) {
+        if ( node.dir) {
           node.icon = this.folderIcon;
         }
         else if (filesRules[ext]) {
@@ -256,6 +307,24 @@
           pass: this.pass
         } : {})
       },
+      contextMenuTree(){
+        return [{
+          text: '<i class="nf nf-fa-file"></i>'+ bbn._('Add files to this folder'),
+          command: () => {
+            this.uploadFile(this.currentContextPath)
+          }
+        },{
+          text: '<i class="nf nf-custom-folder"></i>'+ bbn._('Create new folder'),
+          command: () => {
+            this.newFolder()
+          }
+        },{
+          text: '<i class="nf nf-fa-paste"></i>'+ bbn._('Paste'),
+          command: (node) => {
+            bbn.fn.log('context--->', arguments);
+          }
+        }];
+      },
       /**
        * returns the array of buttons of the context menu
        * 
@@ -271,47 +340,136 @@
             command: (node) => {
               this.copy(node)
             }
-          },{
-            icon: 'nf nf-fa-edit',
-            text: bbn._('Rename'),
+          }  
+        ]
+        if ( n.data.dir ) {
+          objContext.push({
+            icon: 'nf nf-fa-paste',
+            text: bbn._('Create new folder'),
             command: (node) => {
-              this.edit(node)
+              this.newFolder(node)
             }
-          }, {
+          });
+          if ( this.copied !== false ){
+            objContext.push({
+              icon: 'nf nf-fa-paste',
+              text: bbn._('Paste'),
+              command: (node) => {
+                this.paste(node)
+              }
+            });  
+          }
+        }
+        else{
+          objContext.push({
             icon: 'nf nf-fa-download',
             text: bbn._('Download'),
             command: (node) => {
               this.download(node)
             }
-          }/*, {
+          })
+        }
+        if ( this.closest('appui-ide-explorer').source.type === 'nextcloud' ){
+          objContext.push(,{
+            icon: 'nf nf-fa-edit',
+            text: bbn._('Rename'),
+            command: (node) => {
+              this.edit(node)
+            }
+          },{
             icon: 'nf nf-fa-trash_alt',
             text: bbn._('Delete'),
             command: (node) => {
               this.delete(node)
             }
-          }*/,  
-        ]
-        if ( n.data.dir && (this.copied !== false) ) {
-          objContext.push({
-            icon: 'nf nf-fa-paste',
-            text: bbn._('Paste'),
-            command: (node) => {
-              this.paste(node)
-            }
-          });
+          })
         }
         return objContext;
       },
-      contextMenu(n, i) {
-        let objContext = [{
-          icon: 'nf nf-fa-paste',
-          text: bbn._('Paste'),
-          command: (node) => {
-            bbn.fn.log('context--->', arguments);
+      uploadFile(path){
+        this.uploading = this.currentContextPath
+      },
+      uploadSuccess(a, b, d){
+        bbn.fn.happy('now')
+        bbn.fn.log(d.data, arguments,'args')
+        if ( d.data.success ){
+          if ( d.data.name ){
+            appui.success(bbn._(d.data.name + ' ' +'successfully uploaded'));
+            
+            if ( this.getRef('upload').filesSuccess.length && (this.getRef('upload').filesSuccess.length === this.uploaded.length) ){ 
+              setTimeout(()=>{
+                this.uploading = false;
+                this.uploaded = [];
+              }, 500)
+            }
           }
-        }];
-         // return objContext;
-        return [];
+        }
+        else {
+          appui.error(bbn._('Something went wrong while uploading the file'))
+        }
+      },
+      newFolder(node){
+        if ( node ){
+          let tmp = node.tree.data.path, 
+          path = '';
+          if ( tmp.indexOf('/') === 0 ){
+            path = tmp.substr(1, tmp.length);
+          }  
+          else {
+            path = tmp + '/';
+          }
+          node.getPopup().open({
+            title: bbn._('New Directory'),
+            height: '150px',
+            width: '350px',
+            source: {
+              treeUid: node.closest('bbn-tree')._uid,
+              idx: node.idx, 
+              node: node.data,
+              uid: node._uid,
+              origin: this.origin,
+              path: path,
+              root: this.root,
+              new: true,
+              newDir: ''
+            },
+            component: this.$options.components.form
+          })
+        }
+        else { 
+          if ( this.currentContextPath.length ){
+            let idx = bbn.fn.search( this.findAll('bbn-tree'),  'data.path', this.currentContextPath),
+            treeUid,
+            tree;
+            if ( idx > -1 ){
+              tree = this.findAll('bbn-tree')[idx];
+              treeUid = tree._uid;
+              tree.getPopup().open({
+                title: bbn._('New Directory'),
+                height: '150px',
+                width: '350px',
+                source: {
+                  treeUid: treeUid,
+                  node: {
+                    //just because in the case of new folder from node the value is expected in the controller
+                    value: ''
+                  },
+                  origin: this.origin,
+                  path: this.currentContextPath,
+                  root: this.root,
+                  new: true,
+                  newDir: '', 
+                  isFromTree: true
+                },
+                component: this.$options.components.form
+              })
+            }
+
+             bbn.fn.happy(this.currentContextPath)
+          }
+         
+        }
+        
       },
       /**
        * paste the node previously copied in the property this.copied in the current selected dir
@@ -364,24 +522,15 @@
           this.alert(bbn._('Copy something before to paste'));
         }
       },
-      //if mode === 'nextcloud' download the file
+      //download the file
       download(n){
-        this.post_out(this.root + 'actions/finder/download', {
+        bbn.fn.post_out(this.root + 'actions/finder/download/' + n.data.value, {
           value: n.data.value,
           file: n.data.file,
           path: this.currentPath !== n.data.value + '/' ? this.currentPath : '',
           origin: this.origin,
           destination: this.origin + 'download/' + moment().format('x') + '/'
         })
-        /*, (d) => {
-          if ( d.success ){
-            this.alert(n.data.value + ' ' + bbn._('has been correctly downloaded in the folder' + ' ' + d.dest))
-            appui.success(bbn._('Success'))
-          }
-          else {
-            appui.error(bbn._('Something went wrong when downloading the file'))
-          }  
-        }*/
       },
       /**
        * edits the name of the current selected node
@@ -423,25 +572,33 @@
        */
       delete(node){
         this.confirm(bbn._('Do you want to delete') + ' ' + node.data.value + '?', () => {
-          let st = node.closest('bbn-tree').data.path + '/'
+          let st = node.tree.data.path,
             //st = ( (this.mode === 'ftp') || (this.mode === 'ssh')) ? this.origin + this.currentPath : this.currentPath,
               name = node.data.value;
-          if ( node.data.dir && ( this.currentPath === '' ) ){
+          /*if ( node.data.dir && ( this.currentPath === '' ) ){
             st += node.data.value;
           }
           if ( node.data.file ){
             st += node.data.value;
           }
-          
+          */
+
           this.post(this.root + 'actions/finder/delete', {
             path: st, 
+            name: name,
             origin: this.origin
           }, (d) => {
             if ( d.success ){       
-              let items = node.closest('bbn-tree').items;
+              let items = node.tree.items;
               if ( items.length ){
                 items.splice(node.idx, 1);
               }
+              if ( node.data.dir && this.dirs.length ){
+                let idx = bbn.fn.search(this.dirs, 'path', node.tree.data.path + '/' + node.data.value )
+                if ( idx > -1 ){
+                  this.dirs.splice(idx)
+                }
+              }
               //destroy the next tree in the case of elimination of a folder
               if ( node.data.dir && ( this.dirs.length > 1 ) ){
                 this.dirs.pop();
@@ -466,10 +623,12 @@
        * @param n the node
        */
       copy(n){
+        bbn.fn.happy('copy')
+        bbn.fn.log(arguments)
         this.copied = false;
         this.confirm(bbn._('Do you want to copy') + ' ' + n.data.value + '?', () => {
           this.copied = n;
-          if ( n.data.dir && this.dirs.length > 2){
+          /*if ( n.data.dir && this.dirs.length > 2){
             let st = this.currentPath.slice(0,-1),
             idx = st.lastIndexOf('/');
             if ( idx > -1 ){
@@ -480,9 +639,10 @@
           else if ( n.data.dir && this.dirs.length <= 2 ){
             this.oldDir = '';
           }
-          else{
+          else {
             this.oldDir = this.currentPath;
-          }
+          }*/
+          this.oldDir = n.tree.data.path;
           let st = n.data.file ? bbn._('File') : bbn._('Folder');
           st += ' ' + bbn._('successfully copied');
           appui.success(st)
@@ -553,11 +713,23 @@
       form:{
         name: 'form',
         template: `
-        <bbn-form class="bbn-flex-height" :source="source" @success="success" :action="source.root + 'actions/finder/rename'">
+        <bbn-form class="bbn-flex-height"
+                  :source="source" 
+                  @success="success" 
+                  :action="source.root + 'actions/finder/' + (!source.new ? 'rename' : 'new_dir')"
+                  >
           <div class="bbn-grid-fields bbn-l bbn-padded">
             <label>`+ bbn._('Name') +`</label>
             <div>
-              <bbn-input  class="bbn-w-100" v-model="source.node.value">
+              <bbn-input v-if="!source.new" 
+                         class="bbn-w-100" 
+                         v-model="source.node.value"
+                         
+              ></bbn-input>
+              <bbn-input v-else 
+                         class="bbn-w-100" 
+                         v-model="source.newDir"
+              >
               </bbn-input>
             </div>
           </div>
@@ -571,29 +743,54 @@
         computed: {
           dirs(){
             return this.closest('bbn-container').getComponent().dirs;
+          },
+          finder(){
+            return this.closest('bbn-container').find('bbn-finder')
           }
         },
       
         methods:{
-          success(d){
-            bbn.fn.happy('success??')
-            bbn.fn.log(d)
-            if ( d.success ){
+          success(d){
+            if ( d.success ){
               let trees = this.closest('bbn-container').getComponent().findAll('bbn-tree');
-              bbn.fn.each(trees, (v, i) => {
-                if ( v._uid === this.source.treeUid ){
-                  v.items[this.source.idx].value = this.source.node.value;
-                  v.items[this.source.idx].text = this.source.node.value;
+              
+              //creating a new folder
+              if ( d.data && d.data.new_dir ){
+                bbn.fn.happy('mpod')
+                
+                
+                
+                let treeIdx = bbn.fn.search(trees, '_uid', this.source.treeUid);
+                bbn.fn.happy(treeIdx)
+                if ( ( treeIdx > -1 ) && ( trees[treeIdx + 1] ) ){
+                  trees[treeIdx + 1].reload();
+                  bbn.fn.happy(treeIdx)
                 }
-              })
-              appui.success((this.source.node.dir ? bbn._('Folder') : bbn._('File')) + ' ' + bbn._('successfully modified'))
-            }
+                else if (this.source.isFromTree ) {
+                  //case of folder created from the context of the tree and not node
+                  trees[treeIdx].reload();
+                }
+                
+                
+                appui.success(d.data.new_dir + ' ' + bbn._('successfully created'))
+              }
+              //editing an existing folder
+              else { 
+                bbn.fn.each(trees, (v, i) => {
+                  if ( v._uid === this.source.treeUid ){
+                    v.items[this.source.idx].value = this.source.node.value;
+                    v.items[this.source.idx].text = this.source.node.value;
+                  }
+                })
+                appui.success((this.source.node.dir ? bbn._('Folder') : bbn._('File')) + ' ' + bbn._('successfully modified'))
+              }
+            }
             else{
               appui.error(bbn._('Something went wrong'))
             }
           }
-          
-        }
+        },
+        
       }
     }  
   });

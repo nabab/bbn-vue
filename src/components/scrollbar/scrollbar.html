@@ -1,5 +1,5 @@
 <div :class="componentClass"
-      :style="{opacity: !show || !size ? 0 : 1}"
+      :style="barStyle"
       v-if="isVisible"
       @click="jump($event)"
       @dblclick="jump($event, true)"
@@ -7,7 +7,7 @@
       @mouseleave="outSlider"
 >
   <div class="bbn-scroll-slider bbn-primary"
-        :style="style"
+        :style="sliderStyle"
         ref="scrollSlider"
         @touchstart="startDrag"
         @mousedown="startDrag">

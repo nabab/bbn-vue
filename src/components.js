@@ -810,7 +810,7 @@
                   return v ? (new moment(v)).format(cfg.format) : '-';
                 }
                 else{
-                  return v ? bbn.fn.fdate(v, true) : '-';
+                  return bbn.fn.fdatetime(v, '-');
                 }
                 break;
               case "date":
@@ -818,7 +818,7 @@
                   return v ? (new moment(v)).format(cfg.format) : '-';
                 }
                 else{
-                  return v ? bbn.fn.fdate(v) : '-';
+                  return bbn.fn.fdate(v, '-');
                 }
                 break;
               case "time":
@@ -826,7 +826,7 @@
                   return v ? (new moment(v)).format(cfg.format) : '-';
                 }
                 else{
-                  return v ? bbn.fn.fdate(v) : '-';
+                  return v ? bbn.fn.ftime(v) : '-';
                 }
                 break;
               case "email":
@@ -3356,14 +3356,8 @@
            * @data {Number} [0] coolTimer
            * @memberof keepCoolComponent
            */
-          coolTimer: {
-            default: 0
+          coolTimers: {
           },
-          /**
-           * @data coolTimeout
-           * @memberof keepCoolComponent
-           */
-          coolTimeout: null,
           /**
            * @data {Number} [40] coolInterval
            * @memberof keepCoolComponent
@@ -3373,9 +3367,14 @@
       },
       methods: {
         /**
+         * It will prevent the same action to be executed too many times in a row
+         * On the first go the timer will be defined and the action will be executed
+         * On the second go the promise will be created and returned
+         * On the consecutive goes the promise will be returned
+         * Once the promise is executed (after timeout) the promise will be recreated
          * @method keepCool
          * @param {Function} fn 
-         * @param {*Number} idx 
+         * @param {Number} idx 
          * @param {Number} timeout 
          * @memberof keepCoolComponent
          */
@@ -3384,25 +3383,38 @@
             idx = 'default';
           }
           let t = (new Date()).getTime();
-          if ( !this.coolTimer[idx] || (this.coolTimer[idx] < (t - (timeout || this.coolInterval))) ){
-            this.coolTimer[idx] = (new Date()).getTime();
-            return new Promise((resolve) => {
-              setTimeout(() => {
-                fn();
-                resolve();
-              });
-            })
+          let delay = timeout || this.coolInterval;
+          // First go of the serie: nothing exists
+          if ( !this.coolTimers[idx] ){
+            this.coolTimers[idx] = {
+              time: 0,
+              promise: false
+            };
           }
-          else if ( this.coolTimeout === null ){
-            this.coolTimeout = new Promise((resolve) => {
-              setTimeout(() => {
-                this.coolTimeout = null;
-                resolve();
-                this.keepCool(fn, idx, timeout);
-              }, timeout || this.coolInterval);
-            });
+          // If there is a promise it has not yet been executed
+          if ( this.coolTimers[idx].promise ){
+            return this.coolTimers[idx].promise;
           }
-          return this.coolTimeout;
+
+          // Timeout passed, function will have to be executed immediately
+          let diff = delay + this.coolTimers[idx].time - t;
+          if ( (diff > 0) && (diff <= delay) ){
+            delay = diff;
+            this.coolTimers[idx].time = t + delay;
+          }
+          else{
+            delay = 0;
+            this.coolTimers[idx].time = t;
+          }
+          this.coolTimers[idx].promise = new Promise((resolve) => {
+            setTimeout(() => {
+              let r = fn();
+              this.coolTimers[idx].time = (new Date()).getTime();
+              resolve(r);
+              this.coolTimers[idx].promise = false;
+            }, delay);
+          });
+          return this.coolTimers[idx].promise;
         }
       }
     },

@@ -339,7 +339,7 @@
        * @emits scroll
        */
       onScroll(e){
-        if ( !this.scrollable ){
+        if ( this.scrollable === false ){
           return;
         }
         let x = this.getRef('scrollContainer').scrollLeft;
@@ -441,96 +441,75 @@
             }, 1);
           });
         }
-        //bbn.fn.log("onResize");
-        let container = this.$el;
-        let content = this.getRef('scrollContent');
-        if (!this.promise){
-          this.promise = new Promise((resolve) => {
-            /** @todo Replace with a keepCool - to fix */
-            setTimeout(() => {
-              let containerWidth = container.clientWidth;
-              let containerHeight = container.clientHeight;
-              let contentWidth = content.scrollWidth || content.clientWidth;
-              let contentHeight = content.scrollHeight || content.clientHeight;
-              if ( this.naturalWidth && (this.naturalWidth < this.contentWidth) ) {
-                this.contentWidth = this.naturalWidth;
+        return this.keepCool(() => {
+          let container = this.$el;
+          let content = this.getRef('scrollContent');
+          let containerWidth = container.clientWidth;
+          let containerHeight = container.clientHeight;
+          let contentWidth = content.scrollWidth || content.clientWidth;
+          let contentHeight = content.scrollHeight || content.clientHeight;
+          if ( this.naturalWidth && (this.naturalWidth < this.contentWidth) ) {
+            this.contentWidth = this.naturalWidth;
+          }
+          else{
+            this.contentWidth = contentWidth;
+          }
+          if ( this.naturalHeight && (this.naturalHeight < this.contentHeight) ) {
+            this.contentHeight = this.naturalHeight;
+          }
+          else{
+            this.contentHeight = contentHeight;
+          }
+          if ( this.scrollable ){
+            if ( (this.axis === 'both') || (this.axis === 'x') && (this.contentWidth > containerWidth) ){
+              if ( this.$refs.xScroller ){
+                this.$refs.xScroller.onResize();
               }
-              else{
-                this.contentWidth = contentWidth;
+              this.hasScrollX = true;
+            }
+            else{
+              this.hasScrollX = false;
+            }
+            if ((this.axis === 'both') || (this.axis === 'y') && (this.contentHeight > containerHeight)){
+              if ( this.$refs.yScroller ){
+                this.$refs.yScroller.onResize();
               }
-              if ( this.naturalHeight && (this.naturalHeight < this.contentHeight) ) {
-                this.contentHeight = this.naturalHeight;
-              }
-              else{
-                this.contentHeight = contentHeight;
-              }
-              if ( this.scrollable ){
-                if ( (this.axis === 'both') || (this.axis === 'x') && (this.contentWidth > containerWidth) ){
-                  if ( this.$refs.xScroller ){
-                    this.$refs.xScroller.onResize();
-                  }
-                  this.hasScrollX = true;
-                }
-                else{
-                  this.hasScrollX = false;
-                }
-                if ((this.axis === 'both') || (this.axis === 'y') && (this.contentHeight > containerHeight)){
-                  if ( this.$refs.yScroller ){
-                    this.$refs.yScroller.onResize();
-                  }
-                  this.hasScrollY = true;
-                }
-                else{
-                  this.hasScrollY = false;
-                }
-                this.hasScroll = this.hasScrollY || this.hasScrollX;
-                if ( this.currentX > this.contentWidth ) {
-                  this.currentX = 0;
-                }
-                if ( this.currentY > this.contentHeight ) {
-                  this.currentY = 0;
-                }
-                container.scrollLeft = this.currentX;
-                container.scrollTop = this.currentY;
-              }
-              this.$emit('resize');
-              this.setResizeMeasures();
-              this.promise = false;
-              resolve();
-            }, this.latency);
-          });
-        }
-        return this.promise;
+              this.hasScrollY = true;
+            }
+            else{
+              this.hasScrollY = false;
+            }
+            this.hasScroll = this.hasScrollY || this.hasScrollX;
+            if ( this.currentX > this.contentWidth ) {
+              this.currentX = 0;
+            }
+            if ( this.currentY > this.contentHeight ) {
+              this.currentY = 0;
+            }
+            container.scrollLeft = this.currentX;
+            container.scrollTop = this.currentY;
+          }
+          this.$emit('resize');
+          this.setResizeMeasures();
+        }, 'onResize', 250);
       },
       /**
        * @method scrollStart
-       * @fires this.getRef('xScroller').scrollTo
-       * @fires this.getRef('yScroller').scrollTo
+       * @fires scrollStartX
+       * @fires scrollStartY
        */  
       scrollStart(){
-        let x = this.getRef('xScroller'),
-            y = this.getRef('yScroller');
-        if ( x ){
-          x.scrollTo(0);
-        }
-        if ( y ){
-          y.scrollTo(0);  
-        }
+        this.scrollStartX();
+        this.scrollStartY();
       },
       /**
        * @method scrollEnd
-       * @fires this.getRef('xScroller').scrollTo
-       * @fires this.getRef('yScroller').scrollTo
+       * @fires scrollEndX
+       * @fires scrollEndY
        */  
       scrollEnd(){
-        let x = this.getRef('xScroller'),
-            y = this.getRef('yScroller');
-        if ( x ){
-          x.scrollTo('100%');
-        }
-        if ( y ){
-          y.scrollTo('100%');
-        }
+        this.scrollEndX();
+        this.scrollEndY();
       },
       /**
        * Initializes the scroll
@@ -583,7 +562,7 @@
         else {
           this.getRef('scrollContainer').scrollLeft = this.getRef('scrollContainer').scrollWidth;
         }
-    },
+      },
        /**
        * Scroll the y axis to the end
        * @method scrollEndY
@@ -593,6 +572,9 @@
         let y = this.getRef('yScroller');
         if ( y ){
           y.scrollTo('100%');
+        }
+        else {
+          this.getRef('scrollContainer').scrollTop = this.getRef('scrollContainer').scrollHeight;
         }
       },
       /**

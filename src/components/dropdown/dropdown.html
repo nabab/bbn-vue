@@ -1,13 +1,30 @@
-<div :class="[componentClass, 'bbn-iblock', 'bbn-background-internal', 'bbn-unse']"
+<div :class="[
+       componentClass,
+       'bbn-iblock',
+       'bbn-background-internal',
+       'bbn-bordered-internal',
+       'bbn-radius',
+       'bbn-line-height-internal',
+       {'bbn-disabled': !!disabled}
+     ]"
      @mouseleave="leave"
      @focusin="isActive = true"
      @focusout="isActive = false"
      :title="currentText || placeholder || null"
 >
-  <div class="bbn-rel">
+  <div class="bbn-rel bbn-dropdown-container">
     <div v-html="currentText"
-         class="bbn-dropdown-content bbn-xspadded bbn-100 bbn-top-left">
-    </div>
+         :class="[
+           'bbn-dropdown-content',
+           'bbn-l',
+           'bbn-bottom-right',
+           'bbn-top-left',
+           'bbn-line-height-internal',
+           'bbn-hxspadded',
+           {'bbn-disabled': !!disabled}
+         ]"
+         :style="{'padding-right': isNullable ? '4em' : '2.5em'}"
+    ></div>
     <bbn-input :disabled="disabled"
                 @keydown.stop="keydown"
                 @click.stop="click"
@@ -20,10 +37,11 @@
                 :placeholder="placeholder"
                 :tabindex="disabled ? -1 : 0"
                 v-model="currentText"
+                autocomplete="off"
                 :button-right="currentIcon"
                 @clickRightButton="click"
-                autocomplete="off">
-    </bbn-input>
+                class="bbn-no-border bbn-line-height-internal"
+    ></bbn-input>
   </div>
   <input type="hidden"
          v-model="value"
@@ -46,6 +64,5 @@
                :source="filteredData"
                :source-text="sourceText"
                :source-value="sourceValue"
-               >
-  </bbn-floater>
+  ></bbn-floater>
 </div>

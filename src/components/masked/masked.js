@@ -439,98 +439,101 @@
        * @emits input
       */
       keydownEvent(event){
-        if ( 
-          !this.isShiftKey(event.keyCode) &&
-          !this.isControlKey(event.keyCode) &&
-          !this.isArrowKey(event.keyCode) &&
-          !this.isTabKey(event.keyCode) &&
-          !event.ctrlKey
-        ){
-          let isSelection = this.$refs.element.selectionStart !== this.$refs.element.selectionEnd,
-              value = this.value ? this.value.toString() : ''
-          // Check max length
+        if ( !this.disabled && !this.readonly ){
+           
           if ( 
-            !this.isCancKey(event.keyCode) &&
-            !this.isBackspaceKey(event.keyCode) &&
-            !isSelection &&
-            (
-              (value.length >= this.maxLen) || 
-              ((this.size !== undefined) && (value.length >= this.size)) ||
-              ((this.maxlength !== undefined) && (value.length >= this.maxlength))
-            )
+            !this.isShiftKey(event.keyCode) &&
+            !this.isControlKey(event.keyCode) &&
+            !this.isArrowKey(event.keyCode) &&
+            !this.isTabKey(event.keyCode) &&
+            !event.ctrlKey
           ){
-            event.preventDefault()
-            return
-          }
-          // Get the correct cursor position
-          let pos = this.getPos(this.$refs.element.selectionStart, event);
-          // Not special key and not valid char
-          if ( !this.isSpecialKey(event.keyCode) && !this.isValidChar(event.key, pos) ){
-            event.preventDefault()
-          }
-          // Input
-          else if ( 
-            !this.isSpecialKey(event.keyCode) &&
-            ((this.inputValue.charAt(pos) !== this.promptChar) || isSelection)
-          ){
-            let p = this.getIdxRange(
-                  isSelection ? this.$refs.element.selectionStart : pos,
-                  isSelection ? this.$refs.element.selectionEnd - 1 : pos
-                )
-            p.end = isSelection ? p.end + 1 : p.start
-            value = value.slice(0, p.start) + event.key + value.slice(p.end)
-            this.emitInput(value)
-            this.$nextTick(() => {
-              this.setInputValue()
-              this.$nextTick(() => {
-                this.$refs.element.setSelectionRange(pos + 1, pos + 1)
-              })
-            })
-            event.preventDefault()
-          }
-          // Canc and Backspace
-          else if ( this.isCancKey(event.keyCode) || this.isBackspaceKey(event.keyCode) ){
-            event.preventDefault()
-            // Delete from a selection
-            if ( isSelection ){
-              let pos = this.$refs.element.selectionStart,
-                  p = this.getIdxRange(this.$refs.element.selectionStart, this.$refs.element.selectionEnd - 1)
-              this.emitInput(value.slice(0, p.start) + value.slice(p.end + 1))
+            let isSelection = this.$refs.element.selectionStart !== this.$refs.element.selectionEnd,
+                value = this.value ? this.value.toString() : ''
+            // Check max length
+            if ( 
+              !this.isCancKey(event.keyCode) &&
+              !this.isBackspaceKey(event.keyCode) &&
+              !isSelection &&
+              (
+                (value.length >= this.maxLen) || 
+                ((this.size !== undefined) && (value.length >= this.size)) ||
+                ((this.maxlength !== undefined) && (value.length >= this.maxlength))
+              )
+            ){
+              event.preventDefault()
+              return
+            }
+            // Get the correct cursor position
+            let pos = this.getPos(this.$refs.element.selectionStart, event);
+            // Not special key and not valid char
+            if ( !this.isSpecialKey(event.keyCode) && !this.isValidChar(event.key, pos) ){
+              event.preventDefault()
+            }
+            // Input
+            else if ( 
+              !this.isSpecialKey(event.keyCode) &&
+              ((this.inputValue.charAt(pos) !== this.promptChar) || isSelection)
+            ){
+              let p = this.getIdxRange(
+                    isSelection ? this.$refs.element.selectionStart : pos,
+                    isSelection ? this.$refs.element.selectionEnd - 1 : pos
+                  )
+              p.end = isSelection ? p.end + 1 : p.start
+              value = value.slice(0, p.start) + event.key + value.slice(p.end)
+              this.emitInput(value)
               this.$nextTick(() => {
                 this.setInputValue()
                 this.$nextTick(() => {
-                  this.$refs.element.setSelectionRange(pos, pos)
+                  this.$refs.element.setSelectionRange(pos + 1, pos + 1)
                 })
               })
+              event.preventDefault()
             }
-            // Normal backspace and canc
-            else {
-              if ( this.isBackspaceKey(event.keyCode) && (pos > 0) ){
-                this.inputValue = this.inputValue.slice(0, pos - 1) + this.promptChar + this.inputValue.slice(pos)
-                pos--
-              }
-              else if ( this.isCancKey(event.keyCode) && (pos < this.maxPos) ){
-                this.inputValue = this.inputValue.slice(0, pos) + this.promptChar + this.inputValue.slice(pos + 1)
-              }
-              this.$nextTick(() => {
-                this.emitInput(this.raw())
+            // Canc and Backspace
+            else if ( this.isCancKey(event.keyCode) || this.isBackspaceKey(event.keyCode) ){
+              event.preventDefault()
+              // Delete from a selection
+              if ( isSelection ){
+                let pos = this.$refs.element.selectionStart,
+                    p = this.getIdxRange(this.$refs.element.selectionStart, this.$refs.element.selectionEnd - 1)
+                this.emitInput(value.slice(0, p.start) + value.slice(p.end + 1))
                 this.$nextTick(() => {
                   this.setInputValue()
                   this.$nextTick(() => {
                     this.$refs.element.setSelectionRange(pos, pos)
                   })
                 })
-              })
+              }
+              // Normal backspace and canc
+              else {
+                if ( this.isBackspaceKey(event.keyCode) && (pos > 0) ){
+                  this.inputValue = this.inputValue.slice(0, pos - 1) + this.promptChar + this.inputValue.slice(pos)
+                  pos--
+                }
+                else if ( this.isCancKey(event.keyCode) && (pos < this.maxPos) ){
+                  this.inputValue = this.inputValue.slice(0, pos) + this.promptChar + this.inputValue.slice(pos + 1)
+                }
+                this.$nextTick(() => {
+                  this.emitInput(this.raw())
+                  this.$nextTick(() => {
+                    this.setInputValue()
+                    this.$nextTick(() => {
+                      this.$refs.element.setSelectionRange(pos, pos)
+                    })
+                  })
+                })
+              }
+            }
+            else if ( event.shiftKey && this.isArrowKey(event.keyCode) ){
+              this.$refs.element.selectionStart = pos
+            }
+            else {
+              this.$refs.element.setSelectionRange(pos, pos)
             }
           }
-          else if ( event.shiftKey && this.isArrowKey(event.keyCode) ){
-            this.$refs.element.selectionStart = pos
-          }
-          else {
-            this.$refs.element.setSelectionRange(pos, pos)
-          }
+          this.keydown(event)
         }
-        this.keydown(event)
       },
       /** 
        * The method called on every key pressed (keyup event).
@@ -544,24 +547,26 @@
        * @fires keyup
       */
       keyupEvent(event){
-        if ( 
-          !this.isShiftKey(event.keyCode) &&
-          !this.isControlKey(event.keyCode) &&
-          !this.isTabKey(event.keyCode) &&
-          !event.ctrlKey
-        ){
-          let pos = this.$refs.element.selectionStart
-          this.$nextTick(() => {
-            pos = this.getPos(pos, event)
-            if ( event.shiftKey && this.isArrowKey(event.keyCode) ){
-              this.$refs.element.selectionStart = pos
-            }
-            else {
-              this.$refs.element.setSelectionRange(pos, pos)
-            }
-          })
+        if ( !this.disabled && !this.readonly ){
+          if ( 
+            !this.isShiftKey(event.keyCode) &&
+            !this.isControlKey(event.keyCode) &&
+            !this.isTabKey(event.keyCode) &&
+            !event.ctrlKey
+          ){
+            let pos = this.$refs.element.selectionStart
+            this.$nextTick(() => {
+              pos = this.getPos(pos, event)
+              if ( event.shiftKey && this.isArrowKey(event.keyCode) ){
+                this.$refs.element.selectionStart = pos
+              }
+              else {
+                this.$refs.element.setSelectionRange(pos, pos)
+              }
+            })
+          }
+          this.keyup(event)
         }
-        this.keyup(event)
       },
       /**
        * The method called on input event.
@@ -597,10 +602,12 @@
        * @fires blur
        */
       blurEvent(event){
-        if ( !this.value ){
-          this.inputValue = '';
+        if ( !this.disabled && !this.readonly ){
+          if ( !this.value ){
+            this.inputValue = '';
+          }
+          this.blur(event)
         }
-        this.blur(event)
       },
       /**
        * The method called on focus event.
@@ -611,11 +618,13 @@
        * @fires focus
        */
       focusEvent(event){
-        this.setInputValue()
-        this.$nextTick(() => {
-          this.$refs.element.setSelectionRange(0, 0)
-        })
-        this.focus(event)
+        if ( !this.disabled && !this.readonly ){
+          this.setInputValue()
+          this.$nextTick(() => {
+            this.$refs.element.setSelectionRange(0, 0)
+          })
+          this.focus(event)
+        }
       },
       /** 
        * The method called on paste event.
@@ -628,18 +637,20 @@
        * @fires emitInput
       */
       pasteEvent(event){
-        let text = event.clipboardData ? event.clipboardData.getData('text') : '',
-            pos = this.getPos(this.$refs.element.selectionStart),
-            p = this.getIdxRange(0, pos),
-            val = this.value.toString()
-        event.preventDefault()
-        text = this.clearText(text, pos)
-        val = val.slice(p.start, p.end) + text + val.slice(p.end)
-        pos = p.end + text.length + 1
-        this.emitInput(val.slice(0, this.maxLen))
-        this.$nextTick(() => {
-          this.$refs.element.setSelectionRange(pos, pos)
-        })
+        if ( !this.disabled && !this.readonly ){
+          let text = event.clipboardData ? event.clipboardData.getData('text') : '',
+              pos = this.getPos(this.$refs.element.selectionStart),
+              p = this.getIdxRange(0, pos),
+              val = this.value.toString()
+          event.preventDefault()
+          text = this.clearText(text, pos)
+          val = val.slice(p.start, p.end) + text + val.slice(p.end)
+          pos = p.end + text.length + 1
+          this.emitInput(val.slice(0, this.maxLen))
+          this.$nextTick(() => {
+            this.$refs.element.setSelectionRange(pos, pos)
+          })
+        }
       },
       /**
        * The method called on cut event.
@@ -652,20 +663,22 @@
        * @fires emitInput
        */
       cutEvent(event){
-        let sel = document.getSelection(),
-            text = sel.toString(),
-            oriPos = this.$refs.element.selectionStart,
-            pos = this.getPos(oriPos),
-            p = this.getIdxRange(0, pos),
-            val = this.value.toString()
-        event.preventDefault()
-        document.execCommand('copy')
-        text = this.clearText(text, pos)
-        val = val.slice(p.start, p.end) + val.slice(p.end + text.length)
-        this.emitInput(val.slice(0, this.maxLen))
-        this.$nextTick(() => {
-          this.$refs.element.setSelectionRange(oriPos, oriPos)
-        })
+        if ( !this.disabled && !this.readonly ){
+          let sel = document.getSelection(),
+              text = sel.toString(),
+              oriPos = this.$refs.element.selectionStart,
+              pos = this.getPos(oriPos),
+              p = this.getIdxRange(0, pos),
+              val = this.value.toString()
+          event.preventDefault()
+          document.execCommand('copy')
+          text = this.clearText(text, pos)
+          val = val.slice(p.start, p.end) + val.slice(p.end + text.length)
+          this.emitInput(val.slice(0, this.maxLen))
+          this.$nextTick(() => {
+            this.$refs.element.setSelectionRange(oriPos, oriPos)
+          })
+        }
       },
       /**
        * Removes the invalid characters from a string.

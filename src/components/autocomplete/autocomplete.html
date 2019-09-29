@@ -5,9 +5,10 @@
 >
   <div class="bbn-flex-width bbn-h-100">
     <div class="bbn-flex-fill"
-         @click.stop="click">
+         @click.stop="click"
+    >
       <input :disabled="disabled"
-              class="bbn-unselectable bbn-textbox bbn-no-border bbn-abs bbn-top-left"
+              class="bbn-unselectable bbn-textbox bbn-no-border bbn-abs bbn-top-left bbn-bottom-right"
               :required="required"
               :readonly="readonly"
               :placeholder="filterString ? '' : placeholder"
@@ -15,7 +16,8 @@
               autocorrect="off"
               autocapitalize="off"
               spellcheck="false"
-              :value="filterString ? '' : currentText">
+              :value="filterString ? '' : currentText"
+      >
       <input v-if="!disabled && !readonly"
               tabindex="0"
               class="bbn-textbox bbn-no-border"
@@ -30,28 +32,31 @@
               autocorrect="off"
               autocapitalize="off"
               spellcheck="false"
-              :name="name">
+              :name="name"
+      >
     </div>
     <div class="bbn-list-component-button">
       <div v-if="isAjax && isLoading"
-           class="bbn-middle">
+           class="bbn-middle"
+      >
         <bbn-loadicon size="1.2em"
-                      tabindex="-1">
-        </bbn-loadicon>
+                      tabindex="-1"
+        ></bbn-loadicon>
       </div>
       <bbn-button v-else
                   :icon="isOpened && !disabled && !readonly && filteredData.length ? iconUp : iconDown"
-                  class="bbn-p bbn-button-right bbn-no-vborder"
+                  class="bbn-p bbn-button-right bbn-no-vborder bbn-m"
                   @click.prevent.stop="click"
                   tabindex="-1"
-                  :disabled="disabled">
-      </bbn-button>
+                  :disabled="disabled"
+      ></bbn-button>
     </div>
   </div>
   <input type="hidden"
          v-model="value"
          ref="element"
-         :name="name">
+         :name="name"
+  >
   <bbn-floater v-if="!disabled && !readonly && isOpened"
                :element="$el"
                :max-height="maxHeight"
@@ -63,6 +68,6 @@
                @select="select"
                :selected="[value]"
                @close="isOpened = false"
-               :source="filteredData">
-  </bbn-floater>
+               :source="filteredData"
+  ></bbn-floater>
 </div>

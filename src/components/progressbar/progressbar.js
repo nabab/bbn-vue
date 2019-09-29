@@ -68,7 +68,8 @@
        */
       type: {
         type: String,
-        default: 'value'
+        default: 'value',
+        validator: (t) => ['value', 'percent', 'chunk'].includes(t)
       },
       /**
        * The primary color of the bar (hex, rgb, rgba)
@@ -79,6 +80,10 @@
         type: String,
         default: ''
       },
+      barClass: {
+        type: String,
+        default: 'bbn-background-effect-primary'
+      },
       /**
        * Defines the color of the text on the bar
        * @prop textColor {String} [''] textColor
@@ -87,8 +92,12 @@
         type: String,
         default: ''
       },
+      text: {
+        type: String,
+        default: ''
+      },
       /**
-       * Defines the height of the bar if the bar if the prop orientation is set to 'vertical'
+       * Defines the height of the bar if the prop orientation is set to 'vertical'
        * @prop {Number|String} [500] height
        */
       height: {
@@ -129,9 +138,8 @@
       },
       valuePosition: {
         type: String,
-        default: 'right' 
-        //allowed values 'left', 'center', 'right', 'top', 'bottom'
-
+        default: 'right',
+        validator: (p) => ['left', 'center', 'right', 'top', 'bottom'].includes(p)
       }
     },
     data(){

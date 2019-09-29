@@ -1,19 +1,25 @@
 .bbn-dropdown{
   box-sizing: border-box;
-  min-width: 4em;
   cursor: pointer;
-  .bbn-dropdown-content{
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-  }
-  .bbn-input{
-    background-color: transparent;
-    max-width: 100%;
-    width: 100%;
-    input{
-      color: transparent;
-      cursor: pointer;
+  .bbn-dropdown-container {
+    line-height: normal;
+    .bbn-dropdown-content{
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+    .bbn-input{
+      background-color: transparent;
+      max-width: 100%;
+      width: 100%;
+      min-width: 4em;
+      div.bbn-w-100, div.bbn-flex-width {
+        height: 100%;
+      }
+      input{
+        color: transparent;
+        cursor: pointer;
+      }
     }
   }
 }

@@ -1,0 +1,11 @@
+{
+  "name": "calendar",
+  "version": "0.0.1",
+  "authors": [
+    "Mirko Argentino <mirko@bbn.solutions>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "moment": ">= 2.12.0"
+  }
+}

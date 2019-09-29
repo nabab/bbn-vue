@@ -95,7 +95,13 @@
          * 
          * @data {String} [''] inputValue
         */
-        inputValue: ''
+        inputValue: '',
+        /**
+         * The old value displayed in the input.
+         * 
+         * @data {String} [''] oldInputvalue
+         */
+        oldInputValue: ''
       }
     },
     computed: {
@@ -125,6 +131,15 @@
        */
       currentFormat(){
         return this.format || (this.showSecond ? 'HH:mm:ss' : 'HH:mm');
+      },
+      /**
+       * True if the values of the inputValue and the oldInputValue properties are different.
+       * 
+       * @computed intuValueChanged
+       * @return {String}
+       */
+      inputValueChanged(){
+        return this.inputValue !== this.oldInputValue;
       }
     },
     methods: {
@@ -150,7 +165,7 @@
         if ( !format ){
           format = val ? this.getValueFormat(val) : false;
         }
-        let value = format && val ? moment(val, format).format(this.getValueFormat(val)) : '';
+        let value = format && val ? (moment(val, format).isValid() ? moment(val, format).format(this.getValueFormat(val)) : '') : '';
         if ( value && this.min && (value < this.min) ){
           value = this.min;
         }
@@ -162,6 +177,7 @@
         }
         if ( !value ){
           this.inputValue = '';
+          this.oldInputValue = '';
         }
         this.isOpened = false;
       },
@@ -177,18 +193,20 @@
       inputChanged(){
         let newVal = this.$refs.element.inputValue,
             value = !!newVal ? moment(newVal, this.currentFormat).format(this.getValueFormat(newVal)) : '';
-        if ( value && this.min && (value < this.min) ){
-          value = this.min;
-        }
-        if ( value && this.max && (value > this.max) ){
-          value = this.max;
-        }
-        this.setValue(value);
-        this.$nextTick(() => {
-          if ( this.value !== value ){
-            this.$emit('change', event);
+        if ( this.$refs.element.raw(newVal) !== this.oldInputValue ){
+          if ( value && this.min && (value < this.min) ){
+            value = this.min;
           }
-        });
+          if ( value && this.max && (value > this.max) ){
+            value = this.max;
+          }
+          this.setValue(value);
+          this.$nextTick(() => {
+            if ( this.value !== value ){
+              this.$emit('change', event);
+            }
+          });
+        }
       }
     },
     /**
@@ -238,7 +256,8 @@
       maskedMounted(newVal){
         if ( newVal ){
           let val = this.value ? this.value.toString() : '';
-          this.inputValue = this.$refs.element.raw(moment(val, this.getValueFormat(val)).format(this.currentFormat)); 
+          this.inputValue = this.$refs.element.raw(moment(val, this.getValueFormat(val)).format(this.currentFormat));
+          this.oldInputValue = this.inputValue;
         }
       },
       /** 
@@ -251,6 +270,7 @@
         this.inputValue = newVal && this.$refs.element && mom.isValid() ? 
           this.$refs.element.raw(mom.format(this.currentFormat)) : 
           '';
+        this.oldInputValue = this.inputValue;
       }
     },
     components: {

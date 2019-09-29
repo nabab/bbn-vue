@@ -523,10 +523,10 @@
           this.$emit(nv ? 'view' : 'unview', this);
           if ( nv ){
             this.$nextTick(() => {
-              this.selfEmit(true)
-            })
+              this.selfEmit(true);
+            });
           }
-        })
+        });
       },
       /**
        * @watch content

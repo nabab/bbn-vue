@@ -992,9 +992,12 @@
       sayHello(){
         bbn.fn.log("HELLO");
       },
+      /**
+       * @todo 1px must correspond to the border width
+       */
       _scrollContainer(){
         this.marginStyleSheet.innerHTML = "."  + this.cssRuleName + "{margin-top: " +
-        (this.container.scrollTop ? '-' + this.container.scrollTop + 'px' : '0') + '}';
+        (this.container.scrollTop ? '-' + (this.container.scrollTop) + 'px' : '') + '}';
       },
       /**
        * Adds the class 'bbn-table-tr-over' to the row of given idx on mouseenter and remove the class on mouse leave.
@@ -1670,6 +1673,7 @@
        * @fires _addTmp
        */
       edit(row, winOptions, index) {
+        let rowIndex = index;
         if (!this.editable) {
           throw new Error("The table is not editable, you cannot use the edit function in bbn-table");
         }
@@ -1683,7 +1687,9 @@
         this.originalRow = bbn.fn.clone(row);
         // EditedRow exists from now on the time of the edition
         this.editedRow = row;
+        
         if (this.items[index]) {
+
           this.editedIndex = this.items[index].index;
         }
         if (this.editMode === 'popup') {
@@ -2147,17 +2153,14 @@
       updateTable() {
         if (!this.isLoading) {
           this.keepCool(() => {
+            // Equalizing the height of the cells in case of fixed columns
             if (this.groupCols[0].cols.length || this.groupCols[2].cols.length) {
               let ele = this.getRef('table');
               if ( ele && ele.tBodies ){
                 bbn.fn.each(ele.tBodies[0].rows, (row) => {
                   let todo = [row];
-                  row.style.height = 'auto';
                   bbn.fn.each(row.cells, (cell) => {
-                    if ( cell.classList.contains('bbn-table-fixed-cell') ){
-                      cell.style.height = 'auto';
-                      todo.push(cell);
-                    }
+                    todo.push(cell);
                   });
                   this.$nextTick(() => {
                     bbn.fn.adjustHeight(todo);
@@ -2682,7 +2685,7 @@
               });
             }
           });
-        }, 'init', 100);
+        }, 'init', 1000);
       },
       /**
        * Prevents default if enter or tab keys are pressed.

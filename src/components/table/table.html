@@ -140,7 +140,7 @@
     <div :class="{'bbn-flex-fill': scrollable, 'bbn-table-main': true, 'bbn-w-100': true}">
       <div :class="{'bbn-overlay': scrollable, 'bbn-block': !scrollable}"
            :style="{
-             bottom: hasHorizontalScroll ? '-' + containerPadding : '0px',
+             marginBottom: scrollable ? '-' + containerPadding : 0,
              height: scrollable ? 'auto' : '100%'
            }">
         <div class="bbn-table-container"
@@ -151,7 +151,6 @@
                 overflowX: groupCols[0].width + groupCols[1].width + groupCols[2].width > lastKnownCtWidth ? 'scroll' : 'hidden',
                 marginLeft: groupCols[0].width + 'px',
                 marginRight: (scrollable ? groupCols[2].width - containerPadding : groupCols[2].width) + 'px',
-                marginBottom: scrollable ? '-' + containerPadding : 0,
                 paddingRight: scrollable ? containerPadding : 0,
                 paddingBottom: scrollable ? containerPadding : 0,
                 maxWidth: scrollable ? '100%' : null,
@@ -313,7 +312,7 @@
                                 v-bind="col.options"
                                 :source="col.mapper ? col.mapper(d.data) : d.data"
                       ></component>
-                      <div v-else-if="col.buttons">
+                      <div v-else-if="col.buttons" class="bbn-c">
                         <bbn-button v-for="(button, bi) in (Array.isArray(col.buttons) ? col.buttons : col.buttons(d.data, col, i))"
                                     :key="bi"
                                     v-bind="button"

@@ -72,9 +72,11 @@
       return {
         realContainer: this.container ?
           this.container :
-          (this.scroller ? this.scroller.$refs.scrollContainer : false),
+          (this.scroller ? this.scroller.getRef('scrollContainer') : false),
         containerSize: 0,
         contentSize: 0,
+        containerPos: 0,
+        sliderPos: 0,
         dragging: false,
         size: 100,
         start: 0,
@@ -88,18 +90,40 @@
       };
     },
     computed: {
-      style(){
+      shouldBother(){
+        return this.contentSize > this.containerSize;
+      },
+      ratio(){
+        if ( this.shouldBother ){
+          return this.containerSize / this.contentSize;
+        }
+        return 1;
+      },
+      sliderSize(){
+        if ( this.shouldBother ){
+          return Math.round(this.containerSize * this.ratio);
+        }
+        return 0;
+      },
+      maxSliderPos(){
+        return this.shouldBother ? this.containerSize - this.sliderSize : 0;
+      },
+      barStyle(){
         let res = {};
-        if ( this.isVertical ){
-          res.height = this.size + '%';
-          res.top = this.position + '%';
+        res.opacity = this.show && this.shouldBother ? 1 : 0;
+        if ( this.shouldBother ){
+          res[this.isVertical ? 'height' : 'width'] = this.containerSize + 'px';
         }
-        else{
-          res.width = this.size + '%';
-          res.left = this.position + '%';
-        }
-        if ( this.color ){
-          res.backgroundColor = this.color;
+        return res;
+      },
+      sliderStyle(){
+        let res = {};
+        if ( this.shouldBother ){
+          res[this.isVertical ? 'height' : 'width'] = this.sliderSize + 'px';
+          res[this.isVertical ? 'top' : 'left'] = this.sliderPos + 'px';
+          if ( this.color ){
+            res.backgroundColor = this.color;
+          }
         }
         return res;
       },
@@ -114,26 +138,6 @@
       },
     },
     methods: {
-      /**
-       * {Sets the position}
-       * @param  {[Number]}      next    The top position to set (in %)
-       * @param  {[Boolean]}     animate
-       * @param  {[Boolean]}     force   [Executes even if top is already to next]
-       * @param  {[HTMLElement]} origin  [The element fgrom which the scroll originates]
-       * @return {void}
-       */
-      _changePosition(next, animate, force, origin){
-        let position = 0;
-        if ( next > (100 - this.size) ){
-          position = 100 - this.size;
-        }
-        else if ( (next > 0) ){
-          position = next;
-        }
-        if ( force || (position !== this.position) ){
-          this.scrollContainer(position, animate, origin);
-        }
-      },
 
       startDrag(e) {
         if ( this.realContainer ){
@@ -141,6 +145,7 @@
           e.stopPropagation();
           e = e.changedTouches ? e.changedTouches[0] : e;
           this.dragging = true;
+          // Start in pixels
           this.start = this.isVertical ? e.pageY : e.pageX;
         }
       },
@@ -149,12 +154,14 @@
         if ( this.realContainer && this.dragging && this.containerSize ){
           this.keepCool(() => {
             e = e.changedTouches ? e.changedTouches[0] : e;
-            let movement = (this.isVertical ? e.pageY : e.pageX) - this.start;
-            let movementPercentage = movement ? Math.round(movement / this.containerSize * 1000000) / 10000 : 0;
-            this.start = (this.isVertical ? e.pageY : e.pageX);
-            if ( movementPercentage ){
-              this._changePosition(this.position + movementPercentage);
+            // Movement in pixel
+            let newStart = this.isVertical ? e.pageY : e.pageX;
+            let movement = newStart - this.start;
+            if ( movement ){
+              this.sliderPos += movement;
+              this.adjustFromBar();
             }
+            this.start = newStart;
           })
         }
       },
@@ -163,68 +170,46 @@
         this.dragging = false;
       },
 
-      /**
-       * {Effectively change the scroll and bar position and sets variables}
-       * @param  {[type]} top     [description]
-       * @param  {[type]} animate [description]
-       * @param  {[type]} origin  [description]
-       * @return {[type]}         [description]
-       */
-      scrollContainer(position, animate, origin){
-        if ( this.realContainer && this.contentSize ){
-          this.currentScroll = position ? Math.round(this.contentSize * position / 100 * 10000) / 10000 : 0;
-          let ev = false;
-          if ( (position < this.position) && (this.currentScroll < 50) ){
-            ev = this.isVertical ? 'reachTop' : 'reachLeft';
-          }
-          else if ( (position > this.position) && (this.currentScroll > (this.contentSize - this.containerSize - 50)) ){
-            ev = this.isVertical ? 'reachBottom' : 'reachRight';
-          }
-          if ( ev && this.ready ){
-            this.$emit(ev, ev, this);
-          }
+      adjustFromContainer(container){
+        if ( this.shouldBother && container ){
           let prop = this.isVertical ? 'scrollTop' : 'scrollLeft';
-          let anim = {};
-          anim[prop] = this.currentScroll;
-          /** @todo doesn't work */
-          if ( animate && false ){
-            bbn.fn.each(this.scrollableElements(), (a) => {
-              if (
-                (a !== this.realContainer) &&
-                (a !== origin) &&
-                (a[prop] !== this.currentScroll)
-              ){
-                bbn.fn.iterate(anim, (v, k) => {
-                  a.style[k] = v;
-                });
-              }
-            });
-            if ( (origin !== this.realContainer) && (this.realContainer[prop] !== this.currentScroll) ){
-              bbn.fn.iterate(anim, (v, k) => {
-                this.realContainer.style[k] = v;
-              });
-              this.position = position;
-              this.normalize();
-            }
+          this.containerPos = container[prop];
+          this.sliderPos = this.containerPos * this.ratio;
+          if ( container !== this.realContainer ){
+            this.realContainer[prop] = this.containerPos;
           }
-          else {
-            bbn.fn.each(this.scrollableElements(), (a) => {
-              if ( (a !== this.realContainer) && (a !== origin) && (a[prop] !== this.currentScroll) ){
-                a[prop] = this.currentScroll;
-              }
-            });
-            if ( (origin !== this.realContainer) && (this.realContainer.scrollTop !== this.currentScroll) ){
-              this.realContainer[prop] = this.currentScroll;
+          bbn.fn.each(this.scrollableElements(), (a) => {
+            if ( a !== container ){
+              a[prop] = this.containerPos;
             }
-            this.position = position;
+          });
+          this.overContent();
+        }
+      },
+
+      adjustFromBar(){
+        if ( this.shouldBother ){
+          this.containerPos = this.sliderPos / this.ratio;
+          let prop = this.isVertical ? 'scrollTop' : 'scrollLeft';
+          this.realContainer[prop] = this.containerPos;
+          bbn.fn.each(this.scrollableElements(), (a) => {
+            a[prop] = this.containerPos;
+          });
+          if ( this.scroller ){
+            this.scroller.onScroll();
+          }
+          else{
+            let e = new Event('scroll');
+            this.$emit('scroll', e, this.containerPos);
           }
         }
       },
 
+
       /**
        * When the users jumps by clicking the scrollbar while a double click will activate tillEnd.
        **/
-      jump(e, tillEnd) {
+      jump(e, precise) {
         if ( this.realContainer ){
           let isRail = e.target === this.$el;
           if ( isRail ){
@@ -234,35 +219,27 @@
             let isBefore = clickPoint < position[this.isVertical ? 'top' : 'left'];
             let isAfter = clickPoint > position[this.isVertical ? 'bottom' : 'right'];
             if ( isBefore || isAfter ){
-              let movement = isBefore ?
-                      position[this.isVertical ? 'top' : 'left'] - clickPoint :
+              let movement = isBefore ? - (
+                      position[this.isVertical ? 'top' : 'left'] - clickPoint) :
                       clickPoint - (position[this.isVertical ? 'top' : 'left']) - (position[this.isVertical ? 'height' : 'width']);
-              if ( tillEnd ){
-                this._changePosition(isAfter ? 100 : 0, true);
-              }
-              else{
-                let centerize = 0;
-                if ( movement > (this.realSize - 20) ){
-                  movement = (this.realSize - 20) * (isBefore ? 1 : -1);
+              if ( !precise ){
+                movement = this.sliderSize - (this.sliderSize * 0.1);
+                if ( isBefore ){
+                  movement = - movement;
                 }
-                else{
-                  centerize = (isBefore ? -1 : 1) * this.size;
-                }
-                let movementPercentage = movement / this.containerSize * 100 + centerize;
-                this._changePosition(this.position + movementPercentage, true);
               }
+              let newPos = this.sliderPos + movement;
+              if ( newPos < 0 ){
+                newPos = 0;
+              }
+              else if ( newPos > this.maxSliderPos ){
+                newPos = this.maxSliderPos;
+              }
+              this.sliderPos = newPos;
+              this.adjustFromBar();
             }
           }
         }
-      },
-
-      // Emits scroll event
-      normalize(){
-        if ( this.currentScroll !== this.realContainer['scroll' + (this.isVertical ? 'Top' : 'Left')] ){
-          this.realContainer['scroll' + (this.isVertical ? 'Top' : 'Left')] = this.currentScroll;
-        }
-        let e = new Event('scroll');
-        this.$emit('scroll', e, this.position);
       },
 
       // Gets the array of scrollable elements according to scrollAlso attribute
@@ -297,47 +274,15 @@
             this.size = 0;
             return;
           }
-          //bbn.fn.log(tmp1 + '/' + this.containerSize, tmp2 + '/' + this.contentSize);
           if ( (tmp1 !== this.containerSize) || (tmp2 !== this.contentSize) ){
             this.containerSize = tmp1 > 0 ? tmp1 : 0;
             this.contentSize = tmp2 > 0 ? tmp2 : 0;
-            // The scrollbar is only visible if needed, i.e. the content is larger than the container
-            if ( this.containerSize && (this.contentSize - this.tolerance > this.containerSize) ){
-              let old = this.size;
-              this.size = this.containerSize / this.contentSize * 100;
-              this._changePosition(old ? Math.round(this.position * (this.size/old) * 10000)/10000 : 0);
-            }
-            else{
-              this.size = 0;
-            }
             this.isActive = this.contentSize > (this.containerSize + bbn.fn.getScrollBarSize() + 2);
           }
         }
         else{
           this.initContainer();
         }
-      },
-
-      // Sets the variables when the content is scrolled with mouse
-      adjust(e, position){
-        if ( position === this.position ){
-          return;
-        }
-        let prop = this.isVertical ? 'scrollTop' : 'scrollLeft';
-        if (
-          e && e.target &&
-          this.realContainer &&
-          !this.dragging &&
-          (e.target[prop] !== this.currentScroll)
-        ){
-          if ( e.target[prop] ){
-            this._changePosition(Math.round(e.target[prop] / this.contentSize * 1000000)/10000, false, false, e.target);
-          }
-          else{
-            this._changePosition(0);
-          }
-        }
-        this.overContent();
       },
 
       // Sets all event listeners
@@ -350,16 +295,22 @@
           if ( !this.container && this.scroller ){
             this.scroller.$on("resize", this.onResize);
             this.scrollTo(this.initial);
-            this.scroller.$on("scroll", this.adjust);
-            //this.scroller.$on("mousemove", this.overContent);
+            this.scroller.$on("scroll", () => {
+              this.adjustFromContainer(this.realContainer)
+            });
+            this.scroller.$on("mousemove", this.overContent);
           }
           else{
-            this.realContainer.addEventListener('scroll', this.adjust, {passive: true});
-            //this.realContainer.addEventListener('mousemove', this.overContent, {passive: true});
+            this.realContainer.addEventListener("mousemove", this.overContent);
+            this.realContainer.addEventListener('scroll', () => {
+              this.adjustFromContainer(this.realContainer);
+            }, {passive: true});
           }
           bbn.fn.each(this.scrollableElements(), (a) => {
-            a.addEventListener('scroll', this.adjust, {passive: true});
-            //a.addEventListener('mousemove', this.overContent, {passive: true});
+            a.addEventListener('scroll', () => {
+              this.adjustFromContainer(a);
+            }, {passive: true});
+            a.addEventListener('scroll', this.overContent)
           });
         }
       },
@@ -372,10 +323,8 @@
             this.show = true;
           }
           this.moveTimeout = setTimeout(() => {
-            if ( !this.isOverSlider ){
-              this.hideSlider();
-            }
-          }, 1000);
+            this.hideSlider();
+          }, 100);
         }, 'overContent')
       },
 
@@ -409,6 +358,7 @@
       },
 
       animateBar(){
+        return;
         if ( this.$refs.scrollSlider ){
           //this.dragging = true;
           let anim = {};
@@ -423,53 +373,9 @@
         }
       },
       scrollTo(val, animate){
-        let num = null;
-        let ele;
-        let prop = this.isVertical ? 'Top' : 'Left';
-        if ( bbn.fn.isPercent(val) ){
-          num = Math.round(parseFloat(val) * this.contentSize / 100);
-        }
-        else if ( bbn.fn.isNumber(val) ){
-          num = val;
-        }
-        else if ( bbn.fn.isVue(val) && val.$el ){
-          ele = val.$el;
-        }
-        else if ( bbn.fn.isDom(val) ){
-          ele = val;
-        }
-        if ( ele ){
-          let $ct = ele.offsetParent;
-          let witness;
-          num = ele['offset' + prop];
-          while ($ct && (witness !== $ct) && ($ct !== this.realContainer)){
-            if ($ct === document.body) {
-              break;
-            }
-            else {
-              num += parseFloat($ct['offset' + prop]);
-              $ct = $ct.offsetParent;
-            }
-            witness = $ct;
-          }
-          num -= 20;
-          if ( num < 0 ){
-            num = 0;
-          }
-        }
-        //bbn.fn.log(num);
-        if ( num !== null ){
-          if ( num < 0 ){
-            num = 0;
-          }
-          /*
-          else if ( num > 100 ){
-            num = 100;
-          }
-          */
-          this._changePosition(100 / this.contentSize * num, animate);
-          this.animateBar();
-          //this.realContainer['scroll' + prop] = num;
+        if ( this.shouldBother && (val >= 0) && (val <= this.maxSliderPos) ){
+          this.sliderPos = val;
+          this.adjustFromBar();
         }
       },
 
@@ -478,27 +384,20 @@
       },
 
       scrollEnd(){
-        this.scrollTo('100%');
+        this.scrollTo(this.maxSliderPos);
       }
     },
     watch: {
       container(){
         this.initContainer();
       },
-      size(newVal){
-        if ( newVal ){
-          //this.animateBar();
-        }
-      },
-      dragging(newVal){
-        if ( !newVal ){
-          setTimeout(this.normalize, 200);
-        }
-      },
       show(v){
         if (v) {
           this.onResize();
         }
+      },
+      sliderPos(){
+        this.showSlider();
       }
     },
     created(){

@@ -6,3 +6,7 @@ logs
 _DS_STORE*
 src/components/old/
 *.DS_Store
+
+[core]
+filemode = false
+*.* text eol=lf
