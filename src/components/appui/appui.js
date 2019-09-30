@@ -458,8 +458,10 @@
             defaultStartLoadingFunction(url, id, data) {
               if ( window.appui && appui.status ){
                 appui.loaders.unshift(bbn.env.loadersHistory[0]);
-                while ( appui.loaders.length > bbn.env.maxLoadersHistory ){
-                  appui.loaders.pop();
+                let i = appui.loaders.length - 1;
+                while ( (i > 0) && (appui.loaders.length > bbn.env.maxLoadersHistory) ){
+                  appui.loaders.splice(i, 1);
+                  i--;
                 }
               }
             },
