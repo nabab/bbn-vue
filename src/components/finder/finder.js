@@ -370,7 +370,7 @@
           })
         }
         if ( this.closest('appui-ide-explorer').source.type === 'nextcloud' ){
-          objContext.push(,{
+          objContext.push({
             icon: 'nf nf-fa-edit',
             text: bbn._('Rename'),
             command: (node) => {

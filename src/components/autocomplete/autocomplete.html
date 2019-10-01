@@ -1,4 +1,4 @@
-<div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', 'bbn-reactive', {'bbn-disabled': !!disabled}]"
+<div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', {'bbn-disabled': !!disabled}]"
      @mouseleave="leave"
      @focusin="isActive = true"
      @focusout="isActive = false"
@@ -8,7 +8,7 @@
          @click.stop="click"
     >
       <input :disabled="disabled"
-              class="bbn-unselectable bbn-textbox bbn-no-border bbn-abs bbn-top-left bbn-bottom-right"
+              class="bbn-unselectable bbn-no-border bbn-top-left bbn-bottom-right"
               :required="required"
               :readonly="readonly"
               :placeholder="filterString ? '' : placeholder"
@@ -20,7 +20,7 @@
       >
       <input v-if="!disabled && !readonly"
               tabindex="0"
-              class="bbn-textbox bbn-no-border"
+              class="bbn-no-border"
               v-model="filterString"
               ref="input"
               @focus="selectAll"
@@ -45,7 +45,7 @@
       </div>
       <bbn-button v-else
                   :icon="isOpened && !disabled && !readonly && filteredData.length ? iconUp : iconDown"
-                  class="bbn-p bbn-button-right bbn-no-vborder bbn-m"
+                  class="bbn-button-right bbn-no-vborder bbn-m"
                   @click.prevent.stop="click"
                   tabindex="-1"
                   :disabled="disabled"

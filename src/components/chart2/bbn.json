@@ -1,0 +1,13 @@
+{
+  "name": "bbn-chart2",
+  "version": "0.0.1",
+  "authors": [
+    "Thomas Nabet <thomas.nabet@gmail.com>",
+    "Mirko Argentino <mirko.argentino@bbn.solutions>",
+    "Vito Fava <vito@bbn.solutions>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "moment": ">= 2.12.0"
+  }
+}
