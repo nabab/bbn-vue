@@ -40,6 +40,7 @@
                   @sortstart="isSorting = true; sortOriginIndex = w.index; sortTargetIndex = null"
                   :title="w.title ? w.title : (w.text ? w.text : '')"
       ></bbn-widget>
+      <slot></slot>
     </div>
     <div class="bbn-widget bbn-sort-helper"
          ref="sortHelper"
