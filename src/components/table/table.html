@@ -374,13 +374,13 @@
         <span v-text="_('Page')"></span>
         <span v-if="isLoading"
               v-text="currentPage"
-              class="bbn-iblock bbn-c"
-              style="margin-right: 0.5em; width: 6em"></span>
+              class="bbn-iblock bbn-c bbn-narrower bbn-right-sspace"
+        ></span>
         <bbn-numeric v-else
                      v-model="currentPage"
                      :min="1"
                      :max="numPages"
-                     style="margin-right: 0.5em; width: 6em"
+                     class="bbn-narrower bbn-right-sspace"
         ></bbn-numeric>
         <span v-text="_('of') + ' ' + numPages" style="margin-right: 0.25em"></span>
         <bbn-button icon="nf nf-fa-angle_right"

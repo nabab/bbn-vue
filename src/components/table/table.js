@@ -506,7 +506,7 @@
        * @return {Boolean}
        */
       hasToolbar() {
-        return this.toolbarButtons.length || bbn.fn.isObject(this.toolbar);
+        return this.toolbarButtons.length || bbn.fn.isObject(this.toolbar) || bbn.fn.isFunction(this.toolbar) || bbn.fn.isString(this.toolbar);
       },
       /**
        * If the computed isBatch is true, return an array of modified rows.
