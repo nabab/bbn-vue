@@ -400,6 +400,7 @@
                         v-model.number="currentLimit"
                         @change="currentPage = 1"
                         :disabled="!!isLoading"
+                        class="bbn-narrower"
           ></bbn-dropdown>
           <span v-text="_('rows per page')"></span>
         </span>
