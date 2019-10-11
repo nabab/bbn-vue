@@ -142,7 +142,7 @@
         return [{
           text: bbn._('Create a shortcut'),
           icon: 'nf nf-fa-external_link_alt',
-          command: () => {
+          action: () => {
             this.$emit('shortcut', obj);
           }
         }];

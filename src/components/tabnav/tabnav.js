@@ -269,52 +269,15 @@
         return 'black';
       },
       scrollTabs(dir){
-       
-        let ul = this.$refs.tabgroup, 
-            scroll = this.getRef('horizontal-scroll'),
-            scrollContainer = scroll.getRef('scrollContainer'),
-            newPos;
-           
-        if ( ul.clientWidth > scrollContainer.clientWidth ){
+        let scroll = this.getRef('horizontal-scroll');
+        if ( scroll ){
           if ( dir === 'right' ){
-            //newPos = scroll.lastKnownCtWidth - 100;
-            newPos = newPos = scroll.currentX + 100;
+            scroll.scrollAfter();
           }
-          if ( (dir === 'left')  && (scroll.currentX !== 0)){
-            if (scroll.currentX - 100 > 0){
-              newPos = scroll.currentX - 100;
-            }
-            else{
-              newPos = 1;
-            }
+          else{
+            scroll.scrollBefore();
           }
-        scroll.scrollTo(newPos, 0, true);
         }
-       /* if ( dir === 'left'){
-          newPos = this.lastKnownCtWidth - 100 < 0 ? 0 : this.lastKnownCtWidth - 100;
-        }
-        else if ( dir === 'right' ){
-           newPos = this.lastKnownCtWidth + 100 < 0 ? 0 : this.lastKnownCtWidth + 100;
-        }
-        scroll.scrollTo(newPos, 0, true);*/
-        /*if ( ul.scrollWidth > ul.clientWidth ){
-          let total = ul.scrollWidth,
-              visible = ul.clientWidth,
-              position = ul.scrollLeft,
-              max = total - visible,
-              newPos = false;
-          if ( (dir === 'left') && (position > 0) ){
-            newPos = position - 300 < 0 ? 0 : position - 300;
-          }
-          else if ( (dir === 'right') && (position < (total - visible)) ){
-            newPos = (position + 300) > max ? max : position + 300;
-          }
-          if ( newPos !== false ){
-            $(ul).animate({
-              scrollLeft: newPos
-            })
-          }
-        }*/
       },
       cutTitle(title){
         return bbn.fn.shorten(title, 20)
@@ -595,7 +558,7 @@
             text: bbn._("Help"),
             key: "help",
             icon: "nf nf-mdi-help_circle_outline",
-            command: () => {
+            action: () => {
               let tab = this.getVue(idx),
                   span = document.createElement('span');
               span.innerHTML =  this.tabs[idx].title;
@@ -627,7 +590,7 @@
             text: bbn._("Reload"),
             key: "reload",
             icon: "nf nf-mdi-sync",
-            command: () => {
+            action: () => {
               this.reload(idx);
             }
           });
@@ -636,7 +599,7 @@
           text: bbn._("Enlarge"),
           key: "enlarge",
           icon: "nf nf-mdi-arrow_expand_all",
-          command: () => {
+          action: () => {
             this.getVue(idx).fullScreen = true;
           }
         });
@@ -650,7 +613,7 @@
             text: this.tabs[idx].notext ? bbn._("Show text") : bbn._("Show only icon"),
             key: "notext",
             icon: this.tabs[idx].notext ? "nf nf-fa-font" : "nf nf-fa-font_awesome",
-            command: () => {
+            action: () => {
               bbn.fn.log(this.tabs[idx]);
               this.tabs[idx].notext = !this.tabs[idx].notext;
               this.$forceUpdate();
@@ -663,7 +626,7 @@
               text: bbn._("Pin"),
               key: "pin",
               icon: "nf nf-mdi-pin",
-              command: () => {
+              action: () => {
                 this.pin(idx);
               }
             });
@@ -671,7 +634,7 @@
               text: bbn._("Close"),
               key: "close",
               icon: "nf nf-mdi-close",
-              command: () => {
+              action: () => {
                 this.close(idx);
               }
             })
@@ -681,7 +644,7 @@
               text: bbn._("Unpin"),
               key: "pin",
               icon: "nf nf-mdi-pin_off",
-              command: () => {
+              action: () => {
                 this.unpin(idx);
               }
             });
@@ -692,7 +655,7 @@
             text: bbn._("Close Others"),
             key: "close_others",
             icon: "nf nf-mdi-close_circle_outline",
-            command: () => {
+            action: () => {
               this.closeAllBut(idx);
             }
           })
@@ -702,7 +665,7 @@
             text: bbn._("Close All"),
             key: "close_all",
             icon: "nf nf-mdi-close_circle",
-            command: () => {
+            action: () => {
               this.closeAll();
             }
           })

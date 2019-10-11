@@ -291,11 +291,16 @@
         /**
          * @todo description
          *
-         * @prop valueTemplate
+         * @prop {Number|String} valueTemplate
          */
         maxHeight: {
           type: [Number, String]
         },
+        /**
+         * @todo description
+         * 
+         * @prop {Boolean} [false] suggest
+         */
         suggest: {
           type: Boolean,
           default: false
@@ -541,6 +546,10 @@
         visible: {
           type: Boolean,
           default: true
+        },
+        focused: {
+          type: Boolean,
+          default: true
         }
       },
       data(){
@@ -566,15 +575,15 @@
           this.currentVisible = !this.currentVisible;
         },
         switchFocus(v){
-          if ( v ){
-            if ( this.focusable && this.focusable.focus ){
-              bbn.fn.log("BEFORE FOCUS", this.focusable);
-              this.focusable.focus();
+          if ( this.focused ){
+            if ( v ){
+              if ( this.focusable && this.focusable.focus ){
+                this.focusable.focus();
+              }
             }
-          }
-          else if ( this.prevFocused ){
-            bbn.fn.log("BEFORE FOCUS", this.prevFocused);
-            this.prevFocused.focus();
+            else if ( this.prevFocused && this.prevFocused.focus ){
+              this.prevFocused.focus();
+            }
           }
         }
       },
@@ -587,7 +596,7 @@
           if ( !this.focusable ){
             this.focusable = this.$el;
           }
-          if ( this.currentVisible ){
+          if ( this.currentVisible && this.focused ){
             this.switchFocus(true);
           }
         });
@@ -2241,6 +2250,14 @@
         nullable: {
           type: Boolean,
           default: false
+        },
+        /**
+         * Set it to true if you want to auto-resize the input's width based on its value (in characters).
+         * @prop {Boolean} [false] autosize
+         */
+        autosize: {
+          type: Boolean,
+          default: false
         }
       },
       data(){
@@ -2386,6 +2403,9 @@
        */
       created(){
         this.componentClass.push('bbn-input-component');
+        if ( this.autosize ){
+          this.componentClass.push('bbn-auto-width');
+        }
       },
       watch:{
         /**

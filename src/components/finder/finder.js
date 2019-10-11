@@ -310,17 +310,17 @@
       contextMenuTree(){
         return [{
           text: '<i class="nf nf-fa-file"></i>'+ bbn._('Add files to this folder'),
-          command: () => {
+          action: () => {
             this.uploadFile(this.currentContextPath)
           }
         },{
           text: '<i class="nf nf-custom-folder"></i>'+ bbn._('Create new folder'),
-          command: () => {
+          action: () => {
             this.newFolder()
           }
         },{
           text: '<i class="nf nf-fa-paste"></i>'+ bbn._('Paste'),
-          command: (node) => {
+          action: (node) => {
             bbn.fn.log('context--->', arguments);
           }
         }];
@@ -337,7 +337,7 @@
           {
             icon: 'nf nf-fa-copy',
             text: bbn._('Copy'),
-            command: (node) => {
+            action: (node) => {
               this.copy(node)
             }
           }  
@@ -346,7 +346,7 @@
           objContext.push({
             icon: 'nf nf-fa-paste',
             text: bbn._('Create new folder'),
-            command: (node) => {
+            action: (node) => {
               this.newFolder(node)
             }
           });
@@ -354,7 +354,7 @@
             objContext.push({
               icon: 'nf nf-fa-paste',
               text: bbn._('Paste'),
-              command: (node) => {
+              action: (node) => {
                 this.paste(node)
               }
             });  
@@ -364,7 +364,7 @@
           objContext.push({
             icon: 'nf nf-fa-download',
             text: bbn._('Download'),
-            command: (node) => {
+            action: (node) => {
               this.download(node)
             }
           })
@@ -373,13 +373,13 @@
           objContext.push({
             icon: 'nf nf-fa-edit',
             text: bbn._('Rename'),
-            command: (node) => {
+            action: (node) => {
               this.edit(node)
             }
           },{
             icon: 'nf nf-fa-trash_alt',
             text: bbn._('Delete'),
-            command: (node) => {
+            action: (node) => {
               this.delete(node)
             }
           })
@@ -519,7 +519,7 @@
           });
         }
         else if ( !this.copied ){
-          this.alert(bbn._('Copy something before to paste'));
+          this.alert(bbn._('The clipboard is empty!'));
         }
       },
       //download the file

@@ -223,23 +223,56 @@
                       position[this.isVertical ? 'top' : 'left'] - clickPoint) :
                       clickPoint - (position[this.isVertical ? 'top' : 'left']) - (position[this.isVertical ? 'height' : 'width']);
               if ( !precise ){
-                movement = this.sliderSize - (this.sliderSize * 0.1);
                 if ( isBefore ){
-                  movement = - movement;
+                  this.scrollBefore();
+                }
+                else{
+                  this.scrollAfter();
                 }
               }
-              let newPos = this.sliderPos + movement;
-              if ( newPos < 0 ){
-                newPos = 0;
+              else{
+                let newPos = this.sliderPos + movement;
+                if ( newPos < 0 ){
+                  newPos = 0;
+                }
+                else if ( newPos > this.maxSliderPos ){
+                  newPos = this.maxSliderPos;
+                }
+                this.sliderPos = newPos;
+                this.adjustFromBar();
               }
-              else if ( newPos > this.maxSliderPos ){
-                newPos = this.maxSliderPos;
-              }
-              this.sliderPos = newPos;
-              this.adjustFromBar();
             }
           }
         }
+      },
+
+
+      scrollLevel(before){
+        if ( this.sliderSize ){
+          let movement = Math.round(this.sliderSize - (this.sliderSize * 0.1));
+          if ( before ){
+            movement = -movement;
+          }
+          let newPos = this.sliderPos + movement;
+          if ( newPos < 0 ){
+            newPos = 0;
+          }
+          else if ( newPos > this.maxSliderPos ){
+            newPos = this.maxSliderPos;
+          }
+          if ( this.sliderPos !== newPos ){
+            this.sliderPos = newPos;
+            this.adjustFromBar();
+          }
+        }
+      },
+
+      scrollBefore(){
+        return this.scrollLevel(true);
+      },
+
+      scrollAfter(){
+        return this.scrollLevel();
       },
 
       // Gets the array of scrollable elements according to scrollAlso attribute

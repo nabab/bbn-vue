@@ -287,8 +287,14 @@
 
 
       receive(data){
-        //bbn.fn.log(data);
-        if ( data.chat && bbn.fn.numProperties(data.chat) && this.getRef('chat') ){
+        if ( !bbn.fn.numProperties(data) ){
+          return;
+        }
+        bbn.fn.log("RECEIVING", data);
+        if (data.disconnected){
+          document.location.reload();
+        }
+        else if ( data.chat && bbn.fn.numProperties(data.chat) && this.getRef('chat') ){
           //bbn.fn.log("THERE IS A CHAT SO I SEND IT TO THE CHAT");
           this.getRef('chat').receive(data.chat);
         }

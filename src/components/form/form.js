@@ -337,7 +337,7 @@
                   r.push({
                     text: bbn._('Cancel'),
                     icon: 'nf nf-fa-times_circle',
-                    command: () => {
+                    action: () => {
                       this.cancel();
                     }
                   });
@@ -346,7 +346,7 @@
                   r.push({
                     text: bbn._('Reset'),
                     icon: 'nf nf-fa-refresh',
-                    command: () => {
+                    action: () => {
                       this.reset();
                     },
                     disabled: !this.modified && !this.prefilled
@@ -356,7 +356,7 @@
                   r.push({
                     text: bbn._('Submit'),
                     icon: 'nf nf-fa-check_circle',
-                    command: () => {
+                    action: () => {
                       this.submit();
                     },
                     disabled: !this.canSubmit
@@ -365,8 +365,8 @@
               }
             }
             else if ( t === 'object' ){
-              if ( (typeof a.command === 'string') && bbn.fn.isFunction(this[a.command]) ){
-                a.command = this[a.command];
+              if ( (typeof a.action === 'string') && bbn.fn.isFunction(this[a.action]) ){
+                a.action = this[a.action];
               }
               r.push(a);
             }
@@ -434,12 +434,12 @@
         }
       },
       /**
-       * Executes the command given to the button.
+       * Executes the action given to the button.
        * @method _execCommand
        */
       _execCommand(button, ev){
-        if ( button.command ){
-          button.command(this.source, this, ev)
+        if ( button.action ){
+          button.action(this.source, this, ev)
         }
       },
       updateButtons(){
@@ -448,6 +448,9 @@
         }
         this.$nextTick(() => {
           let b = this.getRealButtons();
+          if ( this.window && bbn.fn.isArray(this.window.currentButtons) ){
+            this.window.currentButtons.splice(0, this.window.currentButtons.length);
+          }
           bbn.fn.each(b, (a) => {
             this.realButtons.push(a);
           });
@@ -656,13 +659,10 @@
        */
       init(){
         if ( this.$options.propsData.script ){
-          
           this.$el.dataset.script = this.$options.propsData.script;
-         
         }
         //this.originalData = bbn.fn.extend(true, {}, this.getData());
         this.$nextTick(() => {
-          this.updateButtons();
           let focusable = null;
           if ( !this.window ){
             this.window = this.closest("bbn-floater");
@@ -670,6 +670,7 @@
               this.window.addClose(this.closePopup);
             }
           }
+          this.updateButtons();
           if ( !this.tab ){
             this.tab = this.closest("bbn-container");
           }

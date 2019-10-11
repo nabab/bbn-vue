@@ -28,13 +28,13 @@
             <bbn-context tag="div"
                          class="bbn-flex-width"
                          :source="[
-              {text: _('Copy plain text'), icon: 'nf nf-mdi-cursor_text', command: () => {closest('bbn-clipboard').setClipboard(uid, 'plain')}},
-              {text: _('Copy rich text'), icon: 'nf nf-mdi-code_tags', disabled: !content, command: () => {closest('bbn-clipboard').setClipboard(uid, 'html')}},
-              {text: _('Copy as image'), icon: 'nf nf-fa-image', disabled: !type || (type.indexOf('image/')) !== 0, command: () => {closest('bbn-clipboard').setClipboard(uid, 'image')}},
-              {text: _('Save'), icon: 'nf nf-fa-file_o', command: () => {closest('bbn-clipboard').save(uid)}},
-              {text: _('Save as...'), icon: 'nf nf-fa-file_o', command: () => {closest('bbn-clipboard').saveAs(uid)}},
-              {text: _('Share'), icon: 'nf nf-fa-share', command: () => {}},
-              {text: _('Remove'), icon: 'nf nf-fa-trash_o', command: () => {}},
+              {text: _('Copy plain text'), icon: 'nf nf-mdi-cursor_text', action: () => {closest('bbn-clipboard').setClipboard(uid, 'plain')}},
+              {text: _('Copy rich text'), icon: 'nf nf-mdi-code_tags', disabled: !content, action: () => {closest('bbn-clipboard').setClipboard(uid, 'html')}},
+              {text: _('Copy as image'), icon: 'nf nf-fa-image', disabled: !type || (type.indexOf('image/')) !== 0, action: () => {closest('bbn-clipboard').setClipboard(uid, 'image')}},
+              {text: _('Save'), icon: 'nf nf-fa-file_o', action: () => {closest('bbn-clipboard').save(uid)}},
+              {text: _('Save as...'), icon: 'nf nf-fa-file_o', action: () => {closest('bbn-clipboard').saveAs(uid)}},
+              {text: _('Share'), icon: 'nf nf-fa-share', action: () => {}},
+              {text: _('Remove'), icon: 'nf nf-fa-trash_o', action: () => {}},
             ]">
               <div :title="text"
                   class="bbn-clipboard-text bbn-block-left bbn-flex-fill"

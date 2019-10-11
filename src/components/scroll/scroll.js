@@ -512,6 +512,24 @@
         this.scrollEndY();
       },
       /**
+       * @method scrollBefore
+       * @fires scrollBeforeX
+       * @fires scrollBeforeY
+       */  
+      scrollBefore(){
+        this.scrollBeforeX();
+        this.scrollBeforeY();
+      },
+      /**
+       * @method scrollAfter
+       * @fires scrollAfterX
+       * @fires scrollAfterY
+       */  
+      scrollAfter(){
+        this.scrollAfterX();
+        this.scrollAfterY();
+      },
+      /**
        * Initializes the scroll
        * @method init
        * @fires onResize
@@ -546,6 +564,54 @@
           }
           else {
             this.getRef('scrollContainer').scrollTop = 0;
+          }
+        }
+      },
+      /**
+       * Scroll the x axis to the previous page
+       * @method scrollBeforeX
+       * @fires this.$refs.xScroller.scrollBefore
+       */
+      scrollBeforeX(){
+        let x = this.getRef('xScroller');
+        if (x) {
+          x.scrollBefore();
+        }
+      },
+      /**
+       * Scroll the y axis to the previous page
+       * @method scrollBeforeY
+       * @fires this.$refs.yScroller.scrollBefore
+       */
+      scrollBeforeY() {
+        if (this.hasScrollY) {
+          let y = this.getRef('yScroller');
+          if (y) {
+            y.scrollBefore();
+          }
+        }
+      },
+      /**
+       * Scroll the x axis to the next page
+       * @method scrollBeforeX
+       * @fires this.$refs.xScroller.scrollBefore
+       */
+      scrollAfterX(){
+        let x = this.getRef('xScroller');
+        if (x) {
+          x.scrollAfter();
+        }
+      },
+      /**
+       * Scroll the y axis to the next page
+       * @method scrollBeforeY
+       * @fires this.$refs.yScroller.scrollBefore
+       */
+      scrollAfterY() {
+        if (this.hasScrollY) {
+          let y = this.getRef('yScroller');
+          if (y) {
+            y.scrollAfter();
           }
         }
       },
@@ -592,7 +658,7 @@
           }, this.latency);
         }
         else {
-          bbn.fn.log("ready", cp);
+          //bbn.fn.log("ready", cp);
           if ( !cp || !cp.$options || (cp.$options.name !== 'bbn-floater') ){
             this.keepCool(() => {
               this.onResize();

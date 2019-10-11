@@ -580,8 +580,8 @@
           }
           bbn.fn.each(ar, (a) => {
             let o = bbn.fn.clone( a);
-            if (o.command) {
-              o.command = () => {
+            if (o.action) {
+              o.action = () => {
                 this._execCommand(a);
               }
             }
@@ -1221,7 +1221,7 @@
         return res;
       },
       /**
-       * Executes the command of the button
+       * Executes the action of the button
        *
        * @method _execCommand
        * @param {Object} button
@@ -1236,12 +1236,12 @@
           ev.stopImmediatePropagation();
         }
         //bbn.fn.log("EXEC COMMAND");
-        if (button.command) {
-          if (bbn.fn.isFunction(button.command)) {
-            return button.command(data, col, index);
+        if (button.action) {
+          if (bbn.fn.isFunction(button.action)) {
+            return button.action(data, col, index);
           }
-          else if (typeof (button.command) === 'string') {
-            switch (button.command) {
+          else if (typeof (button.action) === 'string') {
+            switch (button.action) {
               case 'csv':
                 return this.exportCSV();
               case 'insert':
@@ -1741,6 +1741,7 @@
               template: `
 <bbn-form action="` + table.url + `"
           :schema="fields"
+          :scrollable="false"
           :source="data"
           :data="obj"
           @success="success"

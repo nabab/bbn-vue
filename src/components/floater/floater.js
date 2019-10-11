@@ -900,13 +900,13 @@
           }
           /*
           @todo bbn-list does it already
-          if (item.command) {
-            if (typeof (item.command) === 'string') {
+          if (item.action) {
+            if (typeof (item.action) === 'string') {
               bbn.fn.log("CLICK IS STRING", this);
             }
-            else if (bbn.fn.isFunction(item.command)) {
-              //bbn.fn.log("CLICK IS FUNCTION", item.command, this);
-              item.command(idx, item);
+            else if (bbn.fn.isFunction(item.action)) {
+              //bbn.fn.log("CLICK IS FUNCTION", item.action, this);
+              item.action(idx, item);
             }
           }
           */

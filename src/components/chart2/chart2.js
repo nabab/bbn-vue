@@ -35,7 +35,9 @@
        */
       type: {
         type: String,
-        default: 'line'
+        required: true,
+        default: 'line',
+        validator: (t) => ['line', 'bar', 'pie', 'donut', 'area', 'radial'].includes(t)
       },
       /**
        * The title of the chart.
@@ -82,11 +84,11 @@
       /**
        * Set to true to show the value points on the line chart.
        *
-       * @prop {Boolean} [true] showPoint
+       * @prop {Boolean|Number} [6] showPoint
        */
       showPoint: {
-        type: Boolean,
-        default: true
+        type: [Boolean, Number],
+        default: 6
       },
       /**
        * Set to true to show the grid line on the chart.
@@ -529,11 +531,32 @@
        * @return {Object}
        */
       data(){
-        let data = this.source;
-        if ( this.isLine || this.isBar ){
-          if ( data && data.series && !Array.isArray(data.series[0]) && !this.distributeSeries ){
-            data.series = [data.series];
+        let series = this.source.series,
+            data = []
+        if ( this.isLine || this.isBar || this.isArea ){
+          if ( bbn.fn.isArray(series) ){
+            if ( !bbn.fn.isArray(series[0]) ){
+              data.push({
+                data: series
+              })
+            }
+            else {
+              bbn.fn.each(series, (s, i) => {
+                if ( bbn.fn.isObject(s) ){
+
+                }
+                else {
+                  data.push({
+                    data: s,
+                    name: this.legend && this.legend.length ? this.legend[i] : false
+                  })
+                }
+              })
+            }  
           }
+        }
+        else if ( this.isPie || this.isDonut || this.isRadial ){
+          data = this.source.series
         }
         return data;
       },
@@ -562,7 +585,34 @@
        * @return {Boolean}
        */
       isPie(){
-        return this.type === 'pie';
+        return (this.type === 'pie') && !this.donut;
+      },
+      /**
+       * This checks the chart's type is 'donut'.
+       *
+       * @computed isDonut
+       * @return {Boolean}
+       */
+      isDonut(){
+        return (this.type === 'donut') || ((this.type === 'pie') && !!this.donut);
+      },
+      /**
+       * This checks the chart's type is 'area'.
+       *
+       * @computed isArea
+       * @return {Boolean}
+       */
+      isArea(){
+        return this.type === 'area';
+      },
+      /**
+       * This checks the chart's type is 'radial'.
+       *
+       * @computed isRadial
+       * @return {Boolean}
+       */
+      isRadial(){
+        return this.type === 'radial';
       },
       /**
        * This makes an array of activated plugins.
@@ -703,13 +753,11 @@
        */
       lineCfg(){
         let cfg = {
-          lineSmooth: this.step && this.showLine ? Chartist.Interpolation.step() : this.lineSmooth,
-          showPoint: this.showPoint,
-          showLine: this.showLine,
-          pointLabel: this.pointLabel,
-          showArea: this.showArea
+          //showLine: this.showLine,
+          //pointLabel: this.pointLabel,
+          //showArea: this.showArea
         };
-        return this.isLine ? bbn.fn.extend(true, cfg, this.lineBarCommon) : {};
+        return this.isLine ? bbn.fn.extend(true, cfg, this.lineBarAreaCommon, this.lineAreaCommon) : {}
       },
       /**
        * Makes the base configuration object for the 'bar' chart.
@@ -723,17 +771,70 @@
           stackBars: this.barsDistance === 0,
           horizontalBars: this.horizontalBars
         };
-        return this.isBar ? bbn.fn.extend(true, cfg, this.lineBarCommon) : {};
+        return this.isBar ? bbn.fn.extend(true, cfg, this.lineBarAreaCommon) : {};
+      },
+      /**
+       * Makes the base configuration object for the 'area' chart.
+       *
+       * @computed areaCfg
+       * @return {Object}
+       */
+      areaCfg(){
+        let cfg = {}
+        return this.isArea ? bbn.fn.extend(true, cfg, this.lineAreaCommon) : {}
+      },
+      /**
+       * Makes the base configuration object for the 'line' and 'area' chart.
+       *
+       * @computed lineAreaCommon
+       * @return {Object}
+       */
+      lineAreaCommon(){
+        let cfg = {
+          markers: {
+            size: this.showPoint || 0
+          },
+          stroke: {
+            curve: !!this.lineSmooth ? 'smooth' : 'straight'
+          }
+        };
+        return this.isLine || this.isArea ? bbn.fn.extend(true, cfg, this.lineBarAreaCommon) : {}
       },
       /**
        * Makes a common configuration object for the 'line' and 'bar' charts.
        *
-       * @computed lineBarCommon
+       * @computed lineBarAreaCommon
        * @return {Object}
        */
-      lineBarCommon(){
-        if ( this.isLine || this.isBar ){
-          let cfg = {
+      lineBarAreaCommon(){
+        if ( this.isLine || this.isBar || this.isArea ){
+        let cfg = {
+          xaxis:{
+            categories: this.source.labels
+          },
+          grid: {
+            show: !!this.showGridX || !!this.showGridY,
+            xaxis: {
+              lines: {
+                show: !!this.showGridX
+              }
+            },
+            yaxis: {
+              lines: {
+                show: !!this.showGridY
+              }
+            },
+            row: {
+              colors: this.gridColor
+            },
+            column: {
+              colors: this.gridColor
+            }
+          }
+        }
+        return cfg
+
+          /* let cfg = {
             chartPadding: {
               top: this.paddingTop || this.padding,
               right: this.paddingRight || this.padding,
@@ -788,7 +889,7 @@
             cfg.axisY.labelInterpolationFnc = this.showLabelY;
             cfg.axisY.offset = 100;
           }
-          return cfg;
+          return cfg; */
         }
         return {};
       },
@@ -799,66 +900,55 @@
        * @return {Object}
        */
       pieCfg(){
+        let cfg = {}
+        return this.isPie ? cfg : {}
+      },
+      /**
+       * Makes the base configuration object for the 'donut' chart.
+       *
+       * @computed donutCfg
+       * @return {Object}
+       */
+      donutCfg(){
         let cfg = {
-              donut: !!this.donut,
-              chartPadding: this.padding,
-              showLabel: this.showLabel,
-              labelDirection: this.labelExternal ? 'explode' : 'neutral',
-              labelOffset: this.labelOffset,
-              labelInterpolationFnc: (value) => {
-                if ( this.labelWrap ){
-                  let ret = '',
-                      labelWrap = typeof this.labelWrap === 'number' ? this.labelWrap : 25,
-                      tmp,
-                      cont = 0,
-                      arr,
-                      spl = (text) => {
-                        let r = '',
-                            idx = labelWrap;
-                        if ( text.length <= labelWrap ){
-                          return text;
-                        }
-                        for ( let i = labelWrap; i < text.length; i += labelWrap ){
-                          if ( i === labelWrap ){
-                            r += text.slice(0, i) + "\n"
-                          }
-                          r += text.slice(idx, i) + "\n";
-                          idx = i;
-                        }
-                        return r + text.slice(idx);
-                      };
-                  if ( typeof value === 'number' ){
-                    value = value.toString();
-                  }
-                  if ( value.length <= labelWrap ){
-                    return value;
-                  }
-                  if ( value.indexOf('\n') !== -1 ){
-                    arr = value.split('\n');
-                    arr.forEach((a, i) => {
-                      ret += spl(a) + (arr[i+1] ? '\n' : '');
-                    });
-                    return ret;
-                  }
-                  return spl(value);
-                }
-                else {
-                  return value;
+          chart: {
+            type: 'donut'
+          }
+        }
+        if ( bbn.fn.isNumber(this.donut) ){
+          cfg.plotOptions = {
+            pie: {
+              donut: {
+                size: this.donut + '%'
+              }
+            }
+          }
+        }
+        return this.isDonut ? cfg : {}
+      },
+      /**
+       * Makes the base configuration object for the 'pie' chart.
+       *
+       * @computed pieCfg
+       * @return {Object}
+       */
+      radialCfg(){
+        let cfg = {
+          chart: {
+            type: 'radialBar'
+          },
+          plotOptions: {
+            radialBar: {
+              dataLabels: {
+                total: {
+                  show: true,
+                  total: bbn._('TOTAL')
                 }
               }
-            };
-        if ( typeof this.donut === 'number' ){
-          cfg.donutWidth = this.donut;
+            }
+          }
         }
-        else if ( this.donut ){
-          cfg.donutWidth = '100%';
-        }
-        // Force donut if animation is active
-        if ( this.animation ){
-          cfg.donut = true;
-          cfg.donutWidth = '100%';
-        }
-        return this.isPie ? cfg : {};
+        return this.isRadial ? cfg : {}
       },
       /**
        * Makes the configuration object for the widget.
@@ -867,24 +957,54 @@
        * @return {Object}
        */
       widgetCfg(){
-        let cfg = bbn.fn.extend(true, {
-          type: this.type,
-          fullWidth: this.fullWidth,
-          width: this.width,
-          height: this.height,
-          tooltip: this.tooltip,
-          plugins: this.plugins
-        }, this.cfg);
+        let cfg = {
+          chart: {
+            type: this.type,
+            height: this.height,
+            width: this.width
+          },
+          series: this.data,
+          legend: {
+            show: this.legend && this.legend.length
+          },
+          dataLabels: {
+            enabled: !!this.showPoint
+          },
+          tooltip: {
+            enabled: !!this.tooltip
+          },
+          colors: this.color,
+          fill: {
+            type: 'gradient',
+          },
+          theme: {
+            mode: 'light'
+          }
+          //fullWidth: this.fullWidth,
+          //width: this.width,
+          //height: this.height,
+          //tooltip: this.tooltip,
+          //plugins: this.plugins
+        }
         if ( this.isLine ){
-          bbn.fn.extend(true, cfg, this.lineCfg);
+          bbn.fn.extend(true, cfg, this.lineCfg, this.cfg)
         }
-        if ( this.isBar ){
-          bbn.fn.extend(true, cfg, this.barCfg);
+        else if ( this.isBar ){
+          bbn.fn.extend(true, cfg, this.barCfg, this.cfg)
         }
-        if ( this.isPie ){
-          bbn.fn.extend(true, cfg, this.pieCfg);
+        else if ( this.isPie ){
+          bbn.fn.extend(true, cfg, this.pieCfg, this.cfg)
         }
-        return cfg;
+        else if ( this.isDonut ){
+          bbn.fn.extend(true, cfg, this.donutCfg, this.cfg)
+        }
+        else if ( this.isRadial ){
+          bbn.fn.extend(true, cfg, this.radialCfg, this.cfg)
+        }
+        else if ( this.isArea ){
+          bbn.fn.extend(true, cfg, this.areaCfg, this.cfg)
+        }
+        return cfg
       }
     },
     methods: {
@@ -898,23 +1018,19 @@
        * @fires widgetCreated
        */
       init(){
-        if ( this.widget ){
-          this.widget.destroy();
-          this.widget = false;
-        }
+        this.destroy()
         if ( this.data ){
           setTimeout(() => {
             // Widget configuration
-            this.widget = new ApexCharts(this.getRef('chart'), {
-              chart: {
-                type: this.type
-              },
-              series: this.data
-            });
-            this.widget.render();
-            // This operations is performed after widget creation
-            //this.widgetCreated();
-          }, 100);
+            this.widget = new ApexCharts(this.getRef('chart'), bbn.fn.extend(true, {}, this.widgetCfg))
+            this.widget.render()
+          }, 0)
+        }
+      },
+      destroy(){
+        if ( this.widget ){
+          this.widget.destroy()
+          this.widget = false
         }
       },
       /**

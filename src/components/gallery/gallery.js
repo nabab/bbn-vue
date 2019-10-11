@@ -412,7 +412,7 @@
        */
       action(){
         if ( this[this.selectingMode] && this.selected.length ){
-          this.confirm(bbn._(`Are you sure you want to ${this.selectingMode} these photos?`), () => {
+          this.confirm(bbn._(`Are you sure you want to %s these photos?`, this.selectingMode), () => {
             this[this.selectingMode](this.selected.map(v => {
               return Object.assign({}, this.currentData[v]);
             }));

@@ -8,6 +8,7 @@
   ],
   "license": "MIT",
   "dependencies": {
+    "apexcharts.js": ">= 3.8.5",
     "moment": ">= 2.12.0"
   }
 }

@@ -1,9 +1,4 @@
 {
-  "Dashboard": "Tableau de bord",
-  "Search": "Rechercher",
-  "Appui is already defined": "Appui est déjà défini",
-  "Unknown" : "",
-  "The application has been updated but you still use an old version.": "L'application a été mise à jour mais vous utilisez encore une ancienne version",
-  "You need to refresh the page to upgrade.": "Il vous faut rafraîchir la page pour mettre à jour",
-  "Do you want to do it now?": "Voulez-vous le faire maintenant?"
+    "Appui is already defined": "Appui est d\u00e9j\u00e0 d\u00e9fini",
+    "Search..": "Recherche.."
 }

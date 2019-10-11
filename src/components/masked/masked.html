@@ -15,6 +15,7 @@
          @input="inputEvent"
          @paste="pasteEvent"
          @cut="cutEvent"
+         :size="currentInputSize"
   >
   <input :value="value"
          ref="real_masked"

@@ -62,16 +62,16 @@
               <bbn-button class="bbn-xs" @click="context" :title="_('New Folder/Add files to this folder')" icon="nf nf-fa-plus"></bbn-button>
             </bbn-context>
           </div>
-          <div v-text="_('Number of childs:')" v-if="p.num_dirs || p.num_files"></div>
+          <div v-text="_('Number of childs')" v-if="p.num_dirs || p.num_files"></div>
           <div v-text="p.num_dirs + p.num_files" v-if="p.num_dirs || p.num_files"></div>
 
-          <div v-text="_('Directories:')" v-if="p.num_dirs"></div>
+          <div v-text="_('Directories')" v-if="p.num_dirs"></div>
           <div v-text="p.num_dirs" v-if="p.num_dirs"></div>
 
-          <div v-text="_('Files:')" v-if="p.num_files"></div>
+          <div v-text="_('Files')" v-if="p.num_files"></div>
           <div v-text="p.num_files" v-if="p.num_files"></div>
 
-          <div v-text="_('Size:')"></div>
+          <div v-text="_('Size')"></div>
           <div v-if="!p.size">
             <bbn-button icon="nf nf-mdi-scale"
                         class="bbn-xs"
@@ -97,17 +97,17 @@
         class="bbn-finder-info-file-container bbn-flex-height"
   >
     <div class="bbn-grid-fields bbn-header bbn-widget bbn-spadded">
-      <span v-text="_('Filename') + ':'"></span>
+      <span v-text="_('Filename')"></span>
       <span v-text="currentFile ? currentFile.node.data.value : ''"></span>
-      <span v-if="currentFile.info && currentFile.info.size" v-text="_('Size:')"></span>
+      <span v-if="currentFile.info && currentFile.info.size" v-text="_('Size')"></span>
       <span v-text="(currentFile.info && currentFile.info.size) ? currentFile.info.size : ''"></span>
-      <span v-if="(currentFile.info && currentFile.info.width)" v-text="_('Width:')"></span>
+      <span v-if="(currentFile.info && currentFile.info.width)" v-text="_('Width')"></span>
       <span v-if="(currentFile.info && currentFile.info.width)" v-text="currentFile.info.width + 'px'"></span>
-      <span v-if="(currentFile.info && currentFile.info.height)" v-text="_('Height:')"></span>
+      <span v-if="(currentFile.info && currentFile.info.height)" v-text="_('Height')"></span>
       <span v-if="(currentFile.info && currentFile.info.height)" v-text="currentFile.info.height + 'px'"></span>
-      <!--span v-if="currentFile.info && currentFile.info.creation" v-text="_('Creation') + ':'"></span>
+      <!--span v-if="currentFile.info && currentFile.info.creation" v-text="_('Creation')"></span>
       <span-- v-text="(currentFile.info && currentFile.info.creation) ? currentFile.info.creation : ''"></span-->
-      <span v-if="currentFile.info && currentFile.info.mtime" v-text="_('Last modification:')"></span>
+      <span v-if="currentFile.info && currentFile.info.mtime" v-text="_('Last modification')"></span>
       <span v-text="(currentFile.info && currentFile.info.mtime) ? currentFile.info.mtime : ''"></span>
       <div class="bbn-grid-full bbn-right">
         <bbn-button icon="nf nf-fa-hand_paper_o"

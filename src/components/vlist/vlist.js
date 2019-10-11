@@ -224,13 +224,13 @@
             this.items[idx].selected = true;
 
           }
-          if ( this.items[idx].command ){
-            if ( typeof(this.items[idx].command) === 'string' ){
+          if ( this.items[idx].action ){
+            if ( typeof(this.items[idx].action) === 'string' ){
               bbn.fn.log("CLICK IS STRING", this);
             }
-            else if (bbn.fn.isFunction(this.items[idx].command) ){
+            else if (bbn.fn.isFunction(this.items[idx].action) ){
               bbn.fn.log("CLICK IS FUNCTION ???", this);
-              this.items[idx].command(idx, JSON.parse(JSON.stringify(this.items[idx])));
+              this.items[idx].action(idx, JSON.parse(JSON.stringify(this.items[idx])));
             }
           }
           if ( this.mode !== 'options' ){

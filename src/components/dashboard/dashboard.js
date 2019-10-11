@@ -328,7 +328,7 @@
                   text: w.text ?
                     w.text :
                     (w.title ? w.title : bbn._('Untitled')),
-                  command: () => {
+                  action: () => {
                     this.toggleWidget(w.uid);
                   }
                 });
@@ -344,7 +344,7 @@
             this.menu.push(tab.addMenu({
               text: bbn._("Show every widget"),
               icon: 'nf nf-mdi-check_circle',
-              command: () => {
+              action: () => {
                 bbn.fn.each(this.widgets, w => {
                   if ( w.hidden ){
                     this.showWidget(w.uid);
@@ -355,7 +355,7 @@
             this.menu.push(tab.addMenu({
               text: bbn._("Hide every widget"),
               icon: 'nf nf-mdi-checkbox_blank_circle',
-              command: () => {
+              action: () => {
                 bbn.fn.each(this.widgets, w => {
                   if ( !w.hidden ){
                     this.hideWidget(w.uid);
@@ -367,7 +367,7 @@
               this.menu.push(tab.addMenu({
                 text: bbn._("Reset widgets order"),
                 icon: 'nf nf-fa-sort_numeric_asc',
-                command:() => {
+                action:() => {
                   this.currentOrder.splice(0, this.currentOrder.length);
                   this.initWidgets();
                   this.$emit('sort', this.currentOrder);

@@ -87,8 +87,8 @@
        * The size of the input.
        * @prop {String|Number} size
        */
-      size:{
-        type: [String,Number],
+      size: {
+        type: [String, Number],
       }
     },
     data(){
@@ -123,7 +123,17 @@
          * The action performed by the right button.
          * @data {Function} currentActionRight
          */
-        currentActionRight: bbn.fn.isFunction(this.actionRight) ? this.actionRight : ()=>{},
+        currentActionRight: bbn.fn.isFunction(this.actionRight) ? this.actionRight : ()=>{}
+      }
+    },
+    computed: {
+      /**
+       * The current input width in characters if the 'autosize' is enabled
+       * @computed currentInputSize
+       * @returns {Number}
+       */
+      currentInputSize(){
+        return this.autosize ? (this.value ? this.value.toString().length : 1) : 0
       }
     },
     methods: {

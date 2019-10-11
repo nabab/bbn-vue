@@ -7,11 +7,14 @@
 	list-style: none;
 	ul{
 		list-style: none;
-		padding: 2px;
 		margin: 0;
-		&.bbn-tree-child {
+    padding: 0;
+		&.bbn-tree-child{
 			padding-left: 2em;
 		}
+    &.bbn-tree-root{
+      padding-left: 1em;
+    }
 	}
 	ul.bbn-tree-helper{
 		position: fixed;
@@ -20,12 +23,12 @@
 		list-style: none;
 		padding: 0;
 		margin: 0;
-		&.bbn-tree-child {
-			padding-left: 16px;
+		&.bbn-tree-child, &.root {
+			padding-left: 2em;
 		}
-		li{
-			position: relative;
-		}
+    &.bbn-tree-root{
+      padding-left: 1em;
+    }
 	}
 	.bbn-tree-toggle-enter-active, .bbn-tree-toggle-leave-active{
 		transition: max-height 0.3s;

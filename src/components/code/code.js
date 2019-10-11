@@ -549,8 +549,8 @@
             (event.keyCode > 64) &&
             (event.keyCode < 91) 
           ){// only when a letter key is pressed
-                  CodeMirror.commands.autocomplete(cm, null, {completeSingle: false});
-              }
+              CodeMirror.commands.autocomplete(cm, null, {completeSingle: false});
+            }
           });
 
         this.widget.on("change", (ins, bbb) => {

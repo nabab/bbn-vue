@@ -1,11 +1,8 @@
 {
-  "Untitled": "Sans titre",
-  "Impossible to find the index": "Impossible de trouver la position",
-  "Widgets": "Widgets",
-  "Close": "Fermer",
-  "Reload": "Actualiser",
-  "Items": "Élements",
-  "Limit": "Limite", 
-  "Menu": "Menu",
-  "There is no available data": "Il n'y a pas de données disponibles"
+    "Close": "Fermer",
+    "Menu": "Menu",
+    "There is no available data": "Il n'y a pas de donn\u00e9es disponibles",
+    "Reload": "Actualiser",
+    "Items": "\u00c9lements",
+    "Limit": "Limite"
 }

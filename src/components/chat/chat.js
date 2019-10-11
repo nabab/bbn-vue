@@ -481,19 +481,19 @@
               {
                 text: bbn._('Mute'),
                 icon: 'zmdi zmdi-volume-off',
-                command: () => {
+                action: () => {
 
                 }
               }, {
                 text: bbn._('Exit chat'),
                 icon: 'nf nf-fa-sign_out_alt',
-                command: () => {
+                action: () => {
 
                 }
               }, {
                 text: bbn._('Delete messages'),
                 icon: 'nf nf-fa-sign_out_alt',
-                command: () => {
+                action: () => {
                   bbn.fn.confirm(bbn._('Are you sure you want to delete all messages for this chat? They will be' +
                     ' deleted only on your end'), () => {
                     bbn.fn.log("DELETED")
@@ -510,7 +510,7 @@
                   users.push({
                     text: bbn.fn.get_field(chat.users, 'value', o.value, 'text'),
                     icon: 'nf nf-fa-user',
-                    command: () => {
+                    action: () => {
                       chat.addUser(this.chatId, o.value)
                     }
                   });

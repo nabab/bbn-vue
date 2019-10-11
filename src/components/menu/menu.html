@@ -22,9 +22,8 @@
                :key="i"
                :min-width="getRef('li' + i).clientWidth"
                :children="children"
-               :auto-hide="true"
                :element="getRef('li' + i)"
-               @close="onClose"
+               :focused="false"
                :source="item.data[children]"               
   ></bbn-floater>
 </div>

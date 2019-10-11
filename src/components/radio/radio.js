@@ -130,9 +130,9 @@
        * @emits input 
        * @emits change
        */
-			changed(val, e){
+			changed(val, d, e){
 				this.$emit('input', val);
-        this.$emit('change', val);
+        this.$emit('change', val, d, e);
       },
       /**
        * Returns the component's style based on the property 'step'.

@@ -133,30 +133,20 @@
               overflow="visible">
       <div class="bbn-flex-width bbn-h-100">
         <!-- LOADBAR -->
-        <div class="bbn-flex-fill bbn-h-100">
+        <div class="bbn-flex-fill bbn-h-100 bbn-right-space">
           <bbn-loadbar v-if="loaders" ref="loading" :source="loaders"></bbn-loadbar>
-        </div>
-        <div v-if="app.user.isDev"
-             class="bbn-h-100 bbn-vmiddle"
-             style="width: 3em;">
-          <i class="{
-                  nf: true,
-                  'nf-mdi-flag_outline': true,
-                  'bbn-p': true,
-                  'bbn-struck': !colorEnvVisible
-                  }"></i>
         </div>
         <!-- TASK TRACKER -->
         <div v-if="plugins['appui-task']"
-            class="bbn-h-100 bbn-vmiddle"
-            style="width: 3em;"
+            class="bbn-h-100 bbn-vmiddle bbn-right-space"
         >
           <appui-task-tracker></appui-task-tracker>
         </div>
         <!-- CHAT -->
-        <div class="bbn-h-100 bbn-vmiddle" style="width: 8rem;">
-          <bbn-chat v-if="plugins['appui-chat']"
-                    ref="chat"
+        <div v-if="plugins['appui-chat']"
+             :class="['bbn-h-100', 'bbn-vmiddle', {'bbn-right-space': getRef('chat') && getRef('chat').usersOnlineWithoutMe.length}]"
+        >
+          <bbn-chat ref="chat"
                     :url="plugins['appui-chat']"
                     :user-id="app.user.id"
                     :users="app.users"
@@ -171,7 +161,7 @@
         <div v-if="plugins['appui-clipboard'] && clipboard"
              @click.stop="getRef('clipboard').toggle()"
              ref="clipboardButton"
-             :class="['bbn-appui-clipboard-button bbn-h-100 bbn-vmiddle bbn-block bbn-c bbn-hpadded bbn-p']">
+             :class="['bbn-appui-clipboard-button bbn-h-100 bbn-vmiddle bbn-block bbn-c bbn-right-space bbn-p']">
           <i class="nf nf-fa-clipboard bbn-m" tabindex="-1"></i>
           <input class="bbn-invisible bbn-overlay bbn-p"
                  @click.stop="getRef('clipboard').toggle()"

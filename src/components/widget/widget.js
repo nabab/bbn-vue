@@ -189,7 +189,7 @@
           tmp.unshift({
             text: '<i class="nf nf-fa-refresh"></i>' + bbn._("Reload"),
             icon: "nf nf-fa-refresh",
-            command: () => {
+            action: () => {
               this.reload();
             }
           });
@@ -200,7 +200,7 @@
             items.push({
               text: a.toString() + " " + bbn._("Items"),
               selected: a === this.limit,
-              command: () => {
+              action: () => {
                 this.dashboard.updateWidget(this.uid, {limit: a});
               }
             })

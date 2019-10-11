@@ -1,10 +1,5 @@
 {
-  "History informations": "Informations de l'historique",
-  "Delete history": "Supprimer l'historique",
-  "Previous Ajax call": "Requête précédente",
-  "Next Ajax call": "Requête suivante",
-  "Play current calls": "",
-  "Loading": "Chargement",
-  "Requests' history": "Historique des requêtes",
-  "Loaded in": "Chargé en"
+    "Loading": "Chargement",
+    "Requests' history": "Historique des requ\u00eates",
+    "Are you sure you want to abort this request?": "\u00cates-vous s\u00f9r de vouloir annuler cette requ\u00eate?"
 }

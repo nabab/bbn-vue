@@ -1,6 +1,6 @@
 <div :class="componentClass" :style="'border-left-color:' + border_color">
   <h3 v-if="first"
-      v-html="_('Où les conditions suivantes sont vraies')"
+      v-html="_('Where the following conditions are true')"
   ></h3>
   <!-- List of the validated conditions -->
   <div class="bbn-form-full"
@@ -14,10 +14,10 @@
         <bbn-dropdown v-else
                       class="bbn-s"
                       :source="[{
-                        text: _('ET'),
+                        text: _('AND'),
                         value: 'AND'
                       }, {
-                        text: _('OU'),
+                        text: _('OR'),
                         value: 'OR'
                       }]"
                       v-model="currentLogic"

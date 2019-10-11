@@ -15,7 +15,7 @@
 (function(bbn){
   "use strict";
 
-  const NODE_PROPERTIES = ["selected", "selectedClass", "activeClass", "exp anded", "tooltip", "icon", "selectable", "text", "data", "cls", "component", "num", "source", "level", "items"];
+  const NODE_PROPERTIES = ["selected", "selectedClass", "activeClass", "expanded", "tooltip", "icon", "selectable", "text", "data", "cls", "component", "num", "source", "level", "items"];
 
   Vue.component('bbn-tree', {
     /**
@@ -611,7 +611,7 @@
           menu.push({
             text: node.isExpanded ? bbn._("Close") : bbn._("Open"),
             icon: node.isExpanded ? 'nf nf-fa-arrow_circle_up' : 'nf nf-fa-arrow_circle_down',
-            command: () => {
+            action: () => {
               node.isExpanded = !node.isExpanded;
             }
           });
@@ -620,7 +620,7 @@
           menu.push({
             text: bbn._("Refresh"),
             icon: 'nf nf-fa-refresh',
-            command: () => {
+            action: () => {
               this.reload(node);
             }
           })
@@ -632,8 +632,8 @@
               menu.push({
                 text: a.text,
                 icon: a.icon ? a.icon : '',
-                command: a.command ? () => {
-                  a.command(node)
+                action: a.action ? () => {
+                  a.action(node)
                 } : false
               });
             })

@@ -83,7 +83,7 @@
         default: false
       },
       /**
-       * Shows the commands to start and stop autoplay
+       * Shows the actions to start and stop autoplay
        * @prop {Boolean|String} [false] ctrl
        */
       ctrl:{
@@ -120,7 +120,7 @@
         default: false
       },
       /**
-       * Set to true hides the command to start and stop the autoplay
+       * Set to true hides the action to start and stop the autoplay
        * @prop {Boolean} [false] autoHideCtrl
        */
       autoHideCtrl:{

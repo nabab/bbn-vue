@@ -205,6 +205,18 @@
        */
       maxPos(){
         return this.mask.length - this.escapePos.length
+      },
+      /**
+         * The current input width in characters if the 'autosize' is enabled
+         * @computed currentInputSize
+         * @returns {Number}
+         */
+      currentInputSize(){
+        if ( this.autosize ){
+          let val = this.getInputValue()
+          return val.length || 1
+        }
+        return 0
       }
     },
     methods: {

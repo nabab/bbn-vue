@@ -123,7 +123,7 @@
         type: String,
         default: '#c4a300'
       },
-      command: {
+      action: {
         type: [Function, String]
       }
     },
@@ -162,8 +162,8 @@
         }
         else{
           this.$emit('click', e, this);
-          if ( !e.defaultPrevented && this.command ){
-            this.command(e, this);
+          if ( !e.defaultPrevented && this.action ){
+            this.action(e, this);
           }
         }
       }

@@ -490,14 +490,14 @@
               else {
                 item.selected = !item.selected;
               }
-              if ( item.data.command ){
-                if ( typeof(item.data.command) === 'string' ){
-                  if ( bbn.fn.isFunction(this[item.data.command]) ){
-                    this[item.data.command]();
+              if ( item.data.action ){
+                if ( typeof(item.data.action) === 'string' ){
+                  if ( bbn.fn.isFunction(this[item.data.action]) ){
+                    this[item.data.action]();
                   }
                 }
-                else if (bbn.fn.isFunction(item.data.command) ){
-                  item.data.command(idx, item.data);
+                else if (bbn.fn.isFunction(item.data.action) ){
+                  item.data.action(idx, item.data);
                 }
               }
               else if ( item.data.url ) {

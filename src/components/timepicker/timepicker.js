@@ -74,6 +74,14 @@
       scrollMode: {
         type: Boolean,
         default: true
+      },
+      /**
+       * Set it to false if you dont' want to auto-resize the input's width based on its value (in characters).
+       * @prop {Boolean} [true] autosize
+       */
+      autosize: {
+        type: Boolean,
+        default: true
       }
     },
     data(){

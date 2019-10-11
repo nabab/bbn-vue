@@ -310,7 +310,7 @@
             text: okText,
             cls: 'bbn-primary',
             icon: 'nf nf-fa-check_circle',
-            command($ev, btn){
+            action($ev, btn){
               if ( onClose ){
                 onClose($ev, btn);
               }
@@ -396,7 +396,7 @@
             text: yesText,
             cls: 'bbn-primary',
             icon: 'nf nf-fa-check_circle',
-            command($ev, btn){
+            action($ev, btn){
               btn.closest('bbn-floater').close();
               setTimeout(() => {
                 onYes($ev, btn);
@@ -405,7 +405,7 @@
           }, {
             text: noText,
             icon: 'nf nf-fa-times_circle',
-            command($ev, btn){
+            action($ev, btn){
               btn.closest('bbn-floater').close();
               if ( onNo ){
                 setTimeout(() => {

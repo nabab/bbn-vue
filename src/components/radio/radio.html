@@ -19,7 +19,7 @@
              :disabled="disabled || d.disabled"
              :required="required"
              :id="id + '_' + idx"
-             @change="changed(d[sourceValue], $event)"
+             @change="changed(d[sourceValue], d, $event)"
              :checked="d[sourceValue] === modelValue"
       >
       <label class="bbn-radio-label"

@@ -312,7 +312,6 @@
             this.tmpValue = '';
           }
           else{
-             bbn.fn.happy('isnow ' + v )
             if ( this.respectMinMax(v) ){
               this.isChanging = true;
               this.$emit('input', v);

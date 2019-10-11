@@ -24,8 +24,9 @@
         ></i>
       </div>
       <!-- TITLE -->
-      <div class="bbn-flex-fill">
+      <div class="bbn-flex-fill bbn-hpadded">
         <h3 :style="dashboard && dashboard.sortable ? 'cursor: move' : ''"
+            class="bbn-no-margin"
             v-html="title"
             @mousedown="$emit('sortstart')"
             @touchstart="$emit('sortstart')"

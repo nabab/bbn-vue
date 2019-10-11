@@ -131,13 +131,13 @@
 
     methods: {
       /**
-       * Fires the command given to the item 
+       * Fires the action given to the item 
        * @method onClick
        * @param {Object} it 
        */
       onClick(it){
-        if ( it.command && bbn.fn.isFunction(it.command) ){
-          it.command();
+        if ( it.action && bbn.fn.isFunction(it.action) ){
+          it.action();
         }
       },
       mouseover(idx){
