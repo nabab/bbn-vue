@@ -3,6 +3,7 @@
        gridTemplateColumns: columnsCfg,
        gridTemplateRows: rowsCfg,
      }"
+     @scroll.prevent.stop="preventScroll"
      v-show="panes.length"
 >
   <slot></slot>

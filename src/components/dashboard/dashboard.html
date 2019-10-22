@@ -30,12 +30,12 @@
                   :index="w.index"
                   @mouseenter="mouseEnterWidget(w.index)"
                   :class="{'bbn-selected-border': 
-                    sortOriginIndex > w.index ?
-                      (sortOriginIndex !== w.index) &&
-                      (w.index === sortTargetIndex) :
-                      (sortTargetIndex !== null) &&
-                      (w.index - 1 === sortTargetIndex) &&
-                      (sortOriginIndex !== w.index)
+                    (sortOriginIndex !== w.index) && (
+                      sortOriginIndex > w.index ?
+                        (w.index === sortTargetIndex) :
+                        (sortTargetIndex !== null) &&
+                        (w.index - 1 === sortTargetIndex)
+                    )
                   }"
                   @sortstart="isSorting = true; sortOriginIndex = w.index; sortTargetIndex = null"
                   :title="w.title ? w.title : (w.text ? w.text : '')"
@@ -45,7 +45,7 @@
     <div class="bbn-widget bbn-sort-helper"
          ref="sortHelper"
          :style="{
-           display: isSorting ? 'block' : 'none',
+           display: isDragging ? 'block' : 'none',
            width: sortHelperWidth + 'px',
            height: sortHelperHeight + 'px',
            left: sortHelperX + 'px',

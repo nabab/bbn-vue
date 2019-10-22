@@ -596,7 +596,7 @@
                 delete cfg.blur;
               }
               if ( cfg.change !== undefined ){
-                delete cfg.change;
+                delete cfg.change;focus
               }
               if ( cfg.style !== undefined ){
                 delete cfg.style;
@@ -631,6 +631,7 @@
           eventsCfg(){
             let def = {
               focus: (e) => {
+                bbn.fn.log("FOCUS");
                 if ( !this.isExpanded ){
                   let pane = this.closest('bbn-pane'),
                       w = pane.$children[0].$el.clientWidth + pane.$children[1].$el.clientWidth - 40;
@@ -640,6 +641,7 @@
                 }
               },
               blur: (e) => {
+                bbn.fn.log("BLUR");
                 if ( this.isExpanded ){
                   this.$set(this.style, 'width', this.source.style && this.source.style.width ? this.source.style.width : '30px');
                   this.isExpanded = false;

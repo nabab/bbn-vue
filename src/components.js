@@ -42,7 +42,7 @@
       isnotnull: bbn._('N’est pas nul')
     },
     editorNoValueOperators = ['', 'isnull', 'isnotnull', 'isempty', 'isnotempty', 'istrue', 'isfalse'];
-
+  let Vue = window.Vue;
   bbn.fn.autoExtend("vue", {
     emptyComponent: {
       template: '<template><slot></slot></template>',
@@ -815,38 +815,32 @@
           else if ( cfg.type ){
             switch ( cfg.type ){
               case "datetime":
-                if ( cfg.format ){
-                  return v ? (new moment(v)).format(cfg.format) : '-';
+                if ( window.moment && cfg.format ){
+                  return v ? (new window.moment(v)).format(cfg.format) : '-';
                 }
                 else{
                   return bbn.fn.fdatetime(v, '-');
                 }
-                break;
               case "date":
-                if ( cfg.format ){
-                  return v ? (new moment(v)).format(cfg.format) : '-';
+                if ( window.moment && cfg.format ){
+                  return v ? (new window.moment(v)).format(cfg.format) : '-';
                 }
                 else{
                   return bbn.fn.fdate(v, '-');
                 }
-                break;
               case "time":
-                if ( cfg.format ){
-                  return v ? (new moment(v)).format(cfg.format) : '-';
+                if ( cfg.format && window.moment ){
+                  return v ? (new window.moment(v)).format(cfg.format) : '-';
                 }
                 else{
                   return v ? bbn.fn.ftime(v) : '-';
                 }
-                break;
               case "email":
                 return v ? '<a href="mailto:' + v + '">' + v + '</a>' : '-';
-                break;
               case "url":
                 return v ? '<a href="' + v + '">' + v + '</a>' : '-';
-                break;
               case "percent":
                 return v ? bbn.fn.money(v * 100, false, "%", '-', '.', ' ', 2) : '-';
-                break;
               case "number":
                 return v ?
                   bbn.fn.money(
@@ -858,7 +852,6 @@
                     ' ',
                     cfg.precision === -4 ? 3 : (cfg.precision || 0)
                   ) : '-';
-                break;
               case "money":
                 return v ?
                   bbn.fn.money(
@@ -870,15 +863,13 @@
                     ' ',
                     cfg.precision === -4 ? 3 : cfg.precision
                   ) : '-';
-                break;
               case "bool":
               case "boolean":
-                let isYes = v && (v !== 'false') && (v !== '0');
-                if ( cfg.yesvalue !== undefined ){
-                  isYes = v === cfg.yesvalue;
-                }
-                return '<i class="nf nf-fa-' + (isYes ? 'check' : 'times') + '" title="' + (isYes ? bbn._("Yes") : bbn._("No")) + '"></i>';
-                break;
+                return '<i class="nf nf-fa-'
+                  + (((v && (v !== 'false') && (v !== '0')) && ((cfg.yesvalue === undefined) || (v === cfg.yesvalue))) ? 'check' : 'times')
+                  + '" title="'
+                  + (((v && (v !== 'false') && (v !== '0')) && ((cfg.yesvalue === undefined) || (v === cfg.yesvalue))) ? bbn._("Yes") : bbn._("No"))
+                  + '"></i>';
             }
           }
           else if ( cfg.source ){
@@ -1146,7 +1137,7 @@
          * @param e 
          * @memberof eventsComponent
          */
-        touchstart(e){
+        touchstart(){
           this.isTouched = true;
           setTimeout(() => {
             if ( this.isTouched ){
@@ -1162,7 +1153,7 @@
          * @memberof eventsComponent
          * @param e 
          */
-        touchmove(e){
+        touchmove(){
           this.isTouched = false;
         },
         /**
@@ -1171,7 +1162,7 @@
          * @param e 
          * @memberof eventsComponent
          */
-        touchend(e){
+        touchend(){
           this.isTouched = false;
         },
         /**
@@ -1180,7 +1171,7 @@
          * @param e 
          * @memberof eventsComponent
          */
-        touchcancel(e){
+        touchcancel(){
           this.isTouched = false;
         }
       },
@@ -1598,7 +1589,7 @@
           get() {
             return Math.ceil((this.start + 1) / this.currentLimit);
           },
-          set(val, oldVal) {
+          set(val) {
             if ( this.ready ) {
               this.start = val > 1 ? (val - 1) * this.currentLimit : 0;
               this.updateData();
@@ -1756,11 +1747,16 @@
                 if (arr[idx].conditions && arr[idx].conditions.length) {
                   this.getPopup().confirm(bbn._("Are you sure you want to delete this group of conditions?"), () => {
                     arr.splice(idx, 1);
-                    appui.success();
+                    if (window.appui) {
+                      window.appui.success();
+                    }
                   })
-                } else {
+                }
+                else {
                   arr.splice(idx, 1);
-                  appui.success();
+                  if (window.appui) {
+                    window.appui.success();
+                  }
                 }
                 return true;
               }
@@ -1820,7 +1816,7 @@
 
             if ( this.isLoading && this._dataPromise ){
               if ( !this._futurePromise ){
-                this._futurePromise = new Promise((resolve, reject) => {
+                this._futurePromise = new Promise((resolve) => {
                   setTimeout(() => {
                     this._futurePromise = false;
                     this.updateData().then(() => {
@@ -1831,7 +1827,7 @@
               }
               return this._futurePromise;
             }
-            this._dataPromise = new Promise((resolve, reject) => {
+            this._dataPromise = new Promise((resolve) => {
               let prom;
               if ( this.isAjax ){
                 if ( !this.isLoading ){
@@ -1857,7 +1853,6 @@
               else{
                 prom = new Promise((resolve2) => {
                   let data = [];
-                  let total = 0;
                   if ( bbn.fn.isArray(this.source) ){
                     data = this.source;
                   }
@@ -1978,8 +1973,8 @@
                   this.total--;
                   this.updateIndexes();
                   this.$emit('delete', data, ev);
-                  if (appui) {
-                    appui.success(bbn._('Deleted successfully'))
+                  if (window.appui) {
+                    window.appui.success(bbn._('Deleted successfully'))
                   }
                 }
                 else {

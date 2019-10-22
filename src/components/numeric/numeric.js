@@ -404,9 +404,10 @@
       tmpValue(v){
         if ( this.valueTimeOut ) {
           clearTimeout(this.valueTimeOut);
+          bbn.fn.warning('valuetimeout')
         }
         this.valueTimeOut = setTimeout(() => {
-          this._changeTmpValue(v);
+        this._changeTmpValue(v);
         }, 2000);
       },
       /**
@@ -426,7 +427,6 @@
        * @fires _changeTmpValue
        */
       isFocused(v){
-        bbn.fn.warning('watch focused '+v)
         if ( v ){
           this.tmpValue = this.value ? (parseFloat(this.value) * (this.unit === '%' ? 100 : 1)).toFixed(this.decimals) : '';
         }

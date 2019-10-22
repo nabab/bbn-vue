@@ -660,7 +660,15 @@
       },
 
       testMove(){
-        appui.notify("MOVE")
+        bbn.fn.info("MOVE")
+      },
+      /**
+       * @todo Remove this function.
+       * Obliged to do that because of sliders (closing one with right orientation moves the splitter!)
+       */
+      preventScroll(){
+        this.$el.scrollLeft = 0;
+        this.$el.scrollTop = 0;
       },
 
       /**

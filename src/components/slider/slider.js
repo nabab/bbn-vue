@@ -41,47 +41,45 @@
       isVertical(){
         return (this.orientation === 'left') || (this.orientation === 'right');
       },
-      currentStyle(){
-        let o = {
-          opacity: this.opacity
-        };
+      marginLeft(){
         switch (this.orientation) {
           case 'left':
-            o['-webkit-box-shadow'] = '5px 0 5px 0 !important';
-            o['-moz-box-shadow'] = '5px 0 5px 0 !important';
-            o['box-shadow'] = '5px 0 5px 0 !important';
-            o.width = 'auto';
-            o.top = 0;
-            o.left = this.currentVisible ? 0 : -this.currentSize + 'px';
-            o.transition = 'left 0.5s';
-            break;
+            return this.currentVisible ? 0 : -this.currentSize + 'px';
           case 'right':
-            o['-webkit-box-shadow'] = '-5px 0 5px 0 !important';
-            o['-moz-box-shadow'] = '-5px 0 5px 0 !important';
-            o['box-shadow'] = '-5px 0 5px 0 !important';
-            o.width = 'auto';
-            o.top = 0;
-            o.right = this.currentVisible ? 0 : -this.currentSize + 'px';
-            o.transition = 'right 0.5s';
-            break;
-          case 'top':
-            o['-webkit-box-shadow'] = '0 5px 0 5px !important';
-            o['-moz-box-shadow'] = '0 5px 0 5px !important';
-            o['box-shadow'] = '0 5px 0 5px !important';
-            o.left = 0;
-            o.top = this.currentVisible ? 0 : -this.currentSize + 'px';
-            o.transition = 'top 0.5s';
-            break;
-          case 'bottom':
-            o['-webkit-box-shadow'] = '0 -5px 0 5px !important';
-            o['-moz-box-shadow'] = '0 -5px 0 5px !important';
-            o['box-shadow'] = '0 -5px 0 5px !important';
-            o.left = 0;
-            o.bottom = this.currentVisible ? 0 : -this.currentSize + 'px';
-            o.transition = 'bottom 0.5s';
-            break;
+            return this.currentVisible ? 0 : this.currentSize + 'px';
+          default:
+            return 0;
         }
-        return o;
+      },
+      marginTop(){
+        switch (this.orientation) {
+          case 'top':
+            return this.currentVisible ? 0 : -this.currentSize + 'px';
+          case 'bottom':
+            return (this.currentVisible ? bbn.env.height - this.currentSize : bbn.env.height) + 'px';
+          default:
+            return 0;
+        }
+      },
+      currentLeft(){
+        switch (this.orientation) {
+          case 'left':
+            return 0;
+          case 'right':
+            return (bbn.env.width - this.currentSize) + 'px';
+          default:
+            return 0;
+        }
+      },
+      currentTop(){
+        switch (this.orientation) {
+          case 'top':
+            return 0;
+          case 'bottom':
+            return (bbn.env.height - this.currentSize) + 'px';
+          default:
+            return 0;
+        }
       }
     },
     methods: {
@@ -102,17 +100,21 @@
       },
       onResize(){
         let s = this.$el.getBoundingClientRect()[this.isVertical ? 'width' : 'height'];
-        if ((s !== this.currentSize) && (s > 20)){
-          this.currentSize = s + 7;
+        if ((s !== (this.currentSize + 10)) && (s > 20)){
+          this.currentSize = s + 10;
         }
       },
       show(){
         this.onResize();
         this.currentVisible = true;
+        this.$emit('show');
       },
-      hide(){
-        //this.updateSize();
+      hide(e) {
+        if (e && e.target && e.target.blur) {
+          e.target.blur();
+        }
         this.currentVisible = false;
+        this.$emit('hide');
       },
       toggle(){
         if (this.currentVisible) {
@@ -123,22 +125,13 @@
         }
       },
       checkMouseDown(e){
-        if ( this.currentVisible &&
-          !e.target.closest(".bbn-treemenu") &&
-          !e.target.closest(".bbn-menu-button")
-        ){
+        bbn.fn.log('checkMouseDown');
+        if (this.currentVisible && (this.$el !== e.target) && !this.$el.contains(e.target)) {
           e.preventDefault();
           e.stopImmediatePropagation();
           this.toggle();
         }
       },
-    },
-    /**
-     * @event created
-     * @fires _setEvents
-     */
-    created(){
-      this._setEvents();
     },
     /**
      * @event destroyed
@@ -162,7 +155,7 @@
        * @fires _setEvents
        */
       currentVisible(newVal){
-        this._setEvents(!!newVal);
+        this._setEvents(newVal);
       },
       currentSize(v){
         this.$el.style[this.isVertical ? 'width' : 'height'] = v;

@@ -148,6 +148,7 @@
          * @data {Boolean} [false] isSorting
          */
         isSorting: false,
+        isDragging: false,
         sortTimeout: false,
         sortingElement: false,
         sortHelperWidth: 0,
@@ -381,6 +382,9 @@
         if ( this.isSorting && (idx !== this.sortOriginIndex) ){
           this.sortTargetIndex = idx > this.sortOriginIndex ? idx - 1 : idx;
         }
+        else if (this.sortTargetIndex !== null) {
+          this.sortTargetIndex = null;
+        }
       },
       updateWidget(key, cfg){        
         let idx = bbn.fn.search(this.widgets || [], 'key', key),
@@ -588,7 +592,10 @@
             w = 1;
           }
           this.sortHelperX = w;
-          this.sortHelperY = e.clientY;
+          this.sortHelperY = e.clientY + 3;
+          if (!this.isDragging) {
+            this.isDragging = true;
+          }
         }
       }
     },
@@ -626,8 +633,10 @@
      * @fires setCurrentSlots
      */
     updated(){
+      /*
       this.selfEmit(true); 
       this.setCurrentSlots();
+      */
     },
     watch: {
       /**
@@ -664,6 +673,7 @@
             }
           }
           this.sortTargetIndex = null;
+          this.isDragging = false;
         }
         else if (this.widgets[this.sortOriginIndex]) {
           let w = this.widgets[this.sortOriginIndex];
@@ -671,8 +681,6 @@
           let pos = this.sortingElement.$el.getBoundingClientRect();
           this.sortHelperWidth = pos.width;
           this.sortHelperHeight = pos.height;
-          this.sortHelperX = (pos.left - Math.round(this.sortHelperWidth / 2));
-          this.sortHelperY = pos.top;
           this.getRef('sortHelper').innerHTML = this.sortingElement.$el.innerHTML;
         }
       },

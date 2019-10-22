@@ -3,8 +3,12 @@
      @keydown.stop="keydown($event)"
      style="min-height: 6.5em">
   <input type="hidden"
-          ref="element"
-          v-model="value">
+         ref="element"
+         v-model="value"
+         :disabled="disabled"
+         :required="required"
+         :readonly="readonly"
+  >
   <div class="bbn-overlay">
     <bbn-scroll ref="scroll">
       <bbn-list :source="source"
