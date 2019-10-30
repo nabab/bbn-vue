@@ -54,16 +54,21 @@
     data(){
       return {
         checker: false,
-        isCollapsed: this.collapsed
+        isCollapsed: this.collapsed,
+        isResizable: this.resizable
       };
     },
     watch:{
       collapsed(val){
         this.currentHidden = val;
+        this.isCollapsed = val;
       }
     },
     mounted(){
       if (bbn.fn.isFunction(this.$parent.init) ){
+        if (this.resizable === undefined) {
+          this.isResizable = this.$parent.resizable;
+        }
         this.selfEmit(true);
         this.$parent.init();
         setTimeout(() => {

@@ -68,7 +68,7 @@
         default: ''
       },
       /**
-       * Set to false to display only icons instead of arrow buttons.
+       * Shows the arrows on the header.
        *
        * @prop {Boolean} [true] arrows
        */
@@ -93,6 +93,14 @@
       titleIcon: {
         type: [String, Boolean],
         default: 'nf nf-oct-calendar'
+      },
+      /**
+       * The function called on click on the title.
+       * 
+       * @prop {Function} titleAction
+       */
+      titleAction: {
+        type: Function
       },
       /**
        * The initial date.
@@ -628,16 +636,20 @@
       */
       filterEvents(v){
         if ( this.startField && this.endField ){
-          return this.currentData && bbn.fn.isArray(this.currentData) ? this.currentData.filter(ev => {
-            if ( ev.data[this.startField] && ev.data[this.endField] ){
-              let start = moment(ev.data[this.startField], this.startFormat).format(this.currentCfg.valueFormat),
-                  end = moment(ev.data[this.endField], this.endFormat).format(this.currentCfg.valueFormat);
-              return (start <= v) && (end >= v);
-            }
-            return false;
-          }) : []
+          return this.currentData && bbn.fn.isArray(this.currentData) ? 
+            bbn.fn.map(bbn.fn.filter(this.currentData, ev => {
+              if ( ev.data[this.startField] && ev.data[this.endField] ){
+                let start = moment(ev.data[this.startField], this.startFormat).format(this.currentCfg.valueFormat),
+                    end = moment(ev.data[this.endField], this.endFormat).format(this.currentCfg.valueFormat)
+                return (start <= v) && (end >= v)
+              }
+              return false
+            }), ev => {
+              return ev.data
+            }) : 
+            []
         }
-        return [];
+        return []
       },
       /**
        * Sets the calendar's title.
@@ -670,8 +682,7 @@
             return false;
           }
         }
-        this.updateData().then((res) => {
-          this.$emit('dataLoaded', res, this.currentData, this);
+        this.updateData().then(() => {
           this.init();
         });
       },
@@ -819,8 +830,7 @@
      * @emits dataLoaded
     */
     mounted(){
-      this.updateData().then((res) => {
-        this.$emit('dataLoaded');
+      this.updateData().then(() => {
         this.init();
         this.$nextTick(() => {
           if ( !this.date && ( this.max || this.min) ){

@@ -1,15 +1,13 @@
-<div :class="[componentClass, 'bbn-overlay', {
-  'bbn-flex-height': scrollable
+<div :class="[componentClass, {
+  'bbn-overlay': !!scrollable,
+  'bbn-flex-height': !!scrollable
 }]">
   <template v-for="(s, idx) in source">
-
-    <div class="bbn-header bbn-padded bbn-vmiddle"
-    >
+    <div class="bbn-header bbn-spadded bbn-vmiddle">
       <div class="arrow-container bbn-hspadded bbn-p bbn-middle bbn-block" @click="select(idx)">
         <i :class="['nf nf-fa-angle_right', 'header-icon', 'bbn-large',  {'rotate': selected === idx}]"></i>
       </div>
-
-      <div :class="['bbn-p', 'title', 'bbn-vmiddle',{
+      <div :class="['bbn-p', 'title', 'bbn-vmiddle', {
               'center': (align === 'center'),
               'start': (align === 'left'),
               'end': (align === 'right')
@@ -21,49 +19,46 @@
                'inline': s.headerComponent,
                'right-padded': s.headerComponent || headerComponent
              }"
-        >
-        </div>
-
+        ></div>
         <component v-if="s.headerComponent" 
-                  :is="s.headerComponent" 
-                  v-bind="source[idx]['headerOptions']"
+                   :is="s.headerComponent" 
+                   v-bind="source[idx]['headerOptions']"
         ></component>
-
         <component v-if="headerComponent && !s.headerComponent" 
                    :is="headerComponent" 
                    v-bind="headerOptions"
         ></component>
-
       </div>
-     
     </div>
-
-    <div :class="['bbn-content', 'selected',{
-                    'bbn-flex-fill': scrollable
-                }]"
-          v-show="selected === idx"
+    <div :class="['bbn-content', 'selected', {
+           'bbn-flex-fill': !!scrollable,
+           'bbn-w-100': !scrollable
+         }]"
+         v-if="selected === idx"
     >
-      <component :is="scrollable ? 'bbn-scroll' : 'div'">
-        
+      <component :is="scrollable ? 'bbn-scroll' : 'div'"
+                 :class="{'bbn-w-100': !scrollable}"
+                 :key="idx"
+      >
         <div v-if="!s.component && !component" 
              v-html="s.content" 
-             class="content"
+             
         ></div>
-
-       
-        
         <div v-else-if="!s.component && component"
-             class="content">
+             :class="['content', {'bbn-w-100': !scrollable}]"
+        >
           <component :is="component"
-                     v-bind="componentOptions">
-          </component>  
+                     v-bind="componentOptions"
+                     :class="{'bbn-w-100': !scrollable}"
+          ></component>  
         </div>
-        
         <div v-else-if="(s.component)"
-            class="content">
+             :class="['content', {'bbn-w-100': !scrollable}]"
+        >
           <component :is="s.component"
-                     v-bind="source[idx]['componentOptions']">
-          </component>  
+                     v-bind="source[idx]['componentOptions']"
+                     :class="{'bbn-w-100': !scrollable}"
+          ></component>  
         </div>
       </component>
     </div>
@@ -92,10 +87,6 @@
       <component :is="i.component" ref="component" v-if="i.component" v-bind="source[idx]['options']"></component>
       <div v-else-if="i.content" v-html="i.content"></div>
 
-    </div-->
-
-  </div>
-
-  
+    </div-->  
 
 </div>

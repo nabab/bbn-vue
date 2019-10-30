@@ -23,7 +23,7 @@
                   v-if="!isSelecting && remove"
                   :disabled="!total"
       ></bbn-button>
-      <bbn-button :text="_(selectingMode.toTitleCase())"
+      <bbn-button :text="_(correctCase(selectingMode))"
                   icon="nf nf-fa-check"
                   @click="action"
                   v-if="isSelecting"
@@ -97,6 +97,7 @@
                       v-model.number="currentLimit"
                       @change="currentPage = 1"
                       :disabled="!!isLoading"
+                      :autosize="true"
         ></bbn-dropdown>
         <span>{{_('items per page')}}</span>
       </span>

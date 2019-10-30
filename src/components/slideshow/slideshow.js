@@ -755,9 +755,13 @@
          * @memberof miniature
          */
         mounted(){
-          this.$el.querySelector('div.zoom div.content').style.transform = 'scale(0.2)';
-          this.$el.querySelector('div.zoom div.content').querySelector('img').style.transform = 'scale(0.1)';
-
+          const elem = this.$el.querySelector('div.zoom div.content');
+          if ( elem ){
+            elem.style.transform = 'scale(0.2)';
+            if ( elem.querySelector('img') ){
+              elem.querySelector('img').style.transform = 'scale(0.1)';
+            }
+          }
         }
       }
     }

@@ -209,8 +209,7 @@
                   * The resulting string for the CSS property.
                   * @type {string}
                   */
-                  sz = '',
-                  rsAdded = false;
+                  sz = '';
               // If position is not the one expected it means a resizer is before so it's added as a column
               while ( a.position > pos ){
                 sz += lastVisibleResizer ? '0 ' : this.resizerSize + 'px ';
@@ -451,11 +450,12 @@
           }
           */
           let isResizable = bbn.fn.count(tmp, {isResizable: true}) >= 2;
+          let hasPanes = tmp.length > 1;
           // We will populate resizers
           this.resizers.splice(0, this.resizers.length);
           tmp.forEach((pane, idx) => {
             let prev, next, prevc, nextc;
-            if ( isResizable && pane.isResizable ){
+            if ( hasPanes && isResizable && pane.isResizable ){
               prev = this.getPrevResizable(idx, tmp);
               next = this.getNextResizable(idx, tmp);
               prevc = this.getPrevCollapsible(idx, tmp);
@@ -491,7 +491,7 @@
             */
             this.panes.push(pane);
             currentPosition++;
-            if ( isResizable && pane.isResizable ){
+            if ( hasPanes && isResizable && pane.isResizable ){
               // Last collapsible
               let o = {
                 position: currentPosition,
@@ -677,11 +677,13 @@
        * @param {Object} rs 
        */
       resizeStart(e, rs){
-        //bbn.fn.log(this.isResizable);
-        if ( this.isResizable &&
-          !this.isResizing &&
-          this.panes[rs.panec1] && !this.panes[rs.panec1].collapsed &&
-          this.panes[rs.panec2] && !this.panes[rs.panec2].collapsed
+        bbn.fn.log(this.isResizable);
+        if (this.isResizable
+           && !this.isResizing
+           && this.panes[rs.pane1]
+           && !this.panes[rs.pane1].collapsed
+           && this.panes[rs.pane2]
+           && !this.panes[rs.pane2].collapsed
         ){
           this.isResizing = true;
           document.body.addEventListener("touchmove", this.resizeDrag);
@@ -695,6 +697,11 @@
               pos = e.target.getBoundingClientRect(),
               pos1 = vue1.$el.getBoundingClientRect(),
               pos2 = vue2.$el.getBoundingClientRect();
+          if (!this.panes[rs.pane1].size && !this.panes[rs.pane2].size) {
+            this.$set(this.panes[rs.pane1], "size", this.currentOrientation === 'horizontal' ? pos1.width : pos1.height);
+            this.$set(this.panes[rs.pane2], "size", this.currentOrientation === 'horizontal' ? pos2.width : pos2.height);
+            this.$forceUpdate();
+          }
           this.resizeCfg = {
             resizer: rs,
             panes: [vue1, vue2],
@@ -702,7 +709,7 @@
             max: pos2[this.currentSizeType.toLowerCase()] - this.minPaneSize - this.resizerSize
           };
           this.resizeCfg[this.currentOffsetType] = pos[this.currentOffsetType];
-          //bbn.fn.log("START", this.resizeCfg, e, "------------");
+          bbn.fn.log("START", this.resizeCfg, e, "------------");
         }
         /*
             setTimeout(() =>{

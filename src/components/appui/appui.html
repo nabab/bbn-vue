@@ -108,6 +108,14 @@
     </bbn-pane>
     <!-- MAIN -->
     <bbn-pane ref="main">
+      <!--bbn-split-tabs v-if="tabnav"
+                      orientation="horizontal"
+                      ref="tabnav"
+                      :root="root"
+                      :resizable="true"
+                      :observer="true"
+                      :source="source">
+      </bbn-split-tabs-->
       <bbn-tabnav v-if="tabnav"
                   :autoload="true"
                   :root="root"

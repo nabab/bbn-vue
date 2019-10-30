@@ -183,6 +183,9 @@
         if ( value !== this.value ){
           this.emitInput(value);
         }
+        else {
+          this.setInputValue(value);
+        }
         if ( !value ){
           this.inputValue = '';
           this.oldInputValue = '';
@@ -215,6 +218,13 @@
             }
           });
         }
+      },
+      setInputValue(newVal){
+        let mom = moment(newVal.toString(), this.getValueFormat(newVal.toString()));
+        this.inputValue = newVal && this.$refs.element && mom.isValid() ? 
+          this.$refs.element.raw(mom.format(this.currentFormat)) : 
+          '';
+        this.oldInputValue = this.inputValue;
       }
     },
     /**
@@ -274,11 +284,7 @@
        * @fires updateCalendar
       */
       value(newVal){
-        let mom = moment(newVal.toString(), this.getValueFormat(newVal.toString()));
-        this.inputValue = newVal && this.$refs.element && mom.isValid() ? 
-          this.$refs.element.raw(mom.format(this.currentFormat)) : 
-          '';
-        this.oldInputValue = this.inputValue;
+        this.setInputValue(newVal);
       }
     },
     components: {

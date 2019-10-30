@@ -15,10 +15,13 @@
                       icon="nf nf-fa-angle_double_left"
                       @click="prev(true)"
                       :title="_('Previous') + ' ' + currentCfg.stepSkipText"
+                      :notext="true"
+                      class="bbn-right-xsspace"
           ></bbn-button>
           <bbn-button icon="nf nf-fa-angle_left"
                       @click="prev(false)"
                       :title="_('Previous') + ' ' + currentCfg.stepText"
+                      :notext="true"
           ></bbn-button>
         </template>
         <template v-else-if="arrows && !arrowsButtons">
@@ -33,19 +36,26 @@
           ></i>
         </template>
         <div class="bbn-flex-fill bbn-middle bbn-calendar-header-title">
-          <i v-if="titleIcon"
-             :class="[titleIcon, 'bbn-hsmargin', 'bbn-large']"></i>
-          <strong v-text="title"></strong>
+          <span @click="!!titleAction ? titleAction(_self) : false"
+                :class="{'bbn-p': !!titleAction}"
+          >
+            <i v-if="titleIcon"
+               :class="[titleIcon, 'bbn-hsmargin', 'bbn-large']"></i>
+            <strong v-text="title"></strong>
+          </span>
         </div>
         <template v-if="arrows && arrowsButtons">
           <bbn-button icon="nf nf-fa-angle_right"
                       @click="next(false)"
                       :title="_('Next') + ' ' + currentCfg.stepText"
+                      :notext="true"
           ></bbn-button>
           <bbn-button v-if="currentCfg.stepSkip"
                       icon="nf nf-fa-angle_double_right"
                       @click="next(true)"
                       :title="_('Next') + ' ' + currentCfg.stepSkipText"
+                      :notext="true"
+                      class="bbn-left-xsspace"
           ></bbn-button>
         </template>
         <template v-else-if="arrows && !arrowsButtons">
@@ -75,17 +85,11 @@
              :class="['bbn-calendar-item-box', 'bbn-box', {
                'bbn-p': selection && !item.disabled,               
                'bbn-spadded': !itemDetails && itemPadding,
-
-               //'bbn-state-active': item.isCurrent && (!item.inRange || (item.inRange && item.over)),
-               'bbn-tertiary': item.isCurrent && (!item.inRange || (item.inRange && item.over)),
-
+               'bbn-tertiary': item.isCurrent && (!item.inRange || (item.inRange && item.over)) && !(selection && (item.value === currentValue)),
                'bbn-background-effect-primary': item.isCurrent && item.inRange,
                'bbn-state-hover': selection && item.over && !item.disabled,
                'bbn-primary': selection && (item.value === currentValue),
-
-               //'bbn-calendar-colored-item': item.colored && !item.hidden,
                'bbn-secondary': item.colored && !item.hidden && !item.extra,
-
                'bbn-alt-background-effect': !item.hidden && item.inRange && !item.isCurrent,
                'bbn-disabled': item.disabled,
                'bbn-alt-background': extraItems && item.extra
@@ -99,7 +103,10 @@
                class="bbn-flex-height"
                style="position: relative" 
           >
-            <div :class="['bbn-r', 'bbn-unselectable', 'bbn-calendar-item', {'bbn-tertiary-text': item.colored && !item.extra}]"
+            <div :class="['bbn-r', 'bbn-unselectable', 'bbn-calendar-item', {
+              'bbn-secondary-text': item.colored && !item.hidden && !item.extra,
+              'bbn-tertiary-text': item.isCurrent && (!item.inRange || (item.inRange && item.over))
+            }]"
                  style="margin-right: .2em"
             >
               <span v-text="item.text"></span>

@@ -1,8 +1,22 @@
 {
   "name": "@bbn/bbn-vue",
-  "version": "1.0.1",
-  "description": "vue and kendo components",
-  "author": "bbnSolutions",
+  "version": "1.0.2",
+  "description": "Vue UI components",
+  "author": "Thomas Nabet <thomas.nabet@gmail.com>",
+  "contributors": [
+    {
+      "name": "Mirko Argentino",
+      "email": "mirko@bbn.solutions"
+    },
+    {
+      "name": "Loredana Bruno",
+      "email": "lore@bbn.solutions"
+    },
+    {
+      "name": "Vito Fava",
+      "email": "vito@bbn.solutions"
+    }
+  ],
   "main": "src/main.js",
   "scripts": {
     "server": "node server.js",
@@ -21,10 +35,6 @@
     "datatables": "^1.10.13",
     "fancytree": "0.0.0",
     "font-awesome": "^4.7.0",
-    "iconv-lite": "^0.4.18",
-    "jquery": "^3.2.1",
-    "jquery.fancytree": "^2.23.0",
-    "kendo-ui-core": "^2017.2.621",
     "node-lessify": "^0.1.5",
     "simplemde": "^1.11.2",
     "vue": "^2.0.1",
@@ -42,8 +52,6 @@
     "envify": "^3.4.1",
     "express": "^4.15.3",
     "http-server": "^0.9.0",
-    "jquery-bridget": "^2.0.1",
-    "jquery-ui": "^1.12.1",
     "npm-run-all": "^2.1.2",
     "uglify-js": "^2.5.0",
     "vueify": "^9.4.1",

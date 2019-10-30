@@ -1,0 +1,16 @@
+<div :class="componentClass">
+  <bbn-splitter :orientation="orientation"
+                :resizable="resizable">
+    <bbn-pane v-for="(tn, i) in source"
+              :key="i"
+              :resizable="resizable"
+              @focusin="currentPane = i">
+      <bbn-tabnav :autoload="true"
+                  :root="root"
+                  :source="tn.source"
+                  :observer="observer"
+                  :ref="'tabnav' + i">
+      </bbn-tabnav>
+    </bbn-pane>
+  </bbn-splitter>
+</div>

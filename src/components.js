@@ -1885,6 +1885,7 @@
                   else{
                     d = d.data;
                   }
+                  this.$emit('dataReceived', d);
                 }
                 if ( bbn.fn.isArray(d.data) ){
                   if (d.data.length && d.data[0]._bbn){

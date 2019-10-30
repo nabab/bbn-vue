@@ -16,6 +16,7 @@
     "Page": "Page",
     "items per page": "\u00c9l\u00e9ments par page",
     "Error while updating the data": "Erreur pendant la mise \u00e0 jour des donn\u00e9es",
-    "Are you sure you want to %s these photos?": "\u00cates-vous s\u00fbr de vouloir %s ces images?",
+    "Are you sure you want to download these photos?": "\u00cates-vous s\u00fbr de vouloir t\u00e9l\u00e9charger ces images?",
+    "Are you sure you want to remove these photos?": "\u00cates-vous s\u00fbr de vouloir supprimer ces images?",
     "Gallery": "Gallerie"
 }

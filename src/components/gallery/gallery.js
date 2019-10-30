@@ -335,6 +335,13 @@
        * @return {Boolean}
       */
      isVue: bbn.fn.isVue,
+     /** 
+       * Alias of bbn.fn.correctCase.
+       * 
+       * @method correctCase
+       * @return {string}
+      */
+     correctCase: bbn.fn.correctCase,
       /**
        * Updates the component's data.
        * 
@@ -412,9 +419,16 @@
        */
       action(){
         if ( this[this.selectingMode] && this.selected.length ){
-          this.confirm(bbn._(`Are you sure you want to %s these photos?`, this.selectingMode), () => {
+          let mess = '';
+          if ( this.selectingMode === 'download' ){
+            mess = "Are you sure you want to download these photos?";
+          }
+          else if ( this.selectingMode === 'remove' ){
+            mess = "Are you sure you want to remove these photos?";
+          }
+          this.confirm(bbn._(mess, this.selectingMode), () => {
             this[this.selectingMode](this.selected.map(v => {
-              return Object.assign({}, this.currentData[v]);
+              return bbn.fn.extend(true, {}, this.currentData[v]);
             }));
             this.setSelecting(false);
           });
@@ -705,10 +719,11 @@
                   if ( this.col.gallery.zoomable ){
                     this.getPopup().open({
                       title: bbn._('Gallery'),
+                      width: '100%',
+                      height: '100%',
                       scrollable: false,
                       resizable: false,
                       maximizable: false,
-                      maximized: true,
                       component: this.col.gallery.$options.components.galleryZoom,
                       source: {
                         data: this.col.gallery.currentData,

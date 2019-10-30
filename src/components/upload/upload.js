@@ -874,11 +874,14 @@
         }
       },
       /**
-       * @watch filesReady
+       * @watch filesSuccess
        * @emits complete
        */
-      filesProgress(newVal){
-        if ( !newVal.length ){
+      filesSuccess(newVal){
+        if ( 
+          !this.filesProgress.length && 
+          (!!bbn.fn.get_row(newVal, {fromUser: true}) || !!bbn.fn.get_row(newVal, {fromPaste: true}))
+        ){
           this.$emit('complete', this.filesSuccess, this.filesError)
         }
       }

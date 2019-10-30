@@ -1015,6 +1015,12 @@
           });
         }
       },
+      visible(v) {
+        if (v) {
+          this.onResize();
+        }
+
+      },
       /**
        * @watch element
        * @param {Element} newVal

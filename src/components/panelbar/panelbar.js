@@ -97,7 +97,7 @@
       * @event mounted
       */
     mounted(){
-      if ( this.opened ){
+      if ( this.opened !== undefined ){
         this.selected = this.opened;
       }
     },
