@@ -6,6 +6,7 @@
       :style="currentStyle"
       @submit.prevent
       @keydown.enter.prevent.stop="submit"
+      @keydown.esc.stop="cancel"
 >
   <div :class="[{'bbn-flex-fill': scrollable, 'bbn-w-100': scrollable}]"
   >

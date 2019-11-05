@@ -4,7 +4,7 @@
   <div class="bbn-header bbn-bordered-bottom bbn-vxspadded bbn-unselectable" v-if="title">
     <div class="bbn-flex-width">
       <!-- BUTTONS LEFT -->
-      <div class="bbn-widget-button-left bbn-hxspadded">
+      <div class="bbn-header-buttons bbn-widget-button-left bbn-hxspadded">
         <i v-if="closable"
             :title="_('Close')"
             @click="close"
@@ -34,7 +34,7 @@
         ></h3>
       </div>
       <!-- BUTTONS RIGHT -->
-      <div class="bbn-widget-button-right bbn-hxspadded">
+      <div class="bbn-header-buttons bbn-widget-button-right bbn-hxspadded">
         <i v-for="(b, idx) in realButtonsRight"
             :title="b.text"
             @click="actionButton(b.action, uid)"

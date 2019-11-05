@@ -1,5 +1,6 @@
 <div :class="elementClass"
      :style="elementStyle"
+     @scroll.prevent
 >
   <div :class="{'bbn-scroll-container': scrollable, 'bbn-abs': !isMeasuring, 'bbn-overlay': !isMeasuring && !scrollable}"
        :style="containerStyle"

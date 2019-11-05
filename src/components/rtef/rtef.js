@@ -87,7 +87,7 @@
   </div>
   <script>
     let message1 = false;
-    document.addEventListener("DOMContentLoaded", event => { 
+    document.addEventListener("DOMContentLoaded", event => {
       window.addEventListener('message', msg => {
         if ( !message1 && (typeof(msg.data) === 'object') ){
           new Vue({

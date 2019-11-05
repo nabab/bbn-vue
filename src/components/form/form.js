@@ -514,7 +514,8 @@
                   }
                 });
               }
-            })
+            });
+
           }
         }
       },
@@ -528,7 +529,9 @@
         let ev = new Event('cancel', {cancelable: true});
         this.$emit('cancel', ev, this);
         if ( !ev.defaultPrevented ){
-          this.reset();
+          if ( !this.prefilled ){
+            this.reset();
+          }
           if ( this.window ){
             this.window.close();
           }

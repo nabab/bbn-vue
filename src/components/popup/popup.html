@@ -1,6 +1,7 @@
 <div :class="['bbn-overlay', componentClass]"
      v-show="showPopup"
      :style="{zIndex: zIndex}"
+     @keydown.esc.prevent.stop="close(items.length-1)"
 >
   <bbn-floater v-if="showPopup"
               v-for="(popup, i) in popups"
@@ -11,11 +12,10 @@
               :container="$el"
               :style="{zIndex: zIndex+i}"
               @close="items.splice(i, 1)"
-  >
-  </bbn-floater>
+  ></bbn-floater>
   <div class="bbn-modal bbn-overlay"
       tabindex="-1"
       :style="{zIndex: zIndex+items.length-2}"
-      @keydown.esc.prevent.stop="close(items.length-1)">
-  </div>
+      @keydown.esc.prevent.stop="close(items.length-1)"
+  ></div>
 </div>

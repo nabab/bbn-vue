@@ -15,7 +15,7 @@
  * @copyright BBN Solutions
  */
 
-(function (bbn) {
+(function (bbn, Vue) {
   "use strict";
   const METHODS4BUTTONS = ['insert', 'select', 'edit', 'add', 'copy', 'delete'];
   let leaveFilterTimeout = false;
@@ -476,7 +476,9 @@
         initStarted: false,
         inTable: null,
         filterElement: null,
-        hasHorizontalScroll: false
+        hasHorizontalScroll: false,
+        hasScrollX: false,
+        hasScrollY: false
       };
     },
     computed: {
@@ -1065,16 +1067,20 @@
           if (a.field) {
             if (data[a.field] !== undefined) {
               res[a.field] = data[a.field];
-            } else if (a.default !== undefined) {
+            }
+            else if (a.default !== undefined) {
               res[a.field] = bbn.fn.isFunction(a.default) ? a.default() : a.default;
-            } else {
+            }
+            else {
               res[a.field] = '';
             }
-            if (Array.isArray(res[a.field])) {
-              res[a.field] = res[a.field].splice();
-            } else if (res[a.field] instanceof(Date)) {
+            if (bbn.fn.isArray(res[a.field])) {
+              res[a.field] = res[a.field].slice();
+            }
+            else if (res[a.field] instanceof(Date)) {
               res[a.field] = new Date(res[a.field].getTime());
-            } else if ((null !== res[a.field]) && (typeof res[a.field] === 'object')) {
+            }
+            else if ((null !== res[a.field]) && (typeof res[a.field] === 'object')) {
               res[a.field] = bbn.fn.clone(res[a.field]);
             }
           }
@@ -1701,6 +1707,9 @@
           if (!winOptions.height) {
             //winOptions.height = (this.cols.length * 2) + 'rem'
           }
+          if (winOptions.maximizable === undefined) {
+            winOptions.maximizable = true;
+          }
           let popup = bbn.fn.extend({
             source: {
               row: row,
@@ -1710,7 +1719,6 @@
             title: bbn._('Row edition'),
             width: 700
           }, winOptions ? winOptions : {});
-          bbn.fn.log("WIN OPTIONS", winOptions);
           // A component is given as global editor (form)
           if (this.editor) {
             popup.component = this.editor;
@@ -2870,7 +2878,6 @@
         setTimeout(() => {
           if (!this.focused) {
             this.focusedRow = false;
-            bbn.fn.log("focusout");
           }
         }, 50);
       },
@@ -2881,7 +2888,7 @@
             this.focusedRow = idx;
           }
         }
-        bbn.fn.log(e);
+        //bbn.fn.log(e);
       }
     },
     /**
@@ -3092,4 +3099,4 @@
     }
   });
 
-})(bbn);
+})(window.bbn, window.Vue);

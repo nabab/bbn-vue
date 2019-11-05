@@ -140,8 +140,9 @@
     <div :class="{'bbn-flex-fill': scrollable, 'bbn-table-main': true, 'bbn-w-100': true}">
       <div :class="{'bbn-overlay': scrollable, 'bbn-block': !scrollable}"
            :style="{
-             marginBottom: scrollable ? '-' + containerPadding : 0,
-             height: scrollable ? 'auto' : '100%'
+            marginBottom: hasScrollX ? '-' + containerPadding : 0,
+            paddingBottom: hasScrollX ? containerPadding : 0,
+            height: scrollable ? 'auto' : '100%'
            }">
         <div class="bbn-table-container"
               ref="container"
@@ -150,9 +151,9 @@
                 width: containerWidth,
                 overflowX: groupCols[0].width + groupCols[1].width + groupCols[2].width > lastKnownCtWidth ? 'scroll' : 'hidden',
                 marginLeft: groupCols[0].width + 'px',
-                marginRight: (scrollable ? groupCols[2].width - containerPadding : groupCols[2].width) + 'px',
-                paddingRight: scrollable ? containerPadding : 0,
-                paddingBottom: scrollable ? containerPadding : 0,
+                marginRight: (hasScrollY ? groupCols[2].width - containerPadding : groupCols[2].width) + 'px',
+                paddingRight: hasScrollY ? containerPadding : 0,
+                paddingBottom: hasScrollX ? containerPadding : 0,
                 maxWidth: scrollable ? '100%' : null,
                 maxHeight: scrollable ? '100%' : null
               }">
@@ -340,13 +341,17 @@
                          orientation="horizontal"
                          ref="xScroller"
                          :scrollAlso="_getScrollers"
+                         @hook:mounted="hasScrollX = true"
+                         @hook:beforeDestroy="hasScrollX = false"
                          :container="getRef('container')">
           </bbn-scrollbar>
         </div>
         <bbn-scrollbar v-if="!isLoading && scrollable && ready"
                       orientation="vertical"
                       ref="yScroller"
-                      :container="getRef('container')">
+                      @hook:mounted="hasScrollY = true"
+                      @hook:beforeDestroy="hasScrollY = false"
+                   :container="getRef('container')">
         </bbn-scrollbar>
 
       </div>
