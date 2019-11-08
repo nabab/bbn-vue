@@ -76,6 +76,9 @@
       title: {
         type: String
       },
+      icon: {
+        type: String
+      },
       buttonsLeft: {
         type: [Array, Function],
         default(){

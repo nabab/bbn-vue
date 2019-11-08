@@ -820,7 +820,7 @@
        * @method close
        * @param {Event} e 
        */
-      close(force) {
+      close(force, conf= false) {
         let ok = true;
         if (!force) {
           let beforeCloseEvent = new Event('beforeClose', {
@@ -844,15 +844,21 @@
             return;
           }
         }
-        let closeEvent = new Event('close');
-        this.hide();
-        //this.$el.style.display = 'block';
-        this.$nextTick(() => {
-          this.$emit("close", this, closeEvent);
-          if (this.afterClose) {
-            this.afterClose(this);
-          }
-        })
+        let form = this.find('bbn-form');
+        if ( (form !== undefined)  && !conf ){
+          form.closePopup();
+         }
+         else{
+          let closeEvent = new Event('close');
+          this.hide();
+          //this.$el.style.display = 'block';
+          this.$nextTick(() => {
+            this.$emit("close", this, closeEvent);
+            if (this.afterClose) {
+              this.afterClose(this);
+            }
+          })
+        }
       },
       /**
        * Closes all levels.

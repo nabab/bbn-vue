@@ -14,7 +14,7 @@
       @resize.stop="onResize()"
       @mouseleave="mouseleave"
       @mouseenter="isOver = true"
-      @keyup.esc="close"
+      @keydown.esc.prevent.stop="close"
       @click.stop
       @ready.stop
       :style="currentStyle">

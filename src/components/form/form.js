@@ -491,7 +491,13 @@
        * @return {Boolean}
        */
       isModified(){
-        return this.prefilled || !bbn.fn.isSame(this.source, this.originalData);
+        if ( !bbn.fn.isSame(this.source, this.originalData) ){
+          return true;
+        }
+        else if ( this.prefilled ){
+          return true;
+        }
+        return false;
       },
       /**
        * Closes the popup containing the form.
@@ -510,12 +516,20 @@
               if ( this.reset() ){
                 this.$nextTick(() => {
                   if (this.window) {
-                    this.window.close(true);
+                    this.window.close(true, true);
                   }
                 });
               }
             });
-
+          }
+          else{
+            if ( this.reset() ){
+              this.$nextTick(() => {
+                if (this.window) {
+                  this.window.close(true, true);
+                }
+              });
+            }
           }
         }
       },
@@ -529,9 +543,6 @@
         let ev = new Event('cancel', {cancelable: true});
         this.$emit('cancel', ev, this);
         if ( !ev.defaultPrevented ){
-          if ( !this.prefilled ){
-            this.reset();
-          }
           if ( this.window ){
             this.window.close();
           }

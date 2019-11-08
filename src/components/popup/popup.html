@@ -1,7 +1,6 @@
 <div :class="['bbn-overlay', componentClass]"
      v-show="showPopup"
      :style="{zIndex: zIndex}"
-     @keydown.esc.prevent.stop="close(items.length-1)"
 >
   <bbn-floater v-if="showPopup"
               v-for="(popup, i) in popups"

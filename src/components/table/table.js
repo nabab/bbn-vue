@@ -1250,6 +1250,8 @@
             switch (button.action) {
               case 'csv':
                 return this.exportCSV();
+              case 'excel':
+                return this.exportExcel();
               case 'insert':
                 return this.insert(data, {
                   title: bbn._('New row creation')
@@ -1298,6 +1300,31 @@
           filename = 'export-' + bbn.fn.dateSQL().replace('/:/g', '-') + '.csv';
         }
         bbn.fn.download(filename, data, 'csv');
+      },
+      /**
+       * Exports to excel.
+       * @method exportExcel
+       * @fires getPostData
+       */
+      exportExcel(){
+        if ( this.isAjax && !this.isLoading ){
+          let data = {
+            excel: 1,
+            limit: 50000,
+            start: 0,
+            data: this.getPostData()
+          };
+          if ( this.sortable ){
+            data.order = this.currentOrder;
+          }
+          if ( this.isFilterable ){
+            data.filters = this.currentFilters;
+          }
+          if ( this.showable ){
+            data.fields = this.shownFields;
+          }
+          bbn.fn.post_out(this.source, data);
+        }
       },
       /**
        * Returns true if a column is editable.

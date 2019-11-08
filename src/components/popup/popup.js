@@ -139,7 +139,7 @@
           }
           d.index = this.items.length;
           this.items.push(d);
-          this.makeWindows();
+          //this.makeWindows();
           return d.uid;
         }
         else{
@@ -240,7 +240,7 @@
         return a;
       },
 
-      /*close(idx, force){
+      close(idx, force){
         if ( idx === undefined ){
           idx = this.items.length - 1;
         }
@@ -248,23 +248,6 @@
         if ( this.items[idx] && win ){
           win.close(idx, force);
           this.$forceUpdate();
-        }
-      },*/
-
-      close(idx, force){
-        let form = this.find('bbn-form');
-        if ( idx === undefined ){
-          idx = this.items.length - 1;
-        }
-        if ( form !== undefined ){
-          form.cancel();
-        }
-        else{
-          let win = this.getWindow(idx);
-          if ( this.items[idx] && win ){
-            win.close(idx, force);
-            this.$forceUpdate();
-          }
         }
       },
 
@@ -408,7 +391,6 @@
           if ( !o.title ){
             o.title = this.confirmTitle;
           }
-
           o.content = '<div class="bbn-lpadded bbn-medium">' + o.content + '</div>';
           o.buttons = [{
             text: yesText,
@@ -462,7 +444,6 @@
     mounted(){
       bbn.fn.each(this.popups, a => this.open(a))
     },
-
     watch: {
       items: function(){
         this.makeWindows()

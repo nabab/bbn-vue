@@ -24,9 +24,10 @@
         ></i>
       </div>
       <!-- TITLE -->
-      <div class="bbn-flex-fill bbn-hpadded">
+      <div :class="['bbn-flex-fill', 'bbn-hpadded', {'bbn-middle': !!icon}]">
+        <i v-if="icon" :class="[icon, 'bbn-right-sspace', 'bbn-m']"></i>
         <h3 :style="dashboard && dashboard.sortable ? 'cursor: move' : ''"
-            class="bbn-no-margin"
+            :class="['bbn-no-margin', {'bbn-iblock': !!icon}]"
             v-html="title"
             @mousedown="$emit('sortstart')"
             @touchstart="$emit('sortstart')"
