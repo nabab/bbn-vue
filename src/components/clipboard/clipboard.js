@@ -34,6 +34,12 @@
     computed: {
     },
     methods: {
+      unsearch(){
+        if ( this.search.length ){
+          this.search = '';
+          this.items = this.source;
+        }
+      },
       test(uid){
         bbn.fn.log("TEST", uid);
       },
@@ -287,6 +293,20 @@
       };
     },
     watch: {
+      search(val){
+        if ( val.length >= 3 ){
+          let res = [];
+          res = bbn.fn.filter(this.items, (a) => {
+            if ( a.text.toLowerCase().indexOf(this.search.toLowerCase()) >= 0 ){
+              return a
+            } 
+          })
+          this.items = res;
+        }
+        else{
+          this.items = this.source;
+        }
+      }
     },
   });
 
