@@ -118,7 +118,7 @@
             editor = box.querySelector('.trumbowyg-editor'),
             toolbar = box.querySelector('.trumbowyg-button-pane');
         box.classList.add('bbn-flex-height');
-        editor.classList.add('bbn-flex-fill', 'bbn-content', 'bbn-radius-bottom');
+        editor.classList.add('bbn-flex-fill', 'bbn-radius-bottom');
         toolbar.classList.add('bbn-radius-top');
         editor.style.height = 'auto';
       }, 1000)

@@ -6,6 +6,7 @@
   "use strict";
 
   let app;
+  let registeredComponents = {};
   /**
    * Classic input with normalized appearance
    */
@@ -141,6 +142,30 @@
       route(url, force){
         this.getRef('tabnav').route(url, force)
       },
+      register(name, cp){
+        if (cp) {
+          registeredComponents[name] = cp;
+        }
+        else{
+          throw new Error(bbn._("The component") + ' ' + name + ' ' + bbn._("does not exist"));
+        }
+      },
+      unregister(name){
+        if (registeredComponents[name]) {
+          delete registeredComponents[name];
+        }
+        else{
+          throw new Error(bbn._("The component") + ' ' + name + ' ' + bbn._("is not registered"));
+        }
+      },
+      getRegistered(name){
+        if (registeredComponents[name]) {
+          return registeredComponents[name];
+        }
+        throw new Error(bbn._("The component") + ' ' + name + ' ' + bbn._("cannot be found"));
+      },
+
+
       /*
       route(url, force){
         let router = this.find('bbn-router');

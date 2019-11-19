@@ -6,6 +6,7 @@
               :mask="currentMask"
               @hook:mounted="maskedMounted = true"
               @blur="inputChanged"
+              @keydown.enter="inputChanged"
               v-model="inputValue"
               class="bbn-flex-fill"
               :autosize="autosize"

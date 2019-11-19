@@ -494,9 +494,6 @@
         if ( !bbn.fn.isSame(this.source, this.originalData) ){
           return true;
         }
-        else if ( this.prefilled ){
-          return true;
-        }
         return false;
       },
       /**
@@ -738,7 +735,7 @@
        */
       source: {
         deep: true,
-        handler(newVal){
+        handler(){
           bbn.fn.log("BBN-FORM MODIFIED");
           this.modified = this.isModified();
           //this.$emit('input', newVal);

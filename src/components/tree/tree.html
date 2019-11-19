@@ -35,6 +35,7 @@
                        :level="level"
                        :filter-string="tree.filterString"
                        :excluded-section-filter="tree.excludedSectionFilter"
+                       :path="it.path"
         >
           <!-- <li :class="{
                        'bbn-tree-node': true,
@@ -129,6 +130,7 @@
                       :source="!items && tree.isFunction ? tree.source : items"
                       :level="level + 1"
                       :object="tree.object"
+                      :path="path"
             >
             </bbn-tree>
           </li>

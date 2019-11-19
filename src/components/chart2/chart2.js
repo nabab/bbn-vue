@@ -964,6 +964,7 @@
             width: this.width
           },
           series: this.data,
+          labels: this.source.labels || [],
           legend: {
             show: this.legend && this.legend.length
           },

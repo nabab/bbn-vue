@@ -1308,23 +1308,39 @@
        */
       exportExcel(){
         if ( this.isAjax && !this.isLoading ){
-          let data = {
-            excel: 1,
-            limit: 50000,
-            start: 0,
-            data: this.getPostData()
-          };
-          if ( this.sortable ){
-            data.order = this.currentOrder;
-          }
-          if ( this.isFilterable ){
-            data.filters = this.currentFilters;
-          }
-          if ( this.showable ){
-            data.fields = this.shownFields;
-          }
-          bbn.fn.post_out(this.source, data);
+          bbn.fn.post_out(this.source, this.getExcelPostData());
         }
+      },
+      getExcelPostData(){
+        let cols = bbn.fn.filter(this.cols.slice(), c => {
+              return this.shownFields.includes(c.field) || (c.export && c.export.mandatory)
+            }),
+            data = {
+              excel: bbn.fn.map(cols, c => {
+                return {
+                  field: c.field,
+                  // check if is present a custom 'title' on column's export property
+                  title: c.export && c.export.title ? c.export.title : (c.title || ''),
+                  // check if is present a custom 'type' on column's export property
+                  type: c.export && c.export.type ? c.export.type : (c.type || 'string'),
+                  hidden: !this.shownFields.includes(c.field) ? 1 : 0
+                }
+              }),
+              // the current fields
+              fields: bbn.fn.map(cols.slice(), f => {
+                return f.field
+              }),
+              limit: 50000,
+              start: 0,
+              data: this.getPostData()
+            };
+        if ( this.sortable ){
+          data.order = this.currentOrder;
+        }
+        if ( this.isFilterable ){
+          data.filters = this.currentFilters;
+        }
+        return data;
       },
       /**
        * Returns true if a column is editable.
@@ -1470,6 +1486,9 @@
             this.floatingFilterTimeOut = 0;
           }
         }
+      },
+      getPopup(){
+        return this.popup || bbn.vue.getPopup(this);
       },
       /**
        * Returns the options for the bind of the table filter.

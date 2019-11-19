@@ -242,7 +242,7 @@
       isSpecialKey(keyCode){
         switch ( keyCode ){
           case 8: //Backspace
-          case 9: // Tab
+          case 9: //Tab
           case 16: //Shift
           case 18: //AltGraph
           case 35: //End
@@ -322,6 +322,16 @@
        */
       isTabKey(keyCode){
         return keyCode === 9
+      },
+      /**
+       * Checks if the pressed key is the "enter" key.
+       *
+       * @method isEnterKey
+       * @param {Number} keyCode
+       * @returns {Boolean}
+       */
+      isEnterKey(keyCode){
+        return keyCode === 13
       },
       /**
        * Sets the data property 'inputValue'.
@@ -452,13 +462,13 @@
       */
       keydownEvent(event){
         if ( !this.disabled && !this.readonly ){
-           
           if ( 
             !this.isShiftKey(event.keyCode) &&
             !this.isControlKey(event.keyCode) &&
             !this.isArrowKey(event.keyCode) &&
             !this.isTabKey(event.keyCode) &&
-            !event.ctrlKey
+            !event.ctrlKey &&
+            !this.isEnterKey(event.keyCode)
           ){
             let isSelection = this.$refs.element.selectionStart !== this.$refs.element.selectionEnd,
                 value = this.value ? this.value.toString() : ''

@@ -559,6 +559,10 @@
         return ret;
       },
 
+      getTreeNode(idx){
+        return this.getRef('scroll').$children[idx] || null;
+      },
+
       /**
        * Find a node based on path
        * @method getNode
@@ -714,7 +718,8 @@
           let idx = false,
               min = 1,
               max = this.tree.activeNode.$parent.$children.length - 1,
-              parent = this.tree.activeNode.$parent;
+              parent = this.tree.activeNode.$parent,
+              node;
           bbn.fn.each(this.tree.activeNode.$parent.$children, (a, i) => {
             if ( a === this.tree.activeNode ){
               idx = i;
@@ -732,8 +737,8 @@
               if ( this.tree.activeNode ){
                 this.tree.activeNode.isActive = false;
               }
-              let node = this.$refs.root;
-              while ( node.$children.length && node.isExpanded ){
+              node = this.getRef('root');
+              while ( node && node.$children.length && node.isExpanded ){
                 node = node.$children[node.$children.length-1];
               }
               node.isActive = true;
@@ -771,37 +776,39 @@
                 parent.$children[idx+1].isActive = true;
               }
               else {
-                let c = this.tree.activeNode,
-                    p = this.tree.activeNode.$parent;
-                while ( (p.level > 0) && !p.$children[idx+1] ){
-                  c = p;
-                  p = p.$parent;
-                  bbn.fn.each(p.$children, (a, i) => {
-                    if ( a === c ){
-                      idx = i;
-                      return false;
-                    }
-                  });
-                }
-                if ( p.$children[idx+1] ){
-                  p.$children[idx+1].isActive = true;
-                }
+                ((c, p) => {
+                  while ( (p.level > 0) && !p.$children[idx+1] ){
+                    c = p;
+                    p = p.$parent;
+                    bbn.fn.each(p.$children, (a, i) => {
+                      if ( a === c ){
+                        idx = i;
+                        return false;
+                      }
+                    });
+                  }
+                  if ( p.$children[idx+1] ){
+                    p.$children[idx+1].isActive = true;
+                  }
+                })(this.tree.activeNode, this.tree.activeNode.$parent);
               }
               break;
             case 'ArrowUp':
               if ( idx > min ){
-                if ( parent.$children[idx - 1].isExpanded && parent.$children[idx - 1].items.length ){
-                  let p = parent.$children[idx - 1],
+                ((parent) => {
+                  if ( parent.$children[idx - 1].isExpanded && parent.$children[idx - 1].items.length ){
+                    let p = parent.$children[idx - 1],
+                        c = p.$children[p.$children.length - 1];
+                    while ( c.isExpanded && c.items.length ){
+                      p = c;
                       c = p.$children[p.$children.length - 1];
-                  while ( c.isExpanded && c.items.length ){
-                    p = c;
-                    c = p.$children[p.$children.length - 1];
+                    }
+                    c.isActive = true;
                   }
-                  c.isActive = true;
-                }
-                else{
-                  parent.$children[idx - 1].isActive = true;
-                }
+                  else{
+                    parent.$children[idx - 1].isActive = true;
+                  }
+                })(parent);
               }
               else{
                 if ( parent !== this.$refs.root ){
@@ -937,7 +944,7 @@
           else if ( typeof(criteria) === 'number' ){
             idx = criteria;
           }
-          //bbn.fn.log("OopenPath", path, idx, criteria, this.items);
+          bbn.fn.log("OopenPath", path, idx, criteria, this.items);
           if ( idx > -1 ){
             bbn.fn.each(this.items, (a, i) => {
               if ( i !== idx ){
@@ -945,11 +952,14 @@
               }
             })
             if ( path.length ){
-              this.$children[idx].isExpanded = true;
-              this.$children[idx].path = path;
+              bbn.fn.log("PATH HAS LENGTH", path);
+              this.getTreeNode(idx).isExpanded = true;
+              this.getTreeNode(idx).isSelected = false;
+              this.$set(this.items[idx], "path", path);
             }
             else{
-              this.$set(this.items[idx], "selected", true);
+              this.getTreeNode(idx).isSelected = true;
+              bbn.fn.log("PATH IS EMPTY");
             }
           }
         }
@@ -1158,7 +1168,8 @@
        * @emits pathChange
        */
       path(newVal){
-        //bbn.fn.log("Change path", newVal);
+        bbn.fn.log("Change path", newVal);
+        this.openPath();
         this.$emit('pathChange');
       },
       /**

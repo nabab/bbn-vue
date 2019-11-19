@@ -170,6 +170,8 @@
           let emitVal = !this.state ? this.valueToSet : this.novalue;
           this.$emit('input', emitVal);
           this.$emit('change', emitVal, this);
+          //this.$emit('change', event);
+          //this.selfEmit(emitVal);
         }
       }
     },

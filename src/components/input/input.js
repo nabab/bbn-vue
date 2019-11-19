@@ -140,6 +140,22 @@
       clear(){
         this.emitInput('');
       }
+    },
+    mounted(){
+      if (this.required) {
+        this.getRef('element').setAttribute('required', '');
+      }
+    },
+    watch: {
+      required(v){
+        if (v) {
+          this.getRef('element').setAttribute('required', '');
+        }
+        else{
+          this.getRef('element').removeAttribute('required');
+        }
+
+      }
     }
   });
 

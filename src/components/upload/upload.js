@@ -406,7 +406,7 @@
         let idx = bbn.fn.search(this.currentData, {id: file.id})
         if ( idx > -1 ){
           this.currentData.splice(idx, 1)
-          this.$emit('remove', file.id, res, false)
+          this.$emit('remove', file.id, res, false);
           this.$nextTick(() => {
             this.setValue()
           })
@@ -710,24 +710,23 @@
        * @param {Object} file
        * @fires _remove
        */
-      remove(file){
-        this.confirm(bbn._('Are you sure you want to delete this file?'), () => {
+      remove(file, force){
+        let ev = new Event('beforeRemove', {cancelable: true});
+        this.$emit('beforeRemove', ev, file);
+        if (force || !ev.defaultPrevented) {
           if ( this.removeUrl ){
             this.post(
               this.removeUrl,
               bbn.fn.extend(true, {}, this.data ? this.data : {}, {file: file.data.name}),
               d => {
                 this._remove(file, d)
-              },
-              (d) =>{
-                this.$emit('remove', file.id, d, true)
               }
             )
           }
           else {
             this._remove(file)
           }
-        })
+        }
       },
       /** 
        * The method called on the paste event.
@@ -845,7 +844,7 @@
        * @return String
        */
       getFileExt(file){
-        return !!file.fromUser ? file.data.name.substring(file.data.name.lastIndexOf('.')+1) : file.data.extension.substr(1)
+        return file.fromUser ? file.data.name.substring(file.data.name.lastIndexOf('.')+1) : file.data.extension.substr(1)
       }
     },
     /**
