@@ -46,6 +46,9 @@
       bbn.vue.dataComponent
     ],
     props: {
+      noData: {
+        default: '<h3>' + bbn._('No Data') + '</h3>'
+      },
       /**
        * If the property 'group' is given to one or more columns in the table (ex: group="test"), it defines the title of a group of columns. (ex: titleGroups="[{value: 'test', text: 'My group'}]").
        * @prop {Array|Function} titleGroups

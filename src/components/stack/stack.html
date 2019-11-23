@@ -1,0 +1,7 @@
+<div :class="[{'bbn-overlay':true}, componentClass]" v-if="currentData.length">
+	<!--bbn-toolbar></bbn-toolbar-->
+	<div class="bbn-block" v-for="(c, i) in current" @click="setCurrent(c)" :key="i">
+		<i class="bbn-xl nf nf-custom-folder"></i>
+		<div v-text="c.text"></div>
+	</div>
+</div>

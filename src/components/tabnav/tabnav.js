@@ -80,6 +80,12 @@
           return [];
         }
       },
+      menu: {
+        type: [Array, Function],
+        default: function(){
+          return [];
+        }
+      }
 
     },
 
@@ -669,6 +675,12 @@
               this.closeAll();
             }
           })
+        }
+        let menu = bbn.fn.isArray(this.menu) ? this.menu : this.menu(this.tabs[idx]);
+        if (menu.length) {
+          bbn.fn.each(menu, a => {
+            items.push(a);
+          });
         }
         return items;
       },

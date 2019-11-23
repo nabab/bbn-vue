@@ -34,10 +34,12 @@
                   :min="min"
                   :max="max"
                   :extra-items="true"
-                  @hook:mounted="$refs.floater.onResize()"
+                  @hook:mounted="getRef('floater').onResize()"
                   :disable-dates="disableDates"
                   :items-range="datesRange"
                   style="height: auto !important"
+                  :source="source"
+                  :onlyEvents="onlyEvents"
     ></bbn-calendar>
   </bbn-floater>
 </span>

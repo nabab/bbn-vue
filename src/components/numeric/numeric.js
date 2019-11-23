@@ -222,10 +222,38 @@
        * @param {Event} e
        */
       _blur(e){
+        this.checkMinMax()
         this.editMode = false;
         this.$nextTick(() => {
           this.blur(e);
         })
+      },
+      checkMinMax(){
+        let w = false;
+        if ( 
+          (this.max !== undefined) && 
+          (this.currentValue !== '') &&
+          (this.currentValue !== null) &&
+          (this.currentValue > this.max) 
+        ){
+          this.currentValue = parseFloat(this.max).toFixed(this.currentDecimals);
+          w = true;
+        }
+        else if ( 
+          (this.min !== undefined) &&
+          (this.currentValue !== '') &&
+          (this.currentValue !== null) &&
+          (this.currentValue < this.min) 
+        ){
+          this.currentValue = parseFloat(this.min).toFixed(this.currentDecimals);
+          w = true;
+        }
+        if ( w ){
+          this.setInputValue(this.currentValue);
+          if ( this.value !== this.currentValue ){
+            this.emitInput(this.currentValue);
+          }
+        }
       },
       /**
        * Increase the value of the component of 1 step.
@@ -262,17 +290,11 @@
         }
         else {
           let v = newVal ? parseFloat(parseFloat(newVal).toFixed(this.currentDecimals)) : 0;
-          if ( newVal === '0.' ){
+          if ( (typeof newVal === 'string') && newVal.match(/^0\.0*[1-9]{0}$/) ){
             v = newVal;
             this.currentValue = v;
             return;
-          }
-          else if ( (this.max !== undefined) && (v > this.max) ){
-            v = parseFloat(this.max).toFixed(this.currentDecimals);
-          }
-          else if ( (this.min !== undefined) &&  ( v < this.min ) ){
-            v = parseFloat(this.min).toFixed(this.currentDecimals);
-          }
+          }          
           else {
             v = parseFloat(v.toFixed(this.currentDecimals));
           }

@@ -18,6 +18,18 @@
     mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent],
     props: {
       /**
+       * The array of events for each day.
+       * When a string is set, an ajax call will be made to the corresponding url.
+       *
+       * @prop {String|Array} [[]] source
+      */
+      source: {
+        type: [String, Array],
+        default(){
+          return [];
+        }
+      },
+      /**
        * The format of the date displayed.
        *
        * @prop {String} format
@@ -94,6 +106,15 @@
       autosize: {
         type: Boolean,
         default: true
+      },
+      /**
+       * Shows only dates with events.
+       *
+       * @prop {Boolean} [false] onlyEvents
+       */
+      onlyEvents: {
+        type: Boolean,
+        default: false
       }
     },
     data(){
@@ -300,6 +321,12 @@
           }
         }
       },
+      /**
+       * @method setInputValue
+       * @param {String} newVal
+       * @fires getValueFormat
+       * @fires updateCalendar
+       */
       setInputValue(newVal){
         let mom = moment(newVal.toString(), this.getValueFormat(newVal.toString()));
         this.inputValue = newVal && this.$refs.element && mom.isValid() ? 

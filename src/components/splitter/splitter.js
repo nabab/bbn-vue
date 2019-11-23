@@ -13,7 +13,6 @@
 
 (function(bbn){
   "use strict";
-
   Vue.component('bbn-splitter', {
     mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent],
     props: {

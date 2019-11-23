@@ -121,6 +121,39 @@
       }
     },
     methods: {
+      tabMenu(tab){
+        let res = [];
+        let plugin;
+        bbn.fn.iterate(this.plugins, (a, n) => {
+          if (tab.url.indexOf(a+'/') === 0) {
+            plugin = n;
+            return;
+          }
+        });
+        let url = this.plugins['appui-ide'] + '/editor/file/';
+        if (plugin){
+          url += 'BBN_LIB_PATH/bbn/' + plugin + '/src/mvc' + tab.url.substr(this.plugins[plugin].length);
+        }
+        else {
+          url += 'BBN_APP_PATH/mvc/' + tab.url;
+        }
+        url += '/_end_/';
+        if (tab.url.indexOf('test/') === 0) {
+          url += 'private';
+        }
+        else {
+          url += 'php';
+        }
+        res.push({
+          text: bbn._('Open in editor'),
+          icon: 'nf nf-fa-code',
+          action(){
+            bbn.fn.link(url);
+          }
+        });
+        bbn.fn.log(url);
+        return res;
+      },
       addToClipboard(e){
         bbn.fn.getEventData(e).then((data) => {
           bbn.fn.log("ADDI", data);

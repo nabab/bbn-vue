@@ -160,8 +160,18 @@
           <div v-if="isLoading && initReady" class="bbn-overlay bbn-middle">
             <h1 v-text="_('Loading') + '...'"></h1>
           </div>
-          <div v-else-if="!filteredData.length && !tmpRow" class="bbn-overlay bbn-middle">
-            <h1 v-text="noData"></h1>
+          <div v-else-if="!filteredData.length && !tmpRow"
+               :class="{
+                 'bbn-overlay': scrollable,
+                 'bbn-w-100': !scrollable,
+                 'bbn-middle': scrollable,
+                 'bbn-c': !scrollable,
+                 'bbn-padded': true,
+                 'bbn-bordered': true,
+                 'bbn-no-border-top': true,
+                 'bbn-background': true
+                }" 
+                v-html="noData || ' '">
           </div>
           <table v-else-if="currentColumns.length"
                  ref="table"

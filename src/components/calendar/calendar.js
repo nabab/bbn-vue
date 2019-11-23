@@ -373,7 +373,7 @@
               extra: !!ext
             };
         if (
-          (this.onlyEvents && !ev.length) ||
+          (this.onlyEvents && !events.length) ||
           (this.min && (obj.value < moment(this.min).format(this.currentCfg.valueFormat))) ||
           (this.max && (obj.value > moment(this.max).format(this.currentCfg.valueFormat)))
         ){
@@ -625,6 +625,7 @@
           this.currentCfg.make();
           this.$nextTick(() => {
             this.setLabels(this.currentLabelsDates);
+            this.$emit('init', true)
           });
         }
       },

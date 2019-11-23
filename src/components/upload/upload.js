@@ -657,7 +657,7 @@
        * @emits edit
        */
       saveEdit(file){
-        const name = `${file.edit}.${this.getFileExt(file)}`
+        const name = `${file.edit}.${this.getFileExt(file)}`;
         if ( file.edit && (file.name !== name) ){
           let old = bbn.fn.extend(true, {}, file.data)
           if ( file.fromUser ){
