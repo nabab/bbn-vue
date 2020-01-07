@@ -121,6 +121,12 @@
       }
     },
     methods: {
+      focusSearchMenu(){
+        let menu = this.getRef('menu');
+        if (menu) {
+          menu.focusSearch();
+        }
+      },
       tabMenu(tab){
         let res = [];
         let plugin;

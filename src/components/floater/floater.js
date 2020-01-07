@@ -108,7 +108,7 @@
        * @psop {String} title
        */
       title: {
-        type: String
+        type: [Boolean, String]
       },
       /**
        * The footer of the floater.

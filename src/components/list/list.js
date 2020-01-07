@@ -1,7 +1,7 @@
 /**
- * @file bbn-floater component
+ * @file bbn-list component
  *
- * @description bbn-floater is a component that represents a container that can be bound to another element.
+ * @description A fully customizable selectable list.
  *
  * @author BBN Solutions
  *

@@ -1610,6 +1610,7 @@
             return this.currentData;
           }
         },
+        /** @todo Remove: no sense and not used in any component */
         valueIndex(){
           if ( this.value || (this.selected && this.selected.length) ){
             let v = this.value || this.selected[0];

@@ -106,7 +106,7 @@
          * The value of the input (edit mode)
          * @data {String|Number} currentValue
          */
-        currentValue: this.value === null ? '' : this.value,
+        currentValue: this.value === null ? '' : (bbn.fn.isNumber(this.value) ? parseFloat(this.value).toFixed(this.decimals) : this.value),
         /**
          * The current decimals.
          * @data currentDecimals
@@ -121,7 +121,7 @@
        * @returns {Boolean}
        */
       disableDecrease(){
-        return (this.min !== undefined) && ((parseFloat(this.currentValue) - this.step ) <= this.min)
+        return (this.min !== undefined) && (parseFloat(this.currentValue)  <= this.min)
       },
       /**
        * True if the increase functionality must to disabled.
@@ -129,23 +129,21 @@
        * @returns {Boolean}
        */
       disableIncrease(){
-        return (this.max !== undefined) && ((parseFloat(this.currentValue) + this.step ) >= this.max)
+        return (this.max !== undefined) && (parseFloat(this.currentValue) >= this.max)
       },
       /**
-       * The pattern of the input.
+       * The pattern of the input.  ^\-?[0-9]+\.0*[1-9]{0}$
        * @computed pattern
        * @returns {RegExp}
        */
       pattern(){
         let p = '^';
         if ( (this.min === undefined) || (this.min < 0) ){
-          p += '[\\-]{0,1}';
+          p += '\\-?';
         }
+        p += '[0-9]+';
         if ( this.currentDecimals ){
-          p += '[0-9]+([\\.]{1}[0-9]+){0,1}';
-        }
-        else {
-          p += '[0-9]+';
+          p += '(\\.[0-9]{1,' + this.currentDecimals + '}){0,1}';
         }
         p += '$';
         return new RegExp(p);
@@ -219,22 +217,43 @@
       /**
        * @method _blur
        * @fires blur
+       * @fires checkMinMax
+       * @fires checkDecimals
        * @param {Event} e
        */
       _blur(e){
-        this.checkMinMax()
+        this.checkMinMax();
+        this.checkDecimals();
         this.editMode = false;
         this.$nextTick(() => {
           this.blur(e);
         })
       },
+      /**
+       * @method checkDecimals
+       */
+      checkDecimals(){
+        if ( 
+          this.currentDecimals &&
+          this.currentValue &&
+          parseFloat(this.currentValue).toString().match('^\-?[0-9]+\.0{0,' + this.currentDecimals + '}[1-9]{0}$')
+        ){
+          this.currentValue = parseFloat(this.currentValue).toFixed(0);
+        }
+      },
+      /**
+       * @method checkMinMax
+       * @fires setInputValue
+       * @fires emitInput
+       * @returns Boolean
+       */
       checkMinMax(){
         let w = false;
         if ( 
           (this.max !== undefined) && 
           (this.currentValue !== '') &&
           (this.currentValue !== null) &&
-          (this.currentValue > this.max) 
+          (parseFloat(this.currentValue) > parseFloat(this.max)) 
         ){
           this.currentValue = parseFloat(this.max).toFixed(this.currentDecimals);
           w = true;
@@ -243,7 +262,7 @@
           (this.min !== undefined) &&
           (this.currentValue !== '') &&
           (this.currentValue !== null) &&
-          (this.currentValue < this.min) 
+          (parseFloat(this.currentValue) < parseFloat(this.min))
         ){
           this.currentValue = parseFloat(this.min).toFixed(this.currentDecimals);
           w = true;
@@ -254,25 +273,32 @@
             this.emitInput(this.currentValue);
           }
         }
+        return w;
       },
       /**
        * Increase the value of the component of 1 step.
        * @method increment
-       * @fires changeValue
+       * @fires checkMinMax
        */
       increment(){
-        if ( !this.readonly && !this.disabled ){
-          this.changeValue((parseFloat(this.value) || 0) + (this.isPercentage ? this.step / 100 : this.step));
+        if ( !this.readonly && !this.disabled && !this.disableIncrease ){
+          this.currentValue = ((parseFloat(this.value) || 0) + (this.isPercentage ? this.step / 100 : this.step)).toFixed(this.currentDecimals);
+          this.$nextTick(() => {
+            this.checkMinMax();
+          })
         }
       },
       /**
        * Decrease the value of the component of 1 step.
        * @method decrement
-       * @fires changeValue
+       * @fires checkMinMax
        */
       decrement(){
-        if (!this.readonly && !this.disabled) {
-          this.changeValue((parseFloat(this.value) || 0) - (this.isPercentage ? this.step / 100 : this.step));
+        if ( !this.readonly && !this.disabled && !this.disableDecrease ) {
+          this.currentValue = ((parseFloat(this.value) || 0) - (this.isPercentage ? this.step / 100 : this.step)).toFixed(this.currentDecimals);
+          this.$nextTick(() => {
+            this.checkMinMax();
+          })
         }
       },
       /**
@@ -282,26 +308,28 @@
        * @fires setInputValue
        * @fires emitInput
        */
-      changeValue(newVal){
+      changeValue(newVal, oldVal){
         if ( (newVal === '') || (newVal === null) ){
           this.currentValue = '';
           this.setInputValue('');
           this.emitInput(this.nullable ? null : '');
         }
         else {
-          let v = newVal ? parseFloat(parseFloat(newVal).toFixed(this.currentDecimals)) : 0;
-          if ( (typeof newVal === 'string') && newVal.match(/^0\.0*[1-9]{0}$/) ){
-            v = newVal;
-            this.currentValue = v;
-            return;
-          }          
-          else {
-            v = parseFloat(v.toFixed(this.currentDecimals));
+          if ( 
+            this.pattern.exec(newVal) ||
+            (this.currentDecimals && bbn.fn.isString(newVal) && newVal.match(/^\-?[0-9]+\.$/))
+          ){
+            let v = newVal ? parseFloat(parseFloat(newVal).toFixed(this.currentDecimals)) : 0;
+            this.setInputValue(v);
+            if ( this.value !== v ){
+              this.emitInput(v);
+            }
           }
-          this.currentValue = v;
-          this.setInputValue(v);
-          if ( this.value !== v ){
-            this.emitInput(v);
+          else if ( 
+            (!this.currentDecimals || (bbn.fn.isString(newVal) && !newVal.match(/^\-?[0-9]+\.$/))) &&
+            (oldVal !== undefined)
+          ){
+            this.currentValue = oldVal;
           }
         }
       },
@@ -334,11 +362,11 @@
       getFormatted(val, decimals){
         return bbn.fn.money(
           val,
-          bbn.env.money.kilo,
+          ((bbn.env.money !== undefined) && (bbn.env.money.kilo !== undefined)) ? bbn.env.money.kilo : undefined,
           this.unit,
           '',
-          bbn.env.money.decimal,
-          bbn.env.money.thousands,
+          ((bbn.env.money !== undefined) && (bbn.env.money.decimal !== undefined)) ? bbn.env.money.decimal : undefined,
+          ((bbn.env.money !== undefined) && (bbn.env.money.thousands !== undefined)) ? bbn.env.money.thousands : undefined,
           decimals
         )
       }
@@ -348,7 +376,7 @@
        * @watch value
        */
       value(newVal){
-        if ( newVal !== this.currentValue ){
+        if ( (newVal !== this.currentValue) && !this.editMode ){
           this.currentValue = newVal;
         }
       },
@@ -356,8 +384,10 @@
        * @watch currentValue
        * @fires changeValue
        */
-      currentValue(newVal){
-        this.changeValue(newVal);
+      currentValue(newVal, oldVal){
+        if ( (newVal !== oldVal) ){
+          this.changeValue(newVal, oldVal);
+        }
       }
     }
   });

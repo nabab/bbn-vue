@@ -265,6 +265,14 @@
         default(){
           return [];
         }
+      },
+      /** 
+       * Shows the "loading" text when it's loading.
+       * @prop {Boolean} showLoading
+      */
+      showLoading: {
+        type: Boolean,
+        default: false
       }
     },
     data(){

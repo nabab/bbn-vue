@@ -46,6 +46,14 @@
       delay: {
         type: Number,
         default: 500
+      }, 
+      /**
+       * Specifies the mode of the filter 
+       * @props {String} ['startsWith'] filterMode
+       */
+      filterMode: {
+        type: String,
+        default: 'startsWith'
       }
     },
     methods: {
@@ -148,7 +156,7 @@
               if (v && (v.length >= this.minLength)) {
                 this.currentFilters.conditions.splice(0, this.currentFilters.conditions.length ? 1 : 0, {
                   field: this.sourceText,
-                  operator: 'startswith',
+                  operator: this.filterMode,
                   value: v
                 });
                 this.$nextTick(() => {

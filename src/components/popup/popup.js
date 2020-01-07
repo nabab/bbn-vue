@@ -114,6 +114,9 @@
             else if ( !d.title && (typeof(arguments[i]) === 'string') ){
               d.title = arguments[i];
             }
+            else if ( !d.title && (arguments[i] === false) ){
+              d.title = false;
+            }
             else if (bbn.fn.isFunction(arguments[i]) ){
               if ( !d.open ){
                 d.open = arguments[i];
@@ -231,13 +234,26 @@
         if ( a.closable === undefined ){
           a.closable = true;
         }
-        if ( !a.title && this.untitled ){
+        if ( (a.title === undefined) && this.untitled ){
           a.title = this.untitled;
         }
         if ( !a.component && !a.content ){
           a.content = ' ';
         }
         return a;
+      },
+
+      loading(){
+        return this.open({
+          title: false,
+          content: `
+<div class="bbn-middle" style="width: 500px; height: 250px">
+  <div class="bbn-block bbn-c bbn-b bbn-xl">` + bbn._('Loading') + `...</div>
+</div>`,
+          width: 500,
+          height: 250,
+          scrollable: false
+        })
       },
 
       close(idx, force){

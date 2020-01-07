@@ -46,6 +46,10 @@
       bbn.vue.dataComponent
     ],
     props: {
+      titles: {
+        type: Boolean,
+        default: true
+      },
       noData: {
         default: '<h3>' + bbn._('No Data') + '</h3>'
       },
@@ -2085,6 +2089,9 @@
         this.editedIndex = false;
         this.$forceUpdate();
         return bbn.vue.listComponent.methods.updateData.apply(this, [withoutOriginal]).then(() => {
+          if (this.currentData.length && this.selection && this.currentSelected.length) {
+            this.currentSelected = [];
+          }
           if (this.editable) {
             this.originalData = JSON.parse(JSON.stringify(this.currentData.map((a) => {
               return a.data;

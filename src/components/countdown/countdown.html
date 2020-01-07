@@ -1,24 +1,14 @@
 <span :class="[{'bbn-iblock': true}, componentClass]" v-if="target">
+  <span v-if="isValid">
+    <span v-if="rendered">
 
-  <span v-text="(year || '0') + ' ' + (year > 1 ? _('years') : _('year')) + ' '"
-        v-if="(showZero || year) && (!precisionIdx || !scaleIdx)"
-  ></span>
-  <span v-text="(month || '0') + ' ' + (month > 1 ? _('months') : _('month')) + ' '"
-        v-if="(showZero || month) && (precisionIdx > 0)"
-  ></span>
-  <span v-text="(day || '0') + ' ' + (day > 1 ? _('days') : _('day')) + ' '"
-        v-if="(showZero || day) && (precisionIdx > 1)"
-  ></span>
-  <span v-text="(hour || '0') + ' ' + (hour > 1 ? _('hours') : _('hour')) + ' '"
-        v-if="(showZero || hour) && (precisionIdx > 2)"
-  ></span>
-  <span v-text="(minute || '0') + ' ' + (minute > 1 ? _('minutes') : _('minute')) + ' '"
-        v-if="(showZero || minute) && (precisionIdx > 3)"
-  ></span>
-  <span v-text="(second || '0') + ' ' + (second > 1 ? _('seconds') : _('second')) + ' '"
-        v-if="(showZero || second) && (precisionIdx > 4)"
-  ></span>
-  <span v-text="(millisecond || '0') + ' ' + (millisecond > 1 ? _('milliseconds') : _('millisecond')) + ' '"
-        v-if="(showZero || millisecond) && (precisionIdx > 5)"
-  ></span>
+    </span>
+    <span>
+      <span v-for="(p, i) in periods"
+            v-if="shown[p.name]"
+            v-text="text[p.name] + (periods[i+1] && shown[periods[i+1].name] ? p.separator : '')"
+      ></span>
+    </span>
+  </span>
+  <slot v-else></slot>
 </span>

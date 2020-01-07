@@ -238,7 +238,7 @@
         }
       },
       select(item) {
-        if ( item[this.sourceValue] ){
+        if ( item[this.sourceValue] !== undefined ){
           let v = this.value.slice();
           let idx = v.indexOf(item[this.sourceValue]);
           if ( idx > -1 ){

@@ -482,8 +482,10 @@
              */
           hours(){
             if ( this.comp ){
-              let min = this.comp.min ? moment(this.comp.min, this.comp.getValueFormat(this.comp.min)).format('HH') : false,
-                  max = this.comp.max  ? moment(this.comp.max, this.comp.getValueFormat(this.comp.max)).format('HH') : false;
+              /* let min = this.comp.min ? moment(this.comp.min, this.comp.getValueFormat(this.comp.min)).format('HH') : false,
+                  max = this.comp.max  ? moment(this.comp.max, this.comp.getValueFormat(this.comp.max)).format('HH') : false; */
+              let min = false,
+                  max = false;
               return Array.from({length: 24}, (v,i) => {
                 return {
                   text: i.toString().length === 1 ? '0' + i : i,
@@ -647,17 +649,20 @@
             if ( newVal ){
               this.$nextTick(() => {
                 setTimeout(() => {
-                  if ( !bbn.fn.isNull(this.hour) ){
-                    this.getRef('hourScroll').onResize();
-                    this.getRef('hourScroll').scrollTo(0, this.getRef('hourActive'));
+                  let hs = this.getRef('hourScroll'),
+                      ms = this.getRef('minuteScroll'),
+                      ss = this.getRef('secondScroll');
+                  if ( !bbn.fn.isNull(this.hour)  && hs ){
+                    hs.onResize();
+                    hs.scrollTo(0, this.getRef('hourActive'));
                   }
-                  if ( !bbn.fn.isNull(this.minute) ){
-                    this.getRef('minuteScroll').onResize();
-                    this.getRef('minuteScroll').scrollTo(0, this.getRef('minuteActive'));
+                  if ( !bbn.fn.isNull(this.minute) && ms ){
+                    ms.onResize();
+                    ms.scrollTo(0, this.getRef('minuteActive'));
                   }
-                  if ( !bbn.fn.isNull(this.second) ){
-                    this.getRef('secondScroll').onResize();
-                    this.getRef('secondScroll').scrollTo(0, this.getRef('secondActive'));
+                  if ( !bbn.fn.isNull(this.second) && ss ){
+                    ss.onResize();
+                    ss.scrollTo(0, this.getRef('secondActive'));
                   }
                 }, 400)
               })

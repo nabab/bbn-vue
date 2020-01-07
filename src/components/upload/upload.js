@@ -211,7 +211,7 @@
         type: Boolean,
         default: true
       },
-      /**file.data.name.substring(file.data.name.lastIndexOf('.')
+      /**
        * Additional data sent with the ajax call.
        * 
        * @prop {Object} data
@@ -434,7 +434,7 @@
             let ext = file.data.name.substring(file.data.name.lastIndexOf('.')+1)
             if ( !this.extensions.includes(ext) ){
               if ( file.fromUser ){
-                this.$emit('error', {file: file.data.name, message: `${bbn._('The extension')} ${ext} ${bbn._('is not allowed')}!`})
+                this.$emit('error', {file: file.data.name, message: bbn._('The extension') + ` ${ext} ` + bbn._('is not allowed') + '!'})
               }
               return false
             }
@@ -622,11 +622,17 @@
        */
       setValue(){
         let value = bbn.fn.map(this.filesSuccess, f => {
-          return {
-            name: f.data.name,
-            size: f.data.size,
-            extension: f.data.name.substr(f.data.name.lastIndexOf('.'))
+          if ( f.data instanceof File ){
+            return {
+              name: f.data.name,
+              size: f.data.size,
+              extension: f.data.name.substr(f.data.name.lastIndexOf('.'))
+            }
           }
+          return bbn.fn.extend(true, {}, f.data, {
+            size: f. data.size,
+            extension: f.data.name.substr(f.data.name.lastIndexOf('.'))
+          });
         })
         this.emitInput(this.json ? JSON.stringify(value) : value)
         this.$emit('change', this.value);
@@ -868,8 +874,13 @@
        */
       value: {
         deep: true,
-        handler(newVal){
-          this._makeFiles(this.getValue(), false, 'success')
+        handler(newVal, oldVal){
+          if ( !bbn.fn.isSame(newVal, oldVal) ){
+            this.currentData.splice(0);
+          }
+          this.$nextTick(() => {
+            this._makeFiles(this.getValue(), false, 'success')
+          });
         }
       },
       /**

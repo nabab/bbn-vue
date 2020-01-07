@@ -108,11 +108,18 @@
       },
       show(){
         this.onResize();
-        this.currentVisible = true;
+        let e = new Event('show', {cancelable: true});
+        this.$emit('show', e);
+        if (!e.defaultPrevented) {
+          this.currentVisible = true;
+        }
       },
       hide(){
-        //this.updateSize();
-        this.currentVisible = false;
+        let e = new Event('show', {cancelable: true});
+        this.$emit('hide', e);
+        if (!e.defaultPrevented) {
+          this.currentVisible = false;
+        }
       },
       toggle(){
         if (this.currentVisible) {

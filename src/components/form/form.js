@@ -263,6 +263,9 @@
       hasFooter(){
         return this.$slots.footer && this.$slots.footer.length;
       },
+      canCancel(){
+        return this.isModified() || this.window;
+      },
       /**
        * Returns true if the form can be submitted.
        *
@@ -339,7 +342,8 @@
                     icon: 'nf nf-fa-times_circle',
                     action: () => {
                       this.cancel();
-                    }
+                    },
+                    disabled: !this.canCancel
                   });
                   break;
                 case 'reset':
@@ -542,6 +546,9 @@
         if ( !ev.defaultPrevented ){
           if ( this.window ){
             this.window.close();
+          }
+          else if (!bbn.fn.get_row(this.realButtons, {text: bbn._('Reset')})) {
+            this.reset();
           }
         }
       },

@@ -25,24 +25,58 @@
 
   const VALUES = [{
     name: 'year',
+    title: bbn._('year'),
+    titles: bbn._('years'),
+    code: 'y',
+    separator: 'y',
     timeout: 3600000
   }, {
     name: 'month',
+    title: bbn._('month'),
+    titles: bbn._('months'),
+    code: 'm',
+    separator: 'm',
+    diff: 12,
     timeout: 3600000
   }, {
     name: 'day',
+    title: bbn._('day'),
+    titles: bbn._('days'),
+    code: 'd',
+    diff: 31,
+    separator: 'd',
     timeout: 3600000
   }, {
     name: 'hour',
+    title: bbn._('hour'),
+    titles: bbn._('hours'),
+    code: 'h',
+    diff: 24,
+    separator: ':',
     timeout: 3600000
   }, {
     name: 'minute',
+    title: bbn._('minute'),
+    titles: bbn._('minutes'),
+    code: 'i',
+    diff: 60,
+    separator: ':',
     timeout: 60000
   }, {
     name: 'second',
+    title: bbn._('second'),
+    titles: bbn._('seconds'),
+    code: 's',
+    diff: 60,
+    separator: '.',
     timeout: 1000
   }, {
     name: 'millisecond',
+    title: bbn._('millisecond'),
+    titles: bbn._('milliseconds'),
+    code: 'x',
+    diff: 1000,
+    separator: '',
     timeout: 50
   }];
 
@@ -75,24 +109,21 @@
       target: {
         type: [Date, String, Function]
       },
+      /**
+       * Shows unit even if empty.
+       * @prop {Date|String|Function} target
+       */
+      showZero: {
+        type: Boolean,
+        default: false
+      },
+      zeroFill: {
+        type: Boolean,
+        default: true
+      }
     },
     data(){
       return {
-        /**
-         * The index of the 'precision' property in the array of the constant VALUES.
-         * @data {Number} [5] precisionIdx
-         */
-        precisionIdx: bbn.fn.search(VALUES, "name", this.precision),
-        /**
-         * The index of the 'scale' property in the array of the constant VALUES.
-         * @data {Number} [5] precisionIdx
-         */
-        scaleIdx: bbn.fn.search(VALUES, "name", this.scale),
-        /**
-         * The target date normalized.
-         * @data {String} realTarget
-         */
-        realTarget: bbn.fn.date(bbn.fn.isFunction(this.target) ? this.target() : this.target),
         /**
          * The target year.
          * @data {Boolean} targetYear
@@ -144,8 +175,38 @@
          * The timestamp of the real target date.
          * @data {Boolean|Number} time
          */
-        time: false
+        time: false,
+        prevValues: JSON.stringify({}),
+        shown: {},
+        text: {},
+        isValid: false,
+        realTarget: false
       };
+    },
+    computed: {
+      /**
+       * The index of the 'precision' property in the array of the constant VALUES.
+       * @data {Number} [5] precisionIdx
+       */
+      precisionIdx(){
+        return bbn.fn.search(VALUES, this.precision.length === 1 ? 'code' : 'name', this.precision);
+      },
+      /**
+       * The index of the 'scale' property in the array of the constant VALUES.
+       * @data {Number} [5] precisionIdx
+       */
+      scaleIdx(){
+        return bbn.fn.search(VALUES, this.scale.length === 1 ? 'code' : 'name', this.scale);
+      },
+      periods() {
+        return VALUES;
+      },
+      rendered(){
+        if (this.template) {
+          
+        }
+        return false;
+      }
     },
     methods: {
       /**
@@ -157,7 +218,7 @@
         return this.realTarget &&
           (this.precisionIdx > -1) &&
           (this.scaleIdx > -1) &&
-          (this.precisionIdx > this.scaleIdx);
+          (this.precisionIdx >= this.scaleIdx);
       },
       /**
        * Initializes the component.
@@ -172,32 +233,20 @@
        */
       init(){
         clearInterval(this.interval);
-        if ( this.check() ){
-          this.time = this.realTarget.getTime();
-          this.targetYear = this.realTarget.getFullYear();
-          this.targetMonth = this.realTarget.getMonth();
-          this.targetDay = this.realTarget.getDate();
-          this.targetHour = this.realTarget.getHours();
-          this.targetMinute = this.realTarget.getMinutes();
-          this.targetSecond = this.realTarget.getSeconds();
-          this.targetMillisecond = this.realTarget.getMilliseconds();
-          /* let next,
-             d = new Date();
-           if ( this.precisionIdx <= 3 ){
-             next = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours() +1, 0, 0);
-           }
-           else if ( this.precisionIdx === 4 ){
-             next = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getMinutes() +1, 0, 0);
-           }
-           else {
-             next = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getMinutes(), d.getSeconds() + 1, 0);
-           }
-           let timeout = next.getTime() - d.getTime();
-
-           if ( timeout < 0 ){
-             timeout = 0;
-           }*/
-          let timeout = bbn.fn.get_field(VALUES, 'name', this.precision, 'timeout');
+        if (this.precisionIdx === -1) {
+          throw new Error(bbn._("The precision is incorrect"));
+        }
+        else if (this.scaleIdx === -1) {
+          throw new Error(bbn._("The scale is incorrect"));
+        }
+        else{
+          let tmp = bbn.fn.isFunction(this.target) ? this.target() : this.target;
+          if (bbn.fn.isString(tmp)) {
+            tmp = bbn.fn.date(tmp);
+          }
+          this.realTarget = new moment(tmp);
+          this.time = this.realTarget.unix();
+          let timeout = VALUES[this.precisionIdx].timeout;
           this.update();
           this.interval = setInterval(this.update, timeout);
         }
@@ -215,176 +264,64 @@
        *
        */
       update(){
-        let d = new Date(),
-          tNow = d.getTime();
-        if ( tNow > this.time ){
-          bbn.fn.each(VALUES, (a, i) => {
-            this[a.name] = 0;
-          });
-        }
-        else{
-          let diff = [
-            this.targetYear - d.getFullYear(),
-            this.targetMonth - d.getMonth(),
-            this.targetDay - d.getDate(),
-            this.targetHour - d.getHours(),
-            this.targetMinute - d.getMinutes(),
-            this.targetSecond - d.getSeconds(),
-            this.targetMillisecond - d.getMilliseconds()
-          ];
-          for ( let i = 0; i < VALUES.length; i++ ){
-            /*if ( this.precisionIdx > i ){
-              if ( diff[i] <= 0 ) {
-                diff[i - 1]--;
-                switch (i) {
-                  case 1:
-                    if ( this.targetMonth - d.getMonth() === 0 ){
-                      diff[1] = 0;
-                    }
-                    break;
-
-                  case 3:
-                    bbn.fn.log('DIFFERENZA GIORNI', diff[i - 1])
-
-                    diff[3] = 24 + diff[3];
-                    break;
-                  case 4:
-                    diff[4] = 60 - d.getMinutes() + this.targetMinute;
-                    break;
-                  case 5:
-                    //because of diff[5] is a negative number
-                    diff[5] = 60 + diff[5];
-                    break;
-                }
-              }
-            }*/
-            if ( this.precisionIdx <= i ){
-              if ( diff[i] <= 0 ){
-                diff[i - 1]--;
-                switch ( i ){
-                  case 1:
-                    //bbn.fn.log('1-diff[1]', diff[1])
-                    diff[1] = 11 + diff[1];
-                    break;
-                  case 2:
-                    diff[2] = bbn.fn.daysInMonth(d) - diff[2];
-                    break;
-                  case 3:
-                    diff[3] = 24 + diff[3];
-                    break;
-                  case 4:
-                    //bbn.fn.log('diff before', diff[4])
-                    diff[4] = 60 + diff[4];
-                    //bbn.fn.log('diff before', diff[4])
-                    break;
-                  case 5:
-                    //because of diff[5] is a negative number
-                    diff[5] = 60 + diff[5];
-                    break;
-                  case 6:
-                    diff[6] = 1000 + diff[6];
-
-                    break;
-                }
-              }
-            }
-            if ( this.scaleIdx > i ){
-              switch ( i ){
-                case 0:
-                //  bbn.fn.log('2-diff[1]-before', diff[1], diff[0])
-                  diff[1] += 12 * diff[i];
-                //  bbn.fn.log('2-diff[1]-after', diff[1], diff[0])
-                  break;
-                case 1:
-                  diff[2] += 12 * diff[i];
-                  break;
-                case 2:
-                  diff[3] += 30 * diff[i];
-                  break;
-                case 3:
-                  diff[4] += 24 * diff[i];
-                  break;
-                case 4:
-                  diff[5] += 60 * diff[i];
-                  break;
-                case 5:
-                  diff[6] += 60 * diff[i];
-                  break;
-              }
-              diff[i] = 0;
-              }
-            else {
-              switch ( i ){
-                case 1:
-                  //bbn.fn.log('mesi',diff[i])
-                  if (( diff[i + 1] < 0  ) &&  ( diff[i] <= 1)){
-                    diff[i] = 0;
-                  }
-                  else {
-                    //diff[i] --
-                    //bbn.fn.log('diff else month', diff[i], diff )
-                    //diff[i] = 24 + diff[i];
-                  }
-                  break;
-
-                  case 2:
-                    //bbn.fn.log('days before', diff[i])
-                  if (( diff[i + 1] < 0  ) &&  ( diff[i] === 1)){
-                    //bbn.fn.log('diff if days', diff[i], diff )
-                    diff[i] = 0;
-                  }
-                  else if ( ( diff[i] <  0) && ( diff[i + 1] < 0  ) ) {
-                   // bbn.fn.log('days',diff[i], diff)
-                    diff[i] = bbn.fn.daysInMonth(d) + diff[i] -1
-
-                    //bbn.fn.log('diff else days',diff[i], bbn.fn.daysInMonth(d))
-                  }
-                  else if ( ( diff[i] > 0 ) && ( diff[i + 1] === 0 ) ) {
-                    //bbn.fn.log('this is the case', diff[i], diff)
-                    diff[i] = diff[i] - 1;
-                    //bbn.fn.log(diff[i])
-                  }
-                  else if ( diff[i] < 0 ) {
-                    diff[i] = bbn.fn.daysInMonth(d) + diff[i]
-                  }
-                  break;
-
-                case 3:
-                  //bbn.fn.log('diff hours', diff[3], diff)
-                  // case precisionIdx > i
-                  if (( diff[i + 1] < 0  ) &&  ( diff[i] <= 1)){
-                    diff[i] = 0;
-                  }
-                  if (( diff[i + 1] < 0  ) &&  ( diff[i] === 0)){
-                    diff[i] = 23;
-                  }
-                  else if ( ( diff[i + 1] <= 0  ) &&  ( diff[i] > 1) ){
-                    diff[i]  = diff[i] --;
-                  }
-                  else if ( diff[i] <  0) {
-                    diff[i] = 24 + diff[i];
-                  }
-                  else {
-                    bbn.fn.log('hours exeption')
-                  }
-                  break;
-                case 4:
-                  if ( diff[i] < 0 ){
-                    diff[i] = 60 - d.getMinutes() + this.targetMinute;
-                  }
-
-                  //bbn.fn.log('diff else', diff[3], this.targetHour - d.getHours())
-                  break;
-
-              }
-
-              this[VALUES[i].name] = diff[i];
+        if ( this.check() ){
+          let d = new moment();
+          let secs = this.time - d.unix();
+          if ( secs <= 0 ){
+            if (this.isValid) {
+              bbn.fn.each(VALUES, (a, i) => {
+                this[a.name] = 0;
+              });
+              this.isValid = false;
             }
           }
-
-          this.$forceUpdate();
+          else if (secs) {
+            let diff = moment.duration(secs, 'seconds');
+            let diffs = {};
+            bbn.fn.each(VALUES, (a, i) => {
+              diffs[a.name] = diff['as' + a.name[0].toUpperCase() + a.name.substr(1) + 's']();
+              if ((i >= this.scaleIdx) && (i <= this.precisionIdx)) {
+                let round = Math.floor(diffs[a.name]);
+                diffs[a.name] = round;
+                if (i < this.precisionIdx) {
+                  diff = diff.subtract(moment.duration(round, a.name + 's'));
+                }
+              }
+            });
+            bbn.fn.iterate(diffs, (b, n) => {
+              this[n] = b;
+            });
+            if (!this.isValid) {
+              this.isValid = true;
+            }
+            this.shown =  this.getShown();
+            this.text =  this.getText();
+            this.$forceUpdate();
+          }
         }
-      }
+      },
+      getShown(){
+        let res = {};
+        bbn.fn.each(VALUES, (a, i) => {
+          res[a.name] = (this.showZero || this[a.name] || this.zeroFill)
+                        && ((this.precisionIdx >= i) && (this.scaleIdx <= i));
+        })
+        return res;
+      },
+      getText(){
+        let res = {};
+        bbn.fn.each(VALUES, (a, i) =>  {
+          res[a.name] = this[a.name] || 0;
+          if (
+            this.zeroFill
+            && (this.scaleIdx !== i)
+            && (res[a.name].toString().length <= 1)
+          ) {
+            res[a.name] = '0' + res[a.name];
+          }
+        });
+        return res;
+      },
     },
     /**
      * @event created 
@@ -397,10 +334,13 @@
      * @event beforeDestroy
      */
     beforeDestroy(){
-      alert('before destroy')
       if(this.interval){
-        alert('interval')
         clearInterval(this.interval);
+      }
+    },
+    watch: {
+      target(){
+        this.init()
       }
     }
   });

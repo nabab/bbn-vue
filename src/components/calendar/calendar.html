@@ -1,8 +1,12 @@
 <div :class="[componentClass, 'bbn-100']"
      v-show="ready"
 >
-  <div class="bbn-widget bbn-flex-height"
-  >
+  <div v-if="showLoading && isLoading"
+       class="bbn-overlay bbn-middle bbn-xl bbn-white bbn-modal bbn-abs"
+       v-text="_('Loading')"
+       style="z-index: 1"
+  ></div>
+  <div class="bbn-widget bbn-flex-height">
     <div class="bbn-calendar-header bbn-header bbn-xspadded">
       <component v-if="headerComponent"
                  :is="headerComponent"

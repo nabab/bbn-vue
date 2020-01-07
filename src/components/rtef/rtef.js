@@ -86,27 +86,33 @@
     <bbn-rte @input="emit" v-bind="properties" v-model="text"></bbn-rte>
   </div>
   <script>
-    let message1 = false;
+    let message1 = false,
+        obj = false;
     document.addEventListener("DOMContentLoaded", event => {
       window.addEventListener('message', msg => {
-        if ( !message1 && (typeof(msg.data) === 'object') ){
-          new Vue({
-            el: 'div.bbn-container',
-            data: {
-              properties: msg.data.properties || {},
-              text: msg.data.value || '',
-              uid: msg.data.uid
-            },
-            methods: {
-              emit(){
-                window.parent.postMessage({
-                  message: this.text,
-                  uid: this.uid
-                }, '*');
+        if ( typeof(msg.data) === 'object' ){
+          if ( !message1 ){
+            obj = new Vue({
+              el: 'div.bbn-container',
+              data: {
+                properties: msg.data.properties || {},
+                text: msg.data.value || '',
+                uid: msg.data.uid
+              },
+              methods: {
+                emit(){
+                  window.parent.postMessage({
+                    message: this.text,
+                    uid: this.uid
+                  }, '*');
+                }
               }
-            }
-          });
-          message1 = true;
+            });
+            message1 = true;
+          }
+          else {
+            obj.$set(obj, 'text', msg.data.value)
+          }
         }
       });
     });
@@ -130,6 +136,6 @@
       readMessage(msg){
         this.emitInput(msg);
       },
-    },
+    }
   });
 })();

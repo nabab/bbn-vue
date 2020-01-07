@@ -55,6 +55,7 @@
                       :source-value="searchBar.sourceValue"
                       :source-text="searchBar.sourceText"
                       :min-length="searchBar.minLength"
+                      class="bbn-no"
           >
           </bbn-search>
         </div>
@@ -185,6 +186,7 @@
               orientation="left"
               ref="slider"
               style="width: 35em"
+              @show="focusSearchMenu"
               close-button="top-right">
     <bbn-treemenu :source="plugins['appui-menu'] + '/data'"
                   v-if="$refs.slider && $refs.slider.hasBeenOpened"

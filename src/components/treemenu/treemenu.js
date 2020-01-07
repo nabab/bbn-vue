@@ -98,7 +98,8 @@
         /**
          * @data current
          */
-        currentMenu: null
+        currentMenu: null,
+        lastMenu: null
       };
     },
     computed: {
@@ -176,6 +177,7 @@
       go(node, event){
         //bbn.fn.log(node);
         event.preventDefault();
+        this.searchExp = '';
         if ( node && node.data && (node.data.link || node.data.url) ){
           bbn.fn.link(node.data.link || node.data.url);
           this.$emit('select', node, event);
@@ -188,6 +190,13 @@
       resizeScroll(){
         if ( this.$refs.scroll ){
           this.$refs.scroll.onResize()
+        }
+        let code = md5(JSON.stringify(this.currentMenu));
+        if (code !== this.lastMenu) {
+          this.lastMenu = code;
+          this.$nextTick(() => {
+            this.focusSearch();
+          })
         }
       },
       /**
@@ -210,6 +219,13 @@
         this.$nextTick(() => {
           this.currentMenu = this.current;
         })
+      },
+      focusSearch(){
+        let search = this.getRef('search');
+        if (search) {
+          search.focus();
+        }
+
       }
     },
     /**

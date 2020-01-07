@@ -123,11 +123,21 @@
         type: String,
         default: '#c4a300'
       },
+      /**
+      * The action that has to be performed at the event click.
+      *
+      * @prop {Function|String} action
+      */
       action: {
         type: [Function, String]
       }
     },
     computed: {
+      /**
+       * Returns a combination of the properties 'text' and 'title' if the property 'noText' is set to true, else returns the property 'title'.
+       * @computed titleString
+       * @return {String}
+       */
       titleString(){
         let st = '';
         if ( this.notext && this.text ){

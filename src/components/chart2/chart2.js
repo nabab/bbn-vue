@@ -378,7 +378,7 @@
 			 */
       pointLabel: {
         type: Boolean,
-        default: false
+        default: true
       },
 			/**
 			 * The legend list.
@@ -395,8 +395,9 @@
 			 * @prop {String|HTMLElement} [undefined] legendPosition
 			 */
       legendPosition: {
-			  type: [String, HTMLElement],
-        default: undefined
+			  type: String,
+        default: 'bottom',
+        validator: (t) => ['top', 'bottom', 'left', 'right'].includes(t)
       },
       /*threshold: {
         type: Number
@@ -614,90 +615,6 @@
       isRadial(){
         return this.type === 'radial';
       },
-      /**
-       * This makes an array of activated plugins.
-       *
-       * @computed plugins
-       * @return {Array}
-       */
-      plugins(){
-        let plugins = [];
-        // tooltip
-        if ( this.tooltip ){
-          plugins.push(Chartist.plugins.tooltip({
-            currency: this.currency || false,
-            transformTooltipTextFnc:bbn.fn.isFunction(this.tooltip) ? this.tooltip : undefined
-          }));
-        }
-        // axis X/Y title
-        if ( !this.isPie && (this.titleX || this.titleY) ){
-          plugins.push(Chartist.plugins.ctAxisTitle({
-            axisX: {
-              axisTitle: this.titleX || '',
-              axisClass: 'ct-axis-title',
-              offset: {
-                x: 0,
-                y: 50
-              },
-              textAnchor: 'middle'
-            },
-            axisY: {
-              axisTitle: this.titleY || '',
-              axisClass: 'ct-axis-title',
-              offset: {
-                x: 0,
-                y: 0
-              },
-              textAnchor: 'middle',
-              flipTitle: false
-            }
-          }));
-        }
-        // Point Label
-        if ( this.pointLabel ){
-          plugins.push(Chartist.plugins.ctPointLabels());
-        }
-        // Legend
-        if ( this.legend ){
-          plugins.push(Chartist.plugins.legend({
-            onClick(a, b){
-              const rect = b.target.querySelector('div.rect');
-              if ( rect ){
-                if ( rect.classList.contains('inactive') ){
-                  rect.classList.remove('inactive');
-                }
-                else {
-                  rect.classList.add('inactive');
-                }
-              }
-            },
-            removeAll: true,
-            legendNames: Array.isArray(this.legendFixed) ? this.legendFixed : false,
-            position: this.legendPosition || 'top'
-          }));
-        }
-        // Thresold
-        /** @todo  it's not compatible with our colors system and legend */
-        /*if ( (this.isLine || this.isBar) && (typeof this.threshold === 'number') ){
-          plugins.push(Chartist.plugins.ctThreshold({
-            threshold: this.threshold
-          }));
-        }*/
-        // Zoom
-        /** @todo problems with scale x axis */
-        /*if ( this.zoom && this.isLine ){
-          this.trasformData();
-          this.axisX.type =  Chartist.AutoScaleAxis;
-          this.axisX.divisor = this.getLabelsLength();
-          this.axisY.type =  Chartist.AutoScaleAxis;
-          plugins.push(Chartist.plugins.zoom({
-            onZoom(chart, reset) {
-              this.resetZoom = reset;
-            }
-          }));
-        }*/
-        return plugins;
-      },
 			/**
 			 * Sets the color property to the correct form.
 			 *
@@ -754,7 +671,6 @@
       lineCfg(){
         let cfg = {
           //showLine: this.showLine,
-          //pointLabel: this.pointLabel,
           //showArea: this.showArea
         };
         return this.isLine ? bbn.fn.extend(true, cfg, this.lineBarAreaCommon, this.lineAreaCommon) : {}
@@ -831,6 +747,9 @@
               colors: this.gridColor
             }
           }
+        }
+        if ( Object.keys(this.axisX).length ){
+          bbn.fn.extend(true, cfg.xaxis, this.axisX);
         }
         return cfg
 
@@ -966,10 +885,11 @@
           series: this.data,
           labels: this.source.labels || [],
           legend: {
-            show: this.legend && this.legend.length
+            show: this.legend && this.legend.length,
+            position: this.legendPosition
           },
           dataLabels: {
-            enabled: !!this.showPoint
+            enabled: !!this.pointLabel
           },
           tooltip: {
             enabled: !!this.tooltip
@@ -985,7 +905,6 @@
           //width: this.width,
           //height: this.height,
           //tooltip: this.tooltip,
-          //plugins: this.plugins
         }
         if ( this.isLine ){
           bbn.fn.extend(true, cfg, this.lineCfg, this.cfg)

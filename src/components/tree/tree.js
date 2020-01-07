@@ -1734,6 +1734,27 @@
               }
             }
           },
+          getFullPath(separator, field) {
+            let f = field || this.uid || false;
+            if (f) {
+              let st = '';
+              let p = this;
+              while (p && p.is('bbn-tree-node')) {
+                if (p.data[f]) {
+                  if (p !== this) {
+                    st = separator + st;
+                  }
+                  st = p.data[f] + st;
+                  p = p.parent.$parent;
+                }
+                else {
+                  return false;
+                }
+              }
+              return st;
+            }
+            return false;
+          },
           // @todo never used
           getPath(numeric){
             let r = [],

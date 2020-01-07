@@ -6,11 +6,11 @@
        v-if="cols.length"
   >
     <div v-if="hasToolbar"
-         class="bbn-table-toolbar bbn-header bbn-spadded bbn-bordered-bottom"
+         class="bbn-table-toolbar bbn-bordered-bottom"
          ref="toolbar"
     >
       <div v-if="toolbarButtons.length"
-           class="bbn-flex-width bbn-unselectable">
+           class="bbn-flex-width bbn-header bbn-spadded bbn-unselectable">
         <slot name="toolbar"></slot>
         <div class="bbn-flex-fill">
           <bbn-button v-for="(button, i) in toolbarButtons"
@@ -34,7 +34,7 @@
       'bbn-table-titles': true,
       'bbn-table-titles-group': !!titleGroups,
       'bbn-unselectable': true
-    }">
+    }"  v-if="titles">
       <div :class="{'bbn-overlay': scrollable, 'bbn-flex-width': true}">
         <!-- Looping the groups -->
         <div  v-for="(groupCol, groupIndex) in groupCols"
@@ -188,7 +188,7 @@
                   @focusin="focusin(i, $event)"
                   @dblclick="if ( focusedRow !== i ) { focusedRow = i }"
                   :class="[{
-                    'bbn-alt': !!(i % 2),
+                    'bbn-alt': !!(d.index % 2),
                     'bbn-header': !!(d.aggregated || d.groupAggregated),
                   }, trClass ? trClass(d.data) : '']"
               >
