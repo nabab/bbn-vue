@@ -141,7 +141,8 @@
          * 
          * @data {String} currentURL
          */
-        currentURL: this.current || this.url
+        currentURL: this.current || this.url,
+        hasLoader: false
       };
     },
 
@@ -211,7 +212,9 @@
       setCurrent(url){
         if ( url.indexOf(this.url) === 0 ){
           this.currentURL = url;
+          return true;
         }
+        return false;
       },
       /**
        * Sets the title of the container.
@@ -487,6 +490,10 @@
     },
 
     watch: {
+      isUnsaved(newVal){
+        this.router.views[this.idx].unsaved = newVal;
+
+      },
       current(newVal){
         if (newVal.indexOf(this.url) === 0){
           this.currentURL = newVal;

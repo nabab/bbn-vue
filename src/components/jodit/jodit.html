@@ -1,0 +1,7 @@
+<div :class="[componentClass, 'bbn-textbox']"
+     @keydown.enter.stop=""
+>
+  <div class="bbn-100" ref="element" @change="onChange">
+    <slot></slot>
+  </div>
+</div>

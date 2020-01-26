@@ -560,7 +560,13 @@
       },
 
       getTreeNode(idx){
-        return this.getRef('scroll').$children[idx] || null;
+        if ( this.getRef('scroll') && this.getRef('scroll').$children[idx] ){
+          return  this.getRef('scroll').$children[idx];
+        }
+        else {
+          return null;
+        }
+        //return this.getRef('scroll').$children[idx] || null;
       },
 
       /**
@@ -948,18 +954,23 @@
           if ( idx > -1 ){
             bbn.fn.each(this.items, (a, i) => {
               if ( i !== idx ){
+                bbn.fn.log('inside', i, idx)
                 this.$set(this.items[idx], "path", []);
               }
+              else {
+                bbn.fn.log('errore qui')
+                return;
+              }
             })
-            if ( path.length ){
-              bbn.fn.log("PATH HAS LENGTH", path);
-              this.getTreeNode(idx).isExpanded = true;
-              this.getTreeNode(idx).isSelected = false;
-              this.$set(this.items[idx], "path", path);
-            }
-            else{
-              this.getTreeNode(idx).isSelected = true;
-              bbn.fn.log("PATH IS EMPTY");
+            if ( (this.getTreeNode(idx) !== null) && this.getTreeNode(idx) ){
+              if ( path.length ){
+                this.getTreeNode(idx).isExpanded = true;
+                this.getTreeNode(idx).isSelected = false;
+                this.$set(this.items[idx], "path", path);
+              }
+              else{
+                this.getTreeNode(idx).isSelected = true;
+              }
             }
           }
         }

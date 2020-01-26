@@ -1,0 +1,20 @@
+<div :class="[componentClass, 'bbn-textbox']"
+     @keydown.enter.stop=""
+     :style="{height: realHeight}"
+>
+  <textarea ref="element"
+            class="textarea"
+            @tbwchange.native="emitInput($event.target.value)"
+            @tbwpaste.native="emitInput($event.target.value)"
+            :value="value"
+            :required="required"
+            :readonly="readonly"
+            :disabled="disabled"
+  ></textarea> 
+  <input type="hidden"
+         :value="value"
+         :name="name"
+         :disabled="disabled"
+         @change="changeHidden"
+  >
+</div>

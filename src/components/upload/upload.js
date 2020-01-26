@@ -501,40 +501,44 @@
             if ( (id === undefined) || (fr.id === id) ){
               this.setStatusProgress(fr.id)
               if ( this.saveUrl ){
-                bbn.fn.upload(
-                  this.saveUrl,
-                  bbn.fn.extend(true, {}, this.data ? this.data : {}, {file: fr.data}),
-                  (res) => {
-                    let f = false;           
-                    if ( res.data.file || res.data.fichier ){
-                      f = res.data.file || res.data.fichier
+                let ev = new Event('beforeUpload', {cancelable: true});
+                this.$emit('beforeUpload', ev, fr);
+                if (!ev.defaultPrevented) {
+                  bbn.fn.upload(
+                    this.saveUrl,
+                    bbn.fn.extend(true, {}, this.data ? this.data : {}, {file: fr.data}),
+                    (res) => {
+                      let f = false;           
+                      if ( res.data.file || res.data.fichier ){
+                        f = res.data.file || res.data.fichier
+                      }
+                      else if (
+                        res.data.data && 
+                        (res.data.data.file || res.data.data.fichier)
+                      ){
+                        f = res.data.data.file || res.data.data.fichier
+                      }
+                      if ( f && f.name !== fr.data.name ){
+                        this.setName(fr.id, f.name)
+                      }
+                      if ( this.setStatusSuccess(fr.id) ){
+                        this.$nextTick(() => {
+                          this.setValue()
+                          this.$emit('success', fr.id, f.name || fr.data.name, res.data, res)
+                        })
+                      }
+                    },
+                    (err) => {
+                      if ( this.setStatusError(fr.id) ){
+                        this.$emit('error', fr.id, err)
+                        bbn.fn.log('bbn-upload error', fr.id, err)
+                      }
+                    },
+                    (prog) => {
+                      this.setProgress(fr.id, prog)
                     }
-                    else if (
-                      res.data.data && 
-                      (res.data.data.file || res.data.data.fichier)
-                    ){
-                      f = res.data.data.file || res.data.data.fichier
-                    }
-                    if ( f && f.name !== fr.data.name ){
-                      this.setName(fr.id, f.name)
-                    }
-                    if ( this.setStatusSuccess(fr.id) ){
-                      this.$nextTick(() => {
-                        this.setValue()
-                        this.$emit('success', fr.id, f.name || fr.data.name, res.data, res)
-                      })
-                    }
-                  },
-                  (err) => {
-                    if ( this.setStatusError(fr.id) ){
-                      this.$emit('error', fr.id, err)
-                      bbn.fn.log('bbn-upload error', fr.id, err)
-                    }
-                  },
-                  (prog) => {
-                    this.setProgress(fr.id, prog)
-                  }
-                )
+                  )
+                }
               }
               else {
                 if ( this.setStatusSuccess(fr.id) ){
@@ -850,6 +854,7 @@
        * @return String
        */
       getFileExt(file){
+        bbn.fn.log('here  error', file)
         return file.fromUser ? file.data.name.substring(file.data.name.lastIndexOf('.')+1) : file.data.extension.substr(1)
       }
     },

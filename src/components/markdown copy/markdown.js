@@ -10,8 +10,8 @@
  */
 
 
-//Markdown editor use simpleMDe
-(function(bbn, SimpleMDE){
+//Markdown editor use EasyMDE
+(function(bbn, EasyMDE){
   "use strict";
 
   Vue.component('bbn-markdown', {
@@ -41,7 +41,7 @@
     },
     data(){
       return {
-        widgetName: "SimpleMDE",
+        widgetName: "EasyMDE",
         autoDownloadFontAwesome: this.cfg.autoDownloadFontAwesome || false,
         spellChecker: this.cfg.spellChecker || false,
         indentWithTabs: this.cfg.indentWithTabs === undefined ? true : this.cfg.indentWithTabs,
@@ -102,7 +102,7 @@
           return true
         }
       });*/
-      this.widget = new SimpleMDE(bbn.fn.extend({
+      this.widget = new EasyMDE(bbn.fn.extend({
         element: this.$refs.element
       }, this.$data));
       this.widget.codemirror.on("change", () => {
@@ -119,4 +119,4 @@
 
   });
 
-})(bbn, SimpleMDE);
+})(bbn, EasyMDE);

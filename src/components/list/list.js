@@ -154,7 +154,7 @@
       //@todo not used.
       unique: {
         type: Boolean,
-        default: false
+        default: true
       },
       /**
        * The mode of the component.
@@ -478,7 +478,10 @@
             this.isOpened = !this.isOpened;
           }
           else{
-            this.$emit("select", item.data, idx, item.index, ev);
+            let v = item.data[this.sourceValue];
+            if (!this.selected.includes(v)) {
+              this.$emit("select", item.data, idx, item.index, ev);
+            }
             if (!ev.defaultPrevented) {
               if ( (this.mode === 'selection') && !item.selected ){
                 let prev = bbn.fn.get_row(this.filteredData, "selected", true);
@@ -489,6 +492,17 @@
               }
               else {
                 item.selected = !item.selected;
+              }
+              if (item.selected && (v !== undefined)) {
+                if (this.selected.includes(v)) {
+                  this.selected.splice(this.selected.indexOf(v), 1);
+                }
+                else {
+                  if (this.unique && (this.mode === 'free')) {
+                    this.selected.splice(0, this.selected.length);
+                  }
+                  this.selected.push(v);
+                }
               }
               if ( item.data.action ){
                 if ( typeof(item.data.action) === 'string' ){
@@ -506,6 +520,16 @@
             }
           }
         }
+      },
+      unselect(value){
+        bbn.fn.each(bbn.fn.filter(this.currentData, a => {
+          return this.selected.includes(a.data[this.sourceValue]);
+        }), a => {
+          if (a.selected) {
+            a.selected = false;
+          }
+        });
+        this.selected.splice(0, this.selected.length);
       }
     },
     /**

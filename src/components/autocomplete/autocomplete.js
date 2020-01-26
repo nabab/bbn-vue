@@ -1,7 +1,7 @@
 /**
  * @file bbn-autocomplete component
  *
- * @description The autocomplete component allows you to choose a single value from a list.
+ * @description The autocomplete allows to select a single value from a list of items by proposeing suggestions based on the typed characters.
  *
  * @copyright BBN Solutions
  *
@@ -36,20 +36,36 @@
       bbn.vue.dropdownComponent
     ],
     props: {
+      /**
+       * For to apply the filters or not.
+       *
+       * @prop {Boolean} filterable
+       */
       filterable: {
         default: true
       },
+      /**
+       * To define the length of the string to start the filter.
+       *
+       * @prop {Number} [0] minLength
+       */
       minLength: {
         type: Number,
         default: 0
       },
+      /**
+       *
+       *
+       * @prop {Number} [500] delay
+       */
       delay: {
         type: Number,
         default: 500
       }, 
       /**
-       * Specifies the mode of the filter 
-       * @props {String} ['startsWith'] filterMode
+       * Specifies the mode of the filter.
+       *
+       * @prop {String} ['startsWith'] filterMode
        */
       filterMode: {
         type: String,
@@ -57,6 +73,11 @@
       }
     },
     methods: {
+      /**
+       * Puts the focus on the element
+       * @method click
+       *
+       */
       click(){
         if (!this.disabled) {
           this.getRef('input').focus();
@@ -66,8 +87,9 @@
         }
       },
       /**
+       * Remove the filter and close the list if it is notabove it
        * @method leave
-       * @param element 
+       *
        */
       leave(){
         if ( this.isOpened && !this.getRef('list').isOver ){
@@ -76,9 +98,10 @@
         this.filterString = '';
       },
       /**
-       * Emits the event 'select' 
+       * Emits the event 'select'
+       *
        * @method select
-       * @param {} item 
+       * @param {} item
        * @emit change
        */
       select(item){
@@ -93,6 +116,13 @@
         }
         this.isOpened = false;
       },
+
+      /**
+       * Function to do the reset and if the component is open it closes it
+       *
+       * @method resetDropdown
+       * @fires unfilter
+       */
       resetDropdown(){
         this.currentText = this.currentTextValue;
         this.filterString = this.currentTextValue;
@@ -101,6 +131,14 @@
           this.isOpened = false;
         }
       },
+
+      /**
+       * Function that performs different actions based on what is being pressed
+       *
+       * @method keydown
+       * @fires resetDropdown
+       * @fires keynav
+       */
       keydown(e){
         if ((e.key === ' ') || this.commonKeydown(e)) {
           return;
@@ -140,7 +178,9 @@
     watch: {
       /**
        * @watch filterString
-       * @param {String} v 
+       * @fires onResize
+       * @fires unfilter
+       * @param {String} v
        */
       filterString(v){
         if (!this.ready) {

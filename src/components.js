@@ -1823,7 +1823,7 @@
                     this.updateData().then(() => {
                       resolve(this.currentData);
                     });
-                  }, 1000);
+                  }, 50);
                 });
               }
               return this._futurePromise;
@@ -1940,6 +1940,7 @@
                 this.afterUpdate();
                 resolve(this.currentData);
                 this.$emit('dataloaded');
+                bbn.fn.log(this);
                 //this._dataPromise = false;
               });
             });
@@ -2280,6 +2281,7 @@
          * @memberof inputComponent
          */
         emitInput(val){
+          bbn.fn.log('emit input, ', val)
           this.$emit('input', val);
         },
         /**
@@ -2371,10 +2373,8 @@
                     }
                     this.$emit('error', customMessage || mess);
                     let border = $elem.style.border;
-                    // @jquery $elem.css('border', '1px solid red');
                     $elem.style.border = '1px solid red';
                     this.$on('blur', () => {
-                      //@jquery $elem.css('border', 'none');
                       $elem.style.border  = border;
                       $elem.focus();
                     });
@@ -2418,7 +2418,9 @@
               }
             }
             else{
+              bbn.fn.log('qi', this.widget.value, newVal)
               if ( this.widget.value !== newVal ){
+                bbn.fn.log('dopo', this.widget.value, newVal)
                 this.widget.value = newVal;
               }
             }
@@ -2592,7 +2594,6 @@
             }
             else{
               //bbn.fn.log("UNSETTING EVENT FOR WINDOW", this.$el);
-              //@jquery $(window).off("resize", this.resizeEmitter);
               window.removeEventListener("resize", this.resizeEmitter);
             }
           }
@@ -2949,7 +2950,7 @@
          * @memberof viewComponent
          */
         source: {
-          type: [Object, Function]
+          type: [Array, Object, String, Function],
         },
         /**
          * The title of the component.

@@ -72,6 +72,8 @@
         hasRealContainers: false,
         // Fake containers are the bbns-container in the slot
         hasFakeContainers: false,
+        // True if one of the initial containers' URL is an empty string
+        hasEmptyURL: false,
         // The array of containers defined in the source
         cfgViews: [].concat(this.source),
         // The views from the slot?
@@ -142,10 +144,14 @@
           this.add(cp);
           return;
         }
-        this.numRegistered++;
-        if ( cp.url && !this.urls[cp.url] ){
-          this.urls[cp.url] = cp;
+        if (!bbn.fn.isString(cp.url)) {
+          throw Error(bbn._('The component bbn-container must have a URL defined'));
         }
+        if (this.urls[cp.url]) {
+          throw Error(bbn._('Two containers cannot have the same URL defined'));
+        }
+        this.numRegistered++;
+        this.urls[cp.url] = cp;
         if ( !this.isInit && (this.numRegistered === this.views.length) ){
           this.isInit = true;
           if ( this.auto ){
@@ -161,7 +167,10 @@
        */
       unregister(cp){
         this.numRegistered--;
-        if ( cp.url && this.urls[cp.url] ){
+        if (!bbn.fn.isString(cp.url)) {
+          throw Error(bbn._('The component bbn-container must have a URL defined'));
+        }
+        if ( this.urls[cp.url] ){
           delete this.urls[cp.url];
         }
       },
@@ -189,6 +198,12 @@
        * @returns {String|false}
        */
       getRoute(url, force){
+        if (!bbn.fn.isString(url)) {
+          throw Error(bbn._('The component bbn-container must have a valid URL defined'));
+        }
+        if (!url && this.hasEmptyURL) {
+          return '';
+        }
         if ( !url && !this.parent ){
           url = this.parseURL(bbn.env.path);
         }
@@ -294,6 +309,9 @@
        * @returns {void}
        */
       route(url, force){
+        if (!bbn.fn.isString(url) ){
+          throw Error(bbn._('The component bbn-container must have a valid URL defined'));
+        }
         if ( this.ready && (force || !this.activeContainer || (url !== this.currentURL)) ){
           let event = new CustomEvent(
             "beforeRoute",
@@ -304,6 +322,11 @@
           );
           this.$emit("beforeRoute", event, url);
           if ( !event.defaultPrevented ){
+	    if ((url === '') && this.hasEmptyURL) {
+              this.urls[''].setCurrent(url);
+              this.realRoute('', '', force);
+              return;
+            }
             // Checks weather the container is already there
             if ( !url ){
               let idx = this.getRoute('', true);
@@ -355,7 +378,10 @@
        * @param {Boolean} force
        */
       realRoute(url, st, force){
-        if ( st && this.urls[st] ){
+        if (!bbn.fn.isString(url) ){
+          throw Error(bbn._('The component bbn-container must have a valid URL defined'));
+        }
+        if (this.urls[st]) {
           //bbn.fn.log("REAL ROUTING GOING ON FOR " + url);
           if ( url !== this.currentURL ){
             //bbn.fn.log("THE URL IS DIFFERENT FROM THE ORIGINAL " + this.currentURL);
@@ -375,6 +401,12 @@
               if ( child ){
                 //bbn.fn.log("CHILD ROUTER ROUTING: " + url.substr(st.length + 1));
                 child.route(url.substr(st.length + 1), force);
+              }
+              else {
+                let ifr = this.urls[st].find('bbn-frame');
+                if (ifr) {
+                  ifr.route(url.substr(st.length+1));
+                }
               }
             });
           }
@@ -414,6 +446,9 @@
        * @param container
        */
       activate(url, container){
+        if (!bbn.fn.isString(url) ){
+          throw Error(bbn._('The component bbn-container must have a valid URL defined'));
+        }
         let todo = false;
         //bbn.fn.log("ACTIVATING " + url + " AND SENDING FOLLOWING CONTAINER:", container);
         if ( !this.activeContainer || (container && (this.activeContainer !== container)) ){
@@ -447,6 +482,9 @@
       },
 
       changeURL(url, title, replace){
+        if (!bbn.fn.isString(url) ){
+          throw Error(bbn._('The component bbn-container must have a valid URL defined'));
+        }
         //bbn.fn.log("CHANGE URL TO " + url);
         if ( !bbn.env.isInit ){
           return;
@@ -537,14 +575,14 @@
         if ( fullURL === undefined ){
           return '';
         }
-        if ( typeof(fullURL) !== 'string' ){
+        if (!bbn.fn.isString(fullURL)) {
           fullURL = fullURL.toString();
         }
         if ( fullURL.indexOf(bbn.env.root) === 0 ){
           fullURL = fullURL.substr(bbn.env.root.length);
         }
         fullURL = bbn.fn.removeTrailingChars(fullURL, '/');
-        if ( (this.fullBaseURL === (fullURL + '/'))  || (fullURL === '') ){
+        if (this.fullBaseURL === (fullURL + '/')) {
           return '';
         }
         if ( this.fullBaseURL ){
@@ -597,6 +635,13 @@
 
       // Returns the corresponding container's component's DOM element
       getContainer(idx){
+        if ( idx === undefined ){
+          idx = this.selected;
+        }
+        return this.urls[this.views[idx].url];
+      },
+      // Returns the corresponding container's component's DOM element
+      getDOMContainer(idx){
         if ( idx === undefined ){
           idx = this.selected;
         }
@@ -714,11 +759,11 @@
         //bbn.fn.log("ADDING", obj);
         if (
           (typeof(obj) === 'object') &&
-          obj.url &&
+          bbn.fn.isString(obj.url) &&
           ((idx === undefined) || this.isValidIndex(idx) || (idx === this.views.length))
         ){
           if ( !obj.current ){
-            if ( bbn.env.path.indexOf(this.getFullBaseURL() + obj.url + '/') === 0 ){
+            if ( bbn.env.path.indexOf(this.getFullBaseURL() + (obj.url ? obj.url + '/' : '')) === 0 ){
               obj.current = bbn.env.path.substr(this.getFullBaseURL().length);
             }
             else{
@@ -783,6 +828,9 @@
       },
 
       search(url){
+        if (!bbn.fn.isString(url) ){
+          throw Error(bbn._('The component bbn-container must have a valid URL defined'));
+        }
         let r = bbn.fn.search(this.views, "url", url);
         if ( r === -1 ){
           bbn.fn.each(this.views, (tab, index) => {
@@ -796,6 +844,9 @@
       },
 
       callRouter(url, st){
+        if (!bbn.fn.isString(url) ){
+          throw Error(bbn._('The component bbn-container must have a valid URL defined'));
+        }
         if ( this.parent ){
           let containers = this.ancesters('bbn-container');
           url = this.getFullBaseURL().substr(this.router.baseURL.length) + url;
@@ -807,6 +858,24 @@
           this.realRoute(url, st, true);
         }
 
+      },
+
+      searchContainer(url, deep){
+        let container  = false;
+        let idx = this.search(url);
+        if (idx !== false) {
+          container = this.getContainer(idx);
+          if (deep && container) {
+            let router = container.find('bbn-router');
+            if (router) {
+              let real = router.searchContainer(url.substr(router.baseURL.length), true);
+              if (real) {
+                return real;
+              }
+            }
+          }
+        }
+        return container;
       },
 
       load(url, force){
@@ -846,94 +915,72 @@
             });
           }
           this.$emit('update', this.views);
-          return this.post(finalURL, {_bbn_baseURL: this.fullBaseURL}, (d) => {
-            this.isLoading = false;
-            //this.remove(url);
-            if ( d.url ){
-              d.url = this.parseURL(d.url);
-            }
-            if ( !d.url ){
-              d.url = url;
-            }
-            //bbn.fn.log("URLS", url, d.url);
-            if ( url.indexOf(d.url) === 0 ){
-              d.current = url;
-              //bbn.fn.log("CURRENT DEFINED AS " + d.current);
-            }
-            if ( d.data ){
-              d.source = d.data;
-              delete d.data;
-            }
-            if ( (d.url !== d.current) && this.urls[d.current] ){
-              //bbn.fn.log("DELETING VIEW CASE");
-              this.views.splice(this.urls[d.current].idx, 1);
-              delete this.urls[d.current];
-            }
-            if ( !d.title || (d.title === bbn._('Loading')) ){
-              let title = bbn._('Untitled');
-              let num = 1;
-              while ( bbn.fn.search(this.views, {title: title}) > -1 ){
-                num++;
-                title = bbn._('Untitled') + ' ' + num;
+          return this.post(
+            finalURL, 
+            {_bbn_baseURL: this.fullBaseURL}, 
+            (d) => {
+              this.isLoading = false;
+              //this.remove(url);
+              if ( d.url ){
+                d.url = this.parseURL(d.url);
               }
-              d.title = title;
-            }
-            this.$nextTick(() => {
-              this.add(bbn.fn.extend(d, {slot: false, loading: false, load: true, real: false, loaded: true}));
-              setTimeout(() => {
-                if ( !this.urls[d.url] ){
-                  throw new Error(bbn._("Impossible to find the container for URL") + ' ' + d.url);
+              if ( !d.url ){
+                d.url = url;
+              }
+              //bbn.fn.log("URLS", url, d.url);
+              if ( url.indexOf(d.url) === 0 ){
+                d.current = url;
+                //bbn.fn.log("CURRENT DEFINED AS " + d.current);
+              }
+              if ( d.data ){
+                d.source = d.data;
+                delete d.data;
+              }
+              if ( (d.url !== d.current) && this.urls[d.current] ){
+                //bbn.fn.log("DELETING VIEW CASE");
+                this.views.splice(this.urls[d.current].idx, 1);
+                delete this.urls[d.current];
+              }
+              if ( !d.title || (d.title === bbn._('Loading')) ){
+                let title = bbn._('Untitled');
+                let num = 1;
+                while ( bbn.fn.search(this.views, {title: title}) > -1 ){
+                  num++;
+                  title = bbn._('Untitled') + ' ' + num;
                 }
-                //bbn.fn.log("LOADED " + d.url, url);
-                this.urls[d.url].setLoaded(true);
-                // Otherwise the changes we just did on the props wont be taken into account at container level
-                this.urls[d.url].init();
-                this.callRouter(d.current, d.url);
-                this.$emit('update', this.views);
-              })
-            })
-            /*
-            setTimeout(() => {
-              bbn.fn.log(d.url, d, ';;;;;');
-              if ( !this.urls[d.url] ){
-                throw new Error(bbn._("Impossible to find the container for URL") + ' ' + d.url);
+                d.title = title;
               }
-              this.urls[d.url].setLoaded(true);
-              this.urls[d.url].init();
-              setTimeout(() => {
-                bbn.fn.log("ROUTER LOADED:" + d.current);
-                //this.callRouter(d.current, d.url);
-              }, 200)
-            }, 200)
-            */
-          }, (xhr, textStatus, errorThrown) => {
-            this.isLoading = false;
-            this.alert(textStatus);
-            let idx = this.search(this.parseURL(finalURL));
-            if ( idx > -1 ){
-              let url = this.views[idx].url;
-              this.views.splice(this.urls[url].idx, 1);
-              delete this.urls[url];
-            }
-            /*
-            if ( this.isValidIndex(idx) ){
-              this.views[idx].state = xhr.status;
-              this.views[idx].error = errorThrown;
-              this.views[idx].loading = false;
-              this.views[idx].loaded = true;
-              this.views[idx].menu = false;
-              this.views[idx].title = bbn._('Error') + ' ' + xhr.status;
-              if ( this.views[idx].load !== false ){
-                this.views[idx].load = null;
+              this.$nextTick(() => {
+                this.add(bbn.fn.extend(d, {slot: false, loading: false, load: true, real: false, loaded: true}));
+                setTimeout(() => {
+                  if ( !this.urls[d.url] ){
+                    throw new Error(bbn._("Impossible to find the container for URL") + ' ' + d.url);
+                  }
+                  //bbn.fn.log("LOADED " + d.url, url);
+                  this.urls[d.url].setLoaded(true);
+                  // Otherwise the changes we just did on the props wont be taken into account at container level
+                  this.urls[d.url].init();
+                  this.callRouter(d.current, d.url);
+                  this.$emit('update', this.views);
+                })
+              })
+            },
+            (xhr, textStatus, errorThrown) => {
+              this.isLoading = false;
+              this.alert(textStatus);
+              let idx = this.search(this.parseURL(finalURL));
+              if ( idx > -1 ){
+                let url = this.views[idx].url;
+                this.views.splice(this.urls[url].idx, 1);
+                delete this.urls[url];
               }
               this.navigate(url);
               this.activate(url);
+            },
+            () => {
+              this.isLoading = false;
             }
-            */
-            //bbn.fn.log(arguments)
-          }, () => {
-            this.isLoading = false;
-          })
+          );
         }
       },
 
@@ -958,15 +1005,13 @@
         if ( this.url ){
           return this.url;
         }
-        else if ( this.parentContainer && (this.parentContainer.currentURL !== this.parentContainer.url) ){
+        if ( this.parentContainer && (this.parentContainer.currentURL !== this.parentContainer.url) ){
           return this.parentContainer.currentURL.substr(this.parentContainer.url.length + 1);
         }
         if ( this.def ){
           return this.def;
         }
-        else{
-          return this.parseURL(bbn.env.path);
-        }
+        return this.parseURL(bbn.env.path);
       },
 
       getTitle(idx){
@@ -1013,30 +1058,46 @@
         }
         this.baseURL = this.setBaseURL(uri);
       }
-      let url = this.getDefaultURL();
       // Adding bbns-tab from the slot
+      let tmp = [];
       if ( this.$slots.default ){
         for ( let node of this.$slots.default ){
           if (
-            node.componentOptions &&
-            (node.componentOptions.tag === 'bbn-container')
+            node.componentOptions
+            && (node.componentOptions.tag === 'bbn-container')
           ){
+            if (node.componentOptions.propsData.url === undefined) {
+              throw new Error(bbn._("You cannot use containers in router without defining a URL property"));
+            }
             if ( !this.hasRealContainers ){
               this.hasRealContainers = true;
             }
-            let o = {slot: true, load: false, loaded: true};
-            if ( url && (url.indexOf(node.componentOptions.propsData.url) === 0) ){
-              o.current = url;
+            if (node.componentOptions.propsData.url === '') {
+              this.hasEmptyURL = true;
             }
-            this.add(bbn.fn.extend({}, node.componentOptions.propsData, o));
+            let o = {slot: true, load: false, loaded: true};
+            tmp.push(bbn.fn.extend({}, node.componentOptions.propsData, o));
           }
         }
       }
       bbn.fn.each(this.source, (a) => {
-        if ( url && (url.indexOf(a.url) === 0) ){
+        if (a.url === '') {
+          if (a.load) {
+            throw new Error(bbn._("You cannot use containers with empty URL for loading"));
+          }
+          this.hasEmptyURL = true;
+        }
+        tmp.push(bbn.fn.extendOut(a, {slot: false}));
+      });
+      let url = this.getDefaultURL();
+      bbn.fn.each(tmp, (a) => {
+        if (!bbn.fn.isString(a.url)) {
+          throw new Error(bbn._("The container must have a valid URL"));
+        }
+        if (url && url.indexOf(a.url) === 0) {
           a.current = url;
         }
-        this.add(bbn.fn.extendOut(a, {slot: false}));
+        this.add(a);
       });
       this.ready = true;
     },

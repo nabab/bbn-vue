@@ -9,10 +9,11 @@
          :required="required"
          :readonly="readonly"
   >
-  <div class="bbn-overlay">
+  <div class="bbn-overlay bbn-radius">
     <bbn-scroll ref="scroll">
       <bbn-list :source="source"
                 :selection="true"
+                class="bbn-reset"
                 :uid="sourceValue"
                 ref="list"
                 :selected="value"

@@ -89,12 +89,16 @@
              :class="['bbn-calendar-item-box', 'bbn-box', {
                'bbn-p': selection && !item.disabled,               
                'bbn-spadded': !itemDetails && itemPadding,
-               'bbn-tertiary': item.isCurrent && (!item.inRange || (item.inRange && item.over)) && !(selection && (item.value === currentValue)),
-               'bbn-background-effect-primary': item.isCurrent && item.inRange,
+               'bbn-tertiary': item.isCurrent && !(selection && (item.value === currentValue)),
+               'bbn-background-effect-tertiary': item.isCurrent && item.inRange && (item.value !== currentValue),
+               'bbn-background-effect-primary': item.inRange && (item.value === currentValue),
                'bbn-state-hover': selection && item.over && !item.disabled,
+               'bbn-background-effect-hover': selection && item.over && !item.disabled && item.inRange,
                'bbn-primary': selection && (item.value === currentValue),
                'bbn-secondary': item.colored && !item.hidden && !item.extra,
+               'bbn-background-effect-secondary': item.colored && !item.hidden && !item.extra && item.inRange && (item.value !== currentValue),
                'bbn-alt-background-effect': !item.hidden && item.inRange && !item.isCurrent,
+               'bbn-active-background': !item.hidden && item.inRange && !item.isCurrent && (item.value !== currentValue) && !item.colored && (!item.over || (item.over && item.disabled)),
                'bbn-disabled': item.disabled,
                'bbn-alt-background': extraItems && item.extra
              }]"

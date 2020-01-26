@@ -953,6 +953,12 @@
           //bbn.fn.log("onFocus", this.getRef('buttons'), this.getRef('button' + (this.currentButtons.length - 1)));
           this.getRef('button' + (this.currentButtons.length - 1)).$el.focus();
         }
+      },
+      updateData(){
+        if (this.component || this.$slots.default || this.content) {
+          return this.$nextTick()
+        }
+        return bbn.vue.listComponent.methods.updateData.apply(this);
       }
     },
     /**

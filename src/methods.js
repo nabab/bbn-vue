@@ -126,13 +126,11 @@
     _realDefineComponent(name, r, mixins){
       if ( r && r.script ){
         if ( r.css ){
-          // @jquery $(document.head).append('<style>' + r.css + '</style>');
           let el = document.createElement('style');
           el.innerHTML = r.css;
           document.head.insertAdjacentElement('beforeend', el)
         }
         if ( r.content ){
-          //@jquery $(document.body).append('<script type="text/x-template" id="bbn-tpl-component-' + name + '">' + r.content + '</script>');
           let script = document.createElement('script');
           script.innerHTML = r.content;
           script.setAttribute('id', 'bbn-tpl-component-' + name);
@@ -259,19 +257,15 @@
         bbn.fn.each(r.html, (h) => {
           if ( h && h.content ){
             let id = 'bbn-tpl-component-' + name + (h.name === name ? '' : '-' + h.name),
-                // @jquery $tpl = $('<script type="text/x-template" id="' + id + '"></script>');
-            //@jquery $tpl.html(h.content);
             script = document.createElement('script');
             script.innerHTML = h.content;
             script.setAttribute('id', id);
             script.setAttribute('type', 'text/x-template');
-            //@jquery document.body.appendChild($tpl[0]);
             document.body.appendChild(script);
           }
         })
       }
       if ( r.css ){
-        //@jquery $(document.head).append('<style>' + r.css + '</style>');
         let el = document.createElement('style');
           el.innerHTML = r.css;
           document.head.insertAdjacentElement('beforeend', el)
@@ -715,22 +709,19 @@
 
     post(vm, args){
       let cfg = bbn.fn.treat_vars(args);
-      let url = bbn.vue.getContainerURL(vm);
-      if ( !url && bbn.env.path ){
-        url = bbn.env.path;
+      let referer = bbn.vue.getContainerURL(vm);
+      if ( !referer && bbn.env.path ){
+        referer = bbn.env.path;
       }
-      if ( cfg.obj && url ){
-        cfg.obj = bbn.fn.extend({}, cfg.obj, {_bbn_referer: url});
-      }
+      cfg.obj = bbn.fn.extend({}, cfg.obj || {}, {_bbn_referer: referer, _bbn_key: bbn.fn.getIdURL(cfg.url, cfg.obj, 'json')});
       return bbn.fn.post(cfg);
     },
 
-    post_out(vm, action, params, successFn, target){
-      let url = bbn.vue.getContainerURL(vm);
-      if ( url && params && bbn.fn.isObject(params) ){
-        params = bbn.fn.extend({}, params, {_bbn_referer: url});
-      }
-      return bbn.fn.post_out(action, params, successFn, target);
+    post_out(vm, url, obj, onSuccess, target){
+      let referer = bbn.vue.getContainerURL(vm);
+      obj = bbn.fn.extend({}, obj || {}, {_bbn_referer: referer, _bbn_key: bbn.fn.getIdURL(url, obj, 'json')});
+      bbn.fn.log("post_out", obj);
+      return bbn.fn.post_out(url, obj, onSuccess, target);
     }
 
 

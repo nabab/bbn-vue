@@ -1,11 +1,11 @@
 {
-  "name": "bbn-rte",
+  "name": "bbn-jodit",
   "version": "0.1.1",
   "authors": [
     "Thomas Nabet <thomas.nabet@gmail.com>"
   ],
   "license": "MIT",
   "dependencies": {
-    "Trumbowyg": ">=v2.5.1"    	
+    "jodit": ">=3.3.8"
   }
 }

@@ -467,6 +467,10 @@
             }
           });
         }
+      },
+      getCurrentContainer(){
+        let container = this.find('bbn-router').searchContainer(bbn.env.path, true);
+        return container || this;
       }
     },
     beforeCreate(){
@@ -522,7 +526,8 @@
 
             defaultAlertFunction(ele) {
               /** @todo */
-              appui.alert.apply(appui, arguments);
+              let c = appui.getCurrentContainer();
+              c.alert.apply(c, arguments);
             },
             
             defaultStartLoadingFunction(url, id, data) {

@@ -16,20 +16,54 @@
   /**
    * Classic input with normalized appearance
    */
-  $.trumbowyg.svgPath = bbn_root_url + 'lib/Trumbowyg/v2.5.1/dist/ui/icons.svg';
-
   Vue.component('bbn-rte', {
     /**
      * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.inputComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent],
+    mixins: [bbn.vue.basicComponent],
     props: {
+      iFrame:{
+        type: Boolean,
+        default: false
+      },
+      value: {},
+      required: {
+        type: [Boolean, Function, String],
+        default: false
+      },
+      /**
+       * Defines if the component has to be disabled.
+       * @prop {Boolean|Function} [false] disabled
+       * @memberof inputComponent
+       */
+      disabled: {
+        type: [Boolean, Function],
+        default: false
+      },
+      /**
+       * Defines if the component has to be readonly.
+       * @prop {Boolean|Function} [false] readonly
+       * @memberof inputComponent
+       */
+      readonly: {
+        type: [Boolean, Function],
+        default: false
+      },
       pinned: {},
       top: {},
       left: {},
       bottom: {},
       right: {},
+      fullSize:{
+        default:false,
+        type: Boolean
+      },
+      iframeCSSLinks :{
+        default(){
+          return [bbn.env.cdn + 'lib/bbnjs/1.0.1/src/css/iFrame.less']
+        },
+        type: Array
+      }, 
       /**
        * The height of the editor
        * @prop {Number|String} ['100%'] height
@@ -65,7 +99,7 @@
       },
       /**
        * The object of configuration
-       * @prop {Object} cfg
+       * @prop {Object} cfgfg
        */
       cfg: {
         type: Object,
@@ -86,46 +120,45 @@
          * The height to give to the editor depending on the value of the prop height
          * @data {String} realHeight
          */
-        realHeight: typeof this.height === 'string' ? this.height : this.height + 'px'
+        realHeight: typeof this.height === 'string' ? this.height : this.height + 'px',
+        widget: false,
+        currentValue: this.value
       }
     },
     methods: {
-      //@todo not used
-      changeHidden(e){
-        //bbn.fn.log("changeHidden", e);
-        //bbn.fn.log(e.target.value, this.value);
-      }
+      onChange(){
+        this.$emit('input', this.widget.getElementValue());
+      },
+      
     },
     /**
      * Initializes the component
      * @event mounted
      */
     mounted(){
-      let $ele = $(this.$refs.element);
-
-      this.$refs.element.style.minHeight = this.$el.clientHeight;
-      
-      this.widget = $ele.trumbowyg({
-        lang: bbn.env.lang || 'en',
-        autoGrow: false,
-        semantic: false,
-        resetCSS: true,
-        tagsToKeep: ['hr', 'img', 'div'],
-        btns: this.buttons
+      this.widget = new Jodit(this.getRef('element'), {
+        iframe: this.iFrame,
+        disabled: this.disabled,
+        readOnly: this.readOnly,
+        required: this.required,
+        allowResizeX: false,
+        allowResizeY: false,
+        spellcheck: false,
+        useSplitMode: true,
+        height: this.height,
+        tabIndex: 0,
+        uploader: {
+          insertImageAsBase64URI: true
+        },
+        iframeCSSLinks: this.iFrame ? this.iframeCSSLinks : []
       });
-      setTimeout(() => {
-        let box = this.$el.querySelector('.trumbowyg-box'),
-            editor = box.querySelector('.trumbowyg-editor'),
-            toolbar = box.querySelector('.trumbowyg-button-pane');
-        box.classList.add('bbn-flex-height');
-        editor.classList.add('bbn-flex-fill', 'bbn-radius-bottom');
-        toolbar.classList.add('bbn-radius-top');
-        editor.style.height = 'auto';
-      }, 1000)
-      $ele.on("tbwchange tbwpaste", (e) => {
-        this.emitInput(e.target.value)
-      });
-      
+      bbn.fn.log('IFRAME', this.iFrame)
+      if ( this.iFrame ){
+        this.widget.iframeCSSLinks = this.iframeCSSLinks
+      }
+      if ( this.value) {
+        this.widget.value = this.value
+      }
       this.ready = true;
     },
     watch: {
@@ -134,10 +167,11 @@
        * @param newVal 
        */
       value(newVal){
-        if ( this.widget.trumbowyg('html') !== newVal ){
-          this.widget.trumbowyg('html', newVal);
+        if (this.widget && (this.widget.getElementValue()!== newVal)) {
+           bbn.fn.log("CHANFING CURRENT VALUE");
+           this.widget.value = newVal;
         }
       }
     }
   });
-})(jQuery);
+})();

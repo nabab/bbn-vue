@@ -299,6 +299,18 @@
         if (this.ready && (this.widget.getText() != v)) {
           this.widget.setText(v);
         }
+      },
+      value(v){
+        let tmp = v;
+        if (v && (typeof v === 'object')) {
+          tmp = JSON.stringify(v);
+        }
+        else if (!bbn.fn.isString(v)) {
+          tmp = '';
+        }
+        if (tmp !== this.currentValue) {
+          this.currentValue = tmp;
+        }
       }
     }
   });

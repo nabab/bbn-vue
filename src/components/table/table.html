@@ -188,7 +188,7 @@
                   @focusin="focusin(i, $event)"
                   @dblclick="if ( focusedRow !== i ) { focusedRow = i }"
                   :class="[{
-                    'bbn-alt': !!(d.index % 2),
+                    'bbn-alt': !!(i % 2),
                     'bbn-header': !!(d.aggregated || d.groupAggregated),
                   }, trClass ? trClass(d.data) : '']"
               >

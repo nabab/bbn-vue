@@ -2,6 +2,9 @@ div.bbn-container {
   position: relative;
   width: 100%;
   height: 100%;
+  > .bbn-container-visible {
+    overflow: inherit;
+  }
   > .bbn-container-full-screen{
     position: fixed !important;
     top: 0px;
@@ -9,7 +12,7 @@ div.bbn-container {
     right: 0px;
     bottom: 0px;
     z-index: 10;
-    > .bbn-container-full-screen-closer{
+    > .bbn-container-full-screen-closer {
       position: fixed;
       font-size: x-large;
       right: 5px;

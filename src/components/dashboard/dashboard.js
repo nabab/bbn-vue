@@ -184,6 +184,7 @@
         }, uid);
       },
       closeWidget(uid, widget){
+        bbn.fn.log('close',widget)
         let ev = new Event('close', {cancelable: true});
         this.$emit('close', uid, widget);
         if ( !ev.defaultPrevented ){

@@ -135,6 +135,7 @@
     computed: {
       /**
        * Returns a combination of the properties 'text' and 'title' if the property 'noText' is set to true, else returns the property 'title'.
+       *
        * @computed titleString
        * @return {String}
        */

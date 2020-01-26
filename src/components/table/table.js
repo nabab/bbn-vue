@@ -489,6 +489,11 @@
       };
     },
     computed: {
+      selectedValues(){
+        return this.currentSelected.map((a) => {
+          return this.uid ? this.currentData[a].data[this.uid] : this.currentData[a].data;
+        })
+      },
       containerWidth(){
         if ( !this.groupCols || !this.groupCols[1] || !this.groupCols[1].width || !this.lastKnownCtWidth ){
           return '0px';
@@ -1748,7 +1753,6 @@
         this.editedRow = row;
         
         if (this.items[index]) {
-
           this.editedIndex = this.items[index].index;
         }
         if (this.editMode === 'popup') {

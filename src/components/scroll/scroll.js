@@ -342,13 +342,26 @@
         if ( this.scrollable === false ){
           return;
         }
-        let x = this.getRef('scrollContainer').scrollLeft;
+        let ct = this.getRef('scrollContainer');
+        let x = ct.scrollLeft;
         if ( x !== this.currentX ){
           this.currentX = x;
+          if (!x) {
+            this.$emit('reachLeft');
+          }
+          else if (x + ct.clientWidth >= ct.scrollWidth) {
+            this.$emit('reachRight');
+          }
         }
-        let y = this.getRef('scrollContainer').scrollTop;
+        let y = ct.scrollTop;
         if ( y !== this.currentY ){
           this.currentY = y;
+          if (!y) {
+            this.$emit('reachTop');
+          }
+          else if (y + ct.clientHeight >= ct.scrollHeight) {
+            this.$emit('reachBottom');
+          }
         }
         this.$emit('scroll', e)
       },
@@ -662,6 +675,7 @@
           if ( !cp || !cp.$options || (cp.$options.name !== 'bbn-floater') ){
             this.keepCool(() => {
               this.onResize();
+              bbn.fn.log("LAUNCHING ONRESIZE FROM SCROLL");
             }, "init", this.latency * 2);
           }
         }

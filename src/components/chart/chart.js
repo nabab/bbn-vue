@@ -519,6 +519,12 @@
         default(){
           return {};
         }
+      },
+      ticks: {
+        type: Array,
+        default(){
+          return []
+        }
       }
     },
     computed: {
@@ -746,12 +752,14 @@
               position: this.reverseLabelX ? 'start' : 'end'
             }, this.axisX),
             axisY: bbn.fn.extend(true, {
+              type: this.ticks ? Chartist.FixedScaleAxis : Chartist.AutoScaleAxis,
+              ticks: this.ticks || [],
               showLabel:bbn.fn.isFunction(this.showLabelY) ? true : this.showLabelY,
               showGrid: this.showGridY,
               position: this.reverseLabelY ? 'end' : 'start',
               onlyInteger: this.onlyInteger,
               high: this.max,
-              low: this.min ? -this.min : undefined
+              low: this.min || undefined
             }, this.axisY)
           };
           // Axis X

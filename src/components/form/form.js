@@ -743,11 +743,11 @@
       source: {
         deep: true,
         handler(){
-          bbn.fn.log("BBN-FORM MODIFIED");
+          //bbn.fn.log("BBN-FORM MODIFIED");
           this.modified = this.isModified();
           //this.$emit('input', newVal);
-          if ( this.tab && this.tab.tabNav ){
-            this.tab.tabNav.tabs[this.tab.tabNav.selected].isUnsaved = this.modified;
+          if ( this.tab ){
+            this.tab.isUnsaved = this.modified;
           }
         }
       },

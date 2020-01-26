@@ -1,6 +1,5 @@
 /**
  * @file bbn-calendar component
- *
  * @description The bbn-calendar component is a calendar that allows you to interact with dates by providing details, inserting reminders and creating events.
  * @copyright BBN Solutions
  * @author Mirko Argentino 
@@ -136,6 +135,15 @@
        * @prop {Boolean} [false] onlyEvents
        */
       onlyEvents: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * Disables the dates without events.
+       *
+       * @prop {Boolean} [false] disableNoEvents
+       */
+      disableNoEvents: {
         type: Boolean,
         default: false
       },
@@ -281,6 +289,10 @@
         let m = moment(this.date, this.getCfg().valueFormat);
         mom = m.isValid() ? m : mom;
       }
+      else if ( this.max ){
+        let m = moment(this.max, this.getCfg().valueFormat);
+        mom = m.isValid() ? m : mom;
+      }
       return {
         /**
          * Today as 'YYYY-MM-DD' format.
@@ -371,7 +383,7 @@
             obj = {
               text: txt,
               value: val,
-              isCurrent: val === moment(this.today).format(this.currentCfg.valueFormat),
+              isCurrent: val === moment(this.today, this.currentCfg.valueFormat).format(this.currentCfg.valueFormat),
               hidden: !!hid,
               colored: !!col,
               over: false,
@@ -382,13 +394,16 @@
             };
         if (
           (this.onlyEvents && !events.length) ||
-          (this.min && (obj.value < moment(this.min).format(this.currentCfg.valueFormat))) ||
-          (this.max && (obj.value > moment(this.max).format(this.currentCfg.valueFormat)))
+          (this.min && (obj.value < moment(this.min, this.currentCfg.valueFormat).format(this.currentCfg.valueFormat))) ||
+          (this.max && (obj.value > moment(this.max, this.currentCfg.valueFormat).format(this.currentCfg.valueFormat)))
         ){
           obj.hidden = true;
         }
         if ( this.disableDates ){
           obj.disabled = bbn.fn.isFunction(this.disableDates) ? this.disableDates(obj.value) : this.disableDates.includes(obj.value);
+        }
+        if ( this.disableNoEvents && !obj.disabled ){
+          obj.disabled = !events.length;
         }
         return obj;
       },
@@ -616,6 +631,24 @@
         }
         return false;
       },
+      create(){
+        this.updateData().then(() => {
+          this.init();
+          this.$nextTick(() => {
+            if ( !this.date && ( this.max || this.min) ){
+              if ( this.max && !this.min && (this.max < this.currentDate.format(this.currentCfg.valueFormat)) ){
+                this.currentDate = moment(this.max, this.currentCfg.valueFormat);
+              }
+              if ( this.min && !this.max && (this.min > this.currentDate.format(this.currentCfg.valueFormat)) ){
+                this.currentDate = moment(this.min, this.currentCfg.valueFormat);
+              }
+              this.currentCfg.make();
+              this.setTitle();
+            }
+            this.ready = true;
+          });
+        });
+      },
       /**
        * Initializes the calendar.
        *
@@ -785,7 +818,7 @@
             start.subtract(...this.currentCfg.startExtra);
           }
           if ( this.currentCfg.endExtra ){
-            start.add(...this.currentCfg.endExtra);
+            end.add(...this.currentCfg.endExtra);
           }
         }
         data[this.startField] = start.format(this.startFormat);
@@ -839,22 +872,7 @@
      * @emits dataLoaded
     */
     mounted(){
-      this.updateData().then(() => {
-        this.init();
-        this.$nextTick(() => {
-          if ( !this.date && ( this.max || this.min) ){
-            if ( this.max && !this.min && (this.max < this.currentDate.format(this.currentCfg.valueFormat)) ){
-              this.currentDate = moment(this.max, this.currentCfg.valueFormat);
-            }
-            if ( this.min && !this.max && (this.min > this.currentDate.format(this.currentCfg.valueFormat)) ){
-              this.currentDate = moment(this.min, this.currentCfg.valueFormat);
-            }
-            this.currentCfg.make();
-            this.setTitle();
-          }
-          this.ready = true;
-        });
-      });
+      this.create();
     },
     watch: {
       /**
@@ -862,7 +880,8 @@
        * @fires init
       */
       type(newVal){
-        this.init();
+        this.ready = false;
+        this.create();
       },
       /**
        * @watch currentLabelsDates
@@ -870,6 +889,11 @@
       */
       currentLabelsDates(newVal){
         this.setLabels(newVal);
+      },
+      value(newVal, oldVal){
+        if ( newVal !== oldVal ){
+          this.currentValue = newVal;
+        }
       }
     }
   })

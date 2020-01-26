@@ -39,6 +39,7 @@
       <!-- This is the slot -->
       <slot v-else></slot>
       <component is="style" v-if="css" scoped="scoped" v-html="css"></component>
+      <bbn-loader v-if="hasLoader"></bbn-loader>
       <span  v-if="fullScreen"
              class="bbn-container-full-screen-closer bbn-xl bbn-p">
         <i class="nf nf-fa-times_circle"
