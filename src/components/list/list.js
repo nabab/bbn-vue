@@ -493,15 +493,20 @@
               else {
                 item.selected = !item.selected;
               }
-              if (item.selected && (v !== undefined)) {
-                if (this.selected.includes(v)) {
-                  this.selected.splice(this.selected.indexOf(v), 1);
-                }
-                else {
-                  if (this.unique && (this.mode === 'free')) {
-                    this.selected.splice(0, this.selected.length);
+              if (v !== undefined) {
+                if (item.selected) {
+                  if (this.selected.includes(v)) {
+                    this.selected.splice(this.selected.indexOf(v), 1);
                   }
-                  this.selected.push(v);
+                  else {
+                    if (this.unique && (this.mode === 'free')) {
+                      this.selected.splice(0, this.selected.length);
+                    }
+                    this.selected.push(v);
+                  }
+                }
+                else if (this.selected.includes(v)) {
+                  this.selected.splice(this.selected.indexOf(v), 1);
                 }
               }
               if ( item.data.action ){

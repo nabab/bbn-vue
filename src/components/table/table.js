@@ -1320,30 +1320,54 @@
        */
       exportExcel(){
         if ( this.isAjax && !this.isLoading ){
-          bbn.fn.post_out(this.source, this.getExcelPostData());
+          this.getPopup().open({
+            title: bbn._('Warning'),
+            content: '<div class="bbn-padded bbn-c">' + bbn._('What do you want to export?') + '</div>',
+            buttons: [{
+              text: bbn._('Cancel'),
+              action: () => {
+                this.getPopup().close();
+              }
+            }, {
+              text: bbn._('This view'),
+              action: () => {
+                bbn.fn.post_out(this.source, this.getExcelPostData(true));
+                this.getPopup().close();
+              }
+            }, {
+              text: bbn._('All'),
+              action: () => {
+                bbn.fn.post_out(this.source, this.getExcelPostData());
+                this.getPopup().close();
+              }
+            }],
+            width: 300
+          });
         }
       },
-      getExcelPostData(){
+      getExcelPostData(currentView){
         let cols = bbn.fn.filter(this.cols.slice(), c => {
               return this.shownFields.includes(c.field) || (c.export && c.export.mandatory)
             }),
             data = {
-              excel: bbn.fn.map(cols, c => {
-                return {
-                  field: c.field,
-                  // check if is present a custom 'title' on column's export property
-                  title: c.export && c.export.title ? c.export.title : (c.title || ''),
-                  // check if is present a custom 'type' on column's export property
-                  type: c.export && c.export.type ? c.export.type : (c.type || 'string'),
-                  hidden: !this.shownFields.includes(c.field) ? 1 : 0
-                }
-              }),
+              excel: {
+                fields: bbn.fn.map(cols, c => {
+                  return {
+                    field: c.field,
+                    // check if is present a custom 'title' on column's export property
+                    title: c.export && c.export.title ? c.export.title : (c.title || ''),
+                    // check if is present a custom 'type' on column's export property
+                    type: c.export && c.export.type ? c.export.type : (c.type || 'string'),
+                    hidden: !this.shownFields.includes(c.field) ? 1 : 0
+                  }
+                })
+              },
               // the current fields
               fields: bbn.fn.map(cols.slice(), f => {
                 return f.field
               }),
-              limit: 50000,
-              start: 0,
+              limit: currentView ? this.currentLimit : 50000,
+              start: currentView ? this.start : 0,
               data: this.getPostData()
             };
         if ( this.sortable ){

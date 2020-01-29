@@ -24,6 +24,9 @@
         type: String,
         default: 'hidden'
       },
+      title: {
+        type: String
+      },
       size: {
         type: [String, Number],
         default: ''

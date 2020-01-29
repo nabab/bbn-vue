@@ -152,6 +152,9 @@
         }
         this.numRegistered++;
         this.urls[cp.url] = cp;
+        let idx = this.getIndex(cp.url);
+        bbn.fn.log("Giving " + idx + " as index " + typeof(idx));
+        cp.currentIndex = idx;
         if ( !this.isInit && (this.numRegistered === this.views.length) ){
           this.isInit = true;
           if ( this.auto ){
@@ -264,7 +267,7 @@
           selected: null,
           css: '',
           advert: null,
-          unsaved: false,
+          dirty: false,
           help: null,
           imessages: [],
           script: null,
@@ -378,7 +381,7 @@
        * @param {Boolean} force
        */
       realRoute(url, st, force){
-        if (!bbn.fn.isString(url) ){
+        if (!bbn.fn.isString(url) && !bbn.fn.isNumber(url)){
           throw Error(bbn._('The component bbn-container must have a valid URL defined'));
         }
         if (this.urls[st]) {
@@ -410,6 +413,32 @@
               }
             });
           }
+        }
+      },
+
+      /**
+       * Route to the next view if any
+       */
+      next(force){
+        let next = this.selected+1;
+        if (!this.views[next] && force) {
+          next = 0;
+        }
+        if (this.views[next]) {
+          this.activateIndex(next);
+        }
+      },
+
+      /**
+       * Route to the previous view if any
+       */
+      prev(force){
+        let prev = this.selected-1;
+        if (!this.views[prev] && force) {
+          prev = this.views.length - 1;
+        }
+        if (this.views[prev]) {
+          this.activateIndex(prev);
         }
       },
 
@@ -598,7 +627,7 @@
       },
 
       isValidIndex(idx){
-        return this.views[idx] !== undefined;
+        return (typeof idx === 'number') && (this.views[idx] !== undefined);
       },
 
       /**
@@ -724,14 +753,12 @@
           ){
             ev.preventDefault();
             this.confirm(this.confirmLeave, () => {
-              bbn.fn.each(this.unsavedTabs, (t, i) => {
-                let forms = bbn.vue.findAll(this.getVue(t.idx), 'bbn-form');
-                if ( Array.isArray(forms) && forms.length ){
-                  bbn.fn.each(forms, (f, k) => {
-                    f.reset();
-                  });
-                }
-              });
+              let forms = this.views[idx].findAll('bbn-form');
+              if ( Array.isArray(forms) && forms.length ){
+                bbn.fn.each(forms, (f, k) => {
+                  f.reset();
+                });
+              }
               this.$nextTick(() => {
                 this.$emit('close', idx, ev);
                 this.remove(idx, true);
@@ -745,6 +772,9 @@
             bbn.fn.each(this.views, (v, i) => {
               if ( v.idx !== i ){
                 v.idx = i;
+                if (this.urls[v.url]) {
+                  this.urls[v.url].currentIndex = i;
+                }
               }
             });
           }
@@ -1058,6 +1088,27 @@
         }
         this.baseURL = this.setBaseURL(uri);
       }
+      else{
+        window.addEventListener("beforeunload", e =>{
+          e = e || window.event;
+          //if ( $(".bbn-tabnav-unsaved").length ){
+          if ( this.dirty ){
+            // doesn't use that string but a default string...
+            let st = bbn._('You have unsaved data, are you sure you want to leave?');
+
+            // For IE and Firefox prior to version 4
+            if (e) {
+              e.returnValue = st;
+            }
+            // For Safari
+            return st;
+          }
+          else{
+            //$(document.body).fadeOut();                
+            document.body.style.opacity = 0;
+          }
+        });
+      }
       // Adding bbns-tab from the slot
       let tmp = [];
       if ( this.$slots.default ){
@@ -1126,6 +1177,11 @@
         if ( this.ready ){
           //bbn.fn.log("ROUTER change URL", newVal);
           this.route(newVal);
+        }
+      },
+      dirty(v){
+        if (this.parentContainer) {
+          this.parentContainer.dirty = v;
         }
       }
     }

@@ -1,8 +1,8 @@
 <div :class="['bbn-widget', 'bbn-bordered', 'bbn-radius', 'bbn-alt-background', componentClass, full ? 'full' : '']"
      @mouseenter="$emit('mouseenter')">
   <!-- HEADER -->
-  <div class="bbn-header bbn-bordered-bottom bbn-vxspadded bbn-unselectable" v-if="title">
-    <div class="bbn-flex-width">
+  <div class="bbn-header bbn-bordered-bottom bbn-unselectable" v-if="title">
+    <div class="bbn-flex-width bbn-vxspadded">
       <!-- BUTTONS LEFT -->
       <div class="bbn-header-buttons bbn-widget-button-left bbn-hxspadded">
         <i v-if="closable"

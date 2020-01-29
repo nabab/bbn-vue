@@ -238,7 +238,7 @@
           selected: null,
           css: '',
           advert: null,
-          unsaved: false,
+          dirty: false,
           help: null,
           imessages: [],
           script: null,
@@ -668,14 +668,12 @@
           ){
             ev.preventDefault();
             this.confirm(this.confirmLeave, () => {
-              bbn.fn.each(this.unsavedTabs, (t, i) => {
-                let forms = bbn.vue.findAll(this.getVue(t.idx), 'bbn-form');
-                if ( Array.isArray(forms) && forms.length ){
-                  bbn.fn.each(forms, (f, k) => {
-                    f.reset();
-                  });
-                }
-              });
+              let forms = this.views[idx].findAll('bbn-form');
+              if ( Array.isArray(forms) && forms.length ){
+                bbn.fn.each(forms, (f, k) => {
+                  f.reset();
+                });
+              }
               this.$nextTick(() => {
                 this.$emit('close', idx, ev);
                 this.remove(idx, true);

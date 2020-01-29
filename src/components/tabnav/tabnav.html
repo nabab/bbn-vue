@@ -2,8 +2,8 @@
        'bbn-tabnav-scrollable': scrollable
      }, componentClass]"
 >
-  <div class="bbn-tabnav-container bbn-flex-height bbn-flex-width">
-    <div class="bbn-flex-fill bbn-tabnav-ul-container">
+  <div class="bbn-tabnav-container bbn-flex-height">
+    <div class="bbn-tabnav-ul-container">
       <div class="bbn-100">
         <component :is="scrollable ? 'bbn-scroll' : 'div'"
                    ref="horizontal-scroll"
@@ -53,7 +53,7 @@
                             tag: 'div'
                           }"
                           min-width="10em"
-                          :class="['bbn-tabnav-tab', 'bbn-iblock', {'bbn-tabnav-unsaved': tab.unsaved}]"
+                          :class="['bbn-tabnav-tab', 'bbn-iblock', {'bbn-tabnav-dirty': tab.dirty}]"
                           :ref="'title-' + tabIndex"
                           :style="{
                             color: tab.fcolor ? tab.fcolor : null

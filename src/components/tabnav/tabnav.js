@@ -149,11 +149,8 @@
       currentURL(){
         return this.router ? this.router.currentURL : '';
       },
-      unsavedTabs(){
-        return this.router ? this.router.dirtyContainers : [];
-      },
-      isUnsaved(){
-        return !!this.unsavedTabs.length;
+      isDirty(){
+        return this.router ? !!this.router.dirtyContainers.length : false;
       }
     },
 
@@ -798,13 +795,13 @@
         this.$forceUpdate();
       },
         */
-       isUnsaved(val){
+       isDirty(val){
         if ( this.parentTab &&
           this.parentTab.tabNav &&
           this.parentTab.tabNav.tabs &&
           this.parentTab.tabNav.tabs[this.parentTab.tabNav.selected]
         ){
-          this.parentTab.tabNav.tabs[this.parentTab.tabNav.selected].isUnsaved = val;
+          this.parentTab.tabNav.tabs[this.parentTab.tabNav.selected].dirty = val;
         }
       }
     }

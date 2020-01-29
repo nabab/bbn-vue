@@ -894,6 +894,9 @@
         if ( newVal !== oldVal ){
           this.currentValue = newVal;
         }
+      },
+      currentData(){
+        this.init();
       }
     }
   })

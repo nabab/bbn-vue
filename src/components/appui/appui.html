@@ -21,19 +21,19 @@
         'bbn-no-border': true,
       }">
         <!-- MENU BUTTON -->
-        <div class="bbn-block bbn-h-100 bbn-middle bbn-menu-button-container"
-             style="width: 70px; margin-right: 70px">
+        <div class="bbn-block bbn-h-100 bbn-menu-button-container"
+             style="width: 50px; margin-right: 90px">
           <div tabindex="0"
                @keydown.enter="toggleMenu"
                @keydown.space="toggleMenu"
                @mousedown.prevent.stop="toggleMenu"
-               class="bbn-overlay bbn-middle bbn-p">
+               class="bbn-overlay bbn-centered bbn-p">
             <i ref="icon" class="nf nf-fa-bars bbn-xxxl"> </i>
           </div>
         </div>
         <!-- SEARCHBAR -->
         <div class="bbn-abs bbn-h-100 bbn-vspadded"
-             style="left: 70px; right: 140px; top: auto">
+             style="left: 50px; right: 140px; top: auto">
           <!--<bbn-search source="adherents"
                       :placeholder="searchBar.placeholderFocused"
                       ref="search"
@@ -129,6 +129,7 @@
       </bbn-tabnav>
       <bbn-router v-else
                   ref="tabnav"
+                  class="bbn-overlay"
                   :source="source"
                   :url="url"
                   :root="root">

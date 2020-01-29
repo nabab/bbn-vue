@@ -18,4 +18,4 @@
     },
   });
 
-})(jQuery, bbn, kendo);
+})(bbn);

@@ -224,6 +224,15 @@
       windowed: {
         type: [Boolean, String],
         default: 'auto'
+      },
+      /**
+       * If true, will use the class bbn-overlay for its container.
+       *
+       * @prop {Boolean} fullSize
+       */
+      fullSize: {
+        type: Boolean,
+        default: false
       }
     },
     data(){
@@ -234,9 +243,9 @@
       return {
         /**
          * True if the form has been modified.
-         * @data {Boolean} [false] modified
+         * @data {Boolean} [false] dirty
          */
-        modified: false,
+        dirty: false,
         /**
          * True if the form has been modified.
          * @data {Boolean} [false] popup
@@ -264,7 +273,7 @@
         return this.$slots.footer && this.$slots.footer.length;
       },
       canCancel(){
-        return this.isModified() || this.window;
+        return this.window || this.isModified();
       },
       /**
        * Returns true if the form can be submitted.
@@ -273,7 +282,7 @@
        * @return {Boolean}
        */
       canSubmit(){
-        return this.isModified() || this.prefilled;
+        return this.prefilled || this.isModified();
       },
       /**
        * Based on the properties 'fixedFooter' and 'fullScreen', a string is returned containing the classes for the form's template.
@@ -287,10 +296,10 @@
           if ( this.window ){
             st += ' bbn-flex-height';
           }
-          else if ( (this.hasFooter || this.realButtons.length || this.footer) && this.scrollable ){
+          else if ( (this.hasFooter || this.realButtons.length || this.footer) && (this.scrollable || this.fullSize) ){
             st += ' bbn-flex-height';
           }
-          if ( this.scrollable ){
+          if ( this.scrollable || this.fullSize ){
             st += ' bbn-overlay';
           }
         }
@@ -353,7 +362,7 @@
                     action: () => {
                       this.reset();
                     },
-                    disabled: !this.modified && !this.prefilled
+                    disabled: !this.dirty && !this.prefilled
                   });
                   break;
                 case 'submit':
@@ -401,10 +410,7 @@
             if ( this.sendModel && this.source ){
               this.originalData = bbn.fn.extend(true, {}, this.source || {});
             }
-            this.modified = false;
-            if ( this.tab && this.tab.tabNav ){
-              this.tab.tabNav.tabs[this.tab.tabNav.selected].isUnsaved = this.modified;
-            }
+            this.dirty = false;
             this.isLoading = false;
             if ( !e.defaultPrevented ){
               if ( this.window ){
@@ -423,12 +429,7 @@
           if ( this.sendModel ){
             this.originalData = bbn.fn.clone(this.source);
           }
-          this.modified = false;
-          if ( this.tab && this.tab.tabNav ){
-
-            /** @todo Fix this */
-            this.$set(this.tab.router.views[this.tab.tabNav.selected], 'unsaved', this.modified);
-          }
+          this.dirty = false;
           this.isLoading = false;
           if ( !e.defaultPrevented ){
             if ( this.window ){
@@ -668,9 +669,33 @@
        */
       reinit(){
         this.originalData = JSON.parse(JSON.stringify(this.source));
-        this.modified = this.isModified();
+        this.dirty = this.isModified();
       },
-      /**
+      focusFirst(fromLast){
+        let cp = this.getRef('container');
+        if (cp.scrollable) {
+          cp = cp.$el;
+        }
+        if (cp) {
+          let focusable = false;
+          bbn.fn.each(cp.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"]'), (a) => {
+            if (a.offsetHeight && a.offsetWidth && !a.disabled && !a.classList.contains('bbn-no')) {
+              focusable = a;
+              if (!fromLast) {
+                return false;
+              }
+            }
+          });
+          if ( focusable ){
+            focusable.focus();
+          }
+        }
+      },
+      focusLast(){
+        bbn.fn.log("focusLast");
+        this.focusFirst(true);
+      },
+        /**
        * Initializes the form.
        * @method init 
        * 
@@ -692,15 +717,7 @@
           if ( !this.tab ){
             this.tab = this.closest("bbn-container");
           }
-          bbn.fn.each(this.$el.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"]'), (a) => {
-            if (a.offsetHeight && a.offsetWidth) {
-              focusable = a;
-              return false;
-            }
-          });
-          if ( focusable ){
-            focusable.focus();
-          }
+          this.focusFirst();
           this.isInit = true;
         });
       },
@@ -743,12 +760,7 @@
       source: {
         deep: true,
         handler(){
-          //bbn.fn.log("BBN-FORM MODIFIED");
-          this.modified = this.isModified();
-          //this.$emit('input', newVal);
-          if ( this.tab ){
-            this.tab.isUnsaved = this.modified;
-          }
+          this.dirty = this.isModified();
         }
       },
       /**
@@ -757,17 +769,12 @@
       canSubmit(){
         this.updateButtons();
       },
-      modified(v){
-        let ct = this.window || this.tab;
+      dirty(v){
         if (this.window) {
-          if ((v && !this.window.dirty) || (!v && this.window.dirty)) {
-            this.window.dirty = !this.window.dirty;
-          }
+          this.window.dirty = v;
         }
         if (this.tab) {
-          if ((v && !this.tab.dirty) || (!v && this.tab.dirty)) {
-            this.tab.dirty = !this.tab.dirty;
-          }
+          this.tab.dirty = v;
         }
       }
     }

@@ -107,10 +107,6 @@
         /**
          * @todo not used
          */
-        isUnsaved: false,
-        /**
-         * @todo not used
-         */
         isComponentActive: false,
         /**
          * True when the component finishes loading.
@@ -490,10 +486,6 @@
     },
 
     watch: {
-      isUnsaved(newVal){
-        this.router.views[this.idx].unsaved = newVal;
-
-      },
       current(newVal){
         if (newVal.indexOf(this.url) === 0){
           this.currentURL = newVal;
@@ -597,8 +589,10 @@
           this.selfEmit(true)
         })
       },
-      dirty(){
-        this.router.retrieveDirtyContainers()
+      dirty(v){
+        bbn.fn.log("DIRTY WATCHER", this.currentIndex, this.router.views);
+        this.router.views[this.currentIndex].dirty = v;
+        this.router.retrieveDirtyContainers();
       }
     },
 

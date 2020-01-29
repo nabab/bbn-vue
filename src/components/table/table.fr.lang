@@ -30,5 +30,9 @@
     "Row edition": "Modication de l'enregistrement",
     "Row copy": "Copie d'un enregistrement",
     "Multiple filters": "Filtres multiples",
-    "Impossible to open a window if either an editor or a URL is not set": "impossible d'ouvrir une fen\u00eatre si ni un \u00e9diteur ni une URL ne sont renseign\u00e9s"
+    "Impossible to open a window if either an editor or a URL is not set": "impossible d'ouvrir une fen\u00eatre si ni un \u00e9diteur ni une URL ne sont renseign\u00e9s",
+    "Warning": "Avertissement",
+    "What do you want to export?": "Que voulez-vous exporter?",
+    "This view": "Cette vue",
+    "All": "Tout"
 }
