@@ -15,7 +15,6 @@
       @mouseleave="mouseleave"
       @mouseenter="isOver = true"
       @keydown.esc.prevent.stop="close"
-      @click.stop
       @ready.stop
       :style="currentStyle">
   <header v-if="title"
@@ -65,7 +64,8 @@
       ></component>
       <slot v-else-if="$slots.default"></slot>
       <div v-else-if="!!content" 
-          v-html="content"
+           v-html="content"
+           :class="scrollable ? 'bbn-block' : 'bbn-100'"
       ></div>
       <bbn-list v-else-if="filteredData.length"
                 :mode="mode"

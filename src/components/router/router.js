@@ -148,19 +148,22 @@
           throw Error(bbn._('The component bbn-container must have a URL defined'));
         }
         if (this.urls[cp.url]) {
-          throw Error(bbn._('Two containers cannot have the same URL defined'));
+          throw Error(bbn._('Two containers cannot have the same URL defined (' + cp.url + ')'));
         }
         this.numRegistered++;
         this.urls[cp.url] = cp;
-        let idx = this.getIndex(cp.url);
-        bbn.fn.log("Giving " + idx + " as index " + typeof(idx));
-        cp.currentIndex = idx;
-        if ( !this.isInit && (this.numRegistered === this.views.length) ){
-          this.isInit = true;
-          if ( this.auto ){
-            this.route(this.getDefaultURL(), true);
+        let idx = this.search(cp.url);
+        if (idx === false) {
+          this.add(cp);
+        }
+        else{
+          cp.currentIndex = idx;
+          if ( !this.isInit && (this.numRegistered === this.views.length) ){
+            this.isInit = true;
+            if ( this.auto ){
+              this.route(this.getDefaultURL(), true);
+            }
           }
-
         }
       },
       /**
@@ -175,6 +178,11 @@
         }
         if ( this.urls[cp.url] ){
           delete this.urls[cp.url];
+        }
+        let idx = this.search(cp.url);
+        bbn.fn.log("GGGGGG", cp.url, idx, this.views);
+        if (idx !== false) {
+          this.remove(idx);
         }
       },
 
@@ -744,29 +752,8 @@
 
       remove(misc, force){
         let idx = this.getIndex(misc);
-        if ( (idx > -1) && !this.views[idx].slot ){
-          let ev = new Event('close', {cancelable: true});
-          if ( this.isDirty &&
-            this.views[idx].dirty &&
-            !ev.defaultPrevented &&
-            !force
-          ){
-            ev.preventDefault();
-            this.confirm(this.confirmLeave, () => {
-              let forms = this.views[idx].findAll('bbn-form');
-              if ( Array.isArray(forms) && forms.length ){
-                bbn.fn.each(forms, (f, k) => {
-                  f.reset();
-                });
-              }
-              this.$nextTick(() => {
-                this.$emit('close', idx, ev);
-                this.remove(idx, true);
-              });
-            });
-          }
-          this.$emit('close', idx, ev);
-          if (force || !ev.defaultPrevented) {
+        if (idx > -1) {
+          if (this.views[idx].slot) {
             let t = this.views.splice(idx, 1);
             delete this.urls[t.url];
             bbn.fn.each(this.views, (v, i) => {
@@ -778,7 +765,42 @@
               }
             });
           }
-          return true;
+          else {
+            let ev = new Event('close', {cancelable: true});
+            if ( this.isDirty &&
+              this.views[idx].dirty &&
+              !ev.defaultPrevented &&
+              !force
+            ){
+              ev.preventDefault();
+              this.confirm(this.confirmLeave, () => {
+                let forms = this.urls[this.views[idx].url].findAll('bbn-form');
+                if ( Array.isArray(forms) && forms.length ){
+                  bbn.fn.each(forms, (f, k) => {
+                    f.reset();
+                  });
+                }
+                this.$nextTick(() => {
+                  this.$emit('close', idx, ev);
+                  this.remove(idx, true);
+                });
+              });
+            }
+            this.$emit('close', idx, ev);
+            if (force || !ev.defaultPrevented) {
+              let t = this.views.splice(idx, 1);
+              delete this.urls[t.url];
+              bbn.fn.each(this.views, (v, i) => {
+                if ( v.idx !== i ){
+                  v.idx = i;
+                  if (this.urls[v.url]) {
+                    this.urls[v.url].currentIndex = i;
+                  }
+                }
+              });
+            }
+            return true;
+          }
         }
         return false;
       },
@@ -792,67 +814,85 @@
           bbn.fn.isString(obj.url) &&
           ((idx === undefined) || this.isValidIndex(idx) || (idx === this.views.length))
         ){
-          if ( !obj.current ){
-            if ( bbn.env.path.indexOf(this.getFullBaseURL() + (obj.url ? obj.url + '/' : '')) === 0 ){
-              obj.current = bbn.env.path.substr(this.getFullBaseURL().length);
-            }
-            else{
-              obj.current = obj.url;
-            }
-          }
-          else if ( (obj.current !== obj.url) && (obj.current.indexOf(obj.url + '/') !== 0) ){
-            obj.current = obj.url;
-          }
-          if ( !obj.current ){
-            obj.current = obj.url;
-          }
-          if ( obj.content ){
-            obj.loaded = true;
-          }
-          obj.events = {};
-          if ( obj.menu === undefined ){
-            obj.menu = [];
-          }
-          index = this.search(obj.url);
-          //bbn.fn.log("ADDING CONTAINER " + obj.current + " (" + index + ")");
-          if ( index !== false ){
-            let o = this.views[index],
-                cn = this.urls[this.views[index].url];
-            if ( idx === undefined ){
-              idx = index;
-            }
-            if ( cn ){
-              cn.currentIndex = idx;
-            }
-            if ( obj.real ){
-              return;
-            }
-            bbn.fn.iterate(obj, (a, n) => {
-              if ( o[n] !== a ){
-                // Each new property must be set with $set
-                this.$set(o, n, a)
+          if (obj.$options) {
+            if (!obj.current && !obj.currentURL) {
+              if ( bbn.env.path.indexOf(this.getFullBaseURL() + (obj.url ? obj.url + '/' : '')) === 0 ){
+                obj.currentURL = bbn.env.path.substr(this.getFullBaseURL().length);
               }
-            });
+              else{
+                obj.currentURL = obj.url;
+              }
+            }
+            obj = JSON.parse(JSON.stringify((obj.$options.propsData)));
+            obj.slot = true;
+            bbn.fn.log("ADDING FROM SLOT", obj, this.search(obj.url));
+            if (this.search(obj.url) === false) {
+              this.views.push(obj);
+            }
           }
           else{
-            if (this.single) {
-              if (this.views.length){
-                this.views.splice(0, this.views.length);
+            if ( !obj.current ){
+              if ( bbn.env.path.indexOf(this.getFullBaseURL() + (obj.url ? obj.url + '/' : '')) === 0 ){
+                obj.current = bbn.env.path.substr(this.getFullBaseURL().length);
               }
-              obj.selected = true;
-              obj.idx = this.views.length;
+              else{
+                obj.current = obj.url;
+              }
+            }
+            else if ( (obj.current !== obj.url) && (obj.current.indexOf(obj.url + '/') !== 0) ){
+              obj.current = obj.url;
+            }
+            if ( !obj.current ){
+              obj.current = obj.url;
+            }
+            if ( obj.content ){
+              obj.loaded = true;
+            }
+            obj.events = {};
+            if ( obj.menu === undefined ){
+              obj.menu = [];
+            }
+            index = this.search(obj.url);
+            //bbn.fn.log("ADDING CONTAINER " + obj.current + " (" + index + ")");
+            if ( index !== false ){
+              let o = this.views[index],
+                  cn = this.urls[this.views[index].url];
+              if ( idx === undefined ){
+                idx = index;
+              }
+              if ( cn ){
+                cn.currentIndex = idx;
+              }
+              if ( obj.real ){
+                return;
+              }
+              bbn.fn.iterate(obj, (a, n) => {
+                if ( o[n] !== a ){
+                  // Each new property must be set with $set
+                  this.$set(o, n, a)
+                }
+              });
             }
             else{
-              obj.selected = false;
-              obj.idx = idx === undefined ? this.views.length : idx;
-            }
-            bbn.fn.iterate(this.getDefaultView(), (a, n) => {
-              if ( obj[n] === undefined ){
-                // Each new property must be set with $set
-                this.$set(obj, n, a);
+              if (this.single) {
+                if (this.views.length){
+                  this.views.splice(0, this.views.length);
+                }
+                obj.selected = true;
+                obj.idx = this.views.length;
               }
-            });
-            this.views.push(obj);
+              else{
+                obj.selected = false;
+                obj.idx = idx === undefined ? this.views.length : idx;
+              }
+              bbn.fn.iterate(this.getDefaultView(), (a, n) => {
+                if ( obj[n] === undefined ){
+                  // Each new property must be set with $set
+                  this.$set(obj, n, a);
+                }
+              });
+              this.views.push(obj);
+            }
           }
         }
       },
@@ -1023,6 +1063,9 @@
           this.urls[this.views[idx].url].isLoaded
         ){
           this.views[idx].loaded = false;
+          if (this.views[idx].dirty) {
+            this.views[idx].dirty = false;
+          }
           this.urls[this.views[idx].url].isLoaded = false;
           this.$nextTick(() => {
             this.route(this.urls[this.views[idx].url].currentURL, true);

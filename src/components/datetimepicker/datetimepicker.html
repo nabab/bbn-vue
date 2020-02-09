@@ -32,7 +32,7 @@
                      @selected="setDate"
                      :value="value ? value.toString() : ''"
                      :selection="true"
-                     :auto-selection="true"                     
+                     :auto-selection="true"
                      ref="calendar"
                      :date="value ? value.toString() : ''"
                      :min="min"
@@ -48,12 +48,12 @@
                  ref="timeFloater"
                  @close="isTimeOpened = false"
                  :min-width="showSecond ? 165 : 110"
-                 :height="400"
-                 :scrollable="false"
+                 :height="scrollMode ? 400 : (blocksMode ? false : 50)"
+                 :scrollable="!!blocksMode || !scrollMode"
                  hpos="right"
                  :auto-hide="200"
     >
-    <timepicker inline-template 
+    <timepicker inline-template
                 ref="timepicker"
                 @change="setTime"
     >
@@ -69,7 +69,7 @@
                   class="bbn-unselectable bbn-header bbn-no-border-top bbn-no-hborder"
               ></div>
               <div class="bbn-flex-fill">
-                <bbn-scroll :hidden="true" 
+                <bbn-scroll :hidden="true"
                             ref="hourScroll"
                             @hook:mounted="hourReady = true"
                 >
@@ -96,11 +96,11 @@
                   class="bbn-unselectable bbn-header bbn-no-border-top bbn-no-hborder"
               ></div>
               <div class="bbn-flex-fill">
-                <bbn-scroll :hidden="true" 
+                <bbn-scroll :hidden="true"
                             ref="minuteScroll"
                             @hook:mounted="minuteReady = true"
                 >
-                  <div v-for="m in minsec" 
+                  <div v-for="m in minsec"
                       :class="['bbn-p', 'bbn-text', 'bbn-vspadded', 'bbn-reactive', {
                         'bbn-bordered-bottom': m.value !== 59,
                         'bbn-state-selected': minute === m.value
@@ -121,19 +121,19 @@
                     style="border-left: 1px solid"
           >
             <div class="bbn-flex-height">
-              <div v-text="_('Second').substr(0,1)" 
+              <div v-text="_('Second').substr(0,1)"
                     title="_('Second')"
                     class="bbn-unselectable bbn-header bbn-no-border-top bbn-no-hborder"
               ></div>
               <div class="bbn-flex-fill">
-                <bbn-scroll :hidden="true" 
+                <bbn-scroll :hidden="true"
                             ref="secondScroll"
                             @hook:mounted="secondReady = true"
                 >
-                  <div v-for="s in minsec" 
+                  <div v-for="s in minsec"
                       :class="['bbn-p', 'bbn-text', 'bbn-vspadded', 'bbn-background-internal', {
                         'bbn-bordered-bottom': s.value !== 59,
-                        'bbn-primary': second === s.value
+                        'bbn-state-selected': second === s.value
                       }]"
                       @click="setSecond(s.value)"
                       :ref="second === s.value ? 'secondActive' : undefined"
@@ -148,7 +148,7 @@
           </bbn-pane>
         </bbn-splitter>
       </div>
-      <div v-else
+      <div v-else-if="!comp.scrollMode && !comp.blocksMode"
            class="bbn-c"
       >
         <div class="bbn-iblock">
@@ -174,7 +174,7 @@
         <div class="bbn-iblock"
              v-if="comp.showSecond"
         >
-          <div v-text="_('Second').substr(0,1)" 
+          <div v-text="_('Second').substr(0,1)"
                title="_('Second')"
                class="bbn-unselectable bbn-header"
           ></div>
@@ -182,9 +182,117 @@
                         v-model="second"
                         style="width: 50px"
           ></bbn-dropdown>
-        </div>    
+        </div>
+      </div>
+      <div v-else-if="!comp.scrollMode && comp.blocksMode"
+           class="bbn-block bbn-background"
+           :style="{width: comp.showSecond ? '21.25em' : '15.18em'}"
+      >
+        <div class="bbn-block">
+          <div v-text="_('Hour').substr(0,1)"
+               title="_('Hour')"
+               class="bbn-unselectable bbn-header bbn-c bbn-no-border-top bbn-no-border-left bbn-no-border-right"
+          ></div>
+          <div class="bbn-c bbn-flex">
+            <div class="bbn-block" style="vertical-align: top;">
+              <div v-for="n in 12"
+                   :class="[
+                     'bbn-hspadded',
+                     'bbn-left-lpadded',
+                     'bbn-vxxspadded',
+                     'bbn-middle',
+                     'bbn-unselectable',
+                     'bbn-datetimepicker-timeblock',
+                     'bbn-p',
+                     {
+                       'bbn-bordered-bottom': n !== 12,
+                       'bbn-selected-background': hour === (n - 1),
+                       'bbn-selected-text': hour === (n - 1)
+                     }
+                   ]"
+                   v-text="(n - 1).toString().length === 1 ? '0' + (n - 1) : (n - 1)"
+                   @click="setHour(n - 1)"
+              ></div>
+            </div>
+            <div class="bbn-block" style="vertical-align: top;">
+              <div v-for="n in 12"
+                   :class="[
+                     'bbn-hspadded',
+                     'bbn-right-lpadded',
+                     'bbn-vxxspadded',
+                     'bbn-bordered-left',
+                     'bbn-middle',
+                     'bbn-unselectable',
+                     'bbn-datetimepicker-timeblock',
+                     'bbn-p',
+                     {
+                       'bbn-bordered-bottom': n !== 12,
+                       'bbn-selected-background': hour === n + 11,
+                       'bbn-selected-text': hour === n + 11
+                     }
+                   ]"
+                   v-text="n + 11"
+                   @click="setHour(n + 11)"
+              ></div>
+            </div>
+          </div>
+        </div>
+        <div class="bbn-block bbn-bordered-left">
+          <div v-text="_('Minute').substr(0,1)"
+               title="_('Minute')"
+               class="bbn-unselectable bbn-header bbn-c bbn-no-hborder bbn-no-border-top bbn-no-border-left"
+          ></div>
+          <div class="bbn-c bbn-block">
+            <div class="bbn-block" style="vertical-align: top;">
+              <div v-for="n in 12"
+                   :class="[
+                     'bbn-hlpadded',
+                     'bbn-vxxspadded',
+                     'bbn-middle',
+                     'bbn-unselectable',
+                     'bbn-datetimepicker-timeblock',
+                     'bbn-p',
+                     {
+                       'bbn-bordered-bottom': n !== 12,
+                       'bbn-selected-background': minute === (n - 1) * 5,
+                       'bbn-selected-text': minute === (n - 1) * 5
+                     }
+                   ]"
+                   v-text="((n - 1) * 5).toString().length === 1 ? '0' + ((n - 1) * 5) : ((n - 1) * 5)"
+                   @click="setMinute((n - 1) * 5)"
+              ></div>
+            </div>
+          </div>
+        </div>
+        <div v-if="comp.showSecond"
+             class="bbn-block bbn-bordered-left">
+          <div v-text="_('Second').substr(0,1)"
+               title="_('Second')"
+               class="bbn-unselectable bbn-header bbn-c bbn-no-border-right bbn-no-border-top bbn-no-border-left"
+          ></div>
+          <div class="bbn-c bbn-block">
+            <div class="bbn-block" style="vertical-align: top;">
+              <div v-for="n in 12"
+                   :class="[
+                     'bbn-hlpadded',
+                     'bbn-vxxspadded',
+                     'bbn-middle',
+                     'bbn-unselectable',
+                     'bbn-datetimepicker-timeblock',
+                     'bbn-p',
+                     {
+                       'bbn-bordered-bottom': n !== 12,
+                       'bbn-selected-background': second === (n - 1) * 5,
+                       'bbn-selected-text': second === (n - 1) * 5
+                     }
+                   ]"
+                   v-text="((n - 1) * 5).toString().length === 1 ? '0' + ((n - 1) * 5) : ((n - 1) * 5)"
+                   @click="setSecond((n - 1) * 5)"
+              ></div>
+            </div>
+          </div>
+        </div>
       </div>
     </timepicker>
   </bbn-floater>
 </span>
-  

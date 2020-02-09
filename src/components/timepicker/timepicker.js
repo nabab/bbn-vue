@@ -3,7 +3,7 @@
  *
  * @description bbn-timepicker is a component that allowes the user to choose a time value.
  * This component allows the association of data in a bidirectional way and allows the users to choose a validation interval period and the format of the value entered.
-  
+
  * @author Mirko Argentino
  *
  * @copyright BBN Solutions
@@ -76,6 +76,15 @@
         default: true
       },
       /**
+       * Sets to true to show a list view for the time selection instead of the dropdowns.
+       *
+       * @prop {Boolean} [false] blocksMode
+      */
+      blocksMode: {
+        type: Boolean,
+        default: false
+      },
+      /**
        * Set it to false if you dont' want to auto-resize the input's width based on its value (in characters).
        * @prop {Boolean} [true] autosize
        */
@@ -92,21 +101,21 @@
          * @data {Boolean} [false] isOpened
         */
         isOpened: false,
-        /** 
+        /**
          * Indicates if the bbn-masked component is mounted.
-         * 
+         *
          * @data {Boolean} [false] maskedMounted
         */
         maskedMounted: false,
-        /** 
+        /**
          * The current value displayed on the input.
-         * 
+         *
          * @data {String} [''] inputValue
         */
         inputValue: '',
         /**
          * The old value displayed in the input.
-         * 
+         *
          * @data {String} [''] oldInputvalue
          */
         oldInputValue: ''
@@ -142,7 +151,7 @@
       },
       /**
        * True if the values of the inputValue and the oldInputValue properties are different.
-       * 
+       *
        * @computed intuValueChanged
        * @return {String}
        */
@@ -159,7 +168,7 @@
        * @return {String}
        */
       getValueFormat(val){
-        return bbn.fn.isFunction(this.currentValueFormat) ? this.currentValueFormat(val) : this.currentValueFormat;
+        return bbn.fn.isFunction(this.valueFormat) ? this.valueFormat(val) : this.currentValueFormat;
       },
       /**
        * Sets the value.
@@ -171,14 +180,19 @@
       */
       setValue(val, format){
         if ( !format ){
-          format = val ? this.getValueFormat(val) : false;
+          format = !!val ? this.getValueFormat(val.toString()) : false;
         }
-        let value = format && val ? (moment(val, format).isValid() ? moment(val, format).format(this.getValueFormat(val)) : '') : '';
-        if ( value && this.min && (value < this.min) ){
-          value = this.min;
+        let value = !!format && !!val ? (moment(val.toString(), format).isValid() ? moment(val.toString(), format).format(format) : '') : '';
+        if ( value ){
+          if ( value && this.min && (value < this.min) ){
+            value = this.min;
+          }
+          if ( value && this.max && (value > this.max) ){
+            value = this.max;
+          }
         }
-        if ( value && this.max && (value > this.max) ){
-          value = this.max;
+        else if ( this.nullable ){
+          value = null;
         }
         if ( value !== this.value ){
           this.emitInput(value);
@@ -202,9 +216,10 @@
        * @emits change
       */
       inputChanged(){
-        let newVal = this.$refs.element.inputValue,
+        let mask = this.getRef('element'),
+            newVal = mask.inputValue,
             value = !!newVal ? moment(newVal, this.currentFormat).format(this.getValueFormat(newVal)) : '';
-        if ( this.$refs.element.raw(newVal) !== this.oldInputValue ){
+        if ( mask.element.raw(newVal) !== this.oldInputValue ){
           if ( value && this.min && (value < this.min) ){
             value = this.min;
           }
@@ -214,16 +229,22 @@
           this.setValue(value);
           this.$nextTick(() => {
             if ( this.value !== value ){
-              this.$emit('change', event);
+              this.$emit('change', value);
             }
           });
         }
       },
       setInputValue(newVal){
-        let mom = moment(newVal.toString(), this.getValueFormat(newVal.toString()));
-        this.inputValue = newVal && this.$refs.element && mom.isValid() ? 
-          this.$refs.element.raw(mom.format(this.currentFormat)) : 
-          '';
+        if ( newVal ){
+          let mask = this.getRef('element'),
+              mom = moment(newVal.toString(), this.getValueFormat(newVal.toString()));
+          this.inputValue = newVal && mask && mom.isValid() ?
+            mask.raw(mom.format(this.currentFormat)) :
+            '';
+        }
+        else {
+          this.inputValue = '';
+        }
         this.oldInputValue = this.inputValue;
       }
     },
@@ -251,21 +272,21 @@
        * @fires setValue
        */
       min(){
-        this.setValue(this.value !== undefined ? this.value.toString() : '');
+        this.setValue(this.value || '');
       },
       /**
        * @watch max
        * @fires setValue
        */
       max(){
-        this.setValue(this.value !== undefined ? this.value.toString() : '');
+        this.setValue(this.value || '');
       },
       /**
        * @watch valueFormat
        * @fires setValue
        */
       valueFormat(){
-        this.setValue(this.value !== undefined ? this.value.toString() : '');
+        this.setValue(this.value || '');
       },
       /**
        * @watch maskedMounted
@@ -273,12 +294,10 @@
        */
       maskedMounted(newVal){
         if ( newVal ){
-          let val = this.value ? this.value.toString() : '';
-          this.inputValue = this.$refs.element.raw(moment(val, this.getValueFormat(val)).format(this.currentFormat));
-          this.oldInputValue = this.inputValue;
+          this.setInputValue(this.value);
         }
       },
-      /** 
+      /**
        * @watch value
        * @fires getValueFormat
        * @fires updateCalendar
@@ -408,10 +427,10 @@
               this.comp.scrollMode &&
               this.hourReady &&
               this.minuteReady &&
-              this.$refs.minuteActive &&
-              this.$refs.hourActive &&
-              this.comp.$refs.floater.ready &&
-              (!this.comp.showSecond || (this.secondReady && this.$refs.secondActive))
+              this.getRef('minuteActive') &&
+              this.getRef('hourActive') &&
+              this.comp.getRef('floater').ready &&
+              (!this.comp.showSecond || (this.secondReady && this.getRef('secondActive')))
             );
           }
         },

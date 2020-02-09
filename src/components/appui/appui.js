@@ -201,6 +201,9 @@
         if (registeredComponents[name]) {
           return registeredComponents[name];
         }
+        if (name === undefined) {
+          return registeredComponents;
+        }
         throw new Error(bbn._("The component") + ' ' + name + ' ' + bbn._("cannot be found"));
       },
 
@@ -505,10 +508,9 @@
         throw new Error("Impossible to have 2 bbn-appui components on a same page. bbn-appui is meant to hold a whole web app");
       }
       else{
-        this.cool = true;
-        this.componentClass.push('bbn-observer');
         window.appui = this;
-        bbn.fn.init({
+        this.componentClass.push('bbn-observer');
+        let bbnDefaults = {
           fn: {
             defaultAjaxErrorFunction(jqXHR, textStatus, errorThrown) {
               /** @todo */
@@ -565,7 +567,12 @@
               appui.selfEmit(true);
             }
           }
-        });
+        };
+        if (this.root) {
+          bbnDefaults.env = {root: this.root};
+        }
+        bbn.fn.init(bbnDefaults);
+        this.cool = true;
         /*
         bbn.fn.each(this.plugins, (p, i) => {
 

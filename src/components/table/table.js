@@ -1320,34 +1320,41 @@
        */
       exportExcel(){
         if ( this.isAjax && !this.isLoading ){
-          this.getPopup().open({
-            title: bbn._('Warning'),
-            content: '<div class="bbn-padded bbn-c">' + bbn._('What do you want to export?') + '</div>',
-            buttons: [{
-              text: bbn._('Cancel'),
-              action: () => {
-                this.getPopup().close();
-              }
-            }, {
-              text: bbn._('This view'),
-              action: () => {
-                bbn.fn.post_out(this.source, this.getExcelPostData(true));
-                this.getPopup().close();
-              }
-            }, {
-              text: bbn._('All'),
-              action: () => {
-                bbn.fn.post_out(this.source, this.getExcelPostData());
-                this.getPopup().close();
-              }
-            }],
-            width: 300
-          });
+          if ( this.pageable ){
+            this.getPopup().open({
+              title: bbn._('Warning'),
+              content: '<div class="bbn-padded bbn-c">' + bbn._('What do you want to export?') + '</div>',
+              buttons: [{
+                text: bbn._('Cancel'),
+                action: () => {
+                  this.getPopup().close();
+                }
+              }, {
+                text: bbn._('This view'),
+                action: () => {
+                  bbn.fn.post_out(this.source, this.getExcelPostData(true));
+                  this.getPopup().close();
+                }
+              }, {
+                text: bbn._('All'),
+                action: () => {
+                  bbn.fn.post_out(this.source, this.getExcelPostData());
+                  this.getPopup().close();
+                }
+              }],
+              width: 300
+            });
+          }
+          else {
+            this.confirm(bbn._('Are you sure you want to export to Excel?'), () => {
+              bbn.fn.post_out(this.source, this.getExcelPostData());
+            });
+          }
         }
       },
       getExcelPostData(currentView){
-        let cols = bbn.fn.filter(this.cols.slice(), c => {
-              return this.shownFields.includes(c.field) || (c.export && c.export.mandatory)
+        let cols = bbn.fn.filter(bbn.fn.extend(true, [], this.cols), c => {
+              return (this.shownFields.includes(c.field) && ((c.export === undefined) || !c.export.excluded)) || (c.export && !c.export.excluded);
             }),
             data = {
               excel: {
@@ -1358,7 +1365,8 @@
                     title: c.export && c.export.title ? c.export.title : (c.title || ''),
                     // check if is present a custom 'type' on column's export property
                     type: c.export && c.export.type ? c.export.type : (c.type || 'string'),
-                    hidden: !this.shownFields.includes(c.field) ? 1 : 0
+                    hidden: (c.export && (c.export.hidden !== undefined)) ? +c.export.hidden : (!this.shownFields.includes(c.field) ? 1 : 0),
+                    format: c.export && c.export.format ? c.export.format : null
                   }
                 })
               },

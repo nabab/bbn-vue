@@ -1,0 +1,11 @@
+{
+  "name": "bbn-colorpicker2",
+  "version": "0.0.1",
+  "authors": [
+    "Mirko Argentino <mirko@bbn.solutions>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "iro.js": ">= 5.0.0"
+  }
+}

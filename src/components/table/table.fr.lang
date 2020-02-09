@@ -34,5 +34,6 @@
     "Warning": "Avertissement",
     "What do you want to export?": "Que voulez-vous exporter?",
     "This view": "Cette vue",
-    "All": "Tout"
+    "All": "Tout",
+    "Are you sure you want to export to Excel?": "Voulez-vous vraiment exporter vers Excel?"
 }

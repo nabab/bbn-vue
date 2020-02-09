@@ -1,16 +1,16 @@
 .bbn-scroll {
-  overflow: hidden;
   position: relative;
   width: 100%;
   height: 100%;
   > .bbn-scroll-container {
-    top: 0px;
-    left: 0px;
-    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    box-sizing: content-box;
     overflow: scroll;
     &.bbn-overlay{
       overflow: hidden;
     }
+    scrollbar-width: none;
     &::-webkit-scrollbar {
      display: none;
     }

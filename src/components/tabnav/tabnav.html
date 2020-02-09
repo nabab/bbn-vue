@@ -62,10 +62,11 @@
                           @keydown.space.enter.prevent.stop="tabIndex !== selected ? activateIndex(tabIndex) : (() => {})()"
                           @keydown.right.down.prevent.stop="getRef('menu-' + tabIndex) ? getRef('menu-' + tabIndex).$el.focus() : (getRef('closer-' + tabIndex) ? getRef('closer-' + tabIndex).focus() : null)"
               >
-                <i v-if="tab.icon"
-                  :title="tab.title"
-                  :class="tab.icon + (tab.notext ? ' bbn-xl' : '')">
-                </i>
+                <span v-if="tab.icon"
+                      :title="tab.title"
+                      :class="'bbn-iblock' + (tab.notext ? ' bbn-lg' : '')">
+                  <i :class="tab.icon"></i>
+                </span>
                 <span v-if="!tab.notext && tab.title"
                       class="bbn-tab-text"
                       :title="getFullTitle(tab)"

@@ -15,10 +15,10 @@
 
   Vue.component('bbn-multipart', {
     /**
-     *
      * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.localStorageComponent
      */
-    mixins: [bbn.vue.basicComponent],
+    mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent],
     props: {
       /**
        *@tood not used
@@ -43,6 +43,7 @@
        */
       disabled: {},
       script: {},
+      scrollable: {},
       /**
        * The list of fields the form must contain.
        *
@@ -235,7 +236,8 @@
         router: null,
         form: null,
         hasNext: false,
-        hasPrev: false
+        hasPrev: false,
+        isFocusing: false
       }
     },
     methods: {
@@ -253,6 +255,9 @@
         this.router = this.getRef('router');
         this.form = this.getRef('form');
         this.update();
+        setTimeout(() => {
+          this.router.route(this.router.getDefaultURL(), true);
+        }, 100)
       },
       focusout(e){
         bbn.fn.log("FOCUSING OUT")
@@ -260,24 +265,34 @@
       leaveBefore(e){
         if (this.hasPrev) {
           this.router.prev();
+          this.isFocusing = true;
           setTimeout(() => {
             this.form.focusLast();
+            this.isFocusing = false;
           }, 100)
         }
       },
       leaveAfter(e){
         if (this.hasNext) {
           this.router.next();
+          this.isFocusing = true;
           setTimeout(() => {
             this.form.focusFirst();
+            this.isFocusing = false;
           }, 100)
         }
       },
       update(){
         this.hasPrev = this.router.views[this.router.selected-1] !== undefined;
         this.hasNext = this.router.views[this.router.selected+1] !== undefined;
-      }
-    },
+      },
+      onRoute(){
+        this.update();
+        if (!this.isFocusing) {
+          this.form.focusFirst();
+        }
+      },
+    }
   });
 
 })(bbn);

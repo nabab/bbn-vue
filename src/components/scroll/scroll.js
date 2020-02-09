@@ -157,12 +157,12 @@
          * Defines the position ofthe scroll container
          * @data {String} scrollPos
          */
-        scrollPos: (bbn.fn.getScrollBarSize() ? '-' + bbn.fn.getScrollBarSize() : '0') + 'px',
+        scrollPos: '0px',
         /**
          * Defines the padding of the scroll container
          * @data {String} containerPadding
          */
-        containerPadding: (bbn.fn.getScrollBarSize() ? bbn.fn.getScrollBarSize() : '0') + 'px',
+        containerPadding: '0px',
         /**
          * Defines if the scroll has to be hidden basing on the prop hidden
          * @data {Boolean} hiddenX
@@ -261,20 +261,6 @@
         }
         */
         return cfg;
-      },
-      /**
-       * @todo not used
-       */
-      containerStyle(){
-        if ( this.isMeasuring || !this.scrollable ){
-          return {};
-        }
-        return {
-          right: this.hasScrollX ? this.scrollPos : 0,
-          bottom: this.hasScrollY ? this.scrollPos : 0,
-          paddingRight: this.hasScrollX ? this.containerPadding : 0,
-          paddingBottom: this.hasScrollY ? this.containerPadding : 0
-        };
       },
       /**
        * @todo not used
@@ -558,7 +544,7 @@
       scrollStartX(){
         let x = this.getRef('xScroller');
         if (x) {
-          x.scrollTo(0);
+          x.scrollStart();
         }
         else {
           this.getRef('scrollContainer').scrollLeft = 0;
@@ -573,7 +559,7 @@
         if (this.hasScrollY) {
           let y = this.getRef('yScroller');
           if (y) {
-            y.scrollTo(0);
+            y.scrollStart();
           }
           else {
             this.getRef('scrollContainer').scrollTop = 0;
@@ -636,7 +622,7 @@
       scrollEndX(){
         let x = this.getRef('xScroller');
         if ( x ){
-          x.scrollTo('100%');
+          x.scrollEnd();
         }
         else {
           this.getRef('scrollContainer').scrollLeft = this.getRef('scrollContainer').scrollWidth;
@@ -650,7 +636,7 @@
       scrollEndY(){
         let y = this.getRef('yScroller');
         if ( y ){
-          y.scrollTo('100%');
+          y.scrollEnd();
         }
         else {
           this.getRef('scrollContainer').scrollTop = this.getRef('scrollContainer').scrollHeight;

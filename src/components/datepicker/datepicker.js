@@ -125,21 +125,21 @@
          * @data {Boolean} [false] isOpened
         */
         isOpened: false,
-        /** 
+        /**
          * Indicates if the bbn-masked is mounted.
-         * 
+         *
          * @data {Boolean} [false] maskedMounted
         */
         maskedMounted: false,
-        /** 
+        /**
          * The current value displayed in the input.
-         * 
+         *
          * @data {String} [''] inputValue
         */
         inputValue: '',
         /**
          * The old value displayed in the input.
-         * 
+         *
          * @data {String} [''] oldInputvalue
          */
         oldInputValue: ''
@@ -201,21 +201,8 @@
         return 'DD/MM/YYYY';
       },
       /**
-       * The current value displayed in the input.
-       *
-       * @computed inputValue
-       * @fires getValueFormat
-       * @return {String}
-       */
-      /* inputValue(){
-        if ( this.value && this.maskedMounted ){
-          return this.$refs.element.raw(moment(this.value, this.getValueFormat(this.value)).format(this.currentFormat));
-        }
-        return '';
-      }, */
-      /**
        * True if the values of the inputValue and the oldInputValue properties are different.
-       * 
+       *
        * @computed intuValueChanged
        * @return {String}
        */
@@ -232,7 +219,7 @@
        * @return {String}
        */
       getValueFormat(val){
-        return bbn.fn.isFunction(this.currentValueFormat) ? this.currentValueFormat(val) : this.currentValueFormat;
+        return bbn.fn.isFunction(this.valueFormat) ? this.valueFormat(val) : this.currentValueFormat;
 
       },
       /**
@@ -254,13 +241,25 @@
        * @emits input
       */
       setValue(val){
-        let format = !!val ? this.getValueFormat(val) : false,
-            value = format ? (moment(val, format).isValid() ? moment(val, format).format(format) : '') : '';
-        if ( value && this.min && (value < this.min) ){
-          value = this.min;
+        let format = !!val ? this.getValueFormat(val.toString()) : false,
+            value = format ? (moment(val.toString(), format).isValid() ? moment(val.toString(), format).format(format) : '') : '';
+        if ( value ){
+          if ( this.min && (value < this.min) ){
+            value = this.min;
+          }
+          if ( this.max && (value > this.max) ){
+            value = this.max;
+          }
+          if (
+            this.disableDates &&
+            (bbn.fn.isFunction(this.disableDates) && this.disableDates(value)) ||
+            (bbn.fn.isArray(this.disableDates) && this.disableDates.includes(value))
+          ){
+            value = this.nullable ? null : '';
+          }
         }
-        if ( value && this.max && (value > this.max) ){
-          value = this.max;
+        else if ( this.nullable ){
+          value = null;
         }
         if ( value !== this.value ){
           this.emitInput(value);
@@ -281,13 +280,13 @@
        * @fires calendar.refresh
       */
       updateCalendar(){
-        if ( this.$refs.calendar ){
-          this.$refs.calendar.refresh();
+        if ( this.getRef('calendar') ){
+          this.getRef('calendar').refresh();
         }
       },
-      /** 
+      /**
        * The method called by the input blur event.
-       * 
+       *
        * @method inputChanged
        * @fires getValueFormat
        * @fires disableDates
@@ -295,9 +294,10 @@
        * @emits change
       */
       inputChanged(){
-        let newVal = this.$refs.element.inputValue,
+        let mask = this.getRef('element'),
+            newVal = mask.inputValue,
             value = !!newVal ? moment(newVal, this.currentFormat).format(this.getValueFormat(newVal)) : '';
-        if ( this.$refs.element.raw(newVal) !== this.oldInputValue ){
+        if ( mask.raw(newVal) !== this.oldInputValue ){
           if ( value && this.min && (value < this.min) ){
             value = this.min;
           }
@@ -315,7 +315,7 @@
             this.setValue(value);
             this.$nextTick(() => {
               if ( this.value !== value ){
-                this.$emit('change', event);
+                this.$emit('change', value);
               }
             });
           }
@@ -328,10 +328,16 @@
        * @fires updateCalendar
        */
       setInputValue(newVal){
-        let mom = moment(newVal.toString(), this.getValueFormat(newVal.toString()));
-        this.inputValue = newVal && this.$refs.element && mom.isValid() ? 
-          this.$refs.element.raw(mom.format(this.currentFormat)) : 
-          ''; 
+        if ( newVal ){
+          let mask = this.getRef('element'),
+              mom = moment(newVal.toString(), this.getValueFormat(newVal.toString()));
+          this.inputValue = newVal && mask && mom.isValid() ?
+            mask.raw(mom.format(this.currentFormat)) :
+            '';
+        }
+        else {
+          this.inputValue = '';
+        }
         this.oldInputValue = this.inputValue;
         this.updateCalendar();
       }
@@ -357,7 +363,7 @@
        * @fires updateCalendar
        */
       min(){
-        this.setValue(this.value !== undefined ? this.value.toString() : '');
+        this.setValue(this.value || '');
         this.updateCalendar();
       },
       /**
@@ -366,7 +372,7 @@
        * @fires updateCalendar
        */
       max(){
-        this.setValue(this.value !== undefined ? this.value.toString() : '');
+        this.setValue(this.value || '');
         this.updateCalendar();
       },
       /**
@@ -374,7 +380,7 @@
        * @fires setValue
        */
       valueFormat(){
-        this.setValue(this.value !== undefined ? this.value.toString() : '');
+        this.setValue(this.value || '');
       },
       /**
        * @watch maskedMounted
@@ -382,12 +388,10 @@
        */
       maskedMounted(newVal){
         if ( newVal ){
-          let val = this.value ? this.value.toString() : '';
-          this.inputValue = this.$refs.element.raw(moment(val, this.getValueFormat(val)).format(this.currentFormat));
-          this.oldInputValue = this.inputValue;
+          this.setInputValue(this.value);
         }
       },
-      /** 
+      /**
        * @watch value
        * @fires getValueFormat
        * @fires updateCalendar

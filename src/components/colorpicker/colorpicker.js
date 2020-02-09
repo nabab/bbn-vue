@@ -298,9 +298,9 @@
         this.initComponent();
       },
       value(oldVal, newVal){
-        /*if( newVal !== oldVal ){
+        if( newVal !== oldVal ){
           this.$emit('change', newVal)
-        }*/
+        }
       }
     }
   });

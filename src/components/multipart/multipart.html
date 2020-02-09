@@ -17,8 +17,10 @@
       <bbn-router class="bbn-overlay"
                   ref="router"
                   @hook:mounted="init"
+                  :autoload="false"
                   :root="root"
-                  @change="update">
+                  :auto="false"
+                  @change="onRoute">
 
         <slot></slot>
       </bbn-router>

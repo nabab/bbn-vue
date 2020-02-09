@@ -299,7 +299,7 @@
       onResize(){
         //bbn.fn.log(this.scroller ? "CROLLE YES / " + this.scroller['container' + (this.isVertical ? 'Height' : 'Width')] : "NO SCROLLER");
         if ( this.realContainer ){
-          let tmp1 = (this.isVertical ? this.realContainer.clientHeight : this.realContainer.clientWidth) - bbn.fn.getScrollBarSize(),
+          let tmp1 = this.isVertical ? this.realContainer.clientHeight : this.realContainer.clientWidth,
               tmp2 = this.realContainer.children[0] ? this.realContainer.children[0][this.isVertical ? 'clientHeight' : 'clientWidth'] : this.containerSize;
           if ( tmp1 < 20 ){
             this.containerSize = 0;
@@ -310,7 +310,7 @@
           if ( (tmp1 !== this.containerSize) || (tmp2 !== this.contentSize) ){
             this.containerSize = tmp1 > 0 ? tmp1 : 0;
             this.contentSize = tmp2 > 0 ? tmp2 : 0;
-            this.isActive = this.contentSize > (this.containerSize + bbn.fn.getScrollBarSize() + 2);
+            this.isActive = this.contentSize > this.containerSize + 2;
           }
         }
         else{

@@ -556,14 +556,17 @@
         this.widget.on("change", (ins, bbb) => {
           this.emitInput(this.widget.doc.getValue());
         });
-        if ( this.mode === 'js' ){
-          if ( bbn.vue.tern ){
-            this.widget.on("cursorActivity", function(cm) { bbn.vue.tern.updateArgHints(cm); });
+        this.widget.on("cursorActivity", (cm) => {
+          bbn.fn.log(cm);
+          if ( this.mode === 'js' ){
+            if ( bbn.vue.tern ){
+                bbn.vue.tern.updateArgHints(cm);
+            }
+            else{
+              this.initTern();
+            }
           }
-          else{
-            this.initTern();
-          }
-        }
+        });
         this.$nextTick(() => {
           this.ready = true;
           this.$nextTick(() => {
@@ -599,7 +602,7 @@
        * @param {String} oldVal 
        */
       value(newVal, oldVal){
-        if ( (newVal !== oldVal) && ( newVal !== this.widget.getValue()) ){
+        if ( (newVal !== oldVal) && (newVal !== this.widget.getValue()) ){
           this.widget.setValue(newVal);
         }
       }

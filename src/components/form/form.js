@@ -15,10 +15,10 @@
 
   Vue.component('bbn-form', {
     /**
-     *
      * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.localStorageComponent
      */
-    mixins: [bbn.vue.basicComponent],
+    mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent],
     props: {
       /**
        *@tood not used
@@ -256,7 +256,7 @@
         isPosted: false,
         isLoading: false,
         currentSchema: currentSchema,
-        isPosting: false,
+        _isSetting: false,
         window: null,
         isInit: false,
         realButtons: this.getRealButtons()
@@ -741,6 +741,58 @@
      * @fires init
      */
     mounted(){
+      if (this.storage){
+        let data = this.getStorage();
+        if (data) {
+          this._isSetting = true;
+          bbn.fn.iterate(data, (val, name) => {
+            //if ( this.source[name] !== val ){
+            if ( !bbn.fn.isSame(this.source[name], val) ){
+              if (typeof val !== typeof this.source[name]) {
+                this.$set(this.source, name, bbn.fn.clone(val));
+              }
+              else if (bbn.fn.isArray(this.source[name], val)){
+                bbn.fn.each(val, (a, i) => {
+                  if ( this.source[name].length <= i ){
+                    this.source[name].push(a);
+                  }
+                  else if ( a !== this.source[name][i] ){
+                    let idx = this.source[name].indexOf(a);
+                    if ( idx > i ){
+                      bbn.fn.move(this.source[name], idx, i);
+                    }
+                    else{
+                      this.source[name].splice(i, 0, a);
+                    }
+                  }
+                });
+                if ( this.source[name].length > val.length ){
+                  this.source[name].splice(val.length, this.source[name].length - val.length);
+                }
+              }
+              else if (bbn.fn.isObject(this.source[name], val)){
+                let k1 = Object.keys(val);
+                let k2 = Object.keys(this.source[name]);
+                bbn.fn.each(k2, a => {
+                  if ( k1.indexOf(a) === -1 ){
+                    delete this.source[name][a];
+                  }
+                });
+                bbn.fn.each(k1, a => {
+                  if (val[a] !== this.source[name][a]){
+                    this.source[name][a] = val[a];
+                  }
+                });
+              }
+              else{
+                this.$set(this.source, name, bbn.fn.clone(val));
+              }
+            }
+          });
+          this._isSetting = false;
+          this.$forceUpdate();
+        }
+      }
       this.init();
     },
     watch: {
@@ -761,6 +813,17 @@
         deep: true,
         handler(){
           this.dirty = this.isModified();
+          if (this.storage) {
+            if (!this._isSetting) {
+              this.setStorage(this.source)
+            }
+          }
+        }
+      },
+      buttons: {
+        deep: true,
+        handler(){
+          this.realButtons = this.getRealButtons();
         }
       },
       /**

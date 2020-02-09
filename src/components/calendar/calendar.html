@@ -7,7 +7,7 @@
        style="z-index: 1"
   ></div>
   <div class="bbn-widget bbn-flex-height">
-    <div class="bbn-calendar-header bbn-header bbn-xspadded">
+    <div class="bbn-calendar-header bbn-header bbn-xspadded bbn-no-border-left bbn-no-border-right bbn-no-border-top">
       <component v-if="headerComponent"
                  :is="headerComponent"
       ></component>
@@ -87,7 +87,7 @@
       <template v-for="item in items">
         <div v-if="!item.hidden"
              :class="['bbn-calendar-item-box', 'bbn-box', {
-               'bbn-p': selection && !item.disabled,               
+               'bbn-p': selection && !item.disabled,
                'bbn-spadded': !itemDetails && itemPadding,
                'bbn-tertiary': item.isCurrent && !(selection && (item.value === currentValue)),
                'bbn-background-effect-tertiary': item.isCurrent && item.inRange && (item.value !== currentValue),
@@ -109,7 +109,7 @@
         >
           <div v-if="item.events && item.events.length && itemDetails"
                class="bbn-flex-height"
-               style="position: relative" 
+               style="position: relative"
           >
             <div :class="['bbn-r', 'bbn-unselectable', 'bbn-calendar-item', {
               'bbn-secondary-text': item.colored && !item.hidden && !item.extra,
