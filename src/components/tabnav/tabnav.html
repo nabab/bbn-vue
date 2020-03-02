@@ -64,8 +64,10 @@
               >
                 <span v-if="tab.icon"
                       :title="tab.title"
-                      :class="'bbn-iblock' + (tab.notext ? ' bbn-lg' : '')">
-                  <i :class="tab.icon"></i>
+                      :class="'bbn-tabnav-main-icon bbn-iblock' + (tab.notext ? ' bbn-lg' : ' bbn-m')">
+                  <i :class="tab.icon"
+                      :style="{zoom: iconsReady ? 1.1 : 1}"
+                      ></i>
                 </span>
                 <span v-if="!tab.notext && tab.title"
                       class="bbn-tab-text"

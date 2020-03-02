@@ -452,7 +452,7 @@
         return r;
       },
       remove(idx){
-        bbn.fn.log(this.currentData, idx);
+        //bbn.fn.log(this.currentData, idx);
         this.realDelete(idx);
       },
       /**
@@ -541,7 +541,6 @@
      * @event mounted
      */
     mounted(){
-      bbn.fn.log("CREATED");
       this.currentComponent = this.realComponent;
       if (!this.component && !this.template && this.$slots.default) {
         let tpl = this.getRef('slot').innerHTML;

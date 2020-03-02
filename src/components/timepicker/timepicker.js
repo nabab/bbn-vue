@@ -246,6 +246,12 @@
           this.inputValue = '';
         }
         this.oldInputValue = this.inputValue;
+      },
+      clear(){
+        this.setValue('');
+        this.$nextTick(() => {
+          this.$set(this.getRef('element'), 'inputValue', '');
+        })
       }
     },
     /**

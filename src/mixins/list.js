@@ -248,6 +248,12 @@
          * @prop template
          */
         template: {},
+        query: {
+          type: String
+        },
+        queryValues: {
+          type: Object
+        }
       },
       data(){
         let order = this.order;
@@ -269,14 +275,6 @@
            * @data {Boolean, Promise} [false] _dataPromise
            */
           _dataPromise: false,
-          /**
-           * @data {Boolean, Promise} [false] _futurePromise
-           */
-          _futurePromise: false,
-          /**
-           * @data {Boolean, Promise} [false] _futurePromise
-           */
-          _futurePromiseTime: 0,
           /**
            * @data {Boolean} [false] auto If source is a URL and auto is set to true, component will fetch data at mount.
            */
@@ -353,6 +351,9 @@
            * @data {false, Number} filterTimeout
            */
           filterTimeout: false,
+          currentQuery: this.query,
+          currentQueryValues: this.queryValues || {},
+          loadingRequestID: false
         };
       },
       computed: {
@@ -631,42 +632,33 @@
         },
         updateData(){
           if (this.beforeUpdate() !== false) {
-
-            if ( this.isLoading && this._dataPromise ){
-              if ( !this._futurePromise ){
-                this._futurePromise = new Promise((resolve) => {
-                  setTimeout(() => {
-                    this._futurePromise = false;
-                    this.updateData().then(() => {
-                      resolve(this.currentData);
-                    });
-                  }, 50);
-                });
-              }
-              return this._futurePromise;
-            }
             this._dataPromise = new Promise((resolve) => {
               let prom;
+              let loadingRequestID;
               if ( this.isAjax ){
-                if ( !this.isLoading ){
-                  this.isLoading = true;
-                  this.$emit('startloading');
-                  let data = {
-                    limit: this.currentLimit,
-                    start: this.start,
-                    data: this.getPostData()
-                  };
-                  if ( this.sortable ){
-                    data.order = this.currentOrder;
-                  }
-                  if ( this.isFilterable ){
-                    data.filters = this.currentFilters;
-                  }
-                  if ( this.showable ){
-                    data.fields = this.shownFields;
-                  }
-                  prom = this.post(this.source, data)
+                if (this.loadingRequestID) {
+                  bbn.fn.abort(this.loadingRequestID);
+                  bbn.fn.log("I just aborted?");
                 }
+                this.isLoading = true;
+                this.$emit('startloading');
+                let data = {
+                  limit: this.currentLimit,
+                  start: this.start,
+                  data: this.getPostData()
+                };
+                if ( this.sortable ){
+                  data.order = this.currentOrder;
+                }
+                if ( this.isFilterable ){
+                  data.filters = this.currentFilters;
+                }
+                if ( this.showable ){
+                  data.fields = this.shownFields;
+                }
+                loadingRequestID = bbn.fn.getIdURL(this.source, data);
+                this.loadingRequestID = loadingRequestID;
+                prom = this.post(this.source, data);
               }
               else{
                 prom = new Promise((resolve2) => {
@@ -692,8 +684,10 @@
                 });
               }
               prom.then((d) => {
-                if ( this.isLoading ){
+                bbn.fn.log("AFTER PROMISE");
+                if ( this.loadingRequestID && (this.loadingRequestID === loadingRequestID)){
                   this.isLoading = false;
+                  this.loadingRequestID = false;
                   if ( !d ){
                     return;
                   }
@@ -732,6 +726,10 @@
                       return o;
                     });
                   }
+                  if (d.query) {
+                    this.currentQuery = d.query;
+                    this.currentQueryValues = d.queryValues || {};
+                  }
                   this.total = d.total || 0;
                   if (d.order) {
                     this.currentOrder.splice(0, this.currentOrder.length);
@@ -757,7 +755,6 @@
                 this.afterUpdate();
                 resolve(this.currentData);
                 this.$emit('dataloaded');
-                bbn.fn.log(this);
                 //this._dataPromise = false;
               });
             });

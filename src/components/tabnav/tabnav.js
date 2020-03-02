@@ -103,7 +103,8 @@
         parentTab: false,
         selected: false,
         visible: true,
-        router: null
+        router: null,
+        iconsReady: false
       };
     },
 
@@ -504,7 +505,7 @@
             key: "notext",
             icon: this.tabs[idx].notext ? "nf nf-fa-font" : "nf nf-fa-font_awesome",
             action: () => {
-              bbn.fn.log(this.tabs[idx]);
+              //bbn.fn.log(this.tabs[idx]);
               this.tabs[idx].notext = !this.tabs[idx].notext;
               this.$forceUpdate();
             }
@@ -560,7 +561,7 @@
             }
           })
         }
-        let menu = bbn.fn.isArray(this.menu) ? this.menu : this.menu(this.tabs[idx]);
+        let menu = bbn.fn.isArray(this.menu) ? this.menu : this.menu(this.tabs[idx], this);
         if (menu.length) {
           bbn.fn.each(menu, a => {
             items.push(a);
@@ -729,6 +730,10 @@
           }
           */
           this.ready = true;
+          setTimeout(() => {
+            // bugfix for rendering some nf-mdi icons
+            this.iconsReady = true;
+          }, 1000)
           /*
           if ( !url && tabs.length ){
             this.activateDefault();

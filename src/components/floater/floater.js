@@ -820,7 +820,7 @@
        * @method close
        * @param {Event} e 
        */
-      close(force, conf= false) {
+      close(force, confirm = false) {
         let ok = true;
         if (!force) {
           let beforeCloseEvent = new Event('beforeClose', {
@@ -845,7 +845,7 @@
           }
         }
         let form = this.find('bbn-form');
-        if ( (form !== undefined)  && !conf ){
+        if ( (form !== undefined)  && !confirm ){
           form.closePopup();
          }
          else{
@@ -929,7 +929,7 @@
           el.style.position = 'absolute';
           el.style.width = width ? bbn.fn.formatSize(width) : 'auto';
           el.style.height = height ? bbn.fn.formatSize(height) : 'auto';
-          bbn.fn.log("getDimensions", width, height)
+          //bbn.fn.log("getDimensions", width, height)
           try {
             parent.insertAdjacentElement('beforeend', el);
             r = {
@@ -1021,7 +1021,7 @@
               sc.initSize();
             }
             this.$nextTick(() => {
-              bbn.fn.log("CHANGE FILTERED DATA");
+              //bbn.fn.log("CHANGE FILTERED DATA");
               this.onResize();
             });
           });
@@ -1044,7 +1044,7 @@
 
           this.$nextTick(() => {
             this.currentVisible = true;
-            bbn.fn.log("CHANGE ELEMENT");
+            //bbn.fn.log("CHANGE ELEMENT");
             this.onResize();
           });
         }

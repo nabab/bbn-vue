@@ -257,12 +257,7 @@
        * @return {Object|Boolean}
        */
       getComponent(){
-        for ( let i = 0; i < this.$children.length; i++ ){
-          if ( this.$children[i].$options._componentTag !== 'bbn-popup' ){
-            return this.$children[i];
-          }
-        }
-        return false;
+        return this.getRef('component');
       },
       /**
        * Fires the parent's method enter.
@@ -590,7 +585,7 @@
         })
       },
       dirty(v){
-        bbn.fn.log("DIRTY WATCHER", this.currentIndex, this.router.views);
+        //bbn.fn.log("DIRTY WATCHER", this.currentIndex, this.router.views);
         this.router.views[this.currentIndex].dirty = v;
         this.router.retrieveDirtyContainers();
       }

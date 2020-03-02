@@ -1,5 +1,5 @@
 {
-  "name": "bbn-chart2",
+  "name": "bbn-chart",
   "version": "0.0.1",
   "authors": [
     "Thomas Nabet <thomas.nabet@gmail.com>",
@@ -8,7 +8,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "apexcharts.js": ">= 3.8.5",
+    "chartist": ">= 0.11.0",
     "moment": ">= 2.12.0"
   }
 }

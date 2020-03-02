@@ -1,7 +1,7 @@
 /**
  * @file bbn-panelbar component
  *
- * @description bbn-panelbar it's a component that configures itself easily, it allows to visualize the data in a hierarchical way expandable to levels.
+ * @description bbn-panelbar is a component that configures itself easily, it allows to visualize the data in a hierarchical way expandable to levels.
  * It can contain texts, html elements and even Vue components, the latter can be inserted both on its content but also as a header.
  * Those who use this component have the possibility to see schematically their data with the maximum simplicity of interpretation.
  *
@@ -17,11 +17,15 @@
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.localStorageComponent
+     * @mixin bbn.vue.resizerComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent],
+    mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent, bbn.vue.resizerComponent],
 
     props: {
-     
+      flex: { 
+        type: Boolean,
+        default: false
+      },
       /**
        * The source of the component. The object item has property:
        * - header // the title on the header
@@ -85,12 +89,20 @@
     },
     data(){
       return {
+        size: null,
         /**
          * The index of the selected item
          * @data {Number} [null] selected
          */
         selected: null,
+        preselected: null,
+        childHeight: 0
       };
+    },
+    computed:{
+      headers(){
+        return this.$refs['header']
+      }
     },
      /**
       * Select the index of item defined by the prop opened
@@ -98,10 +110,15 @@
       */
     mounted(){
       if ( this.opened !== undefined ){
-        this.selected = this.opened;
+        this.$nextTick(()=>{
+          this.select(this.opened)
+        })
       }
     },
     methods: {
+      onResize(){
+        this.size = this.$el.clientHeight;
+      },
      /**
        * Shows the content of selected items and emits the event select
        * @emits select
@@ -110,15 +127,65 @@
        */
       select(idx){
         if ( this.selected !== idx ){
-          this.selected = idx;
+          this.preselected = idx;
+          if (this.selected === null) {
+            setTimeout(() => {
+              this.selected = idx;
+            }, 300);
+          }
+          else {
+            this.selected = idx;
+          }
           this.$emit('select', idx, this.source[idx])
+          if ( !this.scrollable && !this.flex ){
+            this.$nextTick(()=>{
+              this.getStyle(idx)
+            })
+          }
+          
         }
         else{
+          this.preselected = null;
           this.selected = null;
         }
-      }
+      },
+      getStyle(idx){
+        bbn.fn.log('before',this.source[idx])
+        if ((idx !== null ) && (idx === this.preselected) &&  (this.flex || ((this.source[idx] !== undefined) && (this.source[idx].flex === true)) )) {
+          return this.size ? {height: this.size + 'px', overflow: 'hidden'} : {};
+        }
+        //if this.flex === false, case of panelbar containing a table or other content that has an height
+        else if ((idx !== null ) && (idx === this.preselected) && (!this.flex || ( (this.source[idx] !== undefined) && (this.source[idx].flex === false)) )) {
+          let children = this.getRef('container').children, 
+              res = [],
+              childHeight = 0;
+          bbn.fn.each(children, (a) => {
+            if ( a.classList.contains('bbn-border-box') ){
+              res.push(a)
+            }
+          })
+          this.$nextTick(()=>{
+            if ( res[idx] && res[idx].firstElementChild.clientHeight ){
+              this.childHeight = res[idx].firstElementChild.clientHeight
+            }  
+            return this.size ? {height: this.childHeight + 'px', overflow: 'hidden'} : {};
+          })
+        }
+        else{
+          return {height: '0px', overflow: 'hidden'};
+        }
+      },
 
     },
+    watch: {
+      selected(v, o) {
+        if ( v !== null ){
+          setTimeout(() => {
+            this.headers[v].style.overflow = null;
+          }, 300)
+        }
+      }
+    }
   });
 
 })(bbn);

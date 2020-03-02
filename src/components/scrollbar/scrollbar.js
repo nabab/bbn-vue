@@ -157,9 +157,19 @@
             // Movement in pixel
             let newStart = this.isVertical ? e.pageY : e.pageX;
             let movement = newStart - this.start;
+            bbn.fn.log(movement);
             if ( movement ){
-              this.sliderPos += movement;
-              this.adjustFromBar();
+              let tmp = this.sliderPos + movement;
+              if (tmp < 0) {
+                tmp = 0;
+              }
+              else if (tmp > (this.containerSize - this.sliderSize)) {
+                tmp = this.containerSize - this.sliderSize;
+              }
+              if (this.sliderPos !== tmp) {
+                this.sliderPos = tmp;
+                this.adjustFromBar();
+              }
             }
             this.start = newStart;
           })

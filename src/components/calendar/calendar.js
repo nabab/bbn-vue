@@ -16,6 +16,10 @@
     */
     mixins: [bbn.vue.basicComponent, bbn.vue.listComponent, bbn.vue.resizerComponent],
     props: {
+      autobind: {
+        type: Boolean,
+        default: false
+      },
       /**
        * The array of events for each day.
        * When a string is set, an ajax call will be made to the corresponding url.
@@ -347,7 +351,8 @@
          *
          * @data {String} [''] currentValue
          */
-        currentValue: ''
+        currentValue: '',
+        events: {}
       }
     },
     computed: {
@@ -379,7 +384,8 @@
        * @return {Object}
       */
       _makeItem(txt, val, hid, col, dis, ext){
-        let events = this.filterEvents(val),
+        //let events = this.filterEvents(val),
+        let events = this.events[val],
             obj = {
               text: txt,
               value: val,
@@ -530,8 +536,9 @@
               make: this._makeDays,
               step: [1, 'M'],
               stepSkip: [1, 'y'],
-              stepText: bbn._('day'),
-              stepSkipText: bbn._('month'),
+              stepEvent: [1, 'd'],
+              stepText: bbn._('month'),
+              stepSkipText: bbn._('year'),
               titleFormat: 'MMM YYYY',
               valueFormat: 'YYYY-MM-DD',
               labelsFormatDefault: 'ddd',
@@ -550,6 +557,7 @@
             bbn.fn.extend(cfg, {
               make: this._makeWeeks,
               step: [1, 'w'],
+              stepEvent: [1, 'w'],
               stepText: bbn._('week'),
               titleFormat: 'MMM YYYY',
               valueFormat: 'YYYY-MM-DD',
@@ -569,6 +577,7 @@
             bbn.fn.extend(cfg, {
               make: this._makeMonths,
               step: [1, 'y'],
+              stepEvent: [1, 'M'],
               stepText: bbn._('year'),
               titleFormat: 'YYYY',
               valueFormat: 'YYYY-MM',
@@ -580,6 +589,7 @@
             bbn.fn.extend(cfg, {
               make: this._makeYears,
               step: [10, 'y'],
+              stepEvent: [1, 'y'],
               stepText: bbn._('decade'),
               titleFormat: () => {
                 let from = this.currentDate.format('YYYY') - 5,
@@ -632,21 +642,46 @@
         return false;
       },
       create(){
-        this.updateData().then(() => {
-          this.init();
-          this.$nextTick(() => {
-            if ( !this.date && ( this.max || this.min) ){
-              if ( this.max && !this.min && (this.max < this.currentDate.format(this.currentCfg.valueFormat)) ){
-                this.currentDate = moment(this.max, this.currentCfg.valueFormat);
+        if ( !this.ready ){
+          this.updateData().then(() => {
+            this.init();
+            this.$nextTick(() => {
+              if ( !this.date && ( this.max || this.min) ){
+                if ( this.max && !this.min && (this.max < this.currentDate.format(this.currentCfg.valueFormat)) ){
+                  this.currentDate = moment(this.max, this.currentCfg.valueFormat);
+                }
+                if ( this.min && !this.max && (this.min > this.currentDate.format(this.currentCfg.valueFormat)) ){
+                  this.currentDate = moment(this.min, this.currentCfg.valueFormat);
+                }
+                this.currentCfg.make();
+                this.setTitle();
               }
-              if ( this.min && !this.max && (this.min > this.currentDate.format(this.currentCfg.valueFormat)) ){
-                this.currentDate = moment(this.min, this.currentCfg.valueFormat);
-              }
-              this.currentCfg.make();
-              this.setTitle();
-            }
-            this.ready = true;
+              this.ready = true;
+            });
           });
+        }
+      },
+      makeEvents(){
+        this.$set(this, 'events', {});
+        bbn.fn.each(this.currentData, d => {
+          let tmpStart = moment(d.data[this.startField], this.startFormat).format(this.currentCfg.valueFormat),
+              tmpEnd = moment(d.data[this.endField], this.endFormat).format(this.currentCfg.valueFormat);
+          if ( this.events[tmpStart] === undefined ){
+            this.events[tmpStart] = [];
+          }
+          this.events[tmpStart].push(d.data);
+          if ( tmpStart !== tmpEnd ){
+            let mom = moment(tmpStart, this.currentCfg.valueFormat).add(...this.currentCfg.stepEvent),
+                tmp = mom.format(this.currentCfg.valueFormat);
+            while ( tmp <= tmpEnd ){
+              if ( this.events[tmp] === undefined ){
+                this.events[tmp] = [];
+              }
+              this.events[tmp].push(d.data);
+              mom.add(...this.currentCfg.stepEvent);
+              tmp = mom.format(this.currentCfg.valueFormat);
+            }
+          }
         });
       },
       /**
@@ -662,6 +697,7 @@
             this.currentValue = this.value ? moment(this.value, this.currentCfg.valueFormat).format(this.currentCfg.valueFormat) : '';
             this.$emit('input', this.currentValue);
           }
+          this.makeEvents();
           this.setTitle();
           this.currentCfg.make();
           this.$nextTick(() => {
@@ -677,8 +713,9 @@
        * @return {Array}
       */
       filterEvents(v){
+        return  []
         if ( this.startField && this.endField ){
-          return this.currentData && bbn.fn.isArray(this.currentData) ? 
+          return this.currentData && bbn.fn.isArray(this.currentData) ?
             bbn.fn.map(bbn.fn.filter(this.currentData, ev => {
               if ( ev.data[this.startField] && ev.data[this.endField] ){
                 let start = moment(ev.data[this.startField], this.startFormat).format(this.currentCfg.valueFormat),
@@ -688,7 +725,7 @@
               return false
             }), ev => {
               return ev.data
-            }) : 
+            }) :
             []
         }
         return []

@@ -51,7 +51,7 @@
          */
         scrollable: {
           type: Boolean,
-          default: true
+          default: false
         },
         /**
          * Defines the component to use.

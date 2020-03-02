@@ -1,1 +1,8 @@
-<bbn-tabnav autoload="false" :source="tabs"></bbn-tabnav>
+<div :class="[componentClass, 'bbn-overlay', 'bbn-flex-height']">
+  <div class="bbn-w-100">
+    <bbn-input class="bbn-w-100"></bbn-input>
+  </div>
+  <div class="bbn-flex-fill">
+    <bbn-tabnav :autoload="false" :source="tabs"></bbn-tabnav>
+  </div>
+</div>

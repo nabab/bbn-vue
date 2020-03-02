@@ -717,7 +717,9 @@
           if ( !this.tab ){
             this.tab = this.closest("bbn-container");
           }
-          this.focusFirst();
+          if (!bbn.fn.isMobile()) {
+            this.focusFirst();
+          }
           this.isInit = true;
         });
       },

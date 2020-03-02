@@ -100,7 +100,7 @@
         type: Boolean,
         default: false
       },
-      /** 
+      /**
        * True if you want the possibility to delete a file.
       */
       eliminable: {
@@ -185,7 +185,7 @@
           return [];
         }
       },
-      /** 
+      /**
        * The  accepted types of files.
        * @prop {String} [*] accept
        */
@@ -195,7 +195,7 @@
       },
       /**
        * Set to false to disable the 'paste' function.
-       * 
+       *
        * @prop {Boolean} [true] paste
        */
       paste: {
@@ -204,7 +204,7 @@
       },
       /**
        * Set to false to disable the 'drang&drop' function.
-       * 
+       *
        * @prop {Boolean} [true] dragDrop
        */
       dragDrop: {
@@ -213,7 +213,7 @@
       },
       /**
        * Additional data sent with the ajax call.
-       * 
+       *
        * @prop {Object} data
        */
       data: {
@@ -234,13 +234,18 @@
          * The current files.
          *  @data {Array} [[]] currentData
          */
-        currentData: []
+        currentData: [],
+        /**
+         * Indicates if an uploading is running.
+         *  @data {Boolean} [false] uploading
+         */
+        uploading: false
       };
     },
     computed: {
       /**
        * An object of default text.
-       * 
+       *
        * @computed text
        * @return Object
        */
@@ -253,11 +258,13 @@
           retry: bbn._('Retry'),
           editFilename: bbn._('Edit filename'),
           remove: bbn._('Delete'),
+          removeConfirm: bbn._('Are you sure you want to delete this file?'),
           empty: bbn._('no files'),
           download: bbn._('Download'),
           save: bbn._('Save'),
           cancel: bbn._('Cancel'),
-          filename: bbn._('Write the filename without the extension')
+          filename: bbn._('Write the filename without the extension'),
+          upload: bbn._('Upload')
         }, this.text);
       },
       /**
@@ -266,7 +273,7 @@
        * @return Boolean
        */
       canAddFile(){
-        return this.uploadable && (this.multiple && (!this.max || (this.filesCount < this.max))) || (!this.multiple && !this.filesCount)
+        return this.uploadable && !this.uploading && (this.multiple && (!this.max || (this.filesCount < this.max))) || (!this.multiple && !this.filesCount)
       },
       /**
        * A list of files with the status 'ready'.
@@ -274,7 +281,9 @@
        * @return Array
        */
       filesReady(){
-        return bbn.fn.filter(this.currentData, {conditions: [{field: 'status', value: 'ready'}]})
+        return this.currentData.filter(d => {
+          return d.status === 'ready'
+        })
       },
       /**
        * A list of files with the status 'progress'.
@@ -282,7 +291,9 @@
        * @return Array
        */
       filesProgress(){
-        return bbn.fn.filter(this.currentData, {conditions: [{field: 'status', value: 'progress'}]})
+        return this.currentData.filter(d => {
+          return d.status === 'progress'
+        })
       },
       /**
        * A list of files with the status 'error'.
@@ -290,7 +301,9 @@
        * @return Array
        */
       filesError(){
-        return bbn.fn.filter(this.currentData, {conditions: [{field: 'status', value: 'error'}]})
+        return this.currentData.filter(d => {
+          return d.status === 'error'
+        })
       },
       /**
        * A list of files with the status 'success'.
@@ -298,7 +311,9 @@
        * @return Array
        */
       filesSuccess(){
-        return bbn.fn.filter(this.currentData, {conditions: [{field: 'status', value: 'success'}]})
+        return this.currentData.filter(d => {
+          return d.status === 'success'
+        })
       },
       /**
        * The sum of the files withe the statuses 'ready, 'progress' and 'success'.
@@ -380,7 +395,9 @@
             }
           })
           if ( this.ready && this.autoUpload ){
-            this.upload()
+            this.$nextTick(() => {
+              this.upload()
+            })
           }
         }
         if ( this.getRef('fileInput') ){
@@ -427,14 +444,19 @@
           if ( bbn.fn.get_row(this.currentData, {'data.name': file.data.name}) ){
             if ( file.fromUser ){
               this.$emit('error', {file: file.data.name, message: bbn._('The file exists!')})
+              this.alert(bbn._('The file') + ` "${file.data.name}" ` + bbn._('exists') + '!')
             }
             return false
           }
           if ( bbn.fn.isArray(this.extensions) && this.extensions.length ){
-            let ext = file.data.name.substring(file.data.name.lastIndexOf('.')+1)
-            if ( !this.extensions.includes(ext) ){
+            let ext = file.data.name.substring(file.data.name.lastIndexOf('.')+1).toLowerCase(),
+                extensions = bbn.fn.map(this.extensions, e => {
+                  return e.toLowerCase();
+                });
+            if ( !extensions.includes(ext) ){
               if ( file.fromUser ){
-                this.$emit('error', {file: file.data.name, message: bbn._('The extension') + ` ${ext} ` + bbn._('is not allowed') + '!'})
+                this.$emit('error', {file: file.data.name, message: bbn._('The extension') + ` "${ext}" ` + bbn._('is not allowed') + '!'})
+                this.alert(bbn._('The extension') + ` "${ext}" ` + bbn._('is not allowed') + '!')
               }
               return false
             }
@@ -490,65 +512,72 @@
        * @fires setStatusProgress
        * @fires setName
        * @fires setStatusSuccess
-       * @fires setValue
        * @fires setStatusError
        * @emits success
        * @emits failure
        */
       upload(id){
-        if ( this.uploadable ){
-          bbn.fn.each(this.filesReady, fr => {
-            if ( (id === undefined) || (fr.id === id) ){
-              this.setStatusProgress(fr.id)
-              if ( this.saveUrl ){
-                let ev = new Event('beforeUpload', {cancelable: true});
-                this.$emit('beforeUpload', ev, fr);
-                if (!ev.defaultPrevented) {
-                  bbn.fn.upload(
-                    this.saveUrl,
-                    bbn.fn.extend(true, {}, this.data ? this.data : {}, {file: fr.data}),
-                    (res) => {
-                      let f = false;           
-                      if ( res.data.file || res.data.fichier ){
-                        f = res.data.file || res.data.fichier
+        if ( this.uploadable && this.filesReady.length ){
+          this.uploading = true;
+          if ( id ){
+            this.setStatusProgress(id);
+          }
+          else {
+            bbn.fn.each(this.filesReady, fr => {
+              this.setStatusProgress(fr.id);
+            });
+          }
+          this.$nextTick(() => {
+            bbn.fn.each(this.filesProgress, fr => {
+              if ( (id === undefined) || (fr.id === id) ){
+                if ( this.saveUrl ){
+                  let ev = new Event('beforeUpload', {cancelable: true});
+                  this.$emit('beforeUpload', ev, fr);
+                  if ( !ev.defaultPrevented ){
+                    bbn.fn.upload(
+                      this.saveUrl,
+                      bbn.fn.extend(true, {}, this.data ? this.data : {}, {file: fr.data}),
+                      (res) => {
+                        let f = false;
+                        if ( res.data.file || res.data.fichier ){
+                          f = res.data.file || res.data.fichier
+                        }
+                        else if (
+                          res.data.data &&
+                          (res.data.data.file || res.data.data.fichier)
+                        ){
+                          f = res.data.data.file || res.data.data.fichier
+                        }
+                        if ( f && f.name !== fr.data.name ){
+                          this.setName(fr.id, f.name, false)
+                        }
+                        if ( this.setStatusSuccess(fr.id) ){
+                          this.$nextTick(() => {
+                            this.$emit('success', fr.id, f.name || fr.data.name, res.data, res)
+                          })
+                        }
+                      },
+                      (err) => {
+                        if ( this.setStatusError(fr.id) ){
+                          this.$emit('error', fr.id, err)
+                          bbn.fn.log('bbn-upload error', fr.id, err)
+                        }
+                      },
+                      (prog) => {
+                        this.setProgress(fr.id, prog)
                       }
-                      else if (
-                        res.data.data && 
-                        (res.data.data.file || res.data.data.fichier)
-                      ){
-                        f = res.data.data.file || res.data.data.fichier
-                      }
-                      if ( f && f.name !== fr.data.name ){
-                        this.setName(fr.id, f.name)
-                      }
-                      if ( this.setStatusSuccess(fr.id) ){
-                        this.$nextTick(() => {
-                          this.setValue()
-                          this.$emit('success', fr.id, f.name || fr.data.name, res.data, res)
-                        })
-                      }
-                    },
-                    (err) => {
-                      if ( this.setStatusError(fr.id) ){
-                        this.$emit('error', fr.id, err)
-                        bbn.fn.log('bbn-upload error', fr.id, err)
-                      }
-                    },
-                    (prog) => {
-                      this.setProgress(fr.id, prog)
-                    }
-                  )
+                    )
+                  }
+                }
+                else {
+                  if ( this.setStatusSuccess(fr.id) ){
+                    this.$nextTick(() => {
+                      this.$emit('success', fr.id, fr.data.name, fr.data)
+                    })
+                  }
                 }
               }
-              else {
-                if ( this.setStatusSuccess(fr.id) ){
-                  this.$nextTick(() => {
-                    this.setValue()
-                    this.$emit('success', fr.id, fr.data.name, fr.data)
-                  })
-                }
-              }
-            }
+            })
           })
         }
       },
@@ -559,7 +588,7 @@
        * @param {String} name
        * @return Boolean
        */
-      setName(id, name){
+      setName(id, name, setVal = true){
         if ( id && name ){
           let idx = bbn.fn.search(this.currentData, {id: id})
           if ( idx > -1 ){
@@ -570,9 +599,11 @@
             else {
               this.$set(this.currentData[idx].data, 'name', name)
             }
-            this.$nextTick(() => {
-              this.setValue()
-            })
+            if ( setVal ){
+              this.$nextTick(() => {
+                this.setValue()
+              })
+            }
             return true
           }
         }
@@ -648,8 +679,12 @@
        * @param {Number} [0] progress
        */
       setProgress(id, progress = 0){
-        let file = bbn.fn.get_row(this.currentData, {id: id})
-        this.$set(file, 'progress', progress)
+        if ( bbn.fn.isArray(this.currentData) && this.currentData.length ){
+          let file = bbn.fn.get_row(this.currentData, {id: id})
+          if ( bbn.fn.isObject(file) ){
+            this.$set(file, 'progress', progress)
+          }
+        }
       },
       /**
        * Sets the given file to edit mode.
@@ -724,21 +759,23 @@
         let ev = new Event('beforeRemove', {cancelable: true});
         this.$emit('beforeRemove', ev, file);
         if (force || !ev.defaultPrevented) {
-          if ( this.removeUrl ){
-            this.post(
-              this.removeUrl,
-              bbn.fn.extend(true, {}, this.data ? this.data : {}, {file: file.data.name}),
-              d => {
-                this._remove(file, d)
-              }
-            )
-          }
-          else {
-            this._remove(file)
-          }
+          this.confirm(this.currentText.removeConfirm, () => {
+            if ( this.removeUrl ){
+              this.post(
+                this.removeUrl,
+                bbn.fn.extend(true, {}, this.data ? this.data : {}, {file: file.data.name}),
+                d => {
+                  this._remove(file, d)
+                }
+              )
+            }
+            else {
+              this._remove(file)
+            }
+          })
         }
       },
-      /** 
+      /**
        * The method called on the paste event.
        * @method pasteEvent
        * @param {Event} event
@@ -808,7 +845,7 @@
           case 'gif':
           case 'bmp':
           case 'svg':
-            return 'nf nf-fa-file_image_o' 
+            return 'nf nf-fa-file_image_o'
           case 'avi':
           case 'mov':
           case 'mkv':
@@ -854,7 +891,6 @@
        * @return String
        */
       getFileExt(file){
-        bbn.fn.log('here  error', file)
         return file.fromUser ? file.data.name.substring(file.data.name.lastIndexOf('.')+1) : file.data.extension.substr(1)
       }
     },
@@ -889,19 +925,21 @@
         }
       },
       /**
-       * @watch filesSuccess
+       * @watch filesSProgress
        * @emits complete
+       * @fires setValue
        */
-      filesSuccess(newVal){
-        if ( 
-          !this.filesProgress.length && 
-          (!!bbn.fn.get_row(newVal, {fromUser: true}) || !!bbn.fn.get_row(newVal, {fromPaste: true}))
-        ){
-          this.$emit('complete', this.filesSuccess, this.filesError)
+      filesProgress(newVal, oldVal){
+        if ( !bbn.fn.isSame(newVal, oldVal) && !newVal.length ){
+          this.uploading = false;
+          if ( !this.filesError.length ){
+            this.$emit('complete', this.filesSuccess, this.filesError)
+            this.$nextTick(() => {
+              this.setValue();
+            })
+          }
         }
       }
-    },
-
+    }
   });
-
 })(bbn);

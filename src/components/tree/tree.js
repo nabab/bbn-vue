@@ -1353,6 +1353,7 @@
 
         data: function(){
           return {
+            ready: false,
             /**
              * @data {Boolean} [false] double
              * @memberof bbn-tree-node
@@ -1817,7 +1818,9 @@
               this.checkPath();
             });
             this.resize();
-            this.ready = true;
+            setTimeout(() => {
+              this.ready = true;
+            }, 250)
             /*
             $(this.$el)
               .draggable({

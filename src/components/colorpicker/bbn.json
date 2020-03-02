@@ -2,11 +2,10 @@
   "name": "bbn-colorpicker",
   "version": "0.0.1",
   "authors": [
-    "Thomas Nabet <thomas.nabet@gmail.com>",
-    "Vito Fava <vito@bbn.solutions>"
+    "Mirko Argentino <mirko@bbn.solutions>"
   ],
   "license": "MIT",
   "dependencies": {
-    "spectrum": ">= 1.8.0"    
+    "iro.js": ">= 5.0.0"
   }
 }

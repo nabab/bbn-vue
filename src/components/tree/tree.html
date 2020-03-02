@@ -101,7 +101,7 @@
                       }"
                       tabindex="0"
                 >
-                  <span class="icon">
+                  <span :class="[{'with-zoom': ready}, 'icon']">
                     <!-- If icon is specifically false we leave the white space -->
                     <span v-if="icon === false"></span>
                     <i v-else-if="icon"

@@ -66,8 +66,9 @@
        * @memberof focusComponent
        */
       beforeDestroy(){
-        bbn.fn.log("BEFORE DESTROY", this.prevFocused);
-        this.switchFocus(false);
+        if (!bbn.fn.isMobile()) {
+          this.switchFocus(false);
+        }
       },
       watch: {
         currentVisible(v){

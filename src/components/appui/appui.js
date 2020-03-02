@@ -98,6 +98,7 @@
         widgets: {},
         loaders: [],
         notifications: [],
+        root: '',
         menuOpened: false,
         poller: false,
         debug: false,
@@ -127,42 +128,51 @@
           menu.focusSearch();
         }
       },
-      tabMenu(tab){
+      tabMenu(tab, tabnav) {
         let res = [];
-        let plugin;
-        bbn.fn.iterate(this.plugins, (a, n) => {
-          if (tab.url.indexOf(a+'/') === 0) {
-            plugin = n;
-            return;
+        if (bbn.env.isDev) {
+          let plugin;
+          bbn.fn.iterate(this.plugins, (a, n) => {
+            if (tab.url.indexOf(a+'/') === 0) {
+              plugin = n;
+              return;
+            }
+          });
+          let url = this.plugins['appui-ide'] + '/editor/file/';
+          if (plugin){
+            url += 'BBN_LIB_PATH/bbn/' + plugin + '/src/mvc' + tab.url.substr(this.plugins[plugin].length);
           }
-        });
-        let url = this.plugins['appui-ide'] + '/editor/file/';
-        if (plugin){
-          url += 'BBN_LIB_PATH/bbn/' + plugin + '/src/mvc' + tab.url.substr(this.plugins[plugin].length);
-        }
-        else {
-          url += 'BBN_APP_PATH/mvc/' + tab.url;
-        }
-        url += '/_end_/';
-        if (tab.url.indexOf('test/') === 0) {
-          url += 'private';
-        }
-        else {
-          url += 'php';
-        }
-        res.push({
-          text: bbn._('Open in editor'),
-          icon: 'nf nf-fa-code',
-          action(){
-            bbn.fn.link(url);
+          else {
+            url += 'BBN_APP_PATH/mvc/' + tab.url;
           }
-        });
-        bbn.fn.log(url);
+          url += '/_end_/';
+          if (tab.url.indexOf('test/') === 0) {
+            url += 'private';
+          }
+          else {
+            url += 'php';
+          }
+          res.push({
+            text: bbn._('Open in editor'),
+            icon: 'nf nf-fa-code',
+            action(){
+              bbn.fn.link(url);
+            }
+          });
+          res.push({
+            text: bbn._('Log the container'),
+            icon: 'nf nf-mdi-sign_text',
+            action() {
+              let router = tabnav.getRef('router'),
+                  idx = router.search(tab.url);
+              bbn.fn.log("Container with URL " + tab.url, router.urls[router.views[idx].url]);
+            }
+          });
+        }
         return res;
       },
       addToClipboard(e){
         bbn.fn.getEventData(e).then((data) => {
-          bbn.fn.log("ADDI", data);
           this.clipboardContent.push(data);
         });
         return true;
@@ -173,7 +183,6 @@
           let type = e.type;
           bbn.fn.getEventData(e).then((data) => {
             this.clipboardContent.push(data);
-            bbn.fn.log("DATA FROM " + type, data);
           });
         }
         return true;
@@ -357,7 +366,7 @@
         if ( !bbn.fn.numProperties(data) ){
           return;
         }
-        bbn.fn.log("RECEIVING", data);
+        //bbn.fn.log("RECEIVING", data);
         if (data.disconnected){
           document.location.reload();
         }
@@ -477,31 +486,72 @@
       }
     },
     beforeCreate(){
+      let bbnDefaults = {
+        fn: {
+          defaultAjaxErrorFunction(jqXHR, textStatus, errorThrown) {
+            /** @todo */
+            appui.error({title: textStatus, content: errorThrown}, 4);
+            return false;
+          },
+
+          defaultPreLinkFunction(url) {
+            let router = appui.getRef('tabnav');
+            if ( router && bbn.fn.isFunction(router.route) ){
+              router.route(url);
+            }
+            return false;
+          },
+
+          defaultAlertFunction(ele) {
+            /** @todo */
+            let c = appui.getCurrentContainer();
+            c.alert.apply(c, arguments);
+          },
+          
+          defaultStartLoadingFunction(url, id, data) {
+            if ( window.appui && appui.status ){
+              appui.loaders.unshift(bbn.env.loadersHistory[0]);
+              let i = appui.loaders.length - 1;
+              while ( (i > 0) && (appui.loaders.length > bbn.env.maxLoadersHistory) ){
+                appui.loaders.splice(i, 1);
+                i--;
+              }
+            }
+          },
+          
+          defaultEndLoadingFunction(url, timestamp, data, res) {
+            if ( window.appui && appui.status ){
+              let history = bbn.fn.get_row(bbn.env.loadersHistory, {url: url, start: timestamp});
+              let loader = bbn.fn.get_row(appui.loaders, {url: url, start: timestamp});
+              if ( loader ){
+                if (  history ){
+                  bbn.fn.iterate(history, (val, prop) => {
+                    if ( loader[prop] !== val ){
+                      loader[prop] = val;
+                    }
+                  });
+                }
+                else{
+                  loader.loading = false;
+                }
+              }
+              //appui.$refs.loading.end(url, id, data, res);
+            }
+          },
+
+          defaultResizeFunction(){
+            if (window.appui) {
+              appui.selfEmit(true);
+            }
+          }
+        }
+      };
       /*
-      bbn.vue.preloadBBN([
-        'container',
-        'router',
-        'tabnav',
-        'popup',
-        'autocomplete',
-        'chat',
-        'combo',
-        'context',
-        'treemenu',
-        'tree',
-        'loadicon',
-        'scroll',
-        'scrollbar',
-        'input',
-        'numeric',
-        'dropdown',
-        'initial',
-        'chart',
-        'radio',
-        'checkbox',
-        'window'
-      ]);
+      if (this.root) {
+        bbnDefaults.env = {root: this.root};
+      }
       */
+      bbn.fn.init(bbnDefaults);
     },
     created(){
       if ( window.appui ){
@@ -510,68 +560,6 @@
       else{
         window.appui = this;
         this.componentClass.push('bbn-observer');
-        let bbnDefaults = {
-          fn: {
-            defaultAjaxErrorFunction(jqXHR, textStatus, errorThrown) {
-              /** @todo */
-              appui.error({title: textStatus, content: errorThrown}, 4);
-              return false;
-            },
-
-            defaultPreLinkFunction(url) {
-              let router = appui.getRef('tabnav');
-              if ( router && bbn.fn.isFunction(router.route) ){
-                router.route(url);
-              }
-              return false;
-            },
-
-            defaultAlertFunction(ele) {
-              /** @todo */
-              let c = appui.getCurrentContainer();
-              c.alert.apply(c, arguments);
-            },
-            
-            defaultStartLoadingFunction(url, id, data) {
-              if ( window.appui && appui.status ){
-                appui.loaders.unshift(bbn.env.loadersHistory[0]);
-                let i = appui.loaders.length - 1;
-                while ( (i > 0) && (appui.loaders.length > bbn.env.maxLoadersHistory) ){
-                  appui.loaders.splice(i, 1);
-                  i--;
-                }
-              }
-            },
-            
-            defaultEndLoadingFunction(url, timestamp, data, res) {
-              if ( window.appui && appui.status ){
-                let history = bbn.fn.get_row(bbn.env.loadersHistory, {url: url, start: timestamp});
-                let loader = bbn.fn.get_row(appui.loaders, {url: url, start: timestamp});
-                if ( loader ){
-                  if (  history ){
-                    bbn.fn.iterate(history, (val, prop) => {
-                      if ( loader[prop] !== val ){
-                        loader[prop] = val;
-                      }
-                    });
-                  }
-                  else{
-                    loader.loading = false;
-                  }
-                }
-                //appui.$refs.loading.end(url, id, data, res);
-              }
-            },
-
-            defaultResizeFunction(){
-              appui.selfEmit(true);
-            }
-          }
-        };
-        if (this.root) {
-          bbnDefaults.env = {root: this.root};
-        }
-        bbn.fn.init(bbnDefaults);
         this.cool = true;
         /*
         bbn.fn.each(this.plugins, (p, i) => {
@@ -623,7 +611,7 @@
         deep: true,
         handler(){
           let cpb = this.getRef('clipboardButton');
-          bbn.fn.log("AWATCH", cpb);
+          //bbn.fn.log("AWATCH", cpb);
           if (cpb) {
             cpb.style.backgroundColor = 'red';
             setTimeout(() => {
@@ -707,7 +695,7 @@
           eventsCfg(){
             let def = {
               focus: (e) => {
-                bbn.fn.log("FOCUS");
+                //bbn.fn.log("FOCUS");
                 if ( !this.isExpanded ){
                   let pane = this.closest('bbn-pane'),
                       w = pane.$children[0].$el.clientWidth + pane.$children[1].$el.clientWidth - 40;
@@ -717,7 +705,7 @@
                 }
               },
               blur: (e) => {
-                bbn.fn.log("BLUR");
+                //bbn.fn.log("BLUR");
                 if ( this.isExpanded ){
                   this.$set(this.style, 'width', this.source.style && this.source.style.width ? this.source.style.width : '30px');
                   this.isExpanded = false;

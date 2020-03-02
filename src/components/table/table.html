@@ -140,8 +140,6 @@
     <div :class="{'bbn-flex-fill': scrollable, 'bbn-table-main': true, 'bbn-w-100': true}">
       <div :class="{'bbn-overlay': scrollable, 'bbn-block': !scrollable}"
            :style="{
-            marginBottom: hasScrollX ? '-' + containerPadding : 0,
-            paddingBottom: hasScrollX ? containerPadding : 0,
             height: scrollable ? 'auto' : '100%'
            }">
         <div class="bbn-table-container"
@@ -151,9 +149,7 @@
                 width: containerWidth,
                 overflowX: groupCols[0].width + groupCols[1].width + groupCols[2].width > lastKnownCtWidth ? 'scroll' : 'hidden',
                 marginLeft: groupCols[0].width + 'px',
-                marginRight: (hasScrollY ? groupCols[2].width - containerPadding : groupCols[2].width) + 'px',
-                paddingRight: hasScrollY ? containerPadding : 0,
-                paddingBottom: hasScrollX ? containerPadding : 0,
+                marginRight: groupCols[2].width + 'px',
                 maxWidth: scrollable ? '100%' : null,
                 maxHeight: scrollable ? '100%' : null
               }">
@@ -345,7 +341,7 @@
           position: 'absolute',
           left: groupCols[0].width + 'px',
           right: groupCols[2].width + 'px',
-          bottom: hasHorizontalScroll ? containerPadding : '0px'
+          bottom: '0px'
         }">
           <bbn-scrollbar v-if="!isLoading && scrollable && ready"
                          orientation="horizontal"
@@ -361,7 +357,7 @@
                       ref="yScroller"
                       @hook:mounted="hasScrollY = true"
                       @hook:beforeDestroy="hasScrollY = false"
-                   :container="getRef('container')">
+                      :container="getRef('container')">
         </bbn-scrollbar>
 
       </div>
@@ -377,13 +373,13 @@
         <bbn-button icon="nf nf-fa-angle_double_left"
                     :notext="true"
                     :title="_('Go to the first page')"
-                    :disabled="isLoading || (currentPage == 1)"
+                    :disabled="currentPage == 1"
                     @click="currentPage = 1"
         ></bbn-button>
         <bbn-button icon="nf nf-fa-angle_left"
                     :notext="true"
                     :title="_('Go to the previous page')"
-                    :disabled="isLoading || (currentPage == 1)"
+                    :disabled="currentPage == 1"
                     @click="currentPage--"
         ></bbn-button>
         <span v-text="_('Page')"></span>
@@ -401,14 +397,14 @@
         <bbn-button icon="nf nf-fa-angle_right"
                     :notext="true"
                     :title="_('Go to the next page')"
-                    :disabled="isLoading || (currentPage == numPages)"
+                    :disabled="currentPage == numPages"
                     @click="currentPage++"
         ></bbn-button>
         <bbn-button icon="nf nf-fa-angle_double_right"
                     :notext="true"
                     :title="_('Go to the last page')"
                     @click="currentPage = numPages"
-                    :disabled="isLoading || (currentPage == numPages)"
+                    :disabled="currentPage == numPages"
         ></bbn-button>
         <span class="bbn-hmargin">
           <bbn-dropdown :source="limits"
@@ -422,15 +418,20 @@
       </div>
       <div class="bbn-block" style="float: right">
         <span v-if="filteredData.length && pageable && isAjax"
-              v-text="_('Display items') + ' ' + (start+1) + '-' + (start + currentLimit > total ? total : start + currentLimit) + ' ' + _('of') + ' ' + total"
+              v-text="(start+1) + '-' + (start + currentLimit > total ? total : start + currentLimit) + ' ' + _('of') + ' ' + total"
         ></span>
-        <span v-if="filteredData.length && pageable && !isAjax"
-              v-text="_('Display items') + ' ' + (start+1) + '-' + (start + currentLimit > filteredData.length ? filteredData.length : start + currentLimit) + ' ' + _('of') + ' ' + filteredData.length"
+        <span v-else-if="filteredData.length && pageable && !isAjax"
+              v-text="(start+1) + '-' + (start + currentLimit > filteredData.length ? filteredData.length : start + currentLimit) + ' ' + _('of') + ' ' + filteredData.length"
         ></span>
-        <span v-else-if="filteredData.length"
+        <span v-else
               v-text="total ? _('Total') + ': ' + total + ' ' + _('items') : _('No item')"
         ></span>
         &nbsp;
+        <bbn-button v-if="currentQuery"
+                    :title="_('View SQL query')"
+                    @click="showQuery"
+                    icon="nf nf-mdi-database">
+        </bbn-button>
         <bbn-button v-if="saveable"
                     :disabled="isSaved"
                     :title="_('Save current configuration')"

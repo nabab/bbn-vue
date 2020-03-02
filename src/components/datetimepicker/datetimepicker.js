@@ -358,6 +358,12 @@
         }
         this.oldInputValue = this.inputValue;
         this.updateCalendar();
+      },
+      clear(){
+        this.setValue('');
+        this.$nextTick(() => {
+          this.$set(this.getRef('element'), 'inputValue', '');
+        })
       }
     },
     /**

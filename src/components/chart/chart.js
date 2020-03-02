@@ -1,14 +1,12 @@
 /**
  * @file bbn-chart component
  *
- * @description  The bbn-chart component is a graphical representation of data.  
- * It allows large amounts of information to be condensed into an easily understandable visual format where complex data can be displayed, interpreted and analyzed with detailed customization using one of these graphs: "bar", "pie", "line" and "donut".
+ * @description  The bbn-chart component is a graphical representation of data.
+ * It allows large amounts of information to be condensed into an easily understandable visual format where complex data can be displayed, interpreted and analyzed with detailed customization using one of these graphs: "line", "area", "bar", "pie", "donut" and "radial".
  *
  * @author Mirko Argentino
- *
  * @copyright BBN Solutions
- *
- * @created 24/05/2017
+ * @created 10/02/2020
  */
 
 ((bbn) => {
@@ -18,11 +16,10 @@
     /**
      * @mixin bbn.vue.basicComponent
      */
-    mixins: [bbn.vue.basicComponent],
+    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent],
     props: {
       /**
        * The component's data.
-       *
        * @prop {Object} source
        */
       source: {
@@ -30,40 +27,16 @@
       },
       /**
        * The type of chart.
-       *
        * @prop {String} [line] type
        */
       type: {
         type: String,
-        default: 'line'
-      },
-      /**
-       * The title of the chart.
-       *
-       * @prop {String} title
-       */
-			title: {
-        type: String
-      },
-      /**
-       * The x-axis title.
-       *
-       * @prop {String} titleX.
-       */
-      titleX: {
-			  type: String
-      },
-      /**
-       * The y-axis title.
-       *
-       * @prop {String} titleY
-       */
-      titleY: {
-			  type: String
+        required: true,
+        default: 'line',
+        validator: t => ['line', 'bar', 'pie', 'donut', 'area', 'radial'].includes(t)
       },
       /**
       * The width of the chart.
-      *
       * @prop {String} [100%] width.
       */
       width: {
@@ -72,43 +45,78 @@
       },
       /**
        * The height of the chart.
-       *
        * @prop {String} [100%] height.
        */
       height: {
         type: String,
         default: '100%'
       },
-      /**
-       * Set to true to show the value points on the line chart.
-       *
-       * @prop {Boolean} [true] showPoint
-       */
-      showPoint: {
-        type: Boolean,
-        default: true
+      theme: {
+        type: String,
+        default(){
+          if ( appui && appui.theme && appui.themes ){
+            let isDark = bbn.fn.get_field(appui.themes, {value: appui.theme}, 'isDark');
+            return !!isDark ? 'dark' : 'light';
+          }
+          return 'light';
+        },
+        validator: t => ['light', 'dark'].includes(t)
       },
       /**
-       * Set to true to show the grid line on the chart.
-       *
-       * @prop {Boolean} [true] showLine
+       * The title of the chart.
+       * @prop {String} title
        */
-      showLine: {
+			title: {
+        type: String
+      },
+      /**
+       * The x-axis title.
+       * @prop {String} xTitle.
+       */
+      xTitle: {
+			  type: String
+      },
+      /**
+       * The y-axis title.
+       * @prop {String} yTitle
+       */
+      yTitle: {
+			  type: String
+      },
+      /**
+       * Set it to false to hide the value points on the line chart, or specific the point' size.
+       * @prop {Boolean|Number} [6] points
+       */
+      points: {
+        type: [Boolean, Number],
+        default: 6
+      },
+      /**
+			 * Set it to false if you want to hide the labels on the points.
+			 * @prop {Boolean} [true] pointsLabels
+			 */
+      pointsLabels: {
         type: Boolean,
         default: true
       },
       /**
        * Set to true to show a smooth line on the line chart.
-       *
-       * @prop {Boolean} [false] lineSmooth
+       * @prop {Boolean} [false] smooth
        */
-      lineSmooth: {
+      smooth: {
+        type: Boolean,
+        default: false
+      },
+      /**
+			 * Set it to true to see a square line on the line and area charts.
+			 * @prop {Boolean} [false] step
+			 */
+      step: {
         type: Boolean,
         default: false
       },
       /**
        * Set to true to create a donut pie chart. Integers can be given to determine the donut width.
-       *
        * @prop {Boolean|Number} [false] donut
        */
       donut: {
@@ -116,46 +124,27 @@
         default: false
       },
       /**
-       * Set to false to prevent the chart from occupying the full width of its container.
-       * @prop {Boolean} [true] fullWidth
+       * The series' background style ('gradient' or 'solid').
+       * @prop {String} ['gradient'] fill
        */
-      fullWidth: {
-        type: Boolean,
-        default: true
+      fill: {
+        type: String,
+        default: 'gradient',
+        validator: (f) => ['gradient', 'solid'].includes(f)
       },
       /**
-       * Set it to true if you want to see the area on the line chart.
-       *
-       * @prop {Boolean} [false] showArea
-       */
-      showArea: {
-        type: Boolean,
-        default: false
-      },
-      /**
-       * Area's opacity adjustment.
-       *
-       * @prop {Number|String} [0.1] areaOpacity
+       * Opacity adjustment.
+       * From 0.1 to 1
+       * @prop {Number|String} opacity
       */
-      areaOpacity: {
-        type: [Number, String],
-        default: '0.1'
-      },
-      /**
-       * Set it to true if you want to see the labels on the pie chart.
-       *
-       * @prop {Boolean} [true] showLabel
-       */
-      showLabel: {
-        type: Boolean,
-        default: true
+      opacity: {
+        type: [Number, String]
       },
       /**
        * X-axis configuration object.
-       *
-       * @prop {Object} [{}] axisX
+       * @prop {Object} [{}] xAxis
        */
-      axisX: {
+      xAxis: {
         type: Object,
         default(){
           return {};
@@ -163,178 +152,249 @@
       },
       /**
        * Y-axis configuration object.
-       *
-       * @prop {Object} [{}] axisY
+       * @prop {Object} [{}] yAxis
        */
-      axisY: {
+      yAxis: {
         type: Object,
         default(){
           return {};
         }
       },
       /**
-       * Set it to true if you want to see the x-axis labels on the line and bar charts.
-       * You can give a function to customize these labels.
-       *
-       * @prop {Boolean|Function} [true] showLabelX
+       * Set it to false to hide the grid line on the chart.
+       * @prop {Boolean} [true] grid
        */
-      showLabelX: {
-        type: [Boolean, Function],
-        default: true
-      },
-      /**
-       * Set it to true if you want to see the x-axis labels in the reverse order on the line and bar charts.
-       *
-       * @prop {Boolean} [false] reverseLabelX
-       */
-      reverseLabelX: {
-        type: Boolean,
-        default: false
-      },
-      /**
-       * Set it to true if you want to see the odd values only.
-       *
-       * @prop {Boolean} [false] odd
-       */
-			odd: {
-        type: Boolean,
-        default: false
-      },
-      /**
-       * Set it to true if you want to see the even values only.
-       *
-       * @prop {Boolean} [false] even
-       */
-      even: {
-        type: Boolean,
-        default: false
-      },
-      /**
-       * Set it to true if you want to see the grid for the x-axis on the line and bar charts.
-       *
-       * @prop {Boolean} [true] showGridX
-       */
-      showGridX: {
+      grid: {
         type: Boolean,
         default: true
       },
       /**
-       * Set it to true if you want to see the y-axis labels on the line and bar charts.
-       * You can give a function to customize these labels.
-       *
-       * @prop {Boolean|Function} [true] showLabelY
+       * Set it to false if you want to hide the grid for the x-axis on the chart.
+       * @prop {Boolean} [true] xGrid
        */
-      showLabelY: {
-        type: [Boolean, Function],
+      xGrid: {
+        type: Boolean,
         default: true
       },
       /**
-       * Set it to true if you want to see the y-axis labels in the reverse order on the line and bar charts.
-       *
-       * @prop {Boolean} [false] reverseLabelY
-       */
-      reverseLabelY: {
-        type: Boolean,
-        default: false
-      },
-      /**
-      * Set it to true if you want to see the grid for the y-axis on the line and bar charts.
-      *
-      * @prop {Boolean} [true] showGridY
+      * Set it to false if you want to hide the grid for the y-axis on the chart.
+      * @prop {Boolean} [true] yGrid
       */
-      showGridY: {
+      yGrid: {
         type: Boolean,
         default: true
       },
       /**
-       * Set it to true if you want to enable the animations.
-       * If you give a number it will be used as the time (ms) for the animations.
-       *
-       * @prop {Boolean|Number} [false] animation
-       */
-      animation: {
-        type: [Boolean, Number],
-        default: false
-      },
-      // set it to 0 (zero) for stacked bars
-      /**
-       * The distance between the bars on the bar chart. You can set it to 0 for stacked bars.
-       *
-       * @prop {Number} barsDistance
-       */
-      barsDistance: {
-        type: Number,
-        default: undefined
-      },
-      /**
-       * Set it to true if you want to see horizontal bars on the bar chart.
-       *
-       * @prop {Boolean} [false] horizontalBars
-       */
-      horizontalBars: {
-        type: Boolean,
-        default: false
-      },
-	  /**
-	   * Set it to true if you want to reverse the data order.
-	   * @prop {Boolean} [false] reverseData
-	   */
-      reverseData: {
-        type: Boolean,
-				default: false
-      },
-			/**
-			 * A color list for personalization.
-			 *
-			 * @prop {String|Array} color
-			 */
-      color: {
-        type: [String, Array]
-      },
-			/**
-			 * The label color for personalization.
-			 *
-			 * @prop {String} labelColor
-			 */
-      labelColor: {
-        type: String
-      },
-			/**
-			 * The x-axis label color for personalization.
-			 *
-			 * @prop {String} labelColorX
-			 */
-      labelColorX: {
-        type: String
-      },
-			/**
-			 * The y-axis label color for personalization.
-			 *
-			 * @prop {String} labelColorY
-			 */
-      labelColorY: {
-        type: String
-      },
-			/**
-			 * The background color for personalization.
-			 *
-			 * @prop {String} [inherit] backgroundColor
-			 */
-      backgroundColor: {
-        type: String,
-        default: 'inherit'
-      },
-			/**
-			 * The grid color for personalization.
-			 *
+			 * The grid's color.
 			 * @prop {String} gridColor
 			 */
       gridColor: {
         type: String
       },
+      /**
+			 * The grid's background.
+			 * @prop {String} gridColor
+			 */
+      gridBackground: {
+        type: String
+      },
+      /**
+       * Set it to false if you want to disable the animations.
+       * If you give a number it will be used as the time (ms) for the animations.
+       *
+       * @prop {Boolean|Number} [800] animation
+       */
+      animation: {
+        type: [Boolean, Number],
+        default: 800
+      },
+      /**
+       * Set it to true if you want the stacked bars.
+       * @prop {Boolean} [false] stacked
+       */
+      stacked: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * The distance between the bars on the bar chart.
+       * @prop {Number} barsDistance
+       */
+      barsDistance: {
+        type: Number
+      },
+      /**
+       * Set it to true if you want to see horizontal bars on the bar chart.
+       * @prop {Boolean} [false] horizontalBars
+       */
+      horizontal: {
+        type: Boolean,
+        default: false
+      },
+			/**
+			 * A colors list for personalization.
+			 * @prop {String|Array} color
+			 */
+      color: {
+        type: [String, Array],
+        default(){
+          return [
+            bbn.var.colors.webblue,
+            bbn.var.colors.turquoise,
+            bbn.var.colors.orange,
+            bbn.var.colors.red,
+            bbn.var.colors.purple,
+            bbn.var.colors.yellow,
+            bbn.var.colors.pink,
+            bbn.var.colors.brown,
+            bbn.var.colors.grey,
+            bbn.var.colors.navy,
+            bbn.var.colors.olive,
+            bbn.var.colors.pastelorange,
+            bbn.var.colors.cyan,
+            bbn.var.colors.green,
+            bbn.var.colors.black,
+            bbn.var.colors.white
+          ]
+        }
+      },
+      /**
+       * Set it to false if you want to hide the labels on the chart.
+       * @prop {Boolean} [true] labels
+       */
+      labels: {
+        type: Boolean,
+        default: true
+      },
+      /**
+       * Set it to false if you want to hide the x-axis labels on the chart.
+       * @prop {Boolean} [true] xLabels
+       */
+      xLabels: {
+        type: Boolean,
+        default: true
+      },
+      /**
+       * Set it to false if you want to hide the y-axis labels on the chart.
+       * @prop {Boolean} [true] xLabels
+       */
+      yLabels: {
+        type: Boolean,
+        default: true
+      },
+			/**
+			 * The labela color.
+			 * @prop {String} labelsColor
+			 */
+      labelsColor: {
+        type: String
+      },
+			/**
+			 * The x-axis labels color.
+			 * @prop {String} xLabelsColor
+			 */
+      xLabelsColor: {
+        type: String
+      },
+			/**
+			 * The y-axis labels color.
+			 * @prop {String} yLabelsColor
+			 */
+      yLabelsColor: {
+        type: String
+      },
+      /**
+       * Set a rotation angle for the x-axis.
+       * @prop {Number} xLabelsRotate
+       */
+      xLabelsRotate: {
+        type: Number
+      },
+      /**
+       * Set a rotation angle for the y-axis.
+       * @prop {Number} yLabelsRotate
+       */
+      yLabelsRotate: {
+        type: Number
+      },
+      /**
+       * A custom function for the labels value.
+       * @prop {Function} labelsRender
+       */
+      labelsRender: {
+        type: Function
+      },
+      /**
+       * A custom function for the x-axis value.
+       * @prop {Function} xLabelsRender
+       */
+      xLabelsRender: {
+        type: Function
+      },
+      /**
+       * A custom function for the y-axis value.
+       * @prop {Function} yLabelsRender
+       */
+      yLabelsRender: {
+        type: Function
+      },
+      /**
+			 * X offset of the pie chart's labels.
+			 * @prop {Number} [0] labelsOffsetX
+			 */
+      labelsOffsetX: {
+        type: Number,
+        default: 0
+      },
+      /**
+			 * Y offset of the pie chart's labels.
+			 * @prop {Number} [0] labelsOffsetY
+			 */
+      labelsOffsetY: {
+        type: Number,
+        default: 0
+      },
+      /**
+       * X offset of the x-axis' labels.
+       * @prop {Number} [0] xLabelsOffsetX
+       */
+      xLabelsOffsetX: {
+        type: Number,
+        default: 0
+      },
+      /**
+       * Y offset of the x-axis' labels.
+       * @prop {Number} [0] xLabelsOffsetY
+       */
+      xLabelsOffsetY: {
+        type: Number,
+        default: 0
+      },
+      /**
+       * X offset of the y-axis' labels.
+       * @prop {Number} [0] yLabelsOffsetX
+       */
+      yLabelsOffsetX: {
+        type: Number,
+        default: 0
+      },
+      /**
+       * Y offset of the y-axis' labels.
+       * @prop {Number} [0] yLabelsOffsetY
+       */
+      yLabelsOffsetY: {
+        type: Number,
+        default: 0
+      },
+			/**
+			 * The background color for personalization.
+			 * @prop {String} background
+			 */
+      background: {
+        type: String
+      },
 			/**
 			 * The max value limit.
-			 *
 			 * @prop {Number} [undefined] max
 			 */
       max: {
@@ -343,7 +403,6 @@
       },
 			/**
 			 * The min value limit.
-			 *
 			 * @prop {Number} [undefined] min
 			 */
       min: {
@@ -351,36 +410,50 @@
         default: undefined
       },
 			/**
-			 * Numbers only on y-axis.
-			 *
-			 * @prop {Boolean} [false] onlyInteger
-			 */
-      onlyInteger: {
-        type: Boolean,
-        default: false
-      },
-			/**
-			 * Set it to false if you do not want to activate the tooltip plugin.
-			 * You can customize tooltips by passing a function.
-			 *
-			 * @prop {Boolean|Function} [true] tooltip
+			 * Set it to false if you want to hide the tooltip.
+			 * @prop {Boolean} [true] tooltip
 			 */
       tooltip: {
-        type: [Boolean, Function],
+        type: Boolean,
         default: true
       },
-			/**
-			 * Set it to true if you want to enable the plugin.
-			 *
-			 * @prop {Boolean} [false] pointLabel
-			 */
-      pointLabel: {
-        type: Boolean,
-        default: false
+      /**
+       * Tooltip value customize.
+       * @prop {Function} tooltipRender
+       */
+      tooltipRender: {
+        type: Function
+      },
+      /**
+       * Tooltip value customize.
+       * @prop {Function} tooltipLegendRender
+       */
+      tooltipLegendRender: {
+        type: Function
+      },
+      /**
+       * X axis tooltip customize.
+       * @prop {Function} xTooltipRender
+       */
+      xTooltipRender: {
+        type: Function
+      },
+      /**
+       * Y axis tooltip customize.
+       * @prop {Function} yTooltipRender
+       */
+      yTooltipRender: {
+        type: Function
+      },
+      /**
+       * Z axis tooltip customize.
+       * @prop {Function} zTooltipRender
+       */
+      zTooltipRender: {
+        type: Function
       },
 			/**
 			 * The legend list.
-			 *
 			 * @prop {Boolean|Array} legend
 			 */
       legend: {
@@ -388,130 +461,176 @@
       },
 			/**
 			 * The legend position.
-			 * You can use 'top', 'bottom' or a HTMLElement.
-			 *
+			 * You can use 'top', 'bottom', 'left' or a 'right'.
 			 * @prop {String|HTMLElement} [undefined] legendPosition
 			 */
       legendPosition: {
-			  type: [String, HTMLElement],
-        default: undefined
-      },
-      /*threshold: {
-        type: Number
-      },*/
-			/**
-			 * Set it to true to see a square line on the line chart.
-			 *
-			 * @prop {Boolean} [false] step
-			 */
-      step: {
-        type: Boolean,
-        default: false
-      },
-			/**
-			 * Date format personalization.
-			 *
-			 * @prop {String} dateFormat
-			 */
-      dateFormat: {
-        type: String
-      },
-			/**
-			 * Label offset on the pie chart.
-			 *
-			 * @prop {Number} [0] labelOffset
-			 */
-      labelOffset: {
-        type: Number,
-        default: 0
-      },
-			/**
-			 * Set it to true if you want to see the labels outside of pie chart.
-			 *
-			 * @prop {Boolean} [false] labelExternal
-			 */
-      labelExternal: {
-        type: Boolean,
-        default: false
-      },
-			/**
-			 * Set it to true if you want to wrap the labels on the pie chart.
-			 * You can also give the number of characters for the wrap.
-			 *
-			 * @prop {Boolean|Number} [false] labelWrap
-			 */
-      labelWrap: {
-        type: [Boolean, Number],
-        default: false
-      },
-			/**
-			 * The chart's padding.
-			 *
-			 * @prop {Number} [undefined] padding
-			 */
-      padding: {
-        type: Number,
-        default: undefined
-      },
-			/**
-			 * The top chart's padding.
-			 *
-			 * @prop {Number} [undefined] paddingTop
-			 */
-      paddingTop: {
-        type: Number,
-        default: undefined
-      },
-			/**
-			 * The right chart's padding.
-			 *
-			 * @prop {Number} [undefined] paddingRight
-			 */
-      paddingRight: {
-        type: Number,
-        default: undefined
-      },
-			/**
-			 * The bottom chart's padding.
-			 *
-			 * @prop {Number} [undefined] paddingBottom
-			 */
-      paddingBottom: {
-        type: Number,
-        default: undefined
-      },
-			/**
-			 * The left chart's padding.
-			 *
-			 * @prop {Number} [undefined] paddingLeft
-			 */
-      paddingLeft: {
-        type: Number,
-        default: undefined
+			  type: String,
+        default: 'bottom',
+        validator: (t) => ['top', 'bottom', 'left', 'right'].includes(t)
       },
       /**
-       * Give a currency string to use on the tooltip plugin.
-       *
-       * @prop {String} currency
-       * @todo add this to labels
+       * Legend customize.
+       * @prop {Function} legendRender
        */
-      currency: {
-        type: String
+      legendRender: {
+        type: Function
       },
       /**
        * Set it to true to see distributed series on the bar chart.
-       *
-       * @prop {Boolean} distributeSeries
+       * @prop {Boolean} [false] distributed
        */
-      distributeSeries: {
-        type: Boolean
+      distributed: {
+        type: Boolean,
+        default: false
       },
-      /*zoom: {
-        type: Boolean
-      },*/
-			/**
+      /**
+       * Set it to true if you want to transform the values to currencies.
+       * @prop {Boolean} [false] currency
+       */
+      currency: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * @prop {Boolean|String} [false] xDate
+       */
+      xDate: {
+        type: [Boolean, String],
+        default: false
+      },
+      /**
+       * The string used when the chart hasn't the data.
+       * @prop {String} ['No Data'] nodata
+       */
+      nodata: {
+        type: String,
+        default: bbn._('No data')
+      },
+      /**
+       * Set it to true if you want to see the odd values only.
+       * @prop {Boolean} [false] odd
+       */
+			odd: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * Set it to true if you want to see the even values only.
+       * @prop {Boolean} [false] even
+       */
+      even: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * Shows only interger on the y-axis labels.
+       * @prop {Boolean} [false] onlyInteger
+       */
+      onlyInteger: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * The number of ticks on the y-axis.
+       * @prop {String|Number} ticksNumber
+       */
+      ticksNumber: {
+        type: [String, Number]
+      },
+      /**
+       * Display or note the toolbar/menu in the top right corner.
+       * @prop {Boolean} [true] toolbar
+       */
+      toolbar: {
+        type: Boolean,
+        default: true
+      },
+      /**
+       * Show the download menu / hamburger icon in the toolbar.
+       * If you want to display a custom icon instead of hamburger icon, you can provide HTML string in this property.
+       * @prop {Boolean|String} [true] toolbarDownload
+       */
+      toolbarDownload: {
+        type: [Boolean, String],
+        default: false
+      },
+      /**
+       * Show the rectangle selection icon in the toolbar.
+       * If you want to display a custom icon for selection, you can provide HTML string in this property.
+       * @prop {Boolean|String} [true] toolbarSelection
+       */
+      toolbarSelection: {
+        type: [Boolean, String],
+        default: true
+      },
+      /**
+       * Show the zoom icon which is used for zooming by dragging selection on the chart area.
+       * If you want to display a custom icon for zoom, you can provide HTML string in this property.
+       * @prop {Boolean|String} [true] toolbarZoom
+       */
+      toolbarZoom: {
+        type: [Boolean, String],
+        default: true
+      },
+      /**
+       * Show the zoom-in icon which zooms in 50% from the visible chart area.
+       * If you want to display a custom icon for zoom-in, you can provide HTML string in this property.
+       * @prop {Boolean|String} [true] toolbarZoomin
+       */
+      toolbarZoomin: {
+        type: [Boolean, String],
+        default: true
+      },
+      /**
+       * Show the zoom-out icon which zooms out 50% from the visible chart area.
+       * If you want to display a custom icon for zoom-out, you can provide HTML string in this property.
+       * @prop {Boolean|String} [true] toolbarZoomout
+       */
+      toolbarZoomout: {
+        type: [Boolean, String],
+        default: true
+      },
+      /**
+       * Show the panning icon in the toolbar.
+       * If you want to display a custom icon for span, you can provide HTML string in this property.
+       * @prop {Boolean|String} [true] toolbarPan
+       */
+      toolbarPan: {
+        type: [Boolean, String],
+        default: true
+      },
+      /**
+       * Reset the chart data to it’s initial state after zommin/zoomout/panning.
+       * If you want to display a custom icon for reset, you can provide HTML string in this property.
+       * @prop {Boolean|String} [true] toolbarReset
+       */
+      toolbarReset: {
+        type: [Boolean, String],
+        default: true
+      },
+      /**
+       * Allows to add additional icon buttons in the toolbar.
+       * In the below example, index should be used to place at a particular position in the toolbar.
+       * [{
+       *   icon: '<img src="/static/icons/chart-carpet.png" width="20">',
+       *   index: 4,
+       *   title: 'tooltip of the icon',
+       *   class: 'custom-icon',
+       *   click: function (chart, options, e) {
+       *     console.log("clicked custom-icon")
+       *   }
+       * }]
+       * @prop {Array} [[]] toolbarCustom
+       */
+      toolbarCustom: {
+        type: Array,
+        default(){
+          return [];
+        }
+      },
+      /**
 			 * Use this prop to give native widget's properties.
-			 *
 			 * @prop {Object} [{}] cfg
 			 */
       cfg: {
@@ -519,33 +638,64 @@
         default(){
           return {};
         }
-      },
-      ticks: {
-        type: Array,
-        default(){
-          return []
-        }
+      }
+    },
+    data(){
+      return {
+        container: false,
+        containerHeight: 0,
+        containerWidth: 0,
+        ready: false,
+        widget: false
       }
     },
     computed: {
       /**
        * This makes the widget's data from the source.
-       *
        * @computed data
-       * @return {Object}
+       * @return {Array}
        */
       data(){
-        let data = this.source;
-        if ( this.isLine || this.isBar ){
-          if ( data && data.series && !Array.isArray(data.series[0]) && !this.distributeSeries ){
-            data.series = [data.series];
+        let series = this.source.series,
+            data = []
+        if ( this.isLine || this.isBar || this.isArea ){
+          if ( bbn.fn.isArray(series) && series.length ){
+            if ( !bbn.fn.isArray(series[0]) ){
+              data.push({
+                data: this.even || this.odd ? bbn.fn.filter(series, (v, k) => {
+                  k++;
+                  return (this.even && (k % 2 === 0)) || (this.odd && (k % 2 > 0));
+                }) : series
+              })
+            }
+            else {
+              bbn.fn.each(series, (s, i) => {
+                if ( bbn.fn.isObject(s) ){
+
+                }
+                else {
+                  data.push({
+                    data: this.even || this.odd ? bbn.fn.filter(s, (v, k) => {
+                      k++;
+                      return (this.even && (k % 2 === 0)) || (this.odd && (k % 2 > 0));
+                    }) : s,
+                    name: this.legend && this.legend.length ? this.legend[i] : false
+                  })
+                }
+              })
+            }
           }
+        }
+        else if ( this.isPie || this.isDonut || this.isRadial ){
+          data = this.even || this.odd ? bbn.fn.filter(this.source.series, (v, k) => {
+            k++;
+            return (this.even && (k % 2 === 0)) || (this.odd && (k % 2 > 0));
+          }) : this.source.series
         }
         return data;
       },
       /**
        * This checks the chart's type is 'line'.
-       *
        * @computed isLine
        * @return {Boolean}
        */
@@ -554,7 +704,6 @@
       },
       /**
        * This checks the chart's type is 'bar'.
-       *
        * @computed isBar
        * @return {Boolean}
        */
@@ -563,238 +712,234 @@
       },
       /**
        * This checks the chart's type is 'pie'.
-       *
        * @computed isPie
        * @return {Boolean}
        */
       isPie(){
-        return this.type === 'pie';
+        return (this.type === 'pie') && !this.donut;
       },
       /**
-       * This makes an array of activated plugins.
-       *
-       * @computed plugins
-       * @return {Array}
+       * This checks the chart's type is 'donut'.
+       * @computed isDonut
+       * @return {Boolean}
        */
-      plugins(){
-        let plugins = [];
-        // tooltip
-        if ( this.tooltip ){
-          plugins.push(Chartist.plugins.tooltip({
-            currency: this.currency || false,
-            transformTooltipTextFnc:bbn.fn.isFunction(this.tooltip) ? this.tooltip : undefined
-          }));
-        }
-        // axis X/Y title
-        if ( !this.isPie && (this.titleX || this.titleY) ){
-          plugins.push(Chartist.plugins.ctAxisTitle({
-            axisX: {
-              axisTitle: this.titleX || '',
-              axisClass: 'ct-axis-title',
-              offset: {
-                x: 0,
-                y: 50
-              },
-              textAnchor: 'middle'
-            },
-            axisY: {
-              axisTitle: this.titleY || '',
-              axisClass: 'ct-axis-title',
-              offset: {
-                x: 0,
-                y: 0
-              },
-              textAnchor: 'middle',
-              flipTitle: false
-            }
-          }));
-        }
-        // Point Label
-        if ( this.pointLabel ){
-          plugins.push(Chartist.plugins.ctPointLabels());
-        }
-        // Legend
-        if ( this.legend ){
-          plugins.push(Chartist.plugins.legend({
-            onClick(a, b){
-              const rect = b.target.querySelector('div.rect');
-              if ( rect ){
-                if ( rect.classList.contains('inactive') ){
-                  rect.classList.remove('inactive');
-                }
-                else {
-                  rect.classList.add('inactive');
-                }
-              }
-            },
-            removeAll: true,
-            legendNames: Array.isArray(this.legendFixed) ? this.legendFixed : false,
-            position: this.legendPosition || 'top'
-          }));
-        }
-        // Thresold
-        /** @todo  it's not compatible with our colors system and legend */
-        /*if ( (this.isLine || this.isBar) && (typeof this.threshold === 'number') ){
-          plugins.push(Chartist.plugins.ctThreshold({
-            threshold: this.threshold
-          }));
-        }*/
-        // Zoom
-        /** @todo problems with scale x axis */
-        /*if ( this.zoom && this.isLine ){
-          this.trasformData();
-          this.axisX.type =  Chartist.AutoScaleAxis;
-          this.axisX.divisor = this.getLabelsLength();
-          this.axisY.type =  Chartist.AutoScaleAxis;
-          plugins.push(Chartist.plugins.zoom({
-            onZoom(chart, reset) {
-              this.resetZoom = reset;
-            }
-          }));
-        }*/
-        return plugins;
+      isDonut(){
+        return (this.type === 'donut') || ((this.type === 'pie') && !!this.donut);
+      },
+      /**
+       * This checks the chart's type is 'area'.
+       * @computed isArea
+       * @return {Boolean}
+       */
+      isArea(){
+        return this.type === 'area';
+      },
+      /**
+       * This checks the chart's type is 'radial'.
+       * @computed isRadial
+       * @return {Boolean}
+       */
+      isRadial(){
+        return this.type === 'radial';
       },
 			/**
 			 * Sets the color property to the correct form.
-			 *
 			 * @computed colors
-			 * @return {Array|Boolean}
+			 * @return {Array}
 			 */
 			colors(){
+        let colors = [];
 				if ( typeof this.color === 'string' ){
-					return [this.color];
+					colors = [this.color];
 				}
 				if ( Array.isArray(this.color) ){
-					return this.color;
-				}
-				return false;
+					colors = this.color;
+        }
+        return bbn.fn.map(colors, c => {
+          if (
+            (c.indexOf('#') !== 0) ||
+            (c.toLowerCase().indexOf('rgb') !== 0)
+          ){
+            return bbn.fn.colorToHex(c);
+          }
+          return c;
+        });
 			},
       /**
-       * Makes a correct legend list.
-       *
-       * @computed legendFixed
-       * @return {Boolean|Array}
-       */
-      legendFixed(){
-        if ( Array.isArray(this.legend) && (typeof this.legend[0] === 'object') ){
-          return bbn.fn.map(this.legend, (l) => {
-            return l.text || null;
-          });
-        }
-        else {
-          return this.legend;
-        }
-      },
-      /**
-       * Makes a correct legend list with title as the text.
-       *
-       * @computed legendTitles
-       * @return {Boolean|Array}
-       */
-      legendTitles(){
-        if ( Array.isArray(this.legend) && (typeof this.legend[0] === 'object') ){
-          return bbn.fn.map(this.legend, (l) => {
-            return l.title || (l.text || null) ;
-          });
-        }
-        else {
-          return this.legend;
-        }
-      },
-      /**
        * Makes the base configuration object for the 'line' chart.
-       *
        * @computed lineCfg
        * @return {Object}
        */
       lineCfg(){
-        let cfg = {
-          lineSmooth: this.step && this.showLine ? Chartist.Interpolation.step() : this.lineSmooth,
-          showPoint: this.showPoint,
-          showLine: this.showLine,
-          pointLabel: this.pointLabel,
-          showArea: this.showArea
-        };
-        return this.isLine ? bbn.fn.extend(true, cfg, this.lineBarCommon) : {};
+        let cfg = {};
+        return this.isLine ? bbn.fn.extend(true, cfg, this.lineBarAreaCommon, this.lineAreaCommon) : {}
       },
       /**
        * Makes the base configuration object for the 'bar' chart.
-       *
        * @computed barCfg
        * @return {Object}
        */
       barCfg(){
         let cfg = {
-          seriesBarDistance: this.barsDistance && (this.barsDistance > 0) ? this.barsDistance : undefined,
-          stackBars: this.barsDistance === 0,
-          horizontalBars: this.horizontalBars
+          chart: {
+            stacked: !!this.stacked
+          },
+          plotOptions: {
+            bar: {
+              horizontal: !!this.horizontal,
+              distributed: this.distributed
+            }
+          }
         };
-        return this.isBar ? bbn.fn.extend(true, cfg, this.lineBarCommon) : {};
+        if ( this.barsDistance ){
+          cfg.stroke = {
+            show: true,
+            width: this.barsDistance,
+            colors: ['transparent']
+          };
+        }
+        return this.isBar ? bbn.fn.extend(true, cfg, this.lineBarAreaCommon) : {};
+      },
+      /**
+       * Makes the base configuration object for the 'area' chart.
+       * @computed areaCfg
+       * @return {Object}
+       */
+      areaCfg(){
+        let cfg = {}
+        return this.isArea ? bbn.fn.extend(true, cfg, this.lineAreaCommon) : {}
+      },
+      /**
+       * Makes the base configuration object for the 'line' and 'area' chart.
+       * @computed lineAreaCommon
+       * @return {Object}
+       */
+      lineAreaCommon(){
+        let cfg = {
+          markers: {
+            size: this.points || 0
+          },
+          stroke: {
+            curve: !!this.smooth ? 'smooth' : (!!this.step ? 'stepline' : 'straight')
+          }
+        };
+        return this.isLine || this.isArea ? bbn.fn.extend(true, cfg, this.lineBarAreaCommon) : {}
       },
       /**
        * Makes a common configuration object for the 'line' and 'bar' charts.
-       *
-       * @computed lineBarCommon
+       * @computed lineBarAreaCommon
        * @return {Object}
        */
-      lineBarCommon(){
-        if ( this.isLine || this.isBar ){
+      lineBarAreaCommon(){
+        if ( this.isLine || this.isBar || this.isArea ){
           let cfg = {
-            chartPadding: {
-              top: this.paddingTop || this.padding,
-              right: this.paddingRight || this.padding,
-              bottom: this.paddingBottom || this.padding,
-              left: this.paddingLeft || this.padding
+            xaxis: {
+              labels: {
+                show: !!this.labels && !!this.xLabels && this.data.length,
+                style: {
+                  colors: this.xLabelsColor || (this.labelsColor || []),
+                  cssClass: 'bbn-chart-xaxis-label'
+                },
+                offsetX: this.xLabelsOffsetX,
+                offsetY: this.xLabelsOffsetY,
+                showDuplicates: true
+              },
+              title: {
+                text: this.xTitle,
+                style: {
+                  cssClass: 'bbn-chart-xaxis-title'
+                }
+              }
             },
-            axisX: bbn.fn.extend(true, {
-              showLabel:bbn.fn.isFunction(this.showLabelX) ? true : this.showLabelX,
-              showGrid: this.showGridX,
-              position: this.reverseLabelX ? 'start' : 'end'
-            }, this.axisX),
-            axisY: bbn.fn.extend(true, {
-              type: this.ticks ? Chartist.FixedScaleAxis : Chartist.AutoScaleAxis,
-              ticks: this.ticks || [],
-              showLabel:bbn.fn.isFunction(this.showLabelY) ? true : this.showLabelY,
-              showGrid: this.showGridY,
-              position: this.reverseLabelY ? 'end' : 'start',
-              onlyInteger: this.onlyInteger,
-              high: this.max,
-              low: this.min || undefined
-            }, this.axisY)
-          };
-          // Axis X
-          // Date format
-          if ( this.dateFormat ){
-            cfg.axisX.labelInterpolationFnc = (date, idx) => {
-              if ( this.odd ){
-                return idx % 2 > 0 ? moment(new Date(date)).format(this.dateFormat) : null;
+            yaxis: {
+              labels: {
+                show: !!this.labels && !!this.xLabels && this.data.length,
+                style: {
+                  colors: this.yLabelsColor || (this.labelsColor || []),
+                  cssClass: 'bbn-chart-yaxis-label'
+                },
+                offsetX: this.yLabelsOffsetX,
+                offsetY: this.yLabelsOffsetY
+              },
+              title: {
+                text: this.yTitle,
+                style: {
+                  cssClass: 'bbn-chart-yaxis-title'
+                }
+              },
+              min: this.min,
+              max: this.max
+            },
+            grid: {
+              show: !!this.grid && (!!this.xGrid || !!this.yGrid),
+              xaxis: {
+                lines: {
+                  show: !!this.xGrid
+                }
+              },
+              yaxis: {
+                lines: {
+                  show: !!this.yGrid
+                }
               }
-              if ( this.even ){
-                return idx % 2 === 0 ? moment(new Date(date)).format(this.dateFormat) : null;
+            }
+          }
+          if ( this.xDate ){
+            cfg.xaxis.type = 'datetime';
+            if ( bbn.fn.isString(this.xDate) ){
+              cfg.xaxis.labels.formatter = (value, timestamp, index) => {
+                return moment(timestamp).format(this.xDate);
               }
-              return moment(new Date(date)).format(this.dateFormat);
+            }
+          }
+          if ( this.onlyInteger ){
+            cfg.yaxis.decimalsInFloat = 3;
+          }
+          if ( this.ticksNumber ){
+            cfg.yaxis.tickAmount = parseInt(this.ticksNumber);
+          }
+          if ( this.gridColor ){
+            cfg.grid.borderColor = this.gridColor;
+          }
+          if ( this.gridBackground ){
+            cfg.grid.row = {
+              colors: [this.gridBackground]
             };
           }
-          // Odd labels
-          if ( this.odd && !this.even && !this.dateFormat ){
-            cfg.axisX.labelInterpolationFnc = (val, idx) => {
-              return idx % 2 > 0 ? val : null;
+          if ( this.currency ){
+            cfg.dataLabels = {
+              formatter: (val, opts) => {
+                return bbn.fn.money(val);
+              }
             };
+            if ( this.tooltip ){
+              cfg.tooltip = {
+                y: {
+                  formatter: (val) => {
+                    return bbn.fn.money(val);
+                  }
+                }
+              };
+            }
           }
-          // Even labels
-          if ( this.even && !this.odd && !this.dateFormat ){
-            cfg.axisX.labelInterpolationFnc = function(val, idx){
-              return idx % 2 === 0 ? val : null;
-            };
+          if ( this.xLabelsRotate ){
+            cfg.xaxis.labels.rotate = this.xLabelsRotate;
+            cfg.xaxis.labels.rotateAlways = true;
           }
-          // Custom axisX label
-          if (bbn.fn.isFunction(this.showLabelX) ){
-            cfg.axisX.labelInterpolationFnc = this.showLabelX;
+          if ( this.yLabelsRotate ){
+            cfg.yaxis.labels.rotate = this.yLabelsRotate;
           }
-          // Custom axisY label
-          if (bbn.fn.isFunction(this.showLabelY) ){
-            cfg.axisY.labelInterpolationFnc = this.showLabelY;
-            cfg.axisY.offset = 100;
+          if ( this.labelsRender || this.xLabelsRender ){
+            cfg.xaxis.labels.formatter = this.xLabelsRender || this.labelsRender;
+          }
+          if ( this.labelsRender || this.yLabelsRender ){
+            cfg.yaxis.labels.formatter = this.yLabelsRender || this.labelsRender;
+          }
+          if ( Object.keys(this.xAxis).length ){
+            bbn.fn.extend(true, cfg.xaxis, this.xAxis);
+          }
+          if ( Object.keys(this.yAxis).length ){
+            bbn.fn.extend(true, cfg.yaxis, this.yAxis);
           }
           return cfg;
         }
@@ -802,103 +947,303 @@
       },
       /**
        * Makes the base configuration object for the 'pie' chart.
-       *
        * @computed pieCfg
        * @return {Object}
        */
       pieCfg(){
+        let cfg = {}
+        return this.isPie ? bbn.fn.extend(true, cfg, this.pieDonutCommonCfg) : {}
+      },
+      /**
+       * Makes the base configuration object for the 'donut' chart.
+       * @computed donutCfg
+       * @return {Object}
+       */
+      donutCfg(){
         let cfg = {
-              donut: !!this.donut,
-              chartPadding: this.padding,
-              showLabel: this.showLabel,
-              labelDirection: this.labelExternal ? 'explode' : 'neutral',
-              labelOffset: this.labelOffset,
-              labelInterpolationFnc: (value) => {
-                if ( this.labelWrap ){
-                  let ret = '',
-                      labelWrap = typeof this.labelWrap === 'number' ? this.labelWrap : 25,
-                      tmp,
-                      cont = 0,
-                      arr,
-                      spl = (text) => {
-                        let r = '',
-                            idx = labelWrap;
-                        if ( text.length <= labelWrap ){
-                          return text;
-                        }
-                        for ( let i = labelWrap; i < text.length; i += labelWrap ){
-                          if ( i === labelWrap ){
-                            r += text.slice(0, i) + "\n"
-                          }
-                          r += text.slice(idx, i) + "\n";
-                          idx = i;
-                        }
-                        return r + text.slice(idx);
-                      };
-                  if ( typeof value === 'number' ){
-                    value = value.toString();
+          chart: {
+            type: 'donut'
+          }
+        }
+        if ( bbn.fn.isNumber(this.donut) ){
+          cfg.plotOptions = {
+            pie: {
+              donut: {
+                size: this.donut + '%'
+              }
+            }
+          }
+        }
+        return this.isDonut ? bbn.fn.extend(true, cfg, this.pieDonutCommonCfg) : {}
+      },
+      /**
+       * Makes a common configuration object for the 'pie' and 'donut' charts.
+       * @computed pieDonutCommonCfg
+       * @return {Object}
+       */
+      pieDonutCommonCfg(){
+        if ( this.container && (this.isPie || this.isDonut) ){
+          let cfg = {
+            dataLabels: {
+              enabled: !!this.labels && this.data.length
+            }
+          };
+          if ( this.labelsColor ){
+            cfg.dataLabels.style = {
+              colors: [this.labelsColor]
+            };
+          }
+          if ( this.currency ){
+            cfg.dataLabels.formatter = (val, opts) => {
+              return bbn.fn.money(opts.w.config.series[opts.seriesIndex]);
+            };
+            if ( this.tooltip ){
+              cfg.tooltip = {
+                y: {
+                  formatter: (val) => {
+                    return bbn.fn.money(val);
                   }
-                  if ( value.length <= labelWrap ){
-                    return value;
-                  }
-                  if ( value.indexOf('\n') !== -1 ){
-                    arr = value.split('\n');
-                    arr.forEach((a, i) => {
-                      ret += spl(a) + (arr[i+1] ? '\n' : '');
-                    });
-                    return ret;
-                  }
-                  return spl(value);
                 }
-                else {
-                  return value;
+              };
+            }
+          }
+          if ( this.labelsRender ){
+            cfg.dataLabels.formatter = this.labelsRender;
+            /* if ( this.tooltip ){
+              cfg.tooltip = {
+                y: {
+                  formatter: this.labelsRender
+                }
+              };
+            } */
+          }
+          if ( this.labelsOffsetX ){
+            cfg.dataLabels.offsetX = this.labelsOffsetX;
+          }
+          if ( this.labelsOffsetY ){
+            cfg.dataLabels.offsetY = this.labelsOffsetY;
+          }
+          if (
+            this.containerHeight &&
+            this.containerWidth &&
+            (this.width === '100%') &&
+            (this.height === '100%')
+          ){
+            cfg.chart = {};
+            if ( this.containerWidth < this.containerHeight ){
+              cfg.chart.width = this.containerWidth;
+              //cfg.chart.height ='100%';
+              cfg.chart.height = this.containerWidth;
+            }
+            else {
+              cfg.chart.width = '100%';
+              //cfg.chart.width = this.containerHeight;
+              cfg.chart.height = this.containerHeight;
+            }
+          }
+          return cfg;
+        }
+        return {};
+      },
+      /**
+       * Makes the base configuration object for the 'pie' chart.
+       * @computed radialCfg
+       * @return {Object}
+       */
+      radialCfg(){
+        let cfg = {
+          chart: {
+            type: 'radialBar'
+          },
+          plotOptions: {
+            radialBar: {
+              dataLabels: {
+                total: {
+                  show: true,
+                  total: bbn._('TOTAL')
                 }
               }
-            };
-        if ( typeof this.donut === 'number' ){
-          cfg.donutWidth = this.donut;
+            }
+          }
         }
-        else if ( this.donut ){
-          cfg.donutWidth = '100%';
-        }
-        // Force donut if animation is active
-        if ( this.animation ){
-          cfg.donut = true;
-          cfg.donutWidth = '100%';
-        }
-        return this.isPie ? cfg : {};
+        return this.isRadial ? cfg : {}
       },
       /**
        * Makes the configuration object for the widget.
-       *
        * @computed widgetCfg
        * @return {Object}
        */
       widgetCfg(){
-        let cfg = bbn.fn.extend(true, {
-          type: this.type,
-          fullWidth: this.fullWidth,
-          width: this.width,
-          height: this.height,
-          tooltip: this.tooltip,
-          plugins: this.plugins
-        }, this.cfg);
+        let cfg = {
+          chart: {
+            type: this.type,
+            height: this.height,
+            width: this.width,
+            animations: {
+              enabled: !!this.animation,
+              speed: bbn.fn.isNumber ? this.animation : 800
+            },
+            toolbar: {
+              show: this.toolbar,
+              tools: {
+                download: this.toolbarDownload,
+                selection: this.toolbarSelection,
+                zoom: this.toolbarZoom,
+                zoomin: this.toolbarZoomin,
+                zoomout: this.toolbarZoomout,
+                pan: this.toolbarPan,
+                reset: this.toolbarReset,
+                customIcons: this.toolbarCustom
+              }
+            },
+            defaultLocale: 'en',
+            locales: [{
+              name: 'en',
+              options: {
+                months: [
+                  bbn._('January'),
+                  bbn._('February'),
+                  bbn._('March'),
+                  bbn._('April'),
+                  bbn._('May'),
+                  bbn._('June'),
+                  bbn._('July'),
+                  bbn._('August'),
+                  bbn._('September'),
+                  bbn._('October'),
+                  bbn._('November'),
+                  bbn._('December')
+                ],
+                shortMonths: [
+                  bbn._('Jan'),
+                  bbn._('Feb'),
+                  bbn._('Mar'),
+                  bbn._('Apr'),
+                  bbn._('May'),
+                  bbn._('Jun'),
+                  bbn._('Jul'),
+                  bbn._('Aug'),
+                  bbn._('Sep'),
+                  bbn._('Oct'),
+                  bbn._('Nov'),
+                  bbn._('Dec')
+                ],
+                days: [
+                  bbn._('Sunday'),
+                  bbn._('Monday'),
+                  bbn._('Tuesday'),
+                  bbn._('Wednesday'),
+                  bbn._('Thursday'),
+                  bbn._('Friday'),
+                  bbn._('Saturday')
+                ],
+                shortDays: [
+                  bbn._('Sun'),
+                  bbn._('Mon'),
+                  bbn._('Tue'),
+                  bbn._('Wed'),
+                  bbn._('Thu'),
+                  bbn._('Fri'),
+                  bbn._('Sat')
+                ],
+                toolbar: {
+                  download: bbn._('Download SVG'),
+                  selection: bbn._('Selection'),
+                  selectionZoom: bbn._('Selection Zoom'),
+                  zoomIn: bbn._('Zoom In'),
+                  zoomOut: bbn._('Zoom Out'),
+                  pan: bbn._('Panning'),
+                  reset: bbn._('Reset Zoom')
+                }
+              }
+            }]
+          },
+          series: this.data,
+          labels: this.data && this.data.length ?
+            (this.source.labels ?
+              (this.even || this.odd ? bbn.fn.filter(this.source.labels, (v, k) => {
+                k++;
+                return (this.even && (k % 2 === 0)) || (this.odd && (k % 2 > 0));
+              }) :
+              this.source.labels
+            ) : []) :
+            [],
+          legend: {
+            show: this.legend && this.legend.length,
+            position: this.legendPosition,
+            itemMargin: {
+              horizontal: 5,
+              vertical: 5
+            },
+            formatter: this.legendRender
+          },
+          dataLabels: {
+            enabled: !!this.pointsLabels
+          },
+          tooltip: {
+            enabled: !!this.tooltip,
+            x: {
+              formatter: this.xTooltipRender
+            },
+            y: {
+              formatter: this.yTooltipRender || this.tooltipRender,
+              title: {
+                formatter: this.tooltipLegendRender
+              }
+            },
+            z: {
+              formatter: this.zTooltipRender
+            }
+          },
+          colors: this.colors.length ? this.colors : undefined,
+          fill: {
+            type: this.fill,
+            opacity: this.opacity
+          },
+          theme: {
+            mode: this.theme
+          },
+          noData: {
+            text: this.nodata
+          }
+        }
+        if ( this.background ){
+          cfg.chart.background = this.background;
+        }
+        if ( this.opacity && (this.fill === 'gradient') ){
+          cfg.fill.gradient = {
+            shadeIntensity: 1,
+            opacityFrom: this.opacity,
+            opacityTo: 1
+          };
+        }
+        if ( this.legendPosition === 'bottom' ){
+          cfg.legend.offsetY = -5;
+        }
         if ( this.isLine ){
-          bbn.fn.extend(true, cfg, this.lineCfg);
+          bbn.fn.extend(true, cfg, this.lineCfg, this.cfg)
         }
-        if ( this.isBar ){
-          bbn.fn.extend(true, cfg, this.barCfg);
+        else if ( this.isBar ){
+          bbn.fn.extend(true, cfg, this.barCfg, this.cfg)
         }
-        if ( this.isPie ){
-          bbn.fn.extend(true, cfg, this.pieCfg);
+        else if ( this.isPie ){
+          bbn.fn.extend(true, cfg, this.pieCfg, this.cfg)
         }
-        return cfg;
+        else if ( this.isDonut ){
+          bbn.fn.extend(true, cfg, this.donutCfg, this.cfg)
+        }
+        else if ( this.isRadial ){
+          bbn.fn.extend(true, cfg, this.radialCfg, this.cfg)
+        }
+        else if ( this.isArea ){
+          bbn.fn.extend(true, cfg, this.areaCfg, this.cfg)
+        }
+        return cfg
       }
     },
     methods: {
       /**
        * Destroys the current widget if it exists and fires the chart type constructor.
-       *
        * @method init
        * @fires pieChart
        * @fires barChart
@@ -906,623 +1251,39 @@
        * @fires widgetCreated
        */
       init(){
-        if ( this.widget ){
-          this.widget.detach();
+        this.destroy()
+        this.setSizes();
+        this.$nextTick(() => {
+          if ( !this.widget ){
+            this.widget = new ApexCharts(this.getRef('chart'), bbn.fn.extend(true, {}, this.widgetCfg))
+            this.widget.render();
+          }
+        })
+      },
+      destroy(){
+        if ( this.widget && this.ready ){
+          this.widget.destroy();
           this.widget = false;
         }
-        if ( this.data ){
-          setTimeout(() => {
-            // Widget configuration
-            if ( this.isPie ){
-              this.pieChart();
-            }
-            else if ( this.isBar ){
-              this.barChart();
-            }
-            else if ( this.isLine ){
-              this.lineChart();
-            }
-            // This operations is performed after widget creation
-            this.widgetCreated();
-          }, 100);
-        }
       },
-      /**
-       * Creates a Pie Chart.
-       *
-       * @method pieChart
-       * @fires pieDraw
-       */
-      pieChart(){
-        // Create widget
-        this.widget = new Chartist.Pie(this.$refs.chart, this.data, this.widgetCfg);
-        this.pieDraw();
+      setSizes(){
+        this.containerHeight = this.container.offsetHeight;
+        this.containerWidth = this.container.offsetWidth;
       },
-      /**
-       * Creates a Line Chart.
-       *
-       * @method lineChart
-       * @fires lineDraw
-       */
-      lineChart(){
-        // Creates widget
-        this.widget = new Chartist.Line(this.$refs.chart, this.data, this.widgetCfg);
-        this.lineDraw();
-      },
-      /**
-       * Creates a Bar Chart.
-       *
-       * @method barChart
-       * @fires barDraw
-       */
-      barChart(){
-        // Creates widget
-        this.widget = new Chartist.Bar(this.$refs.chart, this.data, this.widgetCfg);
-        this.barDraw();
-      },
-      /**
-       * Sets animations and colors whilst drawing the line chart.
-       *
-       * @method lineDraw
-       * @fires setGridColor
-       * @fires setColor
-       */
-      lineDraw(){
-        let seq = 0,
-            color = '';
-        // Once the chart is fully created we reset the sequence
-        this.widget.on('created', () => {
-          seq = 0;
-        });
-        this.widget.on('draw', (chartData) => {
-          // Set grid color
-          this.setGridColor(chartData);
-
-          // Customize color
-          this.setColor(chartData);
-
-          // Custom area's opacity
-          if ( this.showArea ){
-            this.setAreaOpacity(chartData);
-          }
-
-          // Customize label color
-          if ( (chartData.type === 'label') ){
-            if ( this.labelColor ){
-              color = this.labelColor;
+      onResize(){
+        if ( this.ready ){
+          this.$nextTick(() =>{
+            this.setSizes();
+            if ( this.widget ){
+              this.updateWidget();
             }
-            if ( this.labelColorX && (chartData.axis.units.pos === 'x') ){
-              color = this.labelColorX;
-            }
-            else if ( this.labelColorY && (chartData.axis.units.pos === 'y') ){
-              color = this.labelColorY;
-            }
-            chartData.element._node.children[0].style.color = color;
-          }
-
-          // Animation
-          if ( this.animation ){
-            let delays =bbn.fn.isNumber(this.animation) ? this.animation : 20,
-                durations = 500;
-            seq++;
-            if ( (chartData.type === 'line') || (chartData.type === 'area') ){
-              // If the element is drawn as a line, there is an opacity fade in. This could also be achieved using CSS3 animations.
-              chartData.element.animate({
-                opacity: {
-                  // The delay when we the animation start
-                  begin: seq * delays + 1000,
-                  // Duration of the animation
-                  dur: durations,
-                  // The value when the animation will start
-                  from: 0,
-                  // The value when it will end
-                  to: 1
-                }
-              });
-            }
-            else if ( (chartData.type === 'label') && (chartData.axis.units.pos === 'x') ){
-              chartData.element.animate({
-                y: {
-                  begin: seq * delays,
-                  dur: durations,
-                  from: chartData.y + 100,
-                  to: chartData.y,
-                  // We can specify an easing function from Chartist.Svg.Easing
-                  easing: 'easeOutQuart'
-                }
-              });
-            }
-            else if ( (chartData.type === 'label') && (chartData.axis.units.pos === 'y') ){
-              chartData.element.animate({
-                x: {
-                  begin: seq * delays,
-                  dur: durations,
-                  from: chartData.x - 100,
-                  to: chartData.x,
-                  easing: 'easeOutQuart'
-                }
-              });
-            }
-            else if ( chartData.type === 'point' ){
-              chartData.element.animate({
-                x1: {
-                  begin: seq * delays,
-                  dur: durations,
-                  from: chartData.x - 10,
-                  to: chartData.x,
-                  easing: 'easeOutQuart'
-                },
-                x2: {
-                  begin: seq * delays,
-                  dur: durations,
-                  from: chartData.x - 10,
-                  to: chartData.x,
-                  easing: 'easeOutQuart'
-                },
-                opacity: {
-                  begin: seq * delays,
-                  dur: durations,
-                  from: 0,
-                  to: 1,
-                  easing: 'easeOutQuart'
-                }
-              });
-            }
-            else if ( chartData.type === 'grid' ){
-              // Using chartData.axis we get x or y. We can use this to construct our animation definition objects
-              let pos1Animation = {
-                    begin: seq * delays,
-                    dur: durations,
-                    from: chartData[chartData.axis.units.pos + '1'] - 30,
-                    to: chartData[chartData.axis.units.pos + '1'],
-                    easing: 'easeOutQuart'
-                  },
-                  pos2Animation = {
-                    begin: seq * delays,
-                    dur: durations,
-                    from: chartData[chartData.axis.units.pos + '2'] - 100,
-                    to: chartData[chartData.axis.units.pos + '2'],
-                    easing: 'easeOutQuart'
-                  },
-                  animations = {};
-              animations[chartData.axis.units.pos + '1'] = pos1Animation;
-              animations[chartData.axis.units.pos + '2'] = pos2Animation;
-              animations['opacity'] = {
-                begin: seq * delays,
-                dur: durations,
-                from: 0,
-                to: 1,
-                easing: 'easeOutQuart'
-              };
-              chartData.element.animate(animations);
-            }
-          }
-        });
-      },
-      /**
-       * Sets animations and colors whilst drawing the bar chart.
-	     *
-       * @method barDraw
-       * @fires setGridColor
-       * @fires setColor
-       */
-      barDraw(){
-        this.widget.on('draw', (chartData) => {
-          // Set grid color
-          this.setGridColor(chartData);
-
-          // Customize color
-          this.setColor(chartData);
-
-          // Customize label color
-          if ( (chartData.type === 'label') ){
-            let color = false;
-            if ( this.labelColor ){
-              color = this.labelColor;
-            }
-            if ( this.labelColorX && (chartData.axis.units.pos === 'x') ){
-              color = this.labelColorX;
-            }
-            else if ( this.labelColorY && (chartData.axis.units.pos === 'y') ){
-              color = this.labelColorY;
-            }
-            if ( color ){
-              chartData.element._node.children[0].color = color;
-            }
-          }
-
-          // Animation
-          if ( this.animation ){
-            let delays =bbn.fn.isNumber(this.animation) ? this.animation : 500,
-                durations = delays;
-            if ( chartData.type === 'bar' ){
-              let color = Array.isArray(this.colors) ? this.colors[this.legend ? this.getColorIdx(chartData) : chartData.seriesIndex] : false,
-                  style = chartData.element.attr('style');
-              if ( color ){
-                style = (style || '') + ' stroke: ' + color + ' !important;';
-              }
-              chartData.element.attr({
-                style: (style || '') + ' stroke-width: 0px'
-              });
-              for ( let s = 0; s < chartData.series.length; ++s) {
-                if ( chartData.seriesIndex === s ){
-                  let ax = {
-                    y2: {
-                      begin:  s * delays,
-                      dur:    durations,
-                      from:   chartData.y1,
-                      to:     chartData.y2,
-                      easing: Chartist.Svg.Easing.easeOutSine
-                    },
-                    'stroke-width': {
-                      begin: s * delays,
-                      dur:   1,
-                      from:  0,
-                      to:    10,
-                      fill:  'freeze'
-                    }
-                  };
-                  if ( this.horizontalBars ){
-                    ax.x2 = ax.y2;
-                    ax.x2.from = chartData.x1;
-                    ax.x2.to = chartData.x2;
-                    delete ax.y2;
-                  }
-                  chartData.element.animate(ax, false);
-                }
-              }
-            }
-            else if ( (chartData.type === 'label') && (chartData.axis.units.pos === 'x') ){
-              chartData.element.animate({
-                y: {
-                  begin: delays,
-                  dur: durations,
-                  from: chartData.y + 100,
-                  to: chartData.y,
-                  // We can specify an easing function from Chartist.Svg.Easing
-                  easing: 'easeOutQuart'
-                }
-              });
-            }
-            else if ( (chartData.type === 'label') && (chartData.axis.units.pos === 'y') ){
-              chartData.element.animate({
-                x: {
-                  begin: delays,
-                  dur: durations,
-                  from: chartData.x - 100,
-                  to: chartData.x,
-                  easing: 'easeOutQuart'
-                }
-              });
-            }
-            else if ( chartData.type === 'grid' ){
-              // Using chartData.axis we get x or y. We can use this to construct our animation definition objects
-              let pos1Animation = {
-                    begin: delays,
-                    dur: durations,
-                    from: chartData[chartData.axis.units.pos + '1'] - 30,
-                    to: chartData[chartData.axis.units.pos + '1'],
-                    easing: 'easeOutQuart'
-                  },
-                  pos2Animation = {
-                    begin: delays,
-                    dur: durations,
-                    from: chartData[chartData.axis.units.pos + '2'] - 100,
-                    to: chartData[chartData.axis.units.pos + '2'],
-                    easing: 'easeOutQuart'
-                  },
-                  animations = {};
-              animations[chartData.axis.units.pos + '1'] = pos1Animation;
-              animations[chartData.axis.units.pos + '2'] = pos2Animation;
-              animations['opacity'] = {
-                begin: delays,
-                dur: durations,
-                from: 0,
-                to: 1,
-                easing: 'easeOutQuart'
-              };
-              chartData.element.animate(animations);
-            }
-          }
-        });
-      },
-      /**
-       * Sets animations, colors and labels whilst drawing the pie chart.
-       *
-       * @method pieDraw
-       * @fires setColor
-       */
-      pieDraw(){
-        let yOffset = this.labelExternal ? 15 : 7.5,
-            p = 1,
-            idDef = bbn.fn.randomString(),
-            defs = false;
-        this.widget.on('draw', (chartData) => {
-          
-          let tmp = 1;
-          // Insert linebreak to labels
-          if ( chartData.type === 'label' ){
-            let lb = chartData.text.split("\n"),
-                text = '';
-            if ( lb.length ){
-              text = '<tspan>' + lb[0] + '</tspan>';
-              bbn.fn.each(lb, (v, i) => {
-                if ( i > 0 ){
-                  text += '<tspan dy="' + yOffset + '" x="' + chartData.x + '">' + v + '</tspan>';
-                  chartData.y -= yOffset;
-                  chartData.element._node.attributes.dy.value -= (this.labelExternal ? yOffset-10 : yOffset);
-                }
-              });
-              chartData.element._node.innerHTML = text;
-            }
-            tmp = lb.length > p ? lb.length : tmp;
-          }
-          if ( this.labelExternal && ( tmp > p) ){
-            p = tmp;
-            //this.widget.update(this.widget.data, {chartPadding: (this.widget.options.chartPadding ? this.widget.options.chartPadding : 0) + (p*yOffset)}, true);
-          }
-
-          // Customize color
-          this.setColor(chartData);
-
-          // Customize label color
-          if ( this.labelColor && (chartData.type === 'label') ){
-            chartData.element.attr({
-              style: 'fill: ' + this.labelColor
-            });
-          }
-
-          // Animation
-          if ( this.animation ){
-            let dur = bbn.fn.isNumber(this.animation) ? this.animation : 500;
-            if ( chartData.type === 'slice' ){
-              let style = chartData.element.attr('style'),
-                  color;
-              if ( this.colors && Array.isArray(this.colors) ){
-                color = this.colors[this.legend ? this.getColorIdx(chartData) : chartData.index];
-                if ( color ){
-                  chartData.element.attr({
-                    style: (style || '') + ' stroke: ' + color + ' !important;'
-                  });
-                }
-              }
-              // Get the total path length to use for the dash array animation
-              let pathLength = chartData.element._node.getTotalLength();
-              // Set a dasharray that matches the path length as a prerequisite to animate dashoffset
-              chartData.element.attr({
-                'stroke-dasharray': pathLength + 'px ' + pathLength + 'px'
-              });
-              // Create animation definition while also assigning an ID to the animation for later sync usage
-              let animationDefinition = {
-                'stroke-dashoffset': {
-                  id: 'anim' + chartData.index,
-                  dur: dur,
-                  from: -pathLength + 'px',
-                  to: '0px',
-                  easing: Chartist.Svg.Easing.easeOutQuint,
-                  // We need to use `fill: 'freeze'`, otherwise, the animation will fall back to initial (not visible)
-                  fill: 'freeze'
-                }
-              };
-              // If this was not the first slice, we need to time the animation so that it uses the end sync event of the previous animation
-              if ( chartData.index !== 0 ){
-                animationDefinition['stroke-dashoffset'].begin = 'anim' + (chartData.index - 1) + '.end';
-              }
-              // We need to set an initial value before the animation starts as we are not in guided mode which would do that for us
-              chartData.element.attr({
-                'stroke-dashoffset': -pathLength + 'px'
-              });
-              // We can't use guided mode as the animations relies on the setting starting manually
-              // See http://gionkunz.github.io/chartist-js/api-documentation.html#chartistsvg-function-animate
-              chartData.element.animate(animationDefinition, false);
-            }
-            else if ( chartData.type === 'label' ){
-              chartData.element.animate({
-                opacity: {
-                  begin: chartData.index * dur + dur,
-                  dur: dur,
-                  from: 0,
-                  to: 1,
-                  easing: 'easeOutQuart'
-                }
-              });
-            }
-          }
-
-          if ( chartData.type === 'slice' ){
-            if ( !defs ){
-              defs = {
-                x: chartData.center.x,
-                y: chartData.center.y
-              };
-              let content = '<radialGradient id="' + idDef + '" r="122.5" gradientUnits="userSpaceOnUse" cx="' + defs.x + '" cy="' + defs.y + '"><stop offset="0.05" style="stop-color:#fff;stop-opacity:0.65;"></stop><stop offset="0.55" style="stop-color:#fff;stop-opacity: 0;"></stop><stop offset="0.85" style="stop-color:#fff;stop-opacity: 0.25;"></stop></radialGradient>',
-                   el = document.createElement('defs');
-                   el.innerHTML = content;
-              chartData.group._node.parentNode.insertAdjacentElement('afterbegin', el)
-            }
-            chartData.element._node.outerHTML += '<path d="' + chartData.element._node.attributes.d.nodeValue + '" stroke="none" fill="url(#' + idDef + ')"></path>';
-          }
-        });
-      },
-      /**
-       * Sets the colors to an element.
-       *
-       * @method setColor
-       * @param {Object} chartData
-       * @fires getColorIdx
-       */
-      setColor(chartData){
-        if ( this.colors ){
-          let style = chartData.element.attr('style'),
-              color;
-          if ( (chartData.type === 'line') ||
-            (chartData.type === 'point') ||
-            ((chartData.type === 'bar') && !this.animation) ||
-            ( chartData.type === 'area' )
-          ){
-            color = this.colors[this.legend ? this.getColorIdx(chartData) : chartData.seriesIndex];
-            if ( color ){
-              chartData.element.attr({
-                style: (style || '') + (chartData.type === 'area' ? ' fill: ' : ' stroke: ') + color + (chartData.type === 'area' ? '; fill-opacity: ' + this.areaOpacity + '; stroke: none' : '')
-              });
-            }
-          }
-          if ( chartData.type === 'slice' ){
-            color = this.colors[this.legend ? this.getColorIdx(chartData) : chartData.index];
-            if ( color && (this.isLine || this.isBar || (this.isPie && !this.animation)) ){
-              chartData.element.attr({
-                style: (style || '') + ' fill: ' + color
-              });
-            }
-          }
-        }
-      },
-      /**
-       * Sets the area's opacity.
-       *
-       * @method setAreaOpacity
-       * @param {Object} chartData A Chartist.js SVG element
-      */
-      setAreaOpacity(chartData) {
-        if ( this.areaOpacity && (chartData.type === 'area') ){
-          let style = chartData.element.attr('style');
-          chartData.element.attr({
-            style: (style || '') + 'fill-opacity: ' + this.areaOpacity + ';'
-          });
-        }
-      },
-      /**
-       * Sets the grid color to an element.
-       *
-       * @method setGridColor
-       * @param {Object} chartData A Chartist.js SVG element
-       */
-      setGridColor(chartData){
-        if ( this.gridColor && (chartData.type === 'grid') ){
-          chartData.element.attr({
-            style: 'stroke: ' + this.gridColor + '; stroke-opacity: 0.2;'
-          });
-        }
-      },
-      /**
-       * Returns the SVG element index color.
-       *
-       * @method getColorIdx
-       * @param {Object} color SVG element
-       * @return {Number}
-       */
-      getColorIdx(color){
-        return color.element._node.parentElement.className.baseVal.replace('ct-series ', '').slice(-1).charCodeAt()-97;
-      },
-      /*trasformData(){
-        bbn.fn.each(this.source.series, (v, i) => {
-          this.source.series[i] = bbn.fn.map(v, (el, idx) => {
-            if ( (typeof el !== 'object') && this.source.labels[idx] ){
-              return {
-                x: this.source.labels[idx],
-                y: el
-              };
-            }
-            return el;
           })
-        });
-        this.source.labels = [];
+        }
       },
-      getLabelsLength(){
-        let length = 0;
-        bbn.fn.each(this.source.series, (v,i) => {
-          length = v.length > length ? v.length : length;
-        });
-        return length;
-      },*/
-      /**
-       * Operations to be performed after the widget creation.
-       *
-       * @method widgetCreated
-       */
-      widgetCreated(){
-        this.widget.on('created', (chartData) => {
-          // Set the right colors to legend
-          if ( this.legend ){
-            let colors = [], 
-                ctSeries = this.widget.container.querySelectorAll('g.ct-series');
-            
-
-            
-            
-            if ( ctSeries.length ){
-              bbn.fn.each( ctSeries, (v, i) => {
-                let bar = v.querySelector('line.ct-bar');
-                if ( this.isBar && bar ){
-                  colors.push(bar.style.stroke);
-                }
-                else {
-                  let paths = v.querySelectorAll('path');
-                  if ( paths.length ){
-                    bbn.fn.each(paths, (p, k) => {
-                      if ( p.classList.contains('ct-line') ||
-                        p.classList.contains('ct-slice-pie') ||
-                        p.classList.contains('ct-slice-donut')
-                      ){
-                        colors.push(p.classList.contains('ct-slice-pie') ? getComputedStyle(p).fill : getComputedStyle(p).stroke);
-                      }
-                    })
-                  }
-                }
-              })
-            }
-            setTimeout(() => {
-              if ( this.isPie && this.legendPosition ){
-                if ( this.widget.container && this.widget.container.querySelector('ul.ct-legend.ct-legend-inside') && this.widget.container.querySelector('ul.ct-legend.ct-legend-inside').classList.contains('ct-legend-inside') ){
-                  this.widget.container.querySelector('ul.ct-legend.ct-legend-inside').classList.remove('ct-legend-inside')
-                }
-              }
-              if ( this.widget.container && this.widget.container.querySelector('ul.ct-legend.ct-legend:not(.ct-legend-inside)') ){
-                let legendHeight = this.widget.container.querySelector('ul.ct-legend.ct-legend:not(.ct-legend-inside)').clientHeight,
-                svgHeight = this.widget.container.querySelector('svg').clientHeight,
-                contHeight = this.widget.container.clientHeight;
-
-                if ( this.widget.container.querySelector('svg') && (legendHeight + svgHeight) > contHeight ){
-                  this.widget.update(false, {height: contHeight - legendHeight}, true);
-                  return;
-                }
-              }
-           
-              
-              if ( this.widget.container && this.widget.container.querySelectorAll('ul.ct-legend li')){
-                let li = this.widget.container.querySelectorAll('ul.ct-legend li');
-                if ( li.length ){
-                  bbn.fn.each(li, (v, i) => {
-                    if ( Array.isArray(this.legendTitles) ){
-                      v.setAttribute('title', this.legendTitles[i]);
-                    }
-                    if ( !v.querySelector('div.rect') ){
-                      let content = '<div class="rect" style="background-color: ' + colors[i] +'; border-color: ' + colors[i] + '"></div>',
-                          el = document.createElement('div');
-                      el.innerHTML = content;
-                      v.insertAdjacentElement('afterbegin', el)
-                    }
-                  });
-                }
-              }
-              
-            }, 100);
-          }
-          // Set the right colors to point labels
-          if ( !this.isPie && (this.labelColor || this.labelColorY) ){
-            if ( this.widget.container && this.widget.container.querySelector('g.ct-series text.ct-label') ){
-              this.widget.container.querySelector('g.ct-series text.ct-label').style.stroke = this.labelColorY || this.labelColor;
-            }
-          }
-          // Reset zoom
-          /*if ( this.zoom && this.isLine ){
-            $(this.widget.container).dblclick(() => {
-              if ( this.resetZoom &&bbn.fn.isFunction(this.resetZoom) ){
-                this.resetZoom();
-              }
-            });
-          }*/
-        });
+      updateWidget(){
+        if ( this.widget && this.ready ){
+          this.widget.updateOptions(this.widgetCfg, true);
+        }
       }
     },
     watch: {
@@ -1532,18 +1293,29 @@
        */
       source(val){
         this.$nextTick(() => {
-          this.init();
+          if ( this.ready ){
+            this.updateWidget()
+
+          }
         });
       },
+      ready(newVal){
+        this.$nextTick(() => {
+          if ( newVal ){
+            this.init();
+          }
+        });
+      }
     },
     /**
      * @event mounted
      * @fires init
      */
     mounted(){
+      this.container = this.getRef('container');
       this.$nextTick(() => {
-        this.init();
-      });
+        this.ready = true;
+      })
     }
   });
 })(bbn);

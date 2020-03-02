@@ -480,28 +480,53 @@
        * @method initTern
        */
       initTern(){
-        if ( (bbn.vue.tern === undefined) && (this.mode === 'js') ){
-          let getURL = (url, c) => {
-            let xhr = new XMLHttpRequest();
-            xhr.open("get", url, true);
-            xhr.send();
-            xhr.onreadystatechange = function() {
-              if (xhr.readyState != 4) return;
-              if (xhr.status < 400) return c(null, xhr.responseText);
-              let e = new Error(xhr.responseText || "No response");
-              e.status = xhr.status;
-              c(e);
+        if (this.mode === 'js') {
+          if (bbn.vue.tern === undefined) {
+            let getURL = (url, c) => {
+              let xhr = new XMLHttpRequest();
+              xhr.open("get", url, true);
+              xhr.send();
+              xhr.onreadystatechange = function() {
+                if (xhr.readyState != 4) return;
+                if (xhr.status < 400) return c(null, xhr.responseText);
+                let e = new Error(xhr.responseText || "No response");
+                e.status = xhr.status;
+                c(e);
+              };
             };
-          };
-          getURL("https://raw.githubusercontent.com/ternjs/tern/master/defs/ecmascript.json", (err, code) => {
-            if (err) {
-              throw new Error("Request for ecmascript.json: " + err);
-            }
-            if ( this.widget && code ){
-              bbn.vue.tern = new CodeMirror.TernServer({defs: [JSON.parse(code)]});
-              this.widget.on("cursorActivity", function(cm) { bbn.vue.tern.updateArgHints(cm); });
-            }
-          });
+            getURL("https://raw.githubusercontent.com/ternjs/tern/master/defs/ecmascript.json", (err, code) => {
+              if (err) {
+                throw new Error("Request for ecmascript.json: " + err);
+              }
+              if ( this.widget && code ){
+                let defs = JSON.parse(code);
+                defs.bbn = {
+                  fn: {},
+                  vue: {}
+                };
+                bbn.fn.iterate(bbn.fn, (a, k) => {
+                  defs.bbn.fn[k] = {
+                    "!type": "fn(number) -> number",
+                    "!url": "https://doc.js.bbn.solutions/" + k,
+                    "!doc": "Returns the value of a number rounded to the nearest integer."                  
+                  }
+                });
+                bbn.fn.iterate(bbn.vue, (a, k) => {
+                  defs.bbn.vue[k] = {
+                    "!type": "fn(number) -> number",
+                    "!url": "https://doc.js.bbn.solutions/" + k,
+                    "!doc": "Returns the value of a number rounded to the nearest integer."                  
+                  }
+                });
+
+                bbn.vue.tern = new CodeMirror.TernServer({defs: [defs]});
+                this.widget.on("cursorActivity", function(cm) { bbn.vue.tern.updateArgHints(cm); });
+              }
+            });
+          }
+          else {
+            this.widget.on("cursorActivity", function(cm) { bbn.vue.tern.updateArgHints(cm); });
+          }
         }
       },
       /**
@@ -556,22 +581,19 @@
         this.widget.on("change", (ins, bbb) => {
           this.emitInput(this.widget.doc.getValue());
         });
-        this.widget.on("cursorActivity", (cm) => {
-          bbn.fn.log(cm);
-          if ( this.mode === 'js' ){
-            if ( bbn.vue.tern ){
-                bbn.vue.tern.updateArgHints(cm);
-            }
-            else{
-              this.initTern();
-            }
-          }
-        });
         this.$nextTick(() => {
           this.ready = true;
-          this.$nextTick(() => {
+          setTimeout(() => {
             this.widget.refresh();
-          })
+            if ( this.mode === 'js' ){
+              this.initTern();
+            }
+            else {
+              this.widget.on("cursorActivity", (cm) => {
+                bbn.fn.log(cm);
+              });
+            }
+          }, 250)
         })
       }
     },

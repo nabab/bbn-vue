@@ -221,11 +221,12 @@
         })
       },
       focusSearch(){
-        let search = this.getRef('search');
-        if (search) {
-          search.focus();
+        if (!bbn.fn.isMobile()) {
+          let search = this.getRef('search');
+          if (search) {
+            search.focus();
+          }
         }
-
       }
     },
     /**
@@ -236,7 +237,7 @@
     mounted(){
       this.onResize();
       //this._position();
-      this.ready = true;      
+      this.ready = true;
     },
     watch: {
       /**

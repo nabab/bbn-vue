@@ -720,7 +720,6 @@
     post_out(vm, url, obj, onSuccess, target){
       let referer = bbn.vue.getContainerURL(vm);
       obj = bbn.fn.extend({}, obj || {}, {_bbn_referer: referer, _bbn_key: bbn.fn.getIdURL(url, obj, 'json')});
-      bbn.fn.log("post_out", obj);
       return bbn.fn.post_out(url, obj, onSuccess, target);
     }
 

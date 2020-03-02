@@ -21,9 +21,7 @@
     },
     data(){
       return {
-        tabs: [{
-
-        }]
+        tabs: []
       }
     },
     computed: {

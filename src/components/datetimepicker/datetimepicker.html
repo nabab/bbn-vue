@@ -1,4 +1,4 @@
-<span :class="[componentClass, 'bbn-textbox']">
+<span :class="[componentClass, 'bbn-textbox', {'bbn-input-nullable': isNullable}]">
     <bbn-masked ref="element"
                 :disabled="disabled"
                 :readonly="readonly"
@@ -11,6 +11,13 @@
                 class="bbn-flex-fill"
                 :autosize="autosize"
     ></bbn-masked>
+    <div v-if="isNullable && !readonly && !disabled"
+        class="bbn-block bbn-h-100 bbn-input-nullable-container"
+    >
+      <i v-if="hasValue" class="nf nf-fa-times_circle bbn-p"
+          @mousedown.prevent.stop="clear"
+      ></i>
+    </div>
     <bbn-button icon="nf nf-fa-calendar"
                 @click="showCalendar"
                 :disabled="disabled || readonly"

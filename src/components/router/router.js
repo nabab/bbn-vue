@@ -180,7 +180,7 @@
           delete this.urls[cp.url];
         }
         let idx = this.search(cp.url);
-        bbn.fn.log("GGGGGG", cp.url, idx, this.views);
+        //bbn.fn.log("GGGGGG", cp.url, idx, this.views);
         if (idx !== false) {
           this.remove(idx);
         }
@@ -320,6 +320,7 @@
        * @returns {void}
        */
       route(url, force){
+        //bbn.fn.log('ROUTE TO ' + url, this.currentURL)
         if (!bbn.fn.isString(url) ){
           throw Error(bbn._('The component bbn-container must have a valid URL defined'));
         }
@@ -333,7 +334,7 @@
           );
           this.$emit("beforeRoute", event, url);
           if ( !event.defaultPrevented ){
-	    if ((url === '') && this.hasEmptyURL) {
+	          if ((url === '') && this.hasEmptyURL) {
               this.urls[''].setCurrent(url);
               this.realRoute('', '', force);
               return;
@@ -530,7 +531,13 @@
           this.currentURL = url;
         }
         // Changing the current property of the view cascades on the container's currentURL
-        if (this.views[this.selected] && (url.indexOf(this.views[this.selected].url) === 0)){
+        if (
+          this.views[this.selected] &&
+          (
+            (url.indexOf(this.views[this.selected].url + '/') === 0) ||
+            (url === this.views[this.selected].url)
+          )
+        ){
           this.$set(this.views[this.selected], 'current', url);
         }
         if ( this.parent ){
@@ -806,13 +813,13 @@
       },
 
       add(obj, idx){
+        //bbn.fn.log("INDEX: ", idx);
         let index;
         //obj must be an object with property url
         //bbn.fn.log("ADDING", obj);
         if (
           (typeof(obj) === 'object') &&
-          bbn.fn.isString(obj.url) &&
-          ((idx === undefined) || this.isValidIndex(idx) || (idx === this.views.length))
+          bbn.fn.isString(obj.url)
         ){
           if (obj.$options) {
             if (!obj.current && !obj.currentURL) {
@@ -825,9 +832,13 @@
             }
             obj = JSON.parse(JSON.stringify((obj.$options.propsData)));
             obj.slot = true;
-            bbn.fn.log("ADDING FROM SLOT", obj, this.search(obj.url));
             if (this.search(obj.url) === false) {
-              this.views.push(obj);
+              if (this.isValidIndex(idx)) {
+                this.views.splice(idx, 0, [obj]);
+              }
+              else {
+                this.views.push(obj);
+              }
             }
           }
           else{
@@ -860,7 +871,7 @@
               if ( idx === undefined ){
                 idx = index;
               }
-              if ( cn ){
+              if (cn && this.isValidIndex(idx)) {
                 cn.currentIndex = idx;
               }
               if ( obj.real ){
@@ -874,6 +885,7 @@
               });
             }
             else{
+              let isValid = this.isValidIndex(idx);
               if (this.single) {
                 if (this.views.length){
                   this.views.splice(0, this.views.length);
@@ -883,7 +895,7 @@
               }
               else{
                 obj.selected = false;
-                obj.idx = idx === undefined ? this.views.length : idx;
+                obj.idx = isValid ? idx : this.views.length;
               }
               bbn.fn.iterate(this.getDefaultView(), (a, n) => {
                 if ( obj[n] === undefined ){
@@ -891,7 +903,12 @@
                   this.$set(obj, n, a);
                 }
               });
-              this.views.push(obj);
+              if (isValid) {
+                this.views.splice(obj.idx, 0, [obj]);
+              }
+              else {
+                this.views.push(obj);
+              }
             }
           }
         }
@@ -954,12 +971,14 @@
           let finalURL = this.fullBaseURL + url;
           let idx = this.search(url);
           let toAdd = false;
+          let view;
           //bbn.fn.log("START LOADING FN FOR IDX " + idx + " ON URL " + finalURL);
           if ( idx !== false ){
             //bbn.fn.log("INDEX RETRIEVED BEFORE LOAD: " + idx.toString(), this.views[idx].slot, this.views[idx].loading);
             if ( this.views[idx].loading || (!force && !this.views[idx].load) ){
               return;
             }
+            view = this.views[idx];
             if (force){
               toAdd = true;
               this.views.splice(idx, 1);
@@ -970,19 +989,17 @@
             idx = this.views.length;
           }
           if (toAdd){
-            this.$nextTick(() => {
-              this.add({
-                url: url,
-                title: bbn._('Loading'),
-                load: true,
-                loading: true,
-                visible: true,
-                real: false,
-                current: url,
-                error: false,
-                loaded: false
-              }, idx);
-            });
+            this.add({
+              url: url,
+              title: view && view.title ? view.title : bbn._('Loading'),
+              load: true,
+              loading: true,
+              visible: true,
+              real: false,
+              current: url,
+              error: false,
+              loaded: false
+            }, idx);
           }
           this.$emit('update', this.views);
           return this.post(
@@ -1002,7 +1019,7 @@
                 d.current = url;
                 //bbn.fn.log("CURRENT DEFINED AS " + d.current);
               }
-              if ( d.data ){
+              if ( d.data && bbn.fn.numProperties(d.data)){
                 d.source = d.data;
                 delete d.data;
               }
@@ -1012,16 +1029,21 @@
                 delete this.urls[d.current];
               }
               if ( !d.title || (d.title === bbn._('Loading')) ){
-                let title = bbn._('Untitled');
-                let num = 1;
-                while ( bbn.fn.search(this.views, {title: title}) > -1 ){
-                  num++;
-                  title = bbn._('Untitled') + ' ' + num;
+                if (view && view.title) {
+                  d.title = view.title;
                 }
-                d.title = title;
+                else{
+                  let title = bbn._('Untitled');
+                  let num = 1;
+                  while ( bbn.fn.search(this.views, {title: title}) > -1 ){
+                    num++;
+                    title = bbn._('Untitled') + ' ' + num;
+                  }
+                  d.title = title;
+                }
               }
               this.$nextTick(() => {
-                this.add(bbn.fn.extend(d, {slot: false, loading: false, load: true, real: false, loaded: true}));
+                this.add(bbn.fn.extend(view || {}, d, {slot: false, loading: false, load: true, real: false, loaded: true}), idx);
                 setTimeout(() => {
                   if ( !this.urls[d.url] ){
                     throw new Error(bbn._("Impossible to find the container for URL") + ' ' + d.url);
@@ -1039,7 +1061,7 @@
               this.isLoading = false;
               this.alert(textStatus);
               let idx = this.search(this.parseURL(finalURL));
-              if ( idx > -1 ){
+              if ( idx !== false ){
                 let url = this.views[idx].url;
                 this.views.splice(this.urls[url].idx, 1);
                 delete this.urls[url];
@@ -1145,10 +1167,6 @@
             }
             // For Safari
             return st;
-          }
-          else{
-            //$(document.body).fadeOut();                
-            document.body.style.opacity = 0;
           }
         });
       }

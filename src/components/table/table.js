@@ -17,10 +17,6 @@
 
 (function (bbn, Vue) {
   "use strict";
-  const METHODS4BUTTONS = ['insert', 'select', 'edit', 'add', 'copy', 'delete'];
-  let leaveFilterTimeout = false;
-  let hasFilter = false;
-
   /**
    * Classic input with normalized appearance
    */
@@ -303,7 +299,7 @@
        */
       loadedConfig: {
         type: Object
-      },
+      }
     },
     data() {
       let editable = bbn.fn.isFunction(this.editable) ? this.editable() : this.editable;
@@ -1010,6 +1006,7 @@
        * @todo 1px must correspond to the border width
        */
       _scrollContainer(){
+        bbn.fn.log("SCROLL CONT");
         this.marginStyleSheet.innerHTML = "."  + this.cssRuleName + "{margin-top: " +
         (this.container.scrollTop ? '-' + (this.container.scrollTop) + 'px' : '') + '}';
       },
@@ -1385,6 +1382,38 @@
           data.filters = this.currentFilters;
         }
         return data;
+      },
+      showQuery(){
+        if (this.currentQuery) {
+          this.getPopup().open({
+            title: bbn._('Database query and parameters'),
+            scrollable: true,
+            component: {
+              template: `
+<div class="bbn-block bbn-spadded">
+  <h3 @click="showValues = !showValues"
+      v-text="showValues ? _('Hide the values') : _('Show the values')"
+      class="bbn-p"></h3>
+  <ol class="bbn-space-bottom" v-if="showValues">
+    <li v-for="v in source.values" v-text="v"></li>
+  </ol>
+  <pre v-text="source.query"></pre>
+</div>
+              `,
+              props: ['source'],
+              data(){
+                return {
+                  showValues: false
+                }
+              }
+            },
+            closable: true,
+            source: {
+              query: this.currentQuery,
+              values: this.currentQueryValues
+            }
+          })
+        }
       },
       /**
        * Returns true if a column is editable.
@@ -3007,6 +3036,9 @@
           ) {
             this.addColumn(bbn.fn.extend({}, def, node.data.attrs));
           }
+          else if (node.tag === 'tr') {
+            this.hasTrSlot = true
+          }
         }
       }
       if (this.columns.length) {
@@ -3100,11 +3132,6 @@
         handler() {
           //bbn.fn.log("watch columns");
           //this.selfEmit();
-        }
-      },
-      currentFilter(v){
-        if (!v) {
-          hasFilter = false;
         }
       },
       /**

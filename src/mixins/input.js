@@ -265,9 +265,7 @@
               }
             }
             else{
-              bbn.fn.log('qi', this.widget.value, newVal)
               if ( this.widget.value !== newVal ){
-                bbn.fn.log('dopo', this.widget.value, newVal)
                 this.widget.value = newVal;
               }
             }

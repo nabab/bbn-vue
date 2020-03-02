@@ -5,13 +5,14 @@
               v-on:enter="enter"
               v-on:after-enter="find('bbn-scroll') ? find('bbn-scroll').onResize() : (() => {})()"
   >
-    <div v-if="ready && isLoaded && (visible || cached)"
-         v-show="visible"
-         :class="{
-         'bbn-overlay': !fullScreen,
-         'bbn-container-full-screen': fullScreen,
-         'bbn-container-visible': visible
-       }"
+    <component :is="scrollable ? 'bbn-scroll' : 'div'"
+               v-if="ready && isLoaded && (visible || cached)"
+               v-show="visible"
+               :class="{
+                'bbn-overlay': !fullScreen,
+                'bbn-container-full-screen': fullScreen,
+                'bbn-container-visible': visible
+               }"
     >
       <!-- This is an ad hoc component with unique name -->
       <component v-if="isComponent"
@@ -27,14 +28,7 @@
                  v-bind="options"
       ></component>
       <!-- This is just HTML content -->
-      <bbn-scroll v-else-if="scrollable && content">
-        <div v-html="content"></div>
-      </bbn-scroll>
-      <div v-else-if="content"
-           class="bbn-overlay">
-        <div class="bbn-100"
-             v-html="content"
-        ></div>
+      <div v-else-if="content" v-html="content">
       </div>
       <!-- This is the slot -->
       <slot v-else></slot>
@@ -48,6 +42,6 @@
       <bbn-popup ref="popup"
                  :source="popups">
       </bbn-popup>
-    </div>
+    </component>
   </transition>
 </div>

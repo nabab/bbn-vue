@@ -1,18 +1,23 @@
-<div v-if="data"
-     :class="['bbn-flex-height', componentClass]"
+<div :class="['bbn-flex-height', componentClass]"
      :style="{
-      width: width,
-      height: height,
-      backgroundColor: backgroundColor
+       width: width,
+       height: height
      }"
 >
   <h4 v-if="title"
       v-html="title"
       class="bbn-middle"
   ></h4>
-  <div class="bbn-w-100 bbn-flex-fill">
-    <div ref="chart"
-         class="ct-chart bbn-overlay"
-    ></div>
+  <div class="bbn-flex-fill"
+       style="width: 100%"
+  >
+     <div class="bbn-overlay"
+          ref="container"
+     >
+       <div v-if="ready" 
+            ref="chart"
+            class="bbn-chart-widget"
+       ></div>
+     </div>
   </div>
 </div>

@@ -606,7 +606,6 @@
        * @memberof focusComponent
        */
       beforeDestroy(){
-        bbn.fn.log("BEFORE DESTROY", this.prevFocused);
         this.switchFocus(false);
       },
       watch: {

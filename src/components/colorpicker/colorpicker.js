@@ -6,302 +6,321 @@
  * Clicking on the input field it displays a color chart. The set of colors can be customized using the palette property.
  * @copyright BBN Solutions
  *
- * @author BBN Solutions
+ * @author Mirko Argentino
  *
- * @created 18/07/2018
+ * @created 10/02/2020
  */
 
 ((bbn) => {
   "use strict";
   Vue.component('bbn-colorpicker', {
     /**
-     * @mixin bbn.vue.basicComponent 
+     * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.inputComponent
      * @mixin bbn.vue.eventsComponent
      */
     mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent],
     props: {
       /**
-       * The value of the colorpicker.
-       * 
-       * @prop {String} value
+       * The colorpicker's value.
+       * @prop {String|} value
        */
       value: {
         type: String,
       },
       /**
-       * @prop {Boolean} [false] panel
+       * Shows the coolors wheel.
+       * @prop {Boolean} [true] wheel
        */
-      panel: {
-        type: Boolean,
-        default: false
-      },
-      /**
-       * 
-       * @prop {Boolean} [false] gradient
-       */
-      //for opacity
-      gradient: {
-        type: Boolean,
-        default: false
-      },
-      /**
-       * Tracks the initial color.
-       * @prop {Boolean} [false] initial
-       */
-      initial: {
+      wheel: {
         type: Boolean,
         default: true
       },
       /**
-       * Set to true to show an input containing the color code.
-       * @prop {Boolean} [false] showCode
+       * Show a colors slider instead of the wheel.
+       * @prop {Boolean} [false] slider
        */
-      showCode: {
-        type: Boolean,
+      slider: {
+        tyoe: Boolean,
         default: false
       },
       /**
-       * If the array palette is defined, set to true to show only the given list of colors.
-       * 
-       * @prop {Boolean} [false] onlyPalette
+       * Shows the brightness slier
+       * @prop {Boolean}.[true] brightness
        */
-      onlyPalette:{
+      brightness: {
         type: Boolean,
-        default: false
+        default: true
       },
       /**
-       * An array containing the list of colors by hex, rgb, rgba or the color's name.
-       *  
+       * Shows the saturation slider.
+       * @prop {Boolean} [true] saturation
+       */
+      saturation: {
+        type: Boolean,
+        default: true
+      },
+      /**
+       * The initial color.
+       * @prop {String} ['#ffffff'] color
+       */
+      color: {
+        type: String,
+        default: '#FDFDFD'
+      },
+      /**
+       * Set it to true to show an input containing the color code.
+       * @prop {Boolean} [true] showCodes
+       */
+      showCodes: {
+        type: Boolean,
+        default: true
+      },
+      /**
+       * An array containing the list of colors by hex, rgb, rgba, hsl or the color's name.
        * @prop {Array} palette
        */
-      palette:{
-        type: Array
+      palette: {
+        type: Array,
+        default(){
+          return bbn.var.colors ? Object.values(bbn.var.colors) : []
+        }
       },
       /**
-       * Set to true to show the button 'choose' and 'cancel'.
-       * 
-       * @prop {Boolean} [false] buttons
+       * Shows a button that empties the selection when clicked.
+       * @prop {Boolean} [true] emptyButton
        */
-      buttons: {
+      emptyButton: {
         type: Boolean,
         default: true
       },
       /**
-       * An array containing the text of the buttons.
-       * 
-       * @prop {Array} textButtons
-       */
-      textButtons: {
-        type: Array
-      },
-      //if set atrue through the panel we can define a palette of favourite colors that come from the selection of the panel and not from an apalette that we have already passed
-      /**
-       * Set to true to create a palette of selected favourite colors.
-       * 
-       * @prop {Boolean} [false] favourite
-       */
-      favourite: {
-        type: Boolean,
-        default: false
-      },
-      /**
-       * Set to true sto how a button that empties the selection when clicked.
-       * 
-       * @prop {Boolean} [false] buttonEmpty
-       */
-      buttonEmpty:{
-        type: Boolean,
-        default: false
-      },
-     
-      /**
        * Defines the color code.
-       * 
+       * Accepted values: 'hex', 'rgb', 'rgba', 'hsl'.
        * @prop {String} ['hex'] codeColor
        */
       codeColor: {
         type: String,
-        default: "hex"
+        default: "hex",
+        validator: (c) => ['hex', 'rgb', 'rgba', 'hsl'].includes(c)
       }
     },
-    computed:{
+    data(){
+      return {
+        /**
+         * @data widget
+         */
+        widget: false,
+        /**
+         * @data {Boolean} [false] showFloater
+         */
+        showFloater: false,
+        /**
+         * @data {Boolean} [false] showPalette
+         */
+        showPalette: false,
+        /**
+         * @data {String} currentValue
+         */
+        currentValue: this.value,
+        /**
+         * @data {String} [''] currentHex
+         */
+        currentHex: '',
+        /**
+         * @data {String} [''] currentRgb
+         */
+        currentRgb: '',
+        /**
+         * @data {String} [''] currentRgba
+         */
+        currentRgba: '',
+        /**
+         * @data {String} [''] currentHsl
+         */
+        currentHsl: ''
+      }
+    },
+    computed: {
       /**
-       * The object of configuration of the colorpicker.
-       * 
-       * @computed dataComponent
-       * @return {Object}
+       * The widget configuration.
+       * @computed currentCfg
+       * @return Object
        */
-      dataComponent(){
-        let cp = this;
+      currentCfg(){
         let obj = {
-          preferredFormat: this.codeColor,
-          togglePaletteOnly: this.onlyPalette,
-          showInput: this.showCode,
-          showPalette: this.favourite,
-          showInitial: this.initial,
-          showAlpha: this.gradient,
-          replacerClassName: "bbn-vmiddle bbn-textbox",
-          preferredFormat: this.codeColor,
-          //container
-          //if set to false and I click outside the panel does not keep the selected value as if it were a cancel
-          clickoutFiresChange: true,
-          showButtons: this.buttons,
-          allowEmpty: this.buttonEmpty,
-          flat: this.panel,
-          change(){
-            //cp.$emit('change', this.value);
-            cp.emitInput(this.value);
-          },
-          move(){
-            cp.$emit('move');
-          },
-          hide(){
-            cp.$emit('hide');
-          },
-          show(){
-            cp.$emit('show');
-          },
-          beforeShow(){
-            cp.$emit('beforeShow');
-          }
+          width: 200,
+          handleRadius: 6,
+          color: this.value || this.color,
+          layout: []
         };
-
-        //for palette
-        if ( this.palette !== undefined && this.palette.length ){
-          obj.palette = this.palette;
-          if( this.panel === true ){
-            obj.showPalette = true;
-            obj.togglePaletteOnly = true;
-          }
-          else{
-            obj.showPaletteOnly = this.onlyPalette;
-          }
+        if ( this.wheel && !this.slider ){
+          obj.layout.push({component: iro.ui.Wheel});
         }
-        //for color
-        if ( this.value !== undefined ){
-          obj.color = this.value;
+        else {
+          obj.layout.push({
+            component: iro.ui.Slider,
+            options: {
+              sliderType: 'hue'
+            }
+          });
         }
-
-        //set text buttons
-        if( this.textButtons !== undefined ){
-          let btns = this.textButtons.slice();
-          if(btns[0] && btns[0].length && (btns[0] !== "") ){
-            obj.cancelText = btns[0];
-          }
-          if( btns[1] && btns[1].length ){
-            obj.chooseText = btns[1];
-          }
+        if ( this.brightness ){
+          obj.layout.push({component: iro.ui.Slider});
         }
-        //events
+        if ( this.saturation ){
+          obj.layout.push({
+            component: iro.ui.Slider,
+            options: {
+              sliderType: 'saturation'
+            }
+          });
+        }
         return obj;
       }
     },
     methods: {
       /**
-       * @method dragstart
-       * @param {Event} e The event
-       * @param {String} color 
-       * @emits dragstart
+       * Initializes the widget.
+       * @method init
+       * @fires destroy
+       * @fires setEvents
        */
-      dragstart(e, color){
-        $(this.$refs.element).on("dragstart.spectrum" , (e, color)=>{
-          this.$emit("dragstart", e, color);
-        });
-      },
-      /**
-       * @method dragstop
-       * @param {Event} e The event
-       * @param {String} color 
-       * @emits dragstop
-       */
-      dragstop(e, color){
-        $(this.$refs.element).on("dragstop.spectrum", (e, color)=>{
-          this.$emit("dragstop", e, color);
-        });
-      },
-      /**
-       * Starts the configuration of the component.
-       * @method initComponent
-       * 
-       */
-      initComponent(){
+      init(){
         if ( this.widget ){
-          $(this.$refs.element).spectrum("destroy");
-          this.widget = false;
+          this.destroy();
         }
         setTimeout(() => {
-          this.widget = $(this.$refs.element).spectrum(this.dataComponent);
-          if ( this.$el.querySelector('.sp-replacer') && this.$el.querySelector('.sp-replacer').classList.contains('sp-replacer')){
-            this.$el.querySelector('.sp-replacer').classList.remove('sp-replacer')
-          }
-          if ( this.$el.querySelector('div.sp-dd') ){
-            this.$el.querySelector('div.sp-dd').style.cursor = 'pointer';
-          }
-          if ( this.$el.querySelector('div.sp-container') ){
-            this.$el.querySelector('div.sp-container').style.zIndex = 1;
-          }
-          this.dragstart();
-          this.dragstop();
-        }, 100);
+          this.widget = new iro.ColorPicker(this.getRef('picker'), this.currentCfg);
+          this.setEvents();
+        }, 300);
       },
       /**
-       * Converts hex to rgb colors.
-       * 
-       * @param {Number} r 
-       * @param {Number} g 
-       * @param {Number} b 
+       * Sets the current values.
+       * @method setCurrents
        */
-      fullColorToHex(r, g, b){
-        var rgbToHex = rgb => {
-          rgb = Math.round(rgb);
-          let hex = Number(rgb).toString(16);
-          if (hex.length < 2) {
-               hex = "0" + hex;
+      setCurrents(color){
+        if ( bbn.fn.isObject(color) ){
+          this.currentHex = color.hexString;
+          this.currentRgb = color.rgbString;
+          this.currentRgba = color.rgbaString;
+          this.currentHsl = color.hslString;
+          switch ( this.codeColor ){
+            case 'hex':
+              this.currentValue = this.currentHex;
+              break;
+            case 'rgb':
+              this.currentValue = this.currentRgb;
+              break;
+            case 'rgba':
+              this.currentValue = this.currentRgba;
+              break;
+            case 'hsl':
+              this.currentValue = this.currentHsl;
+              break;
           }
-          return hex;
         }
-        let red = rgbToHex(r),
-            green = rgbToHex(g),
-            blue = rgbToHex(b);
-        return `#${red}${green}${blue}`;
+        else {
+          this.currentHex = '';
+          this.currentRgb = '';
+          this.currentRgba = '';
+          this.currentHsl = '';
+          this.currentValue = '';
+        }
       },
-      getOptions(){
-        const vm = this;
-        return bbn.vue.getOptions(vm);
+      /**
+       * Sets the events to the widget.
+       * @method setEvents
+       * @fires setCurrents
+       */
+      setEvents(){
+        this.widget.on('mount', cp => {
+          if ( this.value ){
+            this.setCurrents(cp.color);
+          }
+          cp.on('color:change', color => {
+            this.setCurrents(color);
+          })
+        });
+      },
+      /**
+       * Unsets the widget's events.
+       * @method unsetEvents
+       */
+      unsetEvents(){
+        this.widget.off('color:change');
+      },
+      /**
+       * Destroys the widget.
+       * @method destroy
+       * @fires unsetEvents
+       */
+      destroy(){
+        this.unsetEvents();
+        this.widget.base.remove();
+        this.widget = false;
+      },
+      /**
+       * Empties the current calue.
+       * @method empty
+       * @fires setCurrents
+       */
+      empty(){
+        this.setCurrents();
+      },
+      /**
+       * Sets the component value.
+       * @method save
+       * @emit input
+       * @emit change
+       */
+      save(){
+        if ( this.value !== this.currentValue ){
+          this.emitInput(this.currentValue || (this.nullable ? null : ''));
+          this.$emit('change', this.currentValue);
+        }
+        this.showFloater = false
+      },
+      /**
+       * Sets the color to the widget.
+       * @method setColor
+       */
+      setColor(color){
+        this.widget.color.set(color);
+      },
+      /**
+       * Sets the color inserted from the inputs.
+       * @method fromInput
+       * @fires setColor
+       */
+      fromInput(event){
+        this.setColor(event.target.value);
+      },
+      /**
+       * Opens/closes the floater.
+       * @method openCloseFloater
+       */
+      openCloseFloater(){
+        if ( this.showFloater ){
+          this.showFloater = false;
+        }
+        else if ( !this.disabled && !this.readonly ){
+          this.showFloater = true;
+        }
       }
     },
     /**
      * @event mounted
-     * @fires initComponent
      */
     mounted(){
-      this.$nextTick(() => {
-        this.initComponent();
-      });
       this.ready = true;
     },
-    watch:{
-      /**
-       * @watch dataComponent
-       * @param old 
-       * @param val 
-       * @fires initComponent
-       */
-      dataComponent(old, val){
-        if ( old !== val ){
-          this.initComponent();
-        }
-
-      },
-      "$props.disabled"(val){
-        this.initComponent();
-      },
-      value(oldVal, newVal){
-        if( newVal !== oldVal ){
-          this.$emit('change', newVal)
-        }
-      }
+    /**
+     * @event beforeDestroy
+     * @fires destroy
+     */
+    breforeDestroy(){
+      this.destroy();
     }
   });
 })(bbn);

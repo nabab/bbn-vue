@@ -14,7 +14,7 @@
 ((bbn) => {
   "use strict";
 
-  Vue.component('bbn-chart2', {
+  Vue.component('bbn-chart', {
     /**
      * @mixin bbn.vue.basicComponent
      */
@@ -35,9 +35,7 @@
        */
       type: {
         type: String,
-        required: true,
-        default: 'line',
-        validator: (t) => ['line', 'bar', 'pie', 'donut', 'area', 'radial'].includes(t)
+        default: 'line'
       },
       /**
        * The title of the chart.
@@ -84,11 +82,11 @@
       /**
        * Set to true to show the value points on the line chart.
        *
-       * @prop {Boolean|Number} [6] showPoint
+       * @prop {Boolean} [true] showPoint
        */
       showPoint: {
-        type: [Boolean, Number],
-        default: 6
+        type: Boolean,
+        default: true
       },
       /**
        * Set to true to show the grid line on the chart.
@@ -378,7 +376,7 @@
 			 */
       pointLabel: {
         type: Boolean,
-        default: true
+        default: false
       },
 			/**
 			 * The legend list.
@@ -395,9 +393,8 @@
 			 * @prop {String|HTMLElement} [undefined] legendPosition
 			 */
       legendPosition: {
-			  type: String,
-        default: 'bottom',
-        validator: (t) => ['top', 'bottom', 'left', 'right'].includes(t)
+			  type: [String, HTMLElement],
+        default: undefined
       },
       /*threshold: {
         type: Number
@@ -522,6 +519,12 @@
         default(){
           return {};
         }
+      },
+      ticks: {
+        type: Array,
+        default(){
+          return []
+        }
       }
     },
     computed: {
@@ -532,32 +535,11 @@
        * @return {Object}
        */
       data(){
-        let series = this.source.series,
-            data = []
-        if ( this.isLine || this.isBar || this.isArea ){
-          if ( bbn.fn.isArray(series) ){
-            if ( !bbn.fn.isArray(series[0]) ){
-              data.push({
-                data: series
-              })
-            }
-            else {
-              bbn.fn.each(series, (s, i) => {
-                if ( bbn.fn.isObject(s) ){
-
-                }
-                else {
-                  data.push({
-                    data: s,
-                    name: this.legend && this.legend.length ? this.legend[i] : false
-                  })
-                }
-              })
-            }  
+        let data = this.source;
+        if ( this.isLine || this.isBar ){
+          if ( data && data.series && !Array.isArray(data.series[0]) && !this.distributeSeries ){
+            data.series = [data.series];
           }
-        }
-        else if ( this.isPie || this.isDonut || this.isRadial ){
-          data = this.source.series
         }
         return data;
       },
@@ -586,34 +568,91 @@
        * @return {Boolean}
        */
       isPie(){
-        return (this.type === 'pie') && !this.donut;
+        return this.type === 'pie';
       },
       /**
-       * This checks the chart's type is 'donut'.
+       * This makes an array of activated plugins.
        *
-       * @computed isDonut
-       * @return {Boolean}
+       * @computed plugins
+       * @return {Array}
        */
-      isDonut(){
-        return (this.type === 'donut') || ((this.type === 'pie') && !!this.donut);
-      },
-      /**
-       * This checks the chart's type is 'area'.
-       *
-       * @computed isArea
-       * @return {Boolean}
-       */
-      isArea(){
-        return this.type === 'area';
-      },
-      /**
-       * This checks the chart's type is 'radial'.
-       *
-       * @computed isRadial
-       * @return {Boolean}
-       */
-      isRadial(){
-        return this.type === 'radial';
+      plugins(){
+        let plugins = [];
+        // tooltip
+        if ( this.tooltip ){
+          plugins.push(Chartist.plugins.tooltip({
+            currency: this.currency || false,
+            transformTooltipTextFnc:bbn.fn.isFunction(this.tooltip) ? this.tooltip : undefined
+          }));
+        }
+        // axis X/Y title
+        if ( !this.isPie && (this.titleX || this.titleY) ){
+          plugins.push(Chartist.plugins.ctAxisTitle({
+            axisX: {
+              axisTitle: this.titleX || '',
+              axisClass: 'ct-axis-title',
+              offset: {
+                x: 0,
+                y: 50
+              },
+              textAnchor: 'middle'
+            },
+            axisY: {
+              axisTitle: this.titleY || '',
+              axisClass: 'ct-axis-title',
+              offset: {
+                x: 0,
+                y: 0
+              },
+              textAnchor: 'middle',
+              flipTitle: false
+            }
+          }));
+        }
+        // Point Label
+        if ( this.pointLabel ){
+          plugins.push(Chartist.plugins.ctPointLabels());
+        }
+        // Legend
+        if ( this.legend ){
+          plugins.push(Chartist.plugins.legend({
+            onClick(a, b){
+              const rect = b.target.querySelector('div.rect');
+              if ( rect ){
+                if ( rect.classList.contains('inactive') ){
+                  rect.classList.remove('inactive');
+                }
+                else {
+                  rect.classList.add('inactive');
+                }
+              }
+            },
+            removeAll: true,
+            legendNames: Array.isArray(this.legendFixed) ? this.legendFixed : false,
+            position: this.legendPosition || 'top'
+          }));
+        }
+        // Thresold
+        /** @todo  it's not compatible with our colors system and legend */
+        /*if ( (this.isLine || this.isBar) && (typeof this.threshold === 'number') ){
+          plugins.push(Chartist.plugins.ctThreshold({
+            threshold: this.threshold
+          }));
+        }*/
+        // Zoom
+        /** @todo problems with scale x axis */
+        /*if ( this.zoom && this.isLine ){
+          this.trasformData();
+          this.axisX.type =  Chartist.AutoScaleAxis;
+          this.axisX.divisor = this.getLabelsLength();
+          this.axisY.type =  Chartist.AutoScaleAxis;
+          plugins.push(Chartist.plugins.zoom({
+            onZoom(chart, reset) {
+              this.resetZoom = reset;
+            }
+          }));
+        }*/
+        return plugins;
       },
 			/**
 			 * Sets the color property to the correct form.
@@ -670,10 +709,13 @@
        */
       lineCfg(){
         let cfg = {
-          //showLine: this.showLine,
-          //showArea: this.showArea
+          lineSmooth: this.step && this.showLine ? Chartist.Interpolation.step() : this.lineSmooth,
+          showPoint: this.showPoint,
+          showLine: this.showLine,
+          pointLabel: this.pointLabel,
+          showArea: this.showArea
         };
-        return this.isLine ? bbn.fn.extend(true, cfg, this.lineBarAreaCommon, this.lineAreaCommon) : {}
+        return this.isLine ? bbn.fn.extend(true, cfg, this.lineBarCommon) : {};
       },
       /**
        * Makes the base configuration object for the 'bar' chart.
@@ -687,73 +729,17 @@
           stackBars: this.barsDistance === 0,
           horizontalBars: this.horizontalBars
         };
-        return this.isBar ? bbn.fn.extend(true, cfg, this.lineBarAreaCommon) : {};
-      },
-      /**
-       * Makes the base configuration object for the 'area' chart.
-       *
-       * @computed areaCfg
-       * @return {Object}
-       */
-      areaCfg(){
-        let cfg = {}
-        return this.isArea ? bbn.fn.extend(true, cfg, this.lineAreaCommon) : {}
-      },
-      /**
-       * Makes the base configuration object for the 'line' and 'area' chart.
-       *
-       * @computed lineAreaCommon
-       * @return {Object}
-       */
-      lineAreaCommon(){
-        let cfg = {
-          markers: {
-            size: this.showPoint || 0
-          },
-          stroke: {
-            curve: !!this.lineSmooth ? 'smooth' : 'straight'
-          }
-        };
-        return this.isLine || this.isArea ? bbn.fn.extend(true, cfg, this.lineBarAreaCommon) : {}
+        return this.isBar ? bbn.fn.extend(true, cfg, this.lineBarCommon) : {};
       },
       /**
        * Makes a common configuration object for the 'line' and 'bar' charts.
        *
-       * @computed lineBarAreaCommon
+       * @computed lineBarCommon
        * @return {Object}
        */
-      lineBarAreaCommon(){
-        if ( this.isLine || this.isBar || this.isArea ){
-        let cfg = {
-          xaxis:{
-            categories: this.source.labels
-          },
-          grid: {
-            show: !!this.showGridX || !!this.showGridY,
-            xaxis: {
-              lines: {
-                show: !!this.showGridX
-              }
-            },
-            yaxis: {
-              lines: {
-                show: !!this.showGridY
-              }
-            },
-            row: {
-              colors: this.gridColor
-            },
-            column: {
-              colors: this.gridColor
-            }
-          }
-        }
-        if ( Object.keys(this.axisX).length ){
-          bbn.fn.extend(true, cfg.xaxis, this.axisX);
-        }
-        return cfg
-
-          /* let cfg = {
+      lineBarCommon(){
+        if ( this.isLine || this.isBar ){
+          let cfg = {
             chartPadding: {
               top: this.paddingTop || this.padding,
               right: this.paddingRight || this.padding,
@@ -766,12 +752,14 @@
               position: this.reverseLabelX ? 'start' : 'end'
             }, this.axisX),
             axisY: bbn.fn.extend(true, {
+              type: this.ticks ? Chartist.FixedScaleAxis : Chartist.AutoScaleAxis,
+              ticks: this.ticks || [],
               showLabel:bbn.fn.isFunction(this.showLabelY) ? true : this.showLabelY,
               showGrid: this.showGridY,
               position: this.reverseLabelY ? 'end' : 'start',
               onlyInteger: this.onlyInteger,
               high: this.max,
-              low: this.min ? -this.min : undefined
+              low: this.min || undefined
             }, this.axisY)
           };
           // Axis X
@@ -808,7 +796,7 @@
             cfg.axisY.labelInterpolationFnc = this.showLabelY;
             cfg.axisY.offset = 100;
           }
-          return cfg; */
+          return cfg;
         }
         return {};
       },
@@ -819,55 +807,66 @@
        * @return {Object}
        */
       pieCfg(){
-        let cfg = {}
-        return this.isPie ? cfg : {}
-      },
-      /**
-       * Makes the base configuration object for the 'donut' chart.
-       *
-       * @computed donutCfg
-       * @return {Object}
-       */
-      donutCfg(){
         let cfg = {
-          chart: {
-            type: 'donut'
-          }
-        }
-        if ( bbn.fn.isNumber(this.donut) ){
-          cfg.plotOptions = {
-            pie: {
-              donut: {
-                size: this.donut + '%'
-              }
-            }
-          }
-        }
-        return this.isDonut ? cfg : {}
-      },
-      /**
-       * Makes the base configuration object for the 'pie' chart.
-       *
-       * @computed pieCfg
-       * @return {Object}
-       */
-      radialCfg(){
-        let cfg = {
-          chart: {
-            type: 'radialBar'
-          },
-          plotOptions: {
-            radialBar: {
-              dataLabels: {
-                total: {
-                  show: true,
-                  total: bbn._('TOTAL')
+              donut: !!this.donut,
+              chartPadding: this.padding,
+              showLabel: this.showLabel,
+              labelDirection: this.labelExternal ? 'explode' : 'neutral',
+              labelOffset: this.labelOffset,
+              labelInterpolationFnc: (value) => {
+                if ( this.labelWrap ){
+                  let ret = '',
+                      labelWrap = typeof this.labelWrap === 'number' ? this.labelWrap : 25,
+                      tmp,
+                      cont = 0,
+                      arr,
+                      spl = (text) => {
+                        let r = '',
+                            idx = labelWrap;
+                        if ( text.length <= labelWrap ){
+                          return text;
+                        }
+                        for ( let i = labelWrap; i < text.length; i += labelWrap ){
+                          if ( i === labelWrap ){
+                            r += text.slice(0, i) + "\n"
+                          }
+                          r += text.slice(idx, i) + "\n";
+                          idx = i;
+                        }
+                        return r + text.slice(idx);
+                      };
+                  if ( typeof value === 'number' ){
+                    value = value.toString();
+                  }
+                  if ( value.length <= labelWrap ){
+                    return value;
+                  }
+                  if ( value.indexOf('\n') !== -1 ){
+                    arr = value.split('\n');
+                    arr.forEach((a, i) => {
+                      ret += spl(a) + (arr[i+1] ? '\n' : '');
+                    });
+                    return ret;
+                  }
+                  return spl(value);
+                }
+                else {
+                  return value;
                 }
               }
-            }
-          }
+            };
+        if ( typeof this.donut === 'number' ){
+          cfg.donutWidth = this.donut;
         }
-        return this.isRadial ? cfg : {}
+        else if ( this.donut ){
+          cfg.donutWidth = '100%';
+        }
+        // Force donut if animation is active
+        if ( this.animation ){
+          cfg.donut = true;
+          cfg.donutWidth = '100%';
+        }
+        return this.isPie ? cfg : {};
       },
       /**
        * Makes the configuration object for the widget.
@@ -876,55 +875,24 @@
        * @return {Object}
        */
       widgetCfg(){
-        let cfg = {
-          chart: {
-            type: this.type,
-            height: this.height,
-            width: this.width
-          },
-          series: this.data,
-          labels: this.source.labels || [],
-          legend: {
-            show: this.legend && this.legend.length,
-            position: this.legendPosition
-          },
-          dataLabels: {
-            enabled: !!this.pointLabel
-          },
-          tooltip: {
-            enabled: !!this.tooltip
-          },
-          colors: this.color,
-          fill: {
-            type: 'gradient',
-          },
-          theme: {
-            mode: 'light'
-          }
-          //fullWidth: this.fullWidth,
-          //width: this.width,
-          //height: this.height,
-          //tooltip: this.tooltip,
-        }
+        let cfg = bbn.fn.extend(true, {
+          type: this.type,
+          fullWidth: this.fullWidth,
+          width: this.width,
+          height: this.height,
+          tooltip: this.tooltip,
+          plugins: this.plugins
+        }, this.cfg);
         if ( this.isLine ){
-          bbn.fn.extend(true, cfg, this.lineCfg, this.cfg)
+          bbn.fn.extend(true, cfg, this.lineCfg);
         }
-        else if ( this.isBar ){
-          bbn.fn.extend(true, cfg, this.barCfg, this.cfg)
+        if ( this.isBar ){
+          bbn.fn.extend(true, cfg, this.barCfg);
         }
-        else if ( this.isPie ){
-          bbn.fn.extend(true, cfg, this.pieCfg, this.cfg)
+        if ( this.isPie ){
+          bbn.fn.extend(true, cfg, this.pieCfg);
         }
-        else if ( this.isDonut ){
-          bbn.fn.extend(true, cfg, this.donutCfg, this.cfg)
-        }
-        else if ( this.isRadial ){
-          bbn.fn.extend(true, cfg, this.radialCfg, this.cfg)
-        }
-        else if ( this.isArea ){
-          bbn.fn.extend(true, cfg, this.areaCfg, this.cfg)
-        }
-        return cfg
+        return cfg;
       }
     },
     methods: {
@@ -938,19 +906,25 @@
        * @fires widgetCreated
        */
       init(){
-        this.destroy()
+        if ( this.widget ){
+          this.widget.detach();
+          this.widget = false;
+        }
         if ( this.data ){
           setTimeout(() => {
             // Widget configuration
-            this.widget = new ApexCharts(this.getRef('chart'), bbn.fn.extend(true, {}, this.widgetCfg))
-            this.widget.render()
-          }, 0)
-        }
-      },
-      destroy(){
-        if ( this.widget ){
-          this.widget.destroy()
-          this.widget = false
+            if ( this.isPie ){
+              this.pieChart();
+            }
+            else if ( this.isBar ){
+              this.barChart();
+            }
+            else if ( this.isLine ){
+              this.lineChart();
+            }
+            // This operations is performed after widget creation
+            this.widgetCreated();
+          }, 100);
         }
       },
       /**
@@ -973,8 +947,6 @@
       lineChart(){
         // Creates widget
         this.widget = new Chartist.Line(this.$refs.chart, this.data, this.widgetCfg);
-
-
         this.lineDraw();
       },
       /**
