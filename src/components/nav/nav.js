@@ -1,5 +1,5 @@
  /**
-  * @file bbn-tabnav component
+  * @file bbn-nav component
   *
   * @description bbn-tabnav is a component that manages various card containers (bbn-container) that may or not be static, in an organized way, based on the URL. This component allows several different nested bbn-tabnav based on a "base url".
   *
@@ -9,7 +9,7 @@
   *
   * @created 15/02/2017
   */
-(function(Vue){
+ (function(Vue){
   "use strict";
 
   /**
@@ -21,8 +21,8 @@
    * otherwise.
    * @param {boolean|number} selected - The index of the currently selected tab, and false otherwise.
    */
-  Vue.component("bbn-tabnav", {
-    name: 'bbn-tabnav',
+  Vue.component("bbn-nav", {
+    name: 'bbn-nav',
     mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent, bbn.vue.localStorageComponent, bbn.vue.closeComponent, bbn.vue.observerComponent],
     props: {
       /**
@@ -123,13 +123,36 @@
         default: function(){
           return [];
         }
+      },
+      /**
+       * Set it to true if you want to show the breadcrumb instead of the tabs.
+       * @prop {Boolean} [false] breadcrumb
+       */
+      breadcrumb: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * Set it to true if you want to set this nav as a master.
+       * @prop {Boolean} [false] master
+       */
+      master: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * Set it to false if you want to hide the switch.
+       * @prop {Boolean} [true] switch
+       */
+      showSwitch: {
+        type: Boolean,
+        default: true
       }
-
     },
 
     data(){
       return {
-        _bbnTabNav: {
+        _bbnNav: {
           started: false,
           titles: '',
           num: 0
@@ -142,7 +165,9 @@
         selected: false,
         visible: true,
         router: null,
-        iconsReady: false
+        iconsReady: false,
+        subNav: [],
+        isBreadcrumb: this.breadcrumb
       };
     },
 
@@ -172,12 +197,12 @@
         return false;
       },
       // The last tabNav
-      activeTabNav(){
+      activeNav(){
         let tab = this.activeTab;
         if ( tab ){
-          let sub = this.getSubTabNav(this.selected);
+          let sub = this.getSubNav(this.selected);
           if ( sub ){
-            return sub.activeTabNav;
+            return sub.activeNav;
           }
         }
         return this;
@@ -188,17 +213,113 @@
       /**
        * The URL to which the tabnav currently corresponds (its selected tab).
        * @computed currentURL
-       * @return String
+       * @return {String}
        */
       currentURL(){
         return this.router ? this.router.currentURL : '';
       },
       isDirty(){
         return this.router ? !!this.router.dirtyContainers.length : false;
+      },
+      /**
+       * The master bbn-nav of this one.
+       * @computed itsMaster
+       * @return {Vue}
+       */
+      itsMaster(){
+        if ( this.master ){
+          return this;
+        }
+        return bbn.fn.get_row(this.parents, {master: true})
+      },
+      /**
+       * The switch's menu.
+       * @computed mainMenu
+       * @return {Array}
+       */
+      mainMenu(){
+        return [{
+          text: bbn._('Switch to ') + (this.isBreadcrumb ? bbn._('tabs') : bbn._('breadcrumb')) + ' ' + bbn._('mode'),
+          key: 'switch',
+          action: () => {
+            this.isBreadcrumb = !this.isBreadcrumb;
+          }
+        }];
       }
     },
 
     methods: {
+      /**
+       * Returns a sub bbn-nav list
+       * @method getSubNavs
+       * @param {Boolean} self
+       * @fires getSubNavs
+       * @return {Array}
+       */
+      getSubNavs(self){
+        if ( (this.selected !== false) && this.router.views[this.selected] ){
+          let sns = [],
+              sn = this.router.urls[this.router.views[this.selected].url].find(this.$options.name);
+          if ( self ){
+            if ( this.master ){
+              return [];
+            }
+            sns.push(this);
+          }
+          if ( bbn.fn.isVue(sn) ){
+            sns.push(...sn.getSubNavs(true))
+          }
+          return sns;
+        }
+        else {
+          return [];
+        }
+      },
+      /**
+       * Sets the 'subNav' data property with the sub bbn-nav list
+       * @method setSubNavs
+       * @fires getSubNavs
+       */
+      setSubNavs(){
+        this.subNav.splice(0);
+        this.$nextTick(() => {
+          this.subNav.push(...this.getSubNavs());
+        });
+      },
+      /**
+       * Returns the nav's tabs list for the breadcrumb mode.
+       * @method getList
+       * @param {Vue} nav
+       * @fires router.activateIndex
+       * @fires close
+       * @return {Array}
+       */
+      getList(nav){
+        let list = [];
+        if ( !nav ){
+          nav = this;
+        }
+        bbn.fn.each(nav.tabs, t => {
+          list.push({
+            text: t.title,
+            icon: t.icon,
+            key: t.url,
+            bcolor: t.bcolor,
+            fcolor: t.fcolor,
+            static: t.static,
+            action: () => {
+              nav.router.activateIndex(t.idx)
+            },
+            closeAction: () => {
+              nav.close(t.idx)
+            }
+          })
+        });
+        return list;
+      },
+
+
+
       observerEmit(newVal, obs){
         if ( bbn.vue.observerComponent.methods.observerEmit.apply(this, [newVal, obs]) ){
           let ele = this.$el.querySelector(".bbn-observer-" + obs.element);
@@ -241,7 +362,7 @@
               res.fcolor = obj.fcolor;
             }
             /*
-            let subtabnav = tabnav.getSubTabNav(i);
+            let subtabnav = tabnav.getSubNav(i);
             if ( subtabnav && subtabnav.autoload ){
               res.cfg = this.getConfig(subtabnav);
             }
@@ -303,6 +424,7 @@
           this.selected = idx;
         }
         this.$emit('change', this.currentURL);
+        this.setSubNavs();
       },
 
       getTabColor(idx){
@@ -448,6 +570,7 @@
 
       getMenuFn(idx){
         if ( !this.router || !this.tabs[idx]  || (this.tabs[idx].menu === false) ){
+          bbn.fn.log('ciao')
           return false;
         }
         let items = [],
@@ -460,7 +583,7 @@
           }
         });
         if ( !this.tabs[idx].help ){
-          let sub = this.getSubTabNav(idx);
+          let sub = this.getSubNav(idx);
           if ( sub && sub.tabs && sub.tabs.length ){
             let helps = [];
             sub.tabs.forEach((a) => {
@@ -554,7 +677,7 @@
             }
           });
         }
-        if ( !this.tabs[idx].static ){
+        if ( !this.tabs[idx].static && !this.isBreadcrumb ){
           if ( !this.tabs[idx].pinned ){
             items.push({
               text: bbn._("Pin"),
@@ -702,7 +825,7 @@
       navigate(){
         /*
         let idx = this.selected,
-            sub = this.getSubTabNav(idx);
+            sub = this.getSubNav(idx);
         if ( sub && sub.isValidIndex(sub.selected) ){
           sub.navigate();
         }
@@ -716,7 +839,7 @@
 
       },
 
-      getSubTabNav(idx){
+      getSubNav(idx){
         let cp = this.getVue(idx);
         if ( cp ){
           return cp.find(this.$options.name);
@@ -753,7 +876,7 @@
             if ( !this.parentTab && (parent.$vnode.componentOptions.tag === 'bbn-container') ){
               this.parentTab = parent;
             }
-            else if ( parent.$vnode.componentOptions.tag === 'bbn-tabnav' ){
+            else if ( parent.$vnode.componentOptions.tag === 'bbn-nav' ){
               this.parents.push(parent);
             }
           }
@@ -761,34 +884,23 @@
         }
         if ( !this.ready ){
           this.setRouter();
-          /*
-          if ( this.parents.length ){
-            let idx = this.parents[0].search(this.baseURL.substr(0, this.baseURL.length - 1));
-            if ( this.parents[0].isValidIndex(idx) && (this.parents[0].tabs[idx].current.indexOf(this.baseURL) === 0) ){
-              url = this.parents[0].tabs[idx].current.substr(this.baseURL.length);
-            }
-          }
-          if ( !url && (window.location.pathname.indexOf(this.fullBaseURL) === 0) ){
-            url = window.location.pathname.substr(this.fullBaseURL.length);
-          }
-          */
           this.ready = true;
           setTimeout(() => {
             // bugfix for rendering some nf-mdi icons
             this.iconsReady = true;
           }, 1000)
-          /*
-          if ( !url && tabs.length ){
-            this.activateDefault();
-          }
-          bbn.fn.log("TABNAV INITIALISATION WITH URL " + url);
-          this.route(url, true);
-          */
         }
 
       }
     },
-
+    created(){
+      this.$nextTick(() => {
+        if ( this.itsMaster && ( this.itsMaster !== this) ){
+          this.isBreadcrumb = this.itsMaster.isBreadcrumb;
+          this.itsMaster.setSubNavs();
+        }
+      })
+    },
     mounted(){
       let res = [];
       bbn.fn.each(this.source, (a) => {
@@ -812,6 +924,7 @@
         });
       }
       this.initSource = res;
+      this.setSubNavs();
     },
 
     beforeDestroy() {
@@ -831,25 +944,58 @@
           this.$emit('select', this.tabs[newVal], newVal);
           this.router.activateIndex(newVal);
         }
+        this.$nextTick(() => {
+          this.setSubNavs()
+        })
       },
-        /*
-      currentURL(newVal, oldVal){
-        if ( newVal !== oldVal ){
-          bbn.fn.log("CHANGE currentURL TO " + newVal);
-          this.route(newVal);
-            this.$emit('change', newVal, this.selected, oldVal);
-          }
-        }
-        this.$forceUpdate();
-      },
-        */
-       isDirty(val){
+      isDirty(val){
         if ( this.parentTab &&
           this.parentTab.tabNav &&
           this.parentTab.tabNav.tabs &&
           this.parentTab.tabNav.tabs[this.parentTab.tabNav.selected]
         ){
           this.parentTab.tabNav.tabs[this.parentTab.tabNav.selected].dirty = val;
+        }
+      },
+      isBreadcrumb(newVal){
+        bbn.fn.each(this.subNav, s => {
+          s.$set(s, 'isBreadcrumb', newVal);
+        });
+        this.setSubNavs();
+      }
+    },
+    components: {
+      listItem: {
+        template: `
+<span class="bbn-w-100 bbn-vxspadded bbn-hspadded"
+      :style="{
+        backgroundColor: source.bcolor || false,
+        color: source.fcolor || false
+      }"
+>
+  <span class="bbn-flex-width">
+    <span v-if="source.icon"
+          class="space"
+    >
+      <i :class="source.icon"></i>
+    </span>
+    <span class="text bbn-flex-fill" v-html="source.text"></span>
+    <span v-if="!source.static"
+          class="space"
+          style="text-align: right"
+          @click.prevent.stop="close"
+    >
+      <i class="nf nf-fa-times"></i>
+    </span>
+  </span>
+</span>
+        `,
+        props: ['source'],
+        methods: {
+          close(){
+            this.source.closeAction();
+            this.closest('bbn-context').showFloater = false;
+          }
         }
       }
     }

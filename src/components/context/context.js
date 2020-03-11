@@ -3,7 +3,7 @@
  *
  * @description bbn-context is a menu that can be activated with a right click.
  * The source of the menu can have a tree structure.
- * 
+ * ì
  * @copyright BBN Solutions
  *
  * @created 15/02/2017.
@@ -37,7 +37,7 @@
       /**
        * Set to true to show the floating element containing the menu.
        * @prop {Boolean} [false] context
-       * 
+       * ì
        */
       context: {
         type: Boolean,
@@ -51,7 +51,7 @@
         type: String
       },
       /**
-       * 
+       * ì
        * @prop {String} ['free'] mode
        */
       mode: {
@@ -62,12 +62,19 @@
         type: String,
         default: 'items'
       },
+      /**
+       * The component used by list's items.
+       * @prop {Object|String} itemComponent
+       */
+      itemComponent: {
+        type: [Object, String]
+      }
     },
     data(){
       return {
         /**
          * True if the floating element of the menu is opened.
-         * @data {Boolean} [false] showFloater 
+         * @data {Boolean} [false] showFloater ì
          */
         showFloater: false
       };
@@ -76,7 +83,7 @@
       /**
        * Based on the type of event and on the property context, shows or hides the floating element of the menu.
        * @method clickItem
-       * @param {Event} e 
+       * @param {Event} e ì
        * @fires updateData
        */
       clickItem(e){
@@ -89,9 +96,10 @@
             this.showFloater = !this.showFloater;
           }
           else{
-            this.updateData().then(() => {
+            this.$once('dataloaded', () => {
               this.showFloater = !this.showFloater;
             });
+            this.updateData();
           }
         }
       },

@@ -643,7 +643,7 @@
       },
       create(){
         if ( !this.ready ){
-          this.updateData().then(() => {
+          this.$once('dataloaded', () => {
             this.init();
             this.$nextTick(() => {
               if ( !this.date && ( this.max || this.min) ){
@@ -659,6 +659,7 @@
               this.ready = true;
             });
           });
+          this.updateData();
         }
       },
       makeEvents(){
@@ -761,9 +762,10 @@
             return false;
           }
         }
-        this.updateData().then(() => {
+        this.$once('dataloaded', () => {
           this.init();
         });
+        this.updateData();
       },
       /**
        * Changes the current calendar view to the next period.

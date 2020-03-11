@@ -410,8 +410,8 @@
        */
       _updateIconSituation(){
         let hasIcons = false;
-        bbn.fn.each(this.currentData, (a) => {
-          if ( a.icon ){
+        bbn.fn.each(this.filteredData, (a) => {
+          if ( a.data.icon ){
             hasIcons = true;
             return false;
           }
@@ -479,7 +479,7 @@
           }
           else{
             let v = item.data[this.sourceValue];
-            if (!this.selected.includes(v)) {
+            if ((v !== undefined) && !this.selected.includes(v)) {
               this.$emit("select", item.data, idx, item.index, ev);
             }
             if (!ev.defaultPrevented) {
@@ -536,6 +536,15 @@
         });
         this.selected.splice(0, this.selected.length);
       }
+    },
+    /**
+     * @event created
+     * @fires _updateIconSituation
+     */
+    created(){
+      this.$on('dataloaded', () => {
+        this._updateIconSituation();
+      });
     },
     /**
      * @event mounted

@@ -638,7 +638,6 @@
               if ( this.isAjax ){
                 if (this.loadingRequestID) {
                   bbn.fn.abort(this.loadingRequestID);
-                  bbn.fn.log("I just aborted?");
                 }
                 this.isLoading = true;
                 this.$emit('startloading');
@@ -684,7 +683,6 @@
                 });
               }
               prom.then((d) => {
-                bbn.fn.log("AFTER PROMISE");
                 if ( this.loadingRequestID && (this.loadingRequestID === loadingRequestID)){
                   this.isLoading = false;
                   this.loadingRequestID = false;
@@ -699,7 +697,7 @@
                   }
                   this.$emit('dataReceived', d);
                 }
-                if ( bbn.fn.isArray(d.data) ){
+                if ( d && bbn.fn.isArray(d.data) ){
                   if (d.data.length && d.data[0]._bbn){
                     this.currentData = d.data;
                     this.updateIndexes();
@@ -799,13 +797,13 @@
                 }
               })
             } else {
-              this.currentData.splice(index, 1);
+              let row = this.currentData.splice(index, 1);
               this.total--;
               if (this.originalData) {
                 this.originalData.splice(index, 1);
               }
               this.updateIndexes();
-              this.$emit('delete', this.currentData[index].data, ev);
+              this.$emit('delete', row[0], ev);
             }
           }
         },

@@ -834,7 +834,7 @@
             obj.slot = true;
             if (this.search(obj.url) === false) {
               if (this.isValidIndex(idx)) {
-                this.views.splice(idx, 0, [obj]);
+                this.views.splice(idx, 0, obj);
               }
               else {
                 this.views.push(obj);
@@ -864,7 +864,7 @@
               obj.menu = [];
             }
             index = this.search(obj.url);
-            //bbn.fn.log("ADDING CONTAINER " + obj.current + " (" + index + ")");
+            //bbn.fn.warning("ADDING CONTAINER " + obj.current + " (" + index + ")");
             if ( index !== false ){
               let o = this.views[index],
                   cn = this.urls[this.views[index].url];
@@ -904,7 +904,7 @@
                 }
               });
               if (isValid) {
-                this.views.splice(obj.idx, 0, [obj]);
+                this.views.splice(obj.idx, 0, obj);
               }
               else {
                 this.views.push(obj);
@@ -972,7 +972,7 @@
           let idx = this.search(url);
           let toAdd = false;
           let view;
-          //bbn.fn.log("START LOADING FN FOR IDX " + idx + " ON URL " + finalURL);
+          //bbn.fn.warning("START LOADING FN FOR IDX " + idx + " ON URL " + finalURL);
           if ( idx !== false ){
             //bbn.fn.log("INDEX RETRIEVED BEFORE LOAD: " + idx.toString(), this.views[idx].slot, this.views[idx].loading);
             if ( this.views[idx].loading || (!force && !this.views[idx].load) ){
@@ -988,6 +988,7 @@
             toAdd = true;
             idx = this.views.length;
           }
+          //bbn.fn.warning('IDX ' + idx + ' URL ' + url);
           if (toAdd){
             this.add({
               url: url,
@@ -1003,8 +1004,8 @@
           }
           this.$emit('update', this.views);
           return this.post(
-            finalURL, 
-            {_bbn_baseURL: this.fullBaseURL}, 
+            finalURL,
+            {_bbn_baseURL: this.fullBaseURL},
             (d) => {
               this.isLoading = false;
               //this.remove(url);
@@ -1014,17 +1015,17 @@
               if ( !d.url ){
                 d.url = url;
               }
-              //bbn.fn.log("URLS", url, d.url);
+              //bbn.fn.warning("URLS", url, d.url);
               if ( url.indexOf(d.url) === 0 ){
                 d.current = url;
-                //bbn.fn.log("CURRENT DEFINED AS " + d.current);
+                //bbn.fn.warning("CURRENT DEFINED AS " + d.current);
               }
               if ( d.data && bbn.fn.numProperties(d.data)){
                 d.source = d.data;
                 delete d.data;
               }
               if ( (d.url !== d.current) && this.urls[d.current] ){
-                //bbn.fn.log("DELETING VIEW CASE");
+                //bbn.fn.warning("DELETING VIEW CASE.... " + d.current + ' ' + this.urls[d.current].idx);
                 this.views.splice(this.urls[d.current].idx, 1);
                 delete this.urls[d.current];
               }

@@ -435,7 +435,7 @@
             resizable: false,
             maximizable: false,
             closable: false,
-            scrollable: true
+            scrollable: false
           }));
         }
       },

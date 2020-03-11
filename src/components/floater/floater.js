@@ -965,10 +965,11 @@
      * @event created
      * @fires _updateIconSituation
      */
-    created() {
-      this.updateData().then(() => {
+    created(){
+      this.$on('dataloaded', () => {
         this._updateIconSituation();
       });
+      //this.updateData();
     },
     /**
      * @event mounted
@@ -1007,9 +1008,7 @@
         deep: true,
         handler() {
           if ( this.currentData.length ){
-            this.updateData().then(() => {
-              this._updateIconSituation();
-            });
+            this.updateData();
           }
         }
       },

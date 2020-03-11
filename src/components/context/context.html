@@ -20,6 +20,7 @@
                :auto-hide="true"
                :mode="mode"
                v-if="showFloater"
-               @close="showFloater = false">
-  </bbn-floater>
+               @close="showFloater = false"
+               :item-component="itemComponent"
+  ></bbn-floater>
 </component>

@@ -18,6 +18,7 @@
    * Classic input with normalized appearance
    */
   Vue.component('bbn-treemenu', {
+    name: 'bbn-treemenu',
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.resizerComponent 

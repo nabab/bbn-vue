@@ -90,26 +90,21 @@
         }
       }
     },
-    mounted(){
-      /**
-       *
-       * @event mounted
-       * @fires updateData
-       * @return {Boolean}
-       */
-      if ( this.isAutobind ){
-        this.updateData().then(() => {
-          if ( this.value !== undefined ){
-            let row = bbn.fn.get_row(this.currentData, (a) => {
-              return a.data[this.sourceValue] === this.value;
-            });
-            if ( row ){
-              this.currentText = row.data[this.sourceText];
-            }
+    /**
+     *
+     * @event created
+     */
+    created(){
+      this.$on('dataloaded', () => {
+        if ( this.value !== undefined ){
+          let row = bbn.fn.get_row(this.currentData, (a) => {
+            return a.data[this.sourceValue] === this.value;
+          });
+          if ( row ){
+            this.currentText = row.data[this.sourceText];
           }
-          this.ready = true;
-        });
-      }
+        }
+      })
     },
     watch: {
       // When clearing from bbn-input

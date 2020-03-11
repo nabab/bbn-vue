@@ -1949,7 +1949,9 @@
             }
             this.editedRow = false;
           }
+          return true;
         }
+        return false;
       },      
       /**
        * If the prop url of the table is defined makes a post to the url to update or insert the row, else fires the method saveRow to insert or update the row in originalData
@@ -1966,8 +1968,9 @@
             this.post(this.url, o, (d) => {
               this.successEdit(d);
             })
-          } else {
-            this.saveRow()
+          }
+          else if (this.saveRow()) {
+            this.$emit(this.tmpRow ? 'insert' : 'edit');
           }
         }
       },      
@@ -2802,10 +2805,11 @@
             this.initReady = true;
             if (with_data) {
               this.$nextTick(() => {
-                this.updateData().then(() => {
+                this.$once('dataloaded', () => {
                   this.resizeHeight();
                   this.initStarted = false;
                 });
+                this.updateData();
               })
             }
             else{
@@ -3082,17 +3086,19 @@
       if (floater) {
         floater.$on('ready', () => {
           this.init();
-          this.updateData().then(() => {
+          this.$once('dataloaded', () => {
             this.ready = true;
             floater.onResize();
           });
-        })
+        });
+        this.updateData();
       }
       else{
         this.init();
-        this.updateData().then(() => {
+        this.$once('dataloaded', () => {
           this.ready = true;
         });
+        this.updateData();
       }
     },
     /**

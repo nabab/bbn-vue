@@ -352,34 +352,29 @@
         this.currentFilters.conditions.splice(0, this.currentFilters.conditions.length);
       }
     },
-    mounted(){
-      /**
-       *
-       * @event mounted
-       * @fires updateData
-       * @fires onResize
-       * @return {Boolean}
-       */
-      if ( this.isAutobind ){
-        this.updateData().then(() => {
-          if ( this.value !== undefined ){
-            let row = bbn.fn.get_row(this.currentData, (a) => {
-              return a.data[this.sourceValue] === this.value;
-            });
-            if ( row ){
-              this.currentText = row.data[this.sourceText];
-            }
+    /**
+     *
+     * @event created
+     */
+    created(){
+      this.$on('dataloaded', () => {
+        if ( this.value !== undefined ){
+          let row = bbn.fn.get_row(this.currentData, (a) => {
+            return a.data[this.sourceValue] === this.value;
+          });
+          if ( row ){
+            this.currentText = row.data[this.sourceText];
           }
-          if ( !this.currentText && !this.isNullable && this.filteredData.length ){
-            this.emitInput(this.filteredData[0][this.sourceValue]);
-          }
-        });
-      }
+        }
+        if ( !this.currentText && !this.isNullable && this.filteredData.length ){
+          this.emitInput(this.filteredData[0][this.sourceValue]);
+        }
+      });
     },
     watch: {
       /**
        * @watch value
-       * @param newVal 
+       * @param newVal
        */
       value(){
         this.$nextTick(() => {
@@ -388,7 +383,7 @@
       },
       /**
        * @watch filterString
-       * @param {String} v 
+       * @param {String} v
        */
       filterString(v){
         if ( !this.autocomplete ){
@@ -435,11 +430,12 @@
         }
       },
       source(){
-        this.updateData().then(() => {
+        this.$once('dataloaded', () => {
           if ( this.filteredData.length ) {
             this.onResize();
           }
         });
+        this.updateData();
       }
     }
   });
