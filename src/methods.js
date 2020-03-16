@@ -610,7 +610,7 @@
     },
 
     findAll(vm, selector, only_children){
-      let vms = this.getComponents(vm, only_children),
+      let vms = this.getComponents(vm, [], only_children),
           res = [];
       for ( let i = 0; i < vms.length; i++ ){
         if ( this.is(vms[i], selector) ){
