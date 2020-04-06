@@ -253,6 +253,10 @@
         },
         queryValues: {
           type: Object
+        },
+        hierarchy: {
+          type: Boolean,
+          default: false
         }
       },
       data(){

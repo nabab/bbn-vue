@@ -120,7 +120,7 @@
        * @returns {Boolean}
        */
       disableDecrease(){
-        return (this.min !== undefined) && (parseFloat(this.currentValue)  <= this.min)
+        return ((this.min !== undefined) && (parseFloat(this.currentValue)  <= this.min) || !!this.readonly)
       },
       /**
        * True if the increase functionality must to disabled.
@@ -128,7 +128,7 @@
        * @returns {Boolean}
        */
       disableIncrease(){
-        return (this.max !== undefined) && (parseFloat(this.currentValue) >= this.max)
+        return ((this.max !== undefined) && (parseFloat(this.currentValue) >= this.max) || !!this.readonly)
       },
       /**
        * The pattern of the input.  ^\-?[0-9]+\.0*[1-9]{0}$
@@ -248,16 +248,16 @@
        */
       checkMinMax(){
         let w = false;
-        if ( 
-          (this.max !== undefined) && 
+        if (
+          (this.max !== undefined) &&
           (this.currentValue !== '') &&
           (this.currentValue !== null) &&
-          (parseFloat(this.currentValue) > parseFloat(this.max)) 
+          (parseFloat(this.currentValue) > parseFloat(this.max))
         ){
           this.currentValue = parseFloat(this.max).toFixed(this.currentDecimals);
           w = true;
         }
-        else if ( 
+        else if (
           (this.min !== undefined) &&
           (this.currentValue !== '') &&
           (this.currentValue !== null) &&
@@ -284,6 +284,9 @@
           this.currentValue = ((parseFloat(this.value) || 0) + (this.isPercentage ? this.step / 100 : this.step)).toFixed(this.currentDecimals);
           this.$nextTick(() => {
             this.checkMinMax();
+            this.$nextTick(() => {
+              this.$emit('change', this.currentValue);
+            });
           })
         }
       },
@@ -297,6 +300,9 @@
           this.currentValue = ((parseFloat(this.value) || 0) - (this.isPercentage ? this.step / 100 : this.step)).toFixed(this.currentDecimals);
           this.$nextTick(() => {
             this.checkMinMax();
+            this.$nextTick(() => {
+              this.$emit('change', this.currentValue);
+            });
           })
         }
       },

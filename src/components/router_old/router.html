@@ -1,0 +1,14 @@
+<div :class="[{
+       'bbn-h': !ready
+     }, componentClass]"
+>
+  <div class="bbn-overlay">
+    <slot></slot>
+    <bbn-container v-for="view in views"
+                   v-if="!view.slot"
+                   :key="view.url"
+                   v-bind="view"
+                   @view="updateView">
+    </bbn-container>
+  </div>
+</div>

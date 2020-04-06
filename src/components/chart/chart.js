@@ -646,7 +646,9 @@
         containerHeight: 0,
         containerWidth: 0,
         ready: false,
-        widget: false
+        isInit: false,
+        widget: false,
+        id: bbn.fn.randomString()
       }
     },
     computed: {
@@ -1076,12 +1078,22 @@
       widgetCfg(){
         let cfg = {
           chart: {
+            id: this.id,
             type: this.type,
             height: this.height,
             width: this.width,
             animations: {
               enabled: !!this.animation,
-              speed: bbn.fn.isNumber ? this.animation : 800
+              speed: bbn.fn.isNumber ? this.animation : 800,
+              easing: 'easeinout',
+              animateGradually: {
+                enabled: true,
+                delay: 250
+              },
+              dynamicAnimation: {
+                enabled: true,
+                speed: 350
+              }
             },
             toolbar: {
               show: this.toolbar,
@@ -1159,15 +1171,7 @@
             }]
           },
           series: this.data,
-          labels: this.data && this.data.length ?
-            (this.source.labels ?
-              (this.even || this.odd ? bbn.fn.filter(this.source.labels, (v, k) => {
-                k++;
-                return (this.even && (k % 2 === 0)) || (this.odd && (k % 2 > 0));
-              }) :
-              this.source.labels
-            ) : []) :
-            [],
+          labels: this.getLabels(),
           legend: {
             show: this.legend && this.legend.length,
             position: this.legendPosition,
@@ -1250,66 +1254,107 @@
        * @fires lineChart
        * @fires widgetCreated
        */
-      init(){
-        this.destroy()
+      init(emptyData){
+        this.destroy();
         this.setSizes();
         this.$nextTick(() => {
           if ( !this.widget ){
-            this.widget = new ApexCharts(this.getRef('chart'), bbn.fn.extend(true, {}, this.widgetCfg))
+            let cfg = bbn.fn.extend(true, {}, this.widgetCfg);
+            if ( emptyData ){
+              cfg.series = [];
+              cfg.labels = [];
+            }
+            this.widget = new ApexCharts(this.getRef('chart'), cfg)
             this.widget.render();
+            this.isInit = true;
           }
         })
       },
+      /**
+       * @method destroy
+       */
       destroy(){
         if ( this.widget && this.ready ){
           this.widget.destroy();
           this.widget = false;
         }
       },
+      /**
+       * @method setSizes
+       */
       setSizes(){
         this.containerHeight = this.container.offsetHeight;
         this.containerWidth = this.container.offsetWidth;
       },
+      /**
+       * @method onResize
+       * @fires setSizes
+       */
       onResize(){
         if ( this.ready ){
           this.$nextTick(() =>{
             this.setSizes();
             if ( this.widget ){
-              this.updateWidget();
+              //this.updateWidget();
             }
           })
         }
       },
-      updateWidget(){
+      /**
+       * @method updateWidget
+       */
+      updateWidget(cfg){
         if ( this.widget && this.ready ){
-          this.widget.updateOptions(this.widgetCfg, true);
+          this.widget.updateOptions(bbn.fn.extend(true, {}, cfg || this.widgetCfg), !!this.isBar, !!this.animation);
         }
+      },
+      /**
+       * @method getLabels
+       * @return {Array}
+       */
+      getLabels(){
+        return this.data && this.data.length ? (this.source.labels ? (this.even || this.odd ? bbn.fn.filter(this.source.labels, (v, k) => {
+          k++;
+          return (this.even && (k % 2 === 0)) || (this.odd && (k % 2 > 0));
+        }) : this.source.labels) : []) : []
       }
     },
     watch: {
       /**
-       * @watch source
+       * @watch ready
        * @fires init
        */
-      source(val){
-        this.$nextTick(() => {
-          if ( this.ready ){
-            this.updateWidget()
-
-          }
-        });
-      },
       ready(newVal){
         this.$nextTick(() => {
           if ( newVal ){
             this.init();
           }
         });
+      },
+      /**
+       * @watch widgetCfg
+       * @fires init
+       * @fires updateWidget
+       */
+      widgetCfg: {
+        deep: true,
+        handler(newVal, oldVal){
+          if ( this.ready && this.isInit ){
+            if ( newVal.chart.type !== oldVal.chart.type ){
+              this.isInit = false;
+              this.init(true);
+            }
+            else {
+              this.updateWidget();
+            }
+          }
+        }
       }
     },
     /**
      * @event mounted
      * @fires init
+     * @fires getRef
      */
     mounted(){
       this.container = this.getRef('container');

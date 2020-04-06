@@ -1,0 +1,20 @@
+<div :class="[componentClass, {
+        'bbn-key-double': isDouble,
+        'bbn-key-space': isSpace,
+        'bbn-key-narrow': isTop,
+        'bbn-key-bottom': isSpecial && !isEscape && !isArrow,
+        'bbn-key-right': isReturn,
+        'bbn-key-left': isSpecial && !isReturn && !isEscape && !isArrow,
+        'bbn-key-small': isSpecial && !isReturn && !isEscape
+      }]" 
+     tabindex="-1"
+>
+  <span v-if="k === 'tab'">
+    Tab <i class="bbn-lg nf nf-mdi-keyboard_tab"></i>
+  </span>
+  <span v-else-if="isArrow">
+    <i :class="'bbn-lg ' + arrowClass"></i>
+  </span>
+  <span v-else v-html="rendered"></span>
+
+</div>

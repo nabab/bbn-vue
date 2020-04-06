@@ -117,22 +117,18 @@
                       :observer="true"
                       :source="source">
       </bbn-split-tabs-->
-      <bbn-tabnav v-if="tabnav"
-                  :autoload="true"
+      <bbn-router :autoload="!!nav"
                   :root="root"
                   :source="source"
-                  :storage="true"
+                  :storage="!!nav"
                   :observer="true"
                   :menu="tabMenu"
-                  ref="tabnav">
-        <slot></slot>
-      </bbn-tabnav>
-      <bbn-router v-else
-                  ref="tabnav"
-                  class="bbn-overlay"
-                  :source="source"
-                  :url="url"
-                  :root="root">
+                  ref="nav"
+                  :nav="nav"
+                  :master="true"
+                  :class="{'bbn-overlay': !nav}"
+                  :url="!!nav ? undefined : url"
+      >
         <slot></slot>
       </bbn-router>
     </bbn-pane>

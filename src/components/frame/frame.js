@@ -17,7 +17,6 @@
     mixins: [bbn.vue.basicComponent],
     props: {
       sandbox: {
-        type: String,
         default: ''
       },
       url: {

@@ -128,7 +128,7 @@
           menu.focusSearch();
         }
       },
-      tabMenu(tab, tabnav) {
+      tabMenu(tab, router) {
         let res = [];
         if (bbn.env.isDev) {
           let plugin;
@@ -163,8 +163,7 @@
             text: bbn._('Log the container'),
             icon: 'nf nf-mdi-sign_text',
             action() {
-              let router = tabnav.getRef('router'),
-                  idx = router.search(tab.url);
+              let idx = router.search(tab.url);
               bbn.fn.log("Container with URL " + tab.url, router.urls[router.views[idx].url]);
             }
           });
@@ -188,7 +187,7 @@
         return true;
       },
       route(url, force){
-        this.getRef('tabnav').route(url, force)
+        this.getRef('nav').route(url, force)
       },
       register(name, cp){
         if (cp) {
@@ -495,7 +494,7 @@
           },
 
           defaultPreLinkFunction(url) {
-            let router = appui.getRef('tabnav');
+            let router = appui.getRef('nav');
             if ( router && bbn.fn.isFunction(router.route) ){
               router.route(url);
             }

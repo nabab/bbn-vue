@@ -319,6 +319,10 @@
       timepicker: {
         name: 'timepicker',
         props: {
+          /**
+           * @prop {String} [''] value
+           * @memberof timepicker
+           */
           value: {
             type: String,
             default: ''

@@ -3,4 +3,49 @@ div.bbn-router {
   overflow: hidden;
   position: relative;
   box-sizing: border-box;
+  margin: 0;
+  .bbn-router-nav{
+    margin-top: 0;
+    .bbn-router-nav:not(.bbn-router-nav-bc) {
+      margin-top: 0.5em;
+      height: calc(100% - 0.5em);
+    }
+    .bbn-router-switch {
+      width: 2.4em;
+    }
+    &.bbn-router-nav-bc{
+      > div.bbn-flex-width {
+        > div.bbn-router-switch {
+          height: 2.4em;
+        }
+      }
+    }
+    .bbn-router-loading {
+      content: " ";
+      display: block;
+      width: 8px;
+      height: 8px;
+      margin: 1px;
+      border-radius: 50%;
+      border-style: solid;
+      border-width: 3px;
+      border-right-color: transparent !important;
+      border-left-color: transparent !important;
+      animation: bbn-router-loader 1.2s linear infinite;
+    }
+    .bbn-pane .bbn-router-nav:not(.bbn-router-nav-bc){
+      margin-top: 0;
+    }
+    .bbn-pane .bbn-router-nav:not(.bbn-router-nav-bc) .bbn-router-nav:not(.bbn-router-nav-bc){
+      margin-top: 0.5em;
+    }
+  }
+}
+@keyframes bbn-router-loader{
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

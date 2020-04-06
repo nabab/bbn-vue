@@ -43,7 +43,7 @@
            @click="increment"
            unselectable="on"
            tabindex="-1"
-           :disabled="value >= max"
+           :disabled="disableIncrease"
       >
         <i class="nf nf-fa-caret_up"></i>
       </div>
@@ -55,6 +55,7 @@
            @click="decrement"
            unselectable="on"
            tabindex="-1"
+           :disabled="disableDecrease"
       >
         <i class="nf nf-fa-caret_down"></i>
       </div>

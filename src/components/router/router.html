@@ -1,14 +1,84 @@
 <div :class="[{
-       'bbn-h': !ready
+       'bbn-h': !ready,
+       'bbn-overlay': ready && nav
      }, componentClass]"
 >
-  <div class="bbn-overlay">
+  <div v-if="!nav" class="bbn-overlay">
     <slot></slot>
     <bbn-container v-for="view in views"
                    v-if="!view.slot"
                    :key="view.url"
                    v-bind="view"
-                   @view="updateView">
-    </bbn-container>
+    ></bbn-container>
+  </div>
+  <div v-else
+      :class="['bbn-flex-height', 'bbn-router-nav', {'bbn-router-nav-bc': isBreadcrumb}]"
+  >
+    <template v-if="master || !isBreadcrumb">
+      <div class="bbn-flex-width">
+        <div class="bbn-flex-fill">
+          <bbn-breadcrumb v-if="isBreadcrumb"
+                          :source="views"
+                          ref="breadcrumb"
+                          @beforeClose="close"
+                          @select="activateIndex"
+                          :menu="getMenuFn"
+                          :scrollable="scrollable"
+                          :content="false"
+                          :value="selected"
+                          :master="true"
+                          class="bbn-router-breadcrumb"
+          ></bbn-breadcrumb>
+          <bbn-tabs v-else
+                    :source="views"
+                    :scrollable="scrollable"
+                    ref="tabs"
+                    @beforeClose="close"
+                    @select="activateIndex"
+                    :menu="getMenuFn"
+                    @pin="setConfig"
+                    @unpin="setConfig"
+                    :content="false"
+                    :value="selected"
+                    class="bbn-router-tabs"
+          ></bbn-tabs>
+        </div>
+        <div v-if="master && showSwitch"
+             class="bbn-middle bbn-router-switch bbn-header bbn-no-border-top bbn-no-border-left"
+        >
+          <bbn-context :source="mainMenu"
+                        tag="div"
+                        min-width="10em"
+                        tabindex="0"
+                        ref="mainMenu"
+                        class="bbn-middle"
+          >
+            <span v-if="isLoading" class="bbn-router-loading"></span>
+            <i v-else class="nf nf-seti-config bbn-p bbn-large"></i>
+          </bbn-context>
+        </div>
+      </div>
+    </template>
+    <div v-else-if="isBreadcrumb">
+      <bbn-breadcrumb :source="views"
+                      ref="breadcrumb"
+                      @beforeClose="close"
+                      @select="activateIndex"
+                      :menu="getMenuFn"
+                      :scrollable="scrollable"
+                      :content="false"
+                      :value="selected"
+                      :master="false"
+                      class="bbn-router-breadcrumb"
+      ></bbn-breadcrumb>
+    </div>
+    <div class="bbn-flex-fill">
+      <slot></slot>
+      <bbn-container v-for="view in views"
+                     v-if="!view.slot"
+                     :key="view.url"
+                     v-bind="view"
+      ></bbn-container>
+    </div>
   </div>
 </div>

@@ -1,0 +1,78 @@
+<div :class="componentClass">
+  <div v-if="master"
+       :class="['bbn-breadcrumb-container', {'bbn-flex-height': content}]"
+  >
+    <div class="bbn-h-100 bbn-alt bbn-bordered-bottom bbn-no-border-top bbn-no-border-right bbn-vmiddle bbn-hspadded"
+         :style="{
+           backgroundColor: backgroundColor,
+           color: fontColor
+         }"
+    >
+      <bbn-context :source="getList"
+                   tag="span"
+                   min-width="10em"
+                   tabindex="0"
+                   :item-component="$options.components.listItem"
+                   :class="{'bbn-breadcrumb-dirty': isNumber(selected) && source[selected] && !!source[selected].dirty}"
+      >
+        <bbn-context :source="getMenuFn"
+                     :source-index="isNumber(selected) ? selected : undefined"
+                     tag="span"
+                     min-width="10em"
+                     tabindex="0"
+                     :context="true"
+        >
+          <span class="bbn-hxspadded">
+            <i v-if="isNumber(selected) && source[selected] && !!source[selected].icon"
+               :class="[source[selected].icon]"
+            ></i>
+            <span v-text="isNumber(selected) && source[selected] && !!source[selected].title ? source[selected].title : _('Untitled')"
+                  :class="{'bbn-b': !currents.length}"
+            ></span>
+          </span>
+        </bbn-context>
+      </bbn-context>
+      <template v-if="currents.length"
+                v-for="(sn, isn) in currents"
+      >
+        <span :style="{color: fontColor}">
+          <i class="nf nf-fa-angle_right bbn-hsmargin bbn-large" style="vertical-align: middle;"></i>
+        </span>
+        <bbn-context :source="sn.getList"
+                     tag="span"
+                     min-width="10em"
+                     tabindex="0"
+                     :item-component="$options.components.listItem"
+                     :class="{'bbn-breadcrumb-dirty': isNumber(sn.selected) && sn.source[sn.selected] && !!sn.source[sn.selected].dirty}"
+        >
+          <bbn-context :source="sn.getMenuFn"
+                       :source-index="isNumber(sn.selected) ? sn.selected : undefined"
+                       tag="span"
+                       min-width="10em"
+                       tabindex="0"
+                       :context="true"
+          >
+            <span :style="{
+                    backgroundColor: isNumber(sn.selected) && sn.source[sn.selected] && !!sn.source[sn.selected].bcolor ? sn.source[sn.selected].bcolor : '',
+                    color: isNumber(sn.selected) && sn.source[sn.selected] && !!sn.source[sn.selected].fcolor ? sn.source[sn.selected].fcolor : fontColor
+                  }"
+                  class="bbn-hxspadded"
+            >
+              <i v-if="isNumber(sn.selected) && sn.source[sn.selected] && !!sn.source[sn.selected].icon"
+                 :class="[sn.source[sn.selected].icon]"
+              ></i>
+              <span v-text="isNumber(sn.selected) && sn.source[sn.selected] && !!sn.source[sn.selected].title ? sn.source[sn.selected].title : _('Untitled')"
+                    :class="{'bbn-b': !currents[isn+1]}"
+              ></span>
+            </span>
+          </bbn-context>
+        </bbn-context>
+      </template>
+    </div>
+    <div v-if="content && isNumber(selected)"
+         class="bbn-flex-fill"
+         v-html="source[selected] && source[selected].content ? source[selected].content : ''"
+         ref="content"
+    ></div>
+  </div>
+</div>

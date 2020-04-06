@@ -1,119 +1,309 @@
 /**
  * @file bbn-router component
- *
  * @description bbn-router is a component that allows and manages the navigation (url) between the various containers of an application
- *
  * @copyright BBN Solutions
- *
  * @author BBN Solutions
  */
 (function(bbn, Vue){
   "use strict";
 
-  /**
-   * @component
-   * @param {string} url - The URL on which the tabNav will be initialized.
-   * @param {boolean} autoload - Defines if the tab will be automatically loaded based on URLs. False by default
-   * except if it is true for the parent.
-   * @param {string} orientation - The position of the views' titles: top (default) or bottom.
-   * @param {string} root - The root URL of the tabNav, will be only taken into account for the top parents'
-   * tabNav, will be automatically calculated for the children.
-   * @param {boolean} scrollable - Sets if the views' titles will be scrollable in case they have a greater width
-   * than the page (true), or if they will be shown multilines (false, default).
-   * @param {array} source - The views shown at init.
-   * @param {string} currentURL - The URL to which the tabnav currently corresponds (its selected tab).
-   * @param {string} baseURL - The parent TabNav's URL (if any) on top of which the tabNav has been built.
-   * @param {array} parents - The views shown at init.
-   * @param {array} views - The views configuration and state.
-   * @param {boolean} parentTab - If the tabNav has a tabNav parent, the tab Vue object in which it stands, false
-   * otherwise.
-   * @param {boolean|number} selected - The index of the currently selected tab, and false otherwise.
-   */
   Vue.component("bbn-router", {
-    mixins: [bbn.vue.basicComponent, bbn.vue.closeComponent],
+    name: 'bbn-router',
+    mixins: [
+      /**
+       * @mixin bbn.vue.basicComponent
+       */
+      bbn.vue.basicComponent,
+      /**
+       * @mixin bbn.vue.resizerComponent
+       */
+      bbn.vue.resizerComponent,
+      /**
+       * @mixin bbn.vue.localStorageComponent
+       */
+      bbn.vue.localStorageComponent,
+      /**
+       * @mixin bbn.vue.closeComponent
+       */
+      bbn.vue.closeComponent,
+      /**
+       * @mixin bbn.vue.observerComponent
+       */
+      bbn.vue.observerComponent
+    ],
     props: {
-      // Routes automatically after mount
+      /**
+       * Routes automatically after mount.
+       * @prop {Boolean} [true] auto
+       */
       auto: {
         type: Boolean,
         default: true
       },
-      //
+      /**
+       * The URL on which the router will be initialized.
+       * @prop {String} ['] url
+       */
       url: {
         type: String,
         default: ''
       },
+      /**
+       * Defines if the container will be automatically loaded based on URLs.
+       * @prop {Boolean} [true] autoload
+       */
       autoload: {
         type: Boolean,
         default: true
       },
+      /**
+       * The root URL of the router, will be only taken into account for the top parents' router, will be automatically calculated for the children.
+       * @prop {String} ['] root
+       */
       root: {
         type: String,
         default: ''
       },
+      /**
+       * @prop {String} def
+       */
       def: {
         type: String
       },
+      /**
+       * The views shown at init.
+       * @prop {Array} [[]] source
+       */
       source: {
         type: Array,
         default(){
           return [];
         }
       },
+      /**
+       * @prop {Boolean} [false] single
+       */
       single: {
         type: Boolean,
         default: false
+      },
+      /**
+       * Set it to true if you wanto to see the navigation bar (tabs or breadcrumb).
+       * @prop {Boolean} [false] nav
+       */
+      nav: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * Sets if the views' titles will be scrollable in case they have a greater width than the page (true), or if they will be shown multilines (false, default).
+       * @prop {Boolean} [false] scrollable
+       */
+      scrollable: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * The name used for the storage
+       * @prop {String} ['__ROOT__'] storageName
+       */
+      storageName: {
+        type: String,
+        default: '__ROOT__'
+      },
+      /**
+       * The confirm message when you close an unsaved container
+       * @prop {Boolean|String|Function} ['Are you sure you want to discard the changes you made in this tab?'] confirmLeave
+       */
+      confirmLeave: {
+        type: [Boolean, String, Function],
+        default: bbn._("Are you sure you want to discard the changes you made in this page?")
+      },
+      /**
+       *
+       * @prop {String} hideAdvertUrl
+       */
+      hideAdvertUrl: {
+        type: String
+      },
+      /**
+       * The max length of the history
+       * @prop {Number} [10] historyMaxLength
+       */
+      historyMaxLength: {
+        type: Number,
+        default: 10
+      },
+      /**
+       *
+       * @prop {Array|Function} [[]] menu
+       */
+      menu: {
+        type: [Array, Function],
+        default: function(){
+          return [];
+        }
+      },
+      /**
+       * Set it to true if you want to show the breadcrumb instead of the tabs.
+       * @prop {Boolean} [false] breadcrumb
+       */
+      breadcrumb: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * Set it to true if you want to set this nav as a master.
+       * @prop {Boolean} [false] master
+       */
+      master: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * Set it to false if you want to hide the switch.
+       * @prop {Boolean} [true] switch
+       */
+      showSwitch: {
+        type: Boolean,
+        default: true
       }
     },
     data(){
       return {
-        // Number of conatainers registered - as they say it
+        /**
+         * Number of conatainers registered - as they say it
+         * @data {Number} [0] numRegistered
+         */
         numRegistered: 0,
-        // Real containers are the bbn-container in the slot
+        /**
+         * Real containers are the bbn-container in the slot
+         * @data {Boolean} [false] hasRealContainers
+         */
         hasRealContainers: false,
-        // Fake containers are the bbns-container in the slot
+        /**
+         * Fake containers are the bbns-container in the slot
+         * @data {Boolean} [false] hasFakeContainers
+         */
         hasFakeContainers: false,
-        // True if one of the initial containers' URL is an empty string
+        /**
+         * True if one of the initial containers' URL is an empty string
+         * @data {Boolean} [false] hasEmptyURL
+         */
         hasEmptyURL: false,
-        // The array of containers defined in the source
+        /**
+         * The array of containers defined in the source
+         * @data {Array} cfgViews
+         */
         cfgViews: [].concat(this.source),
-        // The views from the slot?
+        /**
+         * The views from the slot?
+         * @data {Array} [[]] slotViews
+         */
         slotViews: [],
-        // All the views
+        /**
+         * All the views
+         * @data {Array} [[]] views
+        */
         views: [],
-        // All the URLS of the views
+        /**
+         * All the URLS of the views
+         * @data {Object} [{}] urls
+         */
         urls: {},
-        // current URL of the router
+        /**
+         * Current URL of the router
+         * @data {String} currentURL
+         */
         currentURL: this.url || '',
-        // relative root of the router (set by user or by parent router)
+        /**
+         * Relative root of the router (set by user or by parent router)
+         * @data {String} baseURL
+         */
         baseURL: this.setBaseURL(this.root),
-        // An array of the parents router
+        /**
+         * An array of the parents router
+         * @data {Array} [[]] parents
+         */
         parents: [],
-        // The direct parent router if there is one
+        /**
+         * The direct parent router if there is one
+         * @data {Vue} [null] parent
+         */
         parent: null,
-        // The root router or the current one it's the same
+        /**
+         * The root router or the current one it's the same
+         * @data {Vue} [null] router
+         */
         router: null,
-        // The container having the router in if there is one
+        /**
+         * The container having the router in if there is one
+         * @data {Vue} [null] parentContainer
+         */
         parentContainer: null,
-        // ????
+        /**
+         * ????
+         * @data {Boolean} [ture] visible
+         */
         visible: true,
-        // The currently visible container
+        /**
+         * The currently visible container
+         * @data {Vue} [null] activeContainer
+         */
         activeContainer: null,
-        // set to true each time the router is loading (can only load once at a time)
+        /**
+         * Set to true each time the router is loading (can only load once at a time)
+         * @data {Boolean} [false] isLoading
+         */
         isLoading: false,
-        // This will remain false until the first routing
+        /**
+         * This will remain false until the first routing
+         * @data {Boolean} [false] routed
+         */
         routed: false,
-        // True while the component is in the action of routing
+        /**
+         * True while the component is in the action of routing
+         * @data {Boolean} [false] isRouting
+         */
         isRouting: false,
-        // False until the first routing
+        /**
+         * False until the first routing
+         * @data {Boolean} [false] isInit
+         */
         isInit: false,
-        // The index of the currently selected view
+        /**
+         * The index of the currently selected view
+         * @data {Number} [null] selected
+         */
         selected: null,
-        dirtyContainers: []
+        /**
+         * The list of the dirty containers
+         * @data {Array} [[]] dirtyContainers
+         */
+        dirtyContainers: [],
+        /**
+         * The navigation history
+         * @data {Array} [[]] history
+         */
+        history: [],
+        /**
+         * Shows if the navigation mode is set to breacrumb
+         * @data {Boolean} isBreadcrumb
+         */
+        isBreadcrumb: this.breadcrumb,
+        /**
+         * itsMaster.isBreadcrumb watcher
+         * @data breadcrumbWatcher
+         */
+        breadcrumbWatcher: false
       };
     },
-
     computed: {
-      // Not only the baseURL but a combination of all the parent's baseURLs
+      /**
+       * Not only the baseURL but a combination of all the parent's baseURLs
+       * @computed fullBaseURL
+       * @return {String}
+       */
       fullBaseURL(){
         let vm = this,
             base = '',
@@ -127,17 +317,113 @@
         }
         return base;
       },
-      // Returns true if there are any unsaved views
+      /**
+       * Returns true if there are any unsaved views
+       * @computed isDirty
+       * @return {Boolean}
+       */
       isDirty(){
         return !!this.dirtyContainers.length;
+      },
+      /**
+       * The master bbn-router of this one.
+       * @computed itsMaster
+       * @return {Vue}
+       */
+      itsMaster(){
+        if ( this.master ){
+          return this;
+        }
+        return bbn.fn.get_row(this.parents, {master: true})
+      },
+      /**
+       * Returns the bbn-tabs component of this router
+       * @computed itsTabs
+       * @fires getRef
+       * @return {Vue|Boolean}
+       */
+      itsTabs(){
+        if ( !this.isBreadcrumb ){
+          return this.getRef('tabs');
+        }
+        return false;
+      },
+      /**
+       * Returns the bbn-breadcrumb component of this router
+       * @computed itsBreadcrumb
+       * @fires getRef
+       * @return {Vue|Boolean}
+       */
+      itsBreadcrumb(){
+        if ( this.isBreadcrumb ){
+          return this.getRef('breadcrumb');
+        }
+        return false;
+      },
+      /**
+       * Returns the master breadcrumb component for this router
+       * @computed itsMasterBreadcrumb
+       * @return {Vue|Boolean}
+       */
+      itsMasterBreadcrumb(){
+        if ( this.isBreadcrumb && this.itsMaster ){
+          return this.itsMaster.getRef('breadcrumb');
+        }
+        return false;
+      },
+      /**
+       * The switch's menu.
+       * @computed mainMenu
+       * @return {Array}
+       */
+      mainMenu(){
+        return [{
+          text: bbn._('Switch to ') + (this.isBreadcrumb ? bbn._('tabs') : bbn._('breadcrumb')) + ' ' + bbn._('mode'),
+          key: 'switch',
+          action: () => {
+            this.isBreadcrumb = !this.isBreadcrumb;
+          }
+        }];
+      },
+      /**
+       * The final Vue object for the active container (if it has sub-router)
+       * @computed activeRealContainer
+       * @fires getRealVue
+       * @return {Vue|Boolean}
+       */
+      activeRealContainer(){
+        if ( bbn.fn.isNumber(this.selected) ){
+          return this.getRealVue(this.selected);
+        }
+        return false;
+      },
+      /**
+       * The last router
+       * @computed activeRouter
+       * @fires getSubRouter
+       * @return {Vue}
+       */
+      activeRouter(){
+        if ( this.activeContainer ){
+          let sub = this.getSubRouter(this.selected);
+          if ( bbn.fn.isVue(sub) ){
+            return sub.activeRouter;
+          }
+        }
+        return this;
       }
     },
 
     methods: {
       /**
        * Function used by container to make themselves known when they are mounted
-       *
+       * @method register
        * @param {Vue} cp
+       * @param {Boolean} fake
+       * @fires add
+       * @fires search
+       * @fires route
+       * @fires getDefaultURL
        */
       register(cp, fake){
         if ( fake ){
@@ -168,7 +454,9 @@
       },
       /**
        * Function used by container to make themselves known when they are destroyed
-       *
+       * @method unregister
+       * @fires search
+       * @fires remove
        * @param {Vue} cp
        */
       unregister(cp){
@@ -185,27 +473,12 @@
           this.remove(idx);
         }
       },
-
-      retrieveDirtyContainers(){
-      // Array of unsaved views
-        let r = []
-        bbn.fn.iterate(this.urls, (v) => {
-          if ( v.dirty ){
-            r.push({
-              idx: v.idx,
-              url: v.url
-            });
-          }
-        });
-        this.dirtyContainers = r;
-        this.dirty = this.dirtyContainers.length > 0;
-      },
-
       /**
        * Given a URL returns the existing path of a corresponding view or false, or the default view if forced
-       *
+       * @method getRoute
        * @param {String} url
        * @param {Boolean} force
+       * @fires parseURL
        * @returns {String|false}
        */
       getRoute(url, force){
@@ -242,7 +515,7 @@
 
       /**
        * Formats a baseURL correctly (without 1st slash and with end slash
-       *
+       * @method setBaseURL
        * @param {String} baseURL
        * @returns {String}
        */
@@ -255,7 +528,11 @@
         }
         return baseURL ? baseURL + '/' : '';
       },
-
+      /**
+       * Returns the default object for the view.
+       * @method getDefaultView
+       * @return {Object}
+       */
       getDefaultView(){
         return {
           source: null,
@@ -288,35 +565,15 @@
           events: {}
         };
       },
-
-      /*
-      observerEmit(newVal, obs){
-        bbn.fn.log("OBS EMIT", newVal, obs);
-        let ele = $(".bbn-observer-" + obs.element, this.$el);
-        if ( ele.length ){
-          let idx = this.getIndex(ele);
-          if ( idx !== false ){
-            let i = bbn.fn.search(this.observers, {id: obs.id, element: obs.element});
-            if ( (i > -1) && (this.observers[i].value !== newVal) ){
-              if ( idx === this.selected ){
-                this.$emit('bbnObs' + obs.element + obs.id, newVal);
-                this.observers[i].value = newVal;
-              }
-              else{
-                this.observers[i].value = newVal;
-                this.$set(this.views[idx].events, 'bbnObs' + obs.element + obs.id, newVal);
-              }
-            }
-          }
-        }
-      },
-      */
-
       /**
        * Sends event beforeRoute (cancellable) and launch real routing
-       *
+       * @method route
        * @param {String} url
        * @param {Boolean} force
+       * @fires realRoute
+       * @fires getRoute
+       * @fires load
+       * @emit beforeRoute
        * @returns {void}
        */
       route(url, force){
@@ -381,13 +638,14 @@
           }
         }
       },
-
       /**
        * Route the router!
-       *
+       * @method realRoute
        * @param {String} url The URL to route to
        * @param {String} st The URL/key of the container on which we will route
        * @param {Boolean} force
+       * @fires activate
+       * @emit route1
        */
       realRoute(url, st, force){
         if (!bbn.fn.isString(url) && !bbn.fn.isNumber(url)){
@@ -424,9 +682,10 @@
           }
         }
       },
-
       /**
        * Route to the next view if any
+       * @method next
+       * @fires activateIndex
        */
       next(force){
         let next = this.selected+1;
@@ -437,9 +696,10 @@
           this.activateIndex(next);
         }
       },
-
       /**
        * Route to the previous view if any
+       * @method prev
+       * @fires activateIndex
        */
       prev(force){
         let prev = this.selected-1;
@@ -450,36 +710,9 @@
           this.activateIndex(prev);
         }
       },
-
-      /**
-       * Looks for a subrouter and route through it if found.
-       *
-       * @param container
-       */
-      updateView(container){
-        return;
-        // Looking for a subrouter in the activated container
-        let subRouter = this.getSubRouter();
-        if ( subRouter ){
-          // If so routing also this container
-          //bbn.fn.log("FROM UPDATEVIEW");
-          subRouter.route(container.currentURL);
-        }
-        else{
-          //bbn.fn.log(container);
-          if ( this.$children.length && !this.currentURL && this.auto ){
-            //bbn.fn.log("ROUTING " + this.url + " FROM METHOD UPDATEVIEW");
-            this.route(this.url, true);
-          }
-          else{
-            //bbn.fn.log("NOT ROUTING " + this.currentURL + " NOR " + this.url + "FROM METHOD UPDATEVIEW");
-          }
-        }
-      },
-
       /**
        * Shows the container with the corresponding URL and hide all others.
-       *
+       * @method activate
        * @param url
        * @param container
        */
@@ -511,14 +744,13 @@
         }
         //bbn.fn.log("ACTIVATED " + url + " AND ACTIVATED CONTAINER BELOW:", this.activeContainer);
       },
-
       /**
-       * Function triggered every time a container is shown (at the start of the animation) to change the URL if needed.
+       * @method changeURL
+       * @param {String} url
+       * @param {String} title
+       * @param {Boolean} replace
+       * @fires getFullBaseURL
        */
-      enter(container){
-        //bbn.fn.log("THE CONTAINER WILL BE SHOWN: ", container);
-      },
-
       changeURL(url, title, replace){
         if (!bbn.fn.isString(url) ){
           throw Error(bbn._('The component bbn-container must have a valid URL defined'));
@@ -554,29 +786,27 @@
           bbn.fn.setNavigationVars(this.getFullBaseURL() + url, title, {}, replace);
         }
       },
-
       /**
        * Returns the baseURL property.
-       *
-       * @returns {string}
+       * @method getBaseURL
+       * @returns {String}
        */
       getBaseURL(){
         return this.baseURL;
       },
-
       /**
        * Returns a string of all the baseURL properties till root.
-       *
-       * @returns {string}
+       * @method getFullBaseURL
+       * @returns {String}
        */
       getFullBaseURL(){
         return this.fullBaseURL;
       },
-
       /**
        * Returns the full URL from the root router (without the hostname)
-       *
-       * @returns {string}
+       * @method getFullURL
+       * @fires getFullBaseURL
+       * @returns {String}
        */
       getFullURL(){
         let url = this.getURL();
@@ -585,20 +815,20 @@
         }
         return '';
       },
-
       /**
        * Returns the current URL of the current router
-       *
-       * @returns {string}
+       * @method getCurrentURL
+       * @returns {String}
        */
       getCurrentURL(){
         return this.currentURL;
       },
-
       /**
        * Returns the full current URL from the root router (without the hostname)
-       *
-       * @returns {string}
+       * @method getFullCurrentURL
+       * @fires getCurrentURL
+       * @fires getFullBaseURL
+       * @returns {String|Boolean}
        */
       getFullCurrentURL(){
         let url = this.getCurrentURL();
@@ -607,12 +837,11 @@
         }
         return false;
       },
-
       /**
        * Returns the url relative to the current tabNav from the given url.
-       *
+       * @method parseURL
        * @param fullURL
-       * @returns {string}
+       * @returns {String}
        */
       parseURL(fullURL){
         let url = fullURL;
@@ -640,22 +869,33 @@
         //bbn.fn.log("PARSING " + url + ' INTO ' + fullURL + ' with a baseURL like this: ' + this.fullBaseURL);
         return fullURL;
       },
-
+      /**
+       * @method isValidIndex
+       * @return {Boolean}
+       */
       isValidIndex(idx){
         return (typeof idx === 'number') && (this.views[idx] !== undefined);
       },
-
       /**
        * Activates the default view, or the first one if no default
+       * @method activateDefault
+       * @fires getIndex
+       * @fires isValidIndex
+       * @fires activate
        */
       activateDefault(){
-        let idx = vm.getIndex('', true);
+        let idx = this.getIndex('', true);
         if ( this.isValidIndex(idx) ){
           //bbn.fn.log("ACTIVATE6", this.views[idx].current ? this.views[idx].current : this.views[idx].url);
           this.activate(this.views[idx].current ? this.views[idx].current : this.views[idx].url);
         }
       },
-
+      /**
+       * @method activateIndex
+       * @param {Number} idx
+       * @fires isValidIndex
+       * @fires route
+       */
       activateIndex(idx){
         if ( this.isValidIndex(idx) ){
           if ( this.urls[this.views[idx].url] ){
@@ -666,7 +906,11 @@
           }
         }
       },
-
+      /**
+       * @method getVue
+       * @fires isValidIndex
+       * @return {Vue|Boolean}
+       */
       getVue(idx){
         if ( idx === undefined ){
           idx = this.selected;
@@ -676,15 +920,25 @@
         }
         return false;
       },
-
-      // Returns the corresponding container's component's DOM element
+      /**
+       * Returns the corresponding container's component's DOM element
+       * @method getContainer
+       * @param {Number} idx
+       * @return {Vue}
+       */
       getContainer(idx){
         if ( idx === undefined ){
           idx = this.selected;
         }
         return this.urls[this.views[idx].url];
       },
-      // Returns the corresponding container's component's DOM element
+      /**
+       * Returns the corresponding container's component's DOM element
+       * @method getDOMContainer
+       * @param {Number} idx
+       * @fires getVue
+       * @return {HTMLElement|Boolean}
+       */
       getDOMContainer(idx){
         if ( idx === undefined ){
           idx = this.selected;
@@ -692,8 +946,14 @@
         let c = this.getVue(idx);
         return c ? c.$el : false;
       },
-
-      // Returns the next router in the corresponding container if there's any
+      /**
+       * Returns the next router in the corresponding container if there's any
+       * @method getSubRouter
+       * @param misc
+       * @fires getIndex
+       * @fires getvue
+       * @return {Vue|null}
+       */
       getSubRouter(misc){
         let idx = this.getIndex(misc);
         if ( idx === undefined ){
@@ -705,24 +965,36 @@
         }
         return null;
       },
-
+      /**
+       * @method getRealVue
+       * @param misc
+       * @fires getIndex
+       * @fires getSubRouter
+       * @fires getVue
+       * @return {Vue}
+       */
       getRealVue(misc){
-        let idx = this.getIndex(misc);
-        let tabnav = this,
-            sub = tabnav;
+        let idx = this.getIndex(misc),
+            router = this,
+            sub = router;
         if ( idx === undefined ){
           idx = this.selected;
         }
-        while ( tabnav ){
-          tabnav = sub.getSubRouter(idx);
-          if ( tabnav ){
-            sub = tabnav;
+        while ( router ){
+          router = sub.getSubRouter(idx);
+          if ( router ){
+            sub = router;
             idx = sub.selected;
           }
         }
         return sub.getVue(idx);
       },
-
+      /**
+       * @method getIndex
+       * @fires isValidIndex
+       * @fires search
+       * @return {Number|Boolean}
+       */
       getIndex(misc){
         if ( !this.views.length ){
           return false;
@@ -756,45 +1028,41 @@
         }
         return this.isValidIndex(misc) ? misc : false;
       },
-
+      /**
+       * @method remove
+       * @param misc
+       * @param force
+       * @fires getIndex
+       * @fires remove
+       * @emit close
+       * @return {Boolean}
+       */
       remove(misc, force){
         let idx = this.getIndex(misc);
-        if (idx > -1) {
-          if (this.views[idx].slot) {
-            let t = this.views.splice(idx, 1);
-            delete this.urls[t.url];
-            bbn.fn.each(this.views, (v, i) => {
-              if ( v.idx !== i ){
-                v.idx = i;
-                if (this.urls[v.url]) {
-                  this.urls[v.url].currentIndex = i;
-                }
+        if ( idx > -1 ){
+          let ev = new Event('close', {cancelable: !force});
+          if (
+            this.isDirty &&
+            this.views[idx].dirty &&
+            !ev.defaultPrevented &&
+            !force
+          ){
+            ev.preventDefault();
+            this.confirm(this.confirmLeave, () => {
+              let forms = this.urls[this.views[idx].url].findAll('bbn-form');
+              if ( Array.isArray(forms) && forms.length ){
+                bbn.fn.each(forms, (f, k) => {
+                  f.reset();
+                });
               }
+              this.$nextTick(() => {
+                this.$emit('close', idx, ev);
+                this.close(idx, true);
+              });
             });
           }
           else {
-            let ev = new Event('close', {cancelable: true});
-            if ( this.isDirty &&
-              this.views[idx].dirty &&
-              !ev.defaultPrevented &&
-              !force
-            ){
-              ev.preventDefault();
-              this.confirm(this.confirmLeave, () => {
-                let forms = this.urls[this.views[idx].url].findAll('bbn-form');
-                if ( Array.isArray(forms) && forms.length ){
-                  bbn.fn.each(forms, (f, k) => {
-                    f.reset();
-                  });
-                }
-                this.$nextTick(() => {
-                  this.$emit('close', idx, ev);
-                  this.remove(idx, true);
-                });
-              });
-            }
-            this.$emit('close', idx, ev);
-            if (force || !ev.defaultPrevented) {
+            if (this.views[idx].slot) {
               let t = this.views.splice(idx, 1);
               delete this.urls[t.url];
               bbn.fn.each(this.views, (v, i) => {
@@ -806,12 +1074,37 @@
                 }
               });
             }
-            return true;
+            else {
+              if ( !force ){
+                this.$emit('close', idx, ev);
+              }
+              if (force || !ev.defaultPrevented) {
+                let t = this.views.splice(idx, 1);
+                delete this.urls[t.url];
+                bbn.fn.each(this.views, (v, i) => {
+                  if ( v.idx !== i ){
+                    v.idx = i;
+                    if (this.urls[v.url]) {
+                      this.urls[v.url].currentIndex = i;
+                    }
+                  }
+                });
+              }
+              return true;
+            }
           }
         }
         return false;
       },
-
+      /**
+       * @method add
+       * @param {Object} obj
+       * @param {Number} idx
+       * @fires getFullBaseURL
+       * @fires search
+       * @fires isValidIndex
+       * @fires getDefaultView
+       */
       add(obj, idx){
         //bbn.fn.log("INDEX: ", idx);
         let index;
@@ -913,7 +1206,11 @@
           }
         }
       },
-
+      /**
+       * @method search
+       * @param {String} url
+       * @return {Number|Boolean}
+       */
       search(url){
         if (!bbn.fn.isString(url) ){
           throw Error(bbn._('The component bbn-container must have a valid URL defined'));
@@ -929,7 +1226,13 @@
         }
         return r > -1 ? r : false;
       },
-
+      /**
+       * @method callRouter
+       * @param {String} url
+       * @param st
+       * @fires getFullBaseURL
+       * @fires realRoute
+       */
       callRouter(url, st){
         if (!bbn.fn.isString(url) ){
           throw Error(bbn._('The component bbn-container must have a valid URL defined'));
@@ -944,12 +1247,18 @@
         else{
           this.realRoute(url, st, true);
         }
-
       },
-
+      /**
+       * @method searchContainer
+       * @param {String} url
+       * @param {Boolean} deep
+       * @fires search
+       * @fires getContainer
+       * @return {Vue|Boolean}
+       */
       searchContainer(url, deep){
-        let container  = false;
-        let idx = this.search(url);
+        let container  = false,
+            idx = this.search(url);
         if (idx !== false) {
           container = this.getContainer(idx);
           if (deep && container) {
@@ -964,7 +1273,18 @@
         }
         return container;
       },
-
+      /**
+       * @method load
+       * @param {String} url
+       * @param {Boolean} force
+       * @fires search
+       * @fires add
+       * @fires parseURL
+       * @fires callRouter
+       * @fires navigate
+       * @fires activate
+       * @emit update
+      */
       load(url, force){
         if ( url ){
           this.isLoading = true;
@@ -1045,16 +1365,21 @@
               }
               this.$nextTick(() => {
                 this.add(bbn.fn.extend(view || {}, d, {slot: false, loading: false, load: true, real: false, loaded: true}), idx);
+                bbn.fn.log('added')
                 setTimeout(() => {
                   if ( !this.urls[d.url] ){
                     throw new Error(bbn._("Impossible to find the container for URL") + ' ' + d.url);
                   }
                   //bbn.fn.log("LOADED " + d.url, url);
                   this.urls[d.url].setLoaded(true);
+                  bbn.fn.log('setLoaded')
                   // Otherwise the changes we just did on the props wont be taken into account at container level
                   this.urls[d.url].init();
+                  bbn.fn.log('init')
                   this.callRouter(d.current, d.url);
+                  bbn.fn.log('callRouter')
                   this.$emit('update', this.views);
+                  bbn.fn.log('update')
                 })
               })
             },
@@ -1067,7 +1392,7 @@
                 this.views.splice(this.urls[url].idx, 1);
                 delete this.urls[url];
               }
-              this.navigate(url);
+              //this.navigate(url);
               this.activate(url);
             },
             () => {
@@ -1076,7 +1401,11 @@
           );
         }
       },
-
+      /**
+       * @method reload
+       * @param {Number} idx
+       * @fires route
+       */
       reload(idx){
         if (
           this.views[idx] &&
@@ -1095,7 +1424,11 @@
           })
         }
       },
-
+      /**
+       * @method getDefaultURL
+       * @fires parseURL
+       * @return {String}
+       */
       getDefaultURL(){
         // If there is a parent router we automatically give the proper baseURL
         if ( this.url ){
@@ -1109,7 +1442,11 @@
         }
         return this.parseURL(bbn.env.path);
       },
-
+      /**
+       * @method getTitle
+       * @param {Number} idx
+       * @return {String}
+       */
       getTitle(idx){
         let cp = this,
             res = '';
@@ -1120,12 +1457,12 @@
           res += (cp.views[idx].title || bbn._('Untitled'));
           if ( cp.parentTab ){
             idx = cp.parentTab.idx;
-            cp = cp.parentTab.tabNav;
+            cp = cp.parentTab.router;
             while ( cp ){
               res += ' < ' + (cp.views[idx].title || bbn._('Untitled'));
               if ( cp.parentTab ){
                 idx = cp.parentTab.idx;
-                cp = cp.parentTab.tabNav;
+                cp = cp.parentTab.router;
               }
               else{
                 cp = false;
@@ -1137,8 +1474,380 @@
         res += bbn.env.siteTitle || bbn._("Untitled site")
         return res;
       },
+      /**
+       * Sets the 'dirtyContainers' property with the list of unsaved views
+       * @method retrieveDirtyContainers
+       */
+      retrieveDirtyContainers(){
+        let r = []
+        bbn.fn.iterate(this.urls, (v) => {
+          if ( v.dirty ){
+            r.push({
+              idx: v.idx,
+              url: v.url
+            });
+          }
+        });
+        this.$set(this, 'dirtyContainers', r);
+      },
+      /**
+       * @method getMenuFn
+       * @param {Number} idx
+       * @fires getSubRouter
+       * @fires getVue
+       * @fires reload
+       * @return {Array|Boolean}
+       */
+      getMenuFn(idx){
+        if ( !this.nav || !this.views[idx]  || (this.views[idx].menu === false) ){
+          return false;
+        }
+        let items = [],
+            tmp = ((bbn.fn.isFunction(this.views[idx].menu) ? this.views[idx].menu() : this.views[idx].menu) || []).slice(),
+            others = false;
+        bbn.fn.each(this.views, (a, i) => {
+          if ( (i !== idx) && !a.static ){
+            others = true;
+            return false;
+          }
+        });
+        if ( !this.views[idx].help ){
+          let sub = this.getSubRouter(idx);
+          if ( sub && sub.views && sub.views.length ){
+            let helps = [];
+            sub.views.forEach((a) => {
+              if ( a.help ){
+                helps.push({
+                  url: sub.fullBaseURL + a.url,
+                  content: a.help,
+                  title: a.title || a.url,
+                  anchor: bbn.fn.randomString(15, 20).toLowerCase()
+                });
+              }
+            });
+            if ( helps.length === 1 ){
+              this.views[idx].help = helps[0].content;
+            }
+            else if ( helps.length ){
+              this.views[idx].help = '';
+              let slide1 = '';
+              helps.forEach((a) => {
+                slide1 += '<h1><a href="#' + a.anchor + '">' + a.title + '</a></h1>\n';
+                this.views[idx].help += '---slide---' + '\n<a name="' + a.anchor + '">\n' + a.content;
+              });
+              this.views[idx].help = slide1 + this.views[idx].help;
+            }
+          }
+        }
+        if ( this.views[idx].help ){
+          items.push({
+            text: bbn._("Help"),
+            key: "help",
+            icon: "nf nf-mdi-help_circle_outline",
+            action: () => {
+              let view = this.getVue(idx),
+                  span = document.createElement('span');
+              span.innerHTML =  this.views[idx].title;
+              let title = span.innerText;
+              if ( !title && span.querySelector("[title]").length ){
+                title = span.querySelector("[title]").getAttribute("title");
+              }
+              view.getPopup().open({
+                scrollable: false,
+                component: {
+                  props: ['source'],
+                  template: `
+                  <bbn-slideshow :source="source.content"
+                                 class="bbn-bg-webblue bbn-white"
+                                 separator="---slide---"></bbn-slideshow>`
+                },
+                source: {
+                  content: this.views[idx].help
+                },
+                title: '<i class="bbn-large nf nf-mdi-help_circle_outline"> </i> <span class="bbn-iblock">' + title + '</span>',
+                width: '90%',
+                height: '90%'
+              });
+            }
+          })
+        }
+        if ( this.autoload ){
+          items.push({
+            text: bbn._("Reload"),
+            key: "reload",
+            icon: "nf nf-mdi-sync",
+            action: () => {
+              this.reload(idx);
+            }
+          });
+        }
+        items.push({
+          text: bbn._("Enlarge"),
+          key: "enlarge",
+          icon: "nf nf-mdi-arrow_expand_all",
+          action: () => {
+            this.getVue(idx).fullScreen = true;
+          }
+        });
+        if ( tmp && tmp.length ){
+          bbn.fn.each(tmp, (a, i) => {
+            items.push(a)
+          })
+        }
+        if ( this.views[idx].icon && this.views[idx].title && !this.isBreadcrumb ){
+          items.push({
+            text: this.views[idx].notext ? bbn._("Show text") : bbn._("Show only icon"),
+            key: "notext",
+            icon: this.views[idx].notext ? "nf nf-fa-font" : "nf nf-fa-font_awesome",
+            action: () => {
+              //bbn.fn.log(this.containers[idx]);
+              this.views[idx].notext = !this.views[idx].notext;
+              this.$forceUpdate();
+            }
+          });
+        }
+        if ( !this.views[idx].static ){
+          if ( this.isBreadcrumb ){
+            items.push({
+              text: bbn._("Close"),
+              key: "close",
+              icon: "nf nf-mdi-close",
+              action: () => {
+                this.getRef('breadcrumb').close(idx);
+              }
+            });
+          }
+          else {
+            if ( !this.views[idx].pinned ){
+              items.push({
+                text: bbn._("Pin"),
+                key: "pin",
+                icon: "nf nf-mdi-pin",
+                action: () => {
+                  this.getRef('tabs').pin(idx);
+                }
+              });
+              items.push({
+                text: bbn._("Close"),
+                key: "close",
+                icon: "nf nf-mdi-close",
+                action: () => {
+                  this.getRef('tabs').close(idx);
+                }
+              })
+            }
+            else{
+              items.push({
+                text: bbn._("Unpin"),
+                key: "pin",
+                icon: "nf nf-mdi-pin_off",
+                action: () => {
+                  this.getRef('tabs').unpin(idx);
+                }
+              });
+            }
+          }
+        }
+        if ( others ){
+          items.push({
+            text: bbn._("Close Others"),
+            key: "close_others",
+            icon: "nf nf-mdi-close_circle_outline",
+            action: () => {
+              this.getRef(this.isBreadcrumb ? 'breadcrumb' : 'tabs').closeAllBut(idx);
+            }
+          })
+        }
+        if ( others && !this.views[idx].static ){
+          items.push({
+            text: bbn._("Close All"),
+            key: "close_all",
+            icon: "nf nf-mdi-close_circle",
+            action: () => {
+              this.getRef(this.isBreadcrumb ? 'breadcrumb' : 'tabs').closeAll();
+            }
+          })
+        }
+        let menu = bbn.fn.isArray(this.menu) ? this.menu : this.menu(this.views[idx], this);
+        if (menu.length) {
+          bbn.fn.each(menu, a => {
+            items.push(a);
+          });
+        }
+        return items;
+      },
+      /**
+       * @method close
+       * @param {Number} idx
+       * @param {Boolean} force
+       * @param {Event} ev
+       * @fires remove
+       * @fires getIndex
+       * @fires activateIndex
+       * @fires setConfig
+       * @return {Boolean}
+       */
+      close(idx, force, ev){
+        if ( ev ){
+          ev.preventDefault();
+        }
+        let res = this.remove(idx, force);
+        if ( res && (this.selected > idx) ){
+          this.selected--;
+        }
+        else if ( res && (this.selected === idx) ){
+          this.selected = false;
+          if ( this.views.length ){
+            bbn.fn.each(this.history, (a) => {
+              let tmp = this.getIndex(a);
+              if ( tmp !== false ){
+                idx = tmp;
+                return false;
+              }
+            });
+            this.activateIndex(this.views[idx] ? idx : idx - 1);
+          }
+        }
+        this.$nextTick(() => {
+          this.setConfig();
+        })
+        return res;
+      },
+      /**
+       * @method setconfig
+       * @fires setStorage
+       * @fires getConfig
+       */
+      setConfig(){
+        if ( this.autoload && this.isInit ){
+          this.setStorage(this.getConfig(), this.parentContainer ? this.parentContainer.getFullURL() : this.storageName);
+          this.$forceUpdate();
+        }
+      },
+      /**
+       * @method getConfig
+       * @return {Object}
+       */
+      getConfig(){
+        let cfg = {
+              baseURL: this.parentContainer ? this.parentContainer.getFullURL() : this.storageName,
+              views: [],
+              breadcrumb: this.isBreadcrumb
+            };
+        bbn.fn.each(this.views, (obj, i) => {
+          if ( obj.url && obj.load ){
+            let res = {
+              url: obj.url,
+              icon: obj.icon || false,
+              notext: obj.notext || false,
+              load: true,
+              loaded: false,
+              title: obj.title ? obj.title : bbn._('Untitled'),
+              static: !!obj.static,
+              pinned: !!obj.pinned,
+              current: obj.current ? obj.current : obj.url,
+              cfg: {}
+            };
+            if ( obj.bcolor ){
+              res.bcolor = obj.bcolor;
+            }
+            if ( obj.fcolor ){
+              res.fcolor = obj.fcolor;
+            }
+            cfg.views.push(res);
+          }
+        });
+        return cfg;
+      },
+      /**
+       * @method unsetConfig
+       * @fires unsetStorage
+       */
+      unsetConfig(){
+        if ( this.autoload ){
+          this.unsetStorage(this.parentContainer ? this.parentContainer.getFullURL() : this.storageName);
+        }
+      },
+      /*
+      observerEmit(newVal, obs){
+        bbn.fn.log("OBS EMIT", newVal, obs);
+        let ele = $(".bbn-observer-" + obs.element, this.$el);
+        if ( ele.length ){
+          let idx = this.getIndex(ele);
+          if ( idx !== false ){
+            let i = bbn.fn.search(this.observers, {id: obs.id, element: obs.element});
+            if ( (i > -1) && (this.observers[i].value !== newVal) ){
+              if ( idx === this.selected ){
+                this.$emit('bbnObs' + obs.element + obs.id, newVal);
+                this.observers[i].value = newVal;
+              }
+              else{
+                this.observers[i].value = newVal;
+                this.$set(this.views[idx].events, 'bbnObs' + obs.element + obs.id, newVal);
+              }
+            }
+          }
+        }
+      },
+      */
+     /**
+      * @method observerEmit
+      * @param newVal
+      * @param obs
+      * @fires getIndex
+      */
+      observerEmit(newVal, obs){
+        if ( bbn.vue.observerComponent.methods.observerEmit.apply(this, [newVal, obs]) ){
+          let ele = this.$el.querySelector(".bbn-observer-" + obs.element);
+          if ( ele ){
+            let idx = this.getIndex(ele);
+            if ( idx !== false ){
+              this.$set(this.views[idx].events, 'bbnObs' + obs.element + obs.id, newVal);
+              this.$nextTick(() => {
+                this.$forceUpdate();
+              });
+            }
+          }
+        }
+      },
+      /**
+       * Function triggered every time a container is shown (at the start of the animation) to change the URL if needed.
+       * @method enter
+       * @param container
+       */
+      enter(container){
+        //bbn.fn.log("THE CONTAINER WILL BE SHOWN: ", container);
+      },
     },
 
+    /**
+     * @event created
+     */
+    created(){
+      /**
+       * @event route
+       * @fires setconfig
+       */
+      this.$on('route', url => {
+        if ( this.nav ){
+          this.setConfig();
+          let i = this.history.indexOf(url);
+          if ( i > -1 ){
+            this.history.splice(i, 1);
+          }
+          this.history.unshift(url);
+          while ( this.history.length > this.historyMaxLength ){
+            this.history.pop();
+          }
+        }
+      });
+    },
+    /**
+     * @event mounted
+     * @fires getStorage
+     * @fires getDefaultURL
+     * @fires aadd
+     */
     mounted(){
       // All routers above (which constitute the fullBaseURL)
       this.parents = this.ancesters('bbn-router');
@@ -1158,10 +1867,9 @@
         window.addEventListener("beforeunload", e =>{
           e = e || window.event;
           //if ( $(".bbn-tabnav-unsaved").length ){
-          if ( this.dirty ){
+          if ( this.isDirty ){
             // doesn't use that string but a default string...
             let st = bbn._('You have unsaved data, are you sure you want to leave?');
-
             // For IE and Firefox prior to version 4
             if (e) {
               e.returnValue = st;
@@ -1193,6 +1901,7 @@
           }
         }
       }
+
       bbn.fn.each(this.source, (a) => {
         if (a.url === '') {
           if (a.load) {
@@ -1202,6 +1911,26 @@
         }
         tmp.push(bbn.fn.extendOut(a, {slot: false}));
       });
+
+      //Get config from the storage
+      let storage = this.getStorage(this.parentContainer ? this.parentContainer.getFullURL() : this.storageName);
+      if ( storage ){
+        if ( storage.breadcrumb !== undefined ){
+          this.isBreadcrumb = storage.breadcrumb;
+        }
+        if ( storage.views ){
+          bbn.fn.each(storage.views, (a) => {
+            let idx = bbn.fn.search(tmp, {url: a.url});
+            if ( idx > -1 ){
+              bbn.fn.extend(tmp[idx], a);
+            }
+            else{
+              tmp.push(a);
+            }
+          });
+        }
+      }
+
       let url = this.getDefaultURL();
       bbn.fn.each(tmp, (a) => {
         if (!bbn.fn.isString(a.url)) {
@@ -1214,8 +1943,14 @@
       });
       this.ready = true;
     },
-
     watch: {
+      /**
+       * @watch currentURL
+       * @fires changeURL
+       * @fires search
+       * @emit change
+       * @emit route
+       */
       currentURL(newVal, oldVal){
         if ( this.ready ){
           this.$nextTick(() => {
@@ -1232,19 +1967,65 @@
             this.$emit('change', newVal);
           });
           this.$emit('route', newVal);
-          
         }
       },
+      /**
+       * @watch url
+       * @fires route
+       */
       url(newVal){
         if ( this.ready ){
           //bbn.fn.log("ROUTER change URL", newVal);
           this.route(newVal);
         }
       },
-      dirty(v){
-        if (this.parentContainer) {
+      /**
+       * @watch dirty
+       */
+      isDirty(v){
+        if ( this.parentContainer ) {
           this.parentContainer.dirty = v;
         }
+      },
+      /**
+       * @watch selected
+       */
+      selected(newVal, oldVal){
+        /* if ( this.nav && (newVal !== oldVal) && bbn.fn.isNumber(newVal) ){
+          let nav = this.itsTabs || this.itsBreadcrumb;
+          if ( bbn.fn.isVue(nav) ){
+            nav.selected = newVal;
+          }
+        } */
+      },
+      /**
+       * @watch itsMaster
+       * @fires breadcrumbWatcher
+       */
+      itsMaster(newVal, oldVal){
+        if ( this.nav && (newVal !== oldVal) ){
+          this.isBreadcrumb = newVal ? newVal.isBreadcrumb : this.breadcrumb;
+          if ( this.breadcrumbWatcher ){
+            this.breadcrumbWatcher();
+          }
+          if ( newVal ){
+            /**
+             * @watch itsMaster.isBreadcrumb
+             */
+            this.breadcrumbWatcher = this.$watch('itsMaster.isBreadcrumb', isB => {
+              this.isBreadcrumb = isB;
+            });
+          }
+        }
+      },
+      /**
+       * @watch isBreadcrumb
+       * @fires setConfig
+       */
+      isBreadcrumb(newVal){
+        this.$nextTick(() => {
+          this.setConfig();
+        })
       }
     }
   });

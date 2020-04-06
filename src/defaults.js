@@ -7,7 +7,7 @@
         clipboard: false,
         header: false,
         status: false,
-        tabnav: false,
+        nav: false,
         root: '',
         pollerPath: 'core/poller',
         logo: 'https://bbn.solutions/logo.png',

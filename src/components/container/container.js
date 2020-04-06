@@ -58,49 +58,41 @@
       return {
         /**
          * True if the container is visible.
-         * 
          * @data {Boolean} [false] isVisible
          */
         isVisible: false,
         /**
          * The router which the container belongs to if it exists.
-         * 
          * @data [null] router
          */
         router: null,
         /**
          * True if the container shows.
-         * 
          * @data {Boolean} [false] visible
          */
         visible: false,
         /**
          * True if the data changes and is unsaved.
-         * 
          * @data {Boolan} [false] dirty
          */
         dirty: false,
         /**
          * True if the container is a componenent.
-         * 
          * @data [null] isComponent
          */
         isComponent: null,
         /**
          * True if the container is fullscreen.
-         * 
          * @data {Boolean} [false] fullScreen
          */
         fullScreen: false,
         /**
          * A random unique component name.
-         * 
          * @data {String} [this.randomName()] componentName
          */
         componentName: this.randomName(),
         /**
          * The array containing popup objects.
-         * 
          * @data {Array} [[]] popups
          */
         popups: [],
@@ -110,31 +102,26 @@
         isComponentActive: false,
         /**
          * True when the component finishes loading.
-         * 
          * @data {Boolean} isLoaded
          */
         isLoaded: !this.load || this.loaded,
         /**
          * True if the container is pinned.
-         * 
          * @data {Boolean} isPinned
          */
         isPinned: this.pinned,
         /**
          * True if the container is static.
-         * 
          * @data {Boolean} isStatic
          */
         isStatic: this.static,
         /**
          * The index of the container.
-         * 
          * @data {Number} currentIndex
          */
         currentIndex: this.idx,
         /**
          * The current url.
-         * 
          * @data {String} currentURL
          */
         currentURL: this.current || this.url,
@@ -563,7 +550,6 @@
       },
       /**
        * If true adds the event listener keydown, or else removes the event listener.
-       * 
        * @watch fullScreen
        * @param {Boolean} newVal 
        * @fires selfEmit

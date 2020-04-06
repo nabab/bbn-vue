@@ -1,16 +1,11 @@
 /**
  * @file bbn-tree component
- *
  * @description bbn-tree is the component that is easily implemented by allowing data to be displayed hierarchically using a tree structure.
  * The component can contain the data loaded only once or it can be created dynamically by making ajax calls, it also allows (after a correct configuration) to perform operations on them, for example drag & drop.
- *
  * @copyright BBN Solutions
- *
  * @author BBN Solutions
- *
- * @created 10/02/2017. 
+ * @created 10/02/2017
  */
-
 
 (function(bbn){
   "use strict";
@@ -19,8 +14,8 @@
 
   Vue.component('bbn-tree', {
     /**
-     * @mixin bbn.vue.basicComponent 
-     * @mixin bbn.vue.localStorageComponent 
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.localStorageComponent
      */
     mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent],
     props: {
@@ -230,7 +225,6 @@
       },
       value: {}
     },
-
     data(){
       let items = [];
       let isAjax = false;
@@ -352,7 +346,6 @@
         currentSelectedValues: []
       };
     },
-
     computed: {
       /**
        * @computed droppableTrees
@@ -368,12 +361,11 @@
         return r;
       }
     },
-
     methods: {
       /**
        * Normalize the list of items basing on it's type
        * @method _objectMapper
-       * @param {Array|Object} items 
+       * @param {Array|Object} items
        * @return {Object}
        */
       _objectMapper(items){
@@ -651,8 +643,6 @@
         }
         return menu;
       },
-
-      
       /**
        * Returns an object with the data to send for a given node.
        * If UID has been given obj will only have this prop other the whole data object
@@ -685,11 +675,10 @@
         }
         return r;
       },
-
       /**
        * Makes an object out of the given properties, adding to data all non existing props
        * @method normalize
-       * @param {Object} obj 
+       * @param {Object} obj
        * @return {Boolean|Object}
        */
       normalize(obj){
@@ -711,7 +700,6 @@
         }
         return false;
       },
-
       /**
        * Manages the key navigation inside the tree
        * @method keyNav
@@ -1119,7 +1107,6 @@
         return r;
       }
     },
-
     /**
      * Definition of the root tree and parent node
      * @event created
@@ -1162,7 +1149,6 @@
       }
       this.ready = true;
     },
-
     watch: {
       /**
        * @watch activeNode
@@ -1193,7 +1179,6 @@
         this.load();
       }
     },
-
     components: {
       /**
        * @component bbn-tree-node
@@ -1350,7 +1335,6 @@
             type: Number
           }
         },
-
         data: function(){
           return {
             ready: false,
