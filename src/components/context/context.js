@@ -103,6 +103,11 @@
           }
         }
       },
+    },
+    watch: {
+      showFloater(newVal){
+        this.$emit(newVal ? 'open' : 'close');
+      }
     }
   });
 

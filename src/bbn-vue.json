@@ -4,21 +4,9 @@
       "active": false,
       "state": "dev"
     },
-    "audio": {
-      "active": false,
-      "state": "dev"
-    },
     "autocomplete": {
       "active": true,
       "state": "stable"
-    },
-    "breadcrumb": {
-      "active": false,
-      "state": "dev"
-    },
-    "browser": {
-      "active": false,
-      "state": "dev"
     },
     "button": {
       "active": true,
@@ -32,6 +20,10 @@
       "active": true,
       "state": "stable"
     },
+    "chart2": {
+      "active": false,
+      "state": "stable"
+    },
     "chat": {
       "active": true,
       "state": "stable"
@@ -40,15 +32,19 @@
       "active": true,
       "state": "stable"
     },
-    "clipboard": {
-      "active": false,
-      "state": "dev"
-    },
     "code": {
       "active": true,
       "state": "stable"
     },
     "colorpicker": {
+      "active": true,
+      "state": "stable"
+    },
+    "colorpicker2": {
+      "active": false,
+      "state": "stable"
+    },
+    "column": {
       "active": true,
       "state": "stable"
     },
@@ -68,6 +64,10 @@
       "active": true,
       "state": "stable"
     },
+    "countdown2": {
+      "active": true,
+      "state": "stable"
+    },
     "dashboard": {
       "active": true,
       "state": "stable"
@@ -84,19 +84,19 @@
       "active": true,
       "state": "stable"
     },
+    "dropdowntreeview": {
+      "active": true,
+      "state": "stable"
+    },
     "field": {
       "active": true,
       "state": "stable"
     },
-    "file": {
-      "active": false,
-      "state": "dev"
-    },
-    "filter": {
+    "finder": {
       "active": true,
       "state": "stable"
     },
-    "finder": {
+    "filter": {
       "active": true,
       "state": "stable"
     },
@@ -112,15 +112,15 @@
       "active": true,
       "state": "stable"
     },
-    "frame": {
-      "active": false,
-      "state": "dev"
-    },
     "gallery": {
       "active": true,
       "state": "stable"
     },
     "grapes": {
+      "active": true,
+      "state": "stable"
+    },
+    "hierarchy": {
       "active": true,
       "state": "stable"
     },
@@ -136,25 +136,13 @@
       "active": true,
       "state": "stable"
     },
-    "jodit": {
-      "active": false,
-      "state": "dev"
-    },
     "json-editor": {
       "active": true,
       "state": "stable"
     },
-    "key": {
-      "active": false,
-      "state": "dev"
-    },
     "list": {
       "active": true,
       "state": "stable"
-    },
-    "list-input": {
-      "active": false,
-      "state": "dev"
     },
     "loadbar": {
       "active": true,
@@ -172,10 +160,6 @@
       "active": true,
       "state": "stable"
     },
-    "markdown copy": {
-      "active": false,
-      "state": "dev"
-    },
     "masked": {
       "active": true,
       "state": "stable"
@@ -188,17 +172,9 @@
       "active": true,
       "state": "stable"
     },
-    "multipart": {
-      "active": false,
-      "state": "dev"
-    },
     "multiselect": {
       "active": true,
       "state": "stable"
-    },
-    "nav": {
-      "active": false,
-      "state": "dev"
     },
     "notification": {
       "active": true,
@@ -208,9 +184,9 @@
       "active": true,
       "state": "stable"
     },
-    "pager": {
-      "active": false,
-      "state": "dev"
+    "operator": {
+      "active": true,
+      "state": "stable"
     },
     "pane": {
       "active": true,
@@ -228,19 +204,19 @@
       "active": true,
       "state": "stable"
     },
-    "prose": {
-      "active": false,
-      "state": "dev"
-    },
     "radio": {
       "active": true,
       "state": "stable"
     },
-    "router": {
-      "active": false,
-      "state": "dev"
-    },
     "rte": {
+      "active": true,
+      "state": "stable"
+    },
+    "rte2": {
+      "active": true,
+      "state": "stable"
+    },
+    "scheduler": {
       "active": true,
       "state": "stable"
     },
@@ -248,9 +224,13 @@
       "active": true,
       "state": "stable"
     },
-    "scrollbar": {
-      "active": false,
-      "state": "dev"
+    "scroll-x": {
+      "active": true,
+      "state": "stable"
+    },
+    "scroll-y": {
+      "active": true,
+      "state": "stable"
     },
     "search": {
       "active": true,
@@ -264,17 +244,9 @@
       "active": true,
       "state": "stable"
     },
-    "split-tabs": {
-      "active": false,
-      "state": "dev"
-    },
     "splitter": {
       "active": true,
       "state": "stable"
-    },
-    "stack": {
-      "active": false,
-      "state": "dev"
     },
     "switch": {
       "active": true,
@@ -287,14 +259,6 @@
     "tabnav": {
       "active": true,
       "state": "stable"
-    },
-    "tabs": {
-      "active": false,
-      "state": "dev"
-    },
-    "terminal": {
-      "active": false,
-      "state": "dev"
     },
     "textarea": {
       "active": true,
@@ -320,10 +284,6 @@
       "active": true,
       "state": "stable"
     },
-    "treedown": {
-      "active": false,
-      "state": "dev"
-    },
     "treemenu": {
       "active": true,
       "state": "stable"
@@ -335,18 +295,6 @@
     "video": {
       "active": true,
       "state": "stable"
-    },
-    "vlist": {
-      "active": false,
-      "state": "dev"
-    },
-    "widget": {
-      "active": false,
-      "state": "dev"
-    },
-    "window": {
-      "active": false,
-      "state": "dev"
     }
   }
-}
+}  

@@ -125,7 +125,8 @@
          * @data {String} currentURL
          */
         currentURL: this.current || this.url,
-        hasLoader: false
+        hasLoader: false,
+        _bbn_container: null
       };
     },
 
@@ -390,16 +391,19 @@
               template: '<div class="bbn-overlay">' + this.content + '</div>',
               methods: {
                 getContainer(){
-                  return this.$parent;
+                  if (!this._bbn_container) {
+                    this._bbn_container = this.closest('bbn-container');
+                  }
+                  return this._bbn_container;
                 },
                 getTab(){
-                  return this.$parent;
+                  return this.getContainer();
                 },
                 addMenu(){
-                  return this.$parent.addMenu.apply(this.$parent, arguments)
+                  return this.getContainer().addMenu.apply(this.$parent, arguments)
                 },
                 deleteMenu(){
-                  return this.$parent.deleteMenu.apply(this.$parent, arguments)
+                  return this.getContainer().deleteMenu.apply(this.$parent, arguments)
                 }
               },
               props: ['source']

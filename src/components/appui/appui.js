@@ -140,10 +140,10 @@
           });
           let url = this.plugins['appui-ide'] + '/editor/file/';
           if (plugin){
-            url += 'BBN_LIB_PATH/bbn/' + plugin + '/src/mvc' + tab.url.substr(this.plugins[plugin].length);
+            url += 'lib/' + plugin + '/mvc' + tab.url.substr(this.plugins[plugin].length);
           }
           else {
-            url += 'BBN_APP_PATH/mvc/' + tab.url;
+            url += 'app/main/mvc/' + tab.url;
           }
           url += '/_end_/';
           if (tab.url.indexOf('test/') === 0) {
