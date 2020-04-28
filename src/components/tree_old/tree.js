@@ -1152,7 +1152,7 @@
     watch: {
       /**
        * @watch activeNode
-       * @param {Object} newVal 
+       * @param {Object} newVal
        */
       activeNode(newVal){
         if ( newVal ){
@@ -1161,7 +1161,7 @@
       },
       /**
        * @watch path
-       * @param newVal 
+       * @param newVal
        * @emits pathChange
        */
       path(newVal){

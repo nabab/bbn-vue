@@ -16,7 +16,7 @@
           type: Function
         },
         /**
-         * The limit of rows to be shown in a page of the table.
+         * The limit of rows to be shown in a page of the list.
          * @prop {Number} [25] limit
          * @memberof listComponent
          */
@@ -25,7 +25,9 @@
           default: 25
         },
         /**
+         * The array of predefined limits.
          * @data {Array} {[10, 25, 50, 100, 250, 500]} limits
+         * @memberof listComponent
          */
         limits: {
           type: Array,
@@ -43,7 +45,7 @@
           default: true
         },
         /**
-         * Set to true allows the table to divide itself in different pages basing on the property limit.
+         * Set to true allows the list to divide itself in different pages basing on the property limit.
          * @prop {Boolean} [false] pageable
          * @memberof listComponent
          */
@@ -52,7 +54,7 @@
           default: false
         },
         /**
-         * Set to true allows table's columns to be sortable.
+         * Set to true allows list's columns to be sortable.
          * @prop {Boolean} [false] sortable
          * @memberof listComponent
          */
@@ -61,7 +63,7 @@
           default: false
         },
         /**
-         * Set to true allows the columns of the table to be filtered. A filter icon will appear at the top of each column.The property can be given to each column to define different behaviour.
+         * Set to true allows the columns of the list to be filtered. A filter icon will appear at the top of each column.The property can be given to each column to define different behaviour.
          * @prop {Boolean} [false] filterable
          * @memberof listComponent
          */
@@ -70,7 +72,7 @@
           default: false
         },
         /**
-         * Set to true enable the multifilter of the table. An icon will appear on the bottom right of the table. By clicking on the icon a popup with the multifilter will open.
+         * Set to true enable the multifilter of the component. An icon will appear on the bottom right of the list. By clicking on the icon a popup with the multifilter will open.
          * @prop {Boolean} [false] multifilter
          * @memberof listComponent
          */
@@ -79,7 +81,7 @@
           default: false
         },
         /**
-         * In case of Ajax table, set to true will make an Ajax call for the data when changing page of the table.
+         * In case of Ajax source, set to true will make an Ajax call for the data when changing page of the list.
          * @prop {Boolean} [true] serverPaging
          * @memberof listComponent
          */
@@ -88,7 +90,7 @@
           default: true
         },
         /**
-         * In case of Ajax table, set to true will make an Ajax call for the sorting of the table.
+         * In case of Ajax source, set to true will make an Ajax call for the sorting of the list.
          * @prop {Boolean} [true] serverSorting
          * @memberof listComponent
          */
@@ -97,7 +99,7 @@
           default: true
         },
         /**
-         * In case of Ajax table, set to true will make an Ajax call for the filter of the table.
+         * In case of Ajax source, set to true will make an Ajax call for the filter of the list.
          * @prop {Boolean} [true] serverFiltering
          * @memberof listComponent
          */
@@ -106,7 +108,7 @@
           default: true
         },
         /**
-         * Defines the order of the columns in the table.
+         * Defines the order of the columns in the component.
          * @prop {Array|Object} [[]] order
          * @memberof listComponent
          */
@@ -117,7 +119,7 @@
           }
         },
         /**
-         * Defines the filters of the table.
+         * Defines the filters of the component.
          * @prop {Object} [{logic: 'AND',conditions: []}] filters
          * @memberof listComponent
          */
@@ -131,7 +133,7 @@
           }
         },
         /**
-         * If the prop selection is set to true defines which rows have to be selected.
+         * If the prop selection is set to true defines which items has to be selected.
          * @prop {Array} selected
          * @memberof listComponent
          */
@@ -142,7 +144,7 @@
           }
         },
         /**
-         * Set to true shows a checkbox in each rows in the first column of the table.
+         * Set to true shows a checkbox in each rows in the first column of the list.
          * @prop {Boolean|Function} selection
          * @memberof listComponent
          */
@@ -179,14 +181,18 @@
           }
         },
         /**
-         * Defines the message to show when the table has no data.
+         * Defines the message to show when the list has no data.
          * @prop {String} ['No data...'] noData
          * @memberof listComponent
          */
         noData: {
           type: String,
           default: bbn._('No data') + '...'
-        },
+        }, 
+        /**
+         * The uid of the list.
+         * @prop {String} uid
+         */
         uid: {
           type: String
         },
@@ -238,22 +244,35 @@
         },
         /**
          * A component for each element of the list.
-         *
+         * @memberof listComponent
          * @prop component
          */
         component: {},
         /**
          * The template to costumize the dropdown menu.
-         *
+         * @memberof listComponent
          * @prop template
          */
         template: {},
+        /**
+         * @prop {String} query
+         * @memberof listComponent
+         */
         query: {
           type: String
         },
+        /**
+         * The query values object.
+         * @prop {Object} queryValues
+         * @memberof listComponent
+         */
         queryValues: {
           type: Object
         },
+        /**
+         * @prop {Object} hierarchy
+         * @memberof listComponent
+         */
         hierarchy: {
           type: Boolean,
           default: false
@@ -272,68 +291,98 @@
         }
         return {
           /**
+           * If true it's the first time the data is loaded.
            * @data {Boolean} [false] _1strun
+           * @memberof listComponent
            */
           _1strun: false,
           /**
+           * _dataPromise
+           * @memberof listComponent
            * @data {Boolean, Promise} [false] _dataPromise
            */
           _dataPromise: false,
           /**
-           * @data {Boolean} [false] auto If source is a URL and auto is set to true, component will fetch data at mount.
+           * If source is a URL and auto is set to true, component will fetch data at mount.
+           * @data {Boolean} [false] auto 
+           * @memberof listComponent
            */
           auto: true,
           /**
+           * The current template of the component.
            * @data {String} [false] currentTemplate
+           * @memberof listComponent
            */
           currentTemplate: this.template,
           /**
+           * 
            * @data {Boolean} [false] currentIndex
+           * @memberof listComponent
            */
           currentIndex: false,
           /**
            * @data {Boolean} [false] currentFilter
+           * @memberof listComponent
            */
           currentFilter: false,
           /**
+           * The current filters of the list.
+           * @memberof listComponent
            * @data {Object} currentFilters
            */
-          currentFilters: bbn.fn.clone( this.filters),
+          currentFilters: bbn.fn.clone(this.filters),
           /**
+           * The current limit of items in the list.
+           * @memberof listComponent
            * @data {Number} [25] currentLimit
            */
           currentLimit: this.limit,
           /**
+           * The current start index of the list.
+           * @memberof listComponent
            * @data {Number} [0] currentStart
            */
           currentStart: this.start,
           /**
+           * The current order of the list.
+           * @memberof listComponent
            * @data {Object} currentOrder
            */
           currentOrder: order,
           /**
+           * The current data of the list.
+           * @memberof listComponent
            * @data {Array} [[]] currentData
            */
           currentData: [],
           /**
+           * The current total of items in the list.
+           * @memberof listComponent
            * @data {Number} [0] currentTotal
            */
           currentTotal: 0,
           /**
+           * The start index.
            * @data {Number} [0] start
+           * @memberof listComponent
            */
           start: 0,
           /**
+           * The total of items in the list. 
            * @data {Number} [0] total
+           * @memberof listComponent
            */
           total: 0,
           /**
+           * True if the list is loading data.
            * @data {Boolean} [false] isLoading
+           * @memberof listComponent 
            */
           isLoading: false,
           /**
-           * Return true if the source of the table is a string.
+           * True if the source of the list is a string.
            * @data {Boolean} isAjax
+           * @memberof listComponent 
            */
           isAjax: typeof this.source === 'string',
           /**
@@ -341,26 +390,59 @@
            * @data {Array} [[]] selectedRows
            */
           currentSelected: this.selected.slice(),
+          /**
+           * True if the list is filterable.
+           * @data {Boolean} [false] isFilterable
+           * @memberof listComponent
+           */
           isFilterable: this.filterable,
+          /**
+           * True if the list has selection enabled.
+           * @data {Boolean} [false] hasSelection
+           */
           hasSelection: !!this.selection,
           /**
+           * The original data of the list.
            * @data [null] originalData
+           * @memberof listComponent
            */
           originalData: null,
           /**
            * @data {String} filterString
+           * @memberof listComponent
            */
           filterString: this.textValue || '',
           /**
+           * @memberof listComponent
            * @data {false, Number} filterTimeout
            */
           filterTimeout: false,
+          /**
+           * The current query.
+           * @data {String} currentQuery
+           * @memberof listComponent
+           */
           currentQuery: this.query,
+          /**
+           * The current query values.
+           * @data {Object} currentQueryValues
+           * @memberof listComponent 
+           */
           currentQueryValues: this.queryValues || {},
+          /**
+           * The id of the loading request.
+           * @data {Boolean} [false] loadingRequestID
+           * @memberof listComponent 
+           */
           loadingRequestID: false
         };
       },
       computed: {
+        /**
+         * The current limits.
+         * @computed currentLimits
+         * @memberof listComponent
+         */
         currentLimits(){
           if (!this.pageable){
             return [];
@@ -377,9 +459,19 @@
             return true;
           });
         },
+        /**
+         * Returns true if a component has been defined for the list.
+         * @computed hasComponent
+         * @memberof listComponent
+         */
         hasComponent(){
           return this.component || this.currentTemplate ? true : false;
         },
+        /**
+         * Returns the component object. 
+         * @computed realComponent
+         * @memberof listComponent
+         */
         realComponent(){
           let cp = this.component || null;
           if (!cp && this.currentTemplate) {
@@ -394,7 +486,7 @@
           return cp;
         },
         /**
-         * Return the number of pages of the table.
+         * Return the number of pages of the list.
          * @computed numPages
          * @return {number}
          */
@@ -402,7 +494,7 @@
           return Math.ceil(this.total / this.currentLimit);
         },
         /**
-         * Return the current page of the table.
+         * Return the current page of the list.
          * @computed currentPage
          * @fires updateData
          * @return {Number}
@@ -520,7 +612,7 @@
           //this.$emit('select', this.currentIndex);
         },
         /**
-         * Pushes the given filter in the currentFilters of the table.
+         * Pushes the given filter in the currentFilters of the list.
          * @method onSetFilter
          * @param {Object} filter 
          */
@@ -671,6 +763,7 @@
                   }
                   else if ( bbn.fn.isFunction(this.source) ){
                     data = this.source(this.sourceIndex);
+                    bbn.fn.log("RESU", data);
                   }
                   else if ( bbn.fn.isObject(this.source) ){
                     bbn.fn.iterate(this.source, (a, n) => {
@@ -709,7 +802,7 @@
                   else{
                     d.data = this._map(d.data);
                     this.currentData = bbn.fn.map(d.data, (a, i) => {
-                      let o = {
+                      let o = this.hierarchy ? bbn.fn.extend(true, a, {index: i, _bbn: true}) : {
                         data: a,
                         index: i,
                         _bbn: true

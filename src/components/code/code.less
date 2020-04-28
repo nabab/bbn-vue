@@ -10,20 +10,43 @@
 }
 .bbn-code{
   position: relative;
-  overflow: auto;
-  height: 100%;
+  height: auto;
   .CodeMirror {
-    height: 100%;
-    width: 100%;
+    padding: 0.5em 0;
     font-size: small;
     font-family: "Fira Code";
     font-feature-settings: "calt" 1;
     text-rendering: optimizeLegibility;
+    height: fit-content;
+  }
+  .bbn-code-filled {
+    width: 100%;
+    min-height: 100%;
+    .CodeMirror {
+      width: 100%;
+      height: auto;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      position: absolute;
+      overflow: auto;
+      scrollbar-width: none;
+      &::-webkit-scrollbar {
+        display: none;
+      }
+      .CodeMirror-vscrollbar, .CodeMirror-hscrollbar {
+        display: none !important;
+      }
+    }
   }
   .theme-button{
     position: absolute;
     width: 25px;
     height: 25px;
     z-index: 5;
+  }
+  .bbn-scrollbar {
+    z-index: 6;
   }
 }

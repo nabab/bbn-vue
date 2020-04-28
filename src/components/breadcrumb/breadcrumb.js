@@ -150,7 +150,7 @@
         ){
           return this.router.itsMaster.itsMasterBreadcrumb;
         }
-        return bbn.fn.get_row(this.parents, {master: true})
+        return bbn.fn.getRow(this.parents, {master: true})
       },
       /**
        * The list of the sub-breadcrumbs used for the render.

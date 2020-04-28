@@ -186,6 +186,9 @@
         }
         return true;
       },
+      onRoute(path) {
+        this.$emit('route', path)
+      },
       route(url, force){
         this.getRef('nav').route(url, force)
       },
@@ -247,7 +250,7 @@
         }
       },
 
-      get_field: bbn.fn.get_field,
+      getField: bbn.fn.getField,
 
       toggleMenu(){
         let menu = this.getRef('slider');
@@ -271,11 +274,11 @@
       },
 
       userName(d){
-        return bbn.fn.get_field(this.users, "value", bbn.fn.isObject(d) && d.id ? d.id : d, "text");
+        return bbn.fn.getField(this.users, "text", "value", bbn.fn.isObject(d) && d.id ? d.id : d);
       },
 
       userGroup(d){
-        return bbn.fn.get_field(this.users, "value", bbn.fn.isObject(d) && d.id ? d.id : d, "id_group");
+        return bbn.fn.getField(this.users, "id_group", "value", bbn.fn.isObject(d) && d.id ? d.id : d);
       },
 
       notify(obj, type, timeout){
@@ -334,7 +337,7 @@
         }
         else {
           if ( bbn.users !== undefined ){
-            return bbn.fn.get_field(bbn.users, "value", d, "text");
+            return bbn.fn.getField(bbn.users, "text", "value", d);
           }
         }
         if ( force ){
@@ -351,7 +354,7 @@
         }
         if ( (type === 'number') ){
           if ( bbn.usergroups !== undefined ){
-            return bbn.fn.get_field(bbn.usergroups, "value", id, "text");
+            return bbn.fn.getField(bbn.usergroups, "text", "value", id);
           }
           return bbn.lng.unknown + " (" + d + ")";
         }
@@ -520,8 +523,8 @@
           
           defaultEndLoadingFunction(url, timestamp, data, res) {
             if ( window.appui && appui.status ){
-              let history = bbn.fn.get_row(bbn.env.loadersHistory, {url: url, start: timestamp});
-              let loader = bbn.fn.get_row(appui.loaders, {url: url, start: timestamp});
+              let history = bbn.fn.getRow(bbn.env.loadersHistory, {url: url, start: timestamp});
+              let loader = bbn.fn.getRow(appui.loaders, {url: url, start: timestamp});
               if ( loader ){
                 if (  history ){
                   bbn.fn.iterate(history, (val, prop) => {

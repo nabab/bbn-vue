@@ -218,8 +218,8 @@
           type: Number
         },
         /**
-         * Defines the maxLength of the component.
-         * @prop {Number} maxLength 
+         * Defines the sqlType of the component.
+         * @prop {String} sqlType 
          * @memberof fieldComponent
          */
         sqlType: {

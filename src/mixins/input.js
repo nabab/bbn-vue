@@ -22,7 +22,7 @@
           type: String
         },
         /**
-         * The component placeholder.
+         * The component's placeholder.
          * @prop {String} placeholder
          * @memberof inputComponent
          */
@@ -64,7 +64,7 @@
         size: {
           type: [Number, String]
         },
-          /**
+         /**
          * Defines the maxlength of the value.
          * @prop {Number|String} maxlength 
          * @memberof inputComponent
@@ -81,8 +81,8 @@
           type: [Function]
         },
         /**
-         * The type of the component.
-         * @prop {Number} tabindex
+         * The attribute tabindex of the input component.
+         * @prop {Number} [0] tabindex
          * @memberof inputComponent
          */
         tabindex: {
@@ -108,10 +108,19 @@
       },
       data(){
         return {
+          /**
+           * True if the component has a value.
+           * @data {Boolean} hasVale
+           */
           hasValue: !!this.value
         };
       },
       computed: {
+        /**
+         * Returns true if the component can have a null value.
+         * @computed isNullable
+         * @returns {Boolean}
+         */
         isNullable(){
           let isNullable = !!this.nullable;
           if ( this.nullable === null ){
@@ -125,7 +134,7 @@
          * Emits the event input.
          * @method emitInput
          * @emit input
-         * @param val 
+         * @param {Number|String} val 
          * @memberof inputComponent
          */
         emitInput(val){
@@ -135,7 +144,7 @@
          * Emits the event change.
          * @method change
          * @emit change
-         * @param e 
+         * @param {Event} e 
          * @memberof inputComponent
          */
         change(e){
@@ -144,7 +153,7 @@
         /**
          * Check the validity of the inserted value.
          * @method isValid
-         * @param val 
+         * @param {Vue} e 
          * @return {Boolean}
          * @memberof inputComponent
          */
@@ -274,9 +283,6 @@
             this.hasValue = !!newVal;
           }
         },
-        cfg(){
-
-        }
       }
     }
   });

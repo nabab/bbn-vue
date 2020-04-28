@@ -195,7 +195,7 @@
         }
       },
       getItem(uid){
-        return bbn.fn.get_row(this.items, {uid: uid});
+        return bbn.fn.getRow(this.items, {uid: uid});
       },
       updateSlider(){
         this.$nextTick(() => {

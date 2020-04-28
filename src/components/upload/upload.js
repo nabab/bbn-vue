@@ -441,7 +441,7 @@
           if ( !file.data.name || ((file.data.size !== undefined) && !file.data.size) ){
             return false
           }
-          if ( bbn.fn.get_row(this.currentData, {'data.name': file.data.name}) ){
+          if ( bbn.fn.getRow(this.currentData, {'data.name': file.data.name}) ){
             if ( file.fromUser ){
               this.$emit('error', {file: file.data.name, message: bbn._('The file exists!')})
               this.alert(bbn._('The file') + ` "${file.data.name}" ` + bbn._('exists') + '!')
@@ -680,7 +680,7 @@
        */
       setProgress(id, progress = 0){
         if ( bbn.fn.isArray(this.currentData) && this.currentData.length ){
-          let file = bbn.fn.get_row(this.currentData, {id: id})
+          let file = bbn.fn.getRow(this.currentData, {id: id})
           if ( bbn.fn.isObject(file) ){
             this.$set(file, 'progress', progress)
           }

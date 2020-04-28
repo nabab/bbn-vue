@@ -74,6 +74,11 @@
         onResize(){
           return;
         },
+        /**
+         * Sets the value of lastKnownHeight and lastKnownWidth basing on the current dimensions of width and height.
+         * @method setResizeMeasures 
+         * @returns {Boolean}
+         */
         setResizeMeasures(){
           let resize = false;
           let h = this.$el ? Math.round(this.$el.clientHeight) : 0;
@@ -196,8 +201,10 @@
         this.componentClass.push('bbn-resizer-component', 'bbn-resize-emitter');
       },
       /**
+       * Defines the resize emitter and emits the event ready.
        * @event mounted
        * @fires setResizeEvent
+       * @emits ready
        * @memberof resizerComponent
        */
       mounted(){
@@ -205,6 +212,7 @@
         this.$on('ready', this.setResizeEvent);
       },
       /**
+       * Unsets the resize emitter.
        * @event beforeDestroy
        * @fires unsetResizeEvent
        * @memberof resizerComponent

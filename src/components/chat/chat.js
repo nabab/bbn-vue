@@ -1,5 +1,5 @@
 /**
- * @file bbn-chat component 
+ * @file bbn-chat component
  *
  * @description bbn-chat component allows the user to communicate in chat sessions with other users online.
  *
@@ -16,9 +16,9 @@
 
   Vue.component('bbn-chat', {
     /**
-     * @mixin bbn.vue.basicComponent 
+     * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.localStorageComponent
-     * @mixin bbn.vue.resizerComponent  
+     * @mixin bbn.vue.resizerComponent
      */
     mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent, bbn.vue.resizerComponent],
     props: {
@@ -39,7 +39,12 @@
           return [];
         }
       },
-      //@todo not used
+      /**
+       * @todo not used
+       *
+       * The array of groups.
+       * @prop {Array} [[]] groups
+       */
       groups: {
         type: Array,
         default(){
@@ -80,7 +85,7 @@
         type: String
       },
       /**
-       * The array of opened windows 
+       * The array of opened windows
        * @prop {Array} [[]] windows
        */
       windows: {
@@ -98,43 +103,46 @@
       return {
         /**
          * The value of the prop online.
-         * 
+         *
          * @data {Boolean} currentOnline
          */
         currentOnline: this.online,
         /**
          * The value of the prop visible.
-         * 
+         *
          * @data {Boolean} currentVisible
          */
         currentVisible: this.visible,
         /**
          * The value of the prop visible.
-         * 
+         *
          * @data {Boolean} usersVisible
          */
         usersVisible: this.visible,
-        //@todo not used
+        /**
+         * @todo not used
+         * @data {String} currentFilter
+         */
         currentFilter: '',
         /**
          * The chat windows currently opened.
-         * 
+         *
          * @data {Array} currentWindows
          */
         currentWindows: data,
         /**
          * The last message sent.
-         * 
+         *
          * @data [null] lastMsg
          */
         lastMsg: null,
         /**
-         * @data [null] onlineUsersHash 
+         * @data [null] onlineUsersHash
          */
         onlineUsersHash: null,
         /**
          * The number of unread messages.
-         * 
+         *
          * @data {Number} [0] unRead
          */
         unread: 0
@@ -143,7 +151,7 @@
     computed: {
       /**
        * The array of online users excluding the current user.
-       * 
+       *
        * @computed usersOnlineWithoutMe
        * @return {Array}
        */
@@ -171,25 +179,36 @@
     },
     methods: {
       /**
-      * Returns the method bbn.fn.get_field.
-      * 
-      * @method get_field
+      * Returns the method bbn.fn.getField.
+      *
+      * @method getField
       * @return {Function}
       */
-      get_field: bbn.fn.get_field,
-      //@todo not used
+      getField: bbn.fn.getField,
+      /**
+       * @todo not used.
+       *
+       * @method isInScreen
+       * @param {Number} i
+       * @return {Boolean}
+       */
       isInScreen(i){
         return (300 * (i + 1) + 300) < this.lastKnownCtWidth;
       },
-      // @todo not used
+      /**
+       * @todo not used.
+       *
+       * @method getMenuFn
+       * @return {Array}
+       */
       getMenuFn(){
         return [];
       },
       /**
        * Opens the chat window selected from the list of online users.
-       * 
+       *
        * @method chatTo
-       * @param {Array} users 
+       * @param {Array} users
        */
       chatTo(users){
         if ( !Array.isArray(users) ){
@@ -238,14 +257,20 @@
       },
       /**
        * @method relay
-       * @param {Object} obj 
-       * @param {Number} idx 
+       * @param {Object} obj
+       * @param {Number} idx
        * @emits send
        */
       relay(obj, idx){
         this.$emit('send', obj, idx);
       },
-      //@todo not used
+      /**
+       * @todo not used.
+       *
+       * @method getStyle
+       * @param {Number} idx
+       * @return {Object}
+       */
       getStyle(idx){
         let r = {},
             pos = this.usersVisible ? 300 : 0,
@@ -260,9 +285,9 @@
       },
       /**
        * Return the current window object basing on the given chat id.
-       *  
+       *
        * @method chatById
-       * @param {String} idChat 
+       * @param {String} idChat
        * @return {Boolean|Object}
        */
       chatById(idChat){
@@ -274,9 +299,10 @@
       },
       /**
        * Add a user to the given chat.
-       * 
-       * @param {String} idChat 
-       * @param {String} idUser 
+       *
+       * @method addUser
+       * @param {String} idChat
+       * @param {String} idUser
        */
       addUser(idChat, idUser){
         let chat = this.chatById(idChat);
@@ -291,7 +317,12 @@
           })
         }
       },
-      //@todo not used
+      /**
+       * @todo not used.
+       *
+       * @method receive
+       * @param {Object} data
+       */
       receive(data){
         bbn.fn.log("RECEIVING THIS FOR CHAT", data);
         if ( data.hash ){
@@ -346,14 +377,14 @@
     watch: {
       /**
        * @watch online
-       * @param {Boolean} newVal 
+       * @param {Boolean} newVal
        */
       online(newVal){
         this.currentOnline = newVal;
       },
       /**
        * @watch currentVisible
-       * @param {Boolean} newVal 
+       * @param {Boolean} newVal
        */
       currentVisible(newVal){
         if ( newVal ){
@@ -364,7 +395,7 @@
     components: {
       /**
        * The chat window of each online user selected from the main list.
-       * 
+       *
        * @component container
        */
       container: {
@@ -459,13 +490,13 @@
         },
         methods: {
           /**
-           * Returns the method bbn.fn.get_field.
+           * Returns the method bbn.fn.getField.
            * 
-           * @method get_field
+           * @method getField
            * @memberof container
            * @return {Function}
            */
-          get_field: bbn.fn.get_field,
+          getField: bbn.fn.getField,
           /**
            * Returns the source of the context menu of each chat window.
            * 
@@ -508,7 +539,7 @@
               bbn.fn.each(chat.usersOnlineWithoutMe, (o, i) => {
                 if ( this.participants.indexOf(o.value) === -1 ){
                   users.push({
-                    text: bbn.fn.get_field(chat.users, 'value', o.value, 'text'),
+                    text: bbn.fn.getField(chat.users, 'text', 'value', o.value),
                     icon: 'nf nf-fa-user',
                     action: () => {
                       chat.addUser(this.chatId, o.value)
@@ -622,6 +653,11 @@
           this.scrollEnd();
         }
       },
+      /**
+       * Represents the individual user in the chat.
+       *
+       * @component user
+       */
       user: {
         template: `
 <div class="bbn-w-100 bbn-p"
@@ -647,7 +683,7 @@
           let cp = this.closest("bbn-chat");
           return {
             cp: cp,
-            userName: bbn.fn.get_field(cp.users, 'value', this.source.value, 'text')
+            userName: bbn.fn.getField(cp.users, 'text', 'value', this.source.value)
           }
         }
       }

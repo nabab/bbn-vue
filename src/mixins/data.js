@@ -13,6 +13,7 @@
          * @param {Object} data
          * @param {Object} cfg
          * @memberof dataComponent
+         * @returns {String}
          */
         renderData(data, cfg){
           if ( !cfg.field || !data ){

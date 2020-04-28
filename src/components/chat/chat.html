@@ -52,13 +52,13 @@
            slot-scope="item"
            @click="chatTo([item.value])">
         <bbn-initial :user-id="item.value"
-                     :user-name="get_field(users, 'value', item.value, 'text')"
+                     :user-name=.getField(users, 'text', 'value', item.value)"
                      :width="16"
                      :height="16"
                      style="padding-right: 3px"
         ></bbn-initial>
         <span class="bbn-large"
-              v-text="get_field(users, 'value', item.value, 'text')">
+              v-text=.getField(users, 'text', 'value', item.value)">
         </span>
       </div> -->
     </bbn-list>
@@ -83,7 +83,7 @@
         <span v-for="participant in participants"
               v-if="participant !== userId"
               class="bbn-user-title"
-              v-text="get_field(users, 'value', participant, 'text')">
+              v-text=.getField(users, 'text', 'value', participant)">
         </span>
         <span class="bbn-chat-context">
           <bbn-context class="nf nf-fa-caret_down bbn-p"
@@ -102,7 +102,7 @@
           <div class="bbn-flex-width" v-for="msg in messages">
             <div class="bbn-block" style="min-width: 20px;">
               <bbn-initial :user-id="msg.user"
-                            :user-name="get_field(users, 'value', msg.user, 'text')"
+                            :user-name=.getField(users, 'text', 'value', msg.user)"
                             :width="16"
                             :height="16"
                             style="vertical-align: middle">

@@ -210,13 +210,14 @@
           type: [String, Number]
         },
         /**
+         * @prop current
          * @prop {String|Number} current
          * @memberof viewComponent
          */
         current: {
           type: [String, Number]
         },
-          /**
+        /**
          * @prop {Boolean} [true] real
          * @memberof viewComponent
          */
@@ -242,10 +243,18 @@
             return {}
           }
         },
+        /**
+         * Defines if the component is disabled.
+         * @prop {Boolean} [false] disabled
+         */
         disabled: {
           type: [Boolean, Function],
           default: false
         },
+        /**
+         * Defines if the component is hidden.
+         * @prop {Boolean} [false] hidden
+         */
         hidden: {
           type: [Boolean, Function],
           default: false

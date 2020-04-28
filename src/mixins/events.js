@@ -22,10 +22,16 @@
       data(){
         return {
           /**
+           * Defines if the component has been changed since its mount.
            * @memberof eventsComponent
            * @data {Boolean} [false] isTouched
            */
           isTouched: false,
+          /**
+           * True if the component is focused.
+           * @memberof eventsComponent
+           * @data {Boolean} [false] isFocused
+           */
           isFocused: false
         }
       },
@@ -33,7 +39,7 @@
         /**
          * Emits the click event.
          * @method click
-         * @param e 
+         * @param {Event} e 
          * @emit click
          * @memberof eventsComponent
          */
@@ -43,7 +49,7 @@
         /**
          * Emits the blur event.
          * @method blur
-         * @param e
+         * @param {Event} e
          * @emit blur
          * @memberof eventsComponent
          */
@@ -54,6 +60,7 @@
         /**
          * Emits the event focus
          * @method focus
+         * @param {Event} e
          * @return {Function}
          * @memberof basicComponent
          */
@@ -68,7 +75,7 @@
         /**
          * Emits the keyup event.
          * @method keyup
-         * @param e
+         * @param {Event} e
          * @memberof eventsComponent
          * @emit keyup
          */
@@ -78,7 +85,7 @@
         /**
          * Emits the keydown event.
          * @method keydown
-         * @param e
+         * @param {Event} e
          * @memberof eventsComponent
          * @emit keydown
          */
@@ -88,7 +95,7 @@
         /**
          * Emits the over event.
          * @method over
-         * @param e
+         * @param {Event} e
          * @memberof eventsComponent
          * @emit over
          */
@@ -101,7 +108,7 @@
         /**
          * Emits the out event.
          * @method out
-         * @param e
+         * @param {Event} e
          * @emit out
          * @memberof eventsComponent
          * @emit over
@@ -115,7 +122,6 @@
         /**
          * Sets the prop isTouched to true
          * @method touchstart
-         * @param e 
          * @memberof eventsComponent
          */
         touchstart(){
@@ -132,7 +138,6 @@
          * Sets the prop isTouched to false.
          * @method touchmove
          * @memberof eventsComponent
-         * @param e 
          */
         touchmove(){
           this.isTouched = false;
@@ -140,7 +145,6 @@
         /**
          * Sets the prop isTouched to false.
          * @method touchend
-         * @param e 
          * @memberof eventsComponent
          */
         touchend(){
@@ -149,7 +153,6 @@
         /**
          * Sets the prop isTouched to false.
          * @method touchcancel
-         * @param e 
          * @memberof eventsComponent
          */
         touchcancel(){

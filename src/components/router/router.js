@@ -113,7 +113,7 @@
       },
       /**
        * The confirm message when you close an unsaved container
-       * @prop {Boolean|String|Function} ['Are you sure you want to discard the changes you made in this tab?'] confirmLeave
+       * @prop {(Boolean|String|Function)} ['Are you sure you want to discard the changes you made in this tab?'] confirmLeave
        */
       confirmLeave: {
         type: [Boolean, String, Function],
@@ -167,6 +167,27 @@
       showSwitch: {
         type: Boolean,
         default: true
+      },
+      /**
+       * If this is set, along with componentSource and componentUrl a single container with this component will be created
+       * @prop {(String|Object)} component
+       */
+      component: {
+        type: [String, Object]
+      },
+      /**
+       * The source for the component
+       * @prop {Object} componentSource
+       */
+      componentSource: {
+        type: Object
+      },
+      /**
+       * The property to get from the componentSource to use for setting the URL
+       * @prop {String} componentUrl
+       */
+      componentUrl: {
+        type: String
       }
     },
     data(){
@@ -334,7 +355,7 @@
         if ( this.master ){
           return this;
         }
-        return bbn.fn.get_row(this.parents, {master: true})
+        return bbn.fn.getRow(this.parents, {master: true})
       },
       /**
        * Returns the bbn-tabs component of this router
@@ -1818,6 +1839,13 @@
       enter(container){
         //bbn.fn.log("THE CONTAINER WILL BE SHOWN: ", container);
       },
+      containerComponentMount(){
+        let ct = this.getRef('container');
+        ct.init();
+        this.$nextTick(() => {
+          ct.show();
+        })
+      }
     },
 
     /**

@@ -157,7 +157,6 @@
             // Movement in pixel
             let newStart = this.isVertical ? e.pageY : e.pageX;
             let movement = newStart - this.start;
-            bbn.fn.log(movement);
             if ( movement ){
               let tmp = this.sliderPos + movement;
               if (tmp < 0) {
@@ -307,7 +306,6 @@
 
       // Calculates all the proportions based on content
       onResize(){
-        //bbn.fn.log(this.scroller ? "CROLLE YES / " + this.scroller['container' + (this.isVertical ? 'Height' : 'Width')] : "NO SCROLLER");
         if ( this.realContainer ){
           let tmp1 = this.isVertical ? this.realContainer.clientHeight : this.realContainer.clientWidth,
               tmp2 = this.realContainer.children[0] ? this.realContainer.children[0][this.isVertical ? 'clientHeight' : 'clientWidth'] : this.containerSize;
@@ -416,9 +414,49 @@
         }
       },
       scrollTo(val, animate){
-        if ( this.shouldBother && (val >= 0) && (val <= this.maxSliderPos) ){
-          this.sliderPos = val;
-          this.adjustFromBar();
+        if (this.shouldBother) {
+          let num = 0;
+          let ele = false;
+          if (bbn.fn.isVue(val) && val.$el) {
+            ele = val.$el;
+          }
+          else if (bbn.fn.isDom(val)){
+            ele = val;
+          }
+          if (ele) {
+            let container = ele.offsetParent;
+            // The position is equal to the offset of the target
+            // minus the size of the viewport, which isn't scrolled,
+            // plus half the size of the viewport to center it
+            // therefore removing half of the viewport does the trick
+            num = ele[this.isVertical ? 'offsetTop' : 'offsetLeft']
+                  - Math.round(this.containerSize/2);
+            while (container && (container !== this.scroller.$el)) {
+              if (container.contains(this.scroller.$el)) {
+                break;
+              }
+              else{
+                num += container[this.isVertical ? 'offsetTop' : 'offsetLeft'];
+                container = container.offsetParent;
+              }
+            }
+          }
+          else if ( bbn.fn.isPercent(val) ){
+            num = Math.round(parseFloat(val) * this.contentSize / 100);
+          }
+          else if (bbn.fn.isNumber(val)) {
+            num = val;
+          }
+          if ( num !== null ){
+            if ( num < 0 ){
+              num = 0;
+            }
+            else if (num > (this.contentSize - this.containerSize)) {
+              num = this.contentSize - this.containerSize;
+            }
+            this.realContainer['scroll' + (this.isVertical ? 'Top' : 'Left')] = num;
+            this.adjustFromContainer();
+          }
         }
       },
 

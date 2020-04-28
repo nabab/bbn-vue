@@ -202,7 +202,7 @@
           currentLetters = this.letters;
         }
         if ( !name && this.userId && this.source ){
-          name = bbn.fn.get_field(this.source, this.idField, this.userId, this.nameField);
+          name = bbn.fn.getField(this.source, this.nameField, this.idField, this.userId);
         }
         if ( !this.letters && name ){
           let tmp = bbn.fn.removeEmpty(name.split(" "));

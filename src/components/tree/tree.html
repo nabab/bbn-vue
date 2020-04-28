@@ -1,6 +1,9 @@
-<div :class="componentClass" v-on="isRoot ? {keydown:keyNav} : {}">
-  <div class="loader" v-if="loading">
-    <bbn-loadicon></bbn-loadicon> Loading...
+<div :class="componentClass"
+     tabindex="0"
+     @keydown.up.down.left.right.enter.space.page-down.page-up.end.home.prevent.stop="keyNav"
+>
+  <div v-if="loading" class="loader">
+    <bbn-loadicon></bbn-loadicon> <span v-text="_('Loading')"></span>...
   </div>
   <component v-else-if="isLoaded"
              :is="isRoot ? 'bbn-scroll' : 'div'"
@@ -10,48 +13,45 @@
                 @after-enter="onOpen"
                 @after-leave="onClose"
     >
-      <ul v-show="items.length && (isRoot || $parent.isExpanded)"
+      <ul v-if="filteredData.length && (isRoot || $parent.isExpanded)"
           :class="{
             'bbn-tree-child': !!level,
             'bbn-tree-root': isRoot
           }"
       >
         <bbn-tree-node inline-template
-                       v-for="(it, i) in items"
-                       :text="it.text"
-                       :key="i"
-                       :idx="i"
-                       :data="toData(it)"
-                       :cls="it.cls"
-                       :component="component"
-                       :icon="it.icon"
-                       :expanded="it.expanded"
-                       :selectable="it.selectable === undefined ? true : it.selectable"
-                       :selected="it.selected"
-                       :num="it.num"
-                       :source="it.items ? it.items : []"
-                       :level="level"
-                       :filter-string="tree.filterString"
-                       :excluded-section-filter="tree.excludedSectionFilter"
-                       :path="it.path"
+                        v-for="(it, i) in filteredData"
+                        :source="it"
+                        :key="level + '-' + i"
+                        :idx="it.index"
+                        :component="it.component || component"
+                        :selectable="it.selectable !== undefined ? it.selectable : selectable"
+                        :multiple="it.multiple !== undefined ? it.multiple : multiple"
+                        :level="level"
+                        :selection="it.selection !== undefined ? it.selection : selection"
+                        :path="it.path"
+                        ref="node"
+                        :quickFilter="quickFilter"
+                        :sortable="it.sortable !== undefined ? it.sortable : sortable"
+                        :uid="uid"
         >
-          <!-- <li :class="{
-                       'bbn-tree-node': true,
-                       'bbn-unselectable': true,
-                       selected: isSelected,
-                       active: isActive,
-                      }"
-              v-show="isMatch || numMatches"
-          > -->
-          <li :class="{
-                       'bbn-tree-node': true,
-                       'bbn-unselectable': true,
-                       selected: isSelected,
-                       active: isActive,
-                      }"
-              v-show="isMatch || numMatches || excludedFilter"
+          <li :class="['bbn-tree-node', 'bbn-unselectable', {
+                        'bbn-state-active': (isActive && !isSelected) || (tree.dragging && tree.overNode && !tree.overOrder && (tree.overNode === _self)),
+                        'bbn-state-selected': isSelected
+                      }]"
+              v-show="isVisible"
+              :title="source.tooltip || source.data.text"
           >
-            <span :class="'node' + (component ? '' : ' no-component') + (cls ? ' ' + cls : '')"
+            <span v-if="sortable && (source.num === 1)"
+                  :class="['bbn-w-100', 'bbn-tree-order-top', {
+                    'bbn-tree-order': tree.dragging && (tree.dragging.parent === parent) && !quickFilter,
+                    'bbn-state-active': !!isOverOrderTop
+                  }]"
+                  style="height: 2px; line-height: 2px;"
+                  ref="orderTop"
+                  @mouseover.stop="mouseOver"
+            ></span>
+            <span :class="'node' + (component ? '' : ' no-component') + (source.cls ? ' ' + source.cls : '')"
                   @mouseover.stop="mouseOver"
             >
               <span class="expander bbn-p"
@@ -64,73 +64,88 @@
               >
                 <!-- If there are no children we leave the white space -->
                 <span v-if="!numChildren || (level < tree.minExpandLevel)"> </span>
-                <i v-else-if="isExpanded"
-                   class="nf nf-fa-caret_down"
-                ></i>
                 <i v-else
-                   class="nf nf-fa-caret_right"
+                    :class="{
+                      'nf nf-fa-caret_down': isExpanded,
+                      'nf nf-fa-caret_right': !isExpanded
+                    }"
                 ></i>
               </span>
-              <span v-if="tree.checkable && tree.uid && (checkable !== false)">
+              <span v-if="tree.uid && (tree.selection || !!selection)">
                 <bbn-checkbox :value="data[tree.uid]"
                               :checked="isChecked()"
                               @change="checkNode"
                               :disabled="isDisabled()"
-                >
-                </bbn-checkbox>
+                ></bbn-checkbox>
               </span>
-              <component v-if="component"
-                         :is="component"
-                         :source="data"
+              <component v-if="!!component"
+                          :is="component"
+                          :source="data"
               ></component>
               <bbn-context v-else
-                           :context="true"
-                           :source="getMenu"
+                            :context="true"
+                            :source="getMenu"
+                            @open="isActive = true"
+                            @close="isActive = false"
               >
                 <span class="selectable"
-                      @dblclick="activate"
+                      @dblclick="dblClickOnNode"
+                      @click="clickOnNode"
                       @mousedown.left="startDrag"
                       @mouseup.left="
-                      if ( !double ){
+                      if ( !doubleClk ){
                         if ( !tree.realDragging && selectable ){
                           isSelected = !isSelected;
                         }
-                        double = true;
+                        doubleClk = true;
                       }"
                       tabindex="0"
                 >
-                  <span :class="[{'with-zoom': ready}, 'icon']">
+                  <span v-if="tree.icons"
+                        :class="[{'with-zoom': ready}, 'icon']"
+                  >
                     <!-- If icon is specifically false we leave the white space -->
-                    <span v-if="icon === false"></span>
-                    <i v-else-if="icon"
-                       :class="icon"
-                       :style="iconStyle"
-                    ></i>
-                    <i v-else-if="numChildren"
-                       class="nf nf-mdi-folder_outline"
-                       :style="iconStyle"
-                    ></i>
+                    <span v-if="source.icon === false"></span>
                     <i v-else
-                       class="nf nf-fa-file"
-                       :style="iconStyle"
+                        :class="getIcon()"
+                        :style="iconStyle"
                     ></i>
                   </span>
                   <span class="title">
-                    <span v-html="text"></span>
+                    <span v-html="source.text"></span>
                   </span>
                 </span>
               </bbn-context>
             </span>
-            <bbn-tree v-if="numChildren"
+            <bbn-tree v-if="!!numChildren"
                       ref="tree"
-                      :num="numChildren"
+                      :key="level + '-' + idx + '-tree'"
+                      class="bbn-text"
                       :component="component"
-                      :source="!items && tree.isFunction ? tree.source : items"
+                      :source="tree.isAjax && !tree.hybrid ? tree.source : (data[tree.children] ? data[tree.children] : [])"
                       :level="level + 1"
-                      :object="tree.object"
+                      :object="tree.object ? !tree.hybrid : false"
                       :path="path"
-            >
-            </bbn-tree>
+                      :autobind="false"
+                      :filterable="isFilterable"
+                      :selectable="source.selectable !== undefined ? source.selectable : tree.selectable"
+                      :selection="source.selection !== undefined ? source.selection : tree.selection"
+                      :cls="source.cls !== undefined ? source.cls : tree.cls"
+                      :quickFilter="quickFilter"
+                      :sortable="source.sortable !== undefined ? source.sortable : tree.sortable"
+                      :multiple="source.multiple !== undefined ? source.multiple : tree.multiple"
+                      :uid="uid"
+                      :opened="!!tree.opened"
+            ></bbn-tree>
+            <span v-if="sortable"
+                  :class="['bbn-w-100', 'bbn-tree-order-bottom', {
+                    'bbn-tree-order': tree.dragging && (tree.dragging.parent === parent) && !quickFilter,
+                    'bbn-state-active': !!isOverOrderBottom
+                  }]"
+                  style="height: 2px; line-height: 2px;"
+                  ref="orderBottom"
+                  @mouseover.stop="mouseOver"
+            ></span>
           </li>
         </bbn-tree-node>
       </ul>

@@ -1,28 +1,32 @@
-<div :class="[{'bbn-reset': true, 'bbn-100': true, 'bbn-overlay': isFullScreen}, componentClass]"
+<div :class="[{'bbn-reset': true, 'bbn-overlay': isFullScreen}, componentClass]"
      @keydown.enter.stop=""
      @keydown.escape.stop="toggleFullScreen(false)"
 >
-  <div class="bbn-100"
-       ref="code"
-       @focus="focus($event)"
-       @blur="blur($event)"
-       @keydown="keydown($event)"
-       @keyup="keyup($event)"
-       @mouseenter="over($event)"
-       @mouseleave="out($event)"
-       @scroll.passive="scroll($event)"
+  <div :class="fill ? 'bbn-code-filled' : ''"
+      ref="code"
+      @focus="focus($event)"
+      @blur="blur($event)"
+      @keydown="keydown($event)"
+      @keyup="keyup($event)"
+      @mouseenter="over($event)"
+      @mouseleave="out($event)"
+      @scroll.passive="scroll($event)"
   ></div>
   <input ref="element"
-         type="hidden"
-         :value="value"
-         :name="name"
-         :disabled="disabled"
-         :required="required"
+        type="hidden"
+        :value="value"
+        :name="name"
+        :disabled="disabled"
+        :required="required"
   >
   <div class="bbn-bg-black bbn-p bbn-middle theme-button"
-       v-if="themeButton"
-       ref="theme_button"
+      v-if="themeButton"
+      ref="theme_button"
   >
     <i class="nf nf-fa-bars" @click="nextTheme()"> </i>
   </div>
+  <bbn-scrollbar v-if="fill && ready"
+                orientation="vertical"
+                :container="$el.querySelector('.CodeMirror-scroll')">
+  </bbn-scrollbar>
 </div>

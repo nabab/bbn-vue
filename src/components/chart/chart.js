@@ -5,7 +5,9 @@
  * It allows large amounts of information to be condensed into an easily understandable visual format where complex data can be displayed, interpreted and analyzed with detailed customization using one of these graphs: "line", "area", "bar", "pie", "donut" and "radial".
  *
  * @author Mirko Argentino
+ *
  * @copyright BBN Solutions
+ *
  * @created 10/02/2020
  */
 
@@ -37,7 +39,7 @@
       },
       /**
       * The width of the chart.
-      * @prop {String} [100%] width.
+      * @prop {String} [100%] width
       */
       width: {
         type: String,
@@ -45,17 +47,22 @@
       },
       /**
        * The height of the chart.
-       * @prop {String} [100%] height.
+       * @prop {String} [100%] height
        */
       height: {
         type: String,
         default: '100%'
       },
+      /**
+       * The theme of chart.
+       *
+       * @prop {String} ['light'] theme
+       */
       theme: {
         type: String,
         default(){
           if ( appui && appui.theme && appui.themes ){
-            let isDark = bbn.fn.get_field(appui.themes, {value: appui.theme}, 'isDark');
+            let isDark = bbn.fn.getField(appui.themes, {value: appui.theme}, 'isDark');
             return !!isDark ? 'dark' : 'light';
           }
           return 'light';
@@ -71,7 +78,7 @@
       },
       /**
        * The x-axis title.
-       * @prop {String} xTitle.
+       * @prop {String} xTitle
        */
       xTitle: {
 			  type: String
@@ -642,12 +649,34 @@
     },
     data(){
       return {
+        /**
+         * @data {Boolean} [false] container
+         */
         container: false,
+        /**
+         * @data {Number} [0] containerHeight
+         */
         containerHeight: 0,
+        /**
+         * @data {Number} [0] containerWidth
+         */
         containerWidth: 0,
+        /**
+         * @data {Boolean} [false] ready
+         */
         ready: false,
+        /**
+         * @data {Boolean} [false] isInit
+         */
         isInit: false,
+        /**
+         * @data {Boolean} [false] widget
+         */
         widget: false,
+        /**
+         * The random string
+         * @data {String} ['random string'] id
+         */
         id: bbn.fn.randomString()
       }
     },

@@ -1,0 +1,49 @@
+<div :class="[componentClass, 'bbn-overlay']">
+  <div class="bbn-hidden" v-if="$slots.default" ref="slot">
+    <slot></slot>
+  </div>
+  <div v-for="(item, index) of items"
+       class="bbn-overlay slide"
+       :style="getStyle(item)">
+    <bbn-scroll :scrollable="item.visible">
+      <ul v-if="item.data.length && ready"
+          class="bbn-menulist"
+      >
+        <li v-if="index > 0" class="bbn-state-default" @click="unselect">
+          <span class="bbn-w-100 bbn-vxspadded bbn-hspadded">
+            <span class="space" v-if="hasIcons"></span>
+            <span class="text">..</span>
+          </span>
+
+        </li>
+        <li v-for="(li, idx) of item.data"
+            :ref="'li-' + index + '-' + idx"
+            :key="uid ? li[uid] : index + '-' + idx"
+            @click="select(index, idx)"
+            :class="{
+              'bbn-no-padding': !!component,
+              'bbn-state-default': true,
+              'bbn-disabled': !!li.disabled,
+              'bbn-state-selected': li.last && (idx === selectedIndex)
+            }">
+          <component v-if="currentComponent"
+                    :is="currentComponent"
+                    :source="li.data"
+                    @remove="remove(idx)"
+                    @hook:mounted="selfEmit(true)">
+          </component>
+          <component v-else
+                    :is="li.url && !li[children] ? 'a' : 'span'"
+                    @click.prevent="() => {}"
+                    class="bbn-w-100 bbn-vxspadded bbn-hspadded"
+                    :href="li.url || null">
+            <span class="space" v-if="hasIcons">
+              <i v-if="li.icon" :class="li.icon"></i>
+            </span>
+            <span class="text" v-html="li[sourceText]"></span>
+          </component>
+        </li>
+      </ul>
+    </bbn-scroll>
+  </div>
+</div>

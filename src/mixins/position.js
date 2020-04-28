@@ -5,6 +5,7 @@
       props: {
         /**
         * The position 'left'.
+        * @memberof positionComponent
         * @prop {Number} left
         */
         left: {
@@ -12,6 +13,7 @@
         },
         /**
         * The position 'right'.
+        * @memberof positionComponent
         * @prop {Number} right
         */
         right: {
@@ -19,6 +21,7 @@
         },
         /**
         * The position 'top'.
+        * @memberof positionComponent
         * @prop {Number} top
         */
         top: {
@@ -26,6 +29,7 @@
         },
         /**
         * The position 'bottom'.
+        * @memberof positionComponent
         * @prop {Number} bottom
         */
         bottom: {

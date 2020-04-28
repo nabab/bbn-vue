@@ -648,22 +648,18 @@
        * @fires onResize
        */
       waitReady(cp){
-        if ( !this.ready ){
-          if ( this.readyDelay !== false ){
+        if (!this.ready) {
+          if (this.readyDelay !== false) {
             clearTimeout(this.readyDelay);
           }
           this.readyDelay = setTimeout(() => {
             this.readyDelay = false;
           }, this.latency);
         }
-        else {
-          //bbn.fn.log("ready", cp);
-          if ( !cp || !cp.$options || (cp.$options.name !== 'bbn-floater') ){
-            this.keepCool(() => {
-              this.onResize();
-              bbn.fn.log("LAUNCHING ONRESIZE FROM SCROLL");
-            }, "init", this.latency * 2);
-          }
+        else if (!cp || !cp.$options || (cp.$options.name !== 'bbn-floater')) {
+          this.keepCool(() => {
+            this.onResize();
+          }, "init", this.latency * 2);
         }
       }
     },
@@ -687,6 +683,11 @@
       readyDelay(newVal){
         if ( newVal === false ){
           this.initSize();
+        }
+      },
+      scrollable(newVal){
+        if (newVal) {
+          this.onResize();
         }
       },
       lastKnownWidth(newVal){

@@ -8,6 +8,7 @@
     memoryComponent: {
       props: {
         /**
+         * The object memory or a function that returns the object.
          * @prop {Object|Function} memory
          * @memberof memoryComponent
          */

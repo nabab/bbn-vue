@@ -6,10 +6,18 @@
   <div v-if="!nav" class="bbn-overlay">
     <slot></slot>
     <bbn-container v-for="view in views"
-                   v-if="!view.slot"
+                   v-if="!view.slot && !component"
                    :key="view.url"
                    v-bind="view"
     ></bbn-container>
+    <bbn-container v-if="component && componentSource && componentUrl && componentSource[componentUrl]"
+                   :source="componentSource"
+                   :component="component"
+                   ref="container"
+                   :selected="true"
+                   @hook:mounted="containerComponentMount"
+                   :url="componentSource[componentUrl]">
+    </bbn-container>
   </div>
   <div v-else
       :class="['bbn-flex-height', 'bbn-router-nav', {'bbn-router-nav-bc': isBreadcrumb}]"
@@ -75,10 +83,15 @@
     <div class="bbn-flex-fill">
       <slot></slot>
       <bbn-container v-for="view in views"
-                     v-if="!view.slot"
+                     v-if="!view.slot && !component"
                      :key="view.url"
                      v-bind="view"
       ></bbn-container>
+      <bbn-container v-if="component && componentSource && componentURL"
+                     :source="componentSource"
+                     :component="component"
+                     :url="componentSource[componentURL]">
+      </bbn-container>
     </div>
   </div>
 </div>

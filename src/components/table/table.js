@@ -24,12 +24,12 @@
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.resizerComponent
+     * @mixin bbn.vue.listComponent
      * @mixin bbn.vue.dataEditorComponent
      * @mixin bbn.vue.localStorageComponent
-     * @mixin bbn.vue.observerCompone
+     * @mixin bbn.vue.observerComponent
      * @mixin bbn.vue.keepCoolComponent
      * @mixin bbn.vue.dataComponent
-     * @mixin bbn.vue.listComponent
      */
     mixins: [
       bbn.vue.basicComponent,
@@ -140,7 +140,7 @@
       },
       /**
        * Defines the default columns width.
-       * @prop {Number} [150]
+       * @prop {Number} [150] defaultColumnWidth
        */
       defaultColumnWidth: {
         type: Number,
@@ -722,7 +722,7 @@
                 tmpData[col.field] = {};
                 bbn.fn.each(data, function (d) {
                   tmpData[col.field][d.index] = d.data[col.field];
-                  d.data[col.field] = d.data[col.field] ? bbn.fn.get_field(col.source, col.sourceValue ? col.sourceValue : 'value', d.data[col.field], col.sourceText ? col.sourceText : 'text') || '' : '';
+                  d.data[col.field] = d.data[col.field] ? bbn.fn.getField(col.source, col.sourceText ? col.sourceText : 'text', col.sourceValue ? col.sourceValue : 'value', d.data[col.field]) || '' : '';
                 })
               }
             });
@@ -1154,7 +1154,7 @@
             top = container ? container.scrollTop : null,
             left = container ? container.scrollLeft : null,
             viewport = scroll ? bbn.fn.clone(scroll.$el.getBoundingClientRect()) : null;
-          if (this.titleGroups && scroll) {
+          if (this.titleGroups && scroll && scroll.getRef('xScroller')) {
             let x = scroll.getRef('xScroller').currentScroll,
               cols = this.titleGroupsCells(this.groupCols[1] && (this.groupCols[1].name === 'main') ? 1 : 0),
               tot = 0;

@@ -5,8 +5,9 @@
       methods: {
         /**
          * States the role of the enter button on the dropdown menu.
-         *
+         * @memberof keynavComponent
          * @method keynav
+         * @param {Event} e
          * @fires widget.select
          * @fires widget.open
          *

@@ -23,6 +23,7 @@
       data(){
         return bbn.fn.extend({
           /**
+           * The change of value of this prop to true emits the event 'ready'.
            * @data {Boolean} [false] ready
            * @memberof basicComponent
            */
@@ -30,11 +31,13 @@
         }, bbn.vue.defaults[this.$options.name.slice(4)] || {})
       },
       methods: {
-        defaultFunction(fn, mixin){
-          if ( bbn.vue[mixin + 'Component'] && bbn.vue[mixin + 'Component'][fn] ){
-            return bbn.vue[mixin + 'Component'][fn].apply(this);
-          }
-        },
+        /**
+         * Creates a HTML string for recreating the component.
+         * @method exportComponent
+         * @memberof basicComponent
+         * @param  {Boolean}   full 
+         * @param  {Number}    level 
+         */
         exportComponent(full, level){
           let lv = level || 0;
           let st = bbn.fn.repeat('  ', lv) + '<' + this.$options._componentTag;
@@ -85,7 +88,7 @@
       },
       watch: {
         /**
-         * Emits the event ready
+         * Emits the event 'ready' when the value is true.
          * @watch ready
          * @emit ready
          * @memberof basicComponent

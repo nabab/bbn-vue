@@ -16,7 +16,9 @@
 
   Vue.component('bbn-markdown', {
     /**
-     * @mixin bbn.vue.fullComponent 
+     * @mixin bbn.vue.basicComponent 
+     * @mixin bbn.vue.inputComponent 
+     * @mixin bbn.vue.eventsComponent 
      */
     mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent],
     props: {

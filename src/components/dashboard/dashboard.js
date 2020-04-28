@@ -222,7 +222,7 @@
       },
       toggleWidget(key, hidden){
         if ( this.widgets ){
-          let w = bbn.fn.get_row(this.widgets, {key: key});
+          let w = bbn.fn.getRow(this.widgets, {key: key});
           if ( w && (w.closable !== false) ){
             this.updateWidget(key, {
               hidden: hidden === undefined ? !w.hidden : hidden
@@ -322,7 +322,7 @@
           let i = 0;
           if ( this.widgets ){
             bbn.fn.each(this.originalSource, (a) => {
-              let w = bbn.fn.get_row(this.widgets, {uid: a.uid});
+              let w = bbn.fn.getRow(this.widgets, {uid: a.uid});
               if ( w && w.showable ){
                 items.push({
                   disabled: !this.closable || (w.closable === false),
@@ -397,7 +397,7 @@
               delete params.cfg[a];
             }
           });
-          if ( bbn.fn.countProperties(params.cfg) ){
+          if ( bbn.fn.numProperties(params.cfg) ){
             bbn.fn.iterate(params.cfg, (a, k) => {
               if ( this.widgets[idx][k] === undefined ){
                 this.$set(this.widgets[idx], k, a);
@@ -566,7 +566,7 @@
       initWidgets(){
         this.widgets = [];
         bbn.fn.each(this.currentOrder, id => {
-          let w = bbn.fn.get_row(this.originalSource, {key: id});
+          let w = bbn.fn.getRow(this.originalSource, {key: id});
           if ( w ){
             this.add(w);
           }

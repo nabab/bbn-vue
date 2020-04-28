@@ -9,12 +9,14 @@
       data(){
         return {
           /**
+           * The obejct containing the cool's timers.
            * @data {Number} [0] coolTimer
            * @memberof keepCoolComponent
            */
           coolTimers: {
           },
           /**
+           * The interval.
            * @data {Number} [40] coolInterval
            * @memberof keepCoolComponent
            */

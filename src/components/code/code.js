@@ -201,6 +201,10 @@
       theme: {
         type: String,
       },
+      fill: {
+        type: Boolean,
+        default: true
+      },
       cfg: {
         type: Object,
         default: function(){
@@ -223,7 +227,7 @@
         /**
          * @todo not used
          */
-        widgetName: "CodeMirror",
+        widget: null,
         /**
          * True if the editor is fullscreen.
          * @data {Boolan} [false] isFullScreen
@@ -286,8 +290,6 @@
         if ( tmp = this.getMode(this.mode) ){
           bbn.fn.extend(true, cfg, tmp);
         }
-        //bbn.fn.info("Codemirror config");
-        //bbn.fn.log(cfg);
         return cfg;
       },
       /**

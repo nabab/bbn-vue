@@ -388,7 +388,7 @@
             // Adding also a few funciton to interact with the tab
             let cont = this;
             let o = bbn.fn.extend(true, res ? res : {}, {
-              template: '<div class="bbn-overlay">' + this.content + '</div>',
+              template: '<div class="' + (this.scrollable ? '' : 'bbn-overlay') + '">' + this.content + '</div>',
               methods: {
                 getContainer(){
                   if (!this._bbn_container) {
@@ -485,6 +485,11 @@
       currentURL(newVal, oldVal){
         if ( !newVal || (newVal.indexOf(this.url) !== 0) ){
           this.currentURL = this.url;
+        }
+      },
+      ready(){
+        if (this.onMount) {
+          this.onMount();
         }
       },
       load(nv, ov){

@@ -484,7 +484,7 @@
             }
             if (!ev.defaultPrevented) {
               if ( (this.mode === 'selection') && !item.selected ){
-                let prev = bbn.fn.get_row(this.filteredData, "selected", true);
+                let prev = bbn.fn.getRow(this.filteredData, "selected", true);
                 if ( prev ){
                   this.currentData[prev.index].selected = false;
                 }

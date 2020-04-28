@@ -22,7 +22,7 @@
              :name="name"
              tabindex="0"
              :disabled="disabled"
-             :readonly="readonly"
+             :readonly="readonly || onlySpinners"
              :required="required"
              @focus="_focus"
              @mouseenter="over"

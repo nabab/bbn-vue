@@ -138,10 +138,7 @@
     </div>
 
     <div :class="{'bbn-flex-fill': scrollable, 'bbn-table-main': true, 'bbn-w-100': true}">
-      <div :class="{'bbn-overlay': scrollable, 'bbn-block': !scrollable}"
-           :style="{
-            height: scrollable ? 'auto' : '100%'
-           }">
+      <div :class="{'bbn-overlay': scrollable, 'bbn-block': !scrollable}">
         <div class="bbn-table-container"
               ref="container"
               @scroll.passive="_scrollContainer"

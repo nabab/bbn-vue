@@ -127,6 +127,7 @@
                   :master="true"
                   :class="{'bbn-overlay': !nav}"
                   :url="!!nav ? undefined : url"
+                  @route="onRoute"
       >
         <slot></slot>
       </bbn-router>

@@ -51,7 +51,6 @@
       > div{
         > div.bbn-table-container{
           overflow-y: auto;
-          min-height: 100%;
           scrollbar-width: none;
           &::-webkit-scrollbar {
            display: none;
@@ -148,6 +147,18 @@
       position: absolute;
       right: 0.5em;
       bottom: 0.5em;
+    }
+  }
+  // Scrollable 
+  &.bbn-overlay {
+    > div {
+      > div.bbn-table-main{
+        > div{
+          > div.bbn-table-container{
+            min-height: 100%;
+          }
+        }
+      }
     }
   }
 }

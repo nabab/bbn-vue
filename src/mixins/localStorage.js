@@ -8,6 +8,7 @@
     localStorageComponent: {
       props: {
         /**
+         * True if the component has to have storage.
          * @prop {Boolean} [false] storage
          * @memberof localStorageComponent
          */
@@ -40,8 +41,9 @@
       },
       computed: {
         /**
+         *  _storage
          * @memberof localStorageComponent
-         * @computed storage
+         * 
          */
         _storage(){
           if ( window.store ){
@@ -79,6 +81,11 @@
         hasStorage(){
           return (this.storage || (this.storageFullName || (this.storageName !== 'default'))) && !!this._storage;
         },
+        /**
+         * Returns the storage's default name.
+         * @computed storageDefaultName 
+         * @returns {String}
+         */
         storageDefaultName(){
           if ( !this.storage ){
             return false;
@@ -91,7 +98,7 @@
          * Returns the complete path of the storage.
          * @method _getStorageRealName
          * @param {String} name 
-         * @return {String}
+         * @returns{String}
          * @memberof localStorageComponent
          */
         _getStorageRealName(name){
@@ -114,7 +121,8 @@
          * Returns the computed _storage
          * @method getStorage
          * @param {String} name 
-         * @return {Boolean|String}
+         * @param {Boolean} isFullName
+         * @returns {Boolean|String}
          * @memberof localStorageComponent
          */
         getStorage(name, isFullName){
@@ -128,6 +136,8 @@
          * @method setStorage
          * @param value 
          * @param {String} name 
+         * @param {Boolean} isFullName
+         * @returns {Boolean}
          * @memberof localStorageComponent
          */
         setStorage(value, name, isFullName){
@@ -140,6 +150,7 @@
          * Unsets the computed _storage.
          * @method unsetStorage
          * @param {String} name 
+         * @param {Boolean} isFullName
          * @memberof localStorageComponent
          */
         unsetStorage(name, isFullName){

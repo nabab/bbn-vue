@@ -1,8 +1,7 @@
 /**
- * @file bbn-button component
+ * @file button.js
  *
- * @description bbn-button is a very simple component to use; it is possible to configure the appearance of the button by defining its properties as desired, for example: displaying only text, the icon or the combination of both.
- * Defines the actions to be performed.
+ * @description bbn-button is a component represents the button with the possibility of extensive customizations.
  *
  * @copyright BBN Solutions
  *
@@ -53,18 +52,18 @@
         type: String
       },
       /**
-      * The icon shown on the button.
-      *
-      *  @prop {String} icon
-      */
+       * The icon shown on the button.
+       *
+       *  @prop {String} icon
+       */
       icon: {
         type: String,
       },
-      /** 
+      /**
        * The icon(s) position (left or right).
-       * 
+       *
        * @prop {String} ['left'] iconPosition
-      */
+       */
       iconPosition: {
         type: String,
         default: 'left',
@@ -88,46 +87,46 @@
         default: null
       },
       /**
-      * Specifies the type of button.
-      *
-      * @prop {String} type
-      */
+       * Specifies the type of button.
+       *
+       * @prop {String} type
+       */
       type: {
         type: String,
         default: 'button'
       },
-     /**
-      * Set to true to disable the button.
-      *
-      * @prop {Boolean|Function} [false] disabled
-      */
+      /**
+       * Set to true to disable the button.
+       *
+       * @prop {Boolean|Function} [false] disabled
+       */
       disabled: {
         type: [Boolean, Function],
         default: false
       },
-     /**
-      * Set to true for the button to glow.
-      *
-      * @prop {Boolean|Function} [false] glowing
-      */
+      /**
+       * Set to true for the button to glow.
+       *
+       * @prop {Boolean|Function} [false] glowing
+       */
       glowing: {
         type: [String, Boolean],
         default: false
       },
-     /**
-      * State the button's glowing colour.
-      *
-      * @prop {String} [#c4a300] glowingColor
-      */
+      /**
+       * State the button's glowing colour.
+       *
+       * @prop {String} [#c4a300] glowingColor
+       */
       glowingColor: {
         type: String,
         default: '#c4a300'
       },
       /**
-      * The action that has to be performed at the event click.
-      *
-      * @prop {Function|String} action
-      */
+       * The action that has to be performed at the event click.
+       *
+       * @prop {Function|String} action
+       */
       action: {
         type: [Function, String]
       }
@@ -180,5 +179,4 @@
       }
     }
   });
-
 })(bbn);

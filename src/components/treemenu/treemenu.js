@@ -157,7 +157,7 @@
        * @param {Number} level 
        * @return {Object}
        */
-      mapSrc(data, idx, level){
+      mapSrc(data, level){
         data.cls = 'bbn-treemenu-' + (level > 6 ? x : level);
         if ( level < 3 ){
           data.cls += ' bbn-bottom-sspace';
@@ -206,8 +206,7 @@
        * @fires tree.load
        */
       reset(){
-        this.$refs.tree.reset();
-        this.$refs.tree.load();
+        this.getRef('tree').reset();
       },
       /**
        * Gets the data of the component
@@ -216,7 +215,7 @@
       getData(){
         return {menu: this.currentMenu};
       },
-      readyTree(){        
+      readyTree(){
         this.$nextTick(() => {
           this.currentMenu = this.current;
         })
@@ -246,9 +245,9 @@
        * @fires reset
        */
       currentMenu(val){
-        if ( (val !== null) && (this.$refs.tree !== undefined) ){         
-          this.reset();         
-        }        
+        if ( (val !== null) && (this.getRef('tree') !== undefined) ){
+          this.reset();
+        }
       }
     }
   });

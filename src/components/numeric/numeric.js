@@ -69,6 +69,14 @@
         type: Boolean,
         default: true
       },
+      /**
+       *
+       * @prop {Boolean} [true] onlySpinners
+       */
+      onlySpinners: {
+        type: Boolean,
+        default: false
+      }
     },
     data(){
       let isPercentage = this.unit === '%',
@@ -205,7 +213,7 @@
        * @fires focus
        */
       _focus(e){
-        if ( !this.disabled && !this.readonly ){
+        if ( !this.disabled && !this.readonly && !this.onlySpinners ){
           this.currentValue = this.value;
           this.editMode = true;
           this.$nextTick(() => {
@@ -278,32 +286,50 @@
        * Increase the value of the component of 1 step.
        * @method increment
        * @fires checkMinMax
+       * @emits beforeIncrement
+       * @emits increment
+       * @emits change
        */
       increment(){
         if ( !this.readonly && !this.disabled && !this.disableIncrease ){
-          this.currentValue = ((parseFloat(this.value) || 0) + (this.isPercentage ? this.step / 100 : this.step)).toFixed(this.currentDecimals);
-          this.$nextTick(() => {
-            this.checkMinMax();
+          let ev = new Event('beforeIncrement', {cancelable: true}),
+              value = ((parseFloat(this.value) || 0) + (this.isPercentage ? this.step / 100 : this.step)).toFixed(this.currentDecimals);
+          this.$emit('beforeIncrement', value, ev);
+          if ( !ev.defaultPrevented ){
+            this.currentValue = value;
             this.$nextTick(() => {
-              this.$emit('change', this.currentValue);
-            });
-          })
+              this.checkMinMax();
+              this.$nextTick(() => {
+                this.$emit('increment', this.currentValue);
+                this.$emit('change', this.currentValue);
+              });
+            })
+          }
         }
       },
       /**
        * Decrease the value of the component of 1 step.
        * @method decrement
        * @fires checkMinMax
+       * @emits beforeDecrement
+       * @emits decrement
+       * @emits change
        */
       decrement(){
         if ( !this.readonly && !this.disabled && !this.disableDecrease ) {
-          this.currentValue = ((parseFloat(this.value) || 0) - (this.isPercentage ? this.step / 100 : this.step)).toFixed(this.currentDecimals);
-          this.$nextTick(() => {
-            this.checkMinMax();
+          let ev = new Event('beforeDecrement', {cancelable: true}),
+              value = ((parseFloat(this.value) || 0) - (this.isPercentage ? this.step / 100 : this.step)).toFixed(this.currentDecimals);
+          this.$emit('beforeDecrement', value, ev);
+          if ( !ev.defaultPrevented ){
+            this.currentValue = value;
             this.$nextTick(() => {
-              this.$emit('change', this.currentValue);
-            });
-          })
+              this.checkMinMax();
+              this.$nextTick(() => {
+                this.$emit('decrement', this.currentValue);
+                this.$emit('change', this.currentValue);
+              });
+            })
+          }
         }
       },
       /**

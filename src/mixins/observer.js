@@ -8,6 +8,7 @@
     observerComponent: {
       props: {
         /**
+         * True if the component has to have an observer.
          * @prop {Boolean} [true] observer
          * @memberof observerComponent
          */
@@ -31,26 +32,31 @@
            */
           observerDirty: false,
           /**
+           * The value of the observer.
            * @memberof observerComponent
            * @data observerValue
            */
           observerValue: null,
           /**
+           * The array of observers.
            * @data {Array} observers
            * @memberof observerComponent
            */
           observers: [],
           /**
+           * The id of the observer.
            * @data observerID
            * @memberof observerComponent
            */
           observerID: null,
           /**
-           * @data observationTower
+           * The closest ancestor 'bbn-obsever';
+           * @data {Vue} observationTower
            * @memberof observerComponent
            */
           observationTower: null,
           /**
+           * The uid of the observer.
            * @data {String} observerUID
            * @memberof observerComponent
            */
@@ -59,6 +65,7 @@
       },
       methods: {
         /**
+         * Returns true if the prop observer is set to true and an observerionTower is found.
          * @method observerCheck
          * @return {Boolean}
          * @memberof observerComponent
@@ -67,6 +74,7 @@
           return !!(this.observer && this.observationTower);
         },
         /**
+         * Returns true if the observer has a value.
          * @method isObserved
          * @return {Boolean}
          * @memberof observerComponent
@@ -75,6 +83,7 @@
           return this.observerCheck() && this.observerValue;
         },
         /**
+         * Updates the observer.
          * @method observerWatch
          * @fires isObserved
          * @memberof observerComponent
@@ -97,7 +106,7 @@
             }, 100);
           }
         },
-          /**
+        /**
          * @method observerRelay
          * @memberof observerComponent
          */
@@ -124,6 +133,7 @@
           }
         },
         /**
+         * Emits the event bbnObs.
          * @method observerEmit
          * @param {String|Number} newVal 
          * @param {Object} obs 
@@ -131,8 +141,7 @@
          * @memberof observerComponent
          */
         observerEmit(newVal, obs){
-          let row = bbn.fn.get_row(this.observers, {id: obs.id, element: obs.element});
-          //bbn.fn.log("--------------observerEmit-------------------", this.$el, newVal, row, obs);
+          let row = bbn.fn.getRow(this.observers, {id: obs.id, element: obs.element});
           if ( row && (row.value !== newVal) ){
             row.value = newVal;
             this.$emit('bbnObs' + obs.element + obs.id, newVal);
@@ -152,6 +161,7 @@
         }
       },
       /**
+       * Defines the observationTower object.
        * @event mounted
        * @memberof observerComponent
        */
@@ -162,6 +172,7 @@
         }
       },
       /**
+       * Removes the observer.
        * @event beforeDestroy
        * @memberof observerComponent
        */

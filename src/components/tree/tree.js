@@ -10,29 +10,41 @@
 (function(bbn){
   "use strict";
 
-  const NODE_PROPERTIES = ["selected", "selectedClass", "activeClass", "expanded", "tooltip", "icon", "selectable", "text", "data", "cls", "component", "num", "source", "level", "items"];
+  const NODE_PROPERTIES = [
+    'text',
+    'icon',
+    'num',
+    'numChildren',
+    'data',
+    'cls',
+    'selectedClass',
+    'activeClass',
+    'selection',
+    'selectable',
+    'multiple',
+    'filterable',
+    'sortable',
+    'selected',
+    'expanded',
+    'component',
+    'tooltip',
+    'path',
+    'visible'
+  ];
 
   Vue.component('bbn-tree', {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.localStorageComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent],
+    mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent, bbn.vue.listComponent],
     props: {
       /**
        * @prop {String} filterString
        */
-      filterString: {
+      /* filterString: {
         type: String
-      },
-      /**
-       * The name of the array containings tree's children
-       * @prop {String} ['items'] children
-       */
-      children: {
-        type: String,
-        default: 'items'
-      },
+      }, */
       /**
        *  @prop {Boolean} [false] excludedSectionFilter
        */
@@ -57,36 +69,11 @@
         default: false
       },
       /**
-       * A function for mapping the tree data
-       * @prop {Function} map
-       */
-      map: {
-        type: Function,
-      },
-      /**
-       * The data to send to the server
-       * @prop {Object|Function} data
-       */
-      data: {
-        type: [Object, Function],
-        default(){
-          return {};
-        }
-      },
-      /**
        * An array of objects representing the nodes
        * @prop {Array|String|Object|Function} source
        */
       source: {
         Type: [Array, String, Object, Function]
-      },
-      /**
-       * Set to false if the source shouldn't be loaded at mount time
-       * @prop {Boolean} [true] autoload
-       */
-      autoload: {
-        type: Boolean,
-        default: true
       },
       /**
        * The class given to the node (or a function returning the class name)
@@ -103,25 +90,10 @@
         type: [Function, String, Object]
       },
       /**
-       * The data field used as UID
-       * @prop {String} uid
-       */
-      uid: {
-        Type: String
-      },
-      /**
        * Set to true for having the nodes draggable
        * @prop {Boolean} [false] draggable
        */
       draggable: {
-        type: Boolean,
-        default: false
-      },
-      /**
-       * Set to true prepend a checkbox to the item
-       * @prop {Boolean} [false] checkable
-       */
-      checkable: {
         type: Boolean,
         default: false
       },
@@ -132,6 +104,10 @@
 
       menu: {
         type: [Array, Function]
+      },
+      icons: {
+        type: Boolean,
+        default: true
       },
       /**
        * An string (or a function returning one) for the icon's color
@@ -208,14 +184,6 @@
           return [];
         }
       },
-      /**
-       * Set to true allows to select multiple nodes in the tree
-       * @prop {Boolean} [true] multiselect
-       */
-      multiselect: {
-        type: Boolean,
-        default: true
-      },
       //@todo never used selectedValues
       selectedValues: {
         type: [Array, String],
@@ -223,29 +191,53 @@
           return []
         }
       },
-      value: {}
+      value: {},
+      /**
+       * @prop {Boolean} [true] selectable
+       */
+      selectable: {
+        type: Boolean,
+        default: true
+      },
+      /**
+       * @prop {Boolean} [true] hierarchy
+       */
+      hierarchy: {
+        type: Boolean,
+        default: true
+      },
+      /**
+       * @prop {String} [''] quickFilter
+       */
+      quickFilter: {
+        type: String,
+        default: ''
+      },
+      /**
+       * @prop {Boolean} [false] sortable
+       */
+      sortable: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * @prop {Array} [[{field: 'num', dir: 'DESC'}, {field: 'text', dir: 'ASC'}]] order
+       */
+      order: {
+        type: Array,
+        default(){
+          return [{
+            field: 'num',
+            dir: 'ASC'
+          }]
+        }
+      },
+      hybrid: {
+        type: Boolean,
+        default: false
+      }
     },
     data(){
-      let items = [];
-      let isAjax = false;
-      let isFunction = false;
-      if ( (typeof(this.source) === 'string') ){
-        isAjax = true;
-      }
-      else if ( bbn.fn.isFunction(this.source) ){
-        isFunction = true;
-      }
-      else{
-        if ( bbn.fn.isArray(this.source) ){
-          items = this._map(this.source);
-        }
-        else if ( this.object ){
-          items = this._objectMapper(this.source)
-        }
-        else{
-          throw new Error(bbn._('The source of the tree must be an array or the object property must be set to true if it is an object'));
-        }
-      }
       return {
         /**
          * Only for the origin tree
@@ -254,12 +246,12 @@
         isRoot: false,
         /**
          * The parent node if not root
-         * @data {Boolean} [false] node
+         * @data {Boolean|Vue} [false] node
          */
         node: false,
         /**
          * The parent tree if not root
-         * @data {Boolean} [false] tree
+         * @data {Boolean|Vue} [false] tree
          */
         tree: false,
         /**
@@ -267,21 +259,6 @@
          * @data {String|Boolean} url
          */
         url: typeof(this.source) === 'string' ? this.source : false,
-        /**
-         * Is the data provided from the server side
-         * @data {Boolean} [false] isAjax
-         */
-        isAjax: isAjax,
-        /**
-         * True when the data is currently loading in the tree (unique to the root)
-         * @data {Boolean} [false] isFunction
-         */
-        isFunction: isFunction,
-        /**
-         * True when the data is currently loading in the tree (unique to the root)
-         * @data {Boolean} [false] isLoading
-         */
-        isLoading: false,
         /**
          * True when the data is currently loading in the current tree
          * @data {Boolean} [false] loading
@@ -298,28 +275,18 @@
          */
         isMounted: false,
         /**
-         * The actual list of items (nodes)
-         * @data {items} [Array] items
-         */
-        items: items,
-        /**
          * The currently active node component object
-         * @data {Boolean} [false] activeNode
+         * @data {Boolean|Vue} [false] activeNode
          */
         activeNode: false,
         /**
-         * The currently selected node component object
-         * @data {Boolean} [false] selectedNode
-         */
-        selectedNode: false,
-        /**
          * The component node object over which the mouse is now
-         * @data {overNode} [false] overNode
+         * @data {Boolean|Vue} [false] overNode
          */
         overNode: false,
         /**
          * Dragging state, true if an element is being dragged
-         * @data {Boolean} [false] dragging
+         * @data {Boolean|Vue} [false] dragging
          */
         dragging: false,
         /**
@@ -342,11 +309,56 @@
          * @data {Array} [[]] currentExpanded
          */
         currentExpanded: [],
-        // @todo never used
-        currentSelectedValues: []
+        /**
+         * The component node object over which the mouse is now
+         * @data {Boolean|Vue} [false] overOrder
+         */
+        overOrder: false,
+        nodes: []
       };
     },
     computed: {
+      /**
+       * @computed filteredData
+       * @fires _checkConditionsOnItem
+       * @return {Array}
+       */
+      filteredData(){
+        let ret = [];
+        if (
+          this.currentData.length &&
+          this.currentFilters &&
+          this.currentFilters.conditions &&
+          this.currentFilters.conditions.length &&
+          (!this.serverFiltering || !this.isAjax)
+        ) {
+          ret = bbn.fn.filter(this.currentData, (a) => {
+            return this._checkConditionsOnItem(this.currentFilters, a.data);
+          });
+        }
+        else{
+          ret = this.currentData;
+        }
+        if ( this.sortable && this.order.length ){
+          ret = bbn.fn.multiorder(ret, bbn.fn.map(this.order, o => {
+            let r = bbn.fn.extend(true, {}, o);
+            r.field = 'data.' + r.field;
+            return r;
+          }));
+          ret = bbn.fn.map(ret, (v, i) => {
+            v.num = i + 1;
+            return v;
+          });
+        }
+        return ret;
+      },
+      /**
+       * @computed selectedNode
+       * @return {Vue|Boolean}
+       */
+      selectedNode(){
+        return this.tree && this.tree.currentSelected.length ? this.tree.currentSelected[this.tree.currentSelected.length-1] : false;
+      },
       /**
        * @computed droppableTrees
        * @return {Array}
@@ -366,28 +378,31 @@
        * Normalize the list of items basing on it's type
        * @method _objectMapper
        * @param {Array|Object} items
-       * @return {Object}
+       * @fires _objectMapper
+       * @return {Array}
        */
       _objectMapper(items){
         let res = [];
         if ( bbn.fn.isArray(items) ){
           bbn.fn.each(items, (a, i) => {
-            let num = 0;
+            let numChildren = 0;
             let o = {
               text: bbn._('Node') + ' ' + i,
-              num_children: num
+              numChildren: numChildren
             };
-            if ( bbn.fn.isArray(a) ){
-              num = a.length;
+            if ( a !== undefined ){
+              if ( bbn.fn.isArray(a) ){
+                numChildren = a.length;
+              }
+              else if ( typeof a === 'object' ){
+                numChildren = bbn.fn.numProperties(a);
+              }
+              else {
+                o.text = typeof a === 'string' ? a : a.toString();
+              }
             }
-            else if ( a && (typeof a === 'object') ){
-              num = bbn.fn.numProperties(a);
-            }
-            else if ( a ){
-              o.text = typeof a === 'string' ? a : a.toString();
-            }
-            if ( num ){
-              o.num_children = num;
+            if ( numChildren ){
+              o.numChildren = numChildren;
               o[this.children] = this._objectMapper(a);
             }
             res.push(o);
@@ -395,22 +410,24 @@
         }
         else if ( items && (typeof items === 'object') && bbn.fn.numProperties(items) ){
           bbn.fn.iterate(items, (a, n) => {
-            let num = 0;
+            let numChildren = 0;
             let o = {
               text: n,
-              num_children: num
+              numChildren: numChildren
             };
-            if ( bbn.fn.isArray(a) ){
-              num = a.length;
+            if ( a !== undefined ){
+              if ( bbn.fn.isArray(a) ){
+                numChildren = a.length;
+              }
+              else if ( typeof a === 'object' ){
+                numChildren = bbn.fn.numProperties(a);
+              }
+              else {
+                o.text = ('<strong>' + o.text + ': </strong>' + a);
+              }
             }
-            else if ( a && (typeof a === 'object') ){
-              num = bbn.fn.numProperties(a);
-            }
-            else if ( a ){
-              o.text = ('<strong>' + o.text + ': </strong>' + a);
-            }
-            if ( num ){
-              o.num_children = num;
+            if ( numChildren ){
+              o.numChildren = numChildren;
               o[this.children] = this._objectMapper(a);
             }
             res.push(o);
@@ -421,80 +438,58 @@
       /**
        * A function to normalize the structure of items
        * @method _map
-       * @param {Array|Function} items 
-       * @param {Number} level 
-       * @fires map
-       * @fires _map
+       * @param {Array} items
+       * @fires tree.map
+       * @fires _objectMapper
        * @return {Array}
        */
-      _map(items, level){
-        if ( this.map ){
-          let res = [];
-          if ( !level ){
-            level = 1; 
-          }
-          else{
-            level++;
-          }
-          if ( bbn.fn.isFunction(items) ){
-            items = items(this.level ? this : null);
-          }
-          bbn.fn.each(items, (a, i) => {
-            let b = this.map(a, i, level);
-            if ( b[this.children] ){
-              b[this.children] = this._map(b[this.children], level);
-            }
-            res.push(b);
-          });
-          return res;
+      _map(items){
+        if ( this.object ){
+          items = this._objectMapper(items.reduce((r, k) => {
+            r[k.value] = k.text;
+            return r;
+          }, {}));
         }
-        return items.slice();
-      },
-      /**
-       * Returns the items basing on the prop isAjax and isFunction
-       * @fires _map
-       * @return {Array}
-       */
-      getItems(){
-        let items = [];
-        if ( !this.isAjax && !this.isFunction ){
-          items = this._map(this.source);
-        }
+        items = bbn.fn.map(items, item => {
+          let o = {};
+          if ( this.tree.map ){
+            item = this.tree.map(item.data !== undefined ? item.data : item, this.level + 1, item.data !== undefined ? item : {});
+          }
+          bbn.fn.each(NODE_PROPERTIES, p => {
+            o[p] = item[p];
+          })
+          if ( item[this.tree.children] ){
+            o.numChildren = item[this.tree.children].length;
+          }
+          if ( o.data === undefined ){
+            o.data = item;
+          }
+          return o;
+        });
         return items;
       },
       /**
        * Resets the tree to the original configuration
        * @method reset
-       * @fires load
-       * @fires getItems
+       * @fires updateData
        */
       reset(){
-        if ( this.isAjax ){
-          this.isLoaded = false;
-        }
-        this.items = [];
-        this.$forceUpdate();
-        this.$nextTick(() => {
-          if ( this.isAjax ){
-            this.load();
-          }
-          else{
-            this.items = this.getItems();
-            this.$forceUpdate();
-          }
-        })
+        this.isLoaded = false;
+        //this.$set(this, 'currentData', []);
+        //this.$forceUpdate();
+        //this.$nextTick(() => {
+          this.updateData();
+        //})
       },
-
       /**
        * Resize the root scroller
        * @method resize
        */
       resize(){
-        if ( this.tree.$refs.scroll ){
-          this.tree.$refs.scroll.onResize();
+        if ( this.tree.getRef('scroll') ){
+          this.tree.getRef('scroll').onResize();
         }
       },
-
       /**
        * Make the root tree resize and emit an open event
        * @method onOpen
@@ -517,12 +512,11 @@
         this.$emit('close');
         this.tree.$emit('close', this);
       },
-
       /**
        * Find a node based on its props
        * @method _findNode
-       * @param {Object} props 
-       * @param {Object} node 
+       * @param {Object} props
+       * @param {Object} node
        * @return {Object}
        */
       _findNode(props, node){
@@ -550,22 +544,22 @@
         }
         return ret;
       },
-
-      getTreeNode(idx){
-        if ( this.getRef('scroll') && this.getRef('scroll').$children[idx] ){
-          return  this.getRef('scroll').$children[idx];
+      /**
+       * @method getNodeByIdx
+       * @param {Number} idx
+       * @return {Vue|Boolean}
+       */
+      getNodeByIdx(idx){
+        if ( bbn.fn.isNumber(idx) && this.nodes.length ){
+          return bbn.fn.getRow(this.nodes, {idx: parseInt(idx)});
         }
-        else {
-          return null;
-        }
-        //return this.getRef('scroll').$children[idx] || null;
+        return false;
       },
-
       /**
        * Find a node based on path
        * @method getNode
-       * @param {Array} arr 
-       * @param context 
+       * @param {Array} arr
+       * @param context
        * @fires _findNode
        * @return {Object}
        */
@@ -589,26 +583,27 @@
           return node;
         }
       },
-
+      addNode(obj){
+        if ( bbn.fn.isObject(obj) ){
+          obj = this._map([obj])[0];
+          obj._bbn = true;
+          obj.index = this.currentData.length;
+          this.currentData.push(obj);
+          return obj;
+        }
+        return false;
+      },
       /**
        * Returns the menu of a given node
        * @method getMenu
-       * @param {Object} node 
+       * @param {Object} node
        * @fires reload
        * @fires menu
        * @return {Array}
        */
       getMenu(node){
-        let idx = -1,
-            menu = [];
-        if ( node.$el && node.$el.parentNode.children.length ){
-          bbn.fn.each(node.$el.parentNode.children, (v, i)=>{
-            if ( v === node.$el){
-              idx = parseInt(i);
-            }
-          })
-        }
-        
+        let menu = [],
+            tree = node.getRef('tree');
         if ( node.numChildren ){
           menu.push({
             text: node.isExpanded ? bbn._("Close") : bbn._("Open"),
@@ -618,7 +613,7 @@
             }
           });
         }
-        if ( this.isAjax && node.numChildren && node.$refs.tree && node.$refs.tree[0].isLoaded ){
+        if ( this.isAjax && node.numChildren && tree && tree.isLoaded ){
           menu.push({
             text: bbn._("Refresh"),
             icon: 'nf nf-fa-refresh',
@@ -628,7 +623,7 @@
           })
         }
         if ( this.menu ){
-          let m2 = bbn.fn.isFunction(this.menu) ? this.menu(node, idx) : this.menu;
+          let m2 = bbn.fn.isFunction(this.menu) ? this.menu(node, node.idx) : this.menu;
           if ( m2.length ){
             bbn.fn.each(m2, function(a,i){
               menu.push({
@@ -646,11 +641,11 @@
       /**
        * Returns an object with the data to send for a given node.
        * If UID has been given obj will only have this prop other the whole data object
-       * @method dataToSend
+       * @method getPostData
        * @fires data
        * @return {Object}
        */
-      dataToSend(){
+      getPostData(){
         // The final object to send
         let r = {},
             uid = this.uid || this.tree.uid;
@@ -667,38 +662,13 @@
         else if ( this.node ){
           r = this.node.data;
         }
-        else if (bbn.fn.isFunction(this.data) ){
-          r = this.data();
+        if (bbn.fn.isFunction(this.tree.data) ){
+          r = bbn.fn.extend(true, {}, this.tree.data(this.node ? this.node.data : {}), r);
         }
         else{
-          r = this.data;
+          r = bbn.fn.extend(true, {}, this.tree.data, r);
         }
         return r;
-      },
-      /**
-       * Makes an object out of the given properties, adding to data all non existing props
-       * @method normalize
-       * @param {Object} obj
-       * @return {Boolean|Object}
-       */
-      normalize(obj){
-        let r = {
-          data: {}
-        };
-        if ( obj.text || obj.icon ){
-          for ( let n in obj ){
-            if ( obj.hasOwnProperty(n) && (typeof n === 'string') ){
-              if ( NODE_PROPERTIES.indexOf(n) > -1 ){
-                r[n] = obj[n];
-              }
-              else{
-                r.data[n] = obj[n];
-              }
-            }
-          }
-          return r;
-        }
-        return false;
       },
       /**
        * Manages the key navigation inside the tree
@@ -706,265 +676,195 @@
        * @param {Event} e The event
        */
       keyNav(e){
-        e.preventDefault();
-        e.stopImmediatePropagation();
+        this.tree.$emit('keynav', e.key);
         if ( this.tree.activeNode ){
-          let idx = false,
-              min = 1,
-              max = this.tree.activeNode.$parent.$children.length - 1,
-              parent = this.tree.activeNode.$parent,
-              node;
-          bbn.fn.each(this.tree.activeNode.$parent.$children, (a, i) => {
-            if ( a === this.tree.activeNode ){
-              idx = i;
-              return false;
-            }
-          });
-          //bbn.fn.log("keyNav", idx, max, e.key);
+          let parent = this.tree.activeNode.parent,
+              data = parent.filteredData.filter(d => !!d.visible),
+              min = 0,
+              max = data.length - 1,
+              idx = bbn.fn.search(data, {index: this.tree.activeNode.idx}),
+              subtree = this.tree.activeNode.getRef('tree');
           switch ( e.key ){
             case 'Enter':
             case ' ':
-              this.tree.activeNode.isSelected = !this.tree.activeNode.isSelected;
+              if ( this.tree.activeNode.selectable ){
+                this.tree.activeNode.isSelected = !this.tree.activeNode.isSelected;
+              }
+              else {
+                let ev = new Event('nodeClick', {cancelable: true});
+                this.tree.$emit('nodeClick', this.tree.activeNode, ev);
+              }
               break;
             case 'PageDown':
             case 'End':
-              if ( this.tree.activeNode ){
-                this.tree.activeNode.isActive = false;
+              if ( data.length ){
+                bbn.fn.getRow(parent.nodes, {idx: data[data.length-1].index}).isActive = true;
+                this.scrollToActive();
               }
-              node = this.getRef('root');
-              while ( node && node.$children.length && node.isExpanded ){
-                node = node.$children[node.$children.length-1];
-              }
-              node.isActive = true;
               break;
-
             case 'PageUp':
             case 'Home':
-              if ( this.tree.activeNode ){
-                this.tree.activeNode.isActive = false;
-              }
-              if ( this.$refs.root.$children[1] ){
-                this.$refs.root.$children[1].isActive = true;
+              if ( data.length ){
+                bbn.fn.getRow(parent.nodes, {idx: data[0].index}).isActive = true;
+                this.scrollToActive();
               }
               break;
-
             case 'ArrowLeft':
-              if ( this.tree.activeNode.isExpanded ){
+              if ( this.tree.activeNode.numChildren && this.tree.activeNode.isExpanded ){
                 this.tree.activeNode.isExpanded = false;
               }
-              else if ( this.tree.activeNode.$parent !== this.$refs.root ){
-                this.tree.activeNode.$parent.isActive = true;
+              else if ( !this.tree.activeNode.parent.isRoot ){
+                this.tree.activeNode.parent.node.isActive = true;
+                this.scrollToActive();
               }
               break;
             case 'ArrowRight':
-              if ( !this.tree.activeNode.isExpanded ){
-                this.tree.activeNode.isExpanded = true;
+              if ( this.tree.activeNode.numChildren ){
+                if ( !this.tree.activeNode.isExpanded ){
+                  this.tree.activeNode.isExpanded = true;
+                }
+                else if ( subtree && subtree.nodes.length ){
+                  bbn.fn.getRow(subtree.nodes, {idx: subtree.filteredData[0].index}).isActive = true;
+                  this.scrollToActive();
+                }
               }
               break;
             case 'ArrowDown':
-              if ( this.tree.activeNode.isExpanded && (this.tree.activeNode.items.length > 1) ){
-                this.tree.activeNode.$children[1].isActive = true;
+              if ( (idx + 1) <= max ){
+                bbn.fn.getRow(parent.nodes, {idx: data[idx+1].index}).isActive = true;
+                this.scrollToActive();
               }
-              else if ( idx < max ){
-                //bbn.fn.log("ORKING");
-                parent.$children[idx+1].isActive = true;
-              }
-              else {
-                ((c, p) => {
-                  while ( (p.level > 0) && !p.$children[idx+1] ){
-                    c = p;
-                    p = p.$parent;
-                    bbn.fn.each(p.$children, (a, i) => {
-                      if ( a === c ){
-                        idx = i;
-                        return false;
-                      }
-                    });
-                  }
-                  if ( p.$children[idx+1] ){
-                    p.$children[idx+1].isActive = true;
-                  }
-                })(this.tree.activeNode, this.tree.activeNode.$parent);
+              else if ( parent.node && parent.node.parent ){
+                data = parent.node.parent.filteredData.filter(d => !!d.visible);
+                idx = bbn.fn.search(data, {index: parent.node.idx});
+                if ( (idx > -1) && data[idx+1] ){
+                  bbn.fn.getRow(parent.node.parent.nodes, {idx: data[idx+1].index}).isActive = true;
+                  this.scrollToActive();
+                }
               }
               break;
             case 'ArrowUp':
-              if ( idx > min ){
-                ((parent) => {
-                  if ( parent.$children[idx - 1].isExpanded && parent.$children[idx - 1].items.length ){
-                    let p = parent.$children[idx - 1],
-                        c = p.$children[p.$children.length - 1];
-                    while ( c.isExpanded && c.items.length ){
-                      p = c;
-                      c = p.$children[p.$children.length - 1];
-                    }
-                    c.isActive = true;
-                  }
-                  else{
-                    parent.$children[idx - 1].isActive = true;
-                  }
-                })(parent);
+              if ( (idx - 1) >= min ){
+                bbn.fn.getRow(parent.nodes, {idx: data[idx-1].index}).isActive = true;
+                this.scrollToActive();
               }
-              else{
-                if ( parent !== this.$refs.root ){
-                  parent.isActive = true;
-                }
-                /*
-                let c = this.tree.activeNode.$parent,
-                    p = c.$parent,
-                    idx = false;
-
-
-                while ( p.$children[idx-1] && p.$children[idx-1].isExpanded && p.$children[idx-1].items.length ){
-                  p = p.$children[idx-1];
-                  idx = p.$children.length - 1;
-                }
-                if ( p.$children[idx-1] ){
-                  p.$children[idx-1].isActive = true;
-                }
-                */
+              else if ( !parent.isRoot && parent.node ){
+                parent.node.isActive = true;
+                this.scrollToActive();
               }
               break;
           }
         }
         else if ( this.tree.selectedNode ){
           this.tree.activeNode = this.tree.selectedNode;
+          this.scrollToActive();
+        }
+        else if ( this.tree.filteredData.length ){
+          bbn.fn.getRow(this.tree.nodes, {idx: this.tree.filteredData[0].index}).isActive = true;
+          this.scrollToActive();
         }
       },
 
       /**
        * Reloads a node already loaded
        * @method reload
-       * @param {Object} node 
-       * @fires load
-       * 
+       * @param {Vue} node
+       * @fires updateData
        */
       reload(node){
-        if ( this.isAjax ){
-          if ( !node ){
-            if ( this.isRoot ){
-              this.items = [];
-              this.isLoaded = false;
-              this.$nextTick(() => {
-                this.load();
-              })
-            }
-            else{
-              this.node.isExpanded = false;
-              this.node.$refs.tree[0].isLoaded = false;
-              this.node.$forceUpdate();
-              this.$nextTick(() => {
-                this.node.isExpanded = true;
-              })
+        //if ( this.isAjax ){
+          if ( this.isRoot && !node ){
+            this.isLoaded = false;
+            this.updateData();
+          }
+          else {
+            node = !node ? this.node : node;
+            let tree = node.getRef('tree');
+            if ( tree ){
+              tree.isLoaded = false;
+              tree.updateData();
             }
           }
-          else if ( node.$refs.tree ){
-            node.isExpanded = false;
-            node.$refs.tree[0].isLoaded = false;
-            node.$forceUpdate();
-            this.$nextTick(() => {
-              node.isExpanded = true;
-            })
-          }
-        }
+        //}
       },
-      /**
-       * @method mapper
-       * @param {Function} fn 
-       * @param {Array} data 
-       * @fires mapper
-       * @return {Array}
-       */
-      mapper(fn, data){
-        let res = [];
-        bbn.fn.each(data, (a, i) => {
-          let tmp = fn(a);
-          if ( tmp[this.children] ){
-            tmp[this.children] = this.mapper(fn, tmp[this.children]);
-          }
-          res.push(tmp);
-        });
-        return res;
-      },
-
       /**
        * Loads a node
        * @method load
-       * @fires dataToSend
-       * @emits load
+       * @fires updateData
        */
       load(){
-        // It must be Ajax and not being already in loading state
-        if ( this.isAjax && !this.tree.isLoading && !this.isLoaded ){
-          this.tree.isLoading = true;
-          this.loading = true;
-          this.tree.$emit('beforeLoad', this.dataToSend());
-          this.post(this.tree.url, this.dataToSend(), (res) => {
-            this.tree.isLoading = false;
-            this.loading = false;
-            if ( res.data ){
-              this.items = this.tree._map(res.data);
-              this.$emit('load', res);
-              /*
-              if ( this.tree.map ){
-                this.items = this.mapper(this.tree.map, res.data);
-              }
-              else{
-                this.items = res.data;
-              }
-              */
-            }
-            this.isLoaded = true;
-          })
-        }
+        this.updateData();
       },
       /**
-       * Opens the node corresponding to the prop 'path'
+       * Opens the node(s) corresponding to the prop 'path'
        * @method openPath
-       * 
        */
       openPath(){
-        if ( this.path.length ){
-          let path = this.path.slice(),
-              criteria = path.shift(),
-              idx = -1;
-          if ( typeof(criteria) === 'object' ){
-            idx = bbn.fn.search(this.items, {data: criteria});
-          }
-          else if ( this.tree.uid ){
-            let cr = {};
-            cr[this.tree.uid] = criteria;
-            idx = bbn.fn.search(this.items, cr);
-          }
-          else if ( typeof(criteria) === 'number' ){
-            idx = criteria;
-          }
-          bbn.fn.log("OopenPath", path, idx, criteria, this.items);
-          if ( idx > -1 ){
-            bbn.fn.each(this.items, (a, i) => {
-              if ( i !== idx ){
-                bbn.fn.log('inside', i, idx)
-                this.$set(this.items[idx], "path", []);
+        this.$nextTick(() => {
+          if ( this.path.length ){
+            let current = bbn.fn.extend(true, [], this.path);
+            if ( bbn.fn.isString(current[0]) ){
+              current = [current];
+            }
+            bbn.fn.each(current, p => {
+              let path = bbn.fn.extend(true, [], p),
+                  criteria = path.shift(),
+                  idx = -1;
+              if ( bbn.fn.isObject(criteria) ){
+                idx = bbn.fn.search(this.filteredData, {data: criteria});
+                if ( idx === -1 ){
+                  bbn.fn.each(this.filteredData, (d, i) => {
+                    if ( !bbn.fn.numProperties(bbn.fn.diffObj(bbn.fn.extend(true, {}, d.data), criteria)) ){
+                      idx = i;
+                      return true;
+                    }
+                  })
+                }
               }
-              else {
-                bbn.fn.log('errore qui')
-                return;
+              else if ( this.tree.uid ){
+                idx = bbn.fn.search(this.filteredData, {['data.' + this.tree.uid]: criteria});
+              }
+              else if ( bbn.fn.isNumber(criteria) ){
+                idx = criteria;
+              }
+              if ( idx > -1 ){
+                if ( path.length ){
+                  this.$set(this.filteredData[idx], 'expanded', true);
+                  this.$set(this.filteredData[idx], 'selected', false);
+                  if ( !bbn.fn.isArray(this.filteredData[idx].path) ){
+                    this.$set(this.filteredData[idx], 'path', []);
+                  }
+                  this.filteredData[idx].path.push(path);
+                }
+                else {
+                  this.$set(this.filteredData[idx], 'selected', true);
+                  this.$nextTick(() => {
+                    setTimeout(() => {
+                      this.scrollToSelected();
+                    }, 200)
+                  })
+                }
               }
             })
-            if ( (this.getTreeNode(idx) !== null) && this.getTreeNode(idx) ){
-              if ( path.length ){
-                this.getTreeNode(idx).isExpanded = true;
-                this.getTreeNode(idx).isSelected = false;
-                this.$set(this.items[idx], "path", path);
-              }
-              else{
-                this.getTreeNode(idx).isSelected = true;
-              }
-            }
           }
+        })
+      },
+
+      getNodePath(node, field){
+        let f = field || this.uid || false,
+            obj = Object.keys(node.data).length ? bbn.fn.extend(true, {}, node.data) : false,
+            fromObj = !f || (node.data[f] === undefined);
+        if ( !fromObj || obj ){
+          let r = [fromObj ? obj : node.data[f]],
+              tree = node.parent;
+          while ( tree && (tree !== this) ){
+            node = tree.node;
+            r.unshift(fromObj ? bbn.fn.extend(true, {}, node.data) : node.data[f]);
+            tree = node.parent;
+          }
+          return r;
         }
-        else {
-          //this.$set(this.items[idx], "path", []);
-        }
+        return false;
       },
 
       /**
@@ -1012,89 +912,90 @@
        * @param {Object} target 
        * @param {Number} index 
        */
-      move(node, target, index){
-        let idx = -1,
-            parent = node.parent;
-        if ( node.$el && node.$el.parentNode.children.length ){
-          bbn.fn.each(node.$el.parentNode.children, (v, i)=>{
-            if ( v === node.$el){
-              idx = parseInt(i);
-            }
-          })
-          
+      move(node, target, force = false){
+        let ev = false;
+        if ( !force ){
+          ev = new Event("move", {cancelable: true});
+          this.tree.$emit('move', node, target, ev);
         }
-        if ( idx > -1 ){
-          if ( !target.numChildren ){
-            target.numChildren = 1;
-            target.$forceUpdate();
-          }
-          else{
-            target.numChildren++;
-          }
-          this.$nextTick(() => {
-            let targetTree = target.$refs.tree[0];
-            parent.numChildren--;
-            let params = parent.items.splice(idx, 1)[0];
-            targetTree.items.push(params);
-            if ( !targetTree.isExpanded ){
-              targetTree.isExpanded = true;
+        if ( force || (ev && !ev.defaultPrevented) ){
+          let idx = node.idx,
+              parent = node.parent,
+              nodes = node.findAll('bbn-tree-node'),
+              expanded = nodes.filter(n => !!n.isExpanded),
+              selected = nodes.filter(n => !!n.isSelected),
+              toPath = [];
+          if ( (idx >= 0) && parent ){
+            if ( !target.numChildren ){
+              target.$set(target, 'numChildren', 1);
             }
-            parent.$forceUpdate();
-            target.$forceUpdate();
-          });
-        }
-      },
-
-      /*
-      // dragging action
-      drag(e){
-        if ( this.tree.dragging ){
-          e.preventDefault();
-          e.stopImmediatePropagation();
-          $(this.$el).find(".dropping").removeClass("dropping");
-          bbn.fn.log(e);
-          let $container = $(e.target).offsetParent(),
-              top = e.layerY,
-              left = e.layerX,
-              p;
-          while ( $container[0] !== this.$refs.scroll.$refs.scrollContent ){
-            p = $container.position();
-            top += p.top;
-            left += p.left;
-            $container = $container.offsetParent();
-          }
-          this.tree.$refs.helper.style.left = left + 'px';
-          this.tree.$refs.helper.style.top = top + 'px';
-          let ok = false;
-          if (
-            this.overNode &&
-            (this.tree.dragging !== this.overNode) &&
-            !this.isNodeOf(this.overNode, this.tree.dragging)
-          ){
-            let $t = $(e.target);
-            $t.parents().each((i, a) => {
-              if ( a === this.overNode.$el ){
-                ok = 1;
-                return false;
+            else{
+              target.numChildren++;
+            }
+            this.$nextTick(() => {
+              let targetTree = target.getRef('tree');
+              if ( node.isExpanded ){
+                expanded.unshift(node);
               }
-              else if ( a === this.$el ){
-                return false;
+              bbn.fn.each(expanded, n => {
+                let p = parent.getNodePath(n);
+                p.push(false);
+                toPath.push(p);
+              });
+              if ( node.isSelected ){
+                selected.unshift(node);
               }
+              bbn.fn.each(selected, n => {
+                toPath.push(parent.getNodePath(n));
+              });
+              if ( parent.node ){
+                parent.node.numChildren--;
+              }
+              if ( this.tree.isAjax ){
+                let nodeSource = bbn.fn.extend(true, {}, parent.currentData[idx]);
+                nodeSource.num = targetTree.currentData.length || 1;
+                nodeSource.index = nodeSource.num - 1
+                targetTree.currentData.push(nodeSource);
+              }
+              else {
+                let nodeSource = parent.source.splice(idx, 1)[0];
+                if ( !bbn.fn.isArray(target.source.data[this.tree.children]) ){
+                  target.$set(target.source.data, this.tree.children, []);
+                }
+                target.source.data[this.tree.children].push(nodeSource);
+              }
+              bbn.fn.each(expanded, n => {
+                n.removeFromExpanded(false);
+              });
+              bbn.fn.each(selected, n => {
+                n.removeFromSelected(false);
+              });
+              this.$nextTick(() => {
+                let callOpenPath = false;
+                if ( !target.isExpanded ){
+                    target.isExpanded = true;
+                }
+                else if ( !this.tree.isAjax ){
+                  targetTree.updateData();
+                  callOpenPath = true;
+                }
+                if ( toPath.length ){
+                  bbn.fn.each(toPath, p => {
+                    targetTree.path.push(p);
+                  })
+                }
+                if ( callOpenPath ){
+                  targetTree.openPath();
+                }
+                parent.currentData.splice(idx, 1);
+              });
             });
           }
-          if ( ok ){
-            $(this.overNode.$el).children("span.node").addClass("dropping");
-          }
-          else{
-            this.overNode = false;
-          }
         }
       },
-      */
-
       /**
        * Returns an object with all the unknown properties of the node component
-       * @param {Object} data 
+       * @param {Object} data
        * @return {Object}
        */
       toData(data){
@@ -1105,78 +1006,164 @@
           }
         }
         return r;
+      },
+      getConfig(){
+        let cfg = {
+          path: []
+        };
+        // Expanded
+        bbn.fn.each(this.currentExpanded, c => {
+          let e = this.getNodePath(c);
+          e.push(false);
+          cfg.path.push(e);
+        });
+        // Selected
+        bbn.fn.each(this.currentSelected, c => {
+          cfg.path.push(this.getNodePath(c));
+        });
+        return cfg;
+      },
+      getLocalStorage(){
+        if ( this.isRoot && this.hasStorage ){
+          let cfg = this.getStorage(this.storageFullName || this.storageName, !!this.storageFullName);
+          if ( cfg && cfg.path !== undefined ){
+            this.path.splice(0, this.path.length, ...cfg.path);
+          }
+          else {
+            this.path.splice(0, this.path.length);
+          }
+        }
+      },
+      setLocalStorage(){
+        let ev = new Event('setStorage', {cancelable: true}),
+            cfg = this.getConfig();
+        this.$emit('setStorage', cfg, this.storageFullName || this.storageName, ev);
+        if ( !ev.defaultPrevented ){
+          this.setStorage(cfg, this.storageFullName || this.storageName, !!this.storageFullName);
+        }
+      },
+      scrollToSelected(){
+        if ( this.isRoot && this.selectedNode ){
+          let scroll = this.getRef('scroll');
+          if ( scroll ){
+            scroll.scrollTo(0, this.selectedNode.$el);
+          }
+        }
+      },
+      scrollToActive(){
+        if ( this.isRoot && this.activeNode ){
+          let scroll = this.getRef('scroll');
+          if ( scroll ){
+            scroll.scrollTo(0, this.activeNode.$el);
+          }
+        }
       }
+    },
+    beforeCreate(){
+      this.$on('beforeUpdate', e => {
+        if ( this.isAjax && (this.tree.isLoading || this.isLoading) ){
+          e.preventDefault();
+        }
+        if ( !e.defaultPrevented ){
+          this.tree.$emit('beforeLoad', this.getPostData());
+        }
+      });
+      this.$on('startloading', () => {
+        //this.tree.isLoading = true;
+        this.loading = true;
+      });
+      this.$on('dataReceived', d => {
+        //this.tree.isLoading = false;
+        this.loading = false;
+        this.$emit('load', d);
+      });
+      this.$on('dataloaded', () => {
+        if ( !this.isLoaded && this.ready ){
+          this.getLocalStorage()
+          this.openPath();
+        }
+        this.isLoaded = true;
+      });
     },
     /**
      * Definition of the root tree and parent node
      * @event created
-     * @fires _map
      */
     created(){
-      let cp = bbn.vue.closest(this, 'bbn-tree');
+      if ( bbn.fn.isFunction(this.source) ){
+        this.isFunction = true;
+      }
+      let cp = this.closest('bbn-tree');
       if ( !cp ){
         this.isRoot = true;
         this.node = false;
         this.tree = this;
       }
-      else{
+      else {
         while ( cp && cp.level ){
-          cp = bbn.vue.closest(cp, 'bbn-tree');
+          cp = cp.closest('bbn-tree');
         }
         if ( cp && !cp.level ){
           this.tree = cp;
-          this.isAjax = this.tree.isAjax;
+          this.isAjax = this.tree.isAjax && !this.tree.hybrid;
         }
-        this.node = bbn.vue.closest(this, 'bbn-tree-node');
+        this.node = this.closest('bbn-tree-node');
       }
-      if ( this.isFunction ){
-        this.items = this._map(this.source(this.level ? this.node : null));
-      }
-      if ( !this.isAjax || this.items.length ){
-        this.isLoaded = true;
-      }
+    },
+    beforeMount(){
+      this.getLocalStorage();
     },
     /**
      * @event mounted
-     * @fires load
+     * @fires updateData
      */
     mounted(){
-      if ( this.isRoot && this.autoload ){
-        this.load();
-      }
-      else if ( this.isExpanded ){
-        this.load();
-      }
+      this.$nextTick(() => {
+        if ( this.node.isExpanded ){
+          this.updateData();
+        }
+      })
       this.ready = true;
     },
     watch: {
       /**
        * @watch activeNode
-       * @param {Object} newVal 
+       * @param {Object} newVal
        */
       activeNode(newVal){
-        if ( newVal ){
-          this.$refs.scroll.scrollTo(0, newVal.$el);
+        if ( newVal && this.isRoot ){
+          let scroll = this.getRef('scroll');
+          if ( scroll ){
+            //scroll.scrollTo(0, newVal.$el);
+          }
+        }
+      },
+      selectedNode(newVal){
+        if ( newVal && this.isRoot ){
+          let scroll = this.getRef('scroll');
+          if ( scroll ){
+            //scroll.scrollTo(0, newVal.$el);
+          }
         }
       },
       /**
        * @watch path
-       * @param newVal 
+       * @param newVal
        * @emits pathChange
        */
       path(newVal){
-        bbn.fn.log("Change path", newVal);
-        this.openPath();
-        this.$emit('pathChange');
+        if ( !this.isLoaded ){
+          if ( this.isRoot || this.ready ){
+            this.openPath();
+          }
+        }
+        this.$emit('pathChange', newVal);
       },
-      /**
-       * @watch source
-       * @fires reset
-       * @fires load
-       */
-      source(){
-        this.reset();
-        this.load();
+      dragging(newVal){
+        if ( !newVal ){
+          this.overNode = false;
+          this.overOrder = false;
+        }
       }
     },
     components: {
@@ -1202,75 +1189,26 @@
             default: false
           },
           /**
-           * True if the node is the one selected
-           * @prop {Boolean} [false] selected
-           * @memberof bbn-tree-node
-           */
-          selected:{
-            type: Boolean,
-            default: false
-          },
-          /**
-           * True if the node is expanded (opened)
-           * @prop {Boolean} [false] expanded
-           * @memberof bbn-tree-node
-           */
-          expanded:{
-            type: Boolean,
-            default: false
-          },
-          /**
-           * A message to show as tooltip
-           * @prop {String} tooltip
-           * @memberof bbn-tree-node
-           */
-          tooltip: {
-            type: String
-          },
-          /**
-           * The icon - or not
-           * @prop {Boolean|String} icon
-           * @memberof bbn-tree-node
-           */
-          icon:{
-            type: [Boolean, String]
-          },
-          /**
            * True if the node is selectable
            * @prop {Boolean} [true] selectable
            * @memberof bbn-tree-node
            */
           selectable: {
             type: Boolean,
-            default: true
+            default: false
+          },
+          multiple:{
+            type: Boolean,
+            default: false
           },
           /**
-           * True if the node is checkable
-           * @prop {Boolean} [true] checkable
+           * True if the node is selection
+           * @prop {Boolean} [false] selection
            * @memberof bbn-tree-node
            */
-          checkable: {
+          selection: {
             type: Boolean,
             default: true
-          },
-          /**
-           * The text inside the node, its title
-           * @prop {String} text
-           * @memberof bbn-tree-node
-           */
-          text: {
-            type: String
-          },
-          /**
-           * The data attached to the node
-           * @prop {Object} [{}] data
-           * @memberof bbn-tree-node
-           */
-          data: {
-            type: Object,
-            default(){
-              return {};
-            }
           },
           /**
            * The opened path if there is one
@@ -1284,14 +1222,6 @@
             }
           },
           /**
-           * A class to give to the node
-           * @prop {String} cls
-           * @memberof bbn-tree-node
-           */
-          cls: {
-            type: [String]
-          },
-          /**
            * A component for the node
            * @prop {String|Function|Vue} component
            * @memberof bbn-tree-node
@@ -1300,22 +1230,14 @@
             type: [String, Function, Vue, Object]
           },
           /**
-           * The number of children of the node
-           * @prop {Number} num
-           * @memberof bbn-tree-node
-           */
-          num: {
-            type: Number
-          },
-          /**
            * The list of children from the node
            * @prop {Array} [[]] source
            * @memberof bbn-tree-node
            */
           source: {
-            type: Array,
+            type: Object,
             default(){
-              return [];
+              return {};
             }
           },
           /**
@@ -1333,16 +1255,27 @@
            */
           idx: {
             type: Number
+          },
+          quickFilter: {
+            type: String,
+            default: ''
+          },
+          sortable: {
+            type: Boolean,
+            default: true
+          },
+          uid: {
+            type: String
           }
         },
-        data: function(){
+        data(){
           return {
             ready: false,
             /**
-             * @data {Boolean} [false] double
+             * @data {Boolean} [false] doubleClk
              * @memberof bbn-tree-node
              */
-            double: false,
+            doubleClk: false,
             /**
              * The parent tree
              * @data {Boolean} [false] parent
@@ -1356,35 +1289,11 @@
              */
             tree: false,
             /**
-             * Sanitized list of items
-             * @data {Array} items
-             * @memberof bbn-tree-node
-             */
-            items: this.source.slice(),
-            /**
              * True if the node is active
              * @data {Boolean} [false] isActive
              * @memberof bbn-tree-node
              */
             isActive: false,
-            /**
-             * True if the node is selected
-             * @data {Boolean} isSelected
-             * @memberof bbn-tree-node
-             */
-            isSelected: !!this.selected,
-            /**
-             * True if the node is expanded
-             * @data {Boolean} isExpanded
-             * @memberof bbn-tree-node
-             */
-            isExpanded: this.expanded,
-            /**
-             * The number of children
-             * @data {Number} numChildren
-             * @memberof bbn-tree-node
-             */
-            numChildren: this.num !== undefined ? this.num : this.source.length,
             /**
              * The animation of the node
              * @data {Boolean} animation
@@ -1397,28 +1306,66 @@
              * @memberof bbn-tree-node
              */
             isMounted: false,
-            /**
-             * @data {Boolean} [false] isMatch
-             * @memberof bbn-tree-node
-             */
-            isMatch: true,
-            /**
-             * @data {Number} [0] numMatches
-             * @memberof bbn-tree-node
-             */
-            numMatches: 0,
-            /**
-             * @data {Boolean} [false] excludedFilter
-             * @memberof bbn-tree-node
-             */
-            excludedFilter: false
+            orderOver: false
           }
         },
         computed: {
+          isOverOrderTop(){
+            return this.tree && this.tree.realDragging && this.tree.overOrder && (this.tree.overOrder === this.getRef('orderTop'));
+          },
+          isOverOrderBottom(){
+            return this.tree && this.tree.realDragging && this.tree.overOrder && (this.tree.overOrder === this.getRef('orderBottom'));
+          },
+          data(){
+            return this.source.data;
+          },
+          isVisible(){
+            let tree = this.getRef('tree');
+            return !this.quickFilter ||
+              ((this.source.text.toLowerCase().indexOf(this.quickFilter.toLowerCase()) > -1) && !this.numChildren) ||
+              ((this.source.text.toLowerCase().indexOf(this.quickFilter.toLowerCase()) > -1) && !this.tree.excludedSectionFilter) ||
+              (
+                (this.source.text.toLowerCase().indexOf(this.quickFilter.toLowerCase()) > -1) &&
+                !!this.tree.excludedSectionFilter &&
+                !!(tree && tree.nodes && tree.nodes.filter(n => !!n.isVisible).length)
+              ) ||
+              !!(tree && tree.nodes && tree.nodes.filter(n => !!n.isVisible).length)
+          },
+          isExpanded: {
+            get(){
+              return !!this.source.expanded;
+            },
+            set(v){
+              this.source.expanded = v;
+            }
+          },
+          isSelected: {
+            get(){
+              return !!this.source.selected;
+            },
+            set(v){
+              this.source.selected = v;
+            }
+          },
+          isFilterable(){
+            return this.source.filterable !== undefined ? !!this.source.filterable : !!this.tree.filterable;
+          },
+          hasFilters(){
+            let tree = this.getRef('tree');
+            return tree && tree.hasFilters;
+          },
+          numChildren: {
+            get(){
+              return this.source.numChildren;
+            },
+            set(v){
+              this.source.numChildren = v;
+            }
+          },
           /**
            * The style of the item's icon
            * @computed iconStyle
-           * @return {Object}
+           * @return {Object}s
            * @memberof bbn-tree-node
            */
           iconStyle(){
@@ -1430,7 +1377,7 @@
           },
           /**
            * @computed menu
-           * @return {Function}
+           * @return {Array}
            * @memberof bbn-tree-node
            */
           menu(){
@@ -1438,13 +1385,14 @@
           }
         },
         methods: {
+          randomString: bbn.fn.randomString,
           /**
            * Return true if the node is checked
            * @method isChecked
            * @memberof bbn-tree-node
            */
           isChecked(){
-           return this.tree.checked.indexOf(this.data[this.tree.uid])  > -1
+           return this.tree.checked.includes(this.data[this.tree.uid])
           },
           /**
            * Return true if the node is disabled
@@ -1452,7 +1400,7 @@
            * @memberof bbn-tree-node
            */
           isDisabled(){
-            return this.tree.disabled.indexOf(this.data[this.tree.uid]) > -1
+            return this.tree.disabled.includes(this.data[this.tree.uid])
           },
           /**
            * Checks the node and emits the events check and uncheck
@@ -1462,7 +1410,7 @@
            * @memberof bbn-tree-node
            */
           checkNode(val){
-            if ( val && this.data[this.tree.uid] && (this.tree.checked.indexOf(this.data[this.tree.uid]) === -1) ){
+            if ( val && this.data[this.tree.uid] && !this.tree.checked.includes(this.data[this.tree.uid]) ){
               this.tree.checked.push(this.data[this.tree.uid]);
               this.tree.$emit('check', this.data[this.tree.uid]);
             }
@@ -1474,34 +1422,30 @@
               }
             }
           },
-           /**
+          /**
            * Activate the node
            * @method activate
-           * @fires activate
            * @memberof bbn-tree-node
            */
           activate(){
-            let ev = new Event('activate');
-            this.tree.$emit('activate', this, ev);
-          },
-          remove(){
-
+            this.isActive = true;
           },
           update(attr){
             for ( let n in attr ){
               this[n] = attr[n];
             }
           },
-          add(obj){
-
-          },
           /**
            * Resize the parent tree
            * @method tree.resize
            * @memberof bbn-tree-node
+           * @memberof bbn-tree-node
            */
           resize(){
             this.tree.resize();
+          },
+          reload(){
+            this.tree.reload(this);
           },
           /**
            * Gets the menu of the parent tree
@@ -1534,42 +1478,53 @@
            * @memberof bbn-tree-node
            */
           startDrag(e){
-            if ( !this.double && this.tree.draggable ){
-              e.preventDefault();
-              e.stopImmediatePropagation();
-              this.tree.dragging = this;
-              if ( this.tree.droppableTrees.length ){
-                bbn.fn.each(this.tree.droppableTrees, (a, i) => {
-                  if ( a !== this.tree ){
-                    a.dragging = this;
-                  }
-                });
+            setTimeout(() => {
+              if ( !this.doubleClk && this.tree.draggable ){
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                this.tree.dragging = this;
+                if ( this.tree.droppableTrees.length ){
+                  bbn.fn.each(this.tree.droppableTrees, (a, i) => {
+                    if ( a !== this.tree ){
+                      a.dragging = this;
+                    }
+                  });
+                }
+                let fn = (e) => {
+                  this.endDrag(e);
+                  document.removeEventListener('mouseup', fn);
+                };
+                document.addEventListener('mouseup', fn);
+                document.addEventListener('mousemove', this.drag);
               }
-              let fn = (e) => {
-                this.endDrag(e);
-                document.removeEventListener('mouseup', fn);
-              };
-              document.addEventListener('mouseup', fn);
-              document.addEventListener('mousemove', this.drag);
-            }
+            }, 100)
           },
           /**
            * Handles the dragging of the node
-           * @method drag  
+           * @method drag
            * @param {Event} e The event
            * @emits tree.dragStart
            * @emits  dragOver
            * @memberof bbn-tree-node
            */
           drag(e){
-            //bbn.fn.log("DS", e);
             e.stopImmediatePropagation();
             e.preventDefault();
-            this.tree.$refs.helper.style.left = e.pageX + 'px';
-            this.tree.$refs.helper.style.top = e.pageY + 'px';
+            this.tree.$refs.helper.style.left = (e.pageX + 2) + 'px';
+            this.tree.$refs.helper.style.top = (e.pageY + 2) + 'px';
+            if ( this.sortable ){
+              if ( e.target.classList.contains('bbn-tree-order') ){
+                if ( this.tree.overOrder !== e.target ){
+                  this.tree.overOrder = e.target;
+                }
+              }
+              else {
+                this.tree.overOrder = false;
+              }
+            }
             if ( !this.tree.realDragging ){
               if ( this.tree.selectedNode ){
-                this.tree.selectedNode.isSelected = false;
+                //this.tree.selectedNode.isSelected = false;
               }
               let ev = new Event("dragStart");
               this.tree.$emit("dragStart", this, ev);
@@ -1590,7 +1545,6 @@
                   }
                 });
               }
-              
               let ok = false;
               for ( let a of this.tree.droppableTrees ){
                 if (
@@ -1601,7 +1555,6 @@
                 ){
                   let t = e.target,
                       parents = [];
-                    
                   while (t) {
                     parents.unshift(t);
                     t = t.parentNode;
@@ -1646,6 +1599,7 @@
           endDrag(e){
             e.preventDefault();
             e.stopImmediatePropagation();
+            let removed = false;
             if ( this.tree.realDragging ){
               this.tree.getRef('helper').innerHTML = '';
               this.tree.realDragging = false;
@@ -1656,16 +1610,27 @@
                     (this.tree.dragging !== a.overNode) &&
                     !a.isNodeOf(a.overNode, this.tree.dragging)
                   ){
-                    if( a.overNode.$el.querySelector('span.node') && a.overNode.$el.querySelector('span.node').classList ){
-                      if ( a.overNode.$el.querySelector('span.node').classList.contains('dropping') ){
-                        a.overNode.$el.querySelector('span.node').classList.remove('dropping')
-                      }
+                    if ( a.overOrder ){
+                      let numBefore = this.tree.dragging.source.num,
+                          numAfter = a.overOrder.classList.contains('bbn-tree-order-top') ? 1 : a.overNode.source.num + 1;
+                          if ( numBefore !== numAfter ){
+                            this.reorder(this.tree.dragging.source.num, numAfter);
+                          }
                     }
-                    let ev = new Event("dragEnd", {cancelable: true});
-                    a.tree.$emit("dragEnd", ev, this, a.overNode);
-                    if ( !ev.defaultPrevented ){
-                      if ( a === this.tree ){
-                        this.tree.move(this, a.overNode);
+                    else {
+                      if( a.overNode.$el.querySelector('span.node') && a.overNode.$el.querySelector('span.node').classList ){
+                        if ( a.overNode.$el.querySelector('span.node').classList.contains('dropping') ){
+                          a.overNode.$el.querySelector('span.node').classList.remove('dropping')
+                        }
+                      }
+                      this.removeDragging();
+                      removed = true;
+                      let ev = new Event("dragEnd", {cancelable: true});
+                      a.tree.$emit("dragEnd", ev, this, a.overNode);
+                      if ( !ev.defaultPrevented ){
+                        if ( a === this.tree ){
+                          this.tree.move(this, a.overNode);
+                        }
                       }
                     }
                   }
@@ -1673,22 +1638,46 @@
               }
               else{
                 let ev = new Event("dragEnd");
+                this.removeDragging();
+                removed = true;
                 this.tree.$emit("dragEnd", this, ev);
               }
             }
+            if ( !removed ){
+              this.removeDragging();
+            }
+          },
+          removeDragging(){
             document.removeEventListener('mousemove', this.drag);
             for ( let a of this.tree.droppableTrees ){
               a.dragging = false;
             }
-            /*
-            if (
-              this.tree.overNode &&
-              (this.tree.dragging !== this.tree.overNode) &&
-              !this.tree.isNodeOf(this.tree.overNode, this.tree.dragging)
-            ){
-              this.tree.move(this, this.tree.overNode);
+          },
+          reorder(oldNum, newNum, force){
+            if ( oldNum !== newNum ){
+              let arr = this.parent.filteredData.slice(),
+                  ele = arr.splice(oldNum-1, 1),
+                  ev = new Event('beforeOrder', {cancelable: true});
+              if ( ele.length ){
+                if ( !force ){
+                  this.tree.$emit('beforeOrder', oldNum, newNum, this.tree.dragging, ev);
+                }
+                if ( !!force || !ev.defaultPrevented ){
+                  arr.splice(newNum-1, 0, ele[0]);
+                  bbn.fn.each(arr, (e, i) => {
+                    if ( e.num !== (i + 1) ){
+                      let data = bbn.fn.extend(true, {}, e.data);
+                      e.num = i + 1;
+                      if ( e.data.num !== undefined ){
+                        //e.data.num = e.num;
+                      }
+                      this.tree.$emit('order', data, e.num);
+                    }
+                  });
+                  //this.parent.updateData();
+                }
+              }
             }
-            */
           },
           /**
            * Defines the parent tree overNode
@@ -1696,13 +1685,14 @@
            * @memberof bbn-tree-node
            */
           mouseOver(){
-            this.tree.overNode = this;
+            this.tree.overNode = this.tree.dragging ? this : false;
           },
           /**
            * @method checkPath
            * @memberof bbn-tree-node
            */
           checkPath(){
+            return;
             if ( this.tree.path.length > this.level ){
               let item = this.tree.path.slice(this.level, this.level + 1)[0],
                   type = typeof item,
@@ -1751,23 +1741,146 @@
             }
             return false;
           },
-          // @todo never used
-          getPath(numeric){
-            let r = [],
-                parent = this;
-            while ( parent ){
-              if ( this.tree.uid ){
-                r.unshift(parent.data[this.tree.uid]);
+          getPath(field){
+            return this.tree.getNodePath(this, field);
+          },
+          addToSelected(emit = true, storage = true){
+            if ( !this.tree.currentSelected.includes(this) ){
+              let sameParent = this.tree.selectedNode && (this.tree.selectedNode.parent === this.parent);
+              if ( (this.tree.selectedNode && !this.tree.multiple) || (sameParent && !this.parent.multiple) ){
+                this.tree.selectedNode.isSelected = false;
               }
-              else if ( numeric ){
-                r.unshift(parent.index);
+              let ev = new Event('beforeSelect', {cancelable: true});
+              if ( emit ){
+                this.tree.$emit('beforeSelect', this, ev);
               }
-              else{
-                r.unshift(parent.data);
+              if ( !ev.defaultPrevented ){
+                this.tree.currentSelected.push(this);
+                if ( storage ){
+                  this.$nextTick(() => {
+                    this.tree.setLocalStorage();
+                  })
+                }
+                if ( emit ){
+                  this.tree.$emit('select', this);
+                }
+                if ( this.tree !== this.parent ){
+                  this.parent.currentSelected.push(this);
+                  if ( emit ){
+                    this.parent.$emit('select', this);
+                  }
+                }
               }
-              parent = bbn.vue.closest(parent, 'bbn-tree-node');
             }
-            return r;
+          },
+          removeFromSelected(emit = true, storage = true){
+            let idx = this.tree.currentSelected.indexOf(this),
+                idx2 = this.parent.currentSelected.indexOf(this),
+                ev = new Event('beforeSelect', {cancelable: true});
+            if ( emit ){
+              this.tree.$emit('beforeUnselect', this, ev);
+            }
+            if ( !ev.defaultPrevented ){
+              if ( idx > -1 ){
+                this.tree.currentSelected.splice(idx, 1);
+                if ( storage ){
+                  this.$nextTick(() => {
+                    this.tree.setLocalStorage();
+                  })
+                }
+                if ( emit ){
+                  this.tree.$emit('unselect', this);
+                }
+              }
+              if ( (idx2 > -1) && (this.tree !== this.parent) ){
+                this.parent.currentSelected.splice(idx, 1);
+                if ( emit ){
+                  this.parent.$emit('unselect', this);
+                }
+              }
+            }
+          },
+          addToExpanded(emit = true, storage = true){
+            if ( !this.tree.currentExpanded.includes(this) ){
+              let ev = new Event('beforeUnfold', {cancelable: true});
+              if ( emit ){
+                this.tree.$emit('beforeUnfold', this, ev);
+              }
+              if ( !ev.defaultPrevented ){
+                this.tree.currentExpanded.push(this);
+                if ( storage ){
+                  this.$nextTick(() => {
+                    this.tree.setLocalStorage();
+                  })
+                }
+                if ( emit ){
+                  this.tree.$emit('unfold', this);
+                }
+                if ( this.tree !== this.parent ){
+                  this.parent.currentExpanded.push(this);
+                  if ( emit ){
+                    this.parent.$emit('unfold', this);
+                  }
+                }
+                return true;
+              }
+            }
+            return false;
+          },
+          removeFromExpanded(emit = true, storage = true){
+            let idx = this.tree.currentExpanded.indexOf(this),
+                idx2 = this.parent.currentExpanded.indexOf(this),
+                ev = new Event('beforeFold', {cancelable: true});
+            if ( emit ){
+              this.tree.$emit('beforeFold', this, ev);
+            }
+            if ( !ev.defaultPrevented ){
+              if ( idx > -1 ){
+                this.tree.currentExpanded.splice(idx, 1);
+                if ( storage ){
+                  this.$nextTick(() => {
+                    this.tree.setLocalStorage();
+                  })
+                }
+                if ( emit ){
+                  this.tree.$emit('fold', this);
+                }
+              }
+              if ( (idx2 > -1) && (this.tree !== this.parent) ){
+                this.parent.currentExpanded.splice(idx, 1);
+                if ( emit ){
+                  this.parent.$emit('fold', this);
+                }
+              }
+              return true;
+            }
+            return false;
+          },
+          /**
+           * Single click on the node
+           * @method clickOnNode
+           * @emits nodeclick
+           * @memberof bbn-tree-node
+           */
+          clickOnNode(ev){
+            this.tree.$emit('nodeClick', this, ev);
+          },
+          /**
+           * Double click on the node
+           * @method dblClickOnNode
+           * @emits nodeDblclick
+           * @memberof bbn-tree-node
+           */
+          dblClickOnNode(ev){
+            this.tree.$emit('nodeDblclick', this, ev);
+          },
+          getIcon(){
+            return this.source.icon || (!!this.numChildren ? (this.isExpanded ? 'nf nf-fa-folder_open' : 'nf nf-fa-folder') : 'nf nf-fa-file');
+          },
+          remove(){
+            if ( !this.parent.isAjax ){
+              this.parent.currentData.splice(this.idx, 1);
+            }
           }
         },
         /**
@@ -1776,8 +1889,18 @@
          * @memberof bbn-tree-node
          */
         created(){
-          this.parent = bbn.vue.closest(this, 'bbn-tree');
+          this.parent = this.closest('bbn-tree');
           this.tree = this.parent.tree || this.parent;
+          if ( this.source.selected ){
+            this.addToSelected();
+          }
+          if ( !this.parent.nodes.includes(this) ){
+            this.parent.nodes.push(this);
+          }
+          if ( this.tree.opened || (this.level < this.tree.minExpandLevel) ){
+            this.$set(this.source, 'expanded', true);
+            this.addToExpanded();
+          }
         },
         /**
          * @event mounted
@@ -1785,172 +1908,122 @@
          * @fires resize
          */
         mounted(){
-          if ( this.tree.opened ){
-            this.isExpanded = true;
-          }
-          else if ( this.level < this.tree.minExpandLevel ){
-            this.isExpanded = true;
-          }
           this.$nextTick(() => {
             if ( !this.animation ){
               setTimeout(() => {
                 this.animation = true;
               }, 500)
             }
+            this.$set(this.source, 'visible', this.isVisible);
             this.isMounted = true;
             this.$nextTick(() => {
-              this.checkPath();
+              if ( this.isExpanded && this.numChildren ){
+                let tree = this.getRef('tree');
+                if ( tree && !tree.isLoaded && !tree.isLoading ){
+                  tree.updateData();
+                }
+              }
             });
             this.resize();
             setTimeout(() => {
               this.ready = true;
             }, 250)
-            /*
-            $(this.$el)
-              .draggable({
-                //containment: this.tree.$refs.scroll.$refs.scrollContent,
-                //appendTo: this.tree.$refs.scroll.$refs.scrollContent,
-                //appendTo: document.body,
-                helper: "clone",
-                opacity: 0.6,
-                drag: (e, ui) => {
-                  //let posY = ui.top;
-                  //bbn.fn.log(e.pageY, e, ui);
-                }
-              })
-              .children(".node")
-              .droppable({
-                accept: '.bbn-tree-node',
-                hoverClass: 'dropping'
-              });
-              */
           })
+        },
+        beforeDestroy(){
+          if ( this.isSelected ){
+            this.removeFromSelected(true, false);
+          }
+          if ( this.isExpanded ){
+            this.removeFromExpanded(true, false);
+          }
+          if ( this.isActive && (this.tree.activeNode === this) ){
+            this.tree.activeNode = false;
+          }
+          if ( this.parent.nodes.includes(this) ){
+            this.parent.nodes.splice(this.parent.nodes.indexOf(this), 1);
+          }
         },
         watch: {
           /**
-           * @watch double
-           * @param {Boolean} newVal 
+           * @watch doubleClk
+           * @param {Boolean} newVal
            * @memberof bbn-tree-node
            */
-          double(newVal){
+          doubleClk(newVal){
             if ( newVal ){
               setTimeout(() => {
-                this.double = false
+                this.doubleClk = false
               }, 500);
             }
           },
           /**
            * @watch isExpanded
-           * @param {Boolean} newVal 
-           * @fires tree.load
+           * @fires tree.updateData
+           * @fires getRef
            * @fires resize
+           * @fires addToExpanded
+           * @fires removeFromExpanded
            * @fires tree.isNodeOf
            * @memberof bbn-tree-node
            */
           isExpanded(newVal){
             if ( newVal ){
-              if ( this.numChildren && !this.$refs.tree[0].isLoaded ){
-                this.$refs.tree[0].load();
-              }
-              else{
-                this.resize();
+              if ( this.addToExpanded() ){
+                let tree = this.getRef('tree');
+                if ( this.numChildren && tree && !tree.isLoaded ){
+                  tree.updateData();
+                }
+                else{
+                  this.resize();
+                }
               }
             }
-            else{
-              if ( this.tree.selectedNode && this.tree.isNodeOf(this.tree.selectedNode, this) ){
-                this.isSelected = true;
+            else {
+              if ( this.removeFromExpanded() ){
+                if ( this.tree.selectedNode && this.tree.isNodeOf(this.tree.selectedNode, this) ){
+                  this.isActive = true;
+                }
+                this.resize();
               }
-              this.resize();
             }
           },
           /**
            * @watch isSelected
-           * @param {Boolean} newVal 
-           * @param {Boolean} oldVal 
-           * @emits tree.unselect
-           * @emits tree.select
+           * @param {Boolean} newVal
+           * @fires addToSelected
+           * @fires removeFromSelected
            * @memberof bbn-tree-node
            */
-          isSelected(newVal, oldVal){
+          isSelected(newVal){
             if ( newVal ){
-              if ( this.tree.selectedNode ){
-                this.tree.selectedNode.isSelected = false;
-                this.tree.$emit('unselect', this);
-              }
-              let ev = new Event('select');
-              this.tree.$emit('select', this, ev);
-              this.tree.selectedNode = this;
+              this.addToSelected();
+            }
+            else {
+              this.removeFromSelected();
             }
           },
           /**
            * @watch isActive
-           * @param {Boolean} newVal 
+           * @param {Boolean} newVal
            * @emits tree.activate
            * @emits tree.deactivate
            * @memberof bbn-tree-node
            */
           isActive(newVal){
-            if ( this.tree.activeNode ){
-              this.tree.selectedNode.isActive = false;
+            if ( newVal ){
+              if ( this.tree.activeNode && (this.tree.activeNode !== this) ){
+                this.tree.activeNode.isActive = false;
+              }
+              this.tree.activeNode = this;
             }
-            this.tree.activeNode = this;
+            else if ( this.tree.activeNode === this ){
+              this.tree.activeNode = false;
+            }
             this.tree.$emit(newVal ? 'activate' : 'deactivate', this);
           },
-          /**
-           * @watch filterString
-           * @param {String} newVal 
-           * @memberof bbn-tree-node
-           */
-          filterString(newVal){
-            this.numMatches = 0;
-            if ( !newVal ){
-              this.isMatch = true;
-            }
-            else{
-              this.isMatch = bbn.fn.compare(this.text, newVal, 'icontains');
-
-              let childrens = this.findAll('bbn-tree-node'),
-                  ctrl = false;
-
-              if ( this.isMatch ){
-                let vm = this;
-                if ( this.excludedSectionFilter && childrens.length ){
-                  ctrl = false;
-                  childrens.forEach( node => {
-                    if ( bbn.fn.compare(node.text, newVal, 'icontains') ){
-                      ctrl = true;
-                    }
-                    node.$set(node, 'excludedFilter',true);
-                  });
-                  // if ( !ctrl ){
-                  //   bbn.fn.each(this.findAll('bbn-tree-node'), node => {
-                  //     node.$set(node, 'excludedFilter', true);
-                  //   });
-                  // }
-                }
-                if ( vm.parent && vm.parent.node ){
-                  vm = vm.parent.node;
-                  while ( vm ){
-                    vm.numMatches++;
-                    vm = vm.parent.node;
-                  }
-                }
-              }
-              else if ( this.excludedSectionFilter  ){
-                ctrl = false;
-                if ( childrens.length ){
-                  bbn.fn.each(childrens, node => {
-                    if (  bbn.fn.compare(node.text, newVal, 'icontains') ){
-                      ctrl = true;
-                    }
-                    node.$set(node, 'excludedFilter',false);
-                  });
-                  if ( !ctrl ){
-                    this.$set(this,'excludedFilter',false);
-                  }
-                }
-              }
-            }
+          isVisible(newVal){
+            this.$set(this.source, 'visible', !!newVal);
           }
         }
       }

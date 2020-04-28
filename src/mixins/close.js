@@ -17,6 +17,7 @@
       data(){
         return {
           /**
+           * Defines if the component's source has been modified. 
            * @data {Boolean}  [false] dirty
            * @memberof closeComponent
            */
@@ -25,6 +26,7 @@
       },
       computed: {
         /**
+         * If the prop 'dirty' is false the component can be closed. 
          * @computed {Boolean} canClose
          * @memberof closeComponent
          */

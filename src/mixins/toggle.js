@@ -3,10 +3,20 @@
   bbn.fn.autoExtend("vue", {
     toggleComponent: {
       props: {
+        /**
+         * True if the component has to be visible.
+         * @memberof toggleComponent
+         * @prop {Boolean} [false] true
+         */
         visible: {
           type: Boolean,
           default: true
         },
+        /**
+         * True to focus the component.
+         * @memberof toggleComponent
+         * @prop {Boolean} [true] focused
+         */
         focused: {
           type: Boolean,
           default: true
@@ -15,25 +25,61 @@
       data(){
         return {
           /**
+           * If an element is focused it returns it.
            * @data {Element} prevFocused
            * @memberof toggleComponent
            */
           prevFocused: bbn.env.focused,
+          /**
+           * Whether or not the component is currently visible.
+           * @memberof toggleComponent
+           * @data {Boolean} currentVisible
+           */
           currentVisible: this.visible,
+          /**
+           * The focusable element.
+           * @memberof toggleComponent
+           * @data {HTMLElement} [null] focusable
+           */
           focusable: null,
+          /**
+           * True when the component has been opened.
+           * @memberof toggleComponent
+           * @data hasBeenOpened {Boolean} [false]
+           */
           hasBeenOpened: false
         };
       },
       methods: {
+        /**
+         * Shows the component.
+         * @method show
+         * @memberof toggleComponent
+         */
         show(){
           this.currentVisible = true;
         },
+        /**
+         * Hides the component.
+         * @method hide
+         * @memberof toggleComponent  
+         */
         hide(){
           this.currentVisible = false;
         },
+        /**
+         * Toggles the component's visibility.
+         * @method toggle
+         * @memberof toggleComponent
+         */
         toggle(){
           this.currentVisible = !this.currentVisible;
         },
+        /**
+         * Change the focused element.
+         * @param {boolean} v
+         * @memberof toggleComponent 
+         */
         switchFocus(v){
           if ( this.focused ){
             if ( v ){
@@ -48,6 +94,7 @@
         }
       },
       /**
+       * If not defined, defines the focusable element.
        * @event mounted
        * @memberof focusComponent
        */
@@ -62,6 +109,7 @@
         });
       },
       /**
+       * Returns the focus on the previously focused element.
        * @event beforeDestroy
        * @memberof focusComponent
        */
@@ -71,6 +119,15 @@
         }
       },
       watch: {
+        /**
+         * Emits the event 'open' or 'close'
+         * @watch currentVisible
+         * @param {Boolean} v 
+         * @emits open
+         * @emits close
+         * @fires switchFocus
+         * @memberof toggleComponent
+         */
         currentVisible(v){
           if ( v ){
             if ( !this.hasBeenOpened ){

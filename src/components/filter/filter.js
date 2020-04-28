@@ -303,7 +303,7 @@
               }
               else if ( f.source ){
                 if (bbn.fn.isArray(f.source) ){
-                  st += bbn.fn.get_field(f.source, 'value', cd.value, 'text');
+                  st += bbn.fn.getField(f.source, 'text', 'value', cd.value);
                 }
                 else if ( typeof f.source === 'object' ){
                   st += f.source[cd.value];

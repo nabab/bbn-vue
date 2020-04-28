@@ -41,7 +41,7 @@
             let url = this.baseUrl + (this.currentURL ? '/' + this.currentURL : '');
             bbn.fn.setNavigationVars(
               url,
-              (this.currentURL ? bbn.fn.get_field(this.source, this.sourceValue, this.currentURL, this.sourceText) + ' < ' : '') + document.title,
+              (this.currentURL ? bbn.fn.getField(this.source, this.sourceText, this.sourceValue, this.currentURL) + ' < ' : '') + document.title,
               {
                 script: () => {
                   //bbn.fn.log("updateUrl & EXEC SCRIPT");

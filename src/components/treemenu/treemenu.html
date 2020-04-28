@@ -21,15 +21,16 @@
     <div class="bbn-w-100 bbn-flex-fill">
       <div class="bbn-overlay">
         <bbn-tree :source="source"
+                  :hybrid="true"
                   :map="mapSrc"
                   :data="getData"
-                  :autoload="false"
+                  :autobind="false"
                   :opened="true"
                   ref="tree"
                   @load="resizeScroll"
-                  :filter-string="searchExp"
+                  :quick-filter="searchExp"
                   :excluded-section-filter="true"
-                  @select="go"
+                  @nodeClick="go"
                   :menu="getMenu"
                   @ready="readyTree"
         ></bbn-tree>

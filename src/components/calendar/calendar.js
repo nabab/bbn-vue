@@ -1,8 +1,11 @@
 /**
  * @file bbn-calendar component
+ *
  * @description The bbn-calendar component is a calendar that allows you to interact with dates by providing details, inserting reminders and creating events.
+ *
  * @copyright BBN Solutions
- * @author Mirko Argentino 
+ *
+ * @author Mirko Argentino
  */
 
 ((bbn) => {
@@ -278,10 +281,10 @@
           return [];
         }
       },
-      /** 
+      /**
        * Shows the "loading" text when it's loading.
        * @prop {Boolean} showLoading
-      */
+       */
       showLoading: {
         type: Boolean,
         default: false
@@ -352,6 +355,11 @@
          * @data {String} [''] currentValue
          */
         currentValue: '',
+        /**
+         * The events.
+         *
+         * @data {Object} [{}] events
+         */
         events: {}
       }
     },
@@ -613,7 +621,7 @@
        *
        * @method getLabelsFormat
        * @return {String|false}
-      */
+       */
       getLabelsFormat(){
         if ( this.labels ){
           switch ( this.labels ){
@@ -641,6 +649,11 @@
         }
         return false;
       },
+      /**
+       * Called to the component mounted setting currentDate at max or min.
+       *
+       * @method create
+       */
       create(){
         if ( !this.ready ){
           this.$once('dataloaded', () => {
@@ -662,6 +675,11 @@
           this.updateData();
         }
       },
+      /**
+       * Defines and inserts events.
+       *
+       * @method makeEvents
+       */
       makeEvents(){
         this.$set(this, 'events', {});
         bbn.fn.each(this.currentData, d => {
@@ -929,11 +947,18 @@
       currentLabelsDates(newVal){
         this.setLabels(newVal);
       },
+      /**
+       * @watch value
+       */
       value(newVal, oldVal){
         if ( newVal !== oldVal ){
           this.currentValue = newVal;
         }
       },
+      /**
+       * @watch currentData
+       * @fires init
+      */
       currentData(){
         this.init();
       }

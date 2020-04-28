@@ -1,0 +1,71 @@
+<template>
+<div :class="[{'bbn-iblock':true}, componentClass]"
+>
+  <input :value="ivalue"
+         ref="element"
+         class="bbn-textbox"
+         :disabled="disabled"
+         :required="required"
+         readonly="readonly"
+  >
+  <input type="hidden"
+         :value="value"
+         :name="name"
+         ref="hinput"
+  > &nbsp;
+  <bbn-button ref="button"
+              @click="build()"
+              class="bbn-no-vborder"
+              icon="nf nf-fa-search"
+  >
+  </bbn-button>
+</div>
+</template>
+<script>
+  module.exports = /**
+ * Created by BBN on 10/02/2017.
+ */
+(function(bbn){
+  "use strict";
+
+  Vue.component('bbn-tree-input', {
+    mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent],
+    props: {
+      extensions:{
+        type: Array,
+        // default: ["dnd"]
+      },
+      autoExpandMS:{
+        type: Number
+      },
+      source: {
+        type: [String, Array, Object]
+      },
+      cfg: {
+        type: Object,
+        default(){
+          return {
+            extensions: ["dnd"],
+            auoExpandedMS: 400,
+            source: [],
+            disabled: false
+          };
+        }
+      }
+    },
+    data(){
+      return {
+        widgetName: "fancytree",
+        ivalue: this.currentSelection ? this.currentSelection : ''
+      };
+    },
+    methods: {
+    },
+    mounted(){
+      this.ready = true;
+    }
+  });
+
+})(bbn);
+
+</script>

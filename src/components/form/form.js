@@ -548,7 +548,7 @@
           if ( this.window ){
             this.window.close();
           }
-          else if (!bbn.fn.get_row(this.realButtons, {text: bbn._('Reset')})) {
+          else if (!bbn.fn.getRow(this.realButtons, {text: bbn._('Reset')})) {
             this.reset();
           }
         }

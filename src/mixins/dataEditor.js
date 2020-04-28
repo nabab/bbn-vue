@@ -63,8 +63,9 @@
       },
       methods: {
         /**
+         * not used
          * @memberof dataEditorComponent
-         * @method editorOperatorType
+         *  editorOperatorType
          * @param {Object} col 
          */
         editorOperatorType(col){
@@ -73,9 +74,11 @@
           }
         },
         /**
+         * Returns if true if the editor has no value.
          * @memberof dataEditorComponent
          * @method editorHasNoValue
-         * @param {*} operator 
+         * @param {String} operator 
+         * @returns {Boolean}
          */
         editorHasNoValue(operator){
           return editorNoValueOperators.indexOf(operator) > -1;
@@ -85,6 +88,7 @@
          * @method editorGetComponentOptions
          * @param {Object} col
          * @memberof dataEditorComponent
+         * @returns {Object}
          */
         editorGetComponentOptions(col){
           let o = {
@@ -140,23 +144,27 @@
       computed: {
         /**
          * The object containing the text for the different operator values.
-         * @computed {Object} editorOperators
+         * @computed editorOperators 
          * @memberof dataEditorComponent
+         * @returns {Object}
          */
         editorOperators(){
           return editorOperators;
         },
         /**
          * The object containing the text for the case null or not null values.
-         * @computed {Object} editorNullOps
+         * @computed editorNullOps
          * @memberof dataEditorComponent
+         * 
          */
         editorNullOps(){
           return editorNullOps;
         },
         /**
-         * @computed {Array} editorNoValueOperators
+         * The array containing the values of operators when the value of the editor is not defined.
+         * @computed editorNoValueOperators 
          * @memberof dataEditorComponent
+         * @returns {Array}
          */
         editorNoValueOperators(){
           return editorNoValueOperators;
