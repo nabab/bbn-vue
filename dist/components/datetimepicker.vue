@@ -311,7 +311,6 @@
  *
  * @description bbn-datetimepicker is a component that allows the user to choose a time and date.
  * The interval period and the value format are easuly customizable.
- * 
  *
  * @copyright BBN Solutions
  *
@@ -489,7 +488,7 @@
        * True if the values of the inputValue and the oldInputValue properties are different.
        *
        * @computed intuValueChanged
-       * @return {String}
+       * @return {Boolean}
        */
       inputValueChanged(){
         return this.inputValue !== this.oldInputValue;
@@ -523,6 +522,7 @@
        *
        * @method getValueFormat
        * @param {String} val The value.
+       * @fires valueFormat
        * @return {String}
        */
       getValueFormat(val){
@@ -532,6 +532,7 @@
        * Sets the value from 'YYYY-MM-DD' formatted value.
        *
        * @method setDate
+       * @param {String} val The value.
        * @fires getValueFormat
        * @fires setValue
       */
@@ -550,6 +551,7 @@
        * Sets the value format from 'HH:mm' to 'HH:mm:ss'.
        *
        * @method setTime
+       * @param {String} val The value.
        * @fires getValueFormat
        * @fires setValue
       */
@@ -566,7 +568,10 @@
        *
        * @method setValue
        * @param {String} val The value.
+       * @param {String} format Type format.
        * @fires getValueFormat
+       * @fires setInputValue
+       * @fires disabledDates
        * @emits input
       */
       setValue(val, format){
@@ -609,6 +614,7 @@
        * Updates the calendar.
        *
        * @method updateCalendar
+       * @fires getRef
        * @fires calendar.refresh
       */
       updateCalendar(){
@@ -653,6 +659,15 @@
           }
         }
       },
+      /**
+       * The method value input.
+       *
+       * @method setInputValue
+       * @param {String} newVal
+       * @fires getValueFormat
+       * @fires updateCalendar
+       * @fires getRef
+       */
       setInputValue(newVal){
         if ( newVal ){
           let mask = this.getRef('element'),
@@ -667,6 +682,13 @@
         this.oldInputValue = this.inputValue;
         this.updateCalendar();
       },
+      /**
+       * clears any contained value in input.
+       *
+       * @method clear
+       * @fires setValue
+       * @fires getRef
+       */
       clear(){
         this.setValue('');
         this.$nextTick(() => {
@@ -717,7 +739,7 @@
       },
       /**
        * @watch maskedMounted
-       * @fires getValueFormat
+       * @fires setInputValue
        */
       maskedMounted(newVal){
         if ( newVal ){
@@ -726,9 +748,8 @@
       },
       /**
        * @watch value
-       * @fires getValueFormat
-       * @fires updateCalendar
-      */
+       * @fires setInputValue
+       */
       value(newVal){
         this.setInputValue(newVal);
       }
@@ -842,6 +863,7 @@
            *
            * @computed checkScroll
            * @memberof timepicker
+           * @fires getRef
            * @return {Boolean}
            */
           checkScroll(){
@@ -863,6 +885,7 @@
            *
            * @method getTime
            * @memberof timepicker
+           * @return {String}
            */
           getTime(){
             if (
@@ -885,6 +908,7 @@
            *
            * @method setHour
            * @memberof timepicker
+           * @fires getTime
            * @param {Number} h
            * @emits change
            */
@@ -900,6 +924,7 @@
            *
            * @method setMinute
            * @memberof timepicker
+           * @fires getTime
            * @param {Number} m
            * @emits change
            */
@@ -916,6 +941,7 @@
            * @method setSecond
            * @memberof timepicker
            * @param {Number} s
+           * @fires getTime
            * @emits change
            */
           setSecond(s){
@@ -984,6 +1010,7 @@
           /**
            * @watch checkScroll
            * @memberof timepicker
+           * @fires getRef
           */
           checkScroll(newVal){
             if ( newVal ){

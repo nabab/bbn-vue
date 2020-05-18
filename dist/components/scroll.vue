@@ -1,11 +1,12 @@
 <template>
 <div :class="elementClass"
      :style="elementStyle"
-     @scroll.prevent
 >
   <div :class="{'bbn-scroll-container': scrollable, 'bbn-overlay': !isMeasuring && !scrollable}"
        ref="scrollContainer"
-       @scroll.passive="onScroll"
+       @scroll="onScroll"
+       tabindex="0"
+       :style="{overflow: isScrolling ? 'hidden' : 'scroll'}"
   >
     <div :class="{'bbn-scroll-content': !isMeasuring, 'bbn-overlay': !scrollable}"
          ref="scrollContent"
@@ -175,6 +176,10 @@
       scrollable: {
         type: Boolean,
         default: true
+      },
+      fullPage: {
+        type: Boolean,
+        default: false
       }
     },
     data() {
@@ -267,7 +272,8 @@
          * @data {Boolean} [false] hasScrollY
          */
         hasScrollY: false,
-        promise: false
+        promise: false,
+        isScrolling: false
       };
     },
     computed: {
@@ -363,18 +369,36 @@
           });
         });
       },
+      preventKeyIfScrolling(e) {
+        if (this.isScrolling && (32 >= e.key <= 40)) {
+          e.preventDefault();
+        }
+      },
       /**
        * @method onScroll
        * @param {Event} e 
        * @emits scroll
        */
       onScroll(e){
-        if ( this.scrollable === false ){
+        if ((this.scrollable === false) || this.isScrolling) {
           return;
         }
         let ct = this.getRef('scrollContainer');
         let x = ct.scrollLeft;
-        if ( x !== this.currentX ){
+        if ( this.hasScrollX && (x !== this.currentX)) {
+          if (this.fullPage) {
+            this.isScrolling = true;
+            setTimeout(() => {
+              this.isScrolling = false;
+            }, 1000);
+            if (x > this.currentX) {
+              x = this.currentX + ct.clientWidth;
+            }
+            else{
+              x = this.currentX - ct.clientWidth;
+            }
+            this.$refs.xScroller.scrollTo(x);
+          }
           this.currentX = x;
           if (!x) {
             this.$emit('reachLeft');
@@ -384,7 +408,21 @@
           }
         }
         let y = ct.scrollTop;
-        if ( y !== this.currentY ){
+        if ( this.hasScrollY && (y !== this.currentY)) {
+          if (this.fullPage) {
+            bbn.fn.log("Scrollibng fp");
+            this.isScrolling = true;
+            setTimeout(() => {
+              this.isScrolling = false;
+            }, 1000);
+            if (y > this.currentY) {
+              y = this.currentY + ct.clientHeight;
+            }
+            else{
+              y = this.currentY - ct.clientHeight;
+            }
+            this.$refs.yScroller.scrollTo(y);
+          }
           this.currentY = y;
           if (!y) {
             this.$emit('reachTop');
@@ -400,11 +438,10 @@
        * @method scrollTo
        * @param {Number} x 
        * @param {Number} y 
-       * @param {String} animate 
        * @fires $refs.xScroller.scrollTo
        * @fires $refs.yScroller.scrollTo
        */
-      scrollTo(x, y, animate){
+      scrollTo(x, y){
         if (!this.hasScroll || !this.ready) {
           return;
         }
@@ -417,7 +454,7 @@
           (x !== null) &&
           this.$refs.xScroller
         ) {
-          this.$refs.xScroller.scrollTo(x, animate);
+          this.$refs.xScroller.scrollTo(x);
         }
         if (
           this.hasScrollY &&
@@ -425,7 +462,7 @@
           (y !== null) &&
           this.$refs.yScroller
         ) {
-          this.$refs.yScroller.scrollTo(y, animate);
+          this.$refs.yScroller.scrollTo(y);
         }
       },
       /**
@@ -449,11 +486,10 @@
         this.$emit('scrolly', ev, top);
       },
       /**
-       * @todo not used
+       * @method initSize
+       * @fires getNaturalDimensions
+       * @fires onResize
        */
-      update(){
-
-      },
       initSize(){
         if ( !this.ready && this.readyDelay ){
           return new Promise((resolve) => {
@@ -505,19 +541,23 @@
           }
           if ( this.scrollable ){
             if ( (this.axis === 'both') || (this.axis === 'x') && (this.contentWidth > containerWidth) ){
-              if ( this.$refs.xScroller ){
-                this.$refs.xScroller.onResize();
-              }
               this.hasScrollX = true;
+              this.$nextTick(() => {
+                if ( this.$refs.xScroller ){
+                  this.$refs.xScroller.onResize();
+                }
+              })
             }
             else{
               this.hasScrollX = false;
             }
             if ((this.axis === 'both') || (this.axis === 'y') && (this.contentHeight > containerHeight)){
-              if ( this.$refs.yScroller ){
-                this.$refs.yScroller.onResize();
-              }
               this.hasScrollY = true;
+              this.$nextTick(() => {
+                if ( this.$refs.yScroller ){
+                  this.$refs.yScroller.onResize();
+                }
+              })
             }
             else{
               this.hasScrollY = false;
@@ -729,18 +769,44 @@
           this.initSize();
         }
       },
+      /**
+       * @watch scrollable
+       * @param newVal 
+       * @fires onResize
+       */
+      scrollable(newVal){
+        if (newVal) {
+          this.onResize();
+        }
+      },
+      /**
+       * @watch lastKnownWidth
+       * @param newVal 
+       */
       lastKnownWidth(newVal){
         this.containerWidth = newVal;
       },
+      /**
+       * @watch lastKnownHeight
+       * @param newVal 
+       */
       lastKnownHeight(newVal){
         this.containerHeight = newVal;
       },
+      /**
+       * @watch containerWidth
+       * @param newVal 
+       */
       containerWidth(){
         let x = this.getRef('xScroller');
         if ( x ){
           x.onResize()
         }
       },
+      /**
+       * @watch containerHeight
+       * @param newVal 
+       */
       containerHeight(){
         let y = this.getRef('yScroller');
         if ( y ){
@@ -764,6 +830,7 @@
   height: 100%;
   box-sizing: content-box;
   overflow: scroll;
+  scroll-behavior: smooth;
   scrollbar-width: none;
 }
 .bbn-scroll > .bbn-scroll-container.bbn-overlay {

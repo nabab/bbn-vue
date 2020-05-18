@@ -212,7 +212,7 @@
     props: {
       /**
        * The ecmascript version.
-       * 
+       *
        * @prop {Number} [6] ecma
        */
       ecma: {
@@ -221,7 +221,7 @@
       },
       /**
        * The language mode.
-       * 
+       *
        * @prop {String} [php] mode
        */
       mode: {
@@ -230,17 +230,26 @@
       },
       /**
        * Defines the style of the editor.
-       * 
+       *
        * @prop {String} theme
-       * 
        */
       theme: {
         type: String,
       },
+      /**
+       * Takes the full height of the container if set to true.
+       *
+       * @prop {Boolean} [true] fill
+       */
       fill: {
         type: Boolean,
         default: true
       },
+      /**
+       * Configuration object.
+       *
+       * @prop {Object} cfg
+       */
       cfg: {
         type: Object,
         default: function(){
@@ -287,10 +296,10 @@
     methods: {
       /**
        * Gets the preset options for the given mode from the constant modes.
-       * 
+       *
        * @method getMode
        * @param {String} mode
-       * @return {Boolean}
+       * @return {Object | Boolean}
        */
       getMode(mode){
         if ( modes[mode] ){
@@ -308,7 +317,7 @@
       },
       /**
        * Gets the options for the editor.
-       * 
+       *
        * @method getOptions
        * @fires getMode
        * @return {Object}
@@ -330,7 +339,7 @@
       },
       /**
        * Places the cursor at a defined point.
-       * 
+       *
        * @method cursorPosition
        * @param {Number} lineCode
        * @param {Number} position
@@ -355,7 +364,7 @@
       },
       /**
        * Returns an object with the selections, marks, folding and value.
-       * 
+       *
        * @method getState
        * @return {Object | Boolean}
        */
@@ -390,7 +399,7 @@
       },
       /**
        * Loads the state, such as the last state saved.
-       * 
+       *
        * @method loadState
        * @param {Object} obj
        * @fires cursorPosition
@@ -429,7 +438,11 @@
       },
       /**
        * Folds the given level.
-       * @param {*} level
+       *
+       * @method foldByLevel
+       * @param {Number} level
+       * @fires foldByLevelRec
+       * @fires foldByNodeOrder
        */
       foldByLevel(level) {
         this.foldByNodeOrder(0);
@@ -442,9 +455,9 @@
       },
       /**
        * @method foldByLevelRec
-       * @param {*} cursor 
-       * @param {*} range 
-       * @param {*} level 
+       * @param {Number} cursor
+       * @param {Object} range
+       * @param {Number} level
        */
       foldByLevelRec(cursor, range, level) {
         if (level > 0) {
@@ -480,8 +493,10 @@
       },
       /**
        * Folds the given node.
+       *
        * @method foldByNodeOrder
-       * @param {Number} node 
+       * @param {Number} node
+       * @fires unfoldAll
        */
       foldByNodeOrder(node) {
         // 0 - fold all
@@ -498,6 +513,7 @@
       },
       /**
        * Folds all nodes.
+       *
        * @method foldAll
        * @fires foldByNodeOrder
        */
@@ -506,6 +522,7 @@
       },
       /**
        * Undfolds all nodes.
+       *
        * @method unfoldAll
        */
       unfoldAll() {
@@ -515,6 +532,7 @@
       },
       /**
        * Initializes the component
+       *
        * @method initTern
        */
       initTern(){
@@ -569,7 +587,9 @@
       },
       /**
        * Adds a block of text in the editor.
-       * @param {String} code 
+       *
+       * @param {String} code
+       * @fires getState
        */
       addSnippet(code){
         if ( code === undefined ){
@@ -586,7 +606,8 @@
       },
       /**
        * Toggles the fullscreen.
-       * @param {Boolean} isFS 
+       *
+       * @param {Boolean} isFS
        */
       toggleFullScreen(isFS){
         if ( isFS === undefined ){
@@ -598,6 +619,8 @@
     /**
      * @event mounted
      * @fires initTern
+     * @fires getRef
+     * @emit  input
      */
     mounted(){
       //bbn.fn.log(this.getOptions());
@@ -639,14 +662,15 @@
     watch: {
       /**
        * @watch currentTheme
-       * @param {String} newVal 
+       * @param {String} newVal
        */
       currentTheme(newVal){
         this.widget.setOption("theme", newVal);
       },
       /**
        * @watch mode
-       * @param {String} newVal 
+       * @param {String} newVal
+       * @fires getMode
        */
       mode(newVal){
         let mode = this.getMode(newVal);
@@ -658,8 +682,8 @@
       },
       /**
        * @watch value
-       * @param {String} newVal 
-       * @param {String} oldVal 
+       * @param {String} newVal
+       * @param {String} oldVal
        */
       value(newVal, oldVal){
         if ( (newVal !== oldVal) && (newVal !== this.widget.getValue()) ){
@@ -684,6 +708,7 @@
   height: auto;
 }
 .bbn-code .CodeMirror {
+  padding: 0.5em 0;
   font-size: small;
   font-family: "Fira Code";
   font-feature-settings: "calt" 1;

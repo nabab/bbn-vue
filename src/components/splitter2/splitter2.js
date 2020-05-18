@@ -1,185 +1,8 @@
-<template>
-<div :class="[{'bbn-overlay': true}, componentClass]"
-     :style="{
-       gridTemplateColumns: columnsCfg,
-       gridTemplateRows: rowsCfg,
-     }"
-     @scroll.prevent.stop="preventScroll"
-     v-show="panes.length"
->
-  <slot></slot>
-  <div v-for="(rs, i) in resizers"
-       :class="[
-         'bbn-unselectable',
-         'bbn-middle',
-         'bbn-splitter-bar',
-         'bbn-header',
-         currentOrientation,
-         {'bbn-splitter-resizer': !!rs.pane2},
-         realResizerClass(rs)
-       ]"
-       ref="resizer"
-       :style="{
-          gridColumn: currentOrientation === 'horizontal' ? rs.position : 1,
-          gridRow: currentOrientation === 'vertical' ? rs.position : 1,
-          minWidth: resizerSize + 'px',
-          minHeight: resizerSize + 'px'
-        }"
-       @mousedown.prevent.stop="resizeStart($event, rs)"
-       @touchstart.prevent.stop="resizeStart($event, rs)"
-  >
-    <div v-if="areCollapsible(rs.panec1, rs.panec2)"
-         class="bbn-splitter-collapser"
-         :style="{fontSize: (resizerSize * 1.2) + 'px'}">
-      <div v-if="isCollapsiblePrev(rs.panec1, rs.panec2)"
-           @click.stop="collapse(rs.panec1, rs.panec2)"
-           :class="{
-             'bbn-p': true,
-             'bbn-w-100': currentOrientation === 'horizontal',
-             'bbn-h-100': currentOrientation === 'vertical',
-             'bbn-c': true
-           }">
-        <i :class="{
-           'nf nf-fa-angle_left': currentOrientation === 'horizontal',
-           'nf nf-fa-angle_up': currentOrientation === 'vertical'
-         }">
-        </i>
-      </div>
-      <div v-if="isCollapsibleNext(rs.panec1, rs.panec2)"
-           @click.stop="collapse(rs.panec2, rs.panec1)"
-           :class="{
-             'bbn-p': true,
-             'bbn-w-100': currentOrientation === 'horizontal',
-             'bbn-h-100': currentOrientation === 'vertical',
-             'bbn-c': true
-           }">
-        <i :class="{
-             'bbn-p': true,
-             'nf nf-fa-angle_right': currentOrientation === 'horizontal',
-             'nf nf-fa-angle_down': currentOrientation === 'vertical'
-           }">
-        </i>
-      </div>
-      <div v-if="isFullyCollapsiblePrev(rs.panec1, rs.panec2, i)"
-           @click.stop="collapse(rs.panec1, rs.panec2, true)"
-           :class="{
-             'bbn-p': true,
-             'bbn-w-100': currentOrientation === 'horizontal',
-             'bbn-h-100': currentOrientation === 'vertical',
-             'bbn-c': true
-           }">
-        <i :class="{
-             'bbn-p': true,
-             'nf nf-fa-angle_double_left': currentOrientation === 'horizontal',
-             'nf nf-fa-angle_double_up': currentOrientation === 'vertical'
-           }">
-        </i>
-      </div>
-      <div v-if="isFullyCollapsibleNext(rs.panec1, rs.panec2, i)"
-           @click.stop="collapse(rs.panec2, rs.panec1, true)"
-           :class="{
-             'bbn-p': true,
-             'bbn-w-100': currentOrientation === 'horizontal',
-             'bbn-h-100': currentOrientation === 'vertical',
-             'bbn-c': true
-           }">
-        <i :class="{
-             'bbn-p': true,
-             'nf nf-fa-angle_double_right': currentOrientation === 'horizontal',
-             'nf nf-fa-angle_double_down': currentOrientation === 'vertical'
-           }">
-        </i>
-      </div>
-      <!--i v-if="panes[rs.panec1] &&
-                    panes[rs.panec1].collapsible &&
-                    !panes[rs.panec1].collapsed && (
-                      panes[rs.panec2] &&
-                      panes[rs.panec2].collapsed
-                    ) &&
-                    !panes[rs.panec1].collapsed"
-         :class="{
-           'bbn-p': true,
-           'nf nf-fa-angle_double_left': currentOrientation === 'horizontal',
-           'nf nf-fa-angle_double_top': currentOrientation === 'vertical'
-         }"
-         @click="collapse(rs.panec1, rs.panec2, true)">
-      </i>
-      <i v-else-if="panes[rs.panec1] &&
-                    panes[rs.panec1].collapsible && (
-                      panes[rs.panec2] &&
-                      panes[rs.panec2].collapsed
-                    ) &&
-                    panes[rs.panec1].collapsed"
-         :class="{
-           'bbn-p': true,
-           'nf nf-fa-angle_double_right': currentOrientation === 'horizontal',
-           'nf nf-fa-angle_double_bottom': currentOrientation === 'vertical'
-         }"
-         @click="collapse(rs.panec2, rs.panec1, true)">
-      </i>
-      
-      <i v-if="rs[i-1].position === panes[rs.panec2] &&
-               panes[rs.panec2].collapsible && (
-                 !panes[rs.panec1] ||
-                 !panes[rs.panec1].collapsed
-               ) &&
-               !panes[rs.panec2].collapsed"
-         :class="{
-           'bbn-p': true,
-           'nf nf-fa-angle_right': currentOrientation === 'horizontal',
-           'nf nf-fa-angle_bottom': currentOrientation === 'vertical'
-         }"
-         @click="collapse(rs.panec2, rs.panec1)">
-      </i>
-      <i v-else-if="panes[rs.panec2] &&
-               panes[rs.panec2].collapsible && (
-                 !panes[rs.panec1] ||
-                 !panes[rs.panec1].collapsed
-               ) &&
-               panes[rs.panec2].collapsed"
-         :class="{
-           'bbn-p': true,
-           'nf nf-fa-angle_left': currentOrientation === 'horizontal',
-           'nf nf-fa-angle_top': currentOrientation === 'vertical'
-         }"
-         @click="collapse(rs.panec1, rs.panec2)">
-      </i>
-      <i v-else-if="panes[rs.panec2] &&
-               panes[rs.panec2].collapsible && (
-                 panes[rs.panec1] &&
-                 panes[rs.panec1].collapsed
-               ) &&
-               !panes[rs.panec2].collapsed"
-         :class="{
-           'bbn-p': true,
-           'nf nf-fa-angle_double_right': currentOrientation === 'horizontal',
-           'nf nf-fa-angle_double_bottom': currentOrientation === 'vertical'
-         }"
-         @click="collapse(rs.panec1, rs.panec2, true)">
-      </i>
-      <i v-else-if="panes[rs.panec2] &&
-               panes[rs.panec2].collapsible && (
-                 panes[rs.panec1] &&
-                 panes[rs.panec1].collapsed
-               ) &&
-               panes[rs.panec2].collapsed"
-         :class="{
-           'bbn-p': true,
-           'nf nf-fa-angle_double_left': currentOrientation === 'horizontal',
-           'nf nf-fa-angle_double_top': currentOrientation === 'vertical'
-         }"
-         @click="collapse(i, rs.panec2, true);">
-      </i-->
-    </div>
-  </div>
-</div>
-</template>
-<script>
-  module.exports = /**
+/**
  * @file bbn-splitter component
  *
  * @description bbn-splitter is a component that can interact dynamically, allowing the division of a layout into resizable areas.
- * To do so it needs another component, the "bbn-pane" that represents the portion of the single area that the splitter contains.
+ * To do so it needs another component, the "bbn-pane2" that represents the portion of the single area that the splitter contains.
  *
  * @copyright BBN Solutions
  *
@@ -190,15 +13,11 @@
 
 (function(bbn){
   "use strict";
-  Vue.component('bbn-splitter', {
-    /**
-     * @mixin bbn.vue.basicComponent 
-     * @mixin bbn.vue.resizerComponent
-     */
+  Vue.component('bbn-splitter2', {
     mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent],
     props: {
       /**
-       * The orientation of the splitter ('horizontal', 'vertical', 'auto').
+       * The orientation of the splitter ('horizontal', 'vertical', 'auto')
        * @prop {String} ['auto'] orientation
        */
       orientation: {
@@ -206,7 +25,7 @@
         default: 'auto'
       },
       /**
-       * Set to true allows the splitter to be resizable. 
+       * Set to true allows the splitter to be resizable 
        * @prop {boolean} [false] resizable
        */
       resizable: {
@@ -214,7 +33,7 @@
         default: false
       },
        /**
-       * Set to true allows the panes inside the splitter to be collapsible. 
+       * Set to true allows the panes inside the splitter to be collapsible 
        * @prop {boolean} [false] collapsible
        */
       collapsible: {
@@ -227,7 +46,7 @@
         default: false
       },
       /**
-       * Defines the size of the resizer element, width if vertical, height if horizontal.
+       * Defines the size of the resizer element, width if vertical, height if horizontal
        * @prop {number} [15] resizerSize
        */
       resizerSize: {
@@ -235,14 +54,14 @@
         default: 15
       },
       /**
-       * A class name to add on the resizer element.
+       * A class name to add on the resizer element
        * @prop {String|Function} resizerClass
        */
       resizerClass: {
         type: [String, Function]
       },
       /**
-       * The minimum size that can have a pane (non collapsed).
+       * The minimum size that can have a pane (non collapsed)
        * @prop {Number} [40] minPaneSize
        */
       minPaneSize: {
@@ -253,22 +72,22 @@
     data(){
       return  {
         /**
-         * The timeout used to launch the initial process (reset each time a new pane is added).
+         * The timeout used to launch the initial process (reset each time a new pane is added)
          * @data {Number} [0] initTimeout
          */
         initTimeout: 0,
         /**
-         * Will be set to true once the splitter has been resized.
+         * Will be set to true once the splitter has been resized
          * @data {Boolean} [false] isResized
          */
         isResized: false,
         /**
-         * Will be set to true when the splitter is being resized by the user.
+         * Will be set to true when the splitter is being resized by the user
          * @data {Boolean} [false] isResizing
          */
         isResizing: false,
         /**
-         * An object containing info about current user resizing when it occurs.
+         * An object containing info about current user resizing when it occurs
          * @data {Boolean} [null] resizeCfg
          */
         resizeCfg: null,
@@ -278,20 +97,21 @@
          */
         resizers: [],
         /**
-         * The content of the prop orientation.
+         * The content of the prop orientation
          * @data {String} currentOrientation
          */
         currentOrientation: this.orientation,
         /**
-         * The configuration of the panes.
+         * Panes' configurations
          * @data {Array} [[]] panes
          */
-        panes: []
+        panes: [],
+        formattedCfg: ''
       };
     },
     computed: {
       /**
-       * Return true if at least 2 panes are resizable - and so is the splitter.
+       * Return true if at least 2 panes are resizable - and so is the splitter
        * @computed isResizable
        * @return {Boolean}
        */
@@ -304,8 +124,7 @@
        * @return {String}
        */
       columnsCfg(){
-        return this.panes.length && (this.currentOrientation === 'horizontal') ?
-          this.getFormatted() : 'auto';
+        return this.panes.length && !this.isVertical && this.availableSize ? this.formattedCfg : 'auto';
       },
       /**
        * What will be actually in the CSS for grid-template-rows.
@@ -313,8 +132,7 @@
        * @return {String}
        */
       rowsCfg(){
-        return this.panes.length && (this.currentOrientation === 'vertical') ?
-          this.getFormatted() : 'auto';
+        return this.panes.length && this.isVertical && this.availableSize ? this.formattedCfg : 'auto';
       },
       /**
        * X or y depending on the current orientation.
@@ -360,9 +178,18 @@
         });
         return availableSize;
       },
-
+      /**
+       * @computed isVertical
+       * @returns {Boolean}
+       */
+      isVertical(){
+        return this.currentOrientation === 'vertical';
+      }
     },
     methods: {
+      setFormatted(){
+        this.formattedCfg = this.getFormatted();
+      },
       /**
        * Returns the calculated grid-template-rows or grid-template-columns as CSS string.
        * @method getFormatted
@@ -408,18 +235,18 @@
                 }
                 else if ( a.size ){
                   if ( a.addedSize || diff ){
-                    sz += 'calc( ';
-                    sz += a.size + (a.isNumber ? 'px' : '');
+                    sz += 'calc(';
+                    sz += a.size + (a.isNumber || bbn.fn.isNumber(a.size) ? 'px' : '');
                     if ( diff ){
                       sz += ' + ' + diff + 'px';
                     }
                     if ( a.addedSize ){
-                      sz += ' + ' + (typeof a.addedSize === 'number' ? a.addedSize + 'px' : a.addedSize);
+                      sz += ' + ' + (bbn.fn.isNumber(a.addedSize) ? a.addedSize + 'px' : a.addedSize);
                     }
                     sz += ')';
                   }
                   else if ( a.size ){
-                    sz += a.size + (a.isNumber ? 'px' : '');
+                    sz += a.size + (a.isNumber || bbn.fn.isNumber(a.size) ? 'px' : '');
                   }
                 }
                 else {
@@ -432,7 +259,7 @@
         return tmp.join(' ');
       },
       /**
-       * Returns the resizer's class according to its resizerClass prop.
+       * returns the resizer's class according to its resizerClass prop.
        * @method realResizerClass
        * @param resizer
        * @return {String}
@@ -480,7 +307,6 @@
       /**
        * Is used when collapsed
        * @todo check it out
-       * @ignore
        */
       updatePositions(){
         /*
@@ -491,7 +317,7 @@
         */
       },
       /**
-       * Gets the next resizable pane.
+       * Gets the next resizable pane
        * @method getNextResizable
        * @param {Number} idx 
        * @param {Array} arr 
@@ -506,7 +332,7 @@
         return false;
       },
       /**
-       * Gets the previous resizable pane.
+       * Gets the previous resizable pane
        * @method getPrevResizable
        * @param {Number} idx 
        * @param {Array} arr 
@@ -521,7 +347,7 @@
         return false;
       },
       /**
-       * Gets the next collapsible pane.
+       * Gets the next collapsible pane
        * @method getNextCollapsible
        * @param {Number} idx 
        * @param {Array} arr 
@@ -536,7 +362,7 @@
         return false;
       },
       /**
-       * Gets the previous collassible pane.
+       * Gets the previous collassible pane
        * @method getPrevCollapsible
        * @param {Number} idx 
        * @param {Array} arr 
@@ -567,35 +393,56 @@
           this.panes.splice(0, this.panes.length);
           // position starts at 1
           let currentPosition = 1,
-              tmp             = [];
+              tmp = [];
           // If 1st pane is collapsible we add a resizer at the start
           this.$children.forEach((pane, i) => {
             // Defining the panes base on the content
-            if ( pane.$vnode.componentOptions.tag === 'bbn-pane' ){
-              let isPercent   = false,
-                  isFixed     = false,
-                  isNumber    = false,
-                  props       = JSON.parse(JSON.stringify(pane.$vnode.componentOptions.propsData)),
-                  resizable   = (this.resizable || props.resizable) && (props.resizable !== false),
+            if ( pane.$vnode.componentOptions.tag === 'bbn-pane2' ){
+              let isRelative = false,
+                  isPercent = false,
+                  isFixed = false,
+                  isNumber = false,
+                  unit = '',
+                  props = JSON.parse(JSON.stringify(pane.$vnode.componentOptions.propsData)),
+                  resizable = (this.resizable || props.resizable) && (props.resizable !== false),
                   collapsible = (this.collapsible || props.collapsible) && (props.collapsible !== false),
-                  value       = parseInt(props.size) || 0;
+                  value = parseInt(props.size) || 0;
               if ( props.size ){
                 isFixed = true;
                 if ( props.size === 'auto' ){
+                  isRelative = true;
                   props.size = false;
                 }
-                else if ( (typeof props.size === 'string') && (props.size.substr(-1) === '%') ){
-                  isPercent = true;
+                else if ( bbn.fn.isString(props.size) ){
+                  if (  props.size.substr(-1) === '%' ){
+                    isPercent = true;
+                    isRelative = true;
+                    unit = '%';
+                  }
+                  else {
+                    switch ( props.size.substr(-2) ){
+                      case 'px':
+                        isNumber = true;
+                        props.size = parseInt(props.size);
+                        unit = 'px';
+                        break;
+                      case 'fr':
+                      case 'em':
+                        isRelative = true;
+                        unit = props.size.substr(-2);
+                        break;
+                    }
+                  }
                 }
-                else if ( (typeof props.size === 'string') && (props.size.substr(-2) === 'px') ){
+                else if ( bbn.fn.isNumber(props.size) ){
                   isNumber = true;
-                  props.size = parseInt(props.size);
-                }
-                else if ( (typeof props.size === 'number') ){
-                  isNumber = true;
+                  unit = 'px';
                 }
               }
-              let obj = bbn.fn.extend({
+              else {
+                isRelative = true;
+              }
+              tmp.push(bbn.fn.extend({
                 index: i,
                 value: value,
                 currentDiff: 0,
@@ -603,15 +450,18 @@
                 addedSize: '',
                 tmpDiff: 0,
                 collapsed: false,
+                isRelative: isRelative,
                 isPercent: isPercent,
                 isFixed: isFixed,
                 isNumber: isNumber,
+                unit: unit,
                 resizable: resizable,
                 collapsible: collapsible,
                 isResizable: collapsible || resizable,
-                pane: pane
-              }, props);
-              tmp.push(obj);
+                pane: pane,
+                originalSize: pane.originalSize,
+                realSize: 0
+              }, props));
             }
           });
           /*
@@ -620,18 +470,18 @@
               position: pos,
               pane1: {
                 obj: this.panes[assoc.index],
-                cp: bbn.vue.find(this, 'bbn-pane', assoc.index)
+                cp: bbn.vue.find(this, 'bbn-pane2', assoc.index)
               },
               pane2: {
                 obj: pane,
-                cp: bbn.vue.find(this, 'bbn-pane', i)
+                cp: bbn.vue.find(this, 'bbn-pane2', i)
               },
             });
             pos++;
           }
           */
-          let isResizable = bbn.fn.count(tmp, {isResizable: true}) >= 2;
-          let hasPanes = tmp.length > 1;
+          let isResizable = bbn.fn.count(tmp, {isResizable: true}) >= 2,
+              hasPanes = tmp.length > 1;
           // We will populate resizers
           this.resizers.splice(0, this.resizers.length);
           tmp.forEach((pane, idx) => {
@@ -714,10 +564,19 @@
           this.$forceUpdate();
           this.ready = true;
           this.selfEmit(true);
+          this.$nextTick(() => {
+            bbn.fn.each(this.panes, p => {
+              let cr = p.pane.$el.getBoundingClientRect(),
+                  size = parseInt(this.isVertical ? cr.height : cr.width) + 'px';
+              //p.size = size;
+              p.realSize = size;
+              //p.pane.realSize = size;
+            });
+          })
         }, 200);
       },
       /**
-       * Return true if one of the two panes given is collassible.
+       * Return true if one of the two panes given is collassible
        * @method areCollapsible
        * @param {Number} idxPane1 
        * @param {Number} idxPane2 
@@ -731,7 +590,6 @@
           );
       },
       /**
-       * Returns true if the previous pane is collapsible.
        * @method isCollapsiblePrev
        * @param {Number} idxPane1 
        * @param {Number} idxPane2 
@@ -746,7 +604,6 @@
         )
       },
       /**
-       * Returns true if the next pane is collapsible.
        * @method isCollapsibleNext
        * @param {Number} idxPane1 
        * @param {Number} idxPane2 
@@ -761,7 +618,6 @@
         )
       },
       /**
-       * Returns true if teh previous pane is fully collapsible.
        * @method isFullyCollapsiblePrev
        * @param {Number} idxPane1 
        * @param {Number} idxPane2 
@@ -778,8 +634,7 @@
           this.panes[idxPane1+1].collapsible
         )
       },
-      /**
-       * Returns true if the next pane is fully collapsible.
+       /**
        * @method isFullyCollapsibleNext
        * @param {Number} idxPane1 
        * @param {Number} idxPane2 
@@ -811,6 +666,7 @@
           }
           this.panes[this.resizeCfg.resizer.pane1].currentDiff = diff;
           this.panes[this.resizeCfg.resizer.pane2].currentDiff = - diff;
+          this.setFormatted();
         }
       },
       /**
@@ -841,10 +697,14 @@
           this.panes[this.resizeCfg.resizer.pane1].pane.selfEmit(true);
           this.panes[this.resizeCfg.resizer.pane2].pane.selfEmit(true);
           this.resizeCfg = null;
+          this.setFormatted();
         }
       },
+
+      testMove(){
+        bbn.fn.info("MOVE")
+      },
       /**
-       * @ignore
        * @todo Remove this function.
        * Obliged to do that because of sliders (closing one with right orientation moves the splitter!)
        */
@@ -854,17 +714,19 @@
       },
 
       /**
-       * Starts the resize.
-       * @param {Event} e 
-       * @param {Object} rs 
+       * Starts the resize
+       * @param {Event} e
+       * @param {Object} rs
        */
       resizeStart(e, rs){
-        if (this.isResizable
-           && !this.isResizing
-           && this.panes[rs.pane1]
-           && !this.panes[rs.pane1].collapsed
-           && this.panes[rs.pane2]
-           && !this.panes[rs.pane2].collapsed
+        bbn.fn.log(this.isResizable);
+        if (
+          this.isResizable &&
+          !this.isResizing &&
+          this.panes[rs.pane1] &&
+          !this.panes[rs.pane1].collapsed &&
+          this.panes[rs.pane2] &&
+          !this.panes[rs.pane2].collapsed
         ){
           this.isResizing = true;
           document.body.addEventListener("touchmove", this.resizeDrag);
@@ -873,14 +735,15 @@
           document.body.addEventListener("touchcancel", this.resizeEnd);
           document.body.addEventListener("mouseup", this.resizeEnd);
           document.body.addEventListener("mouseleave", this.resizeEnd);
-          let vue1 = bbn.vue.find(this, 'bbn-pane', rs.pane1),
-              vue2 = bbn.vue.find(this, 'bbn-pane', rs.pane2),
+          let vue1 = bbn.vue.find(this, 'bbn-pane2', rs.pane1),
+              vue2 = bbn.vue.find(this, 'bbn-pane2', rs.pane2),
               pos = e.target.getBoundingClientRect(),
               pos1 = vue1.$el.getBoundingClientRect(),
               pos2 = vue2.$el.getBoundingClientRect();
-          if (!this.panes[rs.pane1].size && !this.panes[rs.pane2].size) {
-            this.$set(this.panes[rs.pane1], "size", this.currentOrientation === 'horizontal' ? pos1.width : pos1.height);
-            this.$set(this.panes[rs.pane2], "size", this.currentOrientation === 'horizontal' ? pos2.width : pos2.height);
+          if ( !this.panes[rs.pane1].size && !this.panes[rs.pane2].size ){
+            this.$set(this.panes[rs.pane1], "size", this.isVertical ? pos1.height : pos1.width);
+            this.$set(this.panes[rs.pane2], "size", this.isVertical ? pos2.height : pos2.width);
+            this.setFormatted();
             this.$forceUpdate();
           }
           this.resizeCfg = {
@@ -890,7 +753,7 @@
             max: pos2[this.currentSizeType.toLowerCase()] - this.minPaneSize - this.resizerSize
           };
           this.resizeCfg[this.currentOffsetType] = pos[this.currentOffsetType];
-          //bbn.fn.log("START", this.resizeCfg, e, "------------");
+          bbn.fn.log("START", this.resizeCfg, e, "------------");
         }
         /*
             setTimeout(() =>{
@@ -898,8 +761,8 @@
                 if ( a.pane2 ){
                   //bbn.fn.log("DRAGGABLE?", this.$refs.resizer[i]);
                   let prop = this.currentOrientation === 'horizontal' ? 'left' : 'top',
-                      pane1 = bbn.vue.find(this, 'bbn-pane', a.pane1),
-                      pane2 = bbn.vue.find(this, 'bbn-pane', a.pane2),
+                      pane1 = bbn.vue.find(this, 'bbn-pane2', a.pane1),
+                      pane2 = bbn.vue.find(this, 'bbn-pane2', a.pane2),
                       max,
                       min;
                   $(this.$refs.resizer[i]).draggable({
@@ -963,7 +826,7 @@
           */
       },
       /**
-       * Collapses a collapsible pane.
+       * Collapses a collapsible pane
        * @param {Number} toCollapse 
        * @param {Number} toUpdate 
        * @param {Boolean} full 
@@ -1037,10 +900,30 @@
             cls = 'bbn-p nf nf-fa-' + icon + direction;
         return cls;
         */
-      }
+      },
+      setSize(size, idx){
+        if ( (idx !== undefined) && (size !== undefined) ){
+          if ( bbn.fn.isVue(idx) ){
+            bbn.fn.each(this.panes, p => {
+              if ( p.pane && (p.pane === idx) ){
+                idx = p.index;
+                return;
+              }
+            })
+          }
+          if ( bbn.fn.isNumber(idx) && (idx > -1) ){
+            if ( bbn.fn.isNumber(size) ){
+              size = size + 'px';
+            }
+            this.panes[idx].size = size;
+            this.panes[idx].savedDiff = 0;
+            this.panes[idx].isFixed = true;
+            this.setFormatted()
+          }
+        }
+      },
     },
     /**
-     * Defines the current orientation and forces the update of the component.
      * @event mounted 
      * @fires getOrientation
      */
@@ -1059,9 +942,10 @@
        * @watch orientation 
        * @param {String} newVal 
        * @param {String} oldVal 
+       * @fires getOrientation
+       * @fires init
        */
       orientation(newVal, oldVal){
-        bbn.fn.warning(newVal);
         if ( (newVal !== oldVal) && (newVal !== this.currentOrientation) ){
           this.currentOrientation = newVal === 'auto' ? this.getOrientation() : newVal;
         }
@@ -1074,44 +958,13 @@
       currentOrientation(){
         this.init();
       },
+      isResized(){
+
+      },
+      panes(){
+        this.setFormatted();
+      }
     },
   });
 
 })(bbn);
-
-</script>
-<style scoped>
-.bbn-splitter {
-  display: grid;
-  max-width: 100% !important;
-  max-height: 100% !important;
-  overflow: hidden;
-}
-.bbn-splitter .bbn-pane {
-  box-sizing: border-box !important;
-  position: relative;
-}
-.bbn-splitter .bbn-splitter-bar {
-  margin: 0;
-  padding: 0;
-}
-.bbn-splitter .bbn-splitter-bar i {
-  font-weight: bold;
-}
-.bbn-splitter .bbn-splitter-bar.vertical .bbn-splitter-collapser > div {
-  padding: 0 0.5em;
-}
-.bbn-splitter .bbn-splitter-bar.horizontal .bbn-splitter-collapser > div {
-  padding: 0.5em 0;
-}
-.bbn-splitter .bbn-splitter-bar.bbn-splitter-resizer.vertical {
-  cursor: ns-resize;
-}
-.bbn-splitter .bbn-splitter-bar.bbn-splitter-resizer.horizontal {
-  cursor: ew-resize;
-}
-.bbn-splitter .bbn-splitter-bar .bbn-splitter-collapser > div {
-  float: left;
-}
-
-</style>

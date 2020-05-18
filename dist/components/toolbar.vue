@@ -41,15 +41,15 @@
         type: Array
       },
       /**
-       * The orientation of the bar
+       * The orientation of the bar.
        * @prop {String} ['horizontal'] orientation
        */
-      orientation: {
+      orientation: {         
         type: String,
         default: 'horizontal'
       },
       /**
-       * The size of the toolbar, height for horizontal toolbar and width for vertical toolbar
+       * The size of the toolbar, height for horizontal toolbar and width for vertical toolbar.
        * @prop {String|Number} [60] size
        */
       size: {
@@ -59,15 +59,21 @@
     data: function(){
       return {
         /**
-         * The real size of the toolbar basing on the props size and orientation
+         * The real size of the toolbar basing on the props size and orientation.
          * @data {String} [''] currentSize
          */
         currentSize: '',
+        /**
+         * The style of the toolbar.
+         * @data {String} [''] style
+         */
         style: ''
       }
     },
-    methods: {
-    },
+    /**
+     * Defines the current size of the bar basing on its style. 
+     * @event mounted
+     */
     mounted(){
       if ( this.orientation ){
         if ( this.orientation === 'horizontal' ){

@@ -145,9 +145,12 @@
 <script>
   module.exports = /**
  * @file bbn-calendar component
+ *
  * @description The bbn-calendar component is a calendar that allows you to interact with dates by providing details, inserting reminders and creating events.
+ *
  * @copyright BBN Solutions
- * @author Mirko Argentino 
+ *
+ * @author Mirko Argentino
  */
 
 ((bbn) => {
@@ -161,6 +164,10 @@
     */
     mixins: [bbn.vue.basicComponent, bbn.vue.listComponent, bbn.vue.resizerComponent],
     props: {
+      /**
+       * Auto-loads the data at mount of the component if it's set as "true".
+       * @prop {Boolean} [false] autobind
+      */
       autobind: {
         type: Boolean,
         default: false
@@ -423,10 +430,10 @@
           return [];
         }
       },
-      /** 
+      /**
        * Shows the "loading" text when it's loading.
        * @prop {Boolean} showLoading
-      */
+       */
       showLoading: {
         type: Boolean,
         default: false
@@ -497,6 +504,11 @@
          * @data {String} [''] currentValue
          */
         currentValue: '',
+        /**
+         * The events.
+         *
+         * @data {Object} [{}] events
+         */
         events: {}
       }
     },
@@ -758,7 +770,7 @@
        *
        * @method getLabelsFormat
        * @return {String|false}
-      */
+       */
       getLabelsFormat(){
         if ( this.labels ){
           switch ( this.labels ){
@@ -786,6 +798,14 @@
         }
         return false;
       },
+      /**
+       * Called to the component mounted setting currentDate at max or min.
+       *
+       * @method create
+       * @fires init
+       * @fires setTitle
+       * @fires updateData
+       */
       create(){
         if ( !this.ready ){
           this.$once('dataloaded', () => {
@@ -807,6 +827,11 @@
           this.updateData();
         }
       },
+      /**
+       * Defines and inserts events.
+       *
+       * @method makeEvents
+       */
       makeEvents(){
         this.$set(this, 'events', {});
         bbn.fn.each(this.currentData, d => {
@@ -835,7 +860,10 @@
        *
        * @method init
        * @fires currentCfg.make
+       * @fires makeEvents
+       * @fires setTitle
        * @fires setLabels
+       * @emits input
        */
       init(){
         if ( this.currentCfg && bbn.fn.isFunction(this.currentCfg.make) ){
@@ -856,6 +884,7 @@
        * Filters the events.
        *
        * @method filterEvents
+       * @param {String} v
        * @return {Array}
       */
       filterEvents(v){
@@ -894,6 +923,7 @@
        * Refreshes the data
        *
        * @method refresh
+       * @param {Boolean} force
        * @fires updateData
        * @fires init
        * @emits dataLoad
@@ -916,6 +946,7 @@
        * Changes the current calendar view to the next period.
        *
        * @method next
+       * @param {Boolean} skip
        * @fires refresh
        * @emits next
       */
@@ -941,6 +972,7 @@
        * Changes the current calendar view to the previous period.
        *
        * @method prev
+       * @param {Boolean} skip
        * @fires refresh
        * @emits prev
       */
@@ -966,7 +998,7 @@
        * Changes the current value after a selection.
        *
        * @method select
-       * @param {String} day The selected day
+       * @param {String} val The selected day
        * @param {Boolean} [undefined] notEmit If true, the 'selected' emit will not be performed
        * @emits input
        * @emits selected
@@ -1016,6 +1048,7 @@
        * Sets the labels.
        *
        * @method setLabels
+       * @param {Array} d
        * @fires getLabelsFormat
       */
       setLabels(d){
@@ -1029,7 +1062,7 @@
         }
       },
       /**
-       * Handles the resize. 
+       * Handles the resize.
        *
        * @method onResize
        * @fires setLabels
@@ -1051,9 +1084,7 @@
     },
     /**
      * @event mounted
-     * @fires updateData
-     * @fires init
-     * @emits dataLoaded
+     * @fires create
     */
     mounted(){
       this.create();
@@ -1061,7 +1092,7 @@
     watch: {
       /**
        * @watch type
-       * @fires init
+       * @fires create
       */
       type(newVal){
         this.ready = false;
@@ -1074,11 +1105,18 @@
       currentLabelsDates(newVal){
         this.setLabels(newVal);
       },
+      /**
+       * @watch value
+       */
       value(newVal, oldVal){
         if ( newVal !== oldVal ){
           this.currentValue = newVal;
         }
       },
+      /**
+       * @watch currentData
+       * @fires init
+      */
       currentData(){
         this.init();
       }

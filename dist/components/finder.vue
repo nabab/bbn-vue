@@ -2,8 +2,7 @@
 <bbn-scroll axis="x" :class="[componentClass]" ref="scroll">
   <!-- Each tree pane -->
   <div v-for="(p, i) in dirs"
-       :key="i"
-       class="bbn-flex-height bbn-finder-pane bbn-bordered-right">
+        class="bbn-flex-height bbn-finder-pane bbn-bordered-right">
 
     <div v-if="uploading === p.path"
          class="bbn-flex-fill" 

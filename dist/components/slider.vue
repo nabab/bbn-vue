@@ -38,18 +38,34 @@
  */
 (function(bbn){
   "use strict";
-
   Vue.component('bbn-slider', {
+    /**
+     * @mixin bbn.vue.basicComponent 
+     * @mixin bbn.vue.toggleComponent
+     * @mixin bbn.vue.resizerComponent 
+     */
     mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent, bbn.vue.toggleComponent],
     props: {
+      /**
+       * The orientation of the slider.
+       * @prop {String} ['left'] orientation 
+       */
       orientation: {
         type: String,
         default: 'left'
       },
+      /**
+       * The close button.
+       * @prop {Boolean|String} [true]
+       */
       closeButton: {
         type: [Boolean, String],
         default: true
       },
+      /**
+       * Defines if the slider is visible.
+       * @prop {Boolean} [false] visible
+       */
       visible: {
         type: Boolean,
         default: false
@@ -57,19 +73,56 @@
     },
     data(){
       return {
+        /**
+         * True when the component has been opened.
+         */
         hasBeenOpened: false,
+        /**
+         * The opacity of the slider.
+         * @data {Number} [0] opacity
+         */
         opacity: 0,
+        /**
+         * The current size.
+         * @data {Number} [0] currentSize
+         */
         currentSize: 0,
+        /**
+         * The position top.
+         * @data [null] top
+         */
         top: null,
+        /**
+         * The position left.
+         * @data [null] left
+         */
         left: null,
+        /**
+         * The position bottom.
+         * @data [null] bottom
+         */
         bottom: null,
+        /**
+         * The position right.
+         * @data [null] right
+         */
         right: null
       };
     },
     computed: {
+      /**
+       * True if it is a vertical slider.
+       * @computed isVertical
+       * @returns {Boolean}
+       */
       isVertical(){
         return (this.orientation === 'left') || (this.orientation === 'right');
       },
+      /**
+       * The current style.
+       * @computed currentStyle
+       * @returns {String}
+       */
       currentStyle(){
         let o = {
           opacity: this.opacity
@@ -115,7 +168,7 @@
     },
     methods: {
       /**
-       * Adds or removes the event listener for mousedown and touchstart
+       * Adds or removes the event listener for mousedown and touchstart.
        * @method _setEvents
        * @param add 
        */
@@ -129,12 +182,22 @@
           document.removeEventListener('touchstart', this.checkMouseDown);
         }
       },
+      /**
+       * Handles the resize.
+       * @method onResize
+       */
       onResize(){
         let s = this.$el.getBoundingClientRect()[this.isVertical ? 'width' : 'height'];
         if ((s !== this.currentSize) && (s > 20)){
           this.currentSize = s + 7;
         }
       },
+      /**
+       * Shows the slider.
+       * @method show
+       * @fires onResize
+       * @emits show      
+       */
       show(){
         this.onResize();
         let e = new Event('show', {cancelable: true});
@@ -143,6 +206,11 @@
           this.currentVisible = true;
         }
       },
+      /**
+       * Hides the slider.
+       * @method hide
+       * @emits hide      
+       */
       hide(){
         let e = new Event('show', {cancelable: true});
         this.$emit('hide', e);
@@ -150,6 +218,10 @@
           this.currentVisible = false;
         }
       },
+      /**
+       * Toggles the slider.
+       * @method toggle
+       */
       toggle(){
         if (this.currentVisible) {
           this.hide();
@@ -158,6 +230,11 @@
           this.show();
         }
       },
+      /**
+       * Handles the mousedown.
+       * @param {Event} e 
+       * @fires toggle
+       */
       checkMouseDown(e){
         if ( this.currentVisible &&
           !e.target.closest(".bbn-treemenu") &&
@@ -170,6 +247,7 @@
       },
     },
     /**
+     * Sets the events listener.
      * @event created
      * @fires _setEvents
      */
@@ -177,12 +255,17 @@
       this._setEvents();
     },
     /**
+     * Removes the events listener.
      * @event destroyed
      * @fires _setEvents
      */
     destroyed(){
       this._setEvents();
     },
+    /**
+     * Initializes the component.
+     * @event mounted
+     */
     mounted(){
       this.onResize();
       this.ready = true;
@@ -200,6 +283,10 @@
       currentVisible(newVal){
         this._setEvents(!!newVal);
       },
+      /**
+       * @watch currentSize
+       * @param v 
+       */
       currentSize(v){
         this.$el.style[this.isVertical ? 'width' : 'height'] = v;
       }

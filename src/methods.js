@@ -19,7 +19,10 @@
       return vm.$parent ? this._retrievePopup(vm.$parent) : false;
     },
     /**
-     * Sets default object for a component, accessible through bbn.vue.defaults[cpName]
+     * Sets default object for a component, accessible through bbn.vue.defaults[cpName].
+     * 
+     * @method initDefaults
+     * @memberof bbn.vue
      * @param Object defaults 
      * @param String cpName 
      */
@@ -30,6 +33,12 @@
       bbn.fn.extend(true, bbn.vue.defaults, defaults);
     },
 
+    /**
+     * @method setDefaults
+     * @memberof bbn.vue
+     * @param {Object} defaults 
+     * @param {String} cpName
+     */
     setDefaults(defaults, cpName){
       if ( typeof defaults !== 'object' ){
         throw new Error("The default object sent is not an object " + cpName);
@@ -37,6 +46,12 @@
       bbn.vue.defaults[cpName] = bbn.fn.extend(bbn.vue.defaults[cpName] || {}, defaults);
     },
 
+    /**
+     * @method setComponentRule
+     * @memberof bbn.vue
+     * @param {String} url 
+     * @param {String} prefix
+     */
     setComponentRule(url, prefix){
       if ( url ){
         this.localURL = url;
@@ -47,6 +62,12 @@
       }
     },
 
+    /**
+     * @method setDefaultComponentRule
+     * @memberof bbn.vue
+     * @param {String} url 
+     * @param {String} prefix
+     */
     setDefaultComponentRule(url, prefix){
       if ( url ){
         this.defaultLocalURL = url;
@@ -55,11 +76,21 @@
       }
     },
 
+    /**
+     * @method unsetComponentRule
+     * @memberof bbn.vue
+     */
     unsetComponentRule(){
       this.localURL = this.defaultLocalURL;
       this.localPrefix = this.defaultLocalPrefix;
     },
 
+    /**
+     * @method addComponent
+     * @memberof bbn.vue
+     * @param {String} name 
+     * @param {Array} mixins
+     */
     addComponent(name, mixins){
       if ( this.localURL ){
         let componentName = bbn.fn.replaceAll("/", "-", name);
@@ -70,6 +101,11 @@
       }
     },
 
+    /**
+     * @method getStorageComponent
+     * @memberof bbn.vue
+     * @param {String} name 
+     */
     getStorageComponent(name){
       if ( window.store ){
         let tmp = window.store.get(name);
@@ -81,6 +117,12 @@
       return false;
     },
 
+    /**
+     * @method setStorageComponent
+     * @memberof bbn.vue
+     * @param {String} name 
+     * @param {Object} obj
+     */
     setStorageComponent(name, obj){
       if ( window.store ){
         return window.store.set(name, JSON.stringify({
@@ -91,6 +133,15 @@
       return false;
     },
 
+    /**
+     * @method queueComponent
+     * @memberof bbn.vue
+     * @param {String} name 
+     * @param {String} url
+     * @param {Array} mixins
+     * @param {Function} resolve
+     * @param {Function} reject
+     */
     queueComponent(name, url, mixins, resolve, reject){
       clearTimeout(this.queueTimer);
       let def = false;//this.getStorageComponent(name);
@@ -123,6 +174,13 @@
       return this.queueTimer
     },
 
+    /**
+     * @method _realDefineComponent
+     * @memberof bbn.vue
+     * @param {String} name 
+     * @param {Object} r
+     * @param {Array} mixins
+     */
     _realDefineComponent(name, r, mixins){
       if ( r && r.script ){
         if ( r.css ){
@@ -200,6 +258,11 @@
       return false;
     },
 
+    /**
+     * @method executeQueueItems
+     * @memberof bbn.vue
+     * @param {Array} items
+     */
     executeQueueItems(items){
       if ( items.length ){
         let url = 'components';
@@ -225,20 +288,30 @@
       return false;
     },
 
-    executeQueueItem(a){
-      if ( a.url ) {
-        return axios.get(a.url, {responseType:'json'}).then((r) => {
+    /**
+     * @method executeQueueItem
+     * @memberof bbn.vue
+     * @param {Object} item
+     */
+    executeQueueItem(item){
+      if (item.url) {
+        return axios.get(item.url, {responseType:'json'}).then((r) => {
           r = r.data;
-          if ( this._realDefineComponent(a.name, r, a.mixins) ){
-            a.resolve('ok4');
+          if ( this._realDefineComponent(a.name, r, item.mixins) ){
+            item.resolve('ok4');
             return;
           }
-          a.reject();
+          item.reject();
         })
       }
       return false;
     },
 
+    /**
+     * @method preloadBBN
+     * @memberof bbn.vue
+     * @param {Array} todo
+     */
     preloadBBN(todo){
       if ( typeof todo  === 'string' ){
         todo = [todo];
@@ -252,6 +325,12 @@
       }
     },
 
+    /**
+     * @method _realDefineComponent
+     * @memberof bbn.vue
+     * @param {String} name 
+     * @param {Object} r
+     */
     _realDefineBBNComponent(name, r){
       if ( r.html && r.html.length ){
         bbn.fn.each(r.html, (h) => {
@@ -281,7 +360,13 @@
       return false;
     },
 
-    /** Adds an array of components, calling them all at the same time, in a single script */
+    /**
+     * Adds an array of components, calling them all at the same time, in a single script.
+     * 
+     * @method executeQueueItems
+     * @memberof bbn.vue
+     * @param {Array} items
+     */
     executeQueueBBNItem(todo){
       if ( todo.length ){
         let url = bbn_root_url + bbn_root_dir + 'components/?components=' + bbn.fn.map(todo, (a) => {
@@ -349,6 +434,13 @@
         }
     },
 
+    /**
+     * @method queueComponentBBN
+     * @memberof bbn.vue
+     * @param {String} name 
+     * @param {Function} resolve
+     * @param {Function} reject
+     */
     queueComponentBBN(name, resolve, reject){
       if ( bbn.fn.search(this.queueBBN, {name: name}) === -1 ){
         clearTimeout(this.queueTimerBBN);
@@ -378,6 +470,13 @@
       return this.queueTimerBBN;
     },
 
+    /**
+     * @method announceComponent
+     * @memberof bbn.vue
+     * @param {String} name 
+     * @param {String} url
+     * @param {Array} mixins
+     */
     announceComponent(name, url, mixins){
       if ( !this.isNodeJS && (typeof(name) === 'string') && (Vue.options.components[name] === undefined) ){
         Vue.component(name, (resolve, reject) => {
@@ -386,6 +485,11 @@
       }
     },
 
+    /**
+     * @method unloadComponent
+     * @memberof bbn.vue
+     * @param {String} cpName
+     */
     unloadComponent(cpName){
       if ( Vue.options.components[cpName] ){
         let r = delete Vue.options.components[cpName];
@@ -402,8 +506,13 @@
       return false;
     },
 
-    // Looks if the given tag starts with one of the known prefixes,
-    // and it such case defines the component with the corresponding handler
+    /**
+     * Looks if the given tag starts with one of the known prefixes, and it such case defines the component with the corresponding handler.
+     * 
+     * @method loadComponentsByPrefix
+     * @memberof bbn.vue
+     * @param {String} cpName t
+     */
     loadComponentsByPrefix(tag){
       let res = isReservedTag(tag);
       // Tag is unknown and has never gone through this function
@@ -439,6 +548,13 @@
       return false;
     },
 
+    /**
+     * @method addPrefix
+     * @memberof bbn.vue
+     * @param {String} prefix 
+     * @param {Function} handler
+     * @param {Array} mixins
+     */
     addPrefix(prefix, handler, mixins){
       if ( typeof prefix !== 'string' ){
         throw new Error("Prefix must be a string!");
@@ -458,6 +574,11 @@
       });
     },
 
+    /**
+     * @method resetDefBBN
+     * @memberof bbn.vue
+     * @param {String} cp 
+     */
     resetDefBBN(cp){
       if ( Vue.options.components[cp] ){
         delete Vue.options.components['bbn-' + cp];
@@ -467,6 +588,11 @@
       }
     },
 
+    /**
+     * @method resetDef
+     * @memberof bbn.vue
+     * @param {String} cp 
+     */
     resetDef(cp){
       if ( Vue.options.components[cp] ){
         delete Vue.options.components[cp];
@@ -476,6 +602,12 @@
       }
     },
 
+    /**
+     * @method retrieveRef
+     * @memberof bbn.vue
+     * @param {Vue} vm 
+     * @param {String} path 
+     */
     retrieveRef(vm, path){
       let bits = path.split("."),
           target = vm,
@@ -494,6 +626,12 @@
       return false;
     },
 
+    /**
+     * @method is
+     * @memberof bbn.vue
+     * @param {Vue} vm 
+     * @param {String} selector
+     */
     is(vm, selector){
       if (selector && vm) {
         if ( vm.$vnode && vm.$vnode.componentOptions && (vm.$vnode.componentOptions.tag === selector) ){
@@ -506,6 +644,13 @@
       return false;
     },
 
+    /**
+     * @method closest
+     * @memberof bbn.vue
+     * @param {Vue} vm 
+     * @param {String} selector
+     * @param {Boolean} checkEle
+     */
     closest(vm, selector, checkEle){
       let test = vm.$el;
       while ( vm && vm.$parent && (vm !== vm.$parent) ){
@@ -519,6 +664,13 @@
       return false;
     },
 
+    /**
+     * @method closest
+     * @memberof bbn.vue
+     * @param {Vue} vm 
+     * @param {String} selector
+     * @param {Boolean} checkEle
+     */
     ancesters(vm, selector, checkEle){
       let res = [];
       let test = vm.$el;
@@ -533,6 +685,12 @@
       return res;
     },
 
+    /**
+     * @method getRef
+     * @memberof bbn.vue
+     * @param {Vue} vm 
+     * @param {String} name
+     */
     getRef(vm, name){
       if ( vm ){
         if ( Array.isArray(vm.$refs[name]) ){
@@ -547,6 +705,13 @@
       return false;
     },
 
+    /**
+     * @method getChildByKey
+     * @memberof bbn.vue
+     * @param {Vue} vm 
+     * @param {String} key
+     * @param {String} selector
+     */
     getChildByKey(vm, key, selector){
       if ( vm.$children ){
         for ( let i = 0; i < vm.$children.length; i++ ){
@@ -570,6 +735,14 @@
       return false;
     },
 
+    /**
+     * @method findByKey
+     * @memberof bbn.vue
+     * @param {Vue} vm 
+     * @param {String} key
+     * @param {String} selector
+     * @param {Array} ar
+     */
     findByKey(vm, key, selector, ar){
       let tmp = this.getChildByKey(vm, key, selector);
       if ( !tmp && vm.$children ){
@@ -587,12 +760,26 @@
       return tmp;
     },
 
+    /**
+     * @method findAllByKey
+     * @memberof bbn.vue
+     * @param {Vue} vm 
+     * @param {String} key
+     * @param {String} selector
+     */
     findAllByKey(vm, key, selector){
       let ar = [];
       this.findByKey(vm, key, selector, ar);
       return ar;
     },
 
+    /**
+     * @method find
+     * @memberof bbn.vue
+     * @param {Vue} vm 
+     * @param {String} selector
+     * @param {Number} index
+     */
     find(vm, selector, index){
       let vms = this.getComponents(vm);
       let realIdx = 0;
@@ -609,6 +796,13 @@
       }
     },
 
+    /**
+     * @method findAll
+     * @memberof bbn.vue
+     * @param {Vue} vm 
+     * @param {String} selector
+     * @param {Boolean} only_children
+     */
     findAll(vm, selector, only_children){
       let vms = this.getComponents(vm, [], only_children),
           res = [];
@@ -620,6 +814,13 @@
       return res;
     },
 
+    /**
+     * @method getComponents
+     * @memberof bbn.vue
+     * @param {Vue} vm 
+     * @param {Array} ar
+     * @param {Boolean} only_children
+     */
     getComponents(vm, ar, only_children){
       if ( !Array.isArray(ar) ){
         ar = [];
@@ -633,10 +834,20 @@
       return ar;
     },
 
+    /**
+     * @method makeUID
+     * @memberof bbn.vue
+     */
     makeUID(){
       return bbn.fn.md5(bbn.fn.randomString(12, 30));
     },
 
+    /**
+     * @method getRoot
+     * @todo Remove! $root is enough
+     * @memberof bbn.vue
+     * @param {Vue} vm 
+     */
     getRoot(vm){
       let e = vm;
       while ( e.$parent ){
@@ -645,10 +856,23 @@
       return e;
     },
 
+    /**
+     * @method getPopup
+     * @memberof bbn.vue
+     * @param {Vue} vm 
+     */
     getPopup(vm){
       return vm.currentPopup || null;
     },
 
+    /**
+     * @method replaceArrays
+     * @todo Remove! should be in bbn.fn
+     * @memberof bbn.vue
+     * @param {Array} oldArr
+     * @param {Array} newArr
+     * @param {[Number|String]} key
+     */
     replaceArrays(oldArr, newArr, key){
       if ( key &&bbn.fn.isArray(oldArr, newArr) ){
         for ( let i = oldArr.length; i > 0; --i ){
@@ -664,6 +888,12 @@
       }
     },
 
+    /**
+     * @method extend
+     * @todo Check if still needed
+     * @memberof bbn.vue
+     * @param {Vue} vm 
+     */
     extend(vm){
       let deep = false;
       let args = [];
@@ -699,14 +929,29 @@
       return out;
     },
 
+    /**
+     * Retrieves the URL of the closest container.
+     * 
+     * @method getContainerURL
+     * @todo Check if still needed
+     * @memberof bbn.vue
+     * @param {Vue} vm 
+     * @returns {String}
+     */
     getContainerURL(vm){
       let container = vm.closest('bbn-container');
       if ( container ){
         return container.getFullCurrentURL();
       }
-      return null;
+      return '';
     },
 
+    /**
+     * @method post
+     * @todo Check if still needed
+     * @memberof bbn.vue
+     * @param {Vue} vm 
+     */
     post(vm, args){
       let cfg = bbn.fn.treat_vars(args);
       let referer = bbn.vue.getContainerURL(vm);
@@ -717,6 +962,12 @@
       return bbn.fn.post(cfg);
     },
 
+    /**
+     * @method post_out
+     * @todo Check if still needed
+     * @memberof bbn.vue
+     * @param {Vue} vm 
+     */
     post_out(vm, url, obj, onSuccess, target){
       let referer = bbn.vue.getContainerURL(vm);
       obj = bbn.fn.extend({}, obj || {}, {_bbn_referer: referer, _bbn_key: bbn.fn.getIdURL(url, obj, 'json')});

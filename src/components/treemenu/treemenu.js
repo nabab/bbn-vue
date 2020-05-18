@@ -26,7 +26,7 @@
     mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent],
     props: {
       /**
-       * The placeholder on the search input of the tree
+       * The placeholder on the search input of the tree.
        * @prop {String} ['Search'] placeholder
        */
       placeholder: {
@@ -34,7 +34,7 @@
         default: "Search"
       },
       /**
-       * The source of the tree
+       * The source of the tree.
        * @prop {String|Array|Function} source
        */
       source: {
@@ -51,7 +51,7 @@
         default: false
       },
       /**
-       * Set to false hide the search input
+       * Set to false hide the search input.
        * @prop {Boolean}  [false] search
        */
       search: {
@@ -59,6 +59,7 @@
         default: true
       },
       /**
+       * The array of menus.
        * @prop {Array} [[]] menus
        */
       menus: {
@@ -68,6 +69,7 @@
         }
       },
       /**
+       * The current menu object.
        * @prop current
        */
       current: {}
@@ -88,24 +90,30 @@
          */
         posBottom: this.bottom,
         /**
-         * True if the type of the prop source is not Array
+         * True if the type of the prop source is not Array.
          * @data {Number} isAjax
          */
         isAjax: isAjax,
         /**
+         * The menu's items.
          * @data {Array} items
          */
         items: isAjax ? [] : this.source,
         /**
-         * @data current
+         * The current menu.
+         * @data [null] current
          */
         currentMenu: null,
+        /**
+         * The last menu.
+         * @data [null] lastMenu
+         */
         lastMenu: null
       };
     },
     computed: {
       /**
-       * Defines position and width of the component
+       * Defines position and width of the component.
        * @method elementStyle 
        * @return {Object}
        */
@@ -127,9 +135,10 @@
     },
     methods: {
       /**
-       * Creates the menu of the given node
+       * Creates the menu of the given node.
        * @method getMenu
        * @param {Object} node 
+       * @returns {Array}
        */
       getMenu(node){
         if ( !this.shortcuts || node.numChildren ){
@@ -150,10 +159,9 @@
         }];
       },
       /**
-       * Maps the source of the tree
+       * Maps the source of the tree.
        * @method mapSrc
        * @param {Object} data 
-       * @param {Number} idx 
        * @param {Number} level 
        * @return {Object}
        */
@@ -169,11 +177,12 @@
         return data;
       },
       /**
-       * Links to the prop link or url of the given item
+       * Links to the prop link or url of the given item.
        * @method go
        * @param {Object} node 
        * @param {Event} event 
        * @fires hide
+       * @emits select
        */
       go(node, event){
         //bbn.fn.log(node);
@@ -203,7 +212,6 @@
       /**
        * Reload the tree
        * @method reset
-       * @fires tree.load
        */
       reset(){
         this.getRef('tree').reset();
@@ -211,15 +219,26 @@
       /**
        * Gets the data of the component
        * @method getData
+       * @returns {Object}
        */
       getData(){
-        return {menu: this.currentMenu};
+        return {
+          menu: this.currentMenu
+        };
       },
+      /**
+       * Method triggered at '@ready' of the component to set the current menu.
+       * @method readyTree 
+       */
       readyTree(){
         this.$nextTick(() => {
           this.currentMenu = this.current;
         })
       },
+      /**
+       * Focuses the search input.
+       * @method focusSearch
+       */
       focusSearch(){
         if (!bbn.fn.isMobile()) {
           let search = this.getRef('search');
@@ -230,9 +249,9 @@
       }
     },
     /**
+     * Resizes the tree-menu and sets its prop 'ready' to true.
      * @event mounted
      * @fires onResize
-     * @fires _position
      */
     mounted(){
       this.onResize();
@@ -241,6 +260,7 @@
     },
     watch: {
       /**
+       * Resets the tree-menu when the current menu changes.
        * @watch currentMenu
        * @fires reset
        */

@@ -104,6 +104,12 @@
       bbn.vue.urlComponent,
       bbn.vue.dropdownComponent
     ],
+    /**
+     * The current icon.
+     *
+     * @computed currentIcon
+     * @return {String}
+    */
     computed: {
       currentIcon(){
         return this.isOpened && !this.disabled && !this.readonly && this.filteredData.length ?
@@ -116,9 +122,12 @@
        * States the role of the enter key on the dropdown menu.
        *
        * @method keydown
+       * @param {Event} e
        * @fires widget.select
        * @fires widget.open
-       *
+       * @fires commonKeydown
+       * @fires resetDropdown
+       * @fires keynav
        */
       keydown(e){
         if ( e.key === 'Tab' ){
@@ -152,6 +161,12 @@
           }
         }
       },
+      /**
+       * Leave list.
+       *
+       * @method keydown
+       * @fires getRef
+       */
       leave(){
         let lst = this.getRef('list');
         if (lst) {
@@ -160,7 +175,6 @@
       }
     },
     /**
-     *
      * @event created
      */
     created(){
@@ -176,7 +190,10 @@
       })
     },
     watch: {
-      // When clearing from bbn-input
+      /**
+       * @watch  currentText
+       * @emits input
+      */
       currentText(newVal){
         if ( !newVal && this.ready && this.value && this.isNullable){
           this.emitInput('');

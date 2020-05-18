@@ -17,6 +17,7 @@
   Vue.component('bbn-chart', {
     /**
      * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.resizerComponent
      */
     mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent],
     props: {
@@ -39,7 +40,7 @@
       },
       /**
       * The width of the chart.
-      * @prop {String} [100%] width
+      * @prop {String} ['100%'] width
       */
       width: {
         type: String,
@@ -47,7 +48,7 @@
       },
       /**
        * The height of the chart.
-       * @prop {String} [100%] height
+       * @prop {String} ['100%'] height
        */
       height: {
         type: String,
@@ -469,7 +470,7 @@
 			/**
 			 * The legend position.
 			 * You can use 'top', 'bottom', 'left' or a 'right'.
-			 * @prop {String|HTMLElement} [undefined] legendPosition
+			 * @prop {String} ['bottom'] legendPosition
 			 */
       legendPosition: {
 			  type: String,
@@ -556,7 +557,7 @@
       /**
        * Show the download menu / hamburger icon in the toolbar.
        * If you want to display a custom icon instead of hamburger icon, you can provide HTML string in this property.
-       * @prop {Boolean|String} [true] toolbarDownload
+       * @prop {Boolean|String} [false] toolbarDownload
        */
       toolbarDownload: {
         type: [Boolean, String],
@@ -1079,6 +1080,7 @@
       /**
        * Makes the base configuration object for the 'pie' chart.
        * @computed radialCfg
+       * @fires isRadial
        * @return {Object}
        */
       radialCfg(){
@@ -1102,6 +1104,7 @@
       /**
        * Makes the configuration object for the widget.
        * @computed widgetCfg
+       * @fires getLabels
        * @return {Object}
        */
       widgetCfg(){
@@ -1278,10 +1281,10 @@
       /**
        * Destroys the current widget if it exists and fires the chart type constructor.
        * @method init
-       * @fires pieChart
-       * @fires barChart
-       * @fires lineChart
-       * @fires widgetCreated
+       * @param {Boolean} emptyData
+       * @fires destroy
+       * @fires setSize
+       * @fires getRef
        */
       init(emptyData){
         this.destroy();
@@ -1300,6 +1303,8 @@
         })
       },
       /**
+       * Destroys the component chart.
+       *
        * @method destroy
        */
       destroy(){
@@ -1309,6 +1314,8 @@
         }
       },
       /**
+       * Set the dimensions, in height and width.
+       *
        * @method setSizes
        */
       setSizes(){
@@ -1316,6 +1323,8 @@
         this.containerWidth = this.container.offsetWidth;
       },
       /**
+       * Re-adjust the dimensions, in height and width.
+       *
        * @method onResize
        * @fires setSizes
        */
@@ -1330,7 +1339,10 @@
         }
       },
       /**
+       * Update chart.
+       *
        * @method updateWidget
+       * @param {Object} cfg
        */
       updateWidget(cfg){
         if ( this.widget && this.ready ){
@@ -1338,6 +1350,8 @@
         }
       },
       /**
+       * Return list labels.
+       *
        * @method getLabels
        * @return {Array}
        */

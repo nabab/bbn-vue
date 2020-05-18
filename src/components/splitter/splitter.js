@@ -14,10 +14,14 @@
 (function(bbn){
   "use strict";
   Vue.component('bbn-splitter', {
+    /**
+     * @mixin bbn.vue.basicComponent 
+     * @mixin bbn.vue.resizerComponent
+     */
     mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent],
     props: {
       /**
-       * The orientation of the splitter ('horizontal', 'vertical', 'auto')
+       * The orientation of the splitter ('horizontal', 'vertical', 'auto').
        * @prop {String} ['auto'] orientation
        */
       orientation: {
@@ -25,7 +29,7 @@
         default: 'auto'
       },
       /**
-       * Set to true allows the splitter to be resizable 
+       * Set to true allows the splitter to be resizable. 
        * @prop {boolean} [false] resizable
        */
       resizable: {
@@ -33,7 +37,7 @@
         default: false
       },
        /**
-       * Set to true allows the panes inside the splitter to be collapsible 
+       * Set to true allows the panes inside the splitter to be collapsible. 
        * @prop {boolean} [false] collapsible
        */
       collapsible: {
@@ -46,7 +50,7 @@
         default: false
       },
       /**
-       * Defines the size of the resizer element, width if vertical, height if horizontal
+       * Defines the size of the resizer element, width if vertical, height if horizontal.
        * @prop {number} [15] resizerSize
        */
       resizerSize: {
@@ -54,14 +58,14 @@
         default: 15
       },
       /**
-       * A class name to add on the resizer element
+       * A class name to add on the resizer element.
        * @prop {String|Function} resizerClass
        */
       resizerClass: {
         type: [String, Function]
       },
       /**
-       * The minimum size that can have a pane (non collapsed)
+       * The minimum size that can have a pane (non collapsed).
        * @prop {Number} [40] minPaneSize
        */
       minPaneSize: {
@@ -72,22 +76,22 @@
     data(){
       return  {
         /**
-         * The timeout used to launch the initial process (reset each time a new pane is added)
+         * The timeout used to launch the initial process (reset each time a new pane is added).
          * @data {Number} [0] initTimeout
          */
         initTimeout: 0,
         /**
-         * Will be set to true once the splitter has been resized
+         * Will be set to true once the splitter has been resized.
          * @data {Boolean} [false] isResized
          */
         isResized: false,
         /**
-         * Will be set to true when the splitter is being resized by the user
+         * Will be set to true when the splitter is being resized by the user.
          * @data {Boolean} [false] isResizing
          */
         isResizing: false,
         /**
-         * An object containing info about current user resizing when it occurs
+         * An object containing info about current user resizing when it occurs.
          * @data {Boolean} [null] resizeCfg
          */
         resizeCfg: null,
@@ -97,12 +101,12 @@
          */
         resizers: [],
         /**
-         * The content of the prop orientation
+         * The content of the prop orientation.
          * @data {String} currentOrientation
          */
         currentOrientation: this.orientation,
         /**
-         * Panes' configurations
+         * The configuration of the panes.
          * @data {Array} [[]] panes
          */
         panes: []
@@ -110,7 +114,7 @@
     },
     computed: {
       /**
-       * Return true if at least 2 panes are resizable - and so is the splitter
+       * Return true if at least 2 panes are resizable - and so is the splitter.
        * @computed isResizable
        * @return {Boolean}
        */
@@ -251,7 +255,7 @@
         return tmp.join(' ');
       },
       /**
-       * returns the resizer's class according to its resizerClass prop.
+       * Returns the resizer's class according to its resizerClass prop.
        * @method realResizerClass
        * @param resizer
        * @return {String}
@@ -299,6 +303,7 @@
       /**
        * Is used when collapsed
        * @todo check it out
+       * @ignore
        */
       updatePositions(){
         /*
@@ -309,7 +314,7 @@
         */
       },
       /**
-       * Gets the next resizable pane
+       * Gets the next resizable pane.
        * @method getNextResizable
        * @param {Number} idx 
        * @param {Array} arr 
@@ -324,7 +329,7 @@
         return false;
       },
       /**
-       * Gets the previous resizable pane
+       * Gets the previous resizable pane.
        * @method getPrevResizable
        * @param {Number} idx 
        * @param {Array} arr 
@@ -339,7 +344,7 @@
         return false;
       },
       /**
-       * Gets the next collapsible pane
+       * Gets the next collapsible pane.
        * @method getNextCollapsible
        * @param {Number} idx 
        * @param {Array} arr 
@@ -354,7 +359,7 @@
         return false;
       },
       /**
-       * Gets the previous collassible pane
+       * Gets the previous collassible pane.
        * @method getPrevCollapsible
        * @param {Number} idx 
        * @param {Array} arr 
@@ -535,7 +540,7 @@
         }, 200);
       },
       /**
-       * Return true if one of the two panes given is collassible
+       * Return true if one of the two panes given is collassible.
        * @method areCollapsible
        * @param {Number} idxPane1 
        * @param {Number} idxPane2 
@@ -549,6 +554,7 @@
           );
       },
       /**
+       * Returns true if the previous pane is collapsible.
        * @method isCollapsiblePrev
        * @param {Number} idxPane1 
        * @param {Number} idxPane2 
@@ -563,6 +569,7 @@
         )
       },
       /**
+       * Returns true if the next pane is collapsible.
        * @method isCollapsibleNext
        * @param {Number} idxPane1 
        * @param {Number} idxPane2 
@@ -577,6 +584,7 @@
         )
       },
       /**
+       * Returns true if teh previous pane is fully collapsible.
        * @method isFullyCollapsiblePrev
        * @param {Number} idxPane1 
        * @param {Number} idxPane2 
@@ -593,7 +601,8 @@
           this.panes[idxPane1+1].collapsible
         )
       },
-       /**
+      /**
+       * Returns true if the next pane is fully collapsible.
        * @method isFullyCollapsibleNext
        * @param {Number} idxPane1 
        * @param {Number} idxPane2 
@@ -657,11 +666,8 @@
           this.resizeCfg = null;
         }
       },
-
-      testMove(){
-        bbn.fn.info("MOVE")
-      },
       /**
+       * @ignore
        * @todo Remove this function.
        * Obliged to do that because of sliders (closing one with right orientation moves the splitter!)
        */
@@ -671,12 +677,11 @@
       },
 
       /**
-       * Starts the resize
+       * Starts the resize.
        * @param {Event} e 
        * @param {Object} rs 
        */
       resizeStart(e, rs){
-        bbn.fn.log(this.isResizable);
         if (this.isResizable
            && !this.isResizing
            && this.panes[rs.pane1]
@@ -708,7 +713,7 @@
             max: pos2[this.currentSizeType.toLowerCase()] - this.minPaneSize - this.resizerSize
           };
           this.resizeCfg[this.currentOffsetType] = pos[this.currentOffsetType];
-          bbn.fn.log("START", this.resizeCfg, e, "------------");
+          //bbn.fn.log("START", this.resizeCfg, e, "------------");
         }
         /*
             setTimeout(() =>{
@@ -781,7 +786,7 @@
           */
       },
       /**
-       * Collapses a collapsible pane
+       * Collapses a collapsible pane.
        * @param {Number} toCollapse 
        * @param {Number} toUpdate 
        * @param {Boolean} full 
@@ -858,11 +863,11 @@
       }
     },
     /**
+     * Defines the current orientation and forces the update of the component.
      * @event mounted 
      * @fires getOrientation
      */
     mounted(){
-      bbn.fn.warning('mounted');
       if ( this.currentOrientation === 'auto' ){
         this.currentOrientation = this.getOrientation();
         this.$forceUpdate();
@@ -877,8 +882,6 @@
        * @watch orientation 
        * @param {String} newVal 
        * @param {String} oldVal 
-       * @fires getOrientation
-       * @fires init
        */
       orientation(newVal, oldVal){
         bbn.fn.warning(newVal);
@@ -894,9 +897,6 @@
       currentOrientation(){
         this.init();
       },
-      isResized(){
-
-      }
     },
   });
 

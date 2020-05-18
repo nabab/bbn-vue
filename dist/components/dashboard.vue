@@ -122,7 +122,7 @@
       sortable: {
         type: Boolean,
         default: true
-      }, 
+      },
       /**
        * Set to true makes the dashboard scrollable.
        * @prop {Boolean} [true] scrollable
@@ -133,7 +133,7 @@
       },
       /**
        * The source of the dashboard.
-       * @prop {Array} source
+       * @prop {Array} [[]] source
        */
       source: {
         default(){
@@ -151,6 +151,9 @@
       loadedConfig: {
         type: Object
       },
+      /**
+       * @prop {Array} order
+       */
       order: {
         type: Array,
         default(){
@@ -207,22 +210,60 @@
          * @data {Boolean} [false] isSorting
          */
         isSorting: false,
+        /**
+         * @data {Boolean} [false] isDragging
+         */
         isDragging: false,
+        /**
+         * @data {Boolean} [false] sortTimeout
+         */
         sortTimeout: false,
+        /**
+         * @data {Boolean} [false] sortingElement
+         */
         sortingElement: false,
+        /**
+         * @data {Number} [0] sortHelperWidth
+         */
         sortHelperWidth: 0,
+        /**
+         * @data {Number} [0] sortHelperHeight
+         */
         sortHelperHeight: 0,
+        /**
+         * @data {Number} [0] sortHelperX
+         */
         sortHelperX: 0,
+        /**
+         * @data {Number} [0] sortHelperY
+         */
         sortHelperY: 0,
+        /**
+         * @data {Boolean} [[]] currentSlots
+         */
         currentSlots: [],
+        /**
+         * @data {Boolean} [false] resizeTimeout
+         */
         resizeTimeout: false,
+        /**
+         * @data {Number} [1] numCols
+         */
         numCols: 1
       };
     },
     computed: {
+      /**
+       * Widget order list.
+       * @return {Array} originalOrder
+       */
       originalOrder(){
         return bbn.fn.map(this.originalSource, d => d.key);
       },
+      /**
+       * Widget order listInforms whether the widget origin has been changed.
+       * @return {Boolean} isOrderChanged
+       */
       isOrderChanged(){
         if ( !this.originalOrder ){
           return false;
@@ -234,14 +275,23 @@
       /**
        * Sets the configuration of the dashboard.
        * @method setConfig
-       * @param uid 
-       * @param {Object} config 
+       * @param {String} uid
+       * @param {Object} config
+       * @fires setStorage
        */
       setConfig(uid, config){
         this.setStorage({
           order: config.order
         }, uid);
       },
+      /**
+       * Close widget in dashboard.
+       * @method closeWidget
+       * @param {String} uid
+       * @param {Object} widget
+       * @fires updateWidget
+       * @emits close
+       */
       closeWidget(uid, widget){
         bbn.fn.log('close',widget)
         let ev = new Event('close', {cancelable: true});
@@ -253,7 +303,9 @@
       /**
        * Gets the widget corresponding to the given key.
        * @method getWidget
-       * @param {Number} key 
+       * @param {Number} key
+       * @fires closest
+       * @return {Object | undefined}
        */
       getWidget(key){
         let idx = bbn.fn.search(this.widgets, {key: key});
@@ -264,7 +316,7 @@
       /**
        * Hides the widget corresponding to the given key.
        * @method hideWidget
-       * @param {Number} key 
+       * @param {Number} key
        * @fires toggleWidget
        */
       hideWidget(key){
@@ -273,12 +325,19 @@
       /**
        * Shows the widget corresponding to the given key.
        * @method hideWidget
-       * @param {Number} key 
+       * @param {Number} key
        * @fires toggleWidget
        */
       showWidget(key){
         return this.toggleWidget(key, false);
       },
+      /**
+       * Hides or not the widget corresponding to the given key.
+       * @method toggleWidget
+       * @param {Number} key
+       * @param {Boolean} hidden
+       * @fires updateWidget
+       */
       toggleWidget(key, hidden){
         if ( this.widgets ){
           let w = bbn.fn.getRow(this.widgets, {key: key});
@@ -292,7 +351,8 @@
       /**
        * Handles the resize of the component.
        * @method onResize
-       * 
+       * @fires getRef
+       * @fires resizeScroll
        */
       onResize(){
         let ele = this.getRef('container');
@@ -320,8 +380,8 @@
       /**
        * Move the widget from the old index to the new index
        * @method moveWidgets
-       * @param {Number} oldIdx 
-       * @param {Number} newIdx 
+       * @param {Number} oldIdx
+       * @param {Number} newIdx
        */
       moveWidgets(oldIdx, newIdx){
         bbn.fn.move(this.widgets, oldIdx, newIdx);
@@ -334,8 +394,10 @@
       /**
        * Move the widget from the old index to the new index considering the hidden widgets.
        * @method move
-       * @param {Number} oldIdx 
-       * @param {Number} newIdx 
+       * @param {Number} oldIdx
+       * @param {Number} newIdx
+       * @emits sort
+       * @return {Boolean}
        */
       move(oldIdx, newIdx){
         if ( this.widgets[oldIdx] && this.widgets[newIdx] ){
@@ -366,7 +428,12 @@
       /**
        * Updates the menu of the parent container.
        * @method updateMenu
-       * @fires deleteMenu
+       * @fires closest
+       * @fires toggleWidget
+       * @fires showWidget
+       * @fires hideWidget
+       * @fires initWidgets
+       * @emits sort
        */
       updateMenu(){
         let tab = this.closest("bbn-container");
@@ -438,6 +505,11 @@
           }
         }
       },
+     /**
+      *
+      * @method mouseEnterWidget
+      * @param {Number} idx
+      */
       mouseEnterWidget(idx){
         if ( this.isSorting && (idx !== this.sortOriginIndex) ){
           this.sortTargetIndex = idx > this.sortOriginIndex ? idx - 1 : idx;
@@ -446,7 +518,16 @@
           this.sortTargetIndex = null;
         }
       },
-      updateWidget(key, cfg){        
+      /**
+      * Update configuration of the given widget.
+      * @method updateWidget
+      * @param {Number} key
+      * @param {Object} cfg
+      * @fires setWidgetStorage
+      * @fires updateMenu
+      * @fires post
+      */
+      updateWidget(key, cfg){
         let idx = bbn.fn.search(this.widgets || [], 'key', key),
             params = {id: key, cfg: cfg},
             no_save = ['items', 'num', 'start', 'index'];
@@ -488,7 +569,6 @@
                   }
                 })
               }
-              
             });
             if ( this.url !== undefined ){
               return this.post(this.url + 'save', params, (d) => {
@@ -500,9 +580,9 @@
                 }
               });
             }
-            else{              
+            else{
               success();
-            }            
+            }
           }
         }
         new Error("No corresponding widget found for key " + key);
@@ -510,8 +590,8 @@
       /**
        * Sets the storage of the given widget.
        * @method setWidgetStorage
-       * @param {Number} idx 
-       * @fires setStorage
+       * @param {Number} idx
+       * @fires getStorage
        */
       getWidgetStorage(idx){
         if ( this.widgets[idx] ){
@@ -521,7 +601,7 @@
       /**
        * Sets the storage of the given widget.
        * @method setWidgetStorage
-       * @param {Number} idx 
+       * @param {Number} idx
        * @fires setStorage
        */
       setWidgetStorage(idx){
@@ -534,7 +614,8 @@
       /**
        * Normalizes the properties of the given object.
        * @method normalize
-       * @param {Object} obj_orig 
+       * @param {Object} obj_orig
+       * @fires _getStorageRealName
        * @returns {Object}
        */
       normalize(obj_orig){
@@ -555,8 +636,9 @@
       /**
        * Adds the given widget.
        * @method add
-       * @param {Object} obj 
-       * @param {Number} idx 
+       * @param {Object} obj
+       * @param {Number} idx
+       * @fires getWidgetStorage
        * @returns {Object}
        */
       add(obj, idx){
@@ -591,7 +673,8 @@
       /**
        * Handles the resize of the scroll.
        * @method resizeScroll
-       */  
+       * @fires getRef
+       */
       resizeScroll(){
         if ( this.scrollable && this.$refs.scroll ){
           this.getRef('scroll').onResize();
@@ -601,7 +684,8 @@
        * Adds bbns-widget from the slot.
        * @method init
        * @fires normalize
-       * @fires add
+       * @fires initWidgets
+       * @fires updateMenu
        */
       init(){
         this.originalSource = [];
@@ -622,6 +706,12 @@
         this.initWidgets();
         this.updateMenu();
       },
+
+      /**
+       * Adds bbns-widget.
+       * @method initWidgets
+       * @fires add
+       */
       initWidgets(){
         this.widgets = [];
         bbn.fn.each(this.currentOrder, id => {
@@ -639,12 +729,18 @@
       /**
        * Sets the currentSlots property based to the widgets' visibility into the slots.
        * @method setCurrentSlots
+       * @return {Boolean | Array}
        */
       setCurrentSlots(){
         this.currentSlots = this.$slots.default ? this.$slots.default.filter(node => {
           return !!node.tag;
         }) : [];
       },
+      /**
+       * For dragging widget.
+       * @method dragging
+       * @param {Event} e
+       */
       dragging(e){
         if ( this.isSorting ){
           let w = e.clientX - Math.round(this.sortHelperWidth / 2);
@@ -671,7 +767,7 @@
     /**
      * @event mounted
      * @fires onResize
-     * @fires updateMenu
+     * @fires init
      */
     mounted(){
       this.ready  = true;
@@ -679,7 +775,6 @@
       /**
        * @watch currentSlots
        * @fires init
-       * @fires updateMenu
        */
       this.$watch('currentSlots', (newVal, oldVal) => {
         if ( !bbn.fn.isSame(newVal, oldVal) ){
@@ -694,19 +789,21 @@
      */
     updated(){
       /*
-      this.selfEmit(true); 
+      this.selfEmit(true);
       this.setCurrentSlots();
       */
     },
     watch: {
       /**
        * @watch sortTargetIndex
-       * @fires move
        */
       sortTargetIndex(newVal){
       },
       /**
        * @watch isSorting
+       * @emits move
+       * @fires move
+       * @fires getRef
        */
       isSorting(newVal){
         if ( !newVal ){
@@ -744,6 +841,10 @@
           this.getRef('sortHelper').innerHTML = this.sortingElement.$el.innerHTML;
         }
       },
+      /**
+       * @watch source
+       * @fires init
+       */
       source: {
         deep: true,
         handler(){

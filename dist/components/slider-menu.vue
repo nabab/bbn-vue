@@ -1,4 +1,56 @@
-/**
+<template>
+<div :class="[componentClass, 'bbn-overlay']">
+  <div class="bbn-hidden" v-if="$slots.default" ref="slot">
+    <slot></slot>
+  </div>
+  <div v-for="(item, index) of items"
+       class="bbn-overlay slide"
+       :style="getStyle(item)">
+    <bbn-scroll :scrollable="item.visible">
+      <ul v-if="item.data && item.data.length && ready"
+          class="bbn-menulist"
+      >
+        <li v-if="index > 0" class="bbn-state-default" @click="unselect">
+          <span class="bbn-w-100 bbn-vxspadded bbn-hspadded">
+            <!--span class="space" v-if="hasIcons"></span-->
+            <span class="text">..</span>
+          </span>
+
+        </li>
+        <li v-for="(li, idx) of item.data"
+            :ref="'li-' + index + '-' + idx"
+            :key="uid ? li[uid] : index + '-' + idx"
+            @click="select(index, idx)"
+            :class="{
+              'bbn-no-padding': !!component,
+              'bbn-state-default': true,
+              'bbn-disabled': !!li.disabled,
+              'bbn-state-selected': li.last && (idx === selectedIndex)
+            }">
+          <component v-if="currentComponent"
+                    :is="currentComponent"
+                    :source="li"
+                    @remove="remove(idx)">
+          </component>
+          <component v-else
+                    :is="li.url && !li[children] ? 'a' : 'span'"
+                    @click.prevent="() => {}"
+                    class="bbn-w-100 bbn-vxspadded bbn-hspadded"
+                    :href="li.url || null">
+            <!--span class="space" v-if="hasIcons">
+              <i v-if="li.icon" :class="li.icon"></i>
+            </span-->
+            <span class="text" v-html="li[sourceText]"></span>
+          </component>
+        </li>
+      </ul>
+    </bbn-scroll>
+  </div>
+</div>
+
+</template>
+<script>
+  module.exports = /**
  * @file bbn-lists component
  *
  * @description A fully customizable selectable list.
@@ -198,3 +250,47 @@
 
 })(window.Vue, window.bbn);
 
+
+</script>
+<style scoped>
+.bbn-slider-menu {
+  overflow: hidden;
+}
+.bbn-slider-menu .slide {
+  width: 100% !important;
+  transition: left 0.5s;
+}
+.bbn-slider-menu .slide ul > li {
+  position: relative;
+  box-sizing: border-box;
+  min-width: 7em;
+  white-space: nowrap;
+  user-select: none;
+}
+.bbn-slider-menu .slide ul > li span,
+.bbn-slider-menu .slide ul > li a {
+  user-select: none;
+}
+.bbn-slider-menu .slide ul > li.bbn-disabled {
+  opacity: 0.7;
+}
+.bbn-slider-menu .slide ul > li .space {
+  display: inline-block;
+  width: 1.8em;
+  text-align: left;
+}
+.bbn-slider-menu .slide ul > li .text {
+  min-height: 1.2em;
+  line-height: 1.2em;
+}
+.bbn-slider-menu .slide ul > li .text i {
+  margin-right: 1em;
+}
+.bbn-slider-menu .slide ul > li .text.bbn-disabled i {
+  opacity: 0.5;
+}
+.bbn-slider-menu .slide ul > li .text.hidden i {
+  opacity: 0 !important;
+}
+
+</style>

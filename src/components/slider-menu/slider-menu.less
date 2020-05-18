@@ -1,25 +1,18 @@
-.bbn-lists{
+.bbn-slider-menu{
   overflow: hidden;
   .slide {
     width: 100% !important;
     transition: left 0.5s;
     ul {
-      &.options{
-        > li{
-          &.bbn-disabled{
-            opacity: 1;
-            .space {
-              opacity: 0.5;
-            }
-          }
-        }
-      }
       > li{
         position: relative;
         box-sizing: border-box;
         min-width: 7em;
         white-space: nowrap;
         user-select: none;
+        span, a{
+          user-select: none;
+        }
         &.bbn-disabled{
           opacity: 0.7;
         }

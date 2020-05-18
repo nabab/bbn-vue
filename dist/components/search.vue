@@ -82,38 +82,81 @@
       bbn.vue.dropdownComponent
     ],
     props: {
+      /**
+       * @prop {Boolean} [false] filterselection 
+       */
       filtselection: {
         default: false
       },
+      /**
+       * Defines if the search is filterable.
+       * @prop {Boolean} [true] filterable 
+       */
       filterable: {
         default: true
       },
+      /**
+       * Set to true will automatically update the data before mount.
+       * @prop {Boolean} [true] autobind 
+       */
       autobind: {
         default: true
       },
+      /**
+       * Defines if the search can have a null value.
+       * @prop {Boolean} [false] nullable
+       */
       nullable: {
         default: false
       },
+      /**
+       * Defines the min length of the filter string. 
+       * @prop {Number} [1] minLength
+       * 
+       */      
       minLength: {
         type: Number,
         default: 1
       },
+      /**
+       * Defines the left icon of the search.
+       * @prop {Boolean|String} [false] leftIcon 
+       */
       leftIcon: {
         default: false
       },
+      /**
+       * Defines the right icon of the search.
+       * @prop {Boolean|String} ['nf nf-fa-search'] rightIcon 
+       */
       rightIcon: {
         default: 'nf nf-fa-search'
       },
+      /**
+       * Defines the min width of the input.
+       * @prop {String} ['4,2em'] minWidth
+       */
       minWidth: {
         default: '4.2em'
       },
+      /**
+       * Defines the max width of the input.
+       * @prop {String} ['100%'] maxWidth
+       */
       maxWidth: {
         default: '100%'
       },
+      /**
+       * Defines the delay before the component starts to search.
+       * @prop {Number} [500] delay
+       */
       delay: {
         type: Number,
         default: 500
       },
+      /** 
+       * @prop {String} ['?'] shortPlaceholder
+       */
       shortPlaceholder: {
         type: String,
         default: '?'
@@ -121,18 +164,38 @@
     },
     data(){
       return {
+        /**
+         * The current min width.
+         * @data {String} ['4.2em'] specialWidth
+         */
         specialWidth: this.minWidth,
+        /**
+         * The placeholder.
+         * @data {String} ['?'] currentPlaceholder 
+         */
         currentPlaceholder: this.shortPlaceholder,
+        /**
+         * The timeout.
+         * @data {Number|null} [null] timeout
+         */
         timeout: null
       };
     },
     methods: {
+      /***
+       * Focuses the search input.
+       * @method searchFocus
+       */
       searchFocus(){
         clearTimeout(this.timeout);
         this.isFocused = true;
         this.specialWidth = this.maxWidth;
         this.currentPlaceholder = this.placeholder;
       },
+      /**
+       * Blurs the search input.
+       * @method searchBlur
+       */
       searchBlur(){
         clearTimeout(this.timeout);
         this.timeout = setTimeout(() => {
@@ -142,13 +205,19 @@
           this.currentPlaceholder = '?';
         }, 250);
       },
+      /**
+       * Closes the search.
+       * @method searchClose
+       */
       searchClose(){
         this.isOpened = false;
       },
       /**
        * Emits the event 'select' 
        * @method select
-       * @param {} item 
+       * @param {Object} item 
+       * @param {Number} idx
+       * @param {Number} dataIndex
        * @emit change
        */
       select(item, idx, dataIndex){
@@ -171,8 +240,8 @@
        * States the role of the enter key on the dropdown menu.
        *
        * @method _pressEnter
-       * @fires widget.select
-       * @fires widget.open
+       * @fires resetDropdown
+       * @fires keynav
        *
        */
       keydown(e){

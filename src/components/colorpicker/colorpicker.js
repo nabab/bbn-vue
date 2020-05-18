@@ -2,8 +2,10 @@
 
 /**
  * @file bbn-colorpicker component
+ *
  * @description The bbn-colorpicker component contains a field that shows the currently selected color.
  * Clicking on the input field it displays a color chart. The set of colors can be customized using the palette property.
+ *
  * @copyright BBN Solutions
  *
  * @author Mirko Argentino
@@ -23,7 +25,7 @@
     props: {
       /**
        * The colorpicker's value.
-       * @prop {String|} value
+       * @prop {String} value
        */
       value: {
         type: String,
@@ -62,7 +64,7 @@
       },
       /**
        * The initial color.
-       * @prop {String} ['#ffffff'] color
+       * @prop {String} ['#FDFDFD'] color
        */
       color: {
         type: String,
@@ -145,7 +147,7 @@
       /**
        * The widget configuration.
        * @computed currentCfg
-       * @return Object
+       * @return {Object}
        */
       currentCfg(){
         let obj = {
@@ -185,6 +187,7 @@
        * @method init
        * @fires destroy
        * @fires setEvents
+       * @fires getRef
        */
       init(){
         if ( this.widget ){
@@ -319,7 +322,7 @@
      * @event beforeDestroy
      * @fires destroy
      */
-    breforeDestroy(){
+    beforeDestroy(){
       this.destroy();
     }
   });

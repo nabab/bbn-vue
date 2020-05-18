@@ -50,21 +50,21 @@
     mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent],
     props: {
       /**
-       * The value of the component
+       * The value of the component.
        * @prop {Boolean} [true] value
        */
       value: {
         default: true
       },
       /**
-       * The value of the component when switch is off
+       * The value of the component when switch is off.
        * @prop [null] novalue
        */
       novalue: {
         default: null
       },
       /**
-       * The name of the input
+       * The name of the input.
        * @prop {String} [null] name
        */
       name: {
@@ -72,7 +72,7 @@
         default: null
       },
       /**
-       * The id of the input
+       * The id of the input.
        * @prop {String} [bbn.fn.randomString(10, 25)] id
        */
       id: {
@@ -82,14 +82,14 @@
         }
       },
       /**
-       * The class to add to the span
+       * The class(es) to add to the tag span.
        * @prop {String|Array} cls
        */
       cls: {
         type: [String,Array]
       },
       /**
-       * The class to add to the switch button
+       * The class(es) to add to the switch button.
        * @prop {String|Array} sliderCls
        */
       sliderCls: {
@@ -103,7 +103,7 @@
         default: undefined
       },
       /**
-       * True if a value is required
+       * True if a value is required.
        * @prop {Boolean} [false] required
        */
       required: {
@@ -111,7 +111,7 @@
         default: false
       },
       /**
-       * Set to true disables the switch
+       * Set to true disables the switch.
        * @prop {Boolean} [false] disabled
        */
       disabled: {
@@ -119,7 +119,7 @@
         default: false
       },
       /**
-       * Set to true for a readonly switch
+       * Set to true for a readonly switch.
        * @prop {Boolean} [false] readonly
        */
       readonly: {
@@ -138,7 +138,7 @@
       },*/
 
       /**
-       * Set to true to have the component switched on
+       * Set to true to have the component switched on.
        * @prop {Boolean} [false] checked
        */
       checked: {
@@ -153,7 +153,7 @@
         default: false
       },
       /**
-       * Defines the icon for the component when switched on
+       * Defines the icon for the component when switched on.
        * @prop {String} ['nf nf-fa-play'] onIcon
        */
       onIcon: {
@@ -161,7 +161,7 @@
         default: 'nf nf-fa-play'
       },
       /**
-       * Defines the icon for the component when switched off
+       * Defines the icon for the component when switched off.
        * @prop {String} ['nf nf-fa-stop'] offIcon
        */
       offIcon: {
@@ -169,7 +169,7 @@
         default: 'nf nf-fa-stop'
       },
       /**
-       * Set to true does not show onIcon and offIcon
+       * Set to true does not show onIcon and offIcon.
        * @prop {Boolean} [tre] noIcon
        */
       noIcon: {
@@ -177,7 +177,7 @@
         default: true
       },
       /**
-       * Set to true gives the component a rounded appearance
+       * Set to true gives the component a rounded appearance.
        * @prop {Boolean} [false] radius
        */
       radius: {
@@ -195,6 +195,7 @@
     data(){
       return {
         /**
+         * The value of the component.
          * @data {Boolean} valueToSet
          */
         valueToSet: this.value
@@ -227,7 +228,7 @@
         return this.checked;
       },
       /**
-       * If the prop noIcon is set to false returns the icon basing on the component's state 
+       * If the prop noIcon is set to false returns the icon basing on the component's state. 
        * @computed currentIcon
        * @return {String}
        */
@@ -238,7 +239,7 @@
     },
     methods: {
       /**
-       * Switches the component 
+       * Switches the component. 
        * @method toggle
        * @emits input
        * @emits change
@@ -255,6 +256,7 @@
       /**
        * @watch checked
        * @param {Boolean} newValue 
+       * @fires toggle
        */
       checked(newValue){
         if ( newValue !== this.state ){
@@ -263,6 +265,7 @@
       }
     },
     /**
+     * Sets the initial state of the component.
      * @event mounted
      * @fires toggle
      * @emits input
