@@ -36,19 +36,19 @@
     "|",
     {
       "name": "quote",
-      "className": "nf nf-fa-quote-left",
+      "className": "nf nf-fa-quote_left",
       "title": bbn._("Quote"),
       "default": true
     },
     {
       "name": "unordered-list",
-      "className": "nf nf-fa-list-ul",
+      "className": "nf nf-fa-list_ul",
       "title": bbn._("Generic List"),
       "default": true
     },
     {
       "name": "ordered-list",
-      "className": "nf nf-fa-list-ol",
+      "className": "nf nf-fa-list_ol",
       "title": bbn._("Numbered List"),
       "default": true
     },
@@ -61,7 +61,7 @@
     },
     {
       "name": "image",
-      "className": "fas fa-image",
+      "className": "nf nf-fa-image",
       "title": bbn._("Insert Image"),
       "default": true
     },
@@ -80,7 +80,7 @@
     },
     {
       "name": "fullscreen",
-      "className": "nf nf-fa-arrows-alt no-disable no-mobile",
+      "className": "nf nf-fa-arrows_alt no-disable no-mobile",
       "title": bbn._("Toggle Fullscreen"),
       "default": true
     }/*,
@@ -114,7 +114,7 @@
         }
       },
       //@todo not used
-      toolbar: {
+      toolBar: {
         type: Array
       },
       //@todo not used
@@ -139,7 +139,7 @@
           singleLineBreaks: true,
           codeSyntaxHighlighting: true,
         },
-        toolbar: this.toolbar || toolbar,
+        toolbar: this.toolBar || toolbar,
         status: false,
         tabSize: this.cfg.tabSize || 2,
         toolbarTips: true,
