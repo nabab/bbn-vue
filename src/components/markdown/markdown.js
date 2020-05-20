@@ -14,6 +14,87 @@
 (function(bbn, SimpleMDE){
   "use strict";
 
+  const toolbar = [
+    {
+      "name": "bold",
+      "className": "nf nf-fa-bold",
+      "title": bbn._("Bold"),
+      "default": true
+    },
+    {
+      "name": "italic",
+      "className": "nf nf-fa-italic",
+      "title": bbn._("Italic"),
+      "default": true
+    },
+    {
+      "name": "heading",
+      "className": "nf nf-fa-header",
+      "title": bbn._("Heading"),
+      "default": true
+    },
+    "|",
+    {
+      "name": "quote",
+      "className": "nf nf-fa-quote-left",
+      "title": bbn._("Quote"),
+      "default": true
+    },
+    {
+      "name": "unordered-list",
+      "className": "nf nf-fa-list-ul",
+      "title": bbn._("Generic List"),
+      "default": true
+    },
+    {
+      "name": "ordered-list",
+      "className": "nf nf-fa-list-ol",
+      "title": bbn._("Numbered List"),
+      "default": true
+    },
+    "|",
+    {
+      "name": "link",
+      "className": "nf nf-fa-link",
+      "title": bbn._("Create Link"),
+      "default": true
+    },
+    {
+      "name": "image",
+      "className": "fas fa-image",
+      "title": bbn._("Insert Image"),
+      "default": true
+    },
+    "|",
+    {
+      "name": "preview",
+      "className": "nf nf-fa-eye no-disable",
+      "title": bbn._("Toggle Preview"),
+      "default": true
+    },
+    {
+      "name": "side-by-side",
+      "className": "nf nf-fa-columns no-disable no-mobile",
+      "title": bbn._("Toggle Side by Side"),
+      "default": true
+    },
+    {
+      "name": "fullscreen",
+      "className": "nf nf-fa-arrows-alt no-disable no-mobile",
+      "title": bbn._("Toggle Fullscreen"),
+      "default": true
+    }/*,
+    "|",
+    {
+      "name": "guide",
+      "action": "https://simplemde.com/markdown-guide",
+      "className": "nf nf-fa-question-circle",
+      "title": bbn._("Markdown Guide"),
+      "default": true
+    },
+    "|" */
+  ];
+
   Vue.component('bbn-markdown', {
     /**
      * @mixin bbn.vue.basicComponent 
@@ -58,6 +139,7 @@
           singleLineBreaks: true,
           codeSyntaxHighlighting: true,
         },
+        toolbar: this.toolbar || toolbar,
         status: false,
         tabSize: this.cfg.tabSize || 2,
         toolbarTips: true,
