@@ -78,20 +78,16 @@
 <script>
   module.exports = /**
  * @file bbn-autocomplete component
- *
  * @description The autocomplete allows to select a single value from a list of items by proposeing suggestions based on the typed characters.
- *
  * @copyright BBN Solutions
- *
  * @author BBN Solutions
- *
  * @created 10/02/2017.
  */
 
 
 (function(bbn){
   "use strict";
-  
+
   Vue.component('bbn-autocomplete', {
     /**
      * @mixin bbn.vue.basicComponent
@@ -132,7 +128,7 @@
         default: 0
       },
       /**
-       *
+       * Specifies the time of delay.
        *
        * @prop {Number} [500] delay
        */
@@ -152,9 +148,10 @@
     },
     methods: {
       /**
-       * Puts the focus on the element
-       * @method click
+       * Puts the focus on the element.
        *
+       * @method click
+       * @fires getRef
        */
       click(){
         if (!this.disabled) {
@@ -165,9 +162,10 @@
         }
       },
       /**
-       * Remove the filter and close the list if it is notabove it
-       * @method leave
+       * Remove the filter and close the list if it is notabove it.
        *
+       * @method leave
+       * @fires getRef
        */
       leave(){
         if ( this.isOpened && !this.getRef('list').isOver ){
@@ -176,10 +174,12 @@
         this.filterString = '';
       },
       /**
-       * Emits the event 'select'
+       * Emits the event 'select'.
        *
        * @method select
-       * @param {} item
+       * @param {Object} item
+       * @fires emitInput
+       * @fires getRef
        * @emit change
        */
       select(item){
@@ -196,7 +196,7 @@
       },
 
       /**
-       * Function to do the reset and if the component is open it closes it
+       * Function to do the reset and if the component is open it closes it.
        *
        * @method resetDropdown
        * @fires unfilter
@@ -211,10 +211,12 @@
       },
 
       /**
-       * Function that performs different actions based on what is being pressed
+       * Function that performs different actions based on what is being pressed.
        *
        * @method keydown
+       * @param {Event} e
        * @fires resetDropdown
+       * @fires commonKeydown
        * @fires keynav
        */
       keydown(e){
@@ -272,9 +274,8 @@
                   value: v
                 });
                 this.$nextTick(() => {
-                  if (!this.isOpened){
+                  if ( !this.isOpened ){
                     this.isOpened = true;
-                    
                   }
                   else{
                     let list = this.find('bbn-scroll');

@@ -3,7 +3,7 @@
  *
  * @description bbn-context is a menu that can be activated with a right click.
  * The source of the menu can have a tree structure.
- * ì
+ *
  * @copyright BBN Solutions
  *
  * @created 15/02/2017.
@@ -19,6 +19,7 @@
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.listComponent
+     * @mixin bbn.vue.dimensionsComponent
      */
     mixins: [
       bbn.vue.basicComponent,
@@ -51,13 +52,17 @@
         type: String
       },
       /**
-       * ì
+       * Selection mode.
        * @prop {String} ['free'] mode
        */
       mode: {
         type: String,
         default: 'free'
       },
+      /**
+       *
+       * @prop {String} ['items'] children
+       */
       children: {
         type: String,
         default: 'items'
@@ -74,7 +79,7 @@
       return {
         /**
          * True if the floating element of the menu is opened.
-         * @data {Boolean} [false] showFloater ì
+         * @data {Boolean} [false] showFloater
          */
         showFloater: false
       };
@@ -105,6 +110,12 @@
       },
     },
     watch: {
+     /**
+      * @watch showFloater
+      * @fires init
+      * @emits open
+      * @emits close
+      */
       showFloater(newVal){
         this.$emit(newVal ? 'open' : 'close');
       }

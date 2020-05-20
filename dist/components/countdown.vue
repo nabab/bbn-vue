@@ -99,7 +99,7 @@
 
   Vue.component('bbn-countdown', {
     /**
-     * @mixin bbn.vue.basicComponent  
+     * @mixin bbn.vue.basicComponent
      */
     mixins: [bbn.vue.basicComponent],
     props: {
@@ -128,12 +128,16 @@
       },
       /**
        * Shows unit even if empty.
-       * @prop {Date|String|Function} target
+       * @prop {Boolean} [false] showZero
        */
       showZero: {
         type: Boolean,
         default: false
       },
+      /**
+       * Set to true the remaining day and month and year will be displayed.
+       * @prop {Boolean} [true] zeroFill
+       */
       zeroFill: {
         type: Boolean,
         default: true
@@ -143,37 +147,37 @@
       return {
         /**
          * The target year.
-         * @data {Boolean} targetYear
+         * @data {Boolean} [false] targetYear
          */
         targetYear: false,
         /**
          * The target month.
-         * @data {Boolean} targetMonth
+         * @data {Boolean} [false] targetMonth
          */
         targetMonth: false,
         /**
          * The target day.
-         * @data {Boolean} targetDay
+         * @data {Boolean} [false] targetDay
          */
         targetDay: false,
         /**
          * The target hour.
-         * @data {Boolean} targetHour
+         * @data {Boolean} [false] targetHour
          */
         targetHour: false,
         /**
          * The target minute.
-         * @data {Boolean} targetMinute
+         * @data {Boolean} [false] targetMinute
          */
         targetMinute: false,
         /**
          * The target second.
-         * @data {Boolean} targetSecond
+         * @data {Boolean} [false] targetSecond
          */
         targetSecond: false,
         /**
          * The target millisecond.
-         * @data {Boolean} targetMillisecond
+         * @data {Boolean} [false] targetMillisecond
          */
         targetMillisecond: false,
        /* year: false,
@@ -190,37 +194,56 @@
         interval: 0,
         /**
          * The timestamp of the real target date.
-         * @data {Boolean|Number} time
+         * @data {Boolean|Number} [false] time
          */
         time: false,
+        /**
+         * @data {String} ["{}"] prevValues
+         */
         prevValues: JSON.stringify({}),
+        /**
+         * @data {Object} [{}] shown
+         */
         shown: {},
+        /**
+         * @data {Object} [{}] text
+         */
         text: {},
+        /**
+         * @data {Boolean} [false] isValid
+         */
         isValid: false,
+        /**
+         * @data {Boolean} [false] realTarget
+         */
         realTarget: false
       };
     },
     computed: {
       /**
        * The index of the 'precision' property in the array of the constant VALUES.
-       * @data {Number} [5] precisionIdx
+       * @return {Number} [5] precisionIdx
        */
       precisionIdx(){
         return bbn.fn.search(VALUES, this.precision.length === 1 ? 'code' : 'name', this.precision);
       },
       /**
        * The index of the 'scale' property in the array of the constant VALUES.
-       * @data {Number} [5] precisionIdx
+       * @return {Number} [5] scaleIdx
        */
       scaleIdx(){
         return bbn.fn.search(VALUES, this.scale.length === 1 ? 'code' : 'name', this.scale);
       },
+      /**
+       * List type of periods.
+       * @return {Array} periods
+       */
       periods() {
         return VALUES;
       },
+      // @todo incomplete
       rendered(){
         if (this.template) {
-          
         }
         return false;
       }
@@ -239,14 +262,8 @@
       },
       /**
        * Initializes the component.
-       * @fires getTime
-       * @fires getFullYear
-       * @fires getMonth
-       * @fires getDate
-       * @fires getHours
-       * @fires getMinutes
-       * @fires getSeconds
-       * @fires getMilliseconds
+       * @method init
+       * @fires update
        */
       init(){
         clearInterval(this.interval);
@@ -271,14 +288,9 @@
       /**
        * Udates the component.
        * @method update
-       * @fires getFullYear
-       * @fires getMonth
-       * @fires getDate
-       * @fires getHours
-       * @fires getMinutes
-       * @fires getSeconds
-       * @fires getMilliseconds 
-       *
+       * @fires check
+       * @fires getShown
+       * @fires getText
        */
       update(){
         if ( this.check() ){
@@ -317,6 +329,12 @@
           }
         }
       },
+      /**
+       * Returns the descriptive list of units used in the countdown.
+       *
+       * @method getShow
+       * @return {Object}
+       */
       getShown(){
         let res = {};
         bbn.fn.each(VALUES, (a, i) => {
@@ -325,6 +343,12 @@
         })
         return res;
       },
+      /**
+       * Returns the descriptive list of units used in the countdown with the value that contains it when calling this function.
+       *
+       * @method getText
+       * @return {Object}
+       */
       getText(){
         let res = {};
         bbn.fn.each(VALUES, (a, i) =>  {
@@ -341,7 +365,7 @@
       },
     },
     /**
-     * @event created 
+     * @event created
      * @fires init
      */
     created(){
@@ -356,6 +380,10 @@
       }
     },
     watch: {
+     /**
+      * @watch target
+      * @fires init
+      */
       target(){
         this.init()
       }

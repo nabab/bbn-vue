@@ -123,6 +123,15 @@
   //bbn.vue.preloadBBN(['scroll', 'list', 'button']);
   Vue.component('bbn-floater', {
     name: 'bbn-floater',
+    /**
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.listComponent
+     * @mixin  bbn.vue.resizerComponent
+     * @mixin  bbn.vue.keepCoolComponent
+     * @mixin bbn.vue.toggleComponent
+     * @mixin bbn.vue.dimensionsComponent
+     * @mixin bbn.vue.positionComponent 
+     */
     mixins: [
       bbn.vue.basicComponent,
       bbn.vue.listComponent,

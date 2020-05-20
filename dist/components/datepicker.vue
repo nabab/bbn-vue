@@ -69,7 +69,9 @@
 
   Vue.component('bbn-datepicker', {
     /**
-     * @mixin bbn.vue.fullComponent
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.inputComponent
+     * @mixin bbn.vue.eventsComponent
      */
     mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent],
     props: {
@@ -96,7 +98,7 @@
       /**
        * The format of the value.
        *
-       * @prop {String} valueFormat
+       * @prop {String|Function} valueFormat
        */
       valueFormat: {
         type: [String, Function]
@@ -260,7 +262,7 @@
        * True if the values of the inputValue and the oldInputValue properties are different.
        *
        * @computed intuValueChanged
-       * @return {String}
+       * @return {Boolean}
        */
       inputValueChanged(){
         return this.inputValue !== this.oldInputValue;
@@ -272,6 +274,7 @@
        *
        * @method getValueFormat
        * @param {String} val The value.
+       * @fires valueFormat
        * @return {String}
        */
       getValueFormat(val){
@@ -282,9 +285,10 @@
        * Sets the value to the 'YYYY-MM-DD' format.
        *
        * @method setDate
+       * @param {String} val
        * @fires getValueFormat
        * @fires setValue
-      */
+       */
       setDate(val){
         this.setValue(moment(val, 'YYYY-MM-DD').isValid() ? moment(val, 'YYYY-MM-DD').format(this.getValueFormat(val)) : '');
       },
@@ -294,8 +298,10 @@
        * @method setValue
        * @param {String} val The value.
        * @fires getValueFormat
+       * @fires disableDates
+       * @fires setInputValue
        * @emits input
-      */
+       */
       setValue(val){
         let format = !!val ? this.getValueFormat(val.toString()) : false,
             value = format ? (moment(val.toString(), format).isValid() ? moment(val.toString(), format).format(format) : '') : '';
@@ -333,7 +339,7 @@
        * Updates the calendar.
        *
        * @method updateCalendar
-       * @fires calendar.refresh
+       * @fires getRef
       */
       updateCalendar(){
         if ( this.getRef('calendar') ){
@@ -344,6 +350,7 @@
        * The method called by the input blur event.
        *
        * @method inputChanged
+       * @fires getRef
        * @fires getValueFormat
        * @fires disableDates
        * @fires setValue
@@ -378,9 +385,13 @@
         }
       },
       /**
+       * Set the new value by updating the calendar.
+       *
        * @method setInputValue
        * @param {String} newVal
+       * @fires getRef
        * @fires getValueFormat
+       * @fires setValue
        * @fires updateCalendar
        */
       setInputValue(newVal){
@@ -397,6 +408,13 @@
         this.oldInputValue = this.inputValue;
         this.updateCalendar();
       },
+      /**
+       * Clears the value.
+       *
+       * @method clear
+       * @fires getRef
+       * @fires setValue
+       */
       clear(){
         this.setValue('');
         this.$nextTick(() => {
@@ -446,7 +464,7 @@
       },
       /**
        * @watch maskedMounted
-       * @fires getValueFormat
+       * @fires setInputValue
        */
       maskedMounted(newVal){
         if ( newVal ){
@@ -455,8 +473,7 @@
       },
       /**
        * @watch value
-       * @fires getValueFormat
-       * @fires updateCalendar
+       * @fires setInputValue
       */
       value(newVal){
         this.setInputValue(newVal);

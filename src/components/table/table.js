@@ -17,9 +17,6 @@
 
 (function (bbn, Vue) {
   "use strict";
-  /**
-   * Classic input with normalized appearance
-   */
   Vue.component('bbn-table', {
     /**
      * @mixin bbn.vue.basicComponent
@@ -42,10 +39,18 @@
       bbn.vue.dataComponent
     ],
     props: {
+      /**
+       * True if the columns has to have titles.
+       * @prop {Boolean} [true] titles
+       */
       titles: {
         type: Boolean,
         default: true
       },
+      /**
+       * The message to show when the table has no data.
+       * @prop {String} ['<h3>' + bbn._('No Data') + '</h3>'] noData
+       */
       noData: {
         default: '<h3>' + bbn._('No Data') + '</h3>'
       },
@@ -79,6 +84,10 @@
         type: Boolean,
         default: false
       },
+      /**
+       * Set to true will automatically update the data before mount.
+       * @prop {Boolean} [false] autobind
+       */
       autobind: {
         type: Boolean,
         default: false
@@ -191,7 +200,9 @@
         default: bbn._('Are you sure you want to delete this row?')
       },
       /**
-       * Defines the expander of the table.
+       * Defines the expander of the rows.
+       * @prop  {Object|String|Function} expander
+       * 
        */
       expander: {
 
@@ -212,7 +223,7 @@
       },
       /**
        * If one or more columns have the property fixed set to true it defines the side of the fixed column(s).
-       * @prop {String} [left] fixedDefaultSide
+       * @prop {String} ['left'] fixedDefaultSide
        */
       fixedDefaultSide: {
         type: String,
@@ -290,6 +301,9 @@
           };
         }
       },
+      /**
+       * @prop {String|Array} aggregate
+       */
       aggregate: {
         type: [String, Array]
       },
@@ -309,6 +323,7 @@
          */
         _observerReceived: false,
         /**
+         * The group of columns.
          * @data {Object} [[{name: 'left',width: 0,visible: 0,cols: []},{name: 'main',width: 0,visible: 0,cols: []},{name: 'right',width: 0,visible: 0,cols: []}]] groupCols
          */
         groupCols: [{
@@ -335,14 +350,17 @@
          */
         initReady: false,
         /**
+         * The current configuration object.
          * @data {Object} [{}] currentConfig
          */
         currentConfig: {},
         /**
+         * The saved configuration.
          * @data {Boolean} [false] savedConfig
          */
         savedConfig: false,
         /**
+         * The default confuguration
          * @data {Object} defaultConfig
          */
         defaultConfig: bbn.fn.extend({
@@ -471,31 +489,81 @@
          * @data {} [null] rowIndexTimeOut
          */
         rowIndexTimeOut: null,
+        /**
+         * @data {String} containerPadding
+         */
         containerPadding: (bbn.fn.getScrollBarSize() ? bbn.fn.getScrollBarSize() : '0') + 'px',
+        /**
+         * @data {Vue} [null] container
+         */
         container: null,
+        /**
+         * The current scroll top position.
+         * @data {Number} [0] currentScrollTop
+         */
         currentScrollTop: 0,
+        /**
+         * @data [null] marginStyleSheet
+         */
         marginStyleSheet: null,
+        /**
+         * @data {String} [bbn.fn.randomString().toLowerCase()] cssRuleName
+         */
         cssRuleName: bbn.fn.randomString().toLowerCase(),
+        /**
+         * @data {String} [false] initStarted
+         */
         initStarted: false,
+        /**
+         * @data [null] inTable
+         */
         inTable: null,
+        /**
+         * @data [null] filterElement
+         */
         filterElement: null,
+        /**
+         * True if the table has horizontal scroll.
+         * @data {Boolean} [false] hasHorizontalScroll 
+         */
         hasHorizontalScroll: false,
+        /**
+         * @data {Boolean} [false] hasScrollX 
+         */
         hasScrollX: false,
+        /**
+         * @data {Boolean} [false] hasScrollY
+         */
         hasScrollY: false
       };
     },
     computed: {
+      /**
+       * The array of selected values if the table is selectable.
+       * @computed selectedValues
+       * @returns {Array}
+       */
       selectedValues(){
         return this.currentSelected.map((a) => {
           return this.uid ? this.currentData[a].data[this.uid] : this.currentData[a].data;
         })
       },
+      /**
+       * The container width.
+       * @computed containerWidth
+       * @returns {String}
+       */
       containerWidth(){
         if ( !this.groupCols || !this.groupCols[1] || !this.groupCols[1].width || !this.lastKnownCtWidth ){
           return '0px';
         }
         return (this.lastKnownCtWidth - this.groupCols[0].width - this.groupCols[2].width) + 'px';
       },
+      /**
+       * The total width.
+       * @computed totalWidth
+       * @returns {String}
+       */
       totalWidth(){
         if ( !this.groupCols || !this.groupCols[1] || !this.groupCols[1].width || !this.lastKnownCtWidth ){
           return '0px';
@@ -505,7 +573,7 @@
       /**
        * Return true if the table isn't ajax, is editable and the edit mode is 'inline'.
        * @computed isBatch
-       * @return {Boolean}
+       * @returns {Boolean}
        */
       isBatch() {
         return this.editable && (this.editMode === 'inline') && !this.isAjax
@@ -513,7 +581,7 @@
       /**
        * Return true if the table has the prop toolbar defined.
        * @computed hasToolbar
-       * @return {Boolean}
+       * @returns {Boolean}
        */
       hasToolbar() {
         return this.toolbarButtons.length || bbn.fn.isObject(this.toolbar) || bbn.fn.isFunction(this.toolbar) || bbn.fn.isString(this.toolbar);
@@ -521,7 +589,7 @@
       /**
        * If the computed isBatch is true, return an array of modified rows.
        * @computed modifiedRows
-       * @return {Array}
+       * @returns {Array}
        */
       modifiedRows() {
         let res = [];
@@ -535,9 +603,9 @@
         return res;
       },
       /**
-       * Return an array of shown fields excluding the hidden ones.
+       * Return an array of shown fields (the hidden ones are excluded).
        * @computed shownFields
-       * @return {Array}
+       * @returns {Array}
        */
       shownFields() {
         let r = [];
@@ -551,7 +619,7 @@
       /**
        * Return the json string of currentConfig.
        * @computed jsonConfig
-       * @return {String}
+       * @returns {String}
        */
       jsonConfig() {
         return JSON.stringify(this.currentConfig);
@@ -559,7 +627,7 @@
       /**
        * Return true if the saved config is identic to the jsonConfig.
        * @computed isSaved
-       * @return {Boolean}
+       * @returns {Boolean}
        */
       isSaved() {
         return this.jsonConfig === this.savedConfig;
@@ -567,7 +635,7 @@
       /**
        * Return true if the json string of currentConfig is different from initialConfig
        * @computed isChanged
-       * @return {Boolean}
+       * @returns {Boolean}
        */
       isChanged() {
         return JSON.stringify(this.currentConfig) !== this.initialConfig;
@@ -575,7 +643,7 @@
       /**
        * Return an array with the object(s) button for the toolbar.
        * @computed toolbarButtons
-       * @return {Array}
+       * @returns {Array}
        */
       toolbarButtons() {
         let r = [],
@@ -603,7 +671,7 @@
       /**
        * Return false if a required field of a column is missing.
        * @computed isEditedValid
-       * @return {Boolean}
+       * @returns {Boolean}
        */
       isEditedValid() {
         let ok = true;
@@ -620,7 +688,7 @@
       /**
        * Return the number of visible columns of the table.
        * @computed numVisible
-       * @return {number}
+       * @returns {number}
        */
       numVisible() {
         return this.cols.length - bbn.fn.count(this.cols, {
@@ -630,7 +698,7 @@
       /**
        * Return the object scroller.
        * @computed scroller
-       * @return {Object}
+       * @returns {Object}
        */
       scroller() {
         return this.$refs.scroller instanceof Vue ? this.$refs.scroller : null;
@@ -642,17 +710,13 @@
        * @fires expandedValues
        * @fires _updateViewport
        * @fires isExpanded
-       * @return {Array}
+       * @returns {Array}
        */
       items() {
         if (!this.cols.length) {
           return [];
         }
         // The final result
-        /**
-         *
-         * @type {Array}
-         */
         let res = [],
           isGroup = this.groupable && (this.group !== false) && this.cols[this.group] && this.cols[this.group].field,
           groupField = isGroup ? this.cols[this.group].field : false,
@@ -972,9 +1036,9 @@
         return fdata;
       },
       /**
-       * Return true if an expander is defined or if the table is groupable and the group is 'number'
+       * Returns true if an expander is defined or if the table is groupable and the group is 'number'.
        * @computed hasExpander
-       * @return {Boolean}
+       * @returns {Boolean}
        */
       hasExpander() {
         return this.expander || (
@@ -983,6 +1047,11 @@
           this.cols[this.group]
         );
       },
+      /**
+       * The current columns of the table.
+       * @computed currentColumns
+       * @returns {Array}
+       */
       currentColumns(){
         let r = [];
         bbn.fn.each(this.groupCols, (a, i) => {
@@ -999,10 +1068,9 @@
       }
     },
     methods: {
-      sayHello(){
-        bbn.fn.log("HELLO");
-      },
       /**
+       * Defines the margin-top.
+       * @method _scrollContainer
        * @todo 1px must correspond to the border width
        */
       _scrollContainer(){
@@ -1012,11 +1080,11 @@
       },
       /**
        * Adds the class 'bbn-table-tr-over' to the row of given idx on mouseenter and remove the class on mouse leave.
-       *
+       * @ignore
        * @method _updateRowIndex
-       * @fires getRef
        */
       _updateRowIndex(idx) {
+
         bbn.fn.each(this.groupCols, (a) => {
           let table = this.getRef(a.name + 'Table');
           if (table && table.tBodies) {
@@ -1032,10 +1100,11 @@
         //this.currentIndex = idx;
       },
       /**
-       * Returns header's CSS object
+       * Returns header's CSS object.
        * @method _headStyles
-       * @param col
-       * @return {Object}
+       * @param {Object} col
+       * @param {Number} groupIndex
+       * @returns {Object}
        */
       _headStyles(col, groupIndex) {
         let css = {
@@ -1050,6 +1119,10 @@
         }
         return css;
       },
+      /**
+       * @method _getScrollers
+       * @returns {Vue}
+       */
       _getScrollers(){
         return [this.getRef('mainTitles')];
 
@@ -1057,17 +1130,17 @@
       /**
        * Returns body's CSS object
        * @method _bodyStyles
-       * @param col 
-       * @return {Object}
+       * @param {Object} col 
+       * @returns {Object}
        */
       _bodyStyles(col) {
         return {};
       },
       /**
-       * @todo description
+       * Normalizes the row's data.
        * @method _defaultRow
        * @param initialData
-       * @return {Object}
+       * @returns {Object}
        */
       _defaultRow(initialData) {
         let res = {},
@@ -1100,9 +1173,8 @@
        * Creates the object tmpRow.
        *
        * @method _addTmp
-       * @todo
        * @param data
-       * @return {Object}
+       * @returns {Vue}
        */
       _addTmp(data) {
         this._removeTmp().tmpRow = this._defaultRow(data);
@@ -1114,7 +1186,7 @@
       /**
        * Changes the values of tmpRow to false.
        * @method _removeTmp
-       * @return {Object}
+       * @returns {Vue}
        */
       _removeTmp() {
         if (this.tmpRow) {
@@ -1127,7 +1199,7 @@
        * @method _scrollerHidden
        * @param {Object} groupCol
        * @param {Number} idx
-       * @return {Boolean}
+       * @returns {Boolean}
        */
       _scrollerHidden(groupCol, idx) {
         let last = this.groupCols.length === idx - 1;
@@ -1212,7 +1284,7 @@
       /**
        * Prepares the data to export the table to CSV.
        * @method _export
-       * @return {Array}
+       * @returns {Array}
        */
       _export() {
         let span = window.document.createElement('span');
@@ -1236,7 +1308,7 @@
         return res;
       },
       /**
-       * Executes the action of the button
+       * Executes the action of the button.
        *
        * @method _execCommand
        * @param {Object} button
@@ -1244,6 +1316,7 @@
        * @param {Object} col
        * @param {Number} index
        * @param {Event} ev
+       * @returns {Function|Boolean}
        */
       _execCommand(button, data, col, index, ev) {
         if (ev) {
@@ -1285,6 +1358,7 @@
         return false;
       },
       /**
+       * @ignore
        * @todo Not used
        * @method _containerComponent
        * @param {Number} groupIndex
@@ -1298,9 +1372,9 @@
        * Exports to csv and download the given filename.
        * @method exportCSV
        * @param {String} filename
-       * @param {*} valSep
-       * @param {*} rowSep
-       * @param {*} valEsc
+       * @param {String} valSep
+       * @param {String} rowSep
+       * @param {String} valEsc
        * @fires _export
        */
       exportCSV(filename, valSep, rowSep, valEsc) {
@@ -1349,6 +1423,11 @@
           }
         }
       },
+      /**
+       * @method getExcelPostData
+       * @param {Boolean} currentView 
+       * @returns {Object}
+       */
       getExcelPostData(currentView){
         let cols = bbn.fn.filter(bbn.fn.extend(true, [], this.cols), c => {
               return (this.shownFields.includes(c.field) && ((c.export === undefined) || !c.export.excluded)) || (c.export && !c.export.excluded);
@@ -1383,6 +1462,10 @@
         }
         return data;
       },
+      /**
+       * Opens a popup showing the database query.
+       * @method showQuery 
+       */
       showQuery(){
         if (this.currentQuery) {
           this.getPopup().open({
@@ -1421,7 +1504,7 @@
        * @param {Object} row
        * @param {Object} col
        * @param {Number} index
-       * @return {Boolean}
+       * @returns {Boolean}
        */
       isEditable(row, col, index) {
         if (!this.editable) {
@@ -1439,7 +1522,7 @@
        * @param {Object} col
        * @param {Number} idx
        * @fires isEditable
-       * @return {Boolean}
+       * @returns {Boolean}
        */
       isEdited(data, col, idx) {
         return this.isEditable(data, col, idx) &&
@@ -1447,10 +1530,10 @@
           (this.items[idx].index === this.editedIndex);
       },
       /**
-       * @todo descriprion
+       * Returns the configuration for the cells of the titles of grouped columns.
        * @method titleGroupsCells
        * @param {Number} groupIndex
-       * @return {Array}
+       * @returns {Array}
        */
       titleGroupsCells(groupIndex) {
         if (this.titleGroups) {
@@ -1509,7 +1592,7 @@
        * Returns true if the table has currentFilters defined for the given column.
        * @method hasFilter
        * @param {Object} col The column
-       * @return {Boolean}
+       * @returns {Boolean}
        */
       hasFilter(col) {
         if (col.field) {
@@ -1522,6 +1605,7 @@
         return false;
       },
       /**
+       * The behavior of the component at mouseMove.
        * @method moveMouse
        * @param {Event} e
        * @fires keepCool
@@ -1534,7 +1618,7 @@
         }, 'moveMouse')
       },
       /**
-       * @todo desc
+       * Handles the floatingFilterTimeOut.
        * @method checkFilterWindow
        * @param {Event} e
        */
@@ -1560,6 +1644,11 @@
           }
         }
       },
+      /**
+       * Retuns the popup object.
+       * @method getPopup
+       * @returns {Vue}
+       */
       getPopup(){
         return this.popup || bbn.vue.getPopup(this);
       },
@@ -1568,7 +1657,7 @@
        *
        * @method getFilterOptions
        * @fires getColFilters
-       * @return {Object}
+       * @returns {Object}
        */
       getFilterOptions() {
         if (this.currentFilter) {
@@ -1619,7 +1708,7 @@
        * Returns the filter of the given column.
        * @method getColFilters
        * @param {Object} col
-       * @return {Object}
+       * @returns {Object}
        */
       getColFilters(col) {
         let r = [];
@@ -1647,7 +1736,7 @@
       /**
        * Returns the list of the showable columns
        * @method pickableColumnList
-       * @return {Array}
+       * @returns {Array}
        */
       pickableColumnList() {
         return this.cols.slice().map((a) => {
@@ -1904,7 +1993,7 @@
        * @param {Object} d
        * @emit editSuccess
        * @fires saveRow
-       * @return {Boolean}
+       * @returns {Boolean}
        */
       successEdit(d) {
         let ev = new Event('editSuccess', {cancelable: true});
@@ -1954,7 +2043,7 @@
         return false;
       },      
       /**
-       * If the prop url of the table is defined makes a post to the url to update or insert the row, else fires the method saveRow to insert or update the row in originalData
+       * If the prop url of the table is defined makes a post to the url to update or insert the row, else fires the method saveRow to insert or update the row in originalData.
        * @method saveInline
        * @fires saveRow
        *
@@ -1975,10 +2064,11 @@
         }
       },      
       /**
+       * Returns wheter or not the cell is grouped.
        * @method isGroupedCell
        * @param {Number} groupIndex
        * @param {Object} row
-       * @return {Boolean}
+       * @returns {Boolean}
        */
       isGroupedCell(groupIndex, row) {
         if (this.groupable && row.group) {
@@ -1991,9 +2081,9 @@
         return false;
       },
       /**
-       * Returns the current configuration of the table
+       * Returns the current configuration of the table.
        * @method getConfig
-       * @return {Object}
+       * @returns {Object}
        */
       getConfig() {
         return {
@@ -2006,7 +2096,7 @@
       /**
        * Returns the columns configuration.
        * @method getColumnsConfig
-       * @return {Array}
+       * @returns {Array}
        */
       getColumnsConfig() {
         return JSON.parse(JSON.stringify(this.cols));
@@ -2062,7 +2152,7 @@
         }
       },
       /**
-       * Save the current configuration.
+       * Saves the current configuration.
        * @method save
        */
       save() {
@@ -2072,7 +2162,7 @@
        * Adds the given data to the object tmpRow and opens the popup with the form to insert the row.
        * @method insert
        * @param {Object} data
-       * @param {} options
+       * @param {Object} options
        * @param {Number} index
        * @fires _addTmp
        * @fires edit
@@ -2089,7 +2179,7 @@
        * Adds the given data to the object tmpRow and opens the popup with the form to copy the row.
        * @method copy
        * @param {Object} data
-       * @param {} options
+       * @param {Object} options
        * @param {Number} index
        * @fires _addTmp
        * @fires edit
@@ -2141,12 +2231,7 @@
        *
        * @method updateData
        * @param withoutOriginal
-       * @emit startloading
-       * @emit endloading
-       * @fires _map
-       * @fires observerCheck
-       * @fires observerWatch
-       * @fires updateTable
+       * @fires _removeTmp
        * @fires init
        */
       updateData(withoutOriginal) {
@@ -2201,10 +2286,10 @@
         return '';
       },
       /**
-       * Returns true if the row corresponding to the given index has changed respect to originalData
+       * Returns true if the row corresponding to the given index has changed respect to originalData.
        * @method isModified
        * @param {Number} idx
-       * @return {Boolean}
+       * @returns {Boolean}
        */
       isModified(idx) {
         if (!this.originalData) {
@@ -2281,6 +2366,7 @@
       /**
        * Handles the table resize.
        * @method updateTable
+       * @fires keepCool
        * @emit resize
        */
       updateTable() {
@@ -2311,6 +2397,7 @@
        * @param {Object} column
        * @param {Number} index
        * @fires renderData
+       * @returns {Function}
        */
       render(data, column, index) {
         let value = data && column.field ? data[column.field] || '' : undefined;
@@ -2320,6 +2407,7 @@
         return this.renderData(data, column, index);
       },
       /**
+       * Cancels the changes made on the row data.
        * @method cancel
        * @fires _removeTmp
        */
@@ -2336,6 +2424,7 @@
         this.editedIndex = false;
       },
       /**
+       * @ignore
        * @todo not used
        * @method editTmp
        * @param {Object} data
@@ -2347,6 +2436,7 @@
         return this;
       },
       /**
+       * @ignore
        * @method saveTmp
        */
       saveTmp() {},
@@ -2354,7 +2444,7 @@
        * Returns a dimension in pixels of the given param.
        * @method getWidth
        * @param {Number|String} w The width
-       * @return {String}
+       * @returns {String}
        */
       getWidth(w) {
         if (typeof (w) === 'number') {
@@ -2382,7 +2472,7 @@
         })
       },
       /**
-       * Add the given column to table's configuration
+       * Adds the given column to table's configuration
        * @method addColumn
        * @param {Object} obj
        */
@@ -2397,7 +2487,7 @@
        * @method isBeforeAggregated
        * @param {Number} groupIndex
        * @param {Number} idx
-       * @return {Boolean}
+       * @returns {Boolean}
        */
       isBeforeAggregated(groupIndex, idx) {
         return this.isAggregated && ((
@@ -2412,7 +2502,7 @@
           ));
       },
       /**
-       * Reinitialize the table
+       * Handles the resize and reinitializes the table.
        * @method onResize
        * @fires init
        */
@@ -2420,6 +2510,10 @@
         this.resizeHeight();
         this.init();
       },
+      /**
+       * Handles the resize.
+       * @method resizeHeight
+       */
       resizeHeight(){
         if ( this.scrollable ){
           let ct = this.getRef('container');
@@ -2443,7 +2537,7 @@
        * Returns an array containing the scrollcontainer of each items of groupCols.
        * @method dataScrollContents
        * @fires getRef
-       * @return {Array}
+       * @returns {Array}
        */
       dataScrollContents() {
         if (!this.groupCols[0].cols.length && !this.groupCols[2].cols.length) {
@@ -2462,7 +2556,7 @@
        * Returns if the given row is expanded.
        * @method isExpanded
        * @param {Object} d
-       * @return {boolean}
+       * @returns {boolean}
        */
       isExpanded(d) {
         if (this.allExpanded) {
@@ -2491,9 +2585,9 @@
         return false;
       },
       /**
-       * Toggles the expanded prop of the given row idx.
+       * Toggles the expander of the row corresponding to the given idx.
        * @method toggleExpanded
-       * @param idx
+       * @param {Number} idx
        */
       toggleExpanded(idx) {
         if (this.currentData[idx]) {
@@ -2525,10 +2619,10 @@
         }
       },
       /**
-       * Returns if the prop expander is specified.
+       * Returns wheter or not the given row has the expander.
        * @method rowHasExpander
        * @param d
-       * @return {Boolean}
+       * @returns {Boolean}
        */
       rowHasExpander(d) {
         if (this.hasExpander) {
@@ -2540,16 +2634,16 @@
         return false;
       },
       /**
-       * Return true if the given index is selected.
+       * Returns true if the given index is selected.
        * @method isSelected
        * @param {Number} index
-       * @return {Boolean}
+       * @returns {Boolean}
        */
       isSelected(index) {
         return this.selection && (this.currentSelected.indexOf(index) > -1);
       },
       /**
-       * Returns if the given row has td.
+       * Returns true if the given row has td.
        *
        * @method hasTd
        * @param {Object} data
@@ -2586,8 +2680,9 @@
       /**
        * Initializes the table.
        * @method init
-       * @param with_data
+       * @param {Boolean} with_data
        * @fires updateData
+       * @fires keepCool
        */
       init(with_data) {
         this.keepCool(() => {
@@ -2832,7 +2927,6 @@
         }
       },
       /**
-       * @todo it seems to don't work
        * Show or hide the given column index.
        * @method show
        * @param {Array} colIndexes
@@ -2867,7 +2961,7 @@
        * @method getEditableComponent
        * @param {Object} col
        * @param {Object} data
-       * return {String}
+       * @return {String}
        */
       getEditableComponent(col, data) {
         if (col.editor) {
@@ -2900,6 +2994,7 @@
        * @method getEditableOptions
        * @param {Object} col
        * @param {Object} data
+       * @returns {Object}
        */
       getEditableOptions(col, data) {
         let res = col.options ? (
@@ -2948,6 +3043,7 @@
        * Returns the html element of the given row index.
        * @method getTr
        * @param {Number} i
+       * @returns {String}
        */
       getTr(i) {
         let c = this.getRef('table');
@@ -2957,9 +3053,9 @@
         return false;
       },
       /**
-       * Returns an object of the default values of props in bbn.vue.fieldComponent.
+       * Returns an object of the default values for the different types of fields.
        * @method defaultObject
-       * @return {Object}
+       * @returns {Object}
        */
       defaultObject() {
         let o = {};
@@ -2988,16 +3084,22 @@
        * @param {Number} idx
        */
       blurRow(ev, idx) {
-        //bbn.fn.log(ev);
         if (ev.target.tagName !== 'BUTTON') {
           this.focusedRow = false;
         }
       },
       saveEditedRow() {},
       cancelEditedRow() {},
+      /**
+       * 
+       */
       clickCell() {
         bbn.fn.log("click cell");
       },
+      /**
+       * Removes the focus from the given row.
+       * @param {Number} idx 
+       */
       focusout(idx) {
         this.focused = false;
         setTimeout(() => {
@@ -3006,6 +3108,11 @@
           }
         }, 50);
       },
+      /**
+       * Focuses the given row.
+       * @param {Number} idx 
+       * @param {Event} e 
+       */
       focusin(idx, e) {
         if (e.target.tagName !== 'BUTTON') {
           this.focused = true;
@@ -3013,10 +3120,10 @@
             this.focusedRow = idx;
           }
         }
-        //bbn.fn.log(e);
       }
     },
     /**
+     * Adds bbns-column from the slot and sets the initial configuration of the table.
      * @event created
      * @fires addColumn
      * @fires setConfig
@@ -3101,16 +3208,9 @@
         this.updateData();
       }
     },
-    /**
-     * @event updated
-     * @fires updateTable
-     */
-    updated() {
-      //this.updateTable();
-    },
-
     watch: {
       /**
+       * Updates the data.
        * @watch observerValue
        * @fires updateData
        */
@@ -3130,6 +3230,7 @@
         }
       },
       /**
+       * @ignore
        * @watch cols
        * @fires selfEmit
        */
@@ -3141,6 +3242,7 @@
         }
       },
       /**
+       * Forces the update of the component.
        * @watch currentHidden
        * @fires setConfig
        */
@@ -3207,6 +3309,10 @@
           }
         }
       },
+      /**
+       * @watch initStarted
+       * @param v 
+       */
       initStarted(v){
         if ( !v ){
           setTimeout(() => {

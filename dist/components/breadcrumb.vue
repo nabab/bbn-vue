@@ -85,6 +85,7 @@
   * @copyright BBN Solutions
   * @author Mirko Argentino mirko@bbn.solutions
   * @created 10/03/2020
+  * @ignore
   */
  (function(bbn, Vue){
   "use strict";

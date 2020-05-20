@@ -1,11 +1,9 @@
 /**
  * @file bbn-browser component
- *
  * @description bbn-browser
- *
  * @copyright BBN Solutions
- *
  * @author BBN Solutions
+ * @ignore
  */
 (function(bbn){
   "use strict";

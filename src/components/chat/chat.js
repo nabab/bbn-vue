@@ -178,7 +178,7 @@
       }
     },
     methods: {
-      /**
+     /**
       * Returns the method bbn.fn.getField.
       *
       * @method getField
@@ -188,7 +188,6 @@
       /**
        * @todo not used.
        *
-       * @method isInScreen
        * @param {Number} i
        * @return {Boolean}
        */
@@ -198,7 +197,6 @@
       /**
        * @todo not used.
        *
-       * @method getMenuFn
        * @return {Array}
        */
       getMenuFn(){
@@ -256,6 +254,8 @@
         }
       },
       /**
+       * Create event send.
+       *
        * @method relay
        * @param {Object} obj
        * @param {Number} idx
@@ -267,7 +267,6 @@
       /**
        * @todo not used.
        *
-       * @method getStyle
        * @param {Number} idx
        * @return {Object}
        */
@@ -320,7 +319,6 @@
       /**
        * @todo not used.
        *
-       * @method receive
        * @param {Object} data
        */
       receive(data){
@@ -402,22 +400,22 @@
         name: 'container',
         /**
          * @mixin bbn.vue.basicComponent
-         * @memberof container 
+         * @memberof container
          */
         mixins: [bbn.vue.basicComponent],
         props: {
           /**
            * @prop {Number} idx
-           * @memberof container 
+           * @memberof container
            */
           idx: {
             type: Number
           },
           /**
-           * The user id. 
-           * 
+           * The user id.
+           *
            * @prop {String} [''] userId
-           * @memberof container 
+           * @memberof container
            */
           userId: {
             type: String,
@@ -425,9 +423,9 @@
           },
           /**
            * The id of the current chat.
-           * 
+           *
            * @prop {String} [''] chatId
-           * @memberof container 
+           * @memberof container
            */
           chatId: {
             type: String,
@@ -435,9 +433,9 @@
           },
           /**
            * The array of partecipants to the chat.
-           * 
+           *
            * @prop {Array} [[]] partecipants
-           * @memberof container 
+           * @memberof container
            */
           participants: {
             type: Array,
@@ -445,9 +443,9 @@
               return []
             }
           },
-          /** 
+          /**
            * The array of all messages and relative timestamp sent in a chat.
-           * 
+           *
            * @prop {Array} [[]] messages
            * @memberof container
            */
@@ -459,7 +457,7 @@
           },
           /**
            * The array of all users (including offline ones).
-           * 
+           *
            * @prop {Array} [[]] users
            * @memberof container
            */
@@ -474,7 +472,7 @@
           return {
             /**
              * The current message.
-             * 
+             *
              * @data {String} [''] currentMessage
              * @memberof container
              */
@@ -482,7 +480,7 @@
             //@todo not used
             siteURL: bbn.env.host,
             /**
-             * @data [null] chat 
+             * @data [null] chat
              * @memberof container
              */
             chat: null
@@ -491,7 +489,7 @@
         methods: {
           /**
            * Returns the method bbn.fn.getField.
-           * 
+           *
            * @method getField
            * @memberof container
            * @return {Function}
@@ -557,8 +555,8 @@
           },
           /**
            * Closes the given chat window.
-           * 
-           * @param {Number} idx 
+           *
+           * @param {Number} idx
            * @memberof container
            */
           close(idx){
@@ -575,7 +573,7 @@
           },
           /**
            * Sends the current message.
-           *  
+           *
            * @method sendMessage
            * @emits send
            */
@@ -597,10 +595,11 @@
           },
           /**
            * Handles the resize of the scroll in the chat window.
-           * 
+           *
            * @method scrollEnd
+           * @fires getRef
            * @memberof container
-           * 
+           *
            */
           scrollEnd(){
             this.$nextTick(() => {
@@ -614,8 +613,8 @@
           },
           /**
            * The render of the message.
-           * 
-           * @param {String} msg 
+           *
+           * @param {String} msg
            * @return {String}
            * @memberof container
            */
@@ -638,6 +637,7 @@
         /**
          * @event mounted
          * @fires scrollEnd
+         * @fires getRef
          * @memberof container
          */
         mounted(){
@@ -675,6 +675,10 @@
 </div>
         `,
         props: {
+           /**
+           * @prop {Object} source
+           * @memberof user
+           */
           source: {
             type: Object
           }
@@ -682,7 +686,15 @@
         data(){
           let cp = this.closest("bbn-chat");
           return {
+            /**
+             * @data {String} cp
+             * @memberof user
+             */
             cp: cp,
+            /**
+             * @data {String} userName
+             * @memberof user
+             */
             userName: bbn.fn.getField(cp.users, 'text', 'value', this.source.value)
           }
         }

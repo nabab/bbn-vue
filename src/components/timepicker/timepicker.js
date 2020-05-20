@@ -30,7 +30,7 @@
       /**
        * The format of the value.
        *
-       * @prop {String} valueFormat
+       * @prop {String|Function} valueFormat
        */
       valueFormat: {
         type: [String, Function]
@@ -53,7 +53,6 @@
       },
       /**
        * The minimum allowed value.
-       *
        * @prop {String} min
        */
       min: {
@@ -61,9 +60,8 @@
       },
       /**
        * Shows/hides the "seconds" selection.
-       *
        * @prop {Boolean} [false] showSecond
-      */
+       */
       showSecond: {
         type: Boolean,
         default: false
@@ -81,7 +79,7 @@
        * Sets to true to show a list view for the time selection instead of the dropdowns.
        *
        * @prop {Boolean} [false] blocksMode
-      */
+       */
       blocksMode: {
         type: Boolean,
         default: false
@@ -177,7 +175,10 @@
        *
        * @method setValue
        * @param {String} val The value.
+       * @param {String} format 
        * @fires getValueFormat
+       * @fires setInputValue
+       * @fires emitInput
        * @emits input
       */
       setValue(val, format){
@@ -236,6 +237,13 @@
           });
         }
       },
+      /**
+       * Sets the value of the input.
+       * @method setInputValue
+       * @param {String} newVal 
+       * @fires getValueFormat
+       * @fires setValue
+       */
       setInputValue(newVal){
         if ( newVal ){
           let mask = this.getRef('element'),
@@ -249,6 +257,10 @@
         }
         this.oldInputValue = this.inputValue;
       },
+      /**
+       * Clears the input.
+       * @method clear
+       */
       clear(){
         this.setValue('');
         this.$nextTick(() => {
@@ -257,6 +269,7 @@
       }
     },
     /**
+     * Defines the locale set basing on the lang of the environment (bbn.env.lang).
      * @event beforeCreate
      */
     beforeCreate(){
@@ -299,6 +312,7 @@
       /**
        * @watch maskedMounted
        * @fires getValueFormat
+       * @param {String} newVal
        */
       maskedMounted(newVal){
         if ( newVal ){
@@ -307,6 +321,7 @@
       },
       /**
        * @watch value
+       * @param {String} newVal
        * @fires getValueFormat
        * @fires updateCalendar
       */
@@ -316,12 +331,14 @@
     },
     components: {
       /**
+       * The internal component timepicker.
        * @component timepicker
        */
       timepicker: {
         name: 'timepicker',
         props: {
           /**
+           * The value of timepicker
            * @prop {String} [''] value
            * @memberof timepicker
            */
@@ -333,7 +350,7 @@
         data(){
           return {
             /**
-             * The main component.
+             * The component bbn-timepicker.
              *
              * @data {Vue} comp
              * @memberof timepicker
@@ -404,13 +421,13 @@
         },
         computed: {
           /**
-             * The array used to make the hours.
-             *
-             * @computed hours
-             * @memberof timepicker
-             * @fires comp.getValueFormat
-             * @return {Array}
-             */
+           * The array used to make the hours.
+           *
+           * @computed hours
+           * @memberof timepicker
+           * @fires comp.getValueFormat
+           * @return {Array}
+           */
           hours(){
             if ( this.comp ){
               let min = this.comp.min ? moment(this.comp.min, this.comp.getValueFormat(this.comp.min)).format('HH') : false,
@@ -452,6 +469,7 @@
            *
            * @method getTime
            * @memberof timepicker
+           * @returns {String}
            */
           getTime(){
             if (
@@ -474,7 +492,7 @@
            *
            * @method setHour
            * @memberof timepicker
-           * @param {Number} h
+           * @param {Number} h The hour.
            * @emits change
            */
           setHour(h){
@@ -489,7 +507,7 @@
            *
            * @method setMinute
            * @memberof timepicker
-           * @param {Number} m
+           * @param {Number} m The minute.
            * @emits change
            */
           setMinute(m){
@@ -504,7 +522,7 @@
            *
            * @method setSecond
            * @memberof timepicker
-           * @param {Number} s
+           * @param {Number} s The second.c
            * @emits change
            */
           setSecond(s){
@@ -531,6 +549,7 @@
           }
         },
         /**
+         * Sets the property ready of the component to true.
          * @event mounted
          * @memberof timepicker
          */
@@ -571,6 +590,7 @@
             }
           },
           /**
+           * Resizes the scroll.
            * @watch checkScroll
            * @memberof timepicker
           */

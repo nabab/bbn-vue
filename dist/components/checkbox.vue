@@ -52,23 +52,23 @@
       value: {
       /**
        * The value of the checkbox.
-       * 
-       * @props {Boolean} [true] value
+       *
+       * @prop {Boolean} [true] value
        */
         default: true
       },
       /**
       * The value of the checkbox when unchecked.
-      * 
-      * @props {Boolean} novalue
+      *
+      * @prop {Boolean} [null] novalue
       */
       novalue: {
         default: null
       },
       /**
        * The name of the component checkbox.
-       * 
-       * @props {String} name
+       *
+       * @prop {String} [null] name
        */
       name: {
         type: String,
@@ -76,8 +76,8 @@
       },
       /**
        * The id of the checkbox.
-       * 
-       * @props {String} id
+       *
+       * @prop {String} id
        */
       id: {
         type: String,
@@ -87,7 +87,7 @@
       },
       /**
        * @todo description
-       * @props {String|Boolean|Number} modelValue
+       * @prop {String|Boolean|Number} [undefined] modelValue
        */
       modelValue: {
         type: [String, Boolean, Number],
@@ -95,8 +95,8 @@
       },
       /**
        * Set to true to have required checkbox selection.
-       * 
-       * @props {Boolean} [false] required
+       *
+       * @prop {Boolean} [false] required
        */
       required: {
         type: Boolean,
@@ -104,7 +104,6 @@
       },
       /**
        * Set to true to disable the checkbox.
-       * 
        *
        * @prop {Boolean} [false] disabled
        */
@@ -154,6 +153,9 @@
     },
     data(){
       return {
+        /**
+         * @data valueToSet
+         */
         valueToSet: this.value
       }
     },

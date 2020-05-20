@@ -40,11 +40,21 @@
      */
     mixins: [bbn.vue.basicComponent],
     props: {
+      /**
+       * @prop {Boolean} [false] iFrame
+       */
       iFrame:{
         type: Boolean,
         default: false
       },
+      /**
+       * @prop value
+       */
       value: {},
+      /**
+       * Defines if the component value is required.
+      * @prop {Boolean|Function|String} [false] required
+      */
       required: {
         type: [Boolean, Function, String],
         default: false
@@ -67,15 +77,36 @@
         type: [Boolean, Function],
         default: false
       },
+      /**
+       * @prop pinned
+       */
       pinned: {},
+      /**
+       * @prop top
+       */
       top: {},
+      /**
+       * @prop left
+       */
       left: {},
+      /**
+       * @prop bottom
+       */
       bottom: {},
+      /**
+       * @prop right
+       */
       right: {},
+      /**
+       * @prop {Boolean} [false] fullSize
+       */
       fullSize:{
         default:false,
         type: Boolean
       },
+      /**
+       * @prop {Array} [bbn.env.cdn + 'lib/bbnjs/1.0.1/src/css/iFrame.less'] iframeCSSLinks
+       */
       iframeCSSLinks :{
         default(){
           return [bbn.env.cdn + 'lib/bbnjs/1.0.1/src/css/iFrame.less']
@@ -92,13 +123,12 @@
       },
       /**
        * The buttons to show on the toolbar
-       * @prop {Array} buttons
+       * @prop {Array} [[['viewHTML'],['undo', 'redo'],['formatting'],['strong', 'em', 'underline', 'del'],['removeformat', 'foreColor', 'backColor'],['superscript', 'subscript'],['link'],['insertImage', 'base64'],['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],['unorderedList', 'orderedList'],['horizontalRule'],['fullscreen']]] buttons
        */
       buttons: {
         type: Array,
         default(){
           return [
-
             ['viewHTML'],
             ['undo', 'redo'], // Only supported in Blink browsers
             ['formatting'],
@@ -116,8 +146,8 @@
         }
       },
       /**
-       * The object of configuration
-       * @prop {Object} cfgfg
+       * The object of configuration.
+       * @prop {Object} cfg
        */
       cfg: {
         type: Object,
@@ -135,15 +165,25 @@
     data(){
       return {
         /**
-         * The height to give to the editor depending on the value of the prop height
+         * The height to give to the editor depending on the value of the prop height.
          * @data {String} realHeight
          */
         realHeight: typeof this.height === 'string' ? this.height : this.height + 'px',
+        /**
+         * @data {Boolean} [false] widget
+         */
         widget: false,
+         /**
+         * @data {String|Number} currentValue
+         */
         currentValue: this.value
       }
     },
     methods: {
+      /**
+       * @method onChange
+       * @emit input
+       */
       onChange(){
         this.$emit('input', this.widget.getElementValue());
       },
@@ -170,7 +210,6 @@
         },
         iframeCSSLinks: this.iFrame ? this.iframeCSSLinks : []
       });
-      bbn.fn.log('IFRAME', this.iFrame)
       if ( this.iFrame ){
         this.widget.iframeCSSLinks = this.iframeCSSLinks
       }

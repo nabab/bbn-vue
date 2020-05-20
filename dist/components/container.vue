@@ -9,6 +9,7 @@
     <component :is="scrollable ? 'bbn-scroll' : 'div'"
                v-if="ready && isLoaded && (visible || cached)"
                v-show="visible"
+               :axis="scrollable ? 'y' : null"
                :class="{
                 'bbn-overlay': !fullScreen,
                 'bbn-container-full-screen': fullScreen,
@@ -439,7 +440,7 @@
             // Adding also a few funciton to interact with the tab
             let cont = this;
             let o = bbn.fn.extend(true, res ? res : {}, {
-              template: '<div class="bbn-overlay">' + this.content + '</div>',
+              template: '<div class="' + (this.scrollable ? '' : 'bbn-overlay') + '">' + this.content + '</div>',
               methods: {
                 getContainer(){
                   if (!this._bbn_container) {
@@ -523,6 +524,9 @@
     },
 
     watch: {
+      title(v) {
+        this.currentTitle = v;
+      },
       current(newVal){
         if (newVal.indexOf(this.url) === 0){
           this.currentURL = newVal;

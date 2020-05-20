@@ -763,7 +763,6 @@
                   }
                   else if ( bbn.fn.isFunction(this.source) ){
                     data = this.source(this.sourceIndex);
-                    bbn.fn.log("RESU", data);
                   }
                   else if ( bbn.fn.isObject(this.source) ){
                     bbn.fn.iterate(this.source, (a, n) => {

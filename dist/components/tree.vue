@@ -136,6 +136,7 @@
                       :sortable="source.sortable !== undefined ? source.sortable : tree.sortable"
                       :multiple="source.multiple !== undefined ? source.multiple : tree.multiple"
                       :uid="uid"
+                      :opened="!!tree.opened"
             ></bbn-tree>
             <span v-if="sortable"
                   :class="['bbn-w-100', 'bbn-tree-order-bottom', {
@@ -204,15 +205,10 @@
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.localStorageComponent
+     * @mixin bbn.vue.listComponent
      */
     mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent, bbn.vue.listComponent],
     props: {
-      /**
-       * @prop {String} filterString
-       */
-      /* filterString: {
-        type: String
-      }, */
       /**
        *  @prop {Boolean} [false] excludedSectionFilter
        */
@@ -221,7 +217,7 @@
         default: false
       },
       /**
-       * The level until which the tree must be opened
+       * The level until which the tree must be opened.
        * @prop {Number} [0] minExpandLevel
        */
       minExpandLevel: {
@@ -229,7 +225,7 @@
         default: 0
       },
       /**
-       * True if the whole tree must be opened
+       * True if the whole tree must be opened.
        * @prop {Boolean} [false] opened
        */
       opened: {
@@ -237,28 +233,28 @@
         default: false
       },
       /**
-       * An array of objects representing the nodes
+       * An array of objects representing the nodes.
        * @prop {Array|String|Object|Function} source
        */
       source: {
         Type: [Array, String, Object, Function]
       },
       /**
-       * The class given to the node (or a function returning the class name)
+       * The class given to the node (or a function returning the class name).
        * @prop {Function|String} cls
        */
       cls: {
         type: [Function, String]
       },
       /**
-       *  A component for the node
+       * A component for the node.
        * @prop {Function|String|Object} component
        */
       component: {
         type: [Function, String, Object]
       },
       /**
-       * Set to true for having the nodes draggable
+       * Set to true to have the nodes draggable.
        * @prop {Boolean} [false] draggable
        */
       draggable: {
@@ -266,33 +262,37 @@
         default: false
       },
       /**
-       * An array (or a function returning one) of elements for the node context menu
+       * An array (or a function returning one) of elements for the node context menu.
        * @prop {Array|Function} menu
        */
 
       menu: {
         type: [Array, Function]
       },
+      /**
+       * Set to true to use the icon given in the source object of the node.
+       * @prop {Boolean} [true] icons
+       */
       icons: {
         type: Boolean,
         default: true
       },
       /**
-       * An string (or a function returning one) for the icon's color
+       * An string (or a function returning one) for the icon's color.
        * @prop {String|Function} iconColor
        */
       iconColor: {
         type: [String, Function]
       },
       /**
-       * The value of the UID to send for the root tree
+       * The value of the UID to send for the root tree.
        * @prop {String|Number} root
        */
       root: {
         type: [String, Number]
       },
       /**
-       * The hierarchy level, root is 0, and for each generation 1 is added to the level
+       * The hierarchy level, root is 0, and for each generation 1 is added to the level.
        * @prop {Number} [0] level
        */
       level: {
@@ -300,7 +300,7 @@
         default: 0
       },
       /**
-       * Other trees where nodes can be dropped on
+       * Other trees where nodes can be dropped on.
        * @prop {Arrayu} [[]] droppables
        */
       droppables: {
@@ -310,7 +310,7 @@
         }
       },
       /**
-       * Set to true allows to use an object for the tree items
+       * Set to true allows to use an object for the tree items.
        * @prop {Boolean} [false] object
        */
       object: {
@@ -318,7 +318,7 @@
         default: false
       },
       /**
-       * If set to false a draggable tree will not be able to drop on itself
+       * If set to false a draggable tree will not be able to drop on itself.
        * @prop {Boolean} [true] selfDrop
        */
       selfDrop: {
@@ -326,14 +326,14 @@
         default: true
       },
       /**
-       * Helper to transform data when passing from one tree to another
+       * Helper to transform data when passing from one tree to another.
        * @prop {Function} trasferData
        */
       transferData: {
         type: Function
       },
       /**
-       * An array containing the expanded nodes idx
+       * An array containing the expanded nodes idx.
        * @prop {Array} [[]] expanded
        */
       expanded: {
@@ -343,7 +343,7 @@
         }
       },
       /**
-       * The opened path if there is one
+       * The opened path if there is one.
        * @prop {Array} [[]] path
        */
       path: {
@@ -361,6 +361,7 @@
       },
       value: {},
       /**
+       * Set to true for a selectable tree.
        * @prop {Boolean} [true] selectable
        */
       selectable: {
@@ -375,6 +376,7 @@
         default: true
       },
       /**
+       * The string to use as quick filter in the tree.
        * @prop {String} [''] quickFilter
        */
       quickFilter: {
@@ -382,6 +384,7 @@
         default: ''
       },
       /**
+       * True if the tre has to be sortable.
        * @prop {Boolean} [false] sortable
        */
       sortable: {
@@ -389,6 +392,7 @@
         default: false
       },
       /**
+       * The order of items.
        * @prop {Array} [[{field: 'num', dir: 'DESC'}, {field: 'text', dir: 'ASC'}]] order
        */
       order: {
@@ -400,6 +404,14 @@
           }]
         }
       },
+      /**
+       * Set to true if the prop 'ajax' is true, 
+       * the tree will make the ajax call only for
+       * the source of the root level and will take
+       * the current data for the source of other levels
+       * @prop {Boolean} [false] hybrid
+       * 
+       */
       hybrid: {
         type: Boolean,
         default: false
@@ -408,62 +420,62 @@
     data(){
       return {
         /**
-         * Only for the origin tree
+         * Only for the origin tree.
          * @data {Boolean} [false] isRoot
          */
         isRoot: false,
         /**
-         * The parent node if not root
+         * The parent node if not root.
          * @data {Boolean|Vue} [false] node
          */
         node: false,
         /**
-         * The parent tree if not root
+         * The parent tree if not root.
          * @data {Boolean|Vue} [false] tree
          */
         tree: false,
         /**
-         * The URL where to pick the data from if isAjax
+         * The URL where to pick the data from if isAjax.
          * @data {String|Boolean} url
          */
         url: typeof(this.source) === 'string' ? this.source : false,
         /**
-         * True when the data is currently loading in the current tree
+         * True when the data is currently loading in the current tree.
          * @data {Boolean} [false] loading
          */
         loading: false,
         /**
-         * True once the data of the tree has been loaded
+         * True once the data of the tree has been loaded.
          * @data {Boolean} [false] isLoaded
          */
         isLoaded: false,
         /**
-         * True once the component is mounted
+         * True once the component is mounted.
          * @data {Boolean} [false] isMounted
          */
         isMounted: false,
         /**
-         * The currently active node component object
+         * The currently active node component object.
          * @data {Boolean|Vue} [false] activeNode
          */
         activeNode: false,
         /**
-         * The component node object over which the mouse is now
+         * The component node object over which the mouse is now.
          * @data {Boolean|Vue} [false] overNode
          */
         overNode: false,
         /**
-         * Dragging state, true if an element is being dragged
+         * Dragging state, true if an element is being dragged.
          * @data {Boolean|Vue} [false] dragging
          */
         dragging: false,
         /**
-         * Real dragging will start after the mouse's first move, useful to kow if we are in a select or drag context
+         * Real dragging will start after the mouse's first move, useful to kow if we are in a select or drag context.
          * @data {Boolean} [false] realDragging
          */
         realDragging: false,
         /**
-         * An array containing the indexes of checked nodes
+         * An array containing the indexes of checked nodes.
          * @data {Array} [[]] checked
          */
         checked: [],
@@ -473,20 +485,25 @@
          */
         disabled: [],
         /**
-         * An array containing the indexes of expanded nodes
+         * An array containing the indexes of expanded nodes.
          * @data {Array} [[]] currentExpanded
          */
         currentExpanded: [],
         /**
-         * The component node object over which the mouse is now
+         * The component node object over which the mouse is now.
          * @data {Boolean|Vue} [false] overOrder
          */
         overOrder: false,
+        /**
+         * The array of nodes.
+         * @data {Array} [[]] nodes
+         */
         nodes: []
       };
     },
     computed: {
       /**
+       * The current data of the tree.
        * @computed filteredData
        * @fires _checkConditionsOnItem
        * @return {Array}
@@ -521,6 +538,7 @@
         return ret;
       },
       /**
+       * The selected node.
        * @computed selectedNode
        * @return {Vue|Boolean}
        */
@@ -528,6 +546,7 @@
         return this.tree && this.tree.currentSelected.length ? this.tree.currentSelected[this.tree.currentSelected.length-1] : false;
       },
       /**
+       * Array of droppables trees.
        * @computed droppableTrees
        * @return {Array}
        */
@@ -543,7 +562,7 @@
     },
     methods: {
       /**
-       * Normalize the list of items basing on it's type
+       * Normalizes the list of items basing on it's type.
        * @method _objectMapper
        * @param {Array|Object} items
        * @fires _objectMapper
@@ -604,7 +623,7 @@
         return res;
       },
       /**
-       * A function to normalize the structure of items
+       * A function to normalize the structure of items.
        * @method _map
        * @param {Array} items
        * @fires tree.map
@@ -637,7 +656,7 @@
         return items;
       },
       /**
-       * Resets the tree to the original configuration
+       * Resets the tree to the original configuration.
        * @method reset
        * @fires updateData
        */
@@ -650,7 +669,7 @@
         //})
       },
       /**
-       * Resize the root scroller
+       * Resizes the root scroller.
        * @method resize
        */
       resize(){
@@ -659,7 +678,7 @@
         }
       },
       /**
-       * Make the root tree resize and emit an open event
+       * Resizes the root tree and emit an open event
        * @method onOpen
        * @fires resize
        * @emits open
@@ -670,7 +689,7 @@
         this.tree.$emit('open', this);
       },
       /**
-       * Make the root tree resize and emit a close event
+       * Resizes the root tree and emit a close event.
        * @method onClose
        * @fires resize
        * @emits close
@@ -681,7 +700,7 @@
         this.tree.$emit('close', this);
       },
       /**
-       * Find a node based on its props
+       * Finds a node based on its props.
        * @method _findNode
        * @param {Object} props
        * @param {Object} node
@@ -713,6 +732,7 @@
         return ret;
       },
       /**
+       * Returns the node corresponding to the given idx.
        * @method getNodeByIdx
        * @param {Number} idx
        * @return {Vue|Boolean}
@@ -724,7 +744,7 @@
         return false;
       },
       /**
-       * Find a node based on path
+       * Returns a node basing on the given context.
        * @method getNode
        * @param {Array} arr
        * @param context
@@ -752,7 +772,22 @@
         }
       },
       /**
-       * Returns the menu of a given node
+       * Adds a node to the tree.
+       * @param {Object} obj The item to add.
+       * Returns {Boolean|Object}
+       */
+      addNode(obj){
+        if ( bbn.fn.isObject(obj) ){
+          obj = this._map([obj])[0];
+          obj._bbn = true;
+          obj.index = this.currentData.length;
+          this.currentData.push(obj);
+          return obj;
+        }
+        return false;
+      },
+      /**
+       * Returns the menu of the given node.
        * @method getMenu
        * @param {Object} node
        * @fires reload
@@ -798,7 +833,7 @@
       },
       /**
        * Returns an object with the data to send for a given node.
-       * If UID has been given obj will only have this prop other the whole data object
+       * If UID has been given obj will only have this prop other the whole data object.
        * @method getPostData
        * @fires data
        * @return {Object}
@@ -829,7 +864,7 @@
         return r;
       },
       /**
-       * Manages the key navigation inside the tree
+       * Manages the key navigation inside the tree.
        * @method keyNav
        * @param {Event} e The event
        */
@@ -857,12 +892,14 @@
             case 'End':
               if ( data.length ){
                 bbn.fn.getRow(parent.nodes, {idx: data[data.length-1].index}).isActive = true;
+                this.scrollToActive();
               }
               break;
             case 'PageUp':
             case 'Home':
               if ( data.length ){
                 bbn.fn.getRow(parent.nodes, {idx: data[0].index}).isActive = true;
+                this.scrollToActive();
               }
               break;
             case 'ArrowLeft':
@@ -871,6 +908,7 @@
               }
               else if ( !this.tree.activeNode.parent.isRoot ){
                 this.tree.activeNode.parent.node.isActive = true;
+                this.scrollToActive();
               }
               break;
             case 'ArrowRight':
@@ -880,41 +918,48 @@
                 }
                 else if ( subtree && subtree.nodes.length ){
                   bbn.fn.getRow(subtree.nodes, {idx: subtree.filteredData[0].index}).isActive = true;
+                  this.scrollToActive();
                 }
               }
               break;
             case 'ArrowDown':
               if ( (idx + 1) <= max ){
                 bbn.fn.getRow(parent.nodes, {idx: data[idx+1].index}).isActive = true;
+                this.scrollToActive();
               }
               else if ( parent.node && parent.node.parent ){
                 data = parent.node.parent.filteredData.filter(d => !!d.visible);
                 idx = bbn.fn.search(data, {index: parent.node.idx});
                 if ( (idx > -1) && data[idx+1] ){
                   bbn.fn.getRow(parent.node.parent.nodes, {idx: data[idx+1].index}).isActive = true;
+                  this.scrollToActive();
                 }
               }
               break;
             case 'ArrowUp':
               if ( (idx - 1) >= min ){
                 bbn.fn.getRow(parent.nodes, {idx: data[idx-1].index}).isActive = true;
+                this.scrollToActive();
               }
               else if ( !parent.isRoot && parent.node ){
                 parent.node.isActive = true;
+                this.scrollToActive();
               }
               break;
           }
         }
         else if ( this.tree.selectedNode ){
           this.tree.activeNode = this.tree.selectedNode;
+          this.scrollToActive();
         }
         else if ( this.tree.filteredData.length ){
           bbn.fn.getRow(this.tree.nodes, {idx: this.tree.filteredData[0].index}).isActive = true;
+          this.scrollToActive();
         }
       },
 
       /**
-       * Reloads a node already loaded
+       * Reloads a node already loaded.
        * @method reload
        * @param {Vue} node
        * @fires updateData
@@ -936,7 +981,7 @@
         //}
       },
       /**
-       * Loads a node
+       * Loads a node.
        * @method load
        * @fires updateData
        */
@@ -961,10 +1006,12 @@
               if ( bbn.fn.isObject(criteria) ){
                 idx = bbn.fn.search(this.filteredData, {data: criteria});
                 if ( idx === -1 ){
-                  idx = bbn.fn.search(this.filteredData, Object.keys(criteria).reduce((r, k) => {
-                    r['data.' + k] = criteria[k];
-                    return r
-                  }, {}));
+                  bbn.fn.each(this.filteredData, (d, i) => {
+                    if ( !bbn.fn.numProperties(bbn.fn.diffObj(bbn.fn.extend(true, {}, d.data), criteria)) ){
+                      idx = i;
+                      return true;
+                    }
+                  })
                 }
               }
               else if ( this.tree.uid ){
@@ -984,13 +1031,23 @@
                 }
                 else {
                   this.$set(this.filteredData[idx], 'selected', true);
+                  this.$nextTick(() => {
+                    setTimeout(() => {
+                      this.scrollToSelected();
+                    }, 200)
+                  })
                 }
               }
             })
           }
         })
       },
-
+      /**
+       * Returns the node's path.
+       * @method getNodePath
+       * @param {Object} node 
+       * @param {String} field 
+       */
       getNodePath(node, field){
         let f = field || this.uid || false,
             obj = Object.keys(node.data).length ? bbn.fn.extend(true, {}, node.data) : false,
@@ -1009,7 +1066,7 @@
       },
 
       /**
-       * Unselects the currently selected node
+       * Unselects the currently selected node.
        * @method unselect
        */
       unselect(){
@@ -1019,7 +1076,7 @@
       },
 
       /**
-       * Deactivate the active node
+       * Deactivate the active nodes.
        * @method deactivateAll
        */
       deactivateAll(){
@@ -1029,7 +1086,7 @@
       },
 
       /**
-       * Returns true if the first argument node descends from the second
+       * Returns true if the first argument node descends from the second.
        * @method isNodeOf
        * @param {Object} childNode 
        * @param {Object} parentNode 
@@ -1047,11 +1104,11 @@
       },
 
       /**
-       *  Moves a node to or inside a tree
+       *  Moves a node to or inside a tree.
        * @method move
        * @param {Object} node 
        * @param {Object} target 
-       * @param {Number} index 
+       * @param {Boolean} [false] force 
        */
       move(node, target, force = false){
         let ev = false;
@@ -1135,7 +1192,7 @@
         }
       },
       /**
-       * Returns an object with all the unknown properties of the node component
+       * Returns an object with all the unknown properties of the node component.
        * @param {Object} data
        * @return {Object}
        */
@@ -1148,6 +1205,11 @@
         }
         return r;
       },
+      /**
+       * Returns the current configuration of the tree.
+       * @method getConfig
+       * @returns {Object}
+       */
       getConfig(){
         let cfg = {
           path: []
@@ -1164,6 +1226,10 @@
         });
         return cfg;
       },
+      /**
+       * Gets the local storage.
+       * @method getLocalStorage
+       */
       getLocalStorage(){
         if ( this.isRoot && this.hasStorage ){
           let cfg = this.getStorage(this.storageFullName || this.storageName, !!this.storageFullName);
@@ -1175,6 +1241,10 @@
           }
         }
       },
+      /**
+       * Sets the local storage.
+       * @method setLocalStorage
+       */
       setLocalStorage(){
         let ev = new Event('setStorage', {cancelable: true}),
             cfg = this.getConfig();
@@ -1182,8 +1252,38 @@
         if ( !ev.defaultPrevented ){
           this.setStorage(cfg, this.storageFullName || this.storageName, !!this.storageFullName);
         }
+      },
+      /**
+       * Scrolls the tree to the selected node.
+       * @method scrollToSelected
+       */
+      scrollToSelected(){
+        if ( this.isRoot && this.selectedNode ){
+          let scroll = this.getRef('scroll');
+          if ( scroll ){
+            scroll.scrollTo(0, this.selectedNode.$el);
+          }
+        }
+      },
+      /**
+       * Scrolls the tree to the active node.
+       * @method scrollToActive
+       */
+      scrollToActive(){
+        if ( this.isRoot && this.activeNode ){
+          let scroll = this.getRef('scroll');
+          if ( scroll ){
+            scroll.scrollTo(0, this.activeNode.$el);
+          }
+        }
       }
     },
+    /**
+     * Emits the event beforeLoad and load. And opens the nodes defined in the prop path.
+     * @event beforeCreate
+     * @emits beforeLoad
+     * @emits load
+     */
     beforeCreate(){
       this.$on('beforeUpdate', e => {
         if ( this.isAjax && (this.tree.isLoading || this.isLoading) ){
@@ -1211,7 +1311,7 @@
       });
     },
     /**
-     * Definition of the root tree and parent node
+     * Definition of the root tree and parent node.
      * @event created
      */
     created(){
@@ -1235,10 +1335,15 @@
         this.node = this.closest('bbn-tree-node');
       }
     },
+    /**
+     * Gets the local storage.
+     * @event beforeMount
+     */
     beforeMount(){
       this.getLocalStorage();
     },
     /**
+     * Updates the data of the tree and sets the prop 'ready' to true.
      * @event mounted
      * @fires updateData
      */
@@ -1252,14 +1357,14 @@
     },
     watch: {
       /**
-       * @watch activeNode
+       *
        * @param {Object} newVal
        */
       activeNode(newVal){
         if ( newVal && this.isRoot ){
           let scroll = this.getRef('scroll');
           if ( scroll ){
-            scroll.scrollTo(0, newVal.$el);
+            //scroll.scrollTo(0, newVal.$el);
           }
         }
       },
@@ -1267,13 +1372,14 @@
         if ( newVal && this.isRoot ){
           let scroll = this.getRef('scroll');
           if ( scroll ){
-            scroll.scrollTo(0, newVal.$el);
+            //scroll.scrollTo(0, newVal.$el);
           }
         }
       },
       /**
+       * Opens the corresponding node when the prop 'path' changes.
        * @watch path
-       * @param newVal
+       * @param {String} newVal
        * @emits pathChange
        */
       path(newVal){
@@ -1281,9 +1387,13 @@
           if ( this.isRoot || this.ready ){
             this.openPath();
           }
-          this.$emit('pathChange', newVal);
         }
+        this.$emit('pathChange', newVal);
       },
+      /**
+       * Updates the ree overNode and overOrder when the prop 'dragging' changes.
+       * @param {Boolean} newVal 
+       */
       dragging(newVal){
         if ( !newVal ){
           this.overNode = false;
@@ -1458,7 +1568,7 @@
           },
           isExpanded: {
             get(){
-              return this.source.expanded;
+              return !!this.source.expanded;
             },
             set(v){
               this.source.expanded = v;
@@ -1466,7 +1576,7 @@
           },
           isSelected: {
             get(){
-              return this.source.selected;
+              return !!this.source.selected;
             },
             set(v){
               this.source.selected = v;
@@ -1785,7 +1895,7 @@
                   ev = new Event('beforeOrder', {cancelable: true});
               if ( ele.length ){
                 if ( !force ){
-                  this.tree.$emit('beforeOrder', oldNum, newNum, this, ev);
+                  this.tree.$emit('beforeOrder', oldNum, newNum, this.tree.dragging, ev);
                 }
                 if ( !!force || !ev.defaultPrevented ){
                   arr.splice(newNum-1, 0, ele[0]);
@@ -1866,23 +1976,8 @@
             }
             return false;
           },
-          // @todo never used
-          getPath(numeric){
-            let r = [],
-                parent = this;
-            while ( parent ){
-              if ( this.tree.uid ){
-                r.unshift(parent.data[this.tree.uid]);
-              }
-              else if ( numeric ){
-                r.unshift(parent.index);
-              }
-              else{
-                r.unshift(parent.data);
-              }
-              parent = bbn.vue.closest(parent, 'bbn-tree-node');
-            }
-            return r;
+          getPath(field){
+            return this.tree.getNodePath(this, field);
           },
           addToSelected(emit = true, storage = true){
             if ( !this.tree.currentSelected.includes(this) ){
@@ -2037,6 +2132,10 @@
           if ( !this.parent.nodes.includes(this) ){
             this.parent.nodes.push(this);
           }
+          if ( this.tree.opened || (this.level < this.tree.minExpandLevel) ){
+            this.$set(this.source, 'expanded', true);
+            this.addToExpanded();
+          }
         },
         /**
          * @event mounted
@@ -2044,9 +2143,6 @@
          * @fires resize
          */
         mounted(){
-          if ( this.tree.opened || (this.level < this.tree.minExpandLevel) ){
-            this.isExpanded = true;
-          }
           this.$nextTick(() => {
             if ( !this.animation ){
               setTimeout(() => {

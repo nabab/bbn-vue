@@ -49,9 +49,12 @@
 </template>
 <script>
   module.exports = /**
- * @file button.js
- * @description Button component
+ * @file bbn-button component
+ *
+ * @description bbn-button is a component represents the button with the possibility of extensive customizations.
+ *
  * @copyright BBN Solutions
+ *
  * @author BBN Solutions
  */
 (function(bbn){
@@ -99,18 +102,18 @@
         type: String
       },
       /**
-      * The icon shown on the button.
-      *
-      *  @prop {String} icon
-      */
+       * The icon shown on the button.
+       *
+       *  @prop {String} icon
+       */
       icon: {
         type: String,
       },
-      /** 
+      /**
        * The icon(s) position (left or right).
-       * 
+       *
        * @prop {String} ['left'] iconPosition
-      */
+       */
       iconPosition: {
         type: String,
         default: 'left',
@@ -127,53 +130,53 @@
       /**
        * If defined the prop secondary, defines the color of the second icon of the button.
        *
-       * @prop {String} secondaryColor
+       * @prop {String} [null] secondaryColor
        */
       secondaryColor: {
         type: String,
         default: null
       },
       /**
-      * Specifies the type of button.
-      *
-      * @prop {String} type
-      */
+       * Specifies the type of button.
+       *
+       * @prop {String} ['button'] type
+       */
       type: {
         type: String,
         default: 'button'
       },
-     /**
-      * Set to true to disable the button.
-      *
-      * @prop {Boolean|Function} [false] disabled
-      */
+      /**
+       * Set to true to disable the button.
+       *
+       * @prop {Boolean|Function} [false] disabled
+       */
       disabled: {
         type: [Boolean, Function],
         default: false
       },
-     /**
-      * Set to true for the button to glow.
-      *
-      * @prop {Boolean|Function} [false] glowing
-      */
+      /**
+       * Set to true for the button to glow.
+       *
+       * @prop {Boolean|Function} [false] glowing
+       */
       glowing: {
         type: [String, Boolean],
         default: false
       },
-     /**
-      * State the button's glowing colour.
-      *
-      * @prop {String} [#c4a300] glowingColor
-      */
+      /**
+       * State the button's glowing colour.
+       *
+       * @prop {String} ['#c4a300'] glowingColor
+       */
       glowingColor: {
         type: String,
         default: '#c4a300'
       },
       /**
-      * The action that has to be performed at the event click.
-      *
-      * @prop {Function|String} action
-      */
+       * The action that has to be performed at the event click.
+       *
+       * @prop {Function|String} action
+       */
       action: {
         type: [Function, String]
       }
@@ -199,6 +202,7 @@
        * Return if the button is disabled.
        *
        * @computed isDisabled
+       * @fires disabled
        * @return {Boolean}
        */
       isDisabled(){
@@ -211,6 +215,8 @@
        * The role of the button when clicked.
        *
        * @method click
+       * @param {Event} e
+       * @fires action
        * @emit click
        */
       click(e){
@@ -226,7 +232,6 @@
       }
     }
   });
-
 })(bbn);
 
 </script>

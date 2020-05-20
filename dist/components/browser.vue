@@ -12,12 +12,10 @@
 <script>
   module.exports = /**
  * @file bbn-browser component
- *
- * @description 
- *
+ * @description bbn-browser
  * @copyright BBN Solutions
- *
  * @author BBN Solutions
+ * @ignore
  */
 (function(bbn){
   "use strict";
@@ -25,14 +23,20 @@
   Vue.component('bbn-browser', {
     /**
      * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.eventsComponent
      */
     mixins: [bbn.vue.basicComponent],
     props: {
+     /**
+      * The object source of component bbn-browser.
+      * @prop {Object} Source
+      */
       source: {}
     },
     data(){
       return {
+       /**
+        * @prop {Array} [[]] tabs
+        */
         tabs: []
       }
     },
@@ -65,6 +69,9 @@
       }
     },
     components: {
+     /**
+      * @component tab
+      */
       tab: {
         template: `
 <div class="bbn-overlay">

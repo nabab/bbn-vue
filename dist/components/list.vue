@@ -691,6 +691,7 @@
   box-sizing: border-box;
   min-width: 7em;
   white-space: nowrap;
+  user-select: none;
 }
 .bbn-list > ul > li.bbn-disabled {
   opacity: 0.7;

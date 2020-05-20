@@ -472,6 +472,9 @@
     },
 
     watch: {
+      title(v) {
+        this.currentTitle = v;
+      },
       current(newVal){
         if (newVal.indexOf(this.url) === 0){
           this.currentURL = newVal;

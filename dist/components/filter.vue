@@ -230,19 +230,19 @@
   Vue.component('bbn-filter', {
     /**
      * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.dataEditorComponent 
+     * @mixin bbn.vue.dataEditorComponent
      */
     mixins: [bbn.vue.basicComponent, bbn.vue.dataEditorComponent],
     name: 'bbn-filter',
     props: {
       /**
        * The value of the filter.
-       * @prop value
+       * @prop {Object} value
        */
       value: {},
       /**
        * The operator of the filter.
-       * @prop value
+       * @prop operator
        */
       operator: {},
       /**
@@ -251,7 +251,7 @@
       operators: {},
       /**
        * The pre-existing conditions.
-       * @prop {Array} [] conditions 
+       * @prop {Array} [[]] conditions
        */
       conditions: {
         type: Array,
@@ -284,20 +284,22 @@
         type: Number,
         default: 0
       },
-      // ??
+      /**
+       * @prop index
+       */
       index: {},
       // @todo not used
       first: {},
       /**
        * The component used for a single filter.
-       * @prop component
+       * @prop {Object} [{}] component
        */
       component: {},
       /**
        * The component options used for a single filter.
-       * @prop {Object} [{}] component
-       * 
-       */ 
+       * @prop {Object} [{}] componentOptions
+       *
+       */
       componentOptions: {
         type: Object,
         default(){
@@ -351,7 +353,7 @@
       /**
        * Returns the border color.
        * @computed border_color
-       * @return {String} 
+       * @return {String}
        */
       border_color(){
         if ( this.num > borders.length ){
@@ -363,6 +365,7 @@
       },
       /**
        * @todo not used
+       * @return {Vue}
        */
       is_not_root(){
         return this.$parent.$el.classList.contains("bbn-filter-control");
@@ -371,9 +374,9 @@
     methods: {
       /**
        * Alters the filter's style on mouseover event.
-       * 
+       *
        * @method over
-       * @param {Event} e 
+       * @param {Event} e
        */
       over(e){
         e.target.style.color = 'red';
@@ -381,9 +384,9 @@
       },
       /**
        * Alters the filter's style on mouseout event.
-       * 
-       * @method over
-       * @param {Event} e 
+       *
+       * @method out
+       * @param {Event} e
        */
       out(e){
         e.target.style.color = null;
@@ -391,11 +394,11 @@
       },
       /**
        * Sets the conditions for the filter.
-       * 
+       *
        * @method setCondition
-       * @param {Object} obj 
-       * @return {Object} 
+       * @param {Object} obj
        * @emits set
+       * @return {Object}
        */
       setCondition(obj){
         if ( obj.field && obj.operator ){
@@ -412,8 +415,9 @@
       },
       /**
        * Removes the set filter conditions.
+       *
        * @method unsetCondition
-       * @param {Object} obj 
+       * @param {Object} obj
        * @emits set
        * @return {Object}
        */
@@ -430,17 +434,18 @@
       },
       /**
        * Returns the number of fields.
+       *
        * @method hasFields
-       * @return {Number}
+       * @return {Boolean}
        */
       hasFields(){
         return this.fields && Object.keys(this.fields).length;
       },
       /**
        * Styles the text based on the given condition.
-       * 
+       *
        * @method condition_text
-       * @param {Object} cd 
+       * @param {Object} cd
        * @return {String}
        */
       condition_text(cd){
@@ -484,7 +489,7 @@
       /**
        * Completely deletes the conditions of the given index.
        * @method delete_full_condition
-       * @param {Number} idx 
+       * @param {Number} idx
        * @emits unset
        */
       delete_full_condition(idx){
@@ -492,7 +497,10 @@
       },
       /**
        * Deletes the given condition.
-       * @param {Object} condition 
+       *
+       * @method delete_condition
+       * @param {Object} condition
+       * @fires confirm
        * @emits unset
        */
       delete_condition(condition){
@@ -526,7 +534,8 @@
       },
       /**
        * Adds a condition to the given index.
-       * @param {Number} idx 
+       * @method add_group
+       * @param {Number} idx
        */
       add_group(idx){
         this.conditions.splice(idx, 1, {
@@ -550,20 +559,20 @@
         name: 'bbn-filter-form',
         /**
          * @mixin bbn.vue.dataEditorComponent
-         * @memberof bbn-filter-form 
+         * @memberof bbn-filter-form
          */
         mixins: [bbn.vue.dataEditorComponent],
         props: {
           /**
            * The list of fields available for the filter.
            * @prop {Object|Array} [{}] fields
-           * @memberof bbn-filter-form 
+           * @memberof bbn-filter-form
            */
           fields: {},
           /**
            * The column's value for a single column filter.
            * @prop {String} field
-           * @memberof bbn-filter-form 
+           * @memberof bbn-filter-form
            */
           field: {
             type: String
@@ -571,15 +580,15 @@
           /**
            * The type of data of the operators.
            * @prop {String} ['string'] type
-           * @memberof bbn-filter-form 
+           * @memberof bbn-filter-form
            */
           type: {
             type: String
           },
           /**
            * The operator of the filter.
-           * @prop value
-           * @memberof bbn-filter-form 
+           * @prop operator
+           * @memberof bbn-filter-form
            */
           operator: {
             type: String
@@ -587,21 +596,21 @@
           /**
            * The value of the filter.
            * @prop value
-           * @memberof bbn-filter-form 
-           */  
+           * @memberof bbn-filter-form
+           */
           value: {},
           /**
            * The component used for a single filter.
            * @prop component
-           * @memberof bbn-filter-form 
-           * 
+           * @memberof bbn-filter-form
+           *
            */
           component: {},
            /**
            * The component options used for a single filter.
-           * @prop {Object} [{}] component
-           * @memberof bbn-filter-form 
-           */ 
+           * @prop {Object} [{}] componentOptions
+           * @memberof bbn-filter-form
+           */
           componentOptions: {
             type: Object,
             default(){
@@ -611,7 +620,7 @@
           /**
            * Set to true to show the button to delete a condition.
            * @prop {Boolean} [false] buttonDelete
-           * @memberof bbn-filter-form 
+           * @memberof bbn-filter-form
            */
           buttonDelete: {
             type: Boolean,
@@ -623,53 +632,49 @@
             /**
              * The current field.
              * @data {String} currentField
-             * @memberof bbn-filter-form 
+             * @memberof bbn-filter-form
              */
             currentField: this.field || '',
             /**
              * The current type.
              * @data currentType
-             * @memberof bbn-filter-form 
+             * @memberof bbn-filter-form
              */
             currentType: this.type || '',
             /**
              * The current value.
              * @data currentValue
-             * @memberof bbn-filter-form 
+             * @memberof bbn-filter-form
              */
             currentValue: this.value || '',
             /**
              * The current component.
              * @data {String} currentComponent
-             * @memberof bbn-filter-form 
+             * @memberof bbn-filter-form
              */
             currentComponent: this.component || '',
             /**
              * The current component's options.
              * @data {Object} currentComponentOptions
-             * 
-             * @memberof bbn-filter-form 
+             * @memberof bbn-filter-form
              */
             currentComponentOptions: this.componentOptions,
             /**
              * The current operator.
              * @data {String} currentOperator
-             * 
-             * @memberof bbn-filter-form 
+             * @memberof bbn-filter-form
              */
             currentOperator: this.operator || '',
             /**
              * The current operators.
              * @data {Array} [[]] currentOperators
-             * 
-             * @memberof bbn-filter-form 
+             * @memberof bbn-filter-form
              */
             currentOperators: [],
             /**
              * The current condition.
-             * @data {Boolean} currentCondition
-             * 
-             * @memberof bbn-filter-form 
+             * @data {Boolean} [false] currentCondition
+             * @memberof bbn-filter-form
              */
             currentCondition: false,
             /**
@@ -682,12 +687,12 @@
             has_condition: true,
             /**
              * @prop {Array} [[]] items
-             * @memberof bbn-filter-form 
+             * @memberof bbn-filter-form
              */
             items: [],
             /**
              * @prop cfg
-             * @memberof bbn-filter-form 
+             * @memberof bbn-filter-form
              */
             cfg: {}
           };
@@ -696,8 +701,8 @@
           /**
            * Returns the object containing the operators.
            * @computed operators
-           * @fires editorGetComponentOptions
-           * @memberof bbn-filter-form 
+           * @fires currentFullField
+           * @memberof bbn-filter-form
            * @return {Object}
            */
           operators(){
@@ -710,7 +715,8 @@
           /**
            * True if the filter form has no value.
            * @computed no_value
-           * @memberof bbn-filter-form 
+           * @fires editorHasNoValue
+           * @memberof bbn-filter-form
            * @return {Boolean}
            */
           no_value(){
@@ -720,7 +726,7 @@
            * Normalizes the array 'fields' to use as the source of the form's dropdown.
            * @computed columns
            * @return {Array}
-           * @memberof bbn-filter-form 
+           * @memberof bbn-filter-form
            */
           columns(){
             let r = [];
@@ -744,9 +750,8 @@
           /**
            * Returns the object 'field' of the corresponding current field.
            * @computed currentFullField
-           * @memberof bbn-filter-form 
+           * @memberof bbn-filter-form
            * @return {Object}
-           * 
            */
           currentFullField(){
             if ( this.currentField ){
@@ -760,7 +765,7 @@
           /**
            * Returns the title of the current field.
            * @computed currentTitle
-           * @memberof bbn-filter-form 
+           * @memberof bbn-filter-form
            * @return {String}
            */
           currentTitle(){
@@ -777,14 +782,12 @@
           /**
            * Validates the form.
            * @method validate
-           * @param {Boolean} cancel 
+           * @param {Boolean} cancel
            * @fires editorHasNoValue
-           * @fires $parent.unsetCondition
-           * @fires $parent.setCondition
            * @emits validate
            * @emits invalidate
            * @emits error
-           * @memberof bbn-filter-form 
+           * @memberof bbn-filter-form
            */
           validate(cancel){
             if ( this.currentField && this.currentOperator && (this.currentValue || this.editorHasNoValue(this.currentOperator)) ){
@@ -811,8 +814,7 @@
           /**
            * Resets the current operator and the current value to their default.
            * @method unset
-           * @emits $parent.unset
-           * @memberof bbn-filter-form 
+           * @memberof bbn-filter-form
            */
           unset(){
             //bbn.fn.log("UNST", this.currentCondition);
@@ -823,7 +825,7 @@
         },
         /**
          * @event created
-         * @memberof bbn-filter-form 
+         * @memberof bbn-filter-form
          */
         created(){
           if ( this.type && this.editorOperators[this.type] ){
@@ -831,8 +833,8 @@
           }
         },
         /**
-         * @event created
-         * @memberof bbn-filter-form 
+         * @event mounted
+         * @memberof bbn-filter-form
          */
         mounted(){
           this.ready = true;
@@ -843,11 +845,11 @@
         },
         watch: {
           /**
-           * 
+           *
            * @watch currentField
-           * @param {} newVal 
+           * @param {} newVal
            * @fires editorGetComponentOptions
-           * @memberof bbn-filter-form 
+           * @memberof bbn-filter-form
            */
           currentField(newVal){
             let index = bbn.fn.search(this.fields, {field: newVal});

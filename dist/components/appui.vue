@@ -1,5 +1,11 @@
 <template>
-<div class="bbn-appui bbn-observer bbn-overlay"
+<div :class="{
+      'bbn-appui': true,
+      'bbn-observer': true,
+      'bbn-overlay': true,
+      'bbn-mobile': isMobile,
+      'bbn-desktop': !isMobile
+     }"
      :style="{opacity: opacity}">
   <div v-if="!cool"
        class="bbn-middle bbn-xl"
@@ -123,11 +129,14 @@
                   :storage="!!nav"
                   :observer="true"
                   :menu="tabMenu"
+                  :single="single"
+                  :post-base-url="!single"
                   ref="nav"
                   :nav="nav"
                   :master="true"
                   :class="{'bbn-overlay': !nav}"
                   :url="!!nav ? undefined : url"
+                  @route="onRoute"
       >
         <slot></slot>
       </bbn-router>
@@ -220,18 +229,18 @@
 </template>
 <script>
   module.exports = /**
- * Created by BBN on 15/02/2017.
+ * @file appui component
+ * @description The autocomplete allows to select a single value from a list of items by proposeing suggestions based on the typed characters.
+ * @copyright BBN Solutions
+ * @author BBN Solutions
+ * @ignore
+ * @created 10/02/2017.
  */
-
 (function(bbn){
   "use strict";
 
   let app;
   let registeredComponents = {};
-  /**
-   * Classic input with normalized appearance
-   */
-
   Vue.component('bbn-appui', {
     mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent, bbn.vue.localStorageComponent, bbn.vue.observerComponent],
     props: {
@@ -291,10 +300,19 @@
         default(){
           return {}
         }
+      },
+      single: {
+        type: Boolean,
+        default: false
+      },
+      title: {
+        type: String,
+        default: bbn.env.siteTitle || bbn._('App-UI')
       }
     },
     data(){
       return {
+        isMobile: bbn.fn.isMobile(),
         opacity: 0,
         pollerObject: {
           chat: true,
@@ -330,7 +348,8 @@
         searchString: '',
         clipboardContent: [],
         observerTimeout: false,
-        colorEnvVisible: true
+        colorEnvVisible: true,
+        currentTitle: this.title
       }
     },
     computed: {
@@ -406,6 +425,9 @@
           });
         }
         return true;
+      },
+      onRoute(path) {
+        this.$emit('route', path)
       },
       route(url, force){
         this.getRef('nav').route(url, force)

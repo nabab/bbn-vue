@@ -74,9 +74,17 @@
 </bbn-slider>
 </template>
 <script>
-  module.exports = /**
- * Created by BBN on 15/08/2019.
- */
+  module.exports =  /**
+  * @file bbn-clipboard component
+  *
+  * @description bbn-clipboard Classic input with normalized appearance.
+  *
+  * @author BBN Solutions
+  *
+  * @copyright BBN Solutions
+  *
+  * @created 15/08/2019.
+  */
 
 (function(bbn){
   "use strict";
@@ -87,47 +95,105 @@
    */
 
   Vue.component('bbn-clipboard', {
+     /**
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.localStorageComponent
+     */
     mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent],
     props: {
+      /**
+       * @prop {String} ['right'] orientation
+       */
       orientation: {
         type: String,
         default: 'right'
       },
+      /**
+       * @prop {Array} [[]] source
+       */
       source: {
         type: Array
       },
     },
     data(){
       return {
+        /**
+         * @data {Number} [0] opacity
+         */
         opacity: 0,
+        /**
+         * @data {Array} items
+         */
         items: this.source,
+        /**
+         * @data {String} [''] search
+         */
         search: '',
+        /**
+         * @data {Boolean} [false] isSetting
+         */
         isSetting: false,
+        /**
+         * @data {String} [null] uid
+         */
         uid: null,
+        /**
+         * @data {Boolean} [0] isOpened
+         */
         isOpened: false
       };
     },
     computed: {
     },
     methods: {
+       /**
+       * Emits a change when the state of the checkbox changes.
+       *
+       * @method unsearch
+       */
       unsearch(){
         if ( this.search.length ){
           this.search = '';
           this.items = this.source;
         }
       },
+       /**
+       * @todo empty function
+       *
+       * @method test
+       */
       test(uid){
         bbn.fn.log("TEST", uid);
       },
+       /**
+       * 
+       *
+       * @method togle
+       */
       toggle(){
         return this.getRef('slider').toggle();
       },
+      /**
+       *
+       *
+       * @method show
+       */
       show(){
         return this.getRef('slider').show();
       },
+      /**
+       *
+       *
+       * @method hide
+       */
       hide(){
         return this.getRef('slider').hide();
       },
+      /**
+       *
+       *
+       * @method save
+       */
       save(uid, title){
         let item = this.getItem(uid);
         if (item) {
@@ -142,6 +208,11 @@
           bbn.fn.download(title, content, item.type);
         }
       },
+       /**
+       * 
+       *
+       * @method saveAs
+       */
       saveAs(uid){
         let item = this.getItem(uid);
         if (item) {
@@ -152,6 +223,11 @@
           }
         }
       },
+       /**
+       * 
+       *
+       * @method add
+       */
       add(data){
         let dt = bbn.fn.timestamp();
         let uid = dt;
@@ -259,6 +335,10 @@
         }
         this.$forceUpdate();
       },
+       /**
+       * 
+       * @method remove
+       */
       remove(src){
         let idx = bbn.fn.search(this.items, {uid: src.uid});
         if (idx > -1) {
@@ -270,14 +350,29 @@
           }
         }
       },
+       /**
+       * 
+       *
+       * @method getItem
+       */
       getItem(uid){
         return bbn.fn.getRow(this.items, {uid: uid});
       },
+       /**
+       * 
+       *
+       * @method updateSlider
+       */
       updateSlider(){
         this.$nextTick(() => {
           this.getRef('slider').onResize();
         });
       },
+       /**
+       * 
+       *
+       * @method clear
+       */
       clear(){
         this.confirm(bbn._('Are you sure you want to delete the whole content of the clipboard?'), () => {
           while (this.items.length){
@@ -285,6 +380,11 @@
           }
         });
       },
+       /**
+       * 
+       *
+       * @method copy
+       */
       copy(e){
         let type = e.type;
         bbn.fn.getEventData(e).then((data) => {
@@ -294,6 +394,11 @@
         });
         return true;
       },
+      /**
+       * 
+       *
+       * @method setClipboard
+       */
       setClipboard(uid, mode){
         let item = this.getItem(uid);
         bbn.fn.log("setClipboard", item);

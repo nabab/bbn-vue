@@ -11,6 +11,10 @@
 (() => {
   "use strict";
   Vue.component('bbn-slideshow', {
+    /**
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.resizerComponent
+     */
     mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent],
     props: {
       /**
@@ -21,21 +25,21 @@
         type: [Array, Function, String]
       },
       /**
-       * If the type of the source is a string defines which character to use as separator between slides
+       * If the type of the source is a string defines which character to use as separator between slides.
        * @prop {String} separator
        */
       separator: {
         type: String
       },
       /**
-       * The component to use in each slide
+       * The component to use in each slide.
        * @prop {Object} component
        */
       component: {
         type: Object
       },
       /**
-       * Insert a checkbox in each slide
+       * Insert a checkbox in each slide.
        * @prop {String|Boolean} [false] checkbox
        */
       checkbox: {
@@ -43,7 +47,7 @@
         default: false
       },
       /**
-       * Set to true shows a list of all slides' title that can be used to navigate between them
+       * Set to true shows a list of all slides' title that can be used to navigate between them.
        * @prop {Boolean} [false] summary
        */
       summary: {
@@ -59,7 +63,7 @@
         default: false
       },
       /**
-       * Set to true shows the list of previews of the slide
+       * Set to true shows the list of previews of the slide.
        * @prop {Boolean|String} [false] preview
        */
       preview:{
@@ -67,7 +71,7 @@
         default: false
       },
       /**
-       * The dimension of the preview
+       * The dimension of the preview.
        * @prop {Number} [45] dimensionPreview
        */
       dimensionPreview:{
@@ -75,7 +79,7 @@
         default: 45
       },
       /**
-       * Set to true enables the autoplay using the default autoplay time (5000ms). If a number is given, multiplied * 1000, will define the new autoplay time 
+       * Set to true enables the autoplay using the default autoplay time (5000ms). If a number is given, multiplied * 1000, will define the new autoplay time .
        * @prop {Boolean|Number} [false] autoplay
        */
       autoPlay:{
@@ -83,7 +87,7 @@
         default: false
       },
       /**
-       * Shows the actions to start and stop autoplay
+       * Shows the actions to start and stop autoplay.
        * @prop {Boolean|String} [false] ctrl
        */
       ctrl:{
@@ -104,7 +108,7 @@
         default: false
       },
       /**
-       * Set to true hides the preview images
+       * Set to true hides the preview images.
        * @prop {Boolean} [false] autoHidePreview
        */
       autoHidePreview:{
@@ -112,7 +116,7 @@
         default: false
       },
       /**
-       * Set to true hides the arrow icons
+       * Set to true hides the arrow icons.
        * @prop {Boolean} [false] autoHideArrows
        */
       autoHideArrows:{
@@ -120,7 +124,7 @@
         default: false
       },
       /**
-       * Set to true hides the action to start and stop the autoplay
+       * Set to true hides the action to start and stop the autoplay.
        * @prop {Boolean} [false] autoHideCtrl
        */
       autoHideCtrl:{
@@ -128,7 +132,7 @@
         default: false
       },
       /**
-       * If set to true shows the slides in a loop
+       * If set to true shows the slides in a loop..
        * @prop {Boolean} [false] loop
        */
       loop:{
@@ -136,7 +140,7 @@
         default: false
       },
       /**
-       * Set to true shows the slide in the full page
+       * Set to true shows the slide in the full page.
        * @prop {Boolean} [false] fullSlide
        */
       fullSlide:{
@@ -144,7 +148,7 @@
         default: false
       },
       /**
-       * The index of the first slide to show
+       * The index of the first slide to show.
        * @prop {Number} [0] initialSlide
        */
       initialSlide:{
@@ -152,7 +156,7 @@
         default: 0
       },
       /**
-       * Set to true shows the number of the current slide and the total number of slides
+       * Set to true shows the number of the current slide and the total number of slides.
        * @prop {Boolean} [false] showCount
        */
       showCount:{
@@ -160,7 +164,7 @@
         default: false
       },
       /**
-       * Set to true shows the property info of the item
+       * Set to true shows the property info of the item.
        * @prop {Boolean} [false] showInfo
        */
       showInfo:{
@@ -168,7 +172,7 @@
         default: false
       },
       /**
-       * If the property content is given to the item, set to true insert the html content inside a scroll
+       * If the property content is given to the item, set to true insert the html content inside a scroll.
        * @prop {Boolean} [false] scroll
        */
       
@@ -245,60 +249,71 @@
       }
       return {
         /**
-         * @data {String} name
+         * @data {String} [bbn.fn.randomString().toLowerCase()] name
          */
         name: bbn.fn.randomString().toLowerCase(),
         /**
+         * The current slide index
          * @data {Number} currentIndex
          */
         currentIndex: this.initialSlide > src.length ? 0 : this.initialSlide,
         /**
+         * The array of items.
          * @data {Array} items
          */
         items: src,
         /**
-         * True if the type of the prop source is string and the prop separator is false
+         * True if the type of the prop source is string and the prop separator is false.
          * @data {Boolean} isAjax
          */
         isAjax: isAjax,
         /**
+         * The default text to show as label of the checkbox in a selectable slideshow.
          * @data {String} ['Don't show it again'] defaultTextCB
          */
         defaultTextCB: bbn._("Don't show it again"),
         /**
+         * The values of the checkbox in a selectable slideshow.
          * @data valuesCB
          */
         valuesCB: valuesCB,
         /**
+         * The active miniature.
          * @data {Number} [0] activeMiniature
          */
         activeMiniature: 0,
         /**
-         * 
+         * The default autoplay time in milliseconds.
          * @data {Number} [5000] defaultAutoPlay
          */
         defaultAutoPlay: 5000,
         /**
+         * The interval of the autoplay.
          * @data {Boolean} [false] scrollInterval
          */
         scrollInterval: false,
         /**
+         * Shows or hides the miniature.
          * @data {Boolean} [false] showMiniature
          */
         showMiniature: this.autoHidePreview ? false : true,
         /**
+         * If true shows the left arrow icon.
          * @data {Boolean} [false] showArrowLeft
          */
         showArrowLeft: this.autoHideArrows ? false : true,
         /**
+         * If true shows the right arrow icon. 
          * @data {Boolean} [false] showArrowRight
          */
         showArrowRight: this.autoHideArrows ? false : true,
         /**
+         * True shows the controller of the component.
          * @data {Boolean} [false] showCtrl
          */
         showCtrl: this.autoHideCtrl ? false : true,
-         /**
+        /**
+         * The classes of the arrow icons
          * @data {Object} [{left: 'nf nf-fa-arrow_circle_left',right: 'nf nf-fa-arrow_circle_right'}] arrowClass
          */
         arrowClass:{
@@ -306,29 +321,30 @@
           right: 'nf nf-fa-arrow_circle_right',
         },
         /**
+         * The width of the image.
          * @data {Number} [0] imageWidth
          */
         imageWidth: 0,
         /**
+         * The height of the image.
          * @data {Number} [0] imageHeight
          */
         imageHeight: 0,
         /**
+         * The margin left of the image.
          * @data {Number} [0] imageLeftMargin
          */
         imageLeftMargin: 0,
         /**
+         * The margin top of the image.
          * @data {Number} [0] imageTopMargin
          */
         imageTopMargin: 0
       }
     },
     methods: {
-      /*updateImage(ev, idx){
-        this.ratio(idx);
-      },*/
       /**
-       * Handles the resize of the component
+       * Handles the resize of the component.
        * @method onResize
        * @fires aspectRatio
        */
@@ -342,7 +358,7 @@
         }
       },
       /**
-       * Sets the property loaded to true
+       * Sets the property loaded to true.
        * @method afterLoad
        * @param {Number} idx 
        * @fires aspectRatio
@@ -352,7 +368,7 @@
         this.aspectRatio(idx);
       },
       /**
-       * Manages dimentions of the slides
+       * Adjusts the dimensions of the slides basing on the 'mode' defined for the item.
        * @method aspectRatio
        * @param {Number} idx 
        */
@@ -422,7 +438,7 @@
         });
       },
       /**
-       * Manages the slides' style
+       * Manages the slides' style.
        * @method createStyle
        */
       createStyle(){
@@ -436,9 +452,10 @@
             st += '.bbn-slideshow .slideswitch[id="' + this.name + i.toString() + '"]:target ~ #' + this.name + i.toString() + ' .' + it.animation + ' {animation-name:' + it.animation + ' !important;animation-duration: ' + (it.duration || this.duration || '0.5') + 's;' + ( it.animation === 'flip' ? 'backface-visibility: hidden;' : '')+ '}';
           }
         });
+        return st;
       },
       /**
-       * Shows the previous slide
+       * Shows the previous slide.
        * @method prev
        * @fires stopAutoPlay
        * @fires startAutoPlay
@@ -465,7 +482,7 @@
         }
       },
       /**
-       * Shows the next slide
+       * Shows the next slide.
        * @method next
        * @fires stopAutoPlay
        * @fires startAutoPlay
@@ -496,7 +513,7 @@
         }
       },
       /**
-       * Starts the autoplay of slides
+       * Starts the autoplay of slides.
        * @method startAutoPlay
        */
       startAutoPlay(){
@@ -513,7 +530,7 @@
         }, typeof(this.autoPlay) === 'number' ? this.autoPlay*1000 : this.defaultAutoPlay);
       },
        /**
-       * Stops the autoplay of slides
+       * Stops the autoplay of slides.
        * @method stopAutoPlay
        */
       stopAutoPlay(){
@@ -523,7 +540,8 @@
         }
       },
       /**
-       * Shows and hides moniatures
+       * Shows or hides miniatures.
+       * @method miniaturePreview
        * @param {Boolean} val 
        */
       miniaturePreview(val){
@@ -532,7 +550,7 @@
         }
       },
       /**
-       * Shows and hides arrows
+       * Shows or hides arrows.
        * @param {String} direction 
        * @param {Boolean} val 
        */
@@ -547,7 +565,7 @@
         }
       },
       /**
-       * Shows and hide the controller for autoplay
+       * Shows ors hides the controller for autoplay.
        * @param {Boolean} val 
        */
       ctrlPreview(val){
@@ -633,6 +651,11 @@
           this.$emit(newVal[this.currentIndex] ? 'check' : 'uncheck', this.items[this.currentIndex]);
         }
       },
+      /**
+       * @watch currentIndex
+       * @emits changeSlide
+       * @param {Number} val 
+       */
       currentIndex(val){
         this.$emit('changeSlide', val);
       }
@@ -686,6 +709,7 @@
           </div>`,
         props: {
           /**
+           * The array of items.
            * @prop {Array} [] items
            * @memberof miniature
            */
@@ -696,10 +720,11 @@
            }
          },
          /**
+          * 
           * @prop {Boolean} [true] compare
           * @memberof miniature
           */
-         comapare:{
+         compare:{
            type: Boolean,
            default: true
          },
@@ -723,9 +748,10 @@
         data(){
          return {
            /**
+            * The parent component bbn-slideshow
             * @data {Vue} mainComponent
             */
-           mainComponent: bbn.vue.closest(this, 'bbn-slideshow2')
+           mainComponent: bbn.vue.closest(this, 'bbn-slideshow')
 
          }
        },

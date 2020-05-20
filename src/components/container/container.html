@@ -8,6 +8,7 @@
     <component :is="scrollable ? 'bbn-scroll' : 'div'"
                v-if="ready && isLoaded && (visible || cached)"
                v-show="visible"
+               :axis="scrollable ? 'y' : null"
                :class="{
                 'bbn-overlay': !fullScreen,
                 'bbn-container-full-screen': fullScreen,

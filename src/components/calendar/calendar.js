@@ -19,6 +19,10 @@
     */
     mixins: [bbn.vue.basicComponent, bbn.vue.listComponent, bbn.vue.resizerComponent],
     props: {
+      /**
+       * Auto-loads the data at mount of the component if it's set as "true".
+       * @prop {Boolean} [false] autobind
+      */
       autobind: {
         type: Boolean,
         default: false
@@ -653,6 +657,9 @@
        * Called to the component mounted setting currentDate at max or min.
        *
        * @method create
+       * @fires init
+       * @fires setTitle
+       * @fires updateData
        */
       create(){
         if ( !this.ready ){
@@ -708,7 +715,10 @@
        *
        * @method init
        * @fires currentCfg.make
+       * @fires makeEvents
+       * @fires setTitle
        * @fires setLabels
+       * @emits input
        */
       init(){
         if ( this.currentCfg && bbn.fn.isFunction(this.currentCfg.make) ){
@@ -729,6 +739,7 @@
        * Filters the events.
        *
        * @method filterEvents
+       * @param {String} v
        * @return {Array}
       */
       filterEvents(v){
@@ -767,6 +778,7 @@
        * Refreshes the data
        *
        * @method refresh
+       * @param {Boolean} force
        * @fires updateData
        * @fires init
        * @emits dataLoad
@@ -789,6 +801,7 @@
        * Changes the current calendar view to the next period.
        *
        * @method next
+       * @param {Boolean} skip
        * @fires refresh
        * @emits next
       */
@@ -814,6 +827,7 @@
        * Changes the current calendar view to the previous period.
        *
        * @method prev
+       * @param {Boolean} skip
        * @fires refresh
        * @emits prev
       */
@@ -839,7 +853,7 @@
        * Changes the current value after a selection.
        *
        * @method select
-       * @param {String} day The selected day
+       * @param {String} val The selected day
        * @param {Boolean} [undefined] notEmit If true, the 'selected' emit will not be performed
        * @emits input
        * @emits selected
@@ -889,6 +903,7 @@
        * Sets the labels.
        *
        * @method setLabels
+       * @param {Array} d
        * @fires getLabelsFormat
       */
       setLabels(d){
@@ -902,7 +917,7 @@
         }
       },
       /**
-       * Handles the resize. 
+       * Handles the resize.
        *
        * @method onResize
        * @fires setLabels
@@ -924,9 +939,7 @@
     },
     /**
      * @event mounted
-     * @fires updateData
-     * @fires init
-     * @emits dataLoaded
+     * @fires create
     */
     mounted(){
       this.create();
@@ -934,7 +947,7 @@
     watch: {
       /**
        * @watch type
-       * @fires init
+       * @fires create
       */
       type(newVal){
         this.ready = false;

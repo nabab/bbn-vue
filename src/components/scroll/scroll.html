@@ -1,10 +1,11 @@
 <div :class="elementClass"
      :style="elementStyle"
-     @scroll.prevent
 >
   <div :class="{'bbn-scroll-container': scrollable, 'bbn-overlay': !isMeasuring && !scrollable}"
        ref="scrollContainer"
-       @scroll.passive="onScroll"
+       @scroll="onScroll"
+       tabindex="0"
+       :style="{overflow: isScrolling ? 'hidden' : 'scroll'}"
   >
     <div :class="{'bbn-scroll-content': !isMeasuring, 'bbn-overlay': !scrollable}"
          ref="scrollContent"

@@ -1,4 +1,10 @@
-<div class="bbn-appui bbn-observer bbn-overlay"
+<div :class="{
+      'bbn-appui': true,
+      'bbn-observer': true,
+      'bbn-overlay': true,
+      'bbn-mobile': isMobile,
+      'bbn-desktop': !isMobile
+     }"
      :style="{opacity: opacity}">
   <div v-if="!cool"
        class="bbn-middle bbn-xl"
@@ -122,12 +128,15 @@
                   :storage="!!nav"
                   :observer="true"
                   :menu="tabMenu"
+                  :single="single"
+                  :post-base-url="!single"
                   ref="nav"
                   :nav="nav"
                   :master="true"
                   :class="{'bbn-overlay': !nav}"
                   :url="!!nav ? undefined : url"
                   @route="onRoute"
+                  @change="$emit('change', $event)"
       >
         <slot></slot>
       </bbn-router>

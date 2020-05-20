@@ -1,5 +1,5 @@
 /**
- * @file button.js
+ * @file bbn-button component
  *
  * @description bbn-button is a component represents the button with the possibility of extensive customizations.
  *
@@ -80,7 +80,7 @@
       /**
        * If defined the prop secondary, defines the color of the second icon of the button.
        *
-       * @prop {String} secondaryColor
+       * @prop {String} [null] secondaryColor
        */
       secondaryColor: {
         type: String,
@@ -89,7 +89,7 @@
       /**
        * Specifies the type of button.
        *
-       * @prop {String} type
+       * @prop {String} ['button'] type
        */
       type: {
         type: String,
@@ -116,7 +116,7 @@
       /**
        * State the button's glowing colour.
        *
-       * @prop {String} [#c4a300] glowingColor
+       * @prop {String} ['#c4a300'] glowingColor
        */
       glowingColor: {
         type: String,
@@ -152,6 +152,7 @@
        * Return if the button is disabled.
        *
        * @computed isDisabled
+       * @fires disabled
        * @return {Boolean}
        */
       isDisabled(){
@@ -164,6 +165,8 @@
        * The role of the button when clicked.
        *
        * @method click
+       * @param {Event} e
+       * @fires action
        * @emit click
        */
       click(e){
