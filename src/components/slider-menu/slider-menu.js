@@ -80,8 +80,8 @@
           sel += a + '.' + this.children;
           let tmp = bbn.fn.getProperty(this.source, sel);
           bbn.fn.log(sel, tmp);
+          list = tmp
           if (tmp && tmp.length ) {
-            list = tmp
             depth++;
             res.push({
               data: list,
@@ -90,6 +90,11 @@
               last: i === this.currentSelected.length - 1,
               depth: depth
             });
+          }
+          else {
+            res[res.length-1].visible = true;
+            res[res.length-1].selected = true;
+            res[res.length-1].last = true;
           }
         });
         if (list && list.length) {
@@ -115,7 +120,7 @@
         }
         this.maxDepth = depth;
         return res;
-      },
+      }
     },
     methods: {
       getStyle(item){
@@ -146,11 +151,14 @@
        * @emits select
        */
       select(itemIdx, dataIdx){
-        bbn.fn.log("SELE", this.items[itemIdx], this.maxDepth);
+        bbn.fn.log("SELE", dataIdx, this.items[itemIdx], this.maxDepth);
         if ((this.items[itemIdx].depth < this.maxDepth) && this.items[itemIdx].data && this.items[itemIdx].data.length) {
           this.currentSelected.push(dataIdx)
+          this.selectedIndex = false;
         }
-        this.selectedIndex = dataIdx;
+        else {
+          this.selectedIndex = dataIdx;
+        }
         this.$emit('select', this.items[itemIdx].data[dataIdx]);
       },
       unselect(){

@@ -251,7 +251,9 @@
        * @method unsetEvents
        */
       unsetEvents(){
-        this.widget.off('color:change');
+        if (this.widget) {
+          this.widget.off('color:change');
+        }
       },
       /**
        * Destroys the widget.
@@ -259,9 +261,11 @@
        * @fires unsetEvents
        */
       destroy(){
-        this.unsetEvents();
-        this.widget.base.remove();
-        this.widget = false;
+        if (this.widget) {
+          this.unsetEvents();
+          this.widget.base.remove();
+          this.widget = false;
+        }
       },
       /**
        * Empties the current calue.

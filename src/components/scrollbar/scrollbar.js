@@ -336,7 +336,7 @@
             a[prop] = this.containerPos;
           });
           if ( this.scroller ){
-            this.scroller.onScroll();
+            //this.scroller.onScroll();
           }
           else{
             let e = new Event('scroll');
