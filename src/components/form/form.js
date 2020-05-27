@@ -672,20 +672,30 @@
         this.dirty = this.isModified();
       },
       focusFirst(fromLast){
-        let cp = this.getRef('container');
-        if (cp.scrollable) {
-          cp = cp.$el;
+        let ele = this.getRef('container');
+        if (this.scrollable) {
+          ele = ele.$el;
         }
-        if (cp) {
+        if (ele) {
           let focusable = false;
-          bbn.fn.each(cp.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"]'), (a) => {
-            if (a.offsetHeight && a.offsetWidth && !a.disabled && !a.classList.contains('bbn-no')) {
-              focusable = a;
-              if (!fromLast) {
+          let all = ele.querySelectorAll('button, [href], input, select, .bbn-checkbox-label, textarea, [tabindex]:not([tabindex="-1"]');
+          if (fromLast) {
+            bbn.fn.forir(all, (a) => {
+              if (a.offsetHeight && a.offsetWidth && !a.disabled && !a.classList.contains('bbn-no')) {
+                focusable = a;
                 return false;
               }
-            }
-          });
+            })
+          }
+          else {
+            bbn.fn.each(all, (a) => {
+              if (a.offsetHeight && a.offsetWidth && !a.disabled && !a.classList.contains('bbn-no')) {
+                bbn.fn.log(a);
+                focusable = a;
+                return false;
+              }
+            });
+          }
           if ( focusable ){
             focusable.focus();
           }

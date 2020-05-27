@@ -6,7 +6,11 @@
       @mouseenter="inSlider"
       @mouseleave="outSlider"
 >
-  <div class="bbn-scroll-slider bbn-primary"
+  <div :class="{
+        'bbn-scroll-slider': true,
+        'bbn-primary': true,
+        'bbn-scroll-not-dragged': !dragging
+  }"
         :style="sliderStyle"
         ref="scrollSlider"
         @touchstart="startDrag"

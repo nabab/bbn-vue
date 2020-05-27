@@ -34,8 +34,7 @@
       scroller: {
         type: Vue,
         default(){
-          let tmp = bbn.vue.closest(this, 'bbn-scroll');
-          return tmp ? tmp : null;
+          return this.$parent.$options._componentTag === 'bbn-scroll' ? this.$parent : null;
         }
       },
       /**
@@ -212,9 +211,11 @@
       barStyle(){
         let res = {};
         res.opacity = this.show && this.shouldBother ? 1 : 0;
+        /*
         if ( this.shouldBother ){
           res[this.isVertical ? 'height' : 'width'] = this.containerSize + 'px';
         }
+        */
         return res;
       },
       /**
@@ -309,13 +310,25 @@
        * @param {Vue} container 
        */
       adjustFromContainer(container){
-        if ( this.shouldBother && container ){
+        if (this.shouldBother && !this.dragging) {
           let prop = this.isVertical ? 'scrollTop' : 'scrollLeft';
-          this.containerPos = container[prop];
+          let ok = false;
+          if (!container) {
+            container = this.realContainer;
+            if (this.scroller) {
+              this.containerPos = this.scroller['current' + (this.isVertical ? 'Y' : 'X')];
+              ok = true;
+            }
+          }
+          if (!ok) {
+            this.containerPos = container[prop];
+          }
           this.sliderPos = this.containerPos * this.ratio;
+          /*
           if ( container !== this.realContainer ){
             this.realContainer[prop] = this.containerPos;
           }
+          */
           bbn.fn.each(this.scrollableElements(), (a) => {
             if ( a !== container ){
               a[prop] = this.containerPos;
@@ -335,13 +348,8 @@
           bbn.fn.each(this.scrollableElements(), (a) => {
             a[prop] = this.containerPos;
           });
-          if ( this.scroller ){
-            //this.scroller.onScroll();
-          }
-          else{
-            let e = new Event('scroll');
-            this.$emit('scroll', e, this.containerPos);
-          }
+          let e = new Event('scroll');
+          this.$emit('scroll' + (this.isVertical ? 'y' : 'x'), e, this.containerPos);
         }
       },
 
@@ -458,22 +466,35 @@
        */
       onResize(){
         if ( this.realContainer ){
-          let tmp1 = this.isVertical ? this.realContainer.clientHeight : this.realContainer.clientWidth,
-              tmp2 = this.realContainer.children[0] ? this.realContainer.children[0][this.isVertical ? 'clientHeight' : 'clientWidth'] : this.containerSize;
+          let tmp1,
+              tmp2;
+          if (this.scroller) {
+            tmp1 = this.scroller[this.isVertical ? 'containerHeight' : 'containerWidth'];
+            tmp2 = this.scroller[this.isVertical ? 'contentHeight' : 'contentWidth'];
+          }
+          else {
+            tmp1 = this.isVertical ? this.realContainer.clientHeight : this.realContainer.clientWidth;
+            tmp2 = this.realContainer[this.isVertical ? 'scrollHeight' : 'scrollWidth'] || tmp1;
+          }
           if ( tmp1 < 20 ){
             this.containerSize = 0;
             this.contentSize = 0;
             this.size = 0;
+            this.isActive = false;
             return;
           }
           if ( (tmp1 !== this.containerSize) || (tmp2 !== this.contentSize) ){
-            this.containerSize = tmp1 > 0 ? tmp1 : 0;
-            this.contentSize = tmp2 > 0 ? tmp2 : 0;
-            this.isActive = this.contentSize > this.containerSize + 2;
+            this.containerSize = tmp1 || 0;
+            this.contentSize = tmp2 || 0;
           }
+          this.isActive = this.contentSize > this.containerSize + 2;
         }
         else{
+          this.isActive = false;
           this.initContainer();
+          if (this.realContainer) {
+            this.onResize();
+          }
         }
       },
 
@@ -491,14 +512,14 @@
             this.scroller.$on("resize", this.onResize);
             this.scrollTo(this.initial);
             this.scroller.$on("scroll", () => {
-              this.adjustFromContainer(this.realContainer)
+              this.adjustFromContainer()
             });
             this.scroller.$on("mousemove", this.overContent);
           }
           else{
             this.realContainer.addEventListener("mousemove", this.overContent);
             this.realContainer.addEventListener('scroll', () => {
-              this.adjustFromContainer(this.realContainer);
+              this.adjustFromContainer();
             }, {passive: true});
           }
           bbn.fn.each(this.scrollableElements(), (a) => {
@@ -522,7 +543,7 @@
           }
           this.moveTimeout = setTimeout(() => {
             this.hideSlider();
-          }, 100);
+          }, 500);
         }, 'overContent')
       },
 
@@ -531,7 +552,7 @@
        * @method inSlider
        */
       inSlider(){
-        if ( !this.isOverSlider ){
+        if ( !this.isOverSlider && !this.dragging){
           this.isOverSlider = true;
           this.showSlider();
         }
@@ -543,7 +564,7 @@
        * @fires overContent
        */
       outSlider(){
-        if ( this.isOverSlider ){
+        if ( !this.isOverSlider && !this.dragging){
           this.isOverSlider = false;
           this.overContent();
         }
@@ -631,9 +652,8 @@
               num = this.contentSize - this.containerSize;
             }
             this.realContainer['scroll' + (this.isVertical ? 'Top' : 'Left')] = num;
-            setTimeout(() => {
-              this.adjustFromContainer();
-            }, 1000)
+            this.containerPos = num;
+            this.sliderPos = this.containerPos * this.ratio;
           }
         }
       },
@@ -678,6 +698,11 @@
        */
       sliderPos(){
         this.showSlider();
+      },
+      dragging(v) {
+        if (this.scroller) {
+          this.scroller.isDragging = v
+        }
       }
     },
     /**

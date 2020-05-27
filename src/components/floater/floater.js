@@ -166,7 +166,7 @@
        */
       latency: {
         type: Number,
-        default: 50
+        default: 100
       },
       onOpen: {
         type: Function
@@ -516,13 +516,12 @@
             this.updateComponents();
             if (nb !== this.mountedComponents.length) {
               sc.initSize();
-              this.isResized = true;
             }
             else{
               this.onResize();
             }
           }
-        }, this.latency + 10);
+        }, 10);
       },
       addClose(fn){
         for ( let i = 0; i < arguments.length; i++ ){
@@ -549,7 +548,7 @@
        */
       onResize(force) {
         // Should be triggered by the inner scroll once mounted
-        if (this.isResized && this.isVisible && bbn.fn.isDom(this.$el) && !this.isResizing) {
+        if (this.isVisible && bbn.fn.isDom(this.$el) && !this.isResizing) {
           if ( !this.ready ){
             this.init();
             this.ready = true;
@@ -557,7 +556,7 @@
           this.isResizing = true;
           // Resetting
           let scroll = this.getRef('scroll');
-          if (!scroll || !scroll.ready || (!scroll.naturalHeight && !this.height) || (!scroll.naturalWidth && !this.width)) {
+          if (!scroll || !scroll.ready){
             return new Promise((resolve) => {
               setTimeout(() => {
                 this.isResizing = false;
@@ -565,20 +564,22 @@
               }, 1);
             });
           }
-          let oldWidth = this.realWidth;
-          let oldHeight = this.realHeight;
-          let oldContainerWidth = this.containerWidth;
-          let oldContainerHeight = this.containerHeight;
-          let oldScrollWidth = scroll.naturalWidth;
-          let oldScrollHeight = scroll.naturalHeight;
-          this.realHeight = null;
-          this.realWidth = null;
-          this.scrollHeight = null;
-          this.scrollWidth = null;
-          this.currentScroll = false;
-          this.$forceUpdate();
-          return new Promise((resolve) => {
-            this.$nextTick(() => {
+          return this.keepCool(() => {
+            let oldWidth = this.realWidth;
+            let oldHeight = this.realHeight;
+            let oldContainerWidth = this.containerWidth;
+            let oldContainerHeight = this.containerHeight;
+            let oldScrollWidth = scroll.naturalWidth;
+            let oldScrollHeight = scroll.naturalHeight;
+            this.realHeight = null;
+            this.realWidth = null;
+            this.scrollHeight = null;
+            this.scrollWidth = null;
+            this.currentScroll = false;
+            this.$forceUpdate();
+            this.$nextTick().then(() => {
+              return scroll.getNaturalDimensions()
+            }).then(() => {
               // These are the limits of the space the DIV can occupy
               let pos = this.getContainerPosition();
               this.containerWidth = pos.width;
@@ -593,13 +594,12 @@
                 this.realHeight = oldHeight;
                 this.realWidth = oldWidth;
                 this.isResizing = false;
-                resolve();
                 return;
               }
               let outHeight = 0;
               let currentWidth = this.currentWidth || scroll.naturalWidth;
               let currentHeight = this.currentHeight || 0;
-              let scrollHeight = currentHeight ? 0 : scroll.naturalHeight;
+              let scrollHeight = currentHeight || scroll.naturalHeight;
               if (this.title) {
                 let header = this.getRef('header');
                 if (header) {
@@ -755,7 +755,6 @@
                 }
                 this.currentLeft = left + 'px';
                 this.currentTop = top + 'px';
-                resolve();
                 this.isResizing = false;
                 this.$nextTick(() => {
                   this.setResizeMeasures();
@@ -763,10 +762,13 @@
                     //bbn.fn.log("SCROLLER EXSISTS");
                     scroll.setResizeMeasures();
                   }
+                  if (!this.isResized) {
+                    this.isResized = true                  
+                  }
                 });
               });
             });
-          });
+          }, 'onResize', this.latency);
         }
       },
       //@todo not used
@@ -1039,7 +1041,6 @@
         if (v) {
           this.onResize();
         }
-
       },
       /**
        * @watch element

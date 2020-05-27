@@ -52,17 +52,17 @@
           ></bbn-tabs>
         </div>
         <div v-if="master && showSwitch"
-             class="bbn-middle bbn-router-switch bbn-header bbn-no-border-top bbn-no-border-left"
+             class="bbn-c bbn-router-switch bbn-no-border-top bbn-no-border-left"
         >
           <bbn-context :source="mainMenu"
                         tag="div"
                         min-width="10em"
                         tabindex="0"
                         ref="mainMenu"
-                        class="bbn-middle"
+                        class="bbn-w-100 bbn-c"
           >
             <span v-if="isLoading" class="bbn-router-loading"></span>
-            <i v-else class="nf nf-seti-config bbn-p bbn-large"></i>
+            <i v-else class="nf nf-fa-cog bbn-p bbn-large"></i>
           </bbn-context>
         </div>
       </div>

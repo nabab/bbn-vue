@@ -10,7 +10,7 @@
   * @created 10/02/2017
   */
 
-(function(bbn){
+ (function(bbn){
   "use strict";
   Vue.component('bbn-scroll', {
     name: 'bbn-scroll',
@@ -290,36 +290,45 @@
         this.isMeasuring = true;
         return new Promise((resolve, reject) => {
           this.$nextTick().then(() => {
+            let sc = this.find('bbn-scroll');
             if (this.scrollable) {
-              let d = {width: this.getRef('scrollContent').clientWidth, height: this.getRef('scrollContent').clientHeight};
+              let d = {width: this.getRef('scrollContent').offsetWidth, height: this.getRef('scrollContent').offsetHeight};
               if ( !d.width || !d.height ){
-                let sc = this.find('bbn-scroll');
-                if ( sc ){
+                if (sc && (sc.$el.clientWidth === this.$el.clientWidth) && (sc.$el.clientHeight === this.$el.clientHeight)) {
                   sc.getNaturalDimensions().then((d) => {
                     this.naturalWidth = sc.naturalWidth;
                     this.naturalHeight = sc.naturalHeight;
                     this.isMeasuring = false;
-                    resolve(d);
+                    resolve({w: this.naturalWidth, h: this.naturalHeight});
                   })
                 }
                 else{
                   this.isMeasuring = false;
-                  resolve(d);
+                  this.naturalWidth = this.$el.offsetWidth;
+                  this.naturalHeight = this.$el.offsetHeight;
+                  resolve({w: this.naturalWidth, h: this.naturalHeight});
                 }
               }
               else{
                 this.naturalWidth = d.width;
                 this.naturalHeight = d.height;
                 this.isMeasuring = false;
-                resolve(d);
+                resolve({w: this.naturalWidth, h: this.naturalHeight});
               }
             }
+            else if (sc && (sc.$el.clientWidth === this.$el.clientWidth) && (sc.$el.clientHeight === this.$el.clientHeight)) {
+              sc.getNaturalDimensions().then((d) => {
+                this.naturalWidth = sc.naturalWidth;
+                this.naturalHeight = sc.naturalHeight;
+                this.isMeasuring = false;
+                resolve({w: this.naturalWidth, h: this.naturalHeight});
+              })
+            }
             else{
-              let p = this.$el.offsetParent || this.$el.parentNode;
-              this.naturalWidth = p.clientWidth;
-              this.naturalHeight = p.clientHeight;
               this.isMeasuring = false;
-              resolve({width: this.naturalWidth, height: this.naturalHeight});
+              this.naturalWidth = this.$el.offsetWidth;
+              this.naturalHeight = this.$el.offsetHeight;
+              resolve({w: this.naturalWidth, h: this.naturalHeight});
             }
           });
         });
@@ -365,7 +374,6 @@
         let y = ct.scrollTop;
         if ( this.hasScrollY && (y !== this.currentY)) {
           if (this.fullPage) {
-            bbn.fn.log("Scrollibng fp");
             this.isScrolling = true;
             setTimeout(() => {
               this.isScrolling = false;
@@ -478,10 +486,10 @@
         return this.keepCool(() => {
           let container = this.$el;
           let content = this.getRef('scrollContent');
-          let containerWidth = container.clientWidth;
-          let containerHeight = container.clientHeight;
-          let contentWidth = content.scrollWidth || content.clientWidth;
-          let contentHeight = content.scrollHeight || content.clientHeight;
+          let containerWidth = container.offsetWidth;
+          let containerHeight = container.offsetHeight;
+          let contentWidth = content.scrollWidth || content.offsetWidth;
+          let contentHeight = content.scrollHeight || content.offsetHeight;
           if ( this.naturalWidth && (this.naturalWidth < this.contentWidth) ) {
             this.contentWidth = this.naturalWidth;
           }
@@ -529,7 +537,7 @@
           }
           this.$emit('resize');
           this.setResizeMeasures();
-        }, 'onResize', 250);
+        }, 'onResize', 50);
       },
       /**
        * @method scrollStart
