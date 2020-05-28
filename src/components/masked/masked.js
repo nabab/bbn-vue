@@ -117,11 +117,19 @@
        * @returns {Array}
       */
       escapePos(){
+        if (!this.mask) {
+          return [];
+        }
         let exp = Object.keys(this.patterns).map(p => {
               return this.escape.repeat(p === '?' ? 4 : 2) + p
             }).join('|'),
-            reg = new RegExp(exp, 'g')
-        return [...this.mask.matchAll(reg)].map(e => e.index)
+            reg = new RegExp(exp, 'gu'),
+            res = [],
+            match;
+        while (match = reg.exec(this.mask)) {
+          res.push(match.index);
+        }
+        return res;
       },
       /** 
        * The list of banned positions in the mask.

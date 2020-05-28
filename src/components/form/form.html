@@ -8,7 +8,7 @@
       @keydown.enter.prevent.stop="submit"
       @keyup.esc="cancel"
 >
-  <div :class="[{'bbn-flex-fill': scrollable || !!fullSize, 'bbn-w-100': scrollable, 'bbn-flex-height': !scrollable && hasFooter}]"
+  <div :class="[{'bbn-flex-fill': isInit && scrollable || !!fullSize, 'bbn-w-100': scrollable, 'bbn-flex-height': !scrollable && hasFooter}]"
   >
     <component :is="scrollable ? 'bbn-scroll' : 'div'"
                :class="{

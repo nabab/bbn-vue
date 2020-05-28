@@ -253,7 +253,7 @@
        * @returns {Boolean}
        */
       isVisible(){
-        return (this.hidden !== true) && this.isActive;
+        return (this.hidden !== true) && ((this.scroller && this.scroller.isFocused) || this.isActive);
       },
     },
     methods: {

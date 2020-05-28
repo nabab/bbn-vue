@@ -292,23 +292,26 @@
       },
 
       notify(obj, type, timeout){
-        return this.$refs.notification.add(type, obj, timeout);
+        let notification = this.getRef('notification');
+        if (notification) {
+          return notification.show(obj, type, timeout);
+        }
       },
 
       error(obj, timeout){
-        return this.$refs.notification.error(obj, timeout);
+        return this.notify(obj, "error", timeout);
       },
 
       warning(obj, timeout){
-        return this.$refs.notification.warning(obj, timeout);
+        return this.notify(obj, "warning", timeout);
       },
 
       success(obj, timeout){
-        return this.$refs.notification.success(obj, timeout);
+        return this.notify(obj, "success", timeout || 5);
       },
 
       info(obj, timeout){
-        return this.$refs.notification.info(obj, timeout);
+        return this.notify(obj, "info", timeout || 30);
       },
 
       confirm(){

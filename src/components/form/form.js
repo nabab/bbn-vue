@@ -678,7 +678,7 @@
         }
         if (ele) {
           let focusable = false;
-          let all = ele.querySelectorAll('button, [href], input, select, .bbn-checkbox-label, textarea, [tabindex]:not([tabindex="-1"]');
+          let all = ele.querySelectorAll('button, [href], input, select, .bbn-checkbox-label, textarea, [tabindex]:not([tabindex="-1"])');
           if (fromLast) {
             bbn.fn.forir(all, (a) => {
               if (a.offsetHeight && a.offsetWidth && !a.disabled && !a.classList.contains('bbn-no')) {

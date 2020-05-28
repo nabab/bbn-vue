@@ -1,6 +1,7 @@
 <div :class="{
       'bbn-appui': true,
       'bbn-observer': true,
+      'bbn-background': true,
       'bbn-overlay': true,
       'bbn-mobile': isMobile,
       'bbn-desktop': !isMobile
@@ -10,18 +11,13 @@
        class="bbn-middle bbn-xl"
        v-text="_('Appui is already defined') + '... :('">
   </div>
-  <bbn-splitter v-else-if="ready"
-                orientation="vertical"
-                ref="splitter">
+  <div class="bbn-flex-height" v-else-if="ready">
     <!-- HEADER -->
-    <bbn-pane v-if="header"
-              :size="50"
-              :scrollable="false"
-              ref="head"
-              overflow="visible">
+    <div v-if="header"
+         class="bbn-w-100"
+         style="overflow: visible">
       <div :class="{
         'bbn-header': true,
-        'bbn-100': true,
         'bbn-flex-width': true,
         'bbn-unselectable': true,
         'bbn-no-border': true,
@@ -40,17 +36,6 @@
         <!-- SEARCHBAR -->
         <div class="bbn-abs bbn-h-100 bbn-vspadded"
              style="left: 50px; right: 140px; top: auto">
-          <!--<bbn-search source="adherents"
-                      :placeholder="searchBar.placeholderFocused"
-                      ref="search"
-                      @select="searchBar.select"
-                      component="apst-search-item"
-                      v-model="searchBar.value"
-                      :source-value="searchBar.sourceValue"
-                      :source-text="searchBar.sourceText"
-                      :min-length="searchBar.minLength"
-          >
-          </bbn-search>-->
           <bbn-search :source="searchBar.source"
                       :placeholder="searchBar.placeholderFocused"
                       ref="search"
@@ -83,13 +68,12 @@
                        :fixed-right="rightShortcuts">
           </bbn-fisheye>
           <div v-else>
-            Not a menu
           </div>
         </div>
         <!-- LOGO -->
-        <div class="bbn-block bbn-h-100 bbn-logo-container" style="width: 140px">
+        <div class="bbn-block bbn-logo-container" style="max-width: 25%; min-height: 100%; width: 10em">
           <div class="apst-logo bbn-100 bbn-r">
-            <img :src="logo + '?t=2'" border="0" class="bbn-h-100 bbn-right-space">
+            <img :src="logo + '?t=2'" style="border: 0; max-height: 100%; max-width: 100%; width: auto;" class="bbn-right-space">
           </div>
         </div>
         <!-- DEBUGGER? -->
@@ -112,9 +96,9 @@
           <h2>Debug...</h2>
         </div>
       </div>
-    </bbn-pane>
+    </div>
     <!-- MAIN -->
-    <bbn-pane ref="main">
+    <div class="bbn-flex-fill">
       <!--bbn-split-tabs v-if="tabnav"
                       orientation="horizontal"
                       ref="tabnav"
@@ -140,14 +124,12 @@
       >
         <slot></slot>
       </bbn-router>
-    </bbn-pane>
+    </div>
     <!-- STATUS -->
-    <bbn-pane v-if="status"
-              :size="25"
-              :scrollable="false"
+    <div v-if="status"
               ref="foot"
               class="bbn-header bbn-bordered-top"
-              overflow="visible">
+              style="overflow: visible">
       <div class="bbn-flex-width bbn-h-100">
         <!-- LOADBAR -->
         <div class="bbn-flex-fill bbn-h-100 bbn-right-space">
@@ -186,8 +168,8 @@
                  @drop.prevent.stop="getRef('clipboard').copy($event); getRef('clipboard').show()">
         </div>
       </div>
-    </bbn-pane>
-  </bbn-splitter>
+    </div>
+  </div>
   <!-- TREEMENU -->
   <bbn-slider v-if="plugins['appui-menu']"
               orientation="left"

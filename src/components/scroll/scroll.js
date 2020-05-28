@@ -228,7 +228,9 @@
          */
         hasScrollY: false,
         promise: false,
-        isScrolling: false
+        isScrolling: false,
+        isDragging: false,
+        isFocused: false
       };
     },
     computed: {
@@ -344,7 +346,13 @@
        * @emits scroll
        */
       onScroll(e){
-        if ((this.scrollable === false) || this.isScrolling) {
+        if (!this.ready || (this.scrollable === false)) {
+          return;
+        }
+        if (this.isScrolling) {
+          if (e && e.preventDefault) {
+            e.preventDefault();
+          }
           return;
         }
         let ct = this.getRef('scrollContainer');
@@ -354,14 +362,16 @@
             this.isScrolling = true;
             setTimeout(() => {
               this.isScrolling = false;
-            }, 1000);
+            }, bbn.fn.isMobile() ? 2000 : 1000);
             if (x > this.currentX) {
               x = this.currentX + ct.clientWidth;
             }
-            else{
+            else if (x < this.currentX) {
               x = this.currentX - ct.clientWidth;
             }
-            this.$refs.xScroller.scrollTo(x);
+            if ((x != this.currentX) && this.$refs.xScroller) {
+              this.$refs.xScroller.scrollTo(x);
+            }
           }
           this.currentX = x;
           if (!x) {
@@ -377,14 +387,16 @@
             this.isScrolling = true;
             setTimeout(() => {
               this.isScrolling = false;
-            }, 1000);
+            }, bbn.fn.isMobile() ? 3000 : 1000);
             if (y > this.currentY) {
               y = this.currentY + ct.clientHeight;
             }
-            else{
+            else if (y < this.currentY) {
               y = this.currentY - ct.clientHeight;
             }
-            this.$refs.yScroller.scrollTo(y);
+            if ((y != this.currentY) && this.$refs.yScroller) {
+              this.$refs.yScroller.scrollTo(y);
+            }
           }
           this.currentY = y;
           if (!y) {
@@ -537,7 +549,7 @@
           }
           this.$emit('resize');
           this.setResizeMeasures();
-        }, 'onResize', 50);
+        }, 'onResize', this.latency);
       },
       /**
        * @method scrollStart
