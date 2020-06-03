@@ -7,7 +7,7 @@
            @mousedown.prevent.stop="() => {return false}"
 >
   <slot></slot>
-  <bbn-floater :element="$el"
+  <bbn-floater :element="attach || $el"
                :source="filteredData"
                :width="width"
                :height="height"

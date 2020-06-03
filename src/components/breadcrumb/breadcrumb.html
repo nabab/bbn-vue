@@ -14,6 +14,7 @@
                    tabindex="0"
                    :item-component="$options.components.listItem"
                    :class="{'bbn-breadcrumb-dirty': isNumber(selected) && source[selected] && !!source[selected].dirty}"
+                   :attach="$el"
       >
         <bbn-context :source="getMenuFn"
                      :source-index="isNumber(selected) ? selected : undefined"
@@ -44,6 +45,7 @@
                      tabindex="0"
                      :item-component="$options.components.listItem"
                      :class="{'bbn-breadcrumb-dirty': isNumber(sn.selected) && sn.source[sn.selected] && !!sn.source[sn.selected].dirty}"
+                     :attach="$el"
         >
           <bbn-context :source="sn.getMenuFn"
                        :source-index="isNumber(sn.selected) ? sn.selected : undefined"

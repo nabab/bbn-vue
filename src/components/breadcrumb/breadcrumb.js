@@ -108,7 +108,8 @@
          * A list of all sub-breadcrumbs
          * @data {Array} [[]] allSubBreadcrumbs
          */
-        allSubBreadcrumbs: []
+        allSubBreadcrumbs: [],
+        parent: false
       }
     },
     computed: {
@@ -162,7 +163,7 @@
         let ret = [],
             // a way to force this computed to update itself
             sbcs = this.allSubBreadcrumbs;
-        if ( this.router && bbn.fn.isNumber(this.router.selected) ){
+        /* if ( this.router && bbn.fn.isNumber(this.router.selected) ){
           let url = this.router.views[this.router.selected].url;
           if ( this.router.urls[url] && this.subBreadcrumbs[url] ){
             ret.push(this.subBreadcrumbs[url]);
@@ -171,7 +172,8 @@
             }
           }
         }
-        return ret;
+        return ret; */
+        return this.getCurrents(this.router.selected);
       },
       /**
        * Returns the background color used for the main bar.
@@ -228,6 +230,19 @@
             this.itsMaster.allSubBreadcrumbs.splice(idx2, 1);
           }
         }
+      },
+      getCurrents(idx){
+        let ret = [];
+        if ( this.router && bbn.fn.isNumber(idx) ){
+          let url = this.router.views[idx].url;
+          if ( this.router.urls[url] && this.subBreadcrumbs[url] ){
+            ret.push(this.subBreadcrumbs[url]);
+            if ( this.subBreadcrumbs[url].currents.length ){
+              ret.push(...this.subBreadcrumbs[url].currents);
+            }
+          }
+        }
+        return ret;
       },
       /**
        * @method getMenuFn
@@ -305,10 +320,61 @@
           bc = this;
         }
         bbn.fn.each(bc.source, (t, i) => {
-          if ( !t.hidden ){
+          let title = '',
+              sub = bc.getCurrents(i);
+          if ( bc !== bc.itsMaster ){
+            bbn.fn.each(this.getParents(), p => {
+              let style = ''
+              if ( p.source[p.selected].bcolor ){
+                style += `background-color: ${p.source[p.selected].bcolor};`;
+              }
+              if ( p.source[p.selected].fcolor ){
+                style += `color: ${p.source[p.selected].fcolor};`;
+              }
+              title += `
+                <span style="${style}" class="bbn-hxspadded">
+                  ${p.source[p.selected].icon ? '<i class="' + p.source[p.selected].icon + '"></i>' : ''}
+                  <span>` + p.source[p.selected].title || bbn._('Untitled') + `</span>
+                </span>
+                <i class="nf nf-fa-angle_right bbn-hsmargin bbn-large"></i>`;
+            });
+          }
+          let style = ''
+          if ( t.bcolor ){
+            style += `background-color: ${t.bcolor};`;
+          }
+          if ( t.fcolor ){
+            style += `color: ${t.fcolor};`;
+          }
+          title += `
+            <span style="${style}" class="bbn-hxspadded">
+              ${t.icon ? '<i class="' + t.icon + '"></i>' : ''}
+              <span>` + t.title || bbn._('Untitled') + `</span>
+            </span>`;
+          if ( sub.length ){
+            bbn.fn.each(sub, (s, k) => {
+              if ( bbn.fn.isNumber(s.selected) && s.source[s.selected] ){
+                let style = '';
+                if ( s.source[s.selected].bcolor ){
+                  style += `background-color: ${s.source[s.selected].bcolor};`;
+                }
+                if ( s.source[s.selected].fcolor ){
+                  style += `color: ${s.source[s.selected].fcolor};`;
+                }
+                title += `
+                <i class="nf nf-fa-angle_right bbn-hsmargin bbn-large"></i>
+                <span style="${style}" class="bbn-hxspadded ${sub[k+1] ? '' : 'bbn-b'}">
+                  ${s.source[s.selected].icon ? '<i class="' + s.source[s.selected].icon + '"></i>' : ''}
+                  <span>` + s.source[s.selected].title || bbn._('Untitled') + `</span>
+                </span>`;
+              }
+            });
+          }
+          if ( !t.hidden && (i !== bc.selected) ){
             list.push({
-              text: `${i === this.selected ? '<span style="font-weight: bold">' : ''}${t.title}${i === this.selected ? '</strong>' : ''}`,
-              icon: t.icon,
+              //text: prefix + t.title,
+              text: title,
+              //icon: t.icon,
               key: t.url,
               bcolor: t.bcolor,
               fcolor: t.fcolor,
@@ -324,6 +390,10 @@
         });
         return list;
       },
+      getParents(){
+
+        return this.parent ? [...this.parent.getParents(), this.parent] : []
+      }
     },
     /**
      * @event mounted
@@ -342,6 +412,7 @@
       }
       this.$nextTick(() => {
         if ( !this.master && this.router ){
+          this.parent = this.router.parent.itsBreadcrumb;
           this.router.parent.itsBreadcrumb.register(
             this,
             this.router.baseURL.substr(0, this.router.baseURL.length - 1)
@@ -402,11 +473,6 @@
       }"
 >
   <span class="bbn-flex-width">
-    <span v-if="source.icon"
-          class="space"
-    >
-      <i :class="source.icon"></i>
-    </span>
     <span class="text bbn-flex-fill" v-html="source.text"></span>
     <span v-if="!source.static"
           class="space"

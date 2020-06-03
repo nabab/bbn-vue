@@ -73,6 +73,9 @@
        */
       itemComponent: {
         type: [Object, String]
+      },
+      attach: {
+        type: HTMLDivElement
       }
     },
     data(){

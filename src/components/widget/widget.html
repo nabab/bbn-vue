@@ -62,7 +62,7 @@
          v-html="content"
     ></div>
     <!-- LIST OF ITEMS -->
-    <ul v-else-if="currentItems.length">
+    <ul v-else-if="currentItems.length" class="bbn-widget-list">
       <template v-for="(it, idx) in currentItems"
                 v-if="limit ? idx < limit : true"
       >
