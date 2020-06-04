@@ -230,7 +230,8 @@
         promise: false,
         isScrolling: false,
         isDragging: false,
-        isFocused: false
+        isFocused: false,
+        previousTouch: {x: null, y: null}
       };
     },
     computed: {
@@ -283,6 +284,81 @@
       }
     },
     methods: {
+      touchmove(e){
+        if (this.fullPage) {
+          if (!this.isScrolling && e.targetTouches && e.targetTouches.length) {
+            let ev = e.targetTouches[0];
+            let goingUp = false;
+            let goingDown = false;
+            let goingLeft = false;
+            let goingRight = false;
+            let dir = '';
+            let ct = this.getRef('scrollContainer');
+            if (this.previousTouch.x !== null) {
+              if (this.hasScrollX && (ev.pageX !== this.previousTouch.x)) {
+                let x = ct.scrollLeft;
+                if (ev.pageX > this.previousTouch.x) {
+                  goingLeft = true;
+                  x = this.currentX - ct.clientWidth;
+                  dir += ' left';
+                }
+                else {
+                  x = this.currentX + ct.clientWidth;
+                  goingRight = true;
+                  dir += ' right';
+                }
+                if ((x != this.currentX) && this.$refs.xScroller) {
+                  this.$refs.xScroller.scrollTo(x);
+                }
+                this.currentX = x;
+                if (!x) {
+                  this.$emit('reachLeft');
+                }
+                else if (x + ct.clientWidth >= ct.scrollWidth) {
+                  this.$emit('reachRight');
+                }
+              }
+              if (this.hasScrollY && (ev.pageY !== this.previousTouch.y)) {
+                let y = ct.scrollTop;
+                if (ev.pageY > this.previousTouch.y) {
+                  goingUp = true;
+                  y = this.currentY - ct.clientHeight;
+                  dir += ' up';
+                }
+                else {
+                  goingDown = true;
+                  y = this.currentY + ct.clientHeight;
+                  dir += ' down';
+                }
+                if ((y != this.currentY) && this.$refs.yScroller) {
+                  this.$refs.yScroller.scrollTo(y);
+                }
+                this.currentY = y;
+                if (!y) {
+                  this.$emit('reachTop');
+                }
+                else if (y + ct.clientHeight >= ct.scrollHeight) {
+                  this.$emit('reachBottom');
+                }
+              }
+              if (dir) {
+                this.isScrolling = true;
+                setTimeout(() => {
+                  this.isScrolling = false;
+                }, 200);
+              }
+            }
+            this.previousTouch.x = ev.pageX;
+            this.previousTouch.y = ev.pageY;
+            setTimeout(() => {
+              this.previousTouch.x = null;
+              this.previousTouch.y = null;
+            }, 250)
+            bbn.fn.log(e, dir);
+          }
+          e.preventDefault();
+        }
+      },
       /**
        * Gets the dimensions after a resize
        * @method getNaturalDimensions
@@ -349,7 +425,7 @@
         if (!this.ready || (this.scrollable === false)) {
           return;
         }
-        if (this.isScrolling) {
+        if (this.isScrolling || (this.fullPage && bbn.fn.isMobile())) {
           if (e && e.preventDefault) {
             e.preventDefault();
           }
@@ -362,7 +438,7 @@
             this.isScrolling = true;
             setTimeout(() => {
               this.isScrolling = false;
-            }, bbn.fn.isMobile() ? 2000 : 1000);
+            }, 1500);
             if (x > this.currentX) {
               x = this.currentX + ct.clientWidth;
             }
@@ -387,7 +463,7 @@
             this.isScrolling = true;
             setTimeout(() => {
               this.isScrolling = false;
-            }, bbn.fn.isMobile() ? 3000 : 1000);
+            }, 1500);
             if (y > this.currentY) {
               y = this.currentY + ct.clientHeight;
             }

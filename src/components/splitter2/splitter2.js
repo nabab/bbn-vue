@@ -666,6 +666,13 @@
           }
           this.panes[this.resizeCfg.resizer.pane1].currentDiff = diff;
           this.panes[this.resizeCfg.resizer.pane2].currentDiff = - diff;
+
+          this.panes[this.resizeCfg.resizer.pane1].isFixed = true;
+          this.panes[this.resizeCfg.resizer.pane2].isFixed = true;
+          this.panes[this.resizeCfg.resizer.pane1].isRelative = false;
+          this.panes[this.resizeCfg.resizer.pane2].isRelative = false;
+          this.panes[this.resizeCfg.resizer.pane1].resized = true;
+          this.panes[this.resizeCfg.resizer.pane2].resized = true;
           this.setFormatted();
         }
       },
@@ -963,6 +970,19 @@
       },
       panes(){
         this.setFormatted();
+      },
+      availableSize(newSize, oldSize){
+        let diff = newSize - oldSize,
+            toChange = bbn.fn.filter(this.panes, p => {
+              return (p.pane.realSize !== p.pane.lastRealSize) && p.resized && p.isFixed;
+            });
+        bbn.fn.log('diff', diff, toChange);
+        if ( toChange.length ){
+          let s = diff / toChange.length;
+          bbn.fn.each(toChange, p => {
+            this.setSize(p.pane.realSize + s, p.index)
+          })
+        }
       }
     },
   });

@@ -315,70 +315,22 @@
        * @return {Array}
        */
       getList(bc){
-        let list = [];
         if ( !bc ){
           bc = this;
         }
+        let list = [],
+            parents = bc.itsMaster && (bc !== bc.itsMaster) ? bc.getParents() : [];
         bbn.fn.each(bc.source, (t, i) => {
-          let title = '',
-              sub = bc.getCurrents(i);
-          if ( bc !== bc.itsMaster ){
-            bbn.fn.each(this.getParents(), p => {
-              let style = ''
-              if ( p.source[p.selected].bcolor ){
-                style += `background-color: ${p.source[p.selected].bcolor};`;
-              }
-              if ( p.source[p.selected].fcolor ){
-                style += `color: ${p.source[p.selected].fcolor};`;
-              }
-              title += `
-                <span style="${style}" class="bbn-hxspadded">
-                  ${p.source[p.selected].icon ? '<i class="' + p.source[p.selected].icon + '"></i>' : ''}
-                  <span>` + p.source[p.selected].title || bbn._('Untitled') + `</span>
-                </span>
-                <i class="nf nf-fa-angle_right bbn-hsmargin bbn-large"></i>`;
-            });
-          }
-          let style = ''
-          if ( t.bcolor ){
-            style += `background-color: ${t.bcolor};`;
-          }
-          if ( t.fcolor ){
-            style += `color: ${t.fcolor};`;
-          }
-          title += `
-            <span style="${style}" class="bbn-hxspadded">
-              ${t.icon ? '<i class="' + t.icon + '"></i>' : ''}
-              <span>` + t.title || bbn._('Untitled') + `</span>
-            </span>`;
-          if ( sub.length ){
-            bbn.fn.each(sub, (s, k) => {
-              if ( bbn.fn.isNumber(s.selected) && s.source[s.selected] ){
-                let style = '';
-                if ( s.source[s.selected].bcolor ){
-                  style += `background-color: ${s.source[s.selected].bcolor};`;
-                }
-                if ( s.source[s.selected].fcolor ){
-                  style += `color: ${s.source[s.selected].fcolor};`;
-                }
-                title += `
-                <i class="nf nf-fa-angle_right bbn-hsmargin bbn-large"></i>
-                <span style="${style}" class="bbn-hxspadded ${sub[k+1] ? '' : 'bbn-b'}">
-                  ${s.source[s.selected].icon ? '<i class="' + s.source[s.selected].icon + '"></i>' : ''}
-                  <span>` + s.source[s.selected].title || bbn._('Untitled') + `</span>
-                </span>`;
-              }
-            });
-          }
           if ( !t.hidden && (i !== bc.selected) ){
             list.push({
-              //text: prefix + t.title,
-              text: title,
-              //icon: t.icon,
+              text: t.title,
+              icon: t.icon,
               key: t.url,
               bcolor: t.bcolor,
               fcolor: t.fcolor,
               static: t.static,
+              parents: parents,
+              children: bc.getCurrents(i),
               action: () => {
                 bc.selected = t.idx;
               },
@@ -390,9 +342,25 @@
         });
         return list;
       },
+      /**
+       * @method getParents
+       * @return {Array}
+       */
       getParents(){
-
         return this.parent ? [...this.parent.getParents(), this.parent] : []
+      },
+      /**
+       * @method openMenu
+       * @param {Event} ev
+       */
+      openMenu(ev){
+        let ele = ev.target.parentElement.parentElement,
+            e = new MouseEvent("contextmenu", {
+              bubbles: true,
+              cancelable: true,
+              view: window
+            });
+        ele.dispatchEvent(e);
       }
     },
     /**
@@ -466,14 +434,49 @@
        */
       listItem: {
         template: `
-<span class="bbn-w-100 bbn-vxspadded bbn-hspadded"
-      :style="{
-        backgroundColor: source.bcolor || false,
-        color: source.fcolor || false
-      }"
->
-  <span class="bbn-flex-width">
-    <span class="text bbn-flex-fill" v-html="source.text"></span>
+<span class="bbn-w-100 bbn-vxspadded bbn-hspadded">
+  <span class="bbn-flex-width bbn-vmiddle">
+    <span class="text bbn-flex-fill">
+      <template v-for="p in source.parents">
+        <span :style="{
+                backgroundColor: p.source[p.selected].bcolor || false,
+                color: p.source[p.selected].fcolor || false
+              }"
+              class="bbn-hxspadded"
+        >
+          <i v-if="p.source[p.selected].icon"
+             :class="p.source[p.selected].icon"
+          ></i>
+          <span v-html="p.source[p.selected].title || '` + bbn._('Untitled') + `'"></span>
+        </span>
+        <i class="nf nf-fa-angle_right bbn-hsmargin bbn-large bbn-breadcrumb-arrow"></i>
+      </template>
+      <span :style="{
+              backgroundColor: source.bcolor || false,
+              color: source.fcolor || false
+            }"
+            class="bbn-hxspadded"
+      >
+        <i v-if="source.icon"
+           class="source.icon"
+        ></i>
+        <span v-html="source.text || '` + bbn._('Untitled') + `'"></span>
+      </span>
+      <template v-for="(c, i) in source.children">
+        <i class="nf nf-fa-angle_right bbn-hsmargin bbn-large bbn-breadcrumb-arrow"></i>
+        <span :style="{
+                backgroundColor: c.source[c.selected].bcolor || false,
+                color: c.source[c.selected].fcolor || false
+              }"
+              :class="['bbn-hxspadded', {'bbn-b': !!source.children[i+1]}]"
+        >
+          <i v-if="c.source[c.selected].icon"
+             class="c.source[c.selected].icon"
+          ></i>
+          <span v-html="c.source[c.selected].title || '` + bbn._('Untitled') + `'"></span>
+        </span>
+      </template>
+    </span>
     <span v-if="!source.static"
           class="space"
           style="text-align: right"

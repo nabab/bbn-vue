@@ -4,6 +4,7 @@
   <div :class="{'bbn-scroll-container': true, 'bbn-overlay': isScrolling || (!isMeasuring && !scrollable), 'bbn-scroll-not-dragged': !isDragging}"
        ref="scrollContainer"
        @scroll="onScroll"
+       @touchmove="touchmove"
        @focus="isFocused = true"
        @blur="isFocused = false"
        :tabindex="scrollable ? '0' : '-1'"

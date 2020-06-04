@@ -30,6 +30,14 @@
             <span v-text="isNumber(selected) && source[selected] && !!source[selected].title ? source[selected].title : _('Untitled')"
                   :class="{'bbn-b': !currents.length}"
             ></span>
+            <i v-if="isNumber(selected) && source[selected] && !source[selected].static"
+               class="nf nf-fa-times bbn-p bbn-abs bbn-breadcrumb-icons bbn-breadcrumb-icons-close"
+               @click.prevent.stop="close(selected)"
+            ></i>
+            <i v-if="getMenuFn(selected).length"
+               class="nf nf-fa-caret_down bbn-p bbn-abs bbn-breadcrumb-icons bbn-breadcrumb-icons-menu"
+               @click.prevent.stop="openMenu($event)"
+            ></i>
           </span>
         </bbn-context>
       </bbn-context>
@@ -37,7 +45,7 @@
                 v-for="(sn, isn) in currents"
       >
         <span :style="{color: fontColor}">
-          <i class="nf nf-fa-angle_right bbn-hsmargin bbn-large" style="vertical-align: middle;"></i>
+          <i class="nf nf-fa-angle_right bbn-hsmargin bbn-large bbn-breadcrumb-arrow"></i>
         </span>
         <bbn-context :source="sn.getList"
                      tag="span"
@@ -61,11 +69,19 @@
                   class="bbn-hxspadded"
             >
               <i v-if="isNumber(sn.selected) && sn.source[sn.selected] && !!sn.source[sn.selected].icon"
-                 :class="[sn.source[sn.selected].icon]"
+                 :class="sn.source[sn.selected].icon"
               ></i>
               <span v-text="isNumber(sn.selected) && sn.source[sn.selected] && !!sn.source[sn.selected].title ? sn.source[sn.selected].title : _('Untitled')"
                     :class="{'bbn-b': !currents[isn+1]}"
               ></span>
+              <i v-if="isNumber(sn.selected) && sn.source[sn.selected] && !sn.source[sn.selected].static"
+                 class="nf nf-fa-times bbn-p bbn-abs bbn-breadcrumb-icons bbn-breadcrumb-icons-close"
+                 @click.prevent.stop="sn.close(sn.selected)"
+              ></i>
+              <i v-if="sn.getMenuFn(sn.selected).length"
+                 class="nf nf-fa-caret_down bbn-p bbn-abs bbn-breadcrumb-icons bbn-breadcrumb-icons-menu"
+                 @click.prevent.stop="openMenu($event)"
+              ></i>
             </span>
           </bbn-context>
         </bbn-context>

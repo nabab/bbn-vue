@@ -13,6 +13,21 @@ div.bbn-breadcrumb {
     .bbn-breadcrumb-dirty::after {
       content: '*';
     }
+    .bbn-breadcrumb-icons{
+      font-size: 1em;
+      margin: 0;
+      &.bbn-breadcrumb-icons-menu{
+        bottom: -2px;
+      }
+      &.bbn-breadcrumb-icons-close{
+        top: 1px;
+      }
+    }
+    .bbn-breadcrumb-arrow{
+      margin-right: .7em;
+      margin-left: .7em;
+      vertical-align: middle;
+    }
     > div.bbn-loader {
       align-items: center;
       justify-content: center;
@@ -78,7 +93,7 @@ div.bbn-breadcrumb {
         }
       }
     }
-    .bbn-list > ul > li .text i {
+    .bbn-list > ul > li .text i:not(.bbn-breadcrumb-arrow) {
       margin-right: 0 !important;
     }
   }

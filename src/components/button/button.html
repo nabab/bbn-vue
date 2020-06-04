@@ -11,7 +11,7 @@
         :disabled="isDisabled"
         :title="titleString"
 >
-  <span v-if="icon && (iconPosition === 'left')" class="bbn-iblock bbn-button-icon bbn-m">
+  <span v-if="icon && (iconPosition === 'left')" class="bbn-button-icon">
     <i :class="icon"> </i>
     <i v-if="secondary"
        :class="secondary + ' secondary'"

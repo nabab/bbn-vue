@@ -62,6 +62,7 @@
         isCollapsed: this.collapsed,
         isResizable: this.resizable,
         realSize: 0,
+        lastRealSize: 0,
         originalSize: this.size || 'auto'
       };
     },
@@ -73,7 +74,9 @@
     methods: {
       getRealSize(){
         let rect = this.$el.getBoundingClientRect();
-        return this.splitter ? (this.splitter.isVertical ? rect.height : rect.width) : (rect.height > rect.width ? rect.height : rect.width);
+        return this.splitter ?
+          (this.splitter.isVertical ? rect.height : rect.width) :
+          (rect.height > rect.width ? rect.height : rect.width);
       },
       getSize(){
         return parseInt(this.realSize) + 'px';
@@ -106,8 +109,10 @@
       }
       this.$nextTick(() => {
         this.realSize = this.getRealSize();
+        this.lastRealSize = this.realSize;
         if ( this.splitter ){
           this.$watch('splitter.formattedCfg', () => {
+            this.lastRealSize = this.realSize;
             this.realSize = this.getRealSize();
           })
         }
