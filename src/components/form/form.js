@@ -49,7 +49,7 @@
        */
       fields: {},
       /**
-       * Set to true to make a post_out instead of a post when the form is submitted.
+       * Set to true to make a postOut instead of a post when the form is submitted.
        *
        * @prop {Boolean} [false] blank
        */
@@ -399,7 +399,7 @@
         this.isPosted = true;
         this.isLoading = true;
         if ( this.action ){
-          this[this.blank || this.self || this.target ? 'post_out' : 'post'](this.action, bbn.fn.extend(true, {}, this.data || {}, this.source || {}), (d) => {
+          this[this.blank || this.self || this.target ? 'postOut' : 'post'](this.action, bbn.fn.extend(true, {}, this.data || {}, this.source || {}), (d) => {
             this.originalData = bbn.fn.extend(true, {}, this.source || {});
             if ( this.successMessage && p ){
               p.alert(this.successMessage);

@@ -953,7 +953,7 @@
      * @param {Vue} vm 
      */
     post(vm, args){
-      let cfg = bbn.fn.treat_vars(args);
+      let cfg = bbn.fn.treatAjaxArguments(args);
       let referer = bbn.vue.getContainerURL(vm);
       if ( !referer && bbn.env.path ){
         referer = bbn.env.path;
@@ -963,15 +963,15 @@
     },
 
     /**
-     * @method post_out
+     * @method postOut
      * @todo Check if still needed
      * @memberof bbn.vue
      * @param {Vue} vm 
      */
-    post_out(vm, url, obj, onSuccess, target){
+    postOut(vm, url, obj, onSuccess, target){
       let referer = bbn.vue.getContainerURL(vm);
       obj = bbn.fn.extend({}, obj || {}, {_bbn_referer: referer, _bbn_key: bbn.fn.getIdURL(url, obj, 'json')});
-      return bbn.fn.post_out(url, obj, onSuccess, target);
+      return bbn.fn.postOut(url, obj, onSuccess, target);
     }
 
 

@@ -21,7 +21,6 @@
     props: {
       /**
        * The source of the component.
-       * 
        * @prop {Array|String} source
        */
       source: {
@@ -32,7 +31,6 @@
       },
       /**
        * Set to true to allow the component to have a scroll.
-       * 
        * @prop {Boolean} [true] scrollable
        */
       scrollable: {
@@ -41,7 +39,6 @@
       },
       /**
        * The alternative component for the toolbar.
-       * 
        * @props {Vue|Object|Boolean} toolbar
        */
       toolbar: {
@@ -49,16 +46,6 @@
         default: true
       },
       /**
-       * Set to true to show the download button in the toolbar.
-       * 
-       * @prop {Boolean} [true] download
-       */
-      download: {
-        type: Boolean,
-        default: true
-      },
-      /**
-       * 
        * @prop {Boolean|String} [false] overlay
        */
       overlay: {
@@ -67,7 +54,6 @@
       },
       /**
        * Set to true to allow the gallery to be magnifiable.
-       * 
        * @prop {Boolean} [false] zoomable
        */
       zoomable: {
@@ -76,7 +62,6 @@
       },
       /**
        * Set to true to allow the gallery to be pageable.
-       * 
        * @prop {Boolean} [false] pageable
        */
       pageable: {
@@ -85,7 +70,6 @@
       },
       /**
        * Set to true to show info on the gallery's footer.
-       * 
        * @prop {Boolean} [false] info
        */
       info: {
@@ -94,7 +78,6 @@
       },
       /**
        * The gap between the columns.
-       * 
        * @prop {Number} [20] columnGap
        */
       columnGap: {
@@ -103,7 +86,6 @@
       },
       /**
        * The gap between the rows.
-       * 
        * @prop {Number} [20] rowGap
        */
       rowGap: {
@@ -112,7 +94,6 @@
       },
       /**
        * The minimum number of columns allowed.
-       * 
        * @prop {Number} [1] minCol
        */
       minCol: {
@@ -121,7 +102,6 @@
       },
       /**
        * The maximum number of columns allowed.
-       * 
        * @prop {Number} maxCol
        */
       maxCol: {
@@ -129,7 +109,6 @@
       },
       /**
        * The width of the items.
-       * 
        * @prop {Number} [150] itemWidth
        */
       itemWidth: {
@@ -138,7 +117,6 @@
       },
       /**
        * The horizontal alignment of the column.
-       * 
        * @prop {String} ['center'] align
        */
       align: {
@@ -147,7 +125,6 @@
       },
       /**
        * The limit of items allowed.
-       * 
        * @prop {Number} [25] limit
        */
       limit: {
@@ -156,7 +133,6 @@
       },
       /**
        * A function to normalize the source.
-       * 
        * @prop {Function} map
        */
       map: {
@@ -164,7 +140,6 @@
       },
       /**
        * Additional data sent with the ajax call.
-       * 
        * @prop {Object} [{}] data
        */
       data: {
@@ -175,7 +150,6 @@
       },
       /**
        * The function called when the toolbar's upload button is clicked.
-       * 
        * @prop {Function} upload
        */
       upload: {
@@ -183,7 +157,6 @@
       },
       /**
        * The function called when the toolbar's download button is clicked.
-       * 
        * @prop {Function} download
        */
       download: {
@@ -198,7 +171,6 @@
       },
       /**
        * Displays a preview of items below the slideshow.
-       * 
        * @prop {Boolean} [true] preview
        */
       preview: {
@@ -210,67 +182,56 @@
       return {
         /**
          * The width of the component.
-         * 
          * @data {Number} [0] width
          */
         width: 0,
         /**
          * True if the gallery is on selection mode.
-         * 
          * @data {Boolean} [false] isSelecting
          */
         isSelecting:  false,
         /**
          * True if the gallery is loading data.
-         * 
          * @data {Boolean} [false] isLoading
          */
         isLoading: false,
         /**
          * True if the source of the component is a string and an ajax call is made.
-         * 
          * @data {Boolean} isAjax
          */
         isAjax: typeof this.source === 'string',
         /**
          * The source of the component.
-         * 
          * @data {Array} currentData
          */
-        currentData: bbn.fn.isArray(this.source) ? this.source : [],
+        currentData: [],
         /**
          * The limit of the component.
-         * 
          * @data {Number} currentLimit
          */
         currentLimit: this.limit,
         /**
          * The starting item in a pageable gallery.
-         * 
          * @data {Number} [0] start
          */
         start: 0,
         /**
          * The total number of items.
-         * 
          * @data {Number} [0] total
          */
         total: 0,
         /**
          * The source of the dropdown component defining the limit of items shown on the page.
-         * 
-         * @data {Array} [10, 25, 50, 100, 250, 500] limits 
+         * @data {Array} [10, 25, 50, 100, 250, 500] limits
          */
         limits: [10, 25, 50, 100, 250, 500],
         /**
          * The selection mode.
-         * 
          * @prop {Boolean|String} [false] selectingMode
          */
         selectingMode: false,
         /**
          * The array of selected items.
-         * 
          * @prop {Array} [[]] selected
          */
         selected: []
@@ -279,7 +240,6 @@
     computed: {
       /**
        * The number of columns.
-       * 
        * @computed cols
        * @return {Number}
        */
@@ -288,7 +248,6 @@
       },
       /**
        * Returns the number of pages.
-       * 
        * @computed numPages
        * @return {Number}
        */
@@ -297,7 +256,6 @@
       },
       /**
        * The number of the current page.
-       * 
        * @computed currentPage
        * @return {Number}
        */
@@ -312,7 +270,6 @@
       },
       /**
        * True if the toolbar is shown.
-       * 
        * @computed isToolbarShown
        * @return {Boolean}
        */
@@ -321,84 +278,83 @@
       }
     },
     methods: {
-      /** 
+      /**
        * Alias of bbn.fn.isObject.
-       * 
        * @method isObject
        * @return {Boolean}
       */
       isObject: bbn.fn.isObject,
-      /** 
+      /**
        * Alias of bbn.fn.isVue.
-       * 
        * @method isVue
        * @return {Boolean}
       */
      isVue: bbn.fn.isVue,
-     /** 
+     /**
        * Alias of bbn.fn.correctCase.
-       * 
        * @method correctCase
        * @return {string}
       */
      correctCase: bbn.fn.correctCase,
       /**
        * Updates the component's data.
-       * 
        * @method updateData
        * @fires setSelecting
        * @fires _map
        */
       updateData(){
-        if ( this.isAjax && !this.isLoading ){
-          this.setSelecting(false);
-          this.isLoading = true;
-          let data = {
-            limit: this.currentLimit,
-            start: this.start,
-            data: this.data
-          };
-          return this.post(this.source, data, result => {
-            this.isLoading = false;
-            if (
-              !result ||
-              result.error ||
-              ((result.success !== undefined) && !result.success)
-            ) {
-              appui.alert(result && result.error ? result.error : bbn._("Error while updating the data"));
-            }
-            else {
-              this.currentData = this._map(result.data || []);
-              this.total = result.total || result.data.length || 0;
-            }
-          });
-        }
-        else {
-          return new Promise((resolve, reject) => {
-            if ( bbn.fn.isArray(this.source) ){
-              this.currentData = this._map(this.source);
+        if ( !this.isLoading ){
+          if ( this.isAjax ){
+            this.setSelecting(false);
+            this.isLoading = true;
+            let data = {
+              limit: this.currentLimit,
+              start: this.start,
+              data: this.data
+            };
+            return this.post(this.source, data, result => {
+              this.isLoading = false;
+              if (
+                !result ||
+                result.error ||
+                ((result.success !== undefined) && !result.success)
+              ) {
+                appui.alert(result && result.error ? result.error : bbn._("Error while updating the data"));
+              }
+              else {
+                this.currentData = this._map(result.data || []);
+                this.total = result.total || result.data.length || 0;
+              }
+            });
+          }
+          else if ( bbn.fn.isArray(this.source) ){
+            return new Promise((resolve, reject) => {
+              this.currentData = this._map(this.pageable ? this.source.slice(this.start, this.start + this.currentLimit) : this.source);
               this.total = this.source.length;
               resolve(this.currentData);
-            }
-          })
+            })
+          }
         }
       },
-      // Calls the function if the property map is defined.
-      
       /**
-       * If the function 'map' is defined if triggers the map of the source
-       * 
+       * If the function 'map' is defined it triggers the map of the source
        * @method _map
-       * @param {Array} data 
+       * @param {Array} data
        */
       _map(data){
-        return this.map ? data.map(this.map) : data;
+        let da = this.map ? data.map(this.map) : data;
+        return bbn.fn.map(da, (d, i) => {
+          return {
+            _bbn: true,
+            index: i,
+            data: d
+          }
+        });
       },
       /**
        * Sets the selectingMode data property.
-       * 
        * @method setSelecting
-       * @param {String} mode 
+       * @param {String} mode
        */
       setSelecting(mode){
         if ( typeof mode === 'string' ){
@@ -413,7 +369,6 @@
       },
       /**
        * Manages actions based on the data property selectingMode.
-       * 
        * @method action
        * @fires setSelecting
        */
@@ -421,14 +376,14 @@
         if ( this[this.selectingMode] && this.selected.length ){
           let mess = '';
           if ( this.selectingMode === 'download' ){
-            mess = "Are you sure you want to download these photos?";
+            mess = bbn._("Are you sure you want to download these photos?");
           }
           else if ( this.selectingMode === 'remove' ){
-            mess = "Are you sure you want to remove these photos?";
+            mess = bbn._("Are you sure you want to remove these photos?");
           }
           this.confirm(bbn._(mess, this.selectingMode), () => {
             this[this.selectingMode](this.selected.map(v => {
-              return bbn.fn.extend(true, {}, this.currentData[v]);
+              return bbn.fn.extend(true, {}, bbn.fn.getRow(this.currentData, {index: v}));
             }));
             this.setSelecting(false);
           });
@@ -436,7 +391,6 @@
       },
       /**
        * Handles the resize of the component.
-       * 
        * @method onResize
        */
       onResize(){
@@ -451,9 +405,7 @@
     mounted(){
       this.$nextTick(() => {
         this.onResize();
-        if ( this.isAjax ){
-          this.updateData();
-        }
+        this.updateData();
       });
     },
     components: {
@@ -477,7 +429,6 @@
         props: {
           /**
            * The source of the component 'gallery-zoom'.
-           * 
            * @prop {String|Object} source
            * @memberof gallery-zoom
            */
@@ -493,7 +444,7 @@
         name: 'gallery-col',
         template: `
 <div :style="colStyle">
-  <gallery-item v-for="(item, idx) in getSource(index)"
+  <gallery-item v-for="(item, idx) in source"
                 :source="item"
                 :key="'gallery-item-'+index+'-'+idx"
   ></gallery-item>
@@ -501,7 +452,6 @@
         props: {
           /**
            * The source of the component 'gallery-col'.
-           * 
            * @prop {Array} [[]] source
            * @memberof gallery-col
            */
@@ -513,7 +463,6 @@
           },
           /**
            * The index of the column.
-           * 
            * @prop {Number} index
            * @memberof gallery-col
            */
@@ -524,7 +473,6 @@
         computed: {
           /**
            * The parent gallery component.
-           * 
            * @computed gallery
            * @memberof gallery-col
            * @return {Object}
@@ -534,7 +482,6 @@
           },
           /**
            * The style object of the column.
-           * 
            * @computed colStyle
            * @memberof gallery-col
            * @return {Object}
@@ -548,21 +495,6 @@
             }
           }
         },
-        methods: {
-          /**
-           * Gets the column's data.
-           * 
-           * @method getSource
-           * @param {Number} idx
-           * @memberof gallery-col
-           * @return {Boolean}
-           */
-          getSource(idx){
-            return this.gallery.currentData.filter((it, i) => {
-              return i % this.gallery.cols === idx;
-            });
-          }
-        },
         components: {
           /**
            * @component galleryItem
@@ -572,18 +504,18 @@
             name: 'gallery-item',
             template: `
 <a v-if="!col.gallery.isLoading"
-   :class="['bbn-p', {'bbn-primary': isSelected}]"
+   :class="{'bbn-primary': isSelected, 'bbn-p': !!col.gallery.zoomable}"
    @click="action"
    :style="aStyle"
 >
-  <img :src="isObj ? (source.thumb || source.content) : source"
+  <img :src="isObj ? (source.data.thumb || source.data.content) : source.data"
        :style="imgStyle"
        @load="loaded = true"
        :class="{'bbn-gallery-item-selected': isSelected}"
   >
   <span v-if="showOverlay && loaded"
         class="bbn-gallery-overlay bbn-widget"
-        v-text="source.overlay"
+        v-text="source.data.overlay"
   ></span>
   <i v-if="col.gallery.zoomable && loaded && !col.gallery.isSelecting"
     class="bbn-gallery-zoverlay nf nf-fa-search"
@@ -593,7 +525,6 @@
             props: {
               /**
                * The source of the compoment 'gallery-item'.
-               * 
                * @prop {String|Object} source
                * @memberof gallery-item
                */
@@ -605,31 +536,15 @@
               return {
                 /**
                  * True if the gallery-item is loaded.
-                 * 
                  * @data {Boolean} [false] loaded
                  * @memberof gallery-item
                  */
-                loaded: false,
-                /**
-                 * True if the gallery-item is selected.
-                 * 
-                 * @data {Boolean} [false] selected
-                 * @memberof gallery-item
-                 */
-                selected: false,
-                /**
-                 * The index of the item in the currentData of the component 'bbn-gallery'.
-				 *
-                 * @data [null] idx
-                 * @memberof gallery-item
-                 */
-                idx: null
+                loaded: false
               }
             },
             computed: {
               /**
                * The parent component 'gallery-col'.
-               * 
                * @computed col
                * @memberof gallery-item
                * @return {Vue}
@@ -639,7 +554,6 @@
               },
               /**
                * The style object of the item.
-               * 
                * @computed aStyle
                * @memberof gallery-item
                * @return {Object}
@@ -649,11 +563,13 @@
                   margin: `0 0 ${this.col.gallery.rowGap}px 0`,
                   border: this.isSelected ? '5px dotted' : 'none'
                 };
+                if ( !this.col.gallery.zoomable ){
+                  style.cursor = 'default';
+                }
                 return style;
               },
               /**
                * The style object of the image.
-               * 
                * @computed imgStyle
                * @memberof gallery-item
                * @return {Object}
@@ -669,7 +585,6 @@
               },
               /**
                * True if the source of the component is an object.
-               * 
                * @computed isObj
                * @return {Boolean}
                * @memberof gallery-item
@@ -679,29 +594,26 @@
               },
               /**
                * If true, shows the overlay.
-               * 
                * @computed showOverlay
                * @return {Boolean}
                * @memberof gallery-item
                */
               showOverlay(){
-                return this.col.gallery.overlay && this.isObj && (this.source.overlay !== undefined);
+                return this.col.gallery.overlay && this.isObj && (this.source.data.overlay !== undefined);
               },
               /**
                * True if the item is selected.
-               * 
                * @computed isSelected
                * @return {Boolean}
                * @memberof gallery-item
                */
               isSelected(){
-                return (this.idx !== null) && this.col.gallery.selected.includes(this.idx);
+                return this.col.gallery.selected.includes(this.source.index);
               }
             },
             methods: {
               /**
                * Manages the actions.
-               * 
                * @methods action
                * @memberof gallery-item
                * @fires getPopup
@@ -709,10 +621,10 @@
               action(){
                 if ( this.col.gallery.isSelecting ){
                   if ( this.isSelected ){
-                    this.col.gallery.selected.splice(this.col.gallery.selected.indexOf(this.idx), 1);
+                    this.col.gallery.selected.splice(this.col.gallery.selected.indexOf(this.source.index), 1);
                   }
                   else {
-                    this.col.gallery.selected.push(this.idx);
+                    this.col.gallery.selected.push(this.source.index);
                   }
                 }
                 else {
@@ -726,43 +638,18 @@
                       maximizable: false,
                       component: this.col.gallery.$options.components.galleryZoom,
                       source: {
-                        data: this.col.gallery.currentData,
+                        data: bbn.fn.map(this.col.gallery.currentData, d => {
+                          return d.data;
+                        }),
                         info: this.col.gallery.info,
-                        slide: this.idx,
+                        slide: this.source.index,
                         preview: this.col.gallery.preview
 
                       }
                     });
                   }
                 }
-              },
-              /**
-               * Returns the index of the item in the currentData of the component 'bbn-gallery'.
-               * 
-               * @methods getIdx
-               * @memberof gallery-item
-               * @return {Number}
-               */
-              getIdx(){
-                let idx = null;
-                bbn.fn.each(this.col.gallery.currentData, (v, i) => {
-                  if ( bbn.fn.isSame(v, this.source) ){
-                    idx = i;
-                    return;
-                  }
-                });
-                return idx;
               }
-            },
-            /**
-             * Defines the 'idx' property of the data.
-             * 
-             * @event mounted
-             * @memberof gallery-item
-             * @fires getIdx
-             */
-            mounted(){
-              this.idx = this.getIdx();
             }
           }
         }

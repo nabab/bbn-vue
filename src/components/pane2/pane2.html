@@ -1,4 +1,6 @@
-<div :class="[componentClass, 'bbn-background', 'bbn-border-box']">
+<div :class="[componentClass, 'bbn-background', 'bbn-border-box']"
+     :style="currentStyle"
+>
   <div :class="['bbn-overlay', $parent.currentOrientation === 'vertical' ? 'bbn-flex-height' : 'bbn-flex-width']">
     <div v-if="title"
          class="bbn-b bbn-c bbn-header"

@@ -48,6 +48,7 @@
                      @hook:mounted="$refs.calendarFloater.onResize()"
                      :disable-dates="disableDates"
                      :items-range="datesRange"
+                     style="min-height: 200px;"
       ></bbn-calendar>
     </bbn-floater>
     <bbn-floater v-if="isTimeOpened && !disabled && !readonly"

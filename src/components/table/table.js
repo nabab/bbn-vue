@@ -1403,13 +1403,13 @@
               }, {
                 text: bbn._('This view'),
                 action: () => {
-                  bbn.fn.post_out(this.source, this.getExcelPostData(true));
+                  bbn.fn.postOut(this.source, this.getExcelPostData(true));
                   this.getPopup().close();
                 }
               }, {
                 text: bbn._('All'),
                 action: () => {
-                  bbn.fn.post_out(this.source, this.getExcelPostData());
+                  bbn.fn.postOut(this.source, this.getExcelPostData());
                   this.getPopup().close();
                 }
               }],
@@ -1418,7 +1418,7 @@
           }
           else {
             this.confirm(bbn._('Are you sure you want to export to Excel?'), () => {
-              bbn.fn.post_out(this.source, this.getExcelPostData());
+              bbn.fn.postOut(this.source, this.getExcelPostData());
             });
           }
         }

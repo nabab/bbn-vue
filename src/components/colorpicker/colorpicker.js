@@ -63,6 +63,14 @@
         default: true
       },
       /**
+       * Shows the colors palette only.
+       * @prop {Boolean} [false] onlyPalette
+       */
+      onlyPalette: {
+        type: Boolean,
+        default: false
+      },
+      /**
        * The initial color.
        * @prop {String} ['#FDFDFD'] color
        */
@@ -79,7 +87,7 @@
         default: true
       },
       /**
-       * An array containing the list of colors by hex, rgb, rgba, hsl or the color's name.
+       * An array containing the list of colors by hex, rgb, rgba, or hsl.
        * @prop {Array} palette
        */
       palette: {
@@ -120,7 +128,7 @@
         /**
          * @data {Boolean} [false] showPalette
          */
-        showPalette: false,
+        showPalette: this.onlyPalette,
         /**
          * @data {String} currentValue
          */
@@ -156,10 +164,10 @@
           color: this.value || this.color,
           layout: []
         };
-        if ( this.wheel && !this.slider ){
+        if ( this.wheel && !this.slider && !this.onlyPalette ){
           obj.layout.push({component: iro.ui.Wheel});
         }
-        else {
+        else if ( !this.onlyPalette ){
           obj.layout.push({
             component: iro.ui.Slider,
             options: {
@@ -167,10 +175,10 @@
             }
           });
         }
-        if ( this.brightness ){
+        if ( this.brightness && !this.onlyPalette ){
           obj.layout.push({component: iro.ui.Slider});
         }
-        if ( this.saturation ){
+        if ( this.saturation && !this.onlyPalette ){
           obj.layout.push({
             component: iro.ui.Slider,
             options: {

@@ -1211,7 +1211,7 @@
               horizontal: 5,
               vertical: 5
             },
-            formatter: this.legendRender
+            formatter: this.legendRender || undefined
           },
           dataLabels: {
             enabled: !!this.pointsLabels
@@ -1219,16 +1219,16 @@
           tooltip: {
             enabled: !!this.tooltip,
             x: {
-              formatter: this.xTooltipRender
+              formatter: this.xTooltipRender || undefined
             },
             y: {
-              formatter: this.yTooltipRender || this.tooltipRender,
+              formatter: this.yTooltipRender || this.tooltipRender || undefined,
               title: {
-                formatter: this.tooltipLegendRender
+                formatter: this.tooltipLegendRender || undefined
               }
             },
             z: {
-              formatter: this.zTooltipRender
+              formatter: this.zTooltipRender || undefined
             }
           },
           colors: this.colors.length ? this.colors : undefined,

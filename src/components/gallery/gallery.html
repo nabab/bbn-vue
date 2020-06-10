@@ -37,22 +37,19 @@
     </template>
   </div>
   <div ref="gallery" :class="{'bbn-flex-fill': scrollable}">
-    <bbn-scroll v-if="scrollable">
-      <div :style="{margin: '0 auto', textAlign: align}">
-        <gallery-col v-for="(col, index) in cols" 
-                     :key="'gallery-col-'+index" 
-                     :index="index"
-        ></gallery-col>
-      </div>
-    </bbn-scroll>
-    <div v-else>
+    <component :is="scrollable ? 'bbn-scroll' : 'div'"
+               v-if="total"
+    >
       <div :style="{margin: '0 auto', textAlign: align}">
         <gallery-col v-for="(col, index) in cols"
                      :key="'gallery-col-'+index"
                      :index="index"
+                     :source="currentData.filter((it, i) => {
+                        return i % cols === index;
+                      })"
         ></gallery-col>
       </div>
-    </div>
+    </component>
   </div>
   <div v-if="pageable || isAjax">
     <div class="bbn-gallery-pager bbn-widget" ref="pager">

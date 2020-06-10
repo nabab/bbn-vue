@@ -46,7 +46,7 @@
                ref="picker"
                @dblclick.prevent.stop=""
           ></div>
-          <bbn-scroll v-if="showPalette" class="bbn-background">
+          <bbn-scroll v-if="showPalette || onlyPalette" class="bbn-background">
             <div class="bbn-c bbn-vsmargin">
               <div v-for="p in palette"
                    class="bbn-iblock bbn-colorpicker-palette bbn-bordered bbn-smargin bbn-p"
@@ -113,6 +113,7 @@
                             :notext="true"
                             :text="!showPalette ? _('Show palette') : _('Close palette')"
                             @click="showPalette = !showPalette"
+                            v-if="!onlyPalette"
                 ></bbn-button>
               </div>
               <div class="bbn-flex-fill bbn-r">

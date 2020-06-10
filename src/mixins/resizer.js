@@ -83,7 +83,7 @@
           let resize = false;
           let h = this.$el ? Math.round(this.$el.clientHeight) : 0;
           let w = this.$el ? Math.round(this.$el.clientWidth) : 0;
-          let offsetParent = this.$el.parentNode;
+          let offsetParent = this.$el.offsetParent;
           let ctH = (this.parentResizer && offsetParent) ? Math.round(offsetParent.clientHeight) : bbn.env.height;
           let ctW = (this.parentResizer && offsetParent) ? Math.round(offsetParent.clientWidth) : bbn.env.width;
           if ( h && (this.lastKnownHeight !== h) ){

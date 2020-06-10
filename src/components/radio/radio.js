@@ -1,21 +1,16 @@
 /**
  * @file bbn-radio component
- *
  * @description bbn-radio is a component that can be used to select a particular choice from a range of options.
- *
  * @copyright BBN Solutions
- *
  * @author BBN Solutions
- *
  * @created 13/02/2017
  */
-
 (function(bbn){
   "use strict";
 
   Vue.component('bbn-radio', {
     /**
-     * @mixin bbn.vue.basicComponent 
+     * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.inputComponent
      * @mixin bbn.vue.eventsComponent
      */
@@ -36,7 +31,7 @@
 				type: Boolean,
 				default: false
       },
-      /** 
+      /**
        * If the property vertical is set to false, defines the number of columns used to render the component.
        * @prop {Number} step
        */
@@ -56,7 +51,6 @@
       /**
        * A function rendering each radio label.
        * @prop {Function} render
-       * 
        */
       render: {
         type: Function
@@ -106,28 +100,12 @@
       prop: 'modelValue',
       event: 'input'
     },
-    computed: {
-      /**
-       * Returns the html string for the separator between the radio buttons if the property 'separator' is not defined or if the component has the property 'vertical' set to true.
-       * @computed getSeparator
-       * return {String}
-       */
-      getSeparator(){
-        if ( this.vertical && !this.separator ){
-          return '<div style="margin-bottom: 0.5em"></div>'
-        }
-        if ( !this.vertical && !this.separator ){
-          return '<span style="margin-left: 2em">&nbsp;</span>'
-        }
-        return this.separator;
-      }
-    },
-		methods: {
+    methods: {
       /**
        * @method changed
-       * @param val 
-       * @param {Event} e 
-       * @emits input 
+       * @param val
+       * @param {Event} e
+       * @emits input
        * @emits change
        */
 			changed(val, d, e){

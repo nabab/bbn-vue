@@ -128,7 +128,7 @@
        * @returns {Boolean}
        */
       disableDecrease(){
-        return ((this.min !== undefined) && (parseFloat(this.currentValue)  <= this.min) || !!this.readonly)
+        return (bbn.fn.isNumber(this.min) && (parseFloat(this.currentValue)  <= this.min) || !!this.readonly)
       },
       /**
        * True if the increase functionality must to disabled.
@@ -136,7 +136,7 @@
        * @returns {Boolean}
        */
       disableIncrease(){
-        return ((this.max !== undefined) && (parseFloat(this.currentValue) >= this.max) || !!this.readonly)
+        return (bbn.fn.isNumber(this.max) && (parseFloat(this.currentValue) >= this.max) || !!this.readonly)
       },
       /**
        * The pattern of the input.  ^\-?[0-9]+\.0*[1-9]{0}$
@@ -145,7 +145,7 @@
        */
       pattern(){
         let p = '^';
-        if ( (this.min === undefined) || (this.min < 0) ){
+        if ( !bbn.fn.isNumber(this.min) || (this.min < 0) ){
           p += '\\-?';
         }
         p += '[0-9]+';
@@ -178,7 +178,7 @@
       _keydown(e){
         const keys = ([]).concat(bbn.var.keys.numbers, bbn.var.keys.upDown, bbn.var.keys.leftRight, bbn.var.keys.dels, bbn.var.keys.confirm, bbn.var.keys.numsigns);
         if (
-          ((this.min >= 0) && (e.keyCode === 189)) ||
+          (bbn.fn.isNumber(this.min) && (this.min >= 0) && (e.keyCode === 189)) ||
           (!this.decimals && !this.unit && ((e.keyCode === 110) || (e.keyCode === 190))) ||
           (!keys.includes(e.keyCode) && (e.keyCode !== 17))
         ){
@@ -257,7 +257,7 @@
       checkMinMax(){
         let w = false;
         if (
-          (this.max !== undefined) &&
+          bbn.fn.isNumber(this.max) &&
           (this.currentValue !== '') &&
           (this.currentValue !== null) &&
           (parseFloat(this.currentValue) > parseFloat(this.max))
@@ -266,7 +266,7 @@
           w = true;
         }
         else if (
-          (this.min !== undefined) &&
+          bbn.fn.isNumber(this.min) &&
           (this.currentValue !== '') &&
           (this.currentValue !== null) &&
           (parseFloat(this.currentValue) < parseFloat(this.min))

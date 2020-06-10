@@ -277,7 +277,7 @@
               }
               else {
                 return 
-                bbn.fn.post_out(this.root + 'actions/finder/image/' + this.encodedURL)
+                bbn.fn.postOut(this.root + 'actions/finder/image/' + this.encodedURL)
               }
             }
           }
@@ -524,7 +524,7 @@
       },
       //download the file
       download(n){
-        bbn.fn.post_out(this.root + 'actions/finder/download/' + n.data.value, {
+        bbn.fn.postOut(this.root + 'actions/finder/download/' + n.data.value, {
           value: n.data.value,
           file: n.data.file,
           path: this.currentPath !== n.data.value + '/' ? this.currentPath : '',

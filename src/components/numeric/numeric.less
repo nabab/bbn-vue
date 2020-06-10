@@ -14,33 +14,24 @@
       .bbn-numeric-no-pointer-events{
         pointer-events: none;
       }
-      //display: grid;
-      //grid-template-rows: 0.85em 0.85em;
-      display: flex;
-      flex-direction: column;
-      border-top-right-radius: inherit;
-      border-bottom-right-radius: inherit;
+      display: grid;
+      grid-template-rows: 1fr 1fr;
+      //display: flex;
+      //flex-direction: column;
       border-top-left-radius: 0;
       border-bottom-left-radius: 0;
       //height: 100%;
-
       .bbn-reactive-block:first-child{
-        border-top-right-radius: inherit;
         border-bottom-right-radius: 0;
-        border-right: 0px;
-        border-top: 0px;
       }
       .bbn-reactive-block:nth-child(2){
         border-top-right-radius: 0;
-        border-bottom-right-radius: inherit;
-        border-right: 0px;
-        border-bottom: 0px;
       }
       > div{
         width: 1.2em;
-        max-height: 0.85em;
+        //max-height: 0.85em;
         i{
-          max-height: inherit;
+          max-height: .6em;
         }
       }
     }

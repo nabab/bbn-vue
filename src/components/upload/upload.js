@@ -804,7 +804,7 @@
        */
       download(file){
         if ( !!this.downloadable && !!this.downloadUrl ){
-          this.post_out(
+          this.postOut(
             this.downloadUrl,
             bbn.fn.extend(true, {}, this.data ? this.data : {}, {file: file.data.name})
           )

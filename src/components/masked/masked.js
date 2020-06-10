@@ -470,7 +470,7 @@
       */
       keydownEvent(event){
         if ( !this.disabled && !this.readonly ){
-          if ( 
+          if (
             !this.isShiftKey(event.keyCode) &&
             !this.isControlKey(event.keyCode) &&
             !this.isArrowKey(event.keyCode) &&
@@ -481,14 +481,14 @@
             let isSelection = this.$refs.element.selectionStart !== this.$refs.element.selectionEnd,
                 value = this.value ? this.value.toString() : ''
             // Check max length
-            if ( 
+            if (
               !this.isCancKey(event.keyCode) &&
               !this.isBackspaceKey(event.keyCode) &&
               !isSelection &&
               (
-                (value.length >= this.maxLen) || 
-                ((this.size !== undefined) && (value.length >= this.size)) ||
-                ((this.maxlength !== undefined) && (value.length >= this.maxlength))
+                (value.length >= this.maxLen) ||
+                ((this.size !== undefined) && bbn.fn.isNumber(this.size) && (value.length >= this.size)) ||
+                ((this.maxlength !== undefined) && bbn.fn.isNumber(this.maxlength) && (value.length >= this.maxlength))
               )
             ){
               event.preventDefault()
@@ -501,7 +501,7 @@
               event.preventDefault()
             }
             // Input
-            else if ( 
+            else if (
               !this.isSpecialKey(event.keyCode) &&
               ((this.inputValue.charAt(pos) !== this.promptChar) || isSelection)
             ){
@@ -578,7 +578,7 @@
       */
       keyupEvent(event){
         if ( !this.disabled && !this.readonly ){
-          if ( 
+          if (
             !this.isShiftKey(event.keyCode) &&
             !this.isControlKey(event.keyCode) &&
             !this.isTabKey(event.keyCode) &&

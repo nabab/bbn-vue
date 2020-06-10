@@ -1,5 +1,5 @@
 <div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', {'bbn-disabled': !!disabled}]">
-  <div class="bbn-flex-width bbn-h-100">
+  <div class="bbn-flex-width">
     <div class="bbn-flex-fill">
       <input tabindex="0"
              autocomplete="off"
@@ -34,30 +34,45 @@
              :value="value"
       >
     </div>
-    <div :class="['bbn-h-100', 'bbn-numeric-buttons', {'bbn-disabled' : !!readonly}]">
-      <div :class="['bbn-reactive-block', 'bbn-middle', {
-             'bbn-disabled': disableIncrease,
-             'bbn-p': disableIncrease,
-             'bbn-numeric-no-pointer-events' : disableIncrease
-           }]"
-           @click="increment"
-           unselectable="on"
-           tabindex="-1"
-           :disabled="disableIncrease"
+    <div :class="['bbn-numeric-buttons', 'bbn-radius-top-right', 'bbn-radius-bottom-right', {'bbn-disabled' : !!readonly}]">
+      <div :class="[
+            'bbn-reactive-block',
+            'bbn-middle',
+            'bbn-no-border-top',
+            'bbn-no-border-right',
+            'bbn-radius-top-right',
+            {
+              'bbn-disabled': disableIncrease,
+              'bbn-p': disableIncrease,
+              'bbn-numeric-no-pointer-events' : disableIncrease
+            }
+          ]"
+          @click="increment"
+          unselectable="on"
+          tabindex="-1"
+          :disabled="disableIncrease"
       >
-        <i class="nf nf-fa-caret_up"></i>
+        <i class="nf nf-fa-caret_up bbn-middle"></i>
       </div>
-      <div :class="['bbn-reactive-block', 'bbn-middle',{
-             'bbn-disabled': disableDecrease,
-             'bbn-p' :disableDecrease,
-             'bbn-numeric-no-pointer-events' : disableDecrease
-           }]"
-           @click="decrement"
-           unselectable="on"
-           tabindex="-1"
-           :disabled="disableDecrease"
+      <div :class="[
+            'bbn-reactive-block',
+            'bbn-middle',
+            'bbn-no-border-top',
+            'bbn-no-border-bottom',
+            'bbn-no-border-right',
+            'bbn-radius-bottom-right',
+            {
+              'bbn-disabled': disableDecrease,
+              'bbn-p' :disableDecrease,
+              'bbn-numeric-no-pointer-events' : disableDecrease
+            }
+          ]"
+          @click="decrement"
+          unselectable="on"
+          tabindex="-1"
+          :disabled="disableDecrease"
       >
-        <i class="nf nf-fa-caret_down"></i>
+        <i class="nf nf-fa-caret_down bbn-middle"></i>
       </div>
     </div>
   </div>

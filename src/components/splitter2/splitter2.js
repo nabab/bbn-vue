@@ -140,7 +140,7 @@
        * @return {String}
        */
       currentAxis(){
-        return this.currentOrientation === 'horizontal' ? 'x' : 'y'
+        return this.isVertical ? 'y' : 'x'
       },
       /**
        * Width or height depending on the current orientation.
@@ -148,7 +148,7 @@
        * @return {String}
        */
       currentSizeType(){
-        return this.currentOrientation === 'horizontal' ? 'Width' : 'Height';
+        return this.isVertical ? 'Height' : 'Width';
       },
       /**
        * Width or height depending on the current orientation.
@@ -156,7 +156,7 @@
        * @return {String}
        */
       currentOffsetType(){
-        return this.currentOrientation === 'horizontal' ? 'left' : 'top';
+        return this.isVertical ? 'top' : 'left';
       },
       /**
        * Size of the container as given by bbn.
@@ -198,65 +198,63 @@
       getFormatted(){
         /**
          * The position of the panes, starting at 1; gapos will be created for resizers.
-         * 
          * @type {Number}
          */
         let pos = 1,
-            lastVisibleResizer = false,
-            tmp = this.panes.map((a) => {
-                  /**
-                   * The additions of the 3 differences:
-                   * - currentDiff is the current difference while resizing
-                   * - savedDiff is the original difference resulting from other resizings
-                   * - tmpDiff is the temporary difference applied from other(s) collapsed pane(s)
-                   * @type {number}
-                   */
-              let diff = a.currentDiff + a.savedDiff + a.tmpDiff,
-                 /**
-                  * The resulting string for the CSS property.
-                  * @type {string}
-                  */
-                  sz = '';
-              // If position is not the one expected it means a resizer is before so it's added as a column
-              while ( a.position > pos ){
-                sz += lastVisibleResizer ? '0 ' : this.resizerSize + 'px ';
-                lastVisibleResizer = true;
-                pos++;
-              }
-              // If the pane is collapsed we just mark its size at 0
-              if ( a.collapsed ){
-                sz += '0 ';
-              }
-              // If it's a number it will be a sum with the existing diff
-              else {
-                lastVisibleResizer = false;
-                if ( a.addedSize && (a.addedSize === 'auto') ){
-                  sz += 'auto';
+            lastVisibleResizer = false;
+        return this.panes.map((a) => {
+              /**
+               * The additions of the 3 differences:
+               * - currentDiff is the current difference while resizing
+               * - savedDiff is the original difference resulting from other resizings
+               * - tmpDiff is the temporary difference applied from other(s) collapsed pane(s)
+               * @type {number}
+               */
+          let diff = a.currentDiff + a.savedDiff + a.tmpDiff,
+              /**
+              * The resulting string for the CSS property.
+              * @type {string}
+              */
+              sz = '';
+          // If position is not the one expected it means a resizer is before so it's added as a column
+          while ( a.position > pos ){
+            sz += lastVisibleResizer ? '0 ' : this.resizerSize + 'px ';
+            lastVisibleResizer = true;
+            pos++;
+          }
+          // If the pane is collapsed we just mark its size at 0
+          if ( a.collapsed ){
+            sz += '0 ';
+          }
+          // If it's a number it will be a sum with the existing diff
+          else {
+            lastVisibleResizer = false;
+            if ( a.addedSize && (a.addedSize === 'auto') ){
+              sz += 'auto';
+            }
+            else if ( a.size ){
+              if ( a.addedSize || diff ){
+                sz += 'calc(';
+                sz += a.size + (a.isNumber || bbn.fn.isNumber(a.size) ? 'px' : '');
+                if ( diff ){
+                  sz += ' + ' + diff + 'px';
                 }
-                else if ( a.size ){
-                  if ( a.addedSize || diff ){
-                    sz += 'calc(';
-                    sz += a.size + (a.isNumber || bbn.fn.isNumber(a.size) ? 'px' : '');
-                    if ( diff ){
-                      sz += ' + ' + diff + 'px';
-                    }
-                    if ( a.addedSize ){
-                      sz += ' + ' + (bbn.fn.isNumber(a.addedSize) ? a.addedSize + 'px' : a.addedSize);
-                    }
-                    sz += ')';
-                  }
-                  else if ( a.size ){
-                    sz += a.size + (a.isNumber || bbn.fn.isNumber(a.size) ? 'px' : '');
-                  }
+                if ( a.addedSize ){
+                  sz += ' + ' + (bbn.fn.isNumber(a.addedSize) ? a.addedSize + 'px' : a.addedSize);
                 }
-                else {
-                  sz += 'auto';
-                }
+                sz += ')';
               }
-              pos++;
-              return sz;
-            });
-        return tmp.join(' ');
+              else if ( a.size ){
+                sz += a.size + (a.isNumber || bbn.fn.isNumber(a.size) ? 'px' : '');
+              }
+            }
+            else {
+              sz += 'auto';
+            }
+          }
+          pos++;
+          return sz;
+        }).join(' ');
       },
       /**
        * returns the resizer's class according to its resizerClass prop.
@@ -460,7 +458,8 @@
                 isResizable: collapsible || resizable,
                 pane: pane,
                 originalSize: pane.originalSize,
-                realSize: 0
+                formattedSize: 0,
+                resized: false
               }, props));
             }
           });
@@ -566,11 +565,8 @@
           this.selfEmit(true);
           this.$nextTick(() => {
             bbn.fn.each(this.panes, p => {
-              let cr = p.pane.$el.getBoundingClientRect(),
-                  size = parseInt(this.isVertical ? cr.height : cr.width) + 'px';
-              //p.size = size;
-              p.realSize = size;
-              //p.pane.realSize = size;
+              let cr = p.pane.$el.getBoundingClientRect();
+              p.formattedSize = parseInt(this.isVertical ? cr.height : cr.width) + 'px';
             });
           })
         }, 200);
@@ -726,13 +722,14 @@
        * @param {Object} rs
        */
       resizeStart(e, rs){
-        bbn.fn.log(this.isResizable);
         if (
           this.isResizable &&
           !this.isResizing &&
           this.panes[rs.pane1] &&
+          this.panes[rs.pane1].pane &&
           !this.panes[rs.pane1].collapsed &&
           this.panes[rs.pane2] &&
+          this.panes[rs.pane2].pane &&
           !this.panes[rs.pane2].collapsed
         ){
           this.isResizing = true;
@@ -742,22 +739,28 @@
           document.body.addEventListener("touchcancel", this.resizeEnd);
           document.body.addEventListener("mouseup", this.resizeEnd);
           document.body.addEventListener("mouseleave", this.resizeEnd);
-          let vue1 = bbn.vue.find(this, 'bbn-pane2', rs.pane1),
-              vue2 = bbn.vue.find(this, 'bbn-pane2', rs.pane2),
+          let vue1 = this.panes[rs.pane1].pane,
+              vue2 = this.panes[rs.pane2].pane,
               pos = e.target.getBoundingClientRect(),
               pos1 = vue1.$el.getBoundingClientRect(),
-              pos2 = vue2.$el.getBoundingClientRect();
+              pos2 = vue2.$el.getBoundingClientRect(),
+              min = -pos1[this.currentSizeType.toLowerCase()] + vue1.min,
+              max = pos2[this.currentSizeType.toLowerCase()] - vue2.min;
           if ( !this.panes[rs.pane1].size && !this.panes[rs.pane2].size ){
-            this.$set(this.panes[rs.pane1], "size", this.isVertical ? pos1.height : pos1.width);
-            this.$set(this.panes[rs.pane2], "size", this.isVertical ? pos2.height : pos2.width);
+            let s1 = this.isVertical ? pos1.height : pos1.width,
+                s2 = this.isVertical ? pos2.height : pos2.width;
+            s1 = s1 < vue1.min ? vue1.min : (s1 > vue1.max ? vue1.max : s1);
+            s2 = s2 < vue2.min ? vue2.min : (s2 > vue2.max ? vue2.max : s2);
+            this.$set(this.panes[rs.pane1], "size", s1);
+            this.$set(this.panes[rs.pane2], "size", s2);
             this.setFormatted();
             this.$forceUpdate();
           }
           this.resizeCfg = {
             resizer: rs,
             panes: [vue1, vue2],
-            min: -pos1[this.currentSizeType.toLowerCase()] + this.minPaneSize,
-            max: pos2[this.currentSizeType.toLowerCase()] - this.minPaneSize - this.resizerSize
+            min: min,
+            max: max
           };
           this.resizeCfg[this.currentOffsetType] = pos[this.currentOffsetType];
           bbn.fn.log("START", this.resizeCfg, e, "------------");
@@ -882,6 +885,7 @@
             this.panes[toCollapse].collapsed =  collapsing;
             this.panes[toCollapse].pane.isCollapsed =  collapsing;
           }
+          this.setFormatted();
           this.$nextTick(() => {
             this.selfEmit();
           });
@@ -920,12 +924,18 @@
           }
           if ( bbn.fn.isNumber(idx) && (idx > -1) ){
             if ( bbn.fn.isNumber(size) ){
+              if ( size < this.panes[idx].pane.min ){
+                size = this.panes[idx].pane.min;
+              }
+              if ( size > this.panes[idx].pane.max ){
+                size = this.panes[idx].pane.max;
+              }
               size = size + 'px';
             }
             this.panes[idx].size = size;
             this.panes[idx].savedDiff = 0;
             this.panes[idx].isFixed = true;
-            this.setFormatted()
+            this.setFormatted();
           }
         }
       },
@@ -971,6 +981,7 @@
       panes(){
         this.setFormatted();
       },
+      /*
       availableSize(newSize, oldSize){
         let diff = newSize - oldSize,
             toChange = bbn.fn.filter(this.panes, p => {
@@ -984,6 +995,7 @@
           })
         }
       }
+      */
     },
   });
 

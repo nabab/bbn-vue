@@ -49,7 +49,7 @@
       },
       min: {
         type: Number,
-        default: 20
+        default: 40
       },
       max: {
         type: Number,
@@ -63,7 +63,8 @@
         isResizable: this.resizable,
         realSize: 0,
         lastRealSize: 0,
-        originalSize: this.size || 'auto'
+        originalSize: this.size || 'auto',
+        currentStyle: {}
       };
     },
     computed: {
@@ -83,6 +84,12 @@
       },
       setSize(size){
         if ( this.splitter ){
+          if ( size < this.min ){
+            size = this.min;
+          }
+          if ( size > this.max ){
+            size = this.max;
+          }
           this.splitter.setSize(size, this);
         }
       },
@@ -94,6 +101,16 @@
       },
       toggleCollapsed(){
         this.isCollapsed = !this.isCollapsed;
+      },
+      setStyle(){
+        let s = {};
+        if ( this.min ){
+          s[this.$parent.currentOrientation === 'vertical' ? 'min-height' : 'min-width'] = this.min + 'px';
+        }
+        if ( this.max ){
+          s[this.$parent.currentOrientation === 'vertical' ? 'max-height' : 'max-width'] = this.max + 'px';
+        }
+        this.currentStyle = s;
       }
     },
     mounted(){
@@ -108,13 +125,17 @@
         }, 40)
       }
       this.$nextTick(() => {
+        this.setStyle();
         this.realSize = this.getRealSize();
         this.lastRealSize = this.realSize;
         if ( this.splitter ){
           this.$watch('splitter.formattedCfg', () => {
             this.lastRealSize = this.realSize;
             this.realSize = this.getRealSize();
-          })
+          });
+          this.$watch('splitter.currentOrientation', () => {
+            this.setStyle();
+          });
         }
       })
     },

@@ -50,7 +50,7 @@
        */
       fields: {},
       /**
-       * Set to true to make a post_out instead of a post when the form is submitted.
+       * Set to true to make a postOut instead of a post when the form is submitted.
        *
        * @prop {Boolean} [false] blank
        */
