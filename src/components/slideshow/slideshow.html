@@ -54,10 +54,10 @@
         >
           <div v-if="it.type === 'text'"
                :ref="'slide' + i.toString()"
-               :class="['content', it.animation || '', it.cls || '', 'bbn-middle', 'bbn-m' ]"
+               :class="['content', it.animation || '', it.cls || '', 'bbn-middle', 'bbn-m']"
           >
             <component v-if="it.component"
-                       :is="it.component"                      
+                       :is="it.component"
                        :data="it.data || {}"
                        v-bind="it.attributes"
                        :key="i"

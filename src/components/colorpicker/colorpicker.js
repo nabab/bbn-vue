@@ -20,8 +20,9 @@
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.inputComponent
      * @mixin bbn.vue.eventsComponent
+     * @mixin bbn.vue.resizerComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent],
+    mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent, bbn.vue.resizerComponent],
     props: {
       /**
        * The colorpicker's value.
@@ -148,7 +149,11 @@
         /**
          * @data {String} [''] currentHsl
          */
-        currentHsl: ''
+        currentHsl: '',
+        /**
+         * @data {Boolean|Number} [false] initTimeout
+         */
+        initTimeout: false
       }
     },
     computed: {
@@ -159,7 +164,6 @@
        */
       currentCfg(){
         let obj = {
-          width: 200,
           handleRadius: 6,
           color: this.value || this.color,
           layout: []
@@ -191,6 +195,16 @@
     },
     methods: {
       /**
+       * The method called at the window resize event.
+       * @method onResize
+       * @fires init
+       */
+      onResize(){
+        this.$nextTick(() => {
+          this.init();
+        })
+      },
+      /**
        * Initializes the widget.
        * @method init
        * @fires destroy
@@ -201,9 +215,14 @@
         if ( this.widget ){
           this.destroy();
         }
-        setTimeout(() => {
-          this.widget = new iro.ColorPicker(this.getRef('picker'), this.currentCfg);
-          this.setEvents();
+        clearTimeout(this.initTimeout);
+        this.initTimeout = setTimeout(() => {
+          let el = this.getRef('picker');
+          if ( el ){
+            let width = el.offsetParent.getBoundingClientRect().width - 100;
+            this.widget = new iro.ColorPicker(el, bbn.fn.extend(true, {width: width}, this.currentCfg));
+            this.setEvents();
+          }
         }, 300);
       },
       /**

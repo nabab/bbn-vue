@@ -36,7 +36,7 @@
                         :uid="uid"
         >
           <li :class="['bbn-tree-node', 'bbn-unselectable', {
-                        'bbn-state-active': (isActive && !isSelected) || (tree.dragging && tree.overNode && !tree.overOrder && (tree.overNode === _self)),
+                        'bbn-state-active': (isActive && !isSelected) || (tree.dragging && tree.overNode && !tree.overOrder && (tree.overNode === _self) && tree.draggable),
                         'bbn-state-selected': isSelected
                       }]"
               v-show="isVisible"
@@ -51,14 +51,14 @@
                   ref="orderTop"
                   @mouseover.stop="mouseOver"
             ></span>
-            <span :class="'node' + (component ? '' : ' no-component') + (source.cls ? ' ' + source.cls : '')"
+            <span :class="['bbn-tree-node-block', , source.cls, {'bbn-tree-node-block-no-component': !!component}]"
                   @mouseover.stop="mouseOver"
             >
-              <span class="expander bbn-p"
+              <span class="bbn-tree-node-block-expander bbn-p"
                     @click="if ( numChildren && (level >= tree.minExpandLevel) ){
                       isExpanded = !isExpanded;
                     }"
-                    @mouseover="if ( tree.dragging && numChildren && (level >= tree.minExpandLevel) ){
+                    @mouseover="if ( tree.draggable && tree.dragging && numChildren && (level >= tree.minExpandLevel) ){
                       isExpanded = true;
                     }"
               >
@@ -88,7 +88,7 @@
                             @open="isActive = true"
                             @close="isActive = false"
               >
-                <span class="selectable"
+                <span :class="['bbn-tree-node-block-selectable', {'bbn-p': !!selectable}]"
                       @dblclick="dblClickOnNode"
                       @click="clickOnNode"
                       @mousedown.left="startDrag"
@@ -102,7 +102,7 @@
                       tabindex="0"
                 >
                   <span v-if="tree.icons"
-                        :class="[{'with-zoom': ready}, 'icon']"
+                        :class="[{'with-zoom': ready}, 'bbn-tree-node-block-icon']"
                   >
                     <!-- If icon is specifically false we leave the white space -->
                     <span v-if="source.icon === false"></span>
@@ -111,7 +111,7 @@
                         :style="iconStyle"
                     ></i>
                   </span>
-                  <span class="title">
+                  <span class="bbn-tree-node-block-title">
                     <span v-html="source.text"></span>
                   </span>
                 </span>
@@ -151,7 +151,7 @@
       </ul>
     </transition>
     <div class="bbn-tree-helper-container"
-         v-if="draggable && isRoot"
+         v-if="(draggable || sortable) && isRoot"
          ref="helperContainer">
       <ul class="bbn-tree-helper"
           ref="helper"

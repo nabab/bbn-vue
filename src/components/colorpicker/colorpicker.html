@@ -36,8 +36,10 @@
                ref="floater"
                @close="showFloater = false"
                @hook:mounted="init"
-               :width="450"
-               height="300"
+               height="24em"
+               width="45em"
+               :min-width="450"
+               :min-height="300"
   >
     <bbn-splitter orientation="horizontal">
       <bbn-pane>

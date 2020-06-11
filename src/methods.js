@@ -958,7 +958,7 @@
       if ( !referer && bbn.env.path ){
         referer = bbn.env.path;
       }
-      cfg.obj = bbn.fn.extend({}, cfg.obj || {}, {_bbn_referer: referer, _bbn_key: bbn.fn.getIdURL(cfg.url, cfg.obj, 'json')});
+      cfg.obj = bbn.fn.extend({}, cfg.obj || {}, {_bbn_referer: referer, _bbn_key: bbn.fn.getRequestId(cfg.url, cfg.obj, 'json')});
       return bbn.fn.post(cfg);
     },
 
@@ -970,7 +970,7 @@
      */
     postOut(vm, url, obj, onSuccess, target){
       let referer = bbn.vue.getContainerURL(vm);
-      obj = bbn.fn.extend({}, obj || {}, {_bbn_referer: referer, _bbn_key: bbn.fn.getIdURL(url, obj, 'json')});
+      obj = bbn.fn.extend({}, obj || {}, {_bbn_referer: referer, _bbn_key: bbn.fn.getRequestId(url, obj, 'json')});
       return bbn.fn.postOut(url, obj, onSuccess, target);
     }
 

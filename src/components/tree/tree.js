@@ -236,12 +236,11 @@
         }
       },
       /**
-       * Set to true if the prop 'ajax' is true, 
+       * Set to true if the prop 'ajax' is true,
        * the tree will make the ajax call only for
        * the source of the root level and will take
        * the current data for the source of other levels
        * @prop {Boolean} [false] hybrid
-       * 
        */
       hybrid: {
         type: Boolean,
@@ -356,11 +355,12 @@
           ret = this.currentData;
         }
         if ( this.sortable && this.order.length ){
-          ret = bbn.fn.multiorder(ret, bbn.fn.map(this.order, o => {
+          /* ret = bbn.fn.multiorder(ret, bbn.fn.map(this.order, o => {
             let r = bbn.fn.extend(true, {}, o);
             r.field = 'data.' + r.field;
             return r;
-          }));
+          })); */
+          ret = bbn.fn.multiorder(ret, this.order);
           ret = bbn.fn.map(ret, (v, i) => {
             v.num = i + 1;
             return v;
@@ -1545,7 +1545,7 @@
            */
           startDrag(e){
             setTimeout(() => {
-              if ( !this.doubleClk && this.tree.draggable ){
+              if ( !this.doubleClk && (this.tree.draggable || this.sortable)  ){
                 e.preventDefault();
                 e.stopImmediatePropagation();
                 this.tree.dragging = this;
@@ -1576,8 +1576,8 @@
           drag(e){
             e.stopImmediatePropagation();
             e.preventDefault();
-            this.tree.$refs.helper.style.left = (e.pageX + 2) + 'px';
-            this.tree.$refs.helper.style.top = (e.pageY + 2) + 'px';
+            this.tree.getRef('helper').style.left = (e.pageX + 2) + 'px';
+            this.tree.getRef('helper').style.top = (e.pageY + 2) + 'px';
             if ( this.sortable ){
               if ( e.target.classList.contains('bbn-tree-order') ){
                 if ( this.tree.overOrder !== e.target ){
@@ -1683,7 +1683,7 @@
                             this.reorder(this.tree.dragging.source.num, numAfter);
                           }
                     }
-                    else {
+                    else if ( this.tree.draggable ){
                       if( a.overNode.$el.querySelector('span.node') && a.overNode.$el.querySelector('span.node').classList ){
                         if ( a.overNode.$el.querySelector('span.node').classList.contains('dropping') ){
                           a.overNode.$el.querySelector('span.node').classList.remove('dropping')
@@ -1751,7 +1751,7 @@
            * @memberof bbn-tree-node
            */
           mouseOver(){
-            this.tree.overNode = this.tree.dragging ? this : false;
+            this.tree.overNode = this.tree.dragging && (this.tree.draggable || this.sortable) ? this : false;
           },
           /**
            * @method checkPath

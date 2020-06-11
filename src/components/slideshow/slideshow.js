@@ -36,7 +36,7 @@
        * @prop {Object} component
        */
       component: {
-        type: Object
+        type: [String, Object, Vue]
       },
       /**
        * Insert a checkbox in each slide.
@@ -175,7 +175,6 @@
        * If the property content is given to the item, set to true insert the html content inside a scroll.
        * @prop {Boolean} [false] scroll
        */
-      
       scroll: {
         type: Boolean,
         default: false
@@ -202,7 +201,6 @@
       else if ( bbn.fn.isFunction(this.source) ){
         src = this.source();
       }
-
       else if ( bbn.fn.isArray(this.source) && this.checkbox ){
         if ( this.separator ){
           this.source.forEach((v, i) =>{
@@ -221,7 +219,6 @@
           valuesCB[i] = false;
         }
       }
-
       else if ( bbn.fn.isArray(this.source)  ){
         if ( bbn.fn.isEmpty(src) ){
           src = this.source.slice().map((val, idx) => {

@@ -751,7 +751,7 @@
                 if ( this.showable ){
                   data.fields = this.shownFields;
                 }
-                loadingRequestID = bbn.fn.getIdURL(this.source, data);
+                loadingRequestID = bbn.fn.getRequestId(this.source, data);
                 this.loadingRequestID = loadingRequestID;
                 prom = this.post(this.source, data);
               }

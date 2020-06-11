@@ -411,7 +411,7 @@
               extra: !!ext
             };
         if (
-          (this.onlyEvents && !events.length) ||
+          (this.onlyEvents && (!events || !events.length)) ||
           (this.min && (obj.value < moment(this.min, this.currentCfg.valueFormat).format(this.currentCfg.valueFormat))) ||
           (this.max && (obj.value > moment(this.max, this.currentCfg.valueFormat).format(this.currentCfg.valueFormat)))
         ){
@@ -421,7 +421,7 @@
           obj.disabled = bbn.fn.isFunction(this.disableDates) ? this.disableDates(obj.value) : this.disableDates.includes(obj.value);
         }
         if ( this.disableNoEvents && !obj.disabled ){
-          obj.disabled = !events.length;
+          obj.disabled = !events || !events.length;
         }
         return obj;
       },
