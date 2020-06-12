@@ -52,20 +52,20 @@
       /**
        * Specifies the time of delay.
        *
-       * @prop {Number} [500] delay
+       * @prop {Number} [10] delay
        */
       delay: {
         type: Number,
-        default: 500
-      }, 
+        default: 10
+      },
       /**
        * Specifies the mode of the filter.
        *
-       * @prop {String} ['startsWith'] filterMode
+       * @prop {String} ['startswith'] filterMode
        */
       filterMode: {
         type: String,
-        default: 'startsWith'
+        default: 'startswith'
       }
     },
     methods: {
@@ -211,7 +211,7 @@
                 this.unfilter();
               }
             }
-          }, 10);
+          }, this.delay);
         }
         else if ( !v ){
           this.unfilter();

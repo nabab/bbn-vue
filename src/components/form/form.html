@@ -8,13 +8,16 @@
       @keydown.enter.prevent.stop="submit"
       @keyup.esc="cancel"
 >
-  <div :class="[{'bbn-flex-fill': isInit && scrollable || !!fullSize, 'bbn-w-100': scrollable, 'bbn-flex-height': !scrollable && hasFooter}]"
+  <div :class="{
+         'bbn-flex-fill': isInit && scrollable || !!fullSize,
+         'bbn-w-100': scrollable,
+         'bbn-flex-height': !scrollable && hasFooter
+       }"
   >
     <component :is="scrollable ? 'bbn-scroll' : 'div'"
-               :class="{
-                 'bbn-overlay': !!fullSize
-               }"
-               ref="container">
+               :class="{'bbn-overlay': !!fullSize}"
+               ref="container"
+    >
       <div class="bbn-grid-fields bbn-padded" v-if="schema && schema.length">
         <template v-for="field in currentSchema"
                   v-if="field.field && !field.buttons && (field.editable !== false)"
@@ -26,7 +29,8 @@
           <template v-else>
             <label v-html="field.title"
                    :for="field.id"
-                   :title="field.ftitle || field.title || field.field"></label>
+                   :title="field.ftitle || field.title || field.field"
+            ></label>
             <component v-if="field.editor"
                        :is="field.editor"
                        v-bind="field.options"
@@ -44,14 +48,16 @@
     </component>
   </div>
   <div v-if="hasFooter && !popup"
-       class="bbn-form-footer bbn-header">
+       class="bbn-form-footer bbn-header"
+  >
     <slot name="footer"></slot>
   </div>
   <div v-else-if="!window && realButtons.length"
-       class="bbn-form-footer bbn-popup-footer bbn-button-group bbn-flex-width bbn-lg">
+       class="bbn-form-footer bbn-popup-footer bbn-button-group bbn-flex-width bbn-lg"
+  >
     <bbn-button v-for="(button, i) in realButtons"
                 :key="i"
-                v-bind="button">
-    </bbn-button>
+                v-bind="button"
+    ></bbn-button>
   </div>
 </form>

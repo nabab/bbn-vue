@@ -259,7 +259,7 @@
         _isSetting: false,
         window: null,
         isInit: false,
-        realButtons: this.getRealButtons()
+        realButtons: []
       };
     },
     computed: {
@@ -451,18 +451,15 @@
         if (this.realButtons.length) {
           this.realButtons.splice(0, this.realButtons.length);
         }
-        this.$nextTick(() => {
-          let b = this.getRealButtons();
+        if ( this.window && bbn.fn.isArray(this.window.currentButtons) ){
+          this.window.currentButtons.splice(0, this.window.currentButtons.length);
+        }
+        bbn.fn.each(this.getRealButtons(), b => {
+          this.realButtons.push(b);
           if ( this.window && bbn.fn.isArray(this.window.currentButtons) ){
-            this.window.currentButtons.splice(0, this.window.currentButtons.length);
+            this.window.currentButtons.push(b);
           }
-          bbn.fn.each(b, (a) => {
-            this.realButtons.push(a);
-          });
-          if ( this.window ){
-            this.window.currentButtons = this.realButtons;
-          }
-        })
+        });
       },
       /**
        * Compares the actual data with the original data of the form to identify the differences.
@@ -832,10 +829,15 @@
           }
         }
       },
+      /**
+       * @watch buttons
+       */
       buttons: {
         deep: true,
         handler(){
-          this.realButtons = this.getRealButtons();
+          if ( this.isInit ){
+            this.updateButtons();
+          }
         }
       },
       /**
@@ -844,6 +846,15 @@
       canSubmit(){
         this.updateButtons();
       },
+      /**
+       * @watch canCancel
+       */
+      canCancel(){
+        this.updateButtons();
+      },
+      /**
+       * @watch dirty
+       */
       dirty(v){
         if (this.window) {
           this.window.dirty = v;

@@ -247,19 +247,18 @@
       realSize(){
         return this.containerSize ? this.containerSize / 100 * this.size : 0;
       },
-      
       /**
        * @computed isVisible
        * @returns {Boolean}
        */
       isVisible(){
-        return (this.hidden !== true) && ((this.scroller && this.scroller.isFocused) || this.isActive);
+        return (this.hidden !== true) && ((this.scroller && this.scroller.isFocused) && this.isActive || this.isActive);
       },
     },
     methods: {
       /**
        * @method startDrag
-       * @param {Event} e 
+       * @param {Event} e
        */
       startDrag(e) {
         if ( this.realContainer ){
@@ -273,7 +272,7 @@
       },
       /**
        * @method onDrag
-       * @param {Event} e 
+       * @param {Event} e
        */
       onDrag(e) {
         if ( this.realContainer && this.dragging && this.containerSize ){
