@@ -1,16 +1,10 @@
 /**
- * @file bbn-dropdown component
- *
- * @description The easy-to-implement bbn-dropdown component allows you to choose a single value from a user-supplied list.
- *
+ * @file bbn-combo component
+ * @description The easy-to-implement bbn-combo component allows you to choose a single value from a user-supplied list or to write new.
  * @copyright BBN Solutions
- *
  * @author BBN Solutions
- *
  * @created 10/02/2017.
  */
-
-
 (function(bbn){
   "use strict";
 
@@ -36,28 +30,52 @@
       bbn.vue.dropdownComponent
     ],
     props: {
+      /**
+       * Set to true allows the columns of the list to be filtered. A filter icon will appear at the top of each column.The property can be given to each column to define different behaviour.
+       * @prop {Boolean} [true] filterable
+       */
       filterable: {
         default: true
       },
+      /**
+       * To define the length of the string to start the filter.
+       *
+       * @prop {Number} [0] minLength
+       */
       minLength: {
         type: Number,
         default: 0
       },
+      /**
+       * Specifies the time of delay.
+       *
+       * @prop {Number} [10] delay
+       */
       delay: {
         type: Number,
-        default: 500
-      }
+        default: 10
+      },
     },
     methods: {
+      /**
+       * Puts the focus on the element.
+       *
+       * @method click
+       * @fires getRef
+       */
       click(){
-        if (!this.disabled && this.filteredData.length) {
+        if ( !this.disabled && !this.readnly ){
           this.getRef('input').focus();
-          this.isOpened = !this.isOpened;
+          if ( this.filteredData.length ){
+            this.isOpened = !this.isOpened;
+          }
         }
       },
       /**
+       * Remove the filter and close the list if it is notabove it.
+       *
        * @method leave
-       * @param element 
+       * @fires getRef
        */
       leave(){
         if ( this.isOpened && !this.getRef('list').isOver ){
@@ -65,13 +83,16 @@
         }
       },
       /**
-       * Emits the event 'select' 
+       * Emits the event 'select'
        * @method select
-       * @param {} item 
+       * @param {Object} item
+       * @fires emitInput
+       * @fires getRef
        * @emit change
        */
       select(item){
         if ( item && (item[this.sourceValue] !== undefined) ){
+          this.writing = false;
           this.emitInput(item[this.sourceValue]);
           this.$emit('change', item[this.sourceValue]);
           this.filterString = item[this.sourceText];
@@ -81,6 +102,21 @@
         }
         this.isOpened = false;
       },
+      /**
+       * Select the string of text inside of the input.
+       * @method selectAll
+       * @fires getRef
+       */
+      selectAll(){
+        let input = this.getRef('input');
+        input.setSelectionRange(0, input.value.length);
+      },
+      /**
+       * Function to do the reset and if the component is open it closes it.
+       *
+       * @method resetDropdown
+       * @fires unfilter
+       */
       resetDropdown(){
         this.filterString = this.currentTextValue;
         this.unfilter();
@@ -88,6 +124,15 @@
           this.isOpened = false;
         }
       },
+      /**
+       * Function that performs different actions based on what is being pressed.
+       *
+       * @method keydown
+       * @param {Event} e
+       * @fires resetDropdown
+       * @fires commonKeydown
+       * @fires keynav
+       */
       keydown(e){
         if (e.key === 'Tab') {
           let list = this.find('bbn-list');
@@ -105,10 +150,14 @@
         else if (bbn.var.keys.upDown.includes(e.keyCode)) {
           this.keynav(e);
         }
+        else if ( !this.disabled || !this.readonly ){
+          this.writing = true;
+        }
       },
     },
     /**
      * @event created
+     * @fires emitInput
      */
     created(){
       this.$on('dataloaded', () => {
@@ -126,47 +175,48 @@
       });
     },
     watch: {
-      value(){
-        return;
-      },
       /**
        * @watch filterString
-       * @param {String} v 
+       * @param {String} v
+       * @fires onResize
+       * @fires unfilter
+       * @fires emitInput
        */
       filterString(v){
-        if (!this.ready) {
+        if ( !this.ready ){
           this.ready = true;
         }
         clearTimeout(this.filterTimeout);
-        this.isOpened = false;
-        this.filterTimeout = setTimeout(() => {
-          this.filterTimeout = false;
-          bbn.fn.log("IS IT ACTIVE???????", this.isActive);
-          if ( this.isActive ){
-            if (v && (v.length >= this.minLength)) {
-              this.currentFilters.conditions.splice(0, this.currentFilters.conditions.length ? 1 : 0, {
-                field: this.sourceText,
-                operator: 'startswith',
-                value: v
-              });
-              this.$nextTick(() => {
-                if (!this.isOpened){
-                  this.isOpened = true;
-                }
-                else{
-                  let list = this.find('bbn-scroll');
-                  if ( list ){
-                    list.onResize();
+        if ( this.writing ){
+          this.isOpened = false;
+          this.filterTimeout = setTimeout(() => {
+            this.filterTimeout = false;
+            if ( this.isActive ){
+              if (v && (v.length >= this.minLength)) {
+                this.currentFilters.conditions.splice(0, this.currentFilters.conditions.length ? 1 : 0, {
+                  field: this.sourceText,
+                  operator: 'startswith',
+                  value: v
+                });
+                this.$nextTick(() => {
+                  if (!this.isOpened){
+                    this.isOpened = true;
                   }
-                }
-              });
+                  else{
+                    let list = this.find('bbn-scroll');
+                    if ( list ){
+                      list.onResize();
+                    }
+                  }
+                });
+              }
+              else {
+                this.unfilter();
+              }
             }
-            else {
-              this.unfilter();
-            }
-          }
-          this.emitInput(v);
-        }, this.delay);
+            this.emitInput(v);
+          }, this.delay);
+        }
       }
     }
   });
