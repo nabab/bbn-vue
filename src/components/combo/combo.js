@@ -111,7 +111,7 @@
      * @event created
      */
     created(){
-      this.$on.('dataloaded', () => {
+      this.$on('dataloaded', () => {
         if ( this.value !== undefined ){
           let row = bbn.fn.getRow(this.currentData, (a) => {
             return a.data[this.sourceValue] === this.value;

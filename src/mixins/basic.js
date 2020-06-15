@@ -72,7 +72,7 @@
        */
       beforeCreate(){
         if ( !this.$options.render && !this.$options.template && this.$options.name ){
-          this.$options.template = '#bbn-tpl-component-' + this.$options.name.slice(4);
+          this.$options.template = '#bbn-tpl-component-' + (this.$options.name.indexOf('bbn-') === 0 ? this.$options.name.slice(4) : this.$options.name);
         }
       },
       /**

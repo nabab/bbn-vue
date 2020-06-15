@@ -11,14 +11,14 @@
         :disabled="isDisabled"
         :title="titleString"
 >
-  <span v-if="icon && (iconPosition === 'left')" class="bbn-button-icon">
+  <span v-if="icon && (iconPosition === 'left')" class="bbn-button-icon bbn-rel">
     <i :class="icon"> </i>
     <i v-if="secondary"
        :class="secondary + ' secondary'"
        :style="{
         color: secondaryColor,
         transform: 'scale(0.7)',
-        bottom: '0.2em',
+        bottom: '0.15em',
         left: '0.7em',
         position: 'absolute'
       }"
@@ -29,7 +29,8 @@
         :style="{
           paddingLeft: icon && (iconPosition === 'left') ? (secondary ? '1em' : '0.3em') : '',
           paddingRight: icon && (iconPosition === 'right') ? (secondary ? '1em' : '0.3em') : ''
-        }"></span>
+        }"
+  ></span>
   <span v-else-if="!notext"><slot></slot></span>
   <span v-if="icon && (iconPosition === 'right')" class="bbn-iblock bbn-m">
     <i :class="icon"> </i>
@@ -38,7 +39,7 @@
        :style="{
         color: secondaryColor,
         transform: 'scale(0.7)',
-        bottom: '0.2em',
+        bottom: '0.15em',
         left: '0.7em',
         position: 'absolute'
       }"

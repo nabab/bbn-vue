@@ -110,7 +110,7 @@
             if ( this.editor ){
               return this.editor;
             }
-            else if ( this.render !== undefined ){
+            else if ( (this.render !== undefined) && bbn.fn.isFunction(this.render) ){
               this.renderedComponent = 'div';
               this.renderedContent = this.render(this.actualData, this.index, this.field, this.value);
             }
@@ -179,7 +179,7 @@
             }
             else{
               this.renderedComponent = 'div';
-              if ( this.render !== undefined ){
+              if ( (this.render !== undefined) && bbn.fn.isFunction(this.render) ){
                 this.renderedContent = this.render(this.actualData, this.index, this.field, this.value);
               }
               else {

@@ -1,7 +1,6 @@
 ((bbn) => {
   "use strict";
-  const
-    isReservedTag = Vue.config.isReservedTag;
+  const isReservedTag = Vue.config.isReservedTag;
   let loadingComponents = [];
   bbn.fn.autoExtend("vue", {
     /**
@@ -16,7 +15,7 @@
       else if ( vm.getRef('popup') ){
         return vm.getRef('popup');
       }
-      return vm.$parent ? this._retrievePopup(vm.$parent) : false;
+      return vm.$parent ? bbn.vue._retrievePopup(vm.$parent) : false;
     },
     /**
      * Sets default object for a component, accessible through bbn.vue.defaults[cpName].
@@ -54,11 +53,11 @@
      */
     setComponentRule(url, prefix){
       if ( url ){
-        this.localURL = url;
-        if ( this.localURL.substr(-1) !== '/' ){
-          this.localURL += '/';
+        bbn.vue.localURL = url;
+        if ( bbn.vue.localURL.substr(-1) !== '/' ){
+          bbn.vue.localURL += '/';
         }
-        this.localPrefix = prefix || '';
+        bbn.vue.localPrefix = prefix || '';
       }
     },
 
@@ -70,9 +69,9 @@
      */
     setDefaultComponentRule(url, prefix){
       if ( url ){
-        this.defaultLocalURL = url;
-        this.defaultLocalPrefix = prefix || '';
-        this.setComponentRule(url, prefix);
+        bbn.vue.defaultLocalURL = url;
+        bbn.vue.defaultLocalPrefix = prefix || '';
+        bbn.vue.setComponentRule(url, prefix);
       }
     },
 
@@ -81,8 +80,8 @@
      * @memberof bbn.vue
      */
     unsetComponentRule(){
-      this.localURL = this.defaultLocalURL;
-      this.localPrefix = this.defaultLocalPrefix;
+      bbn.vue.localURL = bbn.vue.defaultLocalURL;
+      bbn.vue.localPrefix = bbn.vue.defaultLocalPrefix;
     },
 
     /**
@@ -124,8 +123,8 @@
      * @param {Object} obj
      */
     setStorageComponent(name, obj){
-      if ( window.store ){
-        return window.store.set(name, JSON.stringify({
+      if ( window.localStorage ){
+        return window.localStorage.setItem(name, JSON.stringify({
           value: obj,
           time: (new Date()).getTime()
         }));
@@ -441,33 +440,44 @@
      * @param {Function} resolve
      * @param {Function} reject
      */
-    queueComponentBBN(name, resolve, reject){
-      if ( bbn.fn.search(this.queueBBN, {name: name}) === -1 ){
-        clearTimeout(this.queueTimerBBN);
-        let def = false;//this.getStorageComponent('bbn-' + name);
-        if ( def ){
-          this._realDefineBBNComponent(name, def);
-          this.queueTimer = setTimeout(() => {
-            if ( resolve ){
-              resolve('ok6');
-            }
-            return 'ok7';
-          })
+    queueComponentBBN(name, resolve, reject) {
+      if (bbn.env.host.indexOf('test') === -1) {
+        if ( bbn.fn.search(this.queueBBN, {name: name}) === -1 ){
+          clearTimeout(this.queueTimerBBN);
+          let def = false;
+          if ( def ){
+            this._realDefineBBNComponent(name, def);
+            this.queueTimer = setTimeout(() => {
+              if ( resolve ){
+                resolve('ok6');
+              }
+              return 'ok7';
+            })
+          }
+          else{
+            this.queueBBN.push({
+              name: name,
+              resolve: resolve || (function(){}),
+              reject: reject || (function(){})
+            });
+            this.queueTimerBBN = setTimeout(() => {
+              if ( this.queueBBN.length ){
+                this.executeQueueBBNItem(this.queueBBN.splice(0, this.queueBBN.length));
+              }
+            }, this.loadDelay);
+          }
         }
-        else{
-          this.queueBBN.push({
-            name: name,
-            resolve: resolve || (function(){}),
-            reject: reject || (function(){})
-          });
-          this.queueTimerBBN = setTimeout(() => {
-            if ( this.queueBBN.length ){
-              this.executeQueueBBNItem(this.queueBBN.splice(0, this.queueBBN.length));
-            }
-          }, this.loadDelay);
-        }
+        return this.queueTimerBBN;
       }
-      return this.queueTimerBBN;
+      return bbn.fn.ajax(bbn.vue.libURL + 'dist/js/components/' + name + '.js', 'text').then(d => {
+        if (d && d.data) {
+          eval(d.data);
+          if (Vue.options.components['bbn-' + name]) {
+            resolve();
+          }
+        }
+        return true;
+      })
     },
 
     /**
@@ -522,14 +532,14 @@
         /** @todo add an extended object of all the mixins for all related path */
         let mixins = [];
         // Looking for a corresponding prefix rule
-        bbn.fn.each(this.knownPrefixes, (a, i) => {
+        bbn.fn.each(bbn.vue.knownPrefixes, (a, i) => {
           if ( a.prefix && (tag.indexOf(a.prefix) === 0) && a.handler && bbn.fn.isFunction(a.handler) ){
             // Taking the longest (most precise) prefix's rule
             if ( a.mixins ){
               mixins = mixins.concat(a.mixins);
             }
             if ( idx > -1 ){
-              if ( this.knownPrefixes[i].prefix.length > this.knownPrefixes[idx].prefix.length ){
+              if ( bbn.vue.knownPrefixes[i].prefix.length > bbn.vue.knownPrefixes[idx].prefix.length ){
                 idx = i;
               }
             }
@@ -541,7 +551,7 @@
         // A rule has been found
         if ( idx > -1 ){
           Vue.component(tag, (resolve, reject) => {
-            this.knownPrefixes[idx].handler(tag, resolve, reject);
+            bbn.vue.knownPrefixes[idx].handler(tag, resolve, reject);
           });
         }
       }
@@ -567,7 +577,7 @@
       if ( prefix.substr(-1) !== '-' ){
         prefix += '-';
       }
-      this.knownPrefixes.push({
+      bbn.vue.knownPrefixes.push({
         prefix: prefix,
         handler: handler,
         mixins: mixins || []
@@ -583,7 +593,7 @@
       if ( Vue.options.components[cp] ){
         delete Vue.options.components['bbn-' + cp];
         Vue.component('bbn-' + cp, (resolve, reject) => {
-          this.queueComponentBBN(cp, resolve, reject);
+          bbn.vue.queueComponentBBN(cp, resolve, reject);
         });
       }
     },
@@ -597,7 +607,7 @@
       if ( Vue.options.components[cp] ){
         delete Vue.options.components[cp];
         Vue.component(cp, (resolve, reject) => {
-          this.queueComponent(cp, resolve, reject);
+          bbn.vue.queueComponent(cp, resolve, reject);
         });
       }
     },
@@ -654,7 +664,7 @@
     closest(vm, selector, checkEle){
       let test = vm.$el;
       while ( vm && vm.$parent && (vm !== vm.$parent) ){
-        if ( this.is(vm.$parent, selector) ){
+        if ( bbn.vue.is(vm.$parent, selector) ){
           if ( !checkEle || (test !== vm.$parent.$el) ){
             return vm.$parent;
           }
@@ -675,7 +685,7 @@
       let res = [];
       let test = vm.$el;
       while ( vm && vm.$parent && (vm !== vm.$parent) ){
-        if ( this.is(vm.$parent, selector) ){
+        if ( bbn.vue.is(vm.$parent, selector) ){
           if ( !checkEle || (test !== vm.$parent.$el) ){
             res.push(vm.$parent);
           }
@@ -744,10 +754,10 @@
      * @param {Array} ar
      */
     findByKey(vm, key, selector, ar){
-      let tmp = this.getChildByKey(vm, key, selector);
+      let tmp = bbn.vue.getChildByKey(vm, key, selector);
       if ( !tmp && vm.$children ){
         for ( let i = 0; i < vm.$children.length; i++ ){
-          if ( tmp = this.findByKey(vm.$children[i], key, selector, ar) ){
+          if ( tmp = bbn.vue.findByKey(vm.$children[i], key, selector, ar) ){
             if (bbn.fn.isArray(ar) ){
               ar.push(tmp);
             }
@@ -769,7 +779,7 @@
      */
     findAllByKey(vm, key, selector){
       let ar = [];
-      this.findByKey(vm, key, selector, ar);
+      bbn.vue.findByKey(vm, key, selector, ar);
       return ar;
     },
 
@@ -781,12 +791,12 @@
      * @param {Number} index
      */
     find(vm, selector, index){
-      let vms = this.getComponents(vm);
+      let vms = bbn.vue.getComponents(vm);
       let realIdx = 0;
       index = parseInt(index) || 0;
       if ( vms ){
         for ( let i = 0; i < vms.length; i++ ){
-          if ( this.is(vms[i], selector) ){
+          if ( bbn.vue.is(vms[i], selector) ){
             if ( realIdx === index ){
               return vms[i];
             }
@@ -804,10 +814,10 @@
      * @param {Boolean} only_children
      */
     findAll(vm, selector, only_children){
-      let vms = this.getComponents(vm, [], only_children),
+      let vms = bbn.vue.getComponents(vm, [], only_children),
           res = [];
       for ( let i = 0; i < vms.length; i++ ){
-        if ( this.is(vms[i], selector) ){
+        if ( bbn.vue.is(vms[i], selector) ){
           res.push(vms[i]);
         }
       }
@@ -828,7 +838,7 @@
       bbn.fn.each(vm.$children, (obj) => {
         ar.push(obj)
         if ( !only_children && obj.$children ){
-          this.getComponents(obj, ar);
+          bbn.vue.getComponents(obj, ar);
         }
       });
       return ar;

@@ -1,10 +1,20 @@
 ((bbn) => {
   "use strict";
+  let version = '2.0.2';
+  let libURL = '';
+  bbn.fn.each(document.head.getElementsByTagName('script'), s => {
+    if (s.src && (s.src.indexOf('bbn-vue/' + version + '/') > -1)) {
+      libURL = s.src.split('bbn-vue/' + version + '/')[0] + 'bbn-vue/' + version + '/';
+      return false;
+    }
+  })
+
   bbn.fn.autoExtend("vue", {
+    libURL: libURL,
     defaultLocalURL: false,
     defaultLocalPrefix: '',
     localURL: false,
-    version: '2.0.3',
+    version: version,
     isNodeJS: false,
     localPrefix: '',
     loadingComponents: [],

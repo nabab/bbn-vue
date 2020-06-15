@@ -47,7 +47,7 @@
         if ( this._currentPopup ){
           return this._currentPopup;
         }
-        throw new Error(bbn._('Impossible to find a popup instance. Add a bbn-popup in your root element'))
+        return null;
       }
     },
     methods: {

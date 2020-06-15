@@ -3,8 +3,8 @@
   if ( !bbn.vue ){
     throw new Error("Impossible to find the library bbn-vue")
   }
-  Vue.config.isReservedTag = (tag, context) => {
-    return bbn.vue.loadComponentsByPrefix(tag, context)
+  Vue.config.isReservedTag = (tag) => {
+    return bbn.vue.loadComponentsByPrefix(tag)
   };
 
   bbn.vue.fullComponent = bbn.fn.extend(true, {}, bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent);

@@ -46,28 +46,34 @@
          * 
          */
         _storage(){
-          if ( window.store ){
+          if (window.localStorage) {
             return {
               get(name){
-                let tmp = window.store.get(name);
+                let tmp = window.localStorage.getItem(name);
                 if ( tmp ){
+                  tmp = JSON.parse(tmp);
                   return tmp.value;
                 }
               },
               set(name, value){
-                return window.store.set(name, {
+                return window.localStorage.setItem(name, JSON.stringify({
                   value: value,
                   time: (new Date()).getTime()
-                });
+                }));
               },
               time(name){
-                let tmp = window.store.get(name);
+                let tmp = window.localStorage.getItem(name);
                 if ( tmp ){
+                  tmp = JSON.parse(tmp);
                   return tmp.time;
                 }
+                return false;
               },
               remove(name){
-                return window.store.remove(name);
+                return window.localStorage.removeItem(name);
+              },
+              clear(){
+                return window.localStorage.clear();
               }
             }
           }

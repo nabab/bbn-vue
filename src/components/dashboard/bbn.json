@@ -4,8 +4,5 @@
   "authors": [
     "Thomas Nabet <thomas.nabet@gmail.com>"
   ],
-  "license": "MIT",
-  "dependencies": {
-    "vue-sortable": ">=0.1.3"
-  }
+  "license": "MIT"
 }

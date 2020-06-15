@@ -203,6 +203,16 @@
                         "text": "getList",
                         "desc": "Returns the breadcrumb's source list.",
                         "url": "bbn-vue\/component\/breadcrumb\/methods\/getList"
+                    },
+                    {
+                        "text": "getParents",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/breadcrumb\/methods\/getParents"
+                    },
+                    {
+                        "text": "openMenu",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/breadcrumb\/methods\/openMenu"
                     }
                 ],
                 "mixins": [
@@ -1418,6 +1428,11 @@
                         "url": "bbn-vue\/component\/colorpicker\/props\/saturation"
                     },
                     {
+                        "text": "onlyPalette",
+                        "desc": "Shows the colors palette only.",
+                        "url": "bbn-vue\/component\/colorpicker\/props\/onlyPalette"
+                    },
+                    {
                         "text": "color",
                         "desc": "The initial color.",
                         "url": "bbn-vue\/component\/colorpicker\/props\/color"
@@ -1429,7 +1444,7 @@
                     },
                     {
                         "text": "palette",
-                        "desc": "An array containing the list of colors by hex, rgb, rgba, hsl or the color's name.",
+                        "desc": "An array containing the list of colors by hex, rgb, rgba, or hsl.",
                         "url": "bbn-vue\/component\/colorpicker\/props\/palette"
                     },
                     {
@@ -1444,6 +1459,11 @@
                     }
                 ],
                 "methods": [
+                    {
+                        "text": "onResize",
+                        "desc": "The method called at the window resize event.",
+                        "url": "bbn-vue\/component\/colorpicker\/methods\/onResize"
+                    },
                     {
                         "text": "init",
                         "desc": "Initializes the widget.",
@@ -1510,6 +1530,11 @@
                         "text": "eventsComponent",
                         "desc": "",
                         "url": "bbn-vue\/component\/colorpicker\/mixins\/eventsComponent"
+                    },
+                    {
+                        "text": "resizerComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/colorpicker\/mixins\/resizerComponent"
                     }
                 ]
             },
@@ -2696,7 +2721,7 @@
                     },
                     {
                         "text": "blank",
-                        "desc": "Set to true to make a post_out instead of a post when the form is submitted.",
+                        "desc": "Set to true to make a postOut instead of a post when the form is submitted.",
                         "url": "bbn-vue\/component\/form\/props\/blank"
                     },
                     {
@@ -2891,11 +2916,6 @@
                         "text": "scrollable",
                         "desc": "Set to true to allow the component to have a scroll.",
                         "url": "bbn-vue\/component\/gallery\/props\/scrollable"
-                    },
-                    {
-                        "text": "download",
-                        "desc": "Set to true to show the download button in the toolbar.",
-                        "url": "bbn-vue\/component\/gallery\/props\/download"
                     },
                     {
                         "text": "overlay",
@@ -3757,7 +3777,7 @@
                     },
                     {
                         "text": "blank",
-                        "desc": "Set to true to make a post_out instead of a post when the form is submitted.",
+                        "desc": "Set to true to make a postOut instead of a post when the form is submitted.",
                         "url": "bbn-vue\/component\/multipart\/props\/blank"
                     },
                     {
@@ -6865,7 +6885,7 @@
                     },
                     {
                         "text": "hybrid",
-                        "desc": "Set to true if the prop 'ajax' is true, \r\nthe tree will make the ajax call only for\r\nthe source of the root level and will take\r\nthe current data for the source of other levels",
+                        "desc": "Set to true if the prop 'ajax' is true,\r\nthe tree will make the ajax call only for\r\nthe source of the root level and will take\r\nthe current data for the source of other levels",
                         "url": "bbn-vue\/component\/tree\/props\/hybrid"
                     }
                 ],
@@ -7598,8 +7618,8 @@
                 "desc": ""
             },
             {
-                "text": "post_out",
-                "url": "bbn-vue\/function\/post_out",
+                "text": "postOut",
+                "url": "bbn-vue\/function\/postOut",
                 "desc": ""
             },
             {
