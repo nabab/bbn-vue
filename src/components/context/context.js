@@ -74,8 +74,12 @@
       itemComponent: {
         type: [Object, String]
       },
+      /**
+       * The HTMLElement to bind to.
+       * @props {HTMLElement} attach
+       */
       attach: {
-        type: HTMLDivElement
+        type: HTMLElement
       }
     },
     data(){

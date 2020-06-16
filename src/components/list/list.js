@@ -158,11 +158,13 @@
       },
       /**
        * The mode of the component.
+       * Possible values: 'free', 'options', 'selection'.
        * @prop {String} ['free'] mode
        */
       mode: {
         type: String,
-        default: "free"
+        default: "free",
+        validator: m => ['free', 'options', 'selection'].includes(m)
       },
       //@todo not used
       parent: {

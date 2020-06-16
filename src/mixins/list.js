@@ -245,9 +245,11 @@
         /**
          * A component for each element of the list.
          * @memberof listComponent
-         * @prop component
+         * @prop {String|Object|Vue} component
          */
-        component: {},
+        component: {
+          type: [String, Object, Vue]
+        },
         /**
          * The template to costumize the dropdown menu.
          * @memberof listComponent
@@ -465,7 +467,7 @@
          * @memberof listComponent
          */
         hasComponent(){
-          return this.component || this.currentTemplate ? true : false;
+          return (bbn.fn.isString(this.component) || (bbn.fn.isObject(this.component) && Object.keys(this.component).length)) || this.currentTemplate ? true : false;
         },
         /**
          * Returns the component object. 
@@ -473,7 +475,7 @@
          * @memberof listComponent
          */
         realComponent(){
-          let cp = this.component || null;
+          let cp = bbn.fn.isString(this.component) || (bbn.fn.isObject(this.component) && Object.keys(this.component).length) ? this.component : null;
           if (!cp && this.currentTemplate) {
             cp = {
               props: ['source'],

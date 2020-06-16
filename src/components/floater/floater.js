@@ -23,7 +23,7 @@
      * @mixin  bbn.vue.keepCoolComponent
      * @mixin bbn.vue.toggleComponent
      * @mixin bbn.vue.dimensionsComponent
-     * @mixin bbn.vue.positionComponent 
+     * @mixin bbn.vue.positionComponent
      */
     mixins: [
       bbn.vue.basicComponent,
@@ -37,7 +37,6 @@
     props: {
       /**
        * @prop container
-       * 
        */
       container: {},
       /**
@@ -85,11 +84,13 @@
       },
       /**
        * The list selection mode.
+       * Possible values: 'free', 'options', 'selection'.
        * @prop {String} ['free'] mode
        */
       mode: {
         type: String,
-        default: "free"
+        default: "free",
+        validator: m => ['free', 'options', 'selection'].includes(m)
       },
       /**
        * The hierarchical level, root is 0, and for each generation 1 is added to the level.
@@ -168,24 +169,45 @@
         type: Number,
         default: 100
       },
+      /**
+       * @prop {Function} onOpen
+       */
       onOpen: {
         type: Function
       },
+      /**
+       * @prop {Function} beforeClose
+       */
       beforeClose: {
         type: Function
       },
+      /**
+       * @prop {Function} onClose
+       */
       onClose: {
         type: Function
       },
+      /**
+       * @prop {Function} afterClose
+       */
       afterClose: {
         type: Function
       },
+      /**
+       * @prop {Number} index
+       */
       index: {
         type: Number
       },
+      /**
+       * @prop {String} uid
+       */
       uid: {
         type: String
       },
+      /**
+       * @prop {Boolean} [false] suggest
+       */
       suggest: {
         type: Boolean,
         default: false
@@ -197,6 +219,9 @@
         fns.push(this.onClose);
       }
       return {
+        /**
+         * @data {Array} [[]] closingFunctions
+         */
         closingFunctions: fns,
         /**
          * @data [null] currentTop
@@ -254,22 +279,62 @@
          * @data {Boolean} [false] isMaximized
          */
         isMaximized: false,
+        /**
+         * @data {Number} [0] scrollMaxHeight
+         */
         scrollMaxHeight: 0,
+        /**
+         * @data {Number} [0] scrollMinWidth
+         */
         scrollMinWidth: 0,
+        /**
+         * @data {Array} [[]] currentButtons
+         */
         currentButtons: this.buttons.slice(),
+        /**
+         * @data {Array} [[]] mountedComponents
+         */
         mountedComponents: [],
+        /**
+         * @data {Boolean} [false] isOver
+         */
         isOver: false,
+        /**
+         * @data {Number|Boolean} [false] mouseLeaveTimeout
+         */
         mouseLeaveTimeout: false,
+        /**
+         * @data {Number|Boolean} [false] scrollResizeTimeout
+         */
         scrollResizeTimeout: false,
+        /**
+         * @data {Boolean} [null] isResizing
+         */
         isResizing: null,
+        /**
+         * @data {Boolean} [false] isResized
+         */
         isResized: false,
+        /**
+         * @data {Boolean} [false] isInit
+         */
         isInit: false
       };
     },
     computed: {
+      /**
+       * Normalizes the property 'left'.
+       * @computed formattedLeft
+       * @return {String}
+       */
       formattedLeft() {
         return this.currentLeft ? bbn.fn.formatSize(this.currentLeft) : 'auto';
       },
+      /**
+       * Normalizes the property 'top'.
+       * @computed formattedTop
+       * @return {String}
+       */
       formattedTop() {
         return this.currentTop ? bbn.fn.formatSize(this.currentTop) : 'auto';
       },
@@ -327,19 +392,33 @@
         };
         return s;
       },
+      /**
+       * True if the component is visible.
+       * @computed isVisible
+       * @return {Boolean}
+       */
       isVisible(){
         return !!(this.currentVisible && (
-          this.content || 
-          this.component || 
-          this.filteredData.length || 
+          this.content ||
+          this.component ||
+          this.filteredData.length ||
           this.$slots.default
         ));
       },
+      /**
+       * True if the orientation is 'horizontal'.
+       * @computed isHorizontal
+       * @return {Boolean}
+       */
       isHorizontal(){
         return this.orientation === 'horizontal';
       }
     },
     methods: {
+      /**
+       * @method init
+       * @fires getDimensions
+       */
       init() {
         let width = null;
         let height = null;
@@ -523,6 +602,9 @@
           }
         }, 10);
       },
+      /**
+       * @method addClose
+       */
       addClose(fn){
         for ( let i = 0; i < arguments.length; i++ ){
           if ( typeof arguments[i] === 'function' ){
@@ -530,6 +612,9 @@
           }
         }
       },
+      /**
+       * @method removeClose
+       */
       removeClose(fn){
         if ( !fn ){
           this.closingFunctions = [];
@@ -543,8 +628,13 @@
       /**
        * Handles the resize of the component.
        * @method onResize
+       * @param {Boolean} force
        * @fires getContainerPosition
        * @fires _getCoordinates
+       * @fires init
+       * @fires getRef
+       * @fires keepCool
+       * @fires setResizeMeasures
        */
       onResize(force) {
         // Should be triggered by the inner scroll once mounted
@@ -804,8 +894,10 @@
       },
       /**
        * Closes the floater if the prop autoHide is set to true.
-       * @method blur
+       * @method leave
        * @fires close
+       * @fires leave
+       * @emit mouseleave
        */
       leave() {
         this.isOver = false;
@@ -819,6 +911,11 @@
           this.mouseLeaveTimeout = false;
         }, bbn.fn.isNumber(this.autoHide) ? this.autoHide : 500);
       },
+      /**
+       * @method mouseleave
+       * @emit mouseleave
+       * @fires leave
+       */
       mouseleave(){
         let e = new Event('mouseleave', {cancelable: true});
         this.$emit('mouseleave', e);
@@ -829,7 +926,13 @@
       /**
        * Closes the floater by hiding it.
        * @method close
-       * @param {Event} e 
+       * @param {Boolean} force
+       * @param {Boolean} confirm
+       * @emit beforeClose
+       * @emit close
+       * @fires beforeClose
+       * @fires hide
+       * @fires afterClose
        */
       close(force, confirm = false) {
         let ok = true;
@@ -874,6 +977,7 @@
       /**
        * Closes all levels.
        * @method closeAll
+       * @fires ancesters
        */
       closeAll() {
         this.currentVisible = false;
@@ -890,12 +994,13 @@
       /**
        * Handles the selection of the floater's items.
        * @method select
-       * @param {Number} idx 
+       * @param {Object} item
+       * @param {Number} idx
+       * @param dataIndex
        * @fires closeAll
        * @emits select
        */
-      select(item, idx, dataIndex, ev) {
-        //bbn.fn.log("SELECT", arguments, this.filteredData[idx]);
+      select(item, idx, dataIndex){
         if (item && !item.disabled && !item[this.children]) {
           let ev = new Event('select', {cancelable: true});
           this.$emit("select", item, idx, dataIndex, ev);
@@ -929,6 +1034,12 @@
           */
         }
       },
+      /**
+       * @method getDimensions
+       * @param {Number} width
+       * @param {Number} height
+       * @return {Object}
+       */
       getDimensions(width, height) {
         let r = {
           width: 0,
@@ -955,16 +1066,29 @@
         }
         return r;
       },
+      /**
+       * @method updatePosition
+       * @fires init
+       * @fires onResize
+       */
       updatePosition(){
         this.init();
         this.onResize();
       },
+      /**
+       * @method onFocus
+       * @fires getRef
+       */
       onFocus(){
         if ( this.currentButtons.length ){
           //bbn.fn.log("onFocus", this.getRef('buttons'), this.getRef('button' + (this.currentButtons.length - 1)));
           this.getRef('button' + (this.currentButtons.length - 1)).$el.focus();
         }
       },
+      /**
+       * @method updateData
+       * @return {Promise}
+       */
       updateData(){
         if (this.component || this.$slots.default || this.content) {
           return this.$nextTick()
@@ -984,6 +1108,8 @@
     },
     /**
      * @event mounted
+     * @fires ancesters
+     * @fires closeAll
      */
     mounted(){
       this.$nextTick(() => {
@@ -1000,20 +1126,37 @@
       });
     },
     watch: {
+      /**
+       * @watch left
+       * @fires updatePosition
+       */
       left(){
         this.updatePosition();
       },
+      /**
+       * @watch right
+       * @fires updatePosition
+       */
       right(){
         this.updatePosition();
       },
+      /**
+       * @watch top
+       * @fires updatePosition
+       */
       top(){
         this.updatePosition();
       },
+      /**
+       * @watch bottom
+       * @fires updatePosition
+       */
       bottom(){
         this.updatePosition();
       },
       /**
        * @watch source
+       * @fires updateData
        */
       source: {
         deep: true,
@@ -1023,6 +1166,11 @@
           }
         }
       },
+      /**
+       * @watch filteredData
+       * @fires getRef
+       * @fires onResize
+       */
       filteredData() {
         if (this.ready) {
           this.$nextTick(() => {
@@ -1037,6 +1185,10 @@
           });
         }
       },
+      /**
+       * @watch visible
+       * @fires onResize
+       */
       visible(v) {
         if (v) {
           this.onResize();
@@ -1045,7 +1197,7 @@
       /**
        * @watch element
        * @param {Element} newVal
-       * @fires onResize 
+       * @fires onResize
        */
       element(newVal) {
         if (newVal && this.ready) {
@@ -1058,6 +1210,9 @@
           });
         }
       },
+      /**
+       * @watch isOver
+       */
       isOver(v){
         if (v && this.mouseLeaveTimeout){
           clearTimeout(this.mouseLeaveTimeout);
