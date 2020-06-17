@@ -1,5 +1,7 @@
-<div :class="[{'bbn-reset': true, 'bbn-100': true, 'bbn-unselectable': true}, componentClass]" @click="info = !info">
-  <span class="content">
+<div :class="[{'bbn-reset': true, 'bbn-100': true, 'bbn-unselectable': true}, componentClass]"
+     @click="info = !info"
+>
+  <span class="bbn-loadbar-content">
     <!--span class="buttons" v-if="data.length">
       <i :title="_('History informations')"
          :class="{
@@ -51,14 +53,19 @@
          @click="selected = 0"
       ></i>
     </span-->
-    <span class="bbn-loadbar-state">
+    <span class="bbn-loadbar-state bbn-hxspadded bbn-c bbn-h-100">
       <bbn-loadicon v-if="currentItem.loading" class="bbn-blue"></bbn-loadicon>
       <i v-else-if="currentItem.error" class="nf nf-fa-times_circle bbn-red"></i>
       <i v-else-if="currentItem.success" class="nf nf-fa-check bbn-green"></i>
       <i v-else-if="currentItem.abort" class="nf nf-mdi-stop bbn-orange"></i>
     </span>
-    <a href="javascript:;" :title="text + ' ' + _('Loading')" style="color: inherit; cursor: default" v-if="currentItem">
-      <span class="text" v-text="currentItem.url"></span>
+    <a href="javascript:;"
+       :title="text + ' ' + _('Loading')"
+       style="color: inherit; cursor: default"
+       v-if="currentItem"
+       class="bbn-h-100"
+    >
+      <span class="text bbn-h-100" v-text="currentItem.url"></span>
     </a>
   </span>
   <bbn-floater v-if="info && items.length"
@@ -70,36 +77,35 @@
                :scrollable="true"
                @close="info = false"
                @ready="focusInput"
-               max-height="60vw">
-      <div class="bbn-content bbn-w-100 bbn-padded">
-        <bbn-input class="bbn-w-100"
-                   button-right="nf nf-mdi-send"
-                   v-model="link"
-                   @keydown.enter="go"
-                   @clickRightButton="go"></bbn-input>
-        <ul class="bbn-reset bbn-w-100">
-          <li v-for="it of items">
-            <div @click="cancel(it)">
-              <span class="bbn-loadbar-state">
-                <bbn-loadicon v-if="it.loading" class="bbn-blue"></bbn-loadicon>
-                <i v-else-if="it.error" class="nf nf-fa-times_circle bbn-red"></i>
-                <i v-else-if="it.success" class="nf nf-fa-check bbn-green"></i>
-                <i v-else-if="it.abort" class="nf nf-mdi-stop bbn-orange"></i>
-              </span>
-              <div class="bbn-loadbar-time">
-                <span v-text="renderDuration(it.duration)">
-                </span>
-              </div>
-              <span v-text="it.url"></span>
+               max-height="60vw"
+  >
+    <div class="bbn-content bbn-w-100 bbn-padded">
+      <bbn-input class="bbn-w-100"
+                  button-right="nf nf-mdi-send"
+                  v-model="link"
+                  @keydown.enter="go"
+                  @clickRightButton="go"
+      ></bbn-input>
+      <ul class="bbn-reset bbn-w-100 bbn-ul">
+        <li v-for="it of items">
+          <div @click="cancel(it)">
+            <span class="bbn-loadbar-state bbn-hxspadded bbn-c">
+              <bbn-loadicon v-if="it.loading" class="bbn-blue"></bbn-loadicon>
+              <i v-else-if="it.error" class="nf nf-fa-times_circle bbn-red"></i>
+              <i v-else-if="it.success" class="nf nf-fa-check bbn-green"></i>
+              <i v-else-if="it.abort" class="nf nf-mdi-stop bbn-orange"></i>
+            </span>
+            <div class="bbn-loadbar-time bbn-c">
+              <span v-text="renderDuration(it.duration)"></span>
             </div>
-            <div v-if="it.error && it.errorMessage" 
-                 class="bbn-loadbar-error"
-                 v-text="it.errorMessage"
-            >
-            </div>
-          </li>
-        </ul>
-      </div>
-
+            <span class="bbn-hxspadded" v-text="it.url"></span>
+          </div>
+          <div v-if="it.error && it.errorMessage"
+                class="bbn-loadbar-error bbn-red"
+                v-text="it.errorMessage"
+          ></div>
+        </li>
+      </ul>
+    </div>
   </bbn-floater>
 </div>

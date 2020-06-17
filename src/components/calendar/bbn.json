@@ -4,8 +4,5 @@
   "authors": [
     "Mirko Argentino <mirko@bbn.solutions>"
   ],
-  "license": "MIT",
-  "dependencies": {
-    "moment": ">= 2.12.0"
-  }
+  "license": "MIT"
 }

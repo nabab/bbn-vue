@@ -486,9 +486,9 @@
               !this.isBackspaceKey(event.keyCode) &&
               !isSelection &&
               (
-                (value.length >= this.maxLen) ||
+                (bbn.fn.isNumber(this.maxLen) && (value.length >= parseInt(this.maxLen))) ||
                 ((this.size !== undefined) && bbn.fn.isNumber(this.size) && (value.length >= this.size)) ||
-                ((this.maxlength !== undefined) && bbn.fn.isNumber(this.maxlength) && (value.length >= this.maxlength))
+                ((this.maxlength !== undefined) && bbn.fn.isNumber(this.maxlength) && (value.length >= parseInt(this.maxlength)))
               )
             ){
               event.preventDefault()
@@ -578,12 +578,14 @@
       */
       keyupEvent(event){
         if ( !this.disabled && !this.readonly ){
+          bbn.fn.log('ciao', event)
           if (
             !this.isShiftKey(event.keyCode) &&
             !this.isControlKey(event.keyCode) &&
             !this.isTabKey(event.keyCode) &&
             !event.ctrlKey
           ){
+            bbn.fn.log('ciao2', event)
             let pos = this.$refs.element.selectionStart
             this.$nextTick(() => {
               pos = this.getPos(pos, event)
@@ -591,6 +593,7 @@
                 this.$refs.element.selectionStart = pos
               }
               else {
+                bbn.fn.log('ciao3', pos)
                 this.$refs.element.setSelectionRange(pos, pos)
               }
             })
@@ -609,7 +612,8 @@
        * @emits input
        */
       inputEvent(event){
-        let pos = this.$refs.element.selectionStart
+        let pos = this.$refs.element.selectionStart;
+        bbn.fn.log('input', event, pos, this.maxPos)
         if ( 
           (pos <= this.maxPos) &&
           !bbn.fn.isNull(event.data) &&

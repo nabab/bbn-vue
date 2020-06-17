@@ -1,87 +1,129 @@
 
 /**
  * @file bbn-popup component
- *
  * @description bbn-popup is a component very similar to a desktop window of an operating system.
  * Inside you can show what you wish, even the components with its information.
  * Its potential lies in the fact that it emphasizes with a particular attention that portion of information that we want to see, enclosed in a window that can be opened or closed upon request.
- *
  * @copyright BBN Solutions
- *
  * @author BBN Solutions
- * 
  * @created 15/02/2017
  */
 
 (function(bbn){
   "use strict";
 
-  /**
-   * Classic input with normalized appearance
-   */
   Vue.component('bbn-popup', {
+    /**
+     * @mixin bbn.vue.basicComponent
+     * @minix bbn.vue.resizerComponent
+     */
     mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent],
     props: {
+      /**
+       * @prop {String|Number} ['70%'] defaultWidth
+       */
       defaultWidth: {
         type: [String, Number],
         default: '70%'
       },
+      /**
+       * @prop {String|Number} ['70%'] defaultHeight
+       */
       defaultHeight: {
         type: [String, Number],
         default: '70%'
       },
+      /**
+       * @prop {String} ['United'] united
+       */
       untitled: {
         type: String,
         default: bbn._("Untitled")
       },
+      /**
+       * @prop {Array} [[]] source
+       */
       source: {
         type: Array,
         default: function(){
           return [];
         }
       },
+      /**
+       * @prop {Number} [10] zIndex
+       */
       zIndex: {
         type: Number,
         default: 10
       },
+      /**
+       * @prop {String} ['<i class="nf nf-fa-warning bbn-l"> </i>  Alert'] alertTitle
+       */
       alertTitle: {
         type: String,
         default: '<i class="nf nf-fa-warning bbn-l"> </i> ' + bbn._("Alert")
       },
+      /**
+       * @prop {String} ['There was a problem...'] alertMessage
+       */
       alertMessage: {
         type: String,
         default: bbn._("There was a problem") + '...'
       },
+      /**
+       * @prop {String} ['Confirmation request] confirmTitle
+       */
       confirmTitle: {
         type: String,
         default: bbn._("Confirmation request")
       },
+      /**
+       * @prop {String} ['Are you sure?'] confirmMessage
+       */
       confirmMessage: {
         type: String,
         default: bbn._("Are you sure?")
       },
+      /**
+       * @prop {String} ['OK'] okText
+       */
       okText: {
         type: String,
         default: bbn._("OK")
       },
+      /**
+       * @prop {String} ['Yes'] yesText
+       */
       yesText: {
         type: String,
         default: bbn._("Yes")
       },
+      /**
+       * @prop {String} ['No'] noText
+       */
       noText: {
         type: String,
         default: bbn._("No")
       }
     },
-
     data: function(){
       return {
+        /**
+         * @data [false] type
+         */
         type: false,
+        /**
+         * @data [[]] items
+         */
         items: []
       };
     },
-
     computed: {
+      /**
+       * @computed popus
+       * @fires getObject
+       * @return {Array}
+       */
       popups(){
         let r = [];
         bbn.fn.each(this.items, (a, i) => {
@@ -89,11 +131,14 @@
         });
         return r;
       },
+      /**
+       * @computed showPopup
+       * @return {Boolean}
+       */
       showPopup(){
         return this.items.length > 0;
-      },
+      }
     },
-
     methods: {
       randomString: bbn.fn.randomString,
       open(obj){

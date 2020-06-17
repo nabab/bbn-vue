@@ -1,12 +1,9 @@
 /**
  * @file bbn-panelbar component
- *
  * @description bbn-panelbar is a component that configures itself easily, it allows to visualize the data in a hierarchical way expandable to levels.
  * It can contain texts, html elements and even Vue components, the latter can be inserted both on its content but also as a header.
  * Those who use this component have the possibility to see schematically their data with the maximum simplicity of interpretation.
- *
  * @copyright BBN Solutions
- *
  * @author Loredana Bruno
  */
 
@@ -20,9 +17,11 @@
      * @mixin bbn.vue.resizerComponent
      */
     mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent, bbn.vue.resizerComponent],
-
     props: {
-      flex: { 
+      /**
+       * @prop {Boolean} [false] flex
+       */
+      flex: {
         type: Boolean,
         default: false
       },
@@ -35,27 +34,31 @@
        * - component // a component to show when the item is selected
        * - height // the height of the item's slot, it will overwrite the props itemsHeight for the item
        * - options // options of configuration of the component shown in the slot of the item
-       *
        * @prop {Array} items
        */
       source: {
-        type: [ Array ]
+        type: Array
       },
+      /**
+       * @prop {Boolean} [true] scrollable
+       */
       scrollable: {
         type: Boolean,
         default: true
       },
+      /**
+       * @prop {String} ['center'] align
+       */
       align: {
         type: String,
         default: 'center'
       },
       /**
        * Specifies whether or not an index will be expanded
-       *
        * @prop {Number} opened
        */
       opened: {
-        type: [Number],
+        type: Number,
       },
       /**
        * The component to be rendered on each header if not specified for the single item in the source
@@ -67,20 +70,19 @@
       /**
        * The object of properties to bind with the headerComponent
        * @prop {Object} headerOptions
-       * 
        */
       headerOptions: {
         type: Object
       },
       /**
-       * the component to be rendered in each content slot if not specified for the single item in the source
+       * The component to be rendered in each content slot if not specified for the single item in the source
        * @prop {String} component
        */
       component: {
         type: String
       },
       /**
-       * the object of properties to bind with the component in the content slot
+       * The object of properties to bind with the component in the content slot
        * @prop {Object} componentOptions
        */
       componentOptions :{
@@ -89,41 +91,46 @@
     },
     data(){
       return {
+        /**
+         * @data {Number} [null] size
+         */
         size: null,
         /**
          * The index of the selected item
          * @data {Number} [null] selected
          */
         selected: null,
+        /**
+         * @data {Number} [null] preselected
+         */
         preselected: null,
+        /**
+         * @data {Number} [0] childHeight
+         */
         childHeight: 0
       };
     },
     computed:{
+      /**
+       * @computed headers
+       */
       headers(){
         return this.$refs['header']
       }
     },
-     /**
-      * Select the index of item defined by the prop opened
-      * @event mounted
-      */
-    mounted(){
-      if ( this.opened !== undefined ){
-        this.$nextTick(()=>{
-          this.select(this.opened)
-        })
-      }
-    },
     methods: {
+      /**
+       * @method onResize
+       */
       onResize(){
         this.size = this.$el.clientHeight;
       },
      /**
        * Shows the content of selected items and emits the event select
-       * @emits select
        * @method select
        * @param {Number} idx
+       * @emits select
+       * @fires getStyle
        */
       select(idx){
         if ( this.selected !== idx ){
@@ -142,21 +149,33 @@
               this.getStyle(idx)
             })
           }
-          
         }
         else{
           this.preselected = null;
           this.selected = null;
         }
       },
+      /**
+       * @method getStyle
+       * @param {Number} idx
+       * @fires getRef
+       * @return {Object}
+       */
       getStyle(idx){
-        bbn.fn.log('before',this.source[idx])
-        if ((idx !== null ) && (idx === this.preselected) &&  (this.flex || ((this.source[idx] !== undefined) && (this.source[idx].flex === true)) )) {
+        if (
+          (idx !== null ) &&
+          (idx === this.preselected) &&
+          (this.flex || ((this.source[idx] !== undefined) && (this.source[idx].flex === true)))
+        ){
           return this.size ? {height: this.size + 'px', overflow: 'hidden'} : {};
         }
         //if this.flex === false, case of panelbar containing a table or other content that has an height
-        else if ((idx !== null ) && (idx === this.preselected) && (!this.flex || ( (this.source[idx] !== undefined) && (this.source[idx].flex === false)) )) {
-          let children = this.getRef('container').children, 
+        else if (
+          (idx !== null ) &&
+          (idx === this.preselected) &&
+          (!this.flex || ( (this.source[idx] !== undefined) && (this.source[idx].flex === false)))
+        ){
+          let children = this.getRef('container').children,
               res = [],
               childHeight = 0;
           bbn.fn.each(children, (a) => {
@@ -167,17 +186,31 @@
           this.$nextTick(()=>{
             if ( res[idx] && res[idx].firstElementChild.clientHeight ){
               this.childHeight = res[idx].firstElementChild.clientHeight
-            }  
+            }
             return this.size ? {height: this.childHeight + 'px', overflow: 'hidden'} : {};
           })
         }
         else{
           return {height: '0px', overflow: 'hidden'};
         }
-      },
-
+      }
+    },
+    /**
+      * Select the index of item defined by the prop opened
+      * @event mounted
+      * @fires select
+      */
+     mounted(){
+      if ( this.opened !== undefined ){
+        this.$nextTick(()=>{
+          this.select(this.opened)
+        })
+      }
     },
     watch: {
+      /**
+       * @watch selected
+       */
       selected(v, o) {
         if ( v !== null ){
           setTimeout(() => {
@@ -187,5 +220,4 @@
       }
     }
   });
-
 })(bbn);

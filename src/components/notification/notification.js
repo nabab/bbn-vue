@@ -1,43 +1,64 @@
 /**
  * @file bbn-notification component
- *
  * @description bbn-notification is a component that allows the display of a brief information message, for example to confirm the success of an action that has taken place.
- *
  * @author BBN Solutions
- *
  * @copyright BBN Solutions
- *
  * @created 11/01/2017
  */
 ((bbn) => {
   "use strict";
 
-  /**
-   * Classic input with normalized appearance
-   */
   Vue.component('bbn-notification', {
+    /**
+     * @mixin bbn.vue.basicComponent
+     */
     mixins: [bbn.vue.basicComponent],
     props: {
+      /**
+       * @prop {Number}, [5000] delay
+       */
       delay: {
         type: Number,
         default: 5000
       },
+      /**
+       * @prop pinned
+       */
       pinned: {},
+      /**
+       * @prop {String}, ['bottom-left'] position
+       */
       position: {
         type: String,
         default: 'bottom-left'
       },
+      /**
+       * @prop {String|Function}, ['Success'] successMessage
+       */
       successMessage: {
         type: [String, Function],
         default: bbn._('Success')
       },
+      /**
+       * @prop {String|Function}, ['Warning'] warningMessage
+       */
       warningMessage: {
         type: [String, Function],
         default: bbn._('Warning')
       },
+      /**
+       * @prop {String|Function}, ['Error'] errorMessage
+       */
       errorMessage: {
         type: [String, Function],
         default: bbn._('Error')
+      },
+      /**
+       * @prop {String|Function}, ['Info'] infoMessage
+       */
+      infoMessage: {
+        type: [String, Function],
+        default: bbn._('Info')
       }
     },
     data: function(){
@@ -67,13 +88,32 @@
         });
       });
       return {
+        /**
+         * @data {Array} [[]] items
+         */
         items: [],
+        /**
+         * @data {Boolean} isTop
+         */
         isTop: pos.v.top,
+        /**
+         * @data {Boolean} isLeft
+         */
         isLeft: pos.h.left,
+        /**
+         * @data {Object} [{}] positions
+         */
         positions: {}
       };
     },
     methods: {
+      /**
+       * @method _sanitize
+       * @param {Object} obj
+       * @param {String} type
+       * @param {Number} timeout
+       * @return {Object}
+       */
       _sanitize(obj, type, timeout){
         if ( typeof obj === 'string' ){
           obj = {content: obj};
@@ -99,6 +139,10 @@
         }
       return obj;
       },
+      /**
+       * @method add
+       * @param {Object} o
+       */
       add(o){
         let id = (new Date()).getTime();
         o.id = id;
@@ -112,6 +156,10 @@
           }, o.delay);
         }
       },
+      /**
+       * @method _updatePositions
+       * @fires getRef
+       */
       _updatePositions(){
         let p = {};
         let top = 0;
@@ -139,12 +187,23 @@
           }
         });
       },
+      /**
+       * @method close
+       * @param {Number} id
+       */
       close(id){
         let idx = bbn.fn.search(this.items, {id: id});
         if ( idx > -1 ){
           this.items.splice(idx, 1);
         }
       },
+      /**
+       * @method success
+       * @param {Object} o
+       * @param {Number} timeout
+       * @fires _sanitize
+       * @fires add
+       */
       success(o, timeout){
         if ( !timeout ){
           timeout = this.delay;
@@ -152,27 +211,64 @@
         o = this._sanitize(o, 'success', timeout);
         this.add(o);
       },
+      /**
+       * @method error
+       * @param {Object} o
+       * @param {Number} timeout
+       * @fires _sanitize
+       * @fires add
+       */
       error(o, timeout){
         o = this._sanitize(o, 'error', timeout);
         this.add(o);
       },
+      /**
+       * @method warning
+       * @param {Object} o
+       * @param {Number} timeout
+       * @fires _sanitize
+       * @fires add
+       */
       warning(o, timeout){
         o = this._sanitize(o, 'warning', timeout);
         this.add(o);
       },
+      /**
+       * @method show
+       * @param {Object} o
+       * @param {String} type
+       * @param {Number} timeout
+       * @fires _sanitize
+       * @fires add
+       */
       show(o, type, timeout){
         o = this._sanitize(o, type, timeout);
         this.add(o);
       },
+      /**
+       * @method info
+       * @param {Object} o
+       * @param {Number} timeout
+       * @fires _sanitize
+       * @fires add
+       */
       info(o, timeout){
         o = this._sanitize(o, 'info', timeout);
         this.add(o);
       },
     },
+    /**
+     * @event beforeMount
+     * @fires _updatePositions
+     */
     beforeMount(){
       this._updatePositions();
     },
     watch: {
+      /**
+       * @watch items
+       * @fires _updatePositions
+       */
       items(){
         this.$nextTick(() => {
           this._updatePositions();

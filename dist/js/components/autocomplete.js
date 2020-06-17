@@ -223,7 +223,6 @@ document.head.insertAdjacentElement('beforeend', css);
         }
         this.isOpened = false;
       },
-
       /**
        * Function to do the reset and if the component is open it closes it.
        *
@@ -238,7 +237,6 @@ document.head.insertAdjacentElement('beforeend', css);
           this.isOpened = false;
         }
       },
-
       /**
        * Function that performs different actions based on what is being pressed.
        *
@@ -262,6 +260,7 @@ document.head.insertAdjacentElement('beforeend', css);
     },
     /**
      * @event created
+     * @fires emitInput
      */
     created(){
       this.$on('dataloaded', () => {

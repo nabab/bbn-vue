@@ -5,7 +5,6 @@
   overflow: visible;
   span, a{
     display: inline-block;
-    height: 100%;
     vertical-align: middle;
     i{
       vertical-align: middle;
@@ -14,59 +13,23 @@
   i{
     font-size: 16px;
   }
-  /** loader */
-  span:before {
-    content: '';
-    display: inline-block;
-    height: 100%;
-    vertical-align: middle;
-    margin-right: -0.25em; /* Adjusts for spacing */
-  }
-  .content{
-    padding: 0 2em;
+  .bbn-loadbar-content{
+    padding: 0 1em;
     display: inline-block;
     height: 100%;
     vertical-align: middle;
   }
   .bbn-loadbar-state {
-    width: 1em;
-    margin-right: 0.5em;
+    width: 1.8em;
     display: inline-block;
   }
   .bbn-loadbar-time{
-    width: 3.5em;
-    margin-right: 0.5em;
+    width: 4em;
     display: inline-block;
   }
-  .bbn-loadbar-floater{
-    position: absolute;
-    z-index: 5;
-    bottom: 0px;
-    height: auto;
-    width: 100%;
-    max-height: 40em;
-    white-space: nowrap;
-    overflow: hidden;
-    .bbn-user-title{
-      margin-right: 5px;
-    }
-    .message{
-      a{
-        word-wrap: break-word;
-      }
-    }
-    .bbn-loadbar-error{
-      padding-top: 2px;
-      padding-bottom: 2px;
-      color: red;
-      margin-left: 5.5em;
-      
-    }
-  }
-  .fade-enter-active, .fade-leave-active {
-    transition: opacity .5s;
-  }
-  .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
-    opacity: 0;
+  .bbn-loadbar-error{
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 7em;
   }
 }

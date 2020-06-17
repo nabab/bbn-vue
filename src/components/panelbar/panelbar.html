@@ -13,20 +13,20 @@
                   'bbn-panelbar-end': (align === 'right')
                 }]"
           >
-            <div v-html="s.header" 
+            <div v-html="s.header"
                 @click="select(idx)"
                 :class="{
-                  'bbn-p':true, 
+                  'bbn-p':true,
                   'bbn-panelbar-inline': s.headerComponent,
                   'bbn-panelbar-right-padded': s.headerComponent || headerComponent
                 }"
             ></div>
-            <component v-if="s.headerComponent" 
-                      :is="s.headerComponent" 
+            <component v-if="s.headerComponent"
+                      :is="s.headerComponent"
                       v-bind="source[idx]['headerOptions']"
             ></component>
-            <component v-if="headerComponent && !s.headerComponent" 
-                      :is="headerComponent" 
+            <component v-if="headerComponent && !s.headerComponent"
+                      :is="headerComponent"
                       v-bind="headerOptions"
             ></component>
           </div>
@@ -42,8 +42,8 @@
                      :class="{'bbn-w-100': !scrollable}"
                      :key="idx"
           >
-            <div v-if="!s.component && !component" 
-                 v-html="s.content" 
+            <div v-if="!s.component && !component"
+                 v-html="s.content"
             ></div>
             <div v-else-if="!s.component && component"
                 :class="['bbn-panelbar-content', {'bbn-w-100': !scrollable}]"
@@ -51,7 +51,7 @@
               <component :is="component"
                         v-bind="componentOptions"
                         :class="{'bbn-w-100': !scrollable}"
-              ></component>  
+              ></component>
             </div>
             <div v-else-if="(s.component)"
                 :class="['bbn-panelbar-content', {'bbn-w-100': !scrollable}]"
@@ -59,7 +59,7 @@
               <component :is="s.component"
                          v-bind="source[idx]['componentOptions']"
                          :class="{'bbn-w-100': !scrollable}"
-              ></component>  
+              ></component>
             </div>
           </component>
         </div>

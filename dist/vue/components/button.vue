@@ -11,15 +11,16 @@
         :type="type"
         :disabled="isDisabled"
         :title="titleString"
+        :style="currentStyle"
 >
-  <span v-if="icon && (iconPosition === 'left')" class="bbn-button-icon">
+  <span v-if="icon && (iconPosition === 'left')" class="bbn-button-icon bbn-rel">
     <i :class="icon"> </i>
     <i v-if="secondary"
        :class="secondary + ' secondary'"
        :style="{
         color: secondaryColor,
         transform: 'scale(0.7)',
-        bottom: '0.2em',
+        bottom: '0.15em',
         left: '0.7em',
         position: 'absolute'
       }"
@@ -30,7 +31,8 @@
         :style="{
           paddingLeft: icon && (iconPosition === 'left') ? (secondary ? '1em' : '0.3em') : '',
           paddingRight: icon && (iconPosition === 'right') ? (secondary ? '1em' : '0.3em') : ''
-        }"></span>
+        }"
+  ></span>
   <span v-else-if="!notext"><slot></slot></span>
   <span v-if="icon && (iconPosition === 'right')" class="bbn-iblock bbn-m">
     <i :class="icon"> </i>
@@ -39,7 +41,7 @@
        :style="{
         color: secondaryColor,
         transform: 'scale(0.7)',
-        bottom: '0.2em',
+        bottom: '0.15em',
         left: '0.7em',
         position: 'absolute'
       }"
@@ -157,7 +159,7 @@
       /**
        * Set to true for the button to glow.
        *
-       * @prop {Boolean|Function} [false] glowing
+       * @prop {String|Boolean} [false] glowing
        */
       glowing: {
         type: [String, Boolean],
@@ -179,6 +181,11 @@
        */
       action: {
         type: [Function, String]
+      }
+    },
+    data(){
+      return {
+        glowingID: bbn.fn.randomString()
       }
     },
     computed: {
@@ -208,6 +215,14 @@
       isDisabled(){
         return typeof(this.disabled) === 'function' ?
           this.disabled() : this.disabled
+      },
+      /**
+       * Returns the style of the button
+       * @computed currentStyle
+       * @return {Object}
+       */
+      currentStyle(){
+        return this.glowing && this.glowingColor ? {animation: `bbn-button-glowing-${this.glowingID} 3s infinite`} : {};
       }
     },
     methods: {
@@ -230,67 +245,37 @@
           }
         }
       }
+    },
+    beforeMount(){
+      if ( this.glowing && this.glowingColor ){
+        let lc = bbn.fn.lightenDarkenHex(this.glowingColor, 40),
+            styleTag = document.createElement('style');
+        styleTag.textContent = bbn.fn.isString(this.glowing) ? this.glowing : `
+@-webkit-keyframes bbn-button-glowing-${this.glowingID} {
+  0% { background-color: ${this.glowingColor}; -webkit-box-shadow: 0 0 3px ${this.glowingColor}; }
+  50% { background-color: ${lc}; -webkit-box-shadow: 0 0 40px ${lc}; }
+  100% { background-color: ${this.glowingColor}; -webkit-box-shadow: 0 0 3px ${this.glowingColor}; }
+}
+@-moz-keyframes bbn-button-glowing-${this.glowingID} {
+  0% { background-color: ${this.glowingColor}; -moz-box-shadow: 0 0 3px ${this.glowingColor}; }
+  50% { background-color: ${lc}; -moz-box-shadow: 0 0 40px ${lc}; }
+  100% { background-color: ${this.glowingColor}; -moz-box-shadow: 0 0 3px ${this.glowingColor}; }
+}
+@-o-keyframes bbn-button-glowing-${this.glowingID} {
+  0% { background-color: ${this.glowingColor}; box-shadow: 0 0 3px ${this.glowingColor}; }
+  50% { background-color: ${lc}; box-shadow: 0 0 40px ${lc}; }
+  100% { background-color: ${this.glowingColor}; box-shadow: 0 0 3px ${this.glowingColor}; }
+}
+@keyframes bbn-button-glowing-${this.glowingID} {
+  0% { background-color: ${this.glowingColor}; box-shadow: 0 0 3px ${this.glowingColor}; }
+  50% { background-color: ${lc}; box-shadow: 0 0 40px ${lc}; }
+  100% { background-color: ${this.glowingColor}; box-shadow: 0 0 3px ${this.glowingColor}; }
+}
+        `;
+        document.body.appendChild(styleTag);
+      }
     }
   });
 })(bbn);
 
 </script>
-<style scoped>
-@-webkit-keyframes bbn-button-glowing-red {
-  0% {
-    background-color: #B20000;
-    -webkit-box-shadow: 0 0 3px #B20000;
-  }
-  50% {
-    background-color: #FF0000;
-    -webkit-box-shadow: 0 0 40px #FF0000;
-  }
-  100% {
-    background-color: #B20000;
-    -webkit-box-shadow: 0 0 3px #B20000;
-  }
-}
-@-moz-keyframes bbn-button-glowing-red {
-  0% {
-    background-color: #B20000;
-    -moz-box-shadow: 0 0 3px #B20000;
-  }
-  50% {
-    background-color: #FF0000;
-    -moz-box-shadow: 0 0 40px #FF0000;
-  }
-  100% {
-    background-color: #B20000;
-    -moz-box-shadow: 0 0 3px #B20000;
-  }
-}
-@-o-keyframes bbn-button-glowing-red {
-  0% {
-    background-color: #B20000;
-    box-shadow: 0 0 3px #B20000;
-  }
-  50% {
-    background-color: #FF0000;
-    box-shadow: 0 0 40px #FF0000;
-  }
-  100% {
-    background-color: #B20000;
-    box-shadow: 0 0 3px #B20000;
-  }
-}
-@keyframes bbn-button-glowing-red {
-  0% {
-    background-color: #B20000;
-    box-shadow: 0 0 3px #B20000;
-  }
-  50% {
-    background-color: #FF0000;
-    box-shadow: 0 0 40px #FF0000;
-  }
-  100% {
-    background-color: #B20000;
-    box-shadow: 0 0 3px #B20000;
-  }
-}
-
-</style>
