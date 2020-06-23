@@ -11,9 +11,9 @@
 
   Vue.component('bbn-progressbar', {
     /**
-     * @mixin bbn.vue.basicComponent 
-     * @mixin bbn.vue.inputComponent 
-     * @mixin bbn.vue.eventsComponent 
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.inputComponent
+     * @mixin bbn.vue.eventsComponent
      */
     mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent],
     props: {
@@ -22,12 +22,12 @@
        * @prop {Number|String} value
        */
       value: {
-        type: [Number||String],
+        type: [Number, String],
       },
       /**
        * The maximum value of the bar
        * @prop {Number} [100] max
-       */ 
+       */
       max: {
         type: Number,
         default: 100
@@ -42,7 +42,7 @@
       },
       /**
        * In case of type 'chunk' defines the step of the chunk
-       * @prop {Number} [1] step
+       * @prop {Number} [10] step
        */
       step: {
         type:  Number,
@@ -54,7 +54,8 @@
        */
       orientation: {
         type: String,
-        default: 'horizontal'
+        default: 'horizontal',
+        validator: o => ['horizontal', 'vertical'].includes(o)
       },
       /**
        * Set to true flip the bar.
@@ -71,17 +72,19 @@
       type: {
         type: String,
         default: 'value',
-        validator: (t) => ['value', 'percent', 'chunk'].includes(t)
+        validator: t => ['value', 'percent', 'chunk'].includes(t)
       },
       /**
        * The primary color of the bar (hex, rgb, rgba)
-       *  
-       * @prop {String} barColor
+       * @prop {String} [''] barColor
        */
       barColor: {
         type: String,
         default: ''
       },
+      /**
+       * @prop {String} ['bbn-background-effect-primary'] barClass
+       */
       barClass: {
         type: String,
         default: 'bbn-background-effect-primary'
@@ -94,6 +97,9 @@
         type: String,
         default: ''
       },
+      /**
+       * @prop {String} [''] text
+       */
       text: {
         type: String,
         default: ''
@@ -103,15 +109,15 @@
        * @prop {Number|String} [500] height
        */
       height: {
-        type: [Number||String],
+        type: [Number, String],
         default: 500
       },
       /**
        * Defines the width of the bar if the bar if the prop orientation is set to 'horizontal'
-       * @prop {Number|String} [500] width
+       * @prop {Number|String} width
        */
       width: {
-        type: [Number||String],
+        type: [Number, String],
         //default: 500
       },
       /**
@@ -123,7 +129,7 @@
         default: true
       },
       /**
-       * Set to true shows the unit 
+       * Set to true shows the unit
        * @prop {Boolean} [true] showUnit
        */
       showUnit: {
@@ -138,6 +144,9 @@
         type: Number,
         default: 0
       },
+      /**
+       * @prop {String} ['default'] valuePosition
+       */
       valuePosition: {
         type: String,
         default: 'right',
@@ -173,22 +182,30 @@
         chunkStyle : '',
         /**
          * Defines the class for the alignment of the value in the bar depending on the orientation and on the prop valuePosition
+         * @data {String} [''] realValuePosition
          */
-        realValuePosition: '', 
+        realValuePosition: '',
       }
     },
     computed: {
-      /** */
+      /**
+       * @computed stepTotal
+       * @return {Number}
+       */
       stepTotal(){
         return Math.round(this.max / this.step * 100) / 100;
       },
+      /**
+       * @computed stepTotalRounded
+       * @return {Number}
+       */
       stepTotalRounded(){
         return Math.round(this.max / this.step);
       },
       /**
        * Defines the style of the bar
-       * 
-       * @computed {String} style 
+       * @computed {String} style
+       * @return {String}
        */
       style(){
         let st = '';
@@ -206,9 +223,8 @@
     },
     /**
      * Checks the type of the value 
-     * 
      * @event beforeMount
-     * @emits value
+     * @fires emitInput
      */
     beforeMount(){
       if ( this.type === 'percent' ){
@@ -226,7 +242,7 @@
           this.realValuePosition = 'top';
         }
         else{
-          this.realValuePosition = this.valuePosition;  
+          this.realValuePosition = this.valuePosition;
         }
       }
       else if ( (this.orientation === 'horizontal') && (this.width) ){
@@ -234,9 +250,8 @@
         st += 'height: 1.9em; min-width: ' + (bbn.fn.isNumber(this.width) ? ( this.width  + 'px') : this.width);
       }
       this.orientationStyle = st += ';';
-      
       if ( this.type === 'chunk' ){
-        this.chunknumber = ( this.max - this.min ) / this.step, 
+        this.chunknumber = ( this.max - this.min ) / this.step,
         this.selectedChunks = this.value / this.chunknumber;
       }
       if ( this.max && ( this.value > this.max ) ){
@@ -250,6 +265,9 @@
       }
     },
     watch: {
+      /**
+       * @watch chunknumber
+       */
       chunknumber(val){
         if ( this.orientation === 'horizontal' ){
           this.chunkStyle += 'grid-template-columns:repeat(' + this.chunknumber + ', 1fr);grid-template-rows: 1fr';
@@ -259,7 +277,7 @@
         }
       }
     }
-    
+
   });
 
 })(bbn);

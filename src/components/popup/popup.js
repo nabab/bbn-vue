@@ -140,7 +140,16 @@
       }
     },
     methods: {
+      /**
+       * Alias of bbn.fn.randomString
+       * @method randomString
+      */
       randomString: bbn.fn.randomString,
+      /**
+       * @method open
+       * @param {Object} obj
+       * @return {String|Boolean}
+       */
       open(obj){
         let d = {};
         if ( typeof(obj) !== 'object' ){
@@ -195,7 +204,12 @@
         }
         return false;
       },
-
+      /**
+       * @method load
+       * @param {Object} obj
+       * @fires post
+       * @fires makeWindows
+       */
       load(obj){
         let d = {};
         if ( typeof(obj) !== 'object' ){
@@ -271,7 +285,11 @@
           new Error("You must give a URL in order to load a popup")
         }
       },
-
+      /**
+       * @method getObject
+       * @param {Object} a
+       * @return {Object}
+       */
       getObject(a){
         if ( !a.uid ){
           a.uid = 'bbn-popup-' + bbn.fn.timestamp().toString()
@@ -287,7 +305,11 @@
         }
         return a;
       },
-
+      /**
+       * @method loading
+       * @fires open
+       * @return {String|Boolean}
+       */
       loading(){
         return this.open({
           title: false,
@@ -300,7 +322,12 @@
           scrollable: false
         })
       },
-
+      /**
+       * @method close
+       * @param {Number} idx
+       * @param {Boolean} force
+       * @fires getWindows
+       */
       close(idx, force){
         if ( idx === undefined ){
           idx = this.items.length - 1;
@@ -311,11 +338,18 @@
           this.$forceUpdate();
         }
       },
-
+      /**
+       * @method getIndexByUID
+       * @param {String} uid
+       * @return {Number}
+       */
       getIndexByUID(uid){
         return bbn.fn.search(this.items, {uid: uid});
       },
-
+      /**
+       * @method alert
+       * @fires open
+       */
       alert(){
         let has_msg = false,
             has_title = false,
@@ -395,10 +429,12 @@
             scrollable: true,
             resizable: false
           }));
-
         }
       },
-
+      /**
+       * @method confirm
+       * @fires open
+       */
       confirm(){
         let onYes = false,
             onNo = false,
@@ -484,11 +520,17 @@
           }));
         }
       },
-
+      /**
+       * @method makeWindows
+       */
       makeWindows(){
         this.$forceUpdate();
       },
-
+      /**
+       * @method getWindow
+       * @param {Number} idx
+       * @return {Object|Boolean}
+       */
       getWindow(idx){
         if ( this.popups.length ){
           if ( idx === undefined ){
@@ -502,10 +544,17 @@
         return false;
       }
     },
+    /**
+     * @event mounted
+     */
     mounted(){
       bbn.fn.each(this.popups, a => this.open(a))
     },
     watch: {
+      /**
+       * @watch items
+       * @fires makeWindows
+       */
       items: function(){
         this.makeWindows()
       }

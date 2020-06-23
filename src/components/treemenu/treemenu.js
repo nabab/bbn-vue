@@ -201,7 +201,7 @@
         if ( this.$refs.scroll ){
           this.$refs.scroll.onResize()
         }
-        let code = md5(JSON.stringify(this.currentMenu));
+        let code = bbn.fn.md5(JSON.stringify(this.currentMenu));
         if (code !== this.lastMenu) {
           this.lastMenu = code;
           this.$nextTick(() => {

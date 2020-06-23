@@ -118,17 +118,17 @@
             o.transition = 'right 0.5s';
             break;
           case 'top':
-            o['-webkit-box-shadow'] = '0 5px 0 5px !important';
-            o['-moz-box-shadow'] = '0 5px 0 5px !important';
-            o['box-shadow'] = '0 5px 0 5px !important';
+            o['-webkit-box-shadow'] = '0 5px 5px 0 !important';
+            o['-moz-box-shadow'] = '0 5px 5px 0 !important';
+            o['box-shadow'] = '0 5px 5px 0 !important';
             o.left = 0;
             o.top = this.currentVisible ? 0 : -this.currentSize + 'px';
             o.transition = 'top 0.5s';
             break;
           case 'bottom':
-            o['-webkit-box-shadow'] = '0 -5px 0 5px !important';
-            o['-moz-box-shadow'] = '0 -5px 0 5px !important';
-            o['box-shadow'] = '0 -5px 0 5px !important';
+            o['-webkit-box-shadow'] = '0 -5px 5px 0 !important';
+            o['-moz-box-shadow'] = '0 -5px 5px 0 !important';
+            o['box-shadow'] = '0 -5px 5px 0 !important';
             o.left = 0;
             o.bottom = this.currentVisible ? 0 : -this.currentSize + 'px';
             o.transition = 'bottom 0.5s';

@@ -1,17 +1,17 @@
 
-  <div :class="['bbn-widget', componentClass, 'bbn-primary-border' ,'bbn-progressbar-wrap', { 
+  <div :class="['bbn-widget', componentClass, 'bbn-primary-border' ,'bbn-progressbar-wrap', {
          'bbn-progressbar-horizontal' : (orientation === 'horizontal'),
          'bbn-progressbar-vertical' : (orientation === 'vertical'),
          'bbn-reverse-bar': reverse
-       }]" 
+       }]"
        :rotate="rotate"
        :style="orientationStyle"
        type="type"
   >
-    <div :class="['bbn-wrap', realValuePosition, 'bbn-no-border']" 
+    <div :class="['bbn-wrap', realValuePosition, 'bbn-no-border']"
          style="height: 100%"
     >
-      <div :class="['bbn-progress-status', {'bbn-hspadded': (orientation === 'horizontal')}]" 
+      <div :class="['bbn-progress-status', {'bbn-hspadded': (orientation === 'horizontal')}]"
             v-text="showValue ? (value + ( showUnit ? unit : '' ) ) : ''"
             :style="textColor.length ? 'color: '+ textColor : ''"
       ></div>
@@ -20,15 +20,14 @@
          :style="style"
          v-if="type !== 'chunk'"
     ></div>
-    
-    <div v-else class="chunk bbn-overlay" 
-         :style="chunkStyle" 
+    <div v-else class="chunk bbn-overlay"
+         :style="chunkStyle"
     >
       <div :class="['block', {
              'bbn-background-effect-primary': !barColor.length && ( ((!reverse) && (n <= selectedChunks)) || ((reverse) && (n > chunknumber - selectedChunks)))
-           }]" 
+           }]"
            :style="barColor.length && ( ((!reverse) && (n <= selectedChunks)) || ((reverse) && (n > chunknumber - selectedChunks))) ? 'background-color:'+ barColor : ''"
            v-for="n in chunknumber"
       ></div>
-    </div> 
+    </div>
   </div>

@@ -1,14 +1,22 @@
 <div :class="['bbn-header', 'bbn-unselectable', componentClass, {
-  'bbn-w-100': (orientation === 'horizontal'),
-  'bbn-h-100': (orientation === 'vertical'),
-  'bbn-vmiddle':(orientation === 'horizontal'),
-}]"
-     :style="style" 
-    
-   
+        'bbn-w-100': (orientation === 'horizontal'),
+        'bbn-h-100': (orientation === 'vertical'),
+        'bbn-vmiddle': (orientation === 'horizontal')
+      }]"
+     :style="style"
 >
-  <template>
-    <slot>
-    </slot>
-  </template> 
+  <slot></slot>
+  <template v-for="(s, i) in source">
+    <component v-if="s.content !== undefined"
+              :is="s.component"
+              v-bind="s.options"
+              v-html="s.content"
+              :key="'item' + i"
+    ></component>
+    <component v-else
+              :is="s.component"
+              v-bind="s.options"
+              :key="'item' + i"
+    ></component>
+  </template>
 </div>
