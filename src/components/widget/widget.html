@@ -46,7 +46,9 @@
   </div>
 
   <!-- MAIN CONTENT -->
-  <div :class="['bbn-content', 'bbn-radius-bottom', 'bbn-no-border', {'bbn-padded': !component}]">
+  <div :class="['bbn-content', 'bbn-radius-bottom', 'bbn-no-border', {'bbn-padded': !component || (contentPadding === true)}]"
+       :style="{padding: contentPadding ? contentPadding : false}"
+  >
     <div v-if="isLoading" style="min-height: 15em">
       <bbn-loader></bbn-loader>
     </div>

@@ -151,6 +151,15 @@
       showable: {
         type: Boolean,
         default: true
+      },
+      /**
+       * The padding value to assign to the content element.
+       * If "true" the class "bbn-padded" will be assigned
+       * @prop {Boolean|Number|String} [false] padding
+       */
+      padding: {
+        type: [Boolean, Number, String],
+        default: false
       }
     },
     data(){
@@ -171,6 +180,16 @@
       };
     },
     computed: {
+      /**
+       * @computed contentPadding
+       * @return {String|Boolean}
+       */
+      contentPadding(){
+        if ( bbn.fn.isNumber(this.padding) ){
+          return this.padding + 'px';
+        }
+        return this.padding;
+      },
       currentPage(){
         if ( this.currentTotal > this.limit ){
           return (this.currentStart + this.limit) / this.limit;
