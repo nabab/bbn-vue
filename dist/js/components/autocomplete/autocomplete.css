@@ -1,0 +1,24 @@
+.bbn-autocomplete {
+  box-sizing: border-box;
+  min-width: 4em;
+  cursor: pointer;
+}
+.bbn-autocomplete input {
+  cursor: pointer;
+  width: 100%;
+  font-size: inherit;
+}
+.bbn-autocomplete button {
+  height: 100%;
+}
+.bbn-autocomplete div {
+  box-sizing: border-box;
+}
+.bbn-autocomplete .bbn-list-component-button,
+.bbn-autocomplete .bbn-button-right {
+  min-width: 2em;
+  line-height: normal;
+}
+.bbn-autocomplete .bbn-button-right {
+  opacity: 0.7;
+}

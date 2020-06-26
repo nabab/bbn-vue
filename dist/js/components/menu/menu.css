@@ -1,0 +1,26 @@
+.bbn-menu > ul {
+  height: 100%;
+  zoom: 1;
+  display: table;
+  cursor: default;
+}
+.bbn-menu > ul > li.bbn-menu-item {
+  height: 100%;
+  vertical-align: middle;
+  display: table-cell;
+  list-style: none;
+  user-select: none;
+  white-space: nowrap;
+  margin: 0;
+  padding: 0.3em 1em;
+  line-height: 1.7em;
+  zoom: 1;
+  line-height: normal;
+  font-size: 100%;
+}
+.bbn-menu > ul > li.bbn-menu-item:not(.bbn-disabled) {
+  cursor: pointer;
+}
+.bbn-menu > ul > li.bbn-menu-item span.bbn-menu-icon {
+  margin-right: 0.5em;
+}

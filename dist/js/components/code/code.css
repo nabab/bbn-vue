@@ -1,0 +1,59 @@
+@font-face {
+  font-family: 'Fira Code';
+  src: url('fonts/FiraCode-Regular.woff2') format('woff2'), url('fonts/FiraCode-Regular.ttf') format('truetype'), url('https://cdn.jsdelivr.net/gh/tonsky/FiraCode@master/distr/woff2/FiraCode-Regular.woff2') format('woof2'), url('https://cdn.jsdelivr.net/gh/tonsky/FiraCode@master/distr/ttf/FiraCode-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Fira Code';
+  src: url('fonts/FiraCode-Bold.woff2') format('woff2'), url('fonts/FiraCode-Bold.ttf') format('truetype'), url('https://cdn.jsdelivr.net/gh/tonsky/FiraCode@master/distr/woff2/FiraCode-Bold.woff2') format('woof2'), url('https://cdn.jsdelivr.net/gh/tonsky/FiraCode@master/distr/ttf/FiraCode-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+.bbn-code {
+  position: relative;
+  height: auto;
+}
+.bbn-code .CodeMirror {
+  padding: 0.5em 0;
+  font-size: small;
+  font-family: "Fira Code";
+  font-feature-settings: "calt" 1;
+  text-rendering: optimizeLegibility;
+  height: fit-content;
+}
+.bbn-code .bbn-code-filled {
+  width: 100%;
+  min-height: 100%;
+}
+.bbn-code .bbn-code-filled .CodeMirror {
+  width: 100%;
+  height: auto;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  position: absolute;
+  overflow: auto;
+  scrollbar-width: none;
+}
+.bbn-code .bbn-code-filled .CodeMirror::-webkit-scrollbar {
+  display: none;
+}
+.bbn-code .bbn-code-filled .CodeMirror .CodeMirror-vscrollbar,
+.bbn-code .bbn-code-filled .CodeMirror .CodeMirror-hscrollbar {
+  display: none !important;
+}
+.bbn-code .bbn-code-filled .CodeMirror .CodeMirror-scroll {
+  margin: 0px;
+  padding: 0px;
+}
+.bbn-code .theme-button {
+  position: absolute;
+  width: 25px;
+  height: 25px;
+  z-index: 5;
+}
+.bbn-code .bbn-scrollbar {
+  z-index: 6;
+}

@@ -1,0 +1,328 @@
+(bbn_resolve) => { ((bbn) => {
+let script = document.createElement('script');
+script.innerHTML = `<div :class="[{'bbn-widget': true, 'bbn-h-100': true}, componentClass]">
+  <div class="bbn-flex-height">
+
+    <div class="bbn-block bbn-w-100 bbn-vpadded bbn-c" v-if="menus && menus.length">
+      <bbn-dropdown v-model="currentMenu"
+                    :source="menus"
+                    style="width: 80%"
+                    ref="dropdown"
+      ></bbn-dropdown>
+    </div>
+    <div class="bbn-block bbn-w-100 bbn-vpadded bbn-c" v-if="search">
+      <!--bbn-search name="search" style="width: 80%" ref="search" :placeholder="placeholder"></bbn-search-->
+      <bbn-input name="search"
+                 v-model="searchExp"
+                 style="width: 80%"
+                 ref="search"
+                 autocomplete="off"
+                 :placeholder="placeholder"
+      ></bbn-input>
+    </div>
+    <div class="bbn-w-100 bbn-flex-fill">
+      <div class="bbn-overlay">
+        <bbn-tree :source="source"
+                  :hybrid="true"
+                  :map="mapSrc"
+                  :data="getData"
+                  :autobind="false"
+                  :opened="true"
+                  ref="tree"
+                  @load="resizeScroll"
+                  :quick-filter="searchExp"
+                  :excluded-section-filter="true"
+                  @nodeClick="go"
+                  :menu="getMenu"
+                  @ready="readyTree"
+        ></bbn-tree>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+script.setAttribute('id', 'bbn-tpl-component-treemenu');
+script.setAttribute('type', 'text/x-template');
+document.body.insertAdjacentElement('beforeend', script);
+let css = document.createElement('link');
+css.setAttribute('rel', "stylesheet");
+css.setAttribute('href', bbn.vue.libURL + "dist/js/components/treemenu/treemenu.css");
+document.head.insertAdjacentElement('beforeend', css);
+/**
+ * @file bbn-treemenu component
+ *
+ * @description The bbn-treemenu component is a vertical menu that shows a hierarchical list of elements, with the possibility of searching for the desired element.
+ * Very useful, it allows you to quickly find what the user is looking for, making it dynamic in the presentation, containing the items that satisfy the research.
+ *
+ * @copyright BBN Solutions
+ *
+ * @author BBN Solutions
+ * 
+ * @created 15/02/2017
+ */
+
+((bbn) => {
+  "use strict";
+
+  /**
+   * Classic input with normalized appearance
+   */
+  Vue.component('bbn-treemenu', {
+    name: 'bbn-treemenu',
+    /**
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.resizerComponent 
+     */
+    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent],
+    props: {
+      /**
+       * The placeholder on the search input of the tree.
+       * @prop {String} ['Search'] placeholder
+       */
+      placeholder: {
+        type: String,
+        default: "Search"
+      },
+      /**
+       * The source of the tree.
+       * @prop {String|Array|Function} source
+       */
+      source: {
+        type: [String, Array, Function],
+        default(){
+          return [];
+        }
+      },
+      /**
+       * @prop {Boolean} shortcuts
+       */
+      shortcuts: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * Set to false hide the search input.
+       * @prop {Boolean}  [false] search
+       */
+      search: {
+        type: Boolean,
+        default: true
+      },
+      /**
+       * The array of menus.
+       * @prop {Array} [[]] menus
+       */
+      menus: {
+        type: Array,
+        default(){
+          return [];
+        }
+      },
+      /**
+       * The current menu object.
+       * @prop current
+       */
+      current: {}
+    },
+    data(){
+      let isAjax = !Array.isArray(this.source)
+      return {
+        /**
+         * @data {String} [''] searchExp
+         */
+        searchExp: '',
+        /**
+         * @data {Number} posTop
+         */
+        posTop: this.top,
+        /**
+         * @data {Number} posBottom
+         */
+        posBottom: this.bottom,
+        /**
+         * True if the type of the prop source is not Array.
+         * @data {Number} isAjax
+         */
+        isAjax: isAjax,
+        /**
+         * The menu's items.
+         * @data {Array} items
+         */
+        items: isAjax ? [] : this.source,
+        /**
+         * The current menu.
+         * @data [null] current
+         */
+        currentMenu: null,
+        /**
+         * The last menu.
+         * @data [null] lastMenu
+         */
+        lastMenu: null
+      };
+    },
+    computed: {
+      /**
+       * Defines position and width of the component.
+       * @method elementStyle 
+       * @return {Object}
+       */
+      elementStyle(){
+        let o = {
+          top: '0px',
+          bottom: '0px'
+        };
+        let prop = this.position === 'right' ? 'right' : 'left';
+        o[prop] = 0;
+        if (!this.ready) {
+          o.opacity = 0;
+        }
+        else if (!this.isOpened) {
+          o[prop] = -(this.$el.clientWidth + 40) + 'px';
+        }
+        return o;
+      }
+    },
+    methods: {
+      /**
+       * Creates the menu of the given node.
+       * @method getMenu
+       * @param {Object} node 
+       * @returns {Array}
+       */
+      getMenu(node){
+        if ( !this.shortcuts || node.numChildren ){
+          return [];
+        }
+        let obj = {
+          url: node.data.link,
+          icon: node.icon,
+          text: node.text,
+          id: node.data.id
+        };
+        return [{
+          text: bbn._('Create a shortcut'),
+          icon: 'nf nf-fa-external_link_alt',
+          action: () => {
+            this.$emit('shortcut', obj);
+          }
+        }];
+      },
+      /**
+       * Maps the source of the tree.
+       * @method mapSrc
+       * @param {Object} data 
+       * @param {Number} level 
+       * @return {Object}
+       */
+      mapSrc(data, level){
+        data.cls = 'bbn-treemenu-' + (level > 6 ? x : level);
+        if ( level < 3 ){
+          data.cls += ' bbn-bottom-sspace';
+        }
+        if ( data.items && data.items.length ){
+          data.cls += ' bbn-b';
+          data.selectable = false;
+        }
+        return data;
+      },
+      /**
+       * Links to the prop link or url of the given item.
+       * @method go
+       * @param {Object} node 
+       * @param {Event} event 
+       * @fires hide
+       * @emits select
+       */
+      go(node, event){
+        //bbn.fn.log(node);
+        event.preventDefault();
+        this.searchExp = '';
+        if ( node && node.data && (node.data.link || node.data.url) ){
+          bbn.fn.link(node.data.link || node.data.url);
+          this.$emit('select', node, event);
+        }
+      },
+      /**
+       * Handles the resize of the scroll
+       * @method resizeScroll
+       */
+      resizeScroll(){
+        if ( this.$refs.scroll ){
+          this.$refs.scroll.onResize()
+        }
+        let code = bbn.fn.md5(JSON.stringify(this.currentMenu));
+        if (code !== this.lastMenu) {
+          this.lastMenu = code;
+          this.$nextTick(() => {
+            this.focusSearch();
+          })
+        }
+      },
+      /**
+       * Reload the tree
+       * @method reset
+       */
+      reset(){
+        this.getRef('tree').reset();
+      },
+      /**
+       * Gets the data of the component
+       * @method getData
+       * @returns {Object}
+       */
+      getData(){
+        return {
+          menu: this.currentMenu
+        };
+      },
+      /**
+       * Method triggered at '@ready' of the component to set the current menu.
+       * @method readyTree 
+       */
+      readyTree(){
+        this.$nextTick(() => {
+          this.currentMenu = this.current;
+        })
+      },
+      /**
+       * Focuses the search input.
+       * @method focusSearch
+       */
+      focusSearch(){
+        if (!bbn.fn.isMobile()) {
+          let search = this.getRef('search');
+          if (search) {
+            search.focus();
+          }
+        }
+      }
+    },
+    /**
+     * Resizes the tree-menu and sets its prop 'ready' to true.
+     * @event mounted
+     * @fires onResize
+     */
+    mounted(){
+      this.onResize();
+      //this._position();
+      this.ready = true;
+    },
+    watch: {
+      /**
+       * Resets the tree-menu when the current menu changes.
+       * @watch currentMenu
+       * @fires reset
+       */
+      currentMenu(val){
+        if ( (val !== null) && (this.getRef('tree') !== undefined) ){
+          this.reset();
+        }
+      }
+    }
+  });
+
+})(bbn);
+
+bbn_resolve("ok");
+})(bbn); }

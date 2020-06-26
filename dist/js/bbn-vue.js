@@ -505,14 +505,14 @@
         }
         return this.queueTimerBBN;
       }
-      return bbn.fn.ajax(bbn.vue.libURL + 'dist/js/components/' + name + '.js', 'text').then(d => {
+      return bbn.fn.ajax(bbn.vue.libURL + 'dist/js/components/' + name + '/' + name + '.js', 'text').then(d => {
         if (d && d.data) {
-          eval(d.data);
-          if (Vue.options.components['bbn-' + name]) {
-            resolve('ok');
+          let fn = eval(d.data);
+          if (bbn.fn.isFunction(fn)) {
+            bbn.fn.log("IT IS A FN");
+            fn(resolve);
           }
         }
-        return true;
       })
     },
 
@@ -2732,9 +2732,11 @@
         /**
          * A component for each element of the list.
          * @memberof listComponent
-         * @prop component
+         * @prop {String|Object|Vue} component
          */
-        component: {},
+        component: {
+          type: [String, Object, Vue]
+        },
         /**
          * The template to costumize the dropdown menu.
          * @memberof listComponent
@@ -2952,7 +2954,7 @@
          * @memberof listComponent
          */
         hasComponent(){
-          return this.component || this.currentTemplate ? true : false;
+          return (bbn.fn.isString(this.component) || (bbn.fn.isObject(this.component) && Object.keys(this.component).length)) || this.currentTemplate ? true : false;
         },
         /**
          * Returns the component object. 
@@ -2960,7 +2962,7 @@
          * @memberof listComponent
          */
         realComponent(){
-          let cp = this.component || null;
+          let cp = bbn.fn.isString(this.component) || (bbn.fn.isObject(this.component) && Object.keys(this.component).length) ? this.component : null;
           if (!cp && this.currentTemplate) {
             cp = {
               props: ['source'],

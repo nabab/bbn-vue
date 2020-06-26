@@ -1,0 +1,157 @@
+.bbn-slideshow {
+  padding-bottom: 2vw;
+  padding-top: 2vw;
+}
+.bbn-slideshow .iconImg {
+  cursor: pointer;
+}
+.bbn-slideshow .circleMiniature {
+  cursor: pointer;
+  width: 0.2em;
+  height: 0.2em;
+}
+.bbn-slideshow .navigation {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  position: absolute;
+  bottom: 0px;
+  right: 1vw;
+  font-size: 4vw;
+}
+.bbn-slideshow .showagain {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  font-size: initial;
+}
+.bbn-slideshow a {
+  color: inherit;
+}
+.bbn-slideshow .summary,
+.bbn-slideshow .next,
+.bbn-slideshow .prev {
+  color: #FFF;
+  opacity: 0.6;
+  -moz-opacity: 0.6;
+}
+.bbn-slideshow .summary:hover,
+.bbn-slideshow .next:hover,
+.bbn-slideshow .prev:hover {
+  opacity: 1;
+  -moz-opacity: 1;
+}
+.bbn-slideshow .summary,
+.bbn-slideshow .prev {
+  margin-right: 0.3em;
+}
+.bbn-slideshow .slide {
+  width: 100%;
+  height: 100%;
+}
+.bbn-slideshow .content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  animation-fill-mode: both;
+  animation-duration: 0.5s;
+}
+.bbn-slideshow .content p {
+  text-align: justify;
+}
+.bbn-slideshow .fade_in {
+  -webkit-animation-name: fade_in;
+  -moz-animation-name: fade_in;
+  -o-animation-name: fade_in;
+  animation-name: fade_in;
+}
+.bbn-slideshow .grow {
+  -webkit-animation-name: grow;
+  -moz-animation-name: grow;
+  -o-animation-name: grow;
+  animation-name: grow;
+}
+.bbn-slideshow .slide_from_left {
+  -webkit-animation-name: slide_from_left;
+  -moz-animation-name: slide_from_left;
+  -o-animation-name: slide_from_left;
+  animation-name: slide_from_left;
+}
+.bbn-slideshow .slide_from_right {
+  -webkit-animation-name: slide_from_right;
+  -moz-animation-name: slide_from_right;
+  -o-animation-name: slide_from_right;
+  animation-name: slide_from_right;
+}
+.bbn-slideshow .flip {
+  -webkit-animation-name: flip;
+  -moz-animation-name: flip;
+  -o-animation-name: flip;
+  animation-name: flip;
+  backface-visibility: hidden;
+}
+@keyframes fade_in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes slide_from_left {
+  from {
+    opacity: 0;
+    transform: translateX(100vw);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes slide_from_right {
+  from {
+    opacity: 0;
+    transform: translateX(-100vw);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes flip {
+  0% {
+    opacity: 0;
+    transform: rotateY(180deg) translateX(0);
+  }
+  100% {
+    opacity: 1;
+    transform: rotateY(0deg) translateX(0);
+  }
+}
+@keyframes grow {
+  0% {
+    opacity: 0;
+    transform: scale(0,0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1,1);
+  }
+}
+.zoom {
+  transition: transform .2s;
+  position: relative !important;
+}
+.zoom:hover {
+  -ms-transform: scale(1.2);
+  -webkit-transform: scale(1.2);
+  transform: scale(1.2);
+}

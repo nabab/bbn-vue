@@ -1,0 +1,32 @@
+.bbn-splitter {
+  display: grid;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  overflow: hidden;
+}
+.bbn-splitter .bbn-pane {
+  box-sizing: border-box !important;
+  position: relative;
+}
+.bbn-splitter .bbn-splitter-bar {
+  margin: 0;
+  padding: 0;
+}
+.bbn-splitter .bbn-splitter-bar i {
+  font-weight: bold;
+}
+.bbn-splitter .bbn-splitter-bar.vertical .bbn-splitter-collapser > div {
+  padding: 0 0.5em;
+}
+.bbn-splitter .bbn-splitter-bar.horizontal .bbn-splitter-collapser > div {
+  padding: 0.5em 0;
+}
+.bbn-splitter .bbn-splitter-bar.bbn-splitter-resizer.vertical {
+  cursor: ns-resize;
+}
+.bbn-splitter .bbn-splitter-bar.bbn-splitter-resizer.horizontal {
+  cursor: ew-resize;
+}
+.bbn-splitter .bbn-splitter-bar .bbn-splitter-collapser > div {
+  float: left;
+}

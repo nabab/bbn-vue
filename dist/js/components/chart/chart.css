@@ -1,0 +1,15 @@
+.bbn-chart span.apexcharts-legend-text {
+  color: inherit !important;
+}
+.bbn-chart .bbn-chart-widget div.apexcharts-canvas {
+  background: inherit !important;
+}
+.bbn-chart .bbn-chart-widget div.apexcharts-canvas .apexcharts-xaxistooltip {
+  z-index: 0;
+}
+.bbn-chart .bbn-chart-widget div.apexcharts-canvas .apexcharts-toolbar {
+  z-index: 1;
+}
+.bbn-chart .bbn-chart-widget div.apexcharts-canvas .apexcharts-tooltip {
+  z-index: 2;
+}

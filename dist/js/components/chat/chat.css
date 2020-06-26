@@ -1,0 +1,35 @@
+.bbn-chat .bbn-badge {
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+}
+.bbn-chat > .bbn-block {
+  margin-right: 0.2em;
+}
+.bbn-chat > .bbn-block > i {
+  margin-right: 0.7em;
+}
+.bbn-chat > .bbn-block > span.bbn-badge {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+.bbn-chat .bbn-chat-context {
+  position: absolute;
+  right: 2px;
+  top: 2px;
+  display: inline-block;
+}
+.bbn-chat .bbn-chat-users {
+  position: absolute;
+  right: 0;
+  z-index: 5;
+  bottom: 25px;
+  height: 200px;
+  width: 300px;
+}
+.bbn-chat .bbn-chat-users .bbn-user-title {
+  margin-right: 5px;
+}
+.bbn-chat .bbn-chat-users .message a {
+  word-wrap: break-word;
+}

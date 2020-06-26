@@ -1,0 +1,25 @@
+.bbn-combo {
+  display: inline-block;
+  box-sizing: border-box;
+  min-width: 4em;
+  cursor: pointer;
+}
+.bbn-combo input {
+  cursor: pointer;
+  width: 100%;
+  font-size: inherit;
+}
+.bbn-combo button {
+  height: 100%;
+}
+.bbn-combo div {
+  box-sizing: border-box;
+}
+.bbn-combo .bbn-list-component-button,
+.bbn-combo .bbn-button-right {
+  min-width: 2em;
+  line-height: normal;
+}
+.bbn-combo .bbn-button-right {
+  opacity: 0.7;
+}

@@ -1,0 +1,33 @@
+.bbn-datepicker {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  flex-direction: row;
+}
+.bbn-datepicker .bbn-masked {
+  border: none;
+}
+.bbn-datepicker .bbn-button {
+  margin-top: 0;
+}
+.bbn-datepicker .bbn-button.bbn-button-right {
+  width: inherit;
+  opacity: 0.7;
+}
+.bbn-datepicker .bbn-calendar .bbn-widget:first-child {
+  border: 0;
+}
+.bbn-datepicker.bbn-input-nullable .bbn-input-nullable-container {
+  opacity: 0;
+  transition: opacity 0.2s;
+  line-height: 100%;
+  margin: auto;
+  padding-right: 0.2em;
+  width: 1.05em;
+}
+.bbn-datepicker.bbn-input-nullable .bbn-input-nullable-container .nf-fa-times_circle {
+  line-height: 100%;
+  margin: auto;
+}
+.bbn-datepicker.bbn-input-nullable:hover .bbn-input-nullable-container {
+  opacity: 0.3;
+}

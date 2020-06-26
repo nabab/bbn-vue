@@ -1,0 +1,22 @@
+.bbn-colorpicker .bbn-colorpicker-input-hidden {
+  display: none;
+}
+.bbn-colorpicker .bbn-colorpicker-input {
+  padding: .3em;
+}
+.bbn-colorpicker .bbn-colorpicker-input .bbn-colorpicker-input-color {
+  width: 2em;
+}
+.bbn-colorpicker .bbn-colorpicker-palette {
+  width: 2em;
+  height: 2em;
+}
+.bbn-colorpicker .bbn-colorpicker-details .bbn-colorpicker-preview {
+  height: 8em;
+}
+.bbn-colorpicker .bbn-colorpicker-details .bbn-colorpicker-preview i {
+  font-size: 4em;
+}
+.bbn-colorpicker .bbn-colorpicker-details .bbn-colorpicker-details-inputs {
+  grid-template-columns: minmax(auto,max-content) max-content auto;
+}

@@ -1,0 +1,8 @@
+.bbn-masked {
+  display: inline-block;
+  min-width: 2em;
+}
+.bbn-masked input {
+  width: 100%;
+  font-size: inherit;
+}

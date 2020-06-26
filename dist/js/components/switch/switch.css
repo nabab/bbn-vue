@@ -1,0 +1,53 @@
+.bbn-switch {
+  position: relative;
+  display: inline-block;
+  width: 2.96em;
+  height: 1.7em;
+}
+.bbn-switch input {
+  display: none;
+}
+.bbn-switch .bbn-switch-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  -webkit-transition: .4s;
+  transition: .4s;
+  filter: grayscale(85%);
+}
+.bbn-switch .bbn-switch-slider .bbn-switch-slider-button {
+  position: absolute;
+  text-align: center;
+  color: #666;
+  height: 1.26em;
+  width: 1.26em;
+  left: 0.22em;
+  bottom: 0.22em;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+.bbn-switch .bbn-switch-slider.bbn-switch-round {
+  border-radius: 1.7em;
+}
+.bbn-switch .bbn-switch-slider.bbn-switch-round .bbn-switch-slider-button {
+  border-radius: 50%;
+}
+.bbn-switch input:focus + .bbn-switch-slider {
+  box-shadow: 0 0 1px;
+}
+.bbn-switch input:checked + .bbn-switch-slider {
+  filter: none;
+}
+.bbn-switch input:disabled + .bbn-switch-slider {
+  filter: grayscale(100%) brightness(1.5);
+  cursor: default;
+}
+.bbn-switch input:checked + .bbn-switch-slider .bbn-switch-slider-button {
+  -webkit-transform: translateX(1.26em);
+  -ms-transform: translateX(1.26em);
+  transform: translateX(1.26em);
+}

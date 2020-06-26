@@ -469,14 +469,14 @@
         }
         return this.queueTimerBBN;
       }
-      return bbn.fn.ajax(bbn.vue.libURL + 'dist/js/components/' + name + '.js', 'text').then(d => {
+      return bbn.fn.ajax(bbn.vue.libURL + 'dist/js/components/' + name + '/' + name + '.js', 'text').then(d => {
         if (d && d.data) {
-          eval(d.data);
-          if (Vue.options.components['bbn-' + name]) {
-            resolve();
+          let fn = eval(d.data);
+          if (bbn.fn.isFunction(fn)) {
+            bbn.fn.log("IT IS A FN");
+            fn(resolve);
           }
         }
-        return true;
       })
     },
 

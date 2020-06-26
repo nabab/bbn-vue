@@ -1,0 +1,7 @@
+.bbn-window {
+  transition: opacity 0.2s;
+  position: fixed !important;
+}
+.bbn-window > .bbn-floater {
+  position: absolute !important;
+}

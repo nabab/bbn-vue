@@ -1,0 +1,11 @@
+.bbn-notification .bbn-floater {
+  transition: top 0.5s ease 0s;
+}
+.bbn-notification .bbn-notification-content {
+  white-space: nowrap;
+}
+.bbn-notification .bbn-notification-closer {
+  position: absolute;
+  top: 2px;
+  right: 0.5em;
+}

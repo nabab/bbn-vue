@@ -29,49 +29,49 @@
                 "props": [
                     {
                         "text": "filterable",
-                        "desc": "For to apply the filters or not.",
+                        "desc": "For to apply the filters or not.\r\n       *",
                         "url": "bbn-vue\/component\/autocomplete\/props\/filterable"
                     },
                     {
                         "text": "minLength",
-                        "desc": "To define the length of the string to start the filter.",
+                        "desc": "To define the length of the string to start the filter.\r\n       *",
                         "url": "bbn-vue\/component\/autocomplete\/props\/minLength"
                     },
                     {
                         "text": "delay",
-                        "desc": "Specifies the time of delay.",
+                        "desc": "Specifies the time of delay.\r\n       *",
                         "url": "bbn-vue\/component\/autocomplete\/props\/delay"
                     },
                     {
                         "text": "filterMode",
-                        "desc": "Specifies the mode of the filter.",
+                        "desc": "Specifies the mode of the filter.\r\n       *",
                         "url": "bbn-vue\/component\/autocomplete\/props\/filterMode"
                     }
                 ],
                 "methods": [
                     {
                         "text": "click",
-                        "desc": "Puts the focus on the element.",
+                        "desc": "Puts the focus on the element.\r\n       *",
                         "url": "bbn-vue\/component\/autocomplete\/methods\/click"
                     },
                     {
                         "text": "leave",
-                        "desc": "Remove the filter and close the list if it is notabove it.",
+                        "desc": "Remove the filter and close the list if it is notabove it.\r\n       *",
                         "url": "bbn-vue\/component\/autocomplete\/methods\/leave"
                     },
                     {
                         "text": "select",
-                        "desc": "Emits the event 'select'.",
+                        "desc": "Emits the event 'select'.\r\n       *",
                         "url": "bbn-vue\/component\/autocomplete\/methods\/select"
                     },
                     {
                         "text": "resetDropdown",
-                        "desc": "Function to do the reset and if the component is open it closes it.",
+                        "desc": "Function to do the reset and if the component is open it closes it.\r\n       *",
                         "url": "bbn-vue\/component\/autocomplete\/methods\/resetDropdown"
                     },
                     {
                         "text": "keydown",
-                        "desc": "Function that performs different actions based on what is being pressed.",
+                        "desc": "Function that performs different actions based on what is being pressed.\r\n       *",
                         "url": "bbn-vue\/component\/autocomplete\/methods\/keydown"
                     }
                 ],
@@ -241,7 +241,7 @@
                 "methods": [
                     {
                         "text": "click",
-                        "desc": "The role of the button when clicked.",
+                        "desc": "The role of the button when clicked.\r\n       *",
                         "url": "bbn-vue\/component\/browser\/methods\/click"
                     }
                 ],
@@ -259,69 +259,69 @@
                 "props": [
                     {
                         "text": "title",
-                        "desc": "The title of the button.",
+                        "desc": "The title of the button.\r\n       *",
                         "url": "bbn-vue\/component\/button\/props\/title"
                     },
                     {
                         "text": "text",
-                        "desc": "The button's text.",
+                        "desc": "The button's text.\r\n      *",
                         "url": "bbn-vue\/component\/button\/props\/text"
                     },
                     {
                         "text": "notext",
-                        "desc": "Set to false for no text on the button.",
+                        "desc": "Set to false for no text on the button.\r\n      *",
                         "url": "bbn-vue\/component\/button\/props\/notext"
                     },
                     {
                         "text": "url",
-                        "desc": "The button links to a designated url.",
+                        "desc": "The button links to a designated url.\r\n       *",
                         "url": "bbn-vue\/component\/button\/props\/url"
                     },
                     {
                         "text": "iconPosition",
-                        "desc": "The icon(s) position (left or right).",
+                        "desc": "The icon(s) position (left or right).\r\n       *",
                         "url": "bbn-vue\/component\/button\/props\/iconPosition"
                     },
                     {
                         "text": "secondary",
-                        "desc": "A second icon to display on the button above the main icon.",
+                        "desc": "A second icon to display on the button above the main icon.\r\n       *",
                         "url": "bbn-vue\/component\/button\/props\/secondary"
                     },
                     {
                         "text": "secondaryColor",
-                        "desc": "If defined the prop secondary, defines the color of the second icon of the button.",
+                        "desc": "If defined the prop secondary, defines the color of the second icon of the button.\r\n       *",
                         "url": "bbn-vue\/component\/button\/props\/secondaryColor"
                     },
                     {
                         "text": "type",
-                        "desc": "Specifies the type of button.",
+                        "desc": "Specifies the type of button.\r\n       *",
                         "url": "bbn-vue\/component\/button\/props\/type"
                     },
                     {
                         "text": "disabled",
-                        "desc": "Set to true to disable the button.",
+                        "desc": "Set to true to disable the button.\r\n       *",
                         "url": "bbn-vue\/component\/button\/props\/disabled"
                     },
                     {
                         "text": "glowing",
-                        "desc": "Set to true for the button to glow.",
+                        "desc": "Set to true for the button to glow.\r\n       *",
                         "url": "bbn-vue\/component\/button\/props\/glowing"
                     },
                     {
                         "text": "glowingColor",
-                        "desc": "State the button's glowing colour.",
+                        "desc": "State the button's glowing colour.\r\n       *",
                         "url": "bbn-vue\/component\/button\/props\/glowingColor"
                     },
                     {
                         "text": "action",
-                        "desc": "The action that has to be performed at the event click.",
+                        "desc": "The action that has to be performed at the event click.\r\n       *",
                         "url": "bbn-vue\/component\/button\/props\/action"
                     }
                 ],
                 "methods": [
                     {
                         "text": "click",
-                        "desc": "The role of the button when clicked.",
+                        "desc": "The role of the button when clicked.\r\n       *",
                         "url": "bbn-vue\/component\/button\/methods\/click"
                     }
                 ],
@@ -348,144 +348,9 @@
                         "url": "bbn-vue\/component\/calendar\/props\/autobind"
                     },
                     {
-                        "text": "source",
-                        "desc": "The array of events for each day.\nWhen a string is set, an ajax call will be made to the corresponding url.",
-                        "url": "bbn-vue\/component\/calendar\/props\/source"
-                    },
-                    {
-                        "text": "type",
-                        "desc": "The visualization mode.\nAllowed values: days, weeks, months and years.",
-                        "url": "bbn-vue\/component\/calendar\/props\/type"
-                    },
-                    {
-                        "text": "autoSelect",
-                        "desc": "Set to true to autoselect the date property value.",
-                        "url": "bbn-vue\/component\/calendar\/props\/autoSelect"
-                    },
-                    {
-                        "text": "multiSelection",
-                        "desc": "Set to true to select multiple values.",
-                        "url": "bbn-vue\/component\/calendar\/props\/multiSelection"
-                    },
-                    {
-                        "text": "value",
-                        "desc": "The value.",
-                        "url": "bbn-vue\/component\/calendar\/props\/value"
-                    },
-                    {
-                        "text": "arrows",
-                        "desc": "Shows the arrows on the header.",
-                        "url": "bbn-vue\/component\/calendar\/props\/arrows"
-                    },
-                    {
-                        "text": "arrowsButtons",
-                        "desc": "Shows the arrows as buttons (only icons also).",
-                        "url": "bbn-vue\/component\/calendar\/props\/arrowsButtons"
-                    },
-                    {
-                        "text": "titleIcon",
-                        "desc": "The icon displayed before the title.",
-                        "url": "bbn-vue\/component\/calendar\/props\/titleIcon"
-                    },
-                    {
                         "text": "titleAction",
                         "desc": "The function called on click on the title.",
                         "url": "bbn-vue\/component\/calendar\/props\/titleAction"
-                    },
-                    {
-                        "text": "date",
-                        "desc": "The initial date.",
-                        "url": "bbn-vue\/component\/calendar\/props\/date"
-                    },
-                    {
-                        "text": "extraItems",
-                        "desc": "Shows\/hides the dates of the next and previous period in the current visualization.",
-                        "url": "bbn-vue\/component\/calendar\/props\/extraItems"
-                    },
-                    {
-                        "text": "itemsRange",
-                        "desc": "Array of items to insert into a range.",
-                        "url": "bbn-vue\/component\/calendar\/props\/itemsRange"
-                    },
-                    {
-                        "text": "onlyEvents",
-                        "desc": "Shows only dates with events.",
-                        "url": "bbn-vue\/component\/calendar\/props\/onlyEvents"
-                    },
-                    {
-                        "text": "disableNoEvents",
-                        "desc": "Disables the dates without events.",
-                        "url": "bbn-vue\/component\/calendar\/props\/disableNoEvents"
-                    },
-                    {
-                        "text": "itemDetails",
-                        "desc": "Shows\/hides the date's details.",
-                        "url": "bbn-vue\/component\/calendar\/props\/itemDetails"
-                    },
-                    {
-                        "text": "eventIcon",
-                        "desc": "The icon used to indicate the presence of events in the item.\nIf set to false, nothing will be shown.",
-                        "url": "bbn-vue\/component\/calendar\/props\/eventIcon"
-                    },
-                    {
-                        "text": "itemPadding",
-                        "desc": "Shows\/hides the padding of the item's cell.",
-                        "url": "bbn-vue\/component\/calendar\/props\/itemPadding"
-                    },
-                    {
-                        "text": "itemComponent",
-                        "desc": "The component used for the items.",
-                        "url": "bbn-vue\/component\/calendar\/props\/itemComponent"
-                    },
-                    {
-                        "text": "itemTitle",
-                        "desc": "The title for the item's details.",
-                        "url": "bbn-vue\/component\/calendar\/props\/itemTitle"
-                    },
-                    {
-                        "text": "headerComponent",
-                        "desc": "The component used for the header.",
-                        "url": "bbn-vue\/component\/calendar\/props\/headerComponent"
-                    },
-                    {
-                        "text": "labels",
-                        "desc": "The labels type.\nTypes: auto, letter, abbr, full, false.",
-                        "url": "bbn-vue\/component\/calendar\/props\/labels"
-                    },
-                    {
-                        "text": "startField",
-                        "desc": "The field used for the event's start.",
-                        "url": "bbn-vue\/component\/calendar\/props\/startField"
-                    },
-                    {
-                        "text": "endField",
-                        "desc": "The field used for the event's end.",
-                        "url": "bbn-vue\/component\/calendar\/props\/endField"
-                    },
-                    {
-                        "text": "startFormat",
-                        "desc": "The format used for the event's start.",
-                        "url": "bbn-vue\/component\/calendar\/props\/startFormat"
-                    },
-                    {
-                        "text": "endFormat",
-                        "desc": "The format used for the event's end.",
-                        "url": "bbn-vue\/component\/calendar\/props\/endFormat"
-                    },
-                    {
-                        "text": "max",
-                        "desc": "The maximum allowed date.",
-                        "url": "bbn-vue\/component\/calendar\/props\/max"
-                    },
-                    {
-                        "text": "min",
-                        "desc": "The minimum allowed date.",
-                        "url": "bbn-vue\/component\/calendar\/props\/min"
-                    },
-                    {
-                        "text": "disableDates",
-                        "desc": "The disabled dates.",
-                        "url": "bbn-vue\/component\/calendar\/props\/disableDates"
                     },
                     {
                         "text": "showLoading",
@@ -493,78 +358,7 @@
                         "url": "bbn-vue\/component\/calendar\/props\/showLoading"
                     }
                 ],
-                "methods": [
-                    {
-                        "text": "getCfg",
-                        "desc": "Returns the correct configuration based on the calendar type.",
-                        "url": "bbn-vue\/component\/calendar\/methods\/getCfg"
-                    },
-                    {
-                        "text": "getLabelsFormat",
-                        "desc": "Returns the correct labels' format.",
-                        "url": "bbn-vue\/component\/calendar\/methods\/getLabelsFormat"
-                    },
-                    {
-                        "text": "create",
-                        "desc": "Called to the component mounted setting currentDate at max or min.",
-                        "url": "bbn-vue\/component\/calendar\/methods\/create"
-                    },
-                    {
-                        "text": "makeEvents",
-                        "desc": "Defines and inserts events.",
-                        "url": "bbn-vue\/component\/calendar\/methods\/makeEvents"
-                    },
-                    {
-                        "text": "init",
-                        "desc": "Initializes the calendar.",
-                        "url": "bbn-vue\/component\/calendar\/methods\/init"
-                    },
-                    {
-                        "text": "filterEvents",
-                        "desc": "Filters the events.",
-                        "url": "bbn-vue\/component\/calendar\/methods\/filterEvents"
-                    },
-                    {
-                        "text": "setTitle",
-                        "desc": "Sets the calendar's title.",
-                        "url": "bbn-vue\/component\/calendar\/methods\/setTitle"
-                    },
-                    {
-                        "text": "refresh",
-                        "desc": "Refreshes the data",
-                        "url": "bbn-vue\/component\/calendar\/methods\/refresh"
-                    },
-                    {
-                        "text": "next",
-                        "desc": "Changes the current calendar view to the next period.",
-                        "url": "bbn-vue\/component\/calendar\/methods\/next"
-                    },
-                    {
-                        "text": "prev",
-                        "desc": "Changes the current calendar view to the previous period.",
-                        "url": "bbn-vue\/component\/calendar\/methods\/prev"
-                    },
-                    {
-                        "text": "select",
-                        "desc": "Changes the current value after a selection.",
-                        "url": "bbn-vue\/component\/calendar\/methods\/select"
-                    },
-                    {
-                        "text": "getPostData",
-                        "desc": "Additionals data to sent with the ajax call.",
-                        "url": "bbn-vue\/component\/calendar\/methods\/getPostData"
-                    },
-                    {
-                        "text": "setLabels",
-                        "desc": "Sets the labels.",
-                        "url": "bbn-vue\/component\/calendar\/methods\/setLabels"
-                    },
-                    {
-                        "text": "onResize",
-                        "desc": "Handles the resize.",
-                        "url": "bbn-vue\/component\/calendar\/methods\/onResize"
-                    }
-                ],
+                "methods": [],
                 "mixins": [
                     {
                         "text": "basicComponent",
@@ -609,7 +403,7 @@
                     },
                     {
                         "text": "theme",
-                        "desc": "The theme of chart.",
+                        "desc": "The theme of chart.\r\n       *",
                         "url": "bbn-vue\/component\/chart\/props\/theme"
                     },
                     {
@@ -699,7 +493,7 @@
                     },
                     {
                         "text": "animation",
-                        "desc": "Set it to false if you want to disable the animations.\r\nIf you give a number it will be used as the time (ms) for the animations.",
+                        "desc": "Set it to false if you want to disable the animations.\r\nIf you give a number it will be used as the time (ms) for the animations.\r\n       *",
                         "url": "bbn-vue\/component\/chart\/props\/animation"
                     },
                     {
@@ -949,7 +743,7 @@
                     },
                     {
                         "text": "toolbarCustom",
-                        "desc": "Allows to add additional icon buttons in the toolbar.\r\nIn the below example, index should be used to place at a particular position in the toolbar.\r\n[{\r\n icon: '<img src=\"\/static\/icons\/chart-carpet.png\" width=\"20\">',\r\n index: 4,\r\n title: 'tooltip of the icon',\r\n class: 'custom-icon',\r\n click: function (chart, options, e) {\r\n  console.log(\"clicked custom-icon\")\r\n }\r\n}]",
+                        "desc": "Allows to add additional icon buttons in the toolbar.\r\nIn the below example, index should be used to place at a particular position in the toolbar.\r\n[{\r\n  icon: '<img src=\"\/static\/icons\/chart-carpet.png\" width=\"20\">',\r\n  index: 4,\r\n  title: 'tooltip of the icon',\r\n  class: 'custom-icon',\r\n  click: function (chart, options, e) {\r\n    console.log(\"clicked custom-icon\")\r\n  }\r\n}]",
                         "url": "bbn-vue\/component\/chart\/props\/toolbarCustom"
                     },
                     {
@@ -966,27 +760,27 @@
                     },
                     {
                         "text": "destroy",
-                        "desc": "Destroys the component chart.",
+                        "desc": "Destroys the component chart.\r\n       *",
                         "url": "bbn-vue\/component\/chart\/methods\/destroy"
                     },
                     {
                         "text": "setSizes",
-                        "desc": "Set the dimensions, in height and width.",
+                        "desc": "Set the dimensions, in height and width.\r\n       *",
                         "url": "bbn-vue\/component\/chart\/methods\/setSizes"
                     },
                     {
                         "text": "onResize",
-                        "desc": "Re-adjust the dimensions, in height and width.",
+                        "desc": "Re-adjust the dimensions, in height and width.\r\n       *",
                         "url": "bbn-vue\/component\/chart\/methods\/onResize"
                     },
                     {
                         "text": "updateWidget",
-                        "desc": "Update chart.",
+                        "desc": "Update chart.\r\n       *",
                         "url": "bbn-vue\/component\/chart\/methods\/updateWidget"
                     },
                     {
                         "text": "getLabels",
-                        "desc": "Return list labels.",
+                        "desc": "Return list labels.\r\n       *",
                         "url": "bbn-vue\/component\/chart\/methods\/getLabels"
                     }
                 ],
@@ -1051,32 +845,32 @@
                 "methods": [
                     {
                         "text": "getField",
-                        "desc": "Returns the method bbn.fn.getField.",
+                        "desc": "Returns the method bbn.fn.getField.\r\n      *",
                         "url": "bbn-vue\/component\/chat\/methods\/getField"
                     },
                     {
                         "text": "chatTo",
-                        "desc": "Opens the chat window selected from the list of online users.",
+                        "desc": "Opens the chat window selected from the list of online users.\r\n       *",
                         "url": "bbn-vue\/component\/chat\/methods\/chatTo"
                     },
                     {
                         "text": "relay",
-                        "desc": "Create event send.",
+                        "desc": "Create event send.\r\n       *",
                         "url": "bbn-vue\/component\/chat\/methods\/relay"
                     },
                     {
                         "text": "chatById",
-                        "desc": "Return the current window object basing on the given chat id.",
+                        "desc": "Return the current window object basing on the given chat id.\r\n       *",
                         "url": "bbn-vue\/component\/chat\/methods\/chatById"
                     },
                     {
                         "text": "addUser",
-                        "desc": "Add a user to the given chat.",
+                        "desc": "Add a user to the given chat.\r\n       *",
                         "url": "bbn-vue\/component\/chat\/methods\/addUser"
                     },
                     {
                         "text": "sendMessage",
-                        "desc": "Sends the current message.",
+                        "desc": "Sends the current message.\r\n           *",
                         "url": "bbn-vue\/component\/chat\/methods\/sendMessage"
                     }
                 ],
@@ -1104,22 +898,22 @@
                 "props": [
                     {
                         "text": "value",
-                        "desc": "The value of the checkbox.",
+                        "desc": "The value of the checkbox.\r\n       *",
                         "url": "bbn-vue\/component\/checkbox\/props\/value"
                     },
                     {
                         "text": "novalue",
-                        "desc": "The value of the checkbox when unchecked.",
+                        "desc": "The value of the checkbox when unchecked.\r\n      *",
                         "url": "bbn-vue\/component\/checkbox\/props\/novalue"
                     },
                     {
                         "text": "name",
-                        "desc": "The name of the component checkbox.",
+                        "desc": "The name of the component checkbox.\r\n       *",
                         "url": "bbn-vue\/component\/checkbox\/props\/name"
                     },
                     {
                         "text": "id",
-                        "desc": "The id of the checkbox.",
+                        "desc": "The id of the checkbox.\r\n       *",
                         "url": "bbn-vue\/component\/checkbox\/props\/id"
                     },
                     {
@@ -1129,27 +923,27 @@
                     },
                     {
                         "text": "required",
-                        "desc": "Set to true to have required checkbox selection.",
+                        "desc": "Set to true to have required checkbox selection.\r\n       *",
                         "url": "bbn-vue\/component\/checkbox\/props\/required"
                     },
                     {
                         "text": "disabled",
-                        "desc": "Set to true to disable the checkbox.",
+                        "desc": "Set to true to disable the checkbox.\r\n       *",
                         "url": "bbn-vue\/component\/checkbox\/props\/disabled"
                     },
                     {
                         "text": "readonly",
-                        "desc": "Set to true for a readonly checkbox.",
+                        "desc": "Set to true for a readonly checkbox.\r\n       *",
                         "url": "bbn-vue\/component\/checkbox\/props\/readonly"
                     },
                     {
                         "text": "label",
-                        "desc": "The accompanying label for the checkbox.",
+                        "desc": "The accompanying label for the checkbox.\r\n       *",
                         "url": "bbn-vue\/component\/checkbox\/props\/label"
                     },
                     {
                         "text": "checked",
-                        "desc": "Set to true for a checked checkbox.",
+                        "desc": "Set to true for a checked checkbox.\r\n       *",
                         "url": "bbn-vue\/component\/checkbox\/props\/checked"
                     },
                     {
@@ -1161,7 +955,7 @@
                 "methods": [
                     {
                         "text": "toggle",
-                        "desc": "Emits a change when the state of the checkbox changes.",
+                        "desc": "Emits a change when the state of the checkbox changes.\r\n       *",
                         "url": "bbn-vue\/component\/checkbox\/methods\/toggle"
                     }
                 ],
@@ -1201,7 +995,7 @@
                 "methods": [
                     {
                         "text": "unsearch",
-                        "desc": "Emits a change when the state of the checkbox changes.",
+                        "desc": "Emits a change when the state of the checkbox changes.\r\n       *",
                         "url": "bbn-vue\/component\/clipboard\/methods\/unsearch"
                     },
                     {
@@ -1211,32 +1005,32 @@
                     },
                     {
                         "text": "togle",
-                        "desc": "",
+                        "desc": "*",
                         "url": "bbn-vue\/component\/clipboard\/methods\/togle"
                     },
                     {
                         "text": "show",
-                        "desc": "",
+                        "desc": "*\r\n       *",
                         "url": "bbn-vue\/component\/clipboard\/methods\/show"
                     },
                     {
                         "text": "hide",
-                        "desc": "",
+                        "desc": "*\r\n       *",
                         "url": "bbn-vue\/component\/clipboard\/methods\/hide"
                     },
                     {
                         "text": "save",
-                        "desc": "",
+                        "desc": "*\r\n       *",
                         "url": "bbn-vue\/component\/clipboard\/methods\/save"
                     },
                     {
                         "text": "saveAs",
-                        "desc": "",
+                        "desc": "*",
                         "url": "bbn-vue\/component\/clipboard\/methods\/saveAs"
                     },
                     {
                         "text": "add",
-                        "desc": "",
+                        "desc": "*",
                         "url": "bbn-vue\/component\/clipboard\/methods\/add"
                     },
                     {
@@ -1246,27 +1040,27 @@
                     },
                     {
                         "text": "getItem",
-                        "desc": "",
+                        "desc": "*",
                         "url": "bbn-vue\/component\/clipboard\/methods\/getItem"
                     },
                     {
                         "text": "updateSlider",
-                        "desc": "",
+                        "desc": "*",
                         "url": "bbn-vue\/component\/clipboard\/methods\/updateSlider"
                     },
                     {
                         "text": "clear",
-                        "desc": "",
+                        "desc": "*",
                         "url": "bbn-vue\/component\/clipboard\/methods\/clear"
                     },
                     {
                         "text": "copy",
-                        "desc": "",
+                        "desc": "*",
                         "url": "bbn-vue\/component\/clipboard\/methods\/copy"
                     },
                     {
                         "text": "setClipboard",
-                        "desc": "",
+                        "desc": "*",
                         "url": "bbn-vue\/component\/clipboard\/methods\/setClipboard"
                     }
                 ],
@@ -1289,59 +1083,59 @@
                 "props": [
                     {
                         "text": "ecma",
-                        "desc": "The ecmascript version.",
+                        "desc": "The ecmascript version.\r\n       *",
                         "url": "bbn-vue\/component\/code\/props\/ecma"
                     },
                     {
                         "text": "mode",
-                        "desc": "The language mode.",
+                        "desc": "The language mode.\r\n       *",
                         "url": "bbn-vue\/component\/code\/props\/mode"
                     },
                     {
                         "text": "theme",
-                        "desc": "Defines the style of the editor.",
+                        "desc": "Defines the style of the editor.\r\n       *",
                         "url": "bbn-vue\/component\/code\/props\/theme"
                     },
                     {
                         "text": "fill",
-                        "desc": "Takes the full height of the container if set to true.",
+                        "desc": "Takes the full height of the container if set to true.\r\n       *",
                         "url": "bbn-vue\/component\/code\/props\/fill"
                     },
                     {
                         "text": "cfg",
-                        "desc": "Configuration object.",
+                        "desc": "Configuration object.\r\n       *",
                         "url": "bbn-vue\/component\/code\/props\/cfg"
                     },
                     {
                         "text": "themeButton",
-                        "desc": "Set to true to display a button that can change the theme of the component.",
+                        "desc": "Set to true to display a button that can change the theme of the component.\r\n       *",
                         "url": "bbn-vue\/component\/code\/props\/themeButton"
                     }
                 ],
                 "methods": [
                     {
                         "text": "getMode",
-                        "desc": "Gets the preset options for the given mode from the constant modes.",
+                        "desc": "Gets the preset options for the given mode from the constant modes.\r\n       *",
                         "url": "bbn-vue\/component\/code\/methods\/getMode"
                     },
                     {
                         "text": "getOptions",
-                        "desc": "Gets the options for the editor.",
+                        "desc": "Gets the options for the editor.\r\n       *",
                         "url": "bbn-vue\/component\/code\/methods\/getOptions"
                     },
                     {
                         "text": "cursorPosition",
-                        "desc": "Places the cursor at a defined point.",
+                        "desc": "Places the cursor at a defined point.\r\n       *",
                         "url": "bbn-vue\/component\/code\/methods\/cursorPosition"
                     },
                     {
                         "text": "getState",
-                        "desc": "Returns an object with the selections, marks, folding and value.",
+                        "desc": "Returns an object with the selections, marks, folding and value.\r\n       *",
                         "url": "bbn-vue\/component\/code\/methods\/getState"
                     },
                     {
                         "text": "loadState",
-                        "desc": "Loads the state, such as the last state saved.",
+                        "desc": "Loads the state, such as the last state saved.\r\n       *",
                         "url": "bbn-vue\/component\/code\/methods\/loadState"
                     },
                     {
@@ -1351,7 +1145,7 @@
                     },
                     {
                         "text": "foldByLevel",
-                        "desc": "Folds the given level.",
+                        "desc": "Folds the given level.\r\n       *",
                         "url": "bbn-vue\/component\/code\/methods\/foldByLevel"
                     },
                     {
@@ -1361,22 +1155,22 @@
                     },
                     {
                         "text": "foldByNodeOrder",
-                        "desc": "Folds the given node.",
+                        "desc": "Folds the given node.\r\n       *",
                         "url": "bbn-vue\/component\/code\/methods\/foldByNodeOrder"
                     },
                     {
                         "text": "foldAll",
-                        "desc": "Folds all nodes.",
+                        "desc": "Folds all nodes.\r\n       *",
                         "url": "bbn-vue\/component\/code\/methods\/foldAll"
                     },
                     {
                         "text": "unfoldAll",
-                        "desc": "Undfolds all nodes.",
+                        "desc": "Undfolds all nodes.\r\n       *",
                         "url": "bbn-vue\/component\/code\/methods\/unfoldAll"
                     },
                     {
                         "text": "initTern",
-                        "desc": "Initializes the component",
+                        "desc": "Initializes the component\r\n       *",
                         "url": "bbn-vue\/component\/code\/methods\/initTern"
                     }
                 ],
@@ -1541,17 +1335,53 @@
             {
                 "text": "combo",
                 "url": "bbn-vue\/component\/combo\/overview",
-                "props": [],
+                "props": [
+                    {
+                        "text": "filterable",
+                        "desc": "Set to true allows the columns of the list to be filtered. A filter icon will appear at the top of each column.The property can be given to each column to define different behaviour.",
+                        "url": "bbn-vue\/component\/combo\/props\/filterable"
+                    },
+                    {
+                        "text": "minLength",
+                        "desc": "To define the length of the string to start the filter.\r\n       *",
+                        "url": "bbn-vue\/component\/combo\/props\/minLength"
+                    },
+                    {
+                        "text": "delay",
+                        "desc": "Specifies the time of delay.\r\n       *",
+                        "url": "bbn-vue\/component\/combo\/props\/delay"
+                    }
+                ],
                 "methods": [
                     {
+                        "text": "click",
+                        "desc": "Puts the focus on the element.\r\n       *",
+                        "url": "bbn-vue\/component\/combo\/methods\/click"
+                    },
+                    {
                         "text": "leave",
-                        "desc": "",
+                        "desc": "Remove the filter and close the list if it is notabove it.\r\n       *",
                         "url": "bbn-vue\/component\/combo\/methods\/leave"
                     },
                     {
                         "text": "select",
                         "desc": "Emits the event 'select'",
                         "url": "bbn-vue\/component\/combo\/methods\/select"
+                    },
+                    {
+                        "text": "selectAll",
+                        "desc": "Select the string of text inside of the input.",
+                        "url": "bbn-vue\/component\/combo\/methods\/selectAll"
+                    },
+                    {
+                        "text": "resetDropdown",
+                        "desc": "Function to do the reset and if the component is open it closes it.\r\n       *",
+                        "url": "bbn-vue\/component\/combo\/methods\/resetDropdown"
+                    },
+                    {
+                        "text": "keydown",
+                        "desc": "Function that performs different actions based on what is being pressed.\r\n       *",
+                        "url": "bbn-vue\/component\/combo\/methods\/keydown"
                     }
                 ],
                 "mixins": [
@@ -1733,7 +1563,7 @@
                     },
                     {
                         "text": "children",
-                        "desc": "",
+                        "desc": "*",
                         "url": "bbn-vue\/component\/context\/props\/children"
                     },
                     {
@@ -1815,12 +1645,12 @@
                     },
                     {
                         "text": "getShow",
-                        "desc": "Returns the descriptive list of units used in the countdown.",
+                        "desc": "Returns the descriptive list of units used in the countdown.\r\n       *",
                         "url": "bbn-vue\/component\/countdown\/methods\/getShow"
                     },
                     {
                         "text": "getText",
-                        "desc": "Returns the descriptive list of units used in the countdown with the value that contains it when calling this function.",
+                        "desc": "Returns the descriptive list of units used in the countdown with the value that contains it when calling this function.\r\n       *",
                         "url": "bbn-vue\/component\/countdown\/methods\/getText"
                     }
                 ],
@@ -1945,7 +1775,7 @@
                     },
                     {
                         "text": "mouseEnterWidget",
-                        "desc": "",
+                        "desc": "*",
                         "url": "bbn-vue\/component\/dashboard\/methods\/mouseEnterWidget"
                     },
                     {
@@ -2022,98 +1852,12 @@
                 "url": "bbn-vue\/component\/datepicker\/overview",
                 "props": [
                     {
-                        "text": "source",
-                        "desc": "The array of events for each day.\nWhen a string is set, an ajax call will be made to the corresponding url.",
-                        "url": "bbn-vue\/component\/datepicker\/props\/source"
-                    },
-                    {
-                        "text": "format",
-                        "desc": "The format of the date displayed.",
-                        "url": "bbn-vue\/component\/datepicker\/props\/format"
-                    },
-                    {
-                        "text": "valueFormat",
-                        "desc": "The format of the value.",
-                        "url": "bbn-vue\/component\/datepicker\/props\/valueFormat"
-                    },
-                    {
-                        "text": "mask",
-                        "desc": "The mask for the date input.",
-                        "url": "bbn-vue\/component\/datepicker\/props\/mask"
-                    },
-                    {
-                        "text": "max",
-                        "desc": "The maximum allowed value.",
-                        "url": "bbn-vue\/component\/datepicker\/props\/max"
-                    },
-                    {
-                        "text": "min",
-                        "desc": "The minimum allowed value.",
-                        "url": "bbn-vue\/component\/datepicker\/props\/min"
-                    },
-                    {
-                        "text": "type",
-                        "desc": "The visualization mode.\nAllowed values: days, weeks, months and years.",
-                        "url": "bbn-vue\/component\/datepicker\/props\/type"
-                    },
-                    {
-                        "text": "disableDates",
-                        "desc": "The disabled dates.",
-                        "url": "bbn-vue\/component\/datepicker\/props\/disableDates"
-                    },
-                    {
-                        "text": "datesRange",
-                        "desc": "Array of date values insertable into a range.",
-                        "url": "bbn-vue\/component\/datepicker\/props\/datesRange"
-                    },
-                    {
                         "text": "autosize",
                         "desc": "Set it to false if you dont' want to auto-resize the input's width based on its value (in characters).",
                         "url": "bbn-vue\/component\/datepicker\/props\/autosize"
-                    },
-                    {
-                        "text": "onlyEvents",
-                        "desc": "Shows only dates with events.",
-                        "url": "bbn-vue\/component\/datepicker\/props\/onlyEvents"
                     }
                 ],
-                "methods": [
-                    {
-                        "text": "getValueFormat",
-                        "desc": "Gets the correct value format.",
-                        "url": "bbn-vue\/component\/datepicker\/methods\/getValueFormat"
-                    },
-                    {
-                        "text": "setDate",
-                        "desc": "Sets the value to the 'YYYY-MM-DD' format.",
-                        "url": "bbn-vue\/component\/datepicker\/methods\/setDate"
-                    },
-                    {
-                        "text": "setValue",
-                        "desc": "Sets the value.",
-                        "url": "bbn-vue\/component\/datepicker\/methods\/setValue"
-                    },
-                    {
-                        "text": "updateCalendar",
-                        "desc": "Updates the calendar.",
-                        "url": "bbn-vue\/component\/datepicker\/methods\/updateCalendar"
-                    },
-                    {
-                        "text": "inputChanged",
-                        "desc": "The method called by the input blur event.",
-                        "url": "bbn-vue\/component\/datepicker\/methods\/inputChanged"
-                    },
-                    {
-                        "text": "setInputValue",
-                        "desc": "Set the new value by updating the calendar.",
-                        "url": "bbn-vue\/component\/datepicker\/methods\/setInputValue"
-                    },
-                    {
-                        "text": "clear",
-                        "desc": "Clears the value.",
-                        "url": "bbn-vue\/component\/datepicker\/methods\/clear"
-                    }
-                ],
+                "methods": [],
                 "mixins": [
                     {
                         "text": "basicComponent",
@@ -2138,52 +1882,52 @@
                 "props": [
                     {
                         "text": "format",
-                        "desc": "The format of the date and time displayed in the user interface.",
+                        "desc": "The format of the date and time displayed in the user interface.\r\n       *",
                         "url": "bbn-vue\/component\/datetimepicker\/props\/format"
                     },
                     {
                         "text": "valueFormat",
-                        "desc": "The format of the date and time sent to the server.",
+                        "desc": "The format of the date and time sent to the server.\r\n       *",
                         "url": "bbn-vue\/component\/datetimepicker\/props\/valueFormat"
                     },
                     {
                         "text": "mask",
-                        "desc": "The mask for date input.",
+                        "desc": "The mask for date input.\r\n       *",
                         "url": "bbn-vue\/component\/datetimepicker\/props\/mask"
                     },
                     {
                         "text": "max",
-                        "desc": "The maximum allowed value.",
+                        "desc": "The maximum allowed value.\r\n       *",
                         "url": "bbn-vue\/component\/datetimepicker\/props\/max"
                     },
                     {
                         "text": "min",
-                        "desc": "The minimum allowed value.",
+                        "desc": "The minimum allowed value.\r\n       *",
                         "url": "bbn-vue\/component\/datetimepicker\/props\/min"
                     },
                     {
                         "text": "disableDates",
-                        "desc": "The disabled dates.",
+                        "desc": "The disabled dates.\r\n       *",
                         "url": "bbn-vue\/component\/datetimepicker\/props\/disableDates"
                     },
                     {
                         "text": "datesRange",
-                        "desc": "The array of date values insertable into a range.",
+                        "desc": "The array of date values insertable into a range.\r\n       *",
                         "url": "bbn-vue\/component\/datetimepicker\/props\/datesRange"
                     },
                     {
                         "text": "showSecond",
-                        "desc": "Shows\/hides the seconds selection.",
+                        "desc": "Shows\/hides the seconds selection.\r\n       *",
                         "url": "bbn-vue\/component\/datetimepicker\/props\/showSecond"
                     },
                     {
                         "text": "scrollMode",
-                        "desc": "Shows an alternative view for the time selection instead of the dropdowns.",
+                        "desc": "Shows an alternative view for the time selection instead of the dropdowns.\r\n       *",
                         "url": "bbn-vue\/component\/datetimepicker\/props\/scrollMode"
                     },
                     {
                         "text": "blocksMode",
-                        "desc": "Shows an alternative view for the time selection instead of the dropdowns.",
+                        "desc": "Shows an alternative view for the time selection instead of the dropdowns.\r\n       *",
                         "url": "bbn-vue\/component\/datetimepicker\/props\/blocksMode"
                     },
                     {
@@ -2195,52 +1939,52 @@
                 "methods": [
                     {
                         "text": "showCalendar",
-                        "desc": "Shows\/hides the calendar's floater.",
+                        "desc": "Shows\/hides the calendar's floater.\r\n       *",
                         "url": "bbn-vue\/component\/datetimepicker\/methods\/showCalendar"
                     },
                     {
                         "text": "showTime",
-                        "desc": "Shows\/hides the time's floater",
+                        "desc": "Shows\/hides the time's floater\r\n       *",
                         "url": "bbn-vue\/component\/datetimepicker\/methods\/showTime"
                     },
                     {
                         "text": "getValueFormat",
-                        "desc": "Gets the correct value format.",
+                        "desc": "Gets the correct value format.\r\n       *",
                         "url": "bbn-vue\/component\/datetimepicker\/methods\/getValueFormat"
                     },
                     {
                         "text": "setDate",
-                        "desc": "Sets the value from 'YYYY-MM-DD' formatted value.",
+                        "desc": "Sets the value from 'YYYY-MM-DD' formatted value.\r\n       *",
                         "url": "bbn-vue\/component\/datetimepicker\/methods\/setDate"
                     },
                     {
                         "text": "setTime",
-                        "desc": "Sets the value format from 'HH:mm' to 'HH:mm:ss'.",
+                        "desc": "Sets the value format from 'HH:mm' to 'HH:mm:ss'.\r\n       *",
                         "url": "bbn-vue\/component\/datetimepicker\/methods\/setTime"
                     },
                     {
                         "text": "setValue",
-                        "desc": "Sets the value.",
+                        "desc": "Sets the value.\r\n       *",
                         "url": "bbn-vue\/component\/datetimepicker\/methods\/setValue"
                     },
                     {
                         "text": "updateCalendar",
-                        "desc": "Updates the calendar.",
+                        "desc": "Updates the calendar.\r\n       *",
                         "url": "bbn-vue\/component\/datetimepicker\/methods\/updateCalendar"
                     },
                     {
                         "text": "inputChanged",
-                        "desc": "The method initialized by the input blur event.",
+                        "desc": "The method initialized by the input blur event.\r\n       *",
                         "url": "bbn-vue\/component\/datetimepicker\/methods\/inputChanged"
                     },
                     {
                         "text": "setInputValue",
-                        "desc": "The method value input.",
+                        "desc": "The method value input.\r\n       *",
                         "url": "bbn-vue\/component\/datetimepicker\/methods\/setInputValue"
                     },
                     {
                         "text": "clear",
-                        "desc": "clears any contained value in input.",
+                        "desc": "clears any contained value in input.\r\n       *",
                         "url": "bbn-vue\/component\/datetimepicker\/methods\/clear"
                     }
                 ],
@@ -2269,12 +2013,12 @@
                 "methods": [
                     {
                         "text": "keydown",
-                        "desc": "States the role of the enter key on the dropdown menu.",
+                        "desc": "States the role of the enter key on the dropdown menu.\r\n       *",
                         "url": "bbn-vue\/component\/dropdown\/methods\/keydown"
                     },
                     {
                         "text": "keydown",
-                        "desc": "Leave list.",
+                        "desc": "Leave list.\r\n       *",
                         "url": "bbn-vue\/component\/dropdown\/methods\/keydown"
                     }
                 ],
@@ -2327,7 +2071,7 @@
                 "props": [
                     {
                         "text": "mode",
-                        "desc": "The mode of the component.",
+                        "desc": "The mode of the component.\r\n       *",
                         "url": "bbn-vue\/component\/field\/props\/mode"
                     }
                 ],
@@ -2431,32 +2175,32 @@
                 "methods": [
                     {
                         "text": "over",
-                        "desc": "Alters the filter's style on mouseover event.",
+                        "desc": "Alters the filter's style on mouseover event.\r\n       *",
                         "url": "bbn-vue\/component\/filter\/methods\/over"
                     },
                     {
                         "text": "out",
-                        "desc": "Alters the filter's style on mouseout event.",
+                        "desc": "Alters the filter's style on mouseout event.\r\n       *",
                         "url": "bbn-vue\/component\/filter\/methods\/out"
                     },
                     {
                         "text": "setCondition",
-                        "desc": "Sets the conditions for the filter.",
+                        "desc": "Sets the conditions for the filter.\r\n       *",
                         "url": "bbn-vue\/component\/filter\/methods\/setCondition"
                     },
                     {
                         "text": "unsetCondition",
-                        "desc": "Removes the set filter conditions.",
+                        "desc": "Removes the set filter conditions.\r\n       *",
                         "url": "bbn-vue\/component\/filter\/methods\/unsetCondition"
                     },
                     {
                         "text": "hasFields",
-                        "desc": "Returns the number of fields.",
+                        "desc": "Returns the number of fields.\r\n       *",
                         "url": "bbn-vue\/component\/filter\/methods\/hasFields"
                     },
                     {
                         "text": "condition_text",
-                        "desc": "Styles the text based on the given condition.",
+                        "desc": "Styles the text based on the given condition.\r\n       *",
                         "url": "bbn-vue\/component\/filter\/methods\/condition_text"
                     },
                     {
@@ -2466,7 +2210,7 @@
                     },
                     {
                         "text": "delete_condition",
-                        "desc": "Deletes the given condition.",
+                        "desc": "Deletes the given condition.\r\n       *",
                         "url": "bbn-vue\/component\/filter\/methods\/delete_condition"
                     },
                     {
@@ -2581,7 +2325,7 @@
                     },
                     {
                         "text": "mode",
-                        "desc": "The list selection mode.",
+                        "desc": "The list selection mode.\r\nPossible values: 'free', 'options', 'selection'.",
                         "url": "bbn-vue\/component\/floater\/props\/mode"
                     },
                     {
@@ -2618,9 +2362,49 @@
                         "text": "latency",
                         "desc": "The latency of the floater.",
                         "url": "bbn-vue\/component\/floater\/props\/latency"
+                    },
+                    {
+                        "text": "onOpen",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/floater\/props\/onOpen"
+                    },
+                    {
+                        "text": "beforeClose",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/floater\/props\/beforeClose"
+                    },
+                    {
+                        "text": "onClose",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/floater\/props\/onClose"
+                    },
+                    {
+                        "text": "afterClose",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/floater\/props\/afterClose"
+                    },
+                    {
+                        "text": "index",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/floater\/props\/index"
+                    },
+                    {
+                        "text": "uid",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/floater\/props\/uid"
+                    },
+                    {
+                        "text": "suggest",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/floater\/props\/suggest"
                     }
                 ],
                 "methods": [
+                    {
+                        "text": "init",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/floater\/methods\/init"
+                    },
                     {
                         "text": "getContainerPosition",
                         "desc": "Defines the position of the container.",
@@ -2642,14 +2426,29 @@
                         "url": "bbn-vue\/component\/floater\/methods\/scrollResize"
                     },
                     {
+                        "text": "addClose",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/floater\/methods\/addClose"
+                    },
+                    {
+                        "text": "removeClose",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/floater\/methods\/removeClose"
+                    },
+                    {
                         "text": "onResize",
                         "desc": "Handles the resize of the component.",
                         "url": "bbn-vue\/component\/floater\/methods\/onResize"
                     },
                     {
-                        "text": "blur",
+                        "text": "leave",
                         "desc": "Closes the floater if the prop autoHide is set to true.",
-                        "url": "bbn-vue\/component\/floater\/methods\/blur"
+                        "url": "bbn-vue\/component\/floater\/methods\/leave"
+                    },
+                    {
+                        "text": "mouseleave",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/floater\/methods\/mouseleave"
                     },
                     {
                         "text": "close",
@@ -2665,6 +2464,26 @@
                         "text": "select",
                         "desc": "Handles the selection of the floater's items.",
                         "url": "bbn-vue\/component\/floater\/methods\/select"
+                    },
+                    {
+                        "text": "getDimensions",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/floater\/methods\/getDimensions"
+                    },
+                    {
+                        "text": "updatePosition",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/floater\/methods\/updatePosition"
+                    },
+                    {
+                        "text": "onFocus",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/floater\/methods\/onFocus"
+                    },
+                    {
+                        "text": "updateData",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/floater\/methods\/updateData"
                     }
                 ],
                 "mixins": [
@@ -2711,7 +2530,7 @@
                 "props": [
                     {
                         "text": "prefilled",
-                        "desc": "Set to true to enable the form's buttons without changing the form's content.",
+                        "desc": "Set to true to enable the form's buttons without changing the form's content.\r\n       *",
                         "url": "bbn-vue\/component\/form\/props\/prefilled"
                     },
                     {
@@ -2721,7 +2540,7 @@
                     },
                     {
                         "text": "blank",
-                        "desc": "Set to true to make a postOut instead of a post when the form is submitted.",
+                        "desc": "Set to true to make a postOut instead of a post when the form is submitted.\r\n       *",
                         "url": "bbn-vue\/component\/form\/props\/blank"
                     },
                     {
@@ -2731,104 +2550,104 @@
                     },
                     {
                         "text": "confirmMessage",
-                        "desc": "A confirmation popup with a costumized message shown before the form is submitted.",
+                        "desc": "A confirmation popup with a costumized message shown before the form is submitted.\r\n       *",
                         "url": "bbn-vue\/component\/form\/props\/confirmMessage"
                     },
                     {
                         "text": "confirmLeave",
-                        "desc": "A confirmation popup with a costumized message shown before leaving the form.",
+                        "desc": "A confirmation popup with a costumized message shown before leaving the form.\r\n       *",
                         "url": "bbn-vue\/component\/form\/props\/confirmLeave"
                     },
                     {
                         "text": "action",
-                        "desc": "The url contacted when submitting the form.",
+                        "desc": "The url contacted when submitting the form.\r\n       *",
                         "url": "bbn-vue\/component\/form\/props\/action"
                     },
                     {
                         "text": "success",
-                        "desc": "A method called after a form is correctly submitted.",
+                        "desc": "A method called after a form is correctly submitted.\r\n       *",
                         "url": "bbn-vue\/component\/form\/props\/success"
                     },
                     {
                         "text": "failure",
-                        "desc": "A method called after a form submission fails.",
+                        "desc": "A method called after a form submission fails.\r\n       *",
                         "url": "bbn-vue\/component\/form\/props\/failure"
                     },
                     {
                         "text": "successMessage",
-                        "desc": "A popup with a costumized message shown after a form is correctly submitted.",
+                        "desc": "A popup with a costumized message shown after a form is correctly submitted.\r\n       *",
                         "url": "bbn-vue\/component\/form\/props\/successMessage"
                     },
                     {
                         "text": "failureMessage",
-                        "desc": "A popup with a costumized message shown after a form submission fails.",
+                        "desc": "A popup with a costumized message shown after a form submission fails.\r\n       *",
                         "url": "bbn-vue\/component\/form\/props\/failureMessage"
                     },
                     {
                         "text": "method",
-                        "desc": "The form's method of submission.",
+                        "desc": "The form's method of submission.\r\n       *",
                         "url": "bbn-vue\/component\/form\/props\/method"
                     },
                     {
                         "text": "scrollable",
-                        "desc": "Set to true to enable form scrolling.",
+                        "desc": "Set to true to enable form scrolling.\r\n       *",
                         "url": "bbn-vue\/component\/form\/props\/scrollable"
                     },
                     {
                         "text": "buttons",
-                        "desc": "The buttons shown on the form.",
+                        "desc": "The buttons shown on the form.\r\n       *",
                         "url": "bbn-vue\/component\/form\/props\/buttons"
                     },
                     {
                         "text": "source",
-                        "desc": "The proper data used in the form.",
+                        "desc": "The proper data used in the form.\r\n       *",
                         "url": "bbn-vue\/component\/form\/props\/source"
                     },
                     {
                         "text": "data",
-                        "desc": "The additional data to be sent by the form.",
+                        "desc": "The additional data to be sent by the form.\r\n       *",
                         "url": "bbn-vue\/component\/form\/props\/data"
                     },
                     {
                         "text": "fixedFooter",
-                        "desc": "Set to true to fix the form's footer.",
+                        "desc": "Set to true to fix the form's footer.\r\n       *",
                         "url": "bbn-vue\/component\/form\/props\/fixedFooter"
                     },
                     {
                         "text": "schema",
-                        "desc": "The form's schema generating the inputs.",
+                        "desc": "The form's schema generating the inputs.\r\n       *",
                         "url": "bbn-vue\/component\/form\/props\/schema"
                     },
                     {
                         "text": "sendModel",
-                        "desc": "Set to true if the data property must be sent.",
+                        "desc": "Set to true if the data property must be sent.\r\n       *",
                         "url": "bbn-vue\/component\/form\/props\/sendModel"
                     },
                     {
                         "text": "validation",
-                        "desc": "Checks the fields' data before submitting the form.",
+                        "desc": "Checks the fields' data before submitting the form.\r\n       *",
                         "url": "bbn-vue\/component\/form\/props\/validation"
                     },
                     {
                         "text": "windowed",
-                        "desc": "If true, will consider itself as a unique element of a floater and will have its buttons incorporated in it \r\nwhereas if undefined will.",
+                        "desc": "If true, will consider itself as a unique element of a floater and will have its buttons incorporated in it \r\nwhereas if undefined will.\r\n       *",
                         "url": "bbn-vue\/component\/form\/props\/windowed"
                     },
                     {
                         "text": "fullSize",
-                        "desc": "If true, will use the class bbn-overlay for its container.",
+                        "desc": "If true, will use the class bbn-overlay for its container.\r\n       *",
                         "url": "bbn-vue\/component\/form\/props\/fullSize"
                     }
                 ],
                 "methods": [
                     {
                         "text": "getModifications",
-                        "desc": "Compares the actual data with the original data of the form to identify the differences.",
+                        "desc": "Compares the actual data with the original data of the form to identify the differences.\r\n       *",
                         "url": "bbn-vue\/component\/form\/methods\/getModifications"
                     },
                     {
                         "text": "getData",
-                        "desc": "Based on the prop 'sendModel', either the source of the form or an object of data contained in the form's fields is returned.",
+                        "desc": "Based on the prop 'sendModel', either the source of the form or an object of data contained in the form's fields is returned.\r\n       *",
                         "url": "bbn-vue\/component\/form\/methods\/getData"
                     },
                     {
@@ -3429,7 +3248,7 @@
                     },
                     {
                         "text": "mode",
-                        "desc": "The mode of the component.",
+                        "desc": "The mode of the component.\r\nPossible values: 'free', 'options', 'selection'.",
                         "url": "bbn-vue\/component\/list\/props\/mode"
                     },
                     {
@@ -3619,59 +3438,9 @@
                 ],
                 "methods": [
                     {
-                        "text": "isValidChar",
-                        "desc": "Checks if the given character is valid, based on the mask's pattern.",
-                        "url": "bbn-vue\/component\/masked\/methods\/isValidChar"
-                    },
-                    {
                         "text": "isSpecialKey",
                         "desc": "Checks if the pressed key is a special key.",
                         "url": "bbn-vue\/component\/masked\/methods\/isSpecialKey"
-                    },
-                    {
-                        "text": "isArrowKey",
-                        "desc": "Cheks if the pressed key is an arrow key.",
-                        "url": "bbn-vue\/component\/masked\/methods\/isArrowKey"
-                    },
-                    {
-                        "text": "isShiftKey",
-                        "desc": "Checks if the pressed key is the \"shift\" key.",
-                        "url": "bbn-vue\/component\/masked\/methods\/isShiftKey"
-                    },
-                    {
-                        "text": "isControlKey",
-                        "desc": "Checks if the pressed key is the \"control\" key.",
-                        "url": "bbn-vue\/component\/masked\/methods\/isControlKey"
-                    },
-                    {
-                        "text": "isBackspaceKey",
-                        "desc": "Checks if the pressed key is the \"backspace\" key.",
-                        "url": "bbn-vue\/component\/masked\/methods\/isBackspaceKey"
-                    },
-                    {
-                        "text": "isCancKey",
-                        "desc": "Checks if the pressed key is the \"canc\" key.",
-                        "url": "bbn-vue\/component\/masked\/methods\/isCancKey"
-                    },
-                    {
-                        "text": "isTabKey",
-                        "desc": "Checks if the pressed key is the \"tab\" key.",
-                        "url": "bbn-vue\/component\/masked\/methods\/isTabKey"
-                    },
-                    {
-                        "text": "isEnterKey",
-                        "desc": "Checks if the pressed key is the \"enter\" key.",
-                        "url": "bbn-vue\/component\/masked\/methods\/isEnterKey"
-                    },
-                    {
-                        "text": "setInputValue",
-                        "desc": "Sets the data property 'inputValue'.",
-                        "url": "bbn-vue\/component\/masked\/methods\/setInputValue"
-                    },
-                    {
-                        "text": "getInputValue",
-                        "desc": "Gets the input value.",
-                        "url": "bbn-vue\/component\/masked\/methods\/getInputValue"
                     },
                     {
                         "text": "getPos",
@@ -3704,11 +3473,6 @@
                         "url": "bbn-vue\/component\/masked\/methods\/blurEvent"
                     },
                     {
-                        "text": "focusEvent",
-                        "desc": "The method called on focus event.",
-                        "url": "bbn-vue\/component\/masked\/methods\/focusEvent"
-                    },
-                    {
                         "text": "pasteEvent",
                         "desc": "The method called on paste event.",
                         "url": "bbn-vue\/component\/masked\/methods\/pasteEvent"
@@ -3722,11 +3486,6 @@
                         "text": "clearText",
                         "desc": "Removes the invalid characters from a string.",
                         "url": "bbn-vue\/component\/masked\/methods\/clearText"
-                    },
-                    {
-                        "text": "raw",
-                        "desc": "Gets the raw value.",
-                        "url": "bbn-vue\/component\/masked\/methods\/raw"
                     }
                 ],
                 "mixins": [
@@ -3767,7 +3526,7 @@
                 "props": [
                     {
                         "text": "prefilled",
-                        "desc": "Set to true to enable the form's buttons without changing the form's content.",
+                        "desc": "Set to true to enable the form's buttons without changing the form's content.\r\n       *",
                         "url": "bbn-vue\/component\/multipart\/props\/prefilled"
                     },
                     {
@@ -3777,7 +3536,7 @@
                     },
                     {
                         "text": "blank",
-                        "desc": "Set to true to make a postOut instead of a post when the form is submitted.",
+                        "desc": "Set to true to make a postOut instead of a post when the form is submitted.\r\n       *",
                         "url": "bbn-vue\/component\/multipart\/props\/blank"
                     },
                     {
@@ -3787,87 +3546,87 @@
                     },
                     {
                         "text": "confirmMessage",
-                        "desc": "A confirmation popup with a costumized message shown before the form is submitted.",
+                        "desc": "A confirmation popup with a costumized message shown before the form is submitted.\r\n       *",
                         "url": "bbn-vue\/component\/multipart\/props\/confirmMessage"
                     },
                     {
                         "text": "confirmLeave",
-                        "desc": "A confirmation popup with a costumized message shown before leaving the form.",
+                        "desc": "A confirmation popup with a costumized message shown before leaving the form.\r\n       *",
                         "url": "bbn-vue\/component\/multipart\/props\/confirmLeave"
                     },
                     {
                         "text": "action",
-                        "desc": "The url contacted when submitting the form.",
+                        "desc": "The url contacted when submitting the form.\r\n       *",
                         "url": "bbn-vue\/component\/multipart\/props\/action"
                     },
                     {
                         "text": "success",
-                        "desc": "A method called after a form is correctly submitted.",
+                        "desc": "A method called after a form is correctly submitted.\r\n       *",
                         "url": "bbn-vue\/component\/multipart\/props\/success"
                     },
                     {
                         "text": "failure",
-                        "desc": "A method called after a form submission fails.",
+                        "desc": "A method called after a form submission fails.\r\n       *",
                         "url": "bbn-vue\/component\/multipart\/props\/failure"
                     },
                     {
                         "text": "successMessage",
-                        "desc": "A popup with a costumized message shown after a form is correctly submitted.",
+                        "desc": "A popup with a costumized message shown after a form is correctly submitted.\r\n       *",
                         "url": "bbn-vue\/component\/multipart\/props\/successMessage"
                     },
                     {
                         "text": "failureMessage",
-                        "desc": "A popup with a costumized message shown after a form submission fails.",
+                        "desc": "A popup with a costumized message shown after a form submission fails.\r\n       *",
                         "url": "bbn-vue\/component\/multipart\/props\/failureMessage"
                     },
                     {
                         "text": "method",
-                        "desc": "The form's method of submission.",
+                        "desc": "The form's method of submission.\r\n       *",
                         "url": "bbn-vue\/component\/multipart\/props\/method"
                     },
                     {
                         "text": "buttons",
-                        "desc": "The buttons shown on the form.",
+                        "desc": "The buttons shown on the form.\r\n       *",
                         "url": "bbn-vue\/component\/multipart\/props\/buttons"
                     },
                     {
                         "text": "source",
-                        "desc": "The proper data used in the form.",
+                        "desc": "The proper data used in the form.\r\n       *",
                         "url": "bbn-vue\/component\/multipart\/props\/source"
                     },
                     {
                         "text": "data",
-                        "desc": "The additional data to be sent by the form.",
+                        "desc": "The additional data to be sent by the form.\r\n       *",
                         "url": "bbn-vue\/component\/multipart\/props\/data"
                     },
                     {
                         "text": "fixedFooter",
-                        "desc": "Set to true to fix the form's footer.",
+                        "desc": "Set to true to fix the form's footer.\r\n       *",
                         "url": "bbn-vue\/component\/multipart\/props\/fixedFooter"
                     },
                     {
                         "text": "schema",
-                        "desc": "The form's schema generating the inputs.",
+                        "desc": "The form's schema generating the inputs.\r\n       *",
                         "url": "bbn-vue\/component\/multipart\/props\/schema"
                     },
                     {
                         "text": "sendModel",
-                        "desc": "Set to true if the data property must be sent.",
+                        "desc": "Set to true if the data property must be sent.\r\n       *",
                         "url": "bbn-vue\/component\/multipart\/props\/sendModel"
                     },
                     {
                         "text": "validation",
-                        "desc": "Checks the fields' data before submitting the form.",
+                        "desc": "Checks the fields' data before submitting the form.\r\n       *",
                         "url": "bbn-vue\/component\/multipart\/props\/validation"
                     },
                     {
                         "text": "windowed",
-                        "desc": "If true, will consider itself as a unique element of a floater and will have its buttons incorporated in it \r\nwhereas if undefined will.",
+                        "desc": "If true, will consider itself as a unique element of a floater and will have its buttons incorporated in it \r\nwhereas if undefined will.\r\n       *",
                         "url": "bbn-vue\/component\/multipart\/props\/windowed"
                     },
                     {
                         "text": "fullSize",
-                        "desc": "If true, will use the class bbn-overlay for its container.",
+                        "desc": "If true, will use the class bbn-overlay for its container.\r\n       *",
                         "url": "bbn-vue\/component\/multipart\/props\/fullSize"
                     }
                 ],
@@ -3891,12 +3650,12 @@
                 "props": [
                     {
                         "text": "component",
-                        "desc": "A component for each element of the list.",
+                        "desc": "A component for each element of the list.\r\n       *",
                         "url": "bbn-vue\/component\/multiselect\/props\/component"
                     },
                     {
                         "text": "template",
-                        "desc": "The template to costumize the dropdown menu.",
+                        "desc": "The template to costumize the dropdown menu.\r\n       *",
                         "url": "bbn-vue\/component\/multiselect\/props\/template"
                     },
                     {
@@ -3916,14 +3675,14 @@
                     },
                     {
                         "text": "placeholder",
-                        "desc": "The placeholder of the dropdown.",
+                        "desc": "The placeholder of the dropdown.\r\n       *",
                         "url": "bbn-vue\/component\/multiselect\/props\/placeholder"
                     }
                 ],
                 "methods": [
                     {
                         "text": "keynav",
-                        "desc": "States the role of the enter button on the dropdown menu.",
+                        "desc": "States the role of the enter button on the dropdown menu.\r\n       *",
                         "url": "bbn-vue\/component\/multiselect\/methods\/keynav"
                     }
                 ],
@@ -3958,9 +3717,87 @@
             {
                 "text": "notification",
                 "url": "bbn-vue\/component\/notification\/overview",
-                "props": [],
-                "methods": [],
-                "mixins": []
+                "props": [
+                    {
+                        "text": "delay",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/notification\/props\/delay"
+                    },
+                    {
+                        "text": "pinned",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/notification\/props\/pinned"
+                    },
+                    {
+                        "text": "position",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/notification\/props\/position"
+                    },
+                    {
+                        "text": "successMessage",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/notification\/props\/successMessage"
+                    },
+                    {
+                        "text": "warningMessage",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/notification\/props\/warningMessage"
+                    },
+                    {
+                        "text": "errorMessage",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/notification\/props\/errorMessage"
+                    },
+                    {
+                        "text": "infoMessage",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/notification\/props\/infoMessage"
+                    }
+                ],
+                "methods": [
+                    {
+                        "text": "add",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/notification\/methods\/add"
+                    },
+                    {
+                        "text": "close",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/notification\/methods\/close"
+                    },
+                    {
+                        "text": "success",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/notification\/methods\/success"
+                    },
+                    {
+                        "text": "error",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/notification\/methods\/error"
+                    },
+                    {
+                        "text": "warning",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/notification\/methods\/warning"
+                    },
+                    {
+                        "text": "show",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/notification\/methods\/show"
+                    },
+                    {
+                        "text": "info",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/notification\/methods\/info"
+                    }
+                ],
+                "mixins": [
+                    {
+                        "text": "basicComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/notification\/mixins\/basicComponent"
+                    }
+                ]
             },
             {
                 "text": "numeric",
@@ -3995,11 +3832,6 @@
                         "text": "spinners",
                         "desc": "Set to true shows the arrow buttons of the component.",
                         "url": "bbn-vue\/component\/numeric\/props\/spinners"
-                    },
-                    {
-                        "text": "onlySpinners",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/numeric\/props\/onlySpinners"
                     }
                 ],
                 "methods": [
@@ -4083,9 +3915,24 @@
                 "url": "bbn-vue\/component\/panelbar\/overview",
                 "props": [
                     {
+                        "text": "flex",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/panelbar\/props\/flex"
+                    },
+                    {
                         "text": "items",
                         "desc": "The source of the component. The object item has property:\r\n- header \/\/ the title on the header\r\n- headerComponent \/\/ a component on the header\r\n- headerOptions \/\/ options relative to the component on the header\r\n- content \/\/ the content html or text to show when the item is selected\r\n- component \/\/ a component to show when the item is selected\r\n- height \/\/ the height of the item's slot, it will overwrite the props itemsHeight for the item\r\n- options \/\/ options of configuration of the component shown in the slot of the item",
                         "url": "bbn-vue\/component\/panelbar\/props\/items"
+                    },
+                    {
+                        "text": "scrollable",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/panelbar\/props\/scrollable"
+                    },
+                    {
+                        "text": "align",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/panelbar\/props\/align"
                     },
                     {
                         "text": "opened",
@@ -4104,20 +3951,30 @@
                     },
                     {
                         "text": "component",
-                        "desc": "the component to be rendered in each content slot if not specified for the single item in the source",
+                        "desc": "The component to be rendered in each content slot if not specified for the single item in the source",
                         "url": "bbn-vue\/component\/panelbar\/props\/component"
                     },
                     {
                         "text": "componentOptions",
-                        "desc": "the object of properties to bind with the component in the content slot",
+                        "desc": "The object of properties to bind with the component in the content slot",
                         "url": "bbn-vue\/component\/panelbar\/props\/componentOptions"
                     }
                 ],
                 "methods": [
                     {
+                        "text": "onResize",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/panelbar\/methods\/onResize"
+                    },
+                    {
                         "text": "select",
                         "desc": "Shows the content of selected items and emits the event select",
                         "url": "bbn-vue\/component\/panelbar\/methods\/select"
+                    },
+                    {
+                        "text": "getStyle",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/panelbar\/methods\/getStyle"
                     }
                 ],
                 "mixins": [
@@ -4141,9 +3998,132 @@
             {
                 "text": "popup",
                 "url": "bbn-vue\/component\/popup\/overview",
-                "props": [],
-                "methods": [],
-                "mixins": []
+                "props": [
+                    {
+                        "text": "defaultWidth",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/popup\/props\/defaultWidth"
+                    },
+                    {
+                        "text": "defaultHeight",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/popup\/props\/defaultHeight"
+                    },
+                    {
+                        "text": "united",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/popup\/props\/united"
+                    },
+                    {
+                        "text": "source",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/popup\/props\/source"
+                    },
+                    {
+                        "text": "zIndex",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/popup\/props\/zIndex"
+                    },
+                    {
+                        "text": "alertTitle",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/popup\/props\/alertTitle"
+                    },
+                    {
+                        "text": "alertMessage",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/popup\/props\/alertMessage"
+                    },
+                    {
+                        "text": "confirmTitle",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/popup\/props\/confirmTitle"
+                    },
+                    {
+                        "text": "confirmMessage",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/popup\/props\/confirmMessage"
+                    },
+                    {
+                        "text": "okText",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/popup\/props\/okText"
+                    },
+                    {
+                        "text": "yesText",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/popup\/props\/yesText"
+                    },
+                    {
+                        "text": "noText",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/popup\/props\/noText"
+                    }
+                ],
+                "methods": [
+                    {
+                        "text": "randomString",
+                        "desc": "Alias of bbn.fn.randomString",
+                        "url": "bbn-vue\/component\/popup\/methods\/randomString"
+                    },
+                    {
+                        "text": "open",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/popup\/methods\/open"
+                    },
+                    {
+                        "text": "load",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/popup\/methods\/load"
+                    },
+                    {
+                        "text": "getObject",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/popup\/methods\/getObject"
+                    },
+                    {
+                        "text": "loading",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/popup\/methods\/loading"
+                    },
+                    {
+                        "text": "close",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/popup\/methods\/close"
+                    },
+                    {
+                        "text": "getIndexByUID",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/popup\/methods\/getIndexByUID"
+                    },
+                    {
+                        "text": "alert",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/popup\/methods\/alert"
+                    },
+                    {
+                        "text": "confirm",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/popup\/methods\/confirm"
+                    },
+                    {
+                        "text": "makeWindows",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/popup\/methods\/makeWindows"
+                    },
+                    {
+                        "text": "getWindow",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/popup\/methods\/getWindow"
+                    }
+                ],
+                "mixins": [
+                    {
+                        "text": "basicComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/popup\/mixins\/basicComponent"
+                    }
+                ]
             },
             {
                 "text": "progressbar",
@@ -4190,9 +4170,19 @@
                         "url": "bbn-vue\/component\/progressbar\/props\/barColor"
                     },
                     {
+                        "text": "barClass",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/progressbar\/props\/barClass"
+                    },
+                    {
                         "text": "textColor",
                         "desc": "Defines the color of the text on the bar",
                         "url": "bbn-vue\/component\/progressbar\/props\/textColor"
+                    },
+                    {
+                        "text": "text",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/progressbar\/props\/text"
                     },
                     {
                         "text": "height",
@@ -4218,6 +4208,11 @@
                         "text": "rotate",
                         "desc": "Defines of how many degrees the progressbar has to be rotated",
                         "url": "bbn-vue\/component\/progressbar\/props\/rotate"
+                    },
+                    {
+                        "text": "valuePosition",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/progressbar\/props\/valuePosition"
                     }
                 ],
                 "methods": [],
@@ -4398,7 +4393,7 @@
                     },
                     {
                         "text": "hideAdvertUrl",
-                        "desc": "",
+                        "desc": "*",
                         "url": "bbn-vue\/component\/router\/props\/hideAdvertUrl"
                     },
                     {
@@ -4408,7 +4403,7 @@
                     },
                     {
                         "text": "menu",
-                        "desc": "",
+                        "desc": "*",
                         "url": "bbn-vue\/component\/router\/props\/menu"
                     },
                     {
@@ -6088,7 +6083,7 @@
                     },
                     {
                         "text": "getFilterOptions",
-                        "desc": "Returns the options for the bind of the table filter.",
+                        "desc": "Returns the options for the bind of the table filter.\r\n       *",
                         "url": "bbn-vue\/component\/table\/methods\/getFilterOptions"
                     },
                     {
@@ -6123,7 +6118,7 @@
                     },
                     {
                         "text": "successEdit",
-                        "desc": "After the post in case of edit of the row, update the row in originalData.",
+                        "desc": "After the post in case of edit of the row, update the row in originalData.\r\n       *",
                         "url": "bbn-vue\/component\/table\/methods\/successEdit"
                     },
                     {
@@ -6173,12 +6168,12 @@
                     },
                     {
                         "text": "checkSelection",
-                        "desc": "Emits 'select', 'unselect' or 'toggle' at change of checkbox of the row in a selectable table.",
+                        "desc": "Emits 'select',  'unselect' or 'toggle' at change of checkbox of the row in a selectable table.",
                         "url": "bbn-vue\/component\/table\/methods\/checkSelection"
                     },
                     {
                         "text": "updateData",
-                        "desc": "Refresh the current data set.",
+                        "desc": "Refresh the current data set.\r\n       *",
                         "url": "bbn-vue\/component\/table\/methods\/updateData"
                     },
                     {
@@ -6278,7 +6273,7 @@
                     },
                     {
                         "text": "hasTd",
-                        "desc": "Returns true if the given row has td.",
+                        "desc": "Returns true if the given row has td.\r\n       *",
                         "url": "bbn-vue\/component\/table\/methods\/hasTd"
                     },
                     {
@@ -6298,7 +6293,7 @@
                     },
                     {
                         "text": "getEditableComponent",
-                        "desc": "If no editor is given to the table returns the correct component to edit the field basing on the column type.",
+                        "desc": "If no editor is given to the table returns the correct component to edit the field basing on the column type.\r\n       *",
                         "url": "bbn-vue\/component\/table\/methods\/getEditableComponent"
                     },
                     {
@@ -6385,11 +6380,6 @@
                         "url": "bbn-vue\/component\/tabnav\/props\/autoload"
                     },
                     {
-                        "text": "maxTitleLength",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/tabnav\/props\/maxTitleLength"
-                    },
-                    {
                         "text": "orientation",
                         "desc": "The position of the tabs' titles: top (default) or bottom.",
                         "url": "bbn-vue\/component\/tabnav\/props\/orientation"
@@ -6405,34 +6395,9 @@
                         "url": "bbn-vue\/component\/tabnav\/props\/scrollable"
                     },
                     {
-                        "text": "storageName",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/tabnav\/props\/storageName"
-                    },
-                    {
-                        "text": "confirmLeave",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/tabnav\/props\/confirmLeave"
-                    },
-                    {
-                        "text": "hideAdvertUrl",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/tabnav\/props\/hideAdvertUrl"
-                    },
-                    {
-                        "text": "historyMaxLength",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/tabnav\/props\/historyMaxLength"
-                    },
-                    {
                         "text": "source",
                         "desc": "The tabs shown at init.",
                         "url": "bbn-vue\/component\/tabnav\/props\/source"
-                    },
-                    {
-                        "text": "menu",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/tabnav\/props\/menu"
                     }
                 ],
                 "methods": [],
@@ -6611,22 +6576,22 @@
                 "props": [
                     {
                         "text": "format",
-                        "desc": "The format of the time displayed.",
+                        "desc": "The format of the time displayed.\r\n       *",
                         "url": "bbn-vue\/component\/timepicker\/props\/format"
                     },
                     {
                         "text": "valueFormat",
-                        "desc": "The format of the value.",
+                        "desc": "The format of the value.\r\n       *",
                         "url": "bbn-vue\/component\/timepicker\/props\/valueFormat"
                     },
                     {
                         "text": "mask",
-                        "desc": "The mask for the time input.",
+                        "desc": "The mask for the time input.\r\n       *",
                         "url": "bbn-vue\/component\/timepicker\/props\/mask"
                     },
                     {
                         "text": "max",
-                        "desc": "The maximum allowed value.",
+                        "desc": "The maximum allowed value.\r\n       *",
                         "url": "bbn-vue\/component\/timepicker\/props\/max"
                     },
                     {
@@ -6641,12 +6606,12 @@
                     },
                     {
                         "text": "scrollMode",
-                        "desc": "Sets to true to show a list view for the time selection instead of the dropdowns.",
+                        "desc": "Sets to true to show a list view for the time selection instead of the dropdowns.\r\n       *",
                         "url": "bbn-vue\/component\/timepicker\/props\/scrollMode"
                     },
                     {
                         "text": "blocksMode",
-                        "desc": "Sets to true to show a list view for the time selection instead of the dropdowns.",
+                        "desc": "Sets to true to show a list view for the time selection instead of the dropdowns.\r\n       *",
                         "url": "bbn-vue\/component\/timepicker\/props\/blocksMode"
                     },
                     {
@@ -6658,17 +6623,17 @@
                 "methods": [
                     {
                         "text": "getValueFormat",
-                        "desc": "Gets the correct value format.",
+                        "desc": "Gets the correct value format.\r\n       *",
                         "url": "bbn-vue\/component\/timepicker\/methods\/getValueFormat"
                     },
                     {
                         "text": "setValue",
-                        "desc": "Sets the value.",
+                        "desc": "Sets the value.\r\n       *",
                         "url": "bbn-vue\/component\/timepicker\/methods\/setValue"
                     },
                     {
                         "text": "change",
-                        "desc": "Triggered when the value is changed by the input.",
+                        "desc": "Triggered when the value is changed by the input.\r\n       *",
                         "url": "bbn-vue\/component\/timepicker\/methods\/change"
                     },
                     {
@@ -6704,6 +6669,11 @@
                 "text": "toolbar",
                 "url": "bbn-vue\/component\/toolbar\/overview",
                 "props": [
+                    {
+                        "text": "source",
+                        "desc": "The toolbat elements",
+                        "url": "bbn-vue\/component\/toolbar\/props\/source"
+                    },
                     {
                         "text": "orientation",
                         "desc": "The orientation of the bar.",
@@ -7054,12 +7024,12 @@
                 "props": [
                     {
                         "text": "component",
-                        "desc": "A component for each element of the list.",
+                        "desc": "A component for each element of the list.\r\n       *",
                         "url": "bbn-vue\/component\/treedown\/props\/component"
                     },
                     {
                         "text": "template",
-                        "desc": "The template to costumize the dropdown menu.",
+                        "desc": "The template to costumize the dropdown menu.\r\n       *",
                         "url": "bbn-vue\/component\/treedown\/props\/template"
                     },
                     {
@@ -7079,7 +7049,7 @@
                     },
                     {
                         "text": "placeholder",
-                        "desc": "The placeholder of the dropdown.",
+                        "desc": "The placeholder of the dropdown.\r\n       *",
                         "url": "bbn-vue\/component\/treedown\/props\/placeholder"
                     }
                 ],
@@ -7334,23 +7304,8 @@
                     },
                     {
                         "text": "accept",
-                        "desc": "The accepted types of files.",
+                        "desc": "The  accepted types of files.",
                         "url": "bbn-vue\/component\/upload\/props\/accept"
-                    },
-                    {
-                        "text": "paste",
-                        "desc": "Set to false to disable the 'paste' function.",
-                        "url": "bbn-vue\/component\/upload\/props\/paste"
-                    },
-                    {
-                        "text": "dragDrop",
-                        "desc": "Set to false to disable the 'drang&drop' function.",
-                        "url": "bbn-vue\/component\/upload\/props\/dragDrop"
-                    },
-                    {
-                        "text": "data",
-                        "desc": "Additional data sent with the ajax call.",
-                        "url": "bbn-vue\/component\/upload\/props\/data"
                     },
                     {
                         "text": "showFilesize",
@@ -7485,7 +7440,13 @@
             {
                 "text": "widget",
                 "url": "bbn-vue\/component\/widget\/overview",
-                "props": [],
+                "props": [
+                    {
+                        "text": "padding",
+                        "desc": "The padding value to assign to the content element.\r\nIf \"true\" the class \"bbn-padded\" will be assigned",
+                        "url": "bbn-vue\/component\/widget\/props\/padding"
+                    }
+                ],
                 "methods": [],
                 "mixins": []
             },

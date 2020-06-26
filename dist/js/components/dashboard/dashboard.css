@@ -1,0 +1,23 @@
+.bbn-dashboard.bbn-unselectable {
+  cursor: move;
+}
+.bbn-dashboard .bbn-masonry {
+  overflow: hidden;
+}
+.bbn-dashboard .bbn-masonry > div.bbn-widget {
+  display: grid;
+  margin-bottom: 1em;
+  width: 100%;
+  page-break-inside: avoid;
+}
+.bbn-dashboard .bbn-masonry > div.bbn-widget.full {
+  -webkit-column-span: all;
+  -moz-column-span: all;
+  column-span: all;
+}
+.bbn-dashboard .bbn-dashboard-sortable div.bbn-widget .bbn-header .ui-sortable-handle {
+  cursor: move;
+}
+.bbn-dashboard .bbn-dashboard-sortable .bbn-widget-placeholder {
+  min-height: 200px;
+}

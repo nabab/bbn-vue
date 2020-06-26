@@ -1,0 +1,9 @@
+.bbn-markdown .editor-toolbar a,
+.bbn-markdown .editor-toolbar a.active,
+.bbn-markdown .editor-toolbar a:hover {
+  color: inherit !important;
+}
+.bbn-markdown .editor-preview-side {
+  top: 0;
+  position: absolute;
+}

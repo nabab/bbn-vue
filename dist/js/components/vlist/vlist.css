@@ -1,0 +1,45 @@
+div.bbn-vlist {
+  position: fixed !important;
+  overflow: auto;
+  left: -1000px;
+  z-index: 100;
+}
+div.bbn-vlist .k-menu .k-animation-container .k-animation-container,
+div.bbn-vlist .k-menu .k-menu-group .k-menu-group,
+div.bbn-vlist .k-menu-vertical .k-animation-container,
+div.bbn-vlist .k-menu-vertical .k-menu-group {
+  top: auto;
+  left: auto;
+}
+div.bbn-vlist > ul.options > li .space {
+  opacity: 0;
+}
+div.bbn-vlist > ul.options > li.selected .space {
+  opacity: 1;
+}
+div.bbn-vlist > ul.options > li.disabled {
+  opacity: 1;
+}
+div.bbn-vlist > ul.options > li.disabled .space {
+  opacity: 0.5;
+}
+div.bbn-vlist > ul > li.disabled {
+  opacity: 0.7;
+}
+div.bbn-vlist > ul > li.disabled .k-link {
+  cursor: default;
+}
+div.bbn-vlist > ul > li .space {
+  display: inline-block;
+  width: 1.8em;
+  text-align: left;
+}
+div.bbn-vlist > ul > li .text i {
+  margin-right: 1em;
+}
+div.bbn-vlist > ul > li .text.disabled i {
+  opacity: 0.5;
+}
+div.bbn-vlist > ul > li .text.hidden i {
+  opacity: 0 !important;
+}

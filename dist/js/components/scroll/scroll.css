@@ -1,0 +1,37 @@
+.bbn-scroll {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.bbn-scroll > .bbn-scroll-container {
+  width: 100%;
+  height: 100%;
+  box-sizing: content-box;
+  scrollbar-width: none;
+}
+.bbn-scroll > .bbn-scroll-container.bbn-scroll-not-dragged {
+  scroll-behavior: smooth;
+}
+.bbn-scroll > .bbn-scroll-container.bbn-overlay {
+  overflow: hidden;
+}
+.bbn-scroll > .bbn-scroll-container:not(.bbn-overlay) {
+  overflow: scroll;
+}
+.bbn-scroll > .bbn-scroll-container::-webkit-scrollbar {
+  display: none;
+}
+.bbn-scroll > .bbn-scroll-container > .bbn-scroll-content {
+  hyphens: auto;
+  float: left;
+  box-sizing: border-box;
+}
+.bbn-scroll > .bbn-scroll-container > .bbn-scroll-content:not(.resizing) {
+  min-width: 100% !important;
+  min-height: 100% !important;
+}
+.bbn-scroll ::-webkit-scrollbar {
+  height: 0px;
+  width: 0px;
+  background: transparent;
+}

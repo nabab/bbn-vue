@@ -1,0 +1,34 @@
+.bbn-calendar {
+  min-width: 210px !important;
+}
+.bbn-calendar .bbn-calendar-header {
+  margin-bottom: 0;
+  min-height: unset;
+}
+.bbn-calendar .bbn-calendar-header .bbn-calendar-header-title {
+  font-size: 1em;
+}
+.bbn-calendar .bbn-calendar-container {
+  display: grid;
+}
+.bbn-calendar .bbn-calendar-container .bbn-calendar-labels {
+  text-align: center;
+  margin-bottom: .5em;
+  font-size: 1em;
+}
+.bbn-calendar .bbn-calendar-container .bbn-calendar-item-box {
+  position: relative;
+  border-radius: 0;
+}
+.bbn-calendar .bbn-calendar-container .bbn-calendar-item-box .bbn-calendar-item {
+  font-size: 1em;
+}
+.bbn-calendar .bbn-calendar-container .bbn-calendar-item-box .bbn-calendar-item-icon {
+  position: absolute;
+  top: .2em;
+  left: .2em;
+  font-size: 1em;
+}
+.bbn-calendar .bbn-calendar-container .bbn-calendar-item-box.bbn-calendar-colored-item:not(:hover) {
+  background-color: lightcoral !important;
+}

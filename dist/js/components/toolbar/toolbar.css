@@ -1,0 +1,23 @@
+.bbn-toolbar.bbn-h-100 {
+  text-align: center;
+}
+.bbn-toolbar.bbn-h-100 .bbn-toolbar-horizontal-separator {
+  display: block;
+}
+.bbn-toolbar.bbn-h-100 .bbn-toolbar-separator {
+  display: block;
+}
+.bbn-toolbar .bbn-toolbar-separator {
+  display: inline;
+  margin: 1em;
+}
+.bbn-toolbar .bbn-toolbar-separator:before {
+  content: '\0399';
+}
+.bbn-toolbar .bbn-toolbar-horizontal-separator {
+  display: inline;
+  margin: 1em;
+}
+.bbn-toolbar .bbn-toolbar-horizontal-separator:before {
+  content: '\2014';
+}

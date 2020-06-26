@@ -1,0 +1,37 @@
+.bbn-loadbar {
+  font-size: small;
+  vertical-align: bottom;
+  white-space: nowrap;
+  overflow: visible;
+}
+.bbn-loadbar span,
+.bbn-loadbar a {
+  display: inline-block;
+  vertical-align: middle;
+}
+.bbn-loadbar span i,
+.bbn-loadbar a i {
+  vertical-align: middle;
+}
+.bbn-loadbar i {
+  font-size: 16px;
+}
+.bbn-loadbar .bbn-loadbar-content {
+  padding: 0 1em;
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+}
+.bbn-loadbar .bbn-loadbar-state {
+  width: 1.8em;
+  display: inline-block;
+}
+.bbn-loadbar .bbn-loadbar-time {
+  width: 4em;
+  display: inline-block;
+}
+.bbn-loadbar .bbn-loadbar-error {
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 7em;
+}
