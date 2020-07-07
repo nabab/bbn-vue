@@ -481,7 +481,7 @@
           }
           else{
             let v = item.data[this.sourceValue];
-            if ((v !== undefined) && !this.selected.includes(v)) {
+            if (!this.selected.includes(v)) {
               this.$emit("select", item.data, idx, item.index, ev);
             }
             if (!ev.defaultPrevented) {
@@ -578,15 +578,6 @@
     },
     watch: {
       /**
-       * @watch source
-       */
-      source: {
-        deep: true,
-        handler(){
-          this.updateData();
-        }
-      },
-      /**
        * @watch currentOver
        * @param {Boolean} newVal 
        */
@@ -595,9 +586,20 @@
           this.$parent.scrollTo(this.getRef('li' + newVal));
         }
       },
+      /**
+       * @watch source
+       */
+      source: {
+        deep: true,
+        handler(){
+          this.updateData();
+        }
+      },
+      /*
       selected(){
         this.updateData();
       }
+      */
     }
 
   });

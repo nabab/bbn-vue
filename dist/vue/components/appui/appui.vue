@@ -789,6 +789,30 @@
         window.appui = this;
         this.componentClass.push('bbn-observer');
         this.cool = true;
+        let preloaded = [
+          'input',
+          'tabs',
+          'context',
+          'loadicon',
+          'container',
+          'router',
+          'slider',
+          'clipboard',
+          'scrollbar',
+          'scroll',
+          'slider',
+          'popup',
+          'notification',
+          'search',
+          'fisheye',
+          'loadbar',
+          'chat',
+          'pane',
+          'splitter',
+          'checkbox',
+          'button'
+        ];
+        bbn.vue.preloadBBN(preloaded);
         /*
         bbn.fn.each(this.plugins, (p, i) => {
 

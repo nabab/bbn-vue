@@ -127,7 +127,8 @@
       popups(){
         let r = [];
         bbn.fn.each(this.items, (a, i) => {
-          r.push(this.getObject(bbn.fn.extendOut(a, {index: i})));
+          //r.push(this.getObject(bbn.fn.extendOut(a, {index: i})));
+          r.push(this.getObject(bbn.fn.extend(a, {index: i})));
         });
         return r;
       },
@@ -538,7 +539,8 @@
           }
           if ( this.popups[idx] ){
             //return bbn.vue.getChildByKey(this.$children[0], this.popups[idx].uid);
-            return bbn.vue.getChildByKey(this, idx);
+            //return bbn.vue.getChildByKey(this, idx);
+            return bbn.vue.getChildByKey(this, this.popups[idx].uid);
           }
         }
         return false;

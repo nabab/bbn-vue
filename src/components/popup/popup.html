@@ -4,13 +4,13 @@
 >
   <bbn-floater v-if="showPopup"
               v-for="(popup, i) in popups"
-              :key="i"
+              :key="popup.uid"
               :ref="popup.uid"
-              :index="i"
+              :index="popup.index"
               v-bind="popup"
               :container="$el"
               :style="{zIndex: zIndex+i}"
-              @close="items.splice(i, 1)"
+              @close="items.splice(popup.index, 1)"
   ></bbn-floater>
   <div class="bbn-modal bbn-overlay"
       tabindex="-1"

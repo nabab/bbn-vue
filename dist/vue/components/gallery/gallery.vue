@@ -504,7 +504,7 @@
           }
           this.confirm(bbn._(mess, this.selectingMode), () => {
             this[this.selectingMode](this.selected.map(v => {
-              return bbn.fn.extend(true, {}, bbn.fn.getRow(this.currentData, {index: v}));
+              return bbn.fn.extend(true, {}, bbn.fn.getField(this.currentData, 'data', {index: v}));
             }));
             this.setSelecting(false);
           });

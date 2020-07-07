@@ -176,6 +176,10 @@
       preview: {
         type: Boolean,
         default: true
+      },
+      autobind: {
+        type: Boolean,
+        default: true
       }
     },
     data(){
@@ -234,7 +238,8 @@
          * The array of selected items.
          * @prop {Array} [[]] selected
          */
-        selected: []
+        selected: [],
+        isLoaded: false
       }
     },
     computed: {
@@ -314,6 +319,9 @@
             };
             return this.post(this.source, data, result => {
               this.isLoading = false;
+              if ( !this.isLoaded ){
+                this.isLoaded = true;
+              }
               if (
                 !result ||
                 result.error ||
@@ -331,6 +339,9 @@
             return new Promise((resolve, reject) => {
               this.currentData = this._map(this.pageable ? this.source.slice(this.start, this.start + this.currentLimit) : this.source);
               this.total = this.source.length;
+              if ( !this.isLoaded ){
+                this.isLoaded = true;
+              }
               resolve(this.currentData);
             })
           }
@@ -383,7 +394,7 @@
           }
           this.confirm(bbn._(mess, this.selectingMode), () => {
             this[this.selectingMode](this.selected.map(v => {
-              return bbn.fn.extend(true, {}, bbn.fn.getRow(this.currentData, {index: v}));
+              return bbn.fn.extend(true, {}, bbn.fn.getField(this.currentData, 'data', {index: v}));
             }));
             this.setSelecting(false);
           });
@@ -405,7 +416,9 @@
     mounted(){
       this.$nextTick(() => {
         this.onResize();
-        this.updateData();
+        if ( this.autobind ){
+          this.updateData();
+        }
       });
     },
     components: {
