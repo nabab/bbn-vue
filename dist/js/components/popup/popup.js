@@ -6,13 +6,13 @@ script.innerHTML = `<div :class="['bbn-overlay', componentClass]"
 >
   <bbn-floater v-if="showPopup"
               v-for="(popup, i) in popups"
-              :key="i"
+              :key="popup.uid"
               :ref="popup.uid"
-              :index="i"
+              :index="popup.index"
               v-bind="popup"
               :container="$el"
               :style="{zIndex: zIndex+i}"
-              @close="items.splice(i, 1)"
+              @close="items.splice(popup.index, 1)"
   ></bbn-floater>
   <div class="bbn-modal bbn-overlay"
       tabindex="-1"
@@ -157,7 +157,8 @@ document.head.insertAdjacentElement('beforeend', css);
       popups(){
         let r = [];
         bbn.fn.each(this.items, (a, i) => {
-          r.push(this.getObject(bbn.fn.extendOut(a, {index: i})));
+          //r.push(this.getObject(bbn.fn.extendOut(a, {index: i})));
+          r.push(this.getObject(bbn.fn.extend(a, {index: i})));
         });
         return r;
       },
@@ -568,7 +569,8 @@ document.head.insertAdjacentElement('beforeend', css);
           }
           if ( this.popups[idx] ){
             //return bbn.vue.getChildByKey(this.$children[0], this.popups[idx].uid);
-            return bbn.vue.getChildByKey(this, idx);
+            //return bbn.vue.getChildByKey(this, idx);
+            return bbn.vue.getChildByKey(this, this.popups[idx].uid);
           }
         }
         return false;

@@ -1074,8 +1074,8 @@ document.head.insertAdjacentElement('beforeend', css);
         let form = this.find('bbn-form');
         if ( (form !== undefined)  && !confirm ){
           form.closePopup();
-         }
-         else{
+        }
+        else{
           let closeEvent = new Event('close');
           this.hide();
           //this.$el.style.display = 'block';
