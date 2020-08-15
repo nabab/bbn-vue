@@ -25,7 +25,7 @@
     "converts": "node src/converts"
   },
   "dependencies": {
-    "@bbn/bbn-js": "^1.0.0",
+    "@bbn/bbn-js": "^1.*",
     "angular": "^1.6.5",
     "babel-loader": "^7.1.1",
     "babel-plugin-transform-runtime": "^6.23.0",
