@@ -444,7 +444,7 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                     icon="nf nf-fa-undo"
         ></bbn-button>
         <bbn-button v-if="showable"
-                    :title="_('Columns\' picker')"
+                    :title="_('Columns\\' picker')"
                     @click="openColumnsPicker"
                     icon="nf nf-fa-columns"
         ></bbn-button>
@@ -3828,5 +3828,5 @@ document.head.insertAdjacentElement('beforeend', css);
 
 })(window.bbn, window.Vue);
 
-bbn_resolve("ok");
+if (bbn_resolve) {bbn_resolve("ok");}
 })(bbn); }

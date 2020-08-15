@@ -422,6 +422,7 @@
      * @event created 
      */
     created(){
+      this.componentClass.push('bbn-resize-emitter');
       if ( this.isComponent ){
         componentsList.push(this.componentName);
       }
@@ -490,9 +491,12 @@
           this.currentURL = this.url;
         }
       },
-      ready(){
-        if (this.onMount) {
-          this.onMount();
+      ready(v){
+        bbn.fn.log("READY CONTAINER " + this.url);
+        if (v) {
+          if (this.onMount) {
+            this.onMount();
+          }
         }
       },
       load(nv, ov){

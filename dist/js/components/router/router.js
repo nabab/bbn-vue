@@ -709,12 +709,12 @@ document.head.insertAdjacentElement('beforeend', css);
        * @emit beforeRoute
        * @returns {void}
        */
-      route(url, force){
-        if (!bbn.fn.isString(url) ){
+      route(url, force) {
+        if (!bbn.fn.isString(url)) {
           bbn.fn.log("error in route with url", url);
           throw Error(bbn._('The component bbn-container must have a valid URL defined'));
         }
-        if ( this.ready && (force || !this.activeContainer || (url !== this.currentURL)) ){
+        if (this.ready && (force || !this.activeContainer || (url !== this.currentURL))) {
           let event = new CustomEvent(
             "beforeRoute",
             {
@@ -723,14 +723,16 @@ document.head.insertAdjacentElement('beforeend', css);
             }
           );
           this.$emit("beforeRoute", event, url);
-          if ( !event.defaultPrevented ){
+          if (!event.defaultPrevented) {
+            let bits = url.split('#');
+            url = bits[0];
 	          if ((url === '') && this.hasEmptyURL) {
               this.urls[''].setCurrent(url);
               this.realRoute('', '', force);
               return;
             }
             // Checks weather the container is already there
-            if ( !url ){
+            if (!url) {
               let idx = this.getRoute('', true);
               if ( idx ){
                 url = this.urls[idx].currentURL;
@@ -738,34 +740,34 @@ document.head.insertAdjacentElement('beforeend', css);
             }
             let st = url ? this.getRoute(url) : '';
             //bbn.fn.log("ROUTING FUNCTION EXECUTING FOR " + url + " (CORRESPONDING TO " + st + ")");
-            if ( !url ){
-              return;
-            }
-            if ( !force && (this.currentURL === url) ){
+            if (!url || (!force && (this.currentURL === url))) {
+              if (bits[1]) {
+
+              }
               //bbn.fn.log("SAME URL END ROUTING");
               return;
             }
-            if ( url && ((!st && this.autoload) || (this.urls[st] && this.urls[st].load && !this.urls[st].isLoaded)) ){
+            else if (url && ((!st && this.autoload) || (this.urls[st] && this.urls[st].load && !this.urls[st].isLoaded))) {
               this.load(url);
             }
             // Otherwise the container is activated ie made visible
             else {
               //bbn.fn.log("LOADED " + url);
-              if ( !st && this.def && (!url || force)){
+              if (!st && this.def && (!url || force)) {
                 st = this.getRoute(this.def);
-                if ( st ){
+                if (st) {
                   url = this.def;
                 }
               }
-              if ( !st && force && this.views.length ){
+              if (!st && force && this.views.length) {
                 st = this.views[0].url;
-                if ( st ){
+                if (st) {
                   url = this.urls[st].currentURL || st;
                 }
               }
-              if ( st ){
+              if (st) {
                 this.urls[st].setCurrent(url);
-                this.realRoute(url, st, force);
+                this.realRoute(url, st, force, bits[1]);
               }
             }
           }
@@ -780,7 +782,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @fires activate
        * @emit route1
        */
-      realRoute(url, st, force){
+      realRoute(url, st, force, anchor){
         if (!bbn.fn.isString(url) && !bbn.fn.isNumber(url)){
           bbn.fn.log("error in realRoute with url", url);
           throw Error(bbn._('The component bbn-container must have a valid URL defined'));
@@ -802,8 +804,8 @@ document.head.insertAdjacentElement('beforeend', css);
             this.urls[st].init();
             this.$nextTick(() => {
               let child = this.urls[st].find('bbn-router');
+              bbn.fn.log("LOOKING FOR CHILD", child);
               if ( child ){
-                //bbn.fn.log("CHILD ROUTER ROUTING: " + url.substr(st.length + 1));
                 child.route(url.substr(st.length + 1), force);
               }
               else {
@@ -1988,7 +1990,8 @@ document.head.insertAdjacentElement('beforeend', css);
      * @event created
      */
     created(){
-      /**
+      this.componentClass.push('bbn-resize-emitter');
+        /**
        * @event route
        * @fires setconfig
        */
@@ -2200,5 +2203,5 @@ document.head.insertAdjacentElement('beforeend', css);
   });
 
 })(bbn, Vue);
-bbn_resolve("ok");
+if (bbn_resolve) {bbn_resolve("ok");}
 })(bbn); }

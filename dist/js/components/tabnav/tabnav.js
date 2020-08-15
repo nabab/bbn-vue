@@ -1005,5 +1005,5 @@ document.head.insertAdjacentElement('beforeend', css);
 
 })(Vue);
 
-bbn_resolve("ok");
+if (bbn_resolve) {bbn_resolve("ok");}
 })(bbn); }

@@ -13,7 +13,7 @@ script.innerHTML = `<div :class="elementClass"
   >
     <div :class="{'bbn-scroll-content': true, resizing: isMeasuring, 'bbn-overlay': !scrollable, 'bbn-100': fullPage}"
          ref="scrollContent"
-         @ready.stop="waitReady"
+         @subready.stop="waitReady"
          :style="contentStyle"
     >
       <slot></slot>
@@ -284,7 +284,8 @@ document.head.insertAdjacentElement('beforeend', css);
         isScrolling: false,
         isDragging: false,
         isFocused: false,
-        previousTouch: {x: null, y: null}
+        previousTouch: {x: null, y: null},
+        interval: null
       };
     },
     computed: {
@@ -412,58 +413,6 @@ document.head.insertAdjacentElement('beforeend', css);
           e.preventDefault();
         }
       },
-      /**
-       * Gets the dimensions after a resize
-       * @method getNaturalDimensions
-       * @fires getNaturalDimensions
-       */
-      getNaturalDimensions(){
-        this.isMeasuring = true;
-        return new Promise((resolve, reject) => {
-          this.$nextTick().then(() => {
-            let sc = this.find('bbn-scroll');
-            if (this.scrollable) {
-              let d = {width: this.getRef('scrollContent').offsetWidth, height: this.getRef('scrollContent').offsetHeight};
-              if ( !d.width || !d.height ){
-                if (sc && (sc.$el.clientWidth === this.$el.clientWidth) && (sc.$el.clientHeight === this.$el.clientHeight)) {
-                  sc.getNaturalDimensions().then((d) => {
-                    this.naturalWidth = sc.naturalWidth;
-                    this.naturalHeight = sc.naturalHeight;
-                    this.isMeasuring = false;
-                    resolve({w: this.naturalWidth, h: this.naturalHeight});
-                  })
-                }
-                else{
-                  this.isMeasuring = false;
-                  this.naturalWidth = this.$el.offsetWidth;
-                  this.naturalHeight = this.$el.offsetHeight;
-                  resolve({w: this.naturalWidth, h: this.naturalHeight});
-                }
-              }
-              else{
-                this.naturalWidth = d.width;
-                this.naturalHeight = d.height;
-                this.isMeasuring = false;
-                resolve({w: this.naturalWidth, h: this.naturalHeight});
-              }
-            }
-            else if (sc && (sc.$el.clientWidth === this.$el.clientWidth) && (sc.$el.clientHeight === this.$el.clientHeight)) {
-              sc.getNaturalDimensions().then((d) => {
-                this.naturalWidth = sc.naturalWidth;
-                this.naturalHeight = sc.naturalHeight;
-                this.isMeasuring = false;
-                resolve({w: this.naturalWidth, h: this.naturalHeight});
-              })
-            }
-            else{
-              this.isMeasuring = false;
-              this.naturalWidth = this.$el.offsetWidth;
-              this.naturalHeight = this.$el.offsetHeight;
-              resolve({w: this.naturalWidth, h: this.naturalHeight});
-            }
-          });
-        });
-      },
       preventKeyIfScrolling(e) {
         if (this.isScrolling && (32 >= e.key <= 40)) {
           e.preventDefault();
@@ -590,97 +539,6 @@ document.head.insertAdjacentElement('beforeend', css);
         this.$emit('scrolly', ev, top);
       },
       /**
-       * @method initSize
-       * @fires getNaturalDimensions
-       * @fires onResize
-       */
-      initSize(){
-        if ( !this.ready && this.readyDelay ){
-          return new Promise((resolve) => {
-            setTimeout(() => {
-              resolve();
-            }, 1);
-          });
-        }
-        return this.getNaturalDimensions().then(() => {
-          if ( !this.ready && !this.readyDelay ){
-            this.ready = true;
-          }
-          this.onResize();
-        });
-      },
-      /**
-       * Handles the resize of the scroll
-       * @method onResize
-       * @fires keepCool
-       * @fires getNaturalDimensions
-       * @emits resize
-       */
-      onResize(force){
-        if ( !this.ready ){
-          return new Promise((resolve) => {
-            setTimeout(() => {
-              resolve();
-            }, 1);
-          });
-        }
-        return this.keepCool(() => {
-          let container = this.$el;
-          let content = this.getRef('scrollContent');
-          let containerWidth = container.offsetWidth;
-          let containerHeight = container.offsetHeight;
-          let contentWidth = content.scrollWidth || content.offsetWidth;
-          let contentHeight = content.scrollHeight || content.offsetHeight;
-          if ( this.naturalWidth && (this.naturalWidth < this.contentWidth) ) {
-            this.contentWidth = this.naturalWidth;
-          }
-          else{
-            this.contentWidth = contentWidth;
-          }
-          if ( this.naturalHeight && (this.naturalHeight < this.contentHeight) ) {
-            this.contentHeight = this.naturalHeight;
-          }
-          else{
-            this.contentHeight = contentHeight;
-          }
-          if ( this.scrollable ){
-            if ( (this.axis === 'both') || (this.axis === 'x') && (this.contentWidth > containerWidth) ){
-              this.hasScrollX = true;
-              this.$nextTick(() => {
-                if ( this.$refs.xScroller ){
-                  this.$refs.xScroller.onResize();
-                }
-              })
-            }
-            else{
-              this.hasScrollX = false;
-            }
-            if ((this.axis === 'both') || (this.axis === 'y') && (this.contentHeight > containerHeight)){
-              this.hasScrollY = true;
-              this.$nextTick(() => {
-                if ( this.$refs.yScroller ){
-                  this.$refs.yScroller.onResize();
-                }
-              })
-            }
-            else{
-              this.hasScrollY = false;
-            }
-            this.hasScroll = this.hasScrollY || this.hasScrollX;
-            if ( this.currentX > this.contentWidth ) {
-              this.currentX = 0;
-            }
-            if ( this.currentY > this.contentHeight ) {
-              this.currentY = 0;
-            }
-            container.scrollLeft = this.currentX;
-            container.scrollTop = this.currentY;
-          }
-          this.$emit('resize');
-          this.setResizeMeasures();
-        }, 'onResize', this.latency);
-      },
-      /**
        * @method scrollStart
        * @fires scrollStartX
        * @fires scrollStartY
@@ -715,14 +573,6 @@ document.head.insertAdjacentElement('beforeend', css);
       scrollAfter(){
         this.scrollAfterX();
         this.scrollAfterY();
-      },
-      /**
-       * Initializes the scroll
-       * @method init
-       * @fires onResize
-       */
-      init(){
-        this.initSize();
       },
       /**
        * Scroll the x axis to the position 0
@@ -831,11 +681,157 @@ document.head.insertAdjacentElement('beforeend', css);
         }
       },
       /**
+       * Gets the dimensions after a resize
+       * @method getNaturalDimensions
+       * @fires getNaturalDimensions
+       */
+      getNaturalDimensions(){
+        this.isMeasuring = true;
+        return new Promise((resolve, reject) => {
+          this.$nextTick().then(() => {
+            let sc = this.find('bbn-scroll');
+            if (this.scrollable) {
+              let d = {width: this.getRef('scrollContent').offsetWidth, height: this.getRef('scrollContent').offsetHeight};
+              if ( !d.width || !d.height ){
+                if (sc && (sc.$el.clientWidth === this.$el.clientWidth) && (sc.$el.clientHeight === this.$el.clientHeight)) {
+                  sc.getNaturalDimensions().then((d) => {
+                    this.naturalWidth = sc.naturalWidth;
+                    this.naturalHeight = sc.naturalHeight;
+                    this.isMeasuring = false;
+                    resolve({w: this.naturalWidth, h: this.naturalHeight});
+                  })
+                }
+                else{
+                  this.isMeasuring = false;
+                  this.naturalWidth = this.$el.offsetWidth;
+                  this.naturalHeight = this.$el.offsetHeight;
+                  resolve({w: this.naturalWidth, h: this.naturalHeight});
+                }
+              }
+              else{
+                this.naturalWidth = d.width;
+                this.naturalHeight = d.height;
+                this.isMeasuring = false;
+                resolve({w: this.naturalWidth, h: this.naturalHeight});
+              }
+            }
+            else if (sc && (sc.$el.clientWidth === this.$el.clientWidth) && (sc.$el.clientHeight === this.$el.clientHeight)) {
+              sc.getNaturalDimensions().then((d) => {
+                this.naturalWidth = sc.naturalWidth;
+                this.naturalHeight = sc.naturalHeight;
+                this.isMeasuring = false;
+                resolve({w: this.naturalWidth, h: this.naturalHeight});
+              })
+            }
+            else{
+              this.isMeasuring = false;
+              this.isMeasuring = false;
+              this.naturalWidth = this.$el.offsetWidth;
+              this.naturalHeight = this.$el.offsetHeight;
+              resolve({w: this.naturalWidth, h: this.naturalHeight});
+            }
+          });
+        });
+      },
+      /**
+       * @method initSize
+       * @fires getNaturalDimensions
+       * @fires onResize
+       */
+      initSize(){
+        if ( this.readyDelay ){
+          return new Promise((resolve) => {
+            setTimeout(() => {
+              resolve();
+            }, 1);
+          });
+        }
+        return this.getNaturalDimensions().then(() => {
+          if ( !this.ready && !this.readyDelay ){
+            this.ready = true;
+          }
+          this.onResize();
+        });
+      },
+      /**
+       * Handles the resize of the scroll
+       * @method onResize
+       * @fires keepCool
+       * @fires getNaturalDimensions
+       * @emits resize
+       */
+      onResize(force){
+        bbn.fn.log("SCROLL ONRESIZE FN from " + this.bbnUid, this.$el);
+        if ( !this.ready ){
+          return new Promise((resolve) => {
+            setTimeout(() => {
+              resolve();
+            }, 1);
+          });
+        }
+        return this.keepCool(() => {
+          let container = this.$el;
+          let content = this.getRef('scrollContent');
+          let containerWidth = container.offsetWidth;
+          let containerHeight = container.offsetHeight;
+          let contentWidth = content.scrollWidth || content.offsetWidth;
+          let contentHeight = content.scrollHeight || content.offsetHeight;
+          if ( this.naturalWidth && (this.naturalWidth < this.contentWidth) ) {
+            this.contentWidth = this.naturalWidth;
+          }
+          else{
+            this.contentWidth = contentWidth;
+          }
+          if ( this.naturalHeight && (this.naturalHeight < this.contentHeight) ) {
+            this.contentHeight = this.naturalHeight;
+          }
+          else{
+            this.contentHeight = contentHeight;
+          }
+          if ( this.scrollable ){
+            if ( (this.axis === 'both') || (this.axis === 'x') && (this.contentWidth > containerWidth) ){
+              this.hasScrollX = true;
+              this.$nextTick(() => {
+                if ( this.$refs.xScroller ){
+                  this.$refs.xScroller.onResize();
+                }
+              })
+            }
+            else{
+              this.hasScrollX = false;
+            }
+            if ((this.axis === 'both') || (this.axis === 'y') && (this.contentHeight > containerHeight)){
+              this.hasScrollY = true;
+              this.$nextTick(() => {
+                if ( this.$refs.yScroller ){
+                  this.$refs.yScroller.onResize();
+                }
+              })
+            }
+            else{
+              this.hasScrollY = false;
+            }
+            this.hasScroll = this.hasScrollY || this.hasScrollX;
+            if ( this.currentX > this.contentWidth ) {
+              this.currentX = 0;
+            }
+            if ( this.currentY > this.contentHeight ) {
+              this.currentY = 0;
+            }
+            container.scrollLeft = this.currentX;
+            container.scrollTop = this.currentY;
+          }
+          bbn.fn.log("EMITTING RESIZE FGROM SCROLL");
+          this.$emit('resize');
+          this.setResizeMeasures();
+        }, 'onResize', this.latency);
+      },
+      /**
        * @method waitReady
        * @fires keepCool
        * @fires onResize
        */
-      waitReady(cp){
+      waitReady(ev){
         if (!this.ready) {
           if (this.readyDelay !== false) {
             clearTimeout(this.readyDelay);
@@ -844,12 +840,34 @@ document.head.insertAdjacentElement('beforeend', css);
             this.readyDelay = false;
           }, this.latency);
         }
-        else if (!cp || !cp.$options || (cp.$options.name !== 'bbn-floater')) {
+        else if (!ev || !ev.detail || !ev.detail.cp || !ev.detail.cp.$options || (ev.detail.cp.$options.name !== 'bbn-floater')) {
           this.keepCool(() => {
-            this.onResize();
+            this.initSize();
           }, "init", this.latency * 2);
         }
+        setTimeout(() => {
+          if (this.interval) {
+            clearInterval(this.interval);
+          }
+          this.interval = setInterval(() => {
+            //bbn.fn.log("Scroll interval");
+            if (this.ready && this.scrollable && this.$el.offsetParent) {
+              //bbn.fn.log("offsetParent ok");
+              let content = this.getRef('scrollContent');
+              let contentWidth = content.scrollWidth || content.offsetWidth;
+              let contentHeight = content.scrollHeight || content.offsetHeight;
+              //bbn.fn.log("WIDTH: " + this.naturalWidth + " / " +  this.contentWidth + " / " + contentWidth);
+              if ((this.contentWidth !== contentWidth) || (this.contentHeight !== contentHeight)) {
+                bbn.fn.log("INTERVAL", this.$el, this.naturalWidth, this.contentWidth, '--' + contentWidth + '--', this.naturalHeight, this.contentHeight, '--' + contentHeight + '--')
+                this.initSize();
+              }
+            }
+          }, 50)
+        }, 100)
       }
+    },
+    created(){
+      this.componentClass.push('bbn-resize-emitter');
     },
     /**
      * @event mounted
@@ -861,6 +879,11 @@ document.head.insertAdjacentElement('beforeend', css);
           this.waitReady();
         }
       }, this.latency * 2);
+    },
+    beforeDestroy(){
+      if (this.interval) {
+        clearInterval(this.interval);
+      }
     },
     watch: {
       /**
@@ -922,5 +945,5 @@ document.head.insertAdjacentElement('beforeend', css);
 
 })(bbn);
 
-bbn_resolve("ok");
+if (bbn_resolve) {bbn_resolve("ok");}
 })(bbn); }

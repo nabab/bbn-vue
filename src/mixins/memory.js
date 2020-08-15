@@ -15,17 +15,6 @@
         memory: {
           type: [Object, Function]
         },
-        /**
-         * The classes added to the component.
-         * @prop {Array} [[]] componentClass
-         * @memberof memoryComponent
-         */
-        componentClass: {
-          type: Array,
-          default(){
-            return [];
-          }
-        }
       },
       /**
        * Adds the class 'bbn-memory-component' to the component.

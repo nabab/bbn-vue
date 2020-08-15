@@ -192,6 +192,7 @@
     },
     watch: {
       items(){
+        /*
         if (this.info) {
           this.$nextTick(() => {
             let f = this.getRef('floater');
@@ -200,6 +201,7 @@
             }
           })
         }
+        */
       }
     }
   });

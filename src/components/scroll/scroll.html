@@ -11,7 +11,7 @@
   >
     <div :class="{'bbn-scroll-content': true, resizing: isMeasuring, 'bbn-overlay': !scrollable, 'bbn-100': fullPage}"
          ref="scrollContent"
-         @ready.stop="waitReady"
+         @subready.stop="waitReady"
          :style="contentStyle"
     >
       <slot></slot>

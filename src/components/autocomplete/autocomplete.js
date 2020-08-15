@@ -68,7 +68,27 @@
         default: 'startswith'
       }
     },
+    data(){
+      return {
+        /**
+         * Indicates if the filter input is visible
+         * @data {Boolean} [false] inputIsVisible
+         */
+        inputIsVisible: false
+      }
+    },
     methods: {
+      /**
+       * Shows the filter input
+       * @method _setInputVisible
+       */
+      _setInputVisible(){
+        this.filterString = this.currentText;
+        this.inputIsVisible = true;
+        this.$nextTick(() => {
+          this.getRef('input').focus();
+        })
+      },
       /**
        * Puts the focus on the element.
        *
@@ -94,6 +114,7 @@
           this.isOpened = false;
         }
         this.filterString = '';
+        this.inputIsVisible = false;
       },
       /**
        * Emits the event 'select'.

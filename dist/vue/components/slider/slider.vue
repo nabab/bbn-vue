@@ -5,6 +5,7 @@
   'bbn-w-100': !isVertical,
   'bbn-h-100': isVertical,
 }]"
+     @mouseup.stop
      @mousedown.stop
      :style="currentStyle"
 >
@@ -21,7 +22,7 @@
          'bbn-m': true,
          'bbn-unselectable': true
        }"
-       @click="hide">
+       @click.stop.prevent="hide">
     <i class="nf nf-fa-times"></i>
   </div>
 </div>
@@ -252,6 +253,7 @@
      * @fires _setEvents
      */
     created(){
+      this.componentClass.push('bbn-resize-emitter');
       this._setEvents();
     },
     /**

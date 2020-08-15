@@ -17,7 +17,7 @@
               class="bbn-no-border"
               v-model="filterString"
               ref="input"
-              @focus="selectAll"
+              @focus="selectText"
               autocomplete="off"
               autocorrect="off"
               autocapitalize="off"
@@ -168,10 +168,10 @@
       },
       /**
        * Select the string of text inside of the input.
-       * @method selectAll
+       * @method selectText
        * @fires getRef
        */
-      selectAll(){
+      selectText(){
         let input = this.getRef('input');
         input.setSelectionRange(0, input.value.length);
       },

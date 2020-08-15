@@ -53,7 +53,7 @@ script.innerHTML = `<div :class="componentClass"
                   ref="orderTop"
                   @mouseover.stop="mouseOver"
             ></span>
-            <span :class="['bbn-tree-node-block', , source.cls, {'bbn-tree-node-block-no-component': !!component}]"
+            <span :class="['bbn-tree-node-block', source.cls || '', {'bbn-tree-node-block-no-component': !!component}]"
                   @mouseover.stop="mouseOver"
             >
               <span class="bbn-tree-node-block-expander bbn-p"
@@ -2273,5 +2273,5 @@ document.head.insertAdjacentElement('beforeend', css);
 
 })(bbn);
 
-bbn_resolve("ok");
+if (bbn_resolve) {bbn_resolve("ok");}
 })(bbn); }

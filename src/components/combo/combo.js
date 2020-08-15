@@ -104,10 +104,10 @@
       },
       /**
        * Select the string of text inside of the input.
-       * @method selectAll
+       * @method selectText
        * @fires getRef
        */
-      selectAll(){
+      selectText(){
         let input = this.getRef('input');
         input.setSelectionRange(0, input.value.length);
       },

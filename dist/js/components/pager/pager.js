@@ -1,6 +1,6 @@
 (bbn_resolve) => { ((bbn) => {
 let script = document.createElement('script');
-script.innerHTML = `ponentClass, 'bbn-block']">
+script.innerHTML = `<div :class="[componentClass, 'bbn-block']">
   <div class="bbn-block"
         v-if="element && element.pageable && element.filteredData.length"
   >
@@ -74,7 +74,7 @@ script.innerHTML = `ponentClass, 'bbn-block']">
                 icon="nf nf-fa-undo"
     ></bbn-button>
     <bbn-button v-if="element.showable"
-                :title="_('Columns\' picker')"
+                :title="_('Columns\\' picker')"
                 @click="element.openColumnsPicker"
                 icon="nf nf-fa-columns"
     ></bbn-button>
@@ -90,8 +90,7 @@ script.innerHTML = `ponentClass, 'bbn-block']">
                 icon="nf nf-fa-refresh"
     ></bbn-button>
   </div>
-</div>
-`;
+</div>`;
 script.setAttribute('id', 'bbn-tpl-component-pager');
 script.setAttribute('type', 'text/x-template');
 document.body.insertAdjacentElement('beforeend', script);
@@ -131,5 +130,5 @@ document.head.insertAdjacentElement('beforeend', css);
 
 })(window.Vue, window.bbn);
 
-bbn_resolve("ok");
+if (bbn_resolve) {bbn_resolve("ok");}
 })(bbn); }

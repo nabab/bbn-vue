@@ -222,7 +222,7 @@
         let mask = this.getRef('element'),
             newVal = mask.inputValue,
             value = !!newVal ? moment(newVal, this.currentFormat).format(this.getValueFormat(newVal)) : '';
-        if ( mask.element.raw(newVal) !== this.oldInputValue ){
+        if ( mask.raw(newVal) !== this.oldInputValue ){
           if ( value && this.min && (value < this.min) ){
             value = this.min;
           }

@@ -49,6 +49,7 @@
   float: left;
 }
 .bbn-filter .bbn-filter-items .bbn-filter-main .bbn-filter-form {
+  align-items: center;
   white-space: nowrap;
 }
 .bbn-filter .bbn-filter-items .bbn-filter-main .bbn-filter-form > div.bbn-block {
@@ -79,7 +80,7 @@
   clear: both;
   display: table;
 }
-.bbn-filter .padding {
+.bbn-filter .bbn-filter-padding {
   padding-left: 0.1em;
   padding-right: 0.1em;
 }

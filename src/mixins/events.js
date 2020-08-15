@@ -6,19 +6,6 @@
      * @component eventsComponent
      */
     eventsComponent: {
-      props: {
-        /**
-         * The classes added to the component.
-         * @memberof eventsComponent
-         * @prop {Array} [[]] componentClass 
-         */
-        componentClass: {
-          type: Array,
-          default(){
-            return [];
-          }
-        }
-      },
       data(){
         return {
           /**

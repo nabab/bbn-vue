@@ -660,14 +660,14 @@
        */
       user: {
         template: `
-<div class="bbn-w-100 bbn-p"
+<div class="bbn-w-100 bbn-p bbn-hspadded bbn-vmiddle"
       style="overflow: auto"
       @click="cp.chatTo([source.value])">
   <bbn-initial :user-id="source.value"
                :user-name="userName"
                :width="16"
                :height="16"
-               style="padding-right: 3px"
+               class="bbn-right-sspace"
   ></bbn-initial>
   <span class="bbn-large"
         v-text="userName">

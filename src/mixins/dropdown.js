@@ -124,21 +124,21 @@
             return this.textValue;
           }
           return '';
-        }
+        },
+        isSearching(){
+          return this.currentText !== this.currentTextValue;
+        },
       },
       methods: {
         /**
          * Select the string of text inside of the input.
-         * @method selectAll
+         * @method selectText
          * @memberof dropdownComponent
          */
-        selectAll() {
-          let input = this.getRef('input').$refs['element'];
-          if (input) {
-            input.setSelectionRange(0, input.value.length);
-          }
+        selectText(){
+          this.getRef('input').selectText();
         },
-        /**
+          /**
          * Handles the resize of the component
          * @method onResize
          * @memberof dropdownComponent
@@ -197,6 +197,7 @@
          * @param {Event} e 
          */
         commonKeydown(e){
+          bbn.fn.log("Common keydown from mixin");
           if (!this.filteredData.length || e.altKey || e.ctrlKey || e.metaKey) {
             return;
           }
@@ -209,11 +210,12 @@
               }
             }
             this.resetDropdown();
+            this.isOpened = false;
             return true;
           }
           else if (
             this.isOpened && (
-              bbn.var.keys.confirm.includes(e.which) || (e.key === ' ')
+              bbn.var.keys.confirm.includes(e.which) || ((e.key === ' ') && !this.isSearching)
             )
           ){
             e.preventDefault();
@@ -226,6 +228,7 @@
             }
             return true;
           }
+          bbn.fn.log("Common keydown from mixin (return false)");
           return false;
         },
         /**

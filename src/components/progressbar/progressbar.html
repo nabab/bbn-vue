@@ -12,7 +12,7 @@
          style="height: 100%"
     >
       <div :class="['bbn-progress-status', {'bbn-hspadded': (orientation === 'horizontal')}]"
-            v-text="showValue ? (value + ( showUnit ? unit : '' ) ) : ''"
+            v-text="(showValue ? (value + ( showUnit ? unit : '' ) ) : '') + (!!text ? ( showValue ? ' ' : '') + '(' + text + ')' : '')"
             :style="textColor.length ? 'color: '+ textColor : ''"
       ></div>
     </div>

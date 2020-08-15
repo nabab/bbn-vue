@@ -1,9 +1,7 @@
 (bbn_resolve) => { ((bbn) => {
 let script = document.createElement('script');
-script.innerHTML = `<div :class="[{'bbn-reset': true, 'bbn-100': true, 'bbn-unselectable': true}, componentClass]"
-     @click="info = !info"
->
-  <span class="bbn-loadbar-content">
+script.innerHTML = `<div :class="[{'bbn-reset': true, 'bbn-100': true, 'bbn-unselectable': true}, componentClass]">
+  <span class="bbn-loadbar-content" @click="info = !info">
     <!--span class="buttons" v-if="data.length">
       <i :title="_('History informations')"
          :class="{
@@ -70,18 +68,18 @@ script.innerHTML = `<div :class="[{'bbn-reset': true, 'bbn-100': true, 'bbn-unse
       <span class="text bbn-h-100" v-text="currentItem.url"></span>
     </a>
   </span>
-  <bbn-floater v-if="info && items.length"
+  <bbn-floater v-if="info"
                :element="$el"
                ref="floater"
                :auto-hide="true"
-               :title="_('Requests\' history')"
+               :title="_('Requests\\' history')"
                :closable="true"
                :scrollable="true"
                @close="info = false"
                @ready="focusInput"
                max-height="60vw"
   >
-    <div class="bbn-content bbn-w-100 bbn-padded">
+    <div class="bbn-w-100 bbn-padded">
       <bbn-input class="bbn-w-100"
                   button-right="nf nf-mdi-send"
                   v-model="link"
@@ -312,6 +310,7 @@ document.head.insertAdjacentElement('beforeend', css);
     },
     watch: {
       items(){
+        /*
         if (this.info) {
           this.$nextTick(() => {
             let f = this.getRef('floater');
@@ -320,11 +319,12 @@ document.head.insertAdjacentElement('beforeend', css);
             }
           })
         }
+        */
       }
     }
   });
 
 })(bbn);
 
-bbn_resolve("ok");
+if (bbn_resolve) {bbn_resolve("ok");}
 })(bbn); }

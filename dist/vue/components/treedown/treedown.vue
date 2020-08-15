@@ -21,7 +21,7 @@
               class="bbn-textbox bbn-no-border"
               v-model="filterString"
               ref="filter"
-              @focus="selectAll"
+              @focus="selectText"
               autocomplete="off"
               :required="required"
               :readonly="readonly"
@@ -225,7 +225,7 @@
       }
     },
     methods: {
-      selectAll() {
+      selectText() {
         let filter = this.getRef('filter');
         if (filter) {
           filter.setSelectionRange(0, filter.value.length);
@@ -297,7 +297,7 @@
               this.filterString = item[this.sourceText];
               this.$nextTick(() => {
                 this.getRef('filter').focus();
-                this.selectAll();
+                this.selectText();
               });
             });
           }

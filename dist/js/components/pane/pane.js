@@ -93,6 +93,9 @@ document.head.insertAdjacentElement('beforeend', css);
         this.isCollapsed = val;
       }
     },
+    created(){
+      this.componentClass.push('bbn-resize-emitter');
+    },
     mounted(){
       if (bbn.fn.isFunction(this.$parent.init) ){
         if (this.resizable === undefined) {
@@ -109,5 +112,5 @@ document.head.insertAdjacentElement('beforeend', css);
 
 })(bbn);
 
-bbn_resolve("ok");
+if (bbn_resolve) {bbn_resolve("ok");}
 })(bbn); }

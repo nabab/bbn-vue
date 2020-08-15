@@ -102,7 +102,10 @@
         type: [Boolean, Object],
         default: false
       },
-      //@todo not used
+      /**
+       * Shows or hides the navigation arrow at the bottom of the slider.
+       * @prop {Boolean} [false] navigation
+       */
       navigation:{
         type: Boolean,
         default: false
@@ -129,7 +132,7 @@
        */
       autoHideCtrl:{
         type: Boolean,
-        default: false
+        default: true
       },
       /**
        * If set to true shows the slides in a loop..
@@ -371,7 +374,8 @@
        */
       aspectRatio(idx){
         this.$nextTick(()=>{
-          let ctnRatio = this.lastKnownCtWidth/this.lastKnownCtHeight,
+          let cont = this.getRef('slideContainer'),
+              ctnRatio = cont.offsetWidth/cont.offsetHeight,
               img = this.getRef('slide-img' + idx.toString()),
               imgW = img.naturalWidth,
               imgH = img.naturalHeight,
@@ -420,8 +424,8 @@
           }
           if ( mode === 'stretch' ){
 
-            this.$set(this.items[idx], 'imageWidth',  this.lastKnownCtWidth + 'px');
-            this.$set(this.items[idx], 'imageHeight', this.lastKnownCtHeight + 'px');
+            this.$set(this.items[idx], 'imageWidth',  cont.offsetWidth + 'px');
+            this.$set(this.items[idx], 'imageHeight', cont.offsetHeight + 'px');
             this.$set(this.items[idx], 'showImg', true);
 
             //this.items[idx].imageWidth = this.lastKnownCtWidth + 'px';
@@ -442,11 +446,11 @@
         let st = '',
             rules = [];
         this.items.forEach((it, i) => {
-          st += '.bbn-slideshow .slideswitch:target ~ .slide#' + (this.name + i.toString()) + ' .content{opacity: 0}';
-          st += '.bbn-slideshow .slideswitch[id="' + this.name + i.toString() + '"]:target ~ .slide#' + this.name + i.toString() + ' .navigation {display: block !important;}';
-          st += '.bbn-slideshow .slideswitch[id="' + this.name + i.toString() + '"]:target ~ .slide#' + this.name + i.toString() + ' .content {animation-name: fade_in; animation-duration: 0.5s;}';
+          st += '.bbn-slideshow .slideswitch:target ~ .bbn-slideshow-slide#' + (this.name + i.toString()) + ' .bbn-slideshow-content{opacity: 0}';
+          st += '.bbn-slideshow .slideswitch[id="' + this.name + i.toString() + '"]:target ~ .bbn-slideshow-slide#' + this.name + i.toString() + ' .bbn-slideshow-navigation {display: block !important;}';
+          st += '.bbn-slideshow .slideswitch[id="' + this.name + i.toString() + '"]:target ~ .bbn-slideshow-slide#' + this.name + i.toString() + ' .bbn-slideshow-content {animation-name: bbn-slideshow-effect-fade_in; animation-duration: 0.5s;}';
           if ( it.animation ){
-            st += '.bbn-slideshow .slideswitch[id="' + this.name + i.toString() + '"]:target ~ #' + this.name + i.toString() + ' .' + it.animation + ' {animation-name:' + it.animation + ' !important;animation-duration: ' + (it.duration || this.duration || '0.5') + 's;' + ( it.animation === 'flip' ? 'backface-visibility: hidden;' : '')+ '}';
+            st += '.bbn-slideshow .slideswitch[id="' + this.name + i.toString() + '"]:target ~ #' + this.name + i.toString() + ' .bbn-slideshow-effect-' + it.animation + ' {animation-name: bbn-slideshow-effect-' + it.animation + ' !important;animation-duration: ' + (it.duration || this.duration || '0.5') + 's;' + ( it.animation === 'flip' ? 'backface-visibility: hidden;' : '')+ '}';
           }
         });
         return st;
@@ -463,7 +467,7 @@
           if ( !this.items[idx-1].animation ){
             let slide = this.getRef('slide' + (idx-1).toString());
             if ( slide ){
-              slide.style.animationName = 'slide_from_right';
+              slide.style.animationName = 'bbn-slideshow-effect-slide_from_right';
             }
           }
           this.currentIndex--;
@@ -494,7 +498,7 @@
           if ( !this.items[idx+1].animation ){
             let slide = this.getRef('slide' + (idx-1).toString());
             if ( slide ){
-              slide.style.animationName = 'slide_from_left';
+              slide.style.animationName = 'bbn-slideshow-effect-slide_from_left';
             }
           }
           this.currentIndex++;
@@ -654,6 +658,10 @@
        * @param {Number} val 
        */
       currentIndex(val){
+        let miniatures = this.getRef('miniatures');
+        if ( miniatures ){
+          miniatures.getRef('scroll').getRef('xScroller').scrollTo(miniatures.$refs.items[val]);
+        }
         this.$emit('changeSlide', val);
       }
     },
@@ -662,48 +670,47 @@
        * @component miniature
        */
       miniature: {
-        template: `<div class="bbn-w-100 bbn-c bbn-middle">
-            <template  v-for="(it, i) in items"
-                       style="display: inline; width: 20px; height: 20px"
-            >
-              <div  v-if="(type === 'image' || true) && (it.type === 'img')"
+        template: `
+          <bbn-scroll axis="x" ref="scroll">
+            <div class="bbn-w-100 bbn-middle">
+              <template  v-for="(it, i) in items">
+                <i v-if="type === 'circle'"
                     @click= "clickMiniature(it , i)"
-                    class="zoom"
-                    :style="{
-                      border: (mainComponent.currentIndex === i) ? '2px inset red' : '1px inset black',
-                      width: dimension +'px',
-                      height: dimension + 'px',
-                      margin: '0 3px 0 0',
-
-                    }"
-              >
-                <img :src="it.content" width="100%" height="100%">
-              </div>
-              <div  v-if="(type === 'image' || true) && (it.type === 'text')"
-                    @click= "clickMiniature(it , i)"
-                    class="testing zoom"
-                    :style="{
-                      border: (mainComponent.currentIndex === i) ? '2px inset red' : '1px inset black',
-                      width: dimension +'px',
-                      height: dimension + 'px',
-                      margin: '0 3px 0 0',
-                    }"
-              >
-                <div v-html="it.content" class="content"></div>
-              </div>
-              <i v-else-if="type === 'circle'"
-                   @click= "clickMiniature(it , i)"
-                   :style="{
-                     color: (mainComponent.currentIndex === i) ? 'red' : 'white',
-                   }"
-                  :class="[
-                    (mainComponent.currentIndex === i ? 'nf nf-fa-dot_circle' : 'nf nf-fa-circle'),
-                    'bbn-padded',
-                    'circleMiniature'
-                  ]"
-              ></i>
-            </template>
-          </div>`,
+                    :class="[
+                      (mainComponent.currentIndex === i ? 'nf nf-fa-dot_circle' : 'nf nf-fa-circle'),
+                      'bbn-padded',
+                      'bbn-slideshow-circleMiniature',
+                      'bbn-p',
+                      {'bbn-primary-text-alt': mainComponent.currentIndex === i}
+                    ]"
+                    ref="items"
+                ></i>
+                <div  v-else
+                      @click= "clickMiniature(it , i)"
+                      :class="['bbn-slideshow-zoom', 'bbn-bordered-internal', {
+                        'bbn-primary-border': mainComponent.currentIndex === i,
+                        'bbn-right-xsspace': !!items[i+1]
+                      }]"
+                      :style="{
+                        'border-width': (mainComponent.currentIndex === i) ? 'medium' : '',
+                        width: dimension +'px',
+                        height: dimension + 'px'
+                      }"
+                      ref="items"
+                >
+                  <div v-if="it.type === 'text'"
+                      v-html="it.content"
+                      class="bbn-slideshow-content"
+                  ></div>
+                  <img v-else-if="it.type === 'img'"
+                      :src="it.content"
+                      width="100%"
+                      height="100%"
+                  >
+                </div>
+              </template>
+            </div>
+          </bbn-scroll>`,
         props: {
           /**
            * The array of items.
@@ -748,7 +755,7 @@
             * The parent component bbn-slideshow
             * @data {Vue} mainComponent
             */
-           mainComponent: bbn.vue.closest(this, 'bbn-slideshow')
+           mainComponent: this.closest('bbn-slideshow')
 
          }
        },
@@ -778,7 +785,7 @@
          * @memberof miniature
          */
         mounted(){
-          const elem = this.$el.querySelector('div.zoom div.content');
+          const elem = this.$el.querySelector('div.bbn-slideshow-zoom div.bbn-slideshow-content');
           if ( elem ){
             elem.style.transform = 'scale(0.2)';
             if ( elem.querySelector('img') ){

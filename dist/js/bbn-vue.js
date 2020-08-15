@@ -2,14 +2,12 @@
   "use strict";
   let version = '2.0.2';
   let libURL = '';
-  bbn.fn.each(document.head.getElementsByTagName('script'), s => {
-    if (s.src && (s.src.indexOf('bbn-vue/' + version + '/') > -1)) {
-      libURL = s.src.split('bbn-vue/' + version + '/')[0] + 'bbn-vue/' + version + '/';
-      return false;
-    }
-  })
+  if (bbn_root_dir && bbn_root_url) {
+    libURL = bbn_root_url + bbn.fn.dirName(bbn_root_dir) + '/';
+  }
 
   bbn.fn.autoExtend("vue", {
+    uid: 0,
     libURL: libURL,
     defaultLocalURL: false,
     defaultLocalPrefix: '',
@@ -309,11 +307,12 @@
           d = d.data;
           if ( d && d.success && d.components ){
             bbn.fn.iterate(items, (a, n) => {
-              if ( d.components[n] && this._realDefineComponent(a.name, d.components[n], a.mixins) ){
-                //this.setStorageComponent(a.name, d.components[n]);
-                a.resolve('ok3');
+              if ( d.components[n] && this._realDefineComponent(a.name, d.components[n], a.mixins) && Vue.options.components[a.name]) {
+                bbn.fn.log("All good")
+                a.resolve(Vue.options.components[a.name])
               }
               else{
+                bbn.fn.log("BOUG", a)
                 a.reject();
               }
             })
@@ -332,11 +331,14 @@
       if (item.url) {
         return axios.get(item.url, {responseType:'json'}).then((r) => {
           r = r.data;
-          if ( this._realDefineComponent(a.name, r, item.mixins) ){
-            item.resolve('ok4');
-            return;
+          if ( this._realDefineComponent(a.name, r, item.mixins)  && Vue.options.components[a.name]){
+            bbn.fn.log("All good 2")
+            item.resolve(Vue.options.components[a.name]);
           }
-          item.reject();
+          else {
+            bbn.fn.log("BOUG 2", a)
+            item.reject();
+          }
         })
       }
       return false;
@@ -698,12 +700,12 @@
      * @param {Boolean} checkEle
      */
     closest(vm, selector, checkEle){
-      let test = vm.$el;
-      while ( vm && vm.$parent && (vm !== vm.$parent) ){
-        if ( bbn.vue.is(vm.$parent, selector) ){
-          if ( !checkEle || (test !== vm.$parent.$el) ){
-            return vm.$parent;
-          }
+      if (!checkEle) {
+        vm = vm.$parent;
+      }
+      while (vm) {
+        if (bbn.vue.is(vm, selector)) {
+          return vm;
         }
         vm = vm.$parent;
       }
@@ -1034,20 +1036,8 @@
      * @component basicComponent
      */
     basicComponent: {
-      props: {
-        /**
-         * The classes added to the component.
-         * @prop {Array} [[]] componentClass
-         * @memberof basicComponent
-         */
-        componentClass: {
-          type: Array,
-          default(){
-            return [];
-          }
-        },
-      },
       data(){
+        bbn.vue.uid++;
         return bbn.fn.extend({
           /**
            * The change of value of this prop to true emits the event 'ready'.
@@ -1055,6 +1045,18 @@
            * @memberof basicComponent
            */
           ready: false,
+          /**
+           * Each basic component will have a unique UID.
+           * @data {Number} uid
+           * @memberof basicComponent
+           */
+          bbnUid: bbn.vue.uid,
+          /**
+           * The classes added to the component.
+           * @prop {Array} [[]] componentClass
+           * @memberof basicComponent
+           */
+          componentClass: ['bbn-basic-component'],
         }, bbn.vue.defaults[this.$options.name.slice(4)] || {})
       },
       methods: {
@@ -1111,7 +1113,6 @@
         if (this.$options.name && !this.componentClass.includes(this.$options.name)){
           this.componentClass.push(this.$options.name);
         }
-        this.componentClass.push('bbn-basic-component');
       },
       watch: {
         /**
@@ -1122,7 +1123,7 @@
          */
         ready(newVal){
           if ( newVal ){
-            let ev = new Event('ready', {bubbles: true});
+            let ev = new CustomEvent('subready', {bubbles: true, detail: {cp: this}});
             this.$el.dispatchEvent(ev);
             this.$emit('ready', this);
           }
@@ -1428,21 +1429,21 @@
             return this.textValue;
           }
           return '';
-        }
+        },
+        isSearching(){
+          return this.currentText !== this.currentTextValue;
+        },
       },
       methods: {
         /**
          * Select the string of text inside of the input.
-         * @method selectAll
+         * @method selectText
          * @memberof dropdownComponent
          */
-        selectAll() {
-          let input = this.getRef('input').$refs['element'];
-          if (input) {
-            input.setSelectionRange(0, input.value.length);
-          }
+        selectText(){
+          this.getRef('input').selectText();
         },
-        /**
+          /**
          * Handles the resize of the component
          * @method onResize
          * @memberof dropdownComponent
@@ -1501,6 +1502,7 @@
          * @param {Event} e 
          */
         commonKeydown(e){
+          bbn.fn.log("Common keydown from mixin");
           if (!this.filteredData.length || e.altKey || e.ctrlKey || e.metaKey) {
             return;
           }
@@ -1513,11 +1515,12 @@
               }
             }
             this.resetDropdown();
+            this.isOpened = false;
             return true;
           }
           else if (
             this.isOpened && (
-              bbn.var.keys.confirm.includes(e.which) || (e.key === ' ')
+              bbn.var.keys.confirm.includes(e.which) || ((e.key === ' ') && !this.isSearching)
             )
           ){
             e.preventDefault();
@@ -1530,6 +1533,7 @@
             }
             return true;
           }
+          bbn.fn.log("Common keydown from mixin (return false)");
           return false;
         },
         /**
@@ -1626,8 +1630,12 @@
             let list = this.find('bbn-list');
             if (list) {
               list.isOver = false;
-              let idx = this.valueIndex;
+              let idx = -1;
               let d = list.filteredData;
+              if (d.length === 1) {
+                list.overIdx = 0;
+                return;
+              }
               if (list.overIdx > -1) {
                 idx = list.overIdx;
               }
@@ -2176,19 +2184,6 @@
      * @component dataEditorComponent
      */
     dataEditorComponent: {
-      props: {
-        /**
-         * The classes added to the component.
-         * @prop {Array} componentClass
-         * @memberof dataEditorComponent
-         */
-        componentClass: {
-          type: Array,
-          default(){
-            return [];
-          }
-        }
-      },
       methods: {
         /**
          * not used
@@ -2319,19 +2314,6 @@
      * @component eventsComponent
      */
     eventsComponent: {
-      props: {
-        /**
-         * The classes added to the component.
-         * @memberof eventsComponent
-         * @prop {Array} [[]] componentClass 
-         */
-        componentClass: {
-          type: Array,
-          default(){
-            return [];
-          }
-        }
-      },
       data(){
         return {
           /**
@@ -3537,17 +3519,6 @@
         memory: {
           type: [Object, Function]
         },
-        /**
-         * The classes added to the component.
-         * @prop {Array} [[]] componentClass
-         * @memberof memoryComponent
-         */
-        componentClass: {
-          type: Array,
-          default(){
-            return [];
-          }
-        }
       },
       /**
        * Adds the class 'bbn-memory-component' to the component.
@@ -3694,6 +3665,17 @@
         }
       },
       methods: {
+        /**
+         * Select the text of the component.
+         * @method selectText
+         * @memberof inputComponent
+         */
+        selectText(){
+          let ele = this.getRef('element');
+          if (ele) {
+            bbn.fn.selectElementText(ele)
+          }
+        },
         /**
          * Emits the event input.
          * @method emitInput
@@ -3861,19 +3843,6 @@
      * @component resizerComponent
      */
     resizerComponent: {
-      props: {
-        /**
-         * The classes added to the component.
-         * @prop {Array} componentClass
-         * @memberof resizerComponent
-         */
-        componentClass: {
-          type: Array,
-          default(){
-            return [];
-          }
-        }
-      },
       data(){
         return {
           /**
@@ -3888,6 +3857,12 @@
            * @memberof resizerComponent
            */
           resizeEmitter: false,
+          /**
+           * The listener on the closest resizer parent.
+           * @data {Number} [null] resizeTimeout
+           * @memberof resizerComponent
+           */
+          resizeTimeout: null,
           /**
            * The height.
            * @data {Boolean} [false] lastKnownHeight
@@ -3917,17 +3892,32 @@
            * @data {Boolean} [false] isResizing
            * @memberof resizerComponent
            */
-          isResizing: false
+          isResizing: false,
+          /**
+           * The live computedStyle object for the element.
+           * @data {Object} [null] computedStyle
+           * @memberof resizerComponent
+           */
+          computedStyle: null
         };
       },
       methods: {
         /**
          * A function that can be executed just before the resize event is emitted.
          * @method onResize
+         * @emit resize
          * @memberof resizerComponent
          */
         onResize(){
-          return;
+          bbn.fn.log("DEFAULT ONRESIZE FN FROM " + this.$options.name);
+          return new Promise(resolve => {
+            setTimeout(() => {
+              if (this.$el.offsetHeight && this.setResizeMeasures()) {
+                this.$emit('resize');
+              }
+              resolve();
+            }, 50)
+          });
         },
         /**
          * Sets the value of lastKnownHeight and lastKnownWidth basing on the current dimensions of width and height.
@@ -3935,25 +3925,41 @@
          * @returns {Boolean}
          */
         setResizeMeasures(){
-          let resize = false;
           let h = this.$el ? Math.round(this.$el.clientHeight) : 0;
           let w = this.$el ? Math.round(this.$el.clientWidth) : 0;
+          if (h && w) {
+            this.setComputedStyle();
+          }
+          let resize = false;
+          let isAbsolute = this.computedStyle ? ['absolute', 'fixed'].includes(this.computedStyle.position) : false;
           let offsetParent = this.$el.offsetParent;
-          let ctH = (this.parentResizer && offsetParent) ? Math.round(offsetParent.clientHeight) : bbn.env.height;
-          let ctW = (this.parentResizer && offsetParent) ? Math.round(offsetParent.clientWidth) : bbn.env.width;
-          if ( h && (this.lastKnownHeight !== h) ){
+          let ctH;
+          let ctW;
+          if (!this.parentResizer) {
+            ctH = bbn.env.height;
+            ctW = bbn.env.width;
+          }
+          else if (offsetParent) {
+            ctH = isAbsolute ? bbn.fn.outerHeight(offsetParent) : Math.round(offsetParent.clientHeight);
+            ctW = isAbsolute ? bbn.fn.outerWidth(offsetParent) : Math.round(offsetParent.clientWidth);
+          }
+          else {
+            ctH = 0;
+            ctW = 0;
+          }
+          if (this.lastKnownHeight !== h) {
             this.lastKnownHeight = h;
             resize = true;
           }
-          if ( w && (this.lastKnownWidth !== w) ){
+          if (this.lastKnownWidth !== w) {
             this.lastKnownWidth = w;
             resize = true;
           }
-          if ( ctH && (this.lastKnownCtHeight !== ctH) ){
+          if (this.lastKnownCtHeight !== ctH) {
             this.lastKnownCtHeight = ctH;
             resize = true;
           }
-          if ( ctW && (this.lastKnownCtWidth !== ctW) ){
+          if (this.lastKnownCtWidth !== ctW) {
             this.lastKnownCtWidth = ctW;
             resize = true;
           }
@@ -3962,43 +3968,37 @@
         /**
          * Defines the resize emitter and emits the event resize.
          * @method setResizeEvent
-         * @emit resize
          * @fires resizeEmitter
          * @memberof resizerComponent
          */
         setResizeEvent(){
-          // The timeout used in the listener
-          let resizeTimeout;
+          // Clearing the timeout used in the listener
+          if (this.resizerTimeout) {
+            clearTimeout(this.resizerTimeout);
+          }
+          this.setComputedStyle();
           // This class will allow to recognize the element to listen to
-          this.parentResizer = this.closest(".bbn-resize-emitter", true);
+          this.parentResizer = this.closest(".bbn-resize-emitter");
           // Setting initial dimensions
           this.setResizeMeasures();
           // Creating the callback function which will be used in the timeout in the listener
           this.resizeEmitter = () => {
             // Removing previous timeout
-            clearTimeout(resizeTimeout);
+            clearTimeout(this.resizerTimeout);
             // Creating a new one
-            resizeTimeout = setTimeout(() => {
-              if ( this.$el.parentNode ){
-                if ( this.$el.offsetWidth !== 0 ){
-                  // Checking if the parent hasn't changed (case where the child is mounted before)
-                  let tmp = this.closest(".bbn-resize-emitter", true);
-                  if ( tmp !== this.parentResizer ){
-                    // In that case we reset
-                    this.unsetResizeEvent();
-                    this.setResizeEvent();
-                    return;
-                  }
-                  if (this.setResizeMeasures()) {
-                    this.onResize();
-                    this.$emit("resize");
-                    this.$nextTick(() => {
-                      this.setResizeMeasures();
-                    });
-                  }
+            this.resizerTimeout = setTimeout(() => {
+              if (this.$el.parentNode && this.$el.offsetWidth) {
+                // Checking if the parent hasn't changed (case where the child is mounted before)
+                let tmp = this.closest(".bbn-resize-emitter");
+                if ( tmp !== this.parentResizer ){
+                  // In that case we reset
+                  this.unsetResizeEvent();
+                  this.setResizeEvent();
+                  return;
                 }
               }
-            }, 0);
+              this.onResize();
+            }, 10);
           };
           if ( this.parentResizer ){
             this.parentResizer.$on("resize", this.resizeEmitter);
@@ -4045,6 +4045,11 @@
             default:
               return 'auto';
           }
+        },
+        setComputedStyle(){
+          if (!this.computedStyle && this.$el && this.$el.clienttWidth) {
+            this.computedStyle = window.getComputedStyle(this.$el);
+          }
         }
       },
       /**
@@ -4053,7 +4058,7 @@
        * @memberof resizerComponent
        */
       created(){
-        this.componentClass.push('bbn-resizer-component', 'bbn-resize-emitter');
+        this.componentClass.push('bbn-resizer-component');
       },
       /**
        * Defines the resize emitter and emits the event ready.
@@ -4063,8 +4068,12 @@
        * @memberof resizerComponent
        */
       mounted(){
-        this.setResizeEvent();
-        this.$on('ready', this.setResizeEvent);
+        if (!this.ready) {
+          this.$on('ready', this.setResizeEvent);
+        }
+        else {
+          this.setResizeEvent();
+        }
       },
       /**
        * Unsets the resize emitter.

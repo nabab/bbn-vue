@@ -1,6 +1,6 @@
 (bbn_resolve) => { ((bbn) => {
 let script = document.createElement('script');
-script.innerHTML = `<div :class="['bbn-widget', 'bbn-bordered', 'bbn-radius', 'bbn-alt-background', componentClass, full ? 'full' : '']"
+script.innerHTML = `<div :class="[componentClass, 'bbn-bordered', 'bbn-radius', 'bbn-alt-background', full ? 'full' : '']"
      @mouseenter="$emit('mouseenter')">
   <!-- HEADER -->
   <div class="bbn-header bbn-no-border bbn-bordered-bottom bbn-unselectable" v-if="title">
@@ -559,5 +559,5 @@ document.head.insertAdjacentElement('beforeend', css);
 
 })(bbn);
 
-bbn_resolve("ok");
+if (bbn_resolve) {bbn_resolve("ok");}
 })(bbn); }

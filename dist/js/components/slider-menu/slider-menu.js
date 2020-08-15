@@ -265,5 +265,5 @@ document.head.insertAdjacentElement('beforeend', css);
 })(window.Vue, window.bbn);
 
 
-bbn_resolve("ok");
+if (bbn_resolve) {bbn_resolve("ok");}
 })(bbn); }

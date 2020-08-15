@@ -1,4 +1,67 @@
-<audio preload="none" controls>
-  <source src="https://icecast.radiofrance.fr/fipnouveautes-midfi.mp3" type="audio/ogg">
-  Your browser does not support the audio element.
-</audio>
+<div :class="[componentClass, 'bbn-flex-height', {'bbn-box': skin}]"
+     :style="{
+       width: width,
+       height: height
+     }"
+>
+  <div v-if="title && (titlePosition === 'top')"
+       :class="['bbn-c', {
+         'bbn-header': skin,
+         'bbn-radius-top': skin,
+         'bbn-no-border-top': skin,
+         'bbn-no-border-left': skin,
+         'bbn-no-border-right': skin,
+       }, titleCls]"
+       v-html="title"
+       :style="{
+         background: titleBackground,
+         color: titleColor
+       }"
+  ></div>
+  <div class="bbn-flex-fill"
+      :style="{
+        background: background || (skin ? '#F1F3F4' : '')
+      }"
+  >
+    <audio ref="audio"
+           :autoplay="autoplay"
+           :controls="controls"
+           :loop="false"
+           :muted="muted"
+           preload="auto"
+           :style="{
+             background: background,
+             width: '100%',
+             height: height ? '100%' : ''
+           }"
+           :class="[cls, {
+             'bbn-bordered-bottom': skin,
+             'bbn-bordered-left': skin,
+             'bbn-bordered-right': skin,
+             'bbn-radius-bottom': skin
+           }]"
+           @play="onPlay"
+           @pause="onPause"
+    >
+      <source v-if="source"
+              :src="source"
+              :type="type"
+      ></source>
+      <p v-text="browserMessage"></p>
+    </audio>
+  </div>
+  <div v-if="title && (titlePosition === 'bottom')"
+       :class="['bbn-c', {
+         'bbn-header': skin,
+         'bbn-radius-bottom': skin,
+         'bbn-no-border-bottom': skin,
+         'bbn-no-border-left': skin,
+         'bbn-no-border-right': skin,
+       }, titleCls]"
+       v-html="title"
+       :style="{
+         background: titleBackground,
+         color: titleColor
+       }"
+  ></div>
+</div>

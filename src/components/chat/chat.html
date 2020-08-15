@@ -83,8 +83,8 @@
         <span v-for="participant in participants"
               v-if="participant !== userId"
               class="bbn-user-title"
-              v-text=.getField(users, 'text', 'value', participant)">
-        </span>
+              v-text="getField(users, 'text', 'value', participant)"
+        ></span>
         <span class="bbn-chat-context">
           <bbn-context class="nf nf-fa-caret_down bbn-p"
                        tabindex="-1"
@@ -93,8 +93,8 @@
           ></bbn-context>
           &nbsp;
           <i class="bbn-p nf nf-fa-times"
-             @click="close(idx)"></i>
-          
+             @click="close(idx)"
+          ></i>
         </span>
       </div>
       <div class="bbn-flex-fill bbn-vspadding">

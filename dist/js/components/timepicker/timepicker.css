@@ -14,7 +14,7 @@
   opacity: 0.7;
 }
 .bbn-timepicker .bbn-timepicker-timeblock {
-  width: 2em;
+  width: auto;
   height: 2em;
 }
 .bbn-timepicker.bbn-input-nullable .bbn-input-nullable-container {

@@ -273,11 +273,12 @@
           d = d.data;
           if ( d && d.success && d.components ){
             bbn.fn.iterate(items, (a, n) => {
-              if ( d.components[n] && this._realDefineComponent(a.name, d.components[n], a.mixins) ){
-                //this.setStorageComponent(a.name, d.components[n]);
-                a.resolve('ok3');
+              if ( d.components[n] && this._realDefineComponent(a.name, d.components[n], a.mixins) && Vue.options.components[a.name]) {
+                bbn.fn.log("All good")
+                a.resolve(Vue.options.components[a.name])
               }
               else{
+                bbn.fn.log("BOUG", a)
                 a.reject();
               }
             })
@@ -296,11 +297,14 @@
       if (item.url) {
         return axios.get(item.url, {responseType:'json'}).then((r) => {
           r = r.data;
-          if ( this._realDefineComponent(a.name, r, item.mixins) ){
-            item.resolve('ok4');
-            return;
+          if ( this._realDefineComponent(a.name, r, item.mixins)  && Vue.options.components[a.name]){
+            bbn.fn.log("All good 2")
+            item.resolve(Vue.options.components[a.name]);
           }
-          item.reject();
+          else {
+            bbn.fn.log("BOUG 2", a)
+            item.reject();
+          }
         })
       }
       return false;
@@ -662,12 +666,12 @@
      * @param {Boolean} checkEle
      */
     closest(vm, selector, checkEle){
-      let test = vm.$el;
-      while ( vm && vm.$parent && (vm !== vm.$parent) ){
-        if ( bbn.vue.is(vm.$parent, selector) ){
-          if ( !checkEle || (test !== vm.$parent.$el) ){
-            return vm.$parent;
-          }
+      if (!checkEle) {
+        vm = vm.$parent;
+      }
+      while (vm) {
+        if (bbn.vue.is(vm, selector)) {
+          return vm;
         }
         vm = vm.$parent;
       }

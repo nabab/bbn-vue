@@ -48,19 +48,6 @@
      * @component dataEditorComponent
      */
     dataEditorComponent: {
-      props: {
-        /**
-         * The classes added to the component.
-         * @prop {Array} componentClass
-         * @memberof dataEditorComponent
-         */
-        componentClass: {
-          type: Array,
-          default(){
-            return [];
-          }
-        }
-      },
       methods: {
         /**
          * not used

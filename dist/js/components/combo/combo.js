@@ -18,7 +18,7 @@ script.innerHTML = `<div :class="[
               class="bbn-no-border"
               v-model="filterString"
               ref="input"
-              @focus="selectAll"
+              @focus="selectText"
               autocomplete="off"
               autocorrect="off"
               autocapitalize="off"
@@ -174,10 +174,10 @@ document.head.insertAdjacentElement('beforeend', css);
       },
       /**
        * Select the string of text inside of the input.
-       * @method selectAll
+       * @method selectText
        * @fires getRef
        */
-      selectAll(){
+      selectText(){
         let input = this.getRef('input');
         input.setSelectionRange(0, input.value.length);
       },
@@ -293,5 +293,5 @@ document.head.insertAdjacentElement('beforeend', css);
 
 })(bbn);
 
-bbn_resolve("ok");
+if (bbn_resolve) {bbn_resolve("ok");}
 })(bbn); }

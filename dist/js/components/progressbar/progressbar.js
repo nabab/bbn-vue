@@ -14,7 +14,7 @@ script.innerHTML = `
          style="height: 100%"
     >
       <div :class="['bbn-progress-status', {'bbn-hspadded': (orientation === 'horizontal')}]"
-            v-text="showValue ? (value + ( showUnit ? unit : '' ) ) : ''"
+            v-text="(showValue ? (value + ( showUnit ? unit : '' ) ) : '') + (!!text ? ( showValue ? ' ' : '') + '(' + text + ')' : '')"
             :style="textColor.length ? 'color: '+ textColor : ''"
       ></div>
     </div>
@@ -324,5 +324,5 @@ document.head.insertAdjacentElement('beforeend', css);
 
 })(bbn);
 
-bbn_resolve("ok");
+if (bbn_resolve) {bbn_resolve("ok");}
 })(bbn); }

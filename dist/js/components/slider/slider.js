@@ -6,6 +6,7 @@ script.innerHTML = `<div :class="['bbn-abs', 'bbn-bordered', 'bbn-background', c
   'bbn-w-100': !isVertical,
   'bbn-h-100': isVertical,
 }]"
+     @mouseup.stop
      @mousedown.stop
      :style="currentStyle"
 >
@@ -22,7 +23,7 @@ script.innerHTML = `<div :class="['bbn-abs', 'bbn-bordered', 'bbn-background', c
          'bbn-m': true,
          'bbn-unselectable': true
        }"
-       @click="hide">
+       @click.stop.prevent="hide">
     <i class="nf nf-fa-times"></i>
   </div>
 </div>`;
@@ -258,6 +259,7 @@ document.head.insertAdjacentElement('beforeend', css);
      * @fires _setEvents
      */
     created(){
+      this.componentClass.push('bbn-resize-emitter');
       this._setEvents();
     },
     /**
@@ -300,5 +302,5 @@ document.head.insertAdjacentElement('beforeend', css);
   });
 
 })(bbn);
-bbn_resolve("ok");
+if (bbn_resolve) {bbn_resolve("ok");}
 })(bbn); }

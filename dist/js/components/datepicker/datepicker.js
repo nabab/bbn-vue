@@ -32,7 +32,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-textbox', {'bbn-input-nul
   <bbn-floater v-if="isOpened && !disabled && !readonly"
                :element="$el"
                ref="floater"
-               :auto-hide="200"
+               :auto-hide="1000"
                @close="isOpened = false"
   >
     <bbn-calendar :arrows-buttons="false"
@@ -492,7 +492,7 @@ document.head.insertAdjacentElement('beforeend', css);
 
 })(bbn);
 
-bbn_resolve("ok");
+if (bbn_resolve) {bbn_resolve("ok");}
 };
 document.head.insertAdjacentElement("beforeend", script_dep);
 })(bbn); }

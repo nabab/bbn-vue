@@ -165,7 +165,7 @@
       }
     },
     methods: {
-      selectAll() {
+      selectText() {
         let filter = this.getRef('filter');
         if (filter) {
           filter.setSelectionRange(0, filter.value.length);
@@ -237,7 +237,7 @@
               this.filterString = item[this.sourceText];
               this.$nextTick(() => {
                 this.getRef('filter').focus();
-                this.selectAll();
+                this.selectText();
               });
             });
           }

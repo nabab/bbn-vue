@@ -1,7 +1,7 @@
 (bbn_resolve) => { ((bbn) => {
 let script = document.createElement('script');
 script.innerHTML = `<bbn-slider :orientation="orientation"
-            :class="[componentClass]"
+            :class="componentClass"
             ref="slider"
             close-button="bottom-right"
             :visible="false"
@@ -498,5 +498,5 @@ document.head.insertAdjacentElement('beforeend', css);
   });
 
 })(window.bbn);
-bbn_resolve("ok");
+if (bbn_resolve) {bbn_resolve("ok");}
 })(bbn); }

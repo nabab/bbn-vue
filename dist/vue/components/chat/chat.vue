@@ -84,8 +84,8 @@
         <span v-for="participant in participants"
               v-if="participant !== userId"
               class="bbn-user-title"
-              v-text=.getField(users, 'text', 'value', participant)">
-        </span>
+              v-text="getField(users, 'text', 'value', participant)"
+        ></span>
         <span class="bbn-chat-context">
           <bbn-context class="nf nf-fa-caret_down bbn-p"
                        tabindex="-1"
@@ -94,8 +94,8 @@
           ></bbn-context>
           &nbsp;
           <i class="bbn-p nf nf-fa-times"
-             @click="close(idx)"></i>
-          
+             @click="close(idx)"
+          ></i>
         </span>
       </div>
       <div class="bbn-flex-fill bbn-vspadding">
@@ -790,14 +790,14 @@
        */
       user: {
         template: `
-<div class="bbn-w-100 bbn-p"
+<div class="bbn-w-100 bbn-p bbn-hspadded bbn-vmiddle"
       style="overflow: auto"
       @click="cp.chatTo([source.value])">
   <bbn-initial :user-id="source.value"
                :user-name="userName"
                :width="16"
                :height="16"
-               style="padding-right: 3px"
+               class="bbn-right-sspace"
   ></bbn-initial>
   <span class="bbn-large"
         v-text="userName">

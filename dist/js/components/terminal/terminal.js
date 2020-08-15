@@ -65,7 +65,7 @@ document.body.insertAdjacentElement('beforeend', script);
 
 })(bbn);
 
-bbn_resolve("ok");
+if (bbn_resolve) {bbn_resolve("ok");}
 };
 document.head.insertAdjacentElement("beforeend", script_dep);
 })(bbn); }

@@ -4,8 +4,8 @@
       v-if="isVisible"
       @click="jump($event)"
       @dblclick="jump($event, true)"
-      @mouseenter="inSlider"
-      @mouseleave="outSlider"
+      @mouseenter="isOverSlider = true"
+      @mouseleave="isOverSlider = false"
 >
   <div :class="{
         'bbn-scroll-slider': true,
@@ -111,6 +111,14 @@
        */
       color: {
         type: String
+      },
+      /**
+       * The minimum size in pixel of the scrollbar.
+       * @prop {Number} minSize
+       */
+      minSize: {
+        type: Number,
+        default: 20
       }
     },
     data() {
@@ -188,7 +196,11 @@
         /**
          * @data {Boolean} [false] isActive
          */
-        isActive: false
+        isActive: false,
+        /**
+         * @data {Boolean} [false] isOverSlider
+         */
+        isOverSlider: false
       };
     },
     computed: {
@@ -215,7 +227,11 @@
        */
       sliderSize(){
         if ( this.shouldBother ){
-          return Math.round(this.containerSize * this.ratio);
+          let size = Math.round(this.containerSize * this.ratio);
+          if (size < this.minSize) {
+            size = this.minSize;
+          }
+          return size;
         }
         return 0;
       },
@@ -303,18 +319,8 @@
             // Movement in pixel
             let newStart = this.isVertical ? e.pageY : e.pageX;
             let movement = newStart - this.start;
-            if ( movement ){
-              let tmp = this.sliderPos + movement;
-              if (tmp < 0) {
-                tmp = 0;
-              }
-              else if (tmp > (this.containerSize - this.sliderSize)) {
-                tmp = this.containerSize - this.sliderSize;
-              }
-              if (this.sliderPos !== tmp) {
-                this.sliderPos = tmp;
-                this.adjustFromBar();
-              }
+            if ( movement && this.setSliderPos(this.sliderPos + movement)) {
+              this.adjustFromBar();
             }
             this.start = newStart;
           })
@@ -325,6 +331,21 @@
        */
       stopDrag() {
         this.dragging = false;
+      },
+      setSliderPos(pos){
+        if (bbn.fn.isNumber(pos)) {
+          if (pos < 0) {
+            pos = 0;
+          }
+          else if (pos > this.maxSliderPos) {
+            pos = this.maxSliderPos;
+          }
+          if (this.sliderPos !== pos) {
+            this.sliderPos = pos;
+            return true;
+          }
+        }
+        return false;
       },
       /**
        * @method adjustFromContainer
@@ -344,7 +365,7 @@
           if (!ok) {
             this.containerPos = container[prop];
           }
-          this.sliderPos = this.containerPos * this.ratio;
+          this.setSliderPos(this.containerPos * this.ratio);
           /*
           if ( container !== this.realContainer ){
             this.realContainer[prop] = this.containerPos;
@@ -402,15 +423,7 @@
                   this.scrollAfter();
                 }
               }
-              else{
-                let newPos = this.sliderPos + movement;
-                if ( newPos < 0 ){
-                  newPos = 0;
-                }
-                else if ( newPos > this.maxSliderPos ){
-                  newPos = this.maxSliderPos;
-                }
-                this.sliderPos = newPos;
+              else if (this.setSliderPos(this.sliderPos + movement)) {
                 this.adjustFromBar();
               }
             }
@@ -428,15 +441,7 @@
           if ( before ){
             movement = -movement;
           }
-          let newPos = this.sliderPos + movement;
-          if ( newPos < 0 ){
-            newPos = 0;
-          }
-          else if ( newPos > this.maxSliderPos ){
-            newPos = this.maxSliderPos;
-          }
-          if ( this.sliderPos !== newPos ){
-            this.sliderPos = newPos;
+          if (this.setSliderPos(this.sliderPos + movement)) {
             this.adjustFromBar();
           }
         }
@@ -569,28 +574,6 @@
       },
 
       /**
-       * When the mouse enters over the slider.
-       * @method inSlider
-       */
-      inSlider(){
-        if ( !this.isOverSlider && !this.dragging){
-          this.isOverSlider = true;
-          this.showSlider();
-        }
-      },
-
-      /**
-       * When the mouse leaves the slider.
-       * @method outSlider
-       * @fires overContent
-       */
-      outSlider(){
-        if ( !this.isOverSlider && !this.dragging){
-          this.isOverSlider = false;
-          this.overContent();
-        }
-      },
-      /**
        * @method showSlider
        */
       showSlider() {
@@ -697,6 +680,20 @@
     },
     watch: {
       /**
+       * @watch isOverSlider
+       * @fires initContainer
+       */
+      isOverSlider(v){
+        if (!this.dragging) {
+          if (!v) {
+            this.overContent();
+          }
+          else if (!this.show) {
+            this.showSlider();
+          }
+        }
+      },
+      /**
        * @watch container
        * @fires initContainer
        */
@@ -744,6 +741,7 @@
       document.addEventListener("mouseup", this.stopDrag);
       document.addEventListener("touchend", this.stopDrag);
       this.onResize();
+      this.overContent();
     },
     /**
      * Removes the events listener.
@@ -793,7 +791,6 @@
   width: 0.7em;
   height: 100%;
   right: 0.2em;
-  min-height: 20px;
 }
 .bbn-scrollbar.vertical .bbn-scroll-slider.bbn-scroll-not-dragged {
   transition: top 100ms;
@@ -809,7 +806,6 @@
   height: 0.7em;
   width: 100%;
   bottom: 0.2em;
-  min-width: 20px;
 }
 .bbn-scrollbar.horizontal .bbn-scroll-slider.bbn-scroll-not-dragged {
   transition: left 100ms;

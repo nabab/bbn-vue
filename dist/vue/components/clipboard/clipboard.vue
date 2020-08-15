@@ -1,6 +1,6 @@
 <template>
 <bbn-slider :orientation="orientation"
-            :class="[componentClass]"
+            :class="componentClass"
             ref="slider"
             close-button="bottom-right"
             :visible="false"

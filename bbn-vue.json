@@ -13,7 +13,78 @@
             {
                 "text": "audio",
                 "url": "bbn-vue\/component\/audio\/overview",
-                "props": [],
+                "props": [
+                    {
+                        "text": "title",
+                        "desc": "The audio's title",
+                        "url": "bbn-vue\/component\/audio\/doc\/props#title"
+                    },
+                    {
+                        "text": "titlePosition",
+                        "desc": "The title's position(top or bottom)",
+                        "url": "bbn-vue\/component\/audio\/doc\/props#titlePosition"
+                    },
+                    {
+                        "text": "titleBackground",
+                        "desc": "The title's background",
+                        "url": "bbn-vue\/component\/audio\/doc\/props#titleBackground"
+                    },
+                    {
+                        "text": "titleColor",
+                        "desc": "The title's color",
+                        "url": "bbn-vue\/component\/audio\/doc\/props#titleColor"
+                    },
+                    {
+                        "text": "titleCls",
+                        "desc": "Additional classes for the title",
+                        "url": "bbn-vue\/component\/audio\/doc\/props#titleCls"
+                    },
+                    {
+                        "text": "width",
+                        "desc": "The player's width",
+                        "url": "bbn-vue\/component\/audio\/doc\/props#width"
+                    },
+                    {
+                        "text": "height",
+                        "desc": "The player's height",
+                        "url": "bbn-vue\/component\/audio\/doc\/props#height"
+                    },
+                    {
+                        "text": "autoplay",
+                        "desc": "Specifies that the audio will start playing as soon as it is ready",
+                        "url": "bbn-vue\/component\/audio\/doc\/props#autoplay"
+                    },
+                    {
+                        "text": "controls",
+                        "desc": "Specifies that audio controls should be displayed",
+                        "url": "bbn-vue\/component\/audio\/doc\/props#controls"
+                    },
+                    {
+                        "text": "loop",
+                        "desc": "Specifies that the audio will start over again, every time it is finished",
+                        "url": "bbn-vue\/component\/audio\/doc\/props#loop"
+                    },
+                    {
+                        "text": "muted",
+                        "desc": "Specifies that the audio output should be muted",
+                        "url": "bbn-vue\/component\/audio\/doc\/props#muted"
+                    },
+                    {
+                        "text": "skin",
+                        "desc": "Set it to true if yuo want to use a skinned player",
+                        "url": "bbn-vue\/component\/audio\/doc\/props#skin"
+                    },
+                    {
+                        "text": "background",
+                        "desc": "A custom background for the player",
+                        "url": "bbn-vue\/component\/audio\/doc\/props#background"
+                    },
+                    {
+                        "text": "cls",
+                        "desc": "Additional classes for the player",
+                        "url": "bbn-vue\/component\/audio\/doc\/props#cls"
+                    }
+                ],
                 "methods": [],
                 "mixins": [
                     {
@@ -1369,9 +1440,9 @@
                         "url": "bbn-vue\/component\/combo\/doc\/methods#select"
                     },
                     {
-                        "text": "selectAll",
+                        "text": "selectText",
                         "desc": "Select the string of text inside of the input.",
-                        "url": "bbn-vue\/component\/combo\/doc\/methods#selectAll"
+                        "url": "bbn-vue\/component\/combo\/doc\/methods#selectText"
                     },
                     {
                         "text": "resetDropdown",
@@ -2307,6 +2378,11 @@
                         "text": "element",
                         "desc": "The element used in the render of the floater.",
                         "url": "bbn-vue\/component\/floater\/doc\/props#element"
+                    },
+                    {
+                        "text": "elementWidth",
+                        "desc": "If set to true the minimum width will be equal to the element width",
+                        "url": "bbn-vue\/component\/floater\/doc\/props#elementWidth"
                     },
                     {
                         "text": "orientation",
@@ -4819,11 +4895,6 @@
                 ],
                 "methods": [
                     {
-                        "text": "getNaturalDimensions",
-                        "desc": "Gets the dimensions after a resize",
-                        "url": "bbn-vue\/component\/scroll\/doc\/methods#getNaturalDimensions"
-                    },
-                    {
                         "text": "onScroll",
                         "desc": "",
                         "url": "bbn-vue\/component\/scroll\/doc\/methods#onScroll"
@@ -4844,16 +4915,6 @@
                         "url": "bbn-vue\/component\/scroll\/doc\/methods#scrollVertical"
                     },
                     {
-                        "text": "initSize",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/scroll\/doc\/methods#initSize"
-                    },
-                    {
-                        "text": "onResize",
-                        "desc": "Handles the resize of the scroll",
-                        "url": "bbn-vue\/component\/scroll\/doc\/methods#onResize"
-                    },
-                    {
                         "text": "scrollStart",
                         "desc": "",
                         "url": "bbn-vue\/component\/scroll\/doc\/methods#scrollStart"
@@ -4872,11 +4933,6 @@
                         "text": "scrollAfter",
                         "desc": "",
                         "url": "bbn-vue\/component\/scroll\/doc\/methods#scrollAfter"
-                    },
-                    {
-                        "text": "init",
-                        "desc": "Initializes the scroll",
-                        "url": "bbn-vue\/component\/scroll\/doc\/methods#init"
                     },
                     {
                         "text": "scrollStartX",
@@ -4917,6 +4973,21 @@
                         "text": "scrollEndY",
                         "desc": "Scroll the y axis to the end",
                         "url": "bbn-vue\/component\/scroll\/doc\/methods#scrollEndY"
+                    },
+                    {
+                        "text": "getNaturalDimensions",
+                        "desc": "Gets the dimensions after a resize",
+                        "url": "bbn-vue\/component\/scroll\/doc\/methods#getNaturalDimensions"
+                    },
+                    {
+                        "text": "initSize",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/scroll\/doc\/methods#initSize"
+                    },
+                    {
+                        "text": "onResize",
+                        "desc": "Handles the resize of the scroll",
+                        "url": "bbn-vue\/component\/scroll\/doc\/methods#onResize"
                     },
                     {
                         "text": "waitReady",
@@ -4990,6 +5061,11 @@
                         "text": "color",
                         "desc": "The color of the scrollbar.",
                         "url": "bbn-vue\/component\/scrollbar\/doc\/props#color"
+                    },
+                    {
+                        "text": "minSize",
+                        "desc": "The minimum size in pixel of the scrollbar.",
+                        "url": "bbn-vue\/component\/scrollbar\/doc\/props#minSize"
                     }
                 ],
                 "methods": [
@@ -5057,16 +5133,6 @@
                         "text": "overContent",
                         "desc": "When the mouse is over the content.",
                         "url": "bbn-vue\/component\/scrollbar\/doc\/methods#overContent"
-                    },
-                    {
-                        "text": "inSlider",
-                        "desc": "When the mouse enters over the slider.",
-                        "url": "bbn-vue\/component\/scrollbar\/doc\/methods#inSlider"
-                    },
-                    {
-                        "text": "outSlider",
-                        "desc": "When the mouse leaves the slider.",
-                        "url": "bbn-vue\/component\/scrollbar\/doc\/methods#outSlider"
                     },
                     {
                         "text": "showSlider",
@@ -5374,6 +5440,11 @@
                         "text": "arrows",
                         "desc": "Set to true shows the arrow icons to move to next or previous slide. An object with 'left' and 'right' properties can be given to specify the css class for each arrow and to customize the icon.",
                         "url": "bbn-vue\/component\/slideshow\/doc\/props#arrows"
+                    },
+                    {
+                        "text": "navigation",
+                        "desc": "Shows or hides the navigation arrow at the bottom of the slider.",
+                        "url": "bbn-vue\/component\/slideshow\/doc\/props#navigation"
                     },
                     {
                         "text": "autoHidePreview",
@@ -7426,9 +7497,101 @@
             {
                 "text": "video",
                 "url": "bbn-vue\/component\/video\/overview",
-                "props": [],
+                "props": [
+                    {
+                        "text": "source",
+                        "desc": "The video's URL or the video's code (YouTube)",
+                        "url": "bbn-vue\/component\/video\/doc\/props#source"
+                    },
+                    {
+                        "text": "title",
+                        "desc": "The video's title",
+                        "url": "bbn-vue\/component\/video\/doc\/props#title"
+                    },
+                    {
+                        "text": "titlePosition",
+                        "desc": "The title's position(top or bottom)",
+                        "url": "bbn-vue\/component\/video\/doc\/props#titlePosition"
+                    },
+                    {
+                        "text": "titleBackground",
+                        "desc": "The title's background",
+                        "url": "bbn-vue\/component\/video\/doc\/props#titleBackground"
+                    },
+                    {
+                        "text": "titleColor",
+                        "desc": "The title's color",
+                        "url": "bbn-vue\/component\/video\/doc\/props#titleColor"
+                    },
+                    {
+                        "text": "titleCls",
+                        "desc": "Additional classes for the title",
+                        "url": "bbn-vue\/component\/video\/doc\/props#titleCls"
+                    },
+                    {
+                        "text": "width",
+                        "desc": "The video's width",
+                        "url": "bbn-vue\/component\/video\/doc\/props#width"
+                    },
+                    {
+                        "text": "height",
+                        "desc": "The video's height",
+                        "url": "bbn-vue\/component\/video\/doc\/props#height"
+                    },
+                    {
+                        "text": "autoplay",
+                        "desc": "Specifies that the video will start playing as soon as it is ready",
+                        "url": "bbn-vue\/component\/video\/doc\/props#autoplay"
+                    },
+                    {
+                        "text": "controls",
+                        "desc": "Specifies that video controls should be displayed",
+                        "url": "bbn-vue\/component\/video\/doc\/props#controls"
+                    },
+                    {
+                        "text": "loop",
+                        "desc": "Specifies that the video will start over again, every time it is finished",
+                        "url": "bbn-vue\/component\/video\/doc\/props#loop"
+                    },
+                    {
+                        "text": "muted",
+                        "desc": "Specifies that the audio output should be muted",
+                        "url": "bbn-vue\/component\/video\/doc\/props#muted"
+                    },
+                    {
+                        "text": "poster",
+                        "desc": "Specifies an image to be shown while the video is downloading, or until the user hits the play button",
+                        "url": "bbn-vue\/component\/video\/doc\/props#poster"
+                    },
+                    {
+                        "text": "youtube",
+                        "desc": "Set it to true if you're using a YuoTube video code as source property",
+                        "url": "bbn-vue\/component\/video\/doc\/props#youtube"
+                    },
+                    {
+                        "text": "skin",
+                        "desc": "Set it to true if yuo want to use a skinned player",
+                        "url": "bbn-vue\/component\/video\/doc\/props#skin"
+                    },
+                    {
+                        "text": "background",
+                        "desc": "A custom background for the player",
+                        "url": "bbn-vue\/component\/video\/doc\/props#background"
+                    },
+                    {
+                        "text": "cls",
+                        "desc": "Additional classes for the player",
+                        "url": "bbn-vue\/component\/video\/doc\/props#cls"
+                    }
+                ],
                 "methods": [],
-                "mixins": []
+                "mixins": [
+                    {
+                        "text": "basicComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/video\/doc\/mixins#basicComponent"
+                    }
+                ]
             },
             {
                 "text": "vlist",

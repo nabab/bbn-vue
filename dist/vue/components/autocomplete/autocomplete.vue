@@ -9,22 +9,24 @@
          @click.stop="click"
     >
       <bbn-input :disabled="disabled"
-                class="bbn-unselectable bbn-no-border bbn-top-left bbn-bottom-right"
+                class="bbn-unselectable bbn-no-border"
                 :required="required"
                 :readonly="readonly"
-                :placeholder="filterString ? '' : placeholder"
-                :tabindex="-1"
+                :placeholder="inputIsVisible || isOpened ? '' : placeholder"
                 autocorrect="off"
                 autocapitalize="off"
                 spellcheck="false"
-                :value="filterString ? '' : currentText"
-      ></bbn-input>      
+                :value="inputIsVisible || isOpened ? filterString : currentText"
+                @focus="_setInputVisible"
+                :style="{display: inputIsVisible ? 'none' : 'inline-block'}"
+      ></bbn-input>
       <bbn-input v-if="!disabled && !readonly"
                 :tabindex="0"
                 class="bbn-no-border"
                 v-model="filterString"
                 ref="input"
-                @focus="selectAll"
+                @focus="selectText"
+                @blur="inputIsVisible = false"
                 autocomplete="off"
                 :required="required"
                 :readonly="readonly"
@@ -35,6 +37,7 @@
                 spellcheck="false"
                 :name="name"
                 :nullable="isNullable"
+                :style="{display: inputIsVisible ? 'inline-block' : 'none'}"
       ></bbn-input>
     </div>
     <div class="bbn-list-component-button">
@@ -146,7 +149,27 @@
         default: 'startswith'
       }
     },
+    data(){
+      return {
+        /**
+         * Indicates if the filter input is visible
+         * @data {Boolean} [false] inputIsVisible
+         */
+        inputIsVisible: false
+      }
+    },
     methods: {
+      /**
+       * Shows the filter input
+       * @method _setInputVisible
+       */
+      _setInputVisible(){
+        this.filterString = this.currentText;
+        this.inputIsVisible = true;
+        this.$nextTick(() => {
+          this.getRef('input').focus();
+        })
+      },
       /**
        * Puts the focus on the element.
        *
@@ -172,6 +195,7 @@
           this.isOpened = false;
         }
         this.filterString = '';
+        this.inputIsVisible = false;
       },
       /**
        * Emits the event 'select'.

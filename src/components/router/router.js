@@ -696,11 +696,10 @@
           if ( this.urls[st] ){
             this.urls[st].currentURL = url;
             this.urls[st].init();
-            /*
             this.$nextTick(() => {
               let child = this.urls[st].find('bbn-router');
+              bbn.fn.log("LOOKING FOR CHILD", child);
               if ( child ){
-                //bbn.fn.log("CHILD ROUTER ROUTING: " + url.substr(st.length + 1));
                 child.route(url.substr(st.length + 1), force);
               }
               else {
@@ -710,7 +709,6 @@
                 }
               }
             });
-            */
           }
         }
       },
@@ -1886,7 +1884,8 @@
      * @event created
      */
     created(){
-      /**
+      this.componentClass.push('bbn-resize-emitter');
+        /**
        * @event route
        * @fires setconfig
        */

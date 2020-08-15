@@ -25,8 +25,10 @@ script.innerHTML = `<div :class="[
          :style="{'padding-right': isNullable ? '4em' : '2.5em'}"
     ></div>
     <bbn-input :disabled="disabled"
-                @keydown.stop="keydown"
+                @keydown="keydown"
+                @keyup="keyup"
                 @click.stop="click"
+                @paste="paste"
                 ref="input"
                 autocorrect="off"
                 autocapitalize="off"
@@ -59,6 +61,7 @@ script.innerHTML = `<div :class="[
                :item-component="realComponent"
                @select="select"
                :children="null"
+               :suggest="true"
                :selected="[value]"
                @close="isOpened = false"
                :source="filteredData"
@@ -121,7 +124,7 @@ document.head.insertAdjacentElement('beforeend', css);
         return this.isOpened && !this.disabled && !this.readonly && this.filteredData.length ?
             this.iconUp : this.iconDown;
         //isOpened && !disabled && !readonly && filteredData.length ? iconUp : iconDown
-      },
+      }
     },
     methods: {
       /**
@@ -136,34 +139,36 @@ document.head.insertAdjacentElement('beforeend', css);
        * @fires keynav
        */
       keydown(e){
-        if ( e.key === 'Tab' ){
-          if ( this.isOpened ){
-            e.preventDefault();
-            this.isOpened = false;
-          }
-          return;
-        }
-        e.preventDefault();
         if ( this.commonKeydown(e) ){
           return;
         }
-        else if ((e.key === 'Escape') || bbn.var.keys.dels.includes(e.which)) {
+        else if ((e.key === 'Escape')) {
+          e.preventDefault();
+          this.resetDropdown();
+        }
+        else if (bbn.var.keys.dels.includes(e.which) && !this.filterString) {
+          e.preventDefault();
           this.resetDropdown();
         }
         else if (bbn.var.keys.upDown.includes(e.keyCode)) {
+          e.preventDefault();
           this.keynav(e);
         }
-        else if (e.key === ' ') {
+        else if (!this.isSearching && (e.key === ' ')) {
+          e.preventDefault();
           this.isOpened = !this.isOpened;
         }
-        else if ( e.key.match(/^[A-z0-9]{1}$/)) {
-          this.currentFilters.conditions.splice(0, this.currentFilters.conditions.length ? 1 : 0, {
-            field: this.sourceText,
-            operator: 'startswith',
-            value: e.key
-          });
+      },
+      paste(){
+        alert("PASET");
+      },
+      keyup(e) {
+        if ( e.key.match(/^[A-z0-9\s]{1}$/)) {
           if (!this.isOpened) {
             this.isOpened = true;
+          }
+          if (this.currentText === this.currentTextValue) {
+            this.currentText = '';
           }
         }
       },
@@ -185,7 +190,7 @@ document.head.insertAdjacentElement('beforeend', css);
      */
     created(){
       this.$on('dataloaded', () => {
-        if ( this.value !== undefined ){
+        if ((this.value !== undefined) && !this.currentText.length) {
           let row = bbn.fn.getRow(this.currentData, (a) => {
             return a.data[this.sourceValue] === this.value;
           });
@@ -197,18 +202,51 @@ document.head.insertAdjacentElement('beforeend', css);
     },
     watch: {
       /**
+       * @watch  isActive
+      */
+     isActive(v){
+       if (!v && this.filterString) {
+        this.currentText = this.currentTextValue || '';
+       }
+     },
+      /**
+       * @watch  isOpened
+      */
+     isOpened(){
+      if (this.currentText === this.currentTextValue) {
+        this.selectText();
+      }
+     },
+    /**
        * @watch  currentText
-       * @emits input
       */
       currentText(newVal){
-        if ( !newVal && this.ready && this.value && this.isNullable){
-          this.emitInput('');
+        if (this.ready) {
+          if (!newVal && this.value && this.isNullable){
+            this.emitInput('');
+            this.selectText();
+            this.filterString = '';
+          }
+          else {
+            this.filterString = newVal === this.currentTextValue ? '' : newVal;
+          }
         }
+      },
+      filterString(v){
+        let args = [0, this.currentFilters.conditions.length ? 1 : 0];
+        if (v && this.isActive) {
+          args.push({
+            field: this.sourceText,
+            operator: 'startswith',
+            value: v
+          })
+        }
+        this.currentFilters.conditions.splice(...args);
       }
     }
   });
 
 })(bbn);
 
-bbn_resolve("ok");
+if (bbn_resolve) {bbn_resolve("ok");}
 })(bbn); }

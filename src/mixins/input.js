@@ -131,6 +131,17 @@
       },
       methods: {
         /**
+         * Select the text of the component.
+         * @method selectText
+         * @memberof inputComponent
+         */
+        selectText(){
+          let ele = this.getRef('element');
+          if (ele) {
+            bbn.fn.selectElementText(ele)
+          }
+        },
+        /**
          * Emits the event input.
          * @method emitInput
          * @emit input

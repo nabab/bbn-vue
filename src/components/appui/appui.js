@@ -83,6 +83,7 @@
     data(){
       return {
         isMobile: bbn.fn.isMobile(),
+        mode: bbn.env.mode,
         opacity: 0,
         pollerObject: {
           chat: true,
@@ -129,7 +130,7 @@
             return createElement();
           }
         }, this.cfg)
-      }
+      },
     },
     methods: {
       focusSearchMenu(){
@@ -574,7 +575,7 @@
       }
       else{
         window.appui = this;
-        this.componentClass.push('bbn-observer');
+        this.componentClass.push('bbn-resize-emitter', 'bbn-observer');
         this.cool = true;
         let preloaded = [
           'input',

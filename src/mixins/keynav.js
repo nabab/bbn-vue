@@ -22,8 +22,12 @@
             let list = this.find('bbn-list');
             if (list) {
               list.isOver = false;
-              let idx = this.valueIndex;
+              let idx = -1;
               let d = list.filteredData;
+              if (d.length === 1) {
+                list.overIdx = 0;
+                return;
+              }
               if (list.overIdx > -1) {
                 idx = list.overIdx;
               }

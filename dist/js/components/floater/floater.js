@@ -13,7 +13,7 @@ script.innerHTML = `<div :class="[
       v-if="isVisible"
       tabindex="0"
       @focus="onFocus"
-      @resize.stop="onResize()"
+      @resize.stop="onResize"
       @mouseleave="mouseleave"
       @mouseenter="isOver = true"
       @keydown.esc.prevent.stop="close"
@@ -58,7 +58,8 @@ script.innerHTML = `<div :class="[
     <bbn-scroll :latency="latency"
                 ref="scroll"
                 :scrollable="scrollable"
-                :height="scrollHeight"
+                :max-width="containerWidth"
+                :max-height="containerHeight"
                 @resize="scrollResize">
       <component v-if="component"
                 :is="component"
@@ -132,8 +133,8 @@ document.head.insertAdjacentElement('beforeend', css);
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.listComponent
-     * @mixin  bbn.vue.resizerComponent
-     * @mixin  bbn.vue.keepCoolComponent
+     * @mixin bbn.vue.resizerComponent
+     * @mixin bbn.vue.keepCoolComponent
      * @mixin bbn.vue.toggleComponent
      * @mixin bbn.vue.dimensionsComponent
      * @mixin bbn.vue.positionComponent
@@ -170,6 +171,14 @@ document.head.insertAdjacentElement('beforeend', css);
        */
       element: {
         type: Element
+      },
+      /**
+       * If set to true the minimum width will be equal to the element width
+       * @prop {Boolean} [true] elementWidth
+       */
+      elementWidth: {
+        type: Boolean,
+        default: true
       },
       /**
        * The floater's orientation.
@@ -553,7 +562,7 @@ document.head.insertAdjacentElement('beforeend', css);
         if (tmp.height) {
           minHeight.push(tmp.height);
         }
-        if (this.element) {
+        if (this.element && this.elementWidth) {
           tmp = this.element.getBoundingClientRect();
           if (tmp.width) {
             minWidth.push(tmp.width);
@@ -750,6 +759,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @fires setResizeMeasures
        */
       onResize(force) {
+        bbn.fn.log("FLOATER ONRESIZE FN")
         // Should be triggered by the inner scroll once mounted
         if (this.isVisible && bbn.fn.isDom(this.$el) && !this.isResizing) {
           if ( !this.ready ){
@@ -783,6 +793,13 @@ document.head.insertAdjacentElement('beforeend', css);
             this.$nextTick().then(() => {
               return scroll.getNaturalDimensions()
             }).then(() => {
+              if (!scroll.naturalWidth || !scroll.naturalHeight) {
+                this.isResizing = false;
+                setTimeout(() => {
+                  this.onResize(force);
+                }, Math.round(this.latency/2))
+                return;
+              }
               // These are the limits of the space the DIV can occupy
               let pos = this.getContainerPosition();
               this.containerWidth = pos.width;
@@ -960,7 +977,7 @@ document.head.insertAdjacentElement('beforeend', css);
                 this.currentTop = top + 'px';
                 this.isResizing = false;
                 this.$nextTick(() => {
-                  this.setResizeMeasures();
+                  //this.setResizeMeasures();
                   if (scroll) {
                     //bbn.fn.log("SCROLLER EXSISTS");
                     scroll.setResizeMeasures();
@@ -1022,7 +1039,7 @@ document.head.insertAdjacentElement('beforeend', css);
             this.close();
           }
           this.mouseLeaveTimeout = false;
-        }, bbn.fn.isNumber(this.autoHide) ? this.autoHide : 500);
+        }, bbn.fn.isNumber(this.autoHide) ? this.autoHide : 1500);
       },
       /**
        * @method mouseleave
@@ -1055,7 +1072,8 @@ document.head.insertAdjacentElement('beforeend', css);
           });
           if (this.popup) {
             this.popup.$emit('beforeClose', beforeCloseEvent, this);
-          } else {
+          }
+          else {
             this.$emit('beforeClose', beforeCloseEvent, this);
           }
           if (beforeCloseEvent.defaultPrevented) {
@@ -1195,7 +1213,10 @@ document.head.insertAdjacentElement('beforeend', css);
       onFocus(){
         if ( this.currentButtons.length ){
           //bbn.fn.log("onFocus", this.getRef('buttons'), this.getRef('button' + (this.currentButtons.length - 1)));
-          this.getRef('button' + (this.currentButtons.length - 1)).$el.focus();
+          let lastButton = this.getRef('button' + (this.currentButtons.length - 1));
+          if (lastButton && lastButton.$el) {
+            lastButton.$el.focus();
+          }
         }
       },
       /**
@@ -1214,6 +1235,7 @@ document.head.insertAdjacentElement('beforeend', css);
      * @fires _updateIconSituation
      */
     created(){
+      this.componentClass.push('bbn-resize-emitter');
       this.$on('dataloaded', () => {
         this._updateIconSituation();
       });
@@ -1227,6 +1249,7 @@ document.head.insertAdjacentElement('beforeend', css);
     mounted(){
       this.$nextTick(() => {
         let ancesters = this.ancesters('bbn-floater');
+        /*
         if (this.element) {
           let ct = ancesters.length ? ancesters[ancesters.length-1] : this;
           let scroll = ct.closest('bbn-scroll');
@@ -1236,9 +1259,18 @@ document.head.insertAdjacentElement('beforeend', css);
             });
           }
         }
+        */
       });
     },
     watch: {
+      lastKnownCtWidth() {
+        this.onResize();
+        this.updatePosition();
+      },
+      lastKnownCtHeight() {
+        this.onResize();
+        this.updatePosition();
+      },
       /**
        * @watch left
        * @fires updatePosition
@@ -1284,6 +1316,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @fires getRef
        * @fires onResize
        */
+      /*
       filteredData() {
         if (this.ready) {
           this.$nextTick(() => {
@@ -1298,6 +1331,7 @@ document.head.insertAdjacentElement('beforeend', css);
           });
         }
       },
+      */
       /**
        * @watch visible
        * @fires onResize
@@ -1337,5 +1371,5 @@ document.head.insertAdjacentElement('beforeend', css);
 
 })(window.Vue, window.bbn);
 
-bbn_resolve("ok");
+if (bbn_resolve) {bbn_resolve("ok");}
 })(bbn); }

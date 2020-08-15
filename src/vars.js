@@ -2,14 +2,12 @@
   "use strict";
   let version = '2.0.2';
   let libURL = '';
-  bbn.fn.each(document.head.getElementsByTagName('script'), s => {
-    if (s.src && (s.src.indexOf('bbn-vue/' + version + '/') > -1)) {
-      libURL = s.src.split('bbn-vue/' + version + '/')[0] + 'bbn-vue/' + version + '/';
-      return false;
-    }
-  })
+  if (bbn_root_dir && bbn_root_url) {
+    libURL = bbn_root_url + bbn.fn.dirName(bbn_root_dir) + '/';
+  }
 
   bbn.fn.autoExtend("vue", {
+    uid: 0,
     libURL: libURL,
     defaultLocalURL: false,
     defaultLocalPrefix: '',

@@ -1,6 +1,6 @@
 (bbn_resolve) => { ((bbn) => {
 let script = document.createElement('script');
-script.innerHTML = `<bbn-scroll axis="x" :class="[componentClass]" ref="scroll">
+script.innerHTML = `<bbn-scroll axis="x" :class="componentClass" ref="scroll">
   <!-- Each tree pane -->
   <div v-for="(p, i) in dirs"
         class="bbn-flex-height bbn-finder-pane bbn-bordered-right">
@@ -954,5 +954,5 @@ document.head.insertAdjacentElement('beforeend', css);
 })(window.bbn);
 
 
-bbn_resolve("ok");
+if (bbn_resolve) {bbn_resolve("ok");}
 })(bbn); }

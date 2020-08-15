@@ -4,68 +4,70 @@ script_dep.setAttribute('src', "https://cdn.jsdelivr.net/combine/gh/moment/momen
 script_dep.onload = () => {
 let script = document.createElement('script');
 script.innerHTML = `<span :class="[componentClass, 'bbn-textbox', {'bbn-input-nullable': isNullable}]">
-    <bbn-masked ref="element"
-                :disabled="disabled"
-                :readonly="readonly"
-                :required="required"
-                :mask="currentMask"
-                @hook:mounted="maskedMounted = true"
-                @blur="inputChanged"
-                @keydown.enter="inputChanged"
-                v-model="inputValue"
-                class="bbn-flex-fill"
-                :autosize="autosize"
-    ></bbn-masked>
-    <div v-if="isNullable && !readonly && !disabled"
-        class="bbn-block bbn-h-100 bbn-input-nullable-container"
-    >
-      <i v-if="hasValue" class="nf nf-fa-times_circle bbn-p"
-          @mousedown.prevent.stop="clear"
-      ></i>
-    </div>
-    <bbn-button icon="nf nf-fa-calendar"
-                @click="showCalendar"
-                :disabled="disabled || readonly"
-                class="bbn-datetimepicker-calendar bbn-no-vborder bbn-no-border-right"
-                tabindex="-1"
-    ></bbn-button>
-    <bbn-button icon="nf nf-fa-clock_o"
-                @click="showTime"
-                :disabled="disabled || readonly"
-                class="bbn-datetimepicker-clock bbn-button-right bbn-no-vborder"
-    ></bbn-button>
-    <bbn-floater v-if="isCalendarOpened && !disabled && !readonly"
-                 :element="$el"
-                 :auto-hide="200"
-                 ref="calendarFloater"
-                 @close="isCalendarOpened = false"
-    >
-      <bbn-calendar :arrows-buttons="false"
-                     @selected="setDate"
-                     :value="value ? value.toString() : ''"
-                     :selection="true"
-                     :auto-selection="true"
-                     ref="calendar"
-                     :date="value ? value.toString() : ''"
-                     :min="min"
-                     :max="max"
-                     :extra-items="true"
-                     @hook:mounted="$refs.calendarFloater.onResize()"
-                     :disable-dates="disableDates"
-                     :items-range="datesRange"
-                     style="min-height: 200px;"
-      ></bbn-calendar>
-    </bbn-floater>
-    <bbn-floater v-if="isTimeOpened && !disabled && !readonly"
-                 :element="$el"
-                 ref="timeFloater"
-                 @close="isTimeOpened = false"
-                 :min-width="showSecond ? 165 : 110"
-                 :height="scrollMode ? 400 : (blocksMode ? false : 50)"
-                 :scrollable="!!blocksMode || !scrollMode"
-                 hpos="right"
-                 :auto-hide="200"
-    >
+  <bbn-masked ref="element"
+              :disabled="disabled"
+              :readonly="readonly"
+              :required="required"
+              :mask="currentMask"
+              @hook:mounted="maskedMounted = true"
+              @blur="inputChanged"
+              @keydown.enter="inputChanged"
+              v-model="inputValue"
+              class="bbn-flex-fill"
+              :autosize="autosize"
+  ></bbn-masked>
+  <div v-if="isNullable && !readonly && !disabled"
+      class="bbn-block bbn-h-100 bbn-input-nullable-container"
+  >
+    <i v-if="hasValue" class="nf nf-fa-times_circle bbn-p"
+        @mousedown.prevent.stop="clear"
+    ></i>
+  </div>
+  <bbn-button icon="nf nf-fa-calendar"
+              @click="showCalendar"
+              :disabled="disabled || readonly"
+              class="bbn-datetimepicker-calendar bbn-no-vborder bbn-no-border-right"
+              tabindex="-1"
+  ></bbn-button>
+  <bbn-button icon="nf nf-fa-clock_o"
+              @click="showTime"
+              :disabled="disabled || readonly"
+              class="bbn-datetimepicker-clock bbn-button-right bbn-no-vborder"
+  ></bbn-button>
+  <bbn-floater v-if="isCalendarOpened && !disabled && !readonly"
+                :element="$el"
+                :auto-hide="1000"
+                ref="calendarFloater"
+                @close="isCalendarOpened = false"
+                :element-width="false"
+  >
+    <bbn-calendar :arrows-buttons="false"
+                    @selected="setDate"
+                    :value="value ? value.toString() : ''"
+                    :selection="true"
+                    :auto-selection="true"
+                    ref="calendar"
+                    :date="value ? value.toString() : ''"
+                    :min="min"
+                    :max="max"
+                    :extra-items="true"
+                    @hook:mounted="$refs.calendarFloater.onResize()"
+                    :disable-dates="disableDates"
+                    :items-range="datesRange"
+                    style="min-height: 200px;"
+    ></bbn-calendar>
+  </bbn-floater>
+  <bbn-floater v-if="isTimeOpened && !disabled && !readonly"
+                :element="$el"
+                ref="timeFloater"
+                @close="isTimeOpened = false"
+                :min-width="blocksMode ? (showSecond ? 135 : 130) : (showSecond ? 195 : 130)"
+                :height="scrollMode ? 400 : (blocksMode ? false : 55)"
+                :scrollable="!!blocksMode || !scrollMode"
+                hpos="right"
+                :auto-hide="1000"
+                :element-width="false"
+  >
     <timepicker inline-template
                 ref="timepicker"
                 @change="setTime"
@@ -171,7 +173,7 @@ script.innerHTML = `<span :class="[componentClass, 'bbn-textbox', {'bbn-input-nu
           ></div>
           <bbn-dropdown :source="hours"
                         v-model="hour"
-                        style="width: 50px"
+                        style="width: 60px"
           ></bbn-dropdown>
         </div>
         <div class="bbn-iblock">
@@ -181,7 +183,7 @@ script.innerHTML = `<span :class="[componentClass, 'bbn-textbox', {'bbn-input-nu
           ></div>
           <bbn-dropdown :source="minsec"
                         v-model="minute"
-                        style="width: 50px"
+                        style="width: 60px"
           ></bbn-dropdown>
         </div>
         <div class="bbn-iblock"
@@ -193,25 +195,24 @@ script.innerHTML = `<span :class="[componentClass, 'bbn-textbox', {'bbn-input-nu
           ></div>
           <bbn-dropdown :source="minsec"
                         v-model="second"
-                        style="width: 50px"
+                        style="width: 60px"
           ></bbn-dropdown>
         </div>
       </div>
       <div v-else-if="!comp.scrollMode && comp.blocksMode"
            class="bbn-block bbn-background"
-           :style="{width: comp.showSecond ? '21.25em' : '15.18em'}"
       >
         <div class="bbn-block">
           <div v-text="_('Hour').substr(0,1)"
                title="_('Hour')"
                class="bbn-unselectable bbn-header bbn-c bbn-no-border-top bbn-no-border-left bbn-no-border-right"
           ></div>
-          <div class="bbn-c bbn-flex">
+          <div class="bbn-c bbn-block">
             <div class="bbn-block" style="vertical-align: top;">
               <div v-for="n in 12"
                    :class="[
                      'bbn-hspadded',
-                     'bbn-left-lpadded',
+                     'bbn-left-padded',
                      'bbn-vxxspadded',
                      'bbn-middle',
                      'bbn-unselectable',
@@ -223,15 +224,18 @@ script.innerHTML = `<span :class="[componentClass, 'bbn-textbox', {'bbn-input-nu
                        'bbn-selected-text': hour === (n - 1)
                      }
                    ]"
-                   v-text="(n - 1).toString().length === 1 ? '0' + (n - 1) : (n - 1)"
                    @click="setHour(n - 1)"
-              ></div>
+              >
+                <strong v-text="(n - 1).toString().length === 1 ? '0' + (n - 1) : (n - 1)"
+                        style="opacity: .5"
+                ></strong>
+              </div>
             </div>
             <div class="bbn-block" style="vertical-align: top;">
               <div v-for="n in 12"
                    :class="[
                      'bbn-hspadded',
-                     'bbn-right-lpadded',
+                     'bbn-right-padded',
                      'bbn-vxxspadded',
                      'bbn-bordered-left',
                      'bbn-middle',
@@ -244,9 +248,12 @@ script.innerHTML = `<span :class="[componentClass, 'bbn-textbox', {'bbn-input-nu
                        'bbn-selected-text': hour === n + 11
                      }
                    ]"
-                   v-text="n + 11"
                    @click="setHour(n + 11)"
-              ></div>
+              >
+                <strong v-text="n + 11"
+                        style="opacity: .5"
+                ></strong>
+              </div>
             </div>
           </div>
         </div>
@@ -259,7 +266,7 @@ script.innerHTML = `<span :class="[componentClass, 'bbn-textbox', {'bbn-input-nu
             <div class="bbn-block" style="vertical-align: top;">
               <div v-for="n in 12"
                    :class="[
-                     'bbn-hlpadded',
+                     'bbn-hpadded',
                      'bbn-vxxspadded',
                      'bbn-middle',
                      'bbn-unselectable',
@@ -271,9 +278,12 @@ script.innerHTML = `<span :class="[componentClass, 'bbn-textbox', {'bbn-input-nu
                        'bbn-selected-text': minute === (n - 1) * 5
                      }
                    ]"
-                   v-text="((n - 1) * 5).toString().length === 1 ? '0' + ((n - 1) * 5) : ((n - 1) * 5)"
                    @click="setMinute((n - 1) * 5)"
-              ></div>
+              >
+                <strong v-text="((n - 1) * 5).toString().length === 1 ? '0' + ((n - 1) * 5) : ((n - 1) * 5)"
+                        style="opacity: .5"
+                ></strong>
+              </div>
             </div>
           </div>
         </div>
@@ -287,7 +297,7 @@ script.innerHTML = `<span :class="[componentClass, 'bbn-textbox', {'bbn-input-nu
             <div class="bbn-block" style="vertical-align: top;">
               <div v-for="n in 12"
                    :class="[
-                     'bbn-hlpadded',
+                     'bbn-hpadded',
                      'bbn-vxxspadded',
                      'bbn-middle',
                      'bbn-unselectable',
@@ -299,9 +309,12 @@ script.innerHTML = `<span :class="[componentClass, 'bbn-textbox', {'bbn-input-nu
                        'bbn-selected-text': second === (n - 1) * 5
                      }
                    ]"
-                   v-text="((n - 1) * 5).toString().length === 1 ? '0' + ((n - 1) * 5) : ((n - 1) * 5)"
                    @click="setSecond((n - 1) * 5)"
-              ></div>
+              >
+                <strong v-text="((n - 1) * 5).toString().length === 1 ? '0' + ((n - 1) * 5) : ((n - 1) * 5)"
+                        style="opacity: .5"
+                ></strong>
+              </div>
             </div>
           </div>
         </div>
@@ -1052,7 +1065,7 @@ document.head.insertAdjacentElement('beforeend', css);
 
 })(bbn);
 
-bbn_resolve("ok");
+if (bbn_resolve) {bbn_resolve("ok");}
 };
 document.head.insertAdjacentElement("beforeend", script_dep);
 })(bbn); }

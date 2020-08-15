@@ -1,5 +1,5 @@
 <template>
-ponentClass, 'bbn-block']">
+<div :class="[componentClass, 'bbn-block']">
   <div class="bbn-block"
         v-if="element && element.pageable && element.filteredData.length"
   >
@@ -90,7 +90,6 @@ ponentClass, 'bbn-block']">
     ></bbn-button>
   </div>
 </div>
-
 </template>
 <script>
   module.exports = /**

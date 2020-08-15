@@ -1,5 +1,5 @@
 <template>
-<div :class="['bbn-widget', 'bbn-bordered', 'bbn-radius', 'bbn-alt-background', componentClass, full ? 'full' : '']"
+<div :class="[componentClass, 'bbn-bordered', 'bbn-radius', 'bbn-alt-background', full ? 'full' : '']"
      @mouseenter="$emit('mouseenter')">
   <!-- HEADER -->
   <div class="bbn-header bbn-no-border bbn-bordered-bottom bbn-unselectable" v-if="title">

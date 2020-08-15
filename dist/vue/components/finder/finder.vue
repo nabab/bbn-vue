@@ -1,5 +1,5 @@
 <template>
-<bbn-scroll axis="x" :class="[componentClass]" ref="scroll">
+<bbn-scroll axis="x" :class="componentClass" ref="scroll">
   <!-- Each tree pane -->
   <div v-for="(p, i) in dirs"
         class="bbn-flex-height bbn-finder-pane bbn-bordered-right">

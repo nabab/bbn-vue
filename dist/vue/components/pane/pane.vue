@@ -87,6 +87,9 @@
         this.isCollapsed = val;
       }
     },
+    created(){
+      this.componentClass.push('bbn-resize-emitter');
+    },
     mounted(){
       if (bbn.fn.isFunction(this.$parent.init) ){
         if (this.resizable === undefined) {

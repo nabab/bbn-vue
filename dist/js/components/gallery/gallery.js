@@ -798,5 +798,5 @@ document.head.insertAdjacentElement('beforeend', css);
   })
 })(bbn);
 
-bbn_resolve("ok");
+if (bbn_resolve) {bbn_resolve("ok");}
 })(bbn); }

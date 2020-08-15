@@ -249,10 +249,9 @@
           obj.time = (new Date()).getTime();
           if ( this.multi ){
             this.conditions.push(obj);
+            this.$forceUpdate();
           }
-          else{
-            this.$emit('set', obj)
-          }
+          this.$emit('set', obj)
         }
         return obj;
       },
@@ -381,10 +380,15 @@
        * @param {Number} idx
        */
       add_group(idx){
-        this.conditions.splice(idx, 1, {
-          logic: this.currentLogic,
-          conditions: [this.conditions[idx]]
-        })
+        let cond = bbn.fn.extend(true, {}, this.conditions[idx]);
+        this.conditions.splice(idx, 1);
+        this.$nextTick(() => {
+          this.conditions.splice(idx, 0, {
+            logic: this.currentLogic,
+            conditions: [cond]
+          });
+          this.$forceUpdate();
+        });
       },
       /**
        * Deletes a condition.
@@ -623,10 +627,23 @@
         },
         methods: {
           /**
+           * Resets the current operator, the current value and the current field value (if the number of columns is greater than) to their default.
+           * @method _unset
+           * @memberof bbn-filter-form
+           */
+          _unset(){
+            this.currentOperator = '';
+            this.currentValue = '';
+            if ( this.columns.length > 1 ){
+              this.currentField = '';
+            }
+          },
+          /**
            * Validates the form.
            * @method validate
            * @param {Boolean} cancel
            * @fires editorHasNoValue
+           * @fires _unset
            * @emits validate
            * @emits invalidate
            * @emits error
@@ -646,6 +663,9 @@
               }
               else{
                 this.currentCondition = this.$parent.setCondition(tmp);
+                if ( this.$parent.multi ){
+                  this._unset();
+                }
                 //bbn.fn.log("CONDI", this.currentCondition);
               }
               this.$emit(cancel ? 'invalidate' : 'validate', tmp, cancel);
@@ -655,14 +675,14 @@
             }
           },
           /**
-           * Resets the current operator and the current value to their default.
+           * Calls the "_unset" method and emits "unset" event
            * @method unset
            * @memberof bbn-filter-form
+           * @fires _unset
+           * @emit $parent.unset
            */
           unset(){
-            //bbn.fn.log("UNST", this.currentCondition);
-            this.currentOperator = '';
-            this.currentValue = '';
+            this._unset();
             this.$parent.$emit('unset')
           }
         },
@@ -673,6 +693,19 @@
         created(){
           if ( this.type && this.editorOperators[this.type] ){
             this.currentOperators = this.editorOperators[this.type];
+          }
+          if ( this.field && bbn.fn.isArray(this.fields) && this.fields.length && !this.component ){
+            let fieldObj = bbn.fn.getRow(this.fields, {field: this.field});
+            if ( fieldObj ){
+              let o = this.editorGetComponentOptions(fieldObj);
+              if ( o ){
+                if ( o.type !== this.currentType ){
+                  this.currentType = o.type;
+                }
+                this.currentComponent = o.component;
+                this.currentComponentOptions = o.componentOptions;
+              }
+            }
           }
         },
         /**
@@ -695,9 +728,9 @@
            * @memberof bbn-filter-form
            */
           currentField(newVal){
-            let index = bbn.fn.search(this.fields, {field: newVal});
-            if ( index > -1 ){
-              let o = this.editorGetComponentOptions(this.fields[index]);
+            let fieldObj = bbn.fn.getRow(this.fields, {field: newVal});
+            if ( fieldObj ){
+              let o = this.editorGetComponentOptions(fieldObj);
               if ( o ){
                 this.currentType = o.type;
                 this.currentComponent = o.component;

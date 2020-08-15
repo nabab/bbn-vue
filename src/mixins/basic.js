@@ -7,20 +7,8 @@
      * @component basicComponent
      */
     basicComponent: {
-      props: {
-        /**
-         * The classes added to the component.
-         * @prop {Array} [[]] componentClass
-         * @memberof basicComponent
-         */
-        componentClass: {
-          type: Array,
-          default(){
-            return [];
-          }
-        },
-      },
       data(){
+        bbn.vue.uid++;
         return bbn.fn.extend({
           /**
            * The change of value of this prop to true emits the event 'ready'.
@@ -28,6 +16,18 @@
            * @memberof basicComponent
            */
           ready: false,
+          /**
+           * Each basic component will have a unique UID.
+           * @data {Number} uid
+           * @memberof basicComponent
+           */
+          bbnUid: bbn.vue.uid,
+          /**
+           * The classes added to the component.
+           * @prop {Array} [[]] componentClass
+           * @memberof basicComponent
+           */
+          componentClass: ['bbn-basic-component'],
         }, bbn.vue.defaults[this.$options.name.slice(4)] || {})
       },
       methods: {
@@ -84,7 +84,6 @@
         if (this.$options.name && !this.componentClass.includes(this.$options.name)){
           this.componentClass.push(this.$options.name);
         }
-        this.componentClass.push('bbn-basic-component');
       },
       watch: {
         /**
@@ -95,7 +94,7 @@
          */
         ready(newVal){
           if ( newVal ){
-            let ev = new Event('ready', {bubbles: true});
+            let ev = new CustomEvent('subready', {bubbles: true, detail: {cp: this}});
             this.$el.dispatchEvent(ev);
             this.$emit('ready', this);
           }

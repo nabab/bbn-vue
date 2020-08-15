@@ -1,42 +1,21 @@
 (bbn_resolve) => { ((bbn) => {
 let script = document.createElement('script');
-script.innerHTML = `<div class="bbn-overlay">
+script.innerHTML = `<div :class="[componentClass, 'bbn-overlay']">
   <div v-if="ready"
-       :class="[
-       'bbn-100',
-       componentClass,
-       {'bbn-lpadded' : !fullSlide}
-  ]">
-
+       :class="['bbn-100', {'bbn-padded' : !fullSlide}]"
+  >
     <!-- position aboslute -->
-    <div class="bbn-l bbn-slideshow-count"
-         style="position: absolute; top: 2px; right:2px z-index:10"
+    <div class="bbn-l bbn-slideshow-count bbn-abs"
          v-if="showCount"
     >
       <span class="bbn-xl" v-text="(currentIndex+1) + '/' + items.length"></span>
     </div>
 
     <div class="bbn-100 bbn-flex-width">
-      <!--arrow left-->
-      <div  v-if="arrows"
-            class="bbn-middle bbn-padded bbn-slideshow-arrow-left"
-            @mouseover="arrowsPreview('prev', true)"
-            @mouseleave="arrowsPreview('prev', false)"
-      >
-        <i  v-show="showArrowLeft"
-            :class="[arrowClass.left, 'iconImg', 'bbn-xxxl']"
-            @click="prev"
-            :style="{
-              visibility: (currentIndex === 0 && !loop)? 'hidden' : 'visible',
-            }"
-        ></i>
-      </div>
 
       <div v-if="summary && items.length"
            class="first bbn-flex-fill bbn-slide"
-           :style="{
-             display: currentIndex === 0 ? 'block' : 'none'
-           }">
+           :style="{display: currentIndex === 0 ? 'block' : 'none'}">
         <h2 v-text="_('Summary')"></h2>
         <ol class="bbn-l bbn-lg">
           <li v-for="(it, i) in items">
@@ -47,159 +26,167 @@ script.innerHTML = `<div class="bbn-overlay">
         </ol>
       </div>
 
-
       <div class="bbn-flex-fill bbn-flex-height">
-        <div v-for="(it, i) in items"
-            :class="['bbn-flex-fill','slide', 'sliden' + (summary ? i + 1 : i).toString(), !summary && (i === 0) ? 'first' : '', items[i].class ? items[i].class : '']"
-            :id="name + (summary ? i : i + 1).toString()"
-            :style="{display: currentIndex === (summary ? i + 1 : i) ? 'block' : 'none'}"
-        >
-          <div v-if="it.type === 'text'"
-               :ref="'slide' + i.toString()"
-               :class="['content', it.animation || '', it.cls || '', 'bbn-middle', 'bbn-m']"
-          >
-            <component v-if="it.component"
-                       :is="it.component"
-                       :data="it.data || {}"
-                       v-bind="it.attributes"
-                       :key="i"
-            ></component>
-            <component v-else-if="component"
-                       :is="component"
-                       :content="it.content || ''"
-                       :data="it.data || {}"
-            ></component>
-            <div v-else-if="it.content"
-                 :ref="'slide' + i.toString()"
-                 :class="[it.animation || '', 'bbn-overlay']"
+        <div class="bbn-flex-fill">
+          <div class="bbn-overlay bbn-flex-width">
+            <!--Left arrow-->
+            <div  v-if="arrows"
+                  class="bbn-middle bbn-padded bbn-slideshow-arrow-left"
+                  @mouseover="arrowsPreview('prev', true)"
+                  @mouseleave="arrowsPreview('prev', false)"
             >
-              <bbn-scroll v-if="scroll">
-                <div v-html="it.content"></div>
-              </bbn-scroll>
-              <div v-else v-html="it.content"></div>
+              <i  v-show="showArrowLeft"
+                  :class="[arrowClass.left, 'bbn-p', 'bbn-xxxl']"
+                  @click="prev"
+                  :style="{visibility: (currentIndex === 0 && !loop)? 'hidden' : 'visible'}"
+              ></i>
+            </div>
+            <div class="bbn-flex-fill">
+              <div class="bbn-overlay" ref="slideContainer">
+                <!-- Items-->
+                <div v-for="(it, i) in items"
+                    :class="['bbn-overlay', 'bbn-slideshow-slide', 'sliden' + (summary ? i + 1 : i).toString(), !summary && (i === 0) ? 'first' : '', items[i].class ? items[i].class : '']"
+                    :id="name + (summary ? i : i + 1).toString()"
+                    :style="{display: currentIndex === (summary ? i + 1 : i) ? 'block' : 'none'}"
+                >
+                  <div v-if="it.type === 'text'"
+                       :ref="'slide' + i.toString()"
+                       :class="['bbn-slideshow-content', (it.animation ? 'bbn-slideshow-effect-' + it.animation : ''), it.cls || '', 'bbn-middle', 'bbn-m']"
+                  >
+                    <component v-if="it.component"
+                               :is="it.component"
+                               :data="it.data || {}"
+                               v-bind="it.attributes"
+                               :key="i"
+                    ></component>
+                    <component v-else-if="component"
+                               :is="component"
+                               :content="it.content || ''"
+                               :data="it.data || {}"
+                    ></component>
+                    <div v-else-if="it.content"
+                         :ref="'slide' + i.toString()"
+                         :class="[(it.animation ? 'bbn-slideshow-effect-' + it.animation : ''), 'bbn-overlay']"
+                    >
+                      <bbn-scroll v-if="scroll">
+                        <div v-html="it.content"></div>
+                      </bbn-scroll>
+                      <div v-else v-html="it.content"></div>
+                    </div>
+                  </div>
+                  <!--only image-->
+                  <div v-else-if="it.type === 'img'"
+                       :ref="'slide' + i.toString()"
+                       :class="[(it.animation ? 'bbn-slideshow-effect-' + it.animation : ''), 'bbn-overlay', 'bbn-middle']"
+                  >
+                    <img :src="it.content"
+                         :ref="'slide-img'+ i.toString()"
+                         @load="afterLoad(i)"
+                         :class="['img' + i.toString()]"
+                         :width="it.imageWidth || 'auto'"
+                         :height="it.imageHeight || 'auto'"
+                         :style="{
+                           marginLeft: it.imageLeftMargin || 0,
+                           marginTop: it.imageTopMargin || 0,
+                           visibility: it.showImg ? 'visible' : 'hidden' ,
+                         }"
+                    >
+                  </div>
+                  <bbn-checkbox v-if="checkbox && it.checkable"
+                                v-model="valuesCB[i]"
+                                :value="true"
+                                :novalue="false"
+                                :strict="true"
+                                :label="(typeof checkbox === 'string') ? checkbox : defaultTextCB"
+                                class="bbn-slideshow-showagain"
+                  ></bbn-checkbox>
+                </div>
+              </div>
+              <div class="bbn-overlay bbn-middle">
+                <!-- Commands-->
+                <div v-if="ctrl"
+                    class="bbn-primary-text-alt bbn-slideshow-commands bbn-middle"
+                    @mouseover="ctrlPreview(true)"
+                    @mouseleave="ctrlPreview(false)"
+                >
+                  <i v-show="showCtrl"
+                      :class="[{
+                        'nf nf-fa-pause': !!scrollInterval,
+                        'nf nf-fa-play': !scrollInterval,
+                      }, 'bbn-p', 'bbn-xxxl']"
+                      @click="scrollInterval ? stopAutoPlay() : startAutoPlay()"
+                  ></i>
+                </div>
+              </div>
+            </div>
+            <!-- Right arrow-->
+            <div v-if="arrows"
+                  class="bbn-middle bbn-padded bbn-slideshow-arrow-right"
+                  @mouseover="arrowsPreview('next', true)"
+                  @mouseleave="arrowsPreview('next', false)"
+            >
+              <i v-show="showArrowRight"
+                  :class="[arrowClass.right, 'bbn-p', 'bbn-xxxl']"
+                  @click="next"
+                  :style="{visibility: (currentIndex >= items.length - 1) && !loop ? 'hidden' : 'visible'}"
+              ></i>
             </div>
           </div>
-          <!--only image-->
-          <div v-else-if="it.type === 'img'"
-               :ref="'slide' + i.toString()"
-               :class="[it.animation || '', 'bbn-overlay', 'bbn-middle']"
-          >
-            <img :src="it.content"
-                 :ref="'slide-img'+ i.toString()"
-                 @load="afterLoad(i)"
-                 :class="['img' + i.toString()]"
-                 :width="it.imageWidth || 'auto'"
-                 :height="it.imageHeight || 'auto'"
-                 :style="{
-                   marginLeft: it.imageLeftMargin || 0,
-                   marginTop: it.imageTopMargin || 0,
-                   visibility: it.showImg ? 'visible' : 'hidden' ,
-                 }"
-            >
-          </div>
-          <bbn-checkbox v-if="checkbox && it.checkable"
-                        v-model="valuesCB[i]"
-                        :value="true"
-                        :novalue="false"
-                        :strict="true"
-                        :label="(typeof checkbox === 'string') ? checkbox : defaultTextCB"
-                        class="showagain"
-          ></bbn-checkbox>
         </div>
         <div v-if="showInfo && items[currentIndex].info && items[currentIndex].info.length"
              class="bbn-middle bbn-padded bbn-slideshow-info"
              v-html="items[currentIndex].info"
         ></div>
-        <!--for miniature-->
+        <!-- Miniatures -->
         <div v-if=" preview === true || preview === 'image' || preview === 'circle'"
-             class="bbn-w-100 bbn-middle bbns-gallery-miniature"
-             style="min-height: 60px"
+             :class="['bbn-block', 'bbn-middle', 'bbns-gallery-miniature', 'bbn-hsmargin', {
+               'bbn-top-sspace': !showInfo || !items[currentIndex].info || !items[currentIndex].info.length
+             }]"
+             :style="{'min-height': dimensionPreview + 'px'}"
              @mouseover="miniaturePreview(true)"
              @mouseleave="miniaturePreview(false)"
         >
           <component :is="$options.components.miniature"
                       v-show="showMiniature"
-                     :items="items"
-                     :type="preview"
-                     :dimension="dimensionPreview"
+                      :items="items"
+                      :type="preview"
+                      :dimension="dimensionPreview"
+                      ref="miniatures"
           ></component>
         </div>
       </div>
 
-
-      <!--arrow next-->
-      <div v-if="arrows"
-           class="bbn-middle bbn-padded bbn-slideshow-arrow-right"
-           @mouseover="arrowsPreview('next', true)"
-           @mouseleave="arrowsPreview('next', false)"
-      >
-        <i v-show="showArrowRight"
-           :class="[arrowClass.right, 'iconImg', 'bbn-xxxl']"
-           @click="next"
-           :style="{
-              visibility: (currentIndex >= items.length - 1) && !loop ? 'hidden' : 'visible',
-            }"
-        ></i>
-      </div>
     </div>
 
-    <div v-if="ctrl"
-          class="bbn-100 bbn-middle bbn-c"
-          style="position: absolute; top: 0; padding-bottom: 5vw;"
-          @mouseover="ctrlPreview(true)"
-          @mouseleave="ctrlPreview(false)"
-    >
-      <div v-if ="scrollInterval !== false"
-            style="min-width: 10px"
-            class="iconsCtrl bbn-w-20"
-      >
-        <i v-show="showCtrl"
-            class="nf nf-fa-pause iconImg  bbn-xxxl"
-            @click="stopAutoPlay"
-            style="opacity: 0.6"
-        ></i>
-      </div>
-      <div v-else
-            style="min-width: 10px"
-            class="bbn-w-20"
-      >
-        <i v-show="showCtrl"
-            class="nf nf-fa-play iconImg bbn-xxxl"
-            @click="startAutoPlay"
-            style="opacity: 0.6"
-        ></i>
-      </div>
-    </div>
     <!--old arrows-->
-    <div v-if="items.length && !arrows && (preview === false)" class="navigation">
+    <div v-if="items.length && !arrows && (preview === false) && navigation"
+         class="bbn-slideshow-navigation"
+    >
       <div class="bbn-100">
         <a href="javascript:;"
-            v-if="summary"
-            :title="_('Summary')"
-            @click="currentIndex = 0"
-            :style="{
-              visibility: currentIndex === 0 ? 'hidden' : 'visible'
-              }"
-            class="summary">
-            <i class="nf nf-fa-align_justify"></i>
+           v-if="summary"
+           :title="_('Summary')"
+           @click="currentIndex = 0"
+           :style="{visibility: currentIndex === 0 ? 'hidden' : 'visible'}"
+           class="bbn-slideshow-summary"
+        >
+          <i class="nf nf-fa-align_justify"></i>
         </a>
         <a href="javascript:;"
-            @click="prev"
-            :title="_('Previous')"
-            :style="{
-              visibility: currentIndex === 0 ? 'hidden' : 'visible'
-              }"
-            class="prev">
-            <i class="nf nf-fa-arrow_circle_left"></i>
+           @click="prev"
+           :title="_('Previous')"
+           :style="{visibility: currentIndex === 0 ? 'hidden' : 'visible'}"
+           class="bbn-slideshow-prev"
+        >
+          <i class="nf nf-fa-arrow_circle_left"></i>
         </a>
         <a href="javascript:;"
             @click="next"
             :title="_('Next')"
-            :style="{
-              visibility: currentIndex >= (summary ? items.length : items.length - 1) ? 'hidden' : 'visible'
-              }"
-            class="next">
-            <i class="nf nf-fa-arrow_circle_right"></i>
+            :style="{visibility: currentIndex >= (summary ? items.length : items.length - 1) ? 'hidden' : 'visible'}"
+            class="bbn-slideshow-next"
+        >
+          <i class="nf nf-fa-arrow_circle_right"></i>
         </a>
       </div>
     </div>
@@ -320,7 +307,10 @@ document.head.insertAdjacentElement('beforeend', css);
         type: [Boolean, Object],
         default: false
       },
-      //@todo not used
+      /**
+       * Shows or hides the navigation arrow at the bottom of the slider.
+       * @prop {Boolean} [false] navigation
+       */
       navigation:{
         type: Boolean,
         default: false
@@ -347,7 +337,7 @@ document.head.insertAdjacentElement('beforeend', css);
        */
       autoHideCtrl:{
         type: Boolean,
-        default: false
+        default: true
       },
       /**
        * If set to true shows the slides in a loop..
@@ -589,7 +579,8 @@ document.head.insertAdjacentElement('beforeend', css);
        */
       aspectRatio(idx){
         this.$nextTick(()=>{
-          let ctnRatio = this.lastKnownCtWidth/this.lastKnownCtHeight,
+          let cont = this.getRef('slideContainer'),
+              ctnRatio = cont.offsetWidth/cont.offsetHeight,
               img = this.getRef('slide-img' + idx.toString()),
               imgW = img.naturalWidth,
               imgH = img.naturalHeight,
@@ -638,8 +629,8 @@ document.head.insertAdjacentElement('beforeend', css);
           }
           if ( mode === 'stretch' ){
 
-            this.$set(this.items[idx], 'imageWidth',  this.lastKnownCtWidth + 'px');
-            this.$set(this.items[idx], 'imageHeight', this.lastKnownCtHeight + 'px');
+            this.$set(this.items[idx], 'imageWidth',  cont.offsetWidth + 'px');
+            this.$set(this.items[idx], 'imageHeight', cont.offsetHeight + 'px');
             this.$set(this.items[idx], 'showImg', true);
 
             //this.items[idx].imageWidth = this.lastKnownCtWidth + 'px';
@@ -660,11 +651,11 @@ document.head.insertAdjacentElement('beforeend', css);
         let st = '',
             rules = [];
         this.items.forEach((it, i) => {
-          st += '.bbn-slideshow .slideswitch:target ~ .slide#' + (this.name + i.toString()) + ' .content{opacity: 0}';
-          st += '.bbn-slideshow .slideswitch[id="' + this.name + i.toString() + '"]:target ~ .slide#' + this.name + i.toString() + ' .navigation {display: block !important;}';
-          st += '.bbn-slideshow .slideswitch[id="' + this.name + i.toString() + '"]:target ~ .slide#' + this.name + i.toString() + ' .content {animation-name: fade_in; animation-duration: 0.5s;}';
+          st += '.bbn-slideshow .slideswitch:target ~ .bbn-slideshow-slide#' + (this.name + i.toString()) + ' .bbn-slideshow-content{opacity: 0}';
+          st += '.bbn-slideshow .slideswitch[id="' + this.name + i.toString() + '"]:target ~ .bbn-slideshow-slide#' + this.name + i.toString() + ' .bbn-slideshow-navigation {display: block !important;}';
+          st += '.bbn-slideshow .slideswitch[id="' + this.name + i.toString() + '"]:target ~ .bbn-slideshow-slide#' + this.name + i.toString() + ' .bbn-slideshow-content {animation-name: bbn-slideshow-effect-fade_in; animation-duration: 0.5s;}';
           if ( it.animation ){
-            st += '.bbn-slideshow .slideswitch[id="' + this.name + i.toString() + '"]:target ~ #' + this.name + i.toString() + ' .' + it.animation + ' {animation-name:' + it.animation + ' !important;animation-duration: ' + (it.duration || this.duration || '0.5') + 's;' + ( it.animation === 'flip' ? 'backface-visibility: hidden;' : '')+ '}';
+            st += '.bbn-slideshow .slideswitch[id="' + this.name + i.toString() + '"]:target ~ #' + this.name + i.toString() + ' .bbn-slideshow-effect-' + it.animation + ' {animation-name: bbn-slideshow-effect-' + it.animation + ' !important;animation-duration: ' + (it.duration || this.duration || '0.5') + 's;' + ( it.animation === 'flip' ? 'backface-visibility: hidden;' : '')+ '}';
           }
         });
         return st;
@@ -681,7 +672,7 @@ document.head.insertAdjacentElement('beforeend', css);
           if ( !this.items[idx-1].animation ){
             let slide = this.getRef('slide' + (idx-1).toString());
             if ( slide ){
-              slide.style.animationName = 'slide_from_right';
+              slide.style.animationName = 'bbn-slideshow-effect-slide_from_right';
             }
           }
           this.currentIndex--;
@@ -712,7 +703,7 @@ document.head.insertAdjacentElement('beforeend', css);
           if ( !this.items[idx+1].animation ){
             let slide = this.getRef('slide' + (idx-1).toString());
             if ( slide ){
-              slide.style.animationName = 'slide_from_left';
+              slide.style.animationName = 'bbn-slideshow-effect-slide_from_left';
             }
           }
           this.currentIndex++;
@@ -872,6 +863,10 @@ document.head.insertAdjacentElement('beforeend', css);
        * @param {Number} val 
        */
       currentIndex(val){
+        let miniatures = this.getRef('miniatures');
+        if ( miniatures ){
+          miniatures.getRef('scroll').getRef('xScroller').scrollTo(miniatures.$refs.items[val]);
+        }
         this.$emit('changeSlide', val);
       }
     },
@@ -880,48 +875,47 @@ document.head.insertAdjacentElement('beforeend', css);
        * @component miniature
        */
       miniature: {
-        template: `<div class="bbn-w-100 bbn-c bbn-middle">
-            <template  v-for="(it, i) in items"
-                       style="display: inline; width: 20px; height: 20px"
-            >
-              <div  v-if="(type === 'image' || true) && (it.type === 'img')"
+        template: `
+          <bbn-scroll axis="x" ref="scroll">
+            <div class="bbn-w-100 bbn-middle">
+              <template  v-for="(it, i) in items">
+                <i v-if="type === 'circle'"
                     @click= "clickMiniature(it , i)"
-                    class="zoom"
-                    :style="{
-                      border: (mainComponent.currentIndex === i) ? '2px inset red' : '1px inset black',
-                      width: dimension +'px',
-                      height: dimension + 'px',
-                      margin: '0 3px 0 0',
-
-                    }"
-              >
-                <img :src="it.content" width="100%" height="100%">
-              </div>
-              <div  v-if="(type === 'image' || true) && (it.type === 'text')"
-                    @click= "clickMiniature(it , i)"
-                    class="testing zoom"
-                    :style="{
-                      border: (mainComponent.currentIndex === i) ? '2px inset red' : '1px inset black',
-                      width: dimension +'px',
-                      height: dimension + 'px',
-                      margin: '0 3px 0 0',
-                    }"
-              >
-                <div v-html="it.content" class="content"></div>
-              </div>
-              <i v-else-if="type === 'circle'"
-                   @click= "clickMiniature(it , i)"
-                   :style="{
-                     color: (mainComponent.currentIndex === i) ? 'red' : 'white',
-                   }"
-                  :class="[
-                    (mainComponent.currentIndex === i ? 'nf nf-fa-dot_circle' : 'nf nf-fa-circle'),
-                    'bbn-padded',
-                    'circleMiniature'
-                  ]"
-              ></i>
-            </template>
-          </div>`,
+                    :class="[
+                      (mainComponent.currentIndex === i ? 'nf nf-fa-dot_circle' : 'nf nf-fa-circle'),
+                      'bbn-padded',
+                      'bbn-slideshow-circleMiniature',
+                      'bbn-p',
+                      {'bbn-primary-text-alt': mainComponent.currentIndex === i}
+                    ]"
+                    ref="items"
+                ></i>
+                <div  v-else
+                      @click= "clickMiniature(it , i)"
+                      :class="['bbn-slideshow-zoom', 'bbn-bordered-internal', {
+                        'bbn-primary-border': mainComponent.currentIndex === i,
+                        'bbn-right-xsspace': !!items[i+1]
+                      }]"
+                      :style="{
+                        'border-width': (mainComponent.currentIndex === i) ? 'medium' : '',
+                        width: dimension +'px',
+                        height: dimension + 'px'
+                      }"
+                      ref="items"
+                >
+                  <div v-if="it.type === 'text'"
+                      v-html="it.content"
+                      class="bbn-slideshow-content"
+                  ></div>
+                  <img v-else-if="it.type === 'img'"
+                      :src="it.content"
+                      width="100%"
+                      height="100%"
+                  >
+                </div>
+              </template>
+            </div>
+          </bbn-scroll>`,
         props: {
           /**
            * The array of items.
@@ -966,7 +960,7 @@ document.head.insertAdjacentElement('beforeend', css);
             * The parent component bbn-slideshow
             * @data {Vue} mainComponent
             */
-           mainComponent: bbn.vue.closest(this, 'bbn-slideshow')
+           mainComponent: this.closest('bbn-slideshow')
 
          }
        },
@@ -996,7 +990,7 @@ document.head.insertAdjacentElement('beforeend', css);
          * @memberof miniature
          */
         mounted(){
-          const elem = this.$el.querySelector('div.zoom div.content');
+          const elem = this.$el.querySelector('div.bbn-slideshow-zoom div.bbn-slideshow-content');
           if ( elem ){
             elem.style.transform = 'scale(0.2)';
             if ( elem.querySelector('img') ){
@@ -1009,5 +1003,5 @@ document.head.insertAdjacentElement('beforeend', css);
   });
 })();
 
-bbn_resolve("ok");
+if (bbn_resolve) {bbn_resolve("ok");}
 })(bbn); }

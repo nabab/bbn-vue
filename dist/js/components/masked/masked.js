@@ -652,7 +652,7 @@ document.head.insertAdjacentElement('beforeend', css);
        */
       inputEvent(event){
         let pos = this.$refs.element.selectionStart;
-        bbn.fn.log('input', event, pos, this.maxPos)
+        //bbn.fn.log('input', event, pos, this.maxPos)
         if ( 
           (pos <= this.maxPos) &&
           !bbn.fn.isNull(event.data) &&
@@ -821,5 +821,5 @@ document.head.insertAdjacentElement('beforeend', css);
 
 })(bbn);
 
-bbn_resolve("ok");
+if (bbn_resolve) {bbn_resolve("ok");}
 })(bbn); }

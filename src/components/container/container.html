@@ -3,7 +3,7 @@
   <transition name="fade"
               v-if="!hidden"
               v-on:enter="enter"
-              v-on:after-enter="find('bbn-scroll') ? find('bbn-scroll').onResize() : (() => {})()"
+              v-on:after-enter="onResize"
   >
     <component :is="scrollable ? 'bbn-scroll' : 'div'"
                v-if="ready && isLoaded && (visible || cached)"

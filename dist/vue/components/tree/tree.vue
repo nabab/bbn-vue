@@ -52,7 +52,7 @@
                   ref="orderTop"
                   @mouseover.stop="mouseOver"
             ></span>
-            <span :class="['bbn-tree-node-block', , source.cls, {'bbn-tree-node-block-no-component': !!component}]"
+            <span :class="['bbn-tree-node-block', source.cls || '', {'bbn-tree-node-block-no-component': !!component}]"
                   @mouseover.stop="mouseOver"
             >
               <span class="bbn-tree-node-block-expander bbn-p"
@@ -2329,21 +2329,22 @@
 .bbn-tree .bbn-tree-node span.bbn-tree-node-block.bbn-tree-node-block-no-component span {
   display: inline-block;
 }
-.bbn-tree .bbn-tree-node span.bbn-tree-node-block.bbn-tree-node-block-no-component .bbn-tree-node-block-selectable {
+.bbn-tree .bbn-tree-node span.bbn-tree-node-block .bbn-tree-node-block-selectable {
   padding: 1px;
 }
-.bbn-tree .bbn-tree-node span.bbn-tree-node-block.bbn-tree-node-block-no-component .bbn-tree-node-block-expander {
+.bbn-tree .bbn-tree-node span.bbn-tree-node-block .bbn-tree-node-block-expander {
+  display: inline-block;
   width: 0.7em;
   padding-left: 0.2em;
   font-size: 1.1em;
 }
-.bbn-tree .bbn-tree-node span.bbn-tree-node-block.bbn-tree-node-block-no-component .bbn-tree-node-block-icon {
+.bbn-tree .bbn-tree-node span.bbn-tree-node-block .bbn-tree-node-block-icon {
   width: 1.3em;
 }
-.bbn-tree .bbn-tree-node span.bbn-tree-node-block.bbn-tree-node-block-no-component .bbn-tree-node-block-icon.with-zoom {
+.bbn-tree .bbn-tree-node span.bbn-tree-node-block .bbn-tree-node-block-icon.with-zoom {
   zoom: 1.1;
 }
-.bbn-tree .bbn-tree-node span.bbn-tree-node-block.bbn-tree-node-block-no-component .bbn-tree-node-block-title {
+.bbn-tree .bbn-tree-node span.bbn-tree-node-block .bbn-tree-node-block-title {
   white-space: nowrap;
 }
 

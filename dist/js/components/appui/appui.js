@@ -1,13 +1,11 @@
 (bbn_resolve) => { ((bbn) => {
 let script = document.createElement('script');
-script.innerHTML = `<div :class="{
-      'bbn-appui': true,
-      'bbn-observer': true,
+script.innerHTML = `<div :class="[componentClass, {
       'bbn-background': true,
       'bbn-overlay': true,
       'bbn-mobile': isMobile,
       'bbn-desktop': !isMobile
-     }"
+     }]"
      :style="{opacity: opacity}">
   <div v-if="!cool"
        class="bbn-middle bbn-xl"
@@ -75,7 +73,11 @@ script.innerHTML = `<div :class="{
         <!-- LOGO -->
         <div class="bbn-block bbn-logo-container" style="max-width: 25%; min-height: 100%; width: 10em">
           <div class="bbn-100 bbn-r">
-            <img :src="logo + '?t=2'" style="border: 0; max-height: 100%; max-width: 100%; width: auto;" class="bbn-right-space">
+            <img v-if="!!logo"
+                 :src="logo + '?t=2'"
+                 style="border: 0; max-height: 100%; max-width: 100%; width: auto;"
+                 class="bbn-right-space"
+            >
           </div>
         </div>
         <!-- DEBUGGER? -->
@@ -160,12 +162,11 @@ script.innerHTML = `<div :class="{
         </div>
         <!-- CLIPBOARD BUTTON -->
         <div v-if="plugins['appui-clipboard'] && clipboard"
-             @click.stop="getRef('clipboard').toggle()"
+             @click.stop.prevent="getRef('clipboard').toggle()"
              ref="clipboardButton"
              :class="['bbn-appui-clipboard-button bbn-h-100 bbn-vmiddle bbn-block bbn-c bbn-right-space bbn-p']">
           <i class="nf nf-fa-clipboard bbn-m" tabindex="-1"></i>
           <input class="bbn-invisible bbn-overlay bbn-p"
-                 @click.stop="getRef('clipboard').toggle()"
                  @keydown.space.enter.prevent="getRef('clipboard').toggle()"
                  @drop.prevent.stop="getRef('clipboard').copy($event); getRef('clipboard').show()">
         </div>
@@ -302,6 +303,7 @@ document.head.insertAdjacentElement('beforeend', css);
     data(){
       return {
         isMobile: bbn.fn.isMobile(),
+        mode: bbn.env.mode,
         opacity: 0,
         pollerObject: {
           chat: true,
@@ -348,7 +350,7 @@ document.head.insertAdjacentElement('beforeend', css);
             return createElement();
           }
         }, this.cfg)
-      }
+      },
     },
     methods: {
       focusSearchMenu(){
@@ -793,7 +795,7 @@ document.head.insertAdjacentElement('beforeend', css);
       }
       else{
         window.appui = this;
-        this.componentClass.push('bbn-observer');
+        this.componentClass.push('bbn-resize-emitter', 'bbn-observer');
         this.cool = true;
         let preloaded = [
           'input',
@@ -999,5 +1001,5 @@ document.head.insertAdjacentElement('beforeend', css);
 
 })(window.bbn);
 
-bbn_resolve("ok");
+if (bbn_resolve) {bbn_resolve("ok");}
 })(bbn); }

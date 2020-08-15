@@ -19,8 +19,8 @@
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.listComponent
-     * @mixin  bbn.vue.resizerComponent
-     * @mixin  bbn.vue.keepCoolComponent
+     * @mixin bbn.vue.resizerComponent
+     * @mixin bbn.vue.keepCoolComponent
      * @mixin bbn.vue.toggleComponent
      * @mixin bbn.vue.dimensionsComponent
      * @mixin bbn.vue.positionComponent
@@ -57,6 +57,14 @@
        */
       element: {
         type: Element
+      },
+      /**
+       * If set to true the minimum width will be equal to the element width
+       * @prop {Boolean} [true] elementWidth
+       */
+      elementWidth: {
+        type: Boolean,
+        default: true
       },
       /**
        * The floater's orientation.
@@ -440,7 +448,7 @@
         if (tmp.height) {
           minHeight.push(tmp.height);
         }
-        if (this.element) {
+        if (this.element && this.elementWidth) {
           tmp = this.element.getBoundingClientRect();
           if (tmp.width) {
             minWidth.push(tmp.width);
@@ -637,6 +645,7 @@
        * @fires setResizeMeasures
        */
       onResize(force) {
+        bbn.fn.log("FLOATER ONRESIZE FN")
         // Should be triggered by the inner scroll once mounted
         if (this.isVisible && bbn.fn.isDom(this.$el) && !this.isResizing) {
           if ( !this.ready ){
@@ -670,6 +679,13 @@
             this.$nextTick().then(() => {
               return scroll.getNaturalDimensions()
             }).then(() => {
+              if (!scroll.naturalWidth || !scroll.naturalHeight) {
+                this.isResizing = false;
+                setTimeout(() => {
+                  this.onResize(force);
+                }, Math.round(this.latency/2))
+                return;
+              }
               // These are the limits of the space the DIV can occupy
               let pos = this.getContainerPosition();
               this.containerWidth = pos.width;
@@ -847,7 +863,7 @@
                 this.currentTop = top + 'px';
                 this.isResizing = false;
                 this.$nextTick(() => {
-                  this.setResizeMeasures();
+                  //this.setResizeMeasures();
                   if (scroll) {
                     //bbn.fn.log("SCROLLER EXSISTS");
                     scroll.setResizeMeasures();
@@ -909,7 +925,7 @@
             this.close();
           }
           this.mouseLeaveTimeout = false;
-        }, bbn.fn.isNumber(this.autoHide) ? this.autoHide : 500);
+        }, bbn.fn.isNumber(this.autoHide) ? this.autoHide : 1500);
       },
       /**
        * @method mouseleave
@@ -942,7 +958,8 @@
           });
           if (this.popup) {
             this.popup.$emit('beforeClose', beforeCloseEvent, this);
-          } else {
+          }
+          else {
             this.$emit('beforeClose', beforeCloseEvent, this);
           }
           if (beforeCloseEvent.defaultPrevented) {
@@ -1082,7 +1099,10 @@
       onFocus(){
         if ( this.currentButtons.length ){
           //bbn.fn.log("onFocus", this.getRef('buttons'), this.getRef('button' + (this.currentButtons.length - 1)));
-          this.getRef('button' + (this.currentButtons.length - 1)).$el.focus();
+          let lastButton = this.getRef('button' + (this.currentButtons.length - 1));
+          if (lastButton && lastButton.$el) {
+            lastButton.$el.focus();
+          }
         }
       },
       /**
@@ -1101,6 +1121,7 @@
      * @fires _updateIconSituation
      */
     created(){
+      this.componentClass.push('bbn-resize-emitter');
       this.$on('dataloaded', () => {
         this._updateIconSituation();
       });
@@ -1114,6 +1135,7 @@
     mounted(){
       this.$nextTick(() => {
         let ancesters = this.ancesters('bbn-floater');
+        /*
         if (this.element) {
           let ct = ancesters.length ? ancesters[ancesters.length-1] : this;
           let scroll = ct.closest('bbn-scroll');
@@ -1123,9 +1145,18 @@
             });
           }
         }
+        */
       });
     },
     watch: {
+      lastKnownCtWidth() {
+        this.onResize();
+        this.updatePosition();
+      },
+      lastKnownCtHeight() {
+        this.onResize();
+        this.updatePosition();
+      },
       /**
        * @watch left
        * @fires updatePosition
@@ -1171,6 +1202,7 @@
        * @fires getRef
        * @fires onResize
        */
+      /*
       filteredData() {
         if (this.ready) {
           this.$nextTick(() => {
@@ -1185,6 +1217,7 @@
           });
         }
       },
+      */
       /**
        * @watch visible
        * @fires onResize

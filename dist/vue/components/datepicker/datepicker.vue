@@ -28,7 +28,7 @@
   <bbn-floater v-if="isOpened && !disabled && !readonly"
                :element="$el"
                ref="floater"
-               :auto-hide="200"
+               :auto-hide="1000"
                @close="isOpened = false"
   >
     <bbn-calendar :arrows-buttons="false"

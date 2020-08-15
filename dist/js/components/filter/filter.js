@@ -29,13 +29,13 @@ script.innerHTML = `<div :class="componentClass" :style="'border-left-color:' + 
         >
         </bbn-dropdown>
       </div>
-      <div :style="condition.conditions ? 'display: flex; flex-direction: column;' : 'display: flex;  flex-direction: row; align-items: baseline'"
+      <div :style="condition.conditions ? 'display: flex; flex-direction: column;' : 'display: flex;  flex-direction: row; align-items: center'"
            v-if="multi"
       >
         <div class="bbn-filter-buttons"
              style="display: inline-flex;"
         >
-          <i class="bbn-p bbn-lg nf nf-fa-minus_circle"
+          <i class="bbn-p bbn-lg nf nf-fa-minus_circle bbn-right-xsspace"
              @mouseover="over"
              @mouseout="out"
              :title="_('Delete this condition')"
@@ -71,16 +71,17 @@ script.innerHTML = `<div :class="componentClass" :style="'border-left-color:' + 
   </div>
   <!-- Form for a new condition -->
   <div class="bbn-form-full">
-    <div class="flexbox" style="display: inline-flex;"
-      :class="{
-      'bbn-filter-bordered': fields.length > 1,
-      'bbn-filter-items': true,
-      'bbn-filter-temp': true,
-      'bbn-filter-or': currentLogic === 'OR',
-      'bbn-filter-and': currentLogic === 'AND',
-    }">
+    <div class="bbn-iflex"
+        :class="{
+        'bbn-filter-bordered': fields.length > 1,
+        'bbn-filter-items': true,
+        'bbn-filter-temp': true,
+        'bbn-filter-or': currentLogic === 'OR',
+        'bbn-filter-and': currentLogic === 'AND',
+      }"
+    >
       <!-- Showing the logic (AND/OR) if there are already conditions -->
-      <div class="bbn-filter-logic"
+      <div class="bbn-filter-logic bbn-vmiddle"
            v-text="conditions.length ? currentLogic : ''"
            v-if="multi"
       ></div>
@@ -97,55 +98,64 @@ script.innerHTML = `<div :class="componentClass" :style="'border-left-color:' + 
                          :component-options="componentOptions"
                          @validate="setCondition"
         >
-          <div class="bbn-w-100 bbn-filter-form">
-            <!-- Condition creation line -->
-            <div v-if="columns.length > 1"
-                 class="bbn-block padding bbn-db-column">
-              <bbn-autocomplete :source="columns"
-                                v-model="currentField"
-                                name="field[]"
-                                :placeholder="_('Pick a field')"
-                                ref="column"
-              ></bbn-autocomplete>
+          <div class="bbn-w-100 bbn-filter-form bbn-flex">
+            <div class="bbn-flex bbn-right-sspace" style="flex-direction: column">
+              <!-- Condition creation line -->
+              <div v-if="columns.length > 1"
+                   class="bbn-block bbn-filter-padding bbn-db-column"
+              >
+                <bbn-autocomplete :source="columns"
+                                  v-model="currentField"
+                                  name="field[]"
+                                  :placeholder="_('Pick a field')"
+                                  ref="column"
+                ></bbn-autocomplete>
+              </div>
+              <div v-else-if="field"
+                   class="bbn-block bbn-filter-padding bbn-db-column bbn-right-sspace"
+                   v-html="currentTitle"
+              ></div>
+              <div class="bbn-block bbn-filter-padding bbn-db-operator bbn-top-xsspace">
+                <bbn-dropdown name="operator[]"
+                              :disabled="!currentField"
+                              v-model="currentOperator"
+                              :suggest="true"
+                              :required="true"
+                              :source="operators"
+                              ref="operator"
+                              :placeholder="_('Pick an operator')"
+                ></bbn-dropdown>
+              </div>
+              <div :class="[{'bbn-hidden': !!no_value}, 'bbn-block', 'bbn-filter-padding', 'bbn-db-value', 'bbn-top-xsspace']"
+              >
+                <component v-if="type && currentComponent"
+                           :is="currentComponent"
+                           :disabled="no_value"
+                           name="value"
+                           v-model="currentValue"
+                           ref="value"
+                           v-bind="currentComponentOptions"
+                           @keyup.enter="validate"
+                ></component>
+              </div>
             </div>
-            <div v-else-if="field"
-                 class="bbn-block padding bbn-db-column"
-                 v-html="currentTitle"
-            ></div>
-            <div class="bbn-block padding bbn-db-operator">
-              <bbn-dropdown name="operator[]"
-                            :disabled="!currentField"
-                            v-model="currentOperator"
-                            :suggest="true"
-                            :required="true"
-                            :source="operators"
-                            ref="operator"
-              ></bbn-dropdown>
-            </div>
-            <div :class="(no_value ? 'bbn-hidden ' : '') + 'bbn-block padding bbn-db-value'">
-              <component v-if="type && currentComponent"
-                         :is="currentComponent"
-                         :disabled="no_value"
-                         name="value"
-                         v-model="currentValue"
-                         ref="value"
-                         v-bind="currentComponentOptions"
-              ></component>
-            </div>
-            <div class="bbn-block padding bbn-db-column">
+            <div class="bbn-flex bbn-filter-padding bbn-db-column">
               <bbn-button :disabled="!currentOperator"
                           @click="validate"
                           :title="_('Validate')"
                           ref="check"
-                          icon="nf nf-fa-check">
-              </bbn-button>
+                          icon="nf nf-fa-check"
+                          :notext="true"
+              ></bbn-button>
               <bbn-button v-if="buttonDelete"
                           :disabled="!currentOperator"
                           @click="unset"
                           :title="_('Unset condition')"
                           ref="unset"
-                          icon="nf nf-fa-times">
-              </bbn-button>
+                          icon="nf nf-fa-times"
+                          :notext="true"
+                          class="bbn-left-xsspace"
+              ></bbn-button>
             </div>
           </div>
         </bbn-filter-form>
@@ -411,10 +421,9 @@ document.head.insertAdjacentElement('beforeend', css);
           obj.time = (new Date()).getTime();
           if ( this.multi ){
             this.conditions.push(obj);
+            this.$forceUpdate();
           }
-          else{
-            this.$emit('set', obj)
-          }
+          this.$emit('set', obj)
         }
         return obj;
       },
@@ -543,10 +552,15 @@ document.head.insertAdjacentElement('beforeend', css);
        * @param {Number} idx
        */
       add_group(idx){
-        this.conditions.splice(idx, 1, {
-          logic: this.currentLogic,
-          conditions: [this.conditions[idx]]
-        })
+        let cond = bbn.fn.extend(true, {}, this.conditions[idx]);
+        this.conditions.splice(idx, 1);
+        this.$nextTick(() => {
+          this.conditions.splice(idx, 0, {
+            logic: this.currentLogic,
+            conditions: [cond]
+          });
+          this.$forceUpdate();
+        });
       },
       /**
        * Deletes a condition.
@@ -785,10 +799,23 @@ document.head.insertAdjacentElement('beforeend', css);
         },
         methods: {
           /**
+           * Resets the current operator, the current value and the current field value (if the number of columns is greater than) to their default.
+           * @method _unset
+           * @memberof bbn-filter-form
+           */
+          _unset(){
+            this.currentOperator = '';
+            this.currentValue = '';
+            if ( this.columns.length > 1 ){
+              this.currentField = '';
+            }
+          },
+          /**
            * Validates the form.
            * @method validate
            * @param {Boolean} cancel
            * @fires editorHasNoValue
+           * @fires _unset
            * @emits validate
            * @emits invalidate
            * @emits error
@@ -808,6 +835,9 @@ document.head.insertAdjacentElement('beforeend', css);
               }
               else{
                 this.currentCondition = this.$parent.setCondition(tmp);
+                if ( this.$parent.multi ){
+                  this._unset();
+                }
                 //bbn.fn.log("CONDI", this.currentCondition);
               }
               this.$emit(cancel ? 'invalidate' : 'validate', tmp, cancel);
@@ -817,14 +847,14 @@ document.head.insertAdjacentElement('beforeend', css);
             }
           },
           /**
-           * Resets the current operator and the current value to their default.
+           * Calls the "_unset" method and emits "unset" event
            * @method unset
            * @memberof bbn-filter-form
+           * @fires _unset
+           * @emit $parent.unset
            */
           unset(){
-            //bbn.fn.log("UNST", this.currentCondition);
-            this.currentOperator = '';
-            this.currentValue = '';
+            this._unset();
             this.$parent.$emit('unset')
           }
         },
@@ -835,6 +865,19 @@ document.head.insertAdjacentElement('beforeend', css);
         created(){
           if ( this.type && this.editorOperators[this.type] ){
             this.currentOperators = this.editorOperators[this.type];
+          }
+          if ( this.field && bbn.fn.isArray(this.fields) && this.fields.length && !this.component ){
+            let fieldObj = bbn.fn.getRow(this.fields, {field: this.field});
+            if ( fieldObj ){
+              let o = this.editorGetComponentOptions(fieldObj);
+              if ( o ){
+                if ( o.type !== this.currentType ){
+                  this.currentType = o.type;
+                }
+                this.currentComponent = o.component;
+                this.currentComponentOptions = o.componentOptions;
+              }
+            }
           }
         },
         /**
@@ -857,9 +900,9 @@ document.head.insertAdjacentElement('beforeend', css);
            * @memberof bbn-filter-form
            */
           currentField(newVal){
-            let index = bbn.fn.search(this.fields, {field: newVal});
-            if ( index > -1 ){
-              let o = this.editorGetComponentOptions(this.fields[index]);
+            let fieldObj = bbn.fn.getRow(this.fields, {field: newVal});
+            if ( fieldObj ){
+              let o = this.editorGetComponentOptions(fieldObj);
               if ( o ){
                 this.currentType = o.type;
                 this.currentComponent = o.component;
@@ -969,5 +1012,5 @@ document.head.insertAdjacentElement('beforeend', css);
 
 })(bbn);
 
-bbn_resolve("ok");
+if (bbn_resolve) {bbn_resolve("ok");}
 })(bbn); }

@@ -223,6 +223,7 @@
      * @fires _setEvents
      */
     created(){
+      this.componentClass.push('bbn-resize-emitter');
       this._setEvents();
     },
     /**
