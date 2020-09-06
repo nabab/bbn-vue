@@ -3,8 +3,8 @@
           'bbn-reset': true,
           'bbn-bordered': true,
           'bbn-background-internal': true,
-          'bbn-flex-height': ready && title,
-          'bbn-invisible': !isResized
+          'bbn-flex-height': outHeight > 0,
+          'bbn-invisible': isResizing || !isResized || !visible
         },
         componentClass
       ]"
@@ -12,17 +12,23 @@
       tabindex="0"
       @focus="onFocus"
       @resize.stop="onResize"
-      @mouseleave="mouseleave"
-      @mouseenter="isOver = true"
-      @keydown.esc.prevent.stop="close"
-      @ready.stop
+      @mouseleave="isResized ? isOver = false : (() => {})()"
+      @mouseenter="isResized ? isOver = true : (() => {})()"
+      @keydown.esc.prevent.stop="close()"
+      @subready.stop
       :style="currentStyle">
   <header v-if="title"
           ref="header"
-          class="bbn-header bbn-bordered-bottom bbn-unselectable">
+          :class="{
+            'bbn-header': true,
+            'bbn-bordered-bottom': true,
+            'bbn-unselectable': true,
+            'bbn-block': isResizing,
+            'bbn-w-100': !isResizing
+          }">
     <div class="bbn-block" style="padding-right: 8em">
       <h3 v-html="title"
-          class="bbn-flex-fill bbn-no-margin bbn-spadded"
+          class="bbn-no-margin bbn-spadded"
           ref="title">
       </h3>
     </div>
@@ -47,17 +53,18 @@
   </header>
   <div :class="{
          'bbn-flex-fill': footer || title || (buttons && buttons.length),
-         'bbn-h-100': !title && !footer && (!buttons || !buttons.length)
-       }"
-       :style="{
-         width: width ? '100%' : formattedWidth
+         'bbn-h-100': !title && !footer && (!buttons || !buttons.length),
+         'bbn-w-100': true
        }">
         <!--v-if="isMounted">-->
     <bbn-scroll :latency="latency"
                 ref="scroll"
+                v-if="ready"
                 :scrollable="scrollable"
-                :max-width="containerWidth"
-                :max-height="containerHeight"
+                :max-width="currentMaxWidth || null"
+                :max-height="scrollMaxHeight || null"
+                :min-width="currentMinWidth || null"
+                :min-height="currentMinHeight > outHeight ? currentMinHeight - outHeight : null"
                 @resize="scrollResize">
       <component v-if="component"
                 :is="component"
@@ -89,11 +96,18 @@
   </div>
   <footer v-if="footer"
           v-html="footer"
-          class="bbn-w-100"
+          :class="{
+            'bbn-w-100': !isResizing,
+            'bbn-block': isResizing
+          }"
           ref="footer">
   </footer>
   <footer v-else-if="currentButtons.length"
-          class="bbn-button-group"
+          :class="{
+            'bbn-w-100': !isResizing,
+            'bbn-block': isResizing,
+            'bbn-button-group': true
+          }"
           ref="buttons">
     <bbn-button v-for="(b, i) in currentButtons"
                 :key="i"

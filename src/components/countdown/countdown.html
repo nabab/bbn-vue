@@ -1,8 +1,6 @@
-<span :class="[{'bbn-iblock': true}, componentClass]" v-if="target">
+<span :class="['bbn-iblock', componentClass]" v-if="target">
   <span v-if="isValid">
-    <span v-if="rendered">
-
-    </span>
+    <span v-if="rendered"></span>
     <span>
       <span v-for="(p, i) in periods"
             v-if="shown[p.name]"

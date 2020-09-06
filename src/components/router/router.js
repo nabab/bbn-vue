@@ -398,20 +398,6 @@
         return false;
       },
       /**
-       * The switch's menu.
-       * @computed mainMenu
-       * @return {Array}
-       */
-      mainMenu(){
-        return [{
-          text: bbn._('Switch to ') + (this.isBreadcrumb ? bbn._('tabs') : bbn._('breadcrumb')) + ' ' + bbn._('mode'),
-          key: 'switch',
-          action: () => {
-            this.isBreadcrumb = !this.isBreadcrumb;
-          }
-        }];
-      },
-      /**
        * The final Vue object for the active container (if it has sub-router).
        * @computed activeRealContainer
        * @fires getRealVue
@@ -1364,6 +1350,9 @@
               loaded: false
             }, idx);
           }
+          if ( this.isBreadcrumb ){
+            this.selected = idx;
+          }
           this.$emit('update', this.views);
           let dataObj = this.postBaseUrl ? {_bbn_baseURL: this.fullBaseURL} : {};
           return this.post(
@@ -1456,22 +1445,25 @@
        * @fires route
        */
       reload(idx){
-        if (
-          this.views[idx] &&
-          !this.views[idx].slot &&
-          this.views[idx].load &&
-          this.urls[this.views[idx].url] &&
-          this.urls[this.views[idx].url].isLoaded
-        ){
-          this.views[idx].loaded = false;
-          if (this.views[idx].dirty) {
-            this.views[idx].dirty = false;
+        // So if the ac6tion comes from within the container components can finish whatever they're doing
+        this.$nextTick(() => {
+          if (
+            this.views[idx] &&
+            !this.views[idx].slot &&
+            this.views[idx].load &&
+            this.urls[this.views[idx].url] &&
+            this.urls[this.views[idx].url].isLoaded
+          ){
+            this.views[idx].loaded = false;
+            if (this.views[idx].dirty) {
+              this.views[idx].dirty = false;
+            }
+            this.urls[this.views[idx].url].isLoaded = false;
+            this.$nextTick(() => {
+              this.route(this.urls[this.views[idx].url].currentURL, true);
+            })
           }
-          this.urls[this.views[idx].url].isLoaded = false;
-          this.$nextTick(() => {
-            this.route(this.urls[this.views[idx].url].currentURL, true);
-          })
-        }
+        });
       },
       /**
        * @method getDefaultURL
@@ -1546,9 +1538,10 @@
        * @fires reload
        * @return {Array|Boolean}
        */
-      getMenuFn(idx){
+      getMenuFn(idx) {
+        //bbn.fn.log('getMenuFn(tabIndex)', this.nav, this.views[idx] ? this.views[idx].menu : 'niente', idx);
         if ( !this.nav || !this.views[idx]  || (this.views[idx].menu === false) ){
-          return false;
+          return [];
         }
         let items = [],
             tmp = ((bbn.fn.isFunction(this.views[idx].menu) ? this.views[idx].menu() : this.views[idx].menu) || []).slice(),
@@ -1722,6 +1715,14 @@
             items.push(a);
           });
         }
+        items.push({
+          text: bbn._('Switch to ') + (this.isBreadcrumb ? bbn._('tabs') : bbn._('breadcrumb')) + ' ' + bbn._('mode'),
+          key: 'switch',
+          icon: this.isBreadcrumb ? 'nf nf-mdi-tab' : 'nf nf-fa-ellipsis_h',
+          action: () => {
+            this.itsMaster.isBreadcrumb = !this.itsMaster.isBreadcrumb;
+          }
+        });
         return items;
       },
       /**

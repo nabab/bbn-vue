@@ -361,105 +361,10 @@
     </div>
 
     <!-- Footer -->
-    <div class="bbn-table-footer bbn-widget bbn-unselectable"
-         v-if="pageable || saveable || filterable || isAjax || showable"
-    >
-      <div class="bbn-block"
-           v-if="pageable && currentData.length"
-      >
-        <bbn-button icon="nf nf-fa-angle_double_left"
-                    :notext="true"
-                    :title="_('Go to the first page')"
-                    :disabled="currentPage == 1"
-                    @click="currentPage = 1"
-        ></bbn-button>
-        <bbn-button icon="nf nf-fa-angle_left"
-                    :notext="true"
-                    :title="_('Go to the previous page')"
-                    :disabled="currentPage == 1"
-                    @click="currentPage--"
-        ></bbn-button>
-        <span v-text="_('Page')"></span>
-        <span v-if="isLoading"
-              v-text="currentPage"
-              class="bbn-iblock bbn-c bbn-narrower bbn-right-sspace"
-        ></span>
-        <bbn-numeric v-else
-                     v-model="currentPage"
-                     :min="1"
-                     :max="numPages"
-                     class="bbn-narrower bbn-right-sspace"
-        ></bbn-numeric>
-        <span v-text="_('of') + ' ' + numPages" style="margin-right: 0.25em"></span>
-        <bbn-button icon="nf nf-fa-angle_right"
-                    :notext="true"
-                    :title="_('Go to the next page')"
-                    :disabled="currentPage == numPages"
-                    @click="currentPage++"
-        ></bbn-button>
-        <bbn-button icon="nf nf-fa-angle_double_right"
-                    :notext="true"
-                    :title="_('Go to the last page')"
-                    @click="currentPage = numPages"
-                    :disabled="currentPage == numPages"
-        ></bbn-button>
-        <span class="bbn-hmargin">
-          <bbn-dropdown :source="limits"
-                        v-model.number="currentLimit"
-                        @change="currentPage = 1"
-                        :disabled="!!isLoading"
-                        :autosize="true"
-          ></bbn-dropdown>
-          <span v-text="_('rows per page')"></span>
-        </span>
-      </div>
-      <div class="bbn-block" style="float: right">
-        <span v-if="filteredData.length && pageable && isAjax"
-              v-text="(start+1) + '-' + (start + currentLimit > total ? total : start + currentLimit) + ' ' + _('of') + ' ' + total"
-        ></span>
-        <span v-else-if="filteredData.length && pageable && !isAjax"
-              v-text="(start+1) + '-' + (start + currentLimit > filteredData.length ? filteredData.length : start + currentLimit) + ' ' + _('of') + ' ' + filteredData.length"
-        ></span>
-        <span v-else
-              v-text="total ? _('Total') + ': ' + total + ' ' + _('items') : _('No item')"
-        ></span>
-        &nbsp;
-        <bbn-button v-if="currentQuery"
-                    :title="_('View SQL query')"
-                    @click="showQuery"
-                    icon="nf nf-mdi-database">
-        </bbn-button>
-        <bbn-button v-if="saveable"
-                    :disabled="isSaved"
-                    :title="_('Save current configuration')"
-                    @click="$emit('save', currentConfig)"
-                    icon="nf nf-fa-save"
-        ></bbn-button>
-        <bbn-button v-if="filterable || showable"
-                    :disabled="!isChanged"
-                    :title="_('Reset to original configuration')"
-                    @click="reset(false)"
-                    icon="nf nf-fa-undo"
-        ></bbn-button>
-        <bbn-button v-if="showable"
-                    :title="_('Columns\' picker')"
-                    @click="openColumnsPicker"
-                    icon="nf nf-fa-columns"
-        ></bbn-button>
-        <bbn-button v-if="filterable && multifilter"
-                    :title="_('Multi Filter')"
-                    :class="{'bbn-red': currentFilters && currentFilters.conditions.length ? true : false}"
-                    @click="openMultiFilter"
-                    icon="nf nf-mdi-filter_variant"
-        ></bbn-button>
-        <bbn-button v-if="isAjax"
-                    :title="_('Refresh')"
-                    @click="updateData"
-                    icon="nf nf-fa-refresh"
-        ></bbn-button>
-      </div>
-
-    </div>
+    <bbn-pager class="bbn-table-footer"
+               v-if="pageable || saveable || filterable || isAjax || showable"
+               :element="_self"
+    ></bbn-pager>
   </div>
   <bbn-floater v-if="currentFilter"
                class="bbn-table-floating-filter bbn-widget"

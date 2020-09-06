@@ -168,7 +168,7 @@
         leave(){
           let lst = this.getRef('list');
           if ( lst ){
-            lst.leave();
+            lst.close(true);
           }
         },
         /**

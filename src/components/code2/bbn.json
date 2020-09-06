@@ -1,0 +1,11 @@
+{
+  "name": "bbn-code2",
+  "version": "0.1.1",
+  "authors": [
+    "Thomas Nabet <thomas.nabet@gmail.com>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "codemirror-bundler": ">=1.0.0"
+  }
+}

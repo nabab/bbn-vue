@@ -1,7 +1,11 @@
 <div :class="elementClass"
      :style="elementStyle"
 >
-  <div :class="{'bbn-scroll-container': true, 'bbn-overlay': isScrolling || (!isMeasuring && !scrollable), 'bbn-scroll-not-dragged': !isDragging}"
+  <div :class="{
+         'bbn-scroll-container': true,
+         'bbn-overlay': isScrolling || (!isMeasuring && !scrollable),
+         'bbn-scroll-not-dragged': !isDragging
+       }"
        ref="scrollContainer"
        @scroll="onScroll"
        @touchmove="touchmove"
@@ -9,7 +13,12 @@
        @blur="isFocused = false"
        :tabindex="scrollable ? '0' : '-1'"
   >
-    <div :class="{'bbn-scroll-content': true, resizing: isMeasuring, 'bbn-overlay': !scrollable, 'bbn-100': fullPage}"
+    <div :class="{
+          'bbn-scroll-content': true,
+          resizing: isMeasuring,
+          'bbn-overlay': !scrollable,
+          'bbn-100': fullPage
+        }"
          ref="scrollContent"
          @subready.stop="waitReady"
          :style="contentStyle"

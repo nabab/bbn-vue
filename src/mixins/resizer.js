@@ -16,10 +16,10 @@
           parentResizer: false,
           /**
            * The listener on the closest resizer parent.
-           * @data {Boolean} [false] resizeEmitter
+           * @data {Boolean} [false] onParentResizerEmit
            * @memberof resizerComponent
            */
-          resizeEmitter: false,
+          onParentResizerEmit: false,
           /**
            * The listener on the closest resizer parent.
            * @data {Number} [null] resizeTimeout
@@ -72,14 +72,31 @@
          * @memberof resizerComponent
          */
         onResize(){
-          bbn.fn.log("DEFAULT ONRESIZE FN FROM " + this.$options.name);
+          //bbn.fn.log("DEFAULT ONRESIZE FN FROM " + this.$options.name);
           return new Promise(resolve => {
-            setTimeout(() => {
-              if (this.$el.offsetHeight && this.setResizeMeasures()) {
-                this.$emit('resize');
+            if (!this.isResizing) {
+
+            }
+            this.isResizing = true;
+            this.$nextTick(() => {
+              if (this.$el.offsetHeight) {
+                // Setting initial dimensions
+                let ms1 = this.setResizeMeasures();
+                let ms2 = this.setContainerMeasures();
+                if (ms1 || ms2) {
+                  if (!this.ready) {
+                    setTimeout(() => {
+                      bbn.fn.log("DEFAUT ONRESIZE ON TIMEOUT");
+                      this.onResize();
+                    }, 100)
+                  }
+                  else {
+                    this.$emit('resize');
+                  }
+                }
               }
               resolve();
-            }, 50)
+            })
           });
         },
         /**
@@ -93,6 +110,18 @@
           if (h && w) {
             this.setComputedStyle();
           }
+          let resize = false;
+          if (this.lastKnownHeight !== h) {
+            this.lastKnownHeight = h;
+            resize = true;
+          }
+          if (this.lastKnownWidth !== w) {
+            this.lastKnownWidth = w;
+            resize = true;
+          }
+          return resize;
+        },
+        setContainerMeasures() {
           let resize = false;
           let isAbsolute = this.computedStyle ? ['absolute', 'fixed'].includes(this.computedStyle.position) : false;
           let offsetParent = this.$el.offsetParent;
@@ -110,14 +139,6 @@
             ctH = 0;
             ctW = 0;
           }
-          if (this.lastKnownHeight !== h) {
-            this.lastKnownHeight = h;
-            resize = true;
-          }
-          if (this.lastKnownWidth !== w) {
-            this.lastKnownWidth = w;
-            resize = true;
-          }
           if (this.lastKnownCtHeight !== ctH) {
             this.lastKnownCtHeight = ctH;
             resize = true;
@@ -129,9 +150,9 @@
           return resize;
         },
         /**
-         * Defines the resize emitter and emits the event resize.
+         * Defines the resize emitter and launches process when it resizes.
          * @method setResizeEvent
-         * @fires resizeEmitter
+         * @fires onParentResizerEmit
          * @memberof resizerComponent
          */
         setResizeEvent(){
@@ -143,12 +164,15 @@
           // This class will allow to recognize the element to listen to
           this.parentResizer = this.closest(".bbn-resize-emitter");
           // Setting initial dimensions
-          this.setResizeMeasures();
+          //this.setContainerMeasures();
+          //this.setResizeMeasures();
           // Creating the callback function which will be used in the timeout in the listener
-          this.resizeEmitter = () => {
+          this.onParentResizerEmit = () => {
             // Removing previous timeout
-            clearTimeout(this.resizerTimeout);
-            // Creating a new one
+            if (this.resizerTimeout) {
+              clearTimeout(this.resizerTimeout);
+            }
+              // Creating a new one
             this.resizerTimeout = setTimeout(() => {
               if (this.$el.parentNode && this.$el.offsetWidth) {
                 // Checking if the parent hasn't changed (case where the child is mounted before)
@@ -160,16 +184,20 @@
                   return;
                 }
               }
+              //bbn.fn.log("ON PARENT RESIZER EMIT");
               this.onResize();
-            }, 10);
+            }, 50);
           };
+
           if ( this.parentResizer ){
-            this.parentResizer.$on("resize", this.resizeEmitter);
+            this.parentResizer.$off("resize", this.onParentResizerEmit);
+            this.parentResizer.$on("resize", this.onParentResizerEmit);
           }
           else{
-            window.addEventListener("resize", this.resizeEmitter);
+            window.removeEventListener("resize", this.onParentResizerEmit);
+            window.addEventListener("resize", this.onParentResizerEmit);
           }
-          this.resizeEmitter();
+          this.onParentResizerEmit();
         },
         /**
          * Unsets the resize emitter.
@@ -177,14 +205,14 @@
          * @memberof resizerComponent
          */
         unsetResizeEvent(){
-          if ( this.resizeEmitter ){
+          if ( this.onParentResizerEmit ){
             if ( this.parentResizer ){
               //bbn.fn.log("UNSETTING EVENT FOR PARENT", this.$el, this.parentResizer);
-              this.parentResizer.$off("resize", this.resizeEmitter);
+              this.parentResizer.$off("resize", this.onParentResizerEmit);
             }
             else{
               //bbn.fn.log("UNSETTING EVENT FOR WINDOW", this.$el);
-              window.removeEventListener("resize", this.resizeEmitter);
+              window.removeEventListener("resize", this.onParentResizerEmit);
             }
           }
         },
@@ -195,20 +223,13 @@
          * @param {Boolean} force 
          */  
         selfEmit(force){
+          /*
           if ( this.parentResizer ){
             this.parentResizer.$emit("resize", force);
           }
+          */
         },
-        cssSize(val){
-          switch ( typeof val ){
-            case 'string':
-              return val;
-            case 'number':
-              return val + 'px';
-            default:
-              return 'auto';
-          }
-        },
+        formatSize: bbn.fn.formatSize,
         setComputedStyle(){
           if (!this.computedStyle && this.$el && this.$el.clienttWidth) {
             this.computedStyle = window.getComputedStyle(this.$el);
@@ -230,7 +251,7 @@
        * @emits ready
        * @memberof resizerComponent
        */
-      mounted(){
+      mounted() {
         if (!this.ready) {
           this.$on('ready', this.setResizeEvent);
         }

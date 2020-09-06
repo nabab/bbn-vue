@@ -1,5 +1,5 @@
 <div :class="[componentClass, {'bbn-flex-height': scrollable}]">
-  <div v-if="isToolbarShown" 
+  <div v-if="isToolbarShown"
        class="bbn-l bbn-widget bbn-gallery-toolbar"
   >
     <component v-if="toolbar && (isObject(toolbar) || isVue(toolbar))"
@@ -8,26 +8,26 @@
     <template v-else>
       <bbn-button :text="_('Upload')"
                   icon="nf nf-fa-upload"
-                  @click="upload"
-                  v-if="!isSelecting && upload"
+                  @click="uploadButton"
+                  v-if="!isSelecting && uploadButton"
       ></bbn-button>
       <bbn-button :text="_('Download')"
                   icon="nf nf-fa-download"
                   @click="setSelecting('download')"
-                  v-if="!isSelecting && download"
+                  v-if="!isSelecting && downloadButton"
                   :disabled="!total"
       ></bbn-button>
       <bbn-button :text="_('Remove')"
                   icon="nf nf-fa-trash"
                   @click="setSelecting('remove')"
-                  v-if="!isSelecting && remove"
+                  v-if="!isSelecting && removeButton"
                   :disabled="!total"
       ></bbn-button>
       <bbn-button :text="_(correctCase(selectingMode))"
                   icon="nf nf-fa-check"
                   @click="action"
                   v-if="isSelecting"
-                  :disabled="!selected.length"
+                  :disabled="!currentSelected.length"
       ></bbn-button>
       <bbn-button :text="_('Cancel')"
                   icon="nf nf-fa-times"
@@ -44,75 +44,16 @@
         <gallery-col v-for="(col, index) in cols"
                      :key="'gallery-col-'+index"
                      :index="index"
-                     :source="currentData.filter((it, i) => {
+                     :source="currentView.filter((it, i) => {
                         return i % cols === index;
                       })"
         ></gallery-col>
       </div>
     </component>
   </div>
-  <div v-if="pageable || isAjax">
-    <div class="bbn-gallery-pager bbn-widget" ref="pager">
-      <div class="bbn-block"
-            v-if="pageable"
-      >
-        <bbn-button icon="nf nf-fa-angle_double_left"
-                    :notext="true"
-                    :title="_('Go to the first page')"
-                    :disabled="isLoading || (currentPage == 1)"
-                    @click="currentPage = 1"
-        ></bbn-button>
-        <bbn-button icon="nf nf-fa-angle_left"
-                    :notext="true"
-                    :title="_('Go to the previous page')"
-                    :disabled="isLoading || (currentPage == 1)"
-                    @click="currentPage--"
-        ></bbn-button>
-        {{_('Page')}}
-        <bbn-numeric v-if="currentData && currentData.length"
-                     v-model="currentPage"
-                     :min="1"
-                     :max="numPages"
-                     style="margin-right: 0.5em; width: 6em"
-                     :disabled="isLoading"
-        ></bbn-numeric>
-        {{_('of') + ' ' + numPages}}
-        <bbn-button icon="nf nf-fa-angle_right"
-                    :notext="true"
-                    :title="_('Go to the next page')"
-                    :disabled="isLoading || (currentPage == numPages)"
-                    @click="currentPage++"
-        ></bbn-button>
-        <bbn-button icon="nf nf-fa-angle_double_right"
-                    :notext="true"
-                    :title="_('Go to the last page')"
-                    @click="currentPage = numPages"
-                    :disabled="isLoading || (currentPage == numPages)"
-        ></bbn-button>
-        <span class="bbn-hsmargin">
-        <bbn-dropdown :source="limits"
-                      v-model.number="currentLimit"
-                      @change="currentPage = 1"
-                      :disabled="!!isLoading"
-                      :autosize="true"
-        ></bbn-dropdown>
-        <span>{{_('items per page')}}</span>
-      </span>
-      </div>
-      <div class="bbn-block" style="float: right">
-      <span v-if="pageable"
-            v-text="_('Display items') + ' ' + (start+1) + '-' + (start + currentLimit > total ? total : start + currentLimit) + ' ' + _('of') + ' ' + total"
-      ></span>
-        <span v-else
-              v-text="total ? _('Total') + ': ' + total + ' ' + _('items') : _('No item')"
-        ></span>
-        &nbsp;
-        <bbn-button v-if="isAjax"
-                    :title="_('Refresh')"
-                    @click="updateData"
-                    icon="nf nf-fa-refresh"
-        ></bbn-button>
-      </div>
-    </div>
-  </div>
+  <bbn-pager class="bbn-gallery-pager"
+              :element="_self"
+              ref="pager"
+              v-if="pageable || isAjax"
+  ></bbn-pager>
 </div>

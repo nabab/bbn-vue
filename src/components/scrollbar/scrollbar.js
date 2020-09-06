@@ -473,7 +473,7 @@
           let tmp1,
               tmp2;
           if (this.scroller) {
-            tmp1 = this.scroller[this.isVertical ? 'containerHeight' : 'containerWidth'];
+            tmp1 = this.scroller[this.isVertical ? 'lastKnownHeight' : 'lastKnownWidth'];
             tmp2 = this.scroller[this.isVertical ? 'contentHeight' : 'contentWidth'];
           }
           else {

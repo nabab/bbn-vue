@@ -1,25 +1,39 @@
 <div :class="componentClass"
      :style="{zIndex: zIndex}">
-  <ul ref="container"
-      class="bbn-p"
-      :style="{zIndex: zIndex}"
-  >
-    <li v-for="it in items"
-        :key="it.index"
-        :draggable="!it.fixed"
-        @mouseover="mouseover(it.index)"
-        @mouseout="mouseout(it.index)"
-        @dragstart="dragstart(it.index, $event)"
-        @dragend="dragend(it.index, $event)"
-      >
-      <a :href="it.data.url ? it.data.url : 'javascript:;'"
-         class="bbn-iblock"
-         draggable="false"
-         @click="onClick(it.data, it.index)">
-        <i :class="it.data.icon"></i>
-      </a>
-    </li>
-  </ul>
+  <bbn-scroll :scrollable="false">
+    <ul ref="container"
+        :class="{
+          'bbn-spadded': true,
+          'bbn-invisible': !showIcons
+        }"
+        :style="{zIndex: zIndex}"
+    >
+      <template v-if="showIcons">
+        <li v-for="it in items"
+            :key="it.index"
+            :draggable="!it.fixed"
+            @mouseover="mouseover(it.index)"
+            @mouseout="mouseout(it.index)"
+            @dragstart="dragstart(it.index, $event)"
+            @dragend="dragend(it.index, $event)"
+          >
+          <a :href="it.data.url ? it.data.url : 'javascript:;'"
+            class="bbn-iblock"
+            draggable="false"
+            @click="onClick(it.data, it.index)">
+            <i :class="it.data.icon"></i>
+          </a>
+        </li>
+      </template>
+      <li v-if="!showIcons">
+        <a href="javascript:;"
+          class="bbn-iblock"
+          draggable="false">
+          <i class="nf nf-mdi-dots_horizontal"></i>
+        </a>
+      </li>
+    </ul>
+  </bbn-scroll>
   <div class="bbn-fisheye-bin"
        v-if="visibleBin">
     <i :class="{

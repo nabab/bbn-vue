@@ -52,28 +52,41 @@
       },
       methods: {
         /**
-         * Shows the component.
+         * Shows the slider.
          * @method show
-         * @memberof toggleComponent
+         * @fires onResize
+         * @emits show      
          */
         show(){
-          this.currentVisible = true;
+          let e = new Event('show', {cancelable: true});
+          this.$emit('show', e);
+          if (!e.defaultPrevented) {
+            this.currentVisible = true;
+          }
         },
         /**
-         * Hides the component.
+         * Hides the slider.
          * @method hide
-         * @memberof toggleComponent  
+         * @emits hide      
          */
         hide(){
-          this.currentVisible = false;
+          let e = new Event('show', {cancelable: true});
+          this.$emit('hide', e);
+          if (!e.defaultPrevented) {
+            this.currentVisible = false;
+          }
         },
         /**
-         * Toggles the component's visibility.
+         * Toggles the slider.
          * @method toggle
-         * @memberof toggleComponent
          */
         toggle(){
-          this.currentVisible = !this.currentVisible;
+          if (this.currentVisible) {
+            this.hide();
+          }
+          else{
+            this.show();
+          }
         },
         /**
          * Change the focused element.
@@ -91,6 +104,25 @@
               this.prevFocused.focus();
             }
           }
+        },
+        changeVisible(v) {
+          if ( v ){
+            if ( !this.hasBeenOpened ){
+              this.hasBeenOpened = true;
+            }
+            if ( bbn.env.focused && (bbn.env.focused !== this.prevFocused) ){
+              this.prevFocused = bbn.env.focused;
+            }
+          }
+          if ( this.onResize !== undefined ){
+            if ( v ){
+              this.onResize();
+            }
+            else{
+              this.isResized = false;
+            }
+          }
+          this.switchFocus(v);
         }
       },
       /**
@@ -128,25 +160,12 @@
          * @fires switchFocus
          * @memberof toggleComponent
          */
-        currentVisible(v){
-          if ( v ){
-            if ( !this.hasBeenOpened ){
-              this.hasBeenOpened = true;
-            }
-            if ( bbn.env.focused && (bbn.env.focused !== this.prevFocused) ){
-              this.prevFocused = bbn.env.focused;
-            }
-          }
-          this.$emit(v ? 'open' : 'close');
-          if ( this.onResize !== undefined ){
-            if ( v ){
-              this.onResize();
-            }
-            else{
-              this.isResized = false;
-            }
-          }
-          this.switchFocus(v);
+        currentVisible: {
+          handler(v) {
+            this.$emit(v ? 'open' : 'close');
+            this.changeVisible(v);
+          },
+          immediate: true
         }
       }
     }

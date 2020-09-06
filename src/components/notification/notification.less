@@ -1,12 +1,15 @@
 /* LESS Document */
-.bbn-notification{
-  .bbn-floater{
-    transition: top 0.5s ease 0s;
+.bbn-notification {
+  .bbn-floater.bbn-notification-transition {
+    transition: top left right bottom 0.5s ease-in-out !important;
   }
-  .bbn-notification-content{
+  .bbn-notification-icon {
+    margin-right: 1em;
+  }
+  .bbn-notification-content {
     white-space: nowrap;
   }
-  .bbn-notification-closer{
+  .bbn-notification-closer {
     position: absolute;
     top: 2px;
     right: 0.5em;

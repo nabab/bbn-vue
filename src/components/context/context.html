@@ -9,6 +9,8 @@
   <slot></slot>
   <bbn-floater :element="attach || $el"
                :source="filteredData"
+               :class="'bbn-floater-context-' + bbnUid"
+               ref="floater"
                :width="width"
                :height="height"
                :minWidth="minWidth"
@@ -19,8 +21,10 @@
                :content="content"
                :auto-hide="true"
                :mode="mode"
-               v-if="showFloater"
-               @close="showFloater = false"
+               v-if="showFloater && !disabled"
+               @close="showFloater = false; $emit('close')"
+               @open="$emit('open')"
                :item-component="itemComponent"
+               :position="position"
   ></bbn-floater>
 </component>

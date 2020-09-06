@@ -16,10 +16,6 @@
        */
       bbn.vue.basicComponent,
       /**
-       * @mixin bbn.vue.resizerComponent
-       */
-      bbn.vue.resizerComponent,
-      /**
        * @mixin bbn.vue.localStorageComponent
        */
       bbn.vue.localStorageComponent,

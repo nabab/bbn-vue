@@ -20,7 +20,7 @@
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.listComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.listComponent],
+    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent, bbn.vue.listComponent],
     props: {
       /**
        * The source of the component
@@ -93,7 +93,8 @@
         visibleBin: false,
         visibleText: -1,
         itemFullWidth: 0,
-        draggedIdx: -1
+        draggedIdx: -1,
+        showIcons: true
       };
     },
 
@@ -180,18 +181,43 @@
           e.preventDefault();
           this.$emit('remove', this.items[this.draggedIdx].data, e);
         }
-      }
+      },
+
+      onResize(){
+        let r1 = this.setResizeMeasures();
+        let r2 = this.setContainerMeasures();
+        /*
+        let ct = this.getRef('container');
+        if (ct && (!this.ready || r1 || r2)) {
+          if (this.lastKnownWidth < ct.clientWidth) {
+            if (this.showIcons) {
+              this.showIcons = false;
+            }
+          }
+          else if (!this.showIcons) {
+            this.showIcons = true;
+          }
+        }
+        */
+      },
     },
     /**
      * @event mounted
      * @fires setup
      */
     mounted(){
-      this.ready = true;
+      this.onResize();
+      this.$nextTick(() => {
+        this.ready = true;
+      })
     },
     watch: {
       source(){
         this.updateData();
+      },
+      lastKnownWidth(v){
+        
+
       }
     }
   });

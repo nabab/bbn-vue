@@ -518,11 +518,9 @@
       visible(nv, ov){
         this.$nextTick(() => {
           this.$emit(nv ? 'view' : 'unview', this);
-          if ( nv ){
-            this.$nextTick(() => {
-              this.selfEmit(true);
-            });
-          }
+          this.$nextTick(() => {
+            this.onResize();
+          });
         });
       },
       /**

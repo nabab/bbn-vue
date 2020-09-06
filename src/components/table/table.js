@@ -2718,6 +2718,7 @@
           });
           this.initStarted = true;
           this.$nextTick(() => {
+            this.setContainerMeasures();
             this.setResizeMeasures();
             bbn.fn.each(this.cols, (a, i) => {
               if (!a.hidden && (!this.groupable || (this.group !== i))) {

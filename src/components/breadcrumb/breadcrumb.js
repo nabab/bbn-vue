@@ -233,7 +233,7 @@
       },
       getCurrents(idx){
         let ret = [];
-        if ( this.router && bbn.fn.isNumber(idx) ){
+        if ( this.router && bbn.fn.isNumber(idx) && this.router.views[idx] ){
           let url = this.router.views[idx].url;
           if ( this.router.urls[url] && this.subBreadcrumbs[url] ){
             ret.push(this.subBreadcrumbs[url]);

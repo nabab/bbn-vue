@@ -52,6 +52,7 @@
                               :source="getMenuFn"
                               :source-index="tabIndex"
                               tag="div"
+                              :disabled="tabIndex !== selected"
                               min-width="10em"
                               :class="['bbn-tabs-tab', 'bbn-iblock', {'bbn-tabs-dirty': tab.dirty}]"
                               :ref="'title-' + tabIndex"

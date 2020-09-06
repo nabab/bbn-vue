@@ -1,15 +1,10 @@
-//backup countdown
- /**
-  * @file bbn-countdown component
-  *
-  * @description bbn-countdown is a component that performs a countdown of a user-defined date, based on the measure of time defined in the construction.
-  *
-  * @copyright BBN Solutions
-  *
-  * @author BBN Solutions
-  *
-  * @created 13/02/2017.
-  */
+/**
+ * @file bbn-countdown component
+ * @description bbn-countdown is a component that performs a countdown of a user-defined date, based on the measure of time defined in the construction.
+ * @copyright BBN Solutions
+ * @author BBN Solutions
+ * @created 13/02/2017.
+*/
 
 
 /** @todo try this way
@@ -18,7 +13,6 @@
  const formatted = moment(timestamp).format('L');
 
  console.log(formatted);*/
-
 
 (function(bbn){
   "use strict";

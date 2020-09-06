@@ -3,15 +3,24 @@
                :ref="'it' + it.id"
                :key="it.id"
                :focused="false"
+               :container="$root.$el"
+               :class="{
+                  'bbn-notification-transition': positions[it.id] !== undefined,
+                  'bbn-notification-closing': !!it.closing
+               }"
                :top="isTop && (positions[it.id] !== undefined) ? positions[it.id] : undefined"
                :bottom="isTop || (positions[it.id] === undefined) ? undefined : positions[it.id]"
                :left="isLeft ? 0 : undefined"
                :title="false"
                :scrollable="true"
+               @resize="_updatePositions"
+               @hook.destroy="_updatePositions"
                :right="isLeft ? undefined : 0">
     <div :class="{
         'bbn-notification-content': true,
         'bbn-block': true,
+        'bbn-nowrap': true,
+        'bbn-unselectable': true,
         'bbn-white': !!it.type,
         'bbn-light': true,
         'bbn-m': true,
@@ -22,16 +31,24 @@
         'bbn-b': it.type === 'error',
         'bbn-bg-blue': it.content && (it.type === 'info')
     }">
+      <span class="bbn-notification-icon bbn-iblock bbn-lg"
+            v-if="it.icon">
+        <i :class="[it.icon, it.type ? 'bbn-white' : 'bbn-black']"></i>
+      </span>
       <span v-if="it.content"
+            class="bbn-iblock"
             v-html="it.content">
       </span>
       <span v-else-if="it.type === 'success'"
+            class="bbn-iblock"
             v-html="successMessage">
       </span>
       <span v-else-if="it.type === 'warning'"
+            class="bbn-iblock"
             v-html="warningMessage">
       </span>
       <span v-else-if="it.type === 'error'"
+            class="bbn-iblock"
             v-html="errorMessage">
       </span>
       <div :class="{

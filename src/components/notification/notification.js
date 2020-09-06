@@ -59,6 +59,34 @@
       infoMessage: {
         type: [String, Function],
         default: bbn._('Info')
+      },
+      /**
+       * @prop {String|Function}, ['Success'] successMessage
+       */
+      successIcon: {
+        type: [String, Boolean],
+        default: 'nf nf-fa-check_square'
+      },
+      /**
+       * @prop {String|Function}, ['Warning'] warningMessage
+       */
+      warningIcon: {
+        type: [String, Boolean],
+        default: 'nf nf-fa-warning'
+      },
+      /**
+       * @prop {String|Function}, ['Error'] errorMessage
+       */
+      errorIcon: {
+        type: [String, Boolean],
+        default: 'nf nf-fa-exclamation_circle'
+      },
+      /**
+       * @prop {String|Function}, ['Info'] infoMessage
+       */
+      infoIcon: {
+        type: [String, Boolean],
+        default: 'nf nf-mdi-information'
       }
     },
     data: function(){
@@ -137,22 +165,26 @@
         else{
           obj.pinned = true;
         }
-      return obj;
+        return obj;
       },
       /**
        * @method add
+       * 
        * @param {Object} o
        */
       add(o){
         let id = (new Date()).getTime();
         o.id = id;
+        if (o.icon !== false) {
+          if ((o.icon === undefined) && o.type && this[o.type + 'Icon']) {
+            o.icon = this[o.type + 'Icon'];
+          }
+        }
         this.items.push(o);
+        this._updatePositions();
         if ( o.delay ){
           setTimeout(() => {
-            let idx = bbn.fn.search(this.items, {id: id});
-            if ( idx > -1 ){
-              this.items.splice(idx, 1);
-            }
+            this.close(id);
           }, o.delay);
         }
       },
@@ -162,30 +194,37 @@
        */
       _updatePositions(){
         let p = {};
-        let top = 0;
+        let pos = 0;
+        let ids = [];
         bbn.fn.each(this.items, (a) => {
-          p[a.id] = top;
           let cp = this.getRef('it' + a.id);
+          let s;
           if (cp) {
-            top += cp.$el.getBoundingClientRect().height;
+            s = cp.$el.getBoundingClientRect().height;
           }
+          if (a.closing) {
+            p[a.id] = this.positions[a.id];
+          }
+          else {
+            p[a.id] = pos;
+            if (s) {
+              pos += s;
+            }
+          }
+          ids.push(a.id);
         });
         bbn.fn.iterate(bbn.fn.diffObj(this.positions, p), (a, k) => {
-          let v = undefined;
           if (a.type === 'updated') {
-            v = a.newData;
+            this.positions[k] = a.newData;
           }
           else if (a.type === 'created') {
-            v = a.data;
+            this.positions[k] = a.data;
           }
-          this.$set(this.positions, k, v);
-          let cp = this.getRef('it' + k);
-          if (cp) {
-            setTimeout(() => {
-              cp.onResize(true);
-            }, 100);
+          else if (a.type === 'deleted') {
+            delete this.positions[k];
           }
         });
+        this.$forceUpdate();
       },
       /**
        * @method close
@@ -195,6 +234,7 @@
         let idx = bbn.fn.search(this.items, {id: id});
         if ( idx > -1 ){
           this.items.splice(idx, 1);
+          this._updatePositions();
         }
       },
       /**
@@ -263,17 +303,6 @@
      */
     beforeMount(){
       this._updatePositions();
-    },
-    watch: {
-      /**
-       * @watch items
-       * @fires _updatePositions
-       */
-      items(){
-        this.$nextTick(() => {
-          this._updatePositions();
-        });
-      }
     }
   });
 })(window.bbn);

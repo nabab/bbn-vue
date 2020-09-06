@@ -1,31 +1,27 @@
 /**
- * @file bbn-floater component
- *
- * @description bbn-floater is a component that represents a container that can be bound to another element.
- *
+ * @file bbn-pager component
+ * @description bbn-pager is a component to manage the pagination of a pageable component.
  * @author BBN Solutions
- *
  * @copyright BBN Solutions
  */
-(function(Vue, bbn){
+((bbn) =>{
   "use strict";
-  /**
-   * Classic input with normalized appearance
-   */
-  let isClicked = false;
+
   Vue.component('bbn-pager', {
+    /**
+     * @mixin bbn.vue.basicComponent
+     */
     mixins: [bbn.vue.basicComponent],
     props: {
+      /**
+       * The element to bond with
+       * @props {Vue} element
+       */
       element: {
         type: Vue,
-        default: false
+        required: true
       }
-    },
-    /**
-     * @event mounted
-     */
-    mounted(){
-    },
+    }
   });
 
-})(window.Vue, window.bbn);
+})(bbn);

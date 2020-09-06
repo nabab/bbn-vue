@@ -146,7 +146,7 @@
           bbn.fn.iterate(this.plugins, (a, n) => {
             if (tab.url.indexOf(a+'/') === 0) {
               plugin = n;
-              return;
+              return false;
             }
           });
           let url = this.plugins['appui-ide'] + '/editor/file/';
@@ -164,20 +164,25 @@
             url += 'php';
           }
           res.push({
-            text: bbn._('Open in editor'),
+            text: bbn._('Dev tools'),
             icon: 'nf nf-fa-code',
-            action(){
-              bbn.fn.link(url);
-            }
-          });
-          res.push({
-            text: bbn._('Log the container'),
-            icon: 'nf nf-mdi-sign_text',
-            action() {
-              let idx = router.search(tab.url);
-              bbn.fn.log("Container with URL " + tab.url, router.urls[router.views[idx].url]);
-            }
-          });
+            items: [
+              {
+                text: bbn._('Open in editor'),
+                icon: 'nf nf-fa-edit',
+                action(){
+                  bbn.fn.link(url);
+                }
+              }, {
+                text: bbn._('Log the container'),
+                icon: 'nf nf-mdi-sign_text',
+                action() {
+                  let idx = router.search(tab.url);
+                  bbn.fn.log("Container with URL " + tab.url, router.urls[router.views[idx].url]);
+                }
+              }
+            ]
+          })
         }
         return res;
       },
@@ -553,12 +558,6 @@
               }
               //appui.$refs.loading.end(url, id, data, res);
             }
-          },
-
-          defaultResizeFunction(){
-            if (window.appui) {
-              appui.selfEmit(true);
-            }
           }
         }
       };
@@ -611,11 +610,11 @@
     mounted(){
       if ( this.cool ){
         this.app = this.$refs.app;
-        this.ready = true;
         setTimeout(() => {
-          this.opacity = 1;
+          this.ready = true;
           this.$emit('resize');
           setTimeout(() => {
+            this.opacity = 1;
             this.poll();
           }, 1000);
         }, 1000);
