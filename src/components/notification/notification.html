@@ -51,8 +51,17 @@
             class="bbn-iblock"
             v-html="errorMessage">
       </span>
+      <div v-if="it.num > 1"
+           class="bbn-iblock bbn-top-left bbn-hsmargin bbn-vxsmargin">
+        <span class="bbn-badge bbn-small bbn-bg-red"
+              v-text="it.num"
+        ></span>
+      </div>
       <div :class="{
           'bbn-notification-closer': true,
+          'bbn-top-right': true,
+          'bbn-vxsmargin': true,
+          'bbn-hsmargin': true,
           'bbn-p': true,
           'bbn-white': !!it.type
       }"

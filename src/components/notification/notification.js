@@ -143,27 +143,41 @@
        * @return {Object}
        */
       _sanitize(obj, type, timeout){
-        if ( typeof obj === 'string' ){
-          obj = {content: obj};
-        }
-        else if ( !obj ){
-          obj = {};
-        }
-        obj.type = type;
-        if ( !obj.type ){
-          obj.type = 'info';
-        }
-        if ( !obj.content && this[type + 'Message'] ){
-          obj.content = bbn.fn.isFunction(this[type + 'Message']) ? this[type + 'Message'](obj) : this[type + 'Message']
-        }
-        if ( !obj.content ){
-          obj.content = '';
-        }
-        if ( timeout && !obj.delay ){
-          obj.delay = timeout > 500 ? timeout : timeout * 1000;
-        }
-        else{
-          obj.pinned = true;
+        if (!bbn.fn.isObject(obj) || (!obj.id)) {
+          if ( typeof obj === 'string' ){
+            obj = {content: obj};
+          }
+          else if ( !obj ){
+            obj = {};
+          }
+          if ( !obj.type ){
+            if (type) {
+              obj.type = type;
+            }
+            else {
+              //obj.type = 'info';
+            }
+          }
+          let id = (new Date()).getTime() + bbn.fn.randomString(10);
+          obj.id = id;
+          obj.num = 1;
+          if ( !obj.content && this[type + 'Message'] ){
+            obj.content = bbn.fn.isFunction(this[type + 'Message']) ? this[type + 'Message'](obj) : this[type + 'Message']
+          }
+          if ( !obj.content ){
+            obj.content = '';
+          }
+          if ( timeout && !obj.delay ){
+            obj.delay = timeout > 500 ? timeout : timeout * 1000;
+          }
+          else{
+            obj.pinned = true;
+          }
+          if (obj.icon !== false) {
+            if ((obj.icon === undefined) && obj.type && this[obj.type + 'Icon']) {
+              obj.icon = this[obj.type + 'Icon'];
+            }
+          }
         }
         return obj;
       },
@@ -172,19 +186,22 @@
        * 
        * @param {Object} o
        */
-      add(o){
-        let id = (new Date()).getTime();
-        o.id = id;
-        if (o.icon !== false) {
-          if ((o.icon === undefined) && o.type && this[o.type + 'Icon']) {
-            o.icon = this[o.type + 'Icon'];
-          }
+      add(o) {
+        o = this._sanitize(o);
+        let idx = bbn.fn.search(this.items, {
+          content: o.content,
+          type: o.type,
+          icon: o.icon
+        });
+        if (idx > -1) {
+          o.num += this.items[idx].num;
+          this.items.splice(idx, 1);
         }
         this.items.push(o);
         this._updatePositions();
         if ( o.delay ){
           setTimeout(() => {
-            this.close(id);
+            this.close(o.id);
           }, o.delay);
         }
       },
