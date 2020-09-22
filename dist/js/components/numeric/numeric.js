@@ -18,6 +18,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', {
              @mouseleave="out"
              @change="change"
              v-show="editMode"
+             :size="currentInputSize"
       >
       <input autocomplete="off"
              :value="inputValue"
@@ -31,6 +32,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', {
              @mouseleave="out"
              v-show="!editMode"
              ref="formatted"
+             :size="currentInputSize"
       >
       <input type="hidden"
              :value="value"
@@ -250,6 +252,18 @@ document.head.insertAdjacentElement('beforeend', css);
        */
       isPercentage(){
         return this.unit === '%'
+      },
+      /**
+       * The current input width in characters if the 'autosize' is enabled
+       * @computed currentInputSize
+       * @returns {Number}
+       */
+      currentInputSize(){
+        if ( this.autosize ){
+          let val = this.inputValue;
+          return val.length || 1
+        }
+        return 0
       }
     },
     methods: {

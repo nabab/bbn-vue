@@ -495,7 +495,7 @@
           let tmp1,
               tmp2;
           if (this.scroller) {
-            tmp1 = this.scroller[this.isVertical ? 'containerHeight' : 'containerWidth'];
+            tmp1 = this.scroller[this.isVertical ? 'lastKnownHeight' : 'lastKnownWidth'];
             tmp2 = this.scroller[this.isVertical ? 'contentHeight' : 'contentWidth'];
           }
           else {
@@ -568,9 +568,11 @@
             this.show = true;
           }
           this.moveTimeout = setTimeout(() => {
-            this.hideSlider();
+            if (!this.isOverSlider) {
+              this.hideSlider();
+            }
           }, 500);
-        }, 'overContent')
+        }, 'overContent', 250)
       },
 
       /**
@@ -776,9 +778,9 @@
 <style scoped>
 .bbn-scrollbar {
   position: absolute;
-  -webkit-transition: opacity 500ms ease-in-out;
-  -moz-transition: opacity 500ms ease-in-out;
-  transition: opacity 500ms ease-in-out;
+  -webkit-transition: opacity 150ms ease-in-out;
+  -moz-transition: opacity 150ms ease-in-out;
+  transition: opacity 150ms ease-in-out;
 }
 .bbn-scrollbar.vertical {
   width: 0.7em;

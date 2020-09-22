@@ -4,15 +4,24 @@
                :ref="'it' + it.id"
                :key="it.id"
                :focused="false"
+               :container="$root.$el"
+               :class="{
+                  'bbn-notification-transition': positions[it.id] !== undefined,
+                  'bbn-notification-closing': !!it.closing
+               }"
                :top="isTop && (positions[it.id] !== undefined) ? positions[it.id] : undefined"
                :bottom="isTop || (positions[it.id] === undefined) ? undefined : positions[it.id]"
                :left="isLeft ? 0 : undefined"
                :title="false"
                :scrollable="true"
+               @resize="_updatePositions"
+               @hook.destroy="_updatePositions"
                :right="isLeft ? undefined : 0">
     <div :class="{
         'bbn-notification-content': true,
         'bbn-block': true,
+        'bbn-nowrap': true,
+        'bbn-unselectable': true,
         'bbn-white': !!it.type,
         'bbn-light': true,
         'bbn-m': true,
@@ -23,20 +32,37 @@
         'bbn-b': it.type === 'error',
         'bbn-bg-blue': it.content && (it.type === 'info')
     }">
+      <span class="bbn-notification-icon bbn-iblock bbn-lg"
+            v-if="it.icon">
+        <i :class="[it.icon, it.type ? 'bbn-white' : 'bbn-black']"></i>
+      </span>
       <span v-if="it.content"
+            class="bbn-iblock"
             v-html="it.content">
       </span>
       <span v-else-if="it.type === 'success'"
+            class="bbn-iblock"
             v-html="successMessage">
       </span>
       <span v-else-if="it.type === 'warning'"
+            class="bbn-iblock"
             v-html="warningMessage">
       </span>
       <span v-else-if="it.type === 'error'"
+            class="bbn-iblock"
             v-html="errorMessage">
       </span>
+      <div v-if="it.num > 1"
+           class="bbn-iblock bbn-top-left bbn-hsmargin bbn-vxsmargin">
+        <span class="bbn-badge bbn-small bbn-bg-red"
+              v-text="it.num"
+        ></span>
+      </div>
       <div :class="{
           'bbn-notification-closer': true,
+          'bbn-top-right': true,
+          'bbn-vxsmargin': true,
+          'bbn-hsmargin': true,
           'bbn-p': true,
           'bbn-white': !!it.type
       }"
@@ -109,6 +135,34 @@
       infoMessage: {
         type: [String, Function],
         default: bbn._('Info')
+      },
+      /**
+       * @prop {String|Function}, ['Success'] successMessage
+       */
+      successIcon: {
+        type: [String, Boolean],
+        default: 'nf nf-fa-check_square'
+      },
+      /**
+       * @prop {String|Function}, ['Warning'] warningMessage
+       */
+      warningIcon: {
+        type: [String, Boolean],
+        default: 'nf nf-fa-warning'
+      },
+      /**
+       * @prop {String|Function}, ['Error'] errorMessage
+       */
+      errorIcon: {
+        type: [String, Boolean],
+        default: 'nf nf-fa-exclamation_circle'
+      },
+      /**
+       * @prop {String|Function}, ['Info'] infoMessage
+       */
+      infoIcon: {
+        type: [String, Boolean],
+        default: 'nf nf-mdi-information'
       }
     },
     data: function(){
@@ -165,44 +219,65 @@
        * @return {Object}
        */
       _sanitize(obj, type, timeout){
-        if ( typeof obj === 'string' ){
-          obj = {content: obj};
+        if (!bbn.fn.isObject(obj) || (!obj.id)) {
+          if ( typeof obj === 'string' ){
+            obj = {content: obj};
+          }
+          else if ( !obj ){
+            obj = {};
+          }
+          if ( !obj.type ){
+            if (type) {
+              obj.type = type;
+            }
+            else {
+              //obj.type = 'info';
+            }
+          }
+          let id = (new Date()).getTime() + bbn.fn.randomString(10);
+          obj.id = id;
+          obj.num = 1;
+          if ( !obj.content && this[type + 'Message'] ){
+            obj.content = bbn.fn.isFunction(this[type + 'Message']) ? this[type + 'Message'](obj) : this[type + 'Message']
+          }
+          if ( !obj.content ){
+            obj.content = '';
+          }
+          if ( timeout && !obj.delay ){
+            obj.delay = timeout > 500 ? timeout : timeout * 1000;
+          }
+          else{
+            obj.pinned = true;
+          }
+          if (obj.icon !== false) {
+            if ((obj.icon === undefined) && obj.type && this[obj.type + 'Icon']) {
+              obj.icon = this[obj.type + 'Icon'];
+            }
+          }
         }
-        else if ( !obj ){
-          obj = {};
-        }
-        obj.type = type;
-        if ( !obj.type ){
-          obj.type = 'info';
-        }
-        if ( !obj.content && this[type + 'Message'] ){
-          obj.content = bbn.fn.isFunction(this[type + 'Message']) ? this[type + 'Message'](obj) : this[type + 'Message']
-        }
-        if ( !obj.content ){
-          obj.content = '';
-        }
-        if ( timeout && !obj.delay ){
-          obj.delay = timeout > 500 ? timeout : timeout * 1000;
-        }
-        else{
-          obj.pinned = true;
-        }
-      return obj;
+        return obj;
       },
       /**
        * @method add
+       * 
        * @param {Object} o
        */
-      add(o){
-        let id = (new Date()).getTime();
-        o.id = id;
+      add(o) {
+        o = this._sanitize(o);
+        let idx = bbn.fn.search(this.items, {
+          content: o.content,
+          type: o.type,
+          icon: o.icon
+        });
+        if (idx > -1) {
+          o.num += this.items[idx].num;
+          this.items.splice(idx, 1);
+        }
         this.items.push(o);
+        this._updatePositions();
         if ( o.delay ){
           setTimeout(() => {
-            let idx = bbn.fn.search(this.items, {id: id});
-            if ( idx > -1 ){
-              this.items.splice(idx, 1);
-            }
+            this.close(o.id);
           }, o.delay);
         }
       },
@@ -212,30 +287,37 @@
        */
       _updatePositions(){
         let p = {};
-        let top = 0;
+        let pos = 0;
+        let ids = [];
         bbn.fn.each(this.items, (a) => {
-          p[a.id] = top;
           let cp = this.getRef('it' + a.id);
+          let s;
           if (cp) {
-            top += cp.$el.getBoundingClientRect().height;
+            s = cp.$el.getBoundingClientRect().height;
           }
+          if (a.closing) {
+            p[a.id] = this.positions[a.id];
+          }
+          else {
+            p[a.id] = pos;
+            if (s) {
+              pos += s;
+            }
+          }
+          ids.push(a.id);
         });
         bbn.fn.iterate(bbn.fn.diffObj(this.positions, p), (a, k) => {
-          let v = undefined;
           if (a.type === 'updated') {
-            v = a.newData;
+            this.positions[k] = a.newData;
           }
           else if (a.type === 'created') {
-            v = a.data;
+            this.positions[k] = a.data;
           }
-          this.$set(this.positions, k, v);
-          let cp = this.getRef('it' + k);
-          if (cp) {
-            setTimeout(() => {
-              cp.onResize(true);
-            }, 100);
+          else if (a.type === 'deleted') {
+            delete this.positions[k];
           }
         });
+        this.$forceUpdate();
       },
       /**
        * @method close
@@ -245,6 +327,7 @@
         let idx = bbn.fn.search(this.items, {id: id});
         if ( idx > -1 ){
           this.items.splice(idx, 1);
+          this._updatePositions();
         }
       },
       /**
@@ -313,33 +396,20 @@
      */
     beforeMount(){
       this._updatePositions();
-    },
-    watch: {
-      /**
-       * @watch items
-       * @fires _updatePositions
-       */
-      items(){
-        this.$nextTick(() => {
-          this._updatePositions();
-        });
-      }
     }
   });
 })(window.bbn);
 
 </script>
 <style scoped>
-.bbn-notification .bbn-floater {
-  transition: top 0.5s ease 0s;
+.bbn-notification .bbn-floater.bbn-notification-transition {
+  transition: top left right bottom 0.5s ease-in-out !important;
+}
+.bbn-notification .bbn-notification-icon {
+  margin-right: 1em;
 }
 .bbn-notification .bbn-notification-content {
   white-space: nowrap;
-}
-.bbn-notification .bbn-notification-closer {
-  position: absolute;
-  top: 2px;
-  right: 0.5em;
 }
 
 </style>

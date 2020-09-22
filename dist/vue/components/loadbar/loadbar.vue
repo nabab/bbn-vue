@@ -1,5 +1,5 @@
 <template>
-<div :class="[{'bbn-reset': true, 'bbn-100': true, 'bbn-unselectable': true}, componentClass]">
+<div :class="[{'bbn-100': true, 'bbn-unselectable': true}, componentClass]">
   <span class="bbn-loadbar-content" @click="info = !info">
     <!--span class="buttons" v-if="data.length">
       <i :title="_('History informations')"
@@ -52,8 +52,8 @@
          @click="selected = 0"
       ></i>
     </span-->
-    <span class="bbn-loadbar-state bbn-hxspadded bbn-c bbn-h-100">
-      <bbn-loadicon v-if="currentItem.loading" class="bbn-blue"></bbn-loadicon>
+    <span class="bbn-loadbar-state bbn-hxspadded bbn-c bbn-block bbn-h-100 bbn-vmiddle">
+      <bbn-loadicon v-if="currentItem.loading" class="bbn-blue bbn-h-100"></bbn-loadicon>
       <i v-else-if="currentItem.error" class="nf nf-fa-times_circle bbn-red"></i>
       <i v-else-if="currentItem.success" class="nf nf-fa-check bbn-green"></i>
       <i v-else-if="currentItem.abort" class="nf nf-mdi-stop bbn-orange"></i>
@@ -62,9 +62,9 @@
        :title="text + ' ' + _('Loading')"
        style="color: inherit; cursor: default"
        v-if="currentItem"
-       class="bbn-h-100"
+       class="bbn-h-100 bbn-block"
     >
-      <span class="text bbn-h-100" v-text="currentItem.url"></span>
+      <span class="text bbn-block bbn-h-100 bbn-vmiddle" v-text="currentItem.url"></span>
     </a>
   </span>
   <bbn-floater v-if="info"
@@ -73,12 +73,14 @@
                :auto-hide="true"
                :title="_('Requests\' history')"
                :closable="true"
+               :container="$root.$el"
                :scrollable="true"
                @close="info = false"
                @ready="focusInput"
+               width="100%"
                max-height="60vw"
   >
-    <div class="bbn-w-100 bbn-padded">
+    <div class="bbn-padded bbn-w-100">
       <bbn-input class="bbn-w-100"
                   button-right="nf nf-mdi-send"
                   v-model="link"
@@ -324,14 +326,12 @@
 <style scoped>
 .bbn-loadbar {
   font-size: small;
-  vertical-align: bottom;
   white-space: nowrap;
   overflow: visible;
 }
 .bbn-loadbar span,
 .bbn-loadbar a {
   display: inline-block;
-  vertical-align: middle;
 }
 .bbn-loadbar span i,
 .bbn-loadbar a i {
@@ -344,7 +344,6 @@
   padding: 0 1em;
   display: inline-block;
   height: 100%;
-  vertical-align: middle;
 }
 .bbn-loadbar .bbn-loadbar-state {
   width: 1.8em;

@@ -3192,13 +3192,24 @@
       this.isTable = !!this.closest('bbn-table');
       let floater = this.closest('bbn-floater');
       if (floater) {
-        floater.$on('ready', () => {
+        if ( floater.ready ){
           this.init();
           this.$once('dataloaded', () => {
             this.ready = true;
+            this.setResizeEvent();
             floater.onResize();
           });
-        });
+        }
+        else {
+          floater.$on('ready', () => {
+            this.init();
+            this.$once('dataloaded', () => {
+              this.ready = true;
+              this.setResizeEvent();
+              floater.onResize();
+            });
+          });
+        }
         this.updateData();
       }
       else{

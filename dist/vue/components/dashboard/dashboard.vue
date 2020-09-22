@@ -310,8 +310,9 @@
       getWidget(key){
         let idx = bbn.fn.search(this.widgets, {key: key});
         if ( idx > -1 ){
-          return this.closest("bbn-container");
+          return this.widgets[idx];
         }
+        return null;
       },
       /**
        * Hides the widget corresponding to the given key.
@@ -447,6 +448,7 @@
           let items = [];
           let i = 0;
           if ( this.widgets ){
+            bbn.fn.log("THERE IS A MENU AND WIDGETS IN DASHBOARD");
             bbn.fn.each(this.originalSource, (a) => {
               let w = bbn.fn.getRow(this.widgets, {uid: a.uid});
               if ( w && w.showable ){
@@ -874,6 +876,13 @@
   -webkit-column-span: all;
   -moz-column-span: all;
   column-span: all;
+}
+.bbn-dashboard .bbn-masonry > div.bbn-widget.bbn-basic-component .bbn-flex-fill,
+.bbn-dashboard .bbn-masonry > div.bbn-widget.bbn-basic-component .bbn-line-breaker,
+.bbn-dashboard .bbn-masonry > div.bbn-widget.bbn-basic-component .bbn-w-100,
+.bbn-dashboard .bbn-masonry > div.bbn-widget.bbn-basic-component .bbn-block,
+.bbn-dashboard .bbn-masonry > div.bbn-widget.bbn-basic-component .bbn-widget-content {
+  position: static;
 }
 .bbn-dashboard .bbn-dashboard-sortable div.bbn-widget .bbn-header .ui-sortable-handle {
   cursor: move;

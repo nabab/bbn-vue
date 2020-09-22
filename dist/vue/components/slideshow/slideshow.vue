@@ -1000,8 +1000,8 @@
 </script>
 <style scoped>
 .bbn-slideshow .bbn-slideshow-count {
-  top: 2em;
-  right: 2em;
+  top: 0;
+  right: 0;
   z-index: 10;
 }
 .bbn-slideshow .bbn-slideshow-commands {

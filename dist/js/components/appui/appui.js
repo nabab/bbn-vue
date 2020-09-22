@@ -21,10 +21,11 @@ script.innerHTML = `<div :class="[componentClass, {
         'bbn-flex-width': true,
         'bbn-unselectable': true,
         'bbn-no-border': true,
+        'bbn-h-100': true
       }">
         <!-- MENU BUTTON -->
         <div class="bbn-block bbn-h-100 bbn-menu-button-container"
-             style="width: 50px; margin-right: 90px">
+             style="min-width: 50px; width: 50px; margin-right: 90px">
           <div tabindex="0"
                @keydown.enter="toggleMenu"
                @keydown.space="toggleMenu"
@@ -51,14 +52,14 @@ script.innerHTML = `<div :class="[componentClass, {
           </bbn-search>
         </div>
 <!-- CENTRAL PART -->
-        <div class="bbn-h-100 bbn-splitter-top-center bbn-flex-fill ">
+        <div class="bbn-h-100 bbn-splitter-top-center bbn-flex-fill">
           <!-- FISHEYE -->
           <bbn-fisheye v-if="plugins['appui-menu']"
                        style="z-index: 3"
                        v-show="'?' !== searchBar.value"
                        :class="{
                          'bbn-invisible': $refs.search && $refs.search.isFocused,
-                         'bbn-spadded': true
+                         'bbn-100': true
                         }"
                        :removable="true"
                        @remove="removeShortcut"
@@ -72,9 +73,9 @@ script.innerHTML = `<div :class="[componentClass, {
         </div>
         <!-- LOGO -->
         <div class="bbn-block bbn-logo-container" style="max-width: 25%; min-height: 100%; width: 10em">
-          <div class="bbn-100 bbn-r">
+          <div class="bbn-100 bbn-vmiddle bbn-r">
             <img v-if="!!logo"
-                 :src="logo + '?t=2'"
+                 :src="logo"
                  style="border: 0; max-height: 100%; max-width: 100%; width: auto;"
                  class="bbn-right-space"
             >
@@ -132,13 +133,11 @@ script.innerHTML = `<div :class="[componentClass, {
     <!-- STATUS -->
     <div v-if="status"
               ref="foot"
-              class="bbn-header bbn-bordered-top"
+              class="bbn-header bbn-bordered-top appui-statusbar"
               style="overflow: visible">
-      <div class="bbn-flex-width bbn-h-100">
+      <div class="bbn-flex-width bbn-h-100 bbn-vmiddle">
         <!-- LOADBAR -->
-        <div class="bbn-flex-fill bbn-h-100 bbn-right-space">
-          <bbn-loadbar v-if="loaders" ref="loading" :source="loaders"></bbn-loadbar>
-        </div>
+        <bbn-loadbar class="bbn-flex-fill bbn-h-100 bbn-right-space" ref="loading" :source="loaders"></bbn-loadbar>
         <!-- TASK TRACKER -->
         <div v-if="plugins['appui-task']"
             class="bbn-h-100 bbn-vmiddle bbn-right-space"
@@ -366,7 +365,7 @@ document.head.insertAdjacentElement('beforeend', css);
           bbn.fn.iterate(this.plugins, (a, n) => {
             if (tab.url.indexOf(a+'/') === 0) {
               plugin = n;
-              return;
+              return false;
             }
           });
           let url = this.plugins['appui-ide'] + '/editor/file/';
@@ -384,20 +383,25 @@ document.head.insertAdjacentElement('beforeend', css);
             url += 'php';
           }
           res.push({
-            text: bbn._('Open in editor'),
+            text: bbn._('Dev tools'),
             icon: 'nf nf-fa-code',
-            action(){
-              bbn.fn.link(url);
-            }
-          });
-          res.push({
-            text: bbn._('Log the container'),
-            icon: 'nf nf-mdi-sign_text',
-            action() {
-              let idx = router.search(tab.url);
-              bbn.fn.log("Container with URL " + tab.url, router.urls[router.views[idx].url]);
-            }
-          });
+            items: [
+              {
+                text: bbn._('Open in editor'),
+                icon: 'nf nf-fa-edit',
+                action(){
+                  bbn.fn.link(url);
+                }
+              }, {
+                text: bbn._('Log the container'),
+                icon: 'nf nf-mdi-sign_text',
+                action() {
+                  let idx = router.search(tab.url);
+                  bbn.fn.log("Container with URL " + tab.url, router.urls[router.views[idx].url]);
+                }
+              }
+            ]
+          })
         }
         return res;
       },
@@ -773,12 +777,6 @@ document.head.insertAdjacentElement('beforeend', css);
               }
               //appui.$refs.loading.end(url, id, data, res);
             }
-          },
-
-          defaultResizeFunction(){
-            if (window.appui) {
-              appui.selfEmit(true);
-            }
           }
         }
       };
@@ -831,11 +829,11 @@ document.head.insertAdjacentElement('beforeend', css);
     mounted(){
       if ( this.cool ){
         this.app = this.$refs.app;
-        this.ready = true;
         setTimeout(() => {
-          this.opacity = 1;
+          this.ready = true;
           this.$emit('resize');
           setTimeout(() => {
+            this.opacity = 1;
             this.poll();
           }, 1000);
         }, 1000);

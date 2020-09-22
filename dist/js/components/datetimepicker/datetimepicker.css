@@ -16,6 +16,11 @@
 .bbn-datetimepicker .bbn-button.bbn-datetimepicker-clock {
   opacity: 0.7;
 }
+.bbn-datetimepicker .bbn-calendar {
+  height: auto;
+  max-height: 16em;
+  max-width: 40em;
+}
 .bbn-datetimepicker .bbn-calendar .bbn-widget:first-child {
   border: 0;
 }

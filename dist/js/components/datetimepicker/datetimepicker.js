@@ -39,7 +39,6 @@ script.innerHTML = `<span :class="[componentClass, 'bbn-textbox', {'bbn-input-nu
                 :auto-hide="1000"
                 ref="calendarFloater"
                 @close="isCalendarOpened = false"
-                :element-width="false"
   >
     <bbn-calendar :arrows-buttons="false"
                     @selected="setDate"
@@ -51,18 +50,17 @@ script.innerHTML = `<span :class="[componentClass, 'bbn-textbox', {'bbn-input-nu
                     :min="min"
                     :max="max"
                     :extra-items="true"
-                    @hook:mounted="$refs.calendarFloater.onResize()"
                     :disable-dates="disableDates"
                     :items-range="datesRange"
-                    style="min-height: 200px;"
+                    :element-width="false"
     ></bbn-calendar>
   </bbn-floater>
   <bbn-floater v-if="isTimeOpened && !disabled && !readonly"
                 :element="$el"
                 ref="timeFloater"
                 @close="isTimeOpened = false"
-                :min-width="blocksMode ? (showSecond ? 135 : 130) : (showSecond ? 195 : 130)"
-                :height="scrollMode ? 400 : (blocksMode ? false : 55)"
+                
+                max-width="10em"
                 :scrollable="!!blocksMode || !scrollMode"
                 hpos="right"
                 :auto-hide="1000"

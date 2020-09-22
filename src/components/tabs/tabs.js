@@ -26,7 +26,11 @@
       /**
        * @mixin bbn.vue.observerComponent
        */
-      bbn.vue.observerComponent
+      bbn.vue.observerComponent,
+      /**
+       * @mixin bbn.vue.resizerComponent
+       */
+      bbn.vue.resizerComponent
     ],
     props: {
       /**

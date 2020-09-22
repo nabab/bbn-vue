@@ -1108,6 +1108,7 @@
        * @return {Object}
        */
       widgetCfg(){
+
         let cfg = {
           chart: {
             id: this.id,
@@ -1200,7 +1201,12 @@
                   reset: bbn._('Reset Zoom')
                 }
               }
-            }]
+            }],
+            events: {
+              click: (event, chartContext, config) => {
+                this.$emit('click', event, chartContext, config);
+              }
+            }
           },
           series: this.data,
           labels: this.getLabels(),

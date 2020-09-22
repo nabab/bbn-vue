@@ -810,9 +810,15 @@
             }
           }
         }
-        else if ((coor.top + height > this.containerHeight) || (coor.bottom + height > this.containerHeight)) {
+        else if (coor.top + height > this.containerHeight) {
           if (!this.top) {
-            coor.top = 0;
+            coor.top = this.containerHeight - height;
+          }
+          scrollV = true;
+        }
+        else if (coor.bottom + height > this.containerHeight) {
+          if (!this.bottom) {
+            coor.bottom = this.containerHeight - height;
           }
           scrollV = true;
         }
@@ -1170,7 +1176,7 @@
     mounted() {
       this._setMinMax();
       this.ready = true;
-      /*
+      this.$emit('ready');
       this.$nextTick(() => {
         let ancesters = this.ancesters('bbn-floater');
         if (this.element) {
@@ -1178,12 +1184,11 @@
           let scroll = ct.closest('bbn-scroll');
           if (scroll) {
             scroll.$once('scroll', () => {
-              this.closeAll();
+              this.close();
             });
           }
         }
       });
-      */
     },
     watch: {
       /*

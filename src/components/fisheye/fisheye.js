@@ -6,19 +6,17 @@
  * Each element is represented by an icon capable of performing an action.
  *
  * @author BBN Solutions
- * 
+ *
  * @copyright BBN Solutions
  */
 (function(bbn){
   "use strict";
 
-  /**
-   * Classic input with normalized appearance
-   */
   Vue.component('bbn-fisheye', {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.listComponent
+     * @mixin bbn.vue.resizerComponent
      */
     mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent, bbn.vue.listComponent],
     props: {
@@ -32,6 +30,10 @@
           return [];
         }
       },
+      /**
+       * True if you want to activate the possibility to remove an element.
+       * @prop {Boolean} [false] removable
+       */
       removable: {
         type: Boolean,
         default: false
@@ -64,12 +66,15 @@
         type: Number,
         default: 1
       },
-      itemWidth: {
-        type: Number,
-        default: 24
-      },
+      /**
+       * True if you want to render the component scrollable
+       * @prop {Boolean} [false] scrollable
+       */
+      scrollable: {
+        type: Boolean,
+        default: false
+      }
     },
-
     data(){
       return {
         /**
@@ -88,17 +93,46 @@
          * @data {Boolean} [false] droppableBin
          */
         droppableBin: false,
+        /**
+         * @data {Boolean|Number} [false] timeout
+         */
         timeout: false,
+        /**
+         * @data {Boolean|Number} [false] binTimeout
+         */
         binTimeout: false,
+        /**
+         * @data {Boolean} [false] visibleBin
+         */
         visibleBin: false,
+        /**
+         * @data {Number} [-1] visibleText
+         */
         visibleText: -1,
-        itemFullWidth: 0,
+        /**
+         * @data {Number} [-1] draggedIdx
+         */
         draggedIdx: -1,
-        showIcons: true
+        /**
+         * @data {Boolean} [true] showIcons
+         */
+        showIcons: true,
+        /**
+         * @data {Boolean} [false] visibleFloater
+         */
+        visibleFloater: false,
+        /**
+         * @data {Number} [0] floaterTop
+         */
+        floaterTop: 0
       };
     },
-
     computed: {
+      /**
+       * The icons list
+       * @computed items
+       * @returns {Array}
+       */
       items(){
         let items = [];
         let i = 0;
@@ -127,20 +161,33 @@
           i++;
         });
         return items;
+      },
+      /**
+       * The bin position.
+       * @computed binPosition
+       * @returns {String}
+       */
+      binPosition(){
+        return this.showIcons ? 'top: 15em' : 'bottom: calc(-' + bbn.env.height + 'px + 5em)';
       }
     },
-
     methods: {
       /**
-       * Fires the action given to the item 
+       * Fires the action given to the item
        * @method onClick
-       * @param {Object} it 
+       * @param {Object} it
        */
       onClick(it){
         if ( it.action && bbn.fn.isFunction(it.action) ){
           it.action();
         }
+        this.visibleFloater = false;
       },
+      /**
+       * The method called on the mouseover
+       * @method mouseover
+       * @param {Number} idx
+       */
       mouseover(idx){
         if ( this.visibleText !== idx ){
           clearTimeout(this.timeout);
@@ -150,15 +197,29 @@
           }, 500);
         }
       },
+      /**
+       * The method calledon the mouseout
+       * @method mouseout
+       */
       mouseout(){
         clearTimeout(this.timeout);
         this.visibleText = -1;
       },
-      dragleave(e){
+      /**
+       * The method called on the dragleave
+       * @method dragleave
+       */
+      dragleave(){
         setTimeout(() => {
           this.overBin = false;
         }, 500);
       },
+      /**
+       * The method called on the dragstart
+       * @method dragstart
+       * @param {Number} idx
+       * @param {Event} e
+       */
       dragstart(idx, e){
         if ( this.removable && e.dataTransfer ){
           e.dataTransfer.allowedEffect = 'move';
@@ -170,56 +231,99 @@
           e.preventDefault();
         }
       },
-      dragend(idx, e){
+      /**
+       * The method called on the dragend
+       * @method dragend
+       */
+      dragend(){
         if ( this.removable ){
           this.visibleBin = false;
           this.draggedIdx = -1;
         }
       },
+      /**
+       * The method called on the drop
+       * @method drop
+       * @param {Event} e
+       * @emits remove
+       */
       drop(e){
         if ( this.items[this.draggedIdx] ){
           e.preventDefault();
           this.$emit('remove', this.items[this.draggedIdx].data, e);
         }
       },
-
-      onResize(){
-        let r1 = this.setResizeMeasures();
-        let r2 = this.setContainerMeasures();
-        /*
+      /**
+       * Checks the measures of the main container and the icons container
+       * @method checkMeasures
+       * @fires getRef
+       */
+      checkMeasures(){
         let ct = this.getRef('container');
-        if (ct && (!this.ready || r1 || r2)) {
-          if (this.lastKnownWidth < ct.clientWidth) {
-            if (this.showIcons) {
-              this.showIcons = false;
-            }
-          }
-          else if (!this.showIcons) {
-            this.showIcons = true;
-          }
+        if ( ct ){
+          this.showIcons = this.lastKnownWidth >= ct.offsetWidth;
         }
-        */
       },
+      /**
+       * Opens or closes the floater.
+       * @method toggleFloater
+       */
+      toggleFloater(){
+        if ( !this.visibleFloater ){
+          this.floaterTop = this.$el.getBoundingClientRect().height;
+        }
+        this.visibleFloater = !this.visibleFloater;
+      },
+      /**
+       * The method called on scroll mounted
+       * @fires checkMeasures
+       */
+      onScrollMounted(){
+        this.$nextTick(() => {
+          this.checkMeasures();
+        })
+      }
     },
     /**
      * @event mounted
-     * @fires setup
+     * @fires setResizeMeasures
+     * @fires setContainerMeasures
+     * @fires checkMeasures
      */
     mounted(){
-      this.onResize();
+      this.setResizeMeasures();
+      this.setContainerMeasures();
       this.$nextTick(() => {
         this.ready = true;
+        this.checkMeasures();
       })
     },
     watch: {
+      /**
+       * @watch source
+       * @fires updateData
+       */
       source(){
         this.updateData();
       },
-      lastKnownWidth(v){
-        
-
+      /**
+       * @watch lastKnownWidth
+       * @fires checkMeasures
+       */
+      lastKnownWidth(newVal){
+        this.checkMeasures();
+      },
+      /**
+       * @watch items
+       * @fires checkMeasures
+       */
+      items(){
+        if ( this.ready ){
+          this.$nextTick(() => {
+            this.checkMeasures();
+          })
+        }
       }
     }
   });
-
 })(bbn);

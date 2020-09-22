@@ -15,6 +15,13 @@
   -moz-column-span: all;
   column-span: all;
 }
+.bbn-dashboard .bbn-masonry > div.bbn-widget.bbn-basic-component .bbn-flex-fill,
+.bbn-dashboard .bbn-masonry > div.bbn-widget.bbn-basic-component .bbn-line-breaker,
+.bbn-dashboard .bbn-masonry > div.bbn-widget.bbn-basic-component .bbn-w-100,
+.bbn-dashboard .bbn-masonry > div.bbn-widget.bbn-basic-component .bbn-block,
+.bbn-dashboard .bbn-masonry > div.bbn-widget.bbn-basic-component .bbn-widget-content {
+  position: static;
+}
 .bbn-dashboard .bbn-dashboard-sortable div.bbn-widget .bbn-header .ui-sortable-handle {
   cursor: move;
 }

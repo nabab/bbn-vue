@@ -1,54 +1,88 @@
 <div :class="componentClass"
-     :style="{zIndex: zIndex}">
-  <bbn-scroll :scrollable="false">
-    <ul ref="container"
-        :class="{
-          'bbn-spadded': true,
-          'bbn-invisible': !showIcons
-        }"
+     :style="{zIndex: zIndex}"
+>
+  <bbn-scroll :scrollable="scrollable"
+              @hook:mounted="onScrollMounted"
+  >
+    <ul v-if="!showIcons"
+        :class="['bbn-spadded', {'bbn-invisible': !ready}]"
         :style="{zIndex: zIndex}"
     >
-      <template v-if="showIcons">
-        <li v-for="it in items"
-            :key="it.index"
-            :draggable="!it.fixed"
-            @mouseover="mouseover(it.index)"
-            @mouseout="mouseout(it.index)"
-            @dragstart="dragstart(it.index, $event)"
-            @dragend="dragend(it.index, $event)"
-          >
-          <a :href="it.data.url ? it.data.url : 'javascript:;'"
-            class="bbn-iblock"
-            draggable="false"
-            @click="onClick(it.data, it.index)">
-            <i :class="it.data.icon"></i>
-          </a>
-        </li>
-      </template>
-      <li v-if="!showIcons">
+      <li :draggable="false">
         <a href="javascript:;"
-          class="bbn-iblock"
-          draggable="false">
+           class="bbn-iblock"
+           @click="toggleFloater"
+           ref="dots"
+        >
           <i class="nf nf-mdi-dots_horizontal"></i>
         </a>
       </li>
     </ul>
+    <ul ref="container"
+        :class="['bbn-spadded', {'bbn-invisible': !showIcons || !ready}]"
+        :style="{zIndex: zIndex}"
+    >
+      <li v-for="it in items"
+          :key="it.index"
+          :draggable="!it.fixed"
+          @mouseover="mouseover(it.index)"
+          @mouseout="mouseout(it.index)"
+          @dragstart="dragstart(it.index, $event)"
+          @dragend="dragend(it.index, $event)"
+      >
+        <a :href="it.data.url ? it.data.url : 'javascript:;'"
+            class="bbn-iblock"
+            draggable="false"
+            @click="onClick(it.data, it.index)"
+        >
+          <i :class="it.data.icon"></i>
+        </a>
+      </li>
+    </ul>
   </bbn-scroll>
+  <bbn-floater v-if="visibleFloater"
+               ref="floater"
+               class="bbn-widget"
+               :auto-hide="1000"
+               @close="visibleFloater = false"
+               :scrollable="true"
+               width="100%"
+               height="100%"
+               :left="0"
+               :right="0"
+               :top="floaterTop"
+  >
+    <div class="bbn-spadded bbn-fisheye-floater-content">
+      <a v-for="it in items"
+          :key="it.index"
+          :draggable="!it.fixed"
+          @dragstart="dragstart(it.index, $event)"
+          @dragend="dragend(it.index, $event)"
+          class="bbn-w-100 bbn-c bbn-smargin"
+          @click="onClick(it.data, it.index)"
+          :href="it.data.url ? it.data.url : 'javascript:;'"
+      >
+        <div class="bbn-w-100 bbn-middle">
+          <i :class="[it.data.icon, 'bbn-fisheye-floater-icon', 'bbn-box', ' bbn-xxspadded', 'bbn-middle']"
+          ></i>
+        </div>
+        <div class="bbn-w-100 bbn-top-sspace" v-text="it.data[sourceText]"></div>
+      </a>
+    </div>
+  </bbn-floater>
   <div class="bbn-fisheye-bin"
-       v-if="visibleBin">
-    <i :class="{
-        nf: true,
-        'nf-fa-trash': true,
-        'bbn-red': overBin
-    }"
+       v-if="visibleBin"
+       :style="binPosition"
+  >
+    <i :class="['nf nf-fa-trash', {'bbn-red': overBin}]"
        @dragenter.prevent="overBin = true"
        @dragover.prevent="() => {}"
        @dragleave="dragleave($event)"
        @drop="drop($event)"
-></i>
+    ></i>
   </div>
   <div class="bbn-fisheye-text"
-       v-if="visibleText > -1"
-       v-html="items[visibleText].data[sourceText]">
-  </div>
+       v-if="(visibleText > -1) && showIcons"
+       v-html="items[visibleText].data[sourceText]"
+  ></div>
 </div>

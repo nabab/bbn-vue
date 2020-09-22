@@ -1,14 +1,33 @@
 .bbn-fisheye {
   text-align: center;
   position: relative;
-  overflow: visible;
+  overflow-y: visible;
   transition: opacity 0.3s;
+}
+.bbn-fisheye .bbn-fisheye-floater-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fill,minmax(7.5em,1fr));
+  justify-items: center;
+}
+.bbn-fisheye .bbn-fisheye-floater-content a {
+  width: 6em;
+}
+.bbn-fisheye .bbn-fisheye-floater-content a i {
+  min-width: 1.4em;
+  min-height: 1.4em;
+}
+.bbn-fisheye .bbn-fisheye-floater-content .bbn-fisheye-floater-icon {
+  backface-visibility: hidden;
+  font-size: 4em;
+}
+.bbn-fisheye a {
+  color: inherit;
 }
 .bbn-fisheye ul {
   display: inline-block;
   list-style: none;
-  padding: 0;
   margin: 0;
+  overflow: visible;
   white-space: nowrap;
   line-height: 100%;
   vertical-align: middle;
@@ -24,15 +43,12 @@
   padding: 0.5em;
   box-sizing: border-box;
 }
-.bbn-fisheye ul li a {
-  color: inherit;
-}
 .bbn-fisheye ul li i {
-  display: inline-block;
   backface-visibility: hidden;
+  font-size: 2em;
+  display: inline-block;
   transition: all 0.2s ease-in-out;
   transform: translateZ(0);
-  font-size: 2em;
 }
 .bbn-fisheye ul li i:hover {
   transform: scale(1.5);
@@ -54,10 +70,10 @@
   position: absolute;
   width: 100%;
   text-align: center;
-  top: 15em;
   text-shadow: 0 0 0.8em #000;
   white-space: nowrap;
   color: #FFF;
+  z-index: 200;
 }
 .bbn-fisheye .bbn-fisheye-bin span {
   display: inline-block;

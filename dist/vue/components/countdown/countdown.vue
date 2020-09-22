@@ -1,9 +1,7 @@
 <template>
-<span :class="[{'bbn-iblock': true}, componentClass]" v-if="target">
+<span :class="['bbn-iblock', componentClass]" v-if="target">
   <span v-if="isValid">
-    <span v-if="rendered">
-
-    </span>
+    <span v-if="rendered"></span>
     <span>
       <span v-for="(p, i) in periods"
             v-if="shown[p.name]"
@@ -15,18 +13,13 @@
 </span>
 </template>
 <script>
-  module.exports = //backup countdown
- /**
-  * @file bbn-countdown component
-  *
-  * @description bbn-countdown is a component that performs a countdown of a user-defined date, based on the measure of time defined in the construction.
-  *
-  * @copyright BBN Solutions
-  *
-  * @author BBN Solutions
-  *
-  * @created 13/02/2017.
-  */
+  module.exports = /**
+ * @file bbn-countdown component
+ * @description bbn-countdown is a component that performs a countdown of a user-defined date, based on the measure of time defined in the construction.
+ * @copyright BBN Solutions
+ * @author BBN Solutions
+ * @created 13/02/2017.
+*/
 
 
 /** @todo try this way
@@ -35,7 +28,6 @@
  const formatted = moment(timestamp).format('L');
 
  console.log(formatted);*/
-
 
 (function(bbn){
   "use strict";

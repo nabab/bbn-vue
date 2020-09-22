@@ -24,7 +24,7 @@ script.innerHTML = `<div :class="componentClass"
         <bbn-tree-node inline-template
                         v-for="(it, i) in filteredData"
                         :source="it"
-                        :key="level + '-' + i"
+                        :key="($vnode.key ? $vnode.key + '-' : '') + 'node-' + level + '-' + i"
                         :idx="it.index"
                         :component="it.component || component"
                         :selectable="it.selectable !== undefined ? it.selectable : selectable"
@@ -42,7 +42,7 @@ script.innerHTML = `<div :class="componentClass"
                         'bbn-state-selected': isSelected
                       }]"
               v-show="isVisible"
-              :title="source.tooltip || source.data.text"
+              :title="source.tooltip || textFromText"
           >
             <span v-if="sortable && (source.num === 1)"
                   :class="['bbn-w-100', 'bbn-tree-order-top', {
@@ -121,7 +121,7 @@ script.innerHTML = `<div :class="componentClass"
             </span>
             <bbn-tree v-if="!!numChildren"
                       ref="tree"
-                      :key="level + '-' + idx + '-tree'"
+                      :key="'tree-' + level + '-' + idx"
                       class="bbn-text"
                       :component="component"
                       :source="tree.isAjax && !tree.hybrid ? tree.source : (data[tree.children] ? data[tree.children] : [])"
@@ -1623,6 +1623,12 @@ document.head.insertAdjacentElement('beforeend', css);
            */
           menu(){
             return this.getMenu()
+          },
+          textFromText() {
+            if (this.source.data.text) {
+              return bbn.fn.html2text(this.source.data.text)
+            }
+            return '';
           }
         },
         methods: {

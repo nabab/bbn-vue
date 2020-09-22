@@ -127,7 +127,7 @@
         },
         isSearching(){
           return this.currentText !== this.currentTextValue;
-        },
+        }
       },
       methods: {
         /**

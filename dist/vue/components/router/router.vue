@@ -1,87 +1,44 @@
 <template>
-<div :class="[{
-       'bbn-h': !ready,
-       'bbn-overlay': ready && nav
-     }, componentClass]"
+<div :class="[componentClass, {
+       'bbn-invisible': !ready,
+       'bbn-overlay': nav,
+     }]"
 >
-  <div v-if="!nav" class="bbn-overlay">
-    <slot></slot>
-    <bbn-container v-for="view in views"
-                   v-if="!view.slot && !component"
-                   :key="view.url"
-                   v-bind="view"
-    ></bbn-container>
-    <bbn-container v-if="component && componentSource && componentUrl && componentSource[componentUrl]"
-                   :source="componentSource"
-                   :component="component"
-                   ref="container"
-                   :selected="true"
-                   @hook:mounted="containerComponentMount"
-                   :url="componentSource[componentUrl]">
-    </bbn-container>
-  </div>
-  <div v-else
-      :class="['bbn-flex-height', 'bbn-router-nav', {'bbn-router-nav-bc': isBreadcrumb}]"
-  >
-    <template v-if="master || !isBreadcrumb">
-      <div class="bbn-flex-width">
-        <div class="bbn-flex-fill">
-          <bbn-breadcrumb v-if="isBreadcrumb"
-                          :source="views"
-                          ref="breadcrumb"
-                          @beforeClose="close"
-                          @select="activateIndex"
-                          :menu="getMenuFn"
-                          :scrollable="scrollable"
-                          :content="false"
-                          :value="selected"
-                          :master="true"
-                          class="bbn-router-breadcrumb"
-          ></bbn-breadcrumb>
-          <bbn-tabs v-else
+  <div :class="{
+    'bbn-flex-height': nav,
+    'bbn-router-nav': nav,
+    'bbn-router-nav-bc': nav && isBreadcrumb,
+    'bbn-overlay': !nav
+  }">
+    <bbn-breadcrumb v-if="nav && isBreadcrumb"
                     :source="views"
-                    :scrollable="scrollable"
-                    ref="tabs"
+                    ref="breadcrumb"
                     @beforeClose="close"
                     @select="activateIndex"
                     :menu="getMenuFn"
-                    @pin="setConfig"
-                    @unpin="setConfig"
+                    :scrollable="scrollable"
                     :content="false"
                     :value="selected"
-                    class="bbn-router-tabs"
-          ></bbn-tabs>
-        </div>
-        <div v-if="master && showSwitch"
-             class="bbn-middle bbn-router-switch bbn-bordered-bottom"
-        >
-          <bbn-context :source="mainMenu"
-                        tag="div"
-                        min-width="10em"
-                        tabindex="0"
-                        ref="mainMenu"
-                        class="bbn-100 bbn-middle"
-          >
-            <span v-if="isLoading" class="bbn-router-loading"></span>
-            <i v-else class="nf nf-fa-cog bbn-p bbn-large"></i>
-          </bbn-context>
-        </div>
-      </div>
-    </template>
-    <div v-else-if="isBreadcrumb">
-      <bbn-breadcrumb :source="views"
-                      ref="breadcrumb"
-                      @beforeClose="close"
-                      @select="activateIndex"
-                      :menu="getMenuFn"
-                      :scrollable="scrollable"
-                      :content="false"
-                      :value="selected"
-                      :master="false"
-                      class="bbn-router-breadcrumb"
-      ></bbn-breadcrumb>
-    </div>
-    <div class="bbn-flex-fill">
+                    :master="!!master"
+                    :class="['bbn-router-breadcrumb', {'bbn-router-breadcrumb-master': master}]"
+    ></bbn-breadcrumb>
+    <bbn-tabs v-else-if="nav && !isBreadcrumb"
+              :source="views"
+              :scrollable="scrollable"
+              ref="tabs"
+              @beforeClose="close"
+              @select="activateIndex"
+              :menu="getMenuFn"
+              @pin="setConfig"
+              @unpin="setConfig"
+              :content="false"
+              :value="selected"
+              class="bbn-router-tabs"
+    ></bbn-tabs>
+    <div :class="{
+      'bbn-flex-fill': !!nav,
+      'bbn-overlay': !nav
+    }">
       <slot></slot>
       <bbn-container v-for="view in views"
                      v-if="!view.slot && !component"
@@ -91,8 +48,8 @@
       <bbn-container v-if="component && componentSource && componentURL"
                      :source="componentSource"
                      :component="component"
-                     :url="componentSource[componentURL]">
-      </bbn-container>
+                     :url="componentSource[componentURL]"
+      ></bbn-container>
     </div>
   </div>
 </div>
@@ -227,7 +184,7 @@
         default: 10
       },
       /**
-       *
+       * @todo Integrates Boolean to have a default with no menu
        * @prop {Array|Function} [[]] menu
        */
       menu: {
@@ -496,20 +453,6 @@
           return this.itsMaster.getRef('breadcrumb');
         }
         return false;
-      },
-      /**
-       * The switch's menu.
-       * @computed mainMenu
-       * @return {Array}
-       */
-      mainMenu(){
-        return [{
-          text: bbn._('Switch to ') + (this.isBreadcrumb ? bbn._('tabs') : bbn._('breadcrumb')) + ' ' + bbn._('mode'),
-          key: 'switch',
-          action: () => {
-            this.isBreadcrumb = !this.isBreadcrumb;
-          }
-        }];
       },
       /**
        * The final Vue object for the active container (if it has sub-router).
@@ -1464,6 +1407,9 @@
               loaded: false
             }, idx);
           }
+          if ( this.isBreadcrumb ){
+            this.selected = idx;
+          }
           this.$emit('update', this.views);
           let dataObj = this.postBaseUrl ? {_bbn_baseURL: this.fullBaseURL} : {};
           return this.post(
@@ -1556,22 +1502,25 @@
        * @fires route
        */
       reload(idx){
-        if (
-          this.views[idx] &&
-          !this.views[idx].slot &&
-          this.views[idx].load &&
-          this.urls[this.views[idx].url] &&
-          this.urls[this.views[idx].url].isLoaded
-        ){
-          this.views[idx].loaded = false;
-          if (this.views[idx].dirty) {
-            this.views[idx].dirty = false;
+        // So if the ac6tion comes from within the container components can finish whatever they're doing
+        this.$nextTick(() => {
+          if (
+            this.views[idx] &&
+            !this.views[idx].slot &&
+            this.views[idx].load &&
+            this.urls[this.views[idx].url] &&
+            this.urls[this.views[idx].url].isLoaded
+          ){
+            this.views[idx].loaded = false;
+            if (this.views[idx].dirty) {
+              this.views[idx].dirty = false;
+            }
+            this.urls[this.views[idx].url].isLoaded = false;
+            this.$nextTick(() => {
+              this.route(this.urls[this.views[idx].url].currentURL, true);
+            })
           }
-          this.urls[this.views[idx].url].isLoaded = false;
-          this.$nextTick(() => {
-            this.route(this.urls[this.views[idx].url].currentURL, true);
-          })
-        }
+        });
       },
       /**
        * @method getDefaultURL
@@ -1646,9 +1595,10 @@
        * @fires reload
        * @return {Array|Boolean}
        */
-      getMenuFn(idx){
+      getMenuFn(idx) {
+        //bbn.fn.log('getMenuFn(tabIndex)', this.nav, this.views[idx] ? this.views[idx].menu : 'niente', idx);
         if ( !this.nav || !this.views[idx]  || (this.views[idx].menu === false) ){
-          return false;
+          return [];
         }
         let items = [],
             tmp = ((bbn.fn.isFunction(this.views[idx].menu) ? this.views[idx].menu() : this.views[idx].menu) || []).slice(),
@@ -1822,6 +1772,14 @@
             items.push(a);
           });
         }
+        items.push({
+          text: bbn._('Switch to ') + (this.isBreadcrumb ? bbn._('tabs') : bbn._('breadcrumb')) + ' ' + bbn._('mode'),
+          key: 'switch',
+          icon: this.isBreadcrumb ? 'nf nf-mdi-tab' : 'nf nf-fa-ellipsis_h',
+          action: () => {
+            this.itsMaster.isBreadcrumb = !this.itsMaster.isBreadcrumb;
+          }
+        });
         return items;
       },
       /**
@@ -2213,11 +2171,8 @@ div.bbn-router .bbn-router-nav .bbn-router-nav:not(.bbn-router-nav-bc) {
   margin-top: 0.5em;
   height: calc(99.5%);
 }
-div.bbn-router .bbn-router-nav .bbn-router-switch {
-  width: 2.4em;
-}
-div.bbn-router .bbn-router-nav.bbn-router-nav-bc > div.bbn-flex-width > div.bbn-router-switch {
-  height: 2.4em;
+div.bbn-router .bbn-router-nav.bbn-router-nav-bc .bbn-router-breadcrumb-master {
+  height: 2.5em;
 }
 div.bbn-router .bbn-router-nav .bbn-router-loading {
   content: " ";

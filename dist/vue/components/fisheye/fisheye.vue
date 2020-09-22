@@ -1,43 +1,91 @@
 <template>
 <div :class="componentClass"
-     :style="{zIndex: zIndex}">
-  <ul ref="container"
-      class="bbn-p"
-      :style="{zIndex: zIndex}"
+     :style="{zIndex: zIndex}"
+>
+  <bbn-scroll :scrollable="scrollable"
+              @hook:mounted="onScrollMounted"
   >
-    <li v-for="it in items"
-        :key="it.index"
-        :draggable="!it.fixed"
-        @mouseover="mouseover(it.index)"
-        @mouseout="mouseout(it.index)"
-        @dragstart="dragstart(it.index, $event)"
-        @dragend="dragend(it.index, $event)"
+    <ul v-if="!showIcons"
+        :class="['bbn-spadded', {'bbn-invisible': !ready}]"
+        :style="{zIndex: zIndex}"
+    >
+      <li :draggable="false">
+        <a href="javascript:;"
+           class="bbn-iblock"
+           @click="toggleFloater"
+           ref="dots"
+        >
+          <i class="nf nf-mdi-dots_horizontal"></i>
+        </a>
+      </li>
+    </ul>
+    <ul ref="container"
+        :class="['bbn-spadded', {'bbn-invisible': !showIcons || !ready}]"
+        :style="{zIndex: zIndex}"
+    >
+      <li v-for="it in items"
+          :key="it.index"
+          :draggable="!it.fixed"
+          @mouseover="mouseover(it.index)"
+          @mouseout="mouseout(it.index)"
+          @dragstart="dragstart(it.index, $event)"
+          @dragend="dragend(it.index, $event)"
       >
-      <a :href="it.data.url ? it.data.url : 'javascript:;'"
-         class="bbn-iblock"
-         draggable="false"
-         @click="onClick(it.data, it.index)">
-        <i :class="it.data.icon"></i>
+        <a :href="it.data.url ? it.data.url : 'javascript:;'"
+            class="bbn-iblock"
+            draggable="false"
+            @click="onClick(it.data, it.index)"
+        >
+          <i :class="it.data.icon"></i>
+        </a>
+      </li>
+    </ul>
+  </bbn-scroll>
+  <bbn-floater v-if="visibleFloater"
+               ref="floater"
+               class="bbn-widget"
+               :auto-hide="1000"
+               @close="visibleFloater = false"
+               :scrollable="true"
+               width="100%"
+               height="100%"
+               :left="0"
+               :right="0"
+               :top="floaterTop"
+  >
+    <div class="bbn-spadded bbn-fisheye-floater-content">
+      <a v-for="it in items"
+          :key="it.index"
+          :draggable="!it.fixed"
+          @dragstart="dragstart(it.index, $event)"
+          @dragend="dragend(it.index, $event)"
+          class="bbn-w-100 bbn-c bbn-smargin"
+          @click="onClick(it.data, it.index)"
+          :href="it.data.url ? it.data.url : 'javascript:;'"
+      >
+        <div class="bbn-w-100 bbn-middle">
+          <i :class="[it.data.icon, 'bbn-fisheye-floater-icon', 'bbn-box', ' bbn-xxspadded', 'bbn-middle']"
+          ></i>
+        </div>
+        <div class="bbn-w-100 bbn-top-sspace" v-text="it.data[sourceText]"></div>
       </a>
-    </li>
-  </ul>
+    </div>
+  </bbn-floater>
   <div class="bbn-fisheye-bin"
-       v-if="visibleBin">
-    <i :class="{
-        nf: true,
-        'nf-fa-trash': true,
-        'bbn-red': overBin
-    }"
+       v-if="visibleBin"
+       :style="binPosition"
+  >
+    <i :class="['nf nf-fa-trash', {'bbn-red': overBin}]"
        @dragenter.prevent="overBin = true"
        @dragover.prevent="() => {}"
        @dragleave="dragleave($event)"
        @drop="drop($event)"
-></i>
+    ></i>
   </div>
   <div class="bbn-fisheye-text"
-       v-if="visibleText > -1"
-       v-html="items[visibleText].data[sourceText]">
-  </div>
+       v-if="(visibleText > -1) && showIcons"
+       v-html="items[visibleText].data[sourceText]"
+  ></div>
 </div>
 </template>
 <script>
@@ -49,21 +97,19 @@
  * Each element is represented by an icon capable of performing an action.
  *
  * @author BBN Solutions
- * 
+ *
  * @copyright BBN Solutions
  */
 (function(bbn){
   "use strict";
 
-  /**
-   * Classic input with normalized appearance
-   */
   Vue.component('bbn-fisheye', {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.listComponent
+     * @mixin bbn.vue.resizerComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.listComponent],
+    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent, bbn.vue.listComponent],
     props: {
       /**
        * The source of the component
@@ -75,6 +121,10 @@
           return [];
         }
       },
+      /**
+       * True if you want to activate the possibility to remove an element.
+       * @prop {Boolean} [false] removable
+       */
       removable: {
         type: Boolean,
         default: false
@@ -107,12 +157,15 @@
         type: Number,
         default: 1
       },
-      itemWidth: {
-        type: Number,
-        default: 24
-      },
+      /**
+       * True if you want to render the component scrollable
+       * @prop {Boolean} [false] scrollable
+       */
+      scrollable: {
+        type: Boolean,
+        default: false
+      }
     },
-
     data(){
       return {
         /**
@@ -131,16 +184,46 @@
          * @data {Boolean} [false] droppableBin
          */
         droppableBin: false,
+        /**
+         * @data {Boolean|Number} [false] timeout
+         */
         timeout: false,
+        /**
+         * @data {Boolean|Number} [false] binTimeout
+         */
         binTimeout: false,
+        /**
+         * @data {Boolean} [false] visibleBin
+         */
         visibleBin: false,
+        /**
+         * @data {Number} [-1] visibleText
+         */
         visibleText: -1,
-        itemFullWidth: 0,
-        draggedIdx: -1
+        /**
+         * @data {Number} [-1] draggedIdx
+         */
+        draggedIdx: -1,
+        /**
+         * @data {Boolean} [true] showIcons
+         */
+        showIcons: true,
+        /**
+         * @data {Boolean} [false] visibleFloater
+         */
+        visibleFloater: false,
+        /**
+         * @data {Number} [0] floaterTop
+         */
+        floaterTop: 0
       };
     },
-
     computed: {
+      /**
+       * The icons list
+       * @computed items
+       * @returns {Array}
+       */
       items(){
         let items = [];
         let i = 0;
@@ -169,20 +252,33 @@
           i++;
         });
         return items;
+      },
+      /**
+       * The bin position.
+       * @computed binPosition
+       * @returns {String}
+       */
+      binPosition(){
+        return this.showIcons ? 'top: 15em' : 'bottom: calc(-' + bbn.env.height + 'px + 5em)';
       }
     },
-
     methods: {
       /**
-       * Fires the action given to the item 
+       * Fires the action given to the item
        * @method onClick
-       * @param {Object} it 
+       * @param {Object} it
        */
       onClick(it){
         if ( it.action && bbn.fn.isFunction(it.action) ){
           it.action();
         }
+        this.visibleFloater = false;
       },
+      /**
+       * The method called on the mouseover
+       * @method mouseover
+       * @param {Number} idx
+       */
       mouseover(idx){
         if ( this.visibleText !== idx ){
           clearTimeout(this.timeout);
@@ -192,15 +288,29 @@
           }, 500);
         }
       },
+      /**
+       * The method calledon the mouseout
+       * @method mouseout
+       */
       mouseout(){
         clearTimeout(this.timeout);
         this.visibleText = -1;
       },
-      dragleave(e){
+      /**
+       * The method called on the dragleave
+       * @method dragleave
+       */
+      dragleave(){
         setTimeout(() => {
           this.overBin = false;
         }, 500);
       },
+      /**
+       * The method called on the dragstart
+       * @method dragstart
+       * @param {Number} idx
+       * @param {Event} e
+       */
       dragstart(idx, e){
         if ( this.removable && e.dataTransfer ){
           e.dataTransfer.allowedEffect = 'move';
@@ -212,33 +322,101 @@
           e.preventDefault();
         }
       },
-      dragend(idx, e){
+      /**
+       * The method called on the dragend
+       * @method dragend
+       */
+      dragend(){
         if ( this.removable ){
           this.visibleBin = false;
           this.draggedIdx = -1;
         }
       },
+      /**
+       * The method called on the drop
+       * @method drop
+       * @param {Event} e
+       * @emits remove
+       */
       drop(e){
         if ( this.items[this.draggedIdx] ){
           e.preventDefault();
           this.$emit('remove', this.items[this.draggedIdx].data, e);
         }
+      },
+      /**
+       * Checks the measures of the main container and the icons container
+       * @method checkMeasures
+       * @fires getRef
+       */
+      checkMeasures(){
+        let ct = this.getRef('container');
+        if ( ct ){
+          this.showIcons = this.lastKnownWidth >= ct.offsetWidth;
+        }
+      },
+      /**
+       * Opens or closes the floater.
+       * @method toggleFloater
+       */
+      toggleFloater(){
+        if ( !this.visibleFloater ){
+          this.floaterTop = this.$el.getBoundingClientRect().height;
+        }
+        this.visibleFloater = !this.visibleFloater;
+      },
+      /**
+       * The method called on scroll mounted
+       * @fires checkMeasures
+       */
+      onScrollMounted(){
+        this.$nextTick(() => {
+          this.checkMeasures();
+        })
       }
     },
     /**
      * @event mounted
-     * @fires setup
+     * @fires setResizeMeasures
+     * @fires setContainerMeasures
+     * @fires checkMeasures
      */
     mounted(){
-      this.ready = true;
+      this.setResizeMeasures();
+      this.setContainerMeasures();
+      this.$nextTick(() => {
+        this.ready = true;
+        this.checkMeasures();
+      })
     },
     watch: {
+      /**
+       * @watch source
+       * @fires updateData
+       */
       source(){
         this.updateData();
+      },
+      /**
+       * @watch lastKnownWidth
+       * @fires checkMeasures
+       */
+      lastKnownWidth(newVal){
+        this.checkMeasures();
+      },
+      /**
+       * @watch items
+       * @fires checkMeasures
+       */
+      items(){
+        if ( this.ready ){
+          this.$nextTick(() => {
+            this.checkMeasures();
+          })
+        }
       }
     }
   });
-
 })(bbn);
 
 </script>
@@ -246,14 +424,33 @@
 .bbn-fisheye {
   text-align: center;
   position: relative;
-  overflow: visible;
+  overflow-y: visible;
   transition: opacity 0.3s;
+}
+.bbn-fisheye .bbn-fisheye-floater-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fill,minmax(7.5em,1fr));
+  justify-items: center;
+}
+.bbn-fisheye .bbn-fisheye-floater-content a {
+  width: 6em;
+}
+.bbn-fisheye .bbn-fisheye-floater-content a i {
+  min-width: 1.4em;
+  min-height: 1.4em;
+}
+.bbn-fisheye .bbn-fisheye-floater-content .bbn-fisheye-floater-icon {
+  backface-visibility: hidden;
+  font-size: 4em;
+}
+.bbn-fisheye a {
+  color: inherit;
 }
 .bbn-fisheye ul {
   display: inline-block;
   list-style: none;
-  padding: 0;
   margin: 0;
+  overflow: visible;
   white-space: nowrap;
   line-height: 100%;
   vertical-align: middle;
@@ -269,15 +466,12 @@
   padding: 0.5em;
   box-sizing: border-box;
 }
-.bbn-fisheye ul li a {
-  color: inherit;
-}
 .bbn-fisheye ul li i {
-  display: inline-block;
   backface-visibility: hidden;
+  font-size: 2em;
+  display: inline-block;
   transition: all 0.2s ease-in-out;
   transform: translateZ(0);
-  font-size: 2em;
 }
 .bbn-fisheye ul li i:hover {
   transform: scale(1.5);
@@ -299,10 +493,10 @@
   position: absolute;
   width: 100%;
   text-align: center;
-  top: 15em;
   text-shadow: 0 0 0.8em #000;
   white-space: nowrap;
   color: #FFF;
+  z-index: 200;
 }
 .bbn-fisheye .bbn-fisheye-bin span {
   display: inline-block;

@@ -34,6 +34,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-textbox', {'bbn-input-nul
                ref="floater"
                :auto-hide="1000"
                @close="isOpened = false"
+               :element-width="false"
   >
     <bbn-calendar :arrows-buttons="false"
                   @selected="setDate"
@@ -46,10 +47,8 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-textbox', {'bbn-input-nul
                   :min="min"
                   :max="max"
                   :extra-items="true"
-                  @hook:mounted="getRef('floater').onResize()"
                   :disable-dates="disableDates"
                   :items-range="datesRange"
-                  style="height: auto !important; min-height: 200px;"
                   :source="source"
                   :onlyEvents="onlyEvents"
     ></bbn-calendar>

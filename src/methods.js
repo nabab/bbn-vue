@@ -147,8 +147,8 @@
       if ( def ){
         this._realDefineComponent(name, def, mixins);
         this.queueTimer = setTimeout(() => {
-          resolve('ok1')
-          return 'ok2';
+          resolve(true)
+          return true;
         })
       }
       else{
@@ -274,11 +274,9 @@
           if ( d && d.success && d.components ){
             bbn.fn.iterate(items, (a, n) => {
               if ( d.components[n] && this._realDefineComponent(a.name, d.components[n], a.mixins) && Vue.options.components[a.name]) {
-                bbn.fn.log("All good")
                 a.resolve(Vue.options.components[a.name])
               }
               else{
-                bbn.fn.log("BOUG", a)
                 a.reject();
               }
             })
@@ -298,11 +296,9 @@
         return axios.get(item.url, {responseType:'json'}).then((r) => {
           r = r.data;
           if ( this._realDefineComponent(a.name, r, item.mixins)  && Vue.options.components[a.name]){
-            bbn.fn.log("All good 2")
             item.resolve(Vue.options.components[a.name]);
           }
           else {
-            bbn.fn.log("BOUG 2", a)
             item.reject();
           }
         })
@@ -453,9 +449,9 @@
             this._realDefineBBNComponent(name, def);
             this.queueTimer = setTimeout(() => {
               if ( resolve ){
-                resolve('ok6');
+                resolve(true);
               }
-              return 'ok7';
+              return true;
             })
           }
           else{
@@ -477,7 +473,6 @@
         if (d && d.data) {
           let fn = eval(d.data);
           if (bbn.fn.isFunction(fn)) {
-            bbn.fn.log("IT IS A FN");
             fn(resolve);
           }
         }

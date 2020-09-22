@@ -1,9 +1,10 @@
 <template>
 <div :class="['bbn-overlay', componentClass]"
      v-show="showPopup"
+     @subready.stop
      :style="{zIndex: zIndex}"
 >
-  <bbn-floater v-if="showPopup"
+  <bbn-floater v-if="ready"
               v-for="(popup, i) in popups"
               :key="popup.uid"
               :ref="popup.uid"
@@ -143,6 +144,9 @@
       };
     },
     computed: {
+      numPopups(){
+        return this.items.length
+      },
       /**
        * @computed popus
        * @fires getObject
@@ -152,7 +156,11 @@
         let r = [];
         bbn.fn.each(this.items, (a, i) => {
           //r.push(this.getObject(bbn.fn.extendOut(a, {index: i})));
-          r.push(this.getObject(bbn.fn.extend(a, {index: i})));
+          r.push(this.getObject(bbn.fn.extend(a, {
+            index: i,
+            maxWidth: this.lastKnownWidth || this.lastKnownCtWidth || null,
+            maxHeight: this.lastKnownHeight || this.lastKnownCtHeight || null
+          })));
         });
         return r;
       },
@@ -359,7 +367,8 @@
         }
         let win = this.getWindow(idx);
         if ( this.items[idx] && win ){
-          win.close(idx, force);
+          bbn.fn.log("CLOSE", force);
+          win.close(force);
           this.$forceUpdate();
         }
       },
@@ -414,8 +423,14 @@
               has_callback = 1;
             }
           }
+          else if (bbn.fn.isObject(arguments[i])) {
+            bbn.fn.extend(o, arguments[i]);
+          }
         }
         if ( typeof(o) === 'object' ){
+          if (o.closable === undefined) {
+            o.closable = true;
+          }
           if ( !o.content ){
             o.content = this.alertMessage;
           }
@@ -434,7 +449,7 @@
               if ( onClose ){
                 onClose($ev, btn);
               }
-              btn.closest('bbn-floater').close();
+              btn.closest('bbn-floater').close(true);
             }
           }];
           /*
@@ -450,7 +465,6 @@
           */
           this.open(bbn.fn.extend(o, {
             maximizable: false,
-            closable: false,
             scrollable: true,
             resizable: false
           }));
@@ -511,8 +525,9 @@
             o.content = this.confirmMessage;
           }
           if ( !o.title ){
-            o.title = this.confirmTitle;
+            o.title = false;
           }
+
           o.content = '<div class="bbn-lpadded bbn-medium">' + o.content + '</div>';
           o.buttons = [{
             text: yesText,
@@ -540,7 +555,7 @@
           this.open(bbn.fn.extend(o, {
             resizable: false,
             maximizable: false,
-            closable: false,
+            closable: true,
             scrollable: true
           }));
         }
@@ -574,15 +589,23 @@
      * @event mounted
      */
     mounted(){
-      bbn.fn.each(this.popups, a => this.open(a))
+      bbn.fn.each(this.popups, a => this.open(a));
     },
     watch: {
       /**
        * @watch items
        * @fires makeWindows
        */
-      items: function(){
-        this.makeWindows()
+      items() {
+        this.makeWindows();
+      },
+      numPopups(v){
+        if (!v) {
+          this.ready = false;
+        }
+        else if (!this.ready) {
+          this.ready = true;
+        }
       }
     }
   });

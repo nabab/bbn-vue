@@ -592,7 +592,9 @@
       source: {
         deep: true,
         handler(){
-          this.updateData();
+          if ( this.isAutobind ){
+            this.updateData();
+          }
         }
       },
       /*

@@ -501,7 +501,7 @@ document.head.insertAdjacentElement('beforeend', css);
           let tmp1,
               tmp2;
           if (this.scroller) {
-            tmp1 = this.scroller[this.isVertical ? 'containerHeight' : 'containerWidth'];
+            tmp1 = this.scroller[this.isVertical ? 'lastKnownHeight' : 'lastKnownWidth'];
             tmp2 = this.scroller[this.isVertical ? 'contentHeight' : 'contentWidth'];
           }
           else {
@@ -574,9 +574,11 @@ document.head.insertAdjacentElement('beforeend', css);
             this.show = true;
           }
           this.moveTimeout = setTimeout(() => {
-            this.hideSlider();
+            if (!this.isOverSlider) {
+              this.hideSlider();
+            }
           }, 500);
-        }, 'overContent')
+        }, 'overContent', 250)
       },
 
       /**

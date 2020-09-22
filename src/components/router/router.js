@@ -127,7 +127,7 @@
         default: 10
       },
       /**
-       *
+       * @todo Integrates Boolean to have a default with no menu
        * @prop {Array|Function} [[]] menu
        */
       menu: {

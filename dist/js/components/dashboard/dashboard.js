@@ -316,8 +316,9 @@ document.head.insertAdjacentElement('beforeend', css);
       getWidget(key){
         let idx = bbn.fn.search(this.widgets, {key: key});
         if ( idx > -1 ){
-          return this.closest("bbn-container");
+          return this.widgets[idx];
         }
+        return null;
       },
       /**
        * Hides the widget corresponding to the given key.
@@ -453,6 +454,7 @@ document.head.insertAdjacentElement('beforeend', css);
           let items = [];
           let i = 0;
           if ( this.widgets ){
+            bbn.fn.log("THERE IS A MENU AND WIDGETS IN DASHBOARD");
             bbn.fn.each(this.originalSource, (a) => {
               let w = bbn.fn.getRow(this.widgets, {uid: a.uid});
               if ( w && w.showable ){

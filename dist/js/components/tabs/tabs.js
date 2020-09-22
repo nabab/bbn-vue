@@ -54,6 +54,7 @@ script.innerHTML = `<div :class="[componentClass, {'bbn-tabs-scrollable': scroll
                               :source="getMenuFn"
                               :source-index="tabIndex"
                               tag="div"
+                              :disabled="tabIndex !== selected"
                               min-width="10em"
                               :class="['bbn-tabs-tab', 'bbn-iblock', {'bbn-tabs-dirty': tab.dirty}]"
                               :ref="'title-' + tabIndex"
@@ -150,10 +151,6 @@ document.head.insertAdjacentElement('beforeend', css);
        */
       bbn.vue.basicComponent,
       /**
-       * @mixin bbn.vue.resizerComponent
-       */
-      bbn.vue.resizerComponent,
-      /**
        * @mixin bbn.vue.localStorageComponent
        */
       bbn.vue.localStorageComponent,
@@ -164,7 +161,11 @@ document.head.insertAdjacentElement('beforeend', css);
       /**
        * @mixin bbn.vue.observerComponent
        */
-      bbn.vue.observerComponent
+      bbn.vue.observerComponent,
+      /**
+       * @mixin bbn.vue.resizerComponent
+       */
+      bbn.vue.resizerComponent
     ],
     props: {
       /**

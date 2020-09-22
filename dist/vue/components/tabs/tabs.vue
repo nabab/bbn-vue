@@ -53,6 +53,7 @@
                               :source="getMenuFn"
                               :source-index="tabIndex"
                               tag="div"
+                              :disabled="tabIndex !== selected"
                               min-width="10em"
                               :class="['bbn-tabs-tab', 'bbn-iblock', {'bbn-tabs-dirty': tab.dirty}]"
                               :ref="'title-' + tabIndex"
@@ -144,10 +145,6 @@
        */
       bbn.vue.basicComponent,
       /**
-       * @mixin bbn.vue.resizerComponent
-       */
-      bbn.vue.resizerComponent,
-      /**
        * @mixin bbn.vue.localStorageComponent
        */
       bbn.vue.localStorageComponent,
@@ -158,7 +155,11 @@
       /**
        * @mixin bbn.vue.observerComponent
        */
-      bbn.vue.observerComponent
+      bbn.vue.observerComponent,
+      /**
+       * @mixin bbn.vue.resizerComponent
+       */
+      bbn.vue.resizerComponent
     ],
     props: {
       /**
@@ -456,7 +457,6 @@ div.bbn-tabs {
   overflow: hidden;
   position: relative;
   width: 100%;
-  height: 100%;
   box-sizing: border-box;
   margin: 0;
   padding: 0;

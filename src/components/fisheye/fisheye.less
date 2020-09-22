@@ -3,6 +3,25 @@
   position: relative;
   overflow-y: visible;
   transition: opacity 0.3s;
+  .bbn-fisheye-floater-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(7.5em, 1fr));
+    justify-items: center;
+    a {
+      width: 6em;
+      i {
+        min-width: 1.4em;
+        min-height: 1.4em;
+      }
+    }
+    .bbn-fisheye-floater-icon {
+      backface-visibility: hidden;
+      font-size: 4em;
+    }
+  }
+  a{
+    color: inherit;
+  }
   ul{
     display: inline-block;
     list-style: none;
@@ -21,15 +40,12 @@
       transform: translateZ(0);
       padding: 0.5em;
       box-sizing: border-box;
-      a{
-        color: inherit;
-      }
       i{
-        display: inline-block;
         backface-visibility: hidden;
+        font-size: 2em;
+        display: inline-block;
         transition: all 0.2s ease-in-out;
         transform: translateZ(0);
-        font-size: 2em;
         &:hover{
           transform: scale(1.5);
         }
@@ -53,10 +69,11 @@
     position: absolute;
     width: 100%;
     text-align: center;
-    top: 15em;
+    //top: 15em;
     text-shadow: 0 0 0.8em #000;
     white-space: nowrap;
     color: #FFF;
+    z-index: 200;
     span{
       display: inline-block;
       min-width: 8em;

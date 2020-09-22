@@ -13,7 +13,7 @@
         :title="titleString"
         :style="currentStyle"
 >
-  <span v-if="icon && (iconPosition === 'left')" class="bbn-button-icon bbn-rel">
+  <span v-if="icon && (iconPosition === 'left')" :class="['bbn-button-icon', {'bbn-middle': notext}]">
     <i :class="icon"> </i>
     <i v-if="secondary"
        :class="secondary + ' secondary'"

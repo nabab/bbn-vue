@@ -32,7 +32,7 @@
                hpos="right"
                :auto-hide="1000"
                :element-width="false"
-               max-width="10em"
+               max-width="15em"
   >
     <timepicker inline-template
                 ref="timepicker"
@@ -129,7 +129,7 @@
           </bbn-pane>
         </bbn-splitter>
       </div>
-      <div v-else-if="!comp.scrollMode && !comp.blocksMode"
+      <div v-else-if="comp.dropdownMode"
            class="bbn-c"
       >
         <div class="bbn-iblock">
@@ -165,7 +165,7 @@
           ></bbn-dropdown>
         </div>
       </div>
-      <div v-else-if="!comp.scrollMode && comp.blocksMode"
+      <div v-else-if="comp.blockMode"
            class="bbn-block bbn-background"
       >
         <div class="bbn-block">
@@ -173,8 +173,8 @@
                title="_('Hour')"
                class="bbn-unselectable bbn-header bbn-c bbn-no-border-top bbn-no-border-left bbn-no-border-right"
           ></div>
-          <div class="bbn-c bbn-block bbn-w-50">
-            <div class="bbn-block" style="vertical-align: top;">
+          <div class="bbn-c bbn-block">
+            <div class="bbn-iblock" style="vertical-align: top;">
               <div v-for="n in 12"
                    :class="[
                      'bbn-hspadded',
@@ -197,7 +197,7 @@
                 ></strong>
               </div>
             </div>
-            <div class="bbn-block" style="vertical-align: top;">
+            <div class="bbn-iblock" style="vertical-align: top;">
               <div v-for="n in 12"
                    :class="[
                      'bbn-hspadded',
@@ -221,7 +221,7 @@
             </div>
           </div>
         </div>
-        <div class="bbn-block bbn-w-50 bbn-bordered-left">
+        <div class="bbn-block bbn-bordered-left">
           <div v-text="_('Minute').substr(0,1)"
                title="_('Minute')"
                class="bbn-unselectable bbn-header bbn-c bbn-no-hborder bbn-no-border-top bbn-no-border-left"

@@ -30,7 +30,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-floater-list']">
       <component v-else
                 :is="li.data.url && !li.data[children] ? 'a' : 'span'"
                 @click.prevent="() => {}"
-                class="bbn-w-100 bbn-vxspadded bbn-hspadded"
+                class="bbn-w-100 bbn-hspadded"
                 :href="li.data.url || null">
         <span class="space" v-if="selection || (mode === 'options')">
           <i v-if="li.data.selected"
@@ -673,7 +673,9 @@ document.head.insertAdjacentElement('beforeend', css);
       source: {
         deep: true,
         handler(){
-          this.updateData();
+          if ( this.isAutobind ){
+            this.updateData();
+          }
         }
       },
       /*

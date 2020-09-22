@@ -37,6 +37,7 @@ script.innerHTML = `<span :class="[componentClass, 'bbn-textbox', {'bbn-input-nu
                hpos="right"
                :auto-hide="1000"
                :element-width="false"
+               max-width="15em"
   >
     <timepicker inline-template
                 ref="timepicker"
@@ -133,7 +134,7 @@ script.innerHTML = `<span :class="[componentClass, 'bbn-textbox', {'bbn-input-nu
           </bbn-pane>
         </bbn-splitter>
       </div>
-      <div v-else-if="!comp.scrollMode && !comp.blocksMode"
+      <div v-else-if="comp.dropdownMode"
            class="bbn-c"
       >
         <div class="bbn-iblock">
@@ -169,7 +170,7 @@ script.innerHTML = `<span :class="[componentClass, 'bbn-textbox', {'bbn-input-nu
           ></bbn-dropdown>
         </div>
       </div>
-      <div v-else-if="!comp.scrollMode && comp.blocksMode"
+      <div v-else-if="comp.blockMode"
            class="bbn-block bbn-background"
       >
         <div class="bbn-block">
@@ -177,8 +178,8 @@ script.innerHTML = `<span :class="[componentClass, 'bbn-textbox', {'bbn-input-nu
                title="_('Hour')"
                class="bbn-unselectable bbn-header bbn-c bbn-no-border-top bbn-no-border-left bbn-no-border-right"
           ></div>
-          <div class="bbn-c bbn-block bbn-w-50">
-            <div class="bbn-block" style="vertical-align: top;">
+          <div class="bbn-c bbn-block">
+            <div class="bbn-iblock" style="vertical-align: top;">
               <div v-for="n in 12"
                    :class="[
                      'bbn-hspadded',
@@ -201,7 +202,7 @@ script.innerHTML = `<span :class="[componentClass, 'bbn-textbox', {'bbn-input-nu
                 ></strong>
               </div>
             </div>
-            <div class="bbn-block" style="vertical-align: top;">
+            <div class="bbn-iblock" style="vertical-align: top;">
               <div v-for="n in 12"
                    :class="[
                      'bbn-hspadded',
@@ -225,7 +226,7 @@ script.innerHTML = `<span :class="[componentClass, 'bbn-textbox', {'bbn-input-nu
             </div>
           </div>
         </div>
-        <div class="bbn-block bbn-w-50 bbn-bordered-left">
+        <div class="bbn-block bbn-bordered-left">
           <div v-text="_('Minute').substr(0,1)"
                title="_('Minute')"
                class="bbn-unselectable bbn-header bbn-c bbn-no-hborder bbn-no-border-top bbn-no-border-left"
@@ -320,6 +321,15 @@ document.head.insertAdjacentElement('beforeend', css);
     mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent],
     props: {
       /**
+       * The view mode.
+       * @prop {String} ['scroll'] mode
+       */
+      mode: {
+        type: String,
+        default: 'scroll',
+        validator: m => ['scroll', 'dropdown', 'block'].includes(m)
+      },
+      /**
        * The format of the time displayed.
        *
        * @prop {String} format
@@ -363,24 +373,6 @@ document.head.insertAdjacentElement('beforeend', css);
        * @prop {Boolean} [false] showSecond
        */
       showSecond: {
-        type: Boolean,
-        default: false
-      },
-      /**
-       * Sets to true to show a list view for the time selection instead of the dropdowns.
-       *
-       * @prop {Boolean} [true] scrollMode
-      */
-      scrollMode: {
-        type: Boolean,
-        default: true
-      },
-      /**
-       * Sets to true to show a list view for the time selection instead of the dropdowns.
-       *
-       * @prop {Boolean} [false] blocksMode
-       */
-      blocksMode: {
         type: Boolean,
         default: false
       },
@@ -457,6 +449,15 @@ document.head.insertAdjacentElement('beforeend', css);
        */
       inputValueChanged(){
         return this.inputValue !== this.oldInputValue;
+      },
+      scrollMode(){
+        return this.mode === 'scroll';
+      },
+      dropdownMode(){
+        return this.mode === 'dropdown';
+      },
+      blockMode(){
+        return this.mode === 'block';
       }
     },
     methods: {

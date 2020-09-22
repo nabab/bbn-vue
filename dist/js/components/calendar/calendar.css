@@ -1,5 +1,7 @@
 .bbn-calendar {
-  min-width: 210px !important;
+  min-width: 16em;
+  min-height: 8em;
+  height: 100%;
 }
 .bbn-calendar .bbn-calendar-header {
   margin-bottom: 0;

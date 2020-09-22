@@ -1,5 +1,6 @@
 <template>
 <div :class="[componentClass, 'bbn-overlay']"
+     @subready.stop
      v-show="visible">
   <transition name="fade"
               v-if="!hidden"
@@ -41,11 +42,12 @@
         <i class="nf nf-fa-times_circle"
            @click="fullScreen = false"></i>
       </span>
-      <bbn-popup ref="popup"
-                 :source="popups">
-      </bbn-popup>
     </component>
   </transition>
+  <bbn-popup ref="popup"
+             :source="popups"
+             v-if="!hidden && ready && isLoaded && (visible || cached)">
+  </bbn-popup>
 </div>
 
 </template>
@@ -570,11 +572,9 @@
       visible(nv, ov){
         this.$nextTick(() => {
           this.$emit(nv ? 'view' : 'unview', this);
-          if ( nv ){
-            this.$nextTick(() => {
-              this.selfEmit(true);
-            });
-          }
+          this.$nextTick(() => {
+            this.onResize();
+          });
         });
       },
       /**

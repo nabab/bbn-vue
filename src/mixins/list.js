@@ -593,7 +593,7 @@
                 res = this._checkConditionsOnItem(cond, row);
               }
               else if (cond.field && cond.operator) {
-                res = bbn.fn.compare(row[cond.field], cond.value || null, cond.operator);
+                res = bbn.fn.compare(row[cond.field], cond.value !== undefined ? cond.value : null, cond.operator);
               }
               if (!res && where.logic !== 'OR') {
                 pass = false;

@@ -1,6 +1,7 @@
 (bbn_resolve) => { ((bbn) => {
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-overlay']"
+     @subready.stop
      v-show="visible">
   <transition name="fade"
               v-if="!hidden"
@@ -42,11 +43,12 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-overlay']"
         <i class="nf nf-fa-times_circle"
            @click="fullScreen = false"></i>
       </span>
-      <bbn-popup ref="popup"
-                 :source="popups">
-      </bbn-popup>
     </component>
   </transition>
+  <bbn-popup ref="popup"
+             :source="popups"
+             v-if="!hidden && ready && isLoaded && (visible || cached)">
+  </bbn-popup>
 </div>
 `;
 script.setAttribute('id', 'bbn-tpl-component-container');
@@ -576,11 +578,9 @@ document.head.insertAdjacentElement('beforeend', css);
       visible(nv, ov){
         this.$nextTick(() => {
           this.$emit(nv ? 'view' : 'unview', this);
-          if ( nv ){
-            this.$nextTick(() => {
-              this.selfEmit(true);
-            });
-          }
+          this.$nextTick(() => {
+            this.onResize();
+          });
         });
       },
       /**

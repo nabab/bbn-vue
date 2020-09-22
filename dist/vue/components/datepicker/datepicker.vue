@@ -30,6 +30,7 @@
                ref="floater"
                :auto-hide="1000"
                @close="isOpened = false"
+               :element-width="false"
   >
     <bbn-calendar :arrows-buttons="false"
                   @selected="setDate"
@@ -42,10 +43,8 @@
                   :min="min"
                   :max="max"
                   :extra-items="true"
-                  @hook:mounted="getRef('floater').onResize()"
                   :disable-dates="disableDates"
                   :items-range="datesRange"
-                  style="height: auto !important; min-height: 200px;"
                   :source="source"
                   :onlyEvents="onlyEvents"
     ></bbn-calendar>
@@ -499,6 +498,11 @@
 .bbn-datepicker .bbn-button.bbn-button-right {
   width: inherit;
   opacity: 0.7;
+}
+.bbn-datepicker .bbn-calendar {
+  height: auto;
+  max-height: 16em;
+  max-width: 40em;
 }
 .bbn-datepicker .bbn-calendar .bbn-widget:first-child {
   border: 0;

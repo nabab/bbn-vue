@@ -113,7 +113,7 @@
          * The property 'size' normalized.
          * @data {String} [''] currentSize
          */
-        currentSize: this.size ? bbn.fn.formatSize(this.size) : '',
+        currentSize: this.size || '',
         /**
          * The action performed by the left button.
          * @data {Function} currentActionLeft

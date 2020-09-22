@@ -72,12 +72,14 @@
                :auto-hide="true"
                :title="_('Requests\' history')"
                :closable="true"
+               :container="$root.$el"
                :scrollable="true"
                @close="info = false"
                @ready="focusInput"
+               width="100%"
                max-height="60vw"
   >
-    <div class="bbn-w-100 bbn-padded">
+    <div class="bbn-padded bbn-w-100">
       <bbn-input class="bbn-w-100"
                   button-right="nf nf-mdi-send"
                   v-model="link"

@@ -88,7 +88,7 @@ document.head.insertAdjacentElement('beforeend', css);
          * The opacity of the slider.
          * @data {Number} [0] opacity
          */
-        opacity: 0,
+        opacity: 1,
         /**
          * The current size.
          * @data {Number} [0] currentSize
@@ -113,7 +113,8 @@ document.head.insertAdjacentElement('beforeend', css);
          * The position right.
          * @data [null] right
          */
-        right: null
+        right: null,
+        transitionTimeout: false
       };
     },
     computed: {
@@ -131,9 +132,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @returns {String}
        */
       currentStyle(){
-        let o = {
-          opacity: this.opacity
-        };
+        let o = {};
         switch (this.orientation) {
           case 'left':
             o['-webkit-box-shadow'] = '5px 0 5px 0 !important';
@@ -142,7 +141,12 @@ document.head.insertAdjacentElement('beforeend', css);
             o.width = 'auto';
             o.top = 0;
             o.left = this.currentVisible ? 0 : -this.currentSize + 'px';
-            o.transition = 'left 0.5s';
+            if (this.ready && !this.isResizing) {
+              o.transition = 'left 0.5s';
+            }
+            else {
+              o.opacity = 0;
+            }
             break;
           case 'right':
             o['-webkit-box-shadow'] = '-5px 0 5px 0 !important';
@@ -151,7 +155,12 @@ document.head.insertAdjacentElement('beforeend', css);
             o.width = 'auto';
             o.top = 0;
             o.right = this.currentVisible ? 0 : -this.currentSize + 'px';
-            o.transition = 'right 0.5s';
+            if (this.ready && !this.isResizing) {
+              o.transition = 'right 0.5s';
+            }
+            else {
+              o.opacity = 0;
+            }
             break;
           case 'top':
             o['-webkit-box-shadow'] = '0 5px 5px 0 !important';
@@ -159,7 +168,12 @@ document.head.insertAdjacentElement('beforeend', css);
             o['box-shadow'] = '0 5px 5px 0 !important';
             o.left = 0;
             o.top = this.currentVisible ? 0 : -this.currentSize + 'px';
-            o.transition = 'top 0.5s';
+            if (this.ready && !this.isResizing) {
+              o.transition = 'top 0.5s';
+            }
+            else {
+              o.opacity = 0;
+            }
             break;
           case 'bottom':
             o['-webkit-box-shadow'] = '0 -5px 5px 0 !important';
@@ -167,7 +181,12 @@ document.head.insertAdjacentElement('beforeend', css);
             o['box-shadow'] = '0 -5px 5px 0 !important';
             o.left = 0;
             o.bottom = this.currentVisible ? 0 : -this.currentSize + 'px';
-            o.transition = 'bottom 0.5s';
+            if (this.ready && !this.isResizing) {
+              o.transition = 'bottom 0.5s';
+            }
+            else {
+              o.opacity = 0;
+            }
             break;
         }
         return o;
@@ -193,49 +212,26 @@ document.head.insertAdjacentElement('beforeend', css);
        * Handles the resize.
        * @method onResize
        */
-      onResize(){
-        let s = this.$el.getBoundingClientRect()[this.isVertical ? 'width' : 'height'];
-        if ((s !== this.currentSize) && (s > 20)){
-          this.currentSize = s + 7;
+      onResize() {
+        bbn.fn.log("on Rersize");
+        this.isResizing = true;
+        if (this.transitionTimeout) {
+          clearTimeout(this.transitionTimeout);
         }
-      },
-      /**
-       * Shows the slider.
-       * @method show
-       * @fires onResize
-       * @emits show      
-       */
-      show(){
-        this.onResize();
-        let e = new Event('show', {cancelable: true});
-        this.$emit('show', e);
-        if (!e.defaultPrevented) {
-          this.currentVisible = true;
-        }
-      },
-      /**
-       * Hides the slider.
-       * @method hide
-       * @emits hide      
-       */
-      hide(){
-        let e = new Event('show', {cancelable: true});
-        this.$emit('hide', e);
-        if (!e.defaultPrevented) {
-          this.currentVisible = false;
-        }
-      },
-      /**
-       * Toggles the slider.
-       * @method toggle
-       */
-      toggle(){
-        if (this.currentVisible) {
-          this.hide();
-        }
-        else{
-          this.show();
-        }
+        this.transitionTimeout = setTimeout(() => {
+          if (this.setResizeMeasures() || this.setContainerMeasures()) {
+            let s = this.$el.getBoundingClientRect()[this.isVertical ? 'width' : 'height'];
+            if ((s !== this.currentSize) && (s > 20)){
+              this.currentSize = s + 7;
+            }
+          }
+          this.isResizing = false;
+          if (!this.ready) {
+            setTimeout(() => {
+              this.ready = true;
+            }, 500)
+          }
+        }, 500);
       },
       /**
        * Handles the mousedown.
@@ -252,6 +248,14 @@ document.head.insertAdjacentElement('beforeend', css);
           this.toggle();
         }
       },
+      changeVisible(v) {
+        bbn.fn.log("CHANGE VISIBLE");
+        if (v && !this.hasBeenOpened) {
+          this.hasBeenOpened = true;
+        }
+        this.switchFocus(v);
+        this._setEvents(!!v);
+      }
     },
     /**
      * Sets the events listener.
@@ -276,28 +280,15 @@ document.head.insertAdjacentElement('beforeend', css);
      */
     mounted(){
       this.onResize();
-      this.ready = true;
-      this.$nextTick(() => {
-        this.opacity = 1;
-      });
     },
     watch: {
-      /**
-       * @watch currentVisible
-       * @param {Boolean} newVal 
-       * @fires tree.load
-       * @fires _setEvents
-       */
-      currentVisible(newVal){
-        this._setEvents(!!newVal);
-      },
       /**
        * @watch currentSize
        * @param v 
        */
       currentSize(v){
         this.$el.style[this.isVertical ? 'width' : 'height'] = v;
-      }
+      },
     }
   });
 

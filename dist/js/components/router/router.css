@@ -12,11 +12,8 @@ div.bbn-router .bbn-router-nav .bbn-router-nav:not(.bbn-router-nav-bc) {
   margin-top: 0.5em;
   height: calc(99.5%);
 }
-div.bbn-router .bbn-router-nav .bbn-router-switch {
-  width: 2.4em;
-}
-div.bbn-router .bbn-router-nav.bbn-router-nav-bc > div.bbn-flex-width > div.bbn-router-switch {
-  height: 2.4em;
+div.bbn-router .bbn-router-nav.bbn-router-nav-bc .bbn-router-breadcrumb-master {
+  height: 2.5em;
 }
 div.bbn-router .bbn-router-nav .bbn-router-loading {
   content: " ";

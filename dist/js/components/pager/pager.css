@@ -1,10 +1,9 @@
-.bbn-pager > .bbn-block {
-  height: 100%;
-  vertical-align: middle;
-}
-.bbn-pager > .bbn-block > span {
-  display: inline-block;
-  height: 100%;
-  line-height: 100%;
-  vertical-align: middle;
+.bbn-pager {
+  clear: both;
+  overflow: hidden;
+  position: relative;
+  border-style: solid;
+  border-width: 0.0833em;
+  line-height: 2em;
+  padding: .333em .25em;
 }

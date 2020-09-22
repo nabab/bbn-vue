@@ -54,7 +54,6 @@
                :max-height="maxHeight"
                :min-width="$el.clientWidth"
                ref="list"
-               @mouseleave.prevent
                :auto-hide="true"
                :uid="sourceValue"
                :item-component="realComponent"
@@ -175,7 +174,7 @@
       leave(){
         let lst = this.getRef('list');
         if (lst) {
-          lst.leave();
+          lst.close(true);
         }
       }
     },
@@ -195,24 +194,24 @@
       })
     },
     watch: {
-      /**
-       * @watch  isActive
+     /**
+      * @watch  isActive
       */
      isActive(v){
        if (!v && this.filterString) {
         this.currentText = this.currentTextValue || '';
        }
      },
-      /**
-       * @watch  isOpened
+     /**
+      * @watch  isOpened
       */
      isOpened(){
       if (this.currentText === this.currentTextValue) {
         this.selectText();
       }
      },
-    /**
-       * @watch  currentText
+     /**
+      * @watch  currentText
       */
       currentText(newVal){
         if (this.ready) {

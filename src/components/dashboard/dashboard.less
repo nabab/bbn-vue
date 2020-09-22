@@ -15,6 +15,12 @@
         -moz-column-span: all;
         column-span: all;
       }
+      // Safari
+      &.bbn-basic-component{
+        .bbn-flex-fill, .bbn-line-breaker, .bbn-w-100, .bbn-block, .bbn-widget-content {
+          position: static;
+        }
+      }
     }
   }
   .bbn-dashboard-sortable {

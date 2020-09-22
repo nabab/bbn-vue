@@ -1264,6 +1264,236 @@
                 ]
             },
             {
+                "text": "code2",
+                "url": "bbn-vue\/component\/code2\/overview",
+                "props": [
+                    {
+                        "text": "ecma",
+                        "desc": "The ecmascript version.\r\n       *",
+                        "url": "bbn-vue\/component\/code2\/doc\/props#ecma"
+                    },
+                    {
+                        "text": "mode",
+                        "desc": "The language mode.\r\n       *",
+                        "url": "bbn-vue\/component\/code2\/doc\/props#mode"
+                    },
+                    {
+                        "text": "theme",
+                        "desc": "Defines the style of the editor.\r\n       *",
+                        "url": "bbn-vue\/component\/code2\/doc\/props#theme"
+                    },
+                    {
+                        "text": "fill",
+                        "desc": "Takes the full height of the container if set to true.\r\n       *",
+                        "url": "bbn-vue\/component\/code2\/doc\/props#fill"
+                    },
+                    {
+                        "text": "cfg",
+                        "desc": "Configuration object.\r\n       *",
+                        "url": "bbn-vue\/component\/code2\/doc\/props#cfg"
+                    },
+                    {
+                        "text": "themeButton",
+                        "desc": "Set to true to display a button that can change the theme of the component.\r\n       *",
+                        "url": "bbn-vue\/component\/code2\/doc\/props#themeButton"
+                    }
+                ],
+                "methods": [
+                    {
+                        "text": "getMode",
+                        "desc": "Gets the preset options for the given mode from the constant modes.\r\n       *",
+                        "url": "bbn-vue\/component\/code2\/doc\/methods#getMode"
+                    },
+                    {
+                        "text": "getOptions",
+                        "desc": "Gets the options for the editor.\r\n       *",
+                        "url": "bbn-vue\/component\/code2\/doc\/methods#getOptions"
+                    },
+                    {
+                        "text": "cursorPosition",
+                        "desc": "Places the cursor at a defined point.\r\n       *",
+                        "url": "bbn-vue\/component\/code2\/doc\/methods#cursorPosition"
+                    },
+                    {
+                        "text": "getState",
+                        "desc": "Returns an object with the selections, marks, folding and value.\r\n       *",
+                        "url": "bbn-vue\/component\/code2\/doc\/methods#getState"
+                    },
+                    {
+                        "text": "loadState",
+                        "desc": "Loads the state, such as the last state saved.\r\n       *",
+                        "url": "bbn-vue\/component\/code2\/doc\/methods#loadState"
+                    },
+                    {
+                        "text": "nextTheme",
+                        "desc": "If the property themeButton is set to true, clicking the button will change the theme of the editor.",
+                        "url": "bbn-vue\/component\/code2\/doc\/methods#nextTheme"
+                    },
+                    {
+                        "text": "foldByLevel",
+                        "desc": "Folds the given level.\r\n       *",
+                        "url": "bbn-vue\/component\/code2\/doc\/methods#foldByLevel"
+                    },
+                    {
+                        "text": "foldByLevelRec",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/code2\/doc\/methods#foldByLevelRec"
+                    },
+                    {
+                        "text": "foldByNodeOrder",
+                        "desc": "Folds the given node.\r\n       *",
+                        "url": "bbn-vue\/component\/code2\/doc\/methods#foldByNodeOrder"
+                    },
+                    {
+                        "text": "foldAll",
+                        "desc": "Folds all nodes.\r\n       *",
+                        "url": "bbn-vue\/component\/code2\/doc\/methods#foldAll"
+                    },
+                    {
+                        "text": "unfoldAll",
+                        "desc": "Undfolds all nodes.\r\n       *",
+                        "url": "bbn-vue\/component\/code2\/doc\/methods#unfoldAll"
+                    },
+                    {
+                        "text": "initTern",
+                        "desc": "Initializes the component\r\n       *",
+                        "url": "bbn-vue\/component\/code2\/doc\/methods#initTern"
+                    }
+                ],
+                "mixins": [
+                    {
+                        "text": "basicComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/code2\/doc\/mixins#basicComponent"
+                    },
+                    {
+                        "text": "inputComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/code2\/doc\/mixins#inputComponent"
+                    },
+                    {
+                        "text": "eventsComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/code2\/doc\/mixins#eventsComponent"
+                    }
+                ]
+            },
+            {
+                "text": "code3",
+                "url": "bbn-vue\/component\/code3\/overview",
+                "props": [
+                    {
+                        "text": "ecma",
+                        "desc": "The ecmascript version.\r\n       *",
+                        "url": "bbn-vue\/component\/code3\/doc\/props#ecma"
+                    },
+                    {
+                        "text": "mode",
+                        "desc": "The language mode.\r\n       *",
+                        "url": "bbn-vue\/component\/code3\/doc\/props#mode"
+                    },
+                    {
+                        "text": "theme",
+                        "desc": "Defines the style of the editor.\r\n       *",
+                        "url": "bbn-vue\/component\/code3\/doc\/props#theme"
+                    },
+                    {
+                        "text": "fill",
+                        "desc": "Takes the full height of the container if set to true.\r\n       *",
+                        "url": "bbn-vue\/component\/code3\/doc\/props#fill"
+                    },
+                    {
+                        "text": "cfg",
+                        "desc": "Configuration object.\r\n       *",
+                        "url": "bbn-vue\/component\/code3\/doc\/props#cfg"
+                    },
+                    {
+                        "text": "themeButton",
+                        "desc": "Set to true to display a button that can change the theme of the component.\r\n       *",
+                        "url": "bbn-vue\/component\/code3\/doc\/props#themeButton"
+                    }
+                ],
+                "methods": [
+                    {
+                        "text": "getMode",
+                        "desc": "Gets the preset options for the given mode from the constant modes.\r\n       *",
+                        "url": "bbn-vue\/component\/code3\/doc\/methods#getMode"
+                    },
+                    {
+                        "text": "getOptions",
+                        "desc": "Gets the options for the editor.\r\n       *",
+                        "url": "bbn-vue\/component\/code3\/doc\/methods#getOptions"
+                    },
+                    {
+                        "text": "cursorPosition",
+                        "desc": "Places the cursor at a defined point.\r\n       *",
+                        "url": "bbn-vue\/component\/code3\/doc\/methods#cursorPosition"
+                    },
+                    {
+                        "text": "getState",
+                        "desc": "Returns an object with the selections, marks, folding and value.\r\n       *",
+                        "url": "bbn-vue\/component\/code3\/doc\/methods#getState"
+                    },
+                    {
+                        "text": "loadState",
+                        "desc": "Loads the state, such as the last state saved.\r\n       *",
+                        "url": "bbn-vue\/component\/code3\/doc\/methods#loadState"
+                    },
+                    {
+                        "text": "nextTheme",
+                        "desc": "If the property themeButton is set to true, clicking the button will change the theme of the editor.",
+                        "url": "bbn-vue\/component\/code3\/doc\/methods#nextTheme"
+                    },
+                    {
+                        "text": "foldByLevel",
+                        "desc": "Folds the given level.\r\n       *",
+                        "url": "bbn-vue\/component\/code3\/doc\/methods#foldByLevel"
+                    },
+                    {
+                        "text": "foldByLevelRec",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/code3\/doc\/methods#foldByLevelRec"
+                    },
+                    {
+                        "text": "foldByNodeOrder",
+                        "desc": "Folds the given node.\r\n       *",
+                        "url": "bbn-vue\/component\/code3\/doc\/methods#foldByNodeOrder"
+                    },
+                    {
+                        "text": "foldAll",
+                        "desc": "Folds all nodes.\r\n       *",
+                        "url": "bbn-vue\/component\/code3\/doc\/methods#foldAll"
+                    },
+                    {
+                        "text": "unfoldAll",
+                        "desc": "Undfolds all nodes.\r\n       *",
+                        "url": "bbn-vue\/component\/code3\/doc\/methods#unfoldAll"
+                    },
+                    {
+                        "text": "initTern",
+                        "desc": "Initializes the component\r\n       *",
+                        "url": "bbn-vue\/component\/code3\/doc\/methods#initTern"
+                    }
+                ],
+                "mixins": [
+                    {
+                        "text": "basicComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/code3\/doc\/mixins#basicComponent"
+                    },
+                    {
+                        "text": "inputComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/code3\/doc\/mixins#inputComponent"
+                    },
+                    {
+                        "text": "eventsComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/code3\/doc\/mixins#eventsComponent"
+                    }
+                ]
+            },
+            {
                 "text": "colorpicker",
                 "url": "bbn-vue\/component\/colorpicker\/overview",
                 "props": [
@@ -1612,6 +1842,11 @@
                 "text": "context",
                 "url": "bbn-vue\/component\/context\/overview",
                 "props": [
+                    {
+                        "text": "position",
+                        "desc": "Will force the position.",
+                        "url": "bbn-vue\/component\/context\/doc\/props#position"
+                    },
                     {
                         "text": "tag",
                         "desc": "The html tag used to render the property content.",
@@ -2325,6 +2560,11 @@
                         "url": "bbn-vue\/component\/fisheye\/doc\/props#source"
                     },
                     {
+                        "text": "removable",
+                        "desc": "True if you want to activate the possibility to remove an element.",
+                        "url": "bbn-vue\/component\/fisheye\/doc\/props#removable"
+                    },
+                    {
                         "text": "fixedLeft",
                         "desc": "An array of items fixed on the left of the component",
                         "url": "bbn-vue\/component\/fisheye\/doc\/props#fixedLeft"
@@ -2338,6 +2578,11 @@
                         "text": "zIndex",
                         "desc": "The zIndex of the component",
                         "url": "bbn-vue\/component\/fisheye\/doc\/props#zIndex"
+                    },
+                    {
+                        "text": "scrollable",
+                        "desc": "True if you want to render the component scrollable",
+                        "url": "bbn-vue\/component\/fisheye\/doc\/props#scrollable"
                     }
                 ],
                 "methods": [
@@ -2345,6 +2590,46 @@
                         "text": "onClick",
                         "desc": "Fires the action given to the item",
                         "url": "bbn-vue\/component\/fisheye\/doc\/methods#onClick"
+                    },
+                    {
+                        "text": "mouseover",
+                        "desc": "The method called on the mouseover",
+                        "url": "bbn-vue\/component\/fisheye\/doc\/methods#mouseover"
+                    },
+                    {
+                        "text": "mouseout",
+                        "desc": "The method calledon the mouseout",
+                        "url": "bbn-vue\/component\/fisheye\/doc\/methods#mouseout"
+                    },
+                    {
+                        "text": "dragleave",
+                        "desc": "The method called on the dragleave",
+                        "url": "bbn-vue\/component\/fisheye\/doc\/methods#dragleave"
+                    },
+                    {
+                        "text": "dragstart",
+                        "desc": "The method called on the dragstart",
+                        "url": "bbn-vue\/component\/fisheye\/doc\/methods#dragstart"
+                    },
+                    {
+                        "text": "dragend",
+                        "desc": "The method called on the dragend",
+                        "url": "bbn-vue\/component\/fisheye\/doc\/methods#dragend"
+                    },
+                    {
+                        "text": "drop",
+                        "desc": "The method called on the drop",
+                        "url": "bbn-vue\/component\/fisheye\/doc\/methods#drop"
+                    },
+                    {
+                        "text": "checkMeasures",
+                        "desc": "Checks the measures of the main container and the icons container",
+                        "url": "bbn-vue\/component\/fisheye\/doc\/methods#checkMeasures"
+                    },
+                    {
+                        "text": "toggleFloater",
+                        "desc": "Opens or closes the floater.",
+                        "url": "bbn-vue\/component\/fisheye\/doc\/methods#toggleFloater"
                     }
                 ],
                 "mixins": [
@@ -2357,6 +2642,11 @@
                         "text": "listComponent",
                         "desc": "",
                         "url": "bbn-vue\/component\/fisheye\/doc\/mixins#listComponent"
+                    },
+                    {
+                        "text": "resizerComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/fisheye\/doc\/mixins#resizerComponent"
                     }
                 ]
             },
@@ -2368,6 +2658,11 @@
                         "text": "container",
                         "desc": "",
                         "url": "bbn-vue\/component\/floater\/doc\/props#container"
+                    },
+                    {
+                        "text": "position",
+                        "desc": "If an element is given this will force the position.",
+                        "url": "bbn-vue\/component\/floater\/doc\/props#position"
                     },
                     {
                         "text": "content",
@@ -2482,11 +2777,6 @@
                         "url": "bbn-vue\/component\/floater\/doc\/methods#init"
                     },
                     {
-                        "text": "getContainerPosition",
-                        "desc": "Defines the position of the container.",
-                        "url": "bbn-vue\/component\/floater\/doc\/methods#getContainerPosition"
-                    },
-                    {
                         "text": "show",
                         "desc": "Shows the floater.",
                         "url": "bbn-vue\/component\/floater\/doc\/methods#show"
@@ -2495,6 +2785,26 @@
                         "text": "hide",
                         "desc": "Hides the floater.",
                         "url": "bbn-vue\/component\/floater\/doc\/methods#hide"
+                    },
+                    {
+                        "text": "onResize",
+                        "desc": "Handles the resize of the component.",
+                        "url": "bbn-vue\/component\/floater\/doc\/methods#onResize"
+                    },
+                    {
+                        "text": "getDimensions",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/floater\/doc\/methods#getDimensions"
+                    },
+                    {
+                        "text": "updatePosition",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/floater\/doc\/methods#updatePosition"
+                    },
+                    {
+                        "text": "scrollResize",
+                        "desc": "Handles the resize of the scroller.",
+                        "url": "bbn-vue\/component\/floater\/doc\/methods#scrollResize"
                     },
                     {
                         "text": "scrollResize",
@@ -2512,21 +2822,6 @@
                         "url": "bbn-vue\/component\/floater\/doc\/methods#removeClose"
                     },
                     {
-                        "text": "onResize",
-                        "desc": "Handles the resize of the component.",
-                        "url": "bbn-vue\/component\/floater\/doc\/methods#onResize"
-                    },
-                    {
-                        "text": "leave",
-                        "desc": "Closes the floater if the prop autoHide is set to true.",
-                        "url": "bbn-vue\/component\/floater\/doc\/methods#leave"
-                    },
-                    {
-                        "text": "mouseleave",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/floater\/doc\/methods#mouseleave"
-                    },
-                    {
                         "text": "close",
                         "desc": "Closes the floater by hiding it.",
                         "url": "bbn-vue\/component\/floater\/doc\/methods#close"
@@ -2540,16 +2835,6 @@
                         "text": "select",
                         "desc": "Handles the selection of the floater's items.",
                         "url": "bbn-vue\/component\/floater\/doc\/methods#select"
-                    },
-                    {
-                        "text": "getDimensions",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/floater\/doc\/methods#getDimensions"
-                    },
-                    {
-                        "text": "updatePosition",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/floater\/doc\/methods#updatePosition"
                     },
                     {
                         "text": "onFocus",
@@ -2803,11 +3088,6 @@
                 "url": "bbn-vue\/component\/gallery\/overview",
                 "props": [
                     {
-                        "text": "source",
-                        "desc": "The source of the component.",
-                        "url": "bbn-vue\/component\/gallery\/doc\/props#source"
-                    },
-                    {
                         "text": "scrollable",
                         "desc": "Set to true to allow the component to have a scroll.",
                         "url": "bbn-vue\/component\/gallery\/doc\/props#scrollable"
@@ -2821,11 +3101,6 @@
                         "text": "zoomable",
                         "desc": "Set to true to allow the gallery to be magnifiable.",
                         "url": "bbn-vue\/component\/gallery\/doc\/props#zoomable"
-                    },
-                    {
-                        "text": "pageable",
-                        "desc": "Set to true to allow the gallery to be pageable.",
-                        "url": "bbn-vue\/component\/gallery\/doc\/props#pageable"
                     },
                     {
                         "text": "info",
@@ -2863,49 +3138,24 @@
                         "url": "bbn-vue\/component\/gallery\/doc\/props#align"
                     },
                     {
-                        "text": "limit",
-                        "desc": "The limit of items allowed.",
-                        "url": "bbn-vue\/component\/gallery\/doc\/props#limit"
-                    },
-                    {
-                        "text": "map",
-                        "desc": "A function to normalize the source.",
-                        "url": "bbn-vue\/component\/gallery\/doc\/props#map"
-                    },
-                    {
-                        "text": "data",
-                        "desc": "Additional data sent with the ajax call.",
-                        "url": "bbn-vue\/component\/gallery\/doc\/props#data"
-                    },
-                    {
-                        "text": "upload",
+                        "text": "uploadButton",
                         "desc": "The function called when the toolbar's upload button is clicked.",
-                        "url": "bbn-vue\/component\/gallery\/doc\/props#upload"
+                        "url": "bbn-vue\/component\/gallery\/doc\/props#uploadButton"
                     },
                     {
-                        "text": "download",
+                        "text": "downloadButton",
                         "desc": "The function called when the toolbar's download button is clicked.",
-                        "url": "bbn-vue\/component\/gallery\/doc\/props#download"
+                        "url": "bbn-vue\/component\/gallery\/doc\/props#downloadButton"
                     },
                     {
-                        "text": "remove",
+                        "text": "removeButton",
                         "desc": "The function called when the toolbar's remove button is clicked.",
-                        "url": "bbn-vue\/component\/gallery\/doc\/props#remove"
+                        "url": "bbn-vue\/component\/gallery\/doc\/props#removeButton"
                     },
                     {
                         "text": "preview",
                         "desc": "Displays a preview of items below the slideshow.",
                         "url": "bbn-vue\/component\/gallery\/doc\/props#preview"
-                    },
-                    {
-                        "text": "selectingMode",
-                        "desc": "The selection mode.",
-                        "url": "bbn-vue\/component\/gallery\/doc\/props#selectingMode"
-                    },
-                    {
-                        "text": "selected",
-                        "desc": "The array of selected items.",
-                        "url": "bbn-vue\/component\/gallery\/doc\/props#selected"
                     }
                 ],
                 "methods": [
@@ -2923,11 +3173,6 @@
                         "text": "correctCase",
                         "desc": "Alias of bbn.fn.correctCase.",
                         "url": "bbn-vue\/component\/gallery\/doc\/methods#correctCase"
-                    },
-                    {
-                        "text": "updateData",
-                        "desc": "Updates the component's data.",
-                        "url": "bbn-vue\/component\/gallery\/doc\/methods#updateData"
                     },
                     {
                         "text": "setSelecting",
@@ -2955,6 +3200,11 @@
                         "text": "resizerComponent",
                         "desc": "",
                         "url": "bbn-vue\/component\/gallery\/doc\/mixins#resizerComponent"
+                    },
+                    {
+                        "text": "listComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/gallery\/doc\/mixins#listComponent"
                     }
                 ]
             },
@@ -3828,6 +4078,26 @@
                         "text": "infoMessage",
                         "desc": "",
                         "url": "bbn-vue\/component\/notification\/doc\/props#infoMessage"
+                    },
+                    {
+                        "text": "successMessage",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/notification\/doc\/props#successMessage"
+                    },
+                    {
+                        "text": "warningMessage",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/notification\/doc\/props#warningMessage"
+                    },
+                    {
+                        "text": "errorMessage",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/notification\/doc\/props#errorMessage"
+                    },
+                    {
+                        "text": "infoMessage",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/notification\/doc\/props#infoMessage"
                     }
                 ],
                 "methods": [
@@ -3970,7 +4240,13 @@
                 "url": "bbn-vue\/component\/pager\/overview",
                 "props": [],
                 "methods": [],
-                "mixins": []
+                "mixins": [
+                    {
+                        "text": "basicComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/pager\/doc\/mixins#basicComponent"
+                    }
+                ]
             },
             {
                 "text": "pane",
@@ -4479,7 +4755,7 @@
                     },
                     {
                         "text": "menu",
-                        "desc": "*",
+                        "desc": "",
                         "url": "bbn-vue\/component\/router\/doc\/props#menu"
                     },
                     {
@@ -4991,7 +5267,7 @@
                     },
                     {
                         "text": "waitReady",
-                        "desc": "",
+                        "desc": "Creates a delay to set the scroll as ready",
                         "url": "bbn-vue\/component\/scroll\/doc\/methods#waitReady"
                     }
                 ],
@@ -5323,21 +5599,6 @@
                         "text": "onResize",
                         "desc": "Handles the resize.",
                         "url": "bbn-vue\/component\/slider\/doc\/methods#onResize"
-                    },
-                    {
-                        "text": "show",
-                        "desc": "Shows the slider.",
-                        "url": "bbn-vue\/component\/slider\/doc\/methods#show"
-                    },
-                    {
-                        "text": "hide",
-                        "desc": "Hides the slider.",
-                        "url": "bbn-vue\/component\/slider\/doc\/methods#hide"
-                    },
-                    {
-                        "text": "toggle",
-                        "desc": "Toggles the slider.",
-                        "url": "bbn-vue\/component\/slider\/doc\/methods#toggle"
                     }
                 ],
                 "mixins": [
@@ -6578,9 +6839,9 @@
                 ],
                 "mixins": [
                     {
-                        "text": "observerComponent",
+                        "text": "resizerComponent",
                         "desc": "",
-                        "url": "bbn-vue\/component\/tabs\/doc\/mixins#observerComponent"
+                        "url": "bbn-vue\/component\/tabs\/doc\/mixins#resizerComponent"
                     }
                 ]
             },
@@ -6646,6 +6907,11 @@
                 "url": "bbn-vue\/component\/timepicker\/overview",
                 "props": [
                     {
+                        "text": "mode",
+                        "desc": "The view mode.",
+                        "url": "bbn-vue\/component\/timepicker\/doc\/props#mode"
+                    },
+                    {
                         "text": "format",
                         "desc": "The format of the time displayed.\r\n       *",
                         "url": "bbn-vue\/component\/timepicker\/doc\/props#format"
@@ -6674,16 +6940,6 @@
                         "text": "showSecond",
                         "desc": "Shows\/hides the \"seconds\" selection.",
                         "url": "bbn-vue\/component\/timepicker\/doc\/props#showSecond"
-                    },
-                    {
-                        "text": "scrollMode",
-                        "desc": "Sets to true to show a list view for the time selection instead of the dropdowns.\r\n       *",
-                        "url": "bbn-vue\/component\/timepicker\/doc\/props#scrollMode"
-                    },
-                    {
-                        "text": "blocksMode",
-                        "desc": "Sets to true to show a list view for the time selection instead of the dropdowns.\r\n       *",
-                        "url": "bbn-vue\/component\/timepicker\/doc\/props#blocksMode"
                     },
                     {
                         "text": "autosize",

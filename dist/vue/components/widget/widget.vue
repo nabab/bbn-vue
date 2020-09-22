@@ -25,7 +25,7 @@
         ></i>
       </div>
       <!-- TITLE -->
-      <div :class="['bbn-flex-fill', 'bbn-hpadded', {'bbn-middle': !!icon}]">
+      <div :class="['bbn-widget-title', 'bbn-flex-fill', 'bbn-hpadded', {'bbn-middle': !!icon}]">
         <i v-if="icon" :class="[icon, 'bbn-right-sspace', 'bbn-m']"></i>
         <h3 :style="dashboard && dashboard.sortable ? 'cursor: move' : ''"
             :class="['bbn-no-margin', {'bbn-iblock': !!icon}]"
@@ -59,13 +59,15 @@
                 :source="currentSource"
                 @hook:mounted="$emit('loaded')"
                 v-bind="options"
+                class="bbn-widget-content"
     ></component>
     <!-- HTML CONTENT -->
     <div v-else-if="content"
          v-html="content"
+         class="bbn-widget-content"
     ></div>
     <!-- LIST OF ITEMS -->
-    <ul v-else-if="currentItems.length" class="bbn-widget-list">
+    <ul v-else-if="currentItems.length" class="bbn-widget-list bbn-widget-content">
       <template v-for="(it, idx) in currentItems"
                 v-if="limit ? idx < limit : true"
       >
@@ -78,6 +80,8 @@
                       v-bind="options"
                       :source="it"
           ></component>
+          <a v-else-if="it && it.text && it.url" :href="it.url" v-html="it.text"></a>
+          <span v-else-if="it && it.text" v-html="it.text"></span>
           <span v-else
                 v-html="it"
           ></span>
@@ -90,7 +94,7 @@
     <!-- NO DATA MESSAGE -->
     <div v-else>
       <slot>
-        <div v-html="noData" class="bbn-w-100 bbn-c bbn-padded"></div>
+        <div v-html="noData" class="bbn-widget-content bbn-w-100 bbn-c bbn-padded"></div>
       </slot>
     </div>
     <!-- GO FULL PAGE -->
@@ -164,7 +168,9 @@
       bbn.vue.resizerComponent
     ],
     props: {
-      uid: {},
+      uid: {
+        type: [String, Number]
+      },
       content: {
         type: String
       },
@@ -200,6 +206,9 @@
       },
       component: {
         type: [String, Object]
+      },
+      itemTemplate: {
+        type: String
       },
       itemComponent: {
         type: [String, Object]
@@ -477,15 +486,15 @@
         }
       },
       actionButton(name, uid){
-        let tmp = this,
-            comp;
-        if ( this.component ){
-          comp = bbn.vue.find(this, this.component);
+        let tmp = this;
+        let comp = this.component || this.itemComponent;
+        if (!bbn.fn.isString(comp)) {
+          comp = false;
         }
-        else if ( this.itemComponent ){
-          comp = bbn.vue.find(this, this.itemComponent);
+        else {
+          comp = bbn.vue.find(this, comp);
         }
-        if ( comp &&bbn.fn.isFunction(comp[name]) ){
+        if ( comp && bbn.fn.isFunction(comp[name]) ){
           return comp[name]();
         }
         if (bbn.fn.isFunction(name) ){

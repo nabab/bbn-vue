@@ -1,6 +1,6 @@
 (bbn_resolve) => { ((bbn) => {
 let script = document.createElement('script');
-script.innerHTML = `<div :class="[componentClass, 'bbn-100']"
+script.innerHTML = `<div :class="[componentClass, 'bbn-w-100']"
      v-show="ready"
 >
   <div v-if="showLoading && isLoading"
@@ -8,7 +8,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-100']"
        v-text="_('Loading')"
        style="z-index: 1"
   ></div>
-  <div class="bbn-widget bbn-flex-height">
+  <div :class="['bbn-widget', 'bbn-flex-height', {'bbn-overlay': type === 'weeks'}]">
     <div class="bbn-calendar-header bbn-header bbn-xspadded bbn-no-border-left bbn-no-border-right bbn-no-border-top">
       <component v-if="headerComponent"
                  :is="headerComponent"

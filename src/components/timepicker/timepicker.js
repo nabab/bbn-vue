@@ -20,6 +20,15 @@
     mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent],
     props: {
       /**
+       * The view mode.
+       * @prop {String} ['scroll'] mode
+       */
+      mode: {
+        type: String,
+        default: 'scroll',
+        validator: m => ['scroll', 'dropdown', 'block'].includes(m)
+      },
+      /**
        * The format of the time displayed.
        *
        * @prop {String} format
@@ -63,24 +72,6 @@
        * @prop {Boolean} [false] showSecond
        */
       showSecond: {
-        type: Boolean,
-        default: false
-      },
-      /**
-       * Sets to true to show a list view for the time selection instead of the dropdowns.
-       *
-       * @prop {Boolean} [true] scrollMode
-      */
-      scrollMode: {
-        type: Boolean,
-        default: true
-      },
-      /**
-       * Sets to true to show a list view for the time selection instead of the dropdowns.
-       *
-       * @prop {Boolean} [false] blocksMode
-       */
-      blocksMode: {
         type: Boolean,
         default: false
       },
@@ -157,6 +148,15 @@
        */
       inputValueChanged(){
         return this.inputValue !== this.oldInputValue;
+      },
+      scrollMode(){
+        return this.mode === 'scroll';
+      },
+      dropdownMode(){
+        return this.mode === 'dropdown';
+      },
+      blockMode(){
+        return this.mode === 'block';
       }
     },
     methods: {

@@ -1448,6 +1448,12 @@
            */
           menu(){
             return this.getMenu()
+          },
+          textFromText() {
+            if (this.source.data.text) {
+              return bbn.fn.html2text(this.source.data.text)
+            }
+            return '';
           }
         },
         methods: {

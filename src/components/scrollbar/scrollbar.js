@@ -546,9 +546,11 @@
             this.show = true;
           }
           this.moveTimeout = setTimeout(() => {
-            this.hideSlider();
+            if (!this.isOverSlider) {
+              this.hideSlider();
+            }
           }, 500);
-        }, 'overContent')
+        }, 'overContent', 250)
       },
 
       /**

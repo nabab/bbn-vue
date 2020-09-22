@@ -332,7 +332,7 @@
       },
       getCurrents(idx){
         let ret = [];
-        if ( this.router && bbn.fn.isNumber(idx) ){
+        if ( this.router && bbn.fn.isNumber(idx) && this.router.views[idx] ){
           let url = this.router.views[idx].url;
           if ( this.router.urls[url] && this.subBreadcrumbs[url] ){
             ret.push(this.subBreadcrumbs[url]);
@@ -617,7 +617,6 @@ div.bbn-breadcrumb {
   overflow: hidden;
   position: relative;
   width: 100%;
-  height: 100%;
   box-sizing: border-box;
   margin: 0;
   padding: 0;

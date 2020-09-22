@@ -25,7 +25,9 @@
       bbn.vue.resizerComponent
     ],
     props: {
-      uid: {},
+      uid: {
+        type: [String, Number]
+      },
       content: {
         type: String
       },
@@ -61,6 +63,9 @@
       },
       component: {
         type: [String, Object]
+      },
+      itemTemplate: {
+        type: String
       },
       itemComponent: {
         type: [String, Object]
@@ -338,15 +343,15 @@
         }
       },
       actionButton(name, uid){
-        let tmp = this,
-            comp;
-        if ( this.component ){
-          comp = bbn.vue.find(this, this.component);
+        let tmp = this;
+        let comp = this.component || this.itemComponent;
+        if (!bbn.fn.isString(comp)) {
+          comp = false;
         }
-        else if ( this.itemComponent ){
-          comp = bbn.vue.find(this, this.itemComponent);
+        else {
+          comp = bbn.vue.find(this, comp);
         }
-        if ( comp &&bbn.fn.isFunction(comp[name]) ){
+        if ( comp && bbn.fn.isFunction(comp[name]) ){
           return comp[name]();
         }
         if (bbn.fn.isFunction(name) ){

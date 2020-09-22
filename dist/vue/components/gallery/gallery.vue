@@ -1,6 +1,6 @@
 <template>
 <div :class="[componentClass, {'bbn-flex-height': scrollable}]">
-  <div v-if="isToolbarShown" 
+  <div v-if="isToolbarShown"
        class="bbn-l bbn-widget bbn-gallery-toolbar"
   >
     <component v-if="toolbar && (isObject(toolbar) || isVue(toolbar))"
@@ -9,26 +9,26 @@
     <template v-else>
       <bbn-button :text="_('Upload')"
                   icon="nf nf-fa-upload"
-                  @click="upload"
-                  v-if="!isSelecting && upload"
+                  @click="uploadButton"
+                  v-if="!isSelecting && uploadButton"
       ></bbn-button>
       <bbn-button :text="_('Download')"
                   icon="nf nf-fa-download"
                   @click="setSelecting('download')"
-                  v-if="!isSelecting && download"
+                  v-if="!isSelecting && downloadButton"
                   :disabled="!total"
       ></bbn-button>
       <bbn-button :text="_('Remove')"
                   icon="nf nf-fa-trash"
                   @click="setSelecting('remove')"
-                  v-if="!isSelecting && remove"
+                  v-if="!isSelecting && removeButton"
                   :disabled="!total"
       ></bbn-button>
       <bbn-button :text="_(correctCase(selectingMode))"
                   icon="nf nf-fa-check"
                   @click="action"
                   v-if="isSelecting"
-                  :disabled="!selected.length"
+                  :disabled="!currentSelected.length"
       ></bbn-button>
       <bbn-button :text="_('Cancel')"
                   icon="nf nf-fa-times"
@@ -45,89 +45,26 @@
         <gallery-col v-for="(col, index) in cols"
                      :key="'gallery-col-'+index"
                      :index="index"
-                     :source="currentData.filter((it, i) => {
+                     :source="currentView.filter((it, i) => {
                         return i % cols === index;
                       })"
         ></gallery-col>
       </div>
     </component>
   </div>
-  <div v-if="pageable || isAjax">
-    <div class="bbn-gallery-pager bbn-widget" ref="pager">
-      <div class="bbn-block"
-            v-if="pageable"
-      >
-        <bbn-button icon="nf nf-fa-angle_double_left"
-                    :notext="true"
-                    :title="_('Go to the first page')"
-                    :disabled="isLoading || (currentPage == 1)"
-                    @click="currentPage = 1"
-        ></bbn-button>
-        <bbn-button icon="nf nf-fa-angle_left"
-                    :notext="true"
-                    :title="_('Go to the previous page')"
-                    :disabled="isLoading || (currentPage == 1)"
-                    @click="currentPage--"
-        ></bbn-button>
-        {{_('Page')}}
-        <bbn-numeric v-if="currentData && currentData.length"
-                     v-model="currentPage"
-                     :min="1"
-                     :max="numPages"
-                     style="margin-right: 0.5em; width: 6em"
-                     :disabled="isLoading"
-        ></bbn-numeric>
-        {{_('of') + ' ' + numPages}}
-        <bbn-button icon="nf nf-fa-angle_right"
-                    :notext="true"
-                    :title="_('Go to the next page')"
-                    :disabled="isLoading || (currentPage == numPages)"
-                    @click="currentPage++"
-        ></bbn-button>
-        <bbn-button icon="nf nf-fa-angle_double_right"
-                    :notext="true"
-                    :title="_('Go to the last page')"
-                    @click="currentPage = numPages"
-                    :disabled="isLoading || (currentPage == numPages)"
-        ></bbn-button>
-        <span class="bbn-hsmargin">
-        <bbn-dropdown :source="limits"
-                      v-model.number="currentLimit"
-                      @change="currentPage = 1"
-                      :disabled="!!isLoading"
-                      :autosize="true"
-        ></bbn-dropdown>
-        <span>{{_('items per page')}}</span>
-      </span>
-      </div>
-      <div class="bbn-block" style="float: right">
-      <span v-if="pageable"
-            v-text="_('Display items') + ' ' + (start+1) + '-' + (start + currentLimit > total ? total : start + currentLimit) + ' ' + _('of') + ' ' + total"
-      ></span>
-        <span v-else
-              v-text="total ? _('Total') + ': ' + total + ' ' + _('items') : _('No item')"
-        ></span>
-        &nbsp;
-        <bbn-button v-if="isAjax"
-                    :title="_('Refresh')"
-                    @click="updateData"
-                    icon="nf nf-fa-refresh"
-        ></bbn-button>
-      </div>
-    </div>
-  </div>
+  <bbn-pager class="bbn-gallery-pager"
+              :element="_self"
+              ref="pager"
+              v-if="pageable || isAjax"
+  ></bbn-pager>
 </div>
 </template>
 <script>
   module.exports = // It has a multitude of customizations to better your gallery.
 /**
  * @file bbn-gallery component
- *
  * @description bbn-gallery is a component that displays a collection of images.
- *
- *
  * @copyright BBN Solutions
- *
  * @author Mirko Argentino
  */
 ((bbn) => {
@@ -137,19 +74,10 @@
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.resizerComponent
+     * @mixin bbn.vue.listComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent],
+    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent, bbn.vue.listComponent],
     props: {
-      /**
-       * The source of the component.
-       * @prop {Array|String} source
-       */
-      source: {
-        type: [Array, String],
-        default(){
-          return [];
-        }
-      },
       /**
        * Set to true to allow the component to have a scroll.
        * @prop {Boolean} [true] scrollable
@@ -178,14 +106,6 @@
        * @prop {Boolean} [false] zoomable
        */
       zoomable: {
-        type: Boolean,
-        default: false
-      },
-      /**
-       * Set to true to allow the gallery to be pageable.
-       * @prop {Boolean} [false] pageable
-       */
-      pageable: {
         type: Boolean,
         default: false
       },
@@ -245,49 +165,24 @@
         default: 'center'
       },
       /**
-       * The limit of items allowed.
-       * @prop {Number} [25] limit
-       */
-      limit: {
-        type: Number,
-        default: 25
-      },
-      /**
-       * A function to normalize the source.
-       * @prop {Function} map
-       */
-      map: {
-        type: Function
-      },
-      /**
-       * Additional data sent with the ajax call.
-       * @prop {Object} [{}] data
-       */
-      data: {
-        type: Object,
-        default(){
-          return {}
-        }
-      },
-      /**
        * The function called when the toolbar's upload button is clicked.
-       * @prop {Function} upload
+       * @prop {Function} uploadButton
        */
-      upload: {
+      uploadButton: {
         type: Function
       },
       /**
        * The function called when the toolbar's download button is clicked.
-       * @prop {Function} download
+       * @prop {Function} downloadButton
        */
-      download: {
+      downloadButton: {
         type: Function
       },
       /**
        * The function called when the toolbar's remove button is clicked.
-       * @prop {Function} remove
+       * @prop {Function} removeButton
        */
-      remove: {
+      removeButton: {
         type: Function
       },
       /**
@@ -295,10 +190,6 @@
        * @prop {Boolean} [true] preview
        */
       preview: {
-        type: Boolean,
-        default: true
-      },
-      autobind: {
         type: Boolean,
         default: true
       }
@@ -316,50 +207,14 @@
          */
         isSelecting:  false,
         /**
-         * True if the gallery is loading data.
-         * @data {Boolean} [false] isLoading
-         */
-        isLoading: false,
-        /**
-         * True if the source of the component is a string and an ajax call is made.
-         * @data {Boolean} isAjax
-         */
-        isAjax: typeof this.source === 'string',
-        /**
-         * The source of the component.
-         * @data {Array} currentData
-         */
-        currentData: [],
-        /**
-         * The limit of the component.
-         * @data {Number} currentLimit
-         */
-        currentLimit: this.limit,
-        /**
-         * The starting item in a pageable gallery.
-         * @data {Number} [0] start
-         */
-        start: 0,
-        /**
-         * The total number of items.
-         * @data {Number} [0] total
-         */
-        total: 0,
-        /**
-         * The source of the dropdown component defining the limit of items shown on the page.
-         * @data {Array} [10, 25, 50, 100, 250, 500] limits
-         */
-        limits: [10, 25, 50, 100, 250, 500],
-        /**
          * The selection mode.
-         * @prop {Boolean|String} [false] selectingMode
+         * @data {Boolean|String} [false] selectingMode
          */
         selectingMode: false,
+        currentSelected: this.selected,
         /**
-         * The array of selected items.
-         * @prop {Array} [[]] selected
+         * @data {Boolean} [false] isLoaded
          */
-        selected: [],
         isLoaded: false
       }
     },
@@ -373,35 +228,24 @@
         return parseInt(this.width / (this.itemWidth + this.columnGap)) || 1
       },
       /**
-       * Returns the number of pages.
-       * @computed numPages
-       * @return {Number}
-       */
-      numPages(){
-        return Math.ceil(this.total / this.currentLimit);
-      },
-      /**
-       * The number of the current page.
-       * @computed currentPage
-       * @return {Number}
-       */
-      currentPage: {
-        get(){
-          return Math.ceil((this.start + 1) / this.currentLimit);
-        },
-        set(val) {
-          this.start = val > 1 ? (val - 1) * this.currentLimit : 0;
-          this.updateData();
-        }
-      },
-      /**
        * True if the toolbar is shown.
        * @computed isToolbarShown
        * @return {Boolean}
        */
       isToolbarShown(){
-        return !!(this.toolbar && (this.upload || this.download || this.delete));
-      }
+        return !!(this.toolbar && (this.uploadButton || this.downloadButton || this.removeButton || this.isObject(this.toolbar) || this.isVue(this.toolbar)));
+      },
+      /**
+       * The data of the current view
+       * @computed viewData
+       * @return {Array}
+       */
+      currentView(){
+        if ( this.pageable && this.currentLimit && (!this.isAjax || !this.serverSorting) ){
+          return this.filteredData.slice(this.start, this.start + this.currentLimit);
+        }
+        return this.filteredData;
+      },
     },
     methods: {
       /**
@@ -415,74 +259,13 @@
        * @method isVue
        * @return {Boolean}
       */
-     isVue: bbn.fn.isVue,
-     /**
-       * Alias of bbn.fn.correctCase.
-       * @method correctCase
-       * @return {string}
-      */
-     correctCase: bbn.fn.correctCase,
+      isVue: bbn.fn.isVue,
       /**
-       * Updates the component's data.
-       * @method updateData
-       * @fires setSelecting
-       * @fires _map
-       */
-      updateData(){
-        if ( !this.isLoading ){
-          if ( this.isAjax ){
-            this.setSelecting(false);
-            this.isLoading = true;
-            let data = {
-              limit: this.currentLimit,
-              start: this.start,
-              data: this.data
-            };
-            return this.post(this.source, data, result => {
-              this.isLoading = false;
-              if ( !this.isLoaded ){
-                this.isLoaded = true;
-              }
-              if (
-                !result ||
-                result.error ||
-                ((result.success !== undefined) && !result.success)
-              ) {
-                appui.alert(result && result.error ? result.error : bbn._("Error while updating the data"));
-              }
-              else {
-                this.currentData = this._map(result.data || []);
-                this.total = result.total || result.data.length || 0;
-              }
-            });
-          }
-          else if ( bbn.fn.isArray(this.source) ){
-            return new Promise((resolve, reject) => {
-              this.currentData = this._map(this.pageable ? this.source.slice(this.start, this.start + this.currentLimit) : this.source);
-              this.total = this.source.length;
-              if ( !this.isLoaded ){
-                this.isLoaded = true;
-              }
-              resolve(this.currentData);
-            })
-          }
-        }
-      },
-      /**
-       * If the function 'map' is defined it triggers the map of the source
-       * @method _map
-       * @param {Array} data
-       */
-      _map(data){
-        let da = this.map ? data.map(this.map) : data;
-        return bbn.fn.map(da, (d, i) => {
-          return {
-            _bbn: true,
-            index: i,
-            data: d
-          }
-        });
-      },
+         * Alias of bbn.fn.correctCase.
+         * @method correctCase
+         * @return {string}
+        */
+      correctCase: bbn.fn.correctCase,
       /**
        * Sets the selectingMode data property.
        * @method setSelecting
@@ -496,7 +279,7 @@
         else {
           this.isSelecting = false;
           this.selectingMode = false;
-          this.selected = [];
+          this.currentSelected.splice(0);
         }
       },
       /**
@@ -505,7 +288,7 @@
        * @fires setSelecting
        */
       action(){
-        if ( this[this.selectingMode] && this.selected.length ){
+        if ( this[this.selectingMode + 'Button'] && this.currentSelected.length ){
           let mess = '';
           if ( this.selectingMode === 'download' ){
             mess = bbn._("Are you sure you want to download these photos?");
@@ -514,7 +297,7 @@
             mess = bbn._("Are you sure you want to remove these photos?");
           }
           this.confirm(bbn._(mess, this.selectingMode), () => {
-            this[this.selectingMode](this.selected.map(v => {
+            this[this.selectingMode + 'Button'](this.currentSelected.map(v => {
               return bbn.fn.extend(true, {}, bbn.fn.getField(this.currentData, 'data', {index: v}));
             }));
             this.setSelecting(false);
@@ -537,40 +320,15 @@
     mounted(){
       this.$nextTick(() => {
         this.onResize();
-        if ( this.autobind ){
-          this.updateData();
-        }
+        this.ready = true;
       });
     },
+    watch: {
+      currentLimit(){
+          this.updateData();
+      }
+    },
     components: {
-      /**
-       * @component gallery-zoom
-       */
-      galleryZoom: {
-        name: 'gallery-zoom',
-        template: `
-<div class="bbn-overlay bbn-gallery-zoom">
-  <bbn-slideshow :source="source.data"
-                 :show-info="source.info"
-                 :arrows="true"
-                 :show-count="true"
-                 :full-slide="true"
-                 :initial-slide="source.slide"
-                 :preview="source.preview"
-  ></bbn-slideshow>
-</div>
-                `,
-        props: {
-          /**
-           * The source of the component 'gallery-zoom'.
-           * @prop {String|Object} source
-           * @memberof gallery-zoom
-           */
-          source: {
-            type: [String, Object]
-          }
-        }
-      },
       /**
        * @component gallery-col
        */
@@ -742,7 +500,7 @@
                * @memberof gallery-item
                */
               isSelected(){
-                return this.col.gallery.selected.includes(this.source.index);
+                return this.col.gallery.currentSelected.includes(this.source.index);
               }
             },
             methods: {
@@ -755,10 +513,10 @@
               action(){
                 if ( this.col.gallery.isSelecting ){
                   if ( this.isSelected ){
-                    this.col.gallery.selected.splice(this.col.gallery.selected.indexOf(this.source.index), 1);
+                    this.col.gallery.currentSelected.splice(this.col.gallery.currentSelected.indexOf(this.source.index), 1);
                   }
                   else {
-                    this.col.gallery.selected.push(this.source.index);
+                    this.col.gallery.currentSelected.push(this.source.index);
                   }
                 }
                 else {
@@ -770,7 +528,7 @@
                       scrollable: false,
                       resizable: false,
                       maximizable: false,
-                      component: this.col.gallery.$options.components.galleryZoom,
+                      component: this.$options.components.galleryZoom,
                       source: {
                         data: bbn.fn.map(this.col.gallery.currentData, d => {
                           return d.data;
@@ -784,6 +542,37 @@
                   }
                 }
               }
+            },
+            components: {
+              /**
+               * @component gallery-zoom
+               * @memberof gallery-item
+               */
+              galleryZoom: {
+                name: 'gallery-zoom',
+                template: `
+<div class="bbn-overlay bbn-gallery-zoom">
+  <bbn-slideshow :source="source.data"
+                :show-info="source.info"
+                :arrows="true"
+                :show-count="true"
+                :full-slide="true"
+                :initial-slide="source.slide"
+                :preview="source.preview"
+  ></bbn-slideshow>
+</div>
+                        `,
+                props: {
+                  /**
+                   * The source of the component 'gallery-zoom'.
+                   * @prop {String|Object} source
+                   * @memberof gallery-zoom
+                   */
+                  source: {
+                    type: [String, Object]
+                  }
+                }
+              },
             }
           }
         }
@@ -838,7 +627,6 @@
 .bbn-gallery a:hover img:not(.bbn-gallery-item-selected) {
   filter: grayscale(1);
 }
-.bbn-gallery div.bbn-gallery-pager,
 .bbn-gallery div.bbn-gallery-toolbar {
   clear: both;
   overflow: hidden;

@@ -1,10 +1,8 @@
 (bbn_resolve) => { ((bbn) => {
 let script = document.createElement('script');
-script.innerHTML = `<span :class="[{'bbn-iblock': true}, componentClass]" v-if="target">
+script.innerHTML = `<span :class="['bbn-iblock', componentClass]" v-if="target">
   <span v-if="isValid">
-    <span v-if="rendered">
-
-    </span>
+    <span v-if="rendered"></span>
     <span>
       <span v-for="(p, i) in periods"
             v-if="shown[p.name]"
@@ -17,18 +15,13 @@ script.innerHTML = `<span :class="[{'bbn-iblock': true}, componentClass]" v-if="
 script.setAttribute('id', 'bbn-tpl-component-countdown');
 script.setAttribute('type', 'text/x-template');
 document.body.insertAdjacentElement('beforeend', script);
-//backup countdown
- /**
-  * @file bbn-countdown component
-  *
-  * @description bbn-countdown is a component that performs a countdown of a user-defined date, based on the measure of time defined in the construction.
-  *
-  * @copyright BBN Solutions
-  *
-  * @author BBN Solutions
-  *
-  * @created 13/02/2017.
-  */
+/**
+ * @file bbn-countdown component
+ * @description bbn-countdown is a component that performs a countdown of a user-defined date, based on the measure of time defined in the construction.
+ * @copyright BBN Solutions
+ * @author BBN Solutions
+ * @created 13/02/2017.
+*/
 
 
 /** @todo try this way
@@ -37,7 +30,6 @@ document.body.insertAdjacentElement('beforeend', script);
  const formatted = moment(timestamp).format('L');
 
  console.log(formatted);*/
-
 
 (function(bbn){
   "use strict";

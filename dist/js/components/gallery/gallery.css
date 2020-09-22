@@ -42,7 +42,6 @@
 .bbn-gallery a:hover img:not(.bbn-gallery-item-selected) {
   filter: grayscale(1);
 }
-.bbn-gallery div.bbn-gallery-pager,
 .bbn-gallery div.bbn-gallery-toolbar {
   clear: both;
   overflow: hidden;

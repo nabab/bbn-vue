@@ -10,6 +10,8 @@
   <slot></slot>
   <bbn-floater :element="attach || $el"
                :source="filteredData"
+               :class="'bbn-floater-context-' + bbnUid"
+               ref="floater"
                :width="width"
                :height="height"
                :minWidth="minWidth"
@@ -20,9 +22,11 @@
                :content="content"
                :auto-hide="true"
                :mode="mode"
-               v-if="showFloater"
-               @close="showFloater = false"
+               v-if="showFloater && !disabled"
+               @close="showFloater = false; $emit('close')"
+               @open="$emit('open')"
                :item-component="itemComponent"
+               :position="position"
   ></bbn-floater>
 </component>
 </template>
@@ -56,6 +60,18 @@
       bbn.vue.dimensionsComponent
     ],
     props: {
+      disabled: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * Will force the position.
+       * @prop {String} position
+       */
+      position: {
+        type: String,
+        default: ''
+      },
       /**
        * The html tag used to render the property content.
        * @prop {String} ['span'] tag
@@ -129,33 +145,27 @@
        */
       clickItem(e){
         if (
-          (e.type === 'keydown') ||
-          ((e.type === 'contextmenu') && this.context) ||
-          ((e.type === 'click') && !this.context)
+          !this.disabled
+          && (
+            (e.type === 'keydown') ||
+            ((e.type === 'contextmenu') && this.context) ||
+            ((e.type === 'click') && !this.context)
+          )
         ){
-          if ( this.showFloater ){
-            this.showFloater = !this.showFloater;
-          }
-          else{
-            this.$once('dataloaded', () => {
+          // Don't execute if in the floater
+          if (!e.target.closest('.bbn-floater-context-' + this.bbnUid)) {
+            if (!this.showFloater) {
+              this.updateData().then(() => {
+                this.showFloater = !this.showFloater;
+              })
+            }
+            else {
               this.showFloater = !this.showFloater;
-            });
-            this.updateData();
+            }
           }
         }
       },
     },
-    watch: {
-     /**
-      * @watch showFloater
-      * @fires init
-      * @emits open
-      * @emits close
-      */
-      showFloater(newVal){
-        this.$emit(newVal ? 'open' : 'close');
-      }
-    }
   });
 
 })(bbn);
