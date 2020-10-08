@@ -128,7 +128,7 @@
        * @returns {Boolean}
        */
       disableDecrease(){
-        return (bbn.fn.isNumber(this.min) && (parseFloat(this.currentValue)  <= this.min) || !!this.readonly)
+        return (bbn.fn.isNumber(this.min) && (parseFloat(this.currentValue)  <= this.min)) || !!this.readonly || this.disabled;
       },
       /**
        * True if the increase functionality must to disabled.
@@ -136,7 +136,7 @@
        * @returns {Boolean}
        */
       disableIncrease(){
-        return (bbn.fn.isNumber(this.max) && (parseFloat(this.currentValue) >= this.max) || !!this.readonly)
+        return (bbn.fn.isNumber(this.max) && (parseFloat(this.currentValue) >= this.max)) || !!this.readonly || this.disabled;
       },
       /**
        * The pattern of the input.  ^\-?[0-9]+\.0*[1-9]{0}$

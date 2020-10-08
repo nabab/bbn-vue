@@ -390,7 +390,10 @@
           this.panes.splice(0, this.panes.length);
           // position starts at 1
           let currentPosition = 1,
-              tmp             = [];
+              tmp             = [],
+              hasAuto         = false,
+              hasPercent      = false,
+              hasResizers     = false;
           // If 1st pane is collapsible we add a resizer at the start
           this.$children.forEach((pane, i) => {
             // Defining the panes base on the content
@@ -406,9 +409,11 @@
                 isFixed = true;
                 if ( props.size === 'auto' ){
                   props.size = false;
+                  hasAuto = true;
                 }
                 else if ( (typeof props.size === 'string') && (props.size.substr(-1) === '%') ){
                   isPercent = true;
+                  hasPercent = true;
                 }
                 else if ( (typeof props.size === 'string') && (props.size.substr(-2) === 'px') ){
                   isNumber = true;
@@ -417,6 +422,9 @@
                 else if ( (typeof props.size === 'number') ){
                   isNumber = true;
                 }
+              }
+              else {
+                hasAuto = true;
               }
               let obj = bbn.fn.extend({
                 index: i,
@@ -483,6 +491,7 @@
                   o.panec2 = idx;
                 }
                 this.resizers.push(o);
+                hasResizers = true;
                 currentPosition++;
               }
             }
@@ -530,13 +539,19 @@
               }
               if ( o.panec2 || o.pane2 ){
                 this.resizers.push(o);
+                hasResizers = true;
                 currentPosition++;
               }
             }
           });
-          this.$forceUpdate();
-          this.ready = true;
-          this.selfEmit(true);
+          if ( hasPercent && hasResizers && !hasAuto ){
+            throw bbn._('When a "pane" has a percentage measure and a "resizer" is present a "pane" must have an "auto" measure');
+          }
+          else {
+            this.$forceUpdate();
+            this.ready = true;
+            this.selfEmit(true);
+          }
         }, 200);
       },
       /**
@@ -682,6 +697,10 @@
        * @param {Object} rs 
        */
       resizeStart(e, rs){
+        if ( e.target.tagName.toLowerCase() === 'i' ){
+          e.target.click();
+          return
+        }
         if (this.isResizable
            && !this.isResizing
            && this.panes[rs.pane1]

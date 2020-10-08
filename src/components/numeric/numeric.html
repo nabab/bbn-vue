@@ -36,7 +36,7 @@
              :value="value"
       >
     </div>
-    <div :class="['bbn-numeric-buttons', 'bbn-radius-top-right', 'bbn-radius-bottom-right', {'bbn-disabled' : !!readonly}]">
+    <div :class="['bbn-numeric-buttons', 'bbn-radius-top-right', 'bbn-radius-bottom-right', {'bbn-disabled' : !!readonly || disabled}]">
       <div :class="[
             'bbn-reactive-block',
             'bbn-middle',

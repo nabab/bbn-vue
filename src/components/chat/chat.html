@@ -1,126 +1,240 @@
-<div :class="[componentClass]" v-if="usersOnlineWithoutMe.length">
+<div :class="[componentClass, 'bbn-vmiddle']">
+  <div v-if="currentChats.length"
+       class="bbn-block bbn-vmiddle"
+  >
+    <div v-for="(chat, i) in currentChats"
+         v-if="chat.visible || chat.minimized"
+         :class="['bbn-right-sspace', 'bbn-vmiddle', 'bbn-p', 'bbn-reactive', 'bbn-hxspadded', {
+           'bbn-state-active': chat.active,
+           'bbn-state-selected': chat.unread
+         }]"
+         @click="toggleMinimized(chat.idx)"
+         :title="getParticipantsFormatted(chat.participants)"
+    >
+      <bbn-initial v-if="!chat.info.title && (chat.participants.length === 1)"
+                   :user-name="getParticipantsFormatted(chat.participants)"
+                   :width="16"
+                   :height="16"
+      ></bbn-initial>
+      <i v-else
+         class="nf nf-oct-organization bbn-lg"
+      ></i>
+      <span v-text="chat.info.title || shorten(getParticipantsFormatted(chat.participants), 10)"
+            class="bbn-left-sspace"
+      ></span>
+      <span v-if="chat.unread"
+            class="bbn-xs bbn-badge bbn-left-sspace bbn-primary-text-alt bbn-background"
+            v-text="chat.unread"
+      ></span>
+    </div>
+  </div>
   <div class="bbn-block bbn-p"
-       v-if="visibleWindows.length"
-       @click="currentVisible = !currentVisible; if ( currentVisible && !currentOnline ){ currentOnline = true; } if ( currentVisible && !currentOnline ){ currentOnline = true; }">
-    <i :class="{
-             'bbn-lg': true,
-             'fab': true,
-             'nf nf-fa-stack_exchange': true,
-             'bbn-green': currentOnline,
-             'bbn-red': !currentOnline
-           }">
-    </i>
-    <span class="bbn-xs bbn-badge bbn-bg-red bbn-white"
-          v-if="unread && currentOnline"
-          v-text="unread"></span>
+       @click="usersVisible = !usersVisible"
+  >
+    <i :class="['bbn-lg', 'nf nf-fa-comments', {
+          'bbn-right-sspace': currentOnline && usersOnlineWithoutMe.length,
+          'bbn-red': !currentOnline
+        }]"
+    ></i>
+    <span v-if="currentOnline && usersOnlineWithoutMe.length"
+          class="bbn-xs bbn-badge bbn-bg-green bbn-white"
+          v-text="usersOnlineWithoutMe.length"
+    ></span>
   </div>
-  <div v-if="!usersVisible && currentOnline"
-       class="bbn-block bbn-p"
-       @click="usersVisible = true; currentVisible = true">
-    <i class="bbn-lg nf nf-fa-users"></i>
-    <span class="bbn-xs bbn-badge bbn-bg-webblue bbn-white"
-          v-text="usersOnlineWithoutMe.length">
-    </span>
-  </div>
-  <div v-if="currentWindows.length && currentOnline"
-       class="bbn-block bbn-p"
-       @click="currentOnline = false">
-    <i class="bbn-p bbn-lg nf nf-fa-ban"></i>
-  </div>
-  <div v-if="usersVisible && currentOnline"
-       class="bbn-chat-users bbn-widget bbn-flex-height">
-    <div class="bbn-header bbn-spadded">
-      <span v-text="_('Available users')"></span>
-      <span class="bbn-chat-context">
-        <bbn-context class="nf nf-fa-caret_down bbn-p"
+  <div v-if="usersVisible"
+       class="bbn-chat-users bbn-widget bbn-flex-height"
+       :style="{bottom: bottomCoord}"
+  >
+    <div class="bbn-header bbn-spadded bbn-no-border-top bbn-no-hborder bbn-flex-width">
+      <div class="bbn-flex-fill bbn-l">
+        <span v-text="_('Chat')"></span>
+        <span>(</span>
+        <span v-text="currentOnline ? _('Online') : _('Offline')"
+              :class="{
+                'bbn-green': currentOnline,
+                'bbn-red': !currentOnline
+              }"
+        ></span>
+        <span>)</span>
+      </div>
+      <div>
+        <bbn-context class="nf nf-mdi-menu bbn-p"
                      tabindex="-1"
                      tag="i"
-                     :source="getMenuFn"
+                     :source="mainMenu"
         ></bbn-context>
         &nbsp;
-        <i class="bbn-p nf nf-fa-times"
-           @click="usersVisible = false"></i>
-      </span>
+        <i class="bbn-p nf nf-mdi-window_close"
+           @click="usersVisible = false"
+        ></i>
+      </div>
     </div>
-    <bbn-list :source="usersOnlineWithoutMe"
-              class="bbn-flex-fill"
-              :component="$options.components.user"
-    >
-      <!-- <div class="bbn-w-100 bbn-p"
-           style="overflow: auto"
-           slot="item"
-           slot-scope="item"
-           @click="chatTo([item.value])">
-        <bbn-initial :user-id="item.value"
-                     :user-name=.getField(users, 'text', 'value', item.value)"
-                     :width="16"
-                     :height="16"
-                     style="padding-right: 3px"
-        ></bbn-initial>
-        <span class="bbn-large"
-              v-text=.getField(users, 'text', 'value', item.value)">
-        </span>
-      </div> -->
-    </bbn-list>
+    <div class="bbn-flex-fill">
+      <bbn-scroll>
+        <diV class="bbn-spadded">
+          <div class="bbn-box bbn-c"
+               v-text="_('Current chats')"
+               v-if="Object.values(currentChats).length"
+          ></div>
+          <bbn-list :source="Object.values(currentChats)"
+                    class="bbn-vsmargin"
+                    :component="$options.components.active"
+                    v-if="Object.values(currentChats).length"
+                    @select="onSelectChat"
+          ></bbn-list>
+          <div v-if="currentOnline"
+               class="bbn-box bbn-c"
+               v-text="_('Users')"
+          ></div>
+          <bbn-list v-if="currentOnline"
+                    :source="allUsersWithoutChats"
+                    class="bbn-vsmargin"
+                    :component="$options.components.user"
+                    @select="onSelectUser"
+          ></bbn-list>
+        </diV>
+      </bbn-scroll>
+    </div>
   </div>
-  <container v-for="(chat, i) in visibleWindows"
-             v-if="chat.visible && currentVisible"
-             inline-template
-             :key="chat.idx"
-             :idx="chat.idx"
-             :style="{
-               right: (300 * (i + (usersVisible ? 1 : 0))) + 'px'
-             }"
-             :participants="chat.participants"
-             :messages="chat.messages"
-             :chat-id="chat.id"
-             :user-id="userId"
-             :users="users"
-             @send="relay"
+  <chat v-for="(chat, i) in visibleWindows"
+        v-if="chat.visible"
+        inline-template
+        :key="chat.idx"
+        :idx="chat.idx"
+        :style="{
+          right: (250 * i) + (usersVisible ? 300 : 0) + 'px'
+        }"
+        :participants="chat.participants"
+        :admins="chat.admins"
+        :messages="chat.messages"
+        :info="chat.info"
+        :chat-id="chat.id"
+        :user-id="userId"
+        :users="users"
+        :id-temp="chat.idTemp"
+        :active="chat.active"
+        @send="relay"
   >
-    <div class="bbn-chat-users bbn-widget bbn-flex-height bbn-rad">
-      <div class="bbn-header bbn-spadded">
-        <span v-for="participant in participants"
-              v-if="participant !== userId"
-              class="bbn-user-title"
-              v-text="getField(users, 'text', 'value', participant)"
-        ></span>
-        <span class="bbn-chat-context">
-          <bbn-context class="nf nf-fa-caret_down bbn-p"
-                       tabindex="-1"
-                       tag="i"
-                       :source="getMenuFn"
+    <div class="bbn-chat-conversation bbn-background bbn-flex-height"
+         :style="{bottom: $parent.bottomCoord}"
+         @focusin="cp.activate(idx)"
+         @focusout="cp.deactivate(idx)"
+         tabindex="0"
+    >
+      <div :class="['bbn-header', 'bbn-spadded', 'bbn-grid', {'bbn-state-active': active}]"
+            style="grid-template-columns: auto max-content"
+      >
+        <div class="bbn-w-100 bbn-ellipsis"
+              v-text="currentTitle"
+              :title="currentTitle"
+        ></div>
+        <div>
+          <bbn-context class="nf nf-mdi-menu bbn-p"
+                        tabindex="-1"
+                        tag="i"
+                        :source="getMenu"
           ></bbn-context>
-          &nbsp;
-          <i class="bbn-p nf nf-fa-times"
-             @click="close(idx)"
+          <i class="bbn-p nf nf-mdi-window_minimize bbn-left-sspace"
+             @click="minimize"
           ></i>
-        </span>
+          <i class="bbn-p nf nf-mdi-window_close bbn-left-sspace"
+             @click="close"
+          ></i>
+        </div>
       </div>
-      <div class="bbn-flex-fill bbn-vspadding">
-        <bbn-scroll ref="scroll">
-          <div class="bbn-flex-width" v-for="msg in messages">
-            <div class="bbn-block" style="min-width: 20px;">
-              <bbn-initial :user-id="msg.user"
-                            :user-name=.getField(users, 'text', 'value', msg.user)"
-                            :width="16"
-                            :height="16"
-                            style="vertical-align: middle">
-              </bbn-initial>
-            </div>
-            <div class="bbn-flex-fill message" v-html="renderMsg(msg.message)"></div>
+      <div v-if="isLoading" class="bbn-middle bbn-top-xsspace bbn-s">
+        <bbn-loadicon size="1.5em"></bbn-loadicon>
+        <span class="bbn-left-sspace" v-text="_('Loading...')"></span>
+      </div>
+      <div v-if="showInfo"
+           class="bbn-flex-fill bbn-bordered bbn-no-top-border bbn-alt-background"
+      >
+        <div class="bbn-flex-height">
+          <div class="bbn-flex-fill">
+            <bbn-scroll>
+              <component :is="cp.$options.components.info"
+                    :info="info"
+                    :participants="participants"
+                    :admins="admins"
+                    :user-id="userId"
+                    :chat-id="chatId"
+                    :users="users"
+              ></component>
+            </bbn-scroll>
           </div>
-        </bbn-scroll>
+          <bbn-button class="bbn-no-hborder bbn-no-radius bbn-no-border-bottom"
+                      @click="showInfo = false"
+                      :text="_('CLOSE')"
+          ></bbn-button>
+        </div>
       </div>
-      <div class="bbn-flex-width" style="min-height: 2em">
-        <bbn-input class="bbn-flex-fill"
-                   ref="input"
-                   @keydown.enter.prevent="sendMessage"
-                   v-model="currentMessage"
-        ></bbn-input>
-        <bbn-button icon="nf nf-fa-paper_plane"
-                    @click="sendMessage"></bbn-button>
-      </div>
+      <template v-else>
+        <div class="bbn-flex-fill bbn-bordered bbn-no-vborder">
+          <bbn-scroll ref="scroll"
+                      @reachTop="loadMoreMessages"
+          >
+            <div class="bbn-spadded">
+              <div v-for="(msg, midx) in messages">
+                <div v-if="!midx || (messages[midx-1] && (getDate(messages[midx-1].time) !== getDate(msg.time)))"
+                     class="bbn-middle bbn-s"
+                >
+                  <span v-text="isToday(msg.time) ? _('Today') : getDate(msg.time)"
+                        class="bbn-primary-text-alt"
+                  ></span>
+                </div>
+                <div v-if="msg.user"
+                     :class="['bbn-flex', 'bbn-vsmargin', 'bbn-vmiddle', {
+                       'bbn-left-lspace': msg.user === userId,
+                       'bbn-right-lspace': msg.user !== userId
+                     }]"
+                     :style="{justifyContent: msg.user === userId ? 'flex-end' : 'flex-start'}"
+                >
+                  <span :class="['bbn-chat-conversation-message', 'bbn-box', 'bbn-vxspadded', 'bbn-hspadded', 'bbn-no-border', 'bbn-flex', {
+                          'bbn-alt-background': !msg.unread,
+                          'bbn-alt-light': $parent.isDarkTheme && (msg.user !== userId),
+                          'bbn-alt-dark': !msg.unread && !$parent.isDarkTheme && (msg.user !== userId),
+                          'bbn-primary': msg.unread
+                        }]"
+                        :style="{
+                          'border-bottom-right-radius': msg.user === userId ? 0 : '',
+                          'border-top-left-radius': msg.user === userId ? '' : 0
+                        }"
+                  >
+                    <span>
+                      <span v-if="isGroup"
+                            v-text="getField(cp.users, 'text', 'value', msg.user)"
+                            :title="getField(cp.users, 'text', 'value', msg.user)"
+                            class="bbn-s"
+                      ></span>
+                      <br v-if="isGroup">
+                      <span v-html="renderMsg(msg.message)"></span>
+                    </span>
+                    <span class="bbn-chat-conversation-message-time bbn-left-sspace bbn-xxs"
+                          v-text="getTime(msg.time)"
+                    ></span>
+                  </span>
+                </div>
+                <div v-else
+                     class="bbn-middle bbn-s"
+                >
+                  <span v-text="msg.message"
+                        class="bbn-tertiary-text-alt"
+                  ></span>
+                </div>
+              </div>
+            </div>
+          </bbn-scroll>
+        </div>
+        <div v-if="cp.currentOnline" style="min-height: 2em">
+          <bbn-input class="bbn-chat-conversation-input bbn-w-100 bbn-no-radius"
+                     ref="input"
+                     @keydown.enter.prevent="sendMessage"
+                     v-model="currentMessage"
+                     button-right="nf nf-fa-paper_plane"
+                     @clickRightButton="sendMessage"
+          ></bbn-input>
+        </div>
+      </template>
     </div>
-  </container>
+  </chat>
 </div>

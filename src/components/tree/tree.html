@@ -54,7 +54,7 @@
             <span :class="['bbn-tree-node-block', source.cls || '', {'bbn-tree-node-block-no-component': !!component}]"
                   @mouseover.stop="mouseOver"
             >
-              <span class="bbn-tree-node-block-expander bbn-p"
+              <span :class="['bbn-tree-node-block-expander', {'bbn-p': numChildren}]"
                     @click="if ( numChildren && (level >= tree.minExpandLevel) ){
                       isExpanded = !isExpanded;
                     }"

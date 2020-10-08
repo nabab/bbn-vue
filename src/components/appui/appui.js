@@ -83,12 +83,14 @@
     data(){
       return {
         isMobile: bbn.fn.isMobile(),
+        isTablet: bbn.fn.isTabletDevice(),
         mode: bbn.env.mode,
         opacity: 0,
         pollerObject: {
           chat: true,
           message: null,
-          usersHash: false
+          usersHash: false,
+          chatsHash: false
         },
         // For the server query (checking or not)
         chatOnline: true,
@@ -120,7 +122,8 @@
         clipboardContent: [],
         observerTimeout: false,
         colorEnvVisible: true,
-        currentTitle: this.title
+        currentTitle: this.title,
+        searchIsActive: false
       }
     },
     computed: {
@@ -244,12 +247,8 @@
       },
       */
       sendChatMessage(obj, idx){
-        if ( this.$refs.chat.currentWindows[idx] ){
-          this.pollerObject.message = {
-            text: obj.message,
-            id_chat: this.$refs.chat.currentWindows[idx].id || null,
-            users: obj.users
-          };
+        if ( this.$refs.chat.currentChats[idx] ){
+          this.pollerObject.message = obj;
           this.poll();
           /*
           this.post('chat/actions/message', obj, (d) => {
@@ -264,6 +263,18 @@
           })
           */
         }
+      },
+
+      onChatStatusChanged(status, usersHash, chatsHash){
+        this.pollerObject.chat = status;
+        this.pollerObject.usersHash = usersHash;
+        this.pollerObject.chatsHash = chatsHash;
+        this.poll()
+      },
+
+      setLastActivityChat(obj){
+        this.pollerObject.setLastActivity = obj;
+        this.poll();
       },
 
       getField: bbn.fn.getField,
@@ -504,6 +515,11 @@
       getCurrentContainer(){
         let container = this.find('bbn-router').searchContainer(bbn.env.path, true);
         return container || this;
+      },
+      searchBarBlur(){
+        setTimeout(() => {
+          this.searchIsActive = false
+        }, 500)
       }
     },
     beforeCreate(){
@@ -633,6 +649,10 @@
       },
       usersOnlineHash(newVal){
         this.pollerObject.usersHash = newVal;
+        this.poll();
+      },
+      chatsHash(newVal){
+        this.pollerObject.chatsHash = newVal;
         this.poll();
       },
       observers: {

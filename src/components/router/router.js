@@ -188,6 +188,14 @@
        */
       componentUrl: {
         type: String
+      },
+      /**
+       * The max length for the titles
+       * @prop {Number} [20] maxTitleLength
+       */
+      maxTitleLength: {
+        type: Number,
+        default: 20
       }
     },
     data(){

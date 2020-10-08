@@ -78,7 +78,15 @@
          * @data [null] right
          */
         right: null,
-        transitionTimeout: false
+        /**
+         * @data {Number|Boolean} [false] transitionTimeout
+         */
+        transitionTimeout: false,
+        /**
+         * Indicates if we are on a mobile device
+         * @data {Boolean} isMobile
+         */
+        isMobile: bbn.fn.isMobile()
       };
     },
     computed: {

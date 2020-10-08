@@ -9,7 +9,7 @@
     basicComponent: {
       data(){
         bbn.vue.uid++;
-        return bbn.fn.extend({
+        let o = {
           /**
            * The change of value of this prop to true emits the event 'ready'.
            * @data {Boolean} [false] ready
@@ -24,11 +24,27 @@
           bbnUid: bbn.vue.uid,
           /**
            * The classes added to the component.
-           * @prop {Array} [[]] componentClass
+           * @data {Array} [['bbn-basic-component']] componentClass
            * @memberof basicComponent
            */
           componentClass: ['bbn-basic-component'],
-        }, bbn.vue.defaults[this.$options.name.slice(4)] || {})
+          /**
+           * Indicates if we're on a mobile device.
+           * @data {Boolean} isMobile
+           * @memberof basicComponent
+           */
+          isMobile: bbn.fn.isMobile(),
+          /**
+           * Indicates if we're on a tablet device.
+           * @data {Boolean} isTablet
+           * @memberof basicComponent
+           */
+          isTablet: bbn.fn.isTabletDevice()
+        };
+        if (this.$options.name && bbn.vue.defaults[this.$options.name.slice(4)]) {
+          bbn.fn.extend(o, bbn.vue.defaults[this.$options.name.slice(4)]);
+        }
+        return o;
       },
       methods: {
         /**

@@ -4,9 +4,9 @@
     padding-right: 0.5em;
   }
   > .bbn-block{
-    margin-right: 0.2em;
+    //margin-right: 0.2em;
     > i{
-      margin-right: 0.7em;
+      //margin-right: 0.7em;
     }
     > span.bbn-badge{
       position: absolute;
@@ -14,26 +14,34 @@
       right: 0;
     }
   }
-  .bbn-chat-context{
-    position: absolute;
-    right: 2px;
-    top: 2px;
-    display: inline-block;
-  }
-  .bbn-chat-users{
+  .bbn-chat-common{
     position: absolute;
     right: 0;
     z-index: 5;
-    bottom: 25px;
-    height: 200px;
+    //bottom: 25px;
+    height: 350px;
+  }
+  .bbn-chat-users{
+    .bbn-chat-common;
     width: 300px;
+  }
+  .bbn-chat-conversation{
+    .bbn-chat-common;
+    width: 250px;
+    .bbn-chat-conversation-message {
+      word-break: break-all;
+      .bbn-chat-conversation-message-time {
+        align-self: flex-end;
+        flex-shrink: 0;
+      }
+    }
+    .bbn-chat-conversation-input {
+      button {
+        border-radius: 0 !important;
+      }
+    }
     .bbn-user-title{
       margin-right: 5px;
-    }
-    .message{
-      a{
-        word-wrap: break-word;
-      }
     }
   }
 }

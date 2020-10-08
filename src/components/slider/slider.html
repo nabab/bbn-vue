@@ -18,7 +18,8 @@
          'bbn-bottom-left': closeButton === 'bottom-left',
          'bbn-p': true,
          'bbn-spadded': true,
-         'bbn-m': true,
+         'bbn-m': !isMobile,
+         'bbn-xxl': isMobile,
          'bbn-unselectable': true
        }"
        @click.stop.prevent="hide">

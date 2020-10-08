@@ -364,6 +364,7 @@
     <bbn-pager class="bbn-table-footer"
                v-if="pageable || saveable || filterable || isAjax || showable"
                :element="_self"
+               :buttons="footerButtons"
     ></bbn-pager>
   </div>
   <bbn-floater v-if="currentFilter"

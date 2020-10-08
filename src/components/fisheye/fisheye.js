@@ -73,6 +73,14 @@
       scrollable: {
         type: Boolean,
         default: false
+      },
+      /**
+       * True if you want to render the mobile version of the component
+       * @prop {Boolean} [false] mobile
+       */
+      mobile: {
+        type: Boolean,
+        default: false
       }
     },
     data(){
@@ -116,7 +124,7 @@
         /**
          * @data {Boolean} [true] showIcons
          */
-        showIcons: true,
+        showIcons: !this.mobile,
         /**
          * @data {Boolean} [false] visibleFloater
          */
@@ -178,6 +186,9 @@
        * @param {Object} it
        */
       onClick(it){
+        if ( it.url ){
+          bbn.fn.link(it.url);
+        }
         if ( it.action && bbn.fn.isFunction(it.action) ){
           it.action();
         }
@@ -189,7 +200,7 @@
        * @param {Number} idx
        */
       mouseover(idx){
-        if ( this.visibleText !== idx ){
+        if ( !bbn.fn.isMobile() && (this.visibleText !== idx) ){
           clearTimeout(this.timeout);
           this.visibleText = -1;
           this.timeout = setTimeout(() => {
@@ -260,7 +271,7 @@
        */
       checkMeasures(){
         let ct = this.getRef('container');
-        if ( ct ){
+        if ( ct && !this.mobile ){
           this.showIcons = this.lastKnownWidth >= ct.offsetWidth;
         }
       },

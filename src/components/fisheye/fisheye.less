@@ -7,7 +7,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(7.5em, 1fr));
     justify-items: center;
-    a {
+    span {
       width: 6em;
       i {
         min-width: 1.4em;
@@ -16,8 +16,11 @@
     }
     .bbn-fisheye-floater-icon {
       backface-visibility: hidden;
-      font-size: 4em;
+      font-size: 3em;
     }
+  }
+  .bbn-fisheye-dots {
+    font-size: 2em;
   }
   a{
     color: inherit;
@@ -49,9 +52,15 @@
         &:hover{
           transform: scale(1.5);
         }
+        .bbn-mobile & {
+          transform: none;
+        }
       }
       &:hover{
         transform: scale(1.4);
+      }
+      .bbn-mobile & {
+        transform: none;
       }
     }
   }

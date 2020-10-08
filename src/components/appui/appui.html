@@ -1,7 +1,4 @@
-<div :class="[componentClass, {
-      'bbn-background': true,
-      'bbn-overlay': true,
-      'bbn-mobile': isMobile,
+<div :class="[componentClass, 'bbn-background', 'bbn-overlay', {
       'bbn-desktop': !isMobile
      }]"
      :style="{opacity: opacity}">
@@ -13,28 +10,47 @@
     <!-- HEADER -->
     <div v-if="header"
          class="bbn-w-100"
-         style="overflow: visible">
-      <div :class="{
-        'bbn-header': true,
-        'bbn-flex-width': true,
-        'bbn-unselectable': true,
-        'bbn-no-border': true,
-        'bbn-h-100': true
-      }">
+         style="overflow: visible"
+    >
+      <div :class="['bbn-header', 'bbn-flex-width', 'bbn-unselectable', 'bbn-no-border', {
+             'bbn-h-100': !isMobile,
+             'bbn-spadded': isMobile
+           }]"
+      >
         <!-- MENU BUTTON -->
-        <div class="bbn-block bbn-h-100 bbn-menu-button-container"
-             style="min-width: 50px; width: 50px; margin-right: 90px">
+        <div :class="{
+               'bbn-block': !isMobile,
+               'bbn-h-100': !isMobile,
+               'bbn-appui-menu-button': !isMobile,
+               'bbn-vmiddle': isMobile,
+               'bbn-right-sspace': isMobile && searchIsActive
+              }"
+        >
           <div tabindex="0"
                @keydown.enter="toggleMenu"
                @keydown.space="toggleMenu"
                @mousedown.prevent.stop="toggleMenu"
-               class="bbn-overlay bbn-centered bbn-p">
+               class="bbn-centered bbn-p"
+          >
             <i ref="icon" class="nf nf-fa-bars bbn-xxxl"> </i>
           </div>
         </div>
+        <!-- FISHEYE (MOBILE) -->
+        <bbn-fisheye v-if="plugins['appui-menu'] && isMobile && !searchIsActive"
+                    class="bbn-appui-fisheye bbn-block bbn-large"
+                    :removable="true"
+                    @remove="removeShortcut"
+                    ref="fisheye"
+                    :source="shortcuts"
+                    :fixed-left="leftShortcuts"
+                    :fixed-right="rightShortcuts"
+                    :mobile="true"
+                    :z-index="3"
+        ></bbn-fisheye>
         <!-- SEARCHBAR -->
-        <div class="bbn-abs bbn-h-100 bbn-vspadded"
-             style="left: 50px; right: 140px; top: auto">
+        <div v-if="!isMobile"
+             class="bbn-appui-search bbn-large bbn-abs bbn-h-100 bbn-vspadded"
+        >
           <bbn-search :source="searchBar.source"
                       :placeholder="searchBar.placeholderFocused"
                       ref="search"
@@ -49,8 +65,10 @@
           >
           </bbn-search>
         </div>
-<!-- CENTRAL PART -->
-        <div class="bbn-h-100 bbn-splitter-top-center bbn-flex-fill">
+        <!-- CENTRAL PART -->
+        <div v-if="!isMobile"
+             class="bbn-h-100 bbn-splitter-top-center bbn-flex-fill"
+        >
           <!-- FISHEYE -->
           <bbn-fisheye v-if="plugins['appui-menu']"
                        style="z-index: 3"
@@ -69,13 +87,42 @@
           <div v-else>
           </div>
         </div>
+        <!-- LOGO (MOBILE) -->
+        <div class="bbn-flex-fill bbn-hspadded bbn-middle"
+              v-if="!searchIsActive && !!logo && isMobile"
+        >
+          <img :src="logo"
+               class="bbn-appui-logo"
+          >
+        </div>
+        <!-- SEARCHBAR (MOBILE) -->
+        <div v-if="isMobile"
+             :class="['bbn-appui-search', 'bbn-vmiddle', 'bbn-large', {'bbn-flex-fill': searchIsActive}]">
+          <bbn-search :source="searchBar.source"
+                      :placeholder="searchBar.placeholderFocused"
+                      ref="search"
+                      @select="searchBar.select"
+                      :component="searchBar.component"
+                      v-model="searchBar.value"
+                      :suggest="true"
+                      :source-value="searchBar.sourceValue"
+                      :source-text="searchBar.sourceText"
+                      :min-length="searchBar.minLength"
+                      max-width="100%"
+                      class="bbn-no"
+                      @focus="searchIsActive = true"
+                      @blur="searchBarBlur"
+          ></bbn-search>
+        </div>
         <!-- LOGO -->
-        <div class="bbn-block bbn-logo-container" style="max-width: 25%; min-height: 100%; width: 10em">
+        <div v-if="!isMobile"
+             class="bbn-block bbn-logo-container"
+             style="max-width: 25%; min-height: 100%; width: 10em"
+        >
           <div class="bbn-100 bbn-vmiddle bbn-r">
             <img v-if="!!logo"
                  :src="logo"
-                 style="border: 0; max-height: 100%; max-width: 100%; width: auto;"
-                 class="bbn-right-space"
+                 class="bbn-right-space bbn-appui-logo"
             >
           </div>
         </div>
@@ -124,48 +171,60 @@
                   :url="!!nav ? undefined : url"
                   @route="onRoute"
                   @change="$emit('change', $event)"
+                  :breadcrumb="isMobile"
+                  :scrollable="isMobile"
       >
         <slot></slot>
       </bbn-router>
     </div>
     <!-- STATUS -->
     <div v-if="status"
-              ref="foot"
-              class="bbn-header bbn-bordered-top appui-statusbar"
-              style="overflow: visible">
-      <div class="bbn-flex-width bbn-h-100 bbn-vmiddle">
+        ref="foot"
+        class="bbn-header bbn-bordered-top appui-statusbar"
+        style="overflow: visible"
+    >
+      <div class="bbn-flex-width bbn-h-100">
         <!-- LOADBAR -->
-        <bbn-loadbar class="bbn-flex-fill bbn-h-100 bbn-right-space" ref="loading" :source="loaders"></bbn-loadbar>
-        <!-- TASK TRACKER -->
-        <div v-if="plugins['appui-task']"
-            class="bbn-h-100 bbn-vmiddle bbn-right-space"
-        >
-          <appui-task-tracker></appui-task-tracker>
+        <div class="bbn-flex-fill">
+          <bbn-loadbar class="bbn-h-100 bbn-right-space bbn-overlay"
+                      ref="loading"
+                      :source="loaders"
+          ></bbn-loadbar>
         </div>
-        <!-- CHAT -->
-        <div v-if="plugins['appui-chat']"
-             :class="['bbn-h-100', 'bbn-vmiddle', {'bbn-right-space': getRef('chat') && getRef('chat').usersOnlineWithoutMe.length}]"
-        >
-          <bbn-chat ref="chat"
-                    :url="plugins['appui-chat']"
-                    :user-id="app.user.id"
-                    :users="app.users"
-                    :online-users="usersOnline"
-                    :online="chatOnline"
-                    @send="sendChatMessage"
-                    :groups="app.groups"
+        <div class="bbn-vmiddle">
+          <!-- TASK TRACKER -->
+          <div v-if="plugins['appui-task']"
+              class="bbn-right-space"
           >
-          </bbn-chat>
-        </div>
-        <!-- CLIPBOARD BUTTON -->
-        <div v-if="plugins['appui-clipboard'] && clipboard"
-             @click.stop.prevent="getRef('clipboard').toggle()"
-             ref="clipboardButton"
-             :class="['bbn-appui-clipboard-button bbn-h-100 bbn-vmiddle bbn-block bbn-c bbn-right-space bbn-p']">
-          <i class="nf nf-fa-clipboard bbn-m" tabindex="-1"></i>
-          <input class="bbn-invisible bbn-overlay bbn-p"
-                 @keydown.space.enter.prevent="getRef('clipboard').toggle()"
-                 @drop.prevent.stop="getRef('clipboard').copy($event); getRef('clipboard').show()">
+            <appui-task-tracker></appui-task-tracker>
+          </div>
+          <!-- CHAT -->
+          <div v-if="plugins['appui-chat']"
+               class="bbn-right-space"
+          >
+            <bbn-chat ref="chat"
+                      :url="plugins['appui-chat']"
+                      :user-id="app.user.id"
+                      :users="app.getActiveUsers()"
+                      :online-users="usersOnline"
+                      :online="chatOnline"
+                      @send="sendChatMessage"
+                      @statusChanged="onChatStatusChanged"
+                      :groups="app.groups"
+            ></bbn-chat>
+          </div>
+          <!-- CLIPBOARD BUTTON -->
+          <div v-if="plugins['appui-clipboard'] && clipboard"
+              @click.stop.prevent="getRef('clipboard').toggle()"
+              ref="clipboardButton"
+              class="bbn-appui-clipboard-button bbn-right-space bbn-p bbn-rel"
+          >
+            <i class="nf nf-fa-clipboard bbn-m" tabindex="-1"></i>
+            <input class="bbn-invisible bbn-overlay bbn-p"
+                  @keydown.space.enter.prevent="getRef('clipboard').toggle()"
+                  @drop.prevent.stop="getRef('clipboard').copy($event); getRef('clipboard').show()"
+            >
+          </div>
         </div>
       </div>
     </div>
@@ -174,7 +233,10 @@
   <bbn-slider v-if="plugins['appui-menu']"
               orientation="left"
               ref="slider"
-              style="width: 35em"
+              :style="{
+                width: isMobile && !isTablet ? '100%' : '35em',
+                maxWidth: '100%'
+              }"
               @show="focusSearchMenu"
               close-button="top-right">
     <bbn-treemenu :source="plugins['appui-menu'] + '/data'"

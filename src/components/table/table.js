@@ -313,6 +313,16 @@
        */
       loadedConfig: {
         type: Object
+      },
+      /**
+       * Shows the footer's arrows as buttons
+       * @prop {Boolean} [true] footerButtons
+       */
+      footerButtons: {
+        type: Boolean,
+        default(){
+          return !bbn.fn.isMobile() || bbn.fn.isTabletDevice();
+        }
       }
     },
     data() {
