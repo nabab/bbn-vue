@@ -10,7 +10,6 @@
       @keyup="keyup($event)"
       @mouseenter="over($event)"
       @mouseleave="out($event)"
-      @scroll.passive="scroll($event)"
   ></div>
   <input ref="element"
         type="hidden"
@@ -27,6 +26,7 @@
   </div>
   <bbn-scrollbar v-if="fill && ready"
                 orientation="vertical"
+                ref="scrollbar"
                 :container="$el.querySelector('.CodeMirror-scroll')">
   </bbn-scrollbar>
 </div>

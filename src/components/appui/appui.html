@@ -1,7 +1,8 @@
 <div :class="[componentClass, 'bbn-background', 'bbn-overlay', {
       'bbn-desktop': !isMobile
      }]"
-     :style="{opacity: opacity}">
+     :style="{opacity: opacity}"
+>
   <div v-if="!cool"
        class="bbn-middle bbn-xl"
        v-text="_('Appui is already defined') + '... :('">
@@ -208,7 +209,6 @@
                       :users="app.getActiveUsers()"
                       :online-users="usersOnline"
                       :online="chatOnline"
-                      @send="sendChatMessage"
                       @statusChanged="onChatStatusChanged"
                       :groups="app.groups"
             ></bbn-chat>

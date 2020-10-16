@@ -903,6 +903,9 @@
       unselect(){
         if ( this.tree.selectedNode ){
           this.tree.selectedNode.isSelected = false;
+          if (!this.multiple) {
+            this.$emit('unselect', this);
+          }
         }
       },
 
@@ -1860,13 +1863,13 @@
                     this.tree.setLocalStorage();
                   })
                 }
-                if ( emit ){
+                if (emit && (this.multiple || !this.tree.currentSelected.length)) {
                   this.tree.$emit('unselect', this);
                 }
               }
               if ( (idx2 > -1) && (this.tree !== this.parent) ){
                 this.parent.currentSelected.splice(idx, 1);
-                if ( emit ){
+                if (emit && (this.multiple || !this.tree.currentSelected.length)) {
                   this.parent.$emit('unselect', this);
                 }
               }

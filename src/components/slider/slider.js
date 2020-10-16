@@ -185,7 +185,6 @@
        * @method onResize
        */
       onResize() {
-        bbn.fn.log("on Rersize");
         this.isResizing = true;
         if (this.transitionTimeout) {
           clearTimeout(this.transitionTimeout);
@@ -221,7 +220,7 @@
         }
       },
       changeVisible(v) {
-        bbn.fn.log("CHANGE VISIBLE");
+        //bbn.fn.log("CHANGE SLIDER VISIBLE");
         if (v && !this.hasBeenOpened) {
           this.hasBeenOpened = true;
         }

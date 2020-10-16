@@ -272,12 +272,15 @@
         return axios.get(url, {responseType:'json'}).then((d) => {
           d = d.data;
           if ( d && d.success && d.components ){
-            bbn.fn.iterate(items, (a, n) => {
-              if ( d.components[n] && this._realDefineComponent(a.name, d.components[n], a.mixins) && Vue.options.components[a.name]) {
+            bbn.fn.iterate(items, a => {
+              let cp = bbn.fn.getRow(d.components, {name: a.name});
+              if ( cp && this._realDefineComponent(a.name, cp, a.mixins) && Vue.options.components[a.name]) {
                 a.resolve(Vue.options.components[a.name])
               }
               else{
+                bbn.fn.log("PROMISE REJECT OF" + a.name, a);
                 a.reject();
+                throw new Error(bbn._("Impossible to load the component") + ' ' + a.name);
               }
             })
           }

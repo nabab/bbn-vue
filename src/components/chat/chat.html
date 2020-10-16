@@ -10,6 +10,7 @@
          }]"
          @click="toggleMinimized(chat.idx)"
          :title="getParticipantsFormatted(chat.participants)"
+         :key="i"
     >
       <bbn-initial v-if="!chat.info.title && (chat.participants.length === 1)"
                    :user-name="getParticipantsFormatted(chat.participants)"
@@ -113,7 +114,6 @@
         :users="users"
         :id-temp="chat.idTemp"
         :active="chat.active"
-        @send="relay"
   >
     <div class="bbn-chat-conversation bbn-background bbn-flex-height"
          :style="{bottom: $parent.bottomCoord}"
@@ -174,7 +174,9 @@
                       @reachTop="loadMoreMessages"
           >
             <div class="bbn-spadded">
-              <div v-for="(msg, midx) in messages">
+              <div v-for="(msg, midx) in messages"
+                   :key="midx"
+              >
                 <div v-if="!midx || (messages[midx-1] && (getDate(messages[midx-1].time) !== getDate(msg.time)))"
                      class="bbn-middle bbn-s"
                 >

@@ -259,6 +259,19 @@
     },
 
     methods: {
+      scrollTop(bottom){
+        let sc = this.getRef('scrollbar');
+        if (sc) {
+          sc.onResize();
+          if (sc.shouldBother) {
+            bbn.fn.log("BOTHERRING")
+            sc.scrollTo(bottom ? '100%' : 0);
+          }
+        }
+      },
+      scrollBottom() {
+        this.scrollTop(true);
+      },
       /**
        * Gets the preset options for the given mode from the constant modes.
        *
@@ -604,8 +617,11 @@
             }
           });
 
-        this.widget.on("change", (ins, bbb) => {
+        this.widget.on("change", () => {
           this.emitInput(this.widget.doc.getValue());
+        });
+        this.widget.on("scroll", cm => {
+          this.$emit('scroll', cm)
         });
         this.$nextTick(() => {
           this.ready = true;

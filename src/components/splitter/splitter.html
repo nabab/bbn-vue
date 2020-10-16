@@ -32,12 +32,12 @@
          :style="{fontSize: (resizerSize * 1.2) + 'px'}">
       <div v-if="isCollapsiblePrev(rs.panec1, rs.panec2)"
            :class="{
-             'bbn-p': true,
              'bbn-w-100': currentOrientation === 'horizontal',
              'bbn-h-100': currentOrientation === 'vertical',
              'bbn-c': true
            }">
         <i :class="{
+              'bbn-p': true,
               'nf nf-fa-angle_left': currentOrientation === 'horizontal',
               'nf nf-fa-angle_up': currentOrientation === 'vertical'
             }"
@@ -46,7 +46,6 @@
       </div>
       <div v-if="isCollapsibleNext(rs.panec1, rs.panec2)"
            :class="{
-             'bbn-p': true,
              'bbn-w-100': currentOrientation === 'horizontal',
              'bbn-h-100': currentOrientation === 'vertical',
              'bbn-c': true
@@ -61,7 +60,6 @@
       </div>
       <div v-if="isFullyCollapsiblePrev(rs.panec1, rs.panec2, i)"
            :class="{
-             'bbn-p': true,
              'bbn-w-100': currentOrientation === 'horizontal',
              'bbn-h-100': currentOrientation === 'vertical',
              'bbn-c': true
@@ -76,7 +74,6 @@
       </div>
       <div v-if="isFullyCollapsibleNext(rs.panec1, rs.panec2, i)"
            :class="{
-             'bbn-p': true,
              'bbn-w-100': currentOrientation === 'horizontal',
              'bbn-h-100': currentOrientation === 'vertical',
              'bbn-c': true

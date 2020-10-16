@@ -87,10 +87,12 @@
         mode: bbn.env.mode,
         opacity: 0,
         pollerObject: {
-          chat: true,
-          message: null,
-          usersHash: false,
-          chatsHash: false
+          'appui-chat': {
+            enabled: true,
+            usersHash: false,
+            chatsHash: false
+          },
+          token: bbn.env.token || null
         },
         // For the server query (checking or not)
         chatOnline: true,
@@ -246,35 +248,11 @@
         }
       },
       */
-      sendChatMessage(obj, idx){
-        if ( this.$refs.chat.currentChats[idx] ){
-          this.pollerObject.message = obj;
-          this.poll();
-          /*
-          this.post('chat/actions/message', obj, (d) => {
-            if ( d.success && d.id_chat ){
-              if ( !obj.id ){
-                let chat = this.getRef('chat');
-                if ( chat ){
-                  chat.$set(chat.currentWindows[idx], 'id_chat', d.id_chat)
-                }
-              }
-            }
-          })
-          */
-        }
-      },
-
       onChatStatusChanged(status, usersHash, chatsHash){
-        this.pollerObject.chat = status;
-        this.pollerObject.usersHash = usersHash;
-        this.pollerObject.chatsHash = chatsHash;
+        this.pollerObject['appui-chat'].enabled = status;
+        this.pollerObject['appui-chat'].usersHash = usersHash;
+        this.pollerObject['appui-chat'].chatsHash = chatsHash;
         this.poll()
-      },
-
-      setLastActivityChat(obj){
-        this.pollerObject.setLastActivity = obj;
-        this.poll();
       },
 
       getField: bbn.fn.getField,
@@ -394,17 +372,20 @@
 
 
 
+      /**
+       * Get messages from service worker
+       * @param {Object} data 
+       */
       receive(data){
         if ( !bbn.fn.numProperties(data) ){
           return;
         }
-        //bbn.fn.log("RECEIVING", data);
+        bbn.fn.log("RECEIVING", data);
         if (data.disconnected){
           document.location.reload();
         }
-        else if ( data.chat && bbn.fn.numProperties(data.chat) && this.getRef('chat') ){
-          //bbn.fn.log("THERE IS A CHAT SO I SEND IT TO THE CHAT");
-          this.getRef('chat').receive(data.chat);
+        else if (data.type === 'log') {
+          this.$emit('swlog', data.data);
         }
         else if ( data.data ){
           bbn.fn.each(data.data, (d, i) => {
@@ -422,9 +403,14 @@
             }
           });
         }
+        if ( data.plugins && Object.keys(data.plugins).length ){
+          bbn.fn.iterate(data.plugins, (d, i) => {
+            this.$emit(i, d);
+          });
+        }
       },
 
-      poll(){
+      poll(data){
         bbn.fn.info("POLL");
         if ( this.pollable && this.pollerPath ){
           if ( 'serviceWorker' in navigator ){
@@ -441,12 +427,15 @@
                 }
                 */
               }
-              else{
+              else {
+                if (!data) {
+                  data = {
+                    observers: this.observers
+                  };
+                }
                 bbn.fn.info("ALL OK");
-                navigator.serviceWorker.controller.postMessage(bbn.fn.extendOut({
-                  observers: this.observers
-                }, this.pollerObject));
-                this.observersCopy = this.observers.slice().map(o => bbn.fn.clone(o));
+                navigator.serviceWorker.controller.postMessage(bbn.fn.extendOut({}, data, this.pollerObject));
+                this.observersCopy = bbn.fn.clone(this.observers);
               }
             }
             else{
@@ -621,6 +610,13 @@
 
         })
         */
+        
+        this.$on('appui-chat', d => {
+          let chat = this.getRef('chat');
+          if ( bbn.fn.isVue(chat) && bbn.fn.numProperties(d) ){
+            chat.receive(d);
+          }
+        })
       }
     },
     mounted(){
@@ -629,15 +625,18 @@
         setTimeout(() => {
           this.ready = true;
           this.$emit('resize');
+          if (!this.pollerObject.token) {
+            this.pollerObject.token = bbn.env.token;
+          }
+          this.opacity = 1;
           setTimeout(() => {
-            this.opacity = 1;
             this.poll();
-          }, 1000);
+          }, 5000);
         }, 1000);
       }
     },
     watch: {
-      chatVisible(newVal){
+      /* chatVisible(newVal){
         if ( !newVal ){
           this.chatWindows.splice(0, this.chatWindows.length);
         }
@@ -654,7 +653,7 @@
       chatsHash(newVal){
         this.pollerObject.chatsHash = newVal;
         this.poll();
-      },
+      }, */
       observers: {
         deep: true,
         handler(){

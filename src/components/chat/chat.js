@@ -284,17 +284,6 @@
         }
       },
       /**
-       * Create event send.
-       *
-       * @method relay
-       * @param {Object} obj
-       * @param {Number} idx
-       * @emits send
-       */
-      relay(obj, idx){
-        this.$emit('send', obj, idx);
-      },
-      /**
        * @method receive
        * @param {Object} data
        * @fires chatById
@@ -302,21 +291,13 @@
        */
       receive(data){
         bbn.fn.log("RECEIVING THIS FOR CHAT", data);
-        if ( data.hash ){
-          if ( this.onlineUsersHash !== data.hash ){
-            this.onlineUsersHash = data.hash;
+        if ( data.users && data.users.hash ){
+          if ( this.onlineUsersHash !== data.users.hash ){
+            this.onlineUsersHash = data.users.hash;
             this.onlineUsers.splice(0, this.onlineUsers.length);
-            if ( data.users ){
-              this.onlineUsers.push(...data.users);
+            if ( data.users.list ){
+              this.onlineUsers.push(...data.users.list);
             }
-          }
-        }
-        if ( data.id_temp && data.id_chat ){
-          let chat = bbn.fn.getRow(this.currentChats, {idTemp: data.id_temp});
-          if ( chat ){
-            this.$set(chat, 'id', data.id_chat);
-            this.$set(chat.info, 'id', data.id_chat);
-            delete(chat.idTemp);
           }
         }
         if ( data.chats ){
@@ -345,9 +326,6 @@
             })
             bbn.fn.iterate(data.chats.current, (chat_info, id_chat) => {
               let chat = this.chatById(id_chat);
-              if ( chat_info.messages ){
-                chat_info.messages = bbn.fn.map(chat_info.messages, m => bbn.fn.extend(true, {unread: m.user !== this.userId}, m));
-              }
               if ( chat ){
                 if ( chat_info.info ){
                   this.$set(chat, 'info', chat_info.info)
@@ -388,7 +366,7 @@
                   visible: visible,
                   minimized: false,
                   active: false,
-                  unread: chat_info.messages ? chat_info.messages.length : 0
+                  unread: chat_info.messages.filter(m => m.unread).length
                 }, chat_info));
                 if ( this.currentOnline && !visible ){
                   this.minimize(idx)
@@ -443,7 +421,7 @@
         ev.preventDefault();
         let chat = this.chatById(data.id);
         if ( chat ){
-          this.$set(chat, 'visible', true);
+          this.maximaze(chat.idx);
         }
       },
       onSelectUser(data, idx, index, ev){
@@ -456,9 +434,9 @@
        * @param {Number} idx
        */
       close(idx){
-        let i = bbn.fn.search(this.currentChats, {idx: idx});
-        if ( (i > -1) && this.currentChats[i] ){
-          this.$set(this.currentChats[i], 'visible', false);
+        let chat = bbn.fn.getRow(this.currentChats, {idx: idx});
+        if ( chat ){
+          this.$set(chat, 'visible', false);
         }
       },
       /**
@@ -468,9 +446,9 @@
        * @fires close
        */
       minimize(idx){
-        let i = bbn.fn.search(this.currentChats, {idx: idx});
-        if ( (i > -1) && this.currentChats[i] ){
-          this.$set(this.currentChats[i], 'minimized', true);
+        let chat = bbn.fn.getRoe(this.currentChats, {idx: idx});
+        if ( chat ){
+          this.$set(chat, 'minimized', true);
           this.close(idx);
         }
       },
@@ -480,10 +458,10 @@
        * @param {Number} idx
        */
       maximaze(idx){
-        let i = bbn.fn.search(this.currentChats, {idx: idx});
-        if ( (i > -1) && this.currentChats[i] ){
-          this.$set(this.currentChats[i], 'minimized', false);
-          this.$set(this.currentChats[i], 'visible', true);
+        let chat = bbn.fn.getRow(this.currentChats, {idx: idx});
+        if ( chat ){
+          this.$set(chat, 'minimized', false);
+          this.$set(chat, 'visible', true);
         }
       },
       /**
@@ -493,44 +471,55 @@
        * @fires maximaze
        */
       toggleMinimized(idx){
-        let i = bbn.fn.search(this.currentChats, {idx: idx});
-        if ( (i > -1) && this.currentChats[i] ){
-          if ( this.currentChats[i].minimized ){
+        let chat = bbn.fn.getRow(this.currentChats, {idx: idx});
+        if ( chat ){
+          if ( chat.minimized ){
             this.maximaze(idx);
           }
           else {
-            this.minimize(idx)
+            this.minimize(idx);
           }
         }
       },
       activate(idx){
-        let i = bbn.fn.search(this.currentChats, {idx: idx});
-        if ( (i > -1) && this.currentChats[i] ){
-          let chat = this.currentChats[i];
+        let chat = bbn.fn.getRow(this.currentChats, {idx: idx});
+        if ( chat ){
           this.$set(chat, 'active', true);
           if ( chat.id ){
-            this.$emit('lastActivityChanged', {id_chat: chat.id, id_user: this.userId});
-          }
-          if ( chat.unread ){
-            this.$set(chat, 'unread', 0);
+            this.setLastActivity(chat.id, this.userId);
           }
           setTimeout(() => {
+            if ( chat.unread ){
+              this.$set(chat, 'unread', 0);
+            }
             if ( chat.messages.length ){
               for ( let i = chat.messages.length - 1; i > -1; i-- ){
-                if ( !chat.messages[i].unread ){
-                  break;
+                if ( chat.messages[i].user !== this.userId ){
+                  if ( !chat.messages[i].unread ){
+                    break;
+                  }
+                  chat.messages[i].unread = false;
                 }
-                chat.messages[i].unread = false;
               }
             }
           }, 2000);
         }
       },
       deactivate(idx){
-        let i = bbn.fn.search(this.currentChats, {idx: idx});
-        if ( (i > -1) && this.currentChats[i] ){
-          this.$set(this.currentChats[i], 'active', false);
-          this.$emit('lastActivityChanged', {id_chat: this.currentChats[i].id, id_user: this.userId});
+        let chat = bbn.fn.getRow(this.currentChats, {idx: idx});
+        if ( chat ){
+          this.$set(chat, 'active', false);
+          if ( chat.id ){
+            this.setLastActivity(chat.id, this.userId);
+          }
+        }
+      },
+      setLastActivity(idChat, idUser){
+        if ( idChat && idUser ){
+          this.post(this.url + '/actions/chat/activity', {
+            id_chat: idChat,
+            id_user: idUser
+          });
         }
       }
     },
@@ -757,11 +746,22 @@
               text: bbn._('Leave the chat'),
               icon: 'nf nf-mdi-comment_remove',
               action: () => {
-                this.confirm(bbn._('Are you sure?'), () => {
+                this.confirm(bbn._('Are you sure you want to leave this chat?'), () => {
                   this.leave();
                 })
               }
             });
+            if ( this.info.creator === this.userId ){
+              res.push({
+                text: bbn._('Destroy the chat'),
+                icon: 'nf nf-fa-trash',
+                action: () => {
+                  this.confirm(bbn._('Are you sure you want to destroy this chat?'), () => {
+                    this.destroy();
+                  })
+                }
+              });
+            }
             return res;
           },
           /**
@@ -784,11 +784,13 @@
           },
           /**
            * Leaves the chat.
-           * @method
+           * @method leave
+           * @memberof chat
+           * @fires alert
            */
           leave(){
             if ( this.chatId ){
-              this.post(this.cp.url + '/actions/leave', {id_chat: this.chatId}, (d) => {
+              this.post(this.cp.url + '/actions/chat/leave', {id_chat: this.chatId}, d => {
                 if ( !d.success ){
                   this.alert(bbn._("Impossible to leave the chat!"))
                 }
@@ -798,9 +800,22 @@
               this.cp.currentChats.splice(bbn.fn.search(this.cp.currentChats, {idx:this.idx}), 1);
             }
           },
-          //@todo not used
-          scrollChat(){
-            bbn.fn.log("SCROLL");
+          /**
+           * Destroys the chat.
+           * @method destroy
+           * @memberof destroy
+           */
+          destroy(){
+            if ( this.chatId ){
+              this.post(this.cp.url + '/actions/chat/destroy', {id_chat: this.chatId}, d => {
+                if ( !d.success ){
+                  this.alert(bbn._("Impossible to destroy the chat!"))
+                }
+              })
+            }
+            else if ( this.idTemp ){
+              this.cp.currentChats.splice(bbn.fn.search(this.cp.currentChats, {idx:this.idx}), 1);
+            }
           },
           /**
            * Sends the current message.
@@ -810,23 +825,22 @@
            */
           sendMessage(){
             if ( this.currentMessage ){
-              let obj = {
+              this.post(this.cp.url + '/actions/message/new', {
                 id_chat: this.chatId || null,
+                id_temp: this.idTemp || null,
                 users: this.participants,
-                text: this.currentMessage,
-                title: this.info.title,
-                lastChat: this.cp.lastMsg
-              };
-              if ( this.idTemp ){
-                obj.id_temp = this.idTemp;
-              }
-              this.$emit('send', obj, this.idx);
+                text: this.currentMessage
+              }, d => {
+                if ( d.success && this.idTemp && d.id_chat ){
+                  let c = bbn.fn.getRow(this.cp.currentChats, {idTemp: this.idTemp});
+                  if ( c ){
+                    this.$set(c, 'id', d.id_chat);
+                    this.$set(c, 'idTemp', '');
+                  }
+                }
+              })
               this.currentMessage = '';
             }
-          },
-          //@todo not used
-          goto(url){
-            bbn.fn.link(url)
           },
           /**
            * Handles the resize of the scroll in the chat window.
@@ -837,14 +851,14 @@
            *
            */
           scrollEnd(){
-            this.$nextTick(() => {
-              let sc = this.getRef('scroll');
-              if ( sc ){
-            //    sc.onResize();
+            let sc = this.getRef('scroll');
+            if ( sc ){
+              sc.onResize();
+              this.$nextTick(() => {
                 sc.scrollEndY();
-              //  sc.onResize();
-              }
-            })
+            //  sc.onResize();
+              })
+            }
           },
           /**
            * The render of the message.
@@ -880,7 +894,7 @@
           loadMoreMessages(){
             if ( this.messages.length ){
               this.isLoading = true;
-              this.post(this.cp.url + '/actions/messages', {
+              this.post(this.cp.url + '/actions/message/previous', {
                 id_chat: this.chatId,
                 time: this.messages[0].time
               }, d => {
@@ -1062,7 +1076,8 @@
   <div class="bbn-header bbn-top-sspace bbn-vmiddle">
     <div class="bbn-flex-fill bbn-c">` + bbn._('PARTICIPANTS') + `</div>
     <div class="bbn-hsmargin">
-      <i class="bbn-p nf nf-fa-plus"
+      <i v-if="isAdmin"
+         class="bbn-p nf nf-fa-plus"
          @click="onAddUserClick"
       ></i>
     </div>
@@ -1070,9 +1085,7 @@
   <div class="bbn-spadded bbn-bordered bbn-grid bbn-no-border-top"
       style="grid-template-columns: max-content auto max-content"
   >
-    <template v-for="p in currentParticipants"
-        class=""
-    >
+    <template v-for="p in currentParticipants">
       <div class="bbn-middle"
           style="min-width: 1.5em"
       >
@@ -1166,7 +1179,7 @@
         methods: {
           saveTitle(){
             if ( this.chatId ){
-              this.post(cp.url + '/actions/title', {
+              this.post(cp.url + '/actions/chat/title', {
                 id_chat: this.chatId,
                 title: this.currentTitle
               }, d => {
@@ -1389,7 +1402,7 @@
         template: `
 <bbn-form :validation="validation"
           :source="chat"
-          :action="cp.url + '/actions/group'"
+          :action="cp.url + '/actions/chat/group'"
 >
   <component :is="cp.$options.components.info"
              :info="{
