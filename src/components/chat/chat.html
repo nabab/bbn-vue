@@ -30,7 +30,7 @@
     </div>
   </div>
   <div class="bbn-block bbn-p"
-       @click="usersVisible = !usersVisible"
+       @click="mainWindowVisible = !mainWindowVisible"
   >
     <i :class="['bbn-lg', 'nf nf-fa-comments', {
           'bbn-right-sspace': currentOnline && usersOnlineWithoutMe.length,
@@ -42,13 +42,13 @@
           v-text="usersOnlineWithoutMe.length"
     ></span>
   </div>
-  <div v-if="usersVisible"
+  <div v-if="mainWindowVisible"
        class="bbn-chat-users bbn-widget bbn-flex-height"
        :style="{bottom: bottomCoord}"
   >
     <div class="bbn-header bbn-spadded bbn-no-border-top bbn-no-hborder bbn-flex-width">
       <div class="bbn-flex-fill bbn-l">
-        <span v-text="_('Chat')"></span>
+        <span class="bbn-b" v-text="_('CHAT')"></span>
         <span>(</span>
         <span v-text="currentOnline ? _('Online') : _('Offline')"
               :class="{
@@ -66,16 +66,15 @@
         ></bbn-context>
         &nbsp;
         <i class="bbn-p nf nf-mdi-window_close"
-           @click="usersVisible = false"
+           @click="mainWindowVisible = false"
         ></i>
       </div>
     </div>
     <div class="bbn-flex-fill">
-      <bbn-scroll>
+      <bbn-scroll v-if="isReady">
         <diV class="bbn-spadded">
           <div class="bbn-box bbn-c"
-               v-text="_('Current chats')"
-               v-if="Object.values(currentChats).length"
+               v-text="_('CURRENT CHATS')"
           ></div>
           <bbn-list :source="Object.values(currentChats)"
                     class="bbn-vsmargin"
@@ -83,9 +82,12 @@
                     v-if="Object.values(currentChats).length"
                     @select="onSelectChat"
           ></bbn-list>
-          <div v-if="currentOnline"
-               class="bbn-box bbn-c"
-               v-text="_('Users')"
+          <div v-else
+               class="bbn-spadded bbn-c"
+               v-text="_('None')"
+          ></div>
+          <div class="bbn-box bbn-c"
+               v-text="_('USERS')"
           ></div>
           <bbn-list v-if="currentOnline"
                     :source="allUsersWithoutChats"
@@ -93,8 +95,18 @@
                     :component="$options.components.user"
                     @select="onSelectUser"
           ></bbn-list>
+          <div v-else
+               class="bbn-spadded bbn-c"
+               v-text="_('You are offline')"
+          ></div>
         </diV>
       </bbn-scroll>
+      <div v-else
+           class="bbn-overlay bbn-middle"
+      >
+        <bbn-loadicon size="1.5em"></bbn-loadicon>
+        <span class="bbn-left-sspace" v-text="_('Loading...')"></span>
+      </div>
     </div>
   </div>
   <chat v-for="(chat, i) in visibleWindows"
@@ -103,7 +115,7 @@
         :key="chat.idx"
         :idx="chat.idx"
         :style="{
-          right: (250 * i) + (usersVisible ? 300 : 0) + 'px'
+          right: (250 * i) + (mainWindowVisible ? 300 : 0) + 'px'
         }"
         :participants="chat.participants"
         :admins="chat.admins"
@@ -130,9 +142,10 @@
         ></div>
         <div>
           <bbn-context class="nf nf-mdi-menu bbn-p"
-                        tabindex="-1"
-                        tag="i"
-                        :source="getMenu"
+                       tabindex="-1"
+                       tag="i"
+                       :source="getMenu"
+                       v-if="cp.currentOnline"
           ></bbn-context>
           <i class="bbn-p nf nf-mdi-window_minimize bbn-left-sspace"
              @click="minimize"
@@ -172,6 +185,7 @@
         <div class="bbn-flex-fill bbn-bordered bbn-no-vborder">
           <bbn-scroll ref="scroll"
                       @reachTop="loadMoreMessages"
+                      @hook:mounted="scrollEnd"
           >
             <div class="bbn-spadded">
               <div v-for="(msg, midx) in messages"

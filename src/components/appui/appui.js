@@ -88,7 +88,7 @@
         opacity: 0,
         pollerObject: {
           'appui-chat': {
-            enabled: true,
+            online: false,
             usersHash: false,
             chatsHash: false
           },
@@ -248,10 +248,11 @@
         }
       },
       */
-      onChatStatusChanged(status, usersHash, chatsHash){
-        this.pollerObject['appui-chat'].enabled = status;
+      onChatStatusChanged(status, usersHash, chatsHash, lastChat){
+        this.pollerObject['appui-chat'].online = status;
         this.pollerObject['appui-chat'].usersHash = usersHash;
         this.pollerObject['appui-chat'].chatsHash = chatsHash;
+        this.pollerObject['appui-chat'].lastChat = lastChat;
         this.poll()
       },
 
@@ -627,6 +628,9 @@
           this.$emit('resize');
           if (!this.pollerObject.token) {
             this.pollerObject.token = bbn.env.token;
+          }
+          if (this.app.user.chat) {
+            this.pollerObject['appui-chat'].online = true;
           }
           this.opacity = 1;
           setTimeout(() => {

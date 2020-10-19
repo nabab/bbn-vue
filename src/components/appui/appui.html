@@ -208,7 +208,7 @@
                       :user-id="app.user.id"
                       :users="app.getActiveUsers()"
                       :online-users="usersOnline"
-                      :online="chatOnline"
+                      :online="app.user.chat"
                       @statusChanged="onChatStatusChanged"
                       :groups="app.groups"
             ></bbn-chat>
