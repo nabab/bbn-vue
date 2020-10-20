@@ -6,7 +6,7 @@
          v-if="chat.visible || chat.minimized"
          :class="['bbn-right-sspace', 'bbn-vmiddle', 'bbn-p', 'bbn-reactive', 'bbn-hxspadded', {
            'bbn-state-active': chat.active,
-           'bbn-state-selected': chat.unread
+           'bbn-state-selected': !chat.active && !!chat.unread
          }]"
          @click="toggleMinimized(chat.idx)"
          :title="getParticipantsFormatted(chat.participants)"
@@ -118,6 +118,7 @@
           right: (250 * i) + (mainWindowVisible ? 300 : 0) + 'px'
         }"
         :participants="chat.participants"
+        :participantsActivity="chat.participantsActivity"
         :admins="chat.admins"
         :messages="chat.messages"
         :info="chat.info"
@@ -126,6 +127,7 @@
         :users="users"
         :id-temp="chat.idTemp"
         :active="chat.active"
+        :unread="chat.unread"
   >
     <div class="bbn-chat-conversation bbn-background bbn-flex-height"
          :style="{bottom: $parent.bottomCoord}"
@@ -133,7 +135,10 @@
          @focusout="cp.deactivate(idx)"
          tabindex="0"
     >
-      <div :class="['bbn-header', 'bbn-spadded', 'bbn-grid', {'bbn-state-active': active}]"
+      <div :class="['bbn-header', 'bbn-spadded', 'bbn-grid', {
+             'bbn-state-active': active,
+             'bbn-state-selected': !active && !!unread
+           }]"
             style="grid-template-columns: auto max-content"
       >
         <div class="bbn-w-100 bbn-ellipsis"
@@ -225,9 +230,14 @@
                       <br v-if="isGroup">
                       <span v-html="renderMsg(msg.message)"></span>
                     </span>
-                    <span class="bbn-chat-conversation-message-time bbn-left-sspace bbn-xxs"
-                          v-text="getTime(msg.time)"
-                    ></span>
+                    <span class="bbn-chat-conversation-message-time bbn-left-sspace bbn-xxs">
+                      <span v-text="getTime(msg.time)"></span>
+                      <i v-if="msg.user === userId"
+                         :class="['nf nf-fa-check', 'bbn-left-xsspace', {
+                           'bbn-primary-text-alt': isMsgRead(msg)
+                         }]"
+                      ></i>
+                    </span>
                   </span>
                 </div>
                 <div v-else

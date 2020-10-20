@@ -265,6 +265,7 @@
               creator: this.userId
             },
             participants: [idUser],
+            partecipantsActivity: {[idUser]: 0},
             admins: [this.userId],
             messages: [],
             visible: true,
@@ -318,14 +319,19 @@
             this.chatsHash = data.chats.hash;
           }
           if ( !isStarted ){
-            this.currentChats = bbn.fn.map(chats, (v, i) => bbn.fn.extend(true, {
-              id: v.info.id,
-              idx: i,
-              visible: false,
-              minimized: false,
-              active: false,
-              unread: 0
-            }, v))
+            this.currentChats = bbn.fn.map(chats, (c, i) => {
+              let unread = c.messages.filter(m => m.unread).length;
+              return bbn.fn.extend(true, {}, c, {
+                id: c.info.id,
+                idx: i,
+                visible: false,
+                minimized: !!unread,
+                active: false,
+                unread: unread,
+                participants: bbn.fn.map(c.participants, p => p.id),
+                participantsActivity: this._participantsActivity(c.participants)
+              })
+            })
           }
           else {
             bbn.fn.each(this.currentChats, (c, i) => {
@@ -357,9 +363,13 @@
                     }
                   }
                 }
-                if ( c.participants && !bbn.fn.isSame(c.participants, chat.participants) ){
-                  chat.participants.splice(0);
-                  chat.participants.push(...c.participants);
+                if (c.participants) {
+                  let parts = bbn.fn.map(c.participants, p => p.id);
+                  if (!bbn.fn.isSame(parts, chat.participants)) {
+                    chat.participants.splice(0);
+                    chat.participants.push(...parts);
+                  }
+                  this.$set(chat, 'participantsActivity', this._participantsActivity(c.participants));
                 }
                 if ( c.admins && !bbn.fn.isSame(c.admins, chat.admins) ){
                   chat.admins.splice(0);
@@ -369,14 +379,16 @@
               else {
                 let idx = this.getNewIdx(),
                     visible = c.info.creator && (this.userId === c.info.creator);
-                this.currentChats.push(bbn.fn.extend(true, {
+                this.currentChats.push(bbn.fn.extend(true, {}, c, {
                   id: idChat,
                   idx: idx,
                   visible: visible,
                   minimized: false,
                   active: false,
-                  unread: c.messages.filter(m => m.unread).length
-                }, c));
+                  unread: c.messages.filter(m => m.unread).length,
+                  participants: bbn.fn.map(c.participants, p => p.id),
+                  participantsActivity: this._participantsActivity(c.participants)
+                }));
                 if ( this.currentOnline && !visible ){
                   this.minimize(idx)
                 }
@@ -401,6 +413,9 @@
                   let cont = this.findByKey(chat.idx, 'chat');
                   if ( cont ){
                     cont.scrollEnd();
+                  }
+                  if ( chat.active ){
+                    this.activate(chat.idx);
                   }
                 }
                 else if ( this.currentOnline) {
@@ -581,6 +596,7 @@
        */
       activate(idx){
         let chat = bbn.fn.getRow(this.currentChats, {idx: idx});
+        bbn.fn.log('activate!!', idx, chat.active)
         if ( chat ){
           this.$set(chat, 'active', true);
           if ( chat.id ){
@@ -632,7 +648,18 @@
             id_user: idUser
           });
         }
-      }
+      },
+      /**
+       * Trasforms the array of participants activity to an object "idParticipant: lastActivity"
+       * @method _participantsActivity
+       * @param {Array} list
+       * @return {Object}
+       */
+      _participantsActivity(list){
+        let res = {};
+        bbn.fn.each(list, l => res[l.id] = l.lastActivity);
+        return res;
+      },
     },
     /**
      * @event created
@@ -698,6 +725,17 @@
             }
           },
           /**
+           * Partecipants activity details
+           * @prop {Object} [{}] partecipantsActivity
+           * @memberof chat
+           */
+          participantsActivity: {
+            type: Object,
+            default(){
+              return {}
+            }
+          },
+          /**
            * The array of the admins of the chat.
            * @prop {Array} [[]] admins
            * @memberof chat
@@ -760,6 +798,15 @@
           active: {
             type: Boolean,
             default: false
+          },
+          /**
+           * The number of unread message
+           * @prop {Number} [0] unread
+           * @memberof chat
+           */
+          unread: {
+            type: Number,
+            default: 0
           }
         },
         data(){
@@ -954,7 +1001,7 @@
               sc.onResize();
               setTimeout(() => {
                 sc.scrollEndY();
-              }, 600)
+              }, 700)
             }
           },
           /**
@@ -1030,6 +1077,19 @@
                 this.isLoading = false;
               });
             }
+          },
+          /**
+           * Checks if all participants read the given message
+           * @method isMsgRead
+           * @memberof chat
+           * @param {Object} msg
+           * @return {Boolean}
+           */
+          isMsgRead(msg){
+            if (msg.time){
+              return !this.participants.filter(p => this.participantsActivity[p] && (this.participantsActivity[p] < msg.time)).length;
+            }
+            return false;
           }
         },
         /**
@@ -1044,8 +1104,7 @@
         }
       },
       /**
-       * Represents the individual user in the chat.
-       *
+       * Represents the individual item in the users list.
        * @component user
        */
       user: {
@@ -1071,8 +1130,10 @@
   </div>
 </div>
         `,
+        name: 'user',
         props: {
            /**
+            * The source object
            * @prop {Object} source
            * @memberof user
            */
@@ -1083,6 +1144,7 @@
         data(){
           return {
             /**
+             * The main chat component
              * @data {Vue} cp
              * @memberof user
              */
@@ -1091,6 +1153,7 @@
         }
       },
       /**
+       * Represents the individual item in the current chats list
        * @component active
        */
       active: {
@@ -1132,6 +1195,7 @@
         name: 'active',
         props: {
            /**
+            * The source object
            * @prop {Object} source
            * @memberof active
            */
@@ -1141,25 +1205,64 @@
         },
         data(){
           return {
+            /**
+             * The main chat component
+             * @data {Vue} cp
+             * @memberof active
+             */
             cp: cp
           }
         },
         computed: {
+          /**
+           * The participants list (full object)
+           * @computed participants
+           * @memberof active
+           * @fires cp.getParticipants
+           * @return {Array}
+           */
           participants(){
             return this.cp.getParticipants(this.source.participants);
           },
+          /**
+           * The formatted paticipants list
+           * @computed participantsFormatted
+           * @memberof active
+           * @fires cp.getParticipantsFormatted
+           * @return {Array}
+           */
           participantsFormatted(){
             if ( this.participants ){
               return this.cp.getParticipantsFormatted(this.participants);
             }
             return '';
           },
+          /**
+           * True if this chat is a group
+           * @computed isGroup
+           * @memberof active
+           * @return {Boolean}
+           */
           isGroup(){
             return this.participants.length > 1;
           },
+          /**
+           * The list of the online participants
+           * @computed online
+           * @memberof active
+           * @fires cp.isOnline
+           * @return {Array}
+           */
           online(){
             return this.participants.filter(p => this.cp.isOnline(p.value))
           },
+          /**
+           * The formatted list of the online participants
+           * @computed onlineFormatted
+           * @memberof active
+           * @fires cp.getParticipantsFormatted
+           * @return {Array}
+           */
           onlineFormatted(){
             if ( this.online ){
               return this.cp.getParticipantsFormatted(this.online);
@@ -1168,6 +1271,10 @@
           }
         }
       },
+      /**
+       * The interface where to see/change the chat's info
+       * @component info
+       */
       info: {
         template: `
 <div class="bbn-spadded">
@@ -1233,24 +1340,49 @@
         `,
         name: 'info',
         props: {
+          /**
+           * The chat's ID
+           * @prop {String} [''] chatId
+           * @memberof info
+           */
           chatId: {
             type: String,
             default: ''
           },
+          /**
+           * The current user's ID
+           * @prop {String} userId
+           * @memberof info
+           */
           userId: {
             type: String,
             required: true
           },
+          /**
+           * The chat's info
+           * @prop {Object} info
+           * @memberof info
+           */
           info: {
             type: Object,
             required: true
           },
+          /**
+           * The chat's participants list
+           * @prop {Array} [[]] participants
+           * @memberof info
+           */
           participants: {
             type: Array,
             defauult(){
               return []
             }
           },
+          /**
+           * The chat's admins list
+           * @prop {Array} [[]] admins
+           * @memberof info
+           */
           admins: {
             type: Array,
             defauult(){
@@ -1259,7 +1391,6 @@
           },
           /**
            * The array of all users (including offline ones).
-           *
            * @prop {Array} [[]] users
            * @memberof info
            */
@@ -1269,6 +1400,11 @@
               return []
             }
           },
+          /**
+           * True if the chat title is to be shown
+           * @prop {Boolean} [false] titleVisible
+           * @memberof info
+           */
           titleVisible: {
             type: Boolean,
             default: false
@@ -1276,21 +1412,51 @@
         },
         data(){
           return {
+            /**
+             * The current title
+             * @data {String} currentTitle
+             * @memberof info
+             */
             currentTitle: this.info.title || ''
           }
         },
         computed: {
+          /**
+           * @computed currentParticipants
+           * @memberof info
+           * @fires cp.getParticipants
+           * @return {Array}
+           */
           currentParticipants(){
             return cp.getParticipants(this.participants);
           },
+          /**
+           * True if the current user is the chat creator
+           * @computed isCreator
+           * @memberof info
+           * @return {Boolean}
+           */
           isCreator(){
             return this.userId === this.info.creator
           },
+          /**
+           * True if the current user is a chat admin
+           * @computed isAdmin
+           * @memberof info
+           * @return {Boolean}
+           */
           isAdmin(){
             return this.admins.includes(this.userId)
           }
         },
         methods: {
+          /**
+           * Save the title
+           * @method saveTitle
+           * @memberof info
+           * @fires post
+           * @fires alert
+           */
           saveTitle(){
             if ( this.chatId ){
               this.post(cp.url + '/actions/chat/title', {
@@ -1306,6 +1472,14 @@
               })
             }
           },
+          /**
+           * Toggle the given user as chat admin
+           * @method toggleAdmin
+           * @memberof info
+           * @param {String} idUser
+           * @fires addAdmin
+           * @fires removeAdmin
+           */
           toggleAdmin(idUser){
             let idx = this.admins.indexOf(idUser);
             if ( idx === -1 ){
@@ -1315,6 +1489,12 @@
               this.removeAdmin(idUser)
             }
           },
+          /**
+           * The called method when an user is added from interface
+           * @method onAddUserClick
+           * @memberof info
+           * @fires getPopup
+           */
           onAddUserClick(){
             this.getPopup().open({
               title: bbn._('Select user'),
@@ -1330,10 +1510,11 @@
           },
           /**
            * Add a user to the chat.
-           *
            * @method addUser
            * @param {String} idUser
            * @memberof info
+           * @fires post
+           * @fires alert
            */
           addUser(idUser){
             if (
@@ -1359,6 +1540,15 @@
               }
             }
           },
+          /**
+           * Remove the given user from the chat
+           * @method removeUser
+           * @memberof info
+           * @param {String} idUser
+           * @fires confirm
+           * @fires post
+           * @fires alert
+           */
           removeUser(idUser){
             if (
               this.participants.includes(idUser) &&
@@ -1398,6 +1588,14 @@
               })
             }
           },
+          /**
+           * Add admin to the chat
+           * @method addAdmin
+           * @memberof info
+           * @param {String} idUser
+           * @fires post
+           * @fires alert
+           */
           addAdmin(idUser){
             if (
               (this.userId === this.info.creator) &&
@@ -1422,6 +1620,14 @@
               }
             }
           },
+          /**
+           * Remove admin
+           * @method removeAdmin
+           * @memberof info
+           * @param {String} idUser
+           * @fires post
+           * @fires alert
+           */
           removeAdmin(idUser){
             if (
               (this.userId === this.info.creator) &&
@@ -1448,14 +1654,30 @@
           },
         },
         watch: {
+          /**
+           * @watch currentTitle
+           * @memberof info
+           * @param {String} newVal
+           * @emit titleChanged
+           */
           currentTitle(newVal){
             this.$emit('titleChanged', newVal)
           },
+          /**
+           * @watch info.title
+           * @memberof info
+           * @param {String} newVal
+           */
           'info.title'(newVal){
             this.currentTitle = newVal;
           }
         },
         components: {
+          /**
+           * The users tree
+           * @component users
+           * @memberof info
+           */
           users: {
             template: `
 <div class="bbn-vpadded bbn-overlay">
@@ -1464,12 +1686,22 @@
             `,
             name: 'users',
             props: {
+              /**
+               * The source object
+               * @prop {Object} source
+               * @memberof info
+               */
               source: {
                 type: Object
               }
             },
             data(){
               return {
+                /**
+                 * The users list
+                 * @data {Array} users
+                 * @memberof info
+                 */
                 users: bbn.fn.map(cp.users.filter(u => !this.source.participants.includes(u.value) && (u.value !== this.source.creator)), u => {
                   return bbn.fn.extend(true, {
                     component: this.$options.components.user
@@ -1478,6 +1710,11 @@
               }
             },
             components: {
+              /**
+               * The individual user component
+               * @component user
+               * @memberof users
+               */
               user: {
                 template: `
 <span class="bbn-iblock bbn-p" @click="select">
@@ -1492,11 +1729,23 @@
                 `,
                 name: 'user',
                 props: {
+                  /**
+                   * The source object
+                   * @prop {Object} source
+                   * @memberof user
+                   */
                   source: {
                     type: Object
                   }
                 },
                 methods: {
+                  /**
+                   * The called method on user selecting
+                   * @method select
+                   * @memberof user
+                   * @fires closest
+                   * @fires getPopup
+                   */
                   select(){
                     this.closest('bbn-tree').$parent.source.onSelect(this.source.value);
                     this.getPopup().close();
@@ -1507,6 +1756,10 @@
           }
         }
       },
+      /**
+       * The interface to create a new group
+       * @component newGroup
+       */
       newGroup: {
         template: `
 <bbn-form :validation="validation"
@@ -1530,7 +1783,16 @@
         name: 'newGroup',
         data(){
           return {
+            /**
+             * The main chat component
+             * @data {Vue} cp
+             * @memberof newGroup
+             */
             cp: cp,
+            /**
+             * The chat info
+             * @data {Object} chat
+             */
             chat: {
               title: '',
               participants: [cp.userId],
@@ -1539,6 +1801,14 @@
           }
         },
         methods: {
+          /**
+           * The called method on form validation
+           * @method validation
+           * @memberof newGroup
+           * @param {Object} d
+           * @fires alert
+           * @return {Boolean}
+           */
           validation(d){
             if ( d.participants.length < 3 ){
               this.alert(bbn._('Two or more participants are required'));

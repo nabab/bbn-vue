@@ -629,7 +629,7 @@
           if (!this.pollerObject.token) {
             this.pollerObject.token = bbn.env.token;
           }
-          if (this.app.user.chat) {
+          if (this.app && this.app.user && this.app.user.chat) {
             this.pollerObject['appui-chat'].online = true;
           }
           this.opacity = 1;
