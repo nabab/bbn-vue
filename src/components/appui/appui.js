@@ -88,7 +88,7 @@
         opacity: 0,
         pollerObject: {
           'appui-chat': {
-            online: false,
+            online: null,
             usersHash: false,
             chatsHash: false
           },
@@ -248,13 +248,6 @@
         }
       },
       */
-      onChatStatusChanged(status, usersHash, chatsHash, lastChat){
-        this.pollerObject['appui-chat'].online = status;
-        this.pollerObject['appui-chat'].usersHash = usersHash;
-        this.pollerObject['appui-chat'].chatsHash = chatsHash;
-        this.pollerObject['appui-chat'].lastChat = lastChat;
-        this.poll()
-      },
 
       getField: bbn.fn.getField,
 
@@ -375,107 +368,90 @@
 
       /**
        * Get messages from service worker
-       * @param {Object} data 
+       * @param {Object} message
        */
-      receive(data){
-        if ( !bbn.fn.numProperties(data) ){
-          return;
-        }
-        bbn.fn.log("RECEIVING", data);
-        if (data.disconnected){
-          document.location.reload();
-        }
-        else if (data.type === 'log') {
-          this.$emit('swlog', data.data);
-        }
-        else if ( data.data ){
-          bbn.fn.each(data.data, (d, i) => {
-            if ( d.observers ){
-              for ( let b of d.observers ){
-                let arr = bbn.fn.filter(this.observers, {id: b.id});
-                for ( let a of arr ){
-                  if ( a.value !== b.result ){
-                    //bbn.fn.log("EMITTING OBS", a);
-                    this.observerEmit(b.result, a);
-                    a.value = b.result;
-                  }
-                }
+      receive(message){
+        bbn.fn.log("RECEIVING", message, message.type);
+        if (message.type !== undefined) {
+          switch (message.type) {
+            case 'message':
+              if (!bbn.fn.numProperties(message.data)) {
+                return;
               }
-            }
-          });
-        }
-        if ( data.plugins && Object.keys(data.plugins).length ){
-          bbn.fn.iterate(data.plugins, (d, i) => {
-            this.$emit(i, d);
-          });
-        }
-      },
-
-      poll(data){
-        bbn.fn.info("POLL");
-        if ( this.pollable && this.pollerPath ){
-          if ( 'serviceWorker' in navigator ){
-            if ( navigator.serviceWorker.controller ){
-              if ( navigator.serviceWorker.controller.state === 'redundant' ){
-                bbn.fn.info("SERVICE REDONDANT");
-                /*
-                if ( confirm(
-                  bbn._("The application has been updated but you still use an old version.") + "\n" +
-                  bbn._("You need to refresh the page to upgrade.") + "\n" +
-                  bbn._("Do you want to do it now?")
-                ) ){
-                  document.location.reload();
-                }
-                */
+              if (message.data && message.data.disconnected) {
+                document.location.reload();
               }
-              else {
-                if (!data) {
-                  data = {
-                    observers: this.observers
-                  };
-                }
-                bbn.fn.info("ALL OK");
-                navigator.serviceWorker.controller.postMessage(bbn.fn.extendOut({}, data, this.pollerObject));
-                this.observersCopy = bbn.fn.clone(this.observers);
-              }
-            }
-            else{
-              bbn.fn.info("NO CONTROLLER FOR SW");
-            }
-          }
-          else{
-            bbn.fn.info("NO SW ???");
-          }
-        /*
-          this.poller = bbn.fn.ajax(this.pollerPath, 'json', bbn.fn.extend({observers: this.observers}, this.pollerObject), 'poller', (r) => {
-            this.pollerObject.message = null;
-            //bbn.fn.log("--------------OBS: Returning Data---------------");
-            // put the data_from_file into #response
-            if ( r.data ){
-              bbn.fn.each(r.data, (d, i) => {
-                if ( d.observers ){
-                  for ( let b of d.observers ){
-                    let arr = bbn.fn.filter(this.observers, {id: b.id});
-                    for ( let a of arr ){
-                      if ( a.value !== b.result ){
-                        this.$emit('bbnObs' + a.element + a.id, b.result);
-                        a.value = b.result;
+              else if (message.data && message.data.data) {
+                /* bbn.fn.each(data.data, (d, i) => {
+                  if ( d.observers ){
+                    for ( let b of d.observers ){
+                      let arr = bbn.fn.filter(this.observers, {id: b.id});
+                      for ( let a of arr ){
+                        if ( a.value !== b.result ){
+                          //bbn.fn.log("EMITTING OBS", a);
+                          this.observerEmit(b.result, a);
+                          a.value = b.result;
+                        }
                       }
                     }
                   }
-                }
-              });
-              //appui.success("<div>ANSWER</div><code>" + JSON.stringify(r.data) + '</code>', 5);
-            }
-
-            // call the function again, this time with the timestamp we just got from server.php
-            this.polling = false;
-            this.poller = false;
-          }, () => {
-            this.polling = false;
-            this.poller = false;
-          });
-          */
+                }); */
+              }
+              if ( message.data && message.data.plugins && Object.keys(message.data.plugins).length ){
+                bbn.fn.iterate(message.data.plugins, (d, i) => {
+                  this.$emit(i, message.type, d);
+                });
+              }
+              break;
+            case 'log':
+              this.$emit('swlog', message.data);
+              break;
+            case 'messageFromChannel':
+              bbn.fn.log('messageFromChannel', message);
+              this.$emit(message.channel, message.type, message.data);
+              break;
+          }
+        }
+      },
+      poll(data){
+        bbn.fn.info("POLL");
+        if ( this.pollable && this.pollerPath ){
+          if (!data) {
+            data = {
+              'appui-core': {
+                observers: this.observers
+              }
+            };
+          }
+          if (this._postMessage(bbn.fn.extendOut({}, data, this.pollerObject))) {
+            bbn.fn.info("ALL OK");
+            this.observersCopy = bbn.fn.clone(this.observers);
+          }
+        }
+      },
+      registerChannel(channel){
+        this._postMessage({
+          type: 'registerChannel',
+          channel: channel
+        });
+      },
+      unregisterChannel(channel){
+        this._postMessage({
+          type: 'unregisterChannel',
+          channel: channel
+        });
+      },
+      messageChannel(channel, data){
+        this._postMessage({
+          type: 'messageChannel',
+          channel: channel,
+          data: data
+        });
+      },
+      onChatMounted(){
+        this.pollerObject['appui-chat'].online = this.app && this.app.user && this.app.user.chat;
+        if (this.ready) {
+          this.poll();
         }
       },
       addShortcut(data){
@@ -510,6 +486,23 @@
         setTimeout(() => {
           this.searchIsActive = false
         }, 500)
+      },
+      _postMessage(obj){
+        if ('serviceWorker' in navigator) {
+          if (navigator.serviceWorker.controller) {
+            if (navigator.serviceWorker.controller.state !== 'redundant') {
+              navigator.serviceWorker.controller.postMessage(obj);
+              return true;
+            }
+          }
+          else {
+            bbn.fn.info("NO CONTROLLER FOR SW");
+          }
+        }
+        else {
+          bbn.fn.info("NO SW");
+        }
+        return false;
       }
     },
     beforeCreate(){
@@ -606,16 +599,38 @@
           'button'
         ];
         bbn.vue.preloadBBN(preloaded);
-        /*
-        bbn.fn.each(this.plugins, (p, i) => {
 
-        })
-        */
-        
-        this.$on('appui-chat', d => {
+        // Emissions from poller
+        this.$on('appui-chat', (type, data) => {
           let chat = this.getRef('chat');
-          if ( bbn.fn.isVue(chat) && bbn.fn.numProperties(d) ){
-            chat.receive(d);
+          switch (type) {
+            case 'message':
+              if ('serviceWorkers' in data) {
+                this.pollerObject['appui-chat'] = bbn.fn.extend(true, this.pollerObject['appui-chat'], data.serviceWorkers);
+                delete data.serviceWorkers;
+              }
+              if (bbn.fn.isVue(chat) && bbn.fn.numProperties(data)) {
+                chat.receive(data);
+              }
+              break;
+            case 'messageFromChannel':
+              if (bbn.fn.isVue(chat)) {
+                chat.messageFromChannel(data)
+              }
+              break;
+          }
+        })
+        this.$on('appui-core', (type, data) => {
+          if ((type === 'message') && data.observers) {
+            for (let b of data.observers) {
+              let arr = bbn.fn.filter(this.observers, {id: b.id});
+              for (let a of arr) {
+                if (a.value !== b.result) {
+                  this.observerEmit(b.result, a);
+                  a.value = b.result;
+                }
+              }
+            }
           }
         })
       }
@@ -624,40 +639,30 @@
       if ( this.cool ){
         this.app = this.$refs.app;
         setTimeout(() => {
+          this.registerChannel('appui');
           this.ready = true;
           this.$emit('resize');
           if (!this.pollerObject.token) {
             this.pollerObject.token = bbn.env.token;
           }
-          if (this.app && this.app.user && this.app.user.chat) {
-            this.pollerObject['appui-chat'].online = true;
+          if (this.plugins['appui-chat']){
+            this.registerChannel('appui-chat');
           }
           this.opacity = 1;
           setTimeout(() => {
+            this.poll({
+              type: 'initCompleted'
+            });
             this.poll();
           }, 5000);
         }, 1000);
       }
     },
+    beforeDestroy(){
+      this.$off('appui-chat');
+      this.$off('appui-core');
+    },
     watch: {
-      /* chatVisible(newVal){
-        if ( !newVal ){
-          this.chatWindows.splice(0, this.chatWindows.length);
-        }
-        this.polling = false;
-      },
-      chatOnline(newVal){
-        this.pollerObject.chat = newVal;
-        this.poll();
-      },
-      usersOnlineHash(newVal){
-        this.pollerObject.usersHash = newVal;
-        this.poll();
-      },
-      chatsHash(newVal){
-        this.pollerObject.chatsHash = newVal;
-        this.poll();
-      }, */
       observers: {
         deep: true,
         handler(){

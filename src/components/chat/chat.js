@@ -232,7 +232,7 @@
        */
       shorten: bbn.fn.shorten,
       /**
-       * Return the current window object basing on the given chat id.
+       * Returns the chat object basing on the given id property.
        * @method chatById
        * @param {String} idChat
        * @return {Boolean|Object}
@@ -241,11 +241,40 @@
         return bbn.fn.getRow(this.currentChats, {id: idChat})
       },
       /**
+       * Returns the chat object basing on the given idx property.
+       * @method chatByIdx
+       * @param {Number} idx
+       * @return {Boolean|Object}
+       */
+      chatByIdx(idx){
+        return bbn.fn.getRow(this.currentChats, {idx: idx})
+      },
+      /**
+       * Returns the chat object basing on the given idTemp property.
+       * @method chatByIdTemp
+       * @param {String} idTemp
+       * @return {Boolean|Object}
+       */
+      chatByIdTemp(idTemp){
+        return bbn.fn.getRow(this.currentChats, {idTemp: idTemp})
+      },
+      /**
+       * Returns the chat window component basing on the given idx property
+       * @method chatWindowByIdx
+       * @param {Number} idx
+       * @fires findByKey
+       * @return {Vue|Boolean}
+       */
+      chatWindowByIdx(idx){
+        return this.findByKey(idx, 'chat');
+      },
+      /**
        * Opens the chat window by the given user id
        * @method chatTo
        * @param {String} idUser
        * @fires maximaze
-       * @fires getNewIdx
+       * @fires addChat
+       * @fires messageToChannel
        * @fires activate
        */
       chatTo(idUser){
@@ -255,11 +284,9 @@
           return;
         }
         if ( this.currentOnline ){
-          let idx = this.getNewIdx();
-          this.currentChats.push({
+          let chatObj = {
             id: '',
             idTemp: bbn.fn.randomString(24, 24),
-            idx: idx,
             info: {
               title: '',
               creator: this.userId
@@ -272,24 +299,40 @@
             minimized: false,
             active: false,
             unread: 0
+          };
+          this.messageToChannel({
+            method: 'addChat',
+            params: [bbn.fn.extend(true, {}, chatObj, {visible: false})]
           });
-          this.activate(idx);
+          this.activate(this.addChat(chatObj));
         }
+      },
+      /**
+       * @method addChat
+       * @param {Object} chatObj
+       * @returns {Number}
+       */
+      addChat(chatObj){
+        let idx = chatObj.idx !== undefined ? chatObj.idx : this.getNewIdx();
+        chatObj.idx = idx;
+        this.currentChats.push(chatObj);
+        return idx;
       },
       /**
        * @method receive
        * @param {Object} data
        * @fires chatById
-       * @fires findByKey
+       * @fires chatWindowByIdx
        * @fires minimize
        * @fires getNewIdx
+       * @fires addChat
        */
       receive(data){
         bbn.fn.log("RECEIVING THIS FOR CHAT", data);
+        // Online status
         if ('online' in data) {
           if (data.online) {
             this.currentOnline = true;
-            //this.$emit('statusChanged', true, this.onlineUsersHash, this.chatsHash, this.lastChat);
           }
           else {
             bbn.fn.each(this.currentChats, c => {
@@ -297,9 +340,9 @@
               c.minimized = false;
             })
             this.currentOnline = false;
-            //this.$emit('statusChanged', false, this.onlineUsersHash, this.chatsHash, this.lastChat);
           }
         }
+        // Users
         if ( data.users && data.users.hash ){
           if ( this.onlineUsersHash !== data.users.hash ){
             this.onlineUsersHash = data.users.hash;
@@ -310,36 +353,51 @@
           }
           this.usersReceived = true;
         }
+        // Chats
         if ( data.chats ){
           let isStarted = !!this.lastChat,
-              chats = Object.values(data.chats.current),
-              chatsIds = Object.keys(data.chats.current);
+              chats = Object.values(data.chats.list),
+              chatsIds = Object.keys(data.chats.list);
           this.chatsReceived = true;
-          if ( data.chats.hash ){
+          if ( 'hash' in data.chats ){
             this.chatsHash = data.chats.hash;
           }
-          if ( !isStarted ){
-            this.currentChats = bbn.fn.map(chats, (c, i) => {
-              let unread = c.messages.filter(m => m.unread).length;
-              return bbn.fn.extend(true, {}, c, {
-                id: c.info.id,
-                idx: i,
-                visible: false,
-                minimized: !!unread,
-                active: false,
-                unread: unread,
-                participants: bbn.fn.map(c.participants, p => p.id),
-                participantsActivity: this._participantsActivity(c.participants)
-              })
+          // All list
+          if (!isStarted && !this.currentChats.length) {
+            bbn.fn.each(chats, c => {
+              let unread = c.messages ? c.messages.filter(m => m.unread).length : 0,
+                  current = bbn.fn.getRow(this.currentChats, {id: c.info.id});
+              if (current) {
+                c.minimized = !current.active && !!unread;
+                c.unread = unread;
+                c.participantsActivity = this._participantsActivity(c.participants);
+                c.participants = bbn.fn.map(c.participants, p => p.id);
+                bbn.fn.iterate(c, (v, p) => {
+                  this.$set(current, p, v);
+                })
+              }
+              else {
+                this.addChat(bbn.fn.extend(true, {}, c, {
+                  id: c.info.id,
+                  idx: this.getNewIdx(),
+                  visible: false,
+                  minimized: !!unread,
+                  active: false,
+                  unread: unread,
+                  participants: bbn.fn.map(c.participants, p => p.id),
+                  participantsActivity: this._participantsActivity(c.participants)
+                }))
+              }
             })
           }
+          // Only new
           else {
             bbn.fn.each(this.currentChats, (c, i) => {
-              if ( !chatsIds.includes(c.id) ){
+              if ( !chatsIds.includes(c.id) && !c.idTemp ){
                 this.currentChats.splice(i, 1);
               }
             })
-            bbn.fn.iterate(data.chats.current, (c, idChat) => {
+            bbn.fn.iterate(data.chats.list, (c, idChat) => {
               let chat = this.chatById(idChat);
               if ( chat ){
                 if ( c.info ){
@@ -351,9 +409,9 @@
                   }
                   if ( c.messages.length ){
                     chat.messages.push(...c.messages);
-                    chat.unread += c.messages.filter(m => m.unread).length;
+                    chat.unread += c.messages ? c.messages.filter(m => m.unread).length : 0;
                     if ( chat.visible ){
-                      let cont = this.findByKey(chat.idx, 'chat');
+                      let cont = this.chatWindowByIdx(chat.idx);
                       if ( cont ){
                         cont.scrollEnd()
                       }
@@ -378,27 +436,55 @@
               }
               else {
                 let idx = this.getNewIdx(),
-                    visible = c.info.creator && (this.userId === c.info.creator);
-                this.currentChats.push(bbn.fn.extend(true, {}, c, {
+                    visible = c.info.creator && (this.userId === c.info.creator),
+                    mess = '';
+                if (c.participants.length === 1){
+                  bbn.fn.each(this.currentChats, (cc, ci) => {
+                    if ((cc.idTemp !== undefined)
+                      && (cc.idTemp !== '')
+                      && (cc.participants.length === 1)
+                      && cc.participants.includes(c.participants[0].id)
+                    ) {
+                      let cw = this.chatWindowByIdx(cc.idx);
+                      if (bbn.fn.isVue(cw)) {
+                        mess = cw.currentMessage;
+                        visible = true;
+                      }
+                      this.currentChats.splice(ci, 1);
+                      return;
+                    }
+                  })
+                }
+                this.addChat(bbn.fn.extend(true, {}, c, {
                   id: idChat,
                   idx: idx,
                   visible: visible,
                   minimized: false,
                   active: false,
-                  unread: c.messages.filter(m => m.unread).length,
+                  unread: c.messages ? c.messages.filter(m => m.unread).length : 0,
                   participants: bbn.fn.map(c.participants, p => p.id),
                   participantsActivity: this._participantsActivity(c.participants)
                 }));
                 if ( this.currentOnline && !visible ){
                   this.minimize(idx)
                 }
+                if (mess.length) {
+                  this.$nextTick(() => {
+                    let cw = this.chatWindowByIdx(idx);
+                    if (bbn.fn.isVue(cw)) {
+                      this.$set(cw, 'currentMessage', mess);
+                    }
+                  });
+                }
               }
             });
           }
         }
-        if ( data.last ){
+        // lastChat
+        if ( 'last' in data ){
           this.lastChat = data.last;
         }
+        // New messages
         if ( data.messages ){
           bbn.fn.iterate(data.messages, (messages, idChat) => {
             let chat = this.chatById(idChat);
@@ -410,7 +496,7 @@
                 chat.messages.push(...messages);
                 chat.unread += messages.filter(m => m.unread).length;
                 if ( chat.visible ){
-                  let cont = this.findByKey(chat.idx, 'chat');
+                  let cont = this.chatWindowByIdx(chat.idx);
                   if ( cont ){
                     cont.scrollEnd();
                   }
@@ -427,6 +513,27 @@
         }
       },
       /**
+       * @method messageFromChannel
+       * @param {Object} data
+       */
+      messageFromChannel(data){
+        if (data.method){
+          if (bbn.fn.isFunction(data.method)) {
+            data.method(...data.params || []);
+          }
+          else if (bbn.fn.isFunction(this[data.method])) {
+            this[data.method](...data.params || []);
+          }
+        }
+      },
+      /**
+       * @method messageToChannel
+       * @emit messageToChannel
+       */
+      messageToChannel(data){
+        this.$emit('messageToChannel', data);
+      },
+      /**
        * @method getNewIdx
        * @returns {Number}
        */
@@ -438,6 +545,28 @@
           }
         });
         return max + 1;
+      },
+      /**
+       * @method setIdByTemp
+       * @param {String} idTemp
+       * @param {String} id
+       */
+      setIdByTemp(idTemp, id){
+        let c = bbn.fn.getRow(this.currentChats, {idTemp: idTemp});
+        if ( c ){
+          this.$set(c, 'id', id);
+          this.$set(c, 'idTemp', '');
+        }
+      },
+      /**
+       * @method removeChatByTemp
+       * @param {String} idTemp
+       */
+      removeChatByTemp(idTemp){
+        let idx = bbn.fn.search(this.currentChats, {idTemp: idTemp});
+        if (idx > -1) {
+          this.currentChats.splice(idx, 1);
+        }
       },
       /**
        * Switch the current user online.
@@ -490,15 +619,16 @@
        * Gets the formatted list of participants
        * @method getParticipantsFormatted
        * @param {Array}
+       * @param {String} [', '] separator
        * @returns {String}
        */
-      getParticipantsFormatted(participants){
+      getParticipantsFormatted(participants, separator = ', '){
         if ( bbn.fn.isArray(participants) && participants.length ){
           if ( bbn.fn.isObject(participants[0]) ){
-            return participants.map(p => p.text).join(', ');
+            return participants.map(p => p.text).join(separator);
           }
           else {
-            return this.getParticipantsFormatted(this.getParticipants(participants))
+            return this.getParticipantsFormatted(this.getParticipants(participants), separator)
           }
         }
         return '';
@@ -593,30 +723,46 @@
        * @method activate
        * @param {Number} idx
        * @fires setLastActivity
+       * @fires removeUnread
+       * @fires messageToChannel
        */
       activate(idx){
         let chat = bbn.fn.getRow(this.currentChats, {idx: idx});
-        bbn.fn.log('activate!!', idx, chat.active)
         if ( chat ){
           this.$set(chat, 'active', true);
           if ( chat.id ){
             this.setLastActivity(chat.id, this.userId);
           }
           setTimeout(() => {
-            if ( chat.unread ){
-              this.$set(chat, 'unread', 0);
-            }
-            if ( chat.messages.length ){
-              for ( let i = chat.messages.length - 1; i > -1; i-- ){
-                if ( chat.messages[i].user !== this.userId ){
-                  if ( !chat.messages[i].unread ){
-                    break;
-                  }
-                  chat.messages[i].unread = false;
+            this.removeUnread(idx)
+          }, 2000);
+          this.messageToChannel({
+            method: 'removeUnread',
+            params: [idx]
+          });
+        }
+      },
+      /**
+       * Removes unread tag from messages and from chat
+       * @method removeUnread
+       * @param {Number} idx
+       */
+      removeUnread(idx){
+        let chat = bbn.fn.getRow(this.currentChats, {idx: idx});
+        if (chat) {
+          if (chat.unread) {
+            this.$set(chat, 'unread', 0);
+          }
+          if (chat.messages.length) {
+            for (let i = chat.messages.length - 1; i > -1; i--) {
+              if ((chat.messages[i].user !== this.userId) && (chat.messages[i].unread !== undefined)) {
+                if (!chat.messages[i].unread) {
+                  break;
                 }
+                this.$set(chat.messages[i], 'unread', false);
               }
             }
-          }, 2000);
+          }
         }
       },
       /**
@@ -834,7 +980,19 @@
              * @data {Boolean} [false] showInfo
              * @memberof chat
              */
-            showInfo: false
+            showInfo: false,
+            /**
+             * Indicates whether a message is being sent
+             * @data {Boolean} isSending
+             * @memberof chat
+             */
+            isSending: false,
+            /**
+             * The background color used for the received messages
+             * @data {String} [''] receivedBackground
+             * @memberof chat
+             */
+            receivedBackground: ''
           }
         },
         computed: {
@@ -857,6 +1015,26 @@
           currentTitle(){
             return this.info.title ||
               this.cp.getParticipantsFormatted(this.participants)
+          },
+          /**
+           * The list of the online participants
+           * @computed online
+           * @memberof chat
+           * @fires cp.isOnline
+           * @return {Array}
+           */
+          online(){
+            return this.participants.filter(p => this.cp.isOnline(p))
+          },
+          /**
+           * The formatted list of the online participants
+           * @computed onlineFromatted
+           * @memberof chat
+           * @fires cp.getParticipantsFormatted
+           * @return {String}
+           */
+          onlineFormatted(){
+            return this.online.length ? bbn._('Online participants') + ':\n' + this.cp.getParticipantsFormatted(this.online, '\n') : '';
           }
         },
         methods: {
@@ -915,6 +1093,9 @@
            * @fires cp.close
            */
           close(){
+            if (this.idTemp && !this.chatId && !this.messages.length) {
+              return this.destroy();
+            }
             this.cp.close(this.idx);
           },
           /**
@@ -962,6 +1143,10 @@
             }
             else if ( this.idTemp ){
               this.cp.currentChats.splice(bbn.fn.search(this.cp.currentChats, {idx:this.idx}), 1);
+              this.cp.messageToChannel({
+                method: 'removeChatByTemp',
+                params: [this.idTemp]
+              })
             }
           },
           /**
@@ -972,6 +1157,7 @@
            */
           sendMessage(){
             if ( this.currentMessage ){
+              this.isSending = true;
               this.post(this.cp.url + '/actions/message/new', {
                 id_chat: this.chatId || null,
                 id_temp: this.idTemp || null,
@@ -979,11 +1165,12 @@
                 text: this.currentMessage
               }, d => {
                 if ( d.success && this.idTemp && d.id_chat ){
-                  let c = bbn.fn.getRow(this.cp.currentChats, {idTemp: this.idTemp});
-                  if ( c ){
-                    this.$set(c, 'id', d.id_chat);
-                    this.$set(c, 'idTemp', '');
-                  }
+                  this.cp.setIdByTemp(this.idTemp, d.id_chat);
+                  this.cp.messageToChannel({
+                    method: 'setIdByTemp',
+                    params: [this.idTemp, d.id_chat]
+                  })
+                  this.isSending = false;
                 }
               })
               this.currentMessage = '';
@@ -998,10 +1185,9 @@
           scrollEnd(){
             let sc = this.getRef('scroll');
             if ( sc ){
-              sc.onResize();
-              setTimeout(() => {
+              sc.onResize(true).then(() => {
                 sc.scrollEndY();
-              }, 700)
+              });
             }
           },
           /**
@@ -1087,10 +1273,36 @@
            */
           isMsgRead(msg){
             if (msg.time){
-              return !this.participants.filter(p => this.participantsActivity[p] && (this.participantsActivity[p] < msg.time)).length;
+              return !this.participants.filter(p => !this.participantsActivity[p] || (this.participantsActivity[p] < msg.time)).length;
             }
             return false;
+          },
+          /**
+           * Gets the style properties for the given message
+           * @method getStyle
+           * @memberof chat
+           * @param {Object} msg
+           * @param {Number} idx
+           * @return {Object}
+           */
+          getStyle(msg, idx){
+            let sent = msg.user === this.userId,
+                ret = {};
+            if (this.$refs.message && !sent && !msg.unread) {
+              if (this.receivedBackground) {
+                ret.backgroundColor = this.receivedBackground + '!important';
+                ret.borderColor = this.receivedBackground;
+              }
+            }
+            return ret;
           }
+        },
+        created(){
+          let el = document.createElement('div');
+          el.classList.add('bbn-alt-background');
+          document.body.append(el);
+          this.receivedBackground = bbn.fn.lightenDarkenHex(bbn.fn.rgb2hex(getComputedStyle(el).backgroundColor), this.cp.isDarkTheme ? 30 : -30);
+          el.remove();
         },
         /**
          * @event mounted
@@ -1233,7 +1445,7 @@
            */
           participantsFormatted(){
             if ( this.participants ){
-              return this.cp.getParticipantsFormatted(this.participants);
+              return this.cp.getParticipantsFormatted(this.participants, '\n');
             }
             return '';
           },
@@ -1261,13 +1473,10 @@
            * @computed onlineFormatted
            * @memberof active
            * @fires cp.getParticipantsFormatted
-           * @return {Array}
+           * @return {String}
            */
           onlineFormatted(){
-            if ( this.online ){
-              return this.cp.getParticipantsFormatted(this.online);
-            }
-            return '';
+            return this.online.length && this.isGroup ? bbn._('Online participants') + ':\n' + this.cp.getParticipantsFormatted(this.online, '\n') : '';
           }
         }
       },
@@ -1560,7 +1769,7 @@
                 )
               )
             ){
-              this.confirm(bbn._('Are you sure?'), () => {
+              this.confirm(bbn._('Are you sure you want to remove this user from the chat?'), () => {
                 let remove = () => {
                   let title = cp.getParticipantsFormatted(this.participants),
                       changeTitle = this.info.title === title;

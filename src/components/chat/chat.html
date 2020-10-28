@@ -3,7 +3,7 @@
        class="bbn-block bbn-vmiddle"
   >
     <div v-for="(chat, i) in currentChats"
-         v-if="chat.visible || chat.minimized"
+         v-if="isReady && (chat.visible || chat.minimized)"
          :class="['bbn-right-sspace', 'bbn-vmiddle', 'bbn-p', 'bbn-reactive', 'bbn-hxspadded', {
            'bbn-state-active': chat.active,
            'bbn-state-selected': !chat.active && !!chat.unread
@@ -47,7 +47,7 @@
        :style="{bottom: bottomCoord}"
   >
     <div class="bbn-header bbn-spadded bbn-no-border-top bbn-no-hborder bbn-flex-width">
-      <div class="bbn-flex-fill bbn-l">
+      <div class="bbn-flex-fill bbn-l bbn-unselectable">
         <span class="bbn-b" v-text="_('CHAT')"></span>
         <span>(</span>
         <span v-text="currentOnline ? _('Online') : _('Offline')"
@@ -73,7 +73,7 @@
     <div class="bbn-flex-fill">
       <bbn-scroll v-if="isReady">
         <diV class="bbn-spadded">
-          <div class="bbn-box bbn-c"
+          <div class="bbn-box bbn-c bbn-unselectable"
                v-text="_('CURRENT CHATS')"
           ></div>
           <bbn-list :source="Object.values(currentChats)"
@@ -83,10 +83,10 @@
                     @select="onSelectChat"
           ></bbn-list>
           <div v-else
-               class="bbn-spadded bbn-c"
+               class="bbn-spadded bbn-c bbn-unselectable"
                v-text="_('None')"
           ></div>
-          <div class="bbn-box bbn-c"
+          <div class="bbn-box bbn-c bbn-unselectable"
                v-text="_('USERS')"
           ></div>
           <bbn-list v-if="currentOnline"
@@ -96,7 +96,7 @@
                     @select="onSelectUser"
           ></bbn-list>
           <div v-else
-               class="bbn-spadded bbn-c"
+               class="bbn-spadded bbn-c bbn-unselectable"
                v-text="_('You are offline')"
           ></div>
         </diV>
@@ -139,9 +139,28 @@
              'bbn-state-active': active,
              'bbn-state-selected': !active && !!unread
            }]"
-            style="grid-template-columns: auto max-content"
+            style="grid-template-columns: max-content auto max-content"
       >
-        <div class="bbn-w-100 bbn-ellipsis"
+        <div>
+          <i v-if="!isGroup"
+             :class="['nf nf-fa-circle', {
+               'bbn-green': cp.isOnline(participants[0]),
+               'bbn-red': !cp.isOnline(participants[0])
+              }]"
+          ></i>
+          <i v-else-if="!online.length"
+             class="nf nf-fa-circle bbn-red"
+          ></i>
+          <i v-else-if="cp.currentOnline && (online.length === participants.length)"
+             class="nf nf-fa-circle bbn-green"
+             :title="onlineFormatted"
+          ></i>
+          <i v-else-if="cp.currentOnline && online.length"
+             class="nf nf-fa-circle bbn-orange"
+             :title="onlineFormatted"
+          ></i>
+        </div>
+        <div class="bbn-w-100 bbn-ellipsis bbn-unselectable"
               v-text="currentTitle"
               :title="currentTitle"
         ></div>
@@ -192,7 +211,7 @@
                       @reachTop="loadMoreMessages"
                       @hook:mounted="scrollEnd"
           >
-            <div class="bbn-spadded">
+            <div class="bbn-padded">
               <div v-for="(msg, midx) in messages"
                    :key="midx"
               >
@@ -212,20 +231,26 @@
                 >
                   <span :class="['bbn-chat-conversation-message', 'bbn-box', 'bbn-vxspadded', 'bbn-hspadded', 'bbn-no-border', 'bbn-flex', {
                           'bbn-alt-background': !msg.unread,
-                          'bbn-alt-light': $parent.isDarkTheme && (msg.user !== userId),
-                          'bbn-alt-dark': !msg.unread && !$parent.isDarkTheme && (msg.user !== userId),
-                          'bbn-primary': msg.unread
+                          'bbn-border-background-alt': !msg.unread && msg.user === userId,
+                          'bbn-primary': msg.unread,
+                          'bbn-border-background-primary': msg.unread,
+                          'bbn-chat-conversation-message-received': msg.user !== userId,
+                          'bbn-chat-conversation-message-sent': msg.user === userId
                         }]"
-                        :style="{
-                          'border-bottom-right-radius': msg.user === userId ? 0 : '',
-                          'border-top-left-radius': msg.user === userId ? '' : 0
-                        }"
+                        :style="getStyle(msg, midx)"
+                        ref="message"
                   >
                     <span>
+                      <i v-if="isGroup && (msg.user !== userId)"
+                         :class="['nf nf-fa-circle', 'bbn-xs', {
+                           'bbn-green': cp.isOnline(msg.user),
+                           'bbn-red': !cp.isOnline(msg.user)
+                         }]"
+                      ></i>
                       <span v-if="isGroup"
                             v-text="getField(cp.users, 'text', 'value', msg.user)"
                             :title="getField(cp.users, 'text', 'value', msg.user)"
-                            class="bbn-s"
+                            class="bbn-xs"
                       ></span>
                       <br v-if="isGroup">
                       <span v-html="renderMsg(msg.message)"></span>
@@ -241,7 +266,7 @@
                   </span>
                 </div>
                 <div v-else
-                     class="bbn-middle bbn-s"
+                     class="bbn-middle bbn-xs"
                 >
                   <span v-text="msg.message"
                         class="bbn-tertiary-text-alt"

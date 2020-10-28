@@ -209,7 +209,8 @@
                       :users="app.getActiveUsers()"
                       :online-users="usersOnline"
                       :online="app.user.chat"
-                      @statusChanged="onChatStatusChanged"
+                      @messageToChannel="d => messageChannel('appui-chat', d)"
+                      @hook:mounted="onChatMounted"
                       :groups="app.groups"
             ></bbn-chat>
           </div>
