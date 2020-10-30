@@ -55,7 +55,10 @@
                               tag="div"
                               :disabled="tabIndex !== selected"
                               min-width="10em"
-                              :class="['bbn-tabs-tab', 'bbn-iblock', {'bbn-tabs-dirty': tab.dirty}]"
+                              :class="['bbn-tabs-tab', 'bbn-iblock', {
+                                'bbn-tabs-dirty': tab.dirty,
+                                'bbn-tabs-icononly': tab.notext
+                              }]"
                               :ref="'title-' + tabIndex"
                               :style="{
                                 color: tab.fcolor ? tab.fcolor : null
@@ -534,6 +537,9 @@ div.bbn-tabs > div.bbn-tabs-container ul.bbn-tabs-tabs:first-child > li div.bbn-
 }
 div.bbn-tabs > div.bbn-tabs-container ul.bbn-tabs-tabs:first-child > li div.bbn-tabs-tab > .bbn-tab-text {
   font-size: 1.1em;
+}
+div.bbn-tabs > div.bbn-tabs-container ul.bbn-tabs-tabs:first-child > li div.bbn-tabs-tab > .bbn-tabs-main-icon {
+  line-height: 100%;
 }
 div.bbn-tabs > div.bbn-tabs-container ul.bbn-tabs-tabs:first-child > li div.bbn-tabs-tab.bbn-tabs-dirty::after {
   content: '*';

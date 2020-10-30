@@ -5,20 +5,17 @@
   <bbn-scroll :scrollable="scrollable"
               @hook:mounted="onScrollMounted"
   >
-    <ul v-if="!showIcons"
-        :class="['bbn-spadded', {'bbn-invisible': !ready}]"
-        :style="{zIndex: zIndex}"
+    <div v-if="!showIcons"
+         :class="['bbn-fisheye-dots', 'bbn-overlay', 'bbn-middle', {'bbn-invisible': !ready}]"
+         :style="{zIndex: zIndex}"
     >
-      <li :draggable="false">
-        <a href="javascript:;"
-           class="bbn-iblock"
-           @click="toggleFloater"
-           ref="dots"
+      <span class="bbn-block bbn-p"
+            @click="toggleFloater"
+            ref="dots"
         >
-          <i class="nf nf-mdi-dots_horizontal"></i>
-        </a>
-      </li>
-    </ul>
+          <i class="nf nf-mdi-dots_horizontal bbn-middle"></i>
+        </span>
+    </div>
     <ul ref="container"
         :class="['bbn-spadded', {'bbn-invisible': !showIcons || !ready}]"
         :style="{zIndex: zIndex}"
@@ -31,13 +28,12 @@
           @dragstart="dragstart(it.index, $event)"
           @dragend="dragend(it.index, $event)"
       >
-        <a :href="it.data.url ? it.data.url : 'javascript:;'"
-            class="bbn-iblock"
-            draggable="false"
-            @click="onClick(it.data, it.index)"
+        <span class="bbn-iblock bbn-p"
+              draggable="false"
+              @click="onClick(it.data, it.index)"
         >
           <i :class="it.data.icon"></i>
-        </a>
+        </span>
       </li>
     </ul>
   </bbn-scroll>
@@ -54,21 +50,19 @@
                :top="floaterTop"
   >
     <div class="bbn-spadded bbn-fisheye-floater-content">
-      <a v-for="it in items"
-          :key="it.index"
-          :draggable="!it.fixed"
-          @dragstart="dragstart(it.index, $event)"
-          @dragend="dragend(it.index, $event)"
-          class="bbn-w-100 bbn-c bbn-smargin"
-          @click="onClick(it.data, it.index)"
-          :href="it.data.url ? it.data.url : 'javascript:;'"
+      <span v-for="it in items"
+            :key="it.index"
+            :draggable="!it.fixed"
+            @dragstart="dragstart(it.index, $event)"
+            @dragend="dragend(it.index, $event)"
+            class="bbn-w-100 bbn-c bbn-smargin bbn-p"
+            @click="onClick(it.data, it.index)"
       >
         <div class="bbn-w-100 bbn-middle">
-          <i :class="[it.data.icon, 'bbn-fisheye-floater-icon', 'bbn-box', ' bbn-xxspadded', 'bbn-middle']"
-          ></i>
+          <i :class="[it.data.icon, 'bbn-fisheye-floater-icon', 'bbn-box', ' bbn-xxspadded', 'bbn-middle']"></i>
         </div>
         <div class="bbn-w-100 bbn-top-sspace" v-text="it.data[sourceText]"></div>
-      </a>
+      </span>
     </div>
   </bbn-floater>
   <div class="bbn-fisheye-bin"
@@ -164,6 +158,14 @@
       scrollable: {
         type: Boolean,
         default: false
+      },
+      /**
+       * True if you want to render the mobile version of the component
+       * @prop {Boolean} [false] mobile
+       */
+      mobile: {
+        type: Boolean,
+        default: false
       }
     },
     data(){
@@ -207,7 +209,7 @@
         /**
          * @data {Boolean} [true] showIcons
          */
-        showIcons: true,
+        showIcons: !this.mobile,
         /**
          * @data {Boolean} [false] visibleFloater
          */
@@ -269,6 +271,9 @@
        * @param {Object} it
        */
       onClick(it){
+        if ( it.url ){
+          bbn.fn.link(it.url);
+        }
         if ( it.action && bbn.fn.isFunction(it.action) ){
           it.action();
         }
@@ -280,7 +285,7 @@
        * @param {Number} idx
        */
       mouseover(idx){
-        if ( this.visibleText !== idx ){
+        if ( !bbn.fn.isMobile() && (this.visibleText !== idx) ){
           clearTimeout(this.timeout);
           this.visibleText = -1;
           this.timeout = setTimeout(() => {
@@ -351,7 +356,7 @@
        */
       checkMeasures(){
         let ct = this.getRef('container');
-        if ( ct ){
+        if ( ct && !this.mobile ){
           this.showIcons = this.lastKnownWidth >= ct.offsetWidth;
         }
       },
@@ -432,16 +437,19 @@
   grid-template-columns: repeat(auto-fill,minmax(7.5em,1fr));
   justify-items: center;
 }
-.bbn-fisheye .bbn-fisheye-floater-content a {
+.bbn-fisheye .bbn-fisheye-floater-content span {
   width: 6em;
 }
-.bbn-fisheye .bbn-fisheye-floater-content a i {
+.bbn-fisheye .bbn-fisheye-floater-content span i {
   min-width: 1.4em;
   min-height: 1.4em;
 }
 .bbn-fisheye .bbn-fisheye-floater-content .bbn-fisheye-floater-icon {
   backface-visibility: hidden;
-  font-size: 4em;
+  font-size: 3em;
+}
+.bbn-fisheye .bbn-fisheye-dots {
+  font-size: 2em;
 }
 .bbn-fisheye a {
   color: inherit;
@@ -476,8 +484,14 @@
 .bbn-fisheye ul li i:hover {
   transform: scale(1.5);
 }
+.bbn-mobile .bbn-fisheye ul li i {
+  transform: none;
+}
 .bbn-fisheye ul li:hover {
   transform: scale(1.4);
+}
+.bbn-mobile .bbn-fisheye ul li {
+  transform: none;
 }
 .bbn-fisheye .bbn-fisheye-text {
   position: absolute;

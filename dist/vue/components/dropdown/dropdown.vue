@@ -11,9 +11,8 @@
      :title="currentText || placeholder || null"
 >
   <div class="bbn-rel bbn-dropdown-container">
-    <div v-html="currentText"
-         :class="[
-           'bbn-dropdown-content',
+    <div :class="[
+           'bbn-vmiddle',
            'bbn-l',
            'bbn-bottom-right',
            'bbn-top-left',
@@ -22,7 +21,11 @@
            {'bbn-disabled': !!disabled}
          ]"
          :style="{'padding-right': isNullable ? '4em' : '2.5em'}"
-    ></div>
+    >
+      <div v-html="currentText"
+           class="bbn-dropdown-content"
+      ></div>
+    </div>
     <bbn-input :disabled="disabled"
                 @keydown="keydown"
                 @keyup="keyup"
@@ -249,6 +252,7 @@
 }
 .bbn-dropdown .bbn-dropdown-container {
   line-height: normal;
+  height: 100%;
 }
 .bbn-dropdown .bbn-dropdown-container .bbn-dropdown-content {
   white-space: nowrap;
@@ -259,6 +263,10 @@
   background-color: transparent;
   max-width: 100%;
   width: 100%;
+  height: 100%;
+}
+.bbn-dropdown .bbn-dropdown-container .bbn-input div.bbn-flex-width {
+  height: 100%;
 }
 .bbn-dropdown .bbn-dropdown-container .bbn-input input {
   color: transparent;

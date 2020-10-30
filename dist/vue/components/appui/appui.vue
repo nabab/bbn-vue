@@ -1,11 +1,9 @@
 <template>
-<div :class="[componentClass, {
-      'bbn-background': true,
-      'bbn-overlay': true,
-      'bbn-mobile': isMobile,
+<div :class="[componentClass, 'bbn-background', 'bbn-overlay', {
       'bbn-desktop': !isMobile
      }]"
-     :style="{opacity: opacity}">
+     :style="{opacity: opacity}"
+>
   <div v-if="!cool"
        class="bbn-middle bbn-xl"
        v-text="_('Appui is already defined') + '... :('">
@@ -14,28 +12,47 @@
     <!-- HEADER -->
     <div v-if="header"
          class="bbn-w-100"
-         style="overflow: visible">
-      <div :class="{
-        'bbn-header': true,
-        'bbn-flex-width': true,
-        'bbn-unselectable': true,
-        'bbn-no-border': true,
-        'bbn-h-100': true
-      }">
+         style="overflow: visible"
+    >
+      <div :class="['bbn-header', 'bbn-flex-width', 'bbn-unselectable', 'bbn-no-border', {
+             'bbn-h-100': !isMobile,
+             'bbn-spadded': isMobile
+           }]"
+      >
         <!-- MENU BUTTON -->
-        <div class="bbn-block bbn-h-100 bbn-menu-button-container"
-             style="min-width: 50px; width: 50px; margin-right: 90px">
+        <div :class="{
+               'bbn-block': !isMobile,
+               'bbn-h-100': !isMobile,
+               'bbn-appui-menu-button': !isMobile,
+               'bbn-vmiddle': isMobile,
+               'bbn-right-sspace': isMobile && searchIsActive
+              }"
+        >
           <div tabindex="0"
                @keydown.enter="toggleMenu"
                @keydown.space="toggleMenu"
                @mousedown.prevent.stop="toggleMenu"
-               class="bbn-overlay bbn-centered bbn-p">
+               class="bbn-centered bbn-p"
+          >
             <i ref="icon" class="nf nf-fa-bars bbn-xxxl"> </i>
           </div>
         </div>
+        <!-- FISHEYE (MOBILE) -->
+        <bbn-fisheye v-if="plugins['appui-menu'] && isMobile && !searchIsActive"
+                    class="bbn-appui-fisheye bbn-block bbn-large"
+                    :removable="true"
+                    @remove="removeShortcut"
+                    ref="fisheye"
+                    :source="shortcuts"
+                    :fixed-left="leftShortcuts"
+                    :fixed-right="rightShortcuts"
+                    :mobile="true"
+                    :z-index="3"
+        ></bbn-fisheye>
         <!-- SEARCHBAR -->
-        <div class="bbn-abs bbn-h-100 bbn-vspadded"
-             style="left: 50px; right: 140px; top: auto">
+        <div v-if="!isMobile"
+             class="bbn-appui-search bbn-large bbn-abs bbn-h-100 bbn-vspadded"
+        >
           <bbn-search :source="searchBar.source"
                       :placeholder="searchBar.placeholderFocused"
                       ref="search"
@@ -50,8 +67,10 @@
           >
           </bbn-search>
         </div>
-<!-- CENTRAL PART -->
-        <div class="bbn-h-100 bbn-splitter-top-center bbn-flex-fill">
+        <!-- CENTRAL PART -->
+        <div v-if="!isMobile"
+             class="bbn-h-100 bbn-splitter-top-center bbn-flex-fill"
+        >
           <!-- FISHEYE -->
           <bbn-fisheye v-if="plugins['appui-menu']"
                        style="z-index: 3"
@@ -70,13 +89,42 @@
           <div v-else>
           </div>
         </div>
+        <!-- LOGO (MOBILE) -->
+        <div class="bbn-flex-fill bbn-hspadded bbn-middle"
+              v-if="!searchIsActive && !!logo && isMobile"
+        >
+          <img :src="logo"
+               class="bbn-appui-logo"
+          >
+        </div>
+        <!-- SEARCHBAR (MOBILE) -->
+        <div v-if="isMobile"
+             :class="['bbn-appui-search', 'bbn-vmiddle', 'bbn-large', {'bbn-flex-fill': searchIsActive}]">
+          <bbn-search :source="searchBar.source"
+                      :placeholder="searchBar.placeholderFocused"
+                      ref="search"
+                      @select="searchBar.select"
+                      :component="searchBar.component"
+                      v-model="searchBar.value"
+                      :suggest="true"
+                      :source-value="searchBar.sourceValue"
+                      :source-text="searchBar.sourceText"
+                      :min-length="searchBar.minLength"
+                      max-width="100%"
+                      class="bbn-no"
+                      @focus="searchIsActive = true"
+                      @blur="searchBarBlur"
+          ></bbn-search>
+        </div>
         <!-- LOGO -->
-        <div class="bbn-block bbn-logo-container" style="max-width: 25%; min-height: 100%; width: 10em">
+        <div v-if="!isMobile"
+             class="bbn-block bbn-logo-container"
+             style="max-width: 25%; min-height: 100%; width: 10em"
+        >
           <div class="bbn-100 bbn-vmiddle bbn-r">
             <img v-if="!!logo"
                  :src="logo"
-                 style="border: 0; max-height: 100%; max-width: 100%; width: auto;"
-                 class="bbn-right-space"
+                 class="bbn-right-space bbn-appui-logo"
             >
           </div>
         </div>
@@ -125,48 +173,59 @@
                   :url="!!nav ? undefined : url"
                   @route="onRoute"
                   @change="$emit('change', $event)"
+                  :breadcrumb="isMobile"
+                  :scrollable="isMobile"
       >
         <slot></slot>
       </bbn-router>
     </div>
     <!-- STATUS -->
     <div v-if="status"
-              ref="foot"
-              class="bbn-header bbn-bordered-top appui-statusbar"
-              style="overflow: visible">
-      <div class="bbn-flex-width bbn-h-100 bbn-vmiddle">
+        ref="foot"
+        class="bbn-header bbn-bordered-top appui-statusbar"
+        style="overflow: visible"
+    >
+      <div class="bbn-flex-width bbn-h-100">
         <!-- LOADBAR -->
-        <bbn-loadbar class="bbn-flex-fill bbn-h-100 bbn-right-space" ref="loading" :source="loaders"></bbn-loadbar>
-        <!-- TASK TRACKER -->
-        <div v-if="plugins['appui-task']"
-            class="bbn-h-100 bbn-vmiddle bbn-right-space"
-        >
-          <appui-task-tracker></appui-task-tracker>
+        <div class="bbn-flex-fill">
+          <bbn-loadbar class="bbn-h-100 bbn-right-space bbn-overlay"
+                      ref="loading"
+                      :source="loaders"
+          ></bbn-loadbar>
         </div>
-        <!-- CHAT -->
-        <div v-if="plugins['appui-chat']"
-             :class="['bbn-h-100', 'bbn-vmiddle', {'bbn-right-space': getRef('chat') && getRef('chat').usersOnlineWithoutMe.length}]"
-        >
-          <bbn-chat ref="chat"
-                    :url="plugins['appui-chat']"
-                    :user-id="app.user.id"
-                    :users="app.users"
-                    :online-users="usersOnline"
-                    :online="chatOnline"
-                    @send="sendChatMessage"
-                    :groups="app.groups"
+        <div class="bbn-vmiddle">
+          <!-- TASK TRACKER -->
+          <div v-if="plugins['appui-task']"
+              class="bbn-right-space"
           >
-          </bbn-chat>
-        </div>
-        <!-- CLIPBOARD BUTTON -->
-        <div v-if="plugins['appui-clipboard'] && clipboard"
-             @click.stop.prevent="getRef('clipboard').toggle()"
-             ref="clipboardButton"
-             :class="['bbn-appui-clipboard-button bbn-h-100 bbn-vmiddle bbn-block bbn-c bbn-right-space bbn-p']">
-          <i class="nf nf-fa-clipboard bbn-m" tabindex="-1"></i>
-          <input class="bbn-invisible bbn-overlay bbn-p"
-                 @keydown.space.enter.prevent="getRef('clipboard').toggle()"
-                 @drop.prevent.stop="getRef('clipboard').copy($event); getRef('clipboard').show()">
+            <appui-task-tracker></appui-task-tracker>
+          </div>
+          <!-- CHAT -->
+          <div v-if="plugins['appui-chat']"
+               class="bbn-right-space"
+          >
+            <bbn-chat ref="chat"
+                      :url="plugins['appui-chat']"
+                      :user-id="app.user.id"
+                      :users="app.getActiveUsers()"
+                      :online-users="usersOnline"
+                      :online="app.user.chat"
+                      @statusChanged="onChatStatusChanged"
+                      :groups="app.groups"
+            ></bbn-chat>
+          </div>
+          <!-- CLIPBOARD BUTTON -->
+          <div v-if="plugins['appui-clipboard'] && clipboard"
+              @click.stop.prevent="getRef('clipboard').toggle()"
+              ref="clipboardButton"
+              class="bbn-appui-clipboard-button bbn-right-space bbn-p bbn-rel"
+          >
+            <i class="nf nf-fa-clipboard bbn-m" tabindex="-1"></i>
+            <input class="bbn-invisible bbn-overlay bbn-p"
+                  @keydown.space.enter.prevent="getRef('clipboard').toggle()"
+                  @drop.prevent.stop="getRef('clipboard').copy($event); getRef('clipboard').show()"
+            >
+          </div>
         </div>
       </div>
     </div>
@@ -175,7 +234,10 @@
   <bbn-slider v-if="plugins['appui-menu']"
               orientation="left"
               ref="slider"
-              style="width: 35em"
+              :style="{
+                width: isMobile && !isTablet ? '100%' : '35em',
+                maxWidth: '100%'
+              }"
               @show="focusSearchMenu"
               close-button="top-right">
     <bbn-treemenu :source="plugins['appui-menu'] + '/data'"
@@ -296,12 +358,16 @@
     data(){
       return {
         isMobile: bbn.fn.isMobile(),
+        isTablet: bbn.fn.isTabletDevice(),
         mode: bbn.env.mode,
         opacity: 0,
         pollerObject: {
-          chat: true,
-          message: null,
-          usersHash: false
+          'appui-chat': {
+            online: false,
+            usersHash: false,
+            chatsHash: false
+          },
+          token: bbn.env.token || null
         },
         // For the server query (checking or not)
         chatOnline: true,
@@ -333,7 +399,8 @@
         clipboardContent: [],
         observerTimeout: false,
         colorEnvVisible: true,
-        currentTitle: this.title
+        currentTitle: this.title,
+        searchIsActive: false
       }
     },
     computed: {
@@ -456,27 +523,12 @@
         }
       },
       */
-      sendChatMessage(obj, idx){
-        if ( this.$refs.chat.currentWindows[idx] ){
-          this.pollerObject.message = {
-            text: obj.message,
-            id_chat: this.$refs.chat.currentWindows[idx].id || null,
-            users: obj.users
-          };
-          this.poll();
-          /*
-          this.post('chat/actions/message', obj, (d) => {
-            if ( d.success && d.id_chat ){
-              if ( !obj.id ){
-                let chat = this.getRef('chat');
-                if ( chat ){
-                  chat.$set(chat.currentWindows[idx], 'id_chat', d.id_chat)
-                }
-              }
-            }
-          })
-          */
-        }
+      onChatStatusChanged(status, usersHash, chatsHash, lastChat){
+        this.pollerObject['appui-chat'].online = status;
+        this.pollerObject['appui-chat'].usersHash = usersHash;
+        this.pollerObject['appui-chat'].chatsHash = chatsHash;
+        this.pollerObject['appui-chat'].lastChat = lastChat;
+        this.poll()
       },
 
       getField: bbn.fn.getField,
@@ -596,20 +648,23 @@
 
 
 
+      /**
+       * Get messages from service worker
+       * @param {Object} data 
+       */
       receive(data){
         if ( !bbn.fn.numProperties(data) ){
           return;
         }
-        //bbn.fn.log("RECEIVING", data);
+        bbn.fn.log("RECEIVING", data);
         if (data.disconnected){
           document.location.reload();
         }
-        else if ( data.chat && bbn.fn.numProperties(data.chat) && this.getRef('chat') ){
-          //bbn.fn.log("THERE IS A CHAT SO I SEND IT TO THE CHAT");
-          this.getRef('chat').receive(data.chat);
+        else if (data.type === 'log') {
+          this.$emit('swlog', data.data);
         }
         else if ( data.data ){
-          bbn.fn.each(data.data, (d, i) => {
+          /* bbn.fn.each(data.data, (d, i) => {
             if ( d.observers ){
               for ( let b of d.observers ){
                 let arr = bbn.fn.filter(this.observers, {id: b.id});
@@ -622,11 +677,16 @@
                 }
               }
             }
+          }); */
+        }
+        if ( data.plugins && Object.keys(data.plugins).length ){
+          bbn.fn.iterate(data.plugins, (d, i) => {
+            this.$emit(i, d);
           });
         }
       },
 
-      poll(){
+      poll(data){
         bbn.fn.info("POLL");
         if ( this.pollable && this.pollerPath ){
           if ( 'serviceWorker' in navigator ){
@@ -643,12 +703,15 @@
                 }
                 */
               }
-              else{
+              else {
+                if (!data) {
+                  data = {
+                    observers: this.observers
+                  };
+                }
                 bbn.fn.info("ALL OK");
-                navigator.serviceWorker.controller.postMessage(bbn.fn.extendOut({
-                  observers: this.observers
-                }, this.pollerObject));
-                this.observersCopy = this.observers.slice().map(o => bbn.fn.clone(o));
+                navigator.serviceWorker.controller.postMessage(bbn.fn.extendOut({}, data, this.pollerObject));
+                this.observersCopy = bbn.fn.clone(this.observers);
               }
             }
             else{
@@ -717,6 +780,11 @@
       getCurrentContainer(){
         let container = this.find('bbn-router').searchContainer(bbn.env.path, true);
         return container || this;
+      },
+      searchBarBlur(){
+        setTimeout(() => {
+          this.searchIsActive = false
+        }, 500)
       }
     },
     beforeCreate(){
@@ -813,11 +881,31 @@
           'button'
         ];
         bbn.vue.preloadBBN(preloaded);
-        /*
-        bbn.fn.each(this.plugins, (p, i) => {
-
+        
+        // Emissions from poller
+        this.$on('appui-chat', d => {
+          let chat = this.getRef('chat');
+          if ('serviceWorkers' in d) {
+            this.pollerObject['appui-chat'] = bbn.fn.extend(true, this.pollerObject['appui-chat'], d.serviceWorkers);
+            delete d.serviceWorkers;
+          }
+          if (bbn.fn.isVue(chat) && bbn.fn.numProperties(d)) {
+            chat.receive(d);
+          }
         })
-        */
+        this.$on('appui-core', d => {
+          if (d.observers) {
+            for (let b of d.observers) {
+              let arr = bbn.fn.filter(this.observers, {id: b.id});
+              for (let a of arr) {
+                if (a.value !== b.result) {
+                  this.observerEmit(b.result, a);
+                  a.value = b.result;
+                }
+              }
+            }
+          }
+        })
       }
     },
     mounted(){
@@ -826,15 +914,25 @@
         setTimeout(() => {
           this.ready = true;
           this.$emit('resize');
+          if (!this.pollerObject.token) {
+            this.pollerObject.token = bbn.env.token;
+          }
+          if (this.app && this.app.user && this.app.user.chat) {
+            this.pollerObject['appui-chat'].online = true;
+          }
+          this.opacity = 1;
           setTimeout(() => {
-            this.opacity = 1;
             this.poll();
-          }, 1000);
+          }, 5000);
         }, 1000);
       }
     },
+    beforeDestroy(){
+      this.$off('appui-chat');
+      this.$off('appui-core');
+    },
     watch: {
-      chatVisible(newVal){
+      /* chatVisible(newVal){
         if ( !newVal ){
           this.chatWindows.splice(0, this.chatWindows.length);
         }
@@ -848,6 +946,10 @@
         this.pollerObject.usersHash = newVal;
         this.poll();
       },
+      chatsHash(newVal){
+        this.pollerObject.chatsHash = newVal;
+        this.poll();
+      }, */
       observers: {
         deep: true,
         handler(){
@@ -1000,6 +1102,38 @@
   transition: opacity 0.5s;
   overflow: hidden;
 }
+.bbn-appui .bbn-appui-menu-button {
+  min-width: 50px;
+  width: 50px;
+  margin-right: 90px;
+}
+.bbn-mobile .bbn-appui .bbn-appui-fisheye {
+  min-height: 4em;
+  width: 2.7em;
+}
+.bbn-appui .bbn-appui-logo {
+  border: 0;
+  max-height: 100%;
+  max-width: 100%;
+  width: auto;
+}
+.bbn-mobile .bbn-appui .bbn-appui-logo {
+  max-width: 90%;
+  height: auto;
+  max-height: 4em;
+}
+.bbn-appui .bbn-appui-search {
+  left: 50px;
+  right: 140px;
+  top: auto;
+}
+.bbn-mobile .bbn-appui .bbn-appui-search {
+  width: 4.2em;
+  justify-content: flex-end;
+  left: unset;
+  right: unset;
+  top: unset;
+}
 .bbn-appui .appui-statusbar {
   height: 1.8em;
 }
@@ -1021,9 +1155,6 @@
 .bbn-appui .bbn-appui-clipboard li {
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-.bbn-appui.bbn-mobile {
-  zoom: 1.3;
 }
 
 </style>

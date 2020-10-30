@@ -3,10 +3,6 @@
   white-space: nowrap;
   overflow: visible;
 }
-.bbn-loadbar span,
-.bbn-loadbar a {
-  display: inline-block;
-}
 .bbn-loadbar span i,
 .bbn-loadbar a i {
   vertical-align: middle;
@@ -14,14 +10,17 @@
 .bbn-loadbar i {
   font-size: 16px;
 }
+.bbn-loadbar a {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  display: block;
+}
 .bbn-loadbar .bbn-loadbar-content {
-  padding: 0 1em;
-  display: inline-block;
   height: 100%;
 }
 .bbn-loadbar .bbn-loadbar-state {
   width: 1.8em;
-  display: inline-block;
 }
 .bbn-loadbar .bbn-loadbar-time {
   width: 4em;

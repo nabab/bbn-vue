@@ -382,6 +382,12 @@
            */
           isLoading: false,
           /**
+           * True if the list has been loaded.
+           * @data {Boolean} [false] isLoaded
+           * @memberof listComponent 
+           */
+          isLoaded: this.source !== 'string',
+          /**
            * True if the source of the list is a string.
            * @data {Boolean} isAjax
            * @memberof listComponent 
@@ -728,7 +734,7 @@
         afterUpdate(){
           return true;
         },
-        updateData(){
+        async updateData(){
           if (this.beforeUpdate() !== false) {
             this._dataPromise = new Promise((resolve) => {
               let prom;
@@ -850,6 +856,9 @@
                 }
                 this.afterUpdate();
                 resolve(this.currentData);
+                if (!this.isLoaded) {
+                  this.isLoaded = true;
+                }
                 this.$emit('dataloaded');
                 //this._dataPromise = false;
               });

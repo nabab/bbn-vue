@@ -6,20 +6,17 @@ script.innerHTML = `<div :class="componentClass"
   <bbn-scroll :scrollable="scrollable"
               @hook:mounted="onScrollMounted"
   >
-    <ul v-if="!showIcons"
-        :class="['bbn-spadded', {'bbn-invisible': !ready}]"
-        :style="{zIndex: zIndex}"
+    <div v-if="!showIcons"
+         :class="['bbn-fisheye-dots', 'bbn-overlay', 'bbn-middle', {'bbn-invisible': !ready}]"
+         :style="{zIndex: zIndex}"
     >
-      <li :draggable="false">
-        <a href="javascript:;"
-           class="bbn-iblock"
-           @click="toggleFloater"
-           ref="dots"
+      <span class="bbn-block bbn-p"
+            @click="toggleFloater"
+            ref="dots"
         >
-          <i class="nf nf-mdi-dots_horizontal"></i>
-        </a>
-      </li>
-    </ul>
+          <i class="nf nf-mdi-dots_horizontal bbn-middle"></i>
+        </span>
+    </div>
     <ul ref="container"
         :class="['bbn-spadded', {'bbn-invisible': !showIcons || !ready}]"
         :style="{zIndex: zIndex}"
@@ -32,13 +29,12 @@ script.innerHTML = `<div :class="componentClass"
           @dragstart="dragstart(it.index, $event)"
           @dragend="dragend(it.index, $event)"
       >
-        <a :href="it.data.url ? it.data.url : 'javascript:;'"
-            class="bbn-iblock"
-            draggable="false"
-            @click="onClick(it.data, it.index)"
+        <span class="bbn-iblock bbn-p"
+              draggable="false"
+              @click="onClick(it.data, it.index)"
         >
           <i :class="it.data.icon"></i>
-        </a>
+        </span>
       </li>
     </ul>
   </bbn-scroll>
@@ -55,21 +51,19 @@ script.innerHTML = `<div :class="componentClass"
                :top="floaterTop"
   >
     <div class="bbn-spadded bbn-fisheye-floater-content">
-      <a v-for="it in items"
-          :key="it.index"
-          :draggable="!it.fixed"
-          @dragstart="dragstart(it.index, $event)"
-          @dragend="dragend(it.index, $event)"
-          class="bbn-w-100 bbn-c bbn-smargin"
-          @click="onClick(it.data, it.index)"
-          :href="it.data.url ? it.data.url : 'javascript:;'"
+      <span v-for="it in items"
+            :key="it.index"
+            :draggable="!it.fixed"
+            @dragstart="dragstart(it.index, $event)"
+            @dragend="dragend(it.index, $event)"
+            class="bbn-w-100 bbn-c bbn-smargin bbn-p"
+            @click="onClick(it.data, it.index)"
       >
         <div class="bbn-w-100 bbn-middle">
-          <i :class="[it.data.icon, 'bbn-fisheye-floater-icon', 'bbn-box', ' bbn-xxspadded', 'bbn-middle']"
-          ></i>
+          <i :class="[it.data.icon, 'bbn-fisheye-floater-icon', 'bbn-box', ' bbn-xxspadded', 'bbn-middle']"></i>
         </div>
         <div class="bbn-w-100 bbn-top-sspace" v-text="it.data[sourceText]"></div>
-      </a>
+      </span>
     </div>
   </bbn-floater>
   <div class="bbn-fisheye-bin"
@@ -170,6 +164,14 @@ document.head.insertAdjacentElement('beforeend', css);
       scrollable: {
         type: Boolean,
         default: false
+      },
+      /**
+       * True if you want to render the mobile version of the component
+       * @prop {Boolean} [false] mobile
+       */
+      mobile: {
+        type: Boolean,
+        default: false
       }
     },
     data(){
@@ -213,7 +215,7 @@ document.head.insertAdjacentElement('beforeend', css);
         /**
          * @data {Boolean} [true] showIcons
          */
-        showIcons: true,
+        showIcons: !this.mobile,
         /**
          * @data {Boolean} [false] visibleFloater
          */
@@ -275,6 +277,9 @@ document.head.insertAdjacentElement('beforeend', css);
        * @param {Object} it
        */
       onClick(it){
+        if ( it.url ){
+          bbn.fn.link(it.url);
+        }
         if ( it.action && bbn.fn.isFunction(it.action) ){
           it.action();
         }
@@ -286,7 +291,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @param {Number} idx
        */
       mouseover(idx){
-        if ( this.visibleText !== idx ){
+        if ( !bbn.fn.isMobile() && (this.visibleText !== idx) ){
           clearTimeout(this.timeout);
           this.visibleText = -1;
           this.timeout = setTimeout(() => {
@@ -357,7 +362,7 @@ document.head.insertAdjacentElement('beforeend', css);
        */
       checkMeasures(){
         let ct = this.getRef('container');
-        if ( ct ){
+        if ( ct && !this.mobile ){
           this.showIcons = this.lastKnownWidth >= ct.offsetWidth;
         }
       },

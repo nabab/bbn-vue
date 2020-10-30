@@ -11,7 +11,6 @@
       @keyup="keyup($event)"
       @mouseenter="over($event)"
       @mouseleave="out($event)"
-      @scroll.passive="scroll($event)"
   ></div>
   <input ref="element"
         type="hidden"
@@ -28,6 +27,7 @@
   </div>
   <bbn-scrollbar v-if="fill && ready"
                 orientation="vertical"
+                ref="scrollbar"
                 :container="$el.querySelector('.CodeMirror-scroll')">
   </bbn-scrollbar>
 </div>
@@ -295,6 +295,19 @@
     },
 
     methods: {
+      scrollTop(bottom){
+        let sc = this.getRef('scrollbar');
+        if (sc) {
+          sc.onResize();
+          if (sc.shouldBother) {
+            bbn.fn.log("BOTHERRING")
+            sc.scrollTo(bottom ? '100%' : 0);
+          }
+        }
+      },
+      scrollBottom() {
+        this.scrollTop(true);
+      },
       /**
        * Gets the preset options for the given mode from the constant modes.
        *
@@ -640,8 +653,11 @@
             }
           });
 
-        this.widget.on("change", (ins, bbb) => {
+        this.widget.on("change", () => {
           this.emitInput(this.widget.doc.getValue());
+        });
+        this.widget.on("scroll", cm => {
+          this.$emit('scroll', cm)
         });
         this.$nextTick(() => {
           this.ready = true;

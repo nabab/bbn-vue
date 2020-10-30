@@ -27,7 +27,7 @@
             'bbn-block': isResizing,
             'bbn-w-100': !isResizing
           }">
-    <div class="bbn-block" style="padding-right: 8em">
+    <div class="bbn-w-100">
       <h3 v-html="title"
           class="bbn-no-margin bbn-spadded"
           ref="title">
@@ -696,10 +696,18 @@
             }
           }
         }
+
+        // Added by Mirko 24/09/20
+        minWidth = Math.max(...minWidth);
+        minHeight = Math.max(...minHeight);
+
         this.currentMaxHeight = Math.min(...maxHeight);
-        this.currentMinWidth = Math.max(...minWidth);
-        this.currentMinHeight = Math.max(...minHeight);
         this.currentMaxWidth = Math.min(...maxWidth);
+        // Changed by Mirko 24/09/20
+        //this.currentMinWidth = Math.max(...minWidth);
+        //this.currentMinHeight = Math.max(...minHeight);
+        this.currentMinHeight = minHeight > this.currentMaxHeight ? this.currentMaxHeight : minHeight;
+        this.currentMinWidth = minWidth > this.currentMaxWidth ? this.currentMaxWidth : minWidth;
       },
       /**
        * @todo not used the method getComponents() doesn't exist
@@ -1470,6 +1478,10 @@ div.bbn-floater > header .bbn-top-right {
 div.bbn-floater > header .bbn-top-right > div {
   width: 1.8em;
   float: left;
+}
+div.bbn-floater > header h3 {
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 div.bbn-floater > footer.bbn-button-group {
   min-height: 3em;

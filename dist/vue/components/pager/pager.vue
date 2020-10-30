@@ -1,45 +1,90 @@
 <template>
-<div :class="[componentClass, 'bbn-widget', 'bbn-unselectable']">
-  <div class="bbn-block"
-			 v-if="element && element.pageable && element.currentData.length"
+<div v-if="ready"
+		 :class="[componentClass, 'bbn-widget', 'bbn-unselectable']"
+>
+  <div :class="{
+				 'bbn-block': !isMobile || isTablet,
+				 'bbn-w-100': isMobile && !isTablet,
+				 'bbn-c': isMobile && !isTablet
+			 }"
+			 v-if="element && element.pageable"
 	>
 		<bbn-button icon="nf nf-fa-angle_double_left"
 								:notext="true"
 								:title="_('Go to the first page')"
 								:disabled="element.currentPage == 1"
-								@click="element.currentPage = 1"
+								@click="firstPage"
+								v-if="buttons"
 		></bbn-button>
+		<span v-else
+					class="bbn-iblock bbn-right-xsspace bbn-pager-mobile-icon"
+		>
+			<i :class="['nf nf-fa-angle_double_left', 'bbn-xl', 'bbn-pager-mobile-icon', {
+						'bbn-disabled': element.currentPage == 1
+					}]"
+				 @click="firstPage"
+			></i>
+		</span>
 		<bbn-button icon="nf nf-fa-angle_left"
 								:notext="true"
 								:title="_('Go to the previous page')"
 								:disabled="element.currentPage == 1"
-								@click="element.currentPage--"
+								@click="prevPage"
+								v-if="buttons"
 		></bbn-button>
-		<span v-text="_('Page')"></span>
-		<span v-if="element.isLoading"
-					v-text="element.currentPage"
-					class="bbn-iblock bbn-c bbn-narrower bbn-right-sspace"
-		></span>
-		<bbn-numeric v-else
-								 v-model="element.currentPage"
+		<span v-else
+					class="bbn-iblock bbn-right-xsspace bbn-pager-mobile-icon"
+		>
+			<i :class="['nf nf-fa-angle_left', 'bbn-xl', 'bbn-pager-mobile-icon', {
+				   'bbn-disabled': element.currentPage == 1
+				 }]"
+				 @click="prevPage"
+			></i>
+		</span>
+		<span class="bbn-iblock" v-text="_('Page')"></span>
+		<bbn-numeric v-model="element.currentPage"
 								 :min="1"
 								 :max="element.numPages"
 								 class="bbn-narrower bbn-right-sspace"
+								 :disabled="!!element.isLoading"
+								 :readonly="element.numPages == 1"
 		></bbn-numeric>
-		<span v-text="_('of') + ' ' + element.numPages" style="margin-right: 0.25em"></span>
+		<span class="bbn-iblock bbn-right-xsspace"
+					v-text="_('of') + ' ' + element.numPages"
+		></span>
 		<bbn-button icon="nf nf-fa-angle_right"
 								:notext="true"
 								:title="_('Go to the next page')"
 								:disabled="element.currentPage == element.numPages"
-								@click="element.currentPage++"
+								@click="nextPage"
+								v-if="buttons"
 		></bbn-button>
+		<span v-else
+					class="bbn-iblock bbn-right-xsspace bbn-pager-mobile-icon"
+		>
+			<i :class="['nf nf-fa-angle_right', 'bbn-xl', 'bbn-pager-mobile-icon', {
+				   'bbn-disabled': element.currentPage == element.numPages
+				 }]"
+				 @click="nextPage"
+			></i>
+		</span>
 		<bbn-button icon="nf nf-fa-angle_double_right"
 								:notext="true"
 								:title="_('Go to the last page')"
-								@click="element.currentPage = element.numPages"
+								@click="lastPage"
 								:disabled="element.currentPage == element.numPages"
+								v-if="buttons"
 		></bbn-button>
-		<span class="bbn-hmargin">
+		<span v-else
+					class="bbn-iblock bbn-pager-mobile-icon"
+		>
+			<i :class="['nf nf-fa-angle_double_right', 'bbn-xl', 'bbn-pager-mobile-icon', {
+				   'bbn-disabled': element.currentPage == element.numPages
+				 }]"
+				 @click="lastPage"
+			></i>
+		</span>
+		<span v-if="!isMobile || isTablet" class="bbn-hmargin">
 			<bbn-dropdown :source="element.limits"
 										v-model.number="element.currentLimit"
 										@change="element.currentPage = 1"
@@ -50,58 +95,86 @@
 		</span>
 	</div>
 	<div v-if="element"
-			 class="bbn-block"
-			 style="float: right"
+			 :class="{
+				 'bbn-block': !isMobile || isTablet,
+				 'bbn-flex-width': isMobile && !isTablet,
+				 'bbn-top-xsspace': isMobile && !isTablet && element.pageable && element.currentData.length,
+				 'bbn-vmiddle': isMobile && !isTablet
+			 }"
+			 :style="{
+				 float: !isMobile || isTablet ? 'right' : 'left',
+				 justifyContent: isMobile && !isTablet ? 'flex-end' : ''
+			 }"
 	>
-		<span v-if="element.filteredData.length && element.pageable && element.isAjax"
-					v-text="(element.start+1) + '-' + (element.start + element.currentLimit > element.total ? element.total : element.start + element.currentLimit) + ' ' + _('of') + ' ' + element.total"
-		></span>
-		<span v-else-if="element.filteredData.length && element.pageable && !element.isAjax"
-					v-text="(element.start+1) + '-' + (element.start + element.currentLimit > element.filteredData.length ? element.filteredData.length : element.start + element.currentLimit) + ' ' + _('of') + ' ' + element.filteredData.length"
-		></span>
-		<span v-else
-					v-text="element.total ? _('Total') + ': ' + element.total + ' ' + _('items') : _('No item')"
-		></span>
-		&nbsp;
-		<bbn-button v-if="element.currentQuery"
-								:title="_('View SQL query')"
-								@click="element.showQuery"
-								icon="nf nf-mdi-database"
-								:notext="true"
-		></bbn-button>
-		<bbn-button v-if="element.saveable"
-								:disabled="element.isSaved"
-								:title="_('Save current configuration')"
-								@click="element.$emit('save', element.currentConfig)"
-								icon="nf nf-fa-save"
-								:notext="true"
-		></bbn-button>
-		<bbn-button v-if="element.filterable || element.showable"
-								:disabled="!element.isChanged"
-								:title="_('Reset to original configuration')"
-								@click="element.reset(false)"
-								icon="nf nf-fa-undo"
-								:notext="true"
-		></bbn-button>
-		<bbn-button v-if="element.showable"
-								:title="_('Columns\' picker')"
-								@click="element.openColumnsPicker"
-								icon="nf nf-fa-columns"
-								:notext="true"
-		></bbn-button>
-		<bbn-button v-if="element.filterable && element.multifilter"
-								:title="_('Multi Filter')"
-								:class="{'bbn-red': element.currentFilters && element.currentFilters.conditions.length ? true : false}"
-								@click="element.openMultiFilter"
-								icon="nf nf-mdi-filter_variant"
-								:notext="true"
-		></bbn-button>
-		<bbn-button v-if="element.isAjax"
-								:title="_('Refresh')"
-								@click="element.updateData"
-								icon="nf nf-fa-refresh"
-								:notext="true"
-		></bbn-button>
+		<div v-if="isMobile && !isTablet && element.pageable && element.currentData.length"
+				 class="bbn-right-space bbn-flex-fill bbn-vmiddle"
+		>
+			<bbn-dropdown :source="element.limits"
+										v-model.number="element.currentLimit"
+										@change="element.currentPage = 1"
+										:disabled="!!element.isLoading"
+										:autosize="true"
+			></bbn-dropdown>
+		</div>
+		<div>
+			<span v-if="element.filteredData.length && element.pageable && element.isAjax"
+						v-text="(element.start+1) + '-' + (element.start + element.currentLimit > element.total ? element.total : element.start + element.currentLimit) + ' ' + _('of') + ' ' + element.total"
+			></span>
+			<span v-else-if="element.filteredData.length && element.pageable && !element.isAjax"
+						v-text="(element.start+1) + '-' + (element.start + element.currentLimit > element.filteredData.length ? element.filteredData.length : element.start + element.currentLimit) + ' ' + _('of') + ' ' + element.filteredData.length"
+			></span>
+			<span v-else-if="!isMobile || isTablet"
+						v-text="element.total ? _('Total') + ': ' + element.total + ' ' + _('items') : _('No item')"
+			></span>
+			<span v-else>
+				<i class="nf nf-fa-hashtag bbn-m bbn-right-sspace"></i><span v-text="element.total"></span>
+			</span>
+			&nbsp;
+			<bbn-button v-if="element.currentQuery"
+									:title="_('View SQL query')"
+									@click="element.showQuery"
+									icon="nf nf-mdi-database"
+									:notext="true"
+									class="bbn-left-xsspace"
+			></bbn-button>
+			<bbn-button v-if="element.saveable"
+									:disabled="element.isSaved"
+									:title="_('Save current configuration')"
+									@click="element.$emit('save', element.currentConfig)"
+									icon="nf nf-fa-save"
+									:notext="true"
+									class="bbn-left-xsspace"
+			></bbn-button>
+			<bbn-button v-if="element.filterable || element.showable"
+									:disabled="!element.isChanged"
+									:title="_('Reset to original configuration')"
+									@click="element.reset(false)"
+									icon="nf nf-fa-undo"
+									:notext="true"
+									class="bbn-left-xsspace"
+			></bbn-button>
+			<bbn-button v-if="element.showable"
+									:title="_('Columns\' picker')"
+									@click="element.openColumnsPicker"
+									icon="nf nf-fa-columns"
+									:notext="true"
+									class="bbn-left-xsspace"
+			></bbn-button>
+			<bbn-button v-if="element.filterable && element.multifilter"
+									:title="_('Multi Filter')"
+									:class="['bbn-left-xsspace', {'bbn-red': element.currentFilters && element.currentFilters.conditions.length ? true : false}]"
+									@click="element.openMultiFilter"
+									icon="nf nf-mdi-filter_variant"
+									:notext="true"
+			></bbn-button>
+			<bbn-button v-if="element.isAjax"
+									:title="_('Refresh')"
+									@click="element.updateData"
+									icon="nf nf-fa-refresh"
+									:notext="true"
+									class="bbn-left-xsspace"
+			></bbn-button>
+		</div>
 	</div>
 </div>
 </template>
@@ -128,6 +201,44 @@
       element: {
         type: Vue,
         required: true
+      },
+      buttons: {
+        type: Boolean,
+        default: true
+      }
+    },
+    methods: {
+      firstPage(){
+        if ( this.element && (this.element.currentPage !== 1) ){
+          this.element.currentPage = 1;
+        }
+      },
+      nextPage(){
+        if ( this.element && (this.element.currentPage < this.element.numPages) ){
+          this.element.currentPage++;
+        }
+      },
+      prevPage(){
+        if ( this.element && (this.element.currentPage > 1) ){
+          this.element.currentPage--;
+        }
+      },
+      lastPage(){
+        if ( this.element && (this.element.currentPage !== this.element.numPages) ){
+          this.element.currentPage = this.element.numPages;
+        }
+      }
+    },
+    created(){
+      if ( this.element ){
+        this.element.$on('ready', () => {
+          this.ready = true;
+        })
+      }
+    },
+    mounted(){
+      if ( this.element && this.element.ready && !this.ready ){
+        this.ready = true;
       }
     }
   });
@@ -144,6 +255,9 @@
   border-width: 0.0833em;
   line-height: 2em;
   padding: .333em .25em;
+}
+.bbn-pager .bbn-pager-mobile-icon {
+  vertical-align: middle;
 }
 
 </style>

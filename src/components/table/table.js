@@ -3236,10 +3236,21 @@
        * @watch observerValue
        * @fires updateData
        */
-      observerValue(newVal) {
+      /*observerValue(newVal) {
         if ((newVal !== this._observerReceived) && !this.editedRow) {
           this._observerReceived = newVal;
           //bbn.fn.log("watch observerValue");
+          this.updateData();
+        }
+      },*/
+      /**
+       * Updates the data.
+       * @watch observerDirty
+       * @fires updateData
+       */
+      observerDirty(newVal) {
+        if (newVal && !this.editedRow) {
+          this.observerDirty = false;
           this.updateData();
         }
       },

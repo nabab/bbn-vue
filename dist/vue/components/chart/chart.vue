@@ -89,7 +89,7 @@
         type: String,
         default(){
           if ( appui && appui.theme && appui.themes ){
-            let isDark = bbn.fn.getField(appui.themes, {value: appui.theme}, 'isDark');
+            let isDark = bbn.fn.getField(appui.themes, 'isDark', {value: appui.theme});
             return !!isDark ? 'dark' : 'light';
           }
           return 'light';

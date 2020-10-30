@@ -365,6 +365,7 @@
     <bbn-pager class="bbn-table-footer"
                v-if="pageable || saveable || filterable || isAjax || showable"
                :element="_self"
+               :buttons="footerButtons"
     ></bbn-pager>
   </div>
   <bbn-floater v-if="currentFilter"
@@ -708,6 +709,16 @@
        */
       loadedConfig: {
         type: Object
+      },
+      /**
+       * Shows the footer's arrows as buttons
+       * @prop {Boolean} [true] footerButtons
+       */
+      footerButtons: {
+        type: Boolean,
+        default(){
+          return !bbn.fn.isMobile() || bbn.fn.isTabletDevice();
+        }
       }
     },
     data() {

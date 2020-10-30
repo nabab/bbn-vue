@@ -884,7 +884,7 @@
                     },
                     {
                         "text": "groups",
-                        "desc": "",
+                        "desc": "The array of groups.",
                         "url": "bbn-vue\/component\/chat\/doc\/props#groups"
                     },
                     {
@@ -898,51 +898,111 @@
                         "url": "bbn-vue\/component\/chat\/doc\/props#online"
                     },
                     {
-                        "text": "visible",
-                        "desc": "Set to true shows the list of avalaible users.",
-                        "url": "bbn-vue\/component\/chat\/doc\/props#visible"
-                    },
-                    {
                         "text": "url",
                         "desc": "The url used for the actions of the chat.",
                         "url": "bbn-vue\/component\/chat\/doc\/props#url"
-                    },
-                    {
-                        "text": "windows",
-                        "desc": "The array of opened windows",
-                        "url": "bbn-vue\/component\/chat\/doc\/props#windows"
                     }
                 ],
                 "methods": [
                     {
                         "text": "getField",
-                        "desc": "Returns the method bbn.fn.getField.\r\n      *",
+                        "desc": "Alias of bbn.fn.getField",
                         "url": "bbn-vue\/component\/chat\/doc\/methods#getField"
                     },
                     {
-                        "text": "chatTo",
-                        "desc": "Opens the chat window selected from the list of online users.\r\n       *",
-                        "url": "bbn-vue\/component\/chat\/doc\/methods#chatTo"
-                    },
-                    {
-                        "text": "relay",
-                        "desc": "Create event send.\r\n       *",
-                        "url": "bbn-vue\/component\/chat\/doc\/methods#relay"
+                        "text": "shorten",
+                        "desc": "Alias of bbn.fn.shorten",
+                        "url": "bbn-vue\/component\/chat\/doc\/methods#shorten"
                     },
                     {
                         "text": "chatById",
-                        "desc": "Return the current window object basing on the given chat id.\r\n       *",
+                        "desc": "Return the current window object basing on the given chat id.",
                         "url": "bbn-vue\/component\/chat\/doc\/methods#chatById"
                     },
                     {
-                        "text": "addUser",
-                        "desc": "Add a user to the given chat.\r\n       *",
-                        "url": "bbn-vue\/component\/chat\/doc\/methods#addUser"
+                        "text": "chatTo",
+                        "desc": "Opens the chat window by the given user id",
+                        "url": "bbn-vue\/component\/chat\/doc\/methods#chatTo"
                     },
                     {
-                        "text": "sendMessage",
-                        "desc": "Sends the current message.\r\n           *",
-                        "url": "bbn-vue\/component\/chat\/doc\/methods#sendMessage"
+                        "text": "receive",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/chat\/doc\/methods#receive"
+                    },
+                    {
+                        "text": "getNewIdx",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/chat\/doc\/methods#getNewIdx"
+                    },
+                    {
+                        "text": "switchOnline",
+                        "desc": "Switch the current user online.",
+                        "url": "bbn-vue\/component\/chat\/doc\/methods#switchOnline"
+                    },
+                    {
+                        "text": "switchOffline",
+                        "desc": "Switch the current user offline.",
+                        "url": "bbn-vue\/component\/chat\/doc\/methods#switchOffline"
+                    },
+                    {
+                        "text": "isOnline",
+                        "desc": "Checks if the given user is online.",
+                        "url": "bbn-vue\/component\/chat\/doc\/methods#isOnline"
+                    },
+                    {
+                        "text": "getParticipants",
+                        "desc": "Gets the participants list (full object) from an array of ids",
+                        "url": "bbn-vue\/component\/chat\/doc\/methods#getParticipants"
+                    },
+                    {
+                        "text": "getParticipantsFormatted",
+                        "desc": "Gets the formatted list of participants",
+                        "url": "bbn-vue\/component\/chat\/doc\/methods#getParticipantsFormatted"
+                    },
+                    {
+                        "text": "onSelectChat",
+                        "desc": "The method called on chat selection.",
+                        "url": "bbn-vue\/component\/chat\/doc\/methods#onSelectChat"
+                    },
+                    {
+                        "text": "onSelectUser",
+                        "desc": "The method called on user selection.",
+                        "url": "bbn-vue\/component\/chat\/doc\/methods#onSelectUser"
+                    },
+                    {
+                        "text": "close",
+                        "desc": "Closes the given chat window.",
+                        "url": "bbn-vue\/component\/chat\/doc\/methods#close"
+                    },
+                    {
+                        "text": "minimize",
+                        "desc": "Minimizes the given chat window.",
+                        "url": "bbn-vue\/component\/chat\/doc\/methods#minimize"
+                    },
+                    {
+                        "text": "maximaze",
+                        "desc": "Maximazes the given chat window.",
+                        "url": "bbn-vue\/component\/chat\/doc\/methods#maximaze"
+                    },
+                    {
+                        "text": "toggleMinimized",
+                        "desc": "Toggle minimized to the given chat window.",
+                        "url": "bbn-vue\/component\/chat\/doc\/methods#toggleMinimized"
+                    },
+                    {
+                        "text": "activate",
+                        "desc": "Activates the given chat window",
+                        "url": "bbn-vue\/component\/chat\/doc\/methods#activate"
+                    },
+                    {
+                        "text": "deactivate",
+                        "desc": "Deactivates the given chat window",
+                        "url": "bbn-vue\/component\/chat\/doc\/methods#deactivate"
+                    },
+                    {
+                        "text": "setLastActivity",
+                        "desc": "Sets the last activity of the given user on the given chat",
+                        "url": "bbn-vue\/component\/chat\/doc\/methods#setLastActivity"
                     }
                 ],
                 "mixins": [
@@ -2583,6 +2643,11 @@
                         "text": "scrollable",
                         "desc": "True if you want to render the component scrollable",
                         "url": "bbn-vue\/component\/fisheye\/doc\/props#scrollable"
+                    },
+                    {
+                        "text": "mobile",
+                        "desc": "True if you want to render the mobile version of the component",
+                        "url": "bbn-vue\/component\/fisheye\/doc\/props#mobile"
                     }
                 ],
                 "methods": [
@@ -4792,6 +4857,11 @@
                         "text": "componentUrl",
                         "desc": "The property to get from the componentSource to use for setting the URL.",
                         "url": "bbn-vue\/component\/router\/doc\/props#componentUrl"
+                    },
+                    {
+                        "text": "maxTitleLength",
+                        "desc": "The max length for the titles",
+                        "url": "bbn-vue\/component\/router\/doc\/props#maxTitleLength"
                     }
                 ],
                 "methods": [
@@ -6355,6 +6425,11 @@
                         "text": "loadedConfig",
                         "desc": "",
                         "url": "bbn-vue\/component\/table\/doc\/props#loadedConfig"
+                    },
+                    {
+                        "text": "footerButtons",
+                        "desc": "Shows the footer's arrows as buttons",
+                        "url": "bbn-vue\/component\/table\/doc\/props#footerButtons"
                     }
                 ],
                 "methods": [

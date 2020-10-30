@@ -382,20 +382,7 @@
                 document.location.reload();
               }
               else if (message.data && message.data.data) {
-                /* bbn.fn.each(data.data, (d, i) => {
-                  if ( d.observers ){
-                    for ( let b of d.observers ){
-                      let arr = bbn.fn.filter(this.observers, {id: b.id});
-                      for ( let a of arr ){
-                        if ( a.value !== b.result ){
-                          //bbn.fn.log("EMITTING OBS", a);
-                          this.observerEmit(b.result, a);
-                          a.value = b.result;
-                        }
-                      }
-                    }
-                  }
-                }); */
+
               }
               if ( message.data && message.data.plugins && Object.keys(message.data.plugins).length ){
                 bbn.fn.iterate(message.data.plugins, (d, i) => {
@@ -622,15 +609,7 @@
         })
         this.$on('appui-core', (type, data) => {
           if ((type === 'message') && data.observers) {
-            for (let b of data.observers) {
-              let arr = bbn.fn.filter(this.observers, {id: b.id});
-              for (let a of arr) {
-                if (a.value !== b.result) {
-                  this.observerEmit(b.result, a);
-                  a.value = b.result;
-                }
-              }
-            }
+            bbn.fn.each(data.observers, obs => bbn.fn.each(bbn.fn.filter(this.observers, {id: obs.id}), o => this.observerEmit(obs.result, o)));
           }
         })
       }

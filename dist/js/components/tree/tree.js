@@ -56,7 +56,7 @@ script.innerHTML = `<div :class="componentClass"
             <span :class="['bbn-tree-node-block', source.cls || '', {'bbn-tree-node-block-no-component': !!component}]"
                   @mouseover.stop="mouseOver"
             >
-              <span class="bbn-tree-node-block-expander bbn-p"
+              <span :class="['bbn-tree-node-block-expander', {'bbn-p': numChildren}]"
                     @click="if ( numChildren && (level >= tree.minExpandLevel) ){
                       isExpanded = !isExpanded;
                     }"
@@ -1078,6 +1078,9 @@ document.head.insertAdjacentElement('beforeend', css);
       unselect(){
         if ( this.tree.selectedNode ){
           this.tree.selectedNode.isSelected = false;
+          if (!this.multiple) {
+            this.$emit('unselect', this);
+          }
         }
       },
 
@@ -2035,13 +2038,13 @@ document.head.insertAdjacentElement('beforeend', css);
                     this.tree.setLocalStorage();
                   })
                 }
-                if ( emit ){
+                if (emit && (this.multiple || !this.tree.currentSelected.length)) {
                   this.tree.$emit('unselect', this);
                 }
               }
               if ( (idx2 > -1) && (this.tree !== this.parent) ){
                 this.parent.currentSelected.splice(idx, 1);
-                if ( emit ){
+                if (emit && (this.multiple || !this.tree.currentSelected.length)) {
                   this.parent.$emit('unselect', this);
                 }
               }

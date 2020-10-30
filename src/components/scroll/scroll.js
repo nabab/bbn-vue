@@ -545,13 +545,7 @@
        * @fires this.$refs.xScroller.scrollTo
        */
       scrollStartX(){
-        let x = this.getRef('xScroller');
-        if (x) {
-          x.scrollStart();
-        }
-        else {
-          this.getRef('scrollContainer').scrollLeft = 0;
-        }
+        this.getRef('scrollContainer').scrollLeft = 0;
       },
       /**
        * Scroll the y axis to the position 0
@@ -560,13 +554,7 @@
        */
       scrollStartY() {
         if (this.hasScrollY) {
-          let y = this.getRef('yScroller');
-          if (y) {
-            y.scrollStart();
-          }
-          else {
-            this.getRef('scrollContainer').scrollTop = 0;
-          }
+          this.getRef('scrollContainer').scrollTop = 0;
         }
       },
       /**
@@ -623,13 +611,7 @@
        * @thisfires this.getRef('xScroller').scrollTo
        */
       scrollEndX(){
-        let x = this.getRef('xScroller');
-        if ( x ){
-          x.scrollEnd();
-        }
-        else {
-          this.getRef('scrollContainer').scrollLeft = this.getRef('scrollContainer').scrollWidth;
-        }
+        this.getRef('scrollContainer').scrollLeft = this.contentWidth - this.lastKnownWidth;
       },
        /**
        * Scroll the y axis to the end
@@ -637,13 +619,7 @@
        * @thisfires this.getRef('yScroller').scrollTo
        */
       scrollEndY(){
-        let y = this.getRef('yScroller');
-        if ( y ){
-          y.scrollEnd();
-        }
-        else {
-          this.getRef('scrollContainer').scrollTop = this.getRef('scrollContainer').scrollHeight;
-        }
+        this.getRef('scrollContainer').scrollTop = this.contentHeight - this.lastKnownHeight;
       },
       /**
        * Gets the dimensions after a resize

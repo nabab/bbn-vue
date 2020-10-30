@@ -683,7 +683,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @fires scrollTo
        */
       scrollEnd(){
-        this.scrollTo(this.maxSliderPos);
+        this.scrollTo(this.contentSize - this.containerSize);
       }
     },
     watch: {

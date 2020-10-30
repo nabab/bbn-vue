@@ -7,3 +7,6 @@
   line-height: 2em;
   padding: .333em .25em;
 }
+.bbn-pager .bbn-pager-mobile-icon {
+  vertical-align: middle;
+}

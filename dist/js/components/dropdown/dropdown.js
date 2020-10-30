@@ -12,9 +12,8 @@ script.innerHTML = `<div :class="[
      :title="currentText || placeholder || null"
 >
   <div class="bbn-rel bbn-dropdown-container">
-    <div v-html="currentText"
-         :class="[
-           'bbn-dropdown-content',
+    <div :class="[
+           'bbn-vmiddle',
            'bbn-l',
            'bbn-bottom-right',
            'bbn-top-left',
@@ -23,7 +22,11 @@ script.innerHTML = `<div :class="[
            {'bbn-disabled': !!disabled}
          ]"
          :style="{'padding-right': isNullable ? '4em' : '2.5em'}"
-    ></div>
+    >
+      <div v-html="currentText"
+           class="bbn-dropdown-content"
+      ></div>
+    </div>
     <bbn-input :disabled="disabled"
                 @keydown="keydown"
                 @keyup="keyup"

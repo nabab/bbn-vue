@@ -34,6 +34,7 @@
               :content="false"
               :value="selected"
               class="bbn-router-tabs"
+              :max-title-length="maxTitleLength"
     ></bbn-tabs>
     <div :class="{
       'bbn-flex-fill': !!nav,
@@ -245,6 +246,14 @@
        */
       componentUrl: {
         type: String
+      },
+      /**
+       * The max length for the titles
+       * @prop {Number} [20] maxTitleLength
+       */
+      maxTitleLength: {
+        type: Number,
+        default: 20
       }
     },
     data(){
@@ -2168,8 +2177,8 @@ div.bbn-router .bbn-router-nav {
   margin-top: 0;
 }
 div.bbn-router .bbn-router-nav .bbn-router-nav:not(.bbn-router-nav-bc) {
-  margin-top: 0.5em;
-  height: calc(99.5%);
+  padding-top: 0.5em;
+  height: 100%;
 }
 div.bbn-router .bbn-router-nav.bbn-router-nav-bc .bbn-router-breadcrumb-master {
   height: 2.5em;

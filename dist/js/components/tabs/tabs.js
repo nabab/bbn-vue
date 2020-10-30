@@ -56,7 +56,10 @@ script.innerHTML = `<div :class="[componentClass, {'bbn-tabs-scrollable': scroll
                               tag="div"
                               :disabled="tabIndex !== selected"
                               min-width="10em"
-                              :class="['bbn-tabs-tab', 'bbn-iblock', {'bbn-tabs-dirty': tab.dirty}]"
+                              :class="['bbn-tabs-tab', 'bbn-iblock', {
+                                'bbn-tabs-dirty': tab.dirty,
+                                'bbn-tabs-icononly': tab.notext
+                              }]"
                               :ref="'title-' + tabIndex"
                               :style="{
                                 color: tab.fcolor ? tab.fcolor : null

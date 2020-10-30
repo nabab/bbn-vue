@@ -35,6 +35,7 @@ script.innerHTML = `<div :class="[componentClass, {
               :content="false"
               :value="selected"
               class="bbn-router-tabs"
+              :max-title-length="maxTitleLength"
     ></bbn-tabs>
     <div :class="{
       'bbn-flex-fill': !!nav,
@@ -251,6 +252,14 @@ document.head.insertAdjacentElement('beforeend', css);
        */
       componentUrl: {
         type: String
+      },
+      /**
+       * The max length for the titles
+       * @prop {Number} [20] maxTitleLength
+       */
+      maxTitleLength: {
+        type: Number,
+        default: 20
       }
     },
     data(){

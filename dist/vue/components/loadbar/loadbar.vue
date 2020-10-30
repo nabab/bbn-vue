@@ -1,6 +1,6 @@
 <template>
-<div :class="[{'bbn-100': true, 'bbn-unselectable': true}, componentClass]">
-  <span class="bbn-loadbar-content" @click="info = !info">
+<div :class="['bbn-100', 'bbn-unselectable', componentClass]">
+  <span class="bbn-loadbar-content bbn-right-padded bbn-flex-width" @click="info = !info">
     <!--span class="buttons" v-if="data.length">
       <i :title="_('History informations')"
          :class="{
@@ -52,20 +52,24 @@
          @click="selected = 0"
       ></i>
     </span-->
-    <span class="bbn-loadbar-state bbn-hxspadded bbn-c bbn-block bbn-h-100 bbn-vmiddle">
+    <span class="bbn-loadbar-state bbn-hxspadded bbn-c bbn-block bbn-h-100 bbn-middle">
       <bbn-loadicon v-if="currentItem.loading" class="bbn-blue bbn-h-100"></bbn-loadicon>
       <i v-else-if="currentItem.error" class="nf nf-fa-times_circle bbn-red"></i>
       <i v-else-if="currentItem.success" class="nf nf-fa-check bbn-green"></i>
       <i v-else-if="currentItem.abort" class="nf nf-mdi-stop bbn-orange"></i>
     </span>
-    <a href="javascript:;"
-       :title="text + ' ' + _('Loading')"
-       style="color: inherit; cursor: default"
-       v-if="currentItem"
-       class="bbn-h-100 bbn-block"
-    >
-      <span class="text bbn-block bbn-h-100 bbn-vmiddle" v-text="currentItem.url"></span>
-    </a>
+    <span class="bbn-flex-fill">
+      <span class="bbn-overlay">
+        <span class="bbn-h-100 bbn-vmiddle">
+          <a href="javascript:;"
+             :title="text + ' ' + _('Loading')"
+             style="color: inherit; cursor: default"
+             v-if="currentItem"
+             v-text="currentItem.url"
+          ></a>
+        </span>
+      </span>
+    </span>
   </span>
   <bbn-floater v-if="info"
                :element="$el"
@@ -329,10 +333,6 @@
   white-space: nowrap;
   overflow: visible;
 }
-.bbn-loadbar span,
-.bbn-loadbar a {
-  display: inline-block;
-}
 .bbn-loadbar span i,
 .bbn-loadbar a i {
   vertical-align: middle;
@@ -340,14 +340,17 @@
 .bbn-loadbar i {
   font-size: 16px;
 }
+.bbn-loadbar a {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  display: block;
+}
 .bbn-loadbar .bbn-loadbar-content {
-  padding: 0 1em;
-  display: inline-block;
   height: 100%;
 }
 .bbn-loadbar .bbn-loadbar-state {
   width: 1.8em;
-  display: inline-block;
 }
 .bbn-loadbar .bbn-loadbar-time {
   width: 4em;

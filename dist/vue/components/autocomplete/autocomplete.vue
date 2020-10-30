@@ -330,10 +330,20 @@
   min-width: 4em;
   cursor: pointer;
 }
-.bbn-autocomplete input {
+.bbn-autocomplete > .bbn-flex-width {
+  height: 100%;
+}
+.bbn-autocomplete > .bbn-flex-width .bbn-w-100 {
+  height: 100%;
+}
+.bbn-autocomplete > .bbn-flex-width .bbn-input {
+  height: 100%;
+}
+.bbn-autocomplete > .bbn-flex-width .bbn-input input {
   cursor: pointer;
   width: 100%;
   font-size: inherit;
+  height: 100%;
 }
 .bbn-autocomplete button {
   height: 100%;

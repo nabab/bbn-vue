@@ -19,7 +19,8 @@
          'bbn-bottom-left': closeButton === 'bottom-left',
          'bbn-p': true,
          'bbn-spadded': true,
-         'bbn-m': true,
+         'bbn-m': !isMobile,
+         'bbn-xxl': isMobile,
          'bbn-unselectable': true
        }"
        @click.stop.prevent="hide">
@@ -108,7 +109,15 @@
          * @data [null] right
          */
         right: null,
-        transitionTimeout: false
+        /**
+         * @data {Number|Boolean} [false] transitionTimeout
+         */
+        transitionTimeout: false,
+        /**
+         * Indicates if we are on a mobile device
+         * @data {Boolean} isMobile
+         */
+        isMobile: bbn.fn.isMobile()
       };
     },
     computed: {
@@ -207,7 +216,6 @@
        * @method onResize
        */
       onResize() {
-        bbn.fn.log("on Rersize");
         this.isResizing = true;
         if (this.transitionTimeout) {
           clearTimeout(this.transitionTimeout);
@@ -243,7 +251,7 @@
         }
       },
       changeVisible(v) {
-        bbn.fn.log("CHANGE VISIBLE");
+        //bbn.fn.log("CHANGE SLIDER VISIBLE");
         if (v && !this.hasBeenOpened) {
           this.hasBeenOpened = true;
         }

@@ -343,6 +343,9 @@
 
 </script>
 <style scoped>
+.bbn-json-editor {
+  background-color: white;
+}
 .bbn-json-editor .editor-toolbar a,
 .bbn-json-editor .editor-toolbar a.active,
 .bbn-json-editor .editor-toolbar a:hover {

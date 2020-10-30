@@ -2033,6 +2033,8 @@
             }
           },
           /**
+           * Beware it's a computed, use tree.currentData[idx].expanded to change it.
+           * 
            * @watch isExpanded
            * @fires tree.updateData
            * @fires getRef
@@ -2055,6 +2057,7 @@
               }
             }
             else {
+              bbn.fn.log("REMOVING FROM EXPANDED");
               if ( this.removeFromExpanded() ){
                 if ( this.tree.selectedNode && this.tree.isNodeOf(this.tree.selectedNode, this) ){
                   this.isActive = true;

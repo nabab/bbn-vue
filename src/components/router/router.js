@@ -1868,6 +1868,31 @@
         }
       },
       /**
+       * The called method on the switching to false of the "observer Dirty" property value
+       * @method observerClear
+       * @param {Object} obs
+       * @fires getIndex
+       * @fires $delete
+       * @fires $nextTick
+       * @fires $forceUpdate
+       * @fires observationTower.observerClear
+       */
+      observerClear(obs){
+        let ele = this.$el.querySelector(".bbn-observer-" + obs.element);
+        if ( ele ){
+          let idx = this.getIndex(ele);
+          if ((idx !== false) && (this.views[idx].events['bbnObs' + obs.element + obs.id] !== undefined)) {
+            this.$delete(this.views[idx].events, 'bbnObs' + obs.element + obs.id);
+            this.$nextTick(() => {
+              this.$forceUpdate();
+            });
+          }
+        }
+        else if (this.observationTower) {
+          this.observationTower.observerClear(obs);
+        }
+      },
+      /**
        * Function triggered every time a container is shown (at the start of the animation) to change the URL if needed.
        * @method enter
        * @param container

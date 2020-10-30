@@ -32,23 +32,21 @@
          class="bbn-splitter-collapser"
          :style="{fontSize: (resizerSize * 1.2) + 'px'}">
       <div v-if="isCollapsiblePrev(rs.panec1, rs.panec2)"
-           @click.stop="collapse(rs.panec1, rs.panec2)"
            :class="{
-             'bbn-p': true,
              'bbn-w-100': currentOrientation === 'horizontal',
              'bbn-h-100': currentOrientation === 'vertical',
              'bbn-c': true
            }">
         <i :class="{
-           'nf nf-fa-angle_left': currentOrientation === 'horizontal',
-           'nf nf-fa-angle_up': currentOrientation === 'vertical'
-         }">
-        </i>
+              'bbn-p': true,
+              'nf nf-fa-angle_left': currentOrientation === 'horizontal',
+              'nf nf-fa-angle_up': currentOrientation === 'vertical'
+            }"
+            @click.stop="collapse(rs.panec1, rs.panec2)"
+        ></i>
       </div>
       <div v-if="isCollapsibleNext(rs.panec1, rs.panec2)"
-           @click.stop="collapse(rs.panec2, rs.panec1)"
            :class="{
-             'bbn-p': true,
              'bbn-w-100': currentOrientation === 'horizontal',
              'bbn-h-100': currentOrientation === 'vertical',
              'bbn-c': true
@@ -57,13 +55,12 @@
              'bbn-p': true,
              'nf nf-fa-angle_right': currentOrientation === 'horizontal',
              'nf nf-fa-angle_down': currentOrientation === 'vertical'
-           }">
-        </i>
+           }"
+           @click.stop="collapse(rs.panec2, rs.panec1)"
+        ></i>
       </div>
       <div v-if="isFullyCollapsiblePrev(rs.panec1, rs.panec2, i)"
-           @click.stop="collapse(rs.panec1, rs.panec2, true)"
            :class="{
-             'bbn-p': true,
              'bbn-w-100': currentOrientation === 'horizontal',
              'bbn-h-100': currentOrientation === 'vertical',
              'bbn-c': true
@@ -72,13 +69,12 @@
              'bbn-p': true,
              'nf nf-fa-angle_double_left': currentOrientation === 'horizontal',
              'nf nf-fa-angle_double_up': currentOrientation === 'vertical'
-           }">
-        </i>
+           }"
+           @click.stop="collapse(rs.panec1, rs.panec2, true)"
+        ></i>
       </div>
       <div v-if="isFullyCollapsibleNext(rs.panec1, rs.panec2, i)"
-           @click.stop="collapse(rs.panec2, rs.panec1, true)"
            :class="{
-             'bbn-p': true,
              'bbn-w-100': currentOrientation === 'horizontal',
              'bbn-h-100': currentOrientation === 'vertical',
              'bbn-c': true
@@ -87,8 +83,9 @@
              'bbn-p': true,
              'nf nf-fa-angle_double_right': currentOrientation === 'horizontal',
              'nf nf-fa-angle_double_down': currentOrientation === 'vertical'
-           }">
-        </i>
+           }"
+           @click.stop="collapse(rs.panec2, rs.panec1, true)"
+        ></i>
       </div>
       <!--i v-if="panes[rs.panec1] &&
                     panes[rs.panec1].collapsible &&
@@ -567,7 +564,10 @@
           this.panes.splice(0, this.panes.length);
           // position starts at 1
           let currentPosition = 1,
-              tmp             = [];
+              tmp             = [],
+              hasAuto         = false,
+              hasPercent      = false,
+              hasResizers     = false;
           // If 1st pane is collapsible we add a resizer at the start
           this.$children.forEach((pane, i) => {
             // Defining the panes base on the content
@@ -583,9 +583,11 @@
                 isFixed = true;
                 if ( props.size === 'auto' ){
                   props.size = false;
+                  hasAuto = true;
                 }
                 else if ( (typeof props.size === 'string') && (props.size.substr(-1) === '%') ){
                   isPercent = true;
+                  hasPercent = true;
                 }
                 else if ( (typeof props.size === 'string') && (props.size.substr(-2) === 'px') ){
                   isNumber = true;
@@ -594,6 +596,9 @@
                 else if ( (typeof props.size === 'number') ){
                   isNumber = true;
                 }
+              }
+              else {
+                hasAuto = true;
               }
               let obj = bbn.fn.extend({
                 index: i,
@@ -660,6 +665,7 @@
                   o.panec2 = idx;
                 }
                 this.resizers.push(o);
+                hasResizers = true;
                 currentPosition++;
               }
             }
@@ -707,13 +713,19 @@
               }
               if ( o.panec2 || o.pane2 ){
                 this.resizers.push(o);
+                hasResizers = true;
                 currentPosition++;
               }
             }
           });
-          this.$forceUpdate();
-          this.ready = true;
-          this.selfEmit(true);
+          if ( hasPercent && hasResizers && !hasAuto ){
+            throw bbn._('When a "pane" has a percentage measure and a "resizer" is present a "pane" must have an "auto" measure');
+          }
+          else {
+            this.$forceUpdate();
+            this.ready = true;
+            this.selfEmit(true);
+          }
         }, 200);
       },
       /**
@@ -859,6 +871,10 @@
        * @param {Object} rs 
        */
       resizeStart(e, rs){
+        if ( e.target.tagName.toLowerCase() === 'i' ){
+          e.target.click();
+          return
+        }
         if (this.isResizable
            && !this.isResizing
            && this.panes[rs.pane1]

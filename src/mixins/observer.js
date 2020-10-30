@@ -147,6 +147,17 @@
             this.$emit('bbnObs' + obs.element + obs.id, newVal);
             return true;
           }
+        },
+        /**
+         * The called method on the switching to false of the "observer Dirty" property value
+         * @method observerClear
+         * @param {Object} obs
+         * @fires observationTower.observerClear
+         */
+        observerClear(obs){
+          if (this.observationTower) {
+            this.observationTower.observerClear(obs);
+          }
         }
       },
       /**
@@ -185,6 +196,22 @@
           this.observationTower.$off('bbnObs' + this.observerUID + this.observerID);
         }
       },
+      watch: {
+        /**
+         * @watch observerDirty
+         * @param {Boolean} newVal
+         * @fires observerClear
+         */
+        observerDirty(newVal){
+          if (!newVal) {
+            this.observerClear({
+              id: this.observerID,
+              element: this.observerUID,
+              value: this.observerValue
+            });
+          }
+        }
+      }
     }
   });
 })(bbn);

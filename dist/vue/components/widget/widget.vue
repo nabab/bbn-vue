@@ -631,10 +631,10 @@
   vertical-align: middle;
 }
 .bbn-widget div.bbn-header .bbn-widget-button-left i {
-  margin-left: 2px;
+  margin-left: .25em;
 }
 .bbn-widget div.bbn-header .bbn-widget-button-right i {
-  margin-right: 2px;
+  margin-right: .25em;
 }
 
 </style>

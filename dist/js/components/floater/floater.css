@@ -24,6 +24,10 @@ div.bbn-floater > header .bbn-top-right > div {
   width: 1.8em;
   float: left;
 }
+div.bbn-floater > header h3 {
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
 div.bbn-floater > footer.bbn-button-group {
   min-height: 3em;
 }

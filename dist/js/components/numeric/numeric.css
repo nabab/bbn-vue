@@ -5,6 +5,7 @@
 }
 .bbn-numeric .bbn-flex-width {
   border-radius: inherit;
+  height: 100%;
 }
 .bbn-numeric .bbn-flex-width .bbn-flex-fill {
   border-top-left-radius: inherit;
@@ -37,4 +38,5 @@
   padding-right: 0.5em !important;
   text-align: right !important;
   font-size: inherit;
+  height: 100%;
 }

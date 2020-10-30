@@ -403,8 +403,14 @@
         }
       },
       */
-      observerValue(newVal){
-        if ( (newVal !== this._observerReceived) && !this.editedRow ){
+     /**
+      * @watch observerDirty
+      * @param {Boolean} newVal
+      * @fires load
+      */
+      observerDirty(newVal){
+        if ( newVal && !this.editedRow ){
+          this.observerDirty = false;
           this.load();
         }
       },

@@ -7,7 +7,6 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-iblock']"
      @focusout="isActive = false"
 >
   <bbn-input :placeholder="currentPlaceholder"
-              class="bbn-xl"
               :style="{width: specialWidth, transition: 'width 0.5s'}"
               type="search"
               ref="input"
@@ -194,6 +193,7 @@ document.head.insertAdjacentElement('beforeend', css);
        */
       searchFocus(){
         clearTimeout(this.timeout);
+        this.$emit('focus', this);
         this.isFocused = true;
         this.specialWidth = this.maxWidth;
         this.currentPlaceholder = this.placeholder;
@@ -209,6 +209,7 @@ document.head.insertAdjacentElement('beforeend', css);
           this.specialWidth = this.minWidth;
           this.filterString = '';
           this.currentPlaceholder = '?';
+          this.$emit('blur', this);
         }, 250);
       },
       /**
