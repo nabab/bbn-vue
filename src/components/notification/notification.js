@@ -247,9 +247,12 @@
        * @method close
        * @param {Number} id
        */
-      close(id){
+      close(id, callCallback){
         let idx = bbn.fn.search(this.items, {id: id});
         if ( idx > -1 ){
+          if (callCallback && this.items[idx].onClose && bbn.fn.isFunction(this.items[idx].onClose)){
+            this.items[idx].onClose(this.items[idx]);
+          }
           this.items.splice(idx, 1);
           this._updatePositions();
         }

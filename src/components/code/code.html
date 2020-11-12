@@ -2,15 +2,7 @@
      @keydown.enter.stop=""
      @keydown.escape.stop="toggleFullScreen(false)"
 >
-  <div :class="fill ? 'bbn-code-filled' : ''"
-      ref="code"
-      @focus="focus($event)"
-      @blur="blur($event)"
-      @keydown="keydown($event)"
-      @keyup="keyup($event)"
-      @mouseenter="over($event)"
-      @mouseleave="out($event)"
-  ></div>
+  <div :class="fill ? 'bbn-code-filled' : ''" ref="code"></div>
   <input ref="element"
         type="hidden"
         :value="value"

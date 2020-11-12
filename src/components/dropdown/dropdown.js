@@ -24,6 +24,7 @@
      * @mixin bbn.vue.keynavComponent
      * @mixin bbn.vue.urlComponent
      * @mixin bbn.vue.dropdownComponent
+     * @mixin bbn.vue.localStorageComponent
       */
     mixins: [
       bbn.vue.basicComponent,
@@ -33,7 +34,8 @@
       bbn.vue.listComponent,
       bbn.vue.keynavComponent,
       bbn.vue.urlComponent,
-      bbn.vue.dropdownComponent
+      bbn.vue.dropdownComponent,
+      bbn.vue.localStorageComponent
     ],
     /**
      * The current icon.
@@ -47,6 +49,13 @@
             this.iconUp : this.iconDown;
         //isOpened && !disabled && !readonly && filteredData.length ? iconUp : iconDown
       }
+    },
+    beforeMount() {
+      if (this.storage) {
+        bbn.fn.log("BEFDORE MOUNT WITH STORAGE", this.getStorage());
+        this.emitInput(this.getStorage())
+      }
+
     },
     methods: {
       /**
@@ -164,6 +173,11 @@
           })
         }
         this.currentFilters.conditions.splice(...args);
+      },
+      value(v) {
+        if (this.storage) {
+          this.setStorage(v);
+        }
       }
     }
   });

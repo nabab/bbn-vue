@@ -103,7 +103,7 @@
                       tabindex="0"
                 >
                   <span v-if="tree.icons"
-                        :class="[{'with-zoom': ready}, 'bbn-tree-node-block-icon']"
+                        class="bbn-tree-node-block-icon"
                   >
                     <!-- If icon is specifically false we leave the white space -->
                     <span v-if="source.icon === false"></span>
@@ -2202,6 +2202,8 @@
             }
           },
           /**
+           * Beware it's a computed, use tree.currentData[idx].expanded to change it.
+           * 
            * @watch isExpanded
            * @fires tree.updateData
            * @fires getRef
@@ -2224,6 +2226,7 @@
               }
             }
             else {
+              bbn.fn.log("REMOVING FROM EXPANDED");
               if ( this.removeFromExpanded() ){
                 if ( this.tree.selectedNode && this.tree.isNodeOf(this.tree.selectedNode, this) ){
                   this.isActive = true;
@@ -2348,10 +2351,8 @@
   font-size: 1.1em;
 }
 .bbn-tree .bbn-tree-node span.bbn-tree-node-block .bbn-tree-node-block-icon {
+  display: inline-block;
   width: 1.3em;
-}
-.bbn-tree .bbn-tree-node span.bbn-tree-node-block .bbn-tree-node-block-icon.with-zoom {
-  zoom: 1.1;
 }
 .bbn-tree .bbn-tree-node span.bbn-tree-node-block .bbn-tree-node-block-title {
   white-space: nowrap;

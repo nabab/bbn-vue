@@ -19,7 +19,7 @@ script.innerHTML = `<div :class="['bbn-flex-height', componentClass]"
       v-html="title"
       class="bbn-middle"
   ></h4>
-  <div class="bbn-flex-fill"
+  <div class="bbn-flex-fill bbn-rel"
        style="width: 100%"
   >
      <div class="bbn-overlay"

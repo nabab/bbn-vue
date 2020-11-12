@@ -211,9 +211,18 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-background', 'bbn-overlay
                       :users="app.getActiveUsers()"
                       :online-users="usersOnline"
                       :online="app.user.chat"
-                      @statusChanged="onChatStatusChanged"
+                      @messageToChannel="d => messageChannel('appui-chat', d)"
+                      @hook:mounted="onChatMounted"
                       :groups="app.groups"
             ></bbn-chat>
+          </div>
+          <!-- NOTIFICATIONS -->
+          <div v-if="plugins['appui-notifications'] && pollerObject['appui-notifications']"
+               class="bbn-right-space"
+          >
+            <appui-notifications-tray :unread="pollerObject['appui-notifications'].unread"
+                                      ref="notificationsTray"
+            ></appui-notifications-tray>
           </div>
           <!-- CLIPBOARD BUTTON -->
           <div v-if="plugins['appui-clipboard'] && clipboard"
@@ -293,7 +302,20 @@ document.head.insertAdjacentElement('beforeend', css);
   let app;
   let registeredComponents = {};
   Vue.component('bbn-appui', {
-    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent, bbn.vue.localStorageComponent, bbn.vue.observerComponent],
+    /**
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.resizerComponent
+     * @mixin bbn.vue.localStorageComponent
+     * @mixin bbn.vue.observerComponent
+     * @mixin bbn.vue.browserNotificationComponent
+     */
+    mixins: [
+      bbn.vue.basicComponent,
+      bbn.vue.resizerComponent,
+      bbn.vue.localStorageComponent,
+      bbn.vue.observerComponent,
+      bbn.vue.browserNotificationComponent
+    ],
     props: {
       url: {
         type: String,
@@ -369,7 +391,7 @@ document.head.insertAdjacentElement('beforeend', css);
         opacity: 0,
         pollerObject: {
           'appui-chat': {
-            online: false,
+            online: null,
             usersHash: false,
             chatsHash: false
           },
@@ -416,7 +438,7 @@ document.head.insertAdjacentElement('beforeend', css);
             return createElement();
           }
         }, this.cfg)
-      },
+      }
     },
     methods: {
       focusSearchMenu(){
@@ -529,13 +551,6 @@ document.head.insertAdjacentElement('beforeend', css);
         }
       },
       */
-      onChatStatusChanged(status, usersHash, chatsHash, lastChat){
-        this.pollerObject['appui-chat'].online = status;
-        this.pollerObject['appui-chat'].usersHash = usersHash;
-        this.pollerObject['appui-chat'].chatsHash = chatsHash;
-        this.pollerObject['appui-chat'].lastChat = lastChat;
-        this.poll()
-      },
 
       getField: bbn.fn.getField,
 
@@ -656,107 +671,65 @@ document.head.insertAdjacentElement('beforeend', css);
 
       /**
        * Get messages from service worker
-       * @param {Object} data 
+       * @param {Object} message
        */
-      receive(data){
-        if ( !bbn.fn.numProperties(data) ){
-          return;
-        }
-        bbn.fn.log("RECEIVING", data);
-        if (data.disconnected){
-          document.location.reload();
-        }
-        else if (data.type === 'log') {
-          this.$emit('swlog', data.data);
-        }
-        else if ( data.data ){
-          /* bbn.fn.each(data.data, (d, i) => {
-            if ( d.observers ){
-              for ( let b of d.observers ){
-                let arr = bbn.fn.filter(this.observers, {id: b.id});
-                for ( let a of arr ){
-                  if ( a.value !== b.result ){
-                    //bbn.fn.log("EMITTING OBS", a);
-                    this.observerEmit(b.result, a);
-                    a.value = b.result;
-                  }
-                }
+      receive(message){
+        bbn.fn.log("RECEIVING", message, message.type);
+        if (message.type !== undefined) {
+          switch (message.type) {
+            case 'message':
+              if (!bbn.fn.numProperties(message.data)) {
+                return;
               }
-            }
-          }); */
-        }
-        if ( data.plugins && Object.keys(data.plugins).length ){
-          bbn.fn.iterate(data.plugins, (d, i) => {
-            this.$emit(i, d);
-          });
+              if (message.data && message.data.disconnected) {
+                document.location.reload();
+              }
+              else if (message.data && message.data.data) {
+
+              }
+              if ( message.data && message.data.plugins && Object.keys(message.data.plugins).length ){
+                bbn.fn.iterate(message.data.plugins, (d, i) => {
+                  if ('serviceWorkers' in d) {
+                    this.$set(this.pollerObject, i, bbn.fn.extend(true, this.pollerObject[i], d.serviceWorkers));
+                    delete d.serviceWorkers;
+                  }
+                  this.$emit(i, message.type, d);
+                });
+              }
+              break;
+            case 'log':
+              this.$emit('swlog', message.data);
+              break;
+            case 'messageFromChannel':
+              bbn.fn.log('messageFromChannel', message);
+              this.$emit(message.channel, message.type, message.data);
+              break;
+            case 'notificationClick':
+              bbn.fn.log('notificationClick', message.data);
+              this.browserNotificationClick(message.data);
+          }
         }
       },
-
       poll(data){
         bbn.fn.info("POLL");
         if ( this.pollable && this.pollerPath ){
-          if ( 'serviceWorker' in navigator ){
-            if ( navigator.serviceWorker.controller ){
-              if ( navigator.serviceWorker.controller.state === 'redundant' ){
-                bbn.fn.info("SERVICE REDONDANT");
-                /*
-                if ( confirm(
-                  bbn._("The application has been updated but you still use an old version.") + "\n" +
-                  bbn._("You need to refresh the page to upgrade.") + "\n" +
-                  bbn._("Do you want to do it now?")
-                ) ){
-                  document.location.reload();
-                }
-                */
+          if (!data) {
+            data = {
+              'appui-core': {
+                observers: this.observers
               }
-              else {
-                if (!data) {
-                  data = {
-                    observers: this.observers
-                  };
-                }
-                bbn.fn.info("ALL OK");
-                navigator.serviceWorker.controller.postMessage(bbn.fn.extendOut({}, data, this.pollerObject));
-                this.observersCopy = bbn.fn.clone(this.observers);
-              }
-            }
-            else{
-              bbn.fn.info("NO CONTROLLER FOR SW");
-            }
+            };
           }
-          else{
-            bbn.fn.info("NO SW ???");
+          if (this._postMessage(bbn.fn.extendOut({}, data, this.pollerObject))) {
+            bbn.fn.info("ALL OK");
+            this.observersCopy = bbn.fn.clone(this.observers);
           }
-        /*
-          this.poller = bbn.fn.ajax(this.pollerPath, 'json', bbn.fn.extend({observers: this.observers}, this.pollerObject), 'poller', (r) => {
-            this.pollerObject.message = null;
-            //bbn.fn.log("--------------OBS: Returning Data---------------");
-            // put the data_from_file into #response
-            if ( r.data ){
-              bbn.fn.each(r.data, (d, i) => {
-                if ( d.observers ){
-                  for ( let b of d.observers ){
-                    let arr = bbn.fn.filter(this.observers, {id: b.id});
-                    for ( let a of arr ){
-                      if ( a.value !== b.result ){
-                        this.$emit('bbnObs' + a.element + a.id, b.result);
-                        a.value = b.result;
-                      }
-                    }
-                  }
-                }
-              });
-              //appui.success("<div>ANSWER</div><code>" + JSON.stringify(r.data) + '</code>', 5);
-            }
-
-            // call the function again, this time with the timestamp we just got from server.php
-            this.polling = false;
-            this.poller = false;
-          }, () => {
-            this.polling = false;
-            this.poller = false;
-          });
-          */
+        }
+      },
+      onChatMounted(){
+        this.pollerObject['appui-chat'].online = this.app && this.app.user && this.app.user.chat;
+        if (this.ready) {
+          this.poll();
         }
       },
       addShortcut(data){
@@ -887,27 +860,79 @@ document.head.insertAdjacentElement('beforeend', css);
           'button'
         ];
         bbn.vue.preloadBBN(preloaded);
-        
+
+        this.$on('messageToChannel', data => {
+          this.messageChannel(this.primaryChannel, data);
+        })
+
         // Emissions from poller
-        this.$on('appui-chat', d => {
-          let chat = this.getRef('chat');
-          if ('serviceWorkers' in d) {
-            this.pollerObject['appui-chat'] = bbn.fn.extend(true, this.pollerObject['appui-chat'], d.serviceWorkers);
-            delete d.serviceWorkers;
-          }
-          if (bbn.fn.isVue(chat) && bbn.fn.numProperties(d)) {
-            chat.receive(d);
+        //appui
+        this.$on('appui', (type, data) => {
+          switch (type) {
+            case 'messageFromChannel':
+              this.messageFromChannel(data);
           }
         })
-        this.$on('appui-core', d => {
-          if (d.observers) {
-            for (let b of d.observers) {
-              let arr = bbn.fn.filter(this.observers, {id: b.id});
-              for (let a of arr) {
-                if (a.value !== b.result) {
-                  this.observerEmit(b.result, a);
-                  a.value = b.result;
+        // appui-chat
+        this.$on('appui-chat', (type, data) => {
+          let chat = this.getRef('chat');
+          switch (type) {
+            case 'message':
+              if (bbn.fn.isVue(chat) && bbn.fn.numProperties(data)) {
+                chat.receive(data);
+              }
+              break;
+            case 'messageFromChannel':
+              if (bbn.fn.isVue(chat)) {
+                chat.messageFromChannel(data)
+              }
+              break;
+          }
+        })
+        // appui-core
+        this.$on('appui-core', (type, data) => {
+          if ((type === 'message') && data.observers) {
+            bbn.fn.each(data.observers, obs => bbn.fn.each(bbn.fn.filter(this.observers, {id: obs.id}), o => this.observerEmit(obs.result, o)));
+          }
+        })
+        // appui-notifications
+        this.$on('appui-notifications', (type, data) => {
+          if (type === 'message') {
+            if ('web' in data) {
+              bbn.fn.each(data.web, n => appui.info({
+                content: n.title ? `<div class="bbn-b">${n.title}</div><div>${n.content}</div>` : n.content,
+                data: n,
+                onClose: (not) => {
+                  this.post(this.plugins['appui-notifications'] + '/actions/read', {id: n.id}, d => {
+                    if (d.success) {
+                      this.messageChannel(this.primaryChannel, {
+                        function: (id) => {
+                          let not = appui.getRef('notification'),
+                              idx = bbn.fn.search(not.items, {'data.id': id});
+                          if (idx > -1) {
+                            not.close(not.items[idx].id);
+                          }
+                        },
+                        params: [n.id]
+                      });
+                    }
+                  });
                 }
+              }, 120));
+            }
+            if ('browser' in data) {
+              bbn.fn.each(data.browser, n => this.browserNotify(n.title, {
+                body: bbn.fn.html2text(n.content),
+                tag: n.id,
+                timestamp: n.browser,
+                requireInteraction: true
+              }));
+            }
+            if ('unread' in data) {
+              let tray = this.getRef('notificationsTray'),
+                  trayList = bbn.fn.isVue(tray) ? tray.getRef('list') : false;
+              if (bbn.fn.isVue(trayList)) {
+                trayList.updateData();
               }
             }
           }
@@ -920,14 +945,24 @@ document.head.insertAdjacentElement('beforeend', css);
         setTimeout(() => {
           this.ready = true;
           this.$emit('resize');
-          if (!this.pollerObject.token) {
-            this.pollerObject.token = bbn.env.token;
-          }
-          if (this.app && this.app.user && this.app.user.chat) {
-            this.pollerObject['appui-chat'].online = true;
-          }
           this.opacity = 1;
           setTimeout(() => {
+            this._postMessage({
+              type: 'initCompleted'
+            });
+            this.registerChannel('appui', true);
+            if (!this.pollerObject.token) {
+              this.pollerObject.token = bbn.env.token;
+            }
+            if (this.plugins['appui-chat']){
+              this.registerChannel('appui-chat');
+            }
+            if (this.plugins['appui-notifications']) {
+              this.registerChannel('appui-notifications');
+              this.browserNotificationURL = this.plugins['appui-notifications'];
+              this.browserNotificationSW = true;
+              this.$set(this.pollerObject, 'appui-notifications', {unread: 0});
+            }
             this.poll();
           }, 5000);
         }, 1000);
@@ -936,26 +971,9 @@ document.head.insertAdjacentElement('beforeend', css);
     beforeDestroy(){
       this.$off('appui-chat');
       this.$off('appui-core');
+      this.$off('appui-notifications');
     },
     watch: {
-      /* chatVisible(newVal){
-        if ( !newVal ){
-          this.chatWindows.splice(0, this.chatWindows.length);
-        }
-        this.polling = false;
-      },
-      chatOnline(newVal){
-        this.pollerObject.chat = newVal;
-        this.poll();
-      },
-      usersOnlineHash(newVal){
-        this.pollerObject.usersHash = newVal;
-        this.poll();
-      },
-      chatsHash(newVal){
-        this.pollerObject.chatsHash = newVal;
-        this.poll();
-      }, */
       observers: {
         deep: true,
         handler(){

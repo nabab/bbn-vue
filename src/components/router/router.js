@@ -602,6 +602,7 @@
           bbn.fn.log("error in route with url", url);
           throw Error(bbn._('The component bbn-container must have a valid URL defined'));
         }
+        url = bbn.fn.replaceAll('//', '/', url);
         if (this.ready && (force || !this.activeContainer || (url !== this.currentURL))) {
           let event = new CustomEvent(
             "beforeRoute",
@@ -1147,6 +1148,7 @@
           (typeof(obj) === 'object') &&
           bbn.fn.isString(obj.url)
         ){
+          obj.url = bbn.fn.replaceAll('//', '/', obj.url);
           if (obj.$options) {
             if (!obj.current && !obj.currentURL) {
               if ( bbn.env.path.indexOf(this.getFullBaseURL() + (obj.url ? obj.url + '/' : '')) === 0 ){
@@ -1154,6 +1156,11 @@
               }
               else{
                 obj.currentURL = obj.url;
+              }
+            }
+            else {
+              if (obj.currentURL) {
+                obj.currentURL = bbn.fn.replaceAll(obj.currentURL);
               }
             }
             obj = JSON.parse(JSON.stringify((obj.$options.propsData)));

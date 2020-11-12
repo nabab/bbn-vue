@@ -68,10 +68,8 @@
   font-size: 1.1em;
 }
 .bbn-tree .bbn-tree-node span.bbn-tree-node-block .bbn-tree-node-block-icon {
+  display: inline-block;
   width: 1.3em;
-}
-.bbn-tree .bbn-tree-node span.bbn-tree-node-block .bbn-tree-node-block-icon.with-zoom {
-  zoom: 1.1;
 }
 .bbn-tree .bbn-tree-node span.bbn-tree-node-block .bbn-tree-node-block-title {
   white-space: nowrap;

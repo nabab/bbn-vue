@@ -317,7 +317,7 @@
                                 v-bind="col.options"
                                 :source="col.mapper ? col.mapper(d.data) : d.data"
                       ></component>
-                      <div v-else-if="col.buttons" class="bbn-c">
+                      <template v-else-if="col.buttons">
                         <bbn-button v-for="(button, bi) in (Array.isArray(col.buttons) ? col.buttons : col.buttons(d.data, col, i))"
                                     :key="bi"
                                     v-bind="button"
@@ -326,7 +326,7 @@
                                     @click.prevent.stop="_execCommand(button, d.data, col, i, $event)"
                                     style="margin: 0 .1em"
                         ></bbn-button>
-                      </div>
+                      </template>
                       <div v-else v-html="render(d.data, col, i)"></div>
                     </template>
                   </div>
@@ -2402,17 +2402,29 @@
        * @returns {Boolean}
        */
       successEdit(d) {
-        let ev = new Event('editSuccess', {cancelable: true});
-        this.$emit('editSuccess', d, ev);
-        if (d.success && !ev.defaultPrevented) {
-          if (d.data) {
-            //bbn.fn.log(d.data);
-            bbn.fn.iterate(d.data, (o, n) => {
-              this.editedRow[n] = o;
-            });
+        if (bbn.fn.isObject(d)) {
+          if ((d.success !== undefined) && !d.success) {
+            if (window.appui) {
+              let ev = new Event('editFailure', {cancelable: true});
+              this.$emit('editFailure', d, ev);
+              if (!ev.defaultPrevented) {
+                appui.error();
+              }
+            }
           }
-          this.saveRow();
-          return true;
+          else {
+            let ev = new Event('editSuccess', {cancelable: true});
+            this.$emit('editSuccess', d, ev);
+            if (!ev.defaultPrevented) {
+              if (d.data) {
+                bbn.fn.iterate(d.data, (o, n) => {
+                  this.editedRow[n] = o;
+                });
+              }
+              this.saveRow();
+              return true;
+            }
+          }
         }
         return false;
       },
@@ -3632,10 +3644,21 @@
        * @watch observerValue
        * @fires updateData
        */
-      observerValue(newVal) {
+      /*observerValue(newVal) {
         if ((newVal !== this._observerReceived) && !this.editedRow) {
           this._observerReceived = newVal;
           //bbn.fn.log("watch observerValue");
+          this.updateData();
+        }
+      },*/
+      /**
+       * Updates the data.
+       * @watch observerDirty
+       * @fires updateData
+       */
+      observerDirty(newVal) {
+        if (newVal && !this.editedRow) {
+          this.observerDirty = false;
           this.updateData();
         }
       },

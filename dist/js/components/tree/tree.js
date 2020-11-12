@@ -104,7 +104,7 @@ script.innerHTML = `<div :class="componentClass"
                       tabindex="0"
                 >
                   <span v-if="tree.icons"
-                        :class="[{'with-zoom': ready}, 'bbn-tree-node-block-icon']"
+                        class="bbn-tree-node-block-icon"
                   >
                     <!-- If icon is specifically false we leave the white space -->
                     <span v-if="source.icon === false"></span>
@@ -2208,6 +2208,8 @@ document.head.insertAdjacentElement('beforeend', css);
             }
           },
           /**
+           * Beware it's a computed, use tree.currentData[idx].expanded to change it.
+           * 
            * @watch isExpanded
            * @fires tree.updateData
            * @fires getRef
@@ -2230,6 +2232,7 @@ document.head.insertAdjacentElement('beforeend', css);
               }
             }
             else {
+              bbn.fn.log("REMOVING FROM EXPANDED");
               if ( this.removeFromExpanded() ){
                 if ( this.tree.selectedNode && this.tree.isNodeOf(this.tree.selectedNode, this) ){
                   this.isActive = true;

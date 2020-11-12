@@ -214,6 +214,14 @@
                       :groups="app.groups"
             ></bbn-chat>
           </div>
+          <!-- NOTIFICATIONS -->
+          <div v-if="plugins['appui-notifications'] && pollerObject['appui-notifications']"
+               class="bbn-right-space"
+          >
+            <appui-notifications-tray :unread="pollerObject['appui-notifications'].unread"
+                                      ref="notificationsTray"
+            ></appui-notifications-tray>
+          </div>
           <!-- CLIPBOARD BUTTON -->
           <div v-if="plugins['appui-clipboard'] && clipboard"
               @click.stop.prevent="getRef('clipboard').toggle()"

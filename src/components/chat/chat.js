@@ -17,8 +17,14 @@
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.localStorageComponent
      * @mixin bbn.vue.resizerComponent
+     * @mixin bbn.vue.serviceWorkerComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent, bbn.vue.resizerComponent],
+    mixins: [
+      bbn.vue.basicComponent,
+      bbn.vue.localStorageComponent,
+      bbn.vue.resizerComponent,
+      bbn.vue.serviceWorkerComponent
+    ],
     props: {
       /**
        * The id of the current user
@@ -301,7 +307,7 @@
             unread: 0
           };
           this.messageToChannel({
-            method: 'addChat',
+            function: 'addChat',
             params: [bbn.fn.extend(true, {}, chatObj, {visible: false})]
           });
           this.activate(this.addChat(chatObj));
@@ -513,27 +519,6 @@
         }
       },
       /**
-       * @method messageFromChannel
-       * @param {Object} data
-       */
-      messageFromChannel(data){
-        if (data.method){
-          if (bbn.fn.isFunction(data.method)) {
-            data.method(...data.params || []);
-          }
-          else if (bbn.fn.isFunction(this[data.method])) {
-            this[data.method](...data.params || []);
-          }
-        }
-      },
-      /**
-       * @method messageToChannel
-       * @emit messageToChannel
-       */
-      messageToChannel(data){
-        this.$emit('messageToChannel', data);
-      },
-      /**
        * @method getNewIdx
        * @returns {Number}
        */
@@ -737,7 +722,7 @@
             this.removeUnread(idx)
           }, 2000);
           this.messageToChannel({
-            method: 'removeUnread',
+            function: 'removeUnread',
             params: [idx]
           });
         }
@@ -817,9 +802,11 @@
      * @event mounted
      */
     mounted(){
-      let coord = this.$el.offsetParent.getBoundingClientRect();
-      this.bottomCoord = `${coord.bottom - coord.top}px`;
-      this.ready = true;
+      this.$nextTick(() => {
+        let coord = this.$el.offsetParent.getBoundingClientRect();
+        this.bottomCoord = `${coord.bottom - coord.top}px`;
+        this.ready = true;
+      })
     },
     components: {
       /**
@@ -1144,7 +1131,7 @@
             else if ( this.idTemp ){
               this.cp.currentChats.splice(bbn.fn.search(this.cp.currentChats, {idx:this.idx}), 1);
               this.cp.messageToChannel({
-                method: 'removeChatByTemp',
+                function: 'removeChatByTemp',
                 params: [this.idTemp]
               })
             }
@@ -1167,7 +1154,7 @@
                 if ( d.success && this.idTemp && d.id_chat ){
                   this.cp.setIdByTemp(this.idTemp, d.id_chat);
                   this.cp.messageToChannel({
-                    method: 'setIdByTemp',
+                    function: 'setIdByTemp',
                     params: [this.idTemp, d.id_chat]
                   })
                   this.isSending = false;

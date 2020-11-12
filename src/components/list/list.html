@@ -17,7 +17,8 @@
           'bbn-state-default': true,
           'bbn-disabled': (tmpDisabled === idx) || (!component && !!li.data.disabled),
           'bbn-state-selected': isSelected(idx),
-          'bbn-state-hover': overIdx === idx
+          'bbn-state-hover': overIdx === idx,
+          'bbn-alt': alternateBackground && (idx % 2)
         }">
       <component v-if="currentComponent"
                  :is="currentComponent"

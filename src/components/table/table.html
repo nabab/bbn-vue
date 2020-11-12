@@ -316,7 +316,7 @@
                                 v-bind="col.options"
                                 :source="col.mapper ? col.mapper(d.data) : d.data"
                       ></component>
-                      <div v-else-if="col.buttons" class="bbn-c">
+                      <template v-else-if="col.buttons">
                         <bbn-button v-for="(button, bi) in (Array.isArray(col.buttons) ? col.buttons : col.buttons(d.data, col, i))"
                                     :key="bi"
                                     v-bind="button"
@@ -325,7 +325,7 @@
                                     @click.prevent.stop="_execCommand(button, d.data, col, i, $event)"
                                     style="margin: 0 .1em"
                         ></bbn-button>
-                      </div>
+                      </template>
                       <div v-else v-html="render(d.data, col, i)"></div>
                     </template>
                   </div>

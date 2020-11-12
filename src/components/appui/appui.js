@@ -12,7 +12,20 @@
   let app;
   let registeredComponents = {};
   Vue.component('bbn-appui', {
-    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent, bbn.vue.localStorageComponent, bbn.vue.observerComponent],
+    /**
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.resizerComponent
+     * @mixin bbn.vue.localStorageComponent
+     * @mixin bbn.vue.observerComponent
+     * @mixin bbn.vue.browserNotificationComponent
+     */
+    mixins: [
+      bbn.vue.basicComponent,
+      bbn.vue.resizerComponent,
+      bbn.vue.localStorageComponent,
+      bbn.vue.observerComponent,
+      bbn.vue.browserNotificationComponent
+    ],
     props: {
       url: {
         type: String,
@@ -135,7 +148,7 @@
             return createElement();
           }
         }, this.cfg)
-      },
+      }
     },
     methods: {
       focusSearchMenu(){
@@ -386,6 +399,10 @@
               }
               if ( message.data && message.data.plugins && Object.keys(message.data.plugins).length ){
                 bbn.fn.iterate(message.data.plugins, (d, i) => {
+                  if ('serviceWorkers' in d) {
+                    this.$set(this.pollerObject, i, bbn.fn.extend(true, this.pollerObject[i], d.serviceWorkers));
+                    delete d.serviceWorkers;
+                  }
                   this.$emit(i, message.type, d);
                 });
               }
@@ -397,6 +414,9 @@
               bbn.fn.log('messageFromChannel', message);
               this.$emit(message.channel, message.type, message.data);
               break;
+            case 'notificationClick':
+              bbn.fn.log('notificationClick', message.data);
+              this.browserNotificationClick(message.data);
           }
         }
       },
@@ -415,25 +435,6 @@
             this.observersCopy = bbn.fn.clone(this.observers);
           }
         }
-      },
-      registerChannel(channel){
-        this._postMessage({
-          type: 'registerChannel',
-          channel: channel
-        });
-      },
-      unregisterChannel(channel){
-        this._postMessage({
-          type: 'unregisterChannel',
-          channel: channel
-        });
-      },
-      messageChannel(channel, data){
-        this._postMessage({
-          type: 'messageChannel',
-          channel: channel,
-          data: data
-        });
       },
       onChatMounted(){
         this.pollerObject['appui-chat'].online = this.app && this.app.user && this.app.user.chat;
@@ -473,23 +474,6 @@
         setTimeout(() => {
           this.searchIsActive = false
         }, 500)
-      },
-      _postMessage(obj){
-        if ('serviceWorker' in navigator) {
-          if (navigator.serviceWorker.controller) {
-            if (navigator.serviceWorker.controller.state !== 'redundant') {
-              navigator.serviceWorker.controller.postMessage(obj);
-              return true;
-            }
-          }
-          else {
-            bbn.fn.info("NO CONTROLLER FOR SW");
-          }
-        }
-        else {
-          bbn.fn.info("NO SW");
-        }
-        return false;
       }
     },
     beforeCreate(){
@@ -587,15 +571,23 @@
         ];
         bbn.vue.preloadBBN(preloaded);
 
+        this.$on('messageToChannel', data => {
+          this.messageChannel(this.primaryChannel, data);
+        })
+
         // Emissions from poller
+        //appui
+        this.$on('appui', (type, data) => {
+          switch (type) {
+            case 'messageFromChannel':
+              this.messageFromChannel(data);
+          }
+        })
+        // appui-chat
         this.$on('appui-chat', (type, data) => {
           let chat = this.getRef('chat');
           switch (type) {
             case 'message':
-              if ('serviceWorkers' in data) {
-                this.pollerObject['appui-chat'] = bbn.fn.extend(true, this.pollerObject['appui-chat'], data.serviceWorkers);
-                delete data.serviceWorkers;
-              }
               if (bbn.fn.isVue(chat) && bbn.fn.numProperties(data)) {
                 chat.receive(data);
               }
@@ -607,9 +599,52 @@
               break;
           }
         })
+        // appui-core
         this.$on('appui-core', (type, data) => {
           if ((type === 'message') && data.observers) {
             bbn.fn.each(data.observers, obs => bbn.fn.each(bbn.fn.filter(this.observers, {id: obs.id}), o => this.observerEmit(obs.result, o)));
+          }
+        })
+        // appui-notifications
+        this.$on('appui-notifications', (type, data) => {
+          if (type === 'message') {
+            if ('web' in data) {
+              bbn.fn.each(data.web, n => appui.info({
+                content: n.title ? `<div class="bbn-b">${n.title}</div><div>${n.content}</div>` : n.content,
+                data: n,
+                onClose: (not) => {
+                  this.post(this.plugins['appui-notifications'] + '/actions/read', {id: n.id}, d => {
+                    if (d.success) {
+                      this.messageChannel(this.primaryChannel, {
+                        function: (id) => {
+                          let not = appui.getRef('notification'),
+                              idx = bbn.fn.search(not.items, {'data.id': id});
+                          if (idx > -1) {
+                            not.close(not.items[idx].id);
+                          }
+                        },
+                        params: [n.id]
+                      });
+                    }
+                  });
+                }
+              }, 120));
+            }
+            if ('browser' in data) {
+              bbn.fn.each(data.browser, n => this.browserNotify(n.title, {
+                body: bbn.fn.html2text(n.content),
+                tag: n.id,
+                timestamp: n.browser,
+                requireInteraction: true
+              }));
+            }
+            if ('unread' in data) {
+              let tray = this.getRef('notificationsTray'),
+                  trayList = bbn.fn.isVue(tray) ? tray.getRef('list') : false;
+              if (bbn.fn.isVue(trayList)) {
+                trayList.updateData();
+              }
+            }
           }
         })
       }
@@ -618,20 +653,26 @@
       if ( this.cool ){
         this.app = this.$refs.app;
         setTimeout(() => {
-          this.registerChannel('appui');
           this.ready = true;
           this.$emit('resize');
-          if (!this.pollerObject.token) {
-            this.pollerObject.token = bbn.env.token;
-          }
-          if (this.plugins['appui-chat']){
-            this.registerChannel('appui-chat');
-          }
           this.opacity = 1;
           setTimeout(() => {
-            this.poll({
+            this._postMessage({
               type: 'initCompleted'
             });
+            this.registerChannel('appui', true);
+            if (!this.pollerObject.token) {
+              this.pollerObject.token = bbn.env.token;
+            }
+            if (this.plugins['appui-chat']){
+              this.registerChannel('appui-chat');
+            }
+            if (this.plugins['appui-notifications']) {
+              this.registerChannel('appui-notifications');
+              this.browserNotificationURL = this.plugins['appui-notifications'];
+              this.browserNotificationSW = true;
+              this.$set(this.pollerObject, 'appui-notifications', {unread: 0});
+            }
             this.poll();
           }, 5000);
         }, 1000);
@@ -640,6 +681,7 @@
     beforeDestroy(){
       this.$off('appui-chat');
       this.$off('appui-core');
+      this.$off('appui-notifications');
     },
     watch: {
       observers: {

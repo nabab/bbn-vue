@@ -384,7 +384,7 @@
           .then(
             // resolve from server
             (res) => {
-              if ( res.data ){
+              if (bbn.fn.isObject(res) && res.data) {
                 // This executes the script returned by the server, which will return a new promise
                 let prom = eval(res.data);
                 //bbn.fn.log("THEN", res);
@@ -424,7 +424,8 @@
                 );
               }
               else{
-                bbn.fn.error(url);
+                bbn.fn.log(res);
+                throw new Error("Error loading URL " + url);
               }
             },
             // reject: no return from the server
@@ -519,7 +520,10 @@
     },
 
     /**
-     * Looks if the given tag starts with one of the known prefixes, and it such case defines the component with the corresponding handler.
+     * Loads a component based on its prefix.
+     * 
+     * Looks if the given tag starts with one of the known prefixes, and 
+     * in such case defines the component with the corresponding handler.
      * 
      * @method loadComponentsByPrefix
      * @memberof bbn.vue

@@ -40,7 +40,7 @@
                   @click="!tab.disabled && (tabIndex !== selected) ? (selected = tabIndex) : (() => {})()"
               >
                 <div class="bbn-tabs-badge-container bbn-middle"
-                      v-if="(tabIndex !== selected) && numProperties(tab.events)">
+                      v-if="numProperties(tab.events)">
                   <span class="bbn-badge bbn-small bbn-bg-red"
                         v-text="numProperties(tab.events)"
                   ></span>

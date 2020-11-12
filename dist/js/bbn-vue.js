@@ -418,7 +418,7 @@
           .then(
             // resolve from server
             (res) => {
-              if ( res.data ){
+              if (bbn.fn.isObject(res) && res.data) {
                 // This executes the script returned by the server, which will return a new promise
                 let prom = eval(res.data);
                 //bbn.fn.log("THEN", res);
@@ -458,7 +458,8 @@
                 );
               }
               else{
-                bbn.fn.error(url);
+                bbn.fn.log(res);
+                throw new Error("Error loading URL " + url);
               }
             },
             // reject: no return from the server
@@ -1431,7 +1432,7 @@
          * @returns {String}
          */
         currentTextValue(){
-          if ( this.value && this.sourceValue && this.sourceText && this.currentData.length ){
+          if ( (this.value !== undefined) && !bbn.fn.isNull(this.value) && this.sourceValue && this.sourceText && this.currentData.length ){
             let idx = bbn.fn.search(this.currentData, (a) => {
               return a.data[this.sourceValue] === this.value;
             });
@@ -2884,6 +2885,12 @@
            */
           isLoading: false,
           /**
+           * True if the list has been loaded.
+           * @data {Boolean} [false] isLoaded
+           * @memberof listComponent 
+           */
+          isLoaded: this.source !== 'string',
+          /**
            * True if the source of the list is a string.
            * @data {Boolean} isAjax
            * @memberof listComponent 
@@ -3230,7 +3237,7 @@
         afterUpdate(){
           return true;
         },
-        updateData(){
+        async updateData(){
           if (this.beforeUpdate() !== false) {
             this._dataPromise = new Promise((resolve) => {
               let prom;
@@ -3352,6 +3359,9 @@
                 }
                 this.afterUpdate();
                 resolve(this.currentData);
+                if (!this.isLoaded) {
+                  this.isLoaded = true;
+                }
                 this.$emit('dataloaded');
                 //this._dataPromise = false;
               });
@@ -4868,6 +4878,17 @@
             this.$emit('bbnObs' + obs.element + obs.id, newVal);
             return true;
           }
+        },
+        /**
+         * The called method on the switching to false of the "observer Dirty" property value
+         * @method observerClear
+         * @param {Object} obs
+         * @fires observationTower.observerClear
+         */
+        observerClear(obs){
+          if (this.observationTower) {
+            this.observationTower.observerClear(obs);
+          }
         }
       },
       /**
@@ -4906,6 +4927,22 @@
           this.observationTower.$off('bbnObs' + this.observerUID + this.observerID);
         }
       },
+      watch: {
+        /**
+         * @watch observerDirty
+         * @param {Boolean} newVal
+         * @fires observerClear
+         */
+        observerDirty(newVal){
+          if (!newVal) {
+            this.observerClear({
+              id: this.observerID,
+              element: this.observerUID,
+              value: this.observerValue
+            });
+          }
+        }
+      }
     }
   });
 })(bbn);

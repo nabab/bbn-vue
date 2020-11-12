@@ -263,6 +263,14 @@
       suggest: {
         type: Boolean,
         default: false
+      },
+      /**
+       * Alternates the background color on the list
+       * @prop {Boolean} [false] alternateBackground
+       */
+      alternateBackground :{
+        type: Boolean,
+        default: false
       }
     },
     data(){

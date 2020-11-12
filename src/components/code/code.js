@@ -331,7 +331,8 @@
           }
         }
         if ( ctrl ){
-          this.$nextTick(()=>{
+          this.$nextTick(() => {
+            bbn.fn.log("FOCUS ON METHOD CURSOR POSITION");
             this.widget.focus();
             this.widget.setCursor({line: lineCode, ch: position});
           });
@@ -383,6 +384,7 @@
        * @fires cursorPosition
        */
       loadState( obj ){
+        bbn.fn.log("LOADING CODE STATE");
         this.widget.focus();
         let doc = this.widget.getDoc();
         if ( obj.marks && obj.marks.length ){
@@ -573,6 +575,7 @@
         if ( code === undefined ){
           code = "";
         }
+        bbn.fn.log("FOCUS BEFORE ADDING SNIPPET");
         this.widget.focus();
         let replace = this.widget.getDoc().replaceRange,
             state = this.getState(),

@@ -18,7 +18,8 @@
           'bbn-state-default': true,
           'bbn-disabled': (tmpDisabled === idx) || (!component && !!li.data.disabled),
           'bbn-state-selected': isSelected(idx),
-          'bbn-state-hover': overIdx === idx
+          'bbn-state-hover': overIdx === idx,
+          'bbn-alt': alternateBackground && (idx % 2)
         }">
       <component v-if="currentComponent"
                  :is="currentComponent"
@@ -336,6 +337,14 @@
         }
       },
       suggest: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * Alternates the background color on the list
+       * @prop {Boolean} [false] alternateBackground
+       */
+      alternateBackground :{
         type: Boolean,
         default: false
       }

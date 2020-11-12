@@ -989,6 +989,7 @@ document.head.insertAdjacentElement('beforeend', css);
         }
 
         if (this.element) {
+          bbn.fn.log("ELEMENT");
           if (coor.left + width > this.containerWidth) {
             let isLeftBigger = (coor.right < width) && (coor.left > coor.right);
             if (isLeftBigger) {

@@ -2006,17 +2006,29 @@
        * @returns {Boolean}
        */
       successEdit(d) {
-        let ev = new Event('editSuccess', {cancelable: true});
-        this.$emit('editSuccess', d, ev);
-        if (d.success && !ev.defaultPrevented) {
-          if (d.data) {
-            //bbn.fn.log(d.data);
-            bbn.fn.iterate(d.data, (o, n) => {
-              this.editedRow[n] = o;
-            });
+        if (bbn.fn.isObject(d)) {
+          if ((d.success !== undefined) && !d.success) {
+            if (window.appui) {
+              let ev = new Event('editFailure', {cancelable: true});
+              this.$emit('editFailure', d, ev);
+              if (!ev.defaultPrevented) {
+                appui.error();
+              }
+            }
           }
-          this.saveRow();
-          return true;
+          else {
+            let ev = new Event('editSuccess', {cancelable: true});
+            this.$emit('editSuccess', d, ev);
+            if (!ev.defaultPrevented) {
+              if (d.data) {
+                bbn.fn.iterate(d.data, (o, n) => {
+                  this.editedRow[n] = o;
+                });
+              }
+              this.saveRow();
+              return true;
+            }
+          }
         }
         return false;
       },

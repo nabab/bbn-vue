@@ -8,7 +8,33 @@
                 "url": "bbn-vue\/component\/appui\/overview",
                 "props": [],
                 "methods": [],
-                "mixins": []
+                "mixins": [
+                    {
+                        "text": "basicComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/appui\/doc\/mixins#basicComponent"
+                    },
+                    {
+                        "text": "resizerComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/appui\/doc\/mixins#resizerComponent"
+                    },
+                    {
+                        "text": "localStorageComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/appui\/doc\/mixins#localStorageComponent"
+                    },
+                    {
+                        "text": "observerComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/appui\/doc\/mixins#observerComponent"
+                    },
+                    {
+                        "text": "browserNotificationComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/appui\/doc\/mixins#browserNotificationComponent"
+                    }
+                ]
             },
             {
                 "text": "audio",
@@ -186,6 +212,30 @@
                         "text": "dropdownComponent",
                         "desc": "",
                         "url": "bbn-vue\/component\/autocomplete\/doc\/mixins#dropdownComponent"
+                    }
+                ]
+            },
+            {
+                "text": "block",
+                "url": "bbn-vue\/component\/block\/overview",
+                "props": [
+                    {
+                        "text": "title",
+                        "desc": "The audio's title",
+                        "url": "bbn-vue\/component\/block\/doc\/props#title"
+                    },
+                    {
+                        "text": "titlePosition",
+                        "desc": "The title's position(top or bottom)",
+                        "url": "bbn-vue\/component\/block\/doc\/props#titlePosition"
+                    }
+                ],
+                "methods": [],
+                "mixins": [
+                    {
+                        "text": "basicComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/block\/doc\/mixins#basicComponent"
                     }
                 ]
             },
@@ -916,13 +966,33 @@
                     },
                     {
                         "text": "chatById",
-                        "desc": "Return the current window object basing on the given chat id.",
+                        "desc": "Returns the chat object basing on the given id property.",
                         "url": "bbn-vue\/component\/chat\/doc\/methods#chatById"
+                    },
+                    {
+                        "text": "chatByIdx",
+                        "desc": "Returns the chat object basing on the given idx property.",
+                        "url": "bbn-vue\/component\/chat\/doc\/methods#chatByIdx"
+                    },
+                    {
+                        "text": "chatByIdTemp",
+                        "desc": "Returns the chat object basing on the given idTemp property.",
+                        "url": "bbn-vue\/component\/chat\/doc\/methods#chatByIdTemp"
+                    },
+                    {
+                        "text": "chatWindowByIdx",
+                        "desc": "Returns the chat window component basing on the given idx property",
+                        "url": "bbn-vue\/component\/chat\/doc\/methods#chatWindowByIdx"
                     },
                     {
                         "text": "chatTo",
                         "desc": "Opens the chat window by the given user id",
                         "url": "bbn-vue\/component\/chat\/doc\/methods#chatTo"
+                    },
+                    {
+                        "text": "addChat",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/chat\/doc\/methods#addChat"
                     },
                     {
                         "text": "receive",
@@ -933,6 +1003,16 @@
                         "text": "getNewIdx",
                         "desc": "",
                         "url": "bbn-vue\/component\/chat\/doc\/methods#getNewIdx"
+                    },
+                    {
+                        "text": "setIdByTemp",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/chat\/doc\/methods#setIdByTemp"
+                    },
+                    {
+                        "text": "removeChatByTemp",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/chat\/doc\/methods#removeChatByTemp"
                     },
                     {
                         "text": "switchOnline",
@@ -995,6 +1075,11 @@
                         "url": "bbn-vue\/component\/chat\/doc\/methods#activate"
                     },
                     {
+                        "text": "removeUnread",
+                        "desc": "Removes unread tag from messages and from chat",
+                        "url": "bbn-vue\/component\/chat\/doc\/methods#removeUnread"
+                    },
+                    {
                         "text": "deactivate",
                         "desc": "Deactivates the given chat window",
                         "url": "bbn-vue\/component\/chat\/doc\/methods#deactivate"
@@ -1020,6 +1105,11 @@
                         "text": "resizerComponent",
                         "desc": "",
                         "url": "bbn-vue\/component\/chat\/doc\/mixins#resizerComponent"
+                    },
+                    {
+                        "text": "serviceWorkerComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/chat\/doc\/mixins#serviceWorkerComponent"
                     }
                 ]
             },
@@ -2029,6 +2119,25 @@
                 ]
             },
             {
+                "text": "cursor",
+                "url": "bbn-vue\/component\/cursor\/overview",
+                "props": [
+                    {
+                        "text": "title",
+                        "desc": "The audio's title",
+                        "url": "bbn-vue\/component\/cursor\/doc\/props#title"
+                    }
+                ],
+                "methods": [],
+                "mixins": [
+                    {
+                        "text": "basicComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/cursor\/doc\/mixins#basicComponent"
+                    }
+                ]
+            },
+            {
                 "text": "dashboard",
                 "url": "bbn-vue\/component\/dashboard\/overview",
                 "props": [
@@ -2428,6 +2537,11 @@
                         "text": "dropdownComponent",
                         "desc": "",
                         "url": "bbn-vue\/component\/dropdown\/doc\/mixins#dropdownComponent"
+                    },
+                    {
+                        "text": "localStorageComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/dropdown\/doc\/mixins#localStorageComponent"
                     }
                 ]
             },
@@ -3549,6 +3663,19 @@
                 ]
             },
             {
+                "text": "keyvalue",
+                "url": "bbn-vue\/component\/keyvalue\/overview",
+                "props": [],
+                "methods": [],
+                "mixins": [
+                    {
+                        "text": "basicComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/keyvalue\/doc\/mixins#basicComponent"
+                    }
+                ]
+            },
+            {
                 "text": "list",
                 "url": "bbn-vue\/component\/list\/overview",
                 "props": [
@@ -3676,6 +3803,11 @@
                         "text": "latency",
                         "desc": "The latency of the floater.",
                         "url": "bbn-vue\/component\/list\/doc\/props#latency"
+                    },
+                    {
+                        "text": "alternateBackground",
+                        "desc": "Alternates the background color on the list",
+                        "url": "bbn-vue\/component\/list\/doc\/props#alternateBackground"
                     }
                 ],
                 "methods": [
@@ -4303,8 +4435,45 @@
             {
                 "text": "pager",
                 "url": "bbn-vue\/component\/pager\/overview",
-                "props": [],
-                "methods": [],
+                "props": [
+                    {
+                        "text": "buttons",
+                        "desc": "False if you wanto to see the arrows instead of the buttons",
+                        "url": "bbn-vue\/component\/pager\/doc\/props#buttons"
+                    },
+                    {
+                        "text": "forceMobile",
+                        "desc": "Force to render as mobile",
+                        "url": "bbn-vue\/component\/pager\/doc\/props#forceMobile"
+                    },
+                    {
+                        "text": "forceTablet",
+                        "desc": "Force to render as tablet",
+                        "url": "bbn-vue\/component\/pager\/doc\/props#forceTablet"
+                    }
+                ],
+                "methods": [
+                    {
+                        "text": "firstPage",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/pager\/doc\/methods#firstPage"
+                    },
+                    {
+                        "text": "nextPage",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/pager\/doc\/methods#nextPage"
+                    },
+                    {
+                        "text": "prevPage",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/pager\/doc\/methods#prevPage"
+                    },
+                    {
+                        "text": "lastPage",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/pager\/doc\/methods#lastPage"
+                    }
+                ],
                 "mixins": [
                     {
                         "text": "basicComponent",
@@ -5074,6 +5243,11 @@
                         "text": "observerEmit",
                         "desc": "",
                         "url": "bbn-vue\/component\/router\/doc\/methods#observerEmit"
+                    },
+                    {
+                        "text": "observerClear",
+                        "desc": "The called method on the switching to false of the \"observer Dirty\" property value",
+                        "url": "bbn-vue\/component\/router\/doc\/methods#observerClear"
                     },
                     {
                         "text": "enter",
@@ -7822,6 +7996,19 @@
                         "text": "inputComponent",
                         "desc": "",
                         "url": "bbn-vue\/component\/upload\/doc\/mixins#inputComponent"
+                    }
+                ]
+            },
+            {
+                "text": "values",
+                "url": "bbn-vue\/component\/values\/overview",
+                "props": [],
+                "methods": [],
+                "mixins": [
+                    {
+                        "text": "basicComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/values\/doc\/mixins#basicComponent"
                     }
                 ]
             },

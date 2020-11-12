@@ -1,0 +1,33 @@
+.bbn-cursor{
+  height: 15px;
+  display: flex;
+  flex-direction: row;
+  input{
+    width: 90%;
+    -webkit-appearance: none;  /* Override default CSS styles */
+    appearance: none;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7; 
+    -webkit-transition: .2s; 
+    transition: opacity .2s;
+  }
+  input:hover {
+    opacity: 1; 
+  }
+  input::-webkit-slider-thumb {
+    -webkit-appearance: none; 
+    appearance: none;
+    width: 15px; 
+    height: 15px;
+    background-color: #8a8a8a;
+    cursor: pointer; 
+  }
+  
+  input::-moz-range-thumb {
+    width: 15px;
+    height: 15px; 
+    background-color: #8a8a8a;
+    cursor: pointer; /* Cursor on hover */
+  }
+}

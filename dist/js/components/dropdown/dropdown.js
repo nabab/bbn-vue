@@ -104,6 +104,7 @@ document.head.insertAdjacentElement('beforeend', css);
      * @mixin bbn.vue.keynavComponent
      * @mixin bbn.vue.urlComponent
      * @mixin bbn.vue.dropdownComponent
+     * @mixin bbn.vue.localStorageComponent
       */
     mixins: [
       bbn.vue.basicComponent,
@@ -113,7 +114,8 @@ document.head.insertAdjacentElement('beforeend', css);
       bbn.vue.listComponent,
       bbn.vue.keynavComponent,
       bbn.vue.urlComponent,
-      bbn.vue.dropdownComponent
+      bbn.vue.dropdownComponent,
+      bbn.vue.localStorageComponent
     ],
     /**
      * The current icon.
@@ -127,6 +129,13 @@ document.head.insertAdjacentElement('beforeend', css);
             this.iconUp : this.iconDown;
         //isOpened && !disabled && !readonly && filteredData.length ? iconUp : iconDown
       }
+    },
+    beforeMount() {
+      if (this.storage) {
+        bbn.fn.log("BEFDORE MOUNT WITH STORAGE", this.getStorage());
+        this.emitInput(this.getStorage())
+      }
+
     },
     methods: {
       /**
@@ -244,6 +253,11 @@ document.head.insertAdjacentElement('beforeend', css);
           })
         }
         this.currentFilters.conditions.splice(...args);
+      },
+      value(v) {
+        if (this.storage) {
+          this.setStorage(v);
+        }
       }
     }
   });

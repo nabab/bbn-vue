@@ -131,7 +131,7 @@ script.innerHTML = `<div v-if="ready"
 				<i class="nf nf-fa-hashtag bbn-m bbn-right-sspace"></i><span v-text="element.total"></span>
 			</span>
 			&nbsp;
-			<bbn-button v-if="element.currentQuery"
+			<bbn-button v-if="element.currentQuery && element.showQuery"
 									:title="_('View SQL query')"
 									@click="element.showQuery"
 									icon="nf nf-mdi-database"
@@ -146,7 +146,7 @@ script.innerHTML = `<div v-if="ready"
 									:notext="true"
 									class="bbn-left-xsspace"
 			></bbn-button>
-			<bbn-button v-if="element.filterable || element.showable"
+			<bbn-button v-if="(element.filterable || element.showable) && element.reset"
 									:disabled="!element.isChanged"
 									:title="_('Reset to original configuration')"
 									@click="element.reset(false)"
@@ -154,21 +154,21 @@ script.innerHTML = `<div v-if="ready"
 									:notext="true"
 									class="bbn-left-xsspace"
 			></bbn-button>
-			<bbn-button v-if="element.showable"
+			<bbn-button v-if="element.showable && element.openColumnsPicker"
 									:title="_('Columns\\' picker')"
 									@click="element.openColumnsPicker"
 									icon="nf nf-fa-columns"
 									:notext="true"
 									class="bbn-left-xsspace"
 			></bbn-button>
-			<bbn-button v-if="element.filterable && element.multifilter"
+			<bbn-button v-if="element.filterable && element.multifilter && element.openMultiFilter"
 									:title="_('Multi Filter')"
 									:class="['bbn-left-xsspace', {'bbn-red': element.currentFilters && element.currentFilters.conditions.length ? true : false}]"
 									@click="element.openMultiFilter"
 									icon="nf nf-mdi-filter_variant"
 									:notext="true"
 			></bbn-button>
-			<bbn-button v-if="element.isAjax"
+			<bbn-button v-if="element.isAjax && element.updateData"
 									:title="_('Refresh')"
 									@click="element.updateData"
 									icon="nf nf-fa-refresh"
@@ -208,42 +208,100 @@ document.head.insertAdjacentElement('beforeend', css);
         type: Vue,
         required: true
       },
+      /**
+       * False if you wanto to see the arrows instead of the buttons
+       * @prop {Boolean} [true] buttons
+       */
       buttons: {
         type: Boolean,
         default: true
+      },
+      /**
+       * Force to render as mobile
+       * @prop {Boolean} [false] forceMobile
+       */
+      forceMobile: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * Force to render as tablet
+       * @prop {Boolean} [false] forceTablet
+       */
+      forceTablet: {
+        type: Boolean,
+        default: false
       }
     },
     methods: {
+      /**
+       * @method firstPage
+       */
       firstPage(){
-        if ( this.element && (this.element.currentPage !== 1) ){
+        if (this.element
+          && ('currentPage' in this.element)
+          && (this.element.currentPage !== 1)
+        ){
           this.element.currentPage = 1;
         }
       },
+      /**
+       * @method nextPage
+       */
       nextPage(){
-        if ( this.element && (this.element.currentPage < this.element.numPages) ){
+        if (this.element
+          && ('currentPage' in this.element)
+          && ('numPages' in this.element)
+          && (this.element.currentPage < this.element.numPages)
+        ){
           this.element.currentPage++;
         }
       },
+      /**
+       * @method prevPage
+       */
       prevPage(){
-        if ( this.element && (this.element.currentPage > 1) ){
+        if (this.element
+          && ('currentPage' in this.element)
+          && (this.element.currentPage > 1)
+        ){
           this.element.currentPage--;
         }
       },
+      /**
+       * @method lastPage
+       */
       lastPage(){
-        if ( this.element && (this.element.currentPage !== this.element.numPages) ){
+        if (this.element
+          && ('currentPage' in this.element)
+          && ('numPages' in this.element)
+          && (this.element.currentPage !== this.element.numPages)
+        ){
           this.element.currentPage = this.element.numPages;
         }
       }
     },
+    /**
+     * @event created
+     */
     created(){
-      if ( this.element ){
+      if (this.element){
         this.element.$on('ready', () => {
           this.ready = true;
         })
       }
+      if (this.forceMobile){
+        this.isMobile = true;
+      }
+      if (this.forceTablet){
+        this.isTablet = true;
+      }
     },
+    /**
+     * @event mounted
+     */
     mounted(){
-      if ( this.element && this.element.ready && !this.ready ){
+      if (this.element && this.element.ready && !this.ready){
         this.ready = true;
       }
     }

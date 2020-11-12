@@ -1,0 +1,6 @@
+.bbn-block .block-space-edit {
+  border: 1px dashed #dddddd;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
