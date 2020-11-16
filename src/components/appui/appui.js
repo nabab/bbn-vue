@@ -606,7 +606,7 @@
         this.$on('appui-notifications', (type, data) => {
           if (type === 'message') {
             let tray = this.getRef('notificationsTray')
-            if (bbn.fn.isVue(tray)) {
+            if (bbn.fn.isVue(tray) && bbn.fn.isFunction(tray.receive)) {
               tray.receive(data);
             }
             if ('browser' in data) {
@@ -618,7 +618,16 @@
               }));
             }
           }
-        })
+        });
+        // appui-cron
+        this.$on('appui-cron', (type, data) => {
+          if (type === 'message') {
+            let cron = appui.getRegistered('appui-cron');
+            if (bbn.fn.isVue(cron) && bbn.fn.isFunction(cron.receive)) {
+              cron.receive(data);
+            }
+          }
+        });
 
         // Set plugins pollerObject
         if (!this.pollerObject.token) {
