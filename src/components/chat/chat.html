@@ -276,8 +276,14 @@
             </div>
           </bbn-scroll>
         </div>
-        <div v-if="cp.currentOnline" style="min-height: 2em">
-          <bbn-input class="bbn-chat-conversation-input bbn-w-100 bbn-no-radius"
+        <div v-if="cp.currentOnline"
+             style="min-height: 2em"
+             class="bbn-flex-width"
+        >
+          <bbn-emoji class="bbn-middle bbn-bordered-left bbn-bordered-top bbn-bordered-bottom bbn-alt-background bbn-hxspadded"
+                     @select="addEmoji"
+          ></bbn-emoji>
+          <bbn-input class="bbn-chat-conversation-input bbn-flex-fill bbn-no-radius"
                      ref="input"
                      @keydown.enter.prevent="sendMessage"
                      v-model="currentMessage"
