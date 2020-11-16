@@ -97,14 +97,11 @@
       return {
         isMobile: bbn.fn.isMobile(),
         isTablet: bbn.fn.isTabletDevice(),
+        isFocused: false,
+        intervalBugChrome: null,
         mode: bbn.env.mode,
         opacity: 0,
         pollerObject: {
-          'appui-chat': {
-            online: null,
-            usersHash: false,
-            chatsHash: false
-          },
           token: bbn.env.token || null
         },
         // For the server query (checking or not)
@@ -608,27 +605,9 @@
         // appui-notifications
         this.$on('appui-notifications', (type, data) => {
           if (type === 'message') {
-            if ('web' in data) {
-              bbn.fn.each(data.web, n => appui.info({
-                content: n.title ? `<div class="bbn-b">${n.title}</div><div>${n.content}</div>` : n.content,
-                data: n,
-                onClose: (not) => {
-                  this.post(this.plugins['appui-notifications'] + '/actions/read', {id: n.id}, d => {
-                    if (d.success) {
-                      this.messageChannel(this.primaryChannel, {
-                        function: (id) => {
-                          let not = appui.getRef('notification'),
-                              idx = bbn.fn.search(not.items, {'data.id': id});
-                          if (idx > -1) {
-                            not.close(not.items[idx].id);
-                          }
-                        },
-                        params: [n.id]
-                      });
-                    }
-                  });
-                }
-              }, 120));
+            let tray = this.getRef('notificationsTray')
+            if (bbn.fn.isVue(tray)) {
+              tray.receive(data);
             }
             if ('browser' in data) {
               bbn.fn.each(data.browser, n => this.browserNotify(n.title, {
@@ -638,20 +617,33 @@
                 requireInteraction: true
               }));
             }
-            if ('unread' in data) {
-              let tray = this.getRef('notificationsTray'),
-                  trayList = bbn.fn.isVue(tray) ? tray.getRef('list') : false;
-              if (bbn.fn.isVue(trayList)) {
-                trayList.updateData();
-              }
-            }
           }
         })
+
+        // Set plugins pollerObject
+        if (!this.pollerObject.token) {
+          this.pollerObject.token = bbn.env.token;
+        }
+        if (this.plugins['appui-chat']){
+          this.$set(this.pollerObject, 'appui-chat', {
+            online: null,
+            usersHash: false,
+            chatsHash: false
+          })
+        }
+        if (this.plugins['appui-notifications']) {
+          this.$set(this.pollerObject, 'appui-notifications', {unreadHash: false});
+        }
       }
     },
     mounted(){
       if ( this.cool ){
         this.app = this.$refs.app;
+        this.intervalBugChrome = setInterval(() => {
+          if (this.isFocused && this.$el.scrollLeft) {
+            this.$el.scrollLeft = 0;
+          }
+        }, 1000)
         setTimeout(() => {
           this.ready = true;
           this.$emit('resize');
@@ -661,9 +653,6 @@
               type: 'initCompleted'
             });
             this.registerChannel('appui', true);
-            if (!this.pollerObject.token) {
-              this.pollerObject.token = bbn.env.token;
-            }
             if (this.plugins['appui-chat']){
               this.registerChannel('appui-chat');
             }
@@ -671,7 +660,6 @@
               this.registerChannel('appui-notifications');
               this.browserNotificationURL = this.plugins['appui-notifications'];
               this.browserNotificationSW = true;
-              this.$set(this.pollerObject, 'appui-notifications', {unread: 0});
             }
             this.poll();
           }, 5000);
@@ -679,6 +667,7 @@
       }
     },
     beforeDestroy(){
+      clearInterval(this.intervalBugChrome);
       this.$off('appui-chat');
       this.$off('appui-core');
       this.$off('appui-notifications');

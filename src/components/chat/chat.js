@@ -1282,6 +1282,9 @@
               }
             }
             return ret;
+          },
+          addEmoji(emoji){
+            this.currentMessage += (this.currentMessage.lenght ? ' ' : '') + String.fromCodePoint('0x' + emoji);
           }
         },
         created(){

@@ -1,0 +1,37 @@
+<div :class="componentClass">
+  <div>
+    <span class="bbn-p bbn-m" @click="isOpened = !isOpened">&#x1F600;</span>
+  </div>
+  <bbn-floater v-if="isOpened"
+               :element="$el"
+               ref="floater"
+               :auto-hide="1000"
+               @close="isOpened = false"
+               :element-width="false"
+  >
+    <div class="bbn-flex-width bbn-emoji-container">
+      <div class="bbn-flex bbn-alt-background">
+        <div v-for="l in list"
+            :class="['bbn-reactive', 'bbn-bordered', 'bbn-xspadded', 'bbn-p', 'bbn-m', {'bbn-state-selected': l.icon === category}]"
+            :title="l.text"
+            @click="category = l.icon"
+        >
+          <span v-html="get(l.icon)"></span>
+        </div>
+      </div>
+      <div class="bbn-flex-fill">
+        <bbn-scroll ref="scroll">
+          <div class="bbn-grid bbn-xspadded bbn-emoji-grid">
+            <div v-for="(tit, ico) in items"
+                class="bbn-reactive bbn-p bbn-xspadded bbn-m"
+                :title="tit"
+                @click="select(ico)"
+            >
+              <span v-html="get(ico)"></span>
+            </div>
+          </div>
+        </bbn-scroll>
+      </div>
+    </div>
+  </bbn-floater>
+</div>
