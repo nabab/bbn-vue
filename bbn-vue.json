@@ -2546,6 +2546,35 @@
                 ]
             },
             {
+                "text": "emoji",
+                "url": "bbn-vue\/component\/emoji\/overview",
+                "props": [],
+                "methods": [
+                    {
+                        "text": "select",
+                        "desc": "The called method on emoji select",
+                        "url": "bbn-vue\/component\/emoji\/doc\/methods#select"
+                    },
+                    {
+                        "text": "get",
+                        "desc": "Returns the emoji code",
+                        "url": "bbn-vue\/component\/emoji\/doc\/methods#get"
+                    }
+                ],
+                "mixins": [
+                    {
+                        "text": "basicComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/emoji\/doc\/mixins#basicComponent"
+                    },
+                    {
+                        "text": "resizerComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/emoji\/doc\/mixins#resizerComponent"
+                    }
+                ]
+            },
+            {
                 "text": "field",
                 "url": "bbn-vue\/component\/field\/overview",
                 "props": [
@@ -8247,7 +8276,7 @@
             {
                 "text": "loadComponentsByPrefix",
                 "url": "bbn-vue\/function\/loadComponentsByPrefix",
-                "desc": "Looks if the given tag starts with one of the known prefixes, and it such case defines the component with the corresponding handler."
+                "desc": "Loads a component based on its prefix."
             },
             {
                 "text": "makeUID",

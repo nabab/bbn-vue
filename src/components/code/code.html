@@ -2,7 +2,7 @@
      @keydown.enter.stop=""
      @keydown.escape.stop="toggleFullScreen(false)"
 >
-  <div :class="fill ? 'bbn-code-filled' : ''" ref="code"></div>
+  <div :class="fill ? 'bbn-code-filled' : ''" ref="code" @keydown.escape.stop="toggleFullScreen(false)"></div>
   <input ref="element"
         type="hidden"
         :value="value"

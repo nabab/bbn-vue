@@ -1,3 +1,9 @@
+.bbn-block .component-container .bbn-grid-fields {
+  align-items: center;
+}
+.bbn-block .bbn-grid-fields {
+  border: none !important;
+}
 .bbn-block .block-space-edit {
   border: 1px dashed #dddddd;
   display: flex;

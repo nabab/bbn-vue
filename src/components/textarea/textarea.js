@@ -65,9 +65,6 @@
      * @event mounted
      */
     mounted(){
-      if ( this.disabled ){
-        this.$el.classList.add("bbn-state-disabled");
-      }
       this.ready = true;
     }
   });

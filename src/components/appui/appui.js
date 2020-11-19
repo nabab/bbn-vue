@@ -381,7 +381,7 @@
        * @param {Object} message
        */
       receive(message){
-        bbn.fn.log("RECEIVING", message, message.type);
+        //bbn.fn.log("RECEIVING", message, message.type);
         if (message.type !== undefined) {
           switch (message.type) {
             case 'message':
@@ -389,7 +389,8 @@
                 return;
               }
               if (message.data && message.data.disconnected) {
-                document.location.reload();
+                //document.location.reload();
+                bbn.fn.log('DISCONNECTED', message.data);
               }
               else if (message.data && message.data.data) {
 

@@ -1419,21 +1419,10 @@
                 if (o.title) {
                   this.currentTitle = o.title;
                 }
+                /** @todo Find why this timeout is needed to not have this.urls sometimes empty at that moment */
                 setTimeout(() => {
-                  if ( !this.urls[d.url] ){
-                    throw new Error(bbn._("Impossible to find the container for URL") + ' ' + d.url);
-                  }
-                  //bbn.fn.log("LOADED " + d.url, url);
-                  this.urls[d.url].setLoaded(true);
-                  //bbn.fn.log('setLoaded')
-                  // Otherwise the changes we just did on the props wont be taken into account at container level
-                  this.urls[d.url].init();
-                  //bbn.fn.log('init')
-                  this.callRouter(d.current, d.url);
-                  //bbn.fn.log('callRouter')
-                  this.$emit('update', this.views);
-                  //bbn.fn.log('update')
-                })
+                  this.realInit(d.url, 50);
+                }, 250)
               })
             },
             (xhr, textStatus, errorThrown) => {
@@ -1442,8 +1431,10 @@
               let idx = this.search(this.parseURL(finalURL));
               if ( idx !== false ){
                 let url = this.views[idx].url;
-                this.views.splice(this.urls[url].idx, 1);
-                delete this.urls[url];
+                if (this.urls[url]) {
+                  this.views.splice(this.urls[url].idx, 1);
+                  delete this.urls[url];
+                }
               }
               //this.navigate(url);
               this.activate(url);
@@ -1453,6 +1444,20 @@
             }
           );
         }
+      },
+      realInit(url, num) {
+        bbn.fn.log(url + '   -   ' + num, this.urls ? Object.keys(this.urls) : this.urls, this.baseURL);
+        if (this.urls[url]) {
+          this.urls[url].setLoaded(true);
+          // Otherwise the changes we just did on the props wont be taken into account at container level
+          this.urls[url].init();
+          this.callRouter(this.urls[url].current, url);
+          this.$emit('update', this.views);
+        }
+        else {
+          throw new Error(bbn._("Impossible to find the container for URL") + ' ' + url);
+        }
+
       },
       /**
        * @method reload

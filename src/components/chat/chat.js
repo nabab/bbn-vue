@@ -334,7 +334,7 @@
        * @fires addChat
        */
       receive(data){
-        bbn.fn.log("RECEIVING THIS FOR CHAT", data);
+        //bbn.fn.log("RECEIVING THIS FOR CHAT", data);
         // Online status
         if ('online' in data) {
           if (data.online) {
@@ -791,6 +791,14 @@
         bbn.fn.each(list, l => res[l.id] = l.lastActivity);
         return res;
       },
+      /**
+       * Sets the bottom coordinates of the main window
+       * @method _setCoord
+       */
+      _setCoord(){
+        let coord = this.$el.offsetParent.getBoundingClientRect();
+        this.bottomCoord = `${coord.bottom - coord.top}px`;
+      }
     },
     /**
      * @event created
@@ -803,10 +811,23 @@
      */
     mounted(){
       this.$nextTick(() => {
-        let coord = this.$el.offsetParent.getBoundingClientRect();
-        this.bottomCoord = `${coord.bottom - coord.top}px`;
+        this._setCoord();
         this.ready = true;
       })
+    },
+    watch: {
+      /**
+       * @watch mainWindowVisible
+       * @fires _setCoord
+       */
+      mainWindowVisible: {
+        immediate: true,
+        handler(newVal){
+          if (newVal) {
+            this._setCoord();
+          }
+        }
+      }
     },
     components: {
       /**

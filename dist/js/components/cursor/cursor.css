@@ -3,6 +3,9 @@
   display: flex;
   flex-direction: row;
 }
+.bbn-cursor .bbn-cursor-label {
+  padding-right: 1em;
+}
 .bbn-cursor input {
   width: 90%;
   -webkit-appearance: none;

@@ -82,7 +82,7 @@
         },
         /**
          * The attribute tabindex of the input component.
-         * @prop {Number} [0] tabindex
+         * @prop {Number} tabindex
          * @memberof inputComponent
          */
         tabindex: {
@@ -91,7 +91,7 @@
         },
         /**
          * @prop {Boolean} [false] nullable
-         * @memberof listComponent
+         * @memberof inputComponent
          */
         nullable: {
           type: Boolean,
@@ -104,6 +104,13 @@
         autosize: {
           type: Boolean,
           default: false
+        },
+        /**
+         * @prop {Number|String} default
+         * @memberof inputComponent
+         */
+        default: {
+          type: [String, Number]
         }
       },
       data(){

@@ -6,6 +6,8 @@ logs
 _DS_STORE*
 src/components/old/
 *.DS_Store
+._*
+
 
 [core]
 filemode = false

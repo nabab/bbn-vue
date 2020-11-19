@@ -1,5 +1,5 @@
 <template>
-<textarea :class="['bbn-textbox', componentClass]"
+<textarea :class="['bbn-textbox', componentClass, {'bbn-state-disabled': !!disabled}]"
           :value="value"
           :name="name"
           ref="element"
@@ -88,9 +88,6 @@
      * @event mounted
      */
     mounted(){
-      if ( this.disabled ){
-        this.$el.classList.add("bbn-state-disabled");
-      }
       this.ready = true;
     }
   });

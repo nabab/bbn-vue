@@ -1,6 +1,6 @@
 (bbn_resolve) => { ((bbn) => {
 let script = document.createElement('script');
-script.innerHTML = `<textarea :class="['bbn-textbox', componentClass]"
+script.innerHTML = `<textarea :class="['bbn-textbox', componentClass, {'bbn-state-disabled': !!disabled}]"
           :value="value"
           :name="name"
           ref="element"
@@ -90,9 +90,6 @@ document.body.insertAdjacentElement('beforeend', script);
      * @event mounted
      */
     mounted(){
-      if ( this.disabled ){
-        this.$el.classList.add("bbn-state-disabled");
-      }
       this.ready = true;
     }
   });

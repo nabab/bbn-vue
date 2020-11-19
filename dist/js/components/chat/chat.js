@@ -278,8 +278,14 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-vmiddle']">
             </div>
           </bbn-scroll>
         </div>
-        <div v-if="cp.currentOnline" style="min-height: 2em">
-          <bbn-input class="bbn-chat-conversation-input bbn-w-100 bbn-no-radius"
+        <div v-if="cp.currentOnline"
+             style="min-height: 2em"
+             class="bbn-flex-width"
+        >
+          <div class="bbn-middle bbn-bordered-left bbn-bordered-top bbn-bordered-bottom bbn-alt-background bbn-hxspadded">
+            <bbn-emoji @select="addEmoji"></bbn-emoji>
+          </div>
+          <bbn-input class="bbn-chat-conversation-input bbn-flex-fill bbn-no-radius"
                      ref="input"
                      @keydown.enter.prevent="sendMessage"
                      v-model="currentMessage"
@@ -635,7 +641,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @fires addChat
        */
       receive(data){
-        bbn.fn.log("RECEIVING THIS FOR CHAT", data);
+        //bbn.fn.log("RECEIVING THIS FOR CHAT", data);
         // Online status
         if ('online' in data) {
           if (data.online) {
@@ -1092,6 +1098,14 @@ document.head.insertAdjacentElement('beforeend', css);
         bbn.fn.each(list, l => res[l.id] = l.lastActivity);
         return res;
       },
+      /**
+       * Sets the bottom coordinates of the main window
+       * @method _setCoord
+       */
+      _setCoord(){
+        let coord = this.$el.offsetParent.getBoundingClientRect();
+        this.bottomCoord = `${coord.bottom - coord.top}px`;
+      }
     },
     /**
      * @event created
@@ -1104,10 +1118,23 @@ document.head.insertAdjacentElement('beforeend', css);
      */
     mounted(){
       this.$nextTick(() => {
-        let coord = this.$el.offsetParent.getBoundingClientRect();
-        this.bottomCoord = `${coord.bottom - coord.top}px`;
+        this._setCoord();
         this.ready = true;
       })
+    },
+    watch: {
+      /**
+       * @watch mainWindowVisible
+       * @fires _setCoord
+       */
+      mainWindowVisible: {
+        immediate: true,
+        handler(newVal){
+          if (newVal) {
+            this._setCoord();
+          }
+        }
+      }
     },
     components: {
       /**
@@ -1583,6 +1610,9 @@ document.head.insertAdjacentElement('beforeend', css);
               }
             }
             return ret;
+          },
+          addEmoji(emoji){
+            this.currentMessage += (this.currentMessage.lenght ? ' ' : '') + String.fromCodePoint('0x' + emoji);
           }
         },
         created(){

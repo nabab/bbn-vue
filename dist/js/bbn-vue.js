@@ -554,7 +554,10 @@
     },
 
     /**
-     * Looks if the given tag starts with one of the known prefixes, and it such case defines the component with the corresponding handler.
+     * Loads a component based on its prefix.
+     * 
+     * Looks if the given tag starts with one of the known prefixes, and 
+     * in such case defines the component with the corresponding handler.
      * 
      * @method loadComponentsByPrefix
      * @memberof bbn.vue
@@ -3660,7 +3663,7 @@
         },
         /**
          * The attribute tabindex of the input component.
-         * @prop {Number} [0] tabindex
+         * @prop {Number} tabindex
          * @memberof inputComponent
          */
         tabindex: {
@@ -3669,7 +3672,7 @@
         },
         /**
          * @prop {Boolean} [false] nullable
-         * @memberof listComponent
+         * @memberof inputComponent
          */
         nullable: {
           type: Boolean,
@@ -3682,6 +3685,13 @@
         autosize: {
           type: Boolean,
           default: false
+        },
+        /**
+         * @prop {Number|String} default
+         * @memberof inputComponent
+         */
+        default: {
+          type: [String, Number]
         }
       },
       data(){

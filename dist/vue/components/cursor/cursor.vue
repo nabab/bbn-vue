@@ -1,14 +1,15 @@
 <template>
 <div :class="[componentClass, 'bbn-w-100']">
-  <label v-text="label + ' ' + value" class="bbn-hspadded"></label>
+  <label v-text="label" class="bbn-cursor-label"></label>
   <input :focused="true"
-          v-bind:value="value"
+          v-bind:value="parseInt(value)"
           placeholder="Type your text here!"
-          v-on:input="$emit('input', $event.target.value)"
+          v-on:input="$emit('input', $event.target.value + unit)"
           type="range"
           :min="min" 
           :max="max" 
           class="slider"
+          :step="step"
   >
 </div>
 </template>
@@ -29,9 +30,9 @@
      */
     mixins: [bbn.vue.basicComponent, bbn.vue.eventsComponent, bbn.vue.inputComponent],
     props: {
-      label: {
-        type: String,
-        default: ''
+      step: {
+        type: Number, 
+        default: 1
       },
       /**
        * The aduio's URL
@@ -58,9 +59,17 @@
       },
       value: {
         type: Number | String,
+      },
+      unit: {
+        type: String,
+        default: ''
       }
     },
- 
+    computed: {
+      label(){
+        return this.value 
+      }
+    }
   });
 })(bbn);
 
@@ -70,6 +79,9 @@
   height: 15px;
   display: flex;
   flex-direction: row;
+}
+.bbn-cursor .bbn-cursor-label {
+  padding-right: 1em;
 }
 .bbn-cursor input {
   width: 90%;

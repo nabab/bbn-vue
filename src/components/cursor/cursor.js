@@ -14,9 +14,9 @@
      */
     mixins: [bbn.vue.basicComponent, bbn.vue.eventsComponent, bbn.vue.inputComponent],
     props: {
-      label: {
-        type: String,
-        default: ''
+      step: {
+        type: Number, 
+        default: 1
       },
       /**
        * The aduio's URL
@@ -43,8 +43,16 @@
       },
       value: {
         type: Number | String,
+      },
+      unit: {
+        type: String,
+        default: ''
       }
     },
- 
+    computed: {
+      label(){
+        return this.value 
+      }
+    }
   });
 })(bbn);

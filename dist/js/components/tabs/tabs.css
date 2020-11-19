@@ -75,7 +75,7 @@ div.bbn-tabs > div.bbn-tabs-container ul.bbn-tabs-tabs:first-child > li .bbn-tab
 div.bbn-tabs > div.bbn-tabs-container ul.bbn-tabs-tabs:first-child > li div.bbn-tabs-tab {
   cursor: pointer;
   color: inherit;
-  padding: 0.3em 1.5em 0.5em 1.5em;
+  padding: 0.3em 1.15em 0.5em 1.15em;
   vertical-align: middle;
 }
 div.bbn-tabs > div.bbn-tabs-container ul.bbn-tabs-tabs:first-child > li div.bbn-tabs-tab > .bbn-tab-text {
@@ -84,8 +84,14 @@ div.bbn-tabs > div.bbn-tabs-container ul.bbn-tabs-tabs:first-child > li div.bbn-
 div.bbn-tabs > div.bbn-tabs-container ul.bbn-tabs-tabs:first-child > li div.bbn-tabs-tab > .bbn-tabs-main-icon {
   line-height: 100%;
 }
+div.bbn-tabs > div.bbn-tabs-container ul.bbn-tabs-tabs:first-child > li div.bbn-tabs-tab::after,
+div.bbn-tabs > div.bbn-tabs-container ul.bbn-tabs-tabs:first-child > li div.bbn-tabs-tab::before {
+  font-family: monospace;
+  content: " ";
+  white-space: pre;
+}
 div.bbn-tabs > div.bbn-tabs-container ul.bbn-tabs-tabs:first-child > li div.bbn-tabs-tab.bbn-tabs-dirty::after {
-  content: '*';
+  content: "*";
 }
 div.bbn-tabs > div.bbn-tabs-container ul.bbn-tabs-tabs:first-child > li i.bbn-tabs-icon {
   display: block;

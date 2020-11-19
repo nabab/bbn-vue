@@ -301,7 +301,7 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                                   v-model="editedRow[col.field]"
                                   style="width: 100%"
                         ></component>
-                        <bbn-field v-else-if="col.field && !col.render && !!col.buttons"
+                        <bbn-field v-else-if="col.field && !col.render && !col.buttons"
                                   v-bind="col"
                                   @click.stop=""
                                   :key="d.index"

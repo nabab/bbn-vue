@@ -4,6 +4,8 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-background', 'bbn-overlay
       'bbn-desktop': !isMobile
      }]"
      :style="{opacity: opacity}"
+     @focusin="isFocused = true"
+     @focusout="isFocused = false"
 >
   <div v-if="!cool"
        class="bbn-middle bbn-xl"
@@ -220,9 +222,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-background', 'bbn-overlay
           <div v-if="plugins['appui-notifications'] && pollerObject['appui-notifications']"
                class="bbn-right-space"
           >
-            <appui-notifications-tray :unread="pollerObject['appui-notifications'].unread"
-                                      ref="notificationsTray"
-            ></appui-notifications-tray>
+            <appui-notifications-tray ref="notificationsTray"></appui-notifications-tray>
           </div>
           <!-- CLIPBOARD BUTTON -->
           <div v-if="plugins['appui-clipboard'] && clipboard"
@@ -387,14 +387,11 @@ document.head.insertAdjacentElement('beforeend', css);
       return {
         isMobile: bbn.fn.isMobile(),
         isTablet: bbn.fn.isTabletDevice(),
+        isFocused: false,
+        intervalBugChrome: null,
         mode: bbn.env.mode,
         opacity: 0,
         pollerObject: {
-          'appui-chat': {
-            online: null,
-            usersHash: false,
-            chatsHash: false
-          },
           token: bbn.env.token || null
         },
         // For the server query (checking or not)
@@ -674,7 +671,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @param {Object} message
        */
       receive(message){
-        bbn.fn.log("RECEIVING", message, message.type);
+        //bbn.fn.log("RECEIVING", message, message.type);
         if (message.type !== undefined) {
           switch (message.type) {
             case 'message':
@@ -682,7 +679,8 @@ document.head.insertAdjacentElement('beforeend', css);
                 return;
               }
               if (message.data && message.data.disconnected) {
-                document.location.reload();
+                //document.location.reload();
+                bbn.fn.log('DISCONNECTED', message.data);
               }
               else if (message.data && message.data.data) {
 
@@ -898,27 +896,9 @@ document.head.insertAdjacentElement('beforeend', css);
         // appui-notifications
         this.$on('appui-notifications', (type, data) => {
           if (type === 'message') {
-            if ('web' in data) {
-              bbn.fn.each(data.web, n => appui.info({
-                content: n.title ? `<div class="bbn-b">${n.title}</div><div>${n.content}</div>` : n.content,
-                data: n,
-                onClose: (not) => {
-                  this.post(this.plugins['appui-notifications'] + '/actions/read', {id: n.id}, d => {
-                    if (d.success) {
-                      this.messageChannel(this.primaryChannel, {
-                        function: (id) => {
-                          let not = appui.getRef('notification'),
-                              idx = bbn.fn.search(not.items, {'data.id': id});
-                          if (idx > -1) {
-                            not.close(not.items[idx].id);
-                          }
-                        },
-                        params: [n.id]
-                      });
-                    }
-                  });
-                }
-              }, 120));
+            let tray = this.getRef('notificationsTray')
+            if (bbn.fn.isVue(tray) && bbn.fn.isFunction(tray.receive)) {
+              tray.receive(data);
             }
             if ('browser' in data) {
               bbn.fn.each(data.browser, n => this.browserNotify(n.title, {
@@ -928,20 +908,42 @@ document.head.insertAdjacentElement('beforeend', css);
                 requireInteraction: true
               }));
             }
-            if ('unread' in data) {
-              let tray = this.getRef('notificationsTray'),
-                  trayList = bbn.fn.isVue(tray) ? tray.getRef('list') : false;
-              if (bbn.fn.isVue(trayList)) {
-                trayList.updateData();
-              }
+          }
+        });
+        // appui-cron
+        this.$on('appui-cron', (type, data) => {
+          if (type === 'message') {
+            let cron = appui.getRegistered('appui-cron');
+            if (bbn.fn.isVue(cron) && bbn.fn.isFunction(cron.receive)) {
+              cron.receive(data);
             }
           }
-        })
+        });
+
+        // Set plugins pollerObject
+        if (!this.pollerObject.token) {
+          this.pollerObject.token = bbn.env.token;
+        }
+        if (this.plugins['appui-chat']){
+          this.$set(this.pollerObject, 'appui-chat', {
+            online: null,
+            usersHash: false,
+            chatsHash: false
+          })
+        }
+        if (this.plugins['appui-notifications']) {
+          this.$set(this.pollerObject, 'appui-notifications', {unreadHash: false});
+        }
       }
     },
     mounted(){
       if ( this.cool ){
         this.app = this.$refs.app;
+        this.intervalBugChrome = setInterval(() => {
+          if (this.isFocused && this.$el.scrollLeft) {
+            this.$el.scrollLeft = 0;
+          }
+        }, 1000)
         setTimeout(() => {
           this.ready = true;
           this.$emit('resize');
@@ -951,9 +953,6 @@ document.head.insertAdjacentElement('beforeend', css);
               type: 'initCompleted'
             });
             this.registerChannel('appui', true);
-            if (!this.pollerObject.token) {
-              this.pollerObject.token = bbn.env.token;
-            }
             if (this.plugins['appui-chat']){
               this.registerChannel('appui-chat');
             }
@@ -961,7 +960,6 @@ document.head.insertAdjacentElement('beforeend', css);
               this.registerChannel('appui-notifications');
               this.browserNotificationURL = this.plugins['appui-notifications'];
               this.browserNotificationSW = true;
-              this.$set(this.pollerObject, 'appui-notifications', {unread: 0});
             }
             this.poll();
           }, 5000);
@@ -969,6 +967,7 @@ document.head.insertAdjacentElement('beforeend', css);
       }
     },
     beforeDestroy(){
+      clearInterval(this.intervalBugChrome);
       this.$off('appui-chat');
       this.$off('appui-core');
       this.$off('appui-notifications');

@@ -1,15 +1,16 @@
 (bbn_resolve) => { ((bbn) => {
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-w-100']">
-  <label v-text="label + ' ' + value" class="bbn-hspadded"></label>
+  <label v-text="label" class="bbn-cursor-label"></label>
   <input :focused="true"
-          v-bind:value="value"
+          v-bind:value="parseInt(value)"
           placeholder="Type your text here!"
-          v-on:input="$emit('input', $event.target.value)"
+          v-on:input="$emit('input', $event.target.value + unit)"
           type="range"
           :min="min" 
           :max="max" 
           class="slider"
+          :step="step"
   >
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-cursor');
@@ -35,9 +36,9 @@ document.head.insertAdjacentElement('beforeend', css);
      */
     mixins: [bbn.vue.basicComponent, bbn.vue.eventsComponent, bbn.vue.inputComponent],
     props: {
-      label: {
-        type: String,
-        default: ''
+      step: {
+        type: Number, 
+        default: 1
       },
       /**
        * The aduio's URL
@@ -64,9 +65,17 @@ document.head.insertAdjacentElement('beforeend', css);
       },
       value: {
         type: Number | String,
+      },
+      unit: {
+        type: String,
+        default: ''
       }
     },
- 
+    computed: {
+      label(){
+        return this.value 
+      }
+    }
   });
 })(bbn);
 

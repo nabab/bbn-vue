@@ -280,9 +280,9 @@
              style="min-height: 2em"
              class="bbn-flex-width"
         >
-          <bbn-emoji class="bbn-middle bbn-bordered-left bbn-bordered-top bbn-bordered-bottom bbn-alt-background bbn-hxspadded"
-                     @select="addEmoji"
-          ></bbn-emoji>
+          <div class="bbn-middle bbn-bordered-left bbn-bordered-top bbn-bordered-bottom bbn-alt-background bbn-hxspadded">
+            <bbn-emoji @select="addEmoji"></bbn-emoji>
+          </div>
           <bbn-input class="bbn-chat-conversation-input bbn-flex-fill bbn-no-radius"
                      ref="input"
                      @keydown.enter.prevent="sendMessage"

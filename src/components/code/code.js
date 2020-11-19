@@ -536,27 +536,26 @@
               }
               if ( this.widget && code ){
                 let defs = JSON.parse(code);
-                defs.bbn = {
-                  fn: {},
-                  vue: {}
-                };
-                bbn.fn.iterate(bbn.fn, (a, k) => {
-                  defs.bbn.fn[k] = {
-                    "!type": "fn(number) -> number",
-                    "!url": "https://doc.js.bbn.solutions/" + k,
-                    "!doc": "Returns the value of a number rounded to the nearest integer."                  
+                getURL("https://raw.githubusercontent.com/nabab/bbn-js/master/doc/tern.json", (err, res) => {
+                  if (err) {
+                    throw new Error("Request for ecmascript.json: " + err);
+                  }
+                  if (res){
+                    defs.bbn = {
+                      fn: JSON.parse(res),
+                      vue: {}
+                    };
+                    bbn.fn.iterate(bbn.vue, (a, k) => {
+                      defs.bbn.vue[k] = {
+                        "!type": "fn(number) -> number",
+                        "!url": "https://doc.js.bbn.solutions/" + k,
+                        "!doc": "Returns the value of a number rounded to the nearest integer."                  
+                      }
+                    });
+                    bbn.vue.tern = new CodeMirror.TernServer({defs: [defs]});
+                    this.widget.on("cursorActivity", function(cm) { bbn.vue.tern.updateArgHints(cm); });
                   }
                 });
-                bbn.fn.iterate(bbn.vue, (a, k) => {
-                  defs.bbn.vue[k] = {
-                    "!type": "fn(number) -> number",
-                    "!url": "https://doc.js.bbn.solutions/" + k,
-                    "!doc": "Returns the value of a number rounded to the nearest integer."                  
-                  }
-                });
-
-                bbn.vue.tern = new CodeMirror.TernServer({defs: [defs]});
-                this.widget.on("cursorActivity", function(cm) { bbn.vue.tern.updateArgHints(cm); });
               }
             });
           }
@@ -615,10 +614,18 @@
             !event.ctrlKey && !event.altKey &&
             (event.keyCode > 64) &&
             (event.keyCode < 91) 
-          ){// only when a letter key is pressed
+          ){
+            // only when a letter key is pressed
+            if (this.mode === 'js') {
+              if (bbn.vue.tern) {
+                bbn.vue.tern.complete(this.widget);
+              }
+            }
+            else {
               CodeMirror.commands.autocomplete(cm, null, {completeSingle: false});
             }
-          });
+          }
+        });
 
         this.widget.on("change", () => {
           this.emitInput(this.widget.doc.getValue());
@@ -633,11 +640,13 @@
             if ( this.mode === 'js' ){
               this.initTern();
             }
+            /*
             else {
               this.widget.on("cursorActivity", (cm) => {
                 bbn.fn.log(cm);
               });
             }
+            */
           }, 250)
         })
       }
