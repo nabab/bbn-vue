@@ -282,6 +282,8 @@
       onResize(){
         if ( !this.isResizing ){
           this.isResizing = true;
+          this.setContainerMeasures();
+          this.setResizeMeasures();
           if ( this.orientation === 'auto' ){
             let o = this.getOrientation();
             if ( o !== this.currentOrientation ){
@@ -545,7 +547,7 @@
             }
           });
           if ( hasPercent && hasResizers && !hasAuto ){
-            throw bbn._('When a "pane" has a percentage measure and a "resizer" is present a "pane" must have an "auto" measure');
+            throw bbn._('In a resizable splitter, if a pane has a percentage measure, at least one pane must be meausreless or set at "auto"');
           }
           else {
             this.$forceUpdate();

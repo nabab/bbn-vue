@@ -29,7 +29,6 @@
       bbn.vue.listComponent,
       bbn.vue.keynavComponent,
       bbn.vue.urlComponent,
-      bbn.vue.localStorage,
       bbn.vue.dropdownComponent
     ],
     props: {

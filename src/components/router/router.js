@@ -458,6 +458,7 @@
         }
         this.numRegistered++;
         this.urls[cp.url] = cp;
+        bbn.fn.log("REGISTERING", cp.url, this.urls[cp.url]);
         let idx = this.search(cp.url);
         if (idx === false) {
           this.add(cp);
@@ -485,6 +486,7 @@
           throw Error(bbn._('The component bbn-container must have a URL defined'));
         }
         if ( this.urls[cp.url] ){
+          bbn.fn.log("UNREGISTERING");
           delete this.urls[cp.url];
         }
         let idx = this.search(cp.url);
@@ -1067,6 +1069,7 @@
        * @return {Boolean}
        */
       remove(misc, force){
+        bbn.fn.log("REMOVING " + misc)
         let idx = this.getIndex(misc);
         if ( idx > -1 ){
           let ev = new Event('close', {cancelable: !force}),
@@ -1098,7 +1101,7 @@
             else {
               if (this.views[idx].slot) {
                 let t = this.views.splice(idx, 1);
-                delete this.urls[t.url];
+                //delete this.urls[t.url];
                 bbn.fn.each(this.views, (v, i) => {
                   if ( v.idx !== i ){
                     v.idx = i;
@@ -1114,7 +1117,7 @@
                 }
                 if (force || !ev.defaultPrevented) {
                   let t = this.views.splice(idx, 1);
-                  delete this.urls[t.url];
+                  //delete this.urls[t.url];
                   bbn.fn.each(this.views, (v, i) => {
                     if ( v.idx !== i ){
                       v.idx = i;
@@ -1392,7 +1395,7 @@
                 delete d.data;
               }
               if ( (d.url !== d.current) && this.urls[d.current] ){
-                //bbn.fn.warning("DELETING VIEW CASE.... " + d.current + ' ' + this.urls[d.current].idx);
+                bbn.fn.warning("DELETING VIEW CASE.... " + d.current + ' ' + this.urls[d.current].idx);
                 this.views.splice(this.urls[d.current].idx, 1);
                 delete this.urls[d.current];
               }

@@ -510,10 +510,16 @@
         if ( idx > -1 ){
           this.parsedTags.splice(idx, 1);
         }
+
         let tpl = document.getElementById('bbn-tpl-component-' + cpName);
-        if ( tpl ){
+        if (!tpl && (cpName.indexOf('bbn-') === 0)) {
+          tpl = document.getElementById('bbn-tpl-component-' + cpName.substr(4));
+        }
+
+        if (tpl) {
           tpl.remove();
         }
+
         return r;
       }
       return false;

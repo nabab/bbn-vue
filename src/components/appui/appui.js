@@ -135,7 +135,9 @@
         observerTimeout: false,
         colorEnvVisible: true,
         currentTitle: this.title,
-        searchIsActive: false
+        searchIsActive: false,
+        bigMessage: false,
+        hasBigMessage: false
       }
     },
     computed: {
@@ -148,6 +150,22 @@
       }
     },
     methods: {
+      setBigMessage(msg, timeout = 3000) {
+        this.bigMessage = msg;
+        setTimeout(() => {
+          this.hasBigMessage = true;
+          setTimeout(() => {
+            this.closeBigMessage();
+          }, timeout < 100 ? timeout*1000 : timeout);
+        }, 50);
+
+      },
+      closeBigMessage(){
+        this.hasBigMessage = false;
+        setTimeout(() => {
+          this.bigMessage = false;
+        }, 250)
+      },
       focusSearchMenu(){
         let menu = this.getRef('menu');
         if (menu) {
@@ -164,7 +182,7 @@
               return false;
             }
           });
-          let url = this.plugins['appui-ide'] + '/editor/file/';
+          let url = this.plugins['appui-projects'] + '/router/' + bbn.env.appName + '/ide/editor/file/';
           if (plugin){
             url += 'lib/' + plugin + '/mvc' + tab.url.substr(this.plugins[plugin].length);
           }

@@ -317,7 +317,7 @@
                                 :source="col.mapper ? col.mapper(d.data) : d.data"
                       ></component>
                       <template v-else-if="col.buttons">
-                        <bbn-button v-for="(button, bi) in (Array.isArray(col.buttons) ? col.buttons : col.buttons(d.data, col, i))"
+                        <bbn-button v-for="(button, bi) in (Array.isArray(realButtons) ? realButtons : realButtons(d.data, col, i))"
                                     :key="bi"
                                     v-bind="button"
                                     @focusin.prevent.stop="() => {}"
