@@ -2556,7 +2556,9 @@
            */
           close(){
             this.source.closeAction();
-            this.closest('bbn-list').updateData();
+            // NOt working but should stay opened when closing lines
+            //this.closest('bbn-list').updateData();
+            this.closest('bbn-floater').close();
           }
         }
       }
