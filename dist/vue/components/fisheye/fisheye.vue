@@ -455,7 +455,8 @@
   color: inherit;
 }
 .bbn-fisheye ul {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   list-style: none;
   margin: 0;
   overflow: visible;

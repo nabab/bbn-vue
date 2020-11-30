@@ -1,4 +1,5 @@
-<div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', {'bbn-disabled': !!disabled}]">
+<div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', {'bbn-disabled': !!disabled}]"
+     @click.stop>
   <div class="bbn-flex-width">
     <div class="bbn-flex-fill">
       <input tabindex="0"

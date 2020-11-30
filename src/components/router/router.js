@@ -321,6 +321,10 @@
          */
         history: [],
         /**
+         * @data {Boolean} [false] iconsReady
+         */
+        iconsReady: false,
+        /**
          * Shows if the navigation mode is set to breacrumb.
          * @data {Boolean} isBreadcrumb
          */
@@ -329,7 +333,15 @@
          * itsMaster.isBreadcrumb watcher.
          * @data breadcrumbWatcher
          */
-        breadcrumbWatcher: false
+        breadcrumbWatcher: false,
+        /**
+         * Returns the bbn-breadcrumb component of this router.
+         * @data {HTMLElement|Boolean} itsBreadcrumb
+         * @fires getRef
+         */
+        itsBreadcrumb: this.breadcrumb ? this.getRef('breadcrumb') : false,
+        breadcrumbsList: [],
+        breadcrumbs: [this]
       };
     },
     computed: {
@@ -382,18 +394,7 @@
         }
         return false;
       },
-      /**
-       * Returns the bbn-breadcrumb component of this router.
-       * @computed itsBreadcrumb
-       * @fires getRef
-       * @return {Vue|Boolean}
-       */
-      itsBreadcrumb(){
-        if ( this.isBreadcrumb ){
-          return this.getRef('breadcrumb');
-        }
-        return false;
-      },
+      
       /**
        * Returns the master breadcrumb component for this router.
        * @computed itsMasterBreadcrumb
@@ -401,7 +402,7 @@
        */
       itsMasterBreadcrumb(){
         if ( this.isBreadcrumb && this.itsMaster ){
-          return this.itsMaster.getRef('breadcrumb');
+          return this.itsMaster.itsBreadcrumb;
         }
         return false;
       },
@@ -431,10 +432,34 @@
           }
         }
         return this;
-      }
+      },
+      /**
+       * Returns the scroll configuration
+       * @computed scrollCfg
+       * @return {Object}
+       */
+      scrollCfg(){
+        return this.scrollable ? {
+          axis: 'x',
+          container: true,
+          hidden: true
+        } : {};
+      },
     },
 
     methods: {
+      /**
+       * Alias of bbn.fn.isNumber
+       * @method isNumber
+       * @return {Boolean}
+       */
+      isNumber: bbn.fn.isNumber,
+      /**
+       * Alias of bbn.fn.numProperties
+       * @method numProperties
+       * @return {Number|Boolean}
+       */
+      numProperties: bbn.fn.numProperties,
       /**
        * Function used by container to make themselves known when they are mounted.
        * @method register
@@ -450,16 +475,19 @@
           this.add(cp);
           return;
         }
+
         if (!bbn.fn.isString(cp.url)) {
           throw Error(bbn._('The component bbn-container must have a URL defined'));
         }
+
         if (this.urls[cp.url]) {
           throw Error(bbn._('Two containers cannot have the same URL defined (' + cp.url + ')'));
         }
+
         this.numRegistered++;
         this.urls[cp.url] = cp;
-        bbn.fn.log("REGISTERING", cp.url, this.urls[cp.url]);
         let idx = this.search(cp.url);
+
         if (idx === false) {
           this.add(cp);
         }
@@ -472,6 +500,7 @@
             }
           }
         }
+        this.$emit('registered', cp.url)
       },
       /**
        * Function used by container to make themselves known when they are destroyed
@@ -481,18 +510,27 @@
        * @param {Vue} cp
        */
       unregister(cp){
-        this.numRegistered--;
         if (!bbn.fn.isString(cp.url)) {
           throw Error(bbn._('The component bbn-container must have a URL defined'));
         }
-        if ( this.urls[cp.url] ){
-          bbn.fn.log("UNREGISTERING");
-          delete this.urls[cp.url];
+
+        this.numRegistered--;
+        let idx = this.search(cp.url),
+            dataObj = this.postBaseUrl ? {_bbn_baseURL: this.fullBaseURL} : {},
+            requestID = bbn.fn.getRequestId(cp.url, dataObj);
+        if (bbn.fn.getLoader(requestID)) {
+          bbn.fn.abort(requestID);
         }
-        let idx = this.search(cp.url);
-        //bbn.fn.log("GGGGGG", cp.url, idx, this.views);
+
         if (idx !== false) {
           this.remove(idx);
+        }
+
+        if (this.urls[cp.url] !== undefined) {
+          delete this.urls[cp.url];
+        }
+        if (this.isInit && (this.views.length !== this.numRegistered)) {
+          this.isInit = false;
         }
       },
       /**
@@ -508,15 +546,19 @@
           bbn.fn.log("error in getRoute with url", url);
           throw Error(bbn._('The component bbn-container must have a valid URL defined'));
         }
+
         if (!url && this.hasEmptyURL) {
           return '';
         }
+
         if ( !url && !this.parent ){
           url = this.parseURL(bbn.env.path);
         }
+
         if ( !url && force && this.parent ){
           url = this.parseURL(this.router.getFullCurrentURL());
         }
+
         if ( url ){
           let bits = url.split('/');
           while ( bits.length ){
@@ -527,12 +569,15 @@
             bits.pop();
           }
         }
+
         if ( this.def && force ){
           return this.def
         }
+
         if ( this.views.length && force ){
           return this.views[0].current
         }
+
         return false;
       },
 
@@ -585,7 +630,8 @@
           current: null,
           real: false,
           cfg: {},
-          events: {}
+          events: {},
+          real: false
         };
       },
       /**
@@ -695,7 +741,7 @@
             this.urls[st].init();
             this.$nextTick(() => {
               let child = this.urls[st].find('bbn-router');
-              bbn.fn.log("LOOKING FOR CHILD", child);
+              //bbn.fn.log("LOOKING FOR CHILD", child);
               if ( child ){
                 child.route(url.substr(st.length + 1), force);
               }
@@ -917,7 +963,6 @@
       activateDefault(){
         let idx = this.getIndex('', true);
         if ( this.isValidIndex(idx) ){
-          //bbn.fn.log("ACTIVATE6", this.views[idx].current ? this.views[idx].current : this.views[idx].url);
           this.activate(this.views[idx].current ? this.views[idx].current : this.views[idx].url);
         }
       },
@@ -1059,6 +1104,16 @@
         }
         return this.isValidIndex(misc) ? misc : false;
       },
+      fixIndexes(){
+        bbn.fn.each(this.views, (v, i) => {
+          if ( v.idx !== i ){
+            v.idx = i;
+            if (this.urls[v.url]) {
+              this.urls[v.url].currentIndex = i;
+            }
+          }
+        });
+      },
       /**
        * @method remove
        * @param misc
@@ -1069,7 +1124,6 @@
        * @return {Boolean}
        */
       remove(misc, force){
-        bbn.fn.log("REMOVING " + misc)
         let idx = this.getIndex(misc);
         if ( idx > -1 ){
           let ev = new Event('close', {cancelable: !force}),
@@ -1099,33 +1153,21 @@
               });
             }
             else {
-              if (this.views[idx].slot) {
-                let t = this.views.splice(idx, 1);
-                //delete this.urls[t.url];
-                bbn.fn.each(this.views, (v, i) => {
-                  if ( v.idx !== i ){
-                    v.idx = i;
-                    if (this.urls[v.url]) {
-                      this.urls[v.url].currentIndex = i;
-                    }
-                  }
-                });
+              if (this.views[idx].real) {
+                let url = this.views[idx].url;
+                this.views.splice(idx, 1);
+                this.$delete(this.urls, url);
+                this.fixIndexes()
               }
               else {
                 if ( !force ){
                   this.$emit('close', idx, ev);
                 }
                 if (force || !ev.defaultPrevented) {
-                  let t = this.views.splice(idx, 1);
-                  //delete this.urls[t.url];
-                  bbn.fn.each(this.views, (v, i) => {
-                    if ( v.idx !== i ){
-                      v.idx = i;
-                      if (this.urls[v.url]) {
-                        this.urls[v.url].currentIndex = i;
-                      }
-                    }
-                  });
+                  let url = this.views[idx].url;
+                  this.views.splice(idx, 1);
+                  this.$delete(this.urls, url);
+                  this.fixIndexes()
                 }
                 return true;
               }
@@ -1166,14 +1208,31 @@
                 obj.currentURL = bbn.fn.replaceAll(obj.currentURL);
               }
             }
-            obj = JSON.parse(JSON.stringify((obj.$options.propsData)));
-            obj.slot = true;
-            if (this.search(obj.url) === false) {
+            
+            let obj2 = bbn.fn.extend(true, {}, obj.$options.propsData),
+                props = obj.$options.props;
+            bbn.fn.iterate(props, (v, i) => {
+              if (!(i in obj2) && ('default' in v)) {
+                obj2[i] = v.default;
+              }
+            });
+            bbn.fn.iterate(this.getDefaultView(), (a, n) => {
+              if ( obj2[n] === undefined ){
+                obj2[n] = a;
+              }
+            });
+            if (obj2.real && !this.hasRealContainers) {
+              this.hasRealContainers = true;
+            }
+            if (obj2.url === '') {
+              this.hasEmptyURL = true;
+            }
+            if (this.search(obj2.url) === false) {
               if (this.isValidIndex(idx)) {
-                this.views.splice(idx, 0, obj);
+                this.views.splice(idx, 0, obj2);
               }
               else {
-                this.views.push(obj);
+                this.views.push(obj2);
               }
             }
           }
@@ -1247,6 +1306,7 @@
               }
             }
           }
+          this.fixIndexes()
         }
       },
       /**
@@ -1331,7 +1391,7 @@
        * @emit update
       */
       load(url, force){
-        if ( url ){
+        if (url){
           this.isLoading = true;
           let finalURL = this.fullBaseURL + url;
           let idx = this.search(url);
@@ -1353,8 +1413,6 @@
             toAdd = true;
             idx = this.views.length;
           }
-          bbn.fn.log(url, idx, toAdd);
-          //bbn.fn.warning('IDX ' + idx + ' URL ' + url);
           if (toAdd){
             this.add({
               url: url,
@@ -1377,6 +1435,7 @@
             finalURL,
             dataObj,
             (d) => {
+              let callRealInit = true;
               this.isLoading = false;
               //this.remove(url);
               if ( d.url ){
@@ -1395,9 +1454,17 @@
                 delete d.data;
               }
               if ( (d.url !== d.current) && this.urls[d.current] ){
-                bbn.fn.warning("DELETING VIEW CASE.... " + d.current + ' ' + this.urls[d.current].idx);
-                this.views.splice(this.urls[d.current].idx, 1);
-                delete this.urls[d.current];
+                //bbn.fn.warning("DELETING VIEW CASE.... " + d.current + ' ' + this.urls[d.current].idx, d.url, bbn.fn.search(this.views, {idx: this.urls[d.current].idx}));
+                this.remove(this.urls[d.current].idx, true);
+                //this.views.splice(this.urls[d.current].idx, 1);
+                callRealInit = false;
+                this.$on('registered', (url) => {
+                  if (url === d.url) {
+                    this.$off('registered', url);
+                    this.realInit(url);
+                  }
+                })
+                
               }
               if ( !d.title || (d.title === bbn._('Loading')) ){
                 if (view && view.title) {
@@ -1417,15 +1484,16 @@
                 d.current = d.url;
               }
               this.$nextTick(() => {
-                let o = bbn.fn.extend(view || {}, d, {slot: false, loading: false, load: true, real: false, loaded: true});
+                let o = bbn.fn.extend(view || {}, d, {loading: false, load: true, real: false, loaded: true});
                 this.add(o, idx);
                 if (o.title) {
                   this.currentTitle = o.title;
                 }
-                /** @todo Find why this timeout is needed to not have this.urls sometimes empty at that moment */
-                setTimeout(() => {
-                  this.realInit(d.url, 50);
-                }, 250)
+                this.$nextTick(() => {
+                  if (callRealInit) {
+                    this.realInit(d.url);
+                  }
+                })
               })
             },
             (xhr, textStatus, errorThrown) => {
@@ -1436,10 +1504,8 @@
                 let url = this.views[idx].url;
                 if (this.urls[url]) {
                   this.views.splice(this.urls[url].idx, 1);
-                  delete this.urls[url];
                 }
               }
-              //this.navigate(url);
               this.activate(url);
             },
             () => {
@@ -1448,8 +1514,7 @@
           );
         }
       },
-      realInit(url, num) {
-        bbn.fn.log(url + '   -   ' + num, this.urls ? Object.keys(this.urls) : this.urls, this.baseURL);
+      realInit(url) {    
         if (this.urls[url]) {
           this.urls[url].setLoaded(true);
           // Otherwise the changes we just did on the props wont be taken into account at container level
@@ -1460,7 +1525,6 @@
         else {
           throw new Error(bbn._("Impossible to find the container for URL") + ' ' + url);
         }
-
       },
       /**
        * @method reload
@@ -1472,7 +1536,7 @@
         this.$nextTick(() => {
           if (
             this.views[idx] &&
-            !this.views[idx].slot &&
+            //!this.views[idx].real &&
             this.views[idx].load &&
             this.urls[this.views[idx].url] &&
             this.urls[this.views[idx].url].isLoaded
@@ -1562,7 +1626,6 @@
        * @return {Array|Boolean}
        */
       getMenuFn(idx) {
-        //bbn.fn.log('getMenuFn(tabIndex)', this.nav, this.views[idx] ? this.views[idx].menu : 'niente', idx);
         if ( !this.nav || !this.views[idx]  || (this.views[idx].menu === false) ){
           return [];
         }
@@ -1664,9 +1727,7 @@
             key: "notext",
             icon: this.views[idx].notext ? "nf nf-fa-font" : "nf nf-fa-font_awesome",
             action: () => {
-              //bbn.fn.log(this.containers[idx]);
-              this.views[idx].notext = !this.views[idx].notext;
-              this.$forceUpdate();
+              this.$set(this.views[idx], 'notext', !this.views[idx].notext);
             }
           });
         }
@@ -1759,10 +1820,7 @@
        * @fires setConfig
        * @return {Boolean}
        */
-      close(idx, force, ev){
-        if ( ev ){
-          ev.preventDefault();
-        }
+      close(idx, force){
         let res = this.remove(idx, force);
         if ( res && (this.selected > idx) ){
           this.selected--;
@@ -1793,7 +1851,7 @@
       setConfig(){
         if ( this.autoload && this.isInit ){
           this.setStorage(this.getConfig(), this.parentContainer ? this.parentContainer.getFullURL() : this.storageName);
-          this.$forceUpdate();
+          //this.$forceUpdate();
         }
       },
       /**
@@ -1807,7 +1865,7 @@
               breadcrumb: this.isBreadcrumb
             };
         bbn.fn.each(this.views, (obj, i) => {
-          if ( obj.url && obj.load ){
+          if (obj.url && obj.load) {
             let res = {
               url: obj.url,
               icon: obj.icon || false,
@@ -1818,7 +1876,8 @@
               static: !!obj.static,
               pinned: !!obj.pinned,
               current: obj.current ? obj.current : obj.url,
-              cfg: {}
+              cfg: {},
+              real: obj.real
             };
             if ( obj.bcolor ){
               res.bcolor = obj.bcolor;
@@ -1876,7 +1935,7 @@
             if ( idx !== false ){
               this.$set(this.views[idx].events, 'bbnObs' + obs.element + obs.id, newVal);
               this.$nextTick(() => {
-                this.$forceUpdate();
+                //this.$forceUpdate();
               });
             }
           }
@@ -1899,7 +1958,7 @@
           if ((idx !== false) && (this.views[idx].events['bbnObs' + obs.element + obs.id] !== undefined)) {
             this.$delete(this.views[idx].events, 'bbnObs' + obs.element + obs.id);
             this.$nextTick(() => {
-              this.$forceUpdate();
+              //this.$forceUpdate();
             });
           }
         }
@@ -1926,7 +1985,263 @@
         this.$nextTick(() => {
           ct.show();
         })
+      },
+
+      //Tabs
+      /**
+       * Cuts the given string by 'maxTitleLength' property value
+       * @method cutTitle
+       * @param {String} title
+       * @return {String}
+       */
+      cutTitle(title){
+        return bbn.fn.shorten(title, this.maxTitleLength)
+      },
+      /**
+       * @method getFullTitle
+       * @param {Object} obj
+       * @return {String|null}
+       */
+      getFullTitle(obj){
+        let t = '';
+        if ( obj.notext || (obj.title.length > this.maxTitleLength) ){
+          t += obj.title;
+        }
+        if ( obj.ftitle ){
+          t += (t.length ? ' - ' : '') + obj.ftitle;
+        }
+        return t || null;
+      },
+      /**
+       * @method getFontColor
+       * @param {Number} idx
+       * @fires getRef
+       * @return {String}
+       */
+      getFontColor(idx){
+        if (bbn.fn.isNumber(idx)) {
+          if ( this.views[idx] && this.views[idx].fcolor ){
+            return this.views[idx].fcolor;
+          }
+          let el = this.getRef('title-' + idx);
+          if ( el ){
+            return window.getComputedStyle(el.$el ? el.$el : el).color;
+          }
+        }
+        return '';
+      },
+      /**
+       * @method getBackgroundColor
+       * @param {Number} idx
+       * @fires getRef
+       * @return {String}
+       */
+      getBackgroundColor(idx){
+        if (bbn.fn.isNumber(idx)) {
+          if ( this.views[idx] && this.views[idx].bcolor ){
+            return this.views[idx].bcolor;
+          }
+          let el = this.getRef('title-' + idx);
+          if ( el ){
+            return window.getComputedStyle(el.$el ? el.$el : el).backgroundColor;
+          }
+        }
+        return '';
+      },
+      /**
+       * @method scrollTabs
+       * @param {String} dir
+       * @fires getRef
+       */
+      scrollTabs(dir){
+        let scroll = this.getRef('horizontal-scroll');
+        if ( scroll ){
+          if ( dir === 'right' ){
+            scroll.scrollAfter();
+          }
+          else{
+            scroll.scrollBefore();
+          }
+        }
+      },
+      /**
+       * @method getTab
+       * @param {Number} idx
+       * @fires getRef
+       * @return {HTMLElement}
+       */
+      getTab(idx){
+        if ( idx === undefined ){
+          idx = this.selected;
+        }
+        return this.getRef('tab-' + idx);
+      },
+      /**
+       * @method closeAll
+       * @fires close
+       */
+      closeAll(){
+        for ( let i = this.views.length - 1; i >= 0; i-- ){
+          if ( !this.views[i].static && !this.views[i].pinned ){
+            this.close(i);
+          }
+        }
+      },
+      /**
+       * @method closeallBut
+       * @param {Number} idx
+       * @fires close
+       */
+      closeAllBut(idx){
+        for ( let i = this.views.length - 1; i >= 0; i-- ){
+          if ( !this.views[i].static && !this.views[i].pinned && (i !== idx) ){
+            this.close(i);
+          }
+        }
+      },
+      /**
+       * @method pin
+       * @param {Number} idx
+       * @fires isValidIndex
+       * @fires setConfig
+       * @emit beforePin
+       * @emit pin
+       */
+      pin(idx){
+        if ( this.isValidIndex(idx) ){
+          let ev = new CustomEvent('beforePin', {
+            cancelable: true
+          });
+          this.$emit('beforePin', idx, ev);
+          if ( !ev.defaultPrevented ){
+            this.views[idx].pinned = true;
+            this.setConfig();
+            this.$emit('pin', idx);
+          }
+        }
+      },
+      /**
+       * @method unpin
+       * @param {Number} idx
+       * @fires isValidIndex
+       * @fires setConfig
+       * @emit beforeUnpin
+       * @emit unpin
+       */
+      unpin(idx){
+        if ( this.isValidIndex(idx) ){
+          let ev = new CustomEvent('beforeUnpin', {
+            cancelable: true
+          });
+          this.$emit('beforeUnpin', idx, ev);
+          if ( !ev.defaultPrevented ){
+            this.views[idx].pinned = false;
+            this.setConfig();
+            this.$emit('unpin', idx);
+          }
+        }
+      },
+
+      //Breadcrumb
+      /**
+       * @method registerBreadcrumb
+       * @param {Vue} bc
+       * @param {String} url
+       */
+      registerBreadcrumb(bc){
+        let url = bc.baseURL.substr(0, bc.baseURL.length - 1);
+        this.breadcrumbsList.push(bc);
+        if (this.itsMaster && !this.master) {
+          this.itsMaster.breadcrumbsList.push(bc);
+        }
+      },
+      /**
+       * @method unregisterBreadcrumb
+       * @param {Vue} bc
+       * @param {String} url
+       */
+      unregisterBreadcrumb(bc){
+        let url = bc.baseURL.substr(0, bc.baseURL.length - 1);
+        let idx = bbn.fn.search(this.breadcrumbsList, {baseURL: bc.baseURL});
+        if (idx !== -1) {
+          this.breadcrumbsList.splice(idx, 1);
+        }
+        if (this.itsMaster && !this.master) {
+          idx = bbn.fn.search(this.itsMaster.breadcrumbsList, {baseURL: bc.baseURL});
+          if (idx !== -1) {
+            this.itsMaster.breadcrumbsList.splice(idx, 1);
+          }
+        }
+      },
+      getBreadcrumbs(idx){
+        let ret = [];
+        if (bbn.fn.isNumber(idx) && this.views[idx]) {
+          let url = this.views[idx].url,
+              bc = bbn.fn.getRow(this.breadcrumbsList, {baseURL: url+'/'});
+          if (this.urls[url] && bc) {
+            ret.push(...bc.breadcrumbs);
+          }
+        }
+        return ret;
+      },
+      /**
+       * Returns the breadcrumb's source list.
+       * @method getList
+       * @param {Vue} bc
+       * @fires close
+       * @return {Array}
+       */
+      getList(idx){
+        let list = [],
+            parents = bbn.fn.map(idx && this.itsMaster && (this.baseURL !== this.itsMaster.baseURL) ?
+              this.getParents() : [],
+              p => p.views[p.selected]);
+        if (parents.length > idx) {
+          parents.splice(0, parents.length - idx);
+        }
+        bbn.fn.each(this.views, (t, i) => {
+          if ( !t.hidden && (t.idx !== this.selected) ){
+            list.push({
+              text: t.title,
+              icon: t.icon,
+              key: t.url,
+              bcolor: t.bcolor,
+              fcolor: t.fcolor,
+              static: t.static,
+              parents: parents,
+              children: bbn.fn.map(this.getBreadcrumbs(i), c => c.views[c.selected]),
+              action: () => {
+                this.activateIndex(t.idx);
+              },
+              closeAction: () => {
+                this.close(t.idx)
+              }
+            })
+          }
+        });
+        return list;
+      },
+      /**
+       * @method getParents
+       * @return {Array}
+       */
+      getParents(){
+        return this.parent ? [...this.parent.getParents(), this.parent] : []
+      },
+      /**
+       * @method openMenu
+       * @param {Event} ev
+       */
+      openMenu(ev){
+        let ele = ev.target.parentElement.parentElement,
+            e = new MouseEvent("contextmenu", {
+              bubbles: true,
+              cancelable: true,
+              view: window
+            });
+        ele.dispatchEvent(e);
       }
+      
     },
 
     /**
@@ -1956,7 +2271,7 @@
      * @event mounted
      * @fires getStorage
      * @fires getDefaultURL
-     * @fires aadd
+     * @fires add
      */
     mounted(){
       // All routers above (which constitute the fullBaseURL)
@@ -1989,29 +2304,9 @@
           }
         });
       }
-      // Adding bbns-tab from the slot
-      let tmp = [];
-      if ( this.$slots.default ){
-        for ( let node of this.$slots.default ){
-          if (
-            node.componentOptions
-            && (node.componentOptions.tag === 'bbn-container')
-          ){
-            if (node.componentOptions.propsData.url === undefined) {
-              throw new Error(bbn._("You cannot use containers in router without defining a URL property"));
-            }
-            if ( !this.hasRealContainers ){
-              this.hasRealContainers = true;
-            }
-            if (node.componentOptions.propsData.url === '') {
-              this.hasEmptyURL = true;
-            }
-            let o = {slot: true, load: false, loaded: true};
-            tmp.push(bbn.fn.extend({}, node.componentOptions.propsData, o));
-          }
-        }
-      }
+      // Adding bbns-container from the slot
 
+      let tmp = [];
       bbn.fn.each(this.source, (a) => {
         if (a.url === '') {
           if (a.load) {
@@ -2019,7 +2314,7 @@
           }
           this.hasEmptyURL = true;
         }
-        tmp.push(bbn.fn.extendOut(a, {slot: false}));
+        tmp.push(bbn.fn.extendOut(a, {real: false}));
       });
 
       //Get config from the storage
@@ -2051,7 +2346,37 @@
         }
         this.add(a);
       });
+
+      //Breadcrumb
+      if (!this.master && this.parent) {
+        let ct = this.closest('bbn-container');
+        ct.$on('view', () => {
+          this.parent.registerBreadcrumb(this);
+        });
+        ct.$on('unview', () => {
+          this.parent.unregisterBreadcrumb(this);
+        });
+        if (ct.visible) {
+          this.parent.registerBreadcrumb(this);
+        }
+      }
+      if (this.isBreadcrumb) {
+        this.itsBreadcrumb = this.getRef('breadcrumb');
+      }
+      
       this.ready = true;
+      setTimeout(() => {
+        // bugfix for rendering some nf-mdi icons
+        this.iconsReady = true;
+      }, 1000);
+    },
+    /**
+     * @event beforeDestroy
+     */
+    beforeDestroy(){
+      if (!this.master && this.parent){
+        this.parent.unregisterBreadcrumb(this);
+      }
     },
     watch: {
       currentTitle(v){
@@ -2090,7 +2415,6 @@
        */
       url(newVal){
         if ( this.ready ){
-          //bbn.fn.log("ROUTER change URL", newVal);
           this.route(newVal);
         }
       },
@@ -2101,17 +2425,6 @@
         if ( this.parentContainer ) {
           this.parentContainer.dirty = v;
         }
-      },
-      /**
-       * @watch selected
-       */
-      selected(newVal, oldVal){
-        /* if ( this.nav && (newVal !== oldVal) && bbn.fn.isNumber(newVal) ){
-          let nav = this.itsTabs || this.itsBreadcrumb;
-          if ( bbn.fn.isVue(nav) ){
-            nav.selected = newVal;
-          }
-        } */
       },
       /**
        * @watch itsMaster
@@ -2139,8 +2452,113 @@
        */
       isBreadcrumb(newVal){
         this.$nextTick(() => {
+          if (newVal) {
+            this.itsBreadcrumb = this.getRef('breadcrumb');
+          }
           this.setConfig();
         })
+      },
+      breadcrumbsList(){
+        this.breadcrumbs.splice(0, this.breadcrumbs.length, this, ...this.getBreadcrumbs(this.selected));
+      }
+    },
+    components: {
+      /**
+       * @component listItem
+       */
+      listItem: {
+        template: `
+<div class="bbn-w-100 bbn-vmiddle" style="height: 2.5em">
+  <div class="bbn-flex-width bbn-vmiddle bbn-h-100">
+    <div class="text bbn-flex-fill bbn-vmiddle bbn-h-100">
+      <div class="bbn-flex-width bbn-h-100" :style="lastColors">
+        <template v-for="(p, i) in source.parents">
+          <div :style="{
+                  backgroundColor: p.bcolor || false,
+                  color: p.fcolor || false
+                }"
+                class="bbn-h-100 bbn-vmiddle bbn-vxspadded bbn-hspadded">
+            <i v-if="p.icon"
+              :class="p.icon"/>
+            <span v-html="p.title || '` + bbn._('Untitled') + `'"></span>
+            <span>
+              <i class="nf nf-fa-angle_right bbn-hsmargin bbn-large bbn-router-breadcrumb-arrow"/>
+            </span>
+          </div>
+        </template>
+        <div :style="{
+                backgroundColor: source.bcolor || false,
+                color: source.fcolor || false
+              }"
+              :class="['bbn-h-100', 'bbn-vmiddle', 'bbn-hspadded', {'bbn-flex-fill': !source.children.length}]">
+          <i v-if="source.icon"
+              class="source.icon"/>
+          <span v-html="source.text || '` + bbn._('Untitled') + `'"/>
+        </div>
+        <template v-for="(c, i) in source.children">
+          <div :style="{
+                  backgroundColor: c.bcolor || false,
+                  color: c.fcolor || false
+                }"
+                :class="[
+                  'bbn-h-100',
+                  'bbn-vmiddle',
+                  'bbn-hspadded',
+                  {'bbn-b': !source.children[i+1], 'bbn-flex-fill': i === source.children.length - 1}
+                ]">
+            <span>
+              <i class="nf nf-fa-angle_right bbn-hsmargin bbn-large bbn-router-breadcrumb-arrow"/>
+            </span>
+            <i v-if="c.icon"
+                class="c.icon"/>
+            <span v-html="c.title || '` + bbn._('Untitled') + `'"/>
+          </div>
+        </template>
+        <div v-if="!source.static"
+              class="bbn-vmiddle bbn-h-100 bbn-hspadded"
+              @click.prevent.stop="close">
+          <i class="nf nf-fa-times_rectangle bbn-lg"/>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        `,
+        props: {
+          /**
+           * @prop {Object} source
+           * @memberof listItem
+           */
+          source :{
+            type: Object,
+            required: true
+          }
+        },
+        computed: {
+          lastColors(){
+            let e = this.source.children.length ?
+              this.source.children[this.source.children.length-1]
+              : this.source;
+            let r = {};
+            if (e.bcolor) {
+              r.backgroundColor = e.bcolor;
+            }
+            if (e.fcolor) {
+              r.color = e.fcolor;
+            }
+            return r;
+          },
+        },
+        methods: {
+          /**
+           * @method close
+           * @memberof listItem
+           */
+          close(){
+            this.source.closeAction();
+            this.closest('bbn-list').updateData();
+          }
+        }
       }
     }
   });

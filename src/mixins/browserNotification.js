@@ -126,7 +126,6 @@
       mounted(){
         Notification.requestPermission((perms) => {
           this.hasBrowserPermission = perms === 'granted';
-          this.ready = true;
         })
       }
     }

@@ -25,10 +25,13 @@ script.innerHTML = `<div :class="['bbn-iblock', componentClass]">
              @change="changed(d[sourceValue], d, $event)"
              :checked="d[sourceValue] === modelValue"
       >
-      <label class="bbn-radio-label"
-             v-html="render ? render(d) : d[sourceText]"
+      <label class="bbn-radio-label bbn-iflex bbn-vmiddle"
              :for="id + '_' + idx"
-      ></label>
+      >
+         <span class="bbn-left-sspace"
+               v-html="render ? render(d) : d[sourceText]"
+         ></span>
+      </label>
       <br v-if="!vertical && step && ((idx+1) % step === 0)">
       <div v-if="(source[idx+1] !== undefined) && !!separator"
            :class="{

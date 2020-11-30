@@ -7,47 +7,48 @@
               v-on:enter="enter"
               v-on:after-enter="onResize"
   >
-    <component :is="scrollable ? 'bbn-scroll' : 'div'"
-               v-if="ready && isLoaded && (visible || cached)"
-               v-show="visible"
-               :axis="scrollable ? 'y' : null"
-               :class="{
-                'bbn-overlay': !fullScreen,
-                'bbn-container-full-screen': fullScreen,
-                'bbn-container-visible': visible
-               }"
-    >
-      <!-- This is an ad hoc component with unique name -->
-      <component v-if="isComponent"
-                 :is="$options.components[componentName]"
-                 :source="source"
-                 ref="component"
-      ></component>
-      <!-- This is a classic component -->
-      <component v-else-if="component"
-                 :is="component"
-                 :source="source"
-                 ref="component"
-                 v-bind="options"
-      ></component>
-      <!-- This is just HTML content -->
-      <div v-else-if="content" v-html="content">
-      </div>
-      <!-- This is the slot -->
-      <slot v-else></slot>
-      <component is="style" v-if="css" scoped="scoped" v-html="css"></component>
-      <bbn-loader v-if="hasLoader"></bbn-loader>
-      <span  v-if="fullScreen"
-             class="bbn-container-full-screen-closer bbn-xl bbn-p">
-        <i class="nf nf-fa-times_circle"
-           @click="fullScreen = false"></i>
-      </span>
-    </component>
+    <div :class="{
+      'bbn-overlay': !fullScreen,
+      'bbn-container-full-screen': fullScreen,
+      'bbn-container-visible': visible
+     }">
+      <component :is="scrollable ? 'bbn-scroll' : 'div'"
+                v-if="ready && isLoaded && (visible || cached)"
+                v-show="visible"
+                :axis="scrollable ? 'y' : null"
+                class="bbn-overlay">
+        <!-- This is an ad hoc component with unique name -->
+        <component v-if="isComponent"
+                  :is="$options.components[componentName]"
+                  :source="source"
+                  ref="component"
+        ></component>
+        <!-- This is a classic component -->
+        <component v-else-if="component"
+                  :is="component"
+                  :source="source"
+                  ref="component"
+                  v-bind="options"
+        ></component>
+        <!-- This is just HTML content -->
+        <div v-else-if="content" v-html="content">
+        </div>
+        <!-- This is the slot -->
+        <slot v-else></slot>
+        <component is="style" v-if="css" scoped="scoped" v-html="css"></component>
+        <bbn-loader v-if="hasLoader"></bbn-loader>
+        <span  v-if="fullScreen"
+              class="bbn-container-full-screen-closer bbn-xl bbn-p">
+          <i class="nf nf-fa-times_circle"
+            @click="fullScreen = false"></i>
+        </span>
+      </component>
+      <bbn-popup ref="popup"
+                :source="popups"
+                v-if="!hidden && ready && isLoaded && (visible || cached)">
+      </bbn-popup>
+    </div>
   </transition>
-  <bbn-popup ref="popup"
-             :source="popups"
-             v-if="!hidden && ready && isLoaded && (visible || cached)">
-  </bbn-popup>
 </div>
 
 </template>
@@ -500,12 +501,14 @@
       }
       if ( !this.router.ready ){
         this.router.$on('ready', () => {
+          bbn.fn.log("ROUTER NOT READY")
           //this.init();
           this.router.register(this);
         });
       }
       else{
         //this.init();
+        bbn.fn.log("ROUTER READY")
         this.router.register(this);
       }
       //

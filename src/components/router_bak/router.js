@@ -458,21 +458,17 @@
         }
         this.numRegistered++;
         this.urls[cp.url] = cp;
+        bbn.fn.log("REGISTERING", cp.url, this.urls[cp.url]);
         let idx = this.search(cp.url);
         if (idx === false) {
           this.add(cp);
         }
         else{
           cp.currentIndex = idx;
-          bbn.fn.log('REGISTER', cp.url, this.isInit, this.views.length, Object.keys(this.urls).length, this.numRegistered)
           if ( !this.isInit && (this.numRegistered === this.views.length) ){
             this.isInit = true;
             if ( this.auto ){
-              bbn.fn.log('AUTO ROUTE', cp.url, this.getDefaultURL())
-              this.$nextTick(() => {
-
-                this.route(this.getDefaultURL(), true);
-              })
+              this.route(this.getDefaultURL(), true);
             }
           }
         }
@@ -485,21 +481,18 @@
        * @param {Vue} cp
        */
       unregister(cp){
-        bbn.fn.log('UNREGISTER', cp.url)
         this.numRegistered--;
         if (!bbn.fn.isString(cp.url)) {
           throw Error(bbn._('The component bbn-container must have a URL defined'));
         }
         if ( this.urls[cp.url] ){
+          bbn.fn.log("UNREGISTERING");
           delete this.urls[cp.url];
         }
         let idx = this.search(cp.url);
         //bbn.fn.log("GGGGGG", cp.url, idx, this.views);
         if (idx !== false) {
           this.remove(idx);
-        }
-        if (this.isInit && (this.views.length !== this.numRegistered)) {
-          this.isInit = false;
         }
       },
       /**
@@ -612,7 +605,7 @@
           throw Error(bbn._('The component bbn-container must have a valid URL defined'));
         }
         url = bbn.fn.replaceAll('//', '/', url);
-        if (this.ready && this.isInit && (force || !this.activeContainer || (url !== this.currentURL))) {
+        if (this.ready && (force || !this.activeContainer || (url !== this.currentURL))) {
           let event = new CustomEvent(
             "beforeRoute",
             {
@@ -638,7 +631,6 @@
             }
             let st = url ? this.getRoute(url) : '';
             //bbn.fn.log("ROUTING FUNCTION EXECUTING FOR " + url + " (CORRESPONDING TO " + st + ")");
-            bbn.fn.log('BEFORE LOAD CALL', st, !!this.urls[st])
             if (!url || (!force && (this.currentURL === url))) {
               if (bits[1]) {
 
@@ -1077,6 +1069,7 @@
        * @return {Boolean}
        */
       remove(misc, force){
+        bbn.fn.log("REMOVING " + misc)
         let idx = this.getIndex(misc);
         if ( idx > -1 ){
           let ev = new Event('close', {cancelable: !force}),
@@ -1108,7 +1101,7 @@
             else {
               if (this.views[idx].slot) {
                 let t = this.views.splice(idx, 1);
-                delete this.urls[t.url];
+                //delete this.urls[t.url];
                 bbn.fn.each(this.views, (v, i) => {
                   if ( v.idx !== i ){
                     v.idx = i;
@@ -1124,7 +1117,7 @@
                 }
                 if (force || !ev.defaultPrevented) {
                   let t = this.views.splice(idx, 1);
-                  delete this.urls[t.url];
+                  //delete this.urls[t.url];
                   bbn.fn.each(this.views, (v, i) => {
                     if ( v.idx !== i ){
                       v.idx = i;
@@ -1338,7 +1331,7 @@
        * @emit update
       */
       load(url, force){
-        if ( url && this.isInit){
+        if ( url ){
           this.isLoading = true;
           let finalURL = this.fullBaseURL + url;
           let idx = this.search(url);
@@ -1402,7 +1395,7 @@
                 delete d.data;
               }
               if ( (d.url !== d.current) && this.urls[d.current] ){
-                //bbn.fn.warning("DELETING VIEW CASE.... " + d.current + ' ' + this.urls[d.current].idx);
+                bbn.fn.warning("DELETING VIEW CASE.... " + d.current + ' ' + this.urls[d.current].idx);
                 this.views.splice(this.urls[d.current].idx, 1);
                 delete this.urls[d.current];
               }
@@ -1425,17 +1418,14 @@
               }
               this.$nextTick(() => {
                 let o = bbn.fn.extend(view || {}, d, {slot: false, loading: false, load: true, real: false, loaded: true});
-                bbn.fn.log('AFTER EXTEND', bbn.fn.extend(true, {}, o))
                 this.add(o, idx);
                 if (o.title) {
                   this.currentTitle = o.title;
                 }
                 /** @todo Find why this timeout is needed to not have this.urls sometimes empty at that moment */
-                if (this.isInit) {
                 setTimeout(() => {
                   this.realInit(d.url, 50);
                 }, 250)
-                }
               })
             },
             (xhr, textStatus, errorThrown) => {
@@ -1459,19 +1449,18 @@
         }
       },
       realInit(url, num) {
-        if (this.isInit && Object.keys(this.urls).length) {
-          bbn.fn.log(url + '   -   ' + num, this.urls ? Object.keys(this.urls) : this.urls, this.baseURL, 'isInit', this.isInit, this.views.length, this.numRegistered);
-          if (this.urls[url]) {
-            this.urls[url].setLoaded(true);
-            // Otherwise the changes we just did on the props wont be taken into account at container level
-            this.urls[url].init();
-            this.callRouter(this.urls[url].current, url);
-            this.$emit('update', this.views);
-          }
-          else {
-            throw new Error(bbn._("Impossible to find the container for URL") + ' ' + url);
-          }
+        bbn.fn.log(url + '   -   ' + num, this.urls ? Object.keys(this.urls) : this.urls, this.baseURL);
+        if (this.urls[url]) {
+          this.urls[url].setLoaded(true);
+          // Otherwise the changes we just did on the props wont be taken into account at container level
+          this.urls[url].init();
+          this.callRouter(this.urls[url].current, url);
+          this.$emit('update', this.views);
         }
+        else {
+          throw new Error(bbn._("Impossible to find the container for URL") + ' ' + url);
+        }
+
       },
       /**
        * @method reload
@@ -1970,7 +1959,6 @@
      * @fires aadd
      */
     mounted(){
-      bbn.fn.log('AAAAAAAAAAAAAAAAAAA');
       // All routers above (which constitute the fullBaseURL)
       this.parents = this.ancesters('bbn-router');
       // The closest
@@ -2063,9 +2051,7 @@
         }
         this.add(a);
       });
-      this.$nextTick(() => {
-        this.ready = true;
-      })
+      this.ready = true;
     },
     watch: {
       currentTitle(v){

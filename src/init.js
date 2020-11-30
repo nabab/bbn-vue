@@ -32,6 +32,7 @@
             obj.content = template;
           }
         }
+        obj.real = false;
         router.register(obj, true);
       }
     }

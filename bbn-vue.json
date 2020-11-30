@@ -216,30 +216,6 @@
                 ]
             },
             {
-                "text": "block",
-                "url": "bbn-vue\/component\/block\/overview",
-                "props": [
-                    {
-                        "text": "title",
-                        "desc": "The audio's title",
-                        "url": "bbn-vue\/component\/block\/doc\/props#title"
-                    },
-                    {
-                        "text": "titlePosition",
-                        "desc": "The title's position(top or bottom)",
-                        "url": "bbn-vue\/component\/block\/doc\/props#titlePosition"
-                    }
-                ],
-                "methods": [],
-                "mixins": [
-                    {
-                        "text": "basicComponent",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/block\/doc\/mixins#basicComponent"
-                    }
-                ]
-            },
-            {
                 "text": "breadcrumb",
                 "url": "bbn-vue\/component\/breadcrumb\/overview",
                 "props": [
@@ -1295,6 +1271,25 @@
                         "text": "localStorageComponent",
                         "desc": "",
                         "url": "bbn-vue\/component\/clipboard\/doc\/mixins#localStorageComponent"
+                    }
+                ]
+            },
+            {
+                "text": "cms-block",
+                "url": "bbn-vue\/component\/cms-block\/overview",
+                "props": [
+                    {
+                        "text": "title",
+                        "desc": "The audio's title",
+                        "url": "bbn-vue\/component\/cms-block\/doc\/props#title"
+                    }
+                ],
+                "methods": [],
+                "mixins": [
+                    {
+                        "text": "basicComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/cms-block\/doc\/mixins#basicComponent"
                     }
                 ]
             },
@@ -5064,6 +5059,16 @@
                 ],
                 "methods": [
                     {
+                        "text": "isNumber",
+                        "desc": "Alias of bbn.fn.isNumber",
+                        "url": "bbn-vue\/component\/router\/doc\/methods#isNumber"
+                    },
+                    {
+                        "text": "numProperties",
+                        "desc": "Alias of bbn.fn.numProperties",
+                        "url": "bbn-vue\/component\/router\/doc\/methods#numProperties"
+                    },
+                    {
                         "text": "register",
                         "desc": "Function used by container to make themselves known when they are mounted.",
                         "url": "bbn-vue\/component\/router\/doc\/methods#register"
@@ -5287,6 +5292,81 @@
                         "text": "containerComponentMount",
                         "desc": "",
                         "url": "bbn-vue\/component\/router\/doc\/methods#containerComponentMount"
+                    },
+                    {
+                        "text": "cutTitle",
+                        "desc": "Cuts the given string by 'maxTitleLength' property value",
+                        "url": "bbn-vue\/component\/router\/doc\/methods#cutTitle"
+                    },
+                    {
+                        "text": "getFullTitle",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/router\/doc\/methods#getFullTitle"
+                    },
+                    {
+                        "text": "getFontColor",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/router\/doc\/methods#getFontColor"
+                    },
+                    {
+                        "text": "getBackgroundColor",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/router\/doc\/methods#getBackgroundColor"
+                    },
+                    {
+                        "text": "scrollTabs",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/router\/doc\/methods#scrollTabs"
+                    },
+                    {
+                        "text": "getTab",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/router\/doc\/methods#getTab"
+                    },
+                    {
+                        "text": "closeAll",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/router\/doc\/methods#closeAll"
+                    },
+                    {
+                        "text": "closeallBut",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/router\/doc\/methods#closeallBut"
+                    },
+                    {
+                        "text": "pin",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/router\/doc\/methods#pin"
+                    },
+                    {
+                        "text": "unpin",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/router\/doc\/methods#unpin"
+                    },
+                    {
+                        "text": "registerBreadcrumb",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/router\/doc\/methods#registerBreadcrumb"
+                    },
+                    {
+                        "text": "unregisterBreadcrumb",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/router\/doc\/methods#unregisterBreadcrumb"
+                    },
+                    {
+                        "text": "getList",
+                        "desc": "Returns the breadcrumb's source list.",
+                        "url": "bbn-vue\/component\/router\/doc\/methods#getList"
+                    },
+                    {
+                        "text": "getParents",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/router\/doc\/methods#getParents"
+                    },
+                    {
+                        "text": "openMenu",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/router\/doc\/methods#openMenu"
                     }
                 ],
                 "mixins": [

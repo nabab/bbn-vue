@@ -49,11 +49,10 @@
                     :fixed-left="leftShortcuts"
                     :fixed-right="rightShortcuts"
                     :mobile="true"
-                    :z-index="3"
-        ></bbn-fisheye>
+                    :z-index="3"/>
         <!-- SEARCHBAR -->
         <div v-if="!isMobile"
-             class="bbn-appui-search bbn-large bbn-abs bbn-h-100 bbn-vspadded"
+             class="bbn-appui-search bbn-large bbn-abs bbn-h-100 bbn-vspadded bbn-vmiddle"
         >
           <bbn-search :source="searchBar.source"
                       :placeholder="searchBar.placeholderFocused"
@@ -65,13 +64,11 @@
                       :source-value="searchBar.sourceValue"
                       :source-text="searchBar.sourceText"
                       :min-length="searchBar.minLength"
-                      class="bbn-no"
-          >
-          </bbn-search>
+                      class="bbn-no"/>
         </div>
         <!-- CENTRAL PART -->
         <div v-if="!isMobile"
-             class="bbn-h-100 bbn-splitter-top-center bbn-flex-fill"
+             class="bbn-splitter-top-center bbn-flex-fill"
         >
           <!-- FISHEYE -->
           <bbn-fisheye v-if="plugins['appui-menu']"
@@ -86,10 +83,8 @@
                        ref="fisheye"
                        :source="shortcuts"
                        :fixed-left="leftShortcuts"
-                       :fixed-right="rightShortcuts">
-          </bbn-fisheye>
-          <div v-else>
-          </div>
+                       :fixed-right="rightShortcuts"/>
+          <div v-else v-html="' '"/>
         </div>
         <!-- LOGO (MOBILE) -->
         <div class="bbn-flex-fill bbn-hspadded bbn-middle"
@@ -115,18 +110,17 @@
                       max-width="100%"
                       class="bbn-no"
                       @focus="searchIsActive = true"
-                      @blur="searchBarBlur"
-          ></bbn-search>
+                      @blur="searchBarBlur"/>
         </div>
         <!-- LOGO -->
         <div v-if="!isMobile"
              class="bbn-block bbn-logo-container"
              style="max-width: 25%; min-height: 100%; width: 10em"
         >
-          <div class="bbn-100 bbn-vmiddle bbn-r">
+          <div class="bbn-100 bbn-vmiddle" style="justify-content: flex-end;">
             <img v-if="!!logo"
                  :src="logo"
-                 class="bbn-right-space bbn-appui-logo"
+                 class="bbn-right-padded bbn-appui-logo"
             >
           </div>
         </div>
@@ -178,7 +172,7 @@
                   :breadcrumb="isMobile"
                   :scrollable="isMobile"
       >
-        <slot></slot>
+        <slot/>
       </bbn-router>
     </div>
     <!-- STATUS -->
@@ -192,15 +186,14 @@
         <div class="bbn-flex-fill">
           <bbn-loadbar class="bbn-h-100 bbn-right-space bbn-overlay"
                       ref="loading"
-                      :source="loaders"
-          ></bbn-loadbar>
+                      :source="loaders"/>
         </div>
         <div class="bbn-vmiddle">
           <!-- TASK TRACKER -->
           <div v-if="plugins['appui-task']"
               class="bbn-right-space"
           >
-            <appui-task-tracker></appui-task-tracker>
+            <appui-task-tracker/>
           </div>
           <!-- CHAT -->
           <div v-if="plugins['appui-chat']"
@@ -214,14 +207,13 @@
                       :online="app.user.chat"
                       @messageToChannel="d => messageChannel('appui-chat', d)"
                       @hook:mounted="onChatMounted"
-                      :groups="app.groups"
-            ></bbn-chat>
+                      :groups="app.groups"/>
           </div>
           <!-- NOTIFICATIONS -->
           <div v-if="plugins['appui-notifications'] && pollerObject['appui-notifications']"
                class="bbn-right-space"
           >
-            <appui-notifications-tray ref="notificationsTray"></appui-notifications-tray>
+            <appui-notifications-tray ref="notificationsTray"/>
           </div>
           <!-- CLIPBOARD BUTTON -->
           <div v-if="plugins['appui-clipboard'] && clipboard"
@@ -258,26 +250,33 @@
                   :top="50"
                   :shortcuts="true"
                   @shortcut="addShortcut"
-                  @ready="menuMounted = true">
-    </bbn-treemenu>
+                  @ready="menuMounted = true"/>
   </bbn-slider>
   <!-- CLIPBOARD SLIDER -->
   <bbn-clipboard v-if="plugins['appui-clipboard'] && clipboard"
                  :storage="true"
                  ref="clipboard"
                  :source="clipboardContent"
-                 style="z-index: 13">
-  </bbn-clipboard>
+                 style="z-index: 13"/>
 
   <!-- POPUPS -->
   <bbn-popup :source="popups"
              ref="popup"
-             :z-index="14">
-  </bbn-popup>
+             :z-index="14"/>
   <!-- NOTIFICATIONS -->
-  <bbn-notification ref="notification" :z-index="15"></bbn-notification>
+  <bbn-notification ref="notification" :z-index="15"/>
   <!-- APP COMPONENT -->
-  <component ref="app" :is="appComponent"></component>
+  <div class="bbn-appui-big-message"
+       v-if="bigMessage"
+       :style="{opacity: hasBigMessage ? 0.5 : 0}">
+    <div class="bbn-overlay bbn-middle">
+      <div class="bbn-block"
+           v-html="bigMessage"/>
+    </div>
+    <i class="bbn-top-right bbn-p nf nf-fa-times"
+       @click="closeBigMessage"/>
+  </div>
+  <component ref="app" :is="appComponent"/>
 </div>
 
 </template>
@@ -419,7 +418,9 @@
         observerTimeout: false,
         colorEnvVisible: true,
         currentTitle: this.title,
-        searchIsActive: false
+        searchIsActive: false,
+        bigMessage: false,
+        hasBigMessage: false
       }
     },
     computed: {
@@ -432,6 +433,22 @@
       }
     },
     methods: {
+      setBigMessage(msg, timeout = 3000) {
+        this.bigMessage = msg;
+        setTimeout(() => {
+          this.hasBigMessage = true;
+          setTimeout(() => {
+            this.closeBigMessage();
+          }, timeout < 100 ? timeout*1000 : timeout);
+        }, 50);
+
+      },
+      closeBigMessage(){
+        this.hasBigMessage = false;
+        setTimeout(() => {
+          this.bigMessage = false;
+        }, 250)
+      },
       focusSearchMenu(){
         let menu = this.getRef('menu');
         if (menu) {
@@ -448,7 +465,7 @@
               return false;
             }
           });
-          let url = this.plugins['appui-ide'] + '/editor/file/';
+          let url = this.plugins['appui-projects'] + '/router/' + bbn.env.appName + '/ide/editor/file/';
           if (plugin){
             url += 'lib/' + plugin + '/mvc' + tab.url.substr(this.plugins[plugin].length);
           }
@@ -1173,6 +1190,18 @@
 .bbn-appui .bbn-appui-clipboard li {
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+.bbn-appui .bbn-appui-big-message {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0px;
+  left: 0px;
+  background-color: black;
+  color: white;
+  font-size: 12vmin;
+  transition: opacity 250ms;
+  z-index: 10;
 }
 
 </style>

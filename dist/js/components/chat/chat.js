@@ -1479,13 +1479,16 @@ document.head.insertAdjacentElement('beforeend', css);
                 users: this.participants,
                 text: this.currentMessage
               }, d => {
-                if ( d.success && this.idTemp && d.id_chat ){
-                  this.cp.setIdByTemp(this.idTemp, d.id_chat);
-                  this.cp.messageToChannel({
-                    function: 'setIdByTemp',
-                    params: [this.idTemp, d.id_chat]
-                  })
-                  this.isSending = false;
+                if (d.success) {
+                  if (this.idTemp && d.id_chat) {
+                    this.cp.setIdByTemp(this.idTemp, d.id_chat);
+                    this.cp.messageToChannel({
+                      function: 'setIdByTemp',
+                      params: [this.idTemp, d.id_chat]
+                    })
+                    this.isSending = false;
+                  }
+                  this.cp.setLastActivity(this.chatId, this.userId);
                 }
               })
               this.currentMessage = '';

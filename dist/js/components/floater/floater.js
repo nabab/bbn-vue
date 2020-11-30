@@ -6,7 +6,7 @@ script.innerHTML = `<div :class="[
           'bbn-bordered': true,
           'bbn-background-internal': true,
           'bbn-flex-height': outHeight > 0,
-          'bbn-invisible': isResizing || !isResized || !visible
+          'bbn-invisible': !visible
         },
         componentClass
       ]"
@@ -311,7 +311,7 @@ document.head.insertAdjacentElement('beforeend', css);
        */
       latency: {
         type: Number,
-        default: 300
+        default: 25
       },
       /**
        * @prop {Function} onOpen
@@ -526,7 +526,7 @@ document.head.insertAdjacentElement('beforeend', css);
             left: this.formattedLeft,
             width: this.formattedWidth,
             height: this.formattedHeight,
-            opacity: this.isResizing || !this.isResized ? 0 : 1
+            opacity: this.isResized ? 1 : 0
           };
           if (this.currentMaxWidth) {
             bbn.fn.extend(s, {

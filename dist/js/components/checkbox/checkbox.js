@@ -15,15 +15,18 @@ script.innerHTML = `<span :class="['bbn-iblock', componentClass]"
          ref="element"
          tabindex="0"
   >
-  <label class="bbn-checkbox-label"
+  <label class="bbn-checkbox-label bbn-iflex bbn-vmiddle"
          :for="id"
-         v-html="label"
          @focus="focus"
          @blur="blur"
          @keyup="keyup"
          @keydown.space="$refs.element.click()"
          @click="click"
-  ></label>
+  >
+		<span class="bbn-left-spadded"
+					v-html="label"
+		></span>
+	</label>
 </span>`;
 script.setAttribute('id', 'bbn-tpl-component-checkbox');
 script.setAttribute('type', 'text/x-template');

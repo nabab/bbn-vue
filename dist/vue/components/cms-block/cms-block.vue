@@ -1,4 +1,22 @@
-/**
+<template>
+<div :class="[componentClass, 'bbn-w-100']"
+     :style="{
+       width: width,
+       height: height
+     }">
+  <!--bbn-rte v-if="editable && type === 'html'"
+           v-model="source.content"
+  >
+  </bbn-rte>
+  <div v-else-if="type === 'html'" 
+       v-html="source.content"
+  >
+  </div-->
+  <component v-if="ready" :is="component(type)" :source="source" :class="{'edit-block' : edit}"></component>
+</div>
+</template>
+<script>
+  module.exports = /**
  * @file bbn-cms-block component
  * @description bbn-cms-block 
  * @copyright BBN Solutions
@@ -743,3 +761,123 @@
     }
   });
 })(bbn);
+
+</script>
+<style scoped>
+.bbn-cms-block.bbn-basic-component {
+  margin: 15px auto;
+}
+.bbn-cms-block.bbn-basic-component h1,
+.bbn-cms-block.bbn-basic-component h2,
+.bbn-cms-block.bbn-basic-component h3,
+.bbn-cms-block.bbn-basic-component h4,
+.bbn-cms-block.bbn-basic-component h5,
+.bbn-cms-block.bbn-basic-component h6 {
+  margin: 0 0 .5em;
+  line-height: 1.2;
+  font-weight: bold;
+  font-weight: 100;
+  font-style: normal;
+  line-height: 1.2em;
+  letter-spacing: 0px;
+  text-transform: none;
+}
+.bbn-cms-block.bbn-basic-component hr {
+  color: #bbb;
+  background-color: #bbb;
+  border-bottom-width: 0;
+  border-top-width: 1px;
+}
+.bbn-cms-block.bbn-basic-component .component-container {
+  max-width: 845px;
+  margin: 0 auto;
+  float: unset;
+}
+.bbn-cms-block.bbn-basic-component .component-container.bbn-block-title {
+  padding: 0;
+  padding-top: 16px;
+}
+.bbn-cms-block.bbn-basic-component .component-container.has-hr {
+  display: flex;
+  align-items: center;
+}
+.bbn-cms-block.bbn-basic-component .component-container.has-hr.edit-block {
+  flex-direction: column;
+}
+.bbn-cms-block.bbn-basic-component .component-container.has-hr.edit-block .edit-title {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+.bbn-cms-block.bbn-basic-component .component-container.has-hr hr {
+  margin: 0 30px;
+  flex-grow: 1.5;
+}
+.bbn-cms-block.bbn-basic-component .component-container.bbn-block-html h1,
+.bbn-cms-block.bbn-basic-component .component-container.bbn-block-html h2,
+.bbn-cms-block.bbn-basic-component .component-container.bbn-block-html h3 {
+  margin: 0;
+  white-space: pre-wrap;
+}
+.bbn-cms-block.bbn-basic-component .component-container.bbn-block-html em {
+  white-space: normal;
+}
+.bbn-cms-block.bbn-basic-component .component-container.bbn-block-gallery {
+  margin: 15px auto;
+  text-align: left;
+  display: grid;
+  grid-gap: 20px;
+}
+.bbn-cms-block.bbn-basic-component .component-container.bbn-block-gallery.cols-1 {
+  grid-template-columns: 1fr;
+}
+.bbn-cms-block.bbn-basic-component .component-container.bbn-block-gallery.cols-3 {
+  grid-template-columns: repeat(3,1fr);
+}
+.bbn-cms-block.bbn-basic-component .component-container.bbn-block-gallery.cols-4 {
+  grid-template-columns: repeat(4,1fr);
+}
+.bbn-cms-block.bbn-basic-component .component-container.bbn-block-gallery.cols-2 {
+  grid-template-columns: repeat(2,1fr);
+}
+.bbn-cms-block.bbn-basic-component .component-container.bbn-block-gallery a {
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+}
+.bbn-cms-block.bbn-basic-component .bbn-block-social ul.bbn-menulist.free {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.bbn-cms-block.bbn-basic-component .bbn-block-social .ss-social-list-wrapper {
+  left: 0 !important;
+}
+.bbn-cms-block.bbn-basic-component .bbn-block-social .bbn-block-social-button {
+  line-height: 18px;
+  font-weight: bold;
+}
+.bbn-cms-block.bbn-basic-component .bbn-block-social .bbn-block-social-button .bbn-block-social-icon {
+  color: #ebebeb;
+  line-height: 18px;
+}
+.bbn-cms-block.bbn-basic-component .bbn-block-social .bbn-block-social-button:hover .nf-fa-share_alt {
+  color: #5c5c5c;
+}
+.bbn-cms-block.bbn-basic-component .bbn-block-social .bbn-block-social-button:hover .nf-fa-heart {
+  color: red;
+}
+.bbn-cms-block.bbn-basic-component .component-container .bbn-grid-fields {
+  align-items: center;
+}
+.bbn-cms-block.bbn-basic-component .bbn-grid-fields {
+  border: none !important;
+}
+.bbn-cms-block.bbn-basic-component .block-space-edit {
+  border: 1px dashed #dddddd;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+</style>

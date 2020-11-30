@@ -319,7 +319,7 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                                 :source="col.mapper ? col.mapper(d.data) : d.data"
                       ></component>
                       <template v-else-if="col.buttons">
-                        <bbn-button v-for="(button, bi) in (Array.isArray(col.buttons) ? col.buttons : col.buttons(d.data, col, i))"
+                        <bbn-button v-for="(button, bi) in (Array.isArray(realButtons) ? realButtons : realButtons(d.data, col, i))"
                                     :key="bi"
                                     v-bind="button"
                                     @focusin.prevent.stop="() => {}"
@@ -950,6 +950,48 @@ document.head.insertAdjacentElement('beforeend', css);
       };
     },
     computed: {
+      realButtons(){
+        if (this.cols.length && this.cols[this.colButtons] && this.cols[this.colButtons].buttons) {
+          if (bbn.fn.isFunction(this.cols[this.colButtons].buttons)) {
+            return this.cols[this.colButtons].buttons;
+          }
+          else if (bbn.fn.isArray(this.cols[this.colButtons].buttons)) {
+            let res = [];
+            bbn.fn.each(this.cols[this.colButtons].buttons, a => {
+              if (bbn.fn.isString(a)) {
+                switch (a) {
+                  case 'edit':
+                    res.push({
+                      text: bbn._('Edit'),
+                      action: 'edit',
+                      icon: 'nf nf-fa-edit'
+                    })
+                    break;
+                  case 'copy':
+                    res.push({
+                      text: bbn._("Copy"),
+                      action: 'copy',
+                      icon: 'nf nf-fa-copy'
+                    });
+                    break;
+                  case 'delete':
+                    res.push({
+                      text: bbn._("Delete"),
+                      action: 'delete',
+                      icon: 'nf nf-fa-times'
+                    });
+                    break;
+                }
+              }
+              else {
+                res.push(a)
+              }
+            })
+            return res;
+          }
+        }
+        return [];
+      },
       /**
        * The array of selected values if the table is selectable.
        * @computed selectedValues
@@ -1735,6 +1777,7 @@ document.head.insertAdjacentElement('beforeend', css);
           ev.preventDefault();
           ev.stopImmediatePropagation();
         }
+        bbn.fn.log("INSIDE BUTTON", button);
         //bbn.fn.log("EXEC COMMAND");
         if (button.action) {
           if (bbn.fn.isFunction(button.action)) {

@@ -1,3 +1,27 @@
+(bbn_resolve) => { ((bbn) => {
+let script = document.createElement('script');
+script.innerHTML = `<div :class="[componentClass, 'bbn-w-100']"
+     :style="{
+       width: width,
+       height: height
+     }">
+  <!--bbn-rte v-if="editable && type === 'html'"
+           v-model="source.content"
+  >
+  </bbn-rte>
+  <div v-else-if="type === 'html'" 
+       v-html="source.content"
+  >
+  </div-->
+  <component v-if="ready" :is="component(type)" :source="source" :class="{'edit-block' : edit}"></component>
+</div>`;
+script.setAttribute('id', 'bbn-tpl-component-cms-block');
+script.setAttribute('type', 'text/x-template');
+document.body.insertAdjacentElement('beforeend', script);
+let css = document.createElement('link');
+css.setAttribute('rel', "stylesheet");
+css.setAttribute('href', bbn.vue.libURL + "dist/js/components/cms-block/cms-block.css");
+document.head.insertAdjacentElement('beforeend', css);
 /**
  * @file bbn-cms-block component
  * @description bbn-cms-block 
@@ -743,3 +767,6 @@
     }
   });
 })(bbn);
+
+if (bbn_resolve) {bbn_resolve("ok");}
+})(bbn); }

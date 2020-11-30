@@ -544,10 +544,16 @@
         if ( idx > -1 ){
           this.parsedTags.splice(idx, 1);
         }
+
         let tpl = document.getElementById('bbn-tpl-component-' + cpName);
-        if ( tpl ){
+        if (!tpl && (cpName.indexOf('bbn-') === 0)) {
+          tpl = document.getElementById('bbn-tpl-component-' + cpName.substr(4));
+        }
+
+        if (tpl) {
           tpl.remove();
         }
+
         return r;
       }
       return false;
@@ -680,10 +686,13 @@
      * @method is
      * @memberof bbn.vue
      * @param {Vue} vm 
-     * @param {String} selector
+     * @param {Number|String} selector
      */
     is(vm, selector){
       if (selector && vm) {
+        if (typeof selector === 'number') {
+          return vm._uid === selector;
+        }
         if ( vm.$vnode && vm.$vnode.componentOptions && (vm.$vnode.componentOptions.tag === selector) ){
           return true;
         }
@@ -827,7 +836,7 @@
      * @method find
      * @memberof bbn.vue
      * @param {Vue} vm 
-     * @param {String} selector
+     * @param {String|Number} selector
      * @param {Number} index
      */
     find(vm, selector, index){
@@ -5455,6 +5464,7 @@
             obj.content = template;
           }
         }
+        obj.real = false;
         router.register(obj, true);
       }
     }

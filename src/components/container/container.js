@@ -446,12 +446,14 @@
       }
       if ( !this.router.ready ){
         this.router.$on('ready', () => {
+          bbn.fn.log("ROUTER NOT READY")
           //this.init();
           this.router.register(this);
         });
       }
       else{
         //this.init();
+        bbn.fn.log("ROUTER READY")
         this.router.register(this);
       }
       //

@@ -302,18 +302,25 @@
        * @emits increment
        * @emits change
        */
-      increment(){
-        if ( !this.readonly && !this.disabled && !this.disableIncrease ){
-          let ev = new Event('beforeIncrement', {cancelable: true}),
-              value = ((parseFloat(this.value) || 0) + (this.isPercentage ? this.step / 100 : this.step)).toFixed(this.currentDecimals);
-          this.$emit('beforeIncrement', value, ev);
+      increment(event, negative){
+        if ( !this.readonly && !this.disabled && (negative ? !this.disableDecrease : !this.disableIncrease)){
+          let evName = negative ? 'decrement' : 'increment',
+              beforeEvName = 'before' + bbn.fn.correctCase(evName),
+              ev = new Event(beforeEvName, {cancelable: true}),
+              modifier = negative ? -1 : 1,
+              ratio = (this.currentDecimals ? Math.pow(10, this.currentDecimals) : 1),
+              value = this.value ? Math.round(this.value * ratio) : 0;
+          value += this.step * ratio * modifier;
+          value /= ratio;
+          bbn.fn.log("CREMENT", this.step, this.currentDecimals, ratio, value, "-------");
+          this.$emit(beforeEvName, value, ev);
           if ( !ev.defaultPrevented ){
             this.currentValue = value;
             this.$nextTick(() => {
               this.checkMinMax();
               this.$nextTick(() => {
-                this.$emit('increment', this.currentValue);
-                this.$emit('change', this.currentValue);
+                this.$emit(evName, this.currentValue);
+                //this.$emit('change', this.currentValue);
               });
             })
           }
@@ -328,21 +335,7 @@
        * @emits change
        */
       decrement(){
-        if ( !this.readonly && !this.disabled && !this.disableDecrease ) {
-          let ev = new Event('beforeDecrement', {cancelable: true}),
-              value = ((parseFloat(this.value) || 0) - (this.isPercentage ? this.step / 100 : this.step)).toFixed(this.currentDecimals);
-          this.$emit('beforeDecrement', value, ev);
-          if ( !ev.defaultPrevented ){
-            this.currentValue = value;
-            this.$nextTick(() => {
-              this.checkMinMax();
-              this.$nextTick(() => {
-                this.$emit('decrement', this.currentValue);
-                this.$emit('change', this.currentValue);
-              });
-            })
-          }
-        }
+        this.increment(null, true);
       },
       /**
        * Change the value of the component.
@@ -363,10 +356,10 @@
             (this.currentDecimals && bbn.fn.isString(newVal) && newVal.match(/^\-?[0-9]+\.$/))
           ){
             let v = newVal ? parseFloat(parseFloat(newVal).toFixed(this.currentDecimals)) : 0;
-            this.setInputValue(v);
             if ( this.value !== v ){
               this.emitInput(v);
             }
+            this.setInputValue(v);
           }
           else if ( 
             (!this.currentDecimals || (bbn.fn.isString(newVal) && !newVal.match(/^\-?[0-9]+\.$/))) &&
@@ -428,6 +421,7 @@
        * @fires changeValue
        */
       currentValue(newVal, oldVal){
+        bbn.fn.log("CHANGE OF CURRENT VALUE");
         if ( (newVal !== oldVal) ){
           this.changeValue(newVal, oldVal);
         }

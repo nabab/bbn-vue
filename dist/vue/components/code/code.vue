@@ -643,6 +643,8 @@
             (event.keyCode > 64) &&
             (event.keyCode < 91) 
           ){
+            cm.showHint();
+            /*
             // only when a letter key is pressed
             if (this.mode === 'js') {
               if (bbn.vue.tern) {
@@ -652,6 +654,7 @@
             else {
               CodeMirror.commands.autocomplete(cm, null, {completeSingle: false});
             }
+            */
           }
         });
 

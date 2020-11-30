@@ -1,18 +1,6 @@
 .bbn-cms-block.bbn-basic-component{
-  /*@font-face {
-    font-family: 'proxima-nova';
-    src: url('/font/proxima-nova.ttf');
-  }*/
-  /*font-family: "Helvetica Neue", Helvetica, sans-serif;
-	font-weight: normal;
-	line-height: 1.67em;
-	font-size: 15px;
-	font-family: proxima-nova;
-	font-weight: 400;
-	font-style: normal;
-	line-height: 1.6em;
-	color: #454545;*/
-	h1,
+  margin: 15px auto;
+ 	h1,
 	h2,
 	h3,
 	h4,
@@ -20,11 +8,7 @@
 	h6 {
 		margin: 0 0 .5em;
 		line-height: 1.2;
-		
-		//font-family: "Helvetica Neue", Helvetica, sans-serif;
 		font-weight: bold;
-	/*	font-size: 42px;
-		font-family: proxima-nova;*/
 		font-weight: 100;
 		font-style: normal;
 		line-height: 1.2em;
@@ -38,10 +22,14 @@
     border-top-width: 1px;
   }
   .component-container{
-    padding: 1em;
+    //padding: 1em;
     max-width: 845px;
     margin: 0 auto;
     float: unset;
+  }
+  .component-container.bbn-block-title{
+    padding: 0;
+    padding-top: 16px;
   }
   .component-container.has-hr{
     display: flex;
@@ -59,8 +47,20 @@
       flex-grow: 1.5;
     }
   }
-  .component-container.gallery{
-    margin: 0 auto;
+  .component-container.bbn-block-html{
+    h1,h2,h3{
+      margin: 0;
+      white-space:pre-wrap;
+    }
+    p{
+     // white-space:pre-wrap;
+    }
+    em{
+      white-space: normal;
+    }
+  }
+  .component-container.bbn-block-gallery{
+    margin: 15px auto;
     text-align: left;
     display: grid;
     grid-gap: 20px;
@@ -85,6 +85,34 @@
     }
     img{
     //  padding: 1.5em;
+    }
+  }
+
+  .bbn-block-social ul.bbn-menulist.free{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  } 
+  .bbn-block-social .ss-social-list-wrapper {
+    left: 0 !important
+  }
+
+  .bbn-block-social .bbn-block-social-button {
+    line-height: 18px;
+    font-weight: bold;
+  }
+
+  .bbn-block-social .bbn-block-social-button .bbn-block-social-icon {
+    color: #ebebeb;
+    line-height: 18px
+  }
+
+  .bbn-block-social .bbn-block-social-button:hover{
+    .nf-fa-share_alt{
+      color: #5c5c5c;
+    }
+    .nf-fa-heart{
+      color: red;
     }
   }
   .component-container .bbn-grid-fields{

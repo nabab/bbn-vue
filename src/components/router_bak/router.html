@@ -1,0 +1,55 @@
+<div :class="[componentClass, {
+       'bbn-invisible': !ready,
+       'bbn-overlay': nav,
+     }]"
+>
+  <div :class="{
+    'bbn-flex-height': nav,
+    'bbn-router-nav': nav,
+    'bbn-router-nav-bc': nav && isBreadcrumb,
+    'bbn-overlay': !nav
+  }">
+    <bbn-breadcrumb v-if="nav && isBreadcrumb"
+                    :source="views"
+                    ref="breadcrumb"
+                    @beforeClose="close"
+                    @select="activateIndex"
+                    :menu="getMenuFn"
+                    :scrollable="scrollable"
+                    :content="false"
+                    :value="selected"
+                    :master="!!master"
+                    :class="['bbn-router-breadcrumb', {'bbn-router-breadcrumb-master': master}]"
+    ></bbn-breadcrumb>
+    <bbn-tabs v-else-if="nav && !isBreadcrumb"
+              :source="views"
+              :scrollable="scrollable"
+              ref="tabs"
+              @beforeClose="close"
+              @select="activateIndex"
+              :menu="getMenuFn"
+              @pin="setConfig"
+              @unpin="setConfig"
+              :content="false"
+              :value="selected"
+              class="bbn-router-tabs"
+              :max-title-length="maxTitleLength"
+    ></bbn-tabs>
+    <div :class="{
+      'bbn-flex-fill': !!nav,
+      'bbn-overlay': !nav
+    }">
+      <slot></slot>
+      <bbn-container v-for="view in views"
+                     v-if="!view.slot && !component"
+                     :key="view.url"
+                     v-bind="view"
+      ></bbn-container>
+      <bbn-container v-if="component && componentSource && componentURL"
+                     :source="componentSource"
+                     :component="component"
+                     :url="componentSource[componentURL]"
+      ></bbn-container>
+    </div>
+  </div>
+</div>

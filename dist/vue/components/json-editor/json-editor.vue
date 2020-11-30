@@ -170,7 +170,7 @@
       let isParsed = this.value && (bbn.fn.isObject(this.value) || bbn.fn.isArray(this.value));
       return {
         isParsed: isParsed,
-        currentValue: isParsed ? JSON.stringify(this.value) : (bbn.fn.isString(this.value) ? this.value : '')
+        currentValue: isParsed ? JSON.stringify(this.value) : (this.value && bbn.fn.isString(this.value) ? this.value : null)
       };
     },
     computed: {
@@ -293,7 +293,9 @@
         let cfg = this.getCfg();
         bbn.fn.log("VALUE", this.value);
         this.widget = new JSONEditor(this.$refs.element, cfg);
-        this.widget.setText(this.currentValue);
+        if (this.currentValue) {
+          this.widget.setText(this.currentValue);
+        }
         this.ready = true;
       },
       /**
