@@ -792,6 +792,7 @@ document.head.insertAdjacentElement('beforeend', css);
 
           defaultPreLinkFunction(url) {
             let router = appui.getRef('nav');
+            bbn.fn.log(url);
             if ( router && bbn.fn.isFunction(router.route) ){
               router.route(url);
             }
@@ -841,7 +842,7 @@ document.head.insertAdjacentElement('beforeend', css);
         bbnDefaults.env = {root: this.root};
       }
       */
-      bbn.fn.init(bbnDefaults);
+      bbn.fn.init(bbnDefaults, true);
     },
     created(){
       if ( window.appui ){

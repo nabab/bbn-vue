@@ -786,6 +786,7 @@
 
           defaultPreLinkFunction(url) {
             let router = appui.getRef('nav');
+            bbn.fn.log(url);
             if ( router && bbn.fn.isFunction(router.route) ){
               router.route(url);
             }
@@ -835,7 +836,7 @@
         bbnDefaults.env = {root: this.root};
       }
       */
-      bbn.fn.init(bbnDefaults);
+      bbn.fn.init(bbnDefaults, true);
     },
     created(){
       if ( window.appui ){

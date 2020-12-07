@@ -26,7 +26,7 @@ script.innerHTML = `<div :class="[
           ]"
     ></bbn-button>
     <input :value="value"
-          :type="type"
+          :type="currentType"
           :name="name"
           ref="element"
           :readonly="readonly"
@@ -34,7 +34,7 @@ script.innerHTML = `<div :class="[
           :placeholder="placeholder"
           :maxlength="maxlength"
           :autocomplete="currentAutocomplete"
-          :pattern="pattern"
+          :pattern="currentPattern"
           @input="emitInput($refs.element.value)"
           @click="click"
           @paste="$emit('paste', $event)"
@@ -199,7 +199,9 @@ document.head.insertAdjacentElement('beforeend', css);
          * The action performed by the right button.
          * @data {Function} currentActionRight
          */
-        currentActionRight: bbn.fn.isFunction(this.actionRight) ? this.actionRight : ()=>{}
+        currentActionRight: bbn.fn.isFunction(this.actionRight) ? this.actionRight : ()=>{},
+        currentPattern: null,
+        currentType: null
       }
     },
     computed: {
@@ -215,7 +217,28 @@ document.head.insertAdjacentElement('beforeend', css);
     methods: {
       clear(){
         this.emitInput('');
+      },
+      init(){
+        if (this.pattern) {
+          this.currentPattern = this.pattern;
+          this.currentType = 'text';
+        }
+        else if (this.type === 'hostname') {
+          this.currentPattern = bbn.var.regexp.hostname.source;
+          this.currentType = 'text';
+        }
+        else if (this.type === 'ip') {
+          this.currentPattern = bbn.var.regexp.ip.source;
+          this.currentType = 'text';
+        }
+        else {
+          this.currentPattern = this.pattern;
+          this.currentType = this.type;
+        }
       }
+    },
+    created() {
+      this.init();
     },
     mounted(){
       if (this.required) {
@@ -231,6 +254,9 @@ document.head.insertAdjacentElement('beforeend', css);
           this.getRef('element').removeAttribute('required');
         }
 
+      },
+      type(newVal) {
+        this.init()
       }
     }
   });

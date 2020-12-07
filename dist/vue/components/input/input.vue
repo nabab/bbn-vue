@@ -25,7 +25,7 @@
           ]"
     ></bbn-button>
     <input :value="value"
-          :type="type"
+          :type="currentType"
           :name="name"
           ref="element"
           :readonly="readonly"
@@ -33,7 +33,7 @@
           :placeholder="placeholder"
           :maxlength="maxlength"
           :autocomplete="currentAutocomplete"
-          :pattern="pattern"
+          :pattern="currentPattern"
           @input="emitInput($refs.element.value)"
           @click="click"
           @paste="$emit('paste', $event)"
@@ -193,7 +193,9 @@
          * The action performed by the right button.
          * @data {Function} currentActionRight
          */
-        currentActionRight: bbn.fn.isFunction(this.actionRight) ? this.actionRight : ()=>{}
+        currentActionRight: bbn.fn.isFunction(this.actionRight) ? this.actionRight : ()=>{},
+        currentPattern: null,
+        currentType: null
       }
     },
     computed: {
@@ -209,7 +211,28 @@
     methods: {
       clear(){
         this.emitInput('');
+      },
+      init(){
+        if (this.pattern) {
+          this.currentPattern = this.pattern;
+          this.currentType = 'text';
+        }
+        else if (this.type === 'hostname') {
+          this.currentPattern = bbn.var.regexp.hostname.source;
+          this.currentType = 'text';
+        }
+        else if (this.type === 'ip') {
+          this.currentPattern = bbn.var.regexp.ip.source;
+          this.currentType = 'text';
+        }
+        else {
+          this.currentPattern = this.pattern;
+          this.currentType = this.type;
+        }
       }
+    },
+    created() {
+      this.init();
     },
     mounted(){
       if (this.required) {
@@ -225,6 +248,9 @@
           this.getRef('element').removeAttribute('required');
         }
 
+      },
+      type(newVal) {
+        this.init()
       }
     }
   });

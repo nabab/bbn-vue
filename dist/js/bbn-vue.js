@@ -221,10 +221,15 @@
           el.innerHTML = r.css;
           document.head.insertAdjacentElement('beforeend', el)
         }
+        let tpl = false;
         if ( r.content ){
+          tpl = 'bbn-tpl-component-' + name;
+          while (document.getElementById(tpl)) {
+            tpl = bbn.fn.randomString();
+          }
           let script = document.createElement('script');
           script.innerHTML = r.content;
-          script.setAttribute('id', 'bbn-tpl-component-' + name);
+          script.setAttribute('id', tpl);
           script.setAttribute('type', 'text/x-template');
           document.body.insertAdjacentElement('beforeend', script)
         }
@@ -234,8 +239,8 @@
           if ( !res.mixins ){
             res.mixins = [];
           }
-          if ( !res.template ){
-            res.template = '#bbn-tpl-component-' + name;
+          if (!res.template && tpl){
+            res.template = '#' + tpl;
           }
           if ( !res.props ){
             res.props = {};
@@ -544,16 +549,6 @@
         if ( idx > -1 ){
           this.parsedTags.splice(idx, 1);
         }
-
-        let tpl = document.getElementById('bbn-tpl-component-' + cpName);
-        if (!tpl && (cpName.indexOf('bbn-') === 0)) {
-          tpl = document.getElementById('bbn-tpl-component-' + cpName.substr(4));
-        }
-
-        if (tpl) {
-          tpl.remove();
-        }
-
         return r;
       }
       return false;
@@ -3709,7 +3704,8 @@
            * True if the component has a value.
            * @data {Boolean} hasVale
            */
-          hasValue: !!this.value
+          hasValue: !!this.value,
+
         };
       },
       computed: {
@@ -3771,90 +3767,95 @@
                 inp = $this.$refs.input || false,
                 customMessage = $this.$el.hasAttribute('validationMessage') ? $this.$el.getAttribute('validationMessage') : false;
           let check = (elem) => {
-                if ( elem && elem.validity ){
-                  let validity = elem.validity,
-                      $elem = $this.$el,
-                      // Default message
-                      mess = bbn._('The value you entered for this field is invalid.'),
-                      specificCase = false;
-                  // If valid or disabled, return true
-                  if ( elem.disabled || validity.valid ){
-                    //if ( (!!elem.required || !!elem.readOnly) && !elem.value ){
-                    if ( !!elem.required && !elem.value ){
-                      specificCase = true;
-                    }
-                    else {
-                      return true;
-                    }
-                  }
-                  
-                  if ( !validity.valid || specificCase ){
-                    // If field is required and empty
-                    if ( validity.valueMissing || specificCase ){
-                      mess = bbn._('Please fill out this field.');
-                    }
-                    // If not the right type
-                    else if ( validity.typeMismatch ){
-                      switch ( elem.type ){
-                        // Email
-                        case 'email':
-                          mess = bbn._('Please enter a valid email address.');
-                          break;
-                        // URL
-                        case 'url':
-                          mess = bbn._('Please enter a valid URL.');
-                          break;
-                      }
-                    }
-                    // If too short
-                    else if ( validity.tooShort ){
-                      mess = bbn._('Please lengthen this text to ') + elem.getAttribute('minLength') + bbn._(' characters or more. You are currently using ') + elem.value.length + bbn._(' characters.');
-                    }
-                    // If too long
-                    else if ( validity.tooLong ){
-                      mess = bbn._('Please shorten this text to no more than ') + elem.getAttribute('maxLength') + bbn._(' characters. You are currently using ') + elem.value.length + bbn._(' characters.');
-                    }
-                    // If number input isn't a number
-                    else if ( validity.badInput ){
-                      mess = bbn._('Please enter a number.');
-                    }
-                    // If a number value doesn't match the step interval
-                    else if ( validity.stepMismatch ){
-                      mess = bbn._('Please select a valid value.');
-                    }
-                    // If a number field is over the max
-                    else if ( validity.rangeOverflow ){
-                      mess = bbn._('Please select a value that is no more than ') + elem.getAttribute('max') + '.';
-                    }
-                    // If a number field is below the min
-                    else if ( validity.rangeUnderflow ){
-                      mess = bbn._('Please select a value that is no less than ') + elem.getAttribute('min') + '.';
-                    }
-                    // If pattern doesn't match
-                    else if (validity.patternMismatch) {
-                      // If pattern info is included, return custom error
-                      mess = bbn._('Please match the requested format.');
-                    }
-                    this.$emit('error', customMessage || mess);
-                    let border = $elem.style.border;
-                    $elem.style.border = '1px solid red';
-                    this.$on('blur', () => {
-                      $elem.style.border  = border;
-                      $elem.focus();
-                    });
-                    return false;
+            if ( elem && elem.validity ){
+              let validity = elem.validity,
+                  $elem = $this.$el,
+                  // Default message
+                  mess = bbn._('The value you entered for this field is invalid.'),
+                  specificCase = false;
+              // If valid or disabled, return true
+              if ( elem.disabled || validity.valid ){
+                //if ( (!!elem.required || !!elem.readOnly) && !elem.value ){
+                if ( elem.required && !elem.value ){
+                  specificCase = true;
+                }
+                else {
+                  return true;
+                }
+              }
+              
+              if ( !validity.valid || specificCase ){
+                // If field is required and empty
+                if ( validity.valueMissing || specificCase ){
+                  mess = bbn._('Please fill out this field.');
+                }
+                // If not the right type
+                else if ( validity.typeMismatch ){
+                  switch ( elem.type ){
+                    // Email
+                    case 'email':
+                      mess = bbn._('Please enter a valid email address.');
+                      break;
+                    // URL
+                    case 'url':
+                      mess = bbn._('Please enter a valid URL.');
+                      break;
                   }
                 }
-              },
-              getLastElement = (elem) => {
-                if ( bbn.fn.isVue(elem) && elem.$refs && elem.$refs.element ){
-                  return getLastElement(elem.$refs.element);
+                // If too short
+                else if ( validity.tooShort ){
+                  mess = bbn._('Please lengthen this text to ') + elem.getAttribute('minLength') + bbn._(' characters or more. You are currently using ') + elem.value.length + bbn._(' characters.');
                 }
-                return elem;
-              },
-            okEle = ele ? check(getLastElement(ele)) : false,
-            okInp = inp ? check(getLastElement(inp)) : false;
-          return ele || inp ? !!(okEle || okInp) : true;
+                // If too long
+                else if ( validity.tooLong ){
+                  mess = bbn._('Please shorten this text to no more than ') + elem.getAttribute('maxLength') + bbn._(' characters. You are currently using ') + elem.value.length + bbn._(' characters.');
+                }
+                // If number input isn't a number
+                else if ( validity.badInput ){
+                  mess = bbn._('Please enter a number.');
+                }
+                // If a number value doesn't match the step interval
+                else if ( validity.stepMismatch ){
+                  mess = bbn._('Please select a valid value.');
+                }
+                // If a number field is over the max
+                else if ( validity.rangeOverflow ){
+                  mess = bbn._('Please select a value that is no more than ') + elem.getAttribute('max') + '.';
+                }
+                // If a number field is below the min
+                else if ( validity.rangeUnderflow ){
+                  mess = bbn._('Please select a value that is no less than ') + elem.getAttribute('min') + '.';
+                }
+                // If pattern doesn't match
+                else if (validity.patternMismatch) {
+                  // If pattern info is included, return custom error
+                  mess = bbn._('Please match the requested format.');
+                }
+                this.$emit('error', customMessage || mess);
+                bbn.fn.log(customMessage || mess);
+                let border = $elem.style.border;
+                $elem.style.border = '1px solid red';
+                this.$once('blur', () => {
+                  $elem.style.border  = border;
+                  $elem.focus();
+                });
+                return false;
+              }
+            }
+          };
+          let getLastElement = (elem) => {
+            if ( bbn.fn.isVue(elem) && elem.$refs && elem.$refs.element ){
+              return getLastElement(elem.$refs.element);
+            }
+            return elem;
+          };
+          if (inp) {
+            return check(getLastElement(inp)) || false;
+          }
+          if (ele) {
+            return check(getLastElement(ele)) || false;
+          }
+          return true;
         },
       },
       /**
@@ -3890,7 +3891,7 @@
           if ( !!newVal !== this.hasValue ){
             this.hasValue = !!newVal;
           }
-        },
+        }
       }
     }
   });

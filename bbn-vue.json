@@ -5310,7 +5310,7 @@
                     },
                     {
                         "text": "getBackgroundColor",
-                        "desc": "",
+                        "desc": "s",
                         "url": "bbn-vue\/component\/router\/doc\/methods#getBackgroundColor"
                     },
                     {

@@ -15,60 +15,89 @@
         :class="['bbn-router-breadcrumb', {'bbn-router-breadcrumb-master': master}]">
       <div v-if="master"
           class="bbn-router-breadcrumb-container">
-        <div class="bbn-h-100 bbn-alt bbn-bordered-bottom bbn-no-border-top bbn-no-border-right bbn-vmiddle bbn-hspadded"
+        <div class="bbn-h-100 bbn-alt bbn-bordered-bottom bbn-no-border-top bbn-no-border-right bbn-vmiddle"
             :style="{
               backgroundColor: getBackgroundColor(selected),
               color: getFontColor(selected)
             }">
-          <template v-if="breadcrumbs.length"
-                    v-for="(bc, i) in breadcrumbs">
-            <span v-if="i > 0">
-              <i class="nf nf-fa-angle_right bbn-hsmargin bbn-large bbn-router-breadcrumb-arrow"/>
-            </span>
-            <bbn-context :source="bc.getList(i)"
-                          tag="span"
-                          min-width="10em"
-                          tabindex="0"
-                          :item-component="$options.components.listItem"
-                          :class="[
-                            'bbn-h-100',
-                            'bbn-vmiddle',
-                            'bbn-right-xspadded',
-                            'bbn-left-spadded',
-                            {
-                              'bbn-router-breadcrumb-dirty': isNumber(bc.selected)
-                                                            && bc.views[bc.selected]
-                                                            && !!bc.views[bc.selected].dirty
-                            }
-                          ]"
-                          :attach="itsMasterBreadcrumb || undefined"
-                          :autobind="false"
-                          :style="{
-                            backgroundColor: bc.getBackgroundColor(bc.selected),
-                            color: bc.getFontColor(bc.selected)
-                          }">
-              <bbn-context :source="bc.getMenuFn"
-                           :source-index="isNumber(bc.selected) ? bc.selected : undefined"
-                           tag="span"
-                           min-width="10em"
-                           tabindex="0"
-                           :context="true"
-                           :autobind="false"
-                           class="bbn-vmiddle bbn-h-100">
-                <i v-if="isNumber(bc.selected) && bc.views[bc.selected] && !!bc.views[bc.selected].icon"
-                   :class="bc.views[bc.selected].icon"/>
-                <span v-text="isNumber(bc.selected) && bc.views[bc.selected] && !!bc.views[bc.selected].title ? bc.views[bc.selected].title : _('Untitled')"
-                      :class="{'bbn-b': !breadcrumbs[i+1]}"/>
-                <span class="bbn-grid bbn-h-100 bbn-router-breadcrumb-icons">
-                  <i v-if="isNumber(bc.selected) && bc.views[bc.selected] && !bc.views[bc.selected].static"
-                    class="nf nf-fa-times bbn-p bbn-router-breadcrumb-icon bbn-router-breadcrumb-icons-close"
-                    @click.prevent.stop="bc.close(bc.selected)"/>
-                  <i class="nf nf-fa-caret_down bbn-p bbn-router-breadcrumb-icon bbn-router-breadcrumb-icons-menu"
-                    @click.prevent.stop="openMenu($event)"/>
-                </span>
+          <div class="bbn-flex-width bbn-h-100 bbn-vmiddle">
+            <template v-if="breadcrumbs.length"
+                      v-for="(bc, i) in breadcrumbs">
+              <div v-if="i > 0">
+                <i class="nf nf-fa-angle_right bbn-hsmargin bbn-large bbn-router-breadcrumb-arrow"/>
+              </div>
+              <bbn-context :source="bc.getList(i)"
+                            tag="div"
+                            min-width="10em"
+                            tabindex="0"
+                            :item-component="$options.components.listItem"
+                            class="bbn-h-100 bbn-vmiddle"
+                            :attach="itsMasterBreadcrumb || undefined"
+                            :autobind="false"
+                            :style="{
+                              backgroundColor: bc.getBackgroundColor(bc.selected),
+                              color: bc.getFontColor(bc.selected)
+                            }">
+                <bbn-context :source="bc.getMenuFn"
+                             :source-index="isNumber(bc.selected) ? bc.selected : undefined"
+                             tag="div"
+                             min-width="10em"
+                             tabindex="0"
+                             :context="true"
+                             :autobind="false"
+                             class="bbn-vmiddle bbn-h-100">
+                  <div class="bbn-vmiddle bbn-h-100">
+                    <div class="bbn-router-breadcrumb-badge-container bbn-middle"
+                          v-if="isNumber(bc.selected) && bc.views[bc.selected] && numProperties(bc.views[bc.selected].events)">
+                      <span class="bbn-badge bbn-small bbn-bg-red"
+                            v-text="numProperties(bc.views[bc.selected].events)"/>
+                    </div>
+                    <div class="bbn-router-breadcrumb-loader bbn-border-text"
+                        :style="{borderColor: isNumber(bc.selected) && bc.views[bc.selected] && bc.views[bc.selected].fcolor ? bc.views[bc.selected].fcolor : null}"
+                        v-show="isNumber(bc.selected) && bc.views[bc.selected] && bc.views[bc.selected].loading"/>
+                    <div :class="[
+                           'bbn-router-breadcrumb-element',
+                           'bbn-h-100',
+                           'bbn-vmiddle',
+                           {
+                            'bbn-router-breadcrumb-dirty': isNumber(bc.selected)
+                                                          && bc.views[bc.selected]
+                                                          && !!bc.views[bc.selected].dirty
+                          }
+                         ]">
+                      <span v-if="isNumber(bc.selected) && bc.views[bc.selected] && bc.views[bc.selected].icon"
+                            :title="bc.views[bc.selected].title"
+                            :class="'bbn-router-breadcrumb-element-icon bbn-h-100 bbn-vmiddle bbn-right-xsspace' + (bc.views[bc.selected].notext ? ' bbn-lg' : ' bbn-m')">
+                        <i :class="bc.views[bc.selected].icon"
+                            style="zoom: 1.1"/>
+                      </span>
+                      <span v-if="isNumber(bc.selected) && bc.views[bc.selected] && !bc.views[bc.selected].notext"
+                            :class="['bbn-router-breadcrumb-element-text', {'bbn-b': !breadcrumbs[i+1]}]"
+                            :title="bc.views[bc.selected].title && (bc.views[bc.selected].title.length > bc.maxTitleLength) ? bc.views[bc.selected].title : ''"
+                            v-html="bc.views[bc.selected].title ? bc.cutTitle(bc.views[bc.selected].title) : _('Untitled')"/>
+                    </div>
+                    <i v-if="isNumber(bc.selected)
+                              && bc.views[bc.selected]
+                              && !bc.views[bc.selected].static
+                              && !bc.views[bc.selected].pinned"
+                         class="nf nf-fa-times bbn-p bbn-router-breadcrumb-close bbn-router-breadcrumb-icon"
+                         @click.prevent.stop="bc.close(bc.selected)"/>
+                    <i v-if="isNumber(bc.selected) && bc.views[bc.selected] && bc.views[bc.selected].menu"
+                       class="nf nf-fa-caret_down bbn-router-breadcrumb-menu bbn-router-breadcrumb-icon bbn-p"
+                       @click.prevent.stop="openMenu($event)"/>
+                  </div>
+                </bbn-context>
               </bbn-context>
-            </bbn-context>
-          </template>
+            </template>
+            <div v-if="breadcrumbs.length"
+                 class="bbn-flex-fill bbn-h-100"
+                 :style="{
+                   backgroundColor: breadcrumbs[breadcrumbs.length-1].getBackgroundColor(breadcrumbs[breadcrumbs.length-1].selected),
+                   color: breadcrumbs[breadcrumbs.length-1].getFontColor(breadcrumbs[breadcrumbs.length-1].selected)
+                 }">
+              &nbsp;
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -551,8 +580,7 @@
          * @fires getRef
          */
         itsBreadcrumb: this.breadcrumb ? this.getRef('breadcrumb') : false,
-        breadcrumbsList: [],
-        breadcrumbs: [this]
+        breadcrumbsList: []
       };
     },
     computed: {
@@ -656,6 +684,16 @@
           hidden: true
         } : {};
       },
+      breadcrumbs(){
+        let res = [];
+        if (this.isBreadcrumb) {
+          res.push(this)
+        }
+        if (this.breadcrumbsList.length) {
+          res.push(...this.getBreadcrumbs(this.selected))
+        }
+        return res;
+      }
     },
 
     methods: {
@@ -707,7 +745,7 @@
           if ( !this.isInit && (this.numRegistered === this.views.length) ){
             this.isInit = true;
             if ( this.auto ){
-              this.route(this.getDefaultURL(), true);
+              this.route(this.single ? cp.url : this.getDefaultURL(), true);
             }
           }
         }
@@ -724,7 +762,6 @@
         if (!bbn.fn.isString(cp.url)) {
           throw Error(bbn._('The component bbn-container must have a URL defined'));
         }
-
         this.numRegistered--;
         let idx = this.search(cp.url),
             dataObj = this.postBaseUrl ? {_bbn_baseURL: this.fullBaseURL} : {},
@@ -732,13 +769,11 @@
         if (bbn.fn.getLoader(requestID)) {
           bbn.fn.abort(requestID);
         }
-
-        if (idx !== false) {
-          this.remove(idx);
-        }
-
         if (this.urls[cp.url] !== undefined) {
           delete this.urls[cp.url];
+        }
+        if (idx !== false) {
+          this.remove(idx);
         }
         if (this.isInit && (this.views.length !== this.numRegistered)) {
           this.isInit = false;
@@ -842,7 +877,8 @@
           real: false,
           cfg: {},
           events: {},
-          real: false
+          real: false,
+          last: 0
         };
       },
       /**
@@ -1419,7 +1455,6 @@
                 obj.currentURL = bbn.fn.replaceAll(obj.currentURL);
               }
             }
-            
             let obj2 = bbn.fn.extend(true, {}, obj.$options.propsData),
                 props = obj.$options.props;
             bbn.fn.iterate(props, (v, i) => {
@@ -1715,6 +1750,7 @@
                 let url = this.views[idx].url;
                 if (this.urls[url]) {
                   this.views.splice(this.urls[url].idx, 1);
+                  //delete this.urls[url];
                 }
               }
               this.activate(url);
@@ -2088,7 +2124,8 @@
               pinned: !!obj.pinned,
               current: obj.current ? obj.current : obj.url,
               cfg: {},
-              real: obj.real
+              real: obj.real,
+              last: obj.last
             };
             if ( obj.bcolor ){
               res.bcolor = obj.bcolor;
@@ -2241,7 +2278,7 @@
         }
         return '';
       },
-      /**
+      /**s
        * @method getBackgroundColor
        * @param {Number} idx
        * @fires getRef
@@ -2406,26 +2443,33 @@
         let list = [],
             parents = bbn.fn.map(idx && this.itsMaster && (this.baseURL !== this.itsMaster.baseURL) ?
               this.getParents() : [],
-              p => p.views[p.selected]);
+              p => {
+                return {
+                  view: p.views[p.selected],
+                  maxTitleLength: p.maxTitleLength
+                }
+              });
         if (parents.length > idx) {
           parents.splice(0, parents.length - idx);
         }
         bbn.fn.each(this.views, (t, i) => {
           if ( !t.hidden && (t.idx !== this.selected) ){
             list.push({
-              text: t.title,
-              icon: t.icon,
+              view: t,
               key: t.url,
-              bcolor: t.bcolor,
-              fcolor: t.fcolor,
-              static: t.static,
               parents: parents,
-              children: bbn.fn.map(this.getBreadcrumbs(i), c => c.views[c.selected]),
+              children: bbn.fn.map(this.getBreadcrumbs(i), c => {
+                return {
+                  view: c.views[c.selected],
+                  maxTitleLength: c.maxTitleLength
+                }
+              }),
+              maxTitleLength: this.maxTitleLength,
               action: () => {
                 this.activateIndex(t.idx);
               },
               closeAction: () => {
-                this.close(t.idx)
+                return this.close(t.idx)
               }
             })
           }
@@ -2560,6 +2604,7 @@
 
       //Breadcrumb
       if (!this.master && this.parent) {
+        this.parent.registerBreadcrumb(this);
         let ct = this.closest('bbn-container');
         ct.$on('view', () => {
           this.parent.registerBreadcrumb(this);
@@ -2614,6 +2659,7 @@
             let idx = this.search(newVal);
             if ((idx !== false) && (this.selected !== idx)){
               this.selected = idx;
+              this.views[this.selected].last = bbn.fn.timestamp();
             }
             this.$emit('change', newVal);
           });
@@ -2668,9 +2714,6 @@
           }
           this.setConfig();
         })
-      },
-      breadcrumbsList(){
-        this.breadcrumbs.splice(0, this.breadcrumbs.length, this, ...this.getBreadcrumbs(this.selected));
       }
     },
     components: {
@@ -2679,58 +2722,114 @@
        */
       listItem: {
         template: `
-<div class="bbn-w-100 bbn-vmiddle" style="height: 2.5em">
+<div class="bbn-w-100 bbn-vmiddle"
+     style="height: 2.5em"
+     @mouseenter="isHover = true"
+     @mouseleave="isHover = false">
   <div class="bbn-flex-width bbn-vmiddle bbn-h-100">
-    <div class="text bbn-flex-fill bbn-vmiddle bbn-h-100">
-      <div class="bbn-flex-width bbn-h-100" :style="lastColors">
-        <template v-for="(p, i) in source.parents">
-          <div :style="{
-                  backgroundColor: p.bcolor || false,
-                  color: p.fcolor || false
-                }"
-                class="bbn-h-100 bbn-vmiddle bbn-vxspadded bbn-hspadded">
-            <i v-if="p.icon"
-              :class="p.icon"/>
-            <span v-html="p.title || '` + bbn._('Untitled') + `'"></span>
-            <span>
-              <i class="nf nf-fa-angle_right bbn-hsmargin bbn-large bbn-router-breadcrumb-arrow"/>
-            </span>
+    <div class="bbn-vmiddle bbn-h-100">
+      <div v-for="(p, i) in source.parents"
+           class="bbn-vmiddle bbn-h-100">
+        <div class="bbn-vmiddle bbn-h-100"
+            :style="{
+              backgroundColor: !isHover && p.view.bcolor ? p.view.bcolor : null,
+              color: !isHover && p.view.fcolor ? p.view.fcolor : null
+            }">
+          <div class="bbn-router-breadcrumb-badge-container bbn-middle"
+              v-if="numProperties(p.view.events)">
+            <span class="bbn-badge bbn-small bbn-bg-red"
+                  v-text="numProperties(p.view.events)"/>
           </div>
-        </template>
-        <div :style="{
-                backgroundColor: source.bcolor || false,
-                color: source.fcolor || false
-              }"
-              :class="['bbn-h-100', 'bbn-vmiddle', 'bbn-hspadded', {'bbn-flex-fill': !source.children.length}]">
-          <i v-if="source.icon"
-              class="source.icon"/>
-          <span v-html="source.text || '` + bbn._('Untitled') + `'"/>
+          <div class="bbn-router-breadcrumb-loader bbn-border-text"
+              :style="{borderColor: p.view.fcolor || null}"
+              v-show="p.view.loading"/>
+          <div :class="['bbn-router-breadcrumb-element', 'bbn-h-100', 'bbn-vmiddle', {'bbn-router-breadcrumb-dirty': p.view.dirty}]">
+            <span v-if="p.view.icon"
+                  :title="p.view.title"
+                  :class="'bbn-router-breadcrumb-element-icon bbn-h-100 bbn-vmiddle bbn-right-xsspace' + (p.view.notext ? ' bbn-lg' : ' bbn-m')">
+              <i :class="p.view.icon"
+                style="zoom: 1.1"/>
+            </span>
+            <span v-if="!p.view.notext"
+                  class="bbn-router-breadcrumb-element-text"
+                  :title="p.view.title && (p.view.title.length > p.maxTitleLength) ? p.view.title : ''"
+                  v-html="p.view.title ? shortTitle(p) : '` + bbn._('Untitled') + `'"/>
+          </div>
         </div>
-        <template v-for="(c, i) in source.children">
-          <div :style="{
-                  backgroundColor: c.bcolor || false,
-                  color: c.fcolor || false
-                }"
-                :class="[
-                  'bbn-h-100',
-                  'bbn-vmiddle',
-                  'bbn-hspadded',
-                  {'bbn-b': !source.children[i+1], 'bbn-flex-fill': i === source.children.length - 1}
-                ]">
-            <span>
-              <i class="nf nf-fa-angle_right bbn-hsmargin bbn-large bbn-router-breadcrumb-arrow"/>
-            </span>
-            <i v-if="c.icon"
-                class="c.icon"/>
-            <span v-html="c.title || '` + bbn._('Untitled') + `'"/>
-          </div>
-        </template>
-        <div v-if="!source.static"
-              class="bbn-vmiddle bbn-h-100 bbn-hspadded"
-              @click.prevent.stop="close">
-          <i class="nf nf-fa-times_rectangle bbn-lg"/>
+        <div>
+          <i class="nf nf-fa-angle_right bbn-hsmargin bbn-large bbn-router-breadcrumb-arrow"/>
         </div>
       </div>
+
+      <div class="bbn-vmiddle bbn-h-100"
+          :style="{
+            backgroundColor: !isHover && source.view.bcolor ? source.view.bcolor : null,
+            color: !isHover && source.view.fcolor ? source.view.fcolor : null
+          }">
+        <div class="bbn-router-breadcrumb-badge-container bbn-middle"
+             v-if="numProperties(source.view.events)">
+          <span class="bbn-badge bbn-small bbn-bg-red"
+                v-text="numProperties(source.view.events)"/>
+        </div>
+        <div class="bbn-router-breadcrumb-loader bbn-border-text"
+             :style="{borderColor: source.view.fcolor || null}"
+             v-show="source.view.loading"/>
+        <div :class="['bbn-router-breadcrumb-element', 'bbn-h-100', 'bbn-vmiddle', {'bbn-router-breadcrumb-dirty': source.view.dirty}]">
+          <span v-if="source.view.icon"
+                :title="source.view.title"
+                :class="'bbn-router-breadcrumb-element-icon bbn-h-100 bbn-vmiddle bbn-right-xsspace' + (source.view.notext ? ' bbn-lg' : ' bbn-m')">
+            <i :class="source.view.icon"
+               style="zoom: 1.1"/>
+          </span>
+          <span v-if="!source.view.notext"
+                class="bbn-router-breadcrumb-element-text"
+                :title="source.view.title && (source.view.title.length > source.maxTitleLength) ? source.view.title : ''"
+                v-html="source.view.title ? (source.parents.length? shortTitle(source): source.view.title) : '` + bbn._('Untitled') + `'"/>
+        </div>
+      </div>
+
+      <div v-for="(p, i) in source.children"
+           class="bbn-vmiddle bbn-h-100">
+        <div>
+          <i class="nf nf-fa-angle_right bbn-hsmargin bbn-large bbn-router-breadcrumb-arrow"/>
+        </div>
+        <div class="bbn-vmiddle bbn-h-100"
+             :style="{
+               backgroundColor: !isHover && p.view.bcolor ? p.view.bcolor : null,
+               color: !isHover && p.view.fcolor ? p.view.fcolor : null
+             }">
+          <div class="bbn-router-breadcrumb-badge-container bbn-middle"
+              v-if="numProperties(p.view.events)">
+            <span class="bbn-badge bbn-small bbn-bg-red"
+                  v-text="numProperties(p.view.events)"/>
+          </div>
+          <div class="bbn-router-breadcrumb-loader bbn-border-text"
+              :style="{borderColor: p.view.fcolor || null}"
+              v-show="p.view.loading"/>
+          <div :class="['bbn-router-breadcrumb-element', 'bbn-h-100', 'bbn-vmiddle', {'bbn-router-breadcrumb-dirty': p.view.dirty}]">
+            <span v-if="p.view.icon"
+                  :title="p.view.title"
+                  :class="'bbn-router-breadcrumb-element-icon bbn-h-100 bbn-vmiddle bbn-right-xsspace' + (p.view.notext ? ' bbn-lg' : ' bbn-m')">
+              <i :class="p.view.icon"
+                style="zoom: 1.1"/>
+            </span>
+            <span v-if="!p.view.notext"
+                  class="bbn-router-breadcrumb-element-text"
+                  :title="p.view.title && (p.view.title.length > p.maxTitleLength) ? p.view.title : ''"
+                  v-html="p.view.title ? shortTitle(p) : '` + bbn._('Untitled') + `'"/>
+             </div>
+        </div>
+      </div>
+    </div>
+    <div class="bbn-flex-fill bbn-h-100"
+         :style="!isHover ? lastColors : {}">
+      &nbsp;
+    </div>
+    <div v-if="!source.view.static"
+          class="bbn-vmiddle bbn-h-100 bbn-hspadded"
+          @click.prevent.stop="close"
+          :style="!isHover ? lastColors : {}">
+      <i class="nf nf-fa-times_rectangle bbn-lg"/>
     </div>
   </div>
 </div>
@@ -2745,11 +2844,16 @@
             required: true
           }
         },
+        data(){
+          return {
+            isHover: false
+          }
+        },
         computed: {
           lastColors(){
             let e = this.source.children.length ?
-              this.source.children[this.source.children.length-1]
-              : this.source;
+              this.source.children[this.source.children.length-1].view
+              : this.source.view;
             let r = {};
             if (e.bcolor) {
               r.backgroundColor = e.bcolor;
@@ -2758,16 +2862,31 @@
               r.color = e.fcolor;
             }
             return r;
-          },
+          }
         },
         methods: {
+          numProperties: bbn.fn.numProperties,
           /**
            * @method close
            * @memberof listItem
            */
           close(){
-            this.source.closeAction();
-            this.closest('bbn-list').updateData();
+            if (this.source.closeAction()){
+              /* let list = this.closest('bbn-list');
+              if (bbn.fn.isVue(list)) {
+                let idx = bbn.fn.search(list.source, {'data.key': this.source.key});
+                if (idx > -1) {
+                  list.source.splice(idx, 1);
+                  list.updateData();
+                }
+              } */
+              this.closest('bbn-floater').close();
+            }
+          },
+          shortTitle(src){
+            return src.view.title.length > src.maxTitleLength ?
+              bbn.fn.shorten(src.view.title, src.maxTitleLength) :
+              src.view.title;
           }
         }
       }
@@ -3038,22 +3157,63 @@ div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb {
 div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadcrumb-container {
   height: 100%;
 }
-div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadcrumb-container .bbn-router-breadcrumb-dirty::after {
-  content: '*';
+div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadcrumb-container .bbn-router-breadcrumb-badge-container {
+  position: absolute;
+  top: 0;
+  left: 1px;
+  bottom: 0px;
 }
-div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadcrumb-container .bbn-router-breadcrumb-icons {
-  justify-items: center;
-  align-content: flex-end;
+div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadcrumb-container .bbn-router-breadcrumb-loader {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  position: absolute;
+  top: 0.4em;
+  left: 2px;
 }
-div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadcrumb-container .bbn-router-breadcrumb-icons .bbn-router-breadcrumb-icon {
+div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadcrumb-container .bbn-router-breadcrumb-loader:after {
+  content: " ";
+  display: block;
+  width: 8px;
+  height: 8px;
+  margin: 1px;
+  border-radius: 50%;
+  border-style: solid;
+  border-width: 2px;
+  border-right-color: transparent !important;
+  border-left-color: transparent !important;
+  animation: bbn-router-loader 1.2s linear infinite;
+}
+div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadcrumb-container div.bbn-router-breadcrumb-element {
+  color: inherit;
+  padding: 0 0.8em;
+  vertical-align: middle;
+}
+div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadcrumb-container div.bbn-router-breadcrumb-element > .bbn-router-breadcrumb-element-icon {
+  line-height: 100%;
+}
+div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadcrumb-container div.bbn-router-breadcrumb-element::after,
+div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadcrumb-container div.bbn-router-breadcrumb-element::before {
+  font-family: monospace;
+  content: " ";
+  white-space: pre;
+}
+div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadcrumb-container div.bbn-router-breadcrumb-element.bbn-router-breadcrumb-dirty::after {
+  content: "*";
+}
+div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadcrumb-container i.bbn-router-breadcrumb-icon {
+  display: block;
+  position: absolute;
+  right: 2px;
   font-size: 1em;
+  cursor: pointer;
   margin: 0;
 }
-div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadcrumb-container .bbn-router-breadcrumb-icons .bbn-router-breadcrumb-icon.bbn-router-breadcrumb-icons-menu {
-  align-self: flex-end;
+div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadcrumb-container i.bbn-router-breadcrumb-icon.bbn-router-breadcrumb-close {
+  top: 1px;
 }
-div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadcrumb-container .bbn-router-breadcrumb-icons .bbn-router-breadcrumb-icon.bbn-router-breadcrumb-icons-close {
-  align-self: flex-start;
+div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadcrumb-container i.bbn-router-breadcrumb-icon.bbn-router-breadcrumb-menu {
+  bottom: -2px;
 }
 div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadcrumb-container .bbn-router-breadcrumb-arrow {
   margin-right: .7em;
@@ -3124,9 +3284,6 @@ div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadc
 div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadcrumb-container > div.bbn-loader div.loader-animation .sk-cube-grid .sk-cube.sk-cube9 {
   -webkit-animation-delay: 0.2s;
   animation-delay: 0.2s;
-}
-div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadcrumb-container .bbn-list > ul > li .text i:not(.bbn-router-breadcrumb-arrow) {
-  margin-right: 0 !important;
 }
 @keyframes bbn-router-loader {
   0% {

@@ -232,7 +232,6 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                 </td>
                 <td v-else
                     v-for="(col, index) in currentColumns"
-                    @click="clickCell"
                     :class="[
                       currentClass(col, d.data, i),
                       col.fixed ? cssRuleName + ' bbn-table-fixed-cell bbn-table-cell-' +
@@ -244,7 +243,8 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                       width: col.realWidth
                     }">
                   <!-- Checkboxes -->
-                  <div class="bbn-block bbn-spadded">
+                  <div class="bbn-block bbn-spadded"
+                       @click="clickCell(col, index, d.index)">
                     <div v-if="col.isSelection" class="bbn-c bbn-w-100">
                       <bbn-checkbox v-if="d.selection"
                                     :checked="d.selected"
@@ -3561,8 +3561,8 @@ document.head.insertAdjacentElement('beforeend', css);
       /**
        * 
        */
-      clickCell() {
-        bbn.fn.log("click cell");
+      clickCell(col, colIndex, dataIndex) {
+        this.$emit('click-cell', col, colIndex, dataIndex);
       },
       /**
        * Removes the focus from the given row.
@@ -3761,6 +3761,12 @@ document.head.insertAdjacentElement('beforeend', css);
        * @emit change
        */
       focusedRow(newIndex, oldIndex) {
+        if (this.items[newIndex]) {
+          this.$emit('focus', this.items[newIndex].data, newIndex);
+        }
+        else {
+          this.$emit('focusout', newIndex);
+        }
         if (
           this.editable &&
           (this.editMode === 'inline')

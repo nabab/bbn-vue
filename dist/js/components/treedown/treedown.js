@@ -80,7 +80,7 @@ document.head.insertAdjacentElement('beforeend', css);
 (function(bbn){
   "use strict";
 
-  Vue.component('bbn-dropdown', {
+  Vue.component('bbn-treedown', {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.inputComponent
@@ -207,7 +207,6 @@ document.head.insertAdjacentElement('beforeend', css);
         currentHeight: 0,
         isFilterable: true,
         filterTimeout: false,
-        realComponent: cp,
         isActive: false
       };
     },
