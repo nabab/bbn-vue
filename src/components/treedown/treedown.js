@@ -14,7 +14,7 @@
 (function(bbn){
   "use strict";
 
-  Vue.component('bbn-dropdown', {
+  Vue.component('bbn-treedown', {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.inputComponent
@@ -141,7 +141,6 @@
         currentHeight: 0,
         isFilterable: true,
         filterTimeout: false,
-        realComponent: cp,
         isActive: false
       };
     },

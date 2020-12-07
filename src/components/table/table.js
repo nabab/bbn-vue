@@ -3159,8 +3159,8 @@
       /**
        * 
        */
-      clickCell() {
-        bbn.fn.log("click cell");
+      clickCell(col, colIndex, dataIndex) {
+        this.$emit('click-cell', col, colIndex, dataIndex);
       },
       /**
        * Removes the focus from the given row.
@@ -3359,6 +3359,12 @@
        * @emit change
        */
       focusedRow(newIndex, oldIndex) {
+        if (this.items[newIndex]) {
+          this.$emit('focus', this.items[newIndex].data, newIndex);
+        }
+        else {
+          this.$emit('focusout', newIndex);
+        }
         if (
           this.editable &&
           (this.editMode === 'inline')

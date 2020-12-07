@@ -24,7 +24,7 @@
           ]"
     ></bbn-button>
     <input :value="value"
-          :type="type"
+          :type="currentType"
           :name="name"
           ref="element"
           :readonly="readonly"
@@ -32,7 +32,7 @@
           :placeholder="placeholder"
           :maxlength="maxlength"
           :autocomplete="currentAutocomplete"
-          :pattern="pattern"
+          :pattern="currentPattern"
           @input="emitInput($refs.element.value)"
           @click="click"
           @paste="$emit('paste', $event)"

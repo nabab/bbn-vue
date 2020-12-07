@@ -276,23 +276,68 @@ div.bbn-router {
       zoom: 1;
       > div.bbn-router-breadcrumb-container{
         height: 100%;
-        .bbn-router-breadcrumb-dirty::after {
-          content: '*';
+        .bbn-router-breadcrumb-badge-container{
+          position: absolute;
+          top: 0;
+          left: 1px;
+          bottom: 0px;
         }
-        .bbn-router-breadcrumb-icons{
-          justify-items: center;
-          align-content: flex-end;
-          .bbn-router-breadcrumb-icon{
-            font-size: 1em;
-            margin: 0;
-            &.bbn-router-breadcrumb-icons-menu{
-              align-self: flex-end;
-            }
-            &.bbn-router-breadcrumb-icons-close{
-              align-self: flex-start;
-            }
+        .bbn-router-breadcrumb-loader {
+          display: inline-block;
+          width: 12px;
+          height: 12px;
+          position: absolute;
+          top: 0.4em;
+          left: 2px;
+          &:after {
+            content: " ";
+            display: block;
+            width: 8px;
+            height: 8px;
+            margin: 1px;
+            border-radius: 50%;
+            border-style: solid;
+            border-width: 2px;
+            border-right-color: transparent !important;
+            border-left-color: transparent !important;
+            animation: bbn-router-loader 1.2s linear infinite;
           }
         }
+        div.bbn-router-breadcrumb-element{
+          color: inherit;
+          padding: 0 0.8em;
+          vertical-align: middle;
+          > .bbn-router-breadcrumb-element-text{
+            //font-size: 1.1em;
+          }
+          > .bbn-router-breadcrumb-element-icon {
+            line-height: 100%;
+          }
+          &::after, &::before {
+            font-family: monospace;
+            content: " ";
+            white-space: pre;
+          }
+          &.bbn-router-breadcrumb-dirty::after {
+            content: "*";
+          }
+        }
+        i.bbn-router-breadcrumb-icon{
+          display: block;
+          position: absolute;
+          right: 2px;
+          font-size: 1em;
+          cursor: pointer;
+          margin: 0;
+          &.bbn-router-breadcrumb-close{
+            top: 1px;
+          }
+          &.bbn-router-breadcrumb-menu{
+            bottom: -2px;
+          }
+        }
+
+
         .bbn-router-breadcrumb-arrow{
           margin-right: .7em;
           margin-left: .7em;
@@ -363,9 +408,9 @@ div.bbn-router {
             }
           }
         }
-        .bbn-list > ul > li .text i:not(.bbn-router-breadcrumb-arrow) {
+        /* .bbn-list > ul > li .text i:not(.bbn-router-breadcrumb-arrow) {
           margin-right: 0 !important;
-        }
+        } */
       }
     }
   }

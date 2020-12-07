@@ -14,60 +14,89 @@
         :class="['bbn-router-breadcrumb', {'bbn-router-breadcrumb-master': master}]">
       <div v-if="master"
           class="bbn-router-breadcrumb-container">
-        <div class="bbn-h-100 bbn-alt bbn-bordered-bottom bbn-no-border-top bbn-no-border-right bbn-vmiddle bbn-hspadded"
+        <div class="bbn-h-100 bbn-alt bbn-bordered-bottom bbn-no-border-top bbn-no-border-right bbn-vmiddle"
             :style="{
               backgroundColor: getBackgroundColor(selected),
               color: getFontColor(selected)
             }">
-          <template v-if="breadcrumbs.length"
-                    v-for="(bc, i) in breadcrumbs">
-            <span v-if="i > 0">
-              <i class="nf nf-fa-angle_right bbn-hsmargin bbn-large bbn-router-breadcrumb-arrow"/>
-            </span>
-            <bbn-context :source="bc.getList(i)"
-                          tag="span"
-                          min-width="10em"
-                          tabindex="0"
-                          :item-component="$options.components.listItem"
-                          :class="[
-                            'bbn-h-100',
-                            'bbn-vmiddle',
-                            'bbn-right-xspadded',
-                            'bbn-left-spadded',
-                            {
-                              'bbn-router-breadcrumb-dirty': isNumber(bc.selected)
-                                                            && bc.views[bc.selected]
-                                                            && !!bc.views[bc.selected].dirty
-                            }
-                          ]"
-                          :attach="itsMasterBreadcrumb || undefined"
-                          :autobind="false"
-                          :style="{
-                            backgroundColor: bc.getBackgroundColor(bc.selected),
-                            color: bc.getFontColor(bc.selected)
-                          }">
-              <bbn-context :source="bc.getMenuFn"
-                           :source-index="isNumber(bc.selected) ? bc.selected : undefined"
-                           tag="span"
-                           min-width="10em"
-                           tabindex="0"
-                           :context="true"
-                           :autobind="false"
-                           class="bbn-vmiddle bbn-h-100">
-                <i v-if="isNumber(bc.selected) && bc.views[bc.selected] && !!bc.views[bc.selected].icon"
-                   :class="bc.views[bc.selected].icon"/>
-                <span v-text="isNumber(bc.selected) && bc.views[bc.selected] && !!bc.views[bc.selected].title ? bc.views[bc.selected].title : _('Untitled')"
-                      :class="{'bbn-b': !breadcrumbs[i+1]}"/>
-                <span class="bbn-grid bbn-h-100 bbn-router-breadcrumb-icons">
-                  <i v-if="isNumber(bc.selected) && bc.views[bc.selected] && !bc.views[bc.selected].static"
-                    class="nf nf-fa-times bbn-p bbn-router-breadcrumb-icon bbn-router-breadcrumb-icons-close"
-                    @click.prevent.stop="bc.close(bc.selected)"/>
-                  <i class="nf nf-fa-caret_down bbn-p bbn-router-breadcrumb-icon bbn-router-breadcrumb-icons-menu"
-                    @click.prevent.stop="openMenu($event)"/>
-                </span>
+          <div class="bbn-flex-width bbn-h-100 bbn-vmiddle">
+            <template v-if="breadcrumbs.length"
+                      v-for="(bc, i) in breadcrumbs">
+              <div v-if="i > 0">
+                <i class="nf nf-fa-angle_right bbn-hsmargin bbn-large bbn-router-breadcrumb-arrow"/>
+              </div>
+              <bbn-context :source="bc.getList(i)"
+                            tag="div"
+                            min-width="10em"
+                            tabindex="0"
+                            :item-component="$options.components.listItem"
+                            class="bbn-h-100 bbn-vmiddle"
+                            :attach="itsMasterBreadcrumb || undefined"
+                            :autobind="false"
+                            :style="{
+                              backgroundColor: bc.getBackgroundColor(bc.selected),
+                              color: bc.getFontColor(bc.selected)
+                            }">
+                <bbn-context :source="bc.getMenuFn"
+                             :source-index="isNumber(bc.selected) ? bc.selected : undefined"
+                             tag="div"
+                             min-width="10em"
+                             tabindex="0"
+                             :context="true"
+                             :autobind="false"
+                             class="bbn-vmiddle bbn-h-100">
+                  <div class="bbn-vmiddle bbn-h-100">
+                    <div class="bbn-router-breadcrumb-badge-container bbn-middle"
+                          v-if="isNumber(bc.selected) && bc.views[bc.selected] && numProperties(bc.views[bc.selected].events)">
+                      <span class="bbn-badge bbn-small bbn-bg-red"
+                            v-text="numProperties(bc.views[bc.selected].events)"/>
+                    </div>
+                    <div class="bbn-router-breadcrumb-loader bbn-border-text"
+                        :style="{borderColor: isNumber(bc.selected) && bc.views[bc.selected] && bc.views[bc.selected].fcolor ? bc.views[bc.selected].fcolor : null}"
+                        v-show="isNumber(bc.selected) && bc.views[bc.selected] && bc.views[bc.selected].loading"/>
+                    <div :class="[
+                           'bbn-router-breadcrumb-element',
+                           'bbn-h-100',
+                           'bbn-vmiddle',
+                           {
+                            'bbn-router-breadcrumb-dirty': isNumber(bc.selected)
+                                                          && bc.views[bc.selected]
+                                                          && !!bc.views[bc.selected].dirty
+                          }
+                         ]">
+                      <span v-if="isNumber(bc.selected) && bc.views[bc.selected] && bc.views[bc.selected].icon"
+                            :title="bc.views[bc.selected].title"
+                            :class="'bbn-router-breadcrumb-element-icon bbn-h-100 bbn-vmiddle bbn-right-xsspace' + (bc.views[bc.selected].notext ? ' bbn-lg' : ' bbn-m')">
+                        <i :class="bc.views[bc.selected].icon"
+                            style="zoom: 1.1"/>
+                      </span>
+                      <span v-if="isNumber(bc.selected) && bc.views[bc.selected] && !bc.views[bc.selected].notext"
+                            :class="['bbn-router-breadcrumb-element-text', {'bbn-b': !breadcrumbs[i+1]}]"
+                            :title="bc.views[bc.selected].title && (bc.views[bc.selected].title.length > bc.maxTitleLength) ? bc.views[bc.selected].title : ''"
+                            v-html="bc.views[bc.selected].title ? bc.cutTitle(bc.views[bc.selected].title) : _('Untitled')"/>
+                    </div>
+                    <i v-if="isNumber(bc.selected)
+                              && bc.views[bc.selected]
+                              && !bc.views[bc.selected].static
+                              && !bc.views[bc.selected].pinned"
+                         class="nf nf-fa-times bbn-p bbn-router-breadcrumb-close bbn-router-breadcrumb-icon"
+                         @click.prevent.stop="bc.close(bc.selected)"/>
+                    <i v-if="isNumber(bc.selected) && bc.views[bc.selected] && bc.views[bc.selected].menu"
+                       class="nf nf-fa-caret_down bbn-router-breadcrumb-menu bbn-router-breadcrumb-icon bbn-p"
+                       @click.prevent.stop="openMenu($event)"/>
+                  </div>
+                </bbn-context>
               </bbn-context>
-            </bbn-context>
-          </template>
+            </template>
+            <div v-if="breadcrumbs.length"
+                 class="bbn-flex-fill bbn-h-100"
+                 :style="{
+                   backgroundColor: breadcrumbs[breadcrumbs.length-1].getBackgroundColor(breadcrumbs[breadcrumbs.length-1].selected),
+                   color: breadcrumbs[breadcrumbs.length-1].getFontColor(breadcrumbs[breadcrumbs.length-1].selected)
+                 }">
+              &nbsp;
+            </div>
+          </div>
         </div>
       </div>
     </div>
