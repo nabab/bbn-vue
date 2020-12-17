@@ -74,7 +74,7 @@
               </span>
               <span v-if="tree.uid && (tree.selection || !!selection)">
                 <bbn-checkbox :value="data[tree.uid]"
-                              :checked="isChecked()"
+                              :checked="isChecked(data[tree.uid])"
                               @change="checkNode"
                               :disabled="isDisabled()"
                 ></bbn-checkbox>
@@ -1635,8 +1635,8 @@
            * @method isChecked
            * @memberof bbn-tree-node
            */
-          isChecked(){
-           return this.tree.checked.includes(this.data[this.tree.uid])
+          isChecked(uid){
+           return this.tree.checked.includes(uid)
           },
           /**
            * Return true if the node is disabled

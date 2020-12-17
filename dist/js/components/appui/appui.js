@@ -162,6 +162,8 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-background', 'bbn-overlay
                   :observer="true"
                   :menu="tabMenu"
                   :single="single"
+                  :autoload="autoload"
+                  :def="def"
                   :post-base-url="!single"
                   ref="nav"
                   :nav="nav"
@@ -320,6 +322,13 @@ document.head.insertAdjacentElement('beforeend', css);
         type: String,
         default: bbn.env.path
       },
+      def: {
+        type: String
+      },
+      autoload: {
+        type: Boolean,
+        default: true
+      },
       options: {
         type: Object,
         default(){
@@ -411,7 +420,7 @@ document.head.insertAdjacentElement('beforeend', css);
         widgets: {},
         loaders: [],
         notifications: [],
-        root: '',
+        root: bbn.vue.defaults.appui.root,
         menuOpened: false,
         poller: false,
         debug: false,

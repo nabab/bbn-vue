@@ -19,7 +19,7 @@
                   ref="router"
                   @hook:mounted="init"
                   :autoload="false"
-                  :root="root"
+                  :def="def"
                   :auto="false"
                   @change="onRoute">
 
@@ -270,7 +270,7 @@
         type: Boolean,
         default: false
       },
-      root: {
+      def: {
         type: String,
         default: ''
       }

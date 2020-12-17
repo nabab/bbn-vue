@@ -226,7 +226,7 @@
         type: Boolean,
         default: false
       },
-      root: {
+      def: {
         type: String,
         default: ''
       }

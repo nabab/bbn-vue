@@ -1,5 +1,4 @@
-<span :class="['bbn-iblock', componentClass]"
->
+<span :class="['bbn-iblock', componentClass]">
   <input type="checkbox"
          :id="id"
          :name="name"
@@ -11,15 +10,17 @@
          @change="toggle"
          :checked="state"
          ref="element"
-         tabindex="0"
+				 tabindex="0"
+				 @keydown="onKeyDown"
+				 @click="onClick"
   >
   <label class="bbn-checkbox-label bbn-iflex bbn-vmiddle"
          :for="id"
          @focus="focus"
          @blur="blur"
          @keyup="keyup"
-         @keydown.space="$refs.element.click()"
-         @click="click"
+         @keydown="onKeyDown"
+         @click="onClick"
   >
 		<span class="bbn-left-spadded"
 					v-html="label"

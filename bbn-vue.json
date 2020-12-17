@@ -1154,6 +1154,16 @@
                         "text": "toggle",
                         "desc": "Emits a change when the state of the checkbox changes.\r\n       *",
                         "url": "bbn-vue\/component\/checkbox\/doc\/methods#toggle"
+                    },
+                    {
+                        "text": "onClick",
+                        "desc": "Prevents the event action if the component is disabled or readonly",
+                        "url": "bbn-vue\/component\/checkbox\/doc\/methods#onClick"
+                    },
+                    {
+                        "text": "onKeyDown",
+                        "desc": "Prevents the event action if the component is disabled or readonly",
+                        "url": "bbn-vue\/component\/checkbox\/doc\/methods#onKeyDown"
                     }
                 ],
                 "mixins": [
@@ -3161,6 +3171,21 @@
                         "text": "buttons",
                         "desc": "The buttons shown on the form.\r\n       *",
                         "url": "bbn-vue\/component\/form\/doc\/props#buttons"
+                    },
+                    {
+                        "text": "submitText",
+                        "desc": "The form's text on submit button.\r\n       *",
+                        "url": "bbn-vue\/component\/form\/doc\/props#submitText"
+                    },
+                    {
+                        "text": "cancelText",
+                        "desc": "The form's text on cancel button.\r\n       *",
+                        "url": "bbn-vue\/component\/form\/doc\/props#cancelText"
+                    },
+                    {
+                        "text": "resetText",
+                        "desc": "The form's text on reset button.\r\n       *",
+                        "url": "bbn-vue\/component\/form\/doc\/props#resetText"
                     },
                     {
                         "text": "source",
@@ -6583,11 +6608,6 @@
                         "text": "resizable",
                         "desc": "Set to true allows the table to be resizable.",
                         "url": "bbn-vue\/component\/table\/doc\/props#resizable"
-                    },
-                    {
-                        "text": "autobind",
-                        "desc": "Set to true will automatically update the data before mount.",
-                        "url": "bbn-vue\/component\/table\/doc\/props#autobind"
                     },
                     {
                         "text": "showable",

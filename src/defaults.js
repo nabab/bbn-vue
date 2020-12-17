@@ -8,7 +8,7 @@
         header: false,
         status: false,
         nav: false,
-        root: '',
+        //root: '',
         pollerPath: 'core/poller',
         logo: 'https://bbn.solutions/logo.png',
         leftShortcuts: [],

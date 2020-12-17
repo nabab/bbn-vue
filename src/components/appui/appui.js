@@ -31,6 +31,13 @@
         type: String,
         default: bbn.env.path
       },
+      def: {
+        type: String
+      },
+      autoload: {
+        type: Boolean,
+        default: true
+      },
       options: {
         type: Object,
         default(){
@@ -122,7 +129,7 @@
         widgets: {},
         loaders: [],
         notifications: [],
-        root: '',
+        root: bbn.vue.defaults.appui.root,
         menuOpened: false,
         poller: false,
         debug: false,

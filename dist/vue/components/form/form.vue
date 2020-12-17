@@ -221,6 +221,33 @@
         }
       },
       /**
+       * The form's text on submit button.
+       *
+       * @prop {String} [Submit] submitText
+       */
+      submitText: {
+        type: String,
+        default: bbn._('Submit')
+      },
+      /**
+       * The form's text on cancel button.
+       *
+       * @prop {String} [Cancel] cancelText
+       */
+      cancelText: {
+        type: String,
+        default: bbn._('Cancel')
+      },
+      /**
+       * The form's text on reset button.
+       *
+       * @prop {String} [Reset] resetText
+       */
+      resetText: {
+        type: String,
+        default: bbn._('Reset')
+      },
+      /**
        * The proper data used in the form.
        *
        * @prop {Object} source
@@ -413,7 +440,7 @@
               switch ( a ){
                 case 'cancel':
                   r.push({
-                    text: bbn._('Cancel'),
+                    text: this.cancelText,
                     icon: 'nf nf-fa-times_circle',
                     action: () => {
                       this.cancel();
@@ -423,7 +450,7 @@
                   break;
                 case 'reset':
                   r.push({
-                    text: bbn._('Reset'),
+                    text: this.resetText,
                     icon: 'nf nf-fa-refresh',
                     action: () => {
                       this.reset();
@@ -433,7 +460,7 @@
                   break;
                 case 'submit':
                   r.push({
-                    text: bbn._('Submit'),
+                    text: this.submitText,
                     icon: 'nf nf-fa-check_circle',
                     action: () => {
                       this.submit();
@@ -472,12 +499,12 @@
               bbn.fn.info(this.successMessage, p);
             }
             let e = new Event('success', {cancelable: true});
-            this.$emit('success', d, e);
             if ( this.sendModel && this.source ){
               this.originalData = bbn.fn.extend(true, {}, this.source || {});
             }
             this.dirty = false;
             this.isLoading = false;
+            this.$emit('success', d, e);
             if ( !e.defaultPrevented ){
               if ( this.window ){
                 this.window.close();
@@ -893,6 +920,7 @@
               this.setStorage(this.source)
             }
           }
+          this.$emit('change', this.getModifications())
         }
       },
       /**

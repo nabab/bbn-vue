@@ -175,6 +175,32 @@
           //this.$emit('change', event);
           //this.selfEmit(emitVal);
         }
+      },
+      /**
+       * Prevents the event action if the component is disabled or readonly
+       * @method onClick
+       * @fires click
+       */
+      onClick(ev){
+        if (this.disabled || this.readonly){
+          ev.preventDefault();
+        }
+        else {
+          this.click(ev);
+        }
+      },
+      /**
+       * Prevents the event action if the component is disabled or readonly
+       * @method onKeyDown
+       * @fires keydown
+       */
+      onKeyDown(ev){
+        if ((this.disabled || this.readonly) && (ev.keyCode === 32)) {
+          ev.preventDefault()
+        }
+        else {
+          this.keydown(ev);
+        }
       }
     },
     watch: {

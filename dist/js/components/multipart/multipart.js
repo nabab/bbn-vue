@@ -20,7 +20,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-overlay', 'bbn-flex-width
                   ref="router"
                   @hook:mounted="init"
                   :autoload="false"
-                  :root="root"
+                  :def="def"
                   :auto="false"
                   @change="onRoute">
 
@@ -272,7 +272,7 @@ document.body.insertAdjacentElement('beforeend', script);
         type: Boolean,
         default: false
       },
-      root: {
+      def: {
         type: String,
         default: ''
       }

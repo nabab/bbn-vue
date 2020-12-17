@@ -484,19 +484,15 @@
           this.add(cp);
           return;
         }
-
         if (!bbn.fn.isString(cp.url)) {
           throw Error(bbn._('The component bbn-container must have a URL defined'));
         }
-
         if (this.urls[cp.url]) {
           throw Error(bbn._('Two containers cannot have the same URL defined (' + cp.url + ')'));
         }
-
         this.numRegistered++;
         this.urls[cp.url] = cp;
         let idx = this.search(cp.url);
-
         if (idx === false) {
           this.add(cp);
         }
@@ -1227,6 +1223,27 @@
                 obj2[n] = a;
               }
             });
+
+            // ---- ADDED 16/12/20 (Mirko) ----
+            if ( !obj2.current ){
+              if ( bbn.env.path.indexOf(this.getFullBaseURL() + (obj2.url ? obj2.url + '/' : '')) === 0 ){
+                obj2.current = bbn.env.path.substr(this.getFullBaseURL().length);
+              }
+              else{
+                obj2.current = obj2.url;
+              }
+            }
+            else if ( (obj2.current !== obj2.url) && (obj2.current.indexOf(obj2.url + '/') !== 0) ){
+              obj2.current = obj2.url;
+            }
+            if ( !obj2.current ){
+              obj2.current = obj2.url;
+            }
+            if ( obj2.content ){
+              obj2.loaded = true;
+            }
+            // ---- END ----
+
             if (obj2.real && !this.hasRealContainers) {
               this.hasRealContainers = true;
             }
@@ -2319,9 +2336,47 @@
           }
         });
       }
-      // Adding bbns-container from the slot
 
       let tmp = [];
+
+      // ---- ADDED 16/12/20 (Mirko) ----
+      // Adding bbns-container from the slot
+      if ( this.$slots.default ){
+        for ( let node of this.$slots.default ){
+          if (
+            node.componentOptions
+            && (node.componentOptions.tag === 'bbn-container')
+          ){
+            if (node.componentOptions.propsData.url === undefined) {
+              throw new Error(bbn._("You cannot use containers in router without defining a URL property"));
+            }
+            if ( !this.hasRealContainers ){
+              this.hasRealContainers = true;
+            }
+            if (node.componentOptions.propsData.url === '') {
+              this.hasEmptyURL = true;
+            }
+            let obj = bbn.fn.extend(true, {}, node.componentOptions.propsData),
+                props = node.componentOptions.Ctor.options.props;
+            bbn.fn.iterate(props, (v, i) => {
+              if (!(i in obj) && ('default' in v)) {
+                obj[i] = v.default;
+              }
+            });
+            bbn.fn.iterate(this.getDefaultView(), (a, n) => {
+              if ( obj[n] === undefined ){
+                obj[n] = a;
+              }
+            });
+            obj.real = true;
+            //let o = {real: true, load: false, loaded: true};
+            //tmp.push(bbn.fn.extend({}, node.componentOptions.propsData, o));
+            tmp.push(obj);
+          }
+        }
+      }
+      // ---- END ----
+
       bbn.fn.each(this.source, (a) => {
         if (a.url === '') {
           if (a.load) {
@@ -2361,7 +2416,7 @@
         }
         this.add(a);
       });
-
+      
       //Breadcrumb
       if (!this.master && this.parent) {
         this.parent.registerBreadcrumb(this);

@@ -481,14 +481,6 @@
         default: false
       },
       /**
-       * Set to true will automatically update the data before mount.
-       * @prop {Boolean} [false] autobind
-       */
-      autobind: {
-        type: Boolean,
-        default: false
-      },
-      /**
        * Set to true shows a button at the bottom right of the table that opens a column picker for the table.
        * @prop {Boolean} [false] showable
        */
@@ -3678,7 +3670,9 @@
         this.$once('dataloaded', () => {
           this.ready = true;
         });
-        this.updateData();
+        if (this.autobind) {
+          this.updateData();
+        }
       }
     },
     watch: {

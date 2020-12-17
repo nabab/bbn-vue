@@ -1,7 +1,6 @@
 (bbn_resolve) => { ((bbn) => {
 let script = document.createElement('script');
-script.innerHTML = `<span :class="['bbn-iblock', componentClass]"
->
+script.innerHTML = `<span :class="['bbn-iblock', componentClass]">
   <input type="checkbox"
          :id="id"
          :name="name"
@@ -13,15 +12,17 @@ script.innerHTML = `<span :class="['bbn-iblock', componentClass]"
          @change="toggle"
          :checked="state"
          ref="element"
-         tabindex="0"
+				 tabindex="0"
+				 @keydown="onKeyDown"
+				 @click="onClick"
   >
   <label class="bbn-checkbox-label bbn-iflex bbn-vmiddle"
          :for="id"
          @focus="focus"
          @blur="blur"
          @keyup="keyup"
-         @keydown.space="$refs.element.click()"
-         @click="click"
+         @keydown="onKeyDown"
+         @click="onClick"
   >
 		<span class="bbn-left-spadded"
 					v-html="label"
@@ -207,6 +208,32 @@ document.body.insertAdjacentElement('beforeend', script);
           this.$emit('change', emitVal, this);
           //this.$emit('change', event);
           //this.selfEmit(emitVal);
+        }
+      },
+      /**
+       * Prevents the event action if the component is disabled or readonly
+       * @method onClick
+       * @fires click
+       */
+      onClick(ev){
+        if (this.disabled || this.readonly){
+          ev.preventDefault();
+        }
+        else {
+          this.click(ev);
+        }
+      },
+      /**
+       * Prevents the event action if the component is disabled or readonly
+       * @method onKeyDown
+       * @fires keydown
+       */
+      onKeyDown(ev){
+        if ((this.disabled || this.readonly) && (ev.keyCode === 32)) {
+          ev.preventDefault()
+        }
+        else {
+          this.keydown(ev);
         }
       }
     },
