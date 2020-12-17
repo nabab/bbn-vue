@@ -977,11 +977,14 @@
           }
           this.$forceUpdate();
         },
+        listOnBeforeMount(){
+          if ( this.isAutobind ){
+            this.updateData();
+          }
+        }
       },
       beforeMount(){
-        if ( this.isAutobind ){
-          this.updateData();
-        }
+        this.listOnBeforeMount();
       },
       watch: {
         /**

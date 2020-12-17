@@ -3178,6 +3178,9 @@
             this.focusedRow = idx;
           }
         }
+      },
+      listOnBeforeMount(){
+        
       }
     },
     /**
@@ -3267,14 +3270,16 @@
             });
           });
         }
-        this.updateData();
+        if (this.isAutobind) {
+          this.updateData();
+        }
       }
       else{
         this.init();
         this.$once('dataloaded', () => {
           this.ready = true;
         });
-        if (this.autobind) {
+        if (this.isAutobind) {
           this.updateData();
         }
       }
