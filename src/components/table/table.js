@@ -953,7 +953,7 @@
               o.expander = true;
             }
             if (this.selection && (!bbn.fn.isFunction(this.selection) || this.selection(o))) {
-              o.selected = this.currentSelected.indexOf(data[i].index) > -1;
+              o.selected = (!this.uid && this.currentSelected.includes(data[i].index)) || (this.uid && this.currentSelected.includes(data[i].data[this.uid]));
               o.selection = true;
               groupNumCheckboxes++;
               if (o.selected) {
@@ -2299,7 +2299,7 @@
         this.editedIndex = false;
         this.$forceUpdate();
         return bbn.vue.listComponent.methods.updateData.apply(this, [withoutOriginal]).then(() => {
-          if (this.currentData.length && this.selection && this.currentSelected.length) {
+          if (this.currentData.length && this.selection && this.currentSelected.length && !this.uid) {
             this.currentSelected = [];
           }
           if (this.editable) {
@@ -2697,7 +2697,10 @@
        * @returns {Boolean}
        */
       isSelected(index) {
-        return this.selection && (this.currentSelected.indexOf(index) > -1);
+        return this.selection
+          && ((!this.uid && this.currentSelected.includes(index))
+            || (this.uid && this.currentSelected.includes(this.currentData[index].data[this.uid]))
+          );
       },
       /**
        * Returns true if the given row has td.

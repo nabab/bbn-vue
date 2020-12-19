@@ -334,12 +334,6 @@
          * @data breadcrumbWatcher
          */
         breadcrumbWatcher: false,
-        /**
-         * Returns the bbn-breadcrumb component of this router.
-         * @data {HTMLElement|Boolean} itsBreadcrumb
-         * @fires getRef
-         */
-        itsBreadcrumb: this.breadcrumb ? this.getRef('breadcrumb') : false,
         breadcrumbsList: []
       };
     },
@@ -394,17 +388,6 @@
         return false;
       },
       
-      /**
-       * Returns the master breadcrumb component for this router.
-       * @computed itsMasterBreadcrumb
-       * @return {Vue|Boolean}
-       */
-      itsMasterBreadcrumb(){
-        if ( this.isBreadcrumb && this.itsMaster ){
-          return this.itsMaster.itsBreadcrumb;
-        }
-        return false;
-      },
       /**
        * The final Vue object for the active container (if it has sub-router).
        * @computed activeRealContainer
@@ -1762,7 +1745,7 @@
               key: "close",
               icon: "nf nf-mdi-close",
               action: () => {
-                this.getRef('breadcrumb').close(idx);
+                this.close(idx);
               }
             });
           }
@@ -1773,7 +1756,7 @@
                 key: "pin",
                 icon: "nf nf-mdi-pin",
                 action: () => {
-                  this.getRef('tabs').pin(idx);
+                  this.pin(idx);
                 }
               });
               items.push({
@@ -1781,7 +1764,7 @@
                 key: "close",
                 icon: "nf nf-mdi-close",
                 action: () => {
-                  this.getRef('tabs').close(idx);
+                  this.close(idx);
                 }
               })
             }
@@ -1791,7 +1774,7 @@
                 key: "pin",
                 icon: "nf nf-mdi-pin_off",
                 action: () => {
-                  this.getRef('tabs').unpin(idx);
+                  this.unpin(idx);
                 }
               });
             }
@@ -1803,7 +1786,7 @@
             key: "close_others",
             icon: "nf nf-mdi-close_circle_outline",
             action: () => {
-              this.getRef(this.isBreadcrumb ? 'breadcrumb' : 'tabs').closeAllBut(idx);
+              this.closeAllBut(idx);
             }
           })
         }
@@ -1813,7 +1796,7 @@
             key: "close_all",
             icon: "nf nf-mdi-close_circle",
             action: () => {
-              this.getRef(this.isBreadcrumb ? 'breadcrumb' : 'tabs').closeAll();
+              this.closeAll();
             }
           })
         }
@@ -2431,10 +2414,6 @@
           this.parent.registerBreadcrumb(this);
         }
       }
-      if (this.isBreadcrumb) {
-        this.itsBreadcrumb = this.getRef('breadcrumb');
-      }
-      
       this.ready = true;
       setTimeout(() => {
         // bugfix for rendering some nf-mdi icons
@@ -2524,9 +2503,6 @@
        */
       isBreadcrumb(newVal){
         this.$nextTick(() => {
-          if (newVal) {
-            this.itsBreadcrumb = this.getRef('breadcrumb');
-          }
           this.setConfig();
         })
       }

@@ -11,5 +11,9 @@
        v-html="source.content"
   >
   </div-->
-  <component v-if="ready" :is="component(type)" :source="source" :class="{'edit-block' : edit}"></component>
+  <component v-if="ready" 
+            :is="component(type)" 
+            :source="source"
+            :class="{'edit-block' : edit}"
+  ></component>
 </div>
