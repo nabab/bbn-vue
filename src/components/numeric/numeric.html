@@ -18,6 +18,7 @@
              @change="change"
              v-show="editMode"
              :size="currentInputSize"
+             :style="{'paddingRight': spinners ? '0.5em !important' : ''}"
       >
       <input autocomplete="off"
              :value="inputValue"
@@ -32,12 +33,14 @@
              v-show="!editMode"
              ref="formatted"
              :size="currentInputSize"
+             :style="{'paddingRight': spinners ? '0.5em !important' : ''}"
       >
       <input type="hidden"
              :value="value"
       >
     </div>
-    <div :class="['bbn-numeric-buttons', 'bbn-radius-top-right', 'bbn-radius-bottom-right', {'bbn-disabled' : !!readonly || disabled}]">
+    <div v-if="spinners"
+         :class="['bbn-numeric-buttons', 'bbn-radius-top-right', 'bbn-radius-bottom-right', {'bbn-disabled' : !!readonly || disabled}]">
       <div :class="[
             'bbn-reactive-block',
             'bbn-middle',

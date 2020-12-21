@@ -197,25 +197,27 @@
           e.preventDefault();
           return;
         }
-        //arrow up
-        if ( e.keyCode === 38 ){
-          this.increment();
-        }
-        //arrow down
-        if ( e.keyCode === 40 ){
-          this.decrement();
-        }
-        //page up - increase the step of 10 unit
-        if ( e.keyCode === 33 ){
-          let step = 10 * this.step,
-          tmp = parseFloat(this.value) + (this.isPercentage ? step / 100 : step);
-          this.changeValue(tmp);
-        }
-        //page down - decrease the step of 10 unit
-        if ( e.keyCode === 34 ){
-          let step = 10 * this.step,
-          tmp = parseFloat(this.value) - (this.isPercentage  ? step / 100 : step);
-          this.changeValue(tmp);
+        if (this.spinners) {
+          //arrow up
+          if ( e.keyCode === 38 ){
+            this.increment();
+          }
+          //arrow down
+          if ( e.keyCode === 40 ){
+            this.decrement();
+          }
+          //page up - increase the step of 10 unit
+          if ( e.keyCode === 33 ){
+            let step = 10 * this.step,
+            tmp = parseFloat(this.value) + (this.isPercentage ? step / 100 : step);
+            this.changeValue(tmp);
+          }
+          //page down - decrease the step of 10 unit
+          if ( e.keyCode === 34 ){
+            let step = 10 * this.step,
+            tmp = parseFloat(this.value) - (this.isPercentage  ? step / 100 : step);
+            this.changeValue(tmp);
+          }
         }
         this.keydown(e);
       },
@@ -421,7 +423,7 @@
        * @fires changeValue
        */
       currentValue(newVal, oldVal){
-        bbn.fn.log("CHANGE OF CURRENT VALUE");
+        //bbn.fn.log("CHANGE OF CURRENT VALUE - " + newVal + ' - ' + oldVal);
         if ( (newVal !== oldVal) ){
           this.changeValue(newVal, oldVal);
         }

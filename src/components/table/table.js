@@ -2270,14 +2270,14 @@
           return;
         }
         if (row && row.selection) {
-          let idx = this.currentSelected.indexOf(row.index),
+          let idx = this.currentSelected.indexOf(this.uid ? this.currentData[row.index].data[this.uid] : row.index),
             isSelected = false;
           if (idx > -1) {
             this.$emit('unselect', row.data);
             this.currentSelected.splice(idx, 1);
           } else {
             this.$emit('select', row.data);
-            this.currentSelected.push(row.index);
+            this.currentSelected.push(this.uid ? this.currentData[row.index].data[this.uid] : row.index);
             isSelected = true;
           }
           this.$emit('toggle', isSelected, this.currentData[row.index].data);
