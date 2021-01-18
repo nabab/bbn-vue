@@ -1057,6 +1057,9 @@ document.head.insertAdjacentElement('beforeend', css);
       pieDonutCommonCfg(){
         if ( this.container && (this.isPie || this.isDonut) ){
           let cfg = {
+            legend: {
+              show: !!this.legend
+            },
             dataLabels: {
               enabled: !!this.labels && this.data.length
             }

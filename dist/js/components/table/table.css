@@ -41,9 +41,6 @@
   top: 1px;
   left: 0px;
 }
-.bbn-table > div > .bbn-table-toolbar {
-  min-height: 3.2em;
-}
 .bbn-table > div > div.bbn-table-main {
   overflow: hidden;
 }

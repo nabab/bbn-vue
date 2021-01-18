@@ -6,7 +6,7 @@
 	h4,
 	h5,
 	h6 {
-		margin: 0 0 .5em;
+		margin: 0.5em 0 0 0;
 		line-height: 1.2;
 		font-weight: bold;
 		font-weight: 100;
@@ -22,14 +22,12 @@
     border-top-width: 1px;
   }
   .component-container{
-    //padding: 1em;
-    max-width: 845px;
+    padding: 12px 10px;
     margin: 0 auto;
     float: unset;
   }
   .component-container.bbn-block-title{
-    padding: 0;
-    padding-top: 16px;
+    padding: 12px 10px;
   }
   .component-container.has-hr{
     display: flex;
@@ -59,34 +57,93 @@
       white-space: normal;
     }
   }
-  .component-container.bbn-block-gallery{
+  .component-container.bbn-block-gallery, 
+  .bbn-block-carousel{
     margin: 15px auto;
     padding-bottom: 12px;
     text-align: left;
     display: grid;
     grid-gap: 20px;
-    &.cols-1{
+    &.cols-1, .cols-1{
       grid-template-columns: 1fr;
     }
-    &.cols-3{
+    &.cols-3, .cols-3{
       grid-template-columns: repeat(3,1fr);
     }
-    &.cols-4{
+    &.cols-4, .cols-4{
       grid-template-columns: repeat(4,1fr);
     }
-    &.cols-2{
+    &.cols-2, .cols-2{
       grid-template-columns: repeat(2,1fr);
     }
     
     a{
       overflow: hidden;
       display: flex;
+      flex-direction:column;
     //  align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
+      .bbn-block-gallery-caption{
+        margin-top: 7px;
+      }
     }
+  }
+  .bbn-block-carousel{
+    .cols-1,.cols-2,.cols-3,.cols-4{
+      display:grid;
+      grid-gap: 20px;
+    }
+    display: block;
+    margin: 0 auto;
+    time{
+      opacity: .7;
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.4em;
+      text-transform: none;
+    }
+    .control{
+      i{
+        display: inline-block;
+        cursor: pointer;
+        opacity: .4;
+        position: relative;
+        top: auto;
+        left: auto;
+        right: auto;
+        bottom: auto;
+        margin: 0 0 15px 0;
+        padding: 0;
+        background-color: transparent;
+        color: inherit !important;
+        font-size: 20px;
+        line-height: 16px;
+        &:hover{
+          opacity: 1;
+        }
+        &.prev{
+          margin-right: 10px;
+        }
+      }
+    }
+    a .bbn-block-gallery-caption{
+      font-size: 20px;
+      &:hover{
+        text-decoration: underline;
+      }
+    }
+  }
+  .bbn-block-image{
     img{
-    //  padding: 1.5em;
+      max-width: 100%;
     }
+  }
+  .bbn-block-image .image-details-title,
+  .bbn-block-gallery .image-details-title{
+    font-size: 1.3em;
+    line-height: 1em;
+    margin: 1em 0 .2em 0;
+    display: inline-block;
   }
 
   .bbn-block-social ul.bbn-menulist.free{

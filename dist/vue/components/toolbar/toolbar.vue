@@ -8,17 +8,23 @@
 >
   <slot></slot>
   <template v-for="(s, i) in source">
-    <component v-if="s.content !== undefined"
+
+    <component v-if="s.component"
               :is="s.component"
               v-bind="s.options"
-              v-html="s.content"
-              :key="'item' + i"
-    ></component>
-    <component v-else
-              :is="s.component"
-              v-bind="s.options"
-              :key="'item' + i"
-    ></component>
+              :key="'item' + i"/>
+    <div v-else-if="s.content !== undefined"
+         class="bbn-block bbn-spadded"
+         v-html="s.content"
+         :key="'item' + i"/>
+    <bbn-button v-else-if="(s.url || s.action) && (s.text || s.icon)"
+                v-bind="s"
+                class="bbn-hsmargin"
+                :key="'item' + i"/>
+    <div v-else
+         class="bbn-toolbar-separator"
+         :key="'item' + i"
+    >|</div>
   </template>
 </div>
 
@@ -124,6 +130,9 @@
 
 </script>
 <style scoped>
+.bbn-toolbar {
+  min-height: 3.2em;
+}
 .bbn-toolbar.bbn-h-100 {
   text-align: center;
 }

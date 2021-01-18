@@ -132,18 +132,26 @@ div.bbn-router {
                 content: "*";
               }
             }
-            i.bbn-router-tabs-icon{
-              display: block;
+            div.bbn-router-tabs-icon{
               position: absolute;
-              right: 2px;
-              font-size: 1em;
-              cursor: pointer;
-              margin: 0;
-              &.bbn-router-tab-close{
-                top: 1px;
-              }
-              &.bbn-router-tab-menu{
-                bottom: -2px;
+              right: 0px;
+              top: 0px;
+              bottom: 0px;
+              i{
+                display: block;
+                position: absolute;
+                right: 0px;
+                padding: 2px;
+                padding-right: 2px;
+                font-size: 1em;
+                cursor: pointer;
+                margin: 0;
+                &.bbn-router-tab-close{
+                  top: 0px;
+                }
+                &.bbn-router-tab-menu{
+                  bottom: -2px;
+                }
               }
             }
             div.bbn-router-tabs-selected {

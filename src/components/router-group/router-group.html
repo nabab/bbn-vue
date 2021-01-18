@@ -1,0 +1,10 @@
+<div :class="[componentClass, {
+       'bbn-invisible': !ready,
+       'bbn-overlay': true
+     }]">
+  <bbn-splitter :orientation="orientation" :resizable="true">
+    <bbn-pane v-for="router in routers">
+      <bbn-router v-bind="router"></bbn-router>
+    </bbn-pane>
+  </bbn-splitter>
+</div>

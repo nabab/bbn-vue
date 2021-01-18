@@ -1,3 +1,6 @@
+.bbn-toolbar {
+  min-height: 3.2em;
+}
 .bbn-toolbar.bbn-h-100 {
   text-align: center;
 }

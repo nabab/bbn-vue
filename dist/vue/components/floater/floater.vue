@@ -1211,15 +1211,15 @@
       /**
        * Closes all levels.
        * @method closeAll
-       * @fires ancesters
+       * @fires ancestors
        */
       closeAll() {
         if (this.level) {
-          let ancesters = this.ancesters('bbn-floater');
+          let ancestors = this.ancestors('bbn-floater');
           for (let i = this.level; i >= 0; i--) {
-            if (ancesters[i]) {
-              //bbn.fn.log(ancesters, i, ancesters[i]);
-              ancesters[i].close(true);
+            if (ancestors[i]) {
+              //bbn.fn.log(ancestors, i, ancestors[i]);
+              ancestors[i].close(true);
             }
           }
         }
@@ -1301,7 +1301,7 @@
     },
     /**
      * @event mounted
-     * @fires ancesters
+     * @fires ancestors
      * @fires closeAll
      */
     mounted() {
@@ -1309,9 +1309,9 @@
       this.ready = true;
       this.$emit('ready');
       this.$nextTick(() => {
-        let ancesters = this.ancesters('bbn-floater');
+        let ancestors = this.ancestors('bbn-floater');
         if (this.element) {
-          let ct = ancesters.length ? ancesters[ancesters.length-1] : this;
+          let ct = ancestors.length ? ancestors[ancestors.length-1] : this;
           let scroll = ct.closest('bbn-scroll');
           if (scroll) {
             scroll.$once('scroll', () => {

@@ -9,6 +9,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-overlay']"
               v-on:after-enter="onResize"
   >
     <div :class="{
+      'bbn-background': true,
       'bbn-overlay': !fullScreen,
       'bbn-container-full-screen': fullScreen,
       'bbn-container-visible': visible
@@ -38,12 +39,12 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-overlay']"
         <slot v-else></slot>
         <component is="style" v-if="css" scoped="scoped" v-html="css"></component>
         <bbn-loader v-if="hasLoader"></bbn-loader>
-        <span  v-if="fullScreen"
-              class="bbn-container-full-screen-closer bbn-xl bbn-p">
-          <i class="nf nf-fa-times_circle"
-            @click="fullScreen = false"></i>
-        </span>
       </component>
+      <span  v-if="fullScreen"
+            class="bbn-container-full-screen-closer bbn-xl bbn-p">
+        <i class="nf nf-fa-times_circle"
+          @click="fullScreen = false"></i>
+      </span>
       <bbn-popup ref="popup"
                 :source="popups"
                 v-if="!hidden && ready && isLoaded && (visible || cached)">

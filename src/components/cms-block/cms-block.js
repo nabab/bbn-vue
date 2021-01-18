@@ -8,15 +8,15 @@
 (function(bbn){
   "use strict";
   let titleTemplates = {
-    h1: `<h1 v-text="source.content"></h1>`,
-    h2: `<h2 v-text="source.content"></h2>`,
-    h3: `<h3 v-text="source.content"></h3>`,
-    h4: `<h4 v-text="source.content"></h4>`,
-    h5: `<h5 v-text="source.content"></h5>`,
+    h1: `<h1 v-text="decodeURIComponent(source.content)"></h1>`,
+    h2: `<h2 v-text="decodeURIComponent(source.content)"></h2>`,
+    h3: `<h3 v-text="decodeURIComponent(source.content)"></h3>`,
+    h4: `<h4 v-text="decodeURIComponent(source.content)"></h4>`,
+    h5: `<h5 v-text="decodeURIComponent(source.content)"></h5>`,
   },
   htmlTemplates = {
-    p: `<p v-html="source.content"></p>`,
-    span: `<span v-html="source.content"></span>`
+    p: `<p v-html="decodeURIComponent(source.content)"></p>`,
+    span: `<span v-html="decodeURIComponent(source.content)"></span>`
 
   },
   templates = {
@@ -63,12 +63,37 @@
     image: {
       //taglia originale 100% width,width 50% 33% 25% 
       view: `
-      <div class="component-container" :class="alignClass">
-        <img :src="'image/' + source.src" :style="style">
-        <p class="image-caption bbn-l bbn-s bbn-vsmargin" v-if="source.caption" v-html="source.caption"></p>
+      <div class="component-container bbn-block-image" :class="alignClass">
+        <a v-if="source.href" :href="source.href" class="bbn-c">
+          <img :src="'/image/' + source.src"
+                style="heigth:500px;width:100%"
+               :style="style"
+               :alt="source.alt ? decodeURIComponent(source.alt) : ''"
+          >
+        </a>
+        <img v-else
+             :src="'/image/' + source.src" 
+             :style="style"
+             :alt="source.alt ? decodeURIComponent(source.alt) : ''"
+        >
+        <p class="image-caption bbn-l bbn-s bbn-vsmargin" 
+           v-if="source.caption" 
+           v-html="decodeURIComponent(source.caption)"
+        ></p>
+        <!--error when using decodeuricomponent on details of home image-->
+        <a class="image-details-title bbn-l bbn-vsmargin bbn-w-100" 
+           v-if="source.details_title" 
+           v-html="(source.details_title)"
+           :href="source.href"
+           target="_blank"
+        ></a>
+        <p class="image-details bbn-l bbn-vsmargin" 
+           v-if="source.details" 
+           v-html="(source.details)"
+        ></p>
       </div>`,
       edit:     `
-      <div class="component-container" :class="alignClass">
+      <div class="component-container bbn-block-image" :class="alignClass">
         <div class="bbn-padded">
           <div class="bbn-grid-fields bbn-vspadded bbn-reset">
             <label v-text="_('Upload your image')"></label>
@@ -94,14 +119,31 @@
           </div> 
         </div>
         <img :src="'image/' + source.src" :style="style">
-        <p class="image-caption bbn-l bbn-s bbn-vsmargin" v-if="source.caption" v-html="source.caption"></p>
+        <p class="image-caption bbn-l bbn-s bbn-vsmargin" v-if="source.caption" v-html="decodeURIComponent(source.caption)"></p>
       </div>          
                 `
     }, 
+    carousel: {
+      view: `
+      <div :class="['component-container', 'bbn-block-carousel', 'bbn-w-100',  alignClass]" :style="style" v-if="show">
+        <div v-for="(group, idx) in carouselSource"
+             v-if="idx === currentCarouselIdx" 
+        >
+          <bbn-cms-carousel-control :source="idx"
+                                    :key="idx"
+                                    v-if="carouselSource.length > 3"
+          ></bbn-cms-carousel-control>
+          <div :class="['bbn-w-100',carouselCols]">
+            <bbn-cms-block-gallery-item v-for="(image, imgIdx) in group" :source="image" :key="imgIdx" :index="imgIdx"></bbn-cms-block-gallery-item>
+          </div>
+        </div>
+      </div>
+      `,
+      edit: ``
+    },
     gallery: {
       view: `
       <div :class="['component-container', 'bbn-block-gallery', alignClass, galleryCols]" :style="style" v-if="show">
-        <!-- CREATE IMAGES AND GIVE THEM THE CORRECT HREF -->
         <bbn-cms-block-gallery-item v-for="(image, idx) in source.source" :source="image" :key="idx" :index="idx"></bbn-cms-block-gallery-item>
       </div>
       `,
@@ -134,16 +176,23 @@
     },
     video: {
       view: `
-        <div :class="['component-container', alignClass]">
-          <bbn-video :width="source.style.width" 
+        <div :class="['component-container', 'bbn-cms-block-video', alignClass]">
+          <!--ERROR ON HOME-->
+          <!--bbn-video :width="source.width" 
                      :style="style" 
-                     :height="source.style.height"
+                     :height="source.height"
                      :autoplay="autoplay"
                      :muted="muted"
                      :youtube="youtube"
-                     :source="source.content"
-          ></bbn-video>
-          
+                     :source="source.src"
+          ></bbn-video-->
+          <iframe 
+                  :style="style" 
+                  
+                  :autoplay="false"
+                  
+                  :src="source.src"
+           ></iframe>       
         </div>`, 
       edit: `
       <div class="component-container" id="video-container">
@@ -295,7 +344,7 @@
         height: '100%',
         //ready is important for the component template to be defined 
         ready: true,
-        edit: false
+        edit: false,
       }
     },
     computed: {
@@ -363,10 +412,26 @@
               tinyNumbers: [{text: '1', value: 1}, {text: '2', value: 2},{text: '3', value: 3},{text: '4', value: 4}],
               borderStyle: borderStyle,
               ref: (new Date()).getTime(),
-              show: true
+              show: true,
+              currentCarouselIdx: 0
             }
           },
           computed: {
+            carouselSource(){
+              if (this.source.source && (this.source.type === 'carousel')){
+                let res = [];
+                var i,j,temparray, chunk = 3;
+                for (i=0,j=this.source.source.length; i<j; i+=chunk) {
+                    temparray = this.source.source.slice(i,i+chunk);
+                    res.push(temparray);
+                    // do whatever
+                }
+                console.log(res)
+                return res;
+                
+              }
+              
+            },
             mobile(){
               if ( bbn.env.width <= 640 ){
                 this.$parent.isMobile = true;
@@ -387,12 +452,34 @@
                 }
                 return 'cols-3'
               }
+              else if (this.mobile) {
+                if (this.source.columns !== 2) {
+                  return 'cols-2'
+                }
+                else{
+                  return 'cols-1'
+                }
+              }
+            },
+            carouselCols(){
+              if ( (this.source.type === 'carousel') && !this.mobile){
+                if ( this.source.columns === 1 ){
+                  return 'cols-1'
+                }
+                else if ( this.source.columns === 2 ){
+                  return 'cols-2'
+                }
+                else if ( this.source.columns === 4 ){
+                  return 'cols-4'
+                }
+                return 'cols-3'
+              }
               else if (this.mobile){
                 return 'cols-2'
               }
             },
             youtube(){
-              return this.source.content.indexOf('youtube') > -1
+              return this.source.src.indexOf('youtube') > -1
             },
             contentStyle(){
               let st = ''
@@ -433,10 +520,13 @@
                   st += 'border-color:' + this.source.style['border-color'] + ';';
                 }
                 if(this.source.type === 'line'){
-                  if ( this.source.style['border-width'] ){
-                    st += 'border-top-width:' + this.source.style['border-width'] + ( bbn.fn.isNumber(this.source.content['border-width']) ? 'px;' : ';');
-                    st += 'border-bottom:0'
+                  if (!this.source.style['border-width']){
+                    this.source.style['border-width'] = '100%';
                   }
+                  
+                  st += 'border-top-width:' + this.source.style['border-width'] + ( bbn.fn.isNumber(this.source.content['border-width']) ? 'px;' : ';');
+                  st += 'border-bottom:0'
+                  
                 }
                 else { 
                   if ( this.source.style['border-width'] ){
@@ -464,35 +554,50 @@
             }
           }, 
           methods: { 
+            decodeURIComponent(st){
+              //the regular expression to match the new line
+              /*let reg = /\r?\n|\r/g;
+              if(st.match(reg)){
+                st = st.replace(reg, '');
+              }*/
+              //var st = bbn.fn.nl2br(st);
+              console.log(st)
+              return decodeURIComponent(this.escape(st));
+            },
+            escape(st){
+              return escape(st)
+            },
             /**
              * calculate the height of the images in gallery basing on source.columns
              */
             makeSquareImg(){
-              //creates square container for the a
+              if ( !this.source.noSquare ){
+                 //creates square container for the a
               var items = this.$el.querySelectorAll('a'),
                 images = this.$el.querySelectorAll('img');
                 this.show = false;
-              if (this.source.columns === 1){
-                for (let i in items ){
-                  if ( images[i].tagName === 'IMG' ){
-                    this.$nextTick(()=>{
-                      images[i].style.height = 'auto';
-                      images[i].style.width = '100%';
-                    })
+                if (this.source.columns === 1){
+                  for (let i in items ){
+                    if ( images[i].tagName === 'IMG' ){
+                      this.$nextTick(()=>{
+                        images[i].style.height = 'auto';
+                        images[i].style.width = '100%';
+                      })
+                    }
                   }
                 }
-              }
-              else {
-                for (let i in images ){
-                  if ( images[i].tagName === 'IMG' ){
-                    this.$nextTick(()=>{
-                      images[i].style.height = items[i].offsetWidth + 'px';
-                    })
+                else {
+                  for (let i in images ){
+                    if ( images[i].tagName === 'IMG' ){
+                      this.$nextTick(()=>{
+                        images[i].style.height = items[i].offsetWidth + 'px';
+                      })
+                    }
                   }
+    
                 }
-  
-              }
               this.show = true;
+              }
             },
             setColor(a){
               this.source.style.color = a;
@@ -544,23 +649,76 @@
               props: ['source', 'index'],
               //:src="'image/' + source.content"
               //the template below to take the image from index
-              /*template: `
-                <a :href="'image/gallery/' + (source.src ? source.src : source.name)" target="_blank">
+              template: `
+                <a :href="(source.href ? source.href : source.src)" target="_blank">
                   <!--TO TAKE IMAGE FROM THE INDEX-->
                   <!--img :src="'image/gallery/' + (source.src ? source.src : source.name)" :alt="source.alt ? source.alt : ''"-->
-                  <img :src="source.src" :alt="source.alt ? source.alt : ''">
+                  <img :src="'/image' + source.src" :alt="source.alt ? source.alt : ''" :style="$parent.source.style">
+                  <div v-if="source.caption || (source.title && (type === 'carousel'))" 
+                       :class="['bbn-block-gallery-caption',$parent.alignClass]"
+                       v-html="(source.caption && (type === 'gallery')) ? decodeURIComponent(source.caption) : decodeURIComponent(source.title)"
+                  ></div>
+                  <div v-if="source.details_title" 
+                       :class="['image-details-title',$parent.alignClass]"
+                       v-html="decodeURIComponent(source.details_title)"
+                  ></div>
+                  <div v-if="source.details" 
+                       :class="['image-details',$parent.alignClass]"
+                       v-html="decodeURIComponent(source.details)"
+                  ></div>
+                  <div v-if="source.price" 
+                       :class="['image-price',$parent.alignClass]"
+                       v-text="source.price"
+                  ></div>
+                  <time v-if="source.time" v-text="source.time" :class="$parent.alignClass"></time>
                 </a>
                 `
-                */
-               template: `
+                
+               /*template: `
                 <a :href="(source.src ? source.src : source.name)" target="_blank">
                   <!--TO TAKE IMAGE FROM THE INDEX-->
                   <!--img :src="'image/gallery/' + (source.src ? source.src : source.name)" :alt="source.alt ? source.alt : ''"-->
                   <img :src="source.src" :alt="source.alt ? source.alt : ''">
                 </a>
-                `
-
-            
+                `*/,
+                methods:{
+                  //IMPORTANT TO RENDER CHINESE CHARACTERS
+                  decodeURIComponent(st){
+                    return this.$parent.decodeURIComponent(st);
+                  },
+                  escape(st){
+                    return this.$parent.escape(st);
+                  }
+                },
+                computed: {
+                  type(){
+                    return this.$parent.source.type
+                  }
+                }, 
+                mounted(){
+                  bbn.fn.happy(this.source.price)
+                }
+            },
+            'bbn-cms-carousel-control':{
+              template: `
+              <div class="bbn-r control">
+                <span>
+                  <i @click="prev" class="prev nf nf-oct-chevron_left"></i>
+                  <i @click="next" class="next nf nf-oct-chevron_right"></i>
+                </span>  
+              </div>`,
+              methods: {
+                next(){
+                  if ( this.$parent.currentCarouselIdx < (this.$parent.carouselSource.length -1) ){
+                    this.$parent.currentCarouselIdx ++
+                  }
+                },
+                prev(){
+                  if ( this.$parent.currentCarouselIdx > 0 ){
+                    this.$parent.currentCarouselIdx --
+                  }
+                }
+              }
             },
             //internal component for align buttons in edit of the block
             'bbn-block-align-buttons':{
@@ -628,7 +786,7 @@
             }
           },
           mounted(){
-            if ( this.source.type === 'gallery' ){
+            if ( (this.source.type === 'gallery') || (this.source.type === 'carousel') ){
               this.makeSquareImg();
             }
           },

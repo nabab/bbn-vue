@@ -549,7 +549,7 @@
           while ( bits.length ){
             let st = bits.join('/');
             if ( this.urls[st] ){
-              return st;
+              return this.urls[st].disabled ? '' : st;
             }
             bits.pop();
           }
@@ -1349,7 +1349,7 @@
           throw Error(bbn._('The component bbn-container must have a valid URL defined'));
         }
         if ( this.parent ){
-          let containers = this.ancesters('bbn-container');
+          let containers = this.ancestors('bbn-container');
           url = this.getFullBaseURL().substr(this.router.baseURL.length) + url;
           //bbn.fn.log("CALL ROOT ROUTER WITH URL " + url);
           // The URL of the last bbn-container as index of the root router
@@ -2290,7 +2290,7 @@
      */
     mounted(){
       // All routers above (which constitute the fullBaseURL)
-      this.parents = this.ancesters('bbn-router');
+      this.parents = this.ancestors('bbn-router');
       // The closest
       this.parent = this.parents.length ? this.parents[0] : false;
       // The root

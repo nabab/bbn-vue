@@ -324,6 +324,7 @@
          * @data {Boolean} [false] _observerReceived
          */
         _observerReceived: false,
+        allRowsChecked: false,
         /**
          * The group of columns.
          * @data {Object} [[{name: 'left',width: 0,visible: 0,cols: []},{name: 'main',width: 0,visible: 0,cols: []},{name: 'right',width: 0,visible: 0,cols: []}]] groupCols
@@ -876,14 +877,18 @@
           lastInGroup = false;
         while (data[i] && (i < end)) {
           let a = data[i].data;
+          // True if the element is the last of its group
           lastInGroup = isGroup && (!data[i + 1] || (data[i + 1].data[groupField] !== currentGroupValue));
+          // Is a new group
           if (isGroup && (currentGroupValue !== a[groupField])) {
             groupNumCheckboxes = 0;
-            if (!a[groupField]) {
+            // If the row doesn't have the column
+            if (a[groupField] === undefined) {
               currentGroupValue = null;
               currentGroupIndex = -1;
               isExpanded = true;
-            } else {
+            }
+            else {
               isExpanded = false;
               currentGroupValue = a[groupField];
               currentGroupIndex = data.index;
@@ -918,6 +923,7 @@
                 isExpanded = true;
               }
 
+              currentLink = res.length;
               if (!isExpanded && data[i - 1] && (currentGroupValue === data[i - 1].data[groupField])) {
                 if (res.length) {
                   res.push(tmp);
@@ -925,11 +931,11 @@
               } else {
                 tmp.expanded = isExpanded;
                 res.push(tmp);
-                currentLink = i;
                 rowIndex++;
               }
             }
-          } else if (this.expander) {
+          }
+          else if (this.expander) {
             let exp = bbn.fn.isFunction(this.expander) ? this.expander(data[i], i) : this.expander;
             isExpanded = exp ? this.currentExpanded.indexOf(data[i].index) > -1 : false;
           }
@@ -1118,7 +1124,6 @@
        * @todo 1px must correspond to the border width
        */
       _scrollContainer(){
-        bbn.fn.log("SCROLL CONT");
         this.marginStyleSheet.innerHTML = "."  + this.cssRuleName + "{margin-top: " +
         (this.container.scrollTop ? '-' + (this.container.scrollTop) + 'px' : '') + '}';
       },
@@ -1367,7 +1372,6 @@
           ev.preventDefault();
           ev.stopImmediatePropagation();
         }
-        bbn.fn.log("INSIDE BUTTON", button);
         //bbn.fn.log("EXEC COMMAND");
         if (button.action) {
           if (bbn.fn.isFunction(button.action)) {
@@ -1427,7 +1431,7 @@
         if (!filename) {
           filename = 'export-' + bbn.fn.dateSQL().replace('/:/g', '-') + '.csv';
         }
-        bbn.fn.download(filename, data, 'csv');
+        bbn.fn.downloadContent(filename, data, 'csv');
       },
       /**
        * Exports to excel.
@@ -2252,35 +2256,45 @@
       /**
        * Emits 'select',  'unselect' or 'toggle' at change of checkbox of the row in a selectable table.
        * @method checkSelection
-       * @param {Number} index
+       * @param {Number}  index
+       * @param {Boolean} index
        * @emit unselect
        * @emit select
        * @emit toggle
        */
-      checkSelection(index) {
+      checkSelection(index, state) {
         let row = this.items[index];
-        if (row && this.groupable && row.group) {
-          if (row.expanded) {
-            bbn.fn.fori((d, i) => {
-              if (d && d.selection && (d.data[this.cols[this.group].field] === row.value)) {
-                this.checkSelection(i)
+        if (row) {
+          if (this.groupable && row.group) {
+            if (row.expanded) {
+              bbn.fn.fori((d, i) => {
+                if (d && d.selection && (d.data[this.cols[this.group].field] === row.value)) {
+                  this.checkSelection(i, state)
+                }
+              }, this.items, index + row.num, index + 1)
+            }
+          }
+          else if (row.selection) {
+            let idx = this.currentSelected.indexOf(this.uid ? this.currentData[row.index].data[this.uid] : row.index);
+            let isSelected = false;
+            let toggled = false;
+            if (idx > -1) {
+              if ([undefined, false].includes(state)) {
+                toggled = true;
+                this.$emit('unselect', row.data);
+                this.currentSelected.splice(idx, 1);
               }
-            }, this.items, index + row.num, index + 1)
+            }
+            else if ([undefined, true].includes(state)) {
+              toggled = true;
+              this.$emit('select', row.data);
+              this.currentSelected.push(this.uid ? this.currentData[row.index].data[this.uid] : row.index);
+              isSelected = true;
+            }
+            if (toggled) {
+              this.$emit('toggle', isSelected, this.currentData[row.index].data);
+            }
           }
-          return;
-        }
-        if (row && row.selection) {
-          let idx = this.currentSelected.indexOf(this.uid ? this.currentData[row.index].data[this.uid] : row.index),
-            isSelected = false;
-          if (idx > -1) {
-            this.$emit('unselect', row.data);
-            this.currentSelected.splice(idx, 1);
-          } else {
-            this.$emit('select', row.data);
-            this.currentSelected.push(this.uid ? this.currentData[row.index].data[this.uid] : row.index);
-            isSelected = true;
-          }
-          this.$emit('toggle', isSelected, this.currentData[row.index].data);
         }
       },
       /**
@@ -2673,6 +2687,9 @@
               this.currentExpanded.push(idx);
             }
           }
+          this.$nextTick(() => {
+            this.resizeHeight();
+          })
         }
       },
       /**
@@ -2839,28 +2856,14 @@
               }
             });
             let firstGroup = groupCols[0].visible ? 0 : 1;
-            if (this.hasExpander) {
+            if (this.hasExpander || this.selection) {
               let o = {
-                isExpander: true,
+                isExpander: !!this.hasExpander,
+                isSelection: !!this.selection,
                 title: ' ',
                 filterable: false,
-                width: this.minimumColumnWidth,
-                realWidth: this.minimumColumnWidth
-              };
-              if ( firstGroup === 0 ){
-                o.fixed = true;
-                o.isLeft = true;
-              }
-              groupCols[firstGroup].cols.unshift(o);
-              groupCols[firstGroup].visible++;
-            }
-            if ( this.selection ) {
-              let o = {
-                isSelection: true,
-                title: ' ',
-                filterable: false,
-                width: 40,
-                realWidth: 40
+                width: this.selection ? 40 : this.minimumColumnWidth,
+                realWidth: this.selection ? 40 : this.minimumColumnWidth
               };
               if ( firstGroup === 0 ){
                 o.fixed = true;
@@ -3184,6 +3187,16 @@
       },
       listOnBeforeMount(){
         
+      },
+      checkAll(){
+        bbn.fn.each(this.items, (a, i) => {
+          this.checkSelection(i, true);
+        })
+      },
+      uncheckAll(){
+        bbn.fn.each(this.items, (a, i) => {
+          this.checkSelection(i, false);
+        })
       }
     },
     /**
@@ -3226,7 +3239,8 @@
         bbn.fn.each(this.cols, (a, i) => {
           if (a.hidden) {
             tmp.push(i);
-          } else if (initColumn.length <= 10) {
+          }
+          else if (initColumn.length <= 10) {
             initColumn.push(i);
           }
         });
@@ -3305,10 +3319,18 @@
        * @watch observerDirty
        * @fires updateData
        */
-      observerDirty(newVal) {
-        if (newVal && !this.editedRow) {
+      observerDirty(v) {
+        if (v && !this.editedRow) {
           this.observerDirty = false;
           this.updateData();
+        }
+      },
+      allRowsChecked(v){
+        if (v) {
+          this.checkAll();
+        }
+        else {
+          this.uncheckAll();
         }
       },
       /**
@@ -3317,18 +3339,6 @@
       editedRow(newVal, oldVal) {
         if (newVal === false) {
           this.editedIndex = false;
-        }
-      },
-      /**
-       * @ignore
-       * @watch cols
-       * @fires selfEmit
-       */
-      cols: {
-        deep: true,
-        handler() {
-          //bbn.fn.log("watch columns");
-          //this.selfEmit();
         }
       },
       /**

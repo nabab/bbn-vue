@@ -962,6 +962,25 @@
         reload() {
           return this.updateData();
         },
+
+
+        getIndex(filter) {
+          if (!bbn.fn.isObject(filter) && this.uid) {
+            filter = {[this.uid]: filter};
+          }
+          let fltr = bbn.fn.filterToConditions(filter);
+          let idx = -1;
+
+          bbn.fn.each(this.filteredData, (a, i) => {
+            if (bbn.fn.compareConditions(a.data, fltr)) {
+              idx = i;
+              return false;
+            }
+          });
+          return idx;
+        },
+
+
         /**
          * Removes the row defined by the where param from currentData
          * @method remove

@@ -11,18 +11,10 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
          class="bbn-table-toolbar bbn-bordered-bottom"
          ref="toolbar"
     >
-      <div v-if="toolbarButtons.length"
-           class="bbn-flex-width bbn-header bbn-spadded bbn-unselectable">
+      <bbn-toolbar v-if="toolbarButtons.length"
+                   :source="toolbarButtons">
         <slot name="toolbar"></slot>
-        <div class="bbn-flex-fill">
-          <bbn-button v-for="(button, i) in toolbarButtons"
-                      class="bbn-hsmargin"
-                      :key="i"
-                      v-bind="button"
-                      @click.prevent.stop="_execCommand(button, i)"
-          ></bbn-button>
-        </div>
-      </div>
+      </bbn-toolbar>
       <div v-else-if="typeof toolbar === 'function'"
            v-html="toolbar()"
       ></div>
@@ -89,14 +81,15 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                     'bbn-p': true,
                     'bbn-red': hasFilter(col)
                   }"
-                  v-if="filterable && (col.filterable !== false) && !col.buttons && col.field"
+                  v-if="filterable && (col.filterable !== false) && ((col.filterable === true) || !col.buttons) && col.field"
                   @click="filterElement = $event.target; currentFilter = col;showFilter(col, $event)"
                 ></i>
-                <div v-if="col.isExpander" :title="_('Expand all')">
-                  <!-- @todo an icon for expanding all/none -->
-                </div>
-                <div v-else-if="col.isSelection" :title="_('Check all')">
+                <div v-if="col.isSelection" :title="_('Check all')">
+                  <bbn-checkbox v-model="allRowsChecked"/>
                   <!-- @todo an icon for selecting all/none -->
+                </div>
+                <div v-else-if="col.isExpander" :title="_('Expand all')">
+                  <!-- @todo an icon for expanding all/none -->
                 </div>
                 <component v-else-if="col.tcomponent"
                           :is="col.tcomponent"
@@ -175,164 +168,180 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
               <col v-for="col in currentColumns" :style="{width: col.realWidth}">
             </colgroup>
             <tbody>
-              <tr v-for="(d, i) in items"
-                  :key="i"
-                  :index="d.index"
-                  :tabindex="0"
-                  @focusout="focusout(i, $event)"
-                  @focusin="focusin(i, $event)"
-                  @dblclick="if ( focusedRow !== i ) { focusedRow = i }"
-                  :class="[{
-                    'bbn-alt': !!(i % 2),
-                    'bbn-header': !!(d.aggregated || d.groupAggregated),
-                  }, trClass ? trClass(d.data) : '']"
-              >
-                <!-- Group lines just have the cell with the expander and a single big cell -->
-                <template v-if="groupable && d.group">
-                  <td :class="currentColumns[0].fixed ? cssRuleName + ' bbn-table-fixed-cell bbn-table-cell-left' : ''"
-                      :style="{
-                        left: currentColumns[0].left !== undefined ? currentColumns[0].left + 'px' : 'auto',
-                        width: currentColumns[0].realWidth
-                      }">
-                    <div @click="toggleExpanded(d.index)"
-                         class="bbn-table-expander bbn-p bbn-unselectable bbn-spadded"
-                         v-if="d.expander"
-                         @keydown.space="toggleExpanded(d.index)"
-                         tabindex="0"
-                         >
-                      <i :class="'nf nf-fa-caret_' + (isExpanded(d) ? 'down' : 'right') + ' bbn-lg'"
-                      ></i>
-                    </div>
-                  </td>
-                  <td :class="currentClass(cols[group], d.data, i)"
-                      :colspan="currentColumns.length - 1">
-                    <!--span v-if="!isGroupedCell(groupIndex, d)"></span-->
-                    <component v-if="cols[group].component"
-                              :is="cols[group].component"
+              <template v-for="(d, i) in items">
+                <tr :key="i"
+                    :index="d.index"
+                    :tabindex="0"
+                    @focusout="focusout(i, $event)"
+                    @focusin="focusin(i, $event)"
+                    @dblclick="if ( focusedRow !== i ) { focusedRow = i }"
+                    :class="[{
+                      'bbn-alt': !!(i % 2),
+                      'bbn-header': !!(d.aggregated || d.groupAggregated),
+                    }, trClass ? trClass(d.data) : '']"
+                >
+                  <!-- Group lines just have the cell with the expander and a single big cell -->
+                  <template v-if="groupable && d.group">
+                    <td :class="currentColumns[0].fixed ? cssRuleName + ' bbn-table-fixed-cell bbn-table-cell-left' : ''"
+                        :style="{
+                          left: currentColumns[0].left !== undefined ? currentColumns[0].left + 'px' : 'auto',
+                          width: currentColumns[0].realWidth
+                        }">
+                      <div @click="toggleExpanded(d.index)"
+                          class="bbn-table-expander bbn-p bbn-unselectable bbn-spadded"
+                          v-if="d.expander"
+                          @keydown.space="toggleExpanded(d.index)"
+                          tabindex="0"
+                          >
+                        <i :class="'nf nf-fa-caret_' + (isExpanded(d) ? 'down' : 'right') + ' bbn-lg'"
+                        ></i>
+                      </div>
+                    </td>
+                    <td :class="currentClass(cols[group], d.data, i) + (currentColumns[0].fixed ? ' ' + cssRuleName + ' bbn-table-fixed-cell bbn-table-cell-left' : '')"
+                        :style="{
+                          left: currentColumns[1].left !== undefined ? currentColumns[1].left + 'px' : 'auto',
+                          width: currentColumns[0].fixed && currentColumns[1].left ? (groupCols[1].width - currentColumns[1].left) + 'px' : 'auto'
+                      }"
+                        :colspan="currentColumns.length - 1">
+                      <!--span v-if="!isGroupedCell(groupIndex, d)"></span-->
+                      <component v-if="cols[group].component"
+                                :is="cols[group].component"
+                                class="bbn-spadded"
+                                :source="d.data"
+                      ></component>
+                      <div v-else v-html="render(d.data, cols[group], d.index) + (d.expanded ? '' : ' (' + d.num + ')')"></div>
+                    </td>
+                  </template>
+                  <!--td v-else-if="d.expansion && !selection"
+                      :class="col.fixed ? cssRuleName : ''"
+                      :colspan="currentColumns.length">
+                    &nbsp;
+                  </td-->
+                  <td v-else-if="d.expansion"
+                      :class="currentColumns[0].fixed ? cssRuleName + ' bbn-table-fixed-cell bbn-table-cell-left' : ''"
+                      :colspan="currentColumns.length">
+                    <component v-if="typeof(expander) !== 'function'"
+                              :is="expander"
                               class="bbn-spadded"
                               :source="d.data"
                     ></component>
-                    <div v-else v-html="render(d.data, cols[group], d.index) + (d.expanded ? '' : ' (' + d.num + ')')"></div>
+                    <div v-else v-html="expander(d.data, i)"></div>
                   </td>
-                </template>
-                <!--td v-else-if="d.expansion && !selection"
-                    :class="col.fixed ? cssRuleName : ''"
-                    :colspan="currentColumns.length">
-                  &nbsp;
-                </td-->
-                <td v-else-if="d.expansion"
-                    :class="currentColumns[0].fixed ? cssRuleName + ' bbn-table-fixed-cell bbn-table-cell-left' : ''"
-                    :colspan="currentColumns.length">
-                  <component v-if="typeof(expander) !== 'function'"
-                            :is="expander"
-                            class="bbn-spadded"
-                            :source="d.data"
-                  ></component>
-                  <div v-else v-html="expander(d.data, i)"></div>
-                </td>
-                <td v-else
-                    v-for="(col, index) in currentColumns"
-                    :class="[
-                      currentClass(col, d.data, i),
-                      col.fixed ? cssRuleName + ' bbn-table-fixed-cell bbn-table-cell-' +
-                        (col.isRight ? 'right' : 'left')
-                        : ''
-                    ]"
-                    :style="{
-                      left: col.left !== undefined ? col.left + 'px' : 'auto',
-                      width: col.realWidth
-                    }">
-                  <!-- Checkboxes -->
-                  <div class="bbn-block bbn-spadded"
-                       @click="clickCell(col, index, d.index)">
-                    <div v-if="col.isSelection" class="bbn-c bbn-w-100">
-                      <bbn-checkbox v-if="d.selection"
-                                    :checked="d.selected"
-                                    :value="true"
-                                    :novalue="false"
-                                    :strict="true"
-                                    @change="checkSelection(i)"
-                      ></bbn-checkbox>
-                    </div>
-                    <template v-else-if="d.aggregated || d.groupAggregated">
-                      <span v-if="col.isAggregatedTitle"
-                            :class="d.aggregated ? 'bbn-b' : ''"
-                            v-text="aggregateExp[d.name]"
-                      ></span>
-                      <div v-else-if="col.aggregate"
-                          v-html="render(d.data, col, i)"></div>
-                      <span v-else></span>
-                      <!-- The row is an aggregate and there are no other cells -->
-                    </template>
-                        <!-- Expander -->
-                    <div v-else-if="col.isExpander"
-                        @click="toggleExpanded(d.index)"
-                        class="bbn-table-expander bbn-lg bbn-p bbn-unselectable">
-                      <i :class="'nf nf-fa-caret_' + (isExpanded(d) ? 'down' : 'right') + ' bbn-unselectable'"
-                        v-if="d.expander"
-                        tabindex="0"
-                      ></i>
-                    </div>
-                    <template v-else>
-                      <span class="bbn-table-dirty bbn-top-left"
-                            v-if="isDirty(d, col, i)"></span>
-                      <div v-if="isEdited(d.data, col, i)">
-                        <div v-if="(editMode === 'inline') && (editable !== 'nobuttons') && (col.index === colButtons)">
-                          <bbn-button :text="_('Save')"
-                                      :disabled="!isEditedValid"
-                                      icon="nf nf-fa-save"
-                                      :notext="true"
-                                      @focusin.stop=""
-                                      @click.prevent.stop="saveInline"
-                                      style="margin: 0 .1em"
-                          ></bbn-button>
-                          <bbn-button :text="_('Cancel')"
-                                      icon="nf nf-fa-times"
-                                      :notext="true"
-                                      @focusin.stop=""
-                                      @click.prevent.stop="cancel"
-                                      style="margin: 0 .1em"
-                          ></bbn-button>
-                        </div>
-                        <component v-else-if="(editMode === 'inline') && col.field && (col.editable !== false)"
-                                  v-bind="getEditableOptions(col, d.data)"
-                                  :is="getEditableComponent(col, d.data)"
-                                  @click.stop=""
-                                  v-model="editedRow[col.field]"
-                                  style="width: 100%"
-                        ></component>
-                        <bbn-field v-else-if="col.field && !col.render && !col.buttons"
-                                  v-bind="col"
-                                  @click.stop=""
-                                  :key="d.index"
-                                  :value="d.data[col.field]"
-                                  :data="d.data">
-                        </bbn-field>
-                        <div v-else-if="!col.buttons && col.render"
-                            v-html="col.render(d.data, col, i)"></div>
-                        <div v-else-if="!col.buttons" v-html="render(d.data, col, i)"></div>
-                        <div v-else> </div>
+                  <td v-else
+                      v-for="(col, index) in currentColumns"
+                      :class="[
+                        currentClass(col, d.data, i),
+                        col.fixed ? cssRuleName + ' bbn-table-fixed-cell bbn-table-cell-' +
+                          (col.isRight ? 'right' : 'left')
+                          : ''
+                      ]"
+                      :style="{
+                        left: col.left !== undefined ? col.left + 'px' : 'auto',
+                        width: col.realWidth
+                      }">
+                    <!-- Checkboxes -->
+                    <div class="bbn-block bbn-spadded"
+                        @click="clickCell(col, index, d.index)">
+                      <div v-if="col.isSelection" class="bbn-c bbn-w-100">
+                        <bbn-checkbox v-if="d.selection"
+                                      :checked="d.selected"
+                                      :value="true"
+                                      :novalue="false"
+                                      :strict="true"
+                                      @change="checkSelection(i)"
+                        ></bbn-checkbox>
                       </div>
-                      <component v-else-if="col.component"
-                                :is="col.component"
-                                v-bind="col.options"
-                                :source="col.mapper ? col.mapper(d.data) : d.data"
-                      ></component>
-                      <template v-else-if="col.buttons">
-                        <bbn-button v-for="(button, bi) in (Array.isArray(realButtons) ? realButtons : realButtons(d.data, col, i))"
-                                    :key="bi"
-                                    v-bind="button"
-                                    @focusin.prevent.stop="() => {}"
-                                    @focusout.prevent.stop="() => {}"
-                                    @click.prevent.stop="_execCommand(button, d.data, col, i, $event)"
-                                    style="margin: 0 .1em"
-                        ></bbn-button>
+                      <template v-else-if="d.aggregated || d.groupAggregated">
+                        <span v-if="col.isAggregatedTitle"
+                              :class="d.aggregated ? 'bbn-b' : ''"
+                              v-text="aggregateExp[d.name]"
+                        ></span>
+                        <div v-else-if="col.aggregate"
+                            v-html="render(d.data, col, i)"></div>
+                        <span v-else></span>
+                        <!-- The row is an aggregate and there are no other cells -->
                       </template>
-                      <div v-else v-html="render(d.data, col, i)"></div>
-                    </template>
-                  </div>
-                </td>
-              </tr>
+                          <!-- Expander -->
+                      <div v-else-if="col.isExpander"
+                          @click="toggleExpanded(d.index)"
+                          class="bbn-table-expander bbn-lg bbn-p bbn-unselectable">
+                        <i :class="'nf nf-fa-caret_' + (isExpanded(d) ? 'down' : 'right') + ' bbn-unselectable'"
+                          v-if="d.expander"
+                          tabindex="0"
+                        ></i>
+                        <span v-else>&nbsp;</span>
+                      </div>
+                      <template v-else>
+                        <span class="bbn-table-dirty bbn-top-left"
+                              v-if="isDirty(d, col, i)"></span>
+                        <div v-if="isEdited(d.data, col, i)">
+                          <div v-if="(editMode === 'inline') && (editable !== 'nobuttons') && (col.index === colButtons)">
+                            <bbn-button :text="_('Save')"
+                                        :disabled="!isEditedValid"
+                                        icon="nf nf-fa-save"
+                                        :notext="true"
+                                        @focusin.stop=""
+                                        @click.prevent.stop="saveInline"
+                                        style="margin: 0 .1em"
+                            ></bbn-button>
+                            <bbn-button :text="_('Cancel')"
+                                        icon="nf nf-fa-times"
+                                        :notext="true"
+                                        @focusin.stop=""
+                                        @click.prevent.stop="cancel"
+                                        style="margin: 0 .1em"
+                            ></bbn-button>
+                          </div>
+                          <component v-else-if="(editMode === 'inline') && col.field && (col.editable !== false)"
+                                    v-bind="getEditableOptions(col, d.data)"
+                                    :is="getEditableComponent(col, d.data)"
+                                    @click.stop=""
+                                    v-model="editedRow[col.field]"
+                                    style="width: 100%"
+                          ></component>
+                          <bbn-field v-else-if="col.field && !col.render && !col.buttons"
+                                    v-bind="col"
+                                    @click.stop=""
+                                    :key="d.index"
+                                    :value="d.data[col.field]"
+                                    :data="d.data">
+                          </bbn-field>
+                          <div v-else-if="!col.buttons && col.render"
+                              v-html="col.render(d.data, col, i)"></div>
+                          <div v-else-if="!col.buttons" v-html="render(d.data, col, i)"></div>
+                          <div v-else> </div>
+                        </div>
+                        <component v-else-if="col.component"
+                                  :is="col.component"
+                                  v-bind="col.options"
+                                  :source="col.mapper ? col.mapper(d.data) : d.data"
+                        ></component>
+                        <template v-else-if="col.buttons && (colButtons === index)">
+                          <bbn-button v-for="(button, bi) in (Array.isArray(realButtons) ? realButtons : realButtons(d.data, col, i))"
+                                      :key="bi"
+                                      v-bind="button"
+                                      @focusin.prevent.stop="() => {}"
+                                      @focusout.prevent.stop="() => {}"
+                                      @click.prevent.stop="_execCommand(button, d.data, col, i, $event)"
+                                      style="margin: 0 .1em"
+                          ></bbn-button>
+                        </template>
+                        <template v-else-if="col.buttons">
+                          <bbn-button v-for="(button, bi) in (Array.isArray(col.buttons) ? col.buttons : col.buttons(d.data, col, i))"
+                                      :key="bi"
+                                      v-bind="button"
+                                      @focusin.prevent.stop="() => {}"
+                                      @focusout.prevent.stop="() => {}"
+                                      @click.prevent.stop="_execCommand(button, d.data, col, i, $event)"
+                                      style="margin: 0 .1em"
+                          ></bbn-button>
+                        </template>
+                        <div v-else v-html="render(d.data, col, i)"></div>
+                      </template>
+                    </div>
+                  </td>
+                </tr>
+              </template>
             </tbody>
           </table>
         </div>
@@ -726,6 +735,7 @@ document.head.insertAdjacentElement('beforeend', css);
          * @data {Boolean} [false] _observerReceived
          */
         _observerReceived: false,
+        allRowsChecked: false,
         /**
          * The group of columns.
          * @data {Object} [[{name: 'left',width: 0,visible: 0,cols: []},{name: 'main',width: 0,visible: 0,cols: []},{name: 'right',width: 0,visible: 0,cols: []}]] groupCols
@@ -1278,14 +1288,18 @@ document.head.insertAdjacentElement('beforeend', css);
           lastInGroup = false;
         while (data[i] && (i < end)) {
           let a = data[i].data;
+          // True if the element is the last of its group
           lastInGroup = isGroup && (!data[i + 1] || (data[i + 1].data[groupField] !== currentGroupValue));
+          // Is a new group
           if (isGroup && (currentGroupValue !== a[groupField])) {
             groupNumCheckboxes = 0;
-            if (!a[groupField]) {
+            // If the row doesn't have the column
+            if (a[groupField] === undefined) {
               currentGroupValue = null;
               currentGroupIndex = -1;
               isExpanded = true;
-            } else {
+            }
+            else {
               isExpanded = false;
               currentGroupValue = a[groupField];
               currentGroupIndex = data.index;
@@ -1320,6 +1334,7 @@ document.head.insertAdjacentElement('beforeend', css);
                 isExpanded = true;
               }
 
+              currentLink = res.length;
               if (!isExpanded && data[i - 1] && (currentGroupValue === data[i - 1].data[groupField])) {
                 if (res.length) {
                   res.push(tmp);
@@ -1327,11 +1342,11 @@ document.head.insertAdjacentElement('beforeend', css);
               } else {
                 tmp.expanded = isExpanded;
                 res.push(tmp);
-                currentLink = i;
                 rowIndex++;
               }
             }
-          } else if (this.expander) {
+          }
+          else if (this.expander) {
             let exp = bbn.fn.isFunction(this.expander) ? this.expander(data[i], i) : this.expander;
             isExpanded = exp ? this.currentExpanded.indexOf(data[i].index) > -1 : false;
           }
@@ -1355,7 +1370,7 @@ document.head.insertAdjacentElement('beforeend', css);
               o.expander = true;
             }
             if (this.selection && (!bbn.fn.isFunction(this.selection) || this.selection(o))) {
-              o.selected = this.currentSelected.indexOf(data[i].index) > -1;
+              o.selected = (!this.uid && this.currentSelected.includes(data[i].index)) || (this.uid && this.currentSelected.includes(data[i].data[this.uid]));
               o.selection = true;
               groupNumCheckboxes++;
               if (o.selected) {
@@ -1520,7 +1535,6 @@ document.head.insertAdjacentElement('beforeend', css);
        * @todo 1px must correspond to the border width
        */
       _scrollContainer(){
-        bbn.fn.log("SCROLL CONT");
         this.marginStyleSheet.innerHTML = "."  + this.cssRuleName + "{margin-top: " +
         (this.container.scrollTop ? '-' + (this.container.scrollTop) + 'px' : '') + '}';
       },
@@ -1769,7 +1783,6 @@ document.head.insertAdjacentElement('beforeend', css);
           ev.preventDefault();
           ev.stopImmediatePropagation();
         }
-        bbn.fn.log("INSIDE BUTTON", button);
         //bbn.fn.log("EXEC COMMAND");
         if (button.action) {
           if (bbn.fn.isFunction(button.action)) {
@@ -1829,7 +1842,7 @@ document.head.insertAdjacentElement('beforeend', css);
         if (!filename) {
           filename = 'export-' + bbn.fn.dateSQL().replace('/:/g', '-') + '.csv';
         }
-        bbn.fn.download(filename, data, 'csv');
+        bbn.fn.downloadContent(filename, data, 'csv');
       },
       /**
        * Exports to excel.
@@ -2654,35 +2667,45 @@ document.head.insertAdjacentElement('beforeend', css);
       /**
        * Emits 'select',  'unselect' or 'toggle' at change of checkbox of the row in a selectable table.
        * @method checkSelection
-       * @param {Number} index
+       * @param {Number}  index
+       * @param {Boolean} index
        * @emit unselect
        * @emit select
        * @emit toggle
        */
-      checkSelection(index) {
+      checkSelection(index, state) {
         let row = this.items[index];
-        if (row && this.groupable && row.group) {
-          if (row.expanded) {
-            bbn.fn.fori((d, i) => {
-              if (d && d.selection && (d.data[this.cols[this.group].field] === row.value)) {
-                this.checkSelection(i)
+        if (row) {
+          if (this.groupable && row.group) {
+            if (row.expanded) {
+              bbn.fn.fori((d, i) => {
+                if (d && d.selection && (d.data[this.cols[this.group].field] === row.value)) {
+                  this.checkSelection(i, state)
+                }
+              }, this.items, index + row.num, index + 1)
+            }
+          }
+          else if (row.selection) {
+            let idx = this.currentSelected.indexOf(this.uid ? this.currentData[row.index].data[this.uid] : row.index);
+            let isSelected = false;
+            let toggled = false;
+            if (idx > -1) {
+              if ([undefined, false].includes(state)) {
+                toggled = true;
+                this.$emit('unselect', row.data);
+                this.currentSelected.splice(idx, 1);
               }
-            }, this.items, index + row.num, index + 1)
+            }
+            else if ([undefined, true].includes(state)) {
+              toggled = true;
+              this.$emit('select', row.data);
+              this.currentSelected.push(this.uid ? this.currentData[row.index].data[this.uid] : row.index);
+              isSelected = true;
+            }
+            if (toggled) {
+              this.$emit('toggle', isSelected, this.currentData[row.index].data);
+            }
           }
-          return;
-        }
-        if (row && row.selection) {
-          let idx = this.currentSelected.indexOf(row.index),
-            isSelected = false;
-          if (idx > -1) {
-            this.$emit('unselect', row.data);
-            this.currentSelected.splice(idx, 1);
-          } else {
-            this.$emit('select', row.data);
-            this.currentSelected.push(row.index);
-            isSelected = true;
-          }
-          this.$emit('toggle', isSelected, this.currentData[row.index].data);
         }
       },
       /**
@@ -2701,7 +2724,7 @@ document.head.insertAdjacentElement('beforeend', css);
         this.editedIndex = false;
         this.$forceUpdate();
         return bbn.vue.listComponent.methods.updateData.apply(this, [withoutOriginal]).then(() => {
-          if (this.currentData.length && this.selection && this.currentSelected.length) {
+          if (this.currentData.length && this.selection && this.currentSelected.length && !this.uid) {
             this.currentSelected = [];
           }
           if (this.editable) {
@@ -3075,6 +3098,9 @@ document.head.insertAdjacentElement('beforeend', css);
               this.currentExpanded.push(idx);
             }
           }
+          this.$nextTick(() => {
+            this.resizeHeight();
+          })
         }
       },
       /**
@@ -3099,7 +3125,10 @@ document.head.insertAdjacentElement('beforeend', css);
        * @returns {Boolean}
        */
       isSelected(index) {
-        return this.selection && (this.currentSelected.indexOf(index) > -1);
+        return this.selection
+          && ((!this.uid && this.currentSelected.includes(index))
+            || (this.uid && this.currentSelected.includes(this.currentData[index].data[this.uid]))
+          );
       },
       /**
        * Returns true if the given row has td.
@@ -3238,28 +3267,14 @@ document.head.insertAdjacentElement('beforeend', css);
               }
             });
             let firstGroup = groupCols[0].visible ? 0 : 1;
-            if (this.hasExpander) {
+            if (this.hasExpander || this.selection) {
               let o = {
-                isExpander: true,
+                isExpander: !!this.hasExpander,
+                isSelection: !!this.selection,
                 title: ' ',
                 filterable: false,
-                width: this.minimumColumnWidth,
-                realWidth: this.minimumColumnWidth
-              };
-              if ( firstGroup === 0 ){
-                o.fixed = true;
-                o.isLeft = true;
-              }
-              groupCols[firstGroup].cols.unshift(o);
-              groupCols[firstGroup].visible++;
-            }
-            if ( this.selection ) {
-              let o = {
-                isSelection: true,
-                title: ' ',
-                filterable: false,
-                width: 40,
-                realWidth: 40
+                width: this.selection ? 40 : this.minimumColumnWidth,
+                realWidth: this.selection ? 40 : this.minimumColumnWidth
               };
               if ( firstGroup === 0 ){
                 o.fixed = true;
@@ -3583,6 +3598,16 @@ document.head.insertAdjacentElement('beforeend', css);
       },
       listOnBeforeMount(){
         
+      },
+      checkAll(){
+        bbn.fn.each(this.items, (a, i) => {
+          this.checkSelection(i, true);
+        })
+      },
+      uncheckAll(){
+        bbn.fn.each(this.items, (a, i) => {
+          this.checkSelection(i, false);
+        })
       }
     },
     /**
@@ -3625,7 +3650,8 @@ document.head.insertAdjacentElement('beforeend', css);
         bbn.fn.each(this.cols, (a, i) => {
           if (a.hidden) {
             tmp.push(i);
-          } else if (initColumn.length <= 10) {
+          }
+          else if (initColumn.length <= 10) {
             initColumn.push(i);
           }
         });
@@ -3704,10 +3730,18 @@ document.head.insertAdjacentElement('beforeend', css);
        * @watch observerDirty
        * @fires updateData
        */
-      observerDirty(newVal) {
-        if (newVal && !this.editedRow) {
+      observerDirty(v) {
+        if (v && !this.editedRow) {
           this.observerDirty = false;
           this.updateData();
+        }
+      },
+      allRowsChecked(v){
+        if (v) {
+          this.checkAll();
+        }
+        else {
+          this.uncheckAll();
         }
       },
       /**
@@ -3716,18 +3750,6 @@ document.head.insertAdjacentElement('beforeend', css);
       editedRow(newVal, oldVal) {
         if (newVal === false) {
           this.editedIndex = false;
-        }
-      },
-      /**
-       * @ignore
-       * @watch cols
-       * @fires selfEmit
-       */
-      cols: {
-        deep: true,
-        handler() {
-          //bbn.fn.log("watch columns");
-          //this.selfEmit();
         }
       },
       /**

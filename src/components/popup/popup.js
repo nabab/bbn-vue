@@ -293,6 +293,20 @@
           new Error("You must give a URL in order to load a popup")
         }
       },
+      onOpen(index){
+        if (this.items[index] && bbn.fn.isFunction(this.items[index].open)) {
+          this.items[index].open();
+        }
+      },
+      onClose(index) {
+        if (this.items[index]) {
+          if (bbn.fn.isFunction(this.items[index].close)) {
+            this.items[index].close();
+          }
+        }
+
+        this.items.splice(index, 1);
+      },
       /**
        * @method getObject
        * @param {Object} a

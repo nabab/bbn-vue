@@ -1,12 +1,12 @@
 (bbn_resolve) => { ((bbn) => {
 let script_dep = document.createElement('script');
-script_dep.setAttribute('src', "https://cdn.jsdelivr.net/combine/gh/acornjs/acorn@v0.1/acorn.js,gh/acornjs/acorn@v0.1/acorn_loose.js,gh/acornjs/acorn@v0.1/util/walk.js,gh/ternjs/tern@0.21.0/doc/demo/polyfill.js,gh/ternjs/tern@0.21.0/lib/signal.js,gh/ternjs/tern@0.21.0/lib/tern.js,gh/ternjs/tern@0.21.0/lib/def.js,gh/ternjs/tern@0.21.0/lib/comment.js,gh/ternjs/tern@0.21.0/lib/infer.js,gh/ternjs/tern@0.21.0/plugin/doc_comment.js,gh/google/diff-match-patch@master/javascript/diff_match_patch.min.js,npm/codemirror-minified@5.55.0/lib/codemirror.js,npm/codemirror-minified@5.55.0/addon/dialog/dialog.js,npm/codemirror-minified@5.55.0/addon/edit/matchbrackets.js,npm/codemirror-minified@5.55.0/addon/edit/matchtags.js,npm/codemirror-minified@5.55.0/addon/edit/closebrackets.js,npm/codemirror-minified@5.55.0/addon/edit/closetag.js,npm/codemirror-minified@5.55.0/addon/edit/trailingspace.js,npm/codemirror-minified@5.55.0/addon/edit/continuelist.js,npm/codemirror-minified@5.55.0/addon/runmode/colorize.js,npm/codemirror-minified@5.55.0/addon/search/search.js,npm/codemirror-minified@5.55.0/addon/search/searchcursor.js,npm/codemirror-minified@5.55.0/addon/fold/foldcode.js,npm/codemirror-minified@5.55.0/addon/fold/foldgutter.js,npm/codemirror-minified@5.55.0/addon/fold/brace-fold.js,npm/codemirror-minified@5.55.0/addon/fold/comment-fold.js,npm/codemirror-minified@5.55.0/addon/fold/xml-fold.js,npm/codemirror-minified@5.55.0/addon/fold/markdown-fold.js,npm/codemirror-minified@5.55.0/addon/fold/indent-fold.js,npm/codemirror-minified@5.55.0/addon/mode/overlay.js,npm/codemirror-minified@5.55.0/addon/mode/multiplex.js,npm/codemirror-minified@5.55.0/addon/search/match-highlighter.js,npm/codemirror-minified@5.55.0/addon/search/jump-to-line.js,npm/codemirror-minified@5.55.0/addon/selection/active-line.js,npm/codemirror-minified@5.55.0/addon/runmode/runmode.js,npm/codemirror-minified@5.55.0/addon/selection/mark-selection.js,npm/codemirror-minified@5.55.0/addon/merge/merge.js,npm/codemirror-minified@5.55.0/addon/hint/show-hint.js,npm/codemirror-minified@5.55.0/addon/tern/tern.js,npm/codemirror-minified@5.55.0/mode/clike/clike.js,npm/codemirror-minified@5.55.0/mode/css/css.js,npm/codemirror-minified@5.55.0/mode/diff/diff.js,npm/codemirror-minified@5.55.0/mode/htmlmixed/htmlmixed.js,npm/codemirror-minified@5.55.0/mode/javascript/javascript.js,npm/codemirror-minified@5.55.0/mode/markdown/markdown.js,npm/codemirror-minified@5.55.0/mode/php/php.js,npm/codemirror-minified@5.55.0/mode/sql/sql.js,npm/codemirror-minified@5.55.0/mode/vue/vue.js,npm/codemirror-minified@5.55.0/mode/xml/xml.js,npm/codemirror-minified@5.55.0/mode/coffeescript/coffeescript.js,npm/codemirror-minified@5.55.0/addon/hint/html-hint.js,npm/codemirror-minified@5.55.0/addon/hint/css-hint.js,npm/codemirror-minified@5.55.0/addon/hint/sql-hint.js,npm/codemirror-minified@5.55.0/addon/hint/xml-hint.js");
+script_dep.setAttribute('src', "https://cdn.jsdelivr.net/combine/gh/acornjs/acorn@v0.1/acorn.js,gh/acornjs/acorn@v0.1/acorn_loose.js,gh/acornjs/acorn@v0.1/util/walk.js,gh/ternjs/tern@0.21.0/doc/demo/polyfill.js,gh/ternjs/tern@0.21.0/lib/signal.js,gh/ternjs/tern@0.21.0/lib/tern.js,gh/ternjs/tern@0.21.0/lib/def.js,gh/ternjs/tern@0.21.0/lib/comment.js,gh/ternjs/tern@0.21.0/lib/infer.js,gh/ternjs/tern@0.21.0/plugin/doc_comment.js,gh/google/diff-match-patch@master/javascript/diff_match_patch.min.js,npm/codemirror-minified@5.59.1/lib/codemirror.js,npm/codemirror-minified@5.59.1/addon/dialog/dialog.js,npm/codemirror-minified@5.59.1/addon/edit/matchbrackets.js,npm/codemirror-minified@5.59.1/addon/edit/matchtags.js,npm/codemirror-minified@5.59.1/addon/edit/closebrackets.js,npm/codemirror-minified@5.59.1/addon/edit/closetag.js,npm/codemirror-minified@5.59.1/addon/edit/trailingspace.js,npm/codemirror-minified@5.59.1/addon/edit/continuelist.js,npm/codemirror-minified@5.59.1/addon/runmode/colorize.js,npm/codemirror-minified@5.59.1/addon/search/search.js,npm/codemirror-minified@5.59.1/addon/search/searchcursor.js,npm/codemirror-minified@5.59.1/addon/fold/foldcode.js,npm/codemirror-minified@5.59.1/addon/fold/foldgutter.js,npm/codemirror-minified@5.59.1/addon/fold/brace-fold.js,npm/codemirror-minified@5.59.1/addon/fold/comment-fold.js,npm/codemirror-minified@5.59.1/addon/fold/xml-fold.js,npm/codemirror-minified@5.59.1/addon/fold/markdown-fold.js,npm/codemirror-minified@5.59.1/addon/fold/indent-fold.js,npm/codemirror-minified@5.59.1/addon/mode/overlay.js,npm/codemirror-minified@5.59.1/addon/mode/multiplex.js,npm/codemirror-minified@5.59.1/addon/search/match-highlighter.js,npm/codemirror-minified@5.59.1/addon/search/jump-to-line.js,npm/codemirror-minified@5.59.1/addon/selection/active-line.js,npm/codemirror-minified@5.59.1/addon/runmode/runmode.js,npm/codemirror-minified@5.59.1/addon/selection/mark-selection.js,npm/codemirror-minified@5.59.1/addon/merge/merge.js,npm/codemirror-minified@5.59.1/addon/hint/show-hint.js,npm/codemirror-minified@5.59.1/addon/tern/tern.js,npm/codemirror-minified@5.59.1/mode/clike/clike.js,npm/codemirror-minified@5.59.1/mode/css/css.js,npm/codemirror-minified@5.59.1/mode/diff/diff.js,npm/codemirror-minified@5.59.1/mode/htmlmixed/htmlmixed.js,npm/codemirror-minified@5.59.1/mode/javascript/javascript.js,npm/codemirror-minified@5.59.1/mode/markdown/markdown.js,npm/codemirror-minified@5.59.1/mode/php/php.js,npm/codemirror-minified@5.59.1/mode/sql/sql.js,npm/codemirror-minified@5.59.1/mode/vue/vue.js,npm/codemirror-minified@5.59.1/mode/xml/xml.js,npm/codemirror-minified@5.59.1/mode/coffeescript/coffeescript.js,npm/codemirror-minified@5.59.1/addon/hint/html-hint.js,npm/codemirror-minified@5.59.1/addon/hint/css-hint.js,npm/codemirror-minified@5.59.1/addon/hint/sql-hint.js,npm/codemirror-minified@5.59.1/addon/hint/xml-hint.js");
 script_dep.onload = () => {
 
 let css_dependency;
 css_dependency = document.createElement('link');
 css_dependency.setAttribute('rel', "stylesheet");
-css_dependency.setAttribute('href', "https://cdn.jsdelivr.net/combine/npm/codemirror-minified@5.55.0/lib/codemirror.css,npm/codemirror-minified@5.55.0/addon/dialog/dialog.css,npm/codemirror-minified@5.55.0/addon/fold/foldgutter.css,npm/codemirror-minified@5.55.0/addon/merge/merge.css,npm/codemirror-minified@5.55.0/addon/hint/show-hint.css,npm/codemirror-minified@5.55.0/addon/tern/tern.css,npm/codemirror-minified@5.55.0/theme/3024-day.css,npm/codemirror-minified@5.55.0/theme/3024-night.css,npm/codemirror-minified@5.55.0/theme/abcdef.css,npm/codemirror-minified@5.55.0/theme/ambiance-mobile.css,npm/codemirror-minified@5.55.0/theme/ambiance.css,npm/codemirror-minified@5.55.0/theme/base16-dark.css,npm/codemirror-minified@5.55.0/theme/base16-light.css,npm/codemirror-minified@5.55.0/theme/bespin.css,npm/codemirror-minified@5.55.0/theme/blackboard.css,npm/codemirror-minified@5.55.0/theme/cobalt.css,npm/codemirror-minified@5.55.0/theme/colorforth.css,npm/codemirror-minified@5.55.0/theme/dracula.css,npm/codemirror-minified@5.55.0/theme/duotone-dark.css,npm/codemirror-minified@5.55.0/theme/duotone-light.css,npm/codemirror-minified@5.55.0/theme/eclipse.css,npm/codemirror-minified@5.55.0/theme/elegant.css,npm/codemirror-minified@5.55.0/theme/erlang-dark.css,npm/codemirror-minified@5.55.0/theme/hopscotch.css,npm/codemirror-minified@5.55.0/theme/icecoder.css,npm/codemirror-minified@5.55.0/theme/isotope.css,npm/codemirror-minified@5.55.0/theme/lesser-dark.css,npm/codemirror-minified@5.55.0/theme/liquibyte.css,npm/codemirror-minified@5.55.0/theme/material.css,npm/codemirror-minified@5.55.0/theme/mbo.css,npm/codemirror-minified@5.55.0/theme/mdn-like.css,npm/codemirror-minified@5.55.0/theme/midnight.css,npm/codemirror-minified@5.55.0/theme/monokai.css,npm/codemirror-minified@5.55.0/theme/neat.css,npm/codemirror-minified@5.55.0/theme/neo.css,npm/codemirror-minified@5.55.0/theme/night.css,npm/codemirror-minified@5.55.0/theme/panda-syntax.css,npm/codemirror-minified@5.55.0/theme/paraiso-dark.css,npm/codemirror-minified@5.55.0/theme/paraiso-light.css,npm/codemirror-minified@5.55.0/theme/pastel-on-dark.css,npm/codemirror-minified@5.55.0/theme/railscasts.css,npm/codemirror-minified@5.55.0/theme/rubyblue.css,npm/codemirror-minified@5.55.0/theme/seti.css,npm/codemirror-minified@5.55.0/theme/solarized.css,npm/codemirror-minified@5.55.0/theme/the-matrix.css,npm/codemirror-minified@5.55.0/theme/tomorrow-night-bright.css,npm/codemirror-minified@5.55.0/theme/tomorrow-night-eighties.css,npm/codemirror-minified@5.55.0/theme/ttcn.css,npm/codemirror-minified@5.55.0/theme/twilight.css,npm/codemirror-minified@5.55.0/theme/vibrant-ink.css,npm/codemirror-minified@5.55.0/theme/xq-dark.css,npm/codemirror-minified@5.55.0/theme/xq-light.css,npm/codemirror-minified@5.55.0/theme/yeti.css,npm/codemirror-minified@5.55.0/theme/zenburn.css");
+css_dependency.setAttribute('href', "https://cdn.jsdelivr.net/combine/npm/codemirror-minified@5.59.1/lib/codemirror.css,npm/codemirror-minified@5.59.1/addon/dialog/dialog.css,npm/codemirror-minified@5.59.1/addon/fold/foldgutter.css,npm/codemirror-minified@5.59.1/addon/merge/merge.css,npm/codemirror-minified@5.59.1/addon/hint/show-hint.css,npm/codemirror-minified@5.59.1/addon/tern/tern.css,npm/codemirror-minified@5.59.1/theme/3024-day.css,npm/codemirror-minified@5.59.1/theme/3024-night.css,npm/codemirror-minified@5.59.1/theme/abcdef.css,npm/codemirror-minified@5.59.1/theme/ambiance-mobile.css,npm/codemirror-minified@5.59.1/theme/ambiance.css,npm/codemirror-minified@5.59.1/theme/base16-dark.css,npm/codemirror-minified@5.59.1/theme/base16-light.css,npm/codemirror-minified@5.59.1/theme/bespin.css,npm/codemirror-minified@5.59.1/theme/blackboard.css,npm/codemirror-minified@5.59.1/theme/cobalt.css,npm/codemirror-minified@5.59.1/theme/colorforth.css,npm/codemirror-minified@5.59.1/theme/dracula.css,npm/codemirror-minified@5.59.1/theme/duotone-dark.css,npm/codemirror-minified@5.59.1/theme/duotone-light.css,npm/codemirror-minified@5.59.1/theme/eclipse.css,npm/codemirror-minified@5.59.1/theme/elegant.css,npm/codemirror-minified@5.59.1/theme/erlang-dark.css,npm/codemirror-minified@5.59.1/theme/hopscotch.css,npm/codemirror-minified@5.59.1/theme/icecoder.css,npm/codemirror-minified@5.59.1/theme/isotope.css,npm/codemirror-minified@5.59.1/theme/lesser-dark.css,npm/codemirror-minified@5.59.1/theme/liquibyte.css,npm/codemirror-minified@5.59.1/theme/material.css,npm/codemirror-minified@5.59.1/theme/mbo.css,npm/codemirror-minified@5.59.1/theme/mdn-like.css,npm/codemirror-minified@5.59.1/theme/midnight.css,npm/codemirror-minified@5.59.1/theme/monokai.css,npm/codemirror-minified@5.59.1/theme/neat.css,npm/codemirror-minified@5.59.1/theme/neo.css,npm/codemirror-minified@5.59.1/theme/night.css,npm/codemirror-minified@5.59.1/theme/panda-syntax.css,npm/codemirror-minified@5.59.1/theme/paraiso-dark.css,npm/codemirror-minified@5.59.1/theme/paraiso-light.css,npm/codemirror-minified@5.59.1/theme/pastel-on-dark.css,npm/codemirror-minified@5.59.1/theme/railscasts.css,npm/codemirror-minified@5.59.1/theme/rubyblue.css,npm/codemirror-minified@5.59.1/theme/seti.css,npm/codemirror-minified@5.59.1/theme/solarized.css,npm/codemirror-minified@5.59.1/theme/the-matrix.css,npm/codemirror-minified@5.59.1/theme/tomorrow-night-bright.css,npm/codemirror-minified@5.59.1/theme/tomorrow-night-eighties.css,npm/codemirror-minified@5.59.1/theme/ttcn.css,npm/codemirror-minified@5.59.1/theme/twilight.css,npm/codemirror-minified@5.59.1/theme/vibrant-ink.css,npm/codemirror-minified@5.59.1/theme/xq-dark.css,npm/codemirror-minified@5.59.1/theme/xq-light.css,npm/codemirror-minified@5.59.1/theme/yeti.css,npm/codemirror-minified@5.59.1/theme/zenburn.css");
 document.head.insertAdjacentElement('beforeend', css_dependency);
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[{'bbn-reset': true, 'bbn-overlay': isFullScreen}, componentClass]"
@@ -58,6 +58,126 @@ document.head.insertAdjacentElement('beforeend', css);
   "use strict";
 
   const themes = ["3024-day","3024-night","ambiance-mobile","ambiance","base16-dark","base16-light","blackboard","cobalt","eclipse","elegant","erlang-dark","lesser-dark","mbo","midnight","monokai","neat","night","paraiso-dark","paraiso-light","pastel-on-dark","rubyblue","solarized","the-matrix","tomorrow-night-eighties","twilight","vibrant-ink","xq-dark","xq-light"];
+
+  const phpFn = [
+    "str::as_var",
+    "str::cast",
+    "str::change_case",
+    "str::check_filename",
+    "str::check_json",
+    "str::check_name",
+    "str::check_path",
+    "str::clean",
+    "str::convert_size",
+    "str::correct_types",
+    "str::cut",
+    "str::encode_dbname",
+    "str::encode_filename",
+    "str::escape",
+    "str::escape_all_quotes",
+    "str::escape_apo",
+    "str::escape_dquote",
+    "str::escape_dquotes",
+    "str::escape_quote",
+    "str::escape_quotes",
+    "str::escape_squote",
+    "str::escape_squotes",
+    "str::export",
+    "str::file_ext",
+    "str::genpwd",
+    "str::get_numbers",
+    "str::has_slash",
+    "str::is_buid",
+    "str::is_clean_path",
+    "str::is_date_sql",
+    "str::is_decimal",
+    "str::is_domain",
+    "str::is_email",
+    "str::is_integer",
+    "str::is_ip",
+    "str::is_json",
+    "str::is_number",
+    "str::is_uid",
+    "str::is_url",
+    "str::make_readable",
+    "str::markdown2html",
+    "str::parse_path",
+    "str::parse_url",
+    "str::remove_accents",
+    "str::remove_comments",
+    "str::replace_once",
+    "str::sanitize",
+    "str::say_size",
+    "x::__callStatic",
+    "x::adump",
+    "x::build_options",
+    "x::clean_storage_path",
+    "x::compare_floats",
+    "x::concat",
+    "x::convert_uids",
+    "x::count",
+    "x::count_all",
+    "x::count_properties",
+    "x::curl",
+    "x::debug",
+    "x::decrement",
+    "x::dump",
+    "x::filter",
+    "x::find",
+    "x::from_csv",
+    "x::get_dump",
+    "x::get_field",
+    "x::get_hdump",
+    "x::get_row",
+    "x::get_rows",
+    "x::get_tree",
+    "x::has_deep_prop",
+    "x::has_prop",
+    "x::has_props",
+    "x::hdump",
+    "x::increment",
+    "x::indent_json",
+    "x::indexOf",
+    "x::index_by_first_val",
+    "x::is_assoc",
+    "x::is_cli",
+    "x::is_same",
+    "x::is_windows",
+    "x::join",
+    "x::js_object",
+    "x::json_base64_decode",
+    "x::json_base64_encode",
+    "x::lastIndexOf",
+    "x::last_curl_code",
+    "x::last_curl_error",
+    "x::last_curl_info",
+    "x::log",
+    "x::log_error",
+    "x::make_storage_path",
+    "x::make_tree",
+    "x::make_uid",
+    "x::map",
+    "x::max_with_key",
+    "x::merge_arrays",
+    "x::merge_objects",
+    "x::microtime",
+    "x::min_with_key",
+    "x::output",
+    "x::pick",
+    "x::remove_empty",
+    "x::retrieve_array_var",
+    "x::retrieve_object_var",
+    "x::sort",
+    "x::sort_by",
+    "x::split",
+    "x::sum",
+    "x::to_array",
+    "x::to_csv",
+    "x::to_excel",
+    "x::to_groups",
+    "x::to_keypair",
+    "x::to_object"
+  ];
 
   const baseCfg = {
     scrollbarStyle:null,
@@ -167,17 +287,14 @@ document.head.insertAdjacentElement('beforeend', css);
       */
       autoCloseBrackets: true,
       extraKeys: {
-        "Ctrl-Space": function(cm) { bbn.vue.tern.complete(cm); },
+        "Ctrl-Space": function(cm) { bbn.vue.tern.complete(cm);}/*,
         "Ctrl-I": function(cm) { bbn.vue.tern.showType(cm); },
         "Ctrl-O": function(cm) { bbn.vue.tern.showDocs(cm); },
         "Alt-.": function(cm) { bbn.vue.tern.jumpToDef(cm); },
         "Alt-,": function(cm) { bbn.vue.tern.jumpBack(cm); },
         "Ctrl-Q": function(cm) { bbn.vue.tern.rename(cm); },
-        "Ctrl-.": function(cm) { bbn.vue.tern.selectName(cm); }
+        "Ctrl-.": function(cm) { bbn.vue.tern.selectName(cm); }*/
       }
-    },
-    coffee: {
-      mode: 'text/coffeescript'
     },
     json: {
       mode: {
@@ -204,7 +321,10 @@ document.head.insertAdjacentElement('beforeend', css);
       }
     },
     vue: {
-      mode: "text/x-vue"
+      mode: "text/x-vue",
+      extraKeys: {
+        "Ctrl-Space": "autocomplete",
+      }
     }
   };
 
@@ -560,50 +680,75 @@ document.head.insertAdjacentElement('beforeend', css);
        */
       initTern(){
         if (this.mode === 'js') {
-          if (bbn.vue.tern === undefined) {
-            let getURL = (url, c) => {
-              let xhr = new XMLHttpRequest();
-              xhr.open("get", url, true);
-              xhr.send();
-              xhr.onreadystatechange = function() {
-                if (xhr.readyState != 4) return;
-                if (xhr.status < 400) return c(null, xhr.responseText);
-                let e = new Error(xhr.responseText || "No response");
-                e.status = xhr.status;
-                c(e);
-              };
-            };
-            getURL("https://raw.githubusercontent.com/ternjs/tern/master/defs/ecmascript.json", (err, code) => {
-              if (err) {
-                throw new Error("Request for ecmascript.json: " + err);
-              }
-              if ( this.widget && code ){
-                let defs = JSON.parse(code);
-                getURL("https://raw.githubusercontent.com/nabab/bbn-js/master/doc/tern.json", (err, res) => {
-                  if (err) {
-                    throw new Error("Request for ecmascript.json: " + err);
-                  }
-                  if (res){
-                    defs.bbn = {
-                      fn: JSON.parse(res),
-                      vue: {}
-                    };
-                    bbn.fn.iterate(bbn.vue, (a, k) => {
-                      defs.bbn.vue[k] = {
-                        "!type": "fn(number) -> number",
-                        "!url": "https://doc.js.bbn.solutions/" + k,
-                        "!doc": "Returns the value of a number rounded to the nearest integer."                  
+          if (!bbn.vue.tern) {
+            bbn.fn.ajax({
+              url: "https://raw.githubusercontent.com/ternjs/tern/master/defs/ecmascript.json",
+              success: defs => {
+                /*
+                if (defs && this.widget) {
+                  bbn.vue.tern = new CodeMirror.TernServer({defs: [defs]});
+                  this.widget.on("cursorActivity", cm => {
+                    bbn.vue.tern.updateArgHints(cm);
+                  });
+                }
+                */
+                if (defs && this.widget) {
+                  bbn.fn.ajax({
+                    url: "https://raw.githubusercontent.com/nabab/bbn-js/src/doc/tern.json",
+                    success: res => {
+                      if (res && res.bbn) {
+                        bbn.fn.extend(defs, res);
+                        bbn.fn.ajax({
+                          url: "https://raw.githubusercontent.com/nabab/bbn-vue/src/tern.json",
+                          success: res => {
+                            if (res && res.bbn) {
+                              bbn.fn.extend(true, defs, res);
+                              bbn.fn.iterate(bbn, (a, k) => {
+                                if (!defs.bbn[k]) {
+                                  defs.bbn[k] = {};
+                                  if (bbn.fn.isObject(a)) {
+                                    bbn.fn.iterate(a, (b, n) => {
+                                      defs.bbn[k][n] = {};
+                                      if (b === null) {
+                                        defs.bbn[k][n]['!type'] = 'null';
+                                      }
+                                      else if (bbn.fn.isArray(b)) {
+                                        defs.bbn[k][n]['!type'] = 'Array';
+                                      }
+                                      else {
+                                        defs.bbn[k][n]['!type'] = typeof(b);
+                                      }
+                                    });
+                                  }
+                                  else if (a === null) {
+                                    defs.bbn[k]['!type'] = 'null';
+                                  }
+                                  else if (bbn.fn.isArray(a)) {
+                                    defs.bbn[k]['!type'] = 'Array';
+                                  }
+                                  else {
+                                    defs.bbn[k]['!type'] = typeof(a);
+                                  }
+                                }
+                              });
+                              bbn.vue.tern = new CodeMirror.TernServer({defs: [defs]});
+                              this.widget.on("cursorActivity", cm => {
+                                bbn.vue.tern.updateArgHints(cm);
+                              });
+                            }
+                          }
+                        })
                       }
-                    });
-                    bbn.vue.tern = new CodeMirror.TernServer({defs: [defs]});
-                    this.widget.on("cursorActivity", function(cm) { bbn.vue.tern.updateArgHints(cm); });
-                  }
-                });
+                    }
+                  })
+                }
               }
             });
           }
           else {
-            this.widget.on("cursorActivity", function(cm) { bbn.vue.tern.updateArgHints(cm); });
+            this.widget.on("cursorActivity", cm => {
+              bbn.vue.tern.updateArgHints(cm);
+            });
           }
         }
       },
@@ -647,29 +792,33 @@ document.head.insertAdjacentElement('beforeend', css);
      */
     mounted(){
       //bbn.fn.log(this.getOptions());
-      if ( this.getRef('code') ){
+      if (this.getRef('code')) {
+        if (CodeMirror.hintWords.php
+          && (CodeMirror.hintWords.php.indexOf(phpFn[0]) === -1)
+        ) {
+          CodeMirror.hintWords.php = CodeMirror.hintWords.php.concat(phpFn);
+        }
+
         this.widget = CodeMirror(this.getRef('code'), this.getOptions());
 
         this.widget.on("keyup", (cm, event) => {
           if (
             /*Enables keyboard navigation in autocomplete list*/
-            !cm.state.completionActive &&
-            !event.ctrlKey && !event.altKey &&
-            (event.keyCode > 64) &&
-            (event.keyCode < 91) 
+            !cm.state.completionActive
+            && !event.ctrlKey
+            && !event.altKey
+            // Dot
+            && ([":", ".", "("].includes(event.key)
+            || (
+              (event.keyCode > 64) &&
+              (event.keyCode < 91) 
+            ))
           ){
-            cm.showHint();
-            /*
-            // only when a letter key is pressed
+            let o = {completeSingle: false};
             if (this.mode === 'js') {
-              if (bbn.vue.tern) {
-                bbn.vue.tern.complete(this.widget);
-              }
+              o.hint = bbn.vue.tern.getHint;
             }
-            else {
-              CodeMirror.commands.autocomplete(cm, null, {completeSingle: false});
-            }
-            */
+            cm.showHint(o);
           }
         });
 

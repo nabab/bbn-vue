@@ -44,6 +44,126 @@
 
   const themes = ["3024-day","3024-night","ambiance-mobile","ambiance","base16-dark","base16-light","blackboard","cobalt","eclipse","elegant","erlang-dark","lesser-dark","mbo","midnight","monokai","neat","night","paraiso-dark","paraiso-light","pastel-on-dark","rubyblue","solarized","the-matrix","tomorrow-night-eighties","twilight","vibrant-ink","xq-dark","xq-light"];
 
+  const phpFn = [
+    "str::as_var",
+    "str::cast",
+    "str::change_case",
+    "str::check_filename",
+    "str::check_json",
+    "str::check_name",
+    "str::check_path",
+    "str::clean",
+    "str::convert_size",
+    "str::correct_types",
+    "str::cut",
+    "str::encode_dbname",
+    "str::encode_filename",
+    "str::escape",
+    "str::escape_all_quotes",
+    "str::escape_apo",
+    "str::escape_dquote",
+    "str::escape_dquotes",
+    "str::escape_quote",
+    "str::escape_quotes",
+    "str::escape_squote",
+    "str::escape_squotes",
+    "str::export",
+    "str::file_ext",
+    "str::genpwd",
+    "str::get_numbers",
+    "str::has_slash",
+    "str::is_buid",
+    "str::is_clean_path",
+    "str::is_date_sql",
+    "str::is_decimal",
+    "str::is_domain",
+    "str::is_email",
+    "str::is_integer",
+    "str::is_ip",
+    "str::is_json",
+    "str::is_number",
+    "str::is_uid",
+    "str::is_url",
+    "str::make_readable",
+    "str::markdown2html",
+    "str::parse_path",
+    "str::parse_url",
+    "str::remove_accents",
+    "str::remove_comments",
+    "str::replace_once",
+    "str::sanitize",
+    "str::say_size",
+    "x::__callStatic",
+    "x::adump",
+    "x::build_options",
+    "x::clean_storage_path",
+    "x::compare_floats",
+    "x::concat",
+    "x::convert_uids",
+    "x::count",
+    "x::count_all",
+    "x::count_properties",
+    "x::curl",
+    "x::debug",
+    "x::decrement",
+    "x::dump",
+    "x::filter",
+    "x::find",
+    "x::from_csv",
+    "x::get_dump",
+    "x::get_field",
+    "x::get_hdump",
+    "x::get_row",
+    "x::get_rows",
+    "x::get_tree",
+    "x::has_deep_prop",
+    "x::has_prop",
+    "x::has_props",
+    "x::hdump",
+    "x::increment",
+    "x::indent_json",
+    "x::indexOf",
+    "x::index_by_first_val",
+    "x::is_assoc",
+    "x::is_cli",
+    "x::is_same",
+    "x::is_windows",
+    "x::join",
+    "x::js_object",
+    "x::json_base64_decode",
+    "x::json_base64_encode",
+    "x::lastIndexOf",
+    "x::last_curl_code",
+    "x::last_curl_error",
+    "x::last_curl_info",
+    "x::log",
+    "x::log_error",
+    "x::make_storage_path",
+    "x::make_tree",
+    "x::make_uid",
+    "x::map",
+    "x::max_with_key",
+    "x::merge_arrays",
+    "x::merge_objects",
+    "x::microtime",
+    "x::min_with_key",
+    "x::output",
+    "x::pick",
+    "x::remove_empty",
+    "x::retrieve_array_var",
+    "x::retrieve_object_var",
+    "x::sort",
+    "x::sort_by",
+    "x::split",
+    "x::sum",
+    "x::to_array",
+    "x::to_csv",
+    "x::to_excel",
+    "x::to_groups",
+    "x::to_keypair",
+    "x::to_object"
+  ];
+
   const baseCfg = {
     scrollbarStyle:null,
     lineNumbers: true,
@@ -152,17 +272,14 @@
       */
       autoCloseBrackets: true,
       extraKeys: {
-        "Ctrl-Space": function(cm) { bbn.vue.tern.complete(cm); },
+        "Ctrl-Space": function(cm) { bbn.vue.tern.complete(cm);}/*,
         "Ctrl-I": function(cm) { bbn.vue.tern.showType(cm); },
         "Ctrl-O": function(cm) { bbn.vue.tern.showDocs(cm); },
         "Alt-.": function(cm) { bbn.vue.tern.jumpToDef(cm); },
         "Alt-,": function(cm) { bbn.vue.tern.jumpBack(cm); },
         "Ctrl-Q": function(cm) { bbn.vue.tern.rename(cm); },
-        "Ctrl-.": function(cm) { bbn.vue.tern.selectName(cm); }
+        "Ctrl-.": function(cm) { bbn.vue.tern.selectName(cm); }*/
       }
-    },
-    coffee: {
-      mode: 'text/coffeescript'
     },
     json: {
       mode: {
@@ -189,7 +306,10 @@
       }
     },
     vue: {
-      mode: "text/x-vue"
+      mode: "text/x-vue",
+      extraKeys: {
+        "Ctrl-Space": "autocomplete",
+      }
     }
   };
 
@@ -545,50 +665,75 @@
        */
       initTern(){
         if (this.mode === 'js') {
-          if (bbn.vue.tern === undefined) {
-            let getURL = (url, c) => {
-              let xhr = new XMLHttpRequest();
-              xhr.open("get", url, true);
-              xhr.send();
-              xhr.onreadystatechange = function() {
-                if (xhr.readyState != 4) return;
-                if (xhr.status < 400) return c(null, xhr.responseText);
-                let e = new Error(xhr.responseText || "No response");
-                e.status = xhr.status;
-                c(e);
-              };
-            };
-            getURL("https://raw.githubusercontent.com/ternjs/tern/master/defs/ecmascript.json", (err, code) => {
-              if (err) {
-                throw new Error("Request for ecmascript.json: " + err);
-              }
-              if ( this.widget && code ){
-                let defs = JSON.parse(code);
-                getURL("https://raw.githubusercontent.com/nabab/bbn-js/master/doc/tern.json", (err, res) => {
-                  if (err) {
-                    throw new Error("Request for ecmascript.json: " + err);
-                  }
-                  if (res){
-                    defs.bbn = {
-                      fn: JSON.parse(res),
-                      vue: {}
-                    };
-                    bbn.fn.iterate(bbn.vue, (a, k) => {
-                      defs.bbn.vue[k] = {
-                        "!type": "fn(number) -> number",
-                        "!url": "https://doc.js.bbn.solutions/" + k,
-                        "!doc": "Returns the value of a number rounded to the nearest integer."                  
+          if (!bbn.vue.tern) {
+            bbn.fn.ajax({
+              url: "https://raw.githubusercontent.com/ternjs/tern/master/defs/ecmascript.json",
+              success: defs => {
+                /*
+                if (defs && this.widget) {
+                  bbn.vue.tern = new CodeMirror.TernServer({defs: [defs]});
+                  this.widget.on("cursorActivity", cm => {
+                    bbn.vue.tern.updateArgHints(cm);
+                  });
+                }
+                */
+                if (defs && this.widget) {
+                  bbn.fn.ajax({
+                    url: "https://raw.githubusercontent.com/nabab/bbn-js/src/doc/tern.json",
+                    success: res => {
+                      if (res && res.bbn) {
+                        bbn.fn.extend(defs, res);
+                        bbn.fn.ajax({
+                          url: "https://raw.githubusercontent.com/nabab/bbn-vue/src/tern.json",
+                          success: res => {
+                            if (res && res.bbn) {
+                              bbn.fn.extend(true, defs, res);
+                              bbn.fn.iterate(bbn, (a, k) => {
+                                if (!defs.bbn[k]) {
+                                  defs.bbn[k] = {};
+                                  if (bbn.fn.isObject(a)) {
+                                    bbn.fn.iterate(a, (b, n) => {
+                                      defs.bbn[k][n] = {};
+                                      if (b === null) {
+                                        defs.bbn[k][n]['!type'] = 'null';
+                                      }
+                                      else if (bbn.fn.isArray(b)) {
+                                        defs.bbn[k][n]['!type'] = 'Array';
+                                      }
+                                      else {
+                                        defs.bbn[k][n]['!type'] = typeof(b);
+                                      }
+                                    });
+                                  }
+                                  else if (a === null) {
+                                    defs.bbn[k]['!type'] = 'null';
+                                  }
+                                  else if (bbn.fn.isArray(a)) {
+                                    defs.bbn[k]['!type'] = 'Array';
+                                  }
+                                  else {
+                                    defs.bbn[k]['!type'] = typeof(a);
+                                  }
+                                }
+                              });
+                              bbn.vue.tern = new CodeMirror.TernServer({defs: [defs]});
+                              this.widget.on("cursorActivity", cm => {
+                                bbn.vue.tern.updateArgHints(cm);
+                              });
+                            }
+                          }
+                        })
                       }
-                    });
-                    bbn.vue.tern = new CodeMirror.TernServer({defs: [defs]});
-                    this.widget.on("cursorActivity", function(cm) { bbn.vue.tern.updateArgHints(cm); });
-                  }
-                });
+                    }
+                  })
+                }
               }
             });
           }
           else {
-            this.widget.on("cursorActivity", function(cm) { bbn.vue.tern.updateArgHints(cm); });
+            this.widget.on("cursorActivity", cm => {
+              bbn.vue.tern.updateArgHints(cm);
+            });
           }
         }
       },
@@ -632,29 +777,33 @@
      */
     mounted(){
       //bbn.fn.log(this.getOptions());
-      if ( this.getRef('code') ){
+      if (this.getRef('code')) {
+        if (CodeMirror.hintWords.php
+          && (CodeMirror.hintWords.php.indexOf(phpFn[0]) === -1)
+        ) {
+          CodeMirror.hintWords.php = CodeMirror.hintWords.php.concat(phpFn);
+        }
+
         this.widget = CodeMirror(this.getRef('code'), this.getOptions());
 
         this.widget.on("keyup", (cm, event) => {
           if (
             /*Enables keyboard navigation in autocomplete list*/
-            !cm.state.completionActive &&
-            !event.ctrlKey && !event.altKey &&
-            (event.keyCode > 64) &&
-            (event.keyCode < 91) 
+            !cm.state.completionActive
+            && !event.ctrlKey
+            && !event.altKey
+            // Dot
+            && ([":", ".", "("].includes(event.key)
+            || (
+              (event.keyCode > 64) &&
+              (event.keyCode < 91) 
+            ))
           ){
-            cm.showHint();
-            /*
-            // only when a letter key is pressed
+            let o = {completeSingle: false};
             if (this.mode === 'js') {
-              if (bbn.vue.tern) {
-                bbn.vue.tern.complete(this.widget);
-              }
+              o.hint = bbn.vue.tern.getHint;
             }
-            else {
-              CodeMirror.commands.autocomplete(cm, null, {completeSingle: false});
-            }
-            */
+            cm.showHint(o);
           }
         });
 

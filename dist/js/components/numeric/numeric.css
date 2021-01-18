@@ -35,7 +35,6 @@
   max-height: .6em;
 }
 .bbn-numeric input {
-  padding-right: 0.5em !important;
   text-align: right !important;
   font-size: inherit;
   height: 100%;

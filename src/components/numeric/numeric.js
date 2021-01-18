@@ -314,7 +314,6 @@
               value = this.value ? Math.round(this.value * ratio) : 0;
           value += this.step * ratio * modifier;
           value /= ratio;
-          bbn.fn.log("CREMENT", this.step, this.currentDecimals, ratio, value, "-------");
           this.$emit(beforeEvName, value, ev);
           if ( !ev.defaultPrevented ){
             this.currentValue = value;

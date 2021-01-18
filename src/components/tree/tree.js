@@ -183,6 +183,16 @@
           return [];
         }
       },
+      /**
+       * The default opened path if there is none in storage.
+       * @prop {Array} [[]] path
+       */
+      defaultPath: {
+        type: Array,
+        default(){
+          return [];
+        }
+      },
       //@todo never used selectedValues
       selectedValues: {
         type: [Array, String],
@@ -213,27 +223,6 @@
       quickFilter: {
         type: String,
         default: ''
-      },
-      /**
-       * True if the tre has to be sortable.
-       * @prop {Boolean} [false] sortable
-       */
-      sortable: {
-        type: Boolean,
-        default: false
-      },
-      /**
-       * The order of items.
-       * @prop {Array} [[{field: 'num', dir: 'DESC'}, {field: 'text', dir: 'ASC'}]] order
-       */
-      order: {
-        type: Array,
-        default(){
-          return [{
-            field: 'num',
-            dir: 'ASC'
-          }]
-        }
       },
       /**
        * Set to true if the prop 'ajax' is true,
@@ -799,7 +788,7 @@
         //if ( this.isAjax ){
           if ( this.isRoot && !node ){
             this.isLoaded = false;
-            this.updateData();
+            this.initLoad();
           }
           else {
             node = !node ? this.node : node;
@@ -872,6 +861,18 @@
             })
           }
         })
+      },
+      getNodeByUid(uid) {
+        let res = false;
+        if (this.uid) {
+          bbn.fn.each(this.findAll('bbn-tree-node'), e => {
+            if (e.source && e.source.data && (e.source.data[this.uid] === uid)) {
+              res = e;
+              return false;
+            }
+          })
+        }
+        return res;
       },
       /**
        * Returns the node's path.
@@ -1046,17 +1047,16 @@
        */
       getConfig(){
         let cfg = {
-          path: []
+          expanded: []
         };
+        if (!this.uid) {
+          return cfg;
+        }
         // Expanded
         bbn.fn.each(this.currentExpanded, c => {
-          let e = this.getNodePath(c);
-          e.push(false);
-          cfg.path.push(e);
-        });
-        // Selected
-        bbn.fn.each(this.currentSelected, c => {
-          cfg.path.push(this.getNodePath(c));
+          if (c.source && c.source.data && c.source.data[this.uid]) {
+            cfg.expanded.push(c.source.data[this.uid])
+          }
         });
         return cfg;
       },
@@ -1066,13 +1066,16 @@
        */
       getLocalStorage(){
         if ( this.isRoot && this.hasStorage ){
-          let cfg = this.getStorage(this.storageFullName || this.storageName, !!this.storageFullName);
+          return this.getStorage(this.storageFullName || this.storageName, !!this.storageFullName);
+
+          /*
           if ( cfg && cfg.path !== undefined ){
             this.path.splice(0, this.path.length, ...cfg.path);
           }
           else {
             this.path.splice(0, this.path.length);
           }
+          */
         }
       },
       /**
@@ -1110,6 +1113,42 @@
             scroll.scrollTo(0, this.activeNode.$el);
           }
         }
+      },
+      initLoad() {
+        if (this.hasStorage && this.isRoot) {
+          let storage = this.getLocalStorage();
+          setTimeout(() => {
+            let p = [this.updateData()];
+            if (storage && storage.expanded.length) {
+              bbn.fn.each(storage.expanded, uid => {
+                let idx = p.length-1;
+                p.push(p[idx].then(() => {
+                  return new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                      let node = this.tree.getNodeByUid(uid);
+                      if (node && node.ready) {
+                        node.getRef('tree').$once('dataloaded', () => {
+                          resolve();
+                        });
+                        node.isExpanded = true;
+                      }
+                      else {
+                        reject();
+                      }
+                    }, 250);
+                  })
+                }));
+              });
+            }
+          }, 100)
+        }
+        else if (this.node.isExpanded || this.isRoot) {
+          this.updateData();
+        }
+      },
+      // Keep to prevent the one from list to exexute
+      listOnBeforeMount(){
+
       }
     },
     /**
@@ -1138,7 +1177,7 @@
       });
       this.$on('dataloaded', () => {
         if ( !this.isLoaded && this.ready ){
-          this.getLocalStorage()
+          //this.getLocalStorage()
           this.openPath();
         }
         this.isLoaded = true;
@@ -1170,24 +1209,15 @@
       }
     },
     /**
-     * Gets the local storage.
-     * @event beforeMount
-     */
-    beforeMount(){
-      this.getLocalStorage();
-    },
-    /**
      * Updates the data of the tree and sets the prop 'ready' to true.
      * @event mounted
      * @fires updateData
      */
     mounted(){
-      this.$nextTick(() => {
-        if ( this.node.isExpanded ){
-          this.updateData();
-        }
-      })
       this.ready = true;
+      this.$nextTick(() => {
+        this.initLoad();
+      })
     },
     watch: {
       /**
@@ -1851,7 +1881,7 @@
           removeFromSelected(emit = true, storage = true){
             let idx = this.tree.currentSelected.indexOf(this),
                 idx2 = this.parent.currentSelected.indexOf(this),
-                ev = new Event('beforeSelect', {cancelable: true});
+                ev = new Event('beforeUnselect', {cancelable: true});
             if ( emit ){
               this.tree.$emit('beforeUnselect', this, ev);
             }
@@ -1998,11 +2028,11 @@
                   tree.updateData();
                 }
               }
+              setTimeout(() => {
+                this.ready = true;
+              }, 50)
             });
             this.resize();
-            setTimeout(() => {
-              this.ready = true;
-            }, 250)
           })
         },
         beforeDestroy(){

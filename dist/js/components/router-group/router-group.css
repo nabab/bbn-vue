@@ -129,26 +129,18 @@ div.bbn-router .bbn-router-nav div.bbn-router-tabs > div.bbn-router-tabs-contain
 div.bbn-router .bbn-router-nav div.bbn-router-tabs > div.bbn-router-tabs-container ul.bbn-router-tabs-tabs:first-child > li div.bbn-router-tabs-tab.bbn-router-tabs-dirty::after {
   content: "*";
 }
-div.bbn-router .bbn-router-nav div.bbn-router-tabs > div.bbn-router-tabs-container ul.bbn-router-tabs-tabs:first-child > li div.bbn-router-tabs-icon {
-  position: absolute;
-  right: 0px;
-  top: 0px;
-  bottom: 0px;
-}
-div.bbn-router .bbn-router-nav div.bbn-router-tabs > div.bbn-router-tabs-container ul.bbn-router-tabs-tabs:first-child > li div.bbn-router-tabs-icon i {
+div.bbn-router .bbn-router-nav div.bbn-router-tabs > div.bbn-router-tabs-container ul.bbn-router-tabs-tabs:first-child > li i.bbn-router-tabs-icon {
   display: block;
   position: absolute;
-  right: 0px;
-  padding: 2px;
-  padding-right: 2px;
+  right: 2px;
   font-size: 1em;
   cursor: pointer;
   margin: 0;
 }
-div.bbn-router .bbn-router-nav div.bbn-router-tabs > div.bbn-router-tabs-container ul.bbn-router-tabs-tabs:first-child > li div.bbn-router-tabs-icon i.bbn-router-tab-close {
-  top: 0px;
+div.bbn-router .bbn-router-nav div.bbn-router-tabs > div.bbn-router-tabs-container ul.bbn-router-tabs-tabs:first-child > li i.bbn-router-tabs-icon.bbn-router-tab-close {
+  top: 1px;
 }
-div.bbn-router .bbn-router-nav div.bbn-router-tabs > div.bbn-router-tabs-container ul.bbn-router-tabs-tabs:first-child > li div.bbn-router-tabs-icon i.bbn-router-tab-menu {
+div.bbn-router .bbn-router-nav div.bbn-router-tabs > div.bbn-router-tabs-container ul.bbn-router-tabs-tabs:first-child > li i.bbn-router-tabs-icon.bbn-router-tab-menu {
   bottom: -2px;
 }
 div.bbn-router .bbn-router-nav div.bbn-router-tabs > div.bbn-router-tabs-container ul.bbn-router-tabs-tabs:first-child > li div.bbn-router-tabs-selected {

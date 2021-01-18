@@ -33,7 +33,7 @@ script.innerHTML = `<div :class="[componentClass, {
                             tabindex="0"
                             :item-component="$options.components.listItem"
                             class="bbn-h-100 bbn-vmiddle"
-                            :attach="itsMasterBreadcrumb || undefined"
+                            :attach="itsMaster ? itsMaster.getRef('breadcrumb') : undefined"
                             :autobind="false"
                             :style="{
                               backgroundColor: bc.getBackgroundColor(bc.selected),
@@ -184,22 +184,24 @@ script.innerHTML = `<div :class="[componentClass, {
                           :style="{
                             backgroundColor: getFontColor(tabIndex)
                           }"/>
-                    <i v-if="!tab.static && !tab.pinned"
-                       class="nf nf-fa-times bbn-p bbn-router-tab-close bbn-router-tabs-icon"
-                       tabindex="-1"
-                       :ref="'closer-' + tabIndex"
-                       @keydown.left.down.prevent.stop="getRef('menu-' + tabIndex) ? getRef('menu-' + tabIndex).$el.focus() : null"
-                       @keydown.space.enter.prevent.stop="close(tabIndex)"
-                       @click.stop.prevent="close(tabIndex)"/>
-                    <bbn-context v-if="(tab.menu !== false) && (tabIndex === selected)"
-                                 class="nf nf-fa-caret_down bbn-router-tab-menu bbn-router-tabs-icon bbn-p"
-                                 tabindex="-1"
-                                 min-width="10em"
-                                 tag="i"
-                                 :source="getMenuFn"
-                                 :autobind="false"
-                                 :source-index="tabIndex"
-                                 :ref="'menu-' + tabIndex"/>
+                    <div class="bbn-router-tabs-icon">
+                      <i v-if="!tab.static && !tab.pinned"
+                        class="nf nf-fa-times bbn-p bbn-router-tab-close"
+                        tabindex="-1"
+                        :ref="'closer-' + tabIndex"
+                        @keydown.left.down.prevent.stop="getRef('menu-' + tabIndex) ? getRef('menu-' + tabIndex).$el.focus() : null"
+                        @keydown.space.enter.prevent.stop="close(tabIndex)"
+                        @click.stop.prevent="close(tabIndex)"/>
+                      <bbn-context v-if="(tab.menu !== false) && (tabIndex === selected)"
+                                  class="nf nf-fa-caret_down bbn-router-tab-menu bbn-p"
+                                  tabindex="-1"
+                                  min-width="10em"
+                                  tag="i"
+                                  :source="getMenuFn"
+                                  :autobind="false"
+                                  :source-index="tabIndex"
+                                  :ref="'menu-' + tabIndex"/>
+                    </div>
                   </li>
                 </ul>
               </component>
@@ -580,12 +582,6 @@ document.head.insertAdjacentElement('beforeend', css);
          * @data breadcrumbWatcher
          */
         breadcrumbWatcher: false,
-        /**
-         * Returns the bbn-breadcrumb component of this router.
-         * @data {HTMLElement|Boolean} itsBreadcrumb
-         * @fires getRef
-         */
-        itsBreadcrumb: this.breadcrumb ? this.getRef('breadcrumb') : false,
         breadcrumbsList: []
       };
     },
@@ -640,17 +636,6 @@ document.head.insertAdjacentElement('beforeend', css);
         return false;
       },
       
-      /**
-       * Returns the master breadcrumb component for this router.
-       * @computed itsMasterBreadcrumb
-       * @return {Vue|Boolean}
-       */
-      itsMasterBreadcrumb(){
-        if ( this.isBreadcrumb && this.itsMaster ){
-          return this.itsMaster.itsBreadcrumb;
-        }
-        return false;
-      },
       /**
        * The final Vue object for the active container (if it has sub-router).
        * @computed activeRealContainer
@@ -812,7 +797,7 @@ document.head.insertAdjacentElement('beforeend', css);
           while ( bits.length ){
             let st = bits.join('/');
             if ( this.urls[st] ){
-              return st;
+              return this.urls[st].disabled ? '' : st;
             }
             bits.pop();
           }
@@ -1612,7 +1597,7 @@ document.head.insertAdjacentElement('beforeend', css);
           throw Error(bbn._('The component bbn-container must have a valid URL defined'));
         }
         if ( this.parent ){
-          let containers = this.ancesters('bbn-container');
+          let containers = this.ancestors('bbn-container');
           url = this.getFullBaseURL().substr(this.router.baseURL.length) + url;
           //bbn.fn.log("CALL ROOT ROUTER WITH URL " + url);
           // The URL of the last bbn-container as index of the root router
@@ -2008,7 +1993,7 @@ document.head.insertAdjacentElement('beforeend', css);
               key: "close",
               icon: "nf nf-mdi-close",
               action: () => {
-                this.getRef('breadcrumb').close(idx);
+                this.close(idx);
               }
             });
           }
@@ -2019,7 +2004,7 @@ document.head.insertAdjacentElement('beforeend', css);
                 key: "pin",
                 icon: "nf nf-mdi-pin",
                 action: () => {
-                  this.getRef('tabs').pin(idx);
+                  this.pin(idx);
                 }
               });
               items.push({
@@ -2027,7 +2012,7 @@ document.head.insertAdjacentElement('beforeend', css);
                 key: "close",
                 icon: "nf nf-mdi-close",
                 action: () => {
-                  this.getRef('tabs').close(idx);
+                  this.close(idx);
                 }
               })
             }
@@ -2037,7 +2022,7 @@ document.head.insertAdjacentElement('beforeend', css);
                 key: "pin",
                 icon: "nf nf-mdi-pin_off",
                 action: () => {
-                  this.getRef('tabs').unpin(idx);
+                  this.unpin(idx);
                 }
               });
             }
@@ -2049,7 +2034,7 @@ document.head.insertAdjacentElement('beforeend', css);
             key: "close_others",
             icon: "nf nf-mdi-close_circle_outline",
             action: () => {
-              this.getRef(this.isBreadcrumb ? 'breadcrumb' : 'tabs').closeAllBut(idx);
+              this.closeAllBut(idx);
             }
           })
         }
@@ -2059,7 +2044,7 @@ document.head.insertAdjacentElement('beforeend', css);
             key: "close_all",
             icon: "nf nf-mdi-close_circle",
             action: () => {
-              this.getRef(this.isBreadcrumb ? 'breadcrumb' : 'tabs').closeAll();
+              this.closeAll();
             }
           })
         }
@@ -2553,7 +2538,7 @@ document.head.insertAdjacentElement('beforeend', css);
      */
     mounted(){
       // All routers above (which constitute the fullBaseURL)
-      this.parents = this.ancesters('bbn-router');
+      this.parents = this.ancestors('bbn-router');
       // The closest
       this.parent = this.parents.length ? this.parents[0] : false;
       // The root
@@ -2677,10 +2662,6 @@ document.head.insertAdjacentElement('beforeend', css);
           this.parent.registerBreadcrumb(this);
         }
       }
-      if (this.isBreadcrumb) {
-        this.itsBreadcrumb = this.getRef('breadcrumb');
-      }
-      
       this.ready = true;
       setTimeout(() => {
         // bugfix for rendering some nf-mdi icons
@@ -2770,9 +2751,6 @@ document.head.insertAdjacentElement('beforeend', css);
        */
       isBreadcrumb(newVal){
         this.$nextTick(() => {
-          if (newVal) {
-            this.itsBreadcrumb = this.getRef('breadcrumb');
-          }
           this.setConfig();
         })
       }

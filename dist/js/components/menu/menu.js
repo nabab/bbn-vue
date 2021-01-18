@@ -15,7 +15,10 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-block']"
         @click="overIdx = i"
         @mouseenter="_enterLi(i)"
         >
-      <span v-html="item.data.text"></span>
+      <a v-if="item.data.url" :href="item.data.url">
+        <span v-html="item.data.text"></span>
+      </a>
+      <span v-else v-html="item.data.text"></span>
       <span v-if="item.data[children]" class="nf nf-fa-chevron_down"></span>
     </li>
   </ul>

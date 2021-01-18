@@ -1,0 +1,196 @@
+{
+    "bbn": {
+        "vue": {
+            "addComponent": {
+                "!type": "fn() -> mixed",
+                "!url": "https:\/\/bbn.io\/'bbn-vue\/function\/addComponent",
+                "!doc": ""
+            },
+            "addPrefix": {
+                "!type": "fn() -> mixed",
+                "!url": "https:\/\/bbn.io\/'bbn-vue\/function\/addPrefix",
+                "!doc": ""
+            },
+            "ancestors": {
+                "!type": "fn() -> mixed",
+                "!url": "https:\/\/bbn.io\/'bbn-vue\/function\/ancestors",
+                "!doc": "Returns an array of all parents Vue objects of the component which have the given tag\/class."
+            },
+            "announceComponent": {
+                "!type": "fn() -> mixed",
+                "!url": "https:\/\/bbn.io\/'bbn-vue\/function\/announceComponent",
+                "!doc": ""
+            },
+            "closest": {
+                "!type": "fn() -> mixed",
+                "!url": "https:\/\/bbn.io\/'bbn-vue\/function\/closest",
+                "!doc": "Retrieves the closest parent to the component with the given tag\/class."
+            },
+            "executeQueueItem": {
+                "!type": "fn() -> mixed",
+                "!url": "https:\/\/bbn.io\/'bbn-vue\/function\/executeQueueItem",
+                "!doc": ""
+            },
+            "executeQueueItems": {
+                "!type": "fn() -> mixed",
+                "!url": "https:\/\/bbn.io\/'bbn-vue\/function\/executeQueueItems",
+                "!doc": "Adds an array of components, calling them all at the same time, in a single script."
+            },
+            "extend": {
+                "!type": "fn() -> mixed",
+                "!url": "https:\/\/bbn.io\/'bbn-vue\/function\/extend",
+                "!doc": ""
+            },
+            "find": {
+                "!type": "fn() -> mixed",
+                "!url": "https:\/\/bbn.io\/'bbn-vue\/function\/find",
+                "!doc": "Find the first component in descendant tree matching the given selector."
+            },
+            "findAll": {
+                "!type": "fn() -> mixed",
+                "!url": "https:\/\/bbn.io\/'bbn-vue\/function\/findAll",
+                "!doc": "Find all the components in descendant tree matching the given selector."
+            },
+            "findAllByKey": {
+                "!type": "fn() -> mixed",
+                "!url": "https:\/\/bbn.io\/'bbn-vue\/function\/findAllByKey",
+                "!doc": "Find all descendant components with the given key."
+            },
+            "findByKey": {
+                "!type": "fn() -> mixed",
+                "!url": "https:\/\/bbn.io\/'bbn-vue\/function\/findByKey",
+                "!doc": "Find a descendant component by its key."
+            },
+            "getChildByKey": {
+                "!type": "fn() -> mixed",
+                "!url": "https:\/\/bbn.io\/'bbn-vue\/function\/getChildByKey",
+                "!doc": "Finds a child component by its key."
+            },
+            "getComponents": {
+                "!type": "fn() -> mixed",
+                "!url": "https:\/\/bbn.io\/'bbn-vue\/function\/getComponents",
+                "!doc": "Returns all the descendant components."
+            },
+            "getContainerURL": {
+                "!type": "fn() -> mixed",
+                "!url": "https:\/\/bbn.io\/'bbn-vue\/function\/getContainerURL",
+                "!doc": "Retrieves the URL of the closest container."
+            },
+            "getPopup": {
+                "!type": "fn() -> mixed",
+                "!url": "https:\/\/bbn.io\/'bbn-vue\/function\/getPopup",
+                "!doc": ""
+            },
+            "getRef": {
+                "!type": "fn() -> mixed",
+                "!url": "https:\/\/bbn.io\/'bbn-vue\/function\/getRef",
+                "!doc": "Returns the given ref (equivalent to $refs[name] or $refs[name][0])."
+            },
+            "getRoot": {
+                "!type": "fn() -> mixed",
+                "!url": "https:\/\/bbn.io\/'bbn-vue\/function\/getRoot",
+                "!doc": ""
+            },
+            "getStorageComponent": {
+                "!type": "fn() -> mixed",
+                "!url": "https:\/\/bbn.io\/'bbn-vue\/function\/getStorageComponent",
+                "!doc": ""
+            },
+            "initDefaults": {
+                "!type": "fn() -> mixed",
+                "!url": "https:\/\/bbn.io\/'bbn-vue\/function\/initDefaults",
+                "!doc": "Sets default object for a component, accessible through bbn.vue.defaults[cpName]."
+            },
+            "is": {
+                "!type": "fn() -> mixed",
+                "!url": "https:\/\/bbn.io\/'bbn-vue\/function\/is",
+                "!doc": ""
+            },
+            "loadComponentsByPrefix": {
+                "!type": "fn() -> mixed",
+                "!url": "https:\/\/bbn.io\/'bbn-vue\/function\/loadComponentsByPrefix",
+                "!doc": "Loads a component based on its prefix."
+            },
+            "makeUID": {
+                "!type": "fn() -> mixed",
+                "!url": "https:\/\/bbn.io\/'bbn-vue\/function\/makeUID",
+                "!doc": ""
+            },
+            "post": {
+                "!type": "fn() -> mixed",
+                "!url": "https:\/\/bbn.io\/'bbn-vue\/function\/post",
+                "!doc": ""
+            },
+            "postOut": {
+                "!type": "fn() -> mixed",
+                "!url": "https:\/\/bbn.io\/'bbn-vue\/function\/postOut",
+                "!doc": ""
+            },
+            "preloadBBN": {
+                "!type": "fn() -> mixed",
+                "!url": "https:\/\/bbn.io\/'bbn-vue\/function\/preloadBBN",
+                "!doc": ""
+            },
+            "queueComponent": {
+                "!type": "fn() -> mixed",
+                "!url": "https:\/\/bbn.io\/'bbn-vue\/function\/queueComponent",
+                "!doc": ""
+            },
+            "queueComponentBBN": {
+                "!type": "fn() -> mixed",
+                "!url": "https:\/\/bbn.io\/'bbn-vue\/function\/queueComponentBBN",
+                "!doc": ""
+            },
+            "replaceArrays": {
+                "!type": "fn() -> mixed",
+                "!url": "https:\/\/bbn.io\/'bbn-vue\/function\/replaceArrays",
+                "!doc": ""
+            },
+            "resetDef": {
+                "!type": "fn() -> mixed",
+                "!url": "https:\/\/bbn.io\/'bbn-vue\/function\/resetDef",
+                "!doc": ""
+            },
+            "resetDefBBN": {
+                "!type": "fn() -> mixed",
+                "!url": "https:\/\/bbn.io\/'bbn-vue\/function\/resetDefBBN",
+                "!doc": ""
+            },
+            "retrieveRef": {
+                "!type": "fn() -> mixed",
+                "!url": "https:\/\/bbn.io\/'bbn-vue\/function\/retrieveRef",
+                "!doc": ""
+            },
+            "setComponentRule": {
+                "!type": "fn() -> mixed",
+                "!url": "https:\/\/bbn.io\/'bbn-vue\/function\/setComponentRule",
+                "!doc": ""
+            },
+            "setDefaultComponentRule": {
+                "!type": "fn() -> mixed",
+                "!url": "https:\/\/bbn.io\/'bbn-vue\/function\/setDefaultComponentRule",
+                "!doc": ""
+            },
+            "setDefaults": {
+                "!type": "fn() -> mixed",
+                "!url": "https:\/\/bbn.io\/'bbn-vue\/function\/setDefaults",
+                "!doc": ""
+            },
+            "setStorageComponent": {
+                "!type": "fn() -> mixed",
+                "!url": "https:\/\/bbn.io\/'bbn-vue\/function\/setStorageComponent",
+                "!doc": ""
+            },
+            "unloadComponent": {
+                "!type": "fn() -> mixed",
+                "!url": "https:\/\/bbn.io\/'bbn-vue\/function\/unloadComponent",
+                "!doc": ""
+            },
+            "unsetComponentRule": {
+                "!type": "fn() -> mixed",
+                "!url": "https:\/\/bbn.io\/'bbn-vue\/function\/unsetComponentRule",
+                "!doc": ""
+            }
+        }
+    }
+}

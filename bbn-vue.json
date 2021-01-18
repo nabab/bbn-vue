@@ -3255,6 +3255,11 @@
                         "url": "bbn-vue\/component\/form\/doc\/methods#cancel"
                     },
                     {
+                        "text": "isValid",
+                        "desc": "Checks if the form content is valid.",
+                        "url": "bbn-vue\/component\/form\/doc\/methods#isValid"
+                    },
+                    {
                         "text": "submit",
                         "desc": "Submits the form.",
                         "url": "bbn-vue\/component\/form\/doc\/methods#submit"
@@ -5423,6 +5428,35 @@
                 ]
             },
             {
+                "text": "router-group",
+                "url": "bbn-vue\/component\/router-group\/overview",
+                "props": [
+                    {
+                        "text": "url",
+                        "desc": "The URL on which the router will be initialized.",
+                        "url": "bbn-vue\/component\/router-group\/doc\/props#url"
+                    },
+                    {
+                        "text": "url",
+                        "desc": "The URL on which the router will be initialized.",
+                        "url": "bbn-vue\/component\/router-group\/doc\/props#url"
+                    }
+                ],
+                "methods": [],
+                "mixins": [
+                    {
+                        "text": "basicComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/router-group\/doc\/mixins#basicComponent"
+                    },
+                    {
+                        "text": "localStorageComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/router-group\/doc\/mixins#localStorageComponent"
+                    }
+                ]
+            },
+            {
                 "text": "rte",
                 "url": "bbn-vue\/component\/rte\/overview",
                 "props": [
@@ -7534,6 +7568,11 @@
                         "url": "bbn-vue\/component\/tree\/doc\/props#path"
                     },
                     {
+                        "text": "path",
+                        "desc": "The default opened path if there is none in storage.",
+                        "url": "bbn-vue\/component\/tree\/doc\/props#path"
+                    },
+                    {
                         "text": "selectable",
                         "desc": "Set to true for a selectable tree.",
                         "url": "bbn-vue\/component\/tree\/doc\/props#selectable"
@@ -7547,16 +7586,6 @@
                         "text": "quickFilter",
                         "desc": "The string to use as quick filter in the tree.",
                         "url": "bbn-vue\/component\/tree\/doc\/props#quickFilter"
-                    },
-                    {
-                        "text": "sortable",
-                        "desc": "True if the tre has to be sortable.",
-                        "url": "bbn-vue\/component\/tree\/doc\/props#sortable"
-                    },
-                    {
-                        "text": "order",
-                        "desc": "The order of items.",
-                        "url": "bbn-vue\/component\/tree\/doc\/props#order"
                     },
                     {
                         "text": "hybrid",
@@ -8284,6 +8313,11 @@
                 "desc": ""
             },
             {
+                "text": "ancestors",
+                "url": "bbn-vue\/function\/ancestors",
+                "desc": "Returns an array of all parents Vue objects of the component which have the given tag\/class."
+            },
+            {
                 "text": "announceComponent",
                 "url": "bbn-vue\/function\/announceComponent",
                 "desc": ""
@@ -8291,7 +8325,7 @@
             {
                 "text": "closest",
                 "url": "bbn-vue\/function\/closest",
-                "desc": ""
+                "desc": "Retrieves the closest parent to the component with the given tag\/class."
             },
             {
                 "text": "executeQueueItem",
@@ -8311,32 +8345,32 @@
             {
                 "text": "find",
                 "url": "bbn-vue\/function\/find",
-                "desc": ""
+                "desc": "Find the first component in descendant tree matching the given selector."
             },
             {
                 "text": "findAll",
                 "url": "bbn-vue\/function\/findAll",
-                "desc": ""
+                "desc": "Find all the components in descendant tree matching the given selector."
             },
             {
                 "text": "findAllByKey",
                 "url": "bbn-vue\/function\/findAllByKey",
-                "desc": ""
+                "desc": "Find all descendant components with the given key."
             },
             {
                 "text": "findByKey",
                 "url": "bbn-vue\/function\/findByKey",
-                "desc": ""
+                "desc": "Find a descendant component by its key."
             },
             {
                 "text": "getChildByKey",
                 "url": "bbn-vue\/function\/getChildByKey",
-                "desc": ""
+                "desc": "Finds a child component by its key."
             },
             {
                 "text": "getComponents",
                 "url": "bbn-vue\/function\/getComponents",
-                "desc": ""
+                "desc": "Returns all the descendant components."
             },
             {
                 "text": "getContainerURL",
@@ -8351,7 +8385,7 @@
             {
                 "text": "getRef",
                 "url": "bbn-vue\/function\/getRef",
-                "desc": ""
+                "desc": "Returns the given ref (equivalent to $refs[name] or $refs[name][0])."
             },
             {
                 "text": "getRoot",

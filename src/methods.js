@@ -4,7 +4,7 @@
   let loadingComponents = [];
   bbn.fn.autoExtend("vue", {
     /**
-     * Retrives the closest popup component in the Vue tree
+     * Retrieves the closest popup component in the Vue tree
      * @param vm Vue
      * @returns Vue|false
      */
@@ -665,6 +665,8 @@
     },
 
     /**
+     * Retrieves the closest parent to the component with the given tag/class.
+     * 
      * @method closest
      * @memberof bbn.vue
      * @param {Vue} vm 
@@ -685,13 +687,15 @@
     },
 
     /**
-     * @method closest
+     * Returns an array of all parents Vue objects of the component which have the given tag/class.
+     * 
+     * @method ancestors
      * @memberof bbn.vue
      * @param {Vue} vm 
      * @param {String} selector
      * @param {Boolean} checkEle
      */
-    ancesters(vm, selector, checkEle){
+    ancestors(vm, selector, checkEle) {
       let res = [];
       let test = vm.$el;
       while ( vm && vm.$parent && (vm !== vm.$parent) ){
@@ -706,6 +710,8 @@
     },
 
     /**
+     * Returns the given ref (equivalent to $refs[name] or $refs[name][0]).
+     * 
      * @method getRef
      * @memberof bbn.vue
      * @param {Vue} vm 
@@ -726,6 +732,8 @@
     },
 
     /**
+     * Finds a child component by its key.
+     * 
      * @method getChildByKey
      * @memberof bbn.vue
      * @param {Vue} vm 
@@ -756,6 +764,8 @@
     },
 
     /**
+     * Find a descendant component by its key.
+     * 
      * @method findByKey
      * @memberof bbn.vue
      * @param {Vue} vm 
@@ -781,6 +791,8 @@
     },
 
     /**
+     * Find all descendant components with the given key.
+     * 
      * @method findAllByKey
      * @memberof bbn.vue
      * @param {Vue} vm 
@@ -794,6 +806,8 @@
     },
 
     /**
+     * Find the first component in descendant tree matching the given selector.
+     * 
      * @method find
      * @memberof bbn.vue
      * @param {Vue} vm 
@@ -817,6 +831,8 @@
     },
 
     /**
+     * Find all the components in descendant tree matching the given selector.
+     * 
      * @method findAll
      * @memberof bbn.vue
      * @param {Vue} vm 
@@ -835,6 +851,8 @@
     },
 
     /**
+     * Returns all the descendant components.
+     * 
      * @method getComponents
      * @memberof bbn.vue
      * @param {Vue} vm 
@@ -992,8 +1010,37 @@
       let referer = bbn.vue.getContainerURL(vm);
       obj = bbn.fn.extend({}, obj || {}, {_bbn_referer: referer, _bbn_key: bbn.fn.getRequestId(url, obj, 'json')});
       return bbn.fn.postOut(url, obj, onSuccess, target);
+    },
+
+    objToTree(o) {
+      let r = [];
+      let isArray = bbn.fn.isArray(o);
+      bbn.fn.each(o, (a, n) => {
+        let tmp = {
+          text: isArray ? 'Array' : n
+        };
+        if (a === null) {
+          tmp.text += ': null'
+        }
+        else if (a === true) {
+          tmp.text += ': TRUE'
+        }
+        else if (a === false) {
+          tmp.text += ': TRUE'
+        }
+        else if (bbn.fn.isArray(a) || bbn.fn.isObject(a)) {
+          tmp.items = bbn.vue.objToTree(a);
+          tmp.num_children = tmp.items.length;
+        }
+        else if (!bbn.fn.isString(a)) {
+          tmp.text += ': ' + (a.toString ? a.toString() : '?')
+        }
+        else {
+          tmp.text += ': ' + a;
+        }
+        r.push(tmp);
+      });
+      return r;
     }
-
-
   })
 })(window.bbn);

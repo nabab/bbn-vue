@@ -1,3 +1,88 @@
+<template>
+<div :class="[componentClass, {
+       'bbn-invisible': !ready,
+       'bbn-overlay': true
+     }]">
+  <bbn-splitter :orientation="orientation" :resizable="true">
+    <bbn-pane v-for="router in routers">
+      <bbn-router v-bind="router"></bbn-router>
+    </bbn-pane>
+  </bbn-splitter>
+</div>
+</template>
+<script>
+  module.exports = /**
+ * @file bbn-router component
+ * @description bbn-router is a component that allows and manages the navigation (url) between the various containers of an application
+ * @copyright BBN Solutions
+ * @author BBN Solutions
+ */
+(function(bbn, Vue){
+  "use strict";
+
+  Vue.component("bbn-router-group", {
+    name: 'bbn-router-group',
+    mixins: [
+      /**
+       * @mixin bbn.vue.basicComponent
+       * @mixin bbn.vue.localStorageComponent
+       */
+      bbn.vue.basicComponent,
+      bbn.vue.localStorageComponent,
+    ],
+    props: {
+      /**
+       * The URL on which the router will be initialized.
+       * @prop {String} ['] url
+       */
+      separator: {
+        type: String,
+        default: '!'
+      },
+      /**
+       * The URL on which the router will be initialized.
+       * @prop {String} ['] url
+       */
+      url: {
+        type: String,
+        default: ''
+      },
+    },
+    data(){
+      return {
+      };
+    },
+    computed: {
+    },
+
+    methods: {
+    },
+
+    /**
+     * @event created
+     */
+    created(){
+    },
+    /**
+     * @event mounted
+     * @fires getStorage
+     * @fires getDefaultURL
+     * @fires add
+     */
+    mounted(){
+    },
+    /**
+     * @event beforeDestroy
+     */
+    beforeDestroy(){
+    },
+    watch: {
+    }
+  });
+
+})(bbn, Vue);
+</script>
+<style scoped>
 div.bbn-router {
   border: 0 !important;
   overflow: hidden;
@@ -129,26 +214,18 @@ div.bbn-router .bbn-router-nav div.bbn-router-tabs > div.bbn-router-tabs-contain
 div.bbn-router .bbn-router-nav div.bbn-router-tabs > div.bbn-router-tabs-container ul.bbn-router-tabs-tabs:first-child > li div.bbn-router-tabs-tab.bbn-router-tabs-dirty::after {
   content: "*";
 }
-div.bbn-router .bbn-router-nav div.bbn-router-tabs > div.bbn-router-tabs-container ul.bbn-router-tabs-tabs:first-child > li div.bbn-router-tabs-icon {
-  position: absolute;
-  right: 0px;
-  top: 0px;
-  bottom: 0px;
-}
-div.bbn-router .bbn-router-nav div.bbn-router-tabs > div.bbn-router-tabs-container ul.bbn-router-tabs-tabs:first-child > li div.bbn-router-tabs-icon i {
+div.bbn-router .bbn-router-nav div.bbn-router-tabs > div.bbn-router-tabs-container ul.bbn-router-tabs-tabs:first-child > li i.bbn-router-tabs-icon {
   display: block;
   position: absolute;
-  right: 0px;
-  padding: 2px;
-  padding-right: 2px;
+  right: 2px;
   font-size: 1em;
   cursor: pointer;
   margin: 0;
 }
-div.bbn-router .bbn-router-nav div.bbn-router-tabs > div.bbn-router-tabs-container ul.bbn-router-tabs-tabs:first-child > li div.bbn-router-tabs-icon i.bbn-router-tab-close {
-  top: 0px;
+div.bbn-router .bbn-router-nav div.bbn-router-tabs > div.bbn-router-tabs-container ul.bbn-router-tabs-tabs:first-child > li i.bbn-router-tabs-icon.bbn-router-tab-close {
+  top: 1px;
 }
-div.bbn-router .bbn-router-nav div.bbn-router-tabs > div.bbn-router-tabs-container ul.bbn-router-tabs-tabs:first-child > li div.bbn-router-tabs-icon i.bbn-router-tab-menu {
+div.bbn-router .bbn-router-nav div.bbn-router-tabs > div.bbn-router-tabs-container ul.bbn-router-tabs-tabs:first-child > li i.bbn-router-tabs-icon.bbn-router-tab-menu {
   bottom: -2px;
 }
 div.bbn-router .bbn-router-nav div.bbn-router-tabs > div.bbn-router-tabs-container ul.bbn-router-tabs-tabs:first-child > li div.bbn-router-tabs-selected {
@@ -435,3 +512,5 @@ div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadc
     transform: scale3D(0,0,1);
   }
 }
+
+</style>

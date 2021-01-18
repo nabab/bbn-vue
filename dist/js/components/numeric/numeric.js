@@ -20,6 +20,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', {
              @change="change"
              v-show="editMode"
              :size="currentInputSize"
+             :style="{'paddingRight': spinners ? '0.5em !important' : ''}"
       >
       <input autocomplete="off"
              :value="inputValue"
@@ -34,12 +35,14 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', {
              v-show="!editMode"
              ref="formatted"
              :size="currentInputSize"
+             :style="{'paddingRight': spinners ? '0.5em !important' : ''}"
       >
       <input type="hidden"
              :value="value"
       >
     </div>
-    <div :class="['bbn-numeric-buttons', 'bbn-radius-top-right', 'bbn-radius-bottom-right', {'bbn-disabled' : !!readonly || disabled}]">
+    <div v-if="spinners"
+         :class="['bbn-numeric-buttons', 'bbn-radius-top-right', 'bbn-radius-bottom-right', {'bbn-disabled' : !!readonly || disabled}]">
       <div :class="[
             'bbn-reactive-block',
             'bbn-middle',
@@ -288,25 +291,27 @@ document.head.insertAdjacentElement('beforeend', css);
           e.preventDefault();
           return;
         }
-        //arrow up
-        if ( e.keyCode === 38 ){
-          this.increment();
-        }
-        //arrow down
-        if ( e.keyCode === 40 ){
-          this.decrement();
-        }
-        //page up - increase the step of 10 unit
-        if ( e.keyCode === 33 ){
-          let step = 10 * this.step,
-          tmp = parseFloat(this.value) + (this.isPercentage ? step / 100 : step);
-          this.changeValue(tmp);
-        }
-        //page down - decrease the step of 10 unit
-        if ( e.keyCode === 34 ){
-          let step = 10 * this.step,
-          tmp = parseFloat(this.value) - (this.isPercentage  ? step / 100 : step);
-          this.changeValue(tmp);
+        if (this.spinners) {
+          //arrow up
+          if ( e.keyCode === 38 ){
+            this.increment();
+          }
+          //arrow down
+          if ( e.keyCode === 40 ){
+            this.decrement();
+          }
+          //page up - increase the step of 10 unit
+          if ( e.keyCode === 33 ){
+            let step = 10 * this.step,
+            tmp = parseFloat(this.value) + (this.isPercentage ? step / 100 : step);
+            this.changeValue(tmp);
+          }
+          //page down - decrease the step of 10 unit
+          if ( e.keyCode === 34 ){
+            let step = 10 * this.step,
+            tmp = parseFloat(this.value) - (this.isPercentage  ? step / 100 : step);
+            this.changeValue(tmp);
+          }
         }
         this.keydown(e);
       },
@@ -403,7 +408,6 @@ document.head.insertAdjacentElement('beforeend', css);
               value = this.value ? Math.round(this.value * ratio) : 0;
           value += this.step * ratio * modifier;
           value /= ratio;
-          bbn.fn.log("CREMENT", this.step, this.currentDecimals, ratio, value, "-------");
           this.$emit(beforeEvName, value, ev);
           if ( !ev.defaultPrevented ){
             this.currentValue = value;
@@ -512,7 +516,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @fires changeValue
        */
       currentValue(newVal, oldVal){
-        bbn.fn.log("CHANGE OF CURRENT VALUE");
+        //bbn.fn.log("CHANGE OF CURRENT VALUE - " + newVal + ' - ' + oldVal);
         if ( (newVal !== oldVal) ){
           this.changeValue(newVal, oldVal);
         }

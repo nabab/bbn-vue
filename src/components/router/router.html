@@ -31,7 +31,7 @@
                             tabindex="0"
                             :item-component="$options.components.listItem"
                             class="bbn-h-100 bbn-vmiddle"
-                            :attach="itsMasterBreadcrumb || undefined"
+                            :attach="itsMaster ? itsMaster.getRef('breadcrumb') : undefined"
                             :autobind="false"
                             :style="{
                               backgroundColor: bc.getBackgroundColor(bc.selected),
@@ -182,22 +182,24 @@
                           :style="{
                             backgroundColor: getFontColor(tabIndex)
                           }"/>
-                    <i v-if="!tab.static && !tab.pinned"
-                       class="nf nf-fa-times bbn-p bbn-router-tab-close bbn-router-tabs-icon"
-                       tabindex="-1"
-                       :ref="'closer-' + tabIndex"
-                       @keydown.left.down.prevent.stop="getRef('menu-' + tabIndex) ? getRef('menu-' + tabIndex).$el.focus() : null"
-                       @keydown.space.enter.prevent.stop="close(tabIndex)"
-                       @click.stop.prevent="close(tabIndex)"/>
-                    <bbn-context v-if="(tab.menu !== false) && (tabIndex === selected)"
-                                 class="nf nf-fa-caret_down bbn-router-tab-menu bbn-router-tabs-icon bbn-p"
-                                 tabindex="-1"
-                                 min-width="10em"
-                                 tag="i"
-                                 :source="getMenuFn"
-                                 :autobind="false"
-                                 :source-index="tabIndex"
-                                 :ref="'menu-' + tabIndex"/>
+                    <div class="bbn-router-tabs-icon">
+                      <i v-if="!tab.static && !tab.pinned"
+                        class="nf nf-fa-times bbn-p bbn-router-tab-close"
+                        tabindex="-1"
+                        :ref="'closer-' + tabIndex"
+                        @keydown.left.down.prevent.stop="getRef('menu-' + tabIndex) ? getRef('menu-' + tabIndex).$el.focus() : null"
+                        @keydown.space.enter.prevent.stop="close(tabIndex)"
+                        @click.stop.prevent="close(tabIndex)"/>
+                      <bbn-context v-if="(tab.menu !== false) && (tabIndex === selected)"
+                                  class="nf nf-fa-caret_down bbn-router-tab-menu bbn-p"
+                                  tabindex="-1"
+                                  min-width="10em"
+                                  tag="i"
+                                  :source="getMenuFn"
+                                  :autobind="false"
+                                  :source-index="tabIndex"
+                                  :ref="'menu-' + tabIndex"/>
+                    </div>
                   </li>
                 </ul>
               </component>

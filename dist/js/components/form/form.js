@@ -381,7 +381,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @return {Boolean}
        */
       canSubmit(){
-        return this.prefilled || this.isModified();
+        return this.prefilled || (this.isModified() && this.isValid());
       },
       /**
        * Based on the properties 'fixedFooter' and 'fullScreen', a string is returned containing the classes for the form's template.
@@ -650,25 +650,21 @@ document.head.insertAdjacentElement('beforeend', css);
         }
       },
       /**
-       * Submits the form.
-       * @method submit
-       * @param {Boolean} force 
-       * @fires validation
-       * @fires _post
-       * @emits submit
+       * Checks if the form content is valid.
+       * @method isValid
        */
-      submit(force){
-        let ok = true,
-            elems = this.findAll('.bbn-input-component'),
-            cf = false;
+      isValid(force) {
+        let ok = true;
+        let elems = this.findAll('.bbn-input-component');
         if ( Array.isArray(elems) ){
           bbn.fn.each(elems, (a) => {
             if (bbn.fn.isFunction(a.isValid) && !a.isValid() ){
               ok = false;
             }
-            if (bbn.fn.isFunction(a.validation) && !a.isValid() ){
+            else if (bbn.fn.isFunction(a.validation) && !a.validation() ){
               ok = false;
             }
+
             if ( !ok ){
               return false;
             }
@@ -677,9 +673,21 @@ document.head.insertAdjacentElement('beforeend', css);
         if ( ok && this.validation ){
           ok = this.validation(this.source, this.originalData, force)
         }
-        if ( !ok ){
-          return false;
+        return !!ok;
+      },
+      /**
+       * Submits the form.
+       * @method submit
+       * @param {Boolean} force 
+       * @fires validation
+       * @fires _post
+       * @emits submit
+       */
+      submit(force){
+        if (!this.isValid(force)) {
+          return;
         }
+
         if ( !force ){
           let ev = new Event('submit', {cancelable: true});
           this.$emit('submit', ev, this);
@@ -687,6 +695,8 @@ document.head.insertAdjacentElement('beforeend', css);
             return false;
           }
         }
+
+        let cf = false;
         if ( this.confirmMessage ){
           if (bbn.fn.isFunction(this.confirmMessage) ){
             cf = this.confirmMessage(this);

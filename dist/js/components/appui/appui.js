@@ -165,7 +165,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-background', 'bbn-overlay
                   :autoload="autoload"
                   :def="def"
                   :post-base-url="!single"
-                  ref="nav"
+                  ref="router"
                   :nav="nav"
                   :master="true"
                   :class="{'bbn-overlay': !nav}"
@@ -537,7 +537,7 @@ document.head.insertAdjacentElement('beforeend', css);
         this.$emit('route', path)
       },
       route(url, force){
-        this.getRef('nav').route(url, force)
+        this.getRef('router').route(url, force)
       },
       register(name, cp){
         if (cp) {
@@ -788,6 +788,35 @@ document.head.insertAdjacentElement('beforeend', css);
         setTimeout(() => {
           this.searchIsActive = false
         }, 500)
+      },
+      keydown(e) {
+        if (e.ctrlKey && !e.shiftKey && !e.altKey) {
+          // Arrows do history
+          if ([37, 39].includes(e.keyCode)) {
+            if (!bbn.env.focused
+              || (!['input', 'textarea', 'select'].includes(bbn.env.focused.tagName.toLowerCase()))
+            ) {
+              e.preventDefault();
+              e.stopPropagation();
+              if (e.keyCode === 37) {
+                history.back();
+              }
+              else {
+                history.forward();
+              }
+            }
+          }
+          else if (!this.single && bbn.fn.isNumber(e.key)) {
+            e.preventDefault();
+            e.stopPropagation();
+            let idx = parseInt(e.key);
+            if (!idx) {
+              idx = 10;
+            }
+            idx--;
+            this.getRef('router').activateIndex(idx);
+          }
+        }
       }
     },
     beforeCreate(){
@@ -800,7 +829,7 @@ document.head.insertAdjacentElement('beforeend', css);
           },
 
           defaultPreLinkFunction(url) {
-            let router = appui.getRef('nav');
+            let router = appui.getRef('router');
             bbn.fn.log(url);
             if ( router && bbn.fn.isFunction(router.route) ){
               router.route(url);
@@ -885,6 +914,10 @@ document.head.insertAdjacentElement('beforeend', css);
           'button'
         ];
         bbn.vue.preloadBBN(preloaded);
+
+        window.onkeydown = (e) => {
+          this.keydown(e);
+        };
 
         this.$on('messageToChannel', data => {
           this.messageChannel(this.primaryChannel, data);

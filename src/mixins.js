@@ -89,14 +89,14 @@
         return bbn.vue.closest(this, selector, checkEle);
       },
       /**
-       * Fires the function bbn.vue.ancesters.
-       * @method ancesters
+       * Fires the function bbn.vue.ancestors.
+       * @method ancestors
        * @param {String} selector 
        * @param {Boolean} checkEle 
        * @return {Function}
        */
-      ancesters(selector, checkEle){
-        return bbn.vue.ancesters(this, selector, checkEle);
+      ancestors(selector, checkEle){
+        return bbn.vue.ancestors(this, selector, checkEle);
       },
       /**
        * Fires the function bbn.vue.getChildByKey.

@@ -368,7 +368,7 @@
      */
     mounted(){
       if ( !this.master ){
-        bbn.fn.each(this.ancesters('bbn-breadcrumb'), b => {
+        bbn.fn.each(this.ancestors('bbn-breadcrumb'), b => {
           this.parents.push(b);
           if ( b.master ){
             return false;
