@@ -225,6 +225,19 @@
         default: ''
       },
       /**
+       * The order of items.
+       * @prop {Array} [[{field: 'num', dir: 'DESC'}, {field: 'text', dir: 'ASC'}]] order
+       */
+      order: {
+        type: Array,
+        default(){
+          return [{
+            field: 'num',
+            dir: 'ASC'
+          }]
+        }
+      },
+      /**
        * Set to true if the prop 'ajax' is true,
        * the tree will make the ajax call only for
        * the source of the root level and will take
@@ -317,7 +330,12 @@
          * The array of nodes.
          * @data {Array} [[]] nodes
          */
-        nodes: []
+        nodes: [],
+        /**
+         * The state for the storage.
+         * @data {Array} [[]] nodes
+         */
+        currentState: {}
       };
     },
     computed: {
@@ -521,32 +539,35 @@
       },
       /**
        * Finds a node based on its props.
-       * @method _findNode
+       * @method findNode
        * @param {Object} props
        * @param {Object} node
        * @return {Object}
        */
-      _findNode(props, node){
+      findNode(props){
         let ret = false;
-        if ( node ){
-          if ( node.numChildren && !node.isExpanded ){
-            node.isExpanded = true;
+        if (this.isRoot || (this.node.numChildren && bbn.fn.isObject(props))) {
+          if (!this.isRoot && !this.node.isExpanded) {
+            this.node.isExpanded = true;
           }
-          if ( node.$children && node.numChildren && node.isExpanded && Object.keys(props) ){
-            bbn.fn.each(node.$children, (n, i) => {
-              if ( n.data ){
-                let tmp = {};
-                bbn.fn.each(Object.keys(props), (k, j) => {
-                  if ( n.data[k] === undefined ){
-                    return true;
-                  }
-                  tmp[k] = n.data[k];
-                });
-                if ( JSON.stringify(tmp) === JSON.stringify(props) ){
-                  ret = n;
-                }
-              }
-            });
+
+          let cp = this.isRoot ? this.getRef('scroll') : this;
+          bbn.fn.log("FIND NODE", props, cp);
+          if (cp.$children) {
+            bbn.fn.log("FILTER", bbn.fn.arrayFromProp(
+              cp.$children.filter(a => a.$options && (a.$options._componentTag === 'bbn-tree-node')),
+              'data')
+            );
+            let idx = bbn.fn.search(
+              bbn.fn.arrayFromProp(
+                cp.$children.filter(a => a.$options && (a.$options._componentTag === 'bbn-tree-node')),
+                'data'
+              ),
+              props
+            );
+            if (idx > -1) {
+              ret = cp.$children[idx];
+            }
           }
         }
         return ret;
@@ -562,34 +583,6 @@
           return bbn.fn.getRow(this.nodes, {idx: parseInt(idx)});
         }
         return false;
-      },
-      /**
-       * Returns a node basing on the given context.
-       * @method getNode
-       * @param {Array} arr
-       * @param context
-       * @fires _findNode
-       * @return {Object}
-       */
-      getNode(arr, context){
-        let root = context || this.$refs.root;
-
-        if ( arr ){
-          if ( !bbn.fn.isArray(arr) ){
-            arr = [arr];
-          }
-          arr = arr.map((v) => {
-            if ( (typeof v === 'number') || (typeof v === 'string') ){
-              return {idx: v}
-            }
-            return v;
-          });
-          let node = false;
-          bbn.fn.each(arr, (v, i) => {
-            node = this._findNode(v, root);
-          });
-          return node;
-        }
       },
       /**
        * Adds a node to the tree.
@@ -812,7 +805,7 @@
        * Opens the node(s) corresponding to the prop 'path'
        * @method openPath
        */
-      openPath(){
+      openPath() {
         this.$nextTick(() => {
           if ( this.path.length ){
             let current = bbn.fn.extend(true, [], this.path);
@@ -1047,7 +1040,8 @@
        */
       getConfig(){
         let cfg = {
-          expanded: []
+          expanded: [],
+          state: this.currentState
         };
         if (!this.uid) {
           return cfg;
@@ -1114,36 +1108,47 @@
           }
         }
       },
+      _setCurrentState(state) {
+        this.currentState = state;
+      },
       initLoad() {
+        let state;
         if (this.hasStorage && this.isRoot) {
           let storage = this.getLocalStorage();
-          setTimeout(() => {
-            let p = [this.updateData()];
-            if (storage && storage.expanded.length) {
-              bbn.fn.each(storage.expanded, uid => {
-                let idx = p.length-1;
-                p.push(p[idx].then(() => {
-                  return new Promise((resolve, reject) => {
-                    setTimeout(() => {
-                      let node = this.tree.getNodeByUid(uid);
-                      if (node && node.ready) {
-                        node.getRef('tree').$once('dataloaded', () => {
-                          resolve();
-                        });
-                        node.isExpanded = true;
-                      }
-                      else {
-                        reject();
-                      }
-                    }, 250);
-                  })
-                }));
-              });
-            }
-          }, 100)
+          if (storage) {
+            state = storage.state || null;
+          }
         }
-        else if (this.node.isExpanded || this.isRoot) {
-          this.updateData();
+        else if (bbn.fn.numProperties(this.currentState)) {
+          state = this.currentState;
+        }
+        if (this.node.isExpanded || this.isRoot || state) {
+          this.updateData().then(() => {
+            setTimeout(() => {
+              if (bbn.fn.numProperties(state)) {
+                bbn.fn.each(state, (o, uid) => {
+                  let it = this.findNode({[this.uid]: uid}, this.node);
+                  bbn.fn.log("Looking for uid " + uid + " and... " + (it ? "" : "NOT ") + "FOUND");
+                  if (it) {
+                    if (o.items) {
+                      let tree = it.getRef('tree');
+                      if (tree) {
+                        bbn.fn.log("Tree exists")
+                        tree.$once('dataloaded', () => {
+                          bbn.fn.log("Tree is ready")
+                          tree._setCurrentState(o.items);
+                        });
+                      }
+                      it.isExpanded = true;
+                    }
+                    if (o.expanded) {
+                      it.isExpanded = true;
+                    }
+                  }
+                })
+              }
+            }, 100)
+          });
         }
       },
       // Keep to prevent the one from list to exexute
@@ -1216,7 +1221,9 @@
     mounted(){
       this.ready = true;
       this.$nextTick(() => {
-        this.initLoad();
+        if (this.autobind) {
+          this.initLoad();
+        }
       })
     },
     watch: {
@@ -1905,13 +1912,14 @@
               }
             }
           },
-          addToExpanded(emit = true, storage = true){
-            if ( !this.tree.currentExpanded.includes(this) ){
-              let ev = new Event('beforeUnfold', {cancelable: true});
-              if ( emit ){
+          addToExpanded(emit = true, storage = true) {
+            if (!this.tree.currentExpanded.includes(this)) {
+              let ev;
+              if (emit) {
+                ev = new Event('beforeUnfold', {cancelable: true});
                 this.tree.$emit('beforeUnfold', this, ev);
               }
-              if ( !ev.defaultPrevented ){
+              if (!emit || !ev.defaultPrevented) {
                 this.tree.currentExpanded.push(this);
                 if ( storage ){
                   this.$nextTick(() => {
@@ -1921,40 +1929,82 @@
                 if ( emit ){
                   this.tree.$emit('unfold', this);
                 }
-                if ( this.tree !== this.parent ){
-                  this.parent.currentExpanded.push(this);
-                  if ( emit ){
-                    this.parent.$emit('unfold', this);
-                  }
+
+                let parent = this.parent;
+                while (parent && (parent !== this.tree)) {
+                  parent.currentExpanded.push(this);
+                  parent = parent.node ? parent.node.parent : null;
                 }
+                let path = this.tree.getNodePath(this);
+                path.reduce((o, a) => {
+                  if (!a || !o) {
+                    return undefined;
+                  }
+                  if (o[a] === undefined) {
+                    o[a] = {
+                      items: {},
+                      expanded: true
+                    };
+                  }
+                  else if (!o[a].expanded) {
+                    o[a].expanded = true;
+                  }
+                  return o[a].items;
+                }, this.tree.currentState)
                 return true;
               }
             }
             return false;
           },
-          removeFromExpanded(emit = true, storage = true){
-            let idx = this.tree.currentExpanded.indexOf(this),
-                idx2 = this.parent.currentExpanded.indexOf(this),
+
+          removeFromExpanded(emit = true, storage = true) {
+            let idx = this.tree.currentExpanded.indexOf(this);
+            if (idx > -1) {
+              let ev;
+              if (emit) {
                 ev = new Event('beforeFold', {cancelable: true});
-            if ( emit ){
-              this.tree.$emit('beforeFold', this, ev);
-            }
-            if ( !ev.defaultPrevented ){
-              if ( idx > -1 ){
-                this.tree.currentExpanded.splice(idx, 1);
-                if ( storage ){
-                  this.$nextTick(() => {
-                    this.tree.setLocalStorage();
-                  })
+                this.tree.$emit('beforeFold', this, ev);
+              }
+
+              if (!emit || !ev.defaultPrevented) {
+                let parent = this.parent;
+                while (parent && (parent !== this.tree)) {
+                  let idx2 = parent.currentExpanded.indexOf(this);
+                  if (idx2 > -1) {
+                    parent.currentExpanded.splice(idx2, 1);
+                  }
+                  parent = parent.node ? parent.node.parent : null;
                 }
+
+                this.tree.currentExpanded.splice(idx, 1);
+                let path = this.tree.getNodePath(this);
+                let o = this.tree.currentState;
+                let last = path.length - 1;
+                let prev;
+                parent = false;
+                bbn.fn.each(path, (a, i) => {
+                  if (o[a]) {
+                    if (i === last) {
+                      if (parent && !bbn.fn.numProperties(o[a].items)) {
+                        delete parent[prev];
+                      }
+                      else {
+                        o[a].expanded = false;
+                      }
+                    }
+                    else {
+                      prev = a;
+                      parent = o[a].items;
+                    }
+                  }
+                });
+
+                if (storage) {
+                  this.tree.setLocalStorage();
+                }
+
                 if ( emit ){
                   this.tree.$emit('fold', this);
-                }
-              }
-              if ( (idx2 > -1) && (this.tree !== this.parent) ){
-                this.parent.currentExpanded.splice(idx, 1);
-                if ( emit ){
-                  this.parent.$emit('fold', this);
                 }
               }
               return true;
@@ -2074,7 +2124,7 @@
            * @fires tree.isNodeOf
            * @memberof bbn-tree-node
            */
-          isExpanded(newVal){
+          isExpanded(newVal) {
             if ( newVal ){
               if ( this.addToExpanded() ){
                 let tree = this.getRef('tree');

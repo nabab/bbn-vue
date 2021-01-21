@@ -141,7 +141,8 @@
                 marginLeft: groupCols[0].width + 'px',
                 marginRight: groupCols[2].width + 'px',
                 maxWidth: scrollable ? '100%' : null,
-                maxHeight: scrollable ? '100%' : null
+                maxHeight: scrollable ? '100%' : null,
+                height: scrollable ? '100%' : null
               }">
           <div v-if="isLoading && initReady" class="bbn-overlay bbn-middle">
             <h1 v-text="_('Loading') + '...'"></h1>
@@ -180,7 +181,7 @@
                 >
                   <!-- Group lines just have the cell with the expander and a single big cell -->
                   <template v-if="groupable && d.group">
-                    <td :class="currentColumns[0].fixed ? cssRuleName + ' bbn-table-fixed-cell bbn-table-cell-left' : ''"
+                    <td :class="(trClass ? (typeof trClass === 'function' ? trClass(d.data) : trClass) : '') + (currentColumns[0].fixed ? ' ' + cssRuleName + ' bbn-table-fixed-cell bbn-table-cell-left' : '')"
                         :style="{
                           left: currentColumns[0].left !== undefined ? currentColumns[0].left + 'px' : 'auto',
                           width: currentColumns[0].realWidth
@@ -343,30 +344,29 @@
             </tbody>
           </table>
         </div>
-        <div :style="{
-          position: 'absolute',
-          left: groupCols[0].width + 'px',
-          right: groupCols[2].width + 'px',
-          bottom: '0px'
-        }">
-          <bbn-scrollbar v-if="!isLoading && scrollable && ready"
-                         orientation="horizontal"
-                         ref="xScroller"
-                         :scrollAlso="_getScrollers"
-                         @hook:mounted="hasScrollX = true"
-                         @hook:beforeDestroy="hasScrollX = false"
-                         :container="getRef('container')">
-          </bbn-scrollbar>
-        </div>
-        <bbn-scrollbar v-if="!isLoading && scrollable && ready"
-                      orientation="vertical"
-                      ref="yScroller"
-                      @hook:mounted="hasScrollY = true"
-                      @hook:beforeDestroy="hasScrollY = false"
-                      :container="getRef('container')">
-        </bbn-scrollbar>
-
       </div>
+      <div :style="{
+        position: 'absolute',
+        left: groupCols[0].width + 'px',
+        right: groupCols[2].width + 'px',
+        bottom: '0px'
+      }">
+        <bbn-scrollbar v-if="!isLoading && scrollable && ready"
+                        orientation="horizontal"
+                        ref="xScroller"
+                        :scrollAlso="_getScrollers"
+                        @hook:mounted="hasScrollX = true"
+                        @hook:beforeDestroy="hasScrollX = false"
+                        :container="getRef('container')">
+        </bbn-scrollbar>
+      </div>
+      <bbn-scrollbar v-if="!isLoading && scrollable && ready"
+                    orientation="vertical"
+                    ref="yScroller"
+                    @hook:mounted="hasScrollY = true"
+                    @hook:beforeDestroy="hasScrollY = false"
+                    :container="getRef('container')">
+      </bbn-scrollbar>
     </div>
 
     <!-- Footer -->

@@ -13,8 +13,7 @@
          * @memberof localStorageComponent
          */
         storage: {
-          type: Boolean,
-          default: false
+          type: Boolean
         },
         /**
          * The name of the storage.
@@ -85,6 +84,9 @@
          * @computed {Boolean} hasStorage
          */
         hasStorage(){
+          if (this.storage === false) {
+            return false;
+          }
           return (this.storage || (this.storageFullName || (this.storageName !== 'default'))) && !!this._storage;
         },
         /**

@@ -56,7 +56,9 @@
             outline: 0;
             width: auto;
             table-layout: fixed;
-            border-collapse: collapse;
+            //border-collapse: collapse;
+            border-spacing: 0px;
+            padding: 0px;
             > thead tr{
               height: 39px;
               th{
@@ -84,6 +86,7 @@
                 overflow: hidden;
                 box-sizing: border-box;
                 border-top: 0px;
+                border-right: 0px;
                 padding: 0;
                 &.bbn-table-fixed-cell{
                   position: absolute;
@@ -114,7 +117,7 @@
                     content:"\a0";
                     display:inline-block;
                     width:0;
-                    float:left
+                    float: left;
                   }
                 }
               }

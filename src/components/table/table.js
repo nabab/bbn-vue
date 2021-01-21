@@ -883,7 +883,7 @@
           if (isGroup && (currentGroupValue !== a[groupField])) {
             groupNumCheckboxes = 0;
             // If the row doesn't have the column
-            if (a[groupField] === undefined) {
+            if ((a[groupField] === undefined) || bbn.fn.isNull(a[groupField]) || (a[groupField] === '')) {
               currentGroupValue = null;
               currentGroupIndex = -1;
               isExpanded = true;
@@ -1123,9 +1123,12 @@
        * @method _scrollContainer
        * @todo 1px must correspond to the border width
        */
-      _scrollContainer(){
-        this.marginStyleSheet.innerHTML = "."  + this.cssRuleName + "{margin-top: " +
+      _scrollContainer() {
+        let rule = "."  + this.cssRuleName + "{margin-top: " +
         (this.container.scrollTop ? '-' + (this.container.scrollTop) + 'px' : '') + '}';
+        if (rule !== this.marginStyleSheet.innerHTML) {
+          this.marginStyleSheet.innerHTML = rule;
+        }
       },
       /**
        * Adds the class 'bbn-table-tr-over' to the row of given idx on mouseenter and remove the class on mouse leave.
@@ -2341,6 +2344,8 @@
           !row.groupAggregated &&
           (col.editable !== false) &&
           col.field &&
+          this.originalData &&
+          this.originalData[row.index] &&
           (row.data[col.field] != this.originalData[row.index][col.field])
       },
       /**
@@ -2351,10 +2356,11 @@
        * @param {Number} index
        */
       currentClass(column, data, index) {
+        let tr = this.trClass ? (bbn.fn.isFunction(this.trClass) ? this.trClass(data) : this.trClass) : '';
         if (column.cls) {
-          return bbn.fn.isFunction(column.cls) ? column.cls(data, index, column) : column.cls;
+          return (!!tr ? (tr + ' ') : '') + (bbn.fn.isFunction(column.cls) ? column.cls(data, index, column) : column.cls);
         }
-        return '';
+        return tr || '';
       },
       /**
        * Returns true if the row corresponding to the given index has changed respect to originalData.
@@ -2441,20 +2447,14 @@
        * @emit resize
        */
       updateTable() {
-        if (!this.isLoading) {
+        if (!this.isLoading && this.filteredData.length) {
           this.keepCool(() => {
             // Equalizing the height of the cells in case of fixed columns
             if (this.groupCols[0].cols.length || this.groupCols[2].cols.length) {
               let ele = this.getRef('table');
               if ( ele && ele.tBodies ){
                 bbn.fn.each(ele.tBodies[0].rows, (row) => {
-                  let todo = [row];
-                  bbn.fn.each(row.cells, (cell) => {
-                    todo.push(cell);
-                  });
-                  this.$nextTick(() => {
-                    bbn.fn.adjustHeight(todo);
-                  })
+                  bbn.fn.adjustHeight([row, ...Array.from(row.cells).filter(c => c.classList.contains('bbn-table-fixed-cell'))]);
                 });
               }
             }
@@ -2578,7 +2578,7 @@
        * @fires init
        */
       onResize() {
-        this.resizeHeight();
+        //this.resizeHeight();
         this.init();
       },
       /**
@@ -2880,7 +2880,9 @@
             });
 
             let clientWidth = this.lastKnownCtWidth,
-            toFill = clientWidth - tot - 1;
+            //toFill = clientWidth - tot - 1;
+            // removed the 1px by Mirko 20/01/2021
+            toFill = clientWidth - tot;
             // We must arrive to 100% minimum
             if (toFill > 0) {
               if (numUnknown) {
@@ -2965,7 +2967,7 @@
             if (with_data) {
               this.$nextTick(() => {
                 this.$once('dataloaded', () => {
-                  this.resizeHeight();
+                  //this.resizeHeight();
                   this.initStarted = false;
                 });
                 this.updateData();
@@ -3292,13 +3294,10 @@
         }
       }
       else{
-        this.init();
         this.$once('dataloaded', () => {
           this.ready = true;
         });
-        if (this.isAutobind) {
-          this.updateData();
-        }
+        this.init(!!this.isAutobind);
       }
     },
     watch: {

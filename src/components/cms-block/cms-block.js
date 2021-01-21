@@ -64,15 +64,15 @@
       //taglia originale 100% width,width 50% 33% 25% 
       view: `
       <div class="component-container bbn-block-image" :class="alignClass">
-        <a v-if="source.href" :href="source.href" class="bbn-c">
-          <img :src="'/image/' + source.src"
+        <a v-if="source.href" target="_self" :href="$parent.linkURL + source.href" class="bbn-c">
+          <img :src="$parent.path + source.src"
                 style="heigth:500px;width:100%"
                :style="style"
                :alt="source.alt ? decodeURIComponent(source.alt) : ''"
           >
         </a>
         <img v-else
-             :src="'/image/' + source.src" 
+             :src="$parent.path + source.src" 
              :style="style"
              :alt="source.alt ? decodeURIComponent(source.alt) : ''"
         >
@@ -118,7 +118,7 @@
             <bbn-block-align-buttons></bbn-block-align-buttons>
           </div> 
         </div>
-        <img :src="'image/' + source.src" :style="style">
+        <img :src="$parent.path + source.src" :style="style">
         <p class="image-caption bbn-l bbn-s bbn-vsmargin" v-if="source.caption" v-html="decodeURIComponent(source.caption)"></p>
       </div>          
                 `
@@ -336,7 +336,16 @@
         type: Boolean,
         default: false
       },
-    
+      //the path for the index showing the images ('ex: image/')
+      path: {
+        type: String,
+        default: ''
+      },
+      //the path for the links (give a path to a controller to manage the links)
+      linkURL: {
+        type: String,
+        default: ''
+      }
     },
     data(){
       return {
@@ -417,6 +426,12 @@
             }
           },
           computed: {
+            path(){
+              return this.$parent.path
+            },
+            linkURL(){
+              return this.$parent.linkURL
+            },
             carouselSource(){
               if (this.source.source && (this.source.type === 'carousel')){
                 let res = [];
@@ -616,10 +631,6 @@
             imageSuccess(a, b, c, d){
               if (c.success && c.image.src.length ){
                 if ( this.source.type === 'gallery' ){
-                  bbn.fn.error('gallery')
-                  //this.show = false;
-                  /*bbn.fn.log(this.source.content)
-                  this.source.content = JSON.parse(this.source.content);*/
                   c.image.src = c.image.name;
                   c.image.alt = '';
                   setTimeout(() => {
@@ -627,11 +638,6 @@
                     //this.source.content.push(c.image);//
                     this.makeSquareImg();  
                   }, 200);
-                  
-                  
-                  bbn.fn.log(this.source.content)
-                  
-                  
                 }
                 else{
                   this.source.content = c.image.name; 
@@ -650,10 +656,9 @@
               //:src="'image/' + source.content"
               //the template below to take the image from index
               template: `
-                <a :href="(source.href ? source.href : source.src)" target="_blank">
+                <a  target="_self" :href="(source.href ? (linkURL + source.href) : source.src)">
                   <!--TO TAKE IMAGE FROM THE INDEX-->
-                  <!--img :src="'image/gallery/' + (source.src ? source.src : source.name)" :alt="source.alt ? source.alt : ''"-->
-                  <img :src="'/image' + source.src" :alt="source.alt ? source.alt : ''" :style="$parent.source.style">
+                  <img :src="path + source.src" :alt="source.alt ? source.alt : ''" :style="$parent.source.style">
                   <div v-if="source.caption || (source.title && (type === 'carousel'))" 
                        :class="['bbn-block-gallery-caption',$parent.alignClass]"
                        v-html="(source.caption && (type === 'gallery')) ? decodeURIComponent(source.caption) : decodeURIComponent(source.title)"
@@ -691,6 +696,12 @@
                   }
                 },
                 computed: {
+                  path(){
+                    return this.$parent.path
+                  },
+                  linkURL(){
+                    return this.$parent.linkURL
+                  },
                   type(){
                     return this.$parent.source.type
                   }
