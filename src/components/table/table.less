@@ -5,8 +5,10 @@
       height: 40px;
       width: 100%;
       table{
-        border-collapse: collapse;
         table-layout: fixed;
+        //border-collapse: collapse;
+        border-spacing: 0px;
+        padding: 0px;
       }
       &.bbn-table-titles-group {
         height: 79px;
@@ -14,6 +16,10 @@
       tr{
         height: 39px;
         td{
+          &:not(:last-child){
+            border-right: 0px;
+          }
+          //border-top: 0px;
           box-sizing: border-box;
           position: relative;
           padding: 0.5em;
@@ -86,7 +92,10 @@
                 overflow: hidden;
                 box-sizing: border-box;
                 border-top: 0px;
-                border-right: 0px;
+                &:not(.bbn-table-fixed-cell):not(:last-child){
+                  border-right: 0px;
+                }
+                //border-right: 0px;
                 padding: 0;
                 &.bbn-table-fixed-cell{
                   position: absolute;

@@ -6,7 +6,7 @@
        v-if="cols.length"
   >
     <div v-if="hasToolbar"
-         class="bbn-table-toolbar bbn-bordered-bottom"
+         class="bbn-table-toolbar bbn-w-100"
          ref="toolbar"
     >
       <bbn-toolbar v-if="toolbarButtons.length"
@@ -25,7 +25,8 @@
     <div :class="{
       'bbn-table-titles': true,
       'bbn-table-titles-group': !!titleGroups,
-      'bbn-unselectable': true
+      'bbn-unselectable': true,
+      'bbn-w-100': true
     }"  v-if="titles">
       <div :class="{'bbn-overlay': scrollable, 'bbn-flex-width': true}">
         <!-- Looping the groups -->
