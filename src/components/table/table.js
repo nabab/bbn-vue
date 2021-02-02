@@ -613,7 +613,7 @@
         if ( !this.groupCols || !this.groupCols[1] || !this.groupCols[1].width || !this.lastKnownCtWidth ){
           return '0px';
         }
-        return (this.groupCols[0].width + this.groupCols[1].width + this.groupCols[2].width + 1) + 'px';
+        return (this.groupCols[0].width + this.groupCols[1].width + this.groupCols[2].width) + 'px';
       },
       /**
        * Return true if the table isn't ajax, is editable and the edit mode is 'inline'.
@@ -758,6 +758,7 @@
        * @returns {Array}
        */
       items() {
+        bbn.fn.warning('items')
         if (!this.cols.length) {
           return [];
         }
@@ -874,7 +875,8 @@
           isExpanded = false,
           groupNumCheckboxes = 0,
           groupNumChecked = 0,
-          lastInGroup = false;
+          lastInGroup = false,
+          expanderIndex = 0;
         while (data[i] && (i < end)) {
           let a = data[i].data;
           // True if the element is the last of its group
@@ -950,13 +952,15 @@
                 o.expanded = true;
               } else {
                 o.isGrouped = true;
-                o.link = currentLink;
+                o.link = currentLink;;
               }
             } else if (this.expander && (
                 !bbn.fn.isFunction(this.expander) ||
                 (bbn.fn.isFunction(this.expander) && this.expander(a))
               )) {
               o.expander = true;
+              expanderIndex = o.index;
+              o.expanderIndex = expanderIndex;
             }
             if (this.selection && (!bbn.fn.isFunction(this.selection) || this.selection(o))) {
               o.selected = (!this.uid && this.currentSelected.includes(data[i].index)) || (this.uid && this.currentSelected.includes(data[i].data[this.uid]));
@@ -979,7 +983,8 @@
               index: data[i].index,
               data: a,
               expansion: true,
-              rowIndex: rowIndex
+              rowIndex: rowIndex,
+              expanderIndex: expanderIndex
             });
             rowIndex++;
           }
@@ -1597,7 +1602,22 @@
               if (a.group === group) {
                 cells[cells.length - 1].colspan++;
                 cells[cells.length - 1].width += a.realWidth;
-              } else {
+                if (a.left !== undefined) {
+                  if ((cells[cells.length - 1].left === undefined)
+                    || (a.left < cells[cells.length - 1].left)
+                  ) {
+                    cells[cells.length - 1].left = a.left;
+                  }
+                }
+                if (a.right !== undefined) {
+                  if ((cells[cells.length - 1].right === undefined)
+                    || (a.right < cells[cells.length - 1].right)
+                  ) {
+                    cells[cells.length - 1].right = a.right;
+                  }
+                }
+              }
+              else {
                 if (corresp[a.group] === undefined) {
                   let idx = bbn.fn.search(this.titleGroups, 'value', a.group);
                   if (idx > -1) {
@@ -1610,7 +1630,9 @@
                     style: this.titleGroups[corresp[a.group]].style || {},
                     cls: this.titleGroups[corresp[a.group]].cls || '',
                     colspan: 1,
-                    width: a.realWidth
+                    width: a.realWidth,
+                    left: a.left !== undefined ? a.left : undefined,
+                    right: a.right !== undefined ? a.right : undefined
                   });
                 }
                 /*
@@ -1630,7 +1652,9 @@
                     style: '',
                     cls: '',
                     colspan: 1,
-                    width: a.realWidth
+                    width: a.realWidth,
+                    left: a.left !== undefined ? a.left : undefined,
+                    right: a.right !== undefined ? a.right : undefined
                   });
                 }
                 group = a.group;
@@ -2325,7 +2349,7 @@
             })));
           }
           setTimeout(() => {
-            this.init();
+            //this.init();
           })
         });
       },
@@ -2454,7 +2478,7 @@
               let ele = this.getRef('table');
               if ( ele && ele.tBodies ){
                 bbn.fn.each(ele.tBodies[0].rows, (row) => {
-                  bbn.fn.adjustHeight([row, ...Array.from(row.cells).filter(c => c.classList.contains('bbn-table-fixed-cell'))]);
+                  //bbn.fn.adjustHeight([row, ...Array.from(row.cells).filter(c => c.classList.contains('bbn-table-fixed-cell'))]);
                 });
               }
             }
@@ -2579,13 +2603,18 @@
        */
       onResize() {
         //this.resizeHeight();
-        this.init();
+        //this.init();
+        this.keepCool(() => {
+          this.setContainerMeasures();
+          this.setResizeMeasures();
+        }, 'onResize', 1000)
       },
       /**
        * Handles the resize.
        * @method resizeHeight
        */
       resizeHeight(){
+        return;
         if ( this.scrollable ){
           let ct = this.getRef('container');
           this.updateTable();
@@ -2602,6 +2631,48 @@
               }
             })
           }
+        }
+      },
+      resizeWidth(){
+        let currentTot = this.groupCols[0].width + this.groupCols[1].width + this.groupCols[2].width,
+            styles = window.getComputedStyle(this.$el),
+            borderLeft = styles.getPropertyValue('border-left-width').slice(0, -2),
+            borderRight = styles.getPropertyValue('border-right-width').slice(0, -2),
+            diff =  this.lastKnownCtWidth - borderLeft - borderRight - currentTot,
+            numDynCols = this.currentColumns.filter(c => (c.width === undefined) && !c.isExpander && !c.isSelection && !c.hidden).length,
+            numStaticCols = this.currentColumns.filter(c => !!c.width && !c.isExpander && !c.isSelection && !c.hidden).length,
+            newWidth = numDynCols || numStaticCols
+              ? (Math.floor((diff / (numDynCols || numStaticCols)) * 100) / 100)
+              : 0;
+        if (newWidth) {
+          bbn.fn.each(this.groupCols, groupCol => {
+            let sum = 0;
+            bbn.fn.each(groupCol.cols, col => {
+              if (!col.hidden
+                && !col.isExpander
+                && !col.isSelection
+                && ((!!numDynCols && (col.width === undefined))
+                  || (!numDynCols && !!numStaticCols && !!col.width))
+              ) {
+                let tmp = col.realWidth + newWidth;
+                if ((col.width !== undefined) && (tmp < col.width)) {
+                  tmp = col.width;
+                }
+                if (tmp < this.minimumColumnWidth) {
+                  tmp = this.minimumColumnWidth;
+                }
+                if (col.minWidth && (tmp < col.minWidth)) {
+                  tmp = col.minWidth;
+                }
+                if (col.maxWidth && (tmp > col.maxWidth)) {
+                  tmp = col.maxWidth;
+                }
+                col.realWidth = tmp;
+              }
+              sum += col.realWidth
+            })
+            groupCol.width = sum;
+          });
         }
       },
       /**
@@ -2763,6 +2834,8 @@
        */
       init(with_data) {
         this.keepCool(() => {
+          bbn.fn.warning('table init')
+          this.initStarted = true;
           let groupCols = [
                 {
                   name: 'left',
@@ -2793,7 +2866,6 @@
           bbn.fn.each(this.cols, (a) => {
             a.realWidth = 0;
           });
-          this.initStarted = true;
           this.$nextTick(() => {
             this.setContainerMeasures();
             this.setResizeMeasures();
@@ -2825,6 +2897,12 @@
                   else {
                     a.realWidth = this.minimumColumnWidth;
                     numUnknown++;
+                  }
+                  if (a.minWidth && (a.realWidth < a.minWidth)) {
+                    a.realWidth = a.minWidth;
+                  }
+                  if (a.maxWidth && (a.realWidth > a.maxWidth)) {
+                    a.realWidth = a.maxWidth;
                   }
                   if ( a.buttons !== undefined ) {
                     colButtons = i;
@@ -2880,17 +2958,15 @@
             });
 
             let clientWidth = this.lastKnownCtWidth,
-            //toFill = clientWidth - tot - 1;
-            // removed the 1px by Mirko 20/01/2021
-            toFill = clientWidth - tot;
+                styles = window.getComputedStyle(this.$el),
+                borderLeft = styles.getPropertyValue('border-left-width').slice(0, -2),
+                borderRight = styles.getPropertyValue('border-right-width').slice(0, -2),
+                toFill = Math.floor((clientWidth - borderLeft - borderRight - tot) * 100) / 100;
+                //toFill = Math.round(Math.floor((clientWidth - borderLeft - borderRight - tot) * 100) / 100);
             // We must arrive to 100% minimum
             if (toFill > 0) {
               if (numUnknown) {
-                let newWidth = Math.floor(
-                  (toFill) /
-                  numUnknown *
-                  100
-                ) / 100;
+                let newWidth = Math.floor(toFill / numUnknown * 100) / 100;
                 if (newWidth < this.minimumColumnWidth) {
                   newWidth = this.minimumColumnWidth;
                 }
@@ -2935,7 +3011,8 @@
             if ( aggregatedColTitle ){
               aggregatedColTitle.isAggregatedTitle = true;
             }
-            let sum = 0;
+            let sum = 0,
+                sumRight = 0;
             bbn.fn.each(groupCols, (a, i) => {
               bbn.fn.each(a.cols, (c) => {
                 if ( !c.hidden ){
@@ -2946,13 +3023,15 @@
               sum = 0;
             });
             bbn.fn.each(groupCols, (a, i) => {
-              bbn.fn.each(a.cols, (c) => {
+              bbn.fn.each((i !== 2) ? a.cols : a.cols.slice().reverse(), (c) => {
                 if ( !c.hidden ){
                   if ( i === 0 ){
                     c.left = sum;
                   }
                   else if ( i === 2 ){
-                    c.left = clientWidth - a.width + sum;
+                    //c.left = clientWidth - a.width + sum;
+                    c.right = sumRight;
+                    sumRight += c.realWidth;
                   }
                   sum += c.realWidth;
                 }
@@ -2975,7 +3054,7 @@
             }
             else{
               this.$nextTick(() => {
-                this.resizeHeight();
+                //this.resizeHeight();
                 this.initStarted = false;
               });
             }
@@ -3419,7 +3498,7 @@
        * @param v 
        */
       initStarted(v){
-        if ( !v ){
+        /* if ( !v ){
           setTimeout(() => {
             let hs = false;
             if ( this.scrollable ){
@@ -3430,6 +3509,16 @@
             }
             this.hasHorizontalScroll = hs;
           }, 250);
+        } */
+      },
+      lastKnownCtWidth(){
+        if (this.groupCols.length
+          && !this.initStarted
+          && (this.groupCols[0].cols.length
+            || this.groupCols[1].cols.length
+            || this.groupCols[2].cols.length)
+        ) {
+          this.resizeWidth();
         }
       }
     }

@@ -16,6 +16,22 @@
           type: [String, Number],
         },
         /**
+         * The min-width of the component.
+         * @prop {String|Number} minWidth
+         * @memberof fieldComponent
+         */
+        minWidth: {
+          type: [String, Number],
+        },
+        /**
+         * The max-width of the component.
+         * @prop {String|Number} maxWidth
+         * @memberof fieldComponent
+         */
+        maxWidth: {
+          type: [String, Number],
+        },
+        /**
          * The render of the component.
          * @prop {String|Function} render
          * @memberof fieldComponent

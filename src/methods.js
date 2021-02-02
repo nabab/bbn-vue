@@ -339,6 +339,7 @@
      * @param {Object} r
      */
     _realDefineBBNComponent(name, r){
+      
       if ( r.html && r.html.length ){
         bbn.fn.each(r.html, (h) => {
           if ( h && h.content ){

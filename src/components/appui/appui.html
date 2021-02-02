@@ -211,10 +211,10 @@
                       :groups="app.groups"/>
           </div>
           <!-- NOTIFICATIONS -->
-          <div v-if="plugins['appui-notifications'] && pollerObject['appui-notifications']"
+          <div v-if="plugins['appui-notification'] && pollerObject['appui-notification']"
                class="bbn-right-space"
           >
-            <appui-notifications-tray ref="notificationsTray"/>
+            <appui-notification-tray ref="notificationsTray"/>
           </div>
           <!-- CLIPBOARD BUTTON -->
           <div v-if="plugins['appui-clipboard'] && clipboard"

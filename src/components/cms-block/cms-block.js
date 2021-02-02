@@ -8,15 +8,15 @@
 (function(bbn){
   "use strict";
   let titleTemplates = {
-    h1: `<h1 v-text="decodeURIComponent(source.content)"></h1>`,
-    h2: `<h2 v-text="decodeURIComponent(source.content)"></h2>`,
-    h3: `<h3 v-text="decodeURIComponent(source.content)"></h3>`,
-    h4: `<h4 v-text="decodeURIComponent(source.content)"></h4>`,
-    h5: `<h5 v-text="decodeURIComponent(source.content)"></h5>`,
+    h1: `<h1 v-text="source.content"></h1>`,
+    h2: `<h2 v-text="source.content"></h2>`,
+    h3: `<h3 v-text="source.content"></h3>`,
+    h4: `<h4 v-text="source.content"></h4>`,
+    h5: `<h5 v-text="source.content"></h5>`,
   },
   htmlTemplates = {
-    p: `<p v-html="decodeURIComponent(source.content)"></p>`,
-    span: `<span v-html="decodeURIComponent(source.content)"></span>`
+    p: `<p v-html="source.content"></p>`,
+    span: `<span v-html="source.content"></span>`
 
   },
   templates = {
@@ -68,17 +68,17 @@
           <img :src="$parent.path + source.src"
                 style="heigth:500px;width:100%"
                :style="style"
-               :alt="source.alt ? decodeURIComponent(source.alt) : ''"
+               :alt="source.alt ? source.alt : ''"
           >
         </a>
         <img v-else
              :src="$parent.path + source.src" 
              :style="style"
-             :alt="source.alt ? decodeURIComponent(source.alt) : ''"
+             :alt="source.alt ? source.alt : ''"
         >
         <p class="image-caption bbn-l bbn-s bbn-vsmargin" 
            v-if="source.caption" 
-           v-html="decodeURIComponent(source.caption)"
+           v-html="source.caption"
         ></p>
         <!--error when using decodeuricomponent on details of home image-->
         <a class="image-details-title bbn-l bbn-vsmargin bbn-w-100" 
@@ -119,7 +119,7 @@
           </div> 
         </div>
         <img :src="$parent.path + source.src" :style="style">
-        <p class="image-caption bbn-l bbn-s bbn-vsmargin" v-if="source.caption" v-html="decodeURIComponent(source.caption)"></p>
+        <p class="image-caption bbn-l bbn-s bbn-vsmargin" v-if="source.caption" v-html="source.caption"></p>
       </div>          
                 `
     }, 
@@ -365,6 +365,9 @@
       }
     },
     methods: {
+      selectImg(st){
+        alert(st)
+      },
       alert(){
         alert('test')
       }, 
@@ -535,13 +538,11 @@
                   st += 'border-color:' + this.source.style['border-color'] + ';';
                 }
                 if(this.source.type === 'line'){
-                  if (!this.source.style['border-width']){
+                  if (!this.source.style || !this.source.style['border-width'] ){
                     this.source.style['border-width'] = '100%';
+                    st += 'border-top-width:' + this.source.style['border-width'] + ( bbn.fn.isNumber(this.source.content['border-width']) ? 'px;' : ';');
+                    st += 'border-bottom:0'
                   }
-                  
-                  st += 'border-top-width:' + this.source.style['border-width'] + ( bbn.fn.isNumber(this.source.content['border-width']) ? 'px;' : ';');
-                  st += 'border-bottom:0'
-                  
                 }
                 else { 
                   if ( this.source.style['border-width'] ){
@@ -656,20 +657,22 @@
               //:src="'image/' + source.content"
               //the template below to take the image from index
               template: `
-                <a  target="_self" :href="(source.href ? (linkURL + source.href) : source.src)">
+                <!--IMPORTANT CHANGE FROM CLICK TO HREF WHEN WILL BE POSSIBLE TO MAKE LINK-->
+                <!--a  target="_self" :href="(source.href ? (linkURL + source.href) : source.src)"-->
+                <a  target="_self" @click="selectImg(linkURL + source.href)">
                   <!--TO TAKE IMAGE FROM THE INDEX-->
                   <img :src="path + source.src" :alt="source.alt ? source.alt : ''" :style="$parent.source.style">
                   <div v-if="source.caption || (source.title && (type === 'carousel'))" 
                        :class="['bbn-block-gallery-caption',$parent.alignClass]"
-                       v-html="(source.caption && (type === 'gallery')) ? decodeURIComponent(source.caption) : decodeURIComponent(source.title)"
+                       v-html="(source.caption && (type === 'gallery')) ? source.caption : source.title"
                   ></div>
                   <div v-if="source.details_title" 
                        :class="['image-details-title',$parent.alignClass]"
-                       v-html="decodeURIComponent(source.details_title)"
+                       v-html="source.details_title"
                   ></div>
                   <div v-if="source.details" 
                        :class="['image-details',$parent.alignClass]"
-                       v-html="decodeURIComponent(source.details)"
+                       v-html="source.details"
                   ></div>
                   <div v-if="source.price" 
                        :class="['image-price',$parent.alignClass]"
@@ -693,6 +696,9 @@
                   },
                   escape(st){
                     return this.$parent.escape(st);
+                  },
+                  selectImg(st){
+                    return this.closest('bbn-container').getComponent().selectImg(st)
                   }
                 },
                 computed: {

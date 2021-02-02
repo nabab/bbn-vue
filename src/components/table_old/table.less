@@ -1,0 +1,178 @@
+.bbn-table{
+  > div{
+    div.bbn-table-titles {
+      position: relative;
+      height: 40px;
+      width: 100%;
+      table{
+        table-layout: fixed;
+        //border-collapse: collapse;
+        border-spacing: 0px;
+        padding: 0px;
+      }
+      &.bbn-table-titles-group {
+        height: 79px;
+      }
+      tr{
+        height: 39px;
+        td{
+          &:not(:last-child){
+            border-right: 0px;
+          }
+          //border-top: 0px;
+          box-sizing: border-box;
+          position: relative;
+          padding: 0.5em;
+          white-space: nowrap;
+          > span.bbn-p{
+            text-overflow: ellipsis;
+          }
+          overflow: hidden;
+          font-weight: bold;
+          vertical-align: middle;
+          .bbn-table-title-group{
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            margin-left: 20px;
+            > div{
+              height: 100%;
+              vertical-align: middle;
+              line-height: 38px;
+            }
+          }
+          i.fa.fa-filter{
+            position: absolute;
+            top: 1px;
+            left: 0px;
+          }
+        }
+      }
+    }
+    > div.bbn-table-main{
+      overflow: hidden;
+      > div{
+        > div.bbn-table-container{
+          overflow-y: auto;
+          scrollbar-width: none;
+          &::-webkit-scrollbar {
+           display: none;
+          }
+          > table{
+            outline: 0;
+            width: auto;
+            table-layout: fixed;
+            //border-collapse: collapse;
+            border-spacing: 0px;
+            padding: 0px;
+            > thead tr{
+              height: 39px;
+              th{
+                position: relative;
+                padding: 0.5em;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                font-weight: bold;
+                vertical-align: middle;
+                line-height: 2.5em;
+                i.bbn-table-sortable-icon{
+                  position: absolute;
+                  left: 50%;
+                  bottom: 0px;
+                }
+              }
+            }
+            > tbody > tr{
+              &.bbn-widget{
+                box-sizing: border-box;
+                border-left-width: 0;
+                border-right-width: 0;
+              }
+              td{
+                overflow: hidden;
+                box-sizing: border-box;
+                border-top: 0px;
+                &:not(.bbn-table-fixed-cell):not(:last-child){
+                  border-right: 0px;
+                }
+                //border-right: 0px;
+                padding: 0;
+                &.bbn-table-fixed-cell{
+                  position: absolute;
+                  top: auto;
+                }
+                > div{
+                  overflow: hidden;
+                  height: 100%;
+                  width: 100%;
+                  word-break: break-word;
+                  box-sizing: border-box;
+                  > .bbn-table-expander{
+                    line-height: 1em;
+                    i:focus{
+                      color: red;
+                      outline: 0;
+                    }
+                  }
+                  .bbn-table-dirty{
+                    width:0px;
+                    height:0px;
+                    border-style:solid;
+                    border-width: 3px;
+                    border-color:red transparent transparent red;
+                    padding:0;
+                  }
+                  .bbn-table-dirty:before{
+                    content:"\a0";
+                    display:inline-block;
+                    width:0;
+                    float: left;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    > div.bbn-table-footer{
+      clear: both;
+      overflow: hidden;
+      position: relative;
+      border-style: solid;
+      border-width: 0.0833em;
+      line-height: 2em;
+      padding: .333em .25em;
+    }
+    .toolbar-buttons{
+      padding: 0.3em 0;
+      button{
+        margin: 0 0.3em;
+      }
+    }
+  }
+  .bbn-table-floating-filter{
+    .bbn-table-filter-link{
+      position: absolute;
+      right: 0.5em;
+      bottom: 0.5em;
+    }
+  }
+  // Scrollable 
+  &.bbn-overlay {
+    > div {
+      > div.bbn-table-main{
+        > div{
+          > div.bbn-table-container{
+            min-height: 100%;
+          }
+        }
+      }
+    }
+  }
+}
+.bbn-table-column-picker{
+  ul{
+    list-style: none;
+  }
+}

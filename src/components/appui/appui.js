@@ -189,7 +189,7 @@
               return false;
             }
           });
-          let url = this.plugins['appui-projects'] + '/router/' + bbn.env.appName + '/ide/editor/file/';
+          let url = this.plugins['appui-project'] + '/router/' + bbn.env.appName + '/ide/editor/file/';
           if (plugin){
             url += 'lib/' + plugin + '/mvc' + tab.url.substr(this.plugins[plugin].length);
           }
@@ -662,10 +662,10 @@
             bbn.fn.each(data.observers, obs => bbn.fn.each(bbn.fn.filter(this.observers, {id: obs.id}), o => this.observerEmit(obs.result, o)));
           }
         })
-        // appui-notifications
-        this.$on('appui-notifications', (type, data) => {
+        // appui-notification
+        this.$on('appui-notification', (type, data) => {
           if (type === 'message') {
-            let tray = this.getRef('notificationsTray')
+            let tray = this.getRef('notificationTray')
             if (bbn.fn.isVue(tray) && bbn.fn.isFunction(tray.receive)) {
               tray.receive(data);
             }
@@ -700,8 +700,8 @@
             chatsHash: false
           })
         }
-        if (this.plugins['appui-notifications']) {
-          this.$set(this.pollerObject, 'appui-notifications', {unreadHash: false});
+        if (this.plugins['appui-notification']) {
+          this.$set(this.pollerObject, 'appui-notification', {unreadHash: false});
         }
       }
     },
@@ -725,9 +725,9 @@
             if (this.plugins['appui-chat']){
               this.registerChannel('appui-chat');
             }
-            if (this.plugins['appui-notifications']) {
-              this.registerChannel('appui-notifications');
-              this.browserNotificationURL = this.plugins['appui-notifications'];
+            if (this.plugins['appui-notification']) {
+              this.registerChannel('appui-notification');
+              this.browserNotificationURL = this.plugins['appui-notification'];
               this.browserNotificationSW = true;
             }
             this.poll();
@@ -739,7 +739,7 @@
       clearInterval(this.intervalBugChrome);
       this.$off('appui-chat');
       this.$off('appui-core');
-      this.$off('appui-notifications');
+      this.$off('appui-notification');
     },
     watch: {
       observers: {
