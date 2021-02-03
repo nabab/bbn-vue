@@ -373,6 +373,7 @@
      * @param {Object} r
      */
     _realDefineBBNComponent(name, r){
+      
       if ( r.html && r.html.length ){
         bbn.fn.each(r.html, (h) => {
           if ( h && h.content ){
@@ -1945,8 +1946,7 @@
          * @memberof localStorageComponent
          */
         storage: {
-          type: Boolean,
-          default: false
+          type: Boolean
         },
         /**
          * The name of the storage.
@@ -2017,6 +2017,9 @@
          * @computed {Boolean} hasStorage
          */
         hasStorage(){
+          if (this.storage === false) {
+            return false;
+          }
           return (this.storage || (this.storageFullName || (this.storageName !== 'default'))) && !!this._storage;
         },
         /**
@@ -3830,7 +3833,7 @@
          * @return {Boolean}
          * @memberof inputComponent
          */
-        isValid(e){
+        isValid(e, setError = true){
           const $this = bbn.fn.isVue(e) ? e : this,
                 ele = $this.$refs.element || false,
                 inp = $this.$refs.input || false,
@@ -3900,14 +3903,15 @@
                   // If pattern info is included, return custom error
                   mess = bbn._('Please match the requested format.');
                 }
-                this.$emit('error', customMessage || mess);
-                bbn.fn.log(customMessage || mess);
-                let border = $elem.style.border;
-                $elem.style.border = '1px solid red';
-                this.$once('blur', () => {
-                  $elem.style.border  = border;
-                  $elem.focus();
-                });
+                if (setError) {
+                  this.$emit('error', customMessage || mess);
+                  let border = $elem.style.border;
+                  $elem.style.border = '1px solid red';
+                  this.$once('blur', () => {
+                    $elem.style.border  = border;
+                    $elem.focus();
+                  });
+                }
                 return false;
               }
             }
@@ -4302,6 +4306,22 @@
          * @memberof fieldComponent
          */
         width: {
+          type: [String, Number],
+        },
+        /**
+         * The min-width of the component.
+         * @prop {String|Number} minWidth
+         * @memberof fieldComponent
+         */
+        minWidth: {
+          type: [String, Number],
+        },
+        /**
+         * The max-width of the component.
+         * @prop {String|Number} maxWidth
+         * @memberof fieldComponent
+         */
+        maxWidth: {
           type: [String, Number],
         },
         /**

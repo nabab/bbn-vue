@@ -7588,6 +7588,11 @@
                         "url": "bbn-vue\/component\/tree\/doc\/props#quickFilter"
                     },
                     {
+                        "text": "order",
+                        "desc": "The order of items.",
+                        "url": "bbn-vue\/component\/tree\/doc\/props#order"
+                    },
+                    {
                         "text": "hybrid",
                         "desc": "Set to true if the prop 'ajax' is true,\r\nthe tree will make the ajax call only for\r\nthe source of the root level and will take\r\nthe current data for the source of other levels",
                         "url": "bbn-vue\/component\/tree\/doc\/props#hybrid"
@@ -7615,14 +7620,14 @@
                         "url": "bbn-vue\/component\/tree\/doc\/methods#onClose"
                     },
                     {
+                        "text": "findNode",
+                        "desc": "Finds a node based on its props.",
+                        "url": "bbn-vue\/component\/tree\/doc\/methods#findNode"
+                    },
+                    {
                         "text": "getNodeByIdx",
                         "desc": "Returns the node corresponding to the given idx.",
                         "url": "bbn-vue\/component\/tree\/doc\/methods#getNodeByIdx"
-                    },
-                    {
-                        "text": "getNode",
-                        "desc": "Returns a node basing on the given context.",
-                        "url": "bbn-vue\/component\/tree\/doc\/methods#getNode"
                     },
                     {
                         "text": "getMenu",

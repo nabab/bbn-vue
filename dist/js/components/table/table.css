@@ -1,19 +1,125 @@
-.bbn-table > div div.bbn-table-titles {
+.bbn-table .bbn-table-toolbar .bbn-header {
+  border-top: 0;
+  border-right: 0;
+  border-left: 0;
+}
+.bbn-table table {
+  outline: 0;
+  width: auto;
+  table-layout: fixed;
+  border-spacing: 0px;
+  padding: 0px;
+}
+.bbn-table table tr td.bbn-table-fixed-cell,
+.bbn-table table tr th.bbn-table-fixed-cell {
+  position: sticky;
+  position: -webkit-sticky;
+  z-index: 1;
+}
+.bbn-table table tr td.bbn-table-fixed-cell.bbn-table-fixed-cell-left:not(.bbn-table-fixed-cell-left-last),
+.bbn-table table tr td.bbn-table-fixed-cell.bbn-table-fixed-cell-right,
+.bbn-table table tr th.bbn-table-fixed-cell.bbn-table-fixed-cell-left:not(.bbn-table-fixed-cell-left-last),
+.bbn-table table tr th.bbn-table-fixed-cell.bbn-table-fixed-cell-right {
+  border-right: 0px;
+}
+.bbn-table table tr td:not(.bbn-table-fixed-cell):not(:last-child),
+.bbn-table table tr th:not(.bbn-table-fixed-cell):not(:last-child) {
+  border-right: 0px;
+}
+.bbn-table table tr td.bbn-table-cell-first,
+.bbn-table table tr th.bbn-table-cell-first {
+  border-left: 0px;
+}
+.bbn-table table tr td:last-of-type,
+.bbn-table table tr th:last-of-type {
+  border-right: 0px;
+}
+.bbn-table table tr td:first-of-type,
+.bbn-table table tr th:first-of-type {
+  border-left: 0px;
+}
+.bbn-table table > thead tr {
+  height: 39px;
+}
+.bbn-table table > thead tr th {
+  border-top: 0px;
+  position: relative;
+  padding: 0.5em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-weight: bold;
+  vertical-align: middle;
+}
+.bbn-table table > thead tr th:not(.bbn-table-fixed-cell-left-last) {
+  border-right: 0px;
+}
+.bbn-table table > thead tr th i.bbn-table-sortable-icon {
+  position: absolute;
+  left: 50%;
+  bottom: 0px;
+}
+.bbn-table table > tbody > tr.bbn-widget {
+  box-sizing: border-box;
+  border-left-width: 0;
+  border-right-width: 0;
+}
+.bbn-table table > tbody > tr:last-child td {
+  border-bottom: 0px;
+}
+.bbn-table table > tbody > tr td {
+  overflow: hidden;
+  box-sizing: border-box;
+  border-top: 0px;
+  padding: 0;
+}
+.bbn-table table > tbody > tr td > div {
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+  word-break: break-word;
+  box-sizing: border-box;
+}
+.bbn-table table > tbody > tr td > div > .bbn-table-expander {
+  line-height: 1em;
+}
+.bbn-table table > tbody > tr td > div > .bbn-table-expander i:focus {
+  color: red;
+  outline: 0;
+}
+.bbn-table table > tbody > tr td > div .bbn-table-dirty {
+  width: 0px;
+  height: 0px;
+  border-style: solid;
+  border-width: 3px;
+  border-color: red transparent transparent red;
+  padding: 0;
+}
+.bbn-table table > tbody > tr td > div .bbn-table-dirty:before {
+  content: "\a0";
+  display: inline-block;
+  width: 0;
+  float: left;
+}
+.bbn-table .bbn-scrollbar {
+  z-index: 2;
+}
+.bbn-table2- > div div.bbn-table-titles {
   position: relative;
   height: 40px;
   width: 100%;
 }
-.bbn-table > div div.bbn-table-titles table {
-  border-collapse: collapse;
+.bbn-table2- > div div.bbn-table-titles table {
   table-layout: fixed;
+  border-spacing: 0px;
+  padding: 0px;
 }
-.bbn-table > div div.bbn-table-titles.bbn-table-titles-group {
+.bbn-table2- > div div.bbn-table-titles.bbn-table-titles-group {
   height: 79px;
 }
-.bbn-table > div div.bbn-table-titles tr {
+.bbn-table2- > div div.bbn-table-titles tr {
   height: 39px;
 }
-.bbn-table > div div.bbn-table-titles tr td {
+.bbn-table2- > div div.bbn-table-titles tr td {
   box-sizing: border-box;
   position: relative;
   padding: 0.5em;
@@ -22,45 +128,49 @@
   font-weight: bold;
   vertical-align: middle;
 }
-.bbn-table > div div.bbn-table-titles tr td > span.bbn-p {
+.bbn-table2- > div div.bbn-table-titles tr td:not(:last-child) {
+  border-right: 0px;
+}
+.bbn-table2- > div div.bbn-table-titles tr td > span.bbn-p {
   text-overflow: ellipsis;
 }
-.bbn-table > div div.bbn-table-titles tr td .bbn-table-title-group {
+.bbn-table2- > div div.bbn-table-titles tr td .bbn-table-title-group {
   position: absolute;
   left: 0px;
   top: 0px;
   margin-left: 20px;
 }
-.bbn-table > div div.bbn-table-titles tr td .bbn-table-title-group > div {
+.bbn-table2- > div div.bbn-table-titles tr td .bbn-table-title-group > div {
   height: 100%;
   vertical-align: middle;
   line-height: 38px;
 }
-.bbn-table > div div.bbn-table-titles tr td i.fa.fa-filter {
+.bbn-table2- > div div.bbn-table-titles tr td i.fa.fa-filter {
   position: absolute;
   top: 1px;
   left: 0px;
 }
-.bbn-table > div > div.bbn-table-main {
+.bbn-table2- > div > div.bbn-table-main {
   overflow: hidden;
 }
-.bbn-table > div > div.bbn-table-main > div > div.bbn-table-container {
+.bbn-table2- > div > div.bbn-table-main > div > div.bbn-table-container {
   overflow-y: auto;
   scrollbar-width: none;
 }
-.bbn-table > div > div.bbn-table-main > div > div.bbn-table-container::-webkit-scrollbar {
+.bbn-table2- > div > div.bbn-table-main > div > div.bbn-table-container::-webkit-scrollbar {
   display: none;
 }
-.bbn-table > div > div.bbn-table-main > div > div.bbn-table-container > table {
+.bbn-table2- > div > div.bbn-table-main > div > div.bbn-table-container > table {
   outline: 0;
   width: auto;
   table-layout: fixed;
-  border-collapse: collapse;
+  border-spacing: 0px;
+  padding: 0px;
 }
-.bbn-table > div > div.bbn-table-main > div > div.bbn-table-container > table > thead tr {
+.bbn-table2- > div > div.bbn-table-main > div > div.bbn-table-container > table > thead tr {
   height: 39px;
 }
-.bbn-table > div > div.bbn-table-main > div > div.bbn-table-container > table > thead tr th {
+.bbn-table2- > div > div.bbn-table-main > div > div.bbn-table-container > table > thead tr th {
   position: relative;
   padding: 0.5em;
   white-space: nowrap;
@@ -69,41 +179,45 @@
   vertical-align: middle;
   line-height: 2.5em;
 }
-.bbn-table > div > div.bbn-table-main > div > div.bbn-table-container > table > thead tr th i.bbn-table-sortable-icon {
+.bbn-table2- > div > div.bbn-table-main > div > div.bbn-table-container > table > thead tr th i.bbn-table-sortable-icon {
   position: absolute;
   left: 50%;
   bottom: 0px;
 }
-.bbn-table > div > div.bbn-table-main > div > div.bbn-table-container > table > tbody > tr.bbn-widget {
+.bbn-table2- > div > div.bbn-table-main > div > div.bbn-table-container > table > tbody > tr.bbn-widget {
   box-sizing: border-box;
   border-left-width: 0;
   border-right-width: 0;
 }
-.bbn-table > div > div.bbn-table-main > div > div.bbn-table-container > table > tbody > tr td {
+.bbn-table2- > div > div.bbn-table-main > div > div.bbn-table-container > table > tbody > tr td {
   overflow: hidden;
   box-sizing: border-box;
   border-top: 0px;
   padding: 0;
 }
-.bbn-table > div > div.bbn-table-main > div > div.bbn-table-container > table > tbody > tr td.bbn-table-fixed-cell {
-  position: absolute;
+.bbn-table2- > div > div.bbn-table-main > div > div.bbn-table-container > table > tbody > tr td:not(.bbn-table-fixed-cell):not(:last-child) {
+  border-right: 0px;
+}
+.bbn-table2- > div > div.bbn-table-main > div > div.bbn-table-container > table > tbody > tr td.bbn-table-fixed-cell {
+  position: sticky;
+  position: -webkit-sticky;
   top: auto;
 }
-.bbn-table > div > div.bbn-table-main > div > div.bbn-table-container > table > tbody > tr td > div {
+.bbn-table2- > div > div.bbn-table-main > div > div.bbn-table-container > table > tbody > tr td > div {
   overflow: hidden;
   height: 100%;
   width: 100%;
   word-break: break-word;
   box-sizing: border-box;
 }
-.bbn-table > div > div.bbn-table-main > div > div.bbn-table-container > table > tbody > tr td > div > .bbn-table-expander {
+.bbn-table2- > div > div.bbn-table-main > div > div.bbn-table-container > table > tbody > tr td > div > .bbn-table-expander {
   line-height: 1em;
 }
-.bbn-table > div > div.bbn-table-main > div > div.bbn-table-container > table > tbody > tr td > div > .bbn-table-expander i:focus {
+.bbn-table2- > div > div.bbn-table-main > div > div.bbn-table-container > table > tbody > tr td > div > .bbn-table-expander i:focus {
   color: red;
   outline: 0;
 }
-.bbn-table > div > div.bbn-table-main > div > div.bbn-table-container > table > tbody > tr td > div .bbn-table-dirty {
+.bbn-table2- > div > div.bbn-table-main > div > div.bbn-table-container > table > tbody > tr td > div .bbn-table-dirty {
   width: 0px;
   height: 0px;
   border-style: solid;
@@ -111,13 +225,13 @@
   border-color: red transparent transparent red;
   padding: 0;
 }
-.bbn-table > div > div.bbn-table-main > div > div.bbn-table-container > table > tbody > tr td > div .bbn-table-dirty:before {
+.bbn-table2- > div > div.bbn-table-main > div > div.bbn-table-container > table > tbody > tr td > div .bbn-table-dirty:before {
   content: "\a0";
   display: inline-block;
   width: 0;
   float: left;
 }
-.bbn-table > div > div.bbn-table-footer {
+.bbn-table2- > div > div.bbn-table-footer {
   clear: both;
   overflow: hidden;
   position: relative;
@@ -126,18 +240,18 @@
   line-height: 2em;
   padding: .333em .25em;
 }
-.bbn-table > div .toolbar-buttons {
+.bbn-table2- > div .toolbar-buttons {
   padding: 0.3em 0;
 }
-.bbn-table > div .toolbar-buttons button {
+.bbn-table2- > div .toolbar-buttons button {
   margin: 0 0.3em;
 }
-.bbn-table .bbn-table-floating-filter .bbn-table-filter-link {
+.bbn-table2- .bbn-table-floating-filter .bbn-table-filter-link {
   position: absolute;
   right: 0.5em;
   bottom: 0.5em;
 }
-.bbn-table.bbn-overlay > div > div.bbn-table-main > div > div.bbn-table-container {
+.bbn-table2-.bbn-overlay > div > div.bbn-table-main > div > div.bbn-table-container {
   min-height: 100%;
 }
 .bbn-table-column-picker ul {

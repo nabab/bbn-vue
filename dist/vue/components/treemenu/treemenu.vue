@@ -258,6 +258,7 @@
        * @method reset
        */
       reset(){
+        bbn.fn.warning('reset');
         this.getRef('tree').reset();
       },
       /**

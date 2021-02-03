@@ -30,15 +30,15 @@
 (function(bbn){
   "use strict";
   let titleTemplates = {
-    h1: `<h1 v-text="decodeURIComponent(source.content)"></h1>`,
-    h2: `<h2 v-text="decodeURIComponent(source.content)"></h2>`,
-    h3: `<h3 v-text="decodeURIComponent(source.content)"></h3>`,
-    h4: `<h4 v-text="decodeURIComponent(source.content)"></h4>`,
-    h5: `<h5 v-text="decodeURIComponent(source.content)"></h5>`,
+    h1: `<h1 v-text="source.content"></h1>`,
+    h2: `<h2 v-text="source.content"></h2>`,
+    h3: `<h3 v-text="source.content"></h3>`,
+    h4: `<h4 v-text="source.content"></h4>`,
+    h5: `<h5 v-text="source.content"></h5>`,
   },
   htmlTemplates = {
-    p: `<p v-html="decodeURIComponent(source.content)"></p>`,
-    span: `<span v-html="decodeURIComponent(source.content)"></span>`
+    p: `<p v-html="source.content"></p>`,
+    span: `<span v-html="source.content"></span>`
 
   },
   templates = {
@@ -86,21 +86,21 @@
       //taglia originale 100% width,width 50% 33% 25% 
       view: `
       <div class="component-container bbn-block-image" :class="alignClass">
-        <a v-if="source.href" :href="source.href" class="bbn-c">
-          <img :src="'/image/' + source.src"
+        <a v-if="source.href" target="_self" :href="$parent.linkURL + source.href" class="bbn-c">
+          <img :src="$parent.path + source.src"
                 style="heigth:500px;width:100%"
                :style="style"
-               :alt="source.alt ? decodeURIComponent(source.alt) : ''"
+               :alt="source.alt ? source.alt : ''"
           >
         </a>
         <img v-else
-             :src="'/image/' + source.src" 
+             :src="$parent.path + source.src" 
              :style="style"
-             :alt="source.alt ? decodeURIComponent(source.alt) : ''"
+             :alt="source.alt ? source.alt : ''"
         >
         <p class="image-caption bbn-l bbn-s bbn-vsmargin" 
            v-if="source.caption" 
-           v-html="decodeURIComponent(source.caption)"
+           v-html="source.caption"
         ></p>
         <!--error when using decodeuricomponent on details of home image-->
         <a class="image-details-title bbn-l bbn-vsmargin bbn-w-100" 
@@ -140,8 +140,8 @@
             <bbn-block-align-buttons></bbn-block-align-buttons>
           </div> 
         </div>
-        <img :src="'image/' + source.src" :style="style">
-        <p class="image-caption bbn-l bbn-s bbn-vsmargin" v-if="source.caption" v-html="decodeURIComponent(source.caption)"></p>
+        <img :src="$parent.path + source.src" :style="style">
+        <p class="image-caption bbn-l bbn-s bbn-vsmargin" v-if="source.caption" v-html="source.caption"></p>
       </div>          
                 `
     }, 
@@ -358,7 +358,16 @@
         type: Boolean,
         default: false
       },
-    
+      //the path for the index showing the images ('ex: image/')
+      path: {
+        type: String,
+        default: ''
+      },
+      //the path for the links (give a path to a controller to manage the links)
+      linkURL: {
+        type: String,
+        default: ''
+      }
     },
     data(){
       return {
@@ -378,6 +387,9 @@
       }
     },
     methods: {
+      selectImg(st){
+        alert(st)
+      },
       alert(){
         alert('test')
       }, 
@@ -439,6 +451,12 @@
             }
           },
           computed: {
+            path(){
+              return this.$parent.path
+            },
+            linkURL(){
+              return this.$parent.linkURL
+            },
             carouselSource(){
               if (this.source.source && (this.source.type === 'carousel')){
                 let res = [];
@@ -542,13 +560,11 @@
                   st += 'border-color:' + this.source.style['border-color'] + ';';
                 }
                 if(this.source.type === 'line'){
-                  if (!this.source.style['border-width']){
+                  if (!this.source.style || !this.source.style['border-width'] ){
                     this.source.style['border-width'] = '100%';
+                    st += 'border-top-width:' + this.source.style['border-width'] + ( bbn.fn.isNumber(this.source.content['border-width']) ? 'px;' : ';');
+                    st += 'border-bottom:0'
                   }
-                  
-                  st += 'border-top-width:' + this.source.style['border-width'] + ( bbn.fn.isNumber(this.source.content['border-width']) ? 'px;' : ';');
-                  st += 'border-bottom:0'
-                  
                 }
                 else { 
                   if ( this.source.style['border-width'] ){
@@ -638,10 +654,6 @@
             imageSuccess(a, b, c, d){
               if (c.success && c.image.src.length ){
                 if ( this.source.type === 'gallery' ){
-                  bbn.fn.error('gallery')
-                  //this.show = false;
-                  /*bbn.fn.log(this.source.content)
-                  this.source.content = JSON.parse(this.source.content);*/
                   c.image.src = c.image.name;
                   c.image.alt = '';
                   setTimeout(() => {
@@ -649,11 +661,6 @@
                     //this.source.content.push(c.image);//
                     this.makeSquareImg();  
                   }, 200);
-                  
-                  
-                  bbn.fn.log(this.source.content)
-                  
-                  
                 }
                 else{
                   this.source.content = c.image.name; 
@@ -672,21 +679,22 @@
               //:src="'image/' + source.content"
               //the template below to take the image from index
               template: `
-                <a :href="(source.href ? source.href : source.src)" target="_blank">
+                <!--IMPORTANT CHANGE FROM CLICK TO HREF WHEN WILL BE POSSIBLE TO MAKE LINK-->
+                <!--a  target="_self" :href="(source.href ? (linkURL + source.href) : source.src)"-->
+                <a  target="_self" @click="selectImg(linkURL + source.href)">
                   <!--TO TAKE IMAGE FROM THE INDEX-->
-                  <!--img :src="'image/gallery/' + (source.src ? source.src : source.name)" :alt="source.alt ? source.alt : ''"-->
-                  <img :src="'/image' + source.src" :alt="source.alt ? source.alt : ''" :style="$parent.source.style">
+                  <img :src="path + source.src" :alt="source.alt ? source.alt : ''" :style="$parent.source.style">
                   <div v-if="source.caption || (source.title && (type === 'carousel'))" 
                        :class="['bbn-block-gallery-caption',$parent.alignClass]"
-                       v-html="(source.caption && (type === 'gallery')) ? decodeURIComponent(source.caption) : decodeURIComponent(source.title)"
+                       v-html="(source.caption && (type === 'gallery')) ? source.caption : source.title"
                   ></div>
                   <div v-if="source.details_title" 
                        :class="['image-details-title',$parent.alignClass]"
-                       v-html="decodeURIComponent(source.details_title)"
+                       v-html="source.details_title"
                   ></div>
                   <div v-if="source.details" 
                        :class="['image-details',$parent.alignClass]"
-                       v-html="decodeURIComponent(source.details)"
+                       v-html="source.details"
                   ></div>
                   <div v-if="source.price" 
                        :class="['image-price',$parent.alignClass]"
@@ -710,9 +718,18 @@
                   },
                   escape(st){
                     return this.$parent.escape(st);
+                  },
+                  selectImg(st){
+                    return this.closest('bbn-container').getComponent().selectImg(st)
                   }
                 },
                 computed: {
+                  path(){
+                    return this.$parent.path
+                  },
+                  linkURL(){
+                    return this.$parent.linkURL
+                  },
                   type(){
                     return this.$parent.source.type
                   }

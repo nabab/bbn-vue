@@ -26,6 +26,7 @@ script.innerHTML = `<span :class="['bbn-iblock', componentClass]">
   >
 		<span class="bbn-left-spadded"
 					v-html="label"
+					v-if="label"
 		></span>
 	</label>
 </span>`;

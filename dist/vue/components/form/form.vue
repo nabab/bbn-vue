@@ -375,7 +375,7 @@
        * @return {Boolean}
        */
       canSubmit(){
-        return this.prefilled || (this.isModified() && this.isValid());
+        return this.prefilled || (this.isModified() && this.isValid(false, false));
       },
       /**
        * Based on the properties 'fixedFooter' and 'fullScreen', a string is returned containing the classes for the form's template.
@@ -647,12 +647,12 @@
        * Checks if the form content is valid.
        * @method isValid
        */
-      isValid(force) {
+      isValid(force, callValidation = true) {
         let ok = true;
         let elems = this.findAll('.bbn-input-component');
         if ( Array.isArray(elems) ){
           bbn.fn.each(elems, (a) => {
-            if (bbn.fn.isFunction(a.isValid) && !a.isValid() ){
+            if (bbn.fn.isFunction(a.isValid) && !a.isValid(a, false) ){
               ok = false;
             }
             else if (bbn.fn.isFunction(a.validation) && !a.validation() ){
@@ -664,7 +664,7 @@
             }
           });
         }
-        if ( ok && this.validation ){
+        if ( ok && this.validation && callValidation ){
           ok = this.validation(this.source, this.originalData, force)
         }
         return !!ok;

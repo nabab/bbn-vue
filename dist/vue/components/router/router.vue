@@ -1669,6 +1669,7 @@
               loading: true,
               visible: true,
               real: false,
+              scrollable: !this.single,
               current: url,
               error: false,
               loaded: false

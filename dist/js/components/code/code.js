@@ -694,12 +694,12 @@ document.head.insertAdjacentElement('beforeend', css);
                 */
                 if (defs && this.widget) {
                   bbn.fn.ajax({
-                    url: "https://raw.githubusercontent.com/nabab/bbn-js/src/doc/tern.json",
+                    url: "https://raw.githubusercontent.com/nabab/bbn-js/master/doc/tern.json",
                     success: res => {
                       if (res && res.bbn) {
                         bbn.fn.extend(defs, res);
                         bbn.fn.ajax({
-                          url: "https://raw.githubusercontent.com/nabab/bbn-vue/src/tern.json",
+                          url: "https://raw.githubusercontent.com/nabab/bbn-vue/master/tern.json",
                           success: res => {
                             if (res && res.bbn) {
                               bbn.fn.extend(true, defs, res);

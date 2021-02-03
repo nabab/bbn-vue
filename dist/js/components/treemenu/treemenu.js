@@ -264,6 +264,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @method reset
        */
       reset(){
+        bbn.fn.warning('reset');
         this.getRef('tree').reset();
       },
       /**
