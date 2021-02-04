@@ -643,7 +643,7 @@
         let res = [];
         if (this.isBatch) {
           bbn.fn.each(this.currentData, (d, i) => {
-            if (JSON.stringify(d) !== JSON.stringify(this.originalData[i])) {
+            if (JSON.stringify(d.data) !== JSON.stringify(this.originalData[i])) {
               res.push(d);
             }
           })
@@ -3241,7 +3241,9 @@
        * @param {Number} idx 
        */
       focusout(idx) {
+        bbn.fn.log('focusout')
         this.focused = false;
+        //this.cancel();
         setTimeout(() => {
           if (!this.focused) {
             this.focusedRow = false;
