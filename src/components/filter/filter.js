@@ -408,7 +408,7 @@
          * @mixin bbn.vue.dataEditorComponent
          * @memberof bbn-filter-form
          */
-        mixins: [bbn.vue.dataEditorComponent],
+        mixins: [bbn.vue.basicComponent, bbn.vue.dataEditorComponent],
         props: {
           /**
            * The list of fields available for the filter.

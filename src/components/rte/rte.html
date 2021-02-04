@@ -7,9 +7,14 @@
        :readonly="readonly"
        @change="onChange"
        :value="value"
-       :disabled="disabled"
-       
-  >
-   <slot></slot>
-  </div>
+			:disabled="disabled"/>
+	<div class="bbn-hidden">
+		<slot></slot>
+	</div>
+	<textarea :required="required"
+						:readonly="readonly"
+						ref="input"
+						:value="value"
+						class="bbn-hidden"
+						:disabled="disabled"/>
 </div>

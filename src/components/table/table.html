@@ -25,7 +25,10 @@
            class="bbn-overlay bbn-middle bbn-background"
            style="z-index: 5"
       >
-        <bbn-loadicon :size="24"></bbn-loadicon>
+        <bbn-loadicon class="bbn-vmiddle"
+                      :size="24"/>
+        <span class="bbn-xl bbn-b bbn-left-sspace"
+              v-text="_('Loading') + '...'"/>
       </div>
       <component :is="scrollable ? 'bbn-scroll' : 'div'"
                  class="bbn-w-100"
@@ -42,7 +45,7 @@
               >
             </template>
           </colgroup>
-          <thead v-if="titles">
+          <thead v-if="titles" ref="thead">
             <tr v-if="titleGroups">
               <template v-for="(groupCol, groupIndex) in groupCols">
                 <th v-for="(col, i) in titleGroupsCells(groupIndex)"
@@ -54,20 +57,21 @@
                       right: col.right !== undefined ? (col.right + 'px') : '',
                       width: col.width + 'px'
                     }"
-                    :class="['bbn-c', 'bbn-header', 'bbn-table-fixed-cell', {
+                    :class="['bbn-c', 'bbn-header', 'bbn-ellipsis', 'bbn-table-fixed-cell', {
                       'bbn-table-fixed-cell-left': groupIndex === 0,
                       'bbn-table-fixed-cell-left-last': (groupIndex === 0) && !titleGroupsCells(groupIndex)[i+1],
                       'bbn-table-fixed-cell-right': groupIndex === 2,
                       'bbn-table-cell-first': (groupIndex === 1)
                         && titleGroupsCells(groupIndex).length
                         && (i === 0)
-                    }]">
+                    }]"
+                    :title="col.text">
                   <component v-if="col.component"
                             :is="col.component"
                             :source="col"
                   ></component>
                   <div class="bbn-100 bbn-table-title-group" v-else>
-                    <div :class="col.cls"
+                    <div :class="[col.cls, 'bbn-ellipsis']"
                         :style="col.style"
                         v-html="col.text"
                     ></div>
@@ -87,7 +91,7 @@
                       zIndex: (col.left !== undefined) || (col.right !== undefined) ? 4 : 3,
                       top: titleGroups ? '39px' : '0px'
                     }"
-                    :class="['bbn-c', 'bbn-header', 'bbn-table-fixed-cell', {
+                    :class="['bbn-c', 'bbn-header', 'bbn-ellipsis', 'bbn-table-fixed-cell', {
                       'bbn-table-fixed-cell-left': groupIndex === 0,
                       'bbn-table-fixed-cell-left-last': (groupIndex === 0) && !groupCol.cols[i+1],
                       'bbn-table-fixed-cell-right': groupIndex === 2,
@@ -95,6 +99,7 @@
                         && groupCols[0].cols.length
                         && (i === 0)
                     }]"
+                    :title="col.ftitle || col.title || col.field || ' '"
                 >
                   <i :class="{
                       nf: true,
@@ -103,7 +108,7 @@
                       'bbn-red': hasFilter(col)
                     }"
                     v-if="filterable && (col.filterable !== false) && ((col.filterable === true) || !col.buttons) && col.field"
-                    @click="filterElement = $event.target; currentFilter = col;showFilter(col, $event)"
+                    @click="showFilter(col, $event)"
                   ></i>
                   <div v-if="col.isSelection" :title="_('Check all')">
                     <bbn-checkbox v-model="allRowsChecked"/>
@@ -151,7 +156,7 @@
           </thead>
           <tbody>
             <template v-for="(d, i) in items">
-              <tr :key="i"
+              <tr :key="randomString().toLowerCase()"
                   :index="d.index"
                   :tabindex="0"
                   @focusout="focusout(i, $event)"
@@ -182,15 +187,13 @@
                   <td :class="currentClass(cols[group], d.data, i) + (currentColumns[0].fixed ? ' ' + cssRuleName + ' bbn-table-fixed-cell bbn-table-cell-left' : '')"
                       :style="{
                         left: currentColumns[1].left !== undefined ? currentColumns[1].left + 'px' : 'auto',
-                        width: currentColumns[0].fixed && currentColumns[1].left ? (groupCols[0].width + groupCols[1].width + groupCols[2].width - currentColumns[1].left) + 'px' : 'auto',
+                        width: 'auto',
                         borderRight: '0px',
                         overflow: 'unset'
                     }">
                     <div :class="['bbn-block', currentClass(cols[group], d.data, i), {'bbn-spadded': !cols[group].component}]"
                          :style="{
-                            width: currentColumns[0].fixed && currentColumns[1].left ?
-                              (groupCols[0].width + groupCols[1].width + groupCols[2].width - currentColumns[1].left) + 'px' :
-                              'auto',
+                            width: lastKnownWidth - groupCols[currentColumns[0].isLeft ? 0 : 1].cols[0].realWidth - borderLeft - borderRight + 'px',
                             backgroundColor: 'transparent !important'
                           }">
                       <!--span v-if="!isGroupedCell(groupIndex, d)"></span-->
@@ -220,19 +223,18 @@
                   <td :class="(trClass ? (typeof trClass === 'function' ? trClass(d.data) : trClass) : '') + (currentColumns[0].fixed ? ' ' + cssRuleName + ' bbn-table-fixed-cell bbn-table-cell-left' : '')"
                       :style="{
                         left: currentColumns[1].left !== undefined ? currentColumns[1].left + 'px' : 'auto',
-                        width: currentColumns[0].isEpander ? (groupCols[0].width + groupCols[1].width + groupCols[2].width - currentColumns[0].width) - 1 + 'px' : 'auto',
+                        width: 'auto',
                         borderRight: '0px',
                         overflow: 'unset'
                       }">
                     <div class="bbn-block"
                          :style="{
-                            width: currentColumns[0].isExpander ?
-                              (groupCols[0].width + groupCols[1].width + groupCols[2].width - currentColumns[0].width) - 1 + 'px' :
-                              'auto',
+                            width: lastKnownWidth - groupCols[currentColumns[0].isLeft ? 0 : 1].cols[0].realWidth - borderLeft - borderRight + 'px',
                             backgroundColor: 'transparent !important'
                           }">
                       <component v-if="typeof(expander) !== 'function'"
                           :is="expander"
+                          class="bbn-spadded"
                           :source="d.data"/>
                       <div v-else
                            v-html="expander(d.data, i)"/>
@@ -380,17 +382,16 @@
                :element="filterElement"
                @close="currentFilter = false"
                :auto-hide="true"
-               :width="600"
-               :height="200"
-               :scrollable="false"
+               :scrollable="true"
                :left="floatingFilterX"
                :top="floatingFilterY">
     <bbn-filter v-bind="getFilterOptions()"
                 @set="onSetFilter"
                 @unset="unsetCurrentFilter"
+                class="bbn-w-100"
     ></bbn-filter>
     <div v-if="multifilter"
-         class="bbn-table-filter-link bbn-p bbn-b bbn-i"
+         class="bbn-table-filter-link bbn-p bbn-b bbn-i bbn-w-100 bbn-bottom-padded bbn-left-padded bbn-right-padded bbn-r"
          @click="openMultiFilter">
       <i class="zmdi zmdi-filter-list"></i>
       <span v-text="_('Open the full filter')"></span>

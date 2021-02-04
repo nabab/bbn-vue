@@ -1,7 +1,4 @@
 .bbn-table {
-  .bbn-table-container {
-    //box-sizing: content-box !important;
-  }
   .bbn-table-toolbar {
     .bbn-header {
       border-top: 0;
@@ -17,6 +14,7 @@
     padding: 0px;
     tr {
       td, th {
+        border-collapse: collapse;
         &.bbn-table-fixed-cell{
           position: sticky;
           position: -webkit-sticky;
@@ -41,9 +39,6 @@
     }
     > thead tr {
       height: 39px;
-      &:first-child td {
-        //border-top: 0px;
-      }
       th {
         &:not(.bbn-table-fixed-cell-left-last){
           border-right: 0px;
@@ -51,11 +46,8 @@
         border-top: 0px;
         position: relative;
         padding: 0.5em;
-        white-space: nowrap;
-        text-overflow: ellipsis;
         font-weight: bold;
         vertical-align: middle;
-        //line-height: 2.5em;
         i.bbn-table-sortable-icon {
           position: absolute;
           left: 50%;
@@ -64,6 +56,7 @@
       }
     }
     > tbody > tr {
+      border: 0;
       &.bbn-widget{
         box-sizing: border-box;
         border-left-width: 0;
@@ -105,13 +98,68 @@
             float: left;
           }
         }
+        &.bbn-buttons-flex{
+          .bbn-block{
+            div{
+              display: flex!important;
+              flex-direction: row;
+              flex-wrap: wrap;
+              justify-content: flex-start;
+              .bbn-button.bbn-button-icon-only{
+                margin: .1em .1em !important;
+                height: 2em;
+                width: 2em;
+                span{
+                  //padding-top: 0.25em;
+                }
+              }
+            }
+          }
+          &.bbn-c {
+            .bbn-block{
+              div{
+                justify-content: center;
+              }
+            }
+          }
+          &.bbn-r {
+            .bbn-block{
+              div{
+                justify-content: flex-end;
+              }
+            }
+          }
+        }
       }
     }
   }
   .bbn-scrollbar {
     z-index: 2;
   }
+  > div.bbn-table-footer{
+    clear: both;
+    overflow: hidden;
+    position: relative;
+    border-style: solid;
+    border-width: 0.0833em;
+    line-height: 2em;
+    padding: .333em .25em;
+  }
+  .toolbar-buttons{
+    padding: 0.3em 0;
+    button{
+      margin: 0 0.3em;
+    }
+  }
+  .bbn-table-floating-filter{
+    .bbn-table-filter-link{
+      //position: absolute;
+      //right: 0.5em;
+      //bottom: 0.5em;
+    }
+  }
 }
+
 .bbn-table2-{
   > div{
     div.bbn-table-titles {

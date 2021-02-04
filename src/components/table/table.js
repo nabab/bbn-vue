@@ -526,18 +526,21 @@
          */
         filterElement: null,
         /**
-         * True if the table has horizontal scroll.
-         * @data {Boolean} [false] hasHorizontalScroll 
-         */
-        hasHorizontalScroll: false,
-        /**
          * @data {Boolean} [false] hasScrollX 
          */
         hasScrollX: false,
         /**
          * @data {Boolean} [false] hasScrollY
          */
-        hasScrollY: false
+        hasScrollY: false,
+        /**
+         * @data {Number} [0] borderLeft
+         */
+        borderLeft: 0,
+        /**
+         * @data {Number} [0] borderRight
+         */
+        borderRight: 0
       };
     },
     computed: {
@@ -758,7 +761,6 @@
        * @returns {Array}
        */
       items() {
-        bbn.fn.warning('items')
         if (!this.cols.length) {
           return [];
         }
@@ -1425,6 +1427,7 @@
           template: '<div class="bbn-block"><slot></slot></div>'
         } : bbn.vue.emptyComponent
       },
+      randomString: bbn.fn.randomString,
       /**
        * Exports to csv and download the given filename.
        * @method exportCSV
@@ -1805,8 +1808,17 @@
        */
       showFilter(col, ev) {
         //bbn.fn.log(ev);
-        this.floatingFilterX = ev.pageX - 10 < 0 ? 0 : (ev.pageX - 10 + 600 > this.$el.clientWidth ? this.$el.clientWidth - 600 : ev.pageX - 10);
-        this.floatingFilterY = ev.pageY - 10 < 0 ? 0 : (ev.pageY - 10 + 200 > this.$el.clientHeight ? this.$el.clientHeight - 200 : ev.pageY - 10);
+        this.filterElement = ev.target
+        this.floatingFilterX = (ev.pageX - 10) < 0
+          ? 0
+          : ((ev.pageX - 10 + 600) > this.$el.clientWidth
+            ? this.$el.clientWidth - 600
+            : ev.pageX - 10);
+        this.floatingFilterY = (ev.pageY - 10) < 0
+          ? 0
+          : ((ev.pageY - 10 + 200) > this.$el.clientHeight
+            ? this.$el.clientHeight - 200
+            : ev.pageY - 10);
         this.currentFilter = col;
       },
       /**
@@ -2597,82 +2609,72 @@
           ));
       },
       /**
-       * Handles the resize and reinitializes the table.
+       * Handles the resize.
        * @method onResize
-       * @fires init
+       * @fires setContainerMeasures
+       * @fires setResizeMeasures
+       * @fires keepCool
        */
       onResize() {
-        //this.resizeHeight();
-        //this.init();
-        this.keepCool(() => {
-          this.setContainerMeasures();
-          this.setResizeMeasures();
-        }, 'onResize', 1000)
+        this.setContainerMeasures();
+        this.setResizeMeasures();
       },
       /**
-       * Handles the resize.
-       * @method resizeHeight
+       * Resizes the table.
+       * @method resizeWidth
        */
-      resizeHeight(){
-        return;
-        if ( this.scrollable ){
-          let ct = this.getRef('container');
-          this.updateTable();
-          if ( ct ){
-            ct.style.height = ct.parentNode.clientHeight + 'px';
-            this.$nextTick(() => {
-              let x = this.getRef('xScroller');
-              let y = this.getRef('yScroller');
-              if ( x ){
-                x.onResize();
-              }
-              if ( y ){
-                y.onResize();
-              }
-            })
-          }
-        }
-      },
       resizeWidth(){
         let currentTot = this.groupCols[0].width + this.groupCols[1].width + this.groupCols[2].width,
-            styles = window.getComputedStyle(this.$el),
-            borderLeft = styles.getPropertyValue('border-left-width').slice(0, -2),
-            borderRight = styles.getPropertyValue('border-right-width').slice(0, -2),
-            diff =  this.lastKnownCtWidth - borderLeft - borderRight - currentTot,
+            diff =  this.lastKnownCtWidth - this.borderLeft - this.borderRight - currentTot,
             numDynCols = this.currentColumns.filter(c => (c.width === undefined) && !c.isExpander && !c.isSelection && !c.hidden).length,
             numStaticCols = this.currentColumns.filter(c => !!c.width && !c.isExpander && !c.isSelection && !c.hidden).length,
             newWidth = numDynCols || numStaticCols
-              ? (Math.floor((diff / (numDynCols || numStaticCols)) * 100) / 100)
+              ? (diff / (numDynCols || numStaticCols))
               : 0;
         if (newWidth) {
-          bbn.fn.each(this.groupCols, groupCol => {
-            let sum = 0;
-            bbn.fn.each(groupCol.cols, col => {
-              if (!col.hidden
-                && !col.isExpander
-                && !col.isSelection
-                && ((!!numDynCols && (col.width === undefined))
-                  || (!numDynCols && !!numStaticCols && !!col.width))
-              ) {
-                let tmp = col.realWidth + newWidth;
-                if ((col.width !== undefined) && (tmp < col.width)) {
-                  tmp = col.width;
+          bbn.fn.each(this.groupCols, (groupCol, groupIdx) => {
+            let sum = 0,
+                sumRight= 0,
+                sumLeft = 0;
+            bbn.fn.each((groupIdx !== 2) ? groupCol.cols : groupCol.cols.slice().reverse(), col => {
+              if (!col.hidden) {
+                if (!col.isExpander
+                  && !col.isSelection
+                  && ((!!numDynCols && (col.width === undefined))
+                    || (!numDynCols && !!numStaticCols && !!col.width))
+                ) {
+                  let tmp = col.realWidth + newWidth;
+                  if ((col.width !== undefined) && (tmp < col.width)) {
+                    tmp = col.width;
+                  }
+                  if (tmp < this.minimumColumnWidth) {
+                    tmp = this.minimumColumnWidth;
+                  }
+                  if (col.minWidth && (tmp < col.minWidth)) {
+                    tmp = col.minWidth;
+                  }
+                  if (col.maxWidth && (tmp > col.maxWidth)) {
+                    tmp = col.maxWidth;
+                  }
+                  col.realWidth = tmp;
                 }
-                if (tmp < this.minimumColumnWidth) {
-                  tmp = this.minimumColumnWidth;
+                sum += col.realWidth;
+                if (groupIdx === 0) {
+                  col.left = sumLeft;
+                  sumLeft += col.realWidth;
                 }
-                if (col.minWidth && (tmp < col.minWidth)) {
-                  tmp = col.minWidth;
+                if (groupIdx === 2) {
+                  col.right = sumRight;
+                  sumRight += col.realWidth;
                 }
-                if (col.maxWidth && (tmp > col.maxWidth)) {
-                  tmp = col.maxWidth;
-                }
-                col.realWidth = tmp;
               }
-              sum += col.realWidth
             })
             groupCol.width = sum;
+            sum = 0;
+            sumLeft = 0;
+            sumRight = 0;
           });
+          this.isResizingWidth = false;
         }
       },
       /**
@@ -2758,9 +2760,6 @@
               this.currentExpanded.push(idx);
             }
           }
-          this.$nextTick(() => {
-            this.resizeHeight();
-          })
         }
       },
       /**
@@ -2834,7 +2833,6 @@
        */
       init(with_data) {
         this.keepCool(() => {
-          bbn.fn.warning('table init')
           this.initStarted = true;
           let groupCols = [
                 {
@@ -2961,12 +2959,13 @@
                 styles = window.getComputedStyle(this.$el),
                 borderLeft = styles.getPropertyValue('border-left-width').slice(0, -2),
                 borderRight = styles.getPropertyValue('border-right-width').slice(0, -2),
-                toFill = Math.floor((clientWidth - borderLeft - borderRight - tot) * 100) / 100;
-                //toFill = Math.round(Math.floor((clientWidth - borderLeft - borderRight - tot) * 100) / 100);
+                toFill = clientWidth - borderLeft - borderRight - tot;
+            this.borderLeft = borderLeft;
+            this.borderRight = borderRight;
             // We must arrive to 100% minimum
             if (toFill > 0) {
               if (numUnknown) {
-                let newWidth = Math.floor(toFill / numUnknown * 100) / 100;
+                let newWidth = toFill / numUnknown;
                 if (newWidth < this.minimumColumnWidth) {
                   newWidth = this.minimumColumnWidth;
                 }
@@ -2995,7 +2994,8 @@
                   num--;
                   ignore++;
                 }
-                let bonus = Math.floor(toFill / num * 100) / 100;
+                //let bonus = Math.floor(toFill / num * 100) / 100;
+                let bonus = toFill / num;
                 let maxPreAggregatedWidth = 0;
                 bbn.fn.each(this.cols, (a, i) => {
                   if ( !a.hidden && (i >= ignore) ){
@@ -3011,42 +3011,38 @@
             if ( aggregatedColTitle ){
               aggregatedColTitle.isAggregatedTitle = true;
             }
+
             let sum = 0,
+                sumLeft = 0,
                 sumRight = 0;
             bbn.fn.each(groupCols, (a, i) => {
-              bbn.fn.each(a.cols, (c) => {
+              bbn.fn.each((i !== 2) ? a.cols : a.cols.slice().reverse(), c => {
                 if ( !c.hidden ){
                   sum += c.realWidth;
+                  if ( i === 0 ){
+                    c.left = sumLeft;
+                    sumLeft += c.realWidth;
+                  }
+                  else if ( i === 2 ){
+                    c.right = sumRight;
+                    sumRight += c.realWidth;
+                  }
                 }
               });
               a.width = sum;
               sum = 0;
-            });
-            bbn.fn.each(groupCols, (a, i) => {
-              bbn.fn.each((i !== 2) ? a.cols : a.cols.slice().reverse(), (c) => {
-                if ( !c.hidden ){
-                  if ( i === 0 ){
-                    c.left = sum;
-                  }
-                  else if ( i === 2 ){
-                    //c.left = clientWidth - a.width + sum;
-                    c.right = sumRight;
-                    sumRight += c.realWidth;
-                  }
-                  sum += c.realWidth;
-                }
-              });
-              sum = 0;
+              sumLeft = 0;
+              sumRight = 0;
             });
             this.groupCols = groupCols;
             this.colButtons = colButtons;
             this.isAggregated = isAggregated;
             this.aggregatedColumns = aggregatedColumns;
+            this.resizeWidth();
             this.initReady = true;
             if (with_data) {
               this.$nextTick(() => {
                 this.$once('dataloaded', () => {
-                  //this.resizeHeight();
                   this.initStarted = false;
                 });
                 this.updateData();
@@ -3054,7 +3050,6 @@
             }
             else{
               this.$nextTick(() => {
-                //this.resizeHeight();
                 this.initStarted = false;
               });
             }
@@ -3494,23 +3489,9 @@
         }
       },
       /**
-       * @watch initStarted
-       * @param v 
+       * @watch lastKnownCtWidth
+       * @fires resizeWidth
        */
-      initStarted(v){
-        /* if ( !v ){
-          setTimeout(() => {
-            let hs = false;
-            if ( this.scrollable ){
-              let hb = this.getRef('xScroller');
-              if (hb && hb.isActive){
-                hs = true;
-              }
-            }
-            this.hasHorizontalScroll = hs;
-          }, 250);
-        } */
-      },
       lastKnownCtWidth(){
         if (this.groupCols.length
           && !this.initStarted
@@ -3518,7 +3499,9 @@
             || this.groupCols[1].cols.length
             || this.groupCols[2].cols.length)
         ) {
-          this.resizeWidth();
+          this.$nextTick(() => {
+            this.resizeWidth();
+          })
         }
       }
     }

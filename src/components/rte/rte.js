@@ -20,7 +20,7 @@
     /**
      * @mixin bbn.vue.basicComponent
      */
-    mixins: [bbn.vue.basicComponent],
+    mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent],
     props: {
       /**
        * @prop {Boolean} [false] iFrame
@@ -167,9 +167,17 @@
        * @emit input
        */
       onChange(){
-        this.$emit('input', this.widget.getElementValue());
-      },
-      
+        this.$emit('input', this.widget.value);
+      }
+    },
+    created(){
+      if (!this.value
+        && this.$slots.default
+        && this.$slots.default[0]
+        && this.$slots.default[0].text.length
+      ) {
+        this.currentValue = this.$slots.default[0].text;
+      }
     },
     /**
      * Initializes the component
@@ -195,8 +203,11 @@
       if ( this.iFrame ){
         this.widget.iframeCSSLinks = this.iframeCSSLinks
       }
-      if ( this.value) {
-        this.widget.value = this.value
+      if ( this.currentValue) {
+        this.widget.value = this.currentValue;
+      }
+      if (!this.value && this.currentValue) {
+        this.$emit('input', this.currentValue);
       }
       this.ready = true;
     },
@@ -206,7 +217,7 @@
        * @param newVal 
        */
       value(newVal){
-        if (this.widget && (this.widget.getElementValue()!== newVal)) {
+        if (this.widget && (this.widget.value !== newVal)) {
            bbn.fn.log("CHANFING CURRENT VALUE");
            this.widget.value = newVal;
         }
