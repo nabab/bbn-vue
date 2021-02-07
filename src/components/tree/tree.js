@@ -237,6 +237,12 @@
           }]
         }
       },
+      state: {
+        type: Object,
+        default(){
+          return {};
+        }
+      },
       /**
        * Set to true if the prop 'ajax' is true,
        * the tree will make the ajax call only for
@@ -459,6 +465,14 @@
           });
         }
         return res;
+      },
+      _getTreeState(uid) {
+        bbn.fn.log("UID", uid, JSON.stringify(this.currentState));
+        if (this.currentState[uid]) {
+          bbn.fn.log(this.currentState[uid].items);
+          return this.currentState[uid].items;
+        }
+        return {};
       },
       /**
        * A function to normalize the structure of items.
@@ -1124,30 +1138,28 @@
         }
         if (this.node.isExpanded || this.isRoot || state) {
           this.updateData().then(() => {
-            setTimeout(() => {
-              if (bbn.fn.numProperties(state)) {
-                bbn.fn.each(state, (o, uid) => {
-                  let it = this.findNode({[this.uid]: uid}, this.node);
-                  bbn.fn.log("Looking for uid " + uid + " and... " + (it ? "" : "NOT ") + "FOUND");
-                  if (it) {
-                    if (o.items) {
-                      let tree = it.getRef('tree');
-                      if (tree) {
-                        bbn.fn.log("Tree exists")
-                        tree.$once('dataloaded', () => {
-                          bbn.fn.log("Tree is ready")
-                          tree._setCurrentState(o.items);
-                        });
-                      }
-                      it.isExpanded = true;
+            if (bbn.fn.numProperties(state)) {
+              bbn.fn.each(state, (o, uid) => {
+                let it = this.findNode({[this.uid]: uid}, this.node);
+                bbn.fn.log("Looking for uid " + uid + " and... " + (it ? "" : "NOT ") + "FOUND");
+                if (it) {
+                  if (o.items) {
+                    let tree = it.getRef('tree');
+                    if (tree) {
+                      //tree._setCurrentState(o.items);
+                      bbn.fn.log("Tree exists")
+                      tree.$once('dataloaded', () => {
+                        bbn.fn.log("Tree is ready")
+                      });
                     }
-                    if (o.expanded) {
-                      it.isExpanded = true;
-                    }
+                    it.isExpanded = true;
                   }
-                })
-              }
-            }, 100)
+                  if (o.expanded) {
+                    it.isExpanded = true;
+                  }
+                }
+              })
+            }
           });
         }
       },
@@ -1158,11 +1170,12 @@
     },
     /**
      * Emits the event beforeLoad and load. And opens the nodes defined in the prop path.
+     * Definition of the root tree and parent node.
      * @event beforeCreate
      * @emits beforeLoad
      * @emits load
      */
-    beforeCreate(){
+    created(){
       this.$on('beforeUpdate', e => {
         if ( this.isAjax && (this.tree.isLoading || this.isLoading) ){
           e.preventDefault();
@@ -1187,12 +1200,6 @@
         }
         this.isLoaded = true;
       });
-    },
-    /**
-     * Definition of the root tree and parent node.
-     * @event created
-     */
-    created(){
       if ( bbn.fn.isFunction(this.source) ){
         this.isFunction = true;
       }
@@ -1372,6 +1379,12 @@
           },
           uid: {
             type: String
+          },
+          treeState: {
+            type: Object,
+            default(){
+              return {};
+            }
           }
         },
         data(){

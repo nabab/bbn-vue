@@ -26,7 +26,10 @@
            class="bbn-overlay bbn-middle bbn-background"
            style="z-index: 5"
       >
-        <bbn-loadicon :size="24"></bbn-loadicon>
+        <bbn-loadicon class="bbn-vmiddle"
+                      :size="24"/>
+        <span class="bbn-xl bbn-b bbn-left-sspace"
+              v-text="_('Loading') + '...'"/>
       </div>
       <component :is="scrollable ? 'bbn-scroll' : 'div'"
                  class="bbn-w-100"
@@ -43,7 +46,7 @@
               >
             </template>
           </colgroup>
-          <thead v-if="titles">
+          <thead v-if="titles" ref="thead">
             <tr v-if="titleGroups">
               <template v-for="(groupCol, groupIndex) in groupCols">
                 <th v-for="(col, i) in titleGroupsCells(groupIndex)"
@@ -55,20 +58,21 @@
                       right: col.right !== undefined ? (col.right + 'px') : '',
                       width: col.width + 'px'
                     }"
-                    :class="['bbn-c', 'bbn-header', 'bbn-table-fixed-cell', {
+                    :class="['bbn-c', 'bbn-header', 'bbn-ellipsis', 'bbn-table-fixed-cell', {
                       'bbn-table-fixed-cell-left': groupIndex === 0,
                       'bbn-table-fixed-cell-left-last': (groupIndex === 0) && !titleGroupsCells(groupIndex)[i+1],
                       'bbn-table-fixed-cell-right': groupIndex === 2,
                       'bbn-table-cell-first': (groupIndex === 1)
                         && titleGroupsCells(groupIndex).length
                         && (i === 0)
-                    }]">
+                    }]"
+                    :title="col.text">
                   <component v-if="col.component"
                             :is="col.component"
                             :source="col"
                   ></component>
                   <div class="bbn-100 bbn-table-title-group" v-else>
-                    <div :class="col.cls"
+                    <div :class="[col.cls, 'bbn-ellipsis']"
                         :style="col.style"
                         v-html="col.text"
                     ></div>
@@ -88,7 +92,7 @@
                       zIndex: (col.left !== undefined) || (col.right !== undefined) ? 4 : 3,
                       top: titleGroups ? '39px' : '0px'
                     }"
-                    :class="['bbn-c', 'bbn-header', 'bbn-table-fixed-cell', {
+                    :class="['bbn-c', 'bbn-header', 'bbn-ellipsis', 'bbn-table-fixed-cell', {
                       'bbn-table-fixed-cell-left': groupIndex === 0,
                       'bbn-table-fixed-cell-left-last': (groupIndex === 0) && !groupCol.cols[i+1],
                       'bbn-table-fixed-cell-right': groupIndex === 2,
@@ -96,6 +100,7 @@
                         && groupCols[0].cols.length
                         && (i === 0)
                     }]"
+                    :title="col.ftitle || col.title || col.field || ' '"
                 >
                   <i :class="{
                       nf: true,
@@ -104,7 +109,7 @@
                       'bbn-red': hasFilter(col)
                     }"
                     v-if="filterable && (col.filterable !== false) && ((col.filterable === true) || !col.buttons) && col.field"
-                    @click="filterElement = $event.target; currentFilter = col;showFilter(col, $event)"
+                    @click="showFilter(col, $event)"
                   ></i>
                   <div v-if="col.isSelection" :title="_('Check all')">
                     <bbn-checkbox v-model="allRowsChecked"/>
@@ -152,7 +157,7 @@
           </thead>
           <tbody>
             <template v-for="(d, i) in items">
-              <tr :key="i"
+              <tr :key="randomString().toLowerCase()"
                   :index="d.index"
                   :tabindex="0"
                   @focusout="focusout(i, $event)"
@@ -183,15 +188,13 @@
                   <td :class="currentClass(cols[group], d.data, i) + (currentColumns[0].fixed ? ' ' + cssRuleName + ' bbn-table-fixed-cell bbn-table-cell-left' : '')"
                       :style="{
                         left: currentColumns[1].left !== undefined ? currentColumns[1].left + 'px' : 'auto',
-                        width: currentColumns[0].fixed && currentColumns[1].left ? (groupCols[0].width + groupCols[1].width + groupCols[2].width - currentColumns[1].left) + 'px' : 'auto',
+                        width: 'auto',
                         borderRight: '0px',
                         overflow: 'unset'
                     }">
                     <div :class="['bbn-block', currentClass(cols[group], d.data, i), {'bbn-spadded': !cols[group].component}]"
                          :style="{
-                            width: currentColumns[0].fixed && currentColumns[1].left ?
-                              (groupCols[0].width + groupCols[1].width + groupCols[2].width - currentColumns[1].left) + 'px' :
-                              'auto',
+                            width: lastKnownWidth - groupCols[currentColumns[0].isLeft ? 0 : 1].cols[0].realWidth - borderLeft - borderRight + 'px',
                             backgroundColor: 'transparent !important'
                           }">
                       <!--span v-if="!isGroupedCell(groupIndex, d)"></span-->
@@ -221,19 +224,18 @@
                   <td :class="(trClass ? (typeof trClass === 'function' ? trClass(d.data) : trClass) : '') + (currentColumns[0].fixed ? ' ' + cssRuleName + ' bbn-table-fixed-cell bbn-table-cell-left' : '')"
                       :style="{
                         left: currentColumns[1].left !== undefined ? currentColumns[1].left + 'px' : 'auto',
-                        width: currentColumns[0].isEpander ? (groupCols[0].width + groupCols[1].width + groupCols[2].width - currentColumns[0].width) - 1 + 'px' : 'auto',
+                        width: 'auto',
                         borderRight: '0px',
                         overflow: 'unset'
                       }">
                     <div class="bbn-block"
                          :style="{
-                            width: currentColumns[0].isExpander ?
-                              (groupCols[0].width + groupCols[1].width + groupCols[2].width - currentColumns[0].width) - 1 + 'px' :
-                              'auto',
+                            width: lastKnownWidth - groupCols[currentColumns[0].isLeft ? 0 : 1].cols[0].realWidth - borderLeft - borderRight + 'px',
                             backgroundColor: 'transparent !important'
                           }">
                       <component v-if="typeof(expander) !== 'function'"
                           :is="expander"
+                          class="bbn-spadded"
                           :source="d.data"/>
                       <div v-else
                            v-html="expander(d.data, i)"/>
@@ -381,17 +383,16 @@
                :element="filterElement"
                @close="currentFilter = false"
                :auto-hide="true"
-               :width="600"
-               :height="200"
-               :scrollable="false"
+               :scrollable="true"
                :left="floatingFilterX"
                :top="floatingFilterY">
     <bbn-filter v-bind="getFilterOptions()"
                 @set="onSetFilter"
                 @unset="unsetCurrentFilter"
+                class="bbn-w-100"
     ></bbn-filter>
     <div v-if="multifilter"
-         class="bbn-table-filter-link bbn-p bbn-b bbn-i"
+         class="bbn-table-filter-link bbn-p bbn-b bbn-i bbn-w-100 bbn-bottom-padded bbn-left-padded bbn-right-padded bbn-r"
          @click="openMultiFilter">
       <i class="zmdi zmdi-filter-list"></i>
       <span v-text="_('Open the full filter')"></span>
@@ -930,18 +931,21 @@
          */
         filterElement: null,
         /**
-         * True if the table has horizontal scroll.
-         * @data {Boolean} [false] hasHorizontalScroll 
-         */
-        hasHorizontalScroll: false,
-        /**
          * @data {Boolean} [false] hasScrollX 
          */
         hasScrollX: false,
         /**
          * @data {Boolean} [false] hasScrollY
          */
-        hasScrollY: false
+        hasScrollY: false,
+        /**
+         * @data {Number} [0] borderLeft
+         */
+        borderLeft: 0,
+        /**
+         * @data {Number} [0] borderRight
+         */
+        borderRight: 0
       };
     },
     computed: {
@@ -1044,7 +1048,7 @@
         let res = [];
         if (this.isBatch) {
           bbn.fn.each(this.currentData, (d, i) => {
-            if (JSON.stringify(d) !== JSON.stringify(this.originalData[i])) {
+            if (JSON.stringify(d.data) !== JSON.stringify(this.originalData[i])) {
               res.push(d);
             }
           })
@@ -1162,7 +1166,6 @@
        * @returns {Array}
        */
       items() {
-        bbn.fn.warning('items')
         if (!this.cols.length) {
           return [];
         }
@@ -1829,6 +1832,7 @@
           template: '<div class="bbn-block"><slot></slot></div>'
         } : bbn.vue.emptyComponent
       },
+      randomString: bbn.fn.randomString,
       /**
        * Exports to csv and download the given filename.
        * @method exportCSV
@@ -2209,8 +2213,17 @@
        */
       showFilter(col, ev) {
         //bbn.fn.log(ev);
-        this.floatingFilterX = ev.pageX - 10 < 0 ? 0 : (ev.pageX - 10 + 600 > this.$el.clientWidth ? this.$el.clientWidth - 600 : ev.pageX - 10);
-        this.floatingFilterY = ev.pageY - 10 < 0 ? 0 : (ev.pageY - 10 + 200 > this.$el.clientHeight ? this.$el.clientHeight - 200 : ev.pageY - 10);
+        this.filterElement = ev.target
+        this.floatingFilterX = (ev.pageX - 10) < 0
+          ? 0
+          : ((ev.pageX - 10 + 600) > this.$el.clientWidth
+            ? this.$el.clientWidth - 600
+            : ev.pageX - 10);
+        this.floatingFilterY = (ev.pageY - 10) < 0
+          ? 0
+          : ((ev.pageY - 10 + 200) > this.$el.clientHeight
+            ? this.$el.clientHeight - 200
+            : ev.pageY - 10);
         this.currentFilter = col;
       },
       /**
@@ -3001,82 +3014,72 @@
           ));
       },
       /**
-       * Handles the resize and reinitializes the table.
+       * Handles the resize.
        * @method onResize
-       * @fires init
+       * @fires setContainerMeasures
+       * @fires setResizeMeasures
+       * @fires keepCool
        */
       onResize() {
-        //this.resizeHeight();
-        //this.init();
-        this.keepCool(() => {
-          this.setContainerMeasures();
-          this.setResizeMeasures();
-        }, 'onResize', 1000)
+        this.setContainerMeasures();
+        this.setResizeMeasures();
       },
       /**
-       * Handles the resize.
-       * @method resizeHeight
+       * Resizes the table.
+       * @method resizeWidth
        */
-      resizeHeight(){
-        return;
-        if ( this.scrollable ){
-          let ct = this.getRef('container');
-          this.updateTable();
-          if ( ct ){
-            ct.style.height = ct.parentNode.clientHeight + 'px';
-            this.$nextTick(() => {
-              let x = this.getRef('xScroller');
-              let y = this.getRef('yScroller');
-              if ( x ){
-                x.onResize();
-              }
-              if ( y ){
-                y.onResize();
-              }
-            })
-          }
-        }
-      },
       resizeWidth(){
         let currentTot = this.groupCols[0].width + this.groupCols[1].width + this.groupCols[2].width,
-            styles = window.getComputedStyle(this.$el),
-            borderLeft = styles.getPropertyValue('border-left-width').slice(0, -2),
-            borderRight = styles.getPropertyValue('border-right-width').slice(0, -2),
-            diff =  this.lastKnownCtWidth - borderLeft - borderRight - currentTot,
+            diff =  this.lastKnownCtWidth - this.borderLeft - this.borderRight - currentTot,
             numDynCols = this.currentColumns.filter(c => (c.width === undefined) && !c.isExpander && !c.isSelection && !c.hidden).length,
             numStaticCols = this.currentColumns.filter(c => !!c.width && !c.isExpander && !c.isSelection && !c.hidden).length,
             newWidth = numDynCols || numStaticCols
-              ? (Math.floor((diff / (numDynCols || numStaticCols)) * 100) / 100)
+              ? (diff / (numDynCols || numStaticCols))
               : 0;
         if (newWidth) {
-          bbn.fn.each(this.groupCols, groupCol => {
-            let sum = 0;
-            bbn.fn.each(groupCol.cols, col => {
-              if (!col.hidden
-                && !col.isExpander
-                && !col.isSelection
-                && ((!!numDynCols && (col.width === undefined))
-                  || (!numDynCols && !!numStaticCols && !!col.width))
-              ) {
-                let tmp = col.realWidth + newWidth;
-                if ((col.width !== undefined) && (tmp < col.width)) {
-                  tmp = col.width;
+          bbn.fn.each(this.groupCols, (groupCol, groupIdx) => {
+            let sum = 0,
+                sumRight= 0,
+                sumLeft = 0;
+            bbn.fn.each((groupIdx !== 2) ? groupCol.cols : groupCol.cols.slice().reverse(), col => {
+              if (!col.hidden) {
+                if (!col.isExpander
+                  && !col.isSelection
+                  && ((!!numDynCols && (col.width === undefined))
+                    || (!numDynCols && !!numStaticCols && !!col.width))
+                ) {
+                  let tmp = col.realWidth + newWidth;
+                  if ((col.width !== undefined) && (tmp < col.width)) {
+                    tmp = col.width;
+                  }
+                  if (tmp < this.minimumColumnWidth) {
+                    tmp = this.minimumColumnWidth;
+                  }
+                  if (col.minWidth && (tmp < col.minWidth)) {
+                    tmp = col.minWidth;
+                  }
+                  if (col.maxWidth && (tmp > col.maxWidth)) {
+                    tmp = col.maxWidth;
+                  }
+                  col.realWidth = tmp;
                 }
-                if (tmp < this.minimumColumnWidth) {
-                  tmp = this.minimumColumnWidth;
+                sum += col.realWidth;
+                if (groupIdx === 0) {
+                  col.left = sumLeft;
+                  sumLeft += col.realWidth;
                 }
-                if (col.minWidth && (tmp < col.minWidth)) {
-                  tmp = col.minWidth;
+                if (groupIdx === 2) {
+                  col.right = sumRight;
+                  sumRight += col.realWidth;
                 }
-                if (col.maxWidth && (tmp > col.maxWidth)) {
-                  tmp = col.maxWidth;
-                }
-                col.realWidth = tmp;
               }
-              sum += col.realWidth
             })
             groupCol.width = sum;
+            sum = 0;
+            sumLeft = 0;
+            sumRight = 0;
           });
+          this.isResizingWidth = false;
         }
       },
       /**
@@ -3162,9 +3165,6 @@
               this.currentExpanded.push(idx);
             }
           }
-          this.$nextTick(() => {
-            this.resizeHeight();
-          })
         }
       },
       /**
@@ -3238,7 +3238,6 @@
        */
       init(with_data) {
         this.keepCool(() => {
-          bbn.fn.warning('table init')
           this.initStarted = true;
           let groupCols = [
                 {
@@ -3365,12 +3364,13 @@
                 styles = window.getComputedStyle(this.$el),
                 borderLeft = styles.getPropertyValue('border-left-width').slice(0, -2),
                 borderRight = styles.getPropertyValue('border-right-width').slice(0, -2),
-                toFill = Math.floor((clientWidth - borderLeft - borderRight - tot) * 100) / 100;
-                //toFill = Math.round(Math.floor((clientWidth - borderLeft - borderRight - tot) * 100) / 100);
+                toFill = clientWidth - borderLeft - borderRight - tot;
+            this.borderLeft = borderLeft;
+            this.borderRight = borderRight;
             // We must arrive to 100% minimum
             if (toFill > 0) {
               if (numUnknown) {
-                let newWidth = Math.floor(toFill / numUnknown * 100) / 100;
+                let newWidth = toFill / numUnknown;
                 if (newWidth < this.minimumColumnWidth) {
                   newWidth = this.minimumColumnWidth;
                 }
@@ -3399,7 +3399,8 @@
                   num--;
                   ignore++;
                 }
-                let bonus = Math.floor(toFill / num * 100) / 100;
+                //let bonus = Math.floor(toFill / num * 100) / 100;
+                let bonus = toFill / num;
                 let maxPreAggregatedWidth = 0;
                 bbn.fn.each(this.cols, (a, i) => {
                   if ( !a.hidden && (i >= ignore) ){
@@ -3415,42 +3416,38 @@
             if ( aggregatedColTitle ){
               aggregatedColTitle.isAggregatedTitle = true;
             }
+
             let sum = 0,
+                sumLeft = 0,
                 sumRight = 0;
             bbn.fn.each(groupCols, (a, i) => {
-              bbn.fn.each(a.cols, (c) => {
+              bbn.fn.each((i !== 2) ? a.cols : a.cols.slice().reverse(), c => {
                 if ( !c.hidden ){
                   sum += c.realWidth;
+                  if ( i === 0 ){
+                    c.left = sumLeft;
+                    sumLeft += c.realWidth;
+                  }
+                  else if ( i === 2 ){
+                    c.right = sumRight;
+                    sumRight += c.realWidth;
+                  }
                 }
               });
               a.width = sum;
               sum = 0;
-            });
-            bbn.fn.each(groupCols, (a, i) => {
-              bbn.fn.each((i !== 2) ? a.cols : a.cols.slice().reverse(), (c) => {
-                if ( !c.hidden ){
-                  if ( i === 0 ){
-                    c.left = sum;
-                  }
-                  else if ( i === 2 ){
-                    //c.left = clientWidth - a.width + sum;
-                    c.right = sumRight;
-                    sumRight += c.realWidth;
-                  }
-                  sum += c.realWidth;
-                }
-              });
-              sum = 0;
+              sumLeft = 0;
+              sumRight = 0;
             });
             this.groupCols = groupCols;
             this.colButtons = colButtons;
             this.isAggregated = isAggregated;
             this.aggregatedColumns = aggregatedColumns;
+            this.resizeWidth();
             this.initReady = true;
             if (with_data) {
               this.$nextTick(() => {
                 this.$once('dataloaded', () => {
-                  //this.resizeHeight();
                   this.initStarted = false;
                 });
                 this.updateData();
@@ -3458,7 +3455,6 @@
             }
             else{
               this.$nextTick(() => {
-                //this.resizeHeight();
                 this.initStarted = false;
               });
             }
@@ -3650,7 +3646,9 @@
        * @param {Number} idx 
        */
       focusout(idx) {
+        bbn.fn.log('focusout')
         this.focused = false;
+        //this.cancel();
         setTimeout(() => {
           if (!this.focused) {
             this.focusedRow = false;
@@ -3898,23 +3896,9 @@
         }
       },
       /**
-       * @watch initStarted
-       * @param v 
+       * @watch lastKnownCtWidth
+       * @fires resizeWidth
        */
-      initStarted(v){
-        /* if ( !v ){
-          setTimeout(() => {
-            let hs = false;
-            if ( this.scrollable ){
-              let hb = this.getRef('xScroller');
-              if (hb && hb.isActive){
-                hs = true;
-              }
-            }
-            this.hasHorizontalScroll = hs;
-          }, 250);
-        } */
-      },
       lastKnownCtWidth(){
         if (this.groupCols.length
           && !this.initStarted
@@ -3922,7 +3906,9 @@
             || this.groupCols[1].cols.length
             || this.groupCols[2].cols.length)
         ) {
-          this.resizeWidth();
+          this.$nextTick(() => {
+            this.resizeWidth();
+          })
         }
       }
     }
@@ -3943,6 +3929,10 @@
   table-layout: fixed;
   border-spacing: 0px;
   padding: 0px;
+}
+.bbn-table table tr td,
+.bbn-table table tr th {
+  border-collapse: collapse;
 }
 .bbn-table table tr td.bbn-table-fixed-cell,
 .bbn-table table tr th.bbn-table-fixed-cell {
@@ -3979,8 +3969,6 @@
   border-top: 0px;
   position: relative;
   padding: 0.5em;
-  white-space: nowrap;
-  text-overflow: ellipsis;
   font-weight: bold;
   vertical-align: middle;
 }
@@ -3991,6 +3979,9 @@
   position: absolute;
   left: 50%;
   bottom: 0px;
+}
+.bbn-table table > tbody > tr {
+  border: 0;
 }
 .bbn-table table > tbody > tr.bbn-widget {
   box-sizing: border-box;
@@ -4034,138 +4025,27 @@
   width: 0;
   float: left;
 }
+.bbn-table table > tbody > tr td.bbn-buttons-flex .bbn-block div {
+  display: flex !important;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+.bbn-table table > tbody > tr td.bbn-buttons-flex .bbn-block div .bbn-button.bbn-button-icon-only {
+  margin: .1em .1em !important;
+  height: 2em;
+  width: 2em;
+}
+.bbn-table table > tbody > tr td.bbn-buttons-flex.bbn-c .bbn-block div {
+  justify-content: center;
+}
+.bbn-table table > tbody > tr td.bbn-buttons-flex.bbn-r .bbn-block div {
+  justify-content: flex-end;
+}
 .bbn-table .bbn-scrollbar {
   z-index: 2;
 }
-.bbn-table2- > div div.bbn-table-titles {
-  position: relative;
-  height: 40px;
-  width: 100%;
-}
-.bbn-table2- > div div.bbn-table-titles table {
-  table-layout: fixed;
-  border-spacing: 0px;
-  padding: 0px;
-}
-.bbn-table2- > div div.bbn-table-titles.bbn-table-titles-group {
-  height: 79px;
-}
-.bbn-table2- > div div.bbn-table-titles tr {
-  height: 39px;
-}
-.bbn-table2- > div div.bbn-table-titles tr td {
-  box-sizing: border-box;
-  position: relative;
-  padding: 0.5em;
-  white-space: nowrap;
-  overflow: hidden;
-  font-weight: bold;
-  vertical-align: middle;
-}
-.bbn-table2- > div div.bbn-table-titles tr td:not(:last-child) {
-  border-right: 0px;
-}
-.bbn-table2- > div div.bbn-table-titles tr td > span.bbn-p {
-  text-overflow: ellipsis;
-}
-.bbn-table2- > div div.bbn-table-titles tr td .bbn-table-title-group {
-  position: absolute;
-  left: 0px;
-  top: 0px;
-  margin-left: 20px;
-}
-.bbn-table2- > div div.bbn-table-titles tr td .bbn-table-title-group > div {
-  height: 100%;
-  vertical-align: middle;
-  line-height: 38px;
-}
-.bbn-table2- > div div.bbn-table-titles tr td i.fa.fa-filter {
-  position: absolute;
-  top: 1px;
-  left: 0px;
-}
-.bbn-table2- > div > div.bbn-table-main {
-  overflow: hidden;
-}
-.bbn-table2- > div > div.bbn-table-main > div > div.bbn-table-container {
-  overflow-y: auto;
-  scrollbar-width: none;
-}
-.bbn-table2- > div > div.bbn-table-main > div > div.bbn-table-container::-webkit-scrollbar {
-  display: none;
-}
-.bbn-table2- > div > div.bbn-table-main > div > div.bbn-table-container > table {
-  outline: 0;
-  width: auto;
-  table-layout: fixed;
-  border-spacing: 0px;
-  padding: 0px;
-}
-.bbn-table2- > div > div.bbn-table-main > div > div.bbn-table-container > table > thead tr {
-  height: 39px;
-}
-.bbn-table2- > div > div.bbn-table-main > div > div.bbn-table-container > table > thead tr th {
-  position: relative;
-  padding: 0.5em;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  font-weight: bold;
-  vertical-align: middle;
-  line-height: 2.5em;
-}
-.bbn-table2- > div > div.bbn-table-main > div > div.bbn-table-container > table > thead tr th i.bbn-table-sortable-icon {
-  position: absolute;
-  left: 50%;
-  bottom: 0px;
-}
-.bbn-table2- > div > div.bbn-table-main > div > div.bbn-table-container > table > tbody > tr.bbn-widget {
-  box-sizing: border-box;
-  border-left-width: 0;
-  border-right-width: 0;
-}
-.bbn-table2- > div > div.bbn-table-main > div > div.bbn-table-container > table > tbody > tr td {
-  overflow: hidden;
-  box-sizing: border-box;
-  border-top: 0px;
-  padding: 0;
-}
-.bbn-table2- > div > div.bbn-table-main > div > div.bbn-table-container > table > tbody > tr td:not(.bbn-table-fixed-cell):not(:last-child) {
-  border-right: 0px;
-}
-.bbn-table2- > div > div.bbn-table-main > div > div.bbn-table-container > table > tbody > tr td.bbn-table-fixed-cell {
-  position: sticky;
-  position: -webkit-sticky;
-  top: auto;
-}
-.bbn-table2- > div > div.bbn-table-main > div > div.bbn-table-container > table > tbody > tr td > div {
-  overflow: hidden;
-  height: 100%;
-  width: 100%;
-  word-break: break-word;
-  box-sizing: border-box;
-}
-.bbn-table2- > div > div.bbn-table-main > div > div.bbn-table-container > table > tbody > tr td > div > .bbn-table-expander {
-  line-height: 1em;
-}
-.bbn-table2- > div > div.bbn-table-main > div > div.bbn-table-container > table > tbody > tr td > div > .bbn-table-expander i:focus {
-  color: red;
-  outline: 0;
-}
-.bbn-table2- > div > div.bbn-table-main > div > div.bbn-table-container > table > tbody > tr td > div .bbn-table-dirty {
-  width: 0px;
-  height: 0px;
-  border-style: solid;
-  border-width: 3px;
-  border-color: red transparent transparent red;
-  padding: 0;
-}
-.bbn-table2- > div > div.bbn-table-main > div > div.bbn-table-container > table > tbody > tr td > div .bbn-table-dirty:before {
-  content: "\a0";
-  display: inline-block;
-  width: 0;
-  float: left;
-}
-.bbn-table2- > div > div.bbn-table-footer {
+.bbn-table > div.bbn-table-footer {
   clear: both;
   overflow: hidden;
   position: relative;
@@ -4174,19 +4054,11 @@
   line-height: 2em;
   padding: .333em .25em;
 }
-.bbn-table2- > div .toolbar-buttons {
+.bbn-table .toolbar-buttons {
   padding: 0.3em 0;
 }
-.bbn-table2- > div .toolbar-buttons button {
+.bbn-table .toolbar-buttons button {
   margin: 0 0.3em;
-}
-.bbn-table2- .bbn-table-floating-filter .bbn-table-filter-link {
-  position: absolute;
-  right: 0.5em;
-  bottom: 0.5em;
-}
-.bbn-table2-.bbn-overlay > div > div.bbn-table-main > div > div.bbn-table-container {
-  min-height: 100%;
 }
 .bbn-table-column-picker ul {
   list-style: none;

@@ -140,6 +140,14 @@
         default: 30
       },
       /**
+       * Defines the minimum columns width for mobile devices.
+       * @prop {Number} [100] minimumColumnWidthMobile
+       */
+      minimumColumnWidthMobile: {
+        type: Number,
+        default: 100
+      },
+      /**
        * Defines the default columns width.
        * @prop {Number} [150] defaultColumnWidth
        */
@@ -761,6 +769,7 @@
        * @returns {Array}
        */
       items() {
+        bbn.fn.warning('items')
         if (!this.cols.length) {
           return [];
         }
@@ -1975,6 +1984,7 @@
        * @fires _addTmp
        */
       edit(row, winOptions, index) {
+        bbn.fn.warning('edit');
         let rowIndex = index;
         if (!this.editable) {
           throw new Error("The table is not editable, you cannot use the edit function in bbn-table");
@@ -2084,6 +2094,7 @@
        * @returns {Boolean}
        */
       successEdit(d) {
+        bbn.fn.warning('successEdit')
         if (bbn.fn.isObject(d)) {
           if ((d.success !== undefined) && !d.success) {
             if (window.appui) {
@@ -2116,6 +2127,7 @@
        * @emit saverow
        */
       saveRow() {
+        bbn.fn.warning('saveRow')
         // New insert
         let ev = new Event('saverow', {cancelable: true});
         this.$emit('saverow', this.tmpRow || this.editedRow, ev);
@@ -2149,6 +2161,7 @@
        *
        */      
       saveInline() {
+        bbn.fn.warning('saveInline')
         if (this.tmpRow || this.editedRow) {          
           if (this.url) {
             let o = bbn.fn.extend({}, this.data, this.tmpRow || this.editedRow, {
@@ -2345,6 +2358,7 @@
        * @fires init
        */
       updateData(withoutOriginal) {
+        bbn.fn.warning('updateData')
         /** Mini reset?? */
         this.currentExpanded = [];
         this._removeTmp();
@@ -2519,9 +2533,11 @@
        * @fires _removeTmp
        */
       cancel() {
+        bbn.fn.warning('cancel')
         if (this.tmpRow) {
           this._removeTmp();
-        } else if (this.editedRow && this.originalRow) {
+        }
+        else if (this.editedRow && this.originalRow) {
           if (this.currentData[this.editedIndex]) {
             this.currentData[this.editedIndex].data = this.originalRow;
           }
@@ -2625,7 +2641,8 @@
        */
       resizeWidth(){
         let currentTot = this.groupCols[0].width + this.groupCols[1].width + this.groupCols[2].width,
-            diff =  this.lastKnownCtWidth - this.borderLeft - this.borderRight - currentTot,
+            parentWidth = this.$el.offsetParent ? this.$el.offsetParent.getBoundingClientRect().width : this.lastKnownCtWidth,
+            diff =  parentWidth - this.borderLeft - this.borderRight - currentTot,
             numDynCols = this.currentColumns.filter(c => (c.width === undefined) && !c.isExpander && !c.isSelection && !c.hidden).length,
             numStaticCols = this.currentColumns.filter(c => !!c.width && !c.isExpander && !c.isSelection && !c.hidden).length,
             newWidth = numDynCols || numStaticCols
@@ -2644,11 +2661,18 @@
                     || (!numDynCols && !!numStaticCols && !!col.width))
                 ) {
                   let tmp = col.realWidth + newWidth;
-                  if ((col.width !== undefined) && (tmp < col.width)) {
-                    tmp = col.width;
+                  if ((col.width !== undefined)
+                    && (!bbn.fn.isString(col.width)
+                      || bbn.fn.isNumber(col.width.substr(-1)))
+                  ) {
+                    if (tmp < parseFloat(col.width)) {
+                      tmp = parseFloat(col.width);
+                    }
                   }
-                  if (tmp < this.minimumColumnWidth) {
-                    tmp = this.minimumColumnWidth;
+                  else if (tmp < (bbn.fn.isMobile() ? this.minimumColumnWidthMobile : this.minimumColumnWidth)) {
+                    tmp = bbn.fn.isMobile()
+                      ? this.minimumColumnWidthMobile
+                      : this.minimumColumnWidth;
                   }
                   if (col.minWidth && (tmp < col.minWidth)) {
                     tmp = col.minWidth;
@@ -2834,6 +2858,8 @@
       init(with_data) {
         this.keepCool(() => {
           this.initStarted = true;
+          this.setContainerMeasures();
+          this.setResizeMeasures();
           let groupCols = [
                 {
                   name: 'left',
@@ -2859,14 +2885,13 @@
               isAggregated = false,
               aggregatedColIndex = false,
               aggregatedColTitle = false,
-              aggregatedColumns = [];
+              aggregatedColumns = [],
+              parentWidth = this.$el.offsetParent ? this.$el.offsetParent.getBoundingClientRect().width : this.lastKnownCtWidth;
           this.groupCols = bbn.fn.clone(groupCols);
           bbn.fn.each(this.cols, (a) => {
             a.realWidth = 0;
           });
           this.$nextTick(() => {
-            this.setContainerMeasures();
-            this.setResizeMeasures();
             bbn.fn.each(this.cols, (a, i) => {
               if (!a.hidden && (!this.groupable || (this.group !== i))) {
                 a.index = i;
@@ -2882,18 +2907,20 @@
                     aggregatedColumns.push(a);
                   }
                   if ( a.width ){
-                    if ((typeof (a.width) === 'string') && (a.width.substr(-1) === '%')) {
-                      a.realWidth = Math.floor(this.lastKnownCtWidth * parseFloat(a.width) / 100);
+                    if (bbn.fn.isString(a.width) && (a.width.substr(-1) === '%')) {
+                      a.realWidth = Math.floor(parentWidth * parseFloat(a.width) / 100);
+                      if ( a.realWidth < (bbn.fn.isMobile() ? this.minimumColumnWidthMobile : this.minimumColumnWidth) ){
+                        a.realWidth = bbn.fn.isMobile() ? this.minimumColumnWidthMobile : this.minimumColumnWidth;
+                      }
                     }
                     else {
                       a.realWidth = parseFloat(a.width);
                     }
-                    if ( a.realWidth < this.minimumColumnWidth ){
-                      a.realWidth = this.minimumColumnWidth;
-                    }
                   }
                   else {
-                    a.realWidth = this.minimumColumnWidth;
+                    a.realWidth = bbn.fn.isMobile()
+                      ? this.minimumColumnWidthMobile
+                      : this.minimumColumnWidth;
                     numUnknown++;
                   }
                   if (a.minWidth && (a.realWidth < a.minWidth)) {
@@ -2938,8 +2965,8 @@
                 isSelection: !!this.selection,
                 title: ' ',
                 filterable: false,
-                width: this.selection ? 40 : this.minimumColumnWidth,
-                realWidth: this.selection ? 40 : this.minimumColumnWidth
+                width: this.selection ? 40 : 30,
+                realWidth: this.selection ? 40 : 30
               };
               if ( firstGroup === 0 ){
                 o.fixed = true;
@@ -2955,25 +2982,24 @@
               tot += a.sum;
             });
 
-            let clientWidth = this.lastKnownCtWidth,
-                styles = window.getComputedStyle(this.$el),
+            let styles = window.getComputedStyle(this.$el),
                 borderLeft = styles.getPropertyValue('border-left-width').slice(0, -2),
                 borderRight = styles.getPropertyValue('border-right-width').slice(0, -2),
-                toFill = clientWidth - borderLeft - borderRight - tot;
+                toFill = parentWidth - borderLeft - borderRight - tot;
             this.borderLeft = borderLeft;
             this.borderRight = borderRight;
             // We must arrive to 100% minimum
             if (toFill > 0) {
               if (numUnknown) {
                 let newWidth = toFill / numUnknown;
-                if (newWidth < this.minimumColumnWidth) {
-                  newWidth = this.minimumColumnWidth;
+                if (newWidth < (bbn.fn.isMobile() ? this.minimumColumnWidthMobile : this.minimumColumnWidth)) {
+                  newWidth = bbn.fn.isMobile() ? this.minimumColumnWidthMobile : this.minimumColumnWidth;
                 }
                 let maxPreAggregatedWidth = 0;
                 bbn.fn.each(this.cols, (a, i) => {
                   if (!a.hidden) {
                     if (!a.width) {
-                      a.realWidth = newWidth + this.minimumColumnWidth;
+                      a.realWidth = newWidth + (bbn.fn.isMobile() ? this.minimumColumnWidthMobile : this.minimumColumnWidth);
                     }
                     if ( isAggregated && (i < aggregatedColIndex) && (a.realWidth >= maxPreAggregatedWidth) ){
                       maxPreAggregatedWidth = a.realWidth;
@@ -3062,6 +3088,7 @@
        * @param {Event} e
        */
       keydown(e) {
+        bbn.fn.warning('keydown')
         if (this.isBatch && this.editedRow && (e.which === 9) || (e.which === 13)) {
           e.preventDefault();
         }
@@ -3186,11 +3213,7 @@
        * @returns {String}
        */
       getTr(i) {
-        let c = this.getRef('table');
-        if ( c && c.rows && c.rows[i] ) {
-          return c.rows[i];
-        }
-        return false;
+        return this.$refs.rows && this.$refs.rows[i] ? this.$refs.rows[i] : false;
       },
       /**
        * Returns an object of the default values for the different types of fields.
@@ -3241,7 +3264,8 @@
        * @param {Number} idx 
        */
       focusout(idx) {
-        bbn.fn.log('focusout')
+        return;
+        bbn.fn.warning('focusout')
         this.focused = false;
         //this.cancel();
         setTimeout(() => {
@@ -3256,6 +3280,8 @@
        * @param {Event} e 
        */
       focusin(idx, e) {
+        return;
+        bbn.fn.warning('focusin')
         if (e.target.tagName !== 'BUTTON') {
           this.focused = true;
           if (this.focusedRow !== idx) {
@@ -3373,7 +3399,9 @@
         this.$once('dataloaded', () => {
           this.ready = true;
         });
-        this.init(!!this.isAutobind);
+        this.$nextTick(() => {
+          this.init(!!this.isAutobind);
+        })
       }
     },
     watch: {
@@ -3412,6 +3440,7 @@
        * @watch editedRow
        */
       editedRow(newVal, oldVal) {
+        bbn.fn.warning('editedRow', newVal);
         if (newVal === false) {
           this.editedIndex = false;
         }
@@ -3443,9 +3472,13 @@
       /**
        * @watch focusedRow
        * @fires isModified
+       * @fires edit
        * @emit change
+       * @emit focus
+       * @emit focusout
        */
       focusedRow(newIndex, oldIndex) {
+        bbn.fn.warning('watch focusedRow', newIndex, oldIndex)
         if (this.items[newIndex]) {
           this.$emit('focus', this.items[newIndex].data, newIndex);
         }
@@ -3456,19 +3489,27 @@
           this.editable &&
           (this.editMode === 'inline')
         ) {
-          if (this.items[oldIndex] !== undefined) {
+          if ((oldIndex !== false) && (this.items[oldIndex] !== undefined)) {
             let idx = this.items[oldIndex].index;
-            if (
-              (this.editedIndex === idx) &&
-              this.isModified(idx)
+            if ((this.editedIndex === idx)
+              && this.isModified(idx)
             ) {
-              //this.$forceUpdate();
-              this.$emit('change', this.items[oldIndex].data, idx);
-              //this.save();
+              if (!this.isBatch) {
+                this.cancel();
+              }
+              else {
+                //this.$forceUpdate();
+                this.$emit('change', this.items[oldIndex].data, idx);
+                //this.save();
+              }
             }
+            this.editedRow = false;
           }
-          if (this.items[newIndex] && !this.items[newIndex].group) {
-            let comeFromAfter = newIndex === oldIndex - 1;
+          if ((newIndex !== false)
+            && this.items[newIndex]
+            && !this.items[newIndex].group
+          ) {
+            let comeFromAfter = (oldIndex !== false) && (newIndex === (oldIndex - 1));
             this.$nextTick(() => {
               this.edit(this.items[newIndex].data, null, newIndex);
               this.$nextTick(() => {

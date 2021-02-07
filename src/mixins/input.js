@@ -12,7 +12,11 @@
          * @prop value
          * @memberof inputComponent
          */
-        value: {},
+        value: {
+          default(){
+            return this.default !== undefined ? this.default : ''
+          }
+        },
         /**
          * The component's name.
          * @prop {String} name 

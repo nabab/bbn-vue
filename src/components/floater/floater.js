@@ -657,15 +657,19 @@
             this.resizerFn = setTimeout(() => {
               this.resizerFn = false;
               let scroll = this.getRef('scroll');
-              if (!scroll || !scroll.ready || this.setContainerMeasures()){
+              if (!scroll || !scroll.ready){
                 // Case where the container has changed size
                 if (scroll && scroll.ready) {
                   // Setting lastKnownWidth & lastKnownHeight
                   this.setResizeMeasures();
+                  this.$emit('resize');
                 }
                 // We do nothing and wait that the scroll does the resize
                 resolve();
                 return;
+              }
+              else if (this.setContainerMeasures()) {
+                return this.onResize(true);
               }
               // this will change the dimension and the visibility the time to calculate the sizes
               this.isResizing = true;
@@ -907,7 +911,8 @@
        * @fires onResize
        * @fires updateComponents
        */
-      scrollResize() {
+      scrollResize(force) {
+        bbn.fn.log("Scroll Resize");
         return this.keepCool(() => {
           if (this.scrollResizeTimeout !== false) {
             clearTimeout(this.scrollResizeTimeout);
@@ -1323,7 +1328,7 @@
             }, bbn.fn.isNumber(this.autoHide) ? this.autoHide : 1500);
           }
         }
-      }
+      },
     }
 
   });

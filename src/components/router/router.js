@@ -18,7 +18,6 @@
        * @mixin bbn.vue.observerComponent
        */
       bbn.vue.basicComponent,
-      bbn.vue.resizerComponent,
       bbn.vue.localStorageComponent,
       bbn.vue.closeComponent,
       bbn.vue.observerComponent

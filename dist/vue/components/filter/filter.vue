@@ -5,10 +5,11 @@
   ></h3>
   <!-- List of the validated conditions -->
   <div class="bbn-form-full"
-       v-for="(condition, idx) in conditions">
-    <div :class="'bbn-filter-items bbn-filter-bordered bbn-filter-' + (currentLogic === 'OR' ? 'or' : 'and')"
-         style="display: inline-flex; align-items: baseline">
-      <div class="bbn-filter-logic" v-if="multi">
+       v-for="(condition, idx) in conditions"
+       v-if="multi">
+    <div :class="'bbn-filter-items bbn-filter-bordered bbn-iflex bbn-filter-' + (currentLogic === 'OR' ? 'or' : 'and')"
+         style="align-items: baseline">
+      <div class="bbn-filter-logic">
         <span v-if="idx"
               v-text="currentLogic"
         ></span>
@@ -28,12 +29,12 @@
         >
         </bbn-dropdown>
       </div>
-      <div :style="condition.conditions ? 'display: flex; flex-direction: column;' : 'display: flex;  flex-direction: row; align-items: center'"
-           v-if="multi"
-      >
-        <div class="bbn-filter-buttons"
-             style="display: inline-flex;"
-        >
+      <div class="bbn-flex"
+           :style="{
+             'flex-direction': condition.conditions ? 'column' : 'row',
+             'align-items': condition.conditions ? '' : 'center'
+           }">
+        <div class="bbn-filter-buttons bbn-iflex">
           <i class="bbn-p bbn-lg nf nf-fa-minus_circle bbn-right-xsspace"
              @mouseover="over"
              @mouseout="out"
@@ -574,7 +575,7 @@
          * @mixin bbn.vue.dataEditorComponent
          * @memberof bbn-filter-form
          */
-        mixins: [bbn.vue.dataEditorComponent],
+        mixins: [bbn.vue.basicComponent, bbn.vue.dataEditorComponent],
         props: {
           /**
            * The list of fields available for the filter.

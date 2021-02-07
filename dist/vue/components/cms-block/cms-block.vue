@@ -383,12 +383,12 @@
         return this.source.type
       }, 
       parent(){
-        return this.closest('bbn-container').getComponent();
+        return this.ready ? this.closest('bbn-container').getComponent() : null;
       }
     },
     methods: {
       selectImg(st){
-        alert(st)
+        bbn.fn.link(st);
       },
       alert(){
         alert('test')
@@ -429,6 +429,7 @@
        * @param {string} type 
        */
       component(type){
+        bbn.fn.log(type);
         return {
           props: {
             source: {},
@@ -681,7 +682,7 @@
               template: `
                 <!--IMPORTANT CHANGE FROM CLICK TO HREF WHEN WILL BE POSSIBLE TO MAKE LINK-->
                 <!--a  target="_self" :href="(source.href ? (linkURL + source.href) : source.src)"-->
-                <a  target="_self" @click="selectImg(linkURL + source.href)">
+                <a  target="_self" @click="selectImg">
                   <!--TO TAKE IMAGE FROM THE INDEX-->
                   <img :src="path + source.src" :alt="source.alt ? source.alt : ''" :style="$parent.source.style">
                   <div v-if="source.caption || (source.title && (type === 'carousel'))" 
@@ -719,8 +720,9 @@
                   escape(st){
                     return this.$parent.escape(st);
                   },
-                  selectImg(st){
-                    return this.closest('bbn-container').getComponent().selectImg(st)
+                  selectImg(){
+                    bbn.fn.log(this.closest('bbn-container'), this.closest('bbn-container').getComponent());
+                    return this.closest('bbn-cms-block').selectImg(this.source.href)
                   }
                 },
                 computed: {
@@ -833,6 +835,7 @@
       },
     },
     mounted(){
+      this.ready = true;
       if ( !this.source.style ){
         this.source.style = {};
       }

@@ -18,11 +18,16 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-textbox']"
        :readonly="readonly"
        @change="onChange"
        :value="value"
-       :disabled="disabled"
-       
-  >
-   <slot></slot>
-  </div>
+			:disabled="disabled"/>
+	<div class="bbn-hidden">
+		<slot></slot>
+	</div>
+	<textarea :required="required"
+						:readonly="readonly"
+						ref="input"
+						:value="value"
+						class="bbn-hidden"
+						:disabled="disabled"/>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-rte');
 script.setAttribute('type', 'text/x-template');
@@ -53,7 +58,7 @@ document.head.insertAdjacentElement('beforeend', css);
     /**
      * @mixin bbn.vue.basicComponent
      */
-    mixins: [bbn.vue.basicComponent],
+    mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent],
     props: {
       /**
        * @prop {Boolean} [false] iFrame
@@ -200,9 +205,17 @@ document.head.insertAdjacentElement('beforeend', css);
        * @emit input
        */
       onChange(){
-        this.$emit('input', this.widget.getElementValue());
-      },
-      
+        this.$emit('input', this.widget.value);
+      }
+    },
+    created(){
+      if (!this.value
+        && this.$slots.default
+        && this.$slots.default[0]
+        && this.$slots.default[0].text.length
+      ) {
+        this.currentValue = this.$slots.default[0].text;
+      }
     },
     /**
      * Initializes the component
@@ -228,8 +241,11 @@ document.head.insertAdjacentElement('beforeend', css);
       if ( this.iFrame ){
         this.widget.iframeCSSLinks = this.iframeCSSLinks
       }
-      if ( this.value) {
-        this.widget.value = this.value
+      if ( this.currentValue) {
+        this.widget.value = this.currentValue;
+      }
+      if (!this.value && this.currentValue) {
+        this.$emit('input', this.currentValue);
       }
       this.ready = true;
     },
@@ -239,7 +255,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @param newVal 
        */
       value(newVal){
-        if (this.widget && (this.widget.getElementValue()!== newVal)) {
+        if (this.widget && (this.widget.value !== newVal)) {
            bbn.fn.log("CHANFING CURRENT VALUE");
            this.widget.value = newVal;
         }

@@ -6982,13 +6982,13 @@
                     },
                     {
                         "text": "onResize",
-                        "desc": "Handles the resize and reinitializes the table.",
+                        "desc": "Handles the resize.",
                         "url": "bbn-vue\/component\/table\/doc\/methods#onResize"
                     },
                     {
-                        "text": "resizeHeight",
-                        "desc": "Handles the resize.",
-                        "url": "bbn-vue\/component\/table\/doc\/methods#resizeHeight"
+                        "text": "resizeWidth",
+                        "desc": "Resizes the table.",
+                        "url": "bbn-vue\/component\/table\/doc\/methods#resizeWidth"
                     },
                     {
                         "text": "dataScrollContents",

@@ -126,7 +126,7 @@
        */
       latency: {
         type: Number,
-        default: 125
+        default: 25
       },
       scrollable: {
         type: Boolean,

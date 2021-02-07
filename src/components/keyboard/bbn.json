@@ -1,0 +1,11 @@
+{
+  "name": "bbn-keyboard",
+  "version": "0.1.1",
+  "authors": [
+    "Thomas Nabet <thomas.nabet@gmail.com>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "simple-keyboard": ">=2.32.0"
+  }
+}

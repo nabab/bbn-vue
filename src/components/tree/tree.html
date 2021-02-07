@@ -34,6 +34,7 @@
                         :quickFilter="quickFilter"
                         :sortable="it.sortable !== undefined ? it.sortable : sortable"
                         :uid="uid"
+                        :tree-state="_getTreeState(it.data[uid])"
         >
           <li :class="['bbn-tree-node', 'bbn-unselectable', {
                         'bbn-state-active': (isActive && !isSelected) || (tree.dragging && tree.overNode && !tree.overOrder && (tree.overNode === _self) && tree.draggable),
@@ -135,6 +136,7 @@
                       :sortable="source.sortable !== undefined ? source.sortable : tree.sortable"
                       :multiple="source.multiple !== undefined ? source.multiple : tree.multiple"
                       :uid="uid"
+                      :state="treeState || {}"
                       :opened="!!tree.opened"
             ></bbn-tree>
             <span v-if="sortable"

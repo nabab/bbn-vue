@@ -154,18 +154,19 @@
               </template>
             </tr>
           </thead>
-          <tbody>
+          <tbody ref="tbody">
             <template v-for="(d, i) in items">
               <tr :key="randomString().toLowerCase()"
                   :index="d.index"
                   :tabindex="0"
                   @focusout="focusout(i, $event)"
                   @focusin="focusin(i, $event)"
-                  @dblclick="() => {if ( focusedRow !== i ) { focusedRow = i }}"
+                  @dblclick="() => {if (focusedRow !== i) {focusedRow = i}}"
                   :class="[{
                     'bbn-alt': d.expanderIndex !== undefined ? !!(d.expanderIndex % 2) : !!(d.rowIndex % 2),
                     'bbn-header': !!(d.aggregated || d.groupAggregated),
                   }, trClass ? trClass(d.data) : '']"
+                  ref="rows"
               >
                 <!-- Group lines just have the cell with the expander and a single big cell -->
                 <template v-if="groupable && d.group && currentColumns && currentColumns.length">

@@ -31,7 +31,7 @@
                             tabindex="0"
                             :item-component="$options.components.listItem"
                             class="bbn-h-100 bbn-vmiddle"
-                            :attach="itsMaster ? itsMaster.getRef('breadcrumb') : undefined"
+                            :attach="itsMaster ? (itsMaster.getRef('breadcrumb') || undefined) : undefined"
                             :autobind="false"
                             :style="{
                               backgroundColor: bc.getBackgroundColor(bc.selected),

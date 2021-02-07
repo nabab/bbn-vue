@@ -352,7 +352,9 @@
         _isSetting: false,
         window: null,
         isInit: false,
-        realButtons: []
+        realButtons: [],
+        canSubmit: false,
+        sourceTimeout: 0
       };
     },
     computed: {
@@ -368,15 +370,7 @@
       canCancel(){
         return this.window || this.isModified();
       },
-      /**
-       * Returns true if the form can be submitted.
-       *
-       * @computed canSubmit
-       * @return {Boolean}
-       */
-      canSubmit(){
-        return this.prefilled || (this.isModified() && this.isValid(false, false));
-      },
+      
       /**
        * Based on the properties 'fixedFooter' and 'fullScreen', a string is returned containing the classes for the form's template.
        *
@@ -425,6 +419,15 @@
       }
     },
     methods: {
+      /**
+       * Returns true if the form can be submitted.
+       *
+       * @method _canSubmit
+       * @return {Boolean}
+       */
+      _canSubmit(){
+        return this.prefilled || (this.isModified() && this.isValid(false, false));
+      },
       /**
        * Returns an array containing the form's buttons.
        *
@@ -902,6 +905,7 @@
             }
           });
           this._isSetting = false;
+          this.canSubmit = this._canSubmit();
           this.$forceUpdate();
         }
       }
@@ -924,6 +928,7 @@
       source: {
         deep: true,
         handler(){
+          bbn.fn.warning('form changed')
           this.dirty = this.isModified();
           if (this.storage) {
             if (!this._isSetting) {
@@ -931,6 +936,14 @@
             }
           }
           this.$emit('change', this.getModifications())
+          this.$nextTick(() => {
+            if (this.sourceTimeout) {
+              clearTimeout(this.sourceTimeout);
+            }
+            this.sourceTimeout = setTimeout(() => {
+              this.canSubmit  = this._canSubmit();
+            }, 200)
+          })
         }
       },
       /**
