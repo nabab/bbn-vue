@@ -32,6 +32,7 @@
       </div>
       <component :is="scrollable ? 'bbn-scroll' : 'div'"
                  class="bbn-w-100"
+                 ref="scroll"
       >
         <table :style="{width: totalWidth}"
                ref="table"
@@ -156,7 +157,7 @@
           </thead>
           <tbody ref="tbody">
             <template v-for="(d, i) in items">
-              <tr :key="randomString().toLowerCase()"
+              <tr :key="d.rowKey"
                   :index="d.index"
                   :tabindex="0"
                   @focusout="focusout(i, $event)"
@@ -325,7 +326,7 @@
                         <bbn-field v-else-if="col.field && !col.render && !col.buttons"
                                   v-bind="col"
                                   @click.stop=""
-                                  :key="d.index"
+                                  :key="d.rowKey"
                                   :value="d.data[col.field]"
                                   :data="d.data">
                         </bbn-field>
@@ -369,10 +370,8 @@
         </table>
       </component>
     </div>
-
-    
     <!-- Footer -->
-    <bbn-pager class="bbn-table-footer"
+    <bbn-pager class="bbn-table-footer bbn-no-border-right bbn-no-border-left bbn-no-border-bottom"
                v-if="pageable || saveable || filterable || isAjax || showable"
                :element="_self"
                :buttons="footerButtons"

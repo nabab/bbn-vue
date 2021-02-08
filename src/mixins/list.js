@@ -558,7 +558,9 @@
           }
           return true;
         },
-
+        hashCfg(){
+          return bbn.fn.md5(JSON.stringify(this.currentFilters) + JSON.stringify(this.currentLimit) + JSON.stringify(this.currentStart) + JSON.stringify(this.currentOrder));
+        }
       },
       methods: {
         /**
@@ -809,9 +811,14 @@
                   else{
                     d.data = this._map(d.data);
                     this.currentData = bbn.fn.map(d.data, (a, i) => {
-                      let o = this.hierarchy ? bbn.fn.extend(true, a, {index: i, _bbn: true}) : {
+                      let o = this.hierarchy ? bbn.fn.extend(true, a, {
+                        index: i,
+                        key: this.isAjax ? (i + '-' + this.hashCfg) : i,
+                        _bbn: true,
+                      }) : {
                         data: a,
                         index: i,
+                        key: this.isAjax ? (i + '-' + this.hashCfg) : i,
                         _bbn: true
                       };
                       if ( this.children && a[this.children] && a[this.children].length ){

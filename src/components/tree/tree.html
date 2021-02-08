@@ -136,7 +136,7 @@
                       :sortable="source.sortable !== undefined ? source.sortable : tree.sortable"
                       :multiple="source.multiple !== undefined ? source.multiple : tree.multiple"
                       :uid="uid"
-                      :state="treeState || {}"
+                      :state="treeState"
                       :opened="!!tree.opened"
             ></bbn-tree>
             <span v-if="sortable"

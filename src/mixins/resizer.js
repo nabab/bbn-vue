@@ -176,10 +176,8 @@
 
           // Setting initial dimensions
           //this.setContainerMeasures();
-          bbn.fn.log("SETTING Event for " + this.$options._componentTag);
           // Creating the callback function which will be used in the timeout in the listener
           this.onParentResizerEmit = () => {
-            bbn.fn.log("LAUNCHING Event for " + this.$options._componentTag);
             // Removing previous timeout
             if (this.resizerTimeout) {
               clearTimeout(this.resizerTimeout);

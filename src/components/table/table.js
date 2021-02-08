@@ -764,12 +764,10 @@
        * @computed items
        * @fires _checkConditionsOnValue
        * @fires expandedValues
-       * @fires _updateViewport
        * @fires isExpanded
        * @returns {Array}
        */
       items() {
-        bbn.fn.warning('items')
         if (!this.cols.length) {
           return [];
         }
@@ -871,6 +869,7 @@
           res.push({
             index: -1,
             rowIndex: 0,
+            rowKey: this.isAjax ? ('-1-' + this.hashCfg) : -1,
             data: this.tmpRow,
             selected: false,
             expander: !!this.expander
@@ -912,6 +911,7 @@
                 value: currentGroupValue,
                 data: a,
                 rowIndex: rowIndex,
+                rowKey: data[i].key,
                 expander: true,
                 num: bbn.fn.count(data, 'data.' + this.cols[this.group].field, currentGroupValue)
               };
@@ -956,14 +956,16 @@
             o = {
               index: data[i].index,
               data: a,
-              rowIndex: rowIndex
+              rowIndex: rowIndex,
+              rowKey: data[i].key
             };
             if (isGroup) {
               if (!currentGroupValue) {
                 o.expanded = true;
               } else {
                 o.isGrouped = true;
-                o.link = currentLink;;
+                o.link = currentLink;
+                o.rowKey = o.rowIndex + '-' + o.rowKey;
               }
             } else if (this.expander && (
                 !bbn.fn.isFunction(this.expander) ||
@@ -995,6 +997,7 @@
               data: a,
               expansion: true,
               rowIndex: rowIndex,
+              rowKey: rowIndex + '-' + data[i].key,
               expanderIndex: expanderIndex
             });
             rowIndex++;
@@ -1057,6 +1060,7 @@
                     res.push({
                       index: data[i] ? data[i].index : 0,
                       rowIndex: rowIndex,
+                      rowKey: data[i] ? data[i].key : 0,
                       groupAggregated: true,
                       link: currentLink,
                       value: currentGroupValue,
@@ -1075,6 +1079,7 @@
                   res.push({
                     index: data[i] ? data[i].index : 0,
                     rowIndex: rowIndex,
+                    rowKey: data[i] ? data[i].key : 0,
                     aggregated: true,
                     name: c,
                     data: tmp
@@ -1095,9 +1100,6 @@
           if (d.group || d.expander || this.isExpanded(d) || d.aggregated || (this.isExpanded(d) && d.groupAggregated)) {
             fdata.push(d)
           }
-        });
-        this.$nextTick(() => {
-          this._updateViewport();
         });
         return fdata;
       },
@@ -1134,76 +1136,6 @@
       }
     },
     methods: {
-      /**
-       * Defines the margin-top.
-       * @method _scrollContainer
-       * @todo 1px must correspond to the border width
-       */
-      _scrollContainer() {
-        let rule = "."  + this.cssRuleName + "{margin-top: " +
-        (this.container.scrollTop ? '-' + (this.container.scrollTop) + 'px' : '') + '}';
-        if (rule !== this.marginStyleSheet.innerHTML) {
-          this.marginStyleSheet.innerHTML = rule;
-        }
-      },
-      /**
-       * Adds the class 'bbn-table-tr-over' to the row of given idx on mouseenter and remove the class on mouse leave.
-       * @ignore
-       * @method _updateRowIndex
-       */
-      _updateRowIndex(idx) {
-
-        bbn.fn.each(this.groupCols, (a) => {
-          let table = this.getRef(a.name + 'Table');
-          if (table && table.tBodies) {
-            let trs = this.getRef(a.name + 'Table').tBodies[0].childNodes;
-            /*bbn.fn.each(trs, (tr) => {
-              tr.classList.remove('bbn-primary')
-            })
-            if ((idx !== null) && trs[idx]) {
-              trs[idx].classList.add('bbn-primary');
-            }*/
-          }
-        });
-        //this.currentIndex = idx;
-      },
-      /**
-       * Returns header's CSS object.
-       * @method _headStyles
-       * @param {Object} col
-       * @param {Number} groupIndex
-       * @returns {Object}
-       */
-      _headStyles(col, groupIndex) {
-        let css = {
-          position: groupIndex === 1 ? 'static' : 'absolute',
-          top: 'auto',
-          height: 'inherit',
-          left: col.left === undefined ? 'auto' : col.left + 'px',
-          width: col.realWidth
-        };
-        if (col.hidden) {
-          css.display = 'none';
-        }
-        return css;
-      },
-      /**
-       * @method _getScrollers
-       * @returns {Vue}
-       */
-      _getScrollers(){
-        return [this.getRef('mainTitles')];
-
-      },
-      /**
-       * Returns body's CSS object
-       * @method _bodyStyles
-       * @param {Object} col 
-       * @returns {Object}
-       */
-      _bodyStyles(col) {
-        return {};
-      },
       /**
        * Normalizes the row's data.
        * @method _defaultRow
@@ -1246,8 +1178,9 @@
        */
       _addTmp(data) {
         this._removeTmp().tmpRow = this._defaultRow(data);
-        if (this.$refs.scrollerY) {
-          this.$refs.scrollerY.scrollTo(0, null, true);
+        if (this.$refs.scroll) {
+          this.$refs.scroll.scrollStartY();
+          this.$refs.scroll.scrollStartX();
         }
         return this;
       },
@@ -1261,93 +1194,6 @@
           this.tmpRow = false;
         }
         return this;
-      },
-      /**
-       * Defines if the scroll in the table data part has to be hidden.
-       * @method _scrollerHidden
-       * @param {Object} groupCol
-       * @param {Number} idx
-       * @returns {Boolean}
-       */
-      _scrollerHidden(groupCol, idx) {
-        let last = this.groupCols.length === idx - 1;
-        if (groupCol.name === 'main') {
-          return last ? 'x' : false;
-        }
-        return last ? 'y' : true;
-      },
-      /**
-       * In a scrollable table, updates the viewport after scrolling the X axis.
-       *
-       * @method _updateViewport
-       * @fires titleGroupsCells
-       * @fires getRef
-       */
-      _updateViewport() {
-        if (!this.scrollable) {
-          return
-        }
-        this.keepCool(() => {
-          let table = this.getRef('mainTable'),
-            scroll = this.getRef('mainScroller'),
-            container = scroll ? scroll.getRef('scrollContainer') : null,
-            top = container ? container.scrollTop : null,
-            left = container ? container.scrollLeft : null,
-            viewport = scroll ? bbn.fn.clone(scroll.$el.getBoundingClientRect()) : null;
-          if (this.titleGroups && scroll && scroll.getRef('xScroller')) {
-            let x = scroll.getRef('xScroller').currentScroll,
-              cols = this.titleGroupsCells(this.groupCols[1] && (this.groupCols[1].name === 'main') ? 1 : 0),
-              tot = 0;
-            bbn.fn.each(cols, (a) => {
-              if (tot + a.realWidth > x) {
-                if ( this.getRef('mainTitles') && this.getRef('mainTitles').querySelector('.bbn-table-title-group') ){
-                  this.getRef('mainTitles').querySelector('.bbn-table-title-group').style.left = tot < x ? x - tot : 0;
-                }
-                return false;
-              }
-              tot += a.realWidth;
-            });
-          }
-          return;
-          if (!viewport) {
-            return;
-          }
-          viewport.top = top || 0;
-          viewport.left = left || 0;
-          if (
-            this.viewport &&
-            (this.viewport.x === viewport.x) &&
-            (this.viewport.width === viewport.width) &&
-            (this.viewport.y === viewport.y) &&
-            (this.viewport.height === viewport.height) &&
-            (this.viewport.top === viewport.top) &&
-            (this.viewport.left === viewport.left)
-          ) {
-            return;
-          }
-          this.viewport = viewport;
-          if (table && scroll) {
-            let rows = [],
-              cols = [];
-            if (table && table.rows && table.rows[0] && table.rows[0].cells) {
-              bbn.fn.each(this.groupCols[1].cols, (col, idx) => {
-                if (table.rows[0].cells[idx]) {
-                  let vp = table.rows[0].cells[idx].getBoundingClientRect();
-                  if (vp.x > (viewport.x - 300)) {
-                    cols.push(col.index);
-                  }
-                  if (vp.x > (viewport.x + viewport.width + 300)) {
-                    // MUST STOP HERE
-                    return false;
-                  }
-                  this.viewportCols.splice(0, this.viewportCols.length, ...cols);
-                  this.viewportRows.splice(0, this.viewportRows.length, ...rows);
-                  this.updateTable();
-                }
-              })
-            }
-          }
-        }, '_updateViewport')
       },
       /**
        * Prepares the data to export the table to CSV.
@@ -1425,18 +1271,7 @@
         }
         return false;
       },
-      /**
-       * @ignore
-       * @todo Not used
-       * @method _containerComponent
-       * @param {Number} groupIndex
-       */
-      _containerComponent(groupIndex) {
-        return groupIndex === 1 ? {
-          template: '<div class="bbn-block"><slot></slot></div>'
-        } : bbn.vue.emptyComponent
-      },
-      randomString: bbn.fn.randomString,
+      _randomString: bbn.fn.randomString,
       /**
        * Exports to csv and download the given filename.
        * @method exportCSV
@@ -1902,7 +1737,7 @@
                 table: table,
                 formData: {
                   changed: false
-                },                
+                },
                 shownCols: shownColumns
               }
             },
@@ -1966,7 +1801,7 @@
                 handler() {
                   this.formData.changed = true;
                 }
-              }              
+              }
             }
           },
           source: {
@@ -1984,7 +1819,6 @@
        * @fires _addTmp
        */
       edit(row, winOptions, index) {
-        bbn.fn.warning('edit');
         let rowIndex = index;
         if (!this.editable) {
           throw new Error("The table is not editable, you cannot use the edit function in bbn-table");
@@ -1999,7 +1833,7 @@
         this.originalRow = bbn.fn.clone(row);
         // EditedRow exists from now on the time of the edition
         this.editedRow = row;
-        
+
         if (this.items[index]) {
           this.editedIndex = this.items[index].index;
         }
@@ -2094,7 +1928,6 @@
        * @returns {Boolean}
        */
       successEdit(d) {
-        bbn.fn.warning('successEdit')
         if (bbn.fn.isObject(d)) {
           if ((d.success !== undefined) && !d.success) {
             if (window.appui) {
@@ -2127,7 +1960,6 @@
        * @emit saverow
        */
       saveRow() {
-        bbn.fn.warning('saveRow')
         // New insert
         let ev = new Event('saverow', {cancelable: true});
         this.$emit('saverow', this.tmpRow || this.editedRow, ev);
@@ -2153,16 +1985,15 @@
           return true;
         }
         return false;
-      },      
+      },
       /**
        * If the prop url of the table is defined makes a post to the url to update or insert the row, else fires the method saveRow to insert or update the row in originalData.
        * @method saveInline
        * @fires saveRow
        *
-       */      
+       */
       saveInline() {
-        bbn.fn.warning('saveInline')
-        if (this.tmpRow || this.editedRow) {          
+        if (this.tmpRow || this.editedRow) {
           if (this.url) {
             let o = bbn.fn.extend({}, this.data, this.tmpRow || this.editedRow, {
               action: this.tmpRow ? 'insert' : 'update'
@@ -2175,7 +2006,7 @@
             this.$emit(this.tmpRow ? 'insert' : 'edit');
           }
         }
-      },      
+      },
       /**
        * Returns wheter or not the cell is grouped.
        * @method isGroupedCell
@@ -2358,7 +2189,6 @@
        * @fires init
        */
       updateData(withoutOriginal) {
-        bbn.fn.warning('updateData')
         /** Mini reset?? */
         this.currentExpanded = [];
         this._removeTmp();
@@ -2533,7 +2363,6 @@
        * @fires _removeTmp
        */
       cancel() {
-        bbn.fn.warning('cancel')
         if (this.tmpRow) {
           this._removeTmp();
         }
@@ -2700,25 +2529,6 @@
           });
           this.isResizingWidth = false;
         }
-      },
-      /**
-       * Returns an array containing the scrollcontainer of each items of groupCols.
-       * @method dataScrollContents
-       * @fires getRef
-       * @returns {Array}
-       */
-      dataScrollContents() {
-        if (!this.groupCols[0].cols.length && !this.groupCols[2].cols.length) {
-          return null;
-        }
-        let r = [];
-        bbn.fn.each(this.groupCols, (a) => {
-          let sc = this.getRef(a.name + 'Scroller');
-          if (a.cols.length && sc && sc.getRef('scrollContainer')) {
-            r.push(sc.getRef('scrollContainer'));
-          }
-        });
-        return r;
       },
       /**
        * Returns if the given row is expanded.
@@ -3088,7 +2898,6 @@
        * @param {Event} e
        */
       keydown(e) {
-        bbn.fn.warning('keydown')
         if (this.isBatch && this.editedRow && (e.which === 9) || (e.which === 13)) {
           e.preventDefault();
         }
@@ -3264,8 +3073,6 @@
        * @param {Number} idx 
        */
       focusout(idx) {
-        return;
-        bbn.fn.warning('focusout')
         this.focused = false;
         //this.cancel();
         setTimeout(() => {
@@ -3280,8 +3087,6 @@
        * @param {Event} e 
        */
       focusin(idx, e) {
-        return;
-        bbn.fn.warning('focusin')
         if (e.target.tagName !== 'BUTTON') {
           this.focused = true;
           if (this.focusedRow !== idx) {
@@ -3440,7 +3245,6 @@
        * @watch editedRow
        */
       editedRow(newVal, oldVal) {
-        bbn.fn.warning('editedRow', newVal);
         if (newVal === false) {
           this.editedIndex = false;
         }
@@ -3478,7 +3282,6 @@
        * @emit focusout
        */
       focusedRow(newIndex, oldIndex) {
-        bbn.fn.warning('watch focusedRow', newIndex, oldIndex)
         if (this.items[newIndex]) {
           this.$emit('focus', this.items[newIndex].data, newIndex);
         }
