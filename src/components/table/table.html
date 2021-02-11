@@ -33,6 +33,7 @@
       <component :is="scrollable ? 'bbn-scroll' : 'div'"
                  class="bbn-w-100"
                  ref="scroll"
+                 :offset-y="$refs.thead ? [$refs.thead.getBoundingClientRect().height, 0] : [0,0]"
       >
         <table :style="{width: totalWidth}"
                ref="table"

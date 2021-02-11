@@ -135,7 +135,15 @@
       fullPage: {
         type: Boolean,
         default: false
-      }
+      },
+      offsetX: {
+        type: [Number, Array],
+        default: 0
+      },
+      offsetY: {
+        type: [Number, Array],
+        default: 0
+      },
     },
     data() {
       return {
@@ -232,7 +240,8 @@
         isDragging: false,
         isFocused: false,
         previousTouch: {x: null, y: null},
-        interval: null
+        interval: null,
+        scrollReady: false
       };
     },
     computed: {
@@ -260,6 +269,7 @@
           minWidth: this.minWidth ? bbn.fn.formatSize(this.minWidth) : '100%',
           minHeight: this.minHeight ? bbn.fn.formatSize(this.minHeight) : '100%',
         };
+
         if (this.isMeasuring) {
           cfg.width = '100%';
           cfg.height = '100%';
@@ -806,6 +816,7 @@
             if (this.interval) {
               clearInterval(this.interval);
             }
+            // Checks every second if the scroll content has been resized and sends onResize if so
             this.interval = setInterval(() => {
               if (this.scrollable && this.$el.offsetParent) {
                 //bbn.fn.log("offsetParent ok");
@@ -834,7 +845,11 @@
                   this.onResize(true);
                 }
               }
-            }, 1000)
+            }, 1000);
+            setTimeout(() => {
+              this.scrollReady = true;
+            }, 1000);
+
           }, 100)
         }
       },

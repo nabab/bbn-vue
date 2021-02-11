@@ -3297,14 +3297,9 @@
             if ((this.editedIndex === idx)
               && this.isModified(idx)
             ) {
-              if (!this.isBatch) {
-                this.cancel();
-              }
-              else {
-                //this.$forceUpdate();
-                this.$emit('change', this.items[oldIndex].data, idx);
-                //this.save();
-              }
+              //this.$forceUpdate();
+              this.$emit('change', this.items[oldIndex].data, idx);
+              //this.save();
             }
             this.editedRow = false;
           }
