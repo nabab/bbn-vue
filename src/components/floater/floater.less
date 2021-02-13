@@ -1,6 +1,7 @@
 div.bbn-floater{
   position: fixed !important;
   box-sizing: content-box;
+  overflow: hidden;
   /** Popup zIndex: 7 */
   z-index: 100;
   /*transition: visibility 0s, opacity 0.3s linear;*/
@@ -11,30 +12,31 @@ div.bbn-floater{
   &.bbn-invisible {
     opacity: 0 !important;;
   }
-  > header{
-    white-space: nowrap;
-    padding-right: 3.6em;
-    .bbn-top-right{
-      height: 100%;
-      text-align: right;
-      line-height: 100%;
-      vertical-align: middle;
-      > div{
-        width: 1.8em;
-        float: left;
+  > div {
+    > header{
+      white-space: nowrap;
+      padding-right: 3.6em;
+      .bbn-top-right{
+        height: 100%;
+        text-align: right;
+        line-height: 100%;
+        vertical-align: middle;
+        > div{
+          width: 1.8em;
+          float: left;
+        }
+      }
+      h3 {
+        text-overflow: ellipsis;
+        overflow: hidden;
       }
     }
-    h3 {
-      text-overflow: ellipsis;
-      overflow: hidden;
+    > footer.bbn-button-group{
+      min-height: 3em;
+      button{
+        padding-top: 0.3em;
+        padding-bottom: 0.3em;
+      }
     }
-  }
-  > footer.bbn-button-group{
-    min-height: 3em;
-    button{
-      padding-top: 0.3em;
-      padding-bottom: 0.3em;
-    }
-
   }
 }

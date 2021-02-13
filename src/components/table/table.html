@@ -21,7 +21,7 @@
       ></component>
     </div>
     <div :class="['bbn-w-100', 'bbn-table-container', {'bbn-flex-fill': scrollable}]">
-      <div v-if="initStarted || isLoading"
+      <div v-if="initStarted"
            class="bbn-overlay bbn-middle bbn-background"
            style="z-index: 5"
       >
@@ -59,7 +59,7 @@
                       right: col.right !== undefined ? (col.right + 'px') : '',
                       width: col.width + 'px'
                     }"
-                    :class="['bbn-c', 'bbn-header', 'bbn-ellipsis', 'bbn-table-fixed-cell', {
+                    :class="['bbn-table-fixed-cell', {
                       'bbn-table-fixed-cell-left': groupIndex === 0,
                       'bbn-table-fixed-cell-left-last': (groupIndex === 0) && !titleGroupsCells(groupIndex)[i+1],
                       'bbn-table-fixed-cell-right': groupIndex === 2,
@@ -93,7 +93,7 @@
                       zIndex: (col.left !== undefined) || (col.right !== undefined) ? 4 : 3,
                       top: titleGroups ? '39px' : '0px'
                     }"
-                    :class="['bbn-c', 'bbn-header', 'bbn-ellipsis', 'bbn-table-fixed-cell', {
+                    :class="['bbn-table-fixed-cell', {
                       'bbn-table-fixed-cell-left': groupIndex === 0,
                       'bbn-table-fixed-cell-left-last': (groupIndex === 0) && !groupCol.cols[i+1],
                       'bbn-table-fixed-cell-right': groupIndex === 2,
@@ -156,12 +156,39 @@
               </template>
             </tr>
           </thead>
-          <tbody ref="tbody">
-            <template v-for="(d, i) in items">
+          <tbody ref="tbody"
+                 :class="{
+                   'bbn-overlay': ((!filteredData.length && !tmpRow) || isLoading) && !!scrollable
+                 }">
+            <tr v-if="(!filteredData.length && !tmpRow) || isLoading"
+                :class="{
+                  'bbn-overlay': !!scrollable,
+                  'bbn-middle': !!scrollable
+                }"
+                :style="{
+                  paddingTop: $refs.thead && !!scrollable ? $refs.thead.getBoundingClientRect().height + 'px' : 0,
+                  maxWidth: !!scrollable ? lastKnownWidth + 'px' : '',
+                  left: !!scrollable && getRef('scroll') ? getRef('scroll').currentX + 'px' : ''
+                }">
+              <td :colspan="currentColumns && !scrollable ? currentColumns.length : ''">
+                <div class="bbn-spadded bbn-background bbn-c">
+                  <div v-if="!isLoading"
+                       v-html="noData || ' '"/>
+                  <div v-else
+                       class="bbn-vmiddle">
+                    <bbn-loadicon class="bbn-vmiddle"
+                                  :size="24"/>
+                    <span class="bbn-xl bbn-b bbn-left-sspace"
+                          v-text="_('Loading') + '...'"/>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <template v-else v-for="(d, i) in items">
               <tr :key="d.rowKey"
                   :index="d.index"
                   :tabindex="0"
-                  @focusout="focusout(i, $event)"
+                  @focusout="focusout(i)"
                   @focusin="focusin(i, $event)"
                   @dblclick="() => {if (focusedRow !== i) {focusedRow = i}}"
                   :class="[{

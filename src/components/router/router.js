@@ -818,12 +818,23 @@
         if ( !bbn.env.isInit ){
           return;
         }
-        if ( url !== this.currentURL ){
-          this.currentURL = url;
-        }
-        if (title !== this.currentTitle) {
+        if (title && (title !== this.currentTitle)) {
           this.currentTitle = title;
         }
+        if ( url !== this.currentURL ){
+          this.currentURL = url;
+          // Will fire again
+          return;
+        }
+
+        bbn.fn.log(
+          "changeURL",
+          url,
+          title,
+          this.parentContainer ? 
+            ["FROM PQARENT", this.parentContainer.currentTitle, this.parentContainer.title]
+            : this.currentTitle
+        );
         // Changing the current property of the view cascades on the container's currentURL
         if (
           this.views[this.selected] &&
@@ -834,7 +845,7 @@
         ){
           this.$set(this.views[this.selected], 'current', url);
         }
-        if ( this.parent ){
+        if ( this.parentContainer ){
           this.parentContainer.currentTitle = title + ' < ' + this.parentContainer.title;
           this.parent.changeURL(this.baseURL + url, this.parentContainer.currentTitle, replace);
         }
@@ -1478,7 +1489,7 @@
                 }
                 else{
                   let title = bbn._('Untitled');
-                  let num = 1;
+                  let num = 0;
                   while ( bbn.fn.search(this.views, {title: title}) > -1 ){
                     num++;
                     title = bbn._('Untitled') + ' ' + num;

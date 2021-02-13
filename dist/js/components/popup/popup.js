@@ -4,17 +4,18 @@ script.innerHTML = `<div :class="['bbn-overlay', componentClass]"
      v-show="showPopup"
      @subready.stop
      :style="{zIndex: zIndex}"
+     v-if="ready"
 >
-  <bbn-floater v-if="ready"
-              v-for="(popup, i) in popups"
-              :key="popup.uid"
-              :ref="popup.uid"
-              :index="popup.index"
-              v-bind="popup"
-              :container="$el"
-              :style="{zIndex: zIndex+i}"
-              @close="onClose(popup.index)"
-              @open="onOpen(popup.index)"
+
+  <bbn-floater v-for="(popup, i) in popups"
+               :key="popup.uid"
+               :ref="popup.uid"
+               :index="popup.index"
+               v-bind="popup"
+               :container="$el"
+               :style="{zIndex: zIndex+i}"
+               @close="onClose(popup.index)"
+               @open="onOpen(popup.index)"
   ></bbn-floater>
   <div class="bbn-modal bbn-overlay"
       tabindex="-1"
@@ -606,6 +607,9 @@ document.head.insertAdjacentElement('beforeend', css);
         return false;
       }
     },
+    created(){
+      this.componentClass.push('bbn-resize-emitter');
+    },
     /**
      * @event mounted
      */
@@ -621,10 +625,7 @@ document.head.insertAdjacentElement('beforeend', css);
         this.makeWindows();
       },
       numPopups(v){
-        if (!v) {
-          this.ready = false;
-        }
-        else if (!this.ready) {
+        if (v && !this.ready) {
           this.ready = true;
         }
       }

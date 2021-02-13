@@ -2985,11 +2985,6 @@
                 ],
                 "methods": [
                     {
-                        "text": "init",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/floater\/doc\/methods#init"
-                    },
-                    {
                         "text": "show",
                         "desc": "Shows the floater.",
                         "url": "bbn-vue\/component\/floater\/doc\/methods#show"
@@ -3006,18 +3001,13 @@
                     },
                     {
                         "text": "getDimensions",
-                        "desc": "",
+                        "desc": "Returns an object of numbers as width and height based on whatever unit given.",
                         "url": "bbn-vue\/component\/floater\/doc\/methods#getDimensions"
                     },
                     {
                         "text": "updatePosition",
                         "desc": "",
                         "url": "bbn-vue\/component\/floater\/doc\/methods#updatePosition"
-                    },
-                    {
-                        "text": "scrollResize",
-                        "desc": "Handles the resize of the scroller.",
-                        "url": "bbn-vue\/component\/floater\/doc\/methods#scrollResize"
                     },
                     {
                         "text": "scrollResize",
@@ -3095,6 +3085,231 @@
                         "text": "positionComponent",
                         "desc": "",
                         "url": "bbn-vue\/component\/floater\/doc\/mixins#positionComponent"
+                    }
+                ]
+            },
+            {
+                "text": "floater2",
+                "url": "bbn-vue\/component\/floater2\/overview",
+                "props": [
+                    {
+                        "text": "container",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/floater2\/doc\/props#container"
+                    },
+                    {
+                        "text": "position",
+                        "desc": "If an element is given this will force the position.",
+                        "url": "bbn-vue\/component\/floater2\/doc\/props#position"
+                    },
+                    {
+                        "text": "content",
+                        "desc": "The html content of the floater.",
+                        "url": "bbn-vue\/component\/floater2\/doc\/props#content"
+                    },
+                    {
+                        "text": "element",
+                        "desc": "The element used in the render of the floater.",
+                        "url": "bbn-vue\/component\/floater2\/doc\/props#element"
+                    },
+                    {
+                        "text": "elementWidth",
+                        "desc": "If set to true the minimum width will be equal to the element width",
+                        "url": "bbn-vue\/component\/floater2\/doc\/props#elementWidth"
+                    },
+                    {
+                        "text": "orientation",
+                        "desc": "The floater's orientation.",
+                        "url": "bbn-vue\/component\/floater2\/doc\/props#orientation"
+                    },
+                    {
+                        "text": "scrollable",
+                        "desc": "Defines the ability of the floater to be scrollable.",
+                        "url": "bbn-vue\/component\/floater2\/doc\/props#scrollable"
+                    },
+                    {
+                        "text": "visible",
+                        "desc": "Set to true to show the floater.",
+                        "url": "bbn-vue\/component\/floater2\/doc\/props#visible"
+                    },
+                    {
+                        "text": "mode",
+                        "desc": "The list selection mode.\r\nPossible values: 'free', 'options', 'selection'.",
+                        "url": "bbn-vue\/component\/floater2\/doc\/props#mode"
+                    },
+                    {
+                        "text": "level",
+                        "desc": "The hierarchical level, root is 0, and for each generation 1 is added to the level.",
+                        "url": "bbn-vue\/component\/floater2\/doc\/props#level"
+                    },
+                    {
+                        "text": "itemComponent",
+                        "desc": "The component used for the items.",
+                        "url": "bbn-vue\/component\/floater2\/doc\/props#itemComponent"
+                    },
+                    {
+                        "text": "autoHide",
+                        "desc": "Set to true to auto-hide the component.",
+                        "url": "bbn-vue\/component\/floater2\/doc\/props#autoHide"
+                    },
+                    {
+                        "text": "closable",
+                        "desc": "Set to true to show the icon that allows the closing of the floater.",
+                        "url": "bbn-vue\/component\/floater2\/doc\/props#closable"
+                    },
+                    {
+                        "text": "maximizable",
+                        "desc": "Set to true to show the icon that allows the maximization of the window.",
+                        "url": "bbn-vue\/component\/floater2\/doc\/props#maximizable"
+                    },
+                    {
+                        "text": "maximizable",
+                        "desc": "Set to true to open and close the window with opacity animation.",
+                        "url": "bbn-vue\/component\/floater2\/doc\/props#maximizable"
+                    },
+                    {
+                        "text": "latency",
+                        "desc": "The latency of the floater.",
+                        "url": "bbn-vue\/component\/floater2\/doc\/props#latency"
+                    },
+                    {
+                        "text": "onOpen",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/floater2\/doc\/props#onOpen"
+                    },
+                    {
+                        "text": "beforeClose",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/floater2\/doc\/props#beforeClose"
+                    },
+                    {
+                        "text": "onClose",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/floater2\/doc\/props#onClose"
+                    },
+                    {
+                        "text": "afterClose",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/floater2\/doc\/props#afterClose"
+                    },
+                    {
+                        "text": "index",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/floater2\/doc\/props#index"
+                    },
+                    {
+                        "text": "uid",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/floater2\/doc\/props#uid"
+                    },
+                    {
+                        "text": "suggest",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/floater2\/doc\/props#suggest"
+                    }
+                ],
+                "methods": [
+                    {
+                        "text": "show",
+                        "desc": "Shows the floater.",
+                        "url": "bbn-vue\/component\/floater2\/doc\/methods#show"
+                    },
+                    {
+                        "text": "hide",
+                        "desc": "Hides the floater.",
+                        "url": "bbn-vue\/component\/floater2\/doc\/methods#hide"
+                    },
+                    {
+                        "text": "onResize",
+                        "desc": "Handles the resize of the component.",
+                        "url": "bbn-vue\/component\/floater2\/doc\/methods#onResize"
+                    },
+                    {
+                        "text": "getDimensions",
+                        "desc": "Returns an object of numbers as width and height based on whatever unit given.",
+                        "url": "bbn-vue\/component\/floater2\/doc\/methods#getDimensions"
+                    },
+                    {
+                        "text": "updatePosition",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/floater2\/doc\/methods#updatePosition"
+                    },
+                    {
+                        "text": "scrollResize",
+                        "desc": "Handles the resize of the scroller.",
+                        "url": "bbn-vue\/component\/floater2\/doc\/methods#scrollResize"
+                    },
+                    {
+                        "text": "addClose",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/floater2\/doc\/methods#addClose"
+                    },
+                    {
+                        "text": "removeClose",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/floater2\/doc\/methods#removeClose"
+                    },
+                    {
+                        "text": "close",
+                        "desc": "Closes the floater by hiding it.",
+                        "url": "bbn-vue\/component\/floater2\/doc\/methods#close"
+                    },
+                    {
+                        "text": "closeAll",
+                        "desc": "Closes all levels.",
+                        "url": "bbn-vue\/component\/floater2\/doc\/methods#closeAll"
+                    },
+                    {
+                        "text": "select",
+                        "desc": "Handles the selection of the floater's items.",
+                        "url": "bbn-vue\/component\/floater2\/doc\/methods#select"
+                    },
+                    {
+                        "text": "onFocus",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/floater2\/doc\/methods#onFocus"
+                    },
+                    {
+                        "text": "updateData",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/floater2\/doc\/methods#updateData"
+                    }
+                ],
+                "mixins": [
+                    {
+                        "text": "basicComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/floater2\/doc\/mixins#basicComponent"
+                    },
+                    {
+                        "text": "listComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/floater2\/doc\/mixins#listComponent"
+                    },
+                    {
+                        "text": "resizerComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/floater2\/doc\/mixins#resizerComponent"
+                    },
+                    {
+                        "text": "keepCoolComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/floater2\/doc\/mixins#keepCoolComponent"
+                    },
+                    {
+                        "text": "toggleComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/floater2\/doc\/mixins#toggleComponent"
+                    },
+                    {
+                        "text": "dimensionsComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/floater2\/doc\/mixins#dimensionsComponent"
+                    },
+                    {
+                        "text": "positionComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/floater2\/doc\/mixins#positionComponent"
                     }
                 ]
             },
@@ -3646,9 +3861,9 @@
                         "url": "bbn-vue\/component\/jodit\/doc\/mixins#basicComponent"
                     },
                     {
-                        "text": "inputComponent",
+                        "text": "positionComponent",
                         "desc": "",
-                        "url": "bbn-vue\/component\/jodit\/doc\/mixins#inputComponent"
+                        "url": "bbn-vue\/component\/jodit\/doc\/mixins#positionComponent"
                     }
                 ]
             },
@@ -3717,6 +3932,19 @@
                 ]
             },
             {
+                "text": "keyboard",
+                "url": "bbn-vue\/component\/keyboard\/overview",
+                "props": [],
+                "methods": [],
+                "mixins": [
+                    {
+                        "text": "basicComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/keyboard\/doc\/mixins#basicComponent"
+                    }
+                ]
+            },
+            {
                 "text": "keyvalue",
                 "url": "bbn-vue\/component\/keyvalue\/overview",
                 "props": [],
@@ -3767,26 +3995,6 @@
                         "text": "height",
                         "desc": "The height of the floater.",
                         "url": "bbn-vue\/component\/list\/doc\/props#height"
-                    },
-                    {
-                        "text": "left",
-                        "desc": "The position 'left'.",
-                        "url": "bbn-vue\/component\/list\/doc\/props#left"
-                    },
-                    {
-                        "text": "right",
-                        "desc": "The position 'right'.",
-                        "url": "bbn-vue\/component\/list\/doc\/props#right"
-                    },
-                    {
-                        "text": "top",
-                        "desc": "The position 'top'.",
-                        "url": "bbn-vue\/component\/list\/doc\/props#top"
-                    },
-                    {
-                        "text": "bottom",
-                        "desc": "The position 'bottom'.",
-                        "url": "bbn-vue\/component\/list\/doc\/props#bottom"
                     },
                     {
                         "text": "source",
@@ -3871,7 +4079,33 @@
                         "url": "bbn-vue\/component\/list\/doc\/methods#select"
                     }
                 ],
-                "mixins": []
+                "mixins": [
+                    {
+                        "text": "basicComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/list\/doc\/mixins#basicComponent"
+                    },
+                    {
+                        "text": "inputComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/list\/doc\/mixins#inputComponent"
+                    },
+                    {
+                        "text": "keynavComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/list\/doc\/mixins#keynavComponent"
+                    },
+                    {
+                        "text": "positionComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/list\/doc\/mixins#positionComponent"
+                    },
+                    {
+                        "text": "resizerComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/list\/doc\/mixins#resizerComponent"
+                    }
+                ]
             },
             {
                 "text": "list-input",
@@ -3966,6 +4200,19 @@
                         "text": "basicComponent",
                         "desc": "",
                         "url": "bbn-vue\/component\/loadicon\/doc\/mixins#basicComponent"
+                    }
+                ]
+            },
+            {
+                "text": "map",
+                "url": "bbn-vue\/component\/map\/overview",
+                "props": [],
+                "methods": [],
+                "mixins": [
+                    {
+                        "text": "basicComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/map\/doc\/mixins#basicComponent"
                     }
                 ]
             },
@@ -4966,6 +5213,11 @@
                         "url": "bbn-vue\/component\/radio\/doc\/mixins#inputComponent"
                     },
                     {
+                        "text": "localStorageComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/radio\/doc\/mixins#localStorageComponent"
+                    },
+                    {
                         "text": "eventsComponent",
                         "desc": "",
                         "url": "bbn-vue\/component\/radio\/doc\/mixins#eventsComponent"
@@ -5481,26 +5733,6 @@
                         "url": "bbn-vue\/component\/rte\/doc\/props#pinned"
                     },
                     {
-                        "text": "top",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/rte\/doc\/props#top"
-                    },
-                    {
-                        "text": "left",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/rte\/doc\/props#left"
-                    },
-                    {
-                        "text": "bottom",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/rte\/doc\/props#bottom"
-                    },
-                    {
-                        "text": "right",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/rte\/doc\/props#right"
-                    },
-                    {
                         "text": "fullSize",
                         "desc": "",
                         "url": "bbn-vue\/component\/rte\/doc\/props#fullSize"
@@ -5538,6 +5770,16 @@
                         "text": "basicComponent",
                         "desc": "",
                         "url": "bbn-vue\/component\/rte\/doc\/mixins#basicComponent"
+                    },
+                    {
+                        "text": "inputComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/rte\/doc\/mixins#inputComponent"
+                    },
+                    {
+                        "text": "positionComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/rte\/doc\/mixins#positionComponent"
                     }
                 ]
             },
@@ -6659,11 +6901,6 @@
                         "url": "bbn-vue\/component\/table\/doc\/props#groupable"
                     },
                     {
-                        "text": "editable",
-                        "desc": "Set to true allows to edit inline table's fields if no buttons are defined for the table. Allowed values 'inline','nobuttons'.",
-                        "url": "bbn-vue\/component\/table\/doc\/props#editable"
-                    },
-                    {
                         "text": "serverGrouping",
                         "desc": "In case of Ajax table, set to true will make an Ajax call to group the table by a field.",
                         "url": "bbn-vue\/component\/table\/doc\/props#serverGrouping"
@@ -6679,14 +6916,14 @@
                         "url": "bbn-vue\/component\/table\/doc\/props#minimumColumnWidth"
                     },
                     {
+                        "text": "minimumColumnWidthMobile",
+                        "desc": "Defines the minimum columns width for mobile devices.",
+                        "url": "bbn-vue\/component\/table\/doc\/props#minimumColumnWidthMobile"
+                    },
+                    {
                         "text": "defaultColumnWidth",
                         "desc": "Defines the default columns width.",
                         "url": "bbn-vue\/component\/table\/doc\/props#defaultColumnWidth"
-                    },
-                    {
-                        "text": "url",
-                        "desc": "If defined, the form created for the edit of the table will have this URL as action.",
-                        "url": "bbn-vue\/component\/table\/doc\/props#url"
                     },
                     {
                         "text": "trClass",
@@ -6702,11 +6939,6 @@
                         "text": "expander",
                         "desc": "Defines the expander of the rows.",
                         "url": "bbn-vue\/component\/table\/doc\/props#expander"
-                    },
-                    {
-                        "text": "editor",
-                        "desc": "Defines the editor to use when the edit button of a row is clicked.",
-                        "url": "bbn-vue\/component\/table\/doc\/props#editor"
                     },
                     {
                         "text": "fixedDefaultSide",
@@ -6861,21 +7093,6 @@
                         "url": "bbn-vue\/component\/table\/doc\/methods#edit"
                     },
                     {
-                        "text": "successEdit",
-                        "desc": "After the post in case of edit of the row, update the row in originalData.\r\n       *",
-                        "url": "bbn-vue\/component\/table\/doc\/methods#successEdit"
-                    },
-                    {
-                        "text": "saveRow",
-                        "desc": "Insert or update a row in originalData.",
-                        "url": "bbn-vue\/component\/table\/doc\/methods#saveRow"
-                    },
-                    {
-                        "text": "saveInline",
-                        "desc": "If the prop url of the table is defined makes a post to the url to update or insert the row, else fires the method saveRow to insert or update the row in originalData.",
-                        "url": "bbn-vue\/component\/table\/doc\/methods#saveInline"
-                    },
-                    {
                         "text": "isGroupedCell",
                         "desc": "Returns wheter or not the cell is grouped.",
                         "url": "bbn-vue\/component\/table\/doc\/methods#isGroupedCell"
@@ -6901,16 +7118,6 @@
                         "url": "bbn-vue\/component\/table\/doc\/methods#save"
                     },
                     {
-                        "text": "insert",
-                        "desc": "Adds the given data to the object tmpRow and opens the popup with the form to insert the row.",
-                        "url": "bbn-vue\/component\/table\/doc\/methods#insert"
-                    },
-                    {
-                        "text": "copy",
-                        "desc": "Adds the given data to the object tmpRow and opens the popup with the form to copy the row.",
-                        "url": "bbn-vue\/component\/table\/doc\/methods#copy"
-                    },
-                    {
                         "text": "checkSelection",
                         "desc": "Emits 'select',  'unselect' or 'toggle' at change of checkbox of the row in a selectable table.",
                         "url": "bbn-vue\/component\/table\/doc\/methods#checkSelection"
@@ -6931,11 +7138,6 @@
                         "url": "bbn-vue\/component\/table\/doc\/methods#currentClass"
                     },
                     {
-                        "text": "isModified",
-                        "desc": "Returns true if the row corresponding to the given index has changed respect to originalData.",
-                        "url": "bbn-vue\/component\/table\/doc\/methods#isModified"
-                    },
-                    {
                         "text": "isSorted",
                         "desc": "Returns true if the given column is sorted.",
                         "url": "bbn-vue\/component\/table\/doc\/methods#isSorted"
@@ -6947,23 +7149,13 @@
                     },
                     {
                         "text": "updateTable",
-                        "desc": "Handles the table resize.",
+                        "desc": "Deprecated. Not removed for backwards compatibility.",
                         "url": "bbn-vue\/component\/table\/doc\/methods#updateTable"
                     },
                     {
                         "text": "render",
                         "desc": "Renders a cell according to column's config.",
                         "url": "bbn-vue\/component\/table\/doc\/methods#render"
-                    },
-                    {
-                        "text": "cancel",
-                        "desc": "Cancels the changes made on the row data.",
-                        "url": "bbn-vue\/component\/table\/doc\/methods#cancel"
-                    },
-                    {
-                        "text": "getWidth",
-                        "desc": "Returns a dimension in pixels of the given param.",
-                        "url": "bbn-vue\/component\/table\/doc\/methods#getWidth"
                     },
                     {
                         "text": "reset",
@@ -6989,11 +7181,6 @@
                         "text": "resizeWidth",
                         "desc": "Resizes the table.",
                         "url": "bbn-vue\/component\/table\/doc\/methods#resizeWidth"
-                    },
-                    {
-                        "text": "dataScrollContents",
-                        "desc": "Returns an array containing the scrollcontainer of each items of groupCols.",
-                        "url": "bbn-vue\/component\/table\/doc\/methods#dataScrollContents"
                     },
                     {
                         "text": "isExpanded",
@@ -7076,6 +7263,11 @@
                         "text": "resizerComponent",
                         "desc": "",
                         "url": "bbn-vue\/component\/table\/doc\/mixins#resizerComponent"
+                    },
+                    {
+                        "text": "editableListComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/table\/doc\/mixins#editableListComponent"
                     },
                     {
                         "text": "listComponent",
@@ -8279,7 +8471,18 @@
                 "url": "bbn-vue\/component\/vlist\/overview",
                 "props": [],
                 "methods": [],
-                "mixins": []
+                "mixins": [
+                    {
+                        "text": "basicComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/vlist\/doc\/mixins#basicComponent"
+                    },
+                    {
+                        "text": "positionComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/vlist\/doc\/mixins#positionComponent"
+                    }
+                ]
             },
             {
                 "text": "widget",

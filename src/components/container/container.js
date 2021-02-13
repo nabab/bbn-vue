@@ -125,6 +125,7 @@
          * @data {String} currentURL
          */
         currentURL: this.current || this.url,
+        currentTitle: this.title,
         hasLoader: false,
         _bbn_container: null
       };
@@ -348,6 +349,11 @@
         }
         return false;
       },
+      onResize(){
+        if (this.visible && this.ready) {
+          this.$emit("resize");
+        }
+      },
       /**
        * Initializes the component.
        * 
@@ -520,9 +526,11 @@
       visible(nv, ov){
         this.$nextTick(() => {
           this.$emit(nv ? 'view' : 'unview', this);
-          this.$nextTick(() => {
-            this.onResize();
-          });
+          if (nv) {
+            this.$nextTick(() => {
+              this.onResize();
+            });
+          }
         });
       },
       /**

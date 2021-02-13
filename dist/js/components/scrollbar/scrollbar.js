@@ -125,6 +125,12 @@ document.head.insertAdjacentElement('beforeend', css);
       minSize: {
         type: Number,
         default: 20
+      },
+      offset: {
+        type: [Number, Array],
+        default(){
+          return [0, 0];
+        }
       }
     },
     data() {
@@ -155,7 +161,7 @@ document.head.insertAdjacentElement('beforeend', css);
          * The slider position.
          * @data {Number} [0] sliderPos 
          */  
-        sliderPos: 0,
+        sliderPos: bbn.fn.isArray(this.offset) ? this.offset[0] : this.offset,
         /**
          * @data {Boolean} [false] dragging 
          */  
@@ -223,7 +229,7 @@ document.head.insertAdjacentElement('beforeend', css);
        */
       ratio(){
         if ( this.shouldBother ){
-          return this.containerSize / this.contentSize;
+          return (this.containerSize - this.offsetStart - this.offsetEnd) / this.contentSize;
         }
         return 1;
       },
@@ -246,21 +252,24 @@ document.head.insertAdjacentElement('beforeend', css);
        * @return {Number}
        */
       maxSliderPos(){
-        return this.shouldBother ? this.containerSize - this.sliderSize : 0;
+        return this.shouldBother ? this.containerSize - this.sliderSize - this.offsetStart - this.offsetEnd: 0;
+      },
+      offsetStart() {
+        return (bbn.fn.isArray(this.offset) ? this.offset[0] : this.offset);
+      },
+      offsetEnd() {
+        return (bbn.fn.isArray(this.offset) ? this.offset[1] : this.offset);
       },
       /**
        * @computed barStyle
        * @returns {Object}
        */
       barStyle(){
-        let res = {};
-        res.opacity = this.show && this.shouldBother ? 1 : 0;
-        /*
-        if ( this.shouldBother ){
-          res[this.isVertical ? 'height' : 'width'] = this.containerSize + 'px';
+        return {
+          opacity: this.show && this.shouldBother ? 1 : 0,
+          [this.isVertical ? 'top' : 'left'] : this.offsetStart + 'px',
+          [this.isVertical ? 'bottom' : 'right']: this.offsetEnd + 'px'
         }
-        */
-        return res;
       },
       /**
        * @computed sliderStyle
@@ -343,7 +352,7 @@ document.head.insertAdjacentElement('beforeend', css);
           if (pos < 0) {
             pos = 0;
           }
-          else if (pos > this.maxSliderPos) {
+          if (pos > this.maxSliderPos) {
             pos = this.maxSliderPos;
           }
           if (this.sliderPos !== pos) {
@@ -390,7 +399,7 @@ document.head.insertAdjacentElement('beforeend', css);
        */
       adjustFromBar(){
         if ( this.shouldBother ){
-          this.containerPos = this.sliderPos / this.ratio;
+          this.containerPos = (this.sliderPos / this.ratio);
           let prop = this.isVertical ? 'scrollTop' : 'scrollLeft';
           this.realContainer[prop] = this.containerPos;
           bbn.fn.each(this.scrollableElements(), (a) => {
@@ -430,8 +439,7 @@ document.head.insertAdjacentElement('beforeend', css);
                 }
               }
               else if (this.setSliderPos(this.sliderPos + movement)) {
-                this.adjustFromBar();
-              }
+                this.adjustFromBar();              }
             }
           }
         }

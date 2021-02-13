@@ -45,6 +45,9 @@
 			height: auto;
 		}
 		span.bbn-tree-node-block{
+			span {
+				display: inline-block;
+			}
 			display: inline-block;
 			white-space: nowrap;
 			height: auto;
@@ -52,20 +55,25 @@
 			&.bbn-tree-node-block-no-component{
 				span{
 					display: inline-block;
+					vertical-align: middle;
 				}
 			}
 			.bbn-tree-node-block-selectable{
 				padding: 1px;
 			}
 			.bbn-tree-node-block-expander{
-				display: inline-block;
 				width: 0.7em;
 				padding-left: 0.2em;
 				font-size: 1.1em;
 			}
 			.bbn-tree-node-block-icon{
-				display: inline-block;
+				text-align: center;
 				width: 1.3em;
+				img {
+					width: 100%;
+					height: auto;
+					vertical-align: middle;
+				}
 			}
 			.bbn-tree-node-block-title{
 				white-space: nowrap;

@@ -114,6 +114,7 @@
               this.prevFocused = bbn.env.focused;
             }
           }
+          /*
           if ( this.onResize !== undefined ){
             if ( v ){
               this.onResize();
@@ -122,6 +123,7 @@
               this.isResized = false;
             }
           }
+          */
           this.switchFocus(v);
         }
       },
@@ -162,7 +164,7 @@
          */
         currentVisible: {
           handler(v) {
-            this.$emit(v ? 'open' : 'close');
+            this.$emit(v ? 'show' : 'hide');
             this.changeVisible(v);
           },
           immediate: true

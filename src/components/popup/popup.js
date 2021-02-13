@@ -574,6 +574,9 @@
         return false;
       }
     },
+    created(){
+      this.componentClass.push('bbn-resize-emitter');
+    },
     /**
      * @event mounted
      */
@@ -589,10 +592,7 @@
         this.makeWindows();
       },
       numPopups(v){
-        if (!v) {
-          this.ready = false;
-        }
-        else if (!this.ready) {
+        if (v && !this.ready) {
           this.ready = true;
         }
       }

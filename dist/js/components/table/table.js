@@ -23,7 +23,7 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
       ></component>
     </div>
     <div :class="['bbn-w-100', 'bbn-table-container', {'bbn-flex-fill': scrollable}]">
-      <div v-if="initStarted || isLoading"
+      <div v-if="initStarted"
            class="bbn-overlay bbn-middle bbn-background"
            style="z-index: 5"
       >
@@ -34,6 +34,8 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
       </div>
       <component :is="scrollable ? 'bbn-scroll' : 'div'"
                  class="bbn-w-100"
+                 ref="scroll"
+                 :offset-y="$refs.thead ? [$refs.thead.getBoundingClientRect().height, 0] : [0,0]"
       >
         <table :style="{width: totalWidth}"
                ref="table"
@@ -59,7 +61,7 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                       right: col.right !== undefined ? (col.right + 'px') : '',
                       width: col.width + 'px'
                     }"
-                    :class="['bbn-c', 'bbn-header', 'bbn-ellipsis', 'bbn-table-fixed-cell', {
+                    :class="['bbn-table-fixed-cell', {
                       'bbn-table-fixed-cell-left': groupIndex === 0,
                       'bbn-table-fixed-cell-left-last': (groupIndex === 0) && !titleGroupsCells(groupIndex)[i+1],
                       'bbn-table-fixed-cell-right': groupIndex === 2,
@@ -93,7 +95,7 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                       zIndex: (col.left !== undefined) || (col.right !== undefined) ? 4 : 3,
                       top: titleGroups ? '39px' : '0px'
                     }"
-                    :class="['bbn-c', 'bbn-header', 'bbn-ellipsis', 'bbn-table-fixed-cell', {
+                    :class="['bbn-table-fixed-cell', {
                       'bbn-table-fixed-cell-left': groupIndex === 0,
                       'bbn-table-fixed-cell-left-last': (groupIndex === 0) && !groupCol.cols[i+1],
                       'bbn-table-fixed-cell-right': groupIndex === 2,
@@ -156,18 +158,46 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
               </template>
             </tr>
           </thead>
-          <tbody>
-            <template v-for="(d, i) in items">
-              <tr :key="randomString().toLowerCase()"
+          <tbody ref="tbody"
+                 :class="{
+                   'bbn-overlay': ((!filteredData.length && !tmpRow) || isLoading) && !!scrollable
+                 }">
+            <tr v-if="(!filteredData.length && !tmpRow) || isLoading"
+                :class="{
+                  'bbn-overlay': !!scrollable,
+                  'bbn-middle': !!scrollable
+                }"
+                :style="{
+                  paddingTop: $refs.thead && !!scrollable ? $refs.thead.getBoundingClientRect().height + 'px' : 0,
+                  maxWidth: !!scrollable ? lastKnownWidth + 'px' : '',
+                  left: !!scrollable && getRef('scroll') ? getRef('scroll').currentX + 'px' : ''
+                }">
+              <td :colspan="currentColumns && !scrollable ? currentColumns.length : ''">
+                <div class="bbn-spadded bbn-background bbn-c">
+                  <div v-if="!isLoading"
+                       v-html="noData || ' '"/>
+                  <div v-else
+                       class="bbn-vmiddle">
+                    <bbn-loadicon class="bbn-vmiddle"
+                                  :size="24"/>
+                    <span class="bbn-xl bbn-b bbn-left-sspace"
+                          v-text="_('Loading') + '...'"/>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <template v-else v-for="(d, i) in items">
+              <tr :key="d.rowKey"
                   :index="d.index"
                   :tabindex="0"
-                  @focusout="focusout(i, $event)"
+                  @focusout="focusout(i)"
                   @focusin="focusin(i, $event)"
-                  @dblclick="() => {if ( focusedRow !== i ) { focusedRow = i }}"
+                  @dblclick="() => {if (focusedRow !== i) {focusedRow = i}}"
                   :class="[{
                     'bbn-alt': d.expanderIndex !== undefined ? !!(d.expanderIndex % 2) : !!(d.rowIndex % 2),
                     'bbn-header': !!(d.aggregated || d.groupAggregated),
                   }, trClass ? trClass(d.data) : '']"
+                  ref="rows"
               >
                 <!-- Group lines just have the cell with the expander and a single big cell -->
                 <template v-if="groupable && d.group && currentColumns && currentColumns.length">
@@ -326,7 +356,7 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                         <bbn-field v-else-if="col.field && !col.render && !col.buttons"
                                   v-bind="col"
                                   @click.stop=""
-                                  :key="d.index"
+                                  :key="d.rowKey"
                                   :value="d.data[col.field]"
                                   :data="d.data">
                         </bbn-field>
@@ -370,10 +400,8 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
         </table>
       </component>
     </div>
-
-    
     <!-- Footer -->
-    <bbn-pager class="bbn-table-footer"
+    <bbn-pager class="bbn-table-footer bbn-no-border-right bbn-no-border-left bbn-no-border-bottom"
                v-if="pageable || saveable || filterable || isAjax || showable"
                :element="_self"
                :buttons="footerButtons"
@@ -432,6 +460,7 @@ document.head.insertAdjacentElement('beforeend', css);
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.resizerComponent
+     * @mixin bbn.vue.editableListComponent
      * @mixin bbn.vue.listComponent
      * @mixin bbn.vue.dataEditorComponent
      * @mixin bbn.vue.localStorageComponent
@@ -442,6 +471,7 @@ document.head.insertAdjacentElement('beforeend', css);
     mixins: [
       bbn.vue.basicComponent,
       bbn.vue.resizerComponent,
+      bbn.vue.editableListComponent,
       bbn.vue.listComponent,
       bbn.vue.dataEditorComponent,
       bbn.vue.localStorageComponent,
@@ -520,13 +550,6 @@ document.head.insertAdjacentElement('beforeend', css);
         default: false
       },
       /**
-       * Set to true allows to edit inline table's fields if no buttons are defined for the table. Allowed values 'inline','nobuttons'.
-       * @prop {Boolean|String|Function} editable
-       */
-      editable: {
-        type: [Boolean, String, Function]
-      },
-      /**
        * In case of Ajax table, set to true will make an Ajax call to group the table by a field.
        * @prop {Boolean} [true] serverGrouping
        */
@@ -549,6 +572,14 @@ document.head.insertAdjacentElement('beforeend', css);
       minimumColumnWidth: {
         type: Number,
         default: 30
+      },
+      /**
+       * Defines the minimum columns width for mobile devices.
+       * @prop {Number} [100] minimumColumnWidthMobile
+       */
+      minimumColumnWidthMobile: {
+        type: Number,
+        default: 100
       },
       /**
        * Defines the default columns width.
@@ -578,13 +609,6 @@ document.head.insertAdjacentElement('beforeend', css);
       search: {
         type: Boolean,
         default: false
-      },
-      /**
-       * If defined, the form created for the edit of the table will have this URL as action.
-       * @prop {String} url
-       */
-      url: {
-        type: String
       },
       /**
        * A function to define css class(es) for the rows.
@@ -617,13 +641,7 @@ document.head.insertAdjacentElement('beforeend', css);
         type: Boolean,
         default: false
       },
-      /**
-       * Defines the editor to use when the edit button of a row is clicked.
-       * @prop {String|Object} editor
-       */
-      editor: {
-        type: [String, Object]
-      },
+      
       /**
        * If one or more columns have the property fixed set to true it defines the side of the fixed column(s).
        * @prop {String} ['left'] fixedDefaultSide
@@ -729,7 +747,7 @@ document.head.insertAdjacentElement('beforeend', css);
       }
     },
     data() {
-      let editable = bbn.fn.isFunction(this.editable) ? this.editable() : this.editable;
+      
       return {
         /**
          * @data {Boolean} [false] _observerReceived
@@ -808,26 +826,6 @@ document.head.insertAdjacentElement('beforeend', css);
          */
         group: this.groupBy === undefined ? false : this.groupBy,
         /**
-         * @data {String} editMode
-         */
-        editMode: editable === true ? (this.editor ? 'popup' : 'inline') : (editable === 'popup' ? 'popup' : 'inline'),
-        /**
-         * @data {Boolean|Object} [false] tmpRow
-         */
-        tmpRow: false,
-        /**
-         * @data {Boolean|Object} [false] originalRow
-         */
-        originalRow: false,
-        /**
-         * @data {Boolean|Object} [false] editedRow
-         */
-        editedRow: false,
-        /**
-         * @data {Boolean|Number} [false] editedIndex
-         */
-        editedIndex: false,
-        /**
          * @data {Array} [[]] cols
          */
         cols: [],
@@ -883,22 +881,6 @@ document.head.insertAdjacentElement('beforeend', css);
          * @data {Boolean} [false] focusedRow
          */
         focusedRow: false,
-        /**
-         * @data [null] viewport
-         */
-        viewport: null,
-        /**
-         * @data {Array} viewportRows
-         */
-        viewportRows: [...Array(25).keys()],
-        /**
-         * @data {Array} viewportCols
-         */
-        viewportCols: [],
-        /**
-         * @data {Number} [0] viewportUpdater
-         */
-        viewportUpdater: 0,
         /**
          * @data {} [null] rowIndexTimeOut
          */
@@ -1030,36 +1012,12 @@ document.head.insertAdjacentElement('beforeend', css);
         return (this.groupCols[0].width + this.groupCols[1].width + this.groupCols[2].width) + 'px';
       },
       /**
-       * Return true if the table isn't ajax, is editable and the edit mode is 'inline'.
-       * @computed isBatch
-       * @returns {Boolean}
-       */
-      isBatch() {
-        return this.editable && (this.editMode === 'inline') && !this.isAjax
-      },
-      /**
        * Return true if the table has the prop toolbar defined.
        * @computed hasToolbar
        * @returns {Boolean}
        */
       hasToolbar() {
         return this.toolbarButtons.length || bbn.fn.isObject(this.toolbar) || bbn.fn.isFunction(this.toolbar) || bbn.fn.isString(this.toolbar);
-      },
-      /**
-       * If the computed isBatch is true, return an array of modified rows.
-       * @computed modifiedRows
-       * @returns {Array}
-       */
-      modifiedRows() {
-        let res = [];
-        if (this.isBatch) {
-          bbn.fn.each(this.currentData, (d, i) => {
-            if (JSON.stringify(d.data) !== JSON.stringify(this.originalData[i])) {
-              res.push(d);
-            }
-          })
-        }
-        return res;
       },
       /**
        * Return an array of shown fields (the hidden ones are excluded).
@@ -1167,7 +1125,6 @@ document.head.insertAdjacentElement('beforeend', css);
        * @computed items
        * @fires _checkConditionsOnValue
        * @fires expandedValues
-       * @fires _updateViewport
        * @fires isExpanded
        * @returns {Array}
        */
@@ -1273,6 +1230,7 @@ document.head.insertAdjacentElement('beforeend', css);
           res.push({
             index: -1,
             rowIndex: 0,
+            rowKey: this.isAjax ? ('-1-' + this.hashCfg) : -1,
             data: this.tmpRow,
             selected: false,
             expander: !!this.expander
@@ -1314,6 +1272,7 @@ document.head.insertAdjacentElement('beforeend', css);
                 value: currentGroupValue,
                 data: a,
                 rowIndex: rowIndex,
+                rowKey: data[i].key,
                 expander: true,
                 num: bbn.fn.count(data, 'data.' + this.cols[this.group].field, currentGroupValue)
               };
@@ -1358,14 +1317,16 @@ document.head.insertAdjacentElement('beforeend', css);
             o = {
               index: data[i].index,
               data: a,
-              rowIndex: rowIndex
+              rowIndex: rowIndex,
+              rowKey: data[i].key
             };
             if (isGroup) {
               if (!currentGroupValue) {
                 o.expanded = true;
               } else {
                 o.isGrouped = true;
-                o.link = currentLink;;
+                o.link = currentLink;
+                o.rowKey = o.rowIndex + '-' + o.rowKey;
               }
             } else if (this.expander && (
                 !bbn.fn.isFunction(this.expander) ||
@@ -1397,6 +1358,7 @@ document.head.insertAdjacentElement('beforeend', css);
               data: a,
               expansion: true,
               rowIndex: rowIndex,
+              rowKey: rowIndex + '-' + data[i].key,
               expanderIndex: expanderIndex
             });
             rowIndex++;
@@ -1459,6 +1421,7 @@ document.head.insertAdjacentElement('beforeend', css);
                     res.push({
                       index: data[i] ? data[i].index : 0,
                       rowIndex: rowIndex,
+                      rowKey: data[i] ? data[i].key : 0,
                       groupAggregated: true,
                       link: currentLink,
                       value: currentGroupValue,
@@ -1477,6 +1440,7 @@ document.head.insertAdjacentElement('beforeend', css);
                   res.push({
                     index: data[i] ? data[i].index : 0,
                     rowIndex: rowIndex,
+                    rowKey: data[i] ? data[i].key : 0,
                     aggregated: true,
                     name: c,
                     data: tmp
@@ -1497,9 +1461,6 @@ document.head.insertAdjacentElement('beforeend', css);
           if (d.group || d.expander || this.isExpanded(d) || d.aggregated || (this.isExpanded(d) && d.groupAggregated)) {
             fdata.push(d)
           }
-        });
-        this.$nextTick(() => {
-          this._updateViewport();
         });
         return fdata;
       },
@@ -1537,76 +1498,6 @@ document.head.insertAdjacentElement('beforeend', css);
     },
     methods: {
       /**
-       * Defines the margin-top.
-       * @method _scrollContainer
-       * @todo 1px must correspond to the border width
-       */
-      _scrollContainer() {
-        let rule = "."  + this.cssRuleName + "{margin-top: " +
-        (this.container.scrollTop ? '-' + (this.container.scrollTop) + 'px' : '') + '}';
-        if (rule !== this.marginStyleSheet.innerHTML) {
-          this.marginStyleSheet.innerHTML = rule;
-        }
-      },
-      /**
-       * Adds the class 'bbn-table-tr-over' to the row of given idx on mouseenter and remove the class on mouse leave.
-       * @ignore
-       * @method _updateRowIndex
-       */
-      _updateRowIndex(idx) {
-
-        bbn.fn.each(this.groupCols, (a) => {
-          let table = this.getRef(a.name + 'Table');
-          if (table && table.tBodies) {
-            let trs = this.getRef(a.name + 'Table').tBodies[0].childNodes;
-            /*bbn.fn.each(trs, (tr) => {
-              tr.classList.remove('bbn-primary')
-            })
-            if ((idx !== null) && trs[idx]) {
-              trs[idx].classList.add('bbn-primary');
-            }*/
-          }
-        });
-        //this.currentIndex = idx;
-      },
-      /**
-       * Returns header's CSS object.
-       * @method _headStyles
-       * @param {Object} col
-       * @param {Number} groupIndex
-       * @returns {Object}
-       */
-      _headStyles(col, groupIndex) {
-        let css = {
-          position: groupIndex === 1 ? 'static' : 'absolute',
-          top: 'auto',
-          height: 'inherit',
-          left: col.left === undefined ? 'auto' : col.left + 'px',
-          width: col.realWidth
-        };
-        if (col.hidden) {
-          css.display = 'none';
-        }
-        return css;
-      },
-      /**
-       * @method _getScrollers
-       * @returns {Vue}
-       */
-      _getScrollers(){
-        return [this.getRef('mainTitles')];
-
-      },
-      /**
-       * Returns body's CSS object
-       * @method _bodyStyles
-       * @param {Object} col 
-       * @returns {Object}
-       */
-      _bodyStyles(col) {
-        return {};
-      },
-      /**
        * Normalizes the row's data.
        * @method _defaultRow
        * @param initialData
@@ -1638,118 +1529,6 @@ document.head.insertAdjacentElement('beforeend', css);
           }
         });
         return res;
-      },
-      /**
-       * Creates the object tmpRow.
-       *
-       * @method _addTmp
-       * @param data
-       * @returns {Vue}
-       */
-      _addTmp(data) {
-        this._removeTmp().tmpRow = this._defaultRow(data);
-        if (this.$refs.scrollerY) {
-          this.$refs.scrollerY.scrollTo(0, null, true);
-        }
-        return this;
-      },
-      /**
-       * Changes the values of tmpRow to false.
-       * @method _removeTmp
-       * @returns {Vue}
-       */
-      _removeTmp() {
-        if (this.tmpRow) {
-          this.tmpRow = false;
-        }
-        return this;
-      },
-      /**
-       * Defines if the scroll in the table data part has to be hidden.
-       * @method _scrollerHidden
-       * @param {Object} groupCol
-       * @param {Number} idx
-       * @returns {Boolean}
-       */
-      _scrollerHidden(groupCol, idx) {
-        let last = this.groupCols.length === idx - 1;
-        if (groupCol.name === 'main') {
-          return last ? 'x' : false;
-        }
-        return last ? 'y' : true;
-      },
-      /**
-       * In a scrollable table, updates the viewport after scrolling the X axis.
-       *
-       * @method _updateViewport
-       * @fires titleGroupsCells
-       * @fires getRef
-       */
-      _updateViewport() {
-        if (!this.scrollable) {
-          return
-        }
-        this.keepCool(() => {
-          let table = this.getRef('mainTable'),
-            scroll = this.getRef('mainScroller'),
-            container = scroll ? scroll.getRef('scrollContainer') : null,
-            top = container ? container.scrollTop : null,
-            left = container ? container.scrollLeft : null,
-            viewport = scroll ? bbn.fn.clone(scroll.$el.getBoundingClientRect()) : null;
-          if (this.titleGroups && scroll && scroll.getRef('xScroller')) {
-            let x = scroll.getRef('xScroller').currentScroll,
-              cols = this.titleGroupsCells(this.groupCols[1] && (this.groupCols[1].name === 'main') ? 1 : 0),
-              tot = 0;
-            bbn.fn.each(cols, (a) => {
-              if (tot + a.realWidth > x) {
-                if ( this.getRef('mainTitles') && this.getRef('mainTitles').querySelector('.bbn-table-title-group') ){
-                  this.getRef('mainTitles').querySelector('.bbn-table-title-group').style.left = tot < x ? x - tot : 0;
-                }
-                return false;
-              }
-              tot += a.realWidth;
-            });
-          }
-          return;
-          if (!viewport) {
-            return;
-          }
-          viewport.top = top || 0;
-          viewport.left = left || 0;
-          if (
-            this.viewport &&
-            (this.viewport.x === viewport.x) &&
-            (this.viewport.width === viewport.width) &&
-            (this.viewport.y === viewport.y) &&
-            (this.viewport.height === viewport.height) &&
-            (this.viewport.top === viewport.top) &&
-            (this.viewport.left === viewport.left)
-          ) {
-            return;
-          }
-          this.viewport = viewport;
-          if (table && scroll) {
-            let rows = [],
-              cols = [];
-            if (table && table.rows && table.rows[0] && table.rows[0].cells) {
-              bbn.fn.each(this.groupCols[1].cols, (col, idx) => {
-                if (table.rows[0].cells[idx]) {
-                  let vp = table.rows[0].cells[idx].getBoundingClientRect();
-                  if (vp.x > (viewport.x - 300)) {
-                    cols.push(col.index);
-                  }
-                  if (vp.x > (viewport.x + viewport.width + 300)) {
-                    // MUST STOP HERE
-                    return false;
-                  }
-                  this.viewportCols.splice(0, this.viewportCols.length, ...cols);
-                  this.viewportRows.splice(0, this.viewportRows.length, ...rows);
-                  this.updateTable();
-                }
-              })
-            }
-          }
-        }, '_updateViewport')
       },
       /**
        * Prepares the data to export the table to CSV.
@@ -1827,18 +1606,6 @@ document.head.insertAdjacentElement('beforeend', css);
         }
         return false;
       },
-      /**
-       * @ignore
-       * @todo Not used
-       * @method _containerComponent
-       * @param {Number} groupIndex
-       */
-      _containerComponent(groupIndex) {
-        return groupIndex === 1 ? {
-          template: '<div class="bbn-block"><slot></slot></div>'
-        } : bbn.vue.emptyComponent
-      },
-      randomString: bbn.fn.randomString,
       /**
        * Exports to csv and download the given filename.
        * @method exportCSV
@@ -2304,7 +2071,7 @@ document.head.insertAdjacentElement('beforeend', css);
                 table: table,
                 formData: {
                   changed: false
-                },                
+                },
                 shownCols: shownColumns
               }
             },
@@ -2368,7 +2135,7 @@ document.head.insertAdjacentElement('beforeend', css);
                 handler() {
                   this.formData.changed = true;
                 }
-              }              
+              }
             }
           },
           source: {
@@ -2400,7 +2167,7 @@ document.head.insertAdjacentElement('beforeend', css);
         this.originalRow = bbn.fn.clone(row);
         // EditedRow exists from now on the time of the edition
         this.editedRow = row;
-        
+
         if (this.items[index]) {
           this.editedIndex = this.items[index].index;
         }
@@ -2485,95 +2252,6 @@ document.head.insertAdjacentElement('beforeend', css);
           this.getPopup().open(popup);
         }
       },
-      /**
-       * After the post in case of edit of the row, update the row in originalData.
-       *
-       * @method successEdit
-       * @param {Object} d
-       * @emit editSuccess
-       * @fires saveRow
-       * @returns {Boolean}
-       */
-      successEdit(d) {
-        if (bbn.fn.isObject(d)) {
-          if ((d.success !== undefined) && !d.success) {
-            if (window.appui) {
-              let ev = new Event('editFailure', {cancelable: true});
-              this.$emit('editFailure', d, ev);
-              if (!ev.defaultPrevented) {
-                appui.error();
-              }
-            }
-          }
-          else {
-            let ev = new Event('editSuccess', {cancelable: true});
-            this.$emit('editSuccess', d, ev);
-            if (!ev.defaultPrevented) {
-              if (d.data) {
-                bbn.fn.iterate(d.data, (o, n) => {
-                  this.editedRow[n] = o;
-                });
-              }
-              this.saveRow();
-              return true;
-            }
-          }
-        }
-        return false;
-      },
-      /**
-       * Insert or update a row in originalData.
-       * @method saveRow
-       * @emit saverow
-       */
-      saveRow() {
-        // New insert
-        let ev = new Event('saverow', {cancelable: true});
-        this.$emit('saverow', this.tmpRow || this.editedRow, ev);
-        if (!ev.defaultPrevented) {
-          if (this.tmpRow) {
-            this.currentData.push({
-              data: bbn.fn.clone(this.tmpRow),
-              index: this.currentData.length
-            });
-            if (this.originalData) {
-              this.originalData.push(bbn.fn.clone(this.tmpRow));
-            }
-            this.tmpRow = false;
-          }
-          // Update
-          else if (this.editedRow) {
-            this.$set(this.currentData[this.editedIndex], 'data', bbn.fn.clone(this.editedRow));
-            if (this.originalData) {
-              this.originalData.splice(this.editedIndex, 1, bbn.fn.clone(this.editedRow));
-            }
-            this.editedRow = false;
-          }
-          return true;
-        }
-        return false;
-      },      
-      /**
-       * If the prop url of the table is defined makes a post to the url to update or insert the row, else fires the method saveRow to insert or update the row in originalData.
-       * @method saveInline
-       * @fires saveRow
-       *
-       */      
-      saveInline() {
-        if (this.tmpRow || this.editedRow) {          
-          if (this.url) {
-            let o = bbn.fn.extend({}, this.data, this.tmpRow || this.editedRow, {
-              action: this.tmpRow ? 'insert' : 'update'
-            });
-            this.post(this.url, o, (d) => {
-              this.successEdit(d);
-            })
-          }
-          else if (this.saveRow()) {
-            this.$emit(this.tmpRow ? 'insert' : 'edit');
-          }
-        }
-      },      
       /**
        * Returns wheter or not the cell is grouped.
        * @method isGroupedCell
@@ -2670,40 +2348,6 @@ document.head.insertAdjacentElement('beforeend', css);
         this.savedConfig = this.jsonConfig;
       },
       /**
-       * Adds the given data to the object tmpRow and opens the popup with the form to insert the row.
-       * @method insert
-       * @param {Object} data
-       * @param {Object} options
-       * @param {Number} index
-       * @fires _addTmp
-       * @fires edit
-       */
-      insert(data, options, index) {
-        let d = data ? bbn.fn.clone(data) : {};
-        if (this.uid && d[this.uid]) {
-          delete d[this.uid];
-        }
-        this._addTmp(d, index);
-        this.edit(this.tmpRow, options, index);
-      },
-      /**
-       * Adds the given data to the object tmpRow and opens the popup with the form to copy the row.
-       * @method copy
-       * @param {Object} data
-       * @param {Object} options
-       * @param {Number} index
-       * @fires _addTmp
-       * @fires edit
-       */
-      copy(data, options, index) {
-        let r = bbn.fn.clone(data);
-        if (this.uid && r[this.uid]) {
-          delete r[this.uid];
-        }
-        this._addTmp(r);
-        this.edit(this.tmpRow, options, index);
-      },
-      /**
        * Emits 'select',  'unselect' or 'toggle' at change of checkbox of the row in a selectable table.
        * @method checkSelection
        * @param {Number}  index
@@ -2771,9 +2415,6 @@ document.head.insertAdjacentElement('beforeend', css);
               return a.data;
             })));
           }
-          setTimeout(() => {
-            //this.init();
-          })
         });
       },
       /**
@@ -2808,28 +2449,6 @@ document.head.insertAdjacentElement('beforeend', css);
           return (!!tr ? (tr + ' ') : '') + (bbn.fn.isFunction(column.cls) ? column.cls(data, index, column) : column.cls);
         }
         return tr || '';
-      },
-      /**
-       * Returns true if the row corresponding to the given index has changed respect to originalData.
-       * @method isModified
-       * @param {Number} idx
-       * @returns {Boolean}
-       */
-      isModified(idx) {
-        if (!this.originalData) {
-          return false;
-        }
-        let data = [];
-        let orig;
-        if ( this.filteredData[idx] === undefined ){
-          bbn.fn.each(this.currentData, (a) => data.push(a.data));
-          orig = this.originalData;
-        }
-        else{
-          data = this.filteredData[idx].data;
-          orig = this.originalData[idx];
-        }
-        return JSON.stringify(data) !== JSON.stringify(orig);
       },
       /**
        * Returns true if the given column is sorted.
@@ -2888,25 +2507,11 @@ document.head.insertAdjacentElement('beforeend', css);
         }
       },
       /**
-       * Handles the table resize.
+       * Deprecated. Not removed for backwards compatibility.
        * @method updateTable
-       * @fires keepCool
-       * @emit resize
        */
       updateTable() {
-        if (!this.isLoading && this.filteredData.length) {
-          this.keepCool(() => {
-            // Equalizing the height of the cells in case of fixed columns
-            if (this.groupCols[0].cols.length || this.groupCols[2].cols.length) {
-              let ele = this.getRef('table');
-              if ( ele && ele.tBodies ){
-                bbn.fn.each(ele.tBodies[0].rows, (row) => {
-                  //bbn.fn.adjustHeight([row, ...Array.from(row.cells).filter(c => c.classList.contains('bbn-table-fixed-cell'))]);
-                });
-              }
-            }
-          }, 'updateTable', 100);
-        }
+        return;
       },
       /**
        * Renders a cell according to column's config.
@@ -2923,55 +2528,6 @@ document.head.insertAdjacentElement('beforeend', css);
           return column.render(data, column, index, value)
         }
         return this.renderData(data, column, index);
-      },
-      /**
-       * Cancels the changes made on the row data.
-       * @method cancel
-       * @fires _removeTmp
-       */
-      cancel() {
-        if (this.tmpRow) {
-          this._removeTmp();
-        } else if (this.editedRow && this.originalRow) {
-          if (this.currentData[this.editedIndex]) {
-            this.currentData[this.editedIndex].data = this.originalRow;
-          }
-        }
-        this.originalRow = false;
-        this.editedRow = false;
-        this.editedIndex = false;
-      },
-      /**
-       * @ignore
-       * @todo not used
-       * @method editTmp
-       * @param {Object} data
-       */
-      editTmp(data) {
-        if (this.tmpRow) {
-          data = bbn.fn.extend(this.tmpRow, data);
-        }
-        return this;
-      },
-      /**
-       * @ignore
-       * @method saveTmp
-       */
-      saveTmp() {},
-      /**
-       * Returns a dimension in pixels of the given param.
-       * @method getWidth
-       * @param {Number|String} w The width
-       * @returns {String}
-       */
-      getWidth(w) {
-        if (typeof (w) === 'number') {
-          return (w > 19 ? w : 20) + 'px';
-        }
-        if (bbn.fn.isDimension(w)) {
-          return w;
-        }
-        return '100px';
       },
       /**
        * Resets configuration of the table.
@@ -3033,10 +2589,12 @@ document.head.insertAdjacentElement('beforeend', css);
       /**
        * Resizes the table.
        * @method resizeWidth
+       * @returns {Vue}
        */
       resizeWidth(){
         let currentTot = this.groupCols[0].width + this.groupCols[1].width + this.groupCols[2].width,
-            diff =  this.lastKnownCtWidth - this.borderLeft - this.borderRight - currentTot,
+            parentWidth = this.$el.offsetParent ? this.$el.offsetParent.getBoundingClientRect().width : this.lastKnownCtWidth,
+            diff =  parentWidth - this.borderLeft - this.borderRight - currentTot,
             numDynCols = this.currentColumns.filter(c => (c.width === undefined) && !c.isExpander && !c.isSelection && !c.hidden).length,
             numStaticCols = this.currentColumns.filter(c => !!c.width && !c.isExpander && !c.isSelection && !c.hidden).length,
             newWidth = numDynCols || numStaticCols
@@ -3055,11 +2613,18 @@ document.head.insertAdjacentElement('beforeend', css);
                     || (!numDynCols && !!numStaticCols && !!col.width))
                 ) {
                   let tmp = col.realWidth + newWidth;
-                  if ((col.width !== undefined) && (tmp < col.width)) {
-                    tmp = col.width;
+                  if ((col.width !== undefined)
+                    && (!bbn.fn.isString(col.width)
+                      || bbn.fn.isNumber(col.width.substr(-1)))
+                  ) {
+                    if (tmp < parseFloat(col.width)) {
+                      tmp = parseFloat(col.width);
+                    }
                   }
-                  if (tmp < this.minimumColumnWidth) {
-                    tmp = this.minimumColumnWidth;
+                  else if (tmp < (bbn.fn.isMobile() ? this.minimumColumnWidthMobile : this.minimumColumnWidth)) {
+                    tmp = bbn.fn.isMobile()
+                      ? this.minimumColumnWidthMobile
+                      : this.minimumColumnWidth;
                   }
                   if (col.minWidth && (tmp < col.minWidth)) {
                     tmp = col.minWidth;
@@ -3087,25 +2652,7 @@ document.head.insertAdjacentElement('beforeend', css);
           });
           this.isResizingWidth = false;
         }
-      },
-      /**
-       * Returns an array containing the scrollcontainer of each items of groupCols.
-       * @method dataScrollContents
-       * @fires getRef
-       * @returns {Array}
-       */
-      dataScrollContents() {
-        if (!this.groupCols[0].cols.length && !this.groupCols[2].cols.length) {
-          return null;
-        }
-        let r = [];
-        bbn.fn.each(this.groupCols, (a) => {
-          let sc = this.getRef(a.name + 'Scroller');
-          if (a.cols.length && sc && sc.getRef('scrollContainer')) {
-            r.push(sc.getRef('scrollContainer'));
-          }
-        });
-        return r;
+        return this;
       },
       /**
        * Returns if the given row is expanded.
@@ -3245,6 +2792,8 @@ document.head.insertAdjacentElement('beforeend', css);
       init(with_data) {
         this.keepCool(() => {
           this.initStarted = true;
+          this.setContainerMeasures();
+          this.setResizeMeasures();
           let groupCols = [
                 {
                   name: 'left',
@@ -3270,14 +2819,13 @@ document.head.insertAdjacentElement('beforeend', css);
               isAggregated = false,
               aggregatedColIndex = false,
               aggregatedColTitle = false,
-              aggregatedColumns = [];
+              aggregatedColumns = [],
+              parentWidth = this.$el.offsetParent ? this.$el.offsetParent.getBoundingClientRect().width : this.lastKnownCtWidth;
           this.groupCols = bbn.fn.clone(groupCols);
           bbn.fn.each(this.cols, (a) => {
             a.realWidth = 0;
           });
           this.$nextTick(() => {
-            this.setContainerMeasures();
-            this.setResizeMeasures();
             bbn.fn.each(this.cols, (a, i) => {
               if (!a.hidden && (!this.groupable || (this.group !== i))) {
                 a.index = i;
@@ -3293,18 +2841,20 @@ document.head.insertAdjacentElement('beforeend', css);
                     aggregatedColumns.push(a);
                   }
                   if ( a.width ){
-                    if ((typeof (a.width) === 'string') && (a.width.substr(-1) === '%')) {
-                      a.realWidth = Math.floor(this.lastKnownCtWidth * parseFloat(a.width) / 100);
+                    if (bbn.fn.isString(a.width) && (a.width.substr(-1) === '%')) {
+                      a.realWidth = Math.floor(parentWidth * parseFloat(a.width) / 100);
+                      if ( a.realWidth < (bbn.fn.isMobile() ? this.minimumColumnWidthMobile : this.minimumColumnWidth) ){
+                        a.realWidth = bbn.fn.isMobile() ? this.minimumColumnWidthMobile : this.minimumColumnWidth;
+                      }
                     }
                     else {
                       a.realWidth = parseFloat(a.width);
                     }
-                    if ( a.realWidth < this.minimumColumnWidth ){
-                      a.realWidth = this.minimumColumnWidth;
-                    }
                   }
                   else {
-                    a.realWidth = this.minimumColumnWidth;
+                    a.realWidth = bbn.fn.isMobile()
+                      ? this.minimumColumnWidthMobile
+                      : this.minimumColumnWidth;
                     numUnknown++;
                   }
                   if (a.minWidth && (a.realWidth < a.minWidth)) {
@@ -3349,8 +2899,8 @@ document.head.insertAdjacentElement('beforeend', css);
                 isSelection: !!this.selection,
                 title: ' ',
                 filterable: false,
-                width: this.selection ? 40 : this.minimumColumnWidth,
-                realWidth: this.selection ? 40 : this.minimumColumnWidth
+                width: this.selection ? 40 : 30,
+                realWidth: this.selection ? 40 : 30
               };
               if ( firstGroup === 0 ){
                 o.fixed = true;
@@ -3366,25 +2916,24 @@ document.head.insertAdjacentElement('beforeend', css);
               tot += a.sum;
             });
 
-            let clientWidth = this.lastKnownCtWidth,
-                styles = window.getComputedStyle(this.$el),
+            let styles = window.getComputedStyle(this.$el),
                 borderLeft = styles.getPropertyValue('border-left-width').slice(0, -2),
                 borderRight = styles.getPropertyValue('border-right-width').slice(0, -2),
-                toFill = clientWidth - borderLeft - borderRight - tot;
+                toFill = parentWidth - borderLeft - borderRight - tot;
             this.borderLeft = borderLeft;
             this.borderRight = borderRight;
             // We must arrive to 100% minimum
             if (toFill > 0) {
               if (numUnknown) {
                 let newWidth = toFill / numUnknown;
-                if (newWidth < this.minimumColumnWidth) {
-                  newWidth = this.minimumColumnWidth;
+                if (newWidth < (bbn.fn.isMobile() ? this.minimumColumnWidthMobile : this.minimumColumnWidth)) {
+                  newWidth = bbn.fn.isMobile() ? this.minimumColumnWidthMobile : this.minimumColumnWidth;
                 }
                 let maxPreAggregatedWidth = 0;
                 bbn.fn.each(this.cols, (a, i) => {
                   if (!a.hidden) {
                     if (!a.width) {
-                      a.realWidth = newWidth + this.minimumColumnWidth;
+                      a.realWidth = newWidth + (bbn.fn.isMobile() ? this.minimumColumnWidthMobile : this.minimumColumnWidth);
                     }
                     if ( isAggregated && (i < aggregatedColIndex) && (a.realWidth >= maxPreAggregatedWidth) ){
                       maxPreAggregatedWidth = a.realWidth;
@@ -3597,11 +3146,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @returns {String}
        */
       getTr(i) {
-        let c = this.getRef('table');
-        if ( c && c.rows && c.rows[i] ) {
-          return c.rows[i];
-        }
-        return false;
+        return this.$refs.rows && this.$refs.rows[i] ? this.$refs.rows[i] : false;
       },
       /**
        * Returns an object of the default values for the different types of fields.
@@ -3639,8 +3184,6 @@ document.head.insertAdjacentElement('beforeend', css);
           this.focusedRow = false;
         }
       },
-      saveEditedRow() {},
-      cancelEditedRow() {},
       /**
        * 
        */
@@ -3651,15 +3194,15 @@ document.head.insertAdjacentElement('beforeend', css);
        * Removes the focus from the given row.
        * @param {Number} idx 
        */
-      focusout(idx) {
-        bbn.fn.log('focusout')
-        this.focused = false;
-        //this.cancel();
-        setTimeout(() => {
-          if (!this.focused) {
-            this.focusedRow = false;
-          }
-        }, 50);
+      focusout(idx){
+        if ((idx === undefined) || (idx === this.focusedRow)) {
+          this.focused = false;
+          setTimeout(() => {
+            if (!this.focused) {
+              this.focusedRow = false;
+            }
+          }, 50);
+        }
       },
       /**
        * Focuses the given row.
@@ -3695,7 +3238,7 @@ document.head.insertAdjacentElement('beforeend', css);
      * @fires setConfig
      * @fires getStorage
      */
-    created() {
+    created(){
       // Adding bbns-column from the slot
       if (this.$slots.default) {
         let def = this.defaultObject();
@@ -3733,7 +3276,6 @@ document.head.insertAdjacentElement('beforeend', css);
             initColumn.push(i);
           }
         });
-        this.viewportCols = initColumn;
         this.defaultConfig.hidden = tmp;
       }
 
@@ -3744,6 +3286,14 @@ document.head.insertAdjacentElement('beforeend', css);
       if (cfg) {
         this.setConfig(cfg, true);
       }
+
+      this.$on('addTmp', () => {
+        let scroll = this.getRef('scroll');
+        if (scroll) {
+          scroll.scrollStartY();
+          scroll.scrollStartX();
+        }
+      })
     },
     /**
      * After the initialization of the component sets the property ready on true.
@@ -3784,7 +3334,9 @@ document.head.insertAdjacentElement('beforeend', css);
         this.$once('dataloaded', () => {
           this.ready = true;
         });
-        this.init(!!this.isAutobind);
+        this.$nextTick(() => {
+          this.init(!!this.isAutobind);
+        })
       }
     },
     watch: {
@@ -3820,14 +3372,6 @@ document.head.insertAdjacentElement('beforeend', css);
         }
       },
       /**
-       * @watch editedRow
-       */
-      editedRow(newVal, oldVal) {
-        if (newVal === false) {
-          this.editedIndex = false;
-        }
-      },
-      /**
        * Forces the update of the component.
        * @watch currentHidden
        * @fires setConfig
@@ -3850,50 +3394,51 @@ document.head.insertAdjacentElement('beforeend', css);
         this.currentExpanded = [];
         this.init();
       },
-
       /**
        * @watch focusedRow
        * @fires isModified
+       * @fires edit
        * @emit change
+       * @emit focus
+       * @emit focusout
        */
       focusedRow(newIndex, oldIndex) {
+        if (bbn.fn.isNumber(oldIndex)) {
+          this.$emit('focusout', oldIndex, this.items[oldIndex] ? this.items[oldIndex].index : undefined);
+        }
         if (this.items[newIndex]) {
-          this.$emit('focus', this.items[newIndex].data, newIndex);
+          this.$emit('focus', this.items[newIndex].data, newIndex, this.items[newIndex].index);
         }
-        else {
-          this.$emit('focusout', newIndex);
-        }
-        if (
-          this.editable &&
-          (this.editMode === 'inline')
-        ) {
-          if (this.items[oldIndex] !== undefined) {
+        if (this.editable && (this.editMode === 'inline')) {
+          if (bbn.fn.isNumber(oldIndex) && this.items[oldIndex]) {
             let idx = this.items[oldIndex].index;
-            if (
-              (this.editedIndex === idx) &&
-              this.isModified(idx)
+            if ((this.editedIndex === idx)
+              && this.isModified(idx)
             ) {
-              //this.$forceUpdate();
               this.$emit('change', this.items[oldIndex].data, idx);
-              //this.save();
             }
           }
-          if (this.items[newIndex] && !this.items[newIndex].group) {
-            let comeFromAfter = newIndex === oldIndex - 1;
+          this.editedRow = false;
+          if (bbn.fn.isNumber(newIndex)
+            && this.items[newIndex]
+            && !this.items[newIndex].group
+            && !this.items[newIndex].expander
+          ) {
+            let comeFromAfter = bbn.fn.isNumber(oldIndex) && (newIndex === (oldIndex - 1));
             this.$nextTick(() => {
               this.edit(this.items[newIndex].data, null, newIndex);
               this.$nextTick(() => {
-                let nextInputs = this.getTr(newIndex).querySelectorAll('input');
-                let nextInput;
-                bbn.fn.each(nextInputs, (a) => {
-                  if ( a.offsetWidth ){
+                let nextInputs = this.getTr(newIndex).querySelectorAll('input'),
+                    nextInput;
+                bbn.fn.each(nextInputs, a => {
+                  if (a.offsetWidth) {
                     nextInput = a;
                     if (!comeFromAfter) {
                       return false;
                     }
                   }
                 });
-                if ( nextInput ){
+                if (nextInput) {
                   nextInput.focus();
                 }
               });

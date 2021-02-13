@@ -445,29 +445,34 @@ document.head.insertAdjacentElement('beforeend', css);
             else if ( typeof d === 'object' ){
               this.currentSource = d;
             }
-            this.$nextTick(() => {
+            return this.$nextTick(() => {
               this.isLoading = false;
-              this.$emit("loaded");
-              this.onResize();
-              this.selfEmit(true);
+              if (this.ready) {
+                this.$emit("loaded");
+                this.onResize();
+              }
             });
           });
         }
         else {
-          let items = this.items.slice();
-          if ( this.limit && 
-            ((items.length > this.currentStart) && (items.length > this.limit))
-          ){
-            items = items.splice(this.currentStart, this.limit); 
-          }
+          return new Promise((resolve) => {
+            let items = this.items.slice();
+            if ( this.limit && 
+              ((items.length > this.currentStart) && (items.length > this.limit))
+            ){
+              items = items.splice(this.currentStart, this.limit); 
+            }
 
-          this.$set(this, 'currentItems', items); 
-          this.$nextTick(() => {
-            this.isLoading = false;
-            this.$emit("loaded");
-            this.onResize();
-            this.selfEmit(true);
-          });
+            this.$set(this, 'currentItems', items); 
+            return this.$nextTick(() => {
+              resolve();
+              this.isLoading = false;
+              if (this.ready) {
+                this.$emit("loaded");
+                this.onResize();
+              }
+            });
+          })
         }
       },
       nav(arg){
@@ -531,9 +536,9 @@ document.head.insertAdjacentElement('beforeend', css);
       this.dashboard = bbn.vue.closest(this, "bbn-dashboard");
     },
     mounted(){
-      this.load();
-      this.$nextTick(() => {
-        this.onResize();
+      this.setResizeEvent();
+      this.load().then(() => {
+        this.ready = true;
       });
     },
     updated(){

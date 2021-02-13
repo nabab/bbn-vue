@@ -54,7 +54,11 @@ document.body.insertAdjacentElement('beforeend', script);
      * @mixin bbn.vue.eventsComponent
      *
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent],
+    mixins: [
+      bbn.vue.basicComponent,
+      bbn.vue.inputComponent,
+      bbn.vue.eventsComponent
+    ],
     props: {
       value: {
       /**
@@ -192,7 +196,7 @@ document.body.insertAdjacentElement('beforeend', script);
           return true;
         }
         return this.checked;
-      }
+      },
     },
     methods: {
       /**

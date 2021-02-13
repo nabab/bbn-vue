@@ -34,8 +34,6 @@
                  :scrollAlso="scrollAlso"
                  :initial="currentX"
                  @scroll="scrollHorizontal"
-                 @reachLeft="$emit($event)"
-                 @reachRight="$emit($event)"
                  :offset="offsetX"
   >
   </bbn-scrollbar>
@@ -47,8 +45,6 @@
                  :scrollAlso="scrollAlso"
                  :initial="currentY"
                  @scroll="scrollVertical"
-                 @reachTop="$emit($event)"
-                 @reachBottom="$emit($event)"
                  :offset="offsetY"
   >
   </bbn-scrollbar>

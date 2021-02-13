@@ -393,8 +393,6 @@ document.head.insertAdjacentElement('beforeend', css);
     },
     data(){
       return {
-        isMobile: bbn.fn.isMobile(),
-        isTablet: bbn.fn.isTabletDevice(),
         isFocused: false,
         intervalBugChrome: null,
         mode: bbn.env.mode,
@@ -955,18 +953,20 @@ document.head.insertAdjacentElement('beforeend', css);
         })
         // appui-notification
         this.$on('appui-notification', (type, data) => {
-          if (type === 'message') {
-            let tray = this.getRef('notificationTray')
-            if (bbn.fn.isVue(tray) && bbn.fn.isFunction(tray.receive)) {
-              tray.receive(data);
-            }
-            if ('browser' in data) {
-              bbn.fn.each(data.browser, n => this.browserNotify(n.title, {
-                body: bbn.fn.html2text(n.content),
-                tag: n.id,
-                timestamp: n.browser,
-                requireInteraction: true
-              }));
+          if (this.plugins['appui-notification']) {
+            if (type === 'message') {
+              let tray = this.getRef('notificationTray')
+              if (bbn.fn.isVue(tray) && bbn.fn.isFunction(tray.receive)) {
+                tray.receive(data);
+              }
+              if ('browser' in data) {
+                bbn.fn.each(data.browser, n => this.browserNotify(n.title, {
+                  body: bbn.fn.html2text(n.content),
+                  tag: n.id,
+                  timestamp: n.browser,
+                  requireInteraction: true
+                }));
+              }
             }
           }
         });

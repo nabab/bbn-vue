@@ -42,8 +42,14 @@
   Vue.component('bbn-rte', {
     /**
      * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.inputComponent
+     * @mixin bbn.vue.positionComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent],
+    mixins: [
+      bbn.vue.basicComponent,
+      bbn.vue.inputComponent,
+      bbn.vue.positionComponent
+    ],
     props: {
       /**
        * @prop {Boolean} [false] iFrame
@@ -86,22 +92,6 @@
        * @prop pinned
        */
       pinned: {},
-      /**
-       * @prop top
-       */
-      top: {},
-      /**
-       * @prop left
-       */
-      left: {},
-      /**
-       * @prop bottom
-       */
-      bottom: {},
-      /**
-       * @prop right
-       */
-      right: {},
       /**
        * @prop {Boolean} [false] fullSize
        */

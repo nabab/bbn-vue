@@ -424,12 +424,6 @@
             }
           }
           this.currentX = x;
-          if (!x) {
-            this.$emit('reachLeft');
-          }
-          else if (x + ct.clientWidth >= ct.scrollWidth) {
-            this.$emit('reachRight');
-          }
         }
         let y = ct.scrollTop;
         if ( this.hasScrollY && (y !== this.currentY)) {
@@ -449,12 +443,6 @@
             }
           }
           this.currentY = y;
-          if (!y) {
-            this.$emit('reachTop');
-          }
-          else if (y + ct.clientHeight >= ct.scrollHeight) {
-            this.$emit('reachBottom');
-          }
         }
         if (this.scrollable) {
           e.stopImmediatePropagation();
@@ -473,9 +461,7 @@
         if (!this.hasScroll || !this.ready) {
           return;
         }
-        if (y === undefined) {
-          y = x;
-        }
+
         if (
           this.hasScrollX &&
           (x !== undefined) &&
@@ -484,6 +470,7 @@
         ) {
           this.$refs.xScroller.scrollTo(x);
         }
+
         if (
           this.hasScrollY &&
           (y !== undefined) &&
@@ -501,7 +488,7 @@
        */  
       scrollHorizontal(ev, left){
         this.currentX = left;
-        this.$emit('scrollx', ev, left);
+        this.$emit('scrollx', left);
       },
       /**
        * @method scrollVertical
@@ -511,7 +498,15 @@
        */ 
       scrollVertical(ev, top){
         this.currentY = top;
-        this.$emit('scrolly', ev, top);
+        this.$emit('scrolly', top);
+      },
+      addVertical(y) {
+        this.scrollTo(null, this.currentY + y)
+        this.$emit('scrolly', this.currentY);
+      },
+      addHorizontal(x) {
+        this.scrollTo(this.currentX + x)
+        this.$emit('scrollx', this.currentX);
       },
       /**
        * @method scrollStart
@@ -715,7 +710,7 @@
         // Prevent too many executions
         return this.keepCool(() => {
           // If the container measures have changed
-          if (force || this.setContainerMeasures()) {
+          if (this.setContainerMeasures() || force) {
             // Setting up the element's measures
             this.setResizeMeasures();
             // getting current measures of element and scrollable container
@@ -750,10 +745,12 @@
               this.hasScroll = this.hasScrollY || this.hasScrollX;
               /** @todo Check if this shouldn't be with - (minus) containerSize */
               if ( this.currentX > this.contentWidth ) {
-                this.currentX = 0;
+                // this.currentX = 0;
+                this.currentX = this.contentWidth - this.containerWidth;
               }
               if ( this.currentY > this.contentHeight ) {
-                this.currentY = 0;
+                // this.currentY = 0;
+                this.currentY = this.contentHeight - this.containerHeight;
               }
               container.scrollLeft = this.currentX;
               container.scrollTop = this.currentY;
@@ -883,6 +880,28 @@
           y.onResize()
         }
       },
+      currentX(x) {
+        if (!x) {
+          this.$emit('reachLeft');
+        }
+        else {
+          let ct = this.getRef('scrollContainer');
+          if (ct && (x + ct.clientWidth >= ct.scrollWidth)) {
+            this.$emit('reachRight');
+          }
+        }
+      },
+      currentY(y) {
+        if (!y) {
+          this.$emit('reachTop');
+        }
+        else {
+          let ct = this.getRef('scrollContainer');
+          if (ct && (y + ct.clientHeight >= ct.scrollHeight)) {
+            this.$emit('reachBottom');
+          }
+        }
+    }
     }
   });
 

@@ -135,7 +135,7 @@ div.bbn-router .bbn-router-nav div.bbn-router-tabs > div.bbn-router-tabs-contain
   top: 0px;
   bottom: 0px;
 }
-div.bbn-router .bbn-router-nav div.bbn-router-tabs > div.bbn-router-tabs-container ul.bbn-router-tabs-tabs:first-child > li div.bbn-router-tabs-icon i {
+div.bbn-router .bbn-router-nav div.bbn-router-tabs > div.bbn-router-tabs-container ul.bbn-router-tabs-tabs:first-child > li div.bbn-router-tabs-icon > i {
   display: block;
   position: absolute;
   right: 0px;
@@ -145,10 +145,10 @@ div.bbn-router .bbn-router-nav div.bbn-router-tabs > div.bbn-router-tabs-contain
   cursor: pointer;
   margin: 0;
 }
-div.bbn-router .bbn-router-nav div.bbn-router-tabs > div.bbn-router-tabs-container ul.bbn-router-tabs-tabs:first-child > li div.bbn-router-tabs-icon i.bbn-router-tab-close {
+div.bbn-router .bbn-router-nav div.bbn-router-tabs > div.bbn-router-tabs-container ul.bbn-router-tabs-tabs:first-child > li div.bbn-router-tabs-icon > i.bbn-router-tab-close {
   top: 0px;
 }
-div.bbn-router .bbn-router-nav div.bbn-router-tabs > div.bbn-router-tabs-container ul.bbn-router-tabs-tabs:first-child > li div.bbn-router-tabs-icon i.bbn-router-tab-menu {
+div.bbn-router .bbn-router-nav div.bbn-router-tabs > div.bbn-router-tabs-container ul.bbn-router-tabs-tabs:first-child > li div.bbn-router-tabs-icon > i.bbn-router-tab-menu {
   bottom: -2px;
 }
 div.bbn-router .bbn-router-nav div.bbn-router-tabs > div.bbn-router-tabs-container ul.bbn-router-tabs-tabs:first-child > li div.bbn-router-tabs-selected {

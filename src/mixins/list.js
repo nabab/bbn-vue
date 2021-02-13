@@ -969,8 +969,6 @@
         reload() {
           return this.updateData();
         },
-
-
         getIndex(filter) {
           if (!bbn.fn.isObject(filter) && this.uid) {
             filter = {[this.uid]: filter};
@@ -986,8 +984,6 @@
           });
           return idx;
         },
-
-
         /**
          * Removes the row defined by the where param from currentData
          * @method remove

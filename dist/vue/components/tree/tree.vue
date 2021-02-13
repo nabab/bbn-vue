@@ -6,7 +6,7 @@
   <div v-if="loading" class="loader">
     <bbn-loadicon></bbn-loadicon> <span v-text="_('Loading')"></span>...
   </div>
-  <component v-else-if="isLoaded"
+  <component v-else-if="isInit && isLoaded"
              :is="isRoot ? 'bbn-scroll' : 'div'"
              ref="scroll"
   >
@@ -35,8 +35,9 @@
                         :quickFilter="quickFilter"
                         :sortable="it.sortable !== undefined ? it.sortable : sortable"
                         :uid="uid"
+                        :tree-state="_getTreeState(it.data[uid])"
         >
-          <li :class="['bbn-tree-node', 'bbn-unselectable', {
+          <li :class="['bbn-tree-node', 'bbn-vxxspadded', 'bbn-unselectable', {
                         'bbn-state-active': (isActive && !isSelected) || (tree.dragging && tree.overNode && !tree.overOrder && (tree.overNode === _self) && tree.draggable),
                         'bbn-state-selected': isSelected
                       }]"
@@ -107,6 +108,8 @@
                   >
                     <!-- If icon is specifically false we leave the white space -->
                     <span v-if="source.icon === false"></span>
+                    <img v-else-if="source.icon && (source.icon.indexOf('data:image') === 0)"
+                         :src="source.icon">
                     <i v-else
                         :class="getIcon()"
                         :style="iconStyle"
@@ -136,6 +139,7 @@
                       :sortable="source.sortable !== undefined ? source.sortable : tree.sortable"
                       :multiple="source.multiple !== undefined ? source.multiple : tree.multiple"
                       :uid="uid"
+                      :state="treeState"
                       :opened="!!tree.opened"
             ></bbn-tree>
             <span v-if="sortable"
@@ -406,6 +410,12 @@
           }]
         }
       },
+      state: {
+        type: Object,
+        default(){
+          return {};
+        }
+      },
       /**
        * Set to true if the prop 'ajax' is true,
        * the tree will make the ajax call only for
@@ -504,7 +514,12 @@
          * The state for the storage.
          * @data {Array} [[]] nodes
          */
-        currentState: {}
+        currentState: {},
+        /**
+         * Set to true once it has been loaded.
+         * @data {Array} [[]] nodes
+         */
+        isInit: false
       };
     },
     computed: {
@@ -629,6 +644,13 @@
         }
         return res;
       },
+      _getTreeState(uid) {
+        if (this.currentState[uid]) {
+          bbn.fn.log('CURRENT STATE FOUND', this.currentState[uid][this.children]);
+          return bbn.fn.clone(this.currentState[uid][this.children]);
+        }
+        return {};
+      },
       /**
        * A function to normalize the structure of items.
        * @method _map
@@ -721,12 +743,7 @@
           }
 
           let cp = this.isRoot ? this.getRef('scroll') : this;
-          bbn.fn.log("FIND NODE", props, cp);
           if (cp.$children) {
-            bbn.fn.log("FILTER", bbn.fn.arrayFromProp(
-              cp.$children.filter(a => a.$options && (a.$options._componentTag === 'bbn-tree-node')),
-              'data')
-            );
             let idx = bbn.fn.search(
               bbn.fn.arrayFromProp(
                 cp.$children.filter(a => a.$options && (a.$options._componentTag === 'bbn-tree-node')),
@@ -950,7 +967,7 @@
         //if ( this.isAjax ){
           if ( this.isRoot && !node ){
             this.isLoaded = false;
-            this.initLoad();
+            this.init();
           }
           else {
             node = !node ? this.node : node;
@@ -975,6 +992,7 @@
        * @method openPath
        */
       openPath() {
+        return;
         this.$nextTick(() => {
           if ( this.path.length ){
             let current = bbn.fn.extend(true, [], this.path);
@@ -1278,9 +1296,10 @@
         }
       },
       _setCurrentState(state) {
+        bbn.fn.log("State", this, state);
         this.currentState = state;
       },
-      initLoad() {
+      initStorage(){
         let state;
         if (this.hasStorage && this.isRoot) {
           let storage = this.getLocalStorage();
@@ -1288,36 +1307,42 @@
             state = storage.state || null;
           }
         }
-        else if (bbn.fn.numProperties(this.currentState)) {
-          state = this.currentState;
+        else if (this.state) {
+          state = this.state;
         }
-        if (this.node.isExpanded || this.isRoot || state) {
+        if (state) {
+          this._setCurrentState(state);
+        }
+      },
+      init() {
+        if (this.node.isExpanded
+            || this.isRoot
+            || (this.currentState && this.currentState.expanded)
+        ) {
           this.updateData().then(() => {
-            setTimeout(() => {
-              if (bbn.fn.numProperties(state)) {
-                bbn.fn.each(state, (o, uid) => {
+            this.isInit = true;
+            if (bbn.fn.numProperties(this.currentState) && this.filteredData.length) {
+              setTimeout(() => {
+                bbn.fn.each(this.currentState, (o, uid) => {
                   let it = this.findNode({[this.uid]: uid}, this.node);
-                  bbn.fn.log("Looking for uid " + uid + " and... " + (it ? "" : "NOT ") + "FOUND");
                   if (it) {
-                    if (o.items) {
-                      let tree = it.getRef('tree');
-                      if (tree) {
-                        bbn.fn.log("Tree exists")
-                        tree.$once('dataloaded', () => {
-                          bbn.fn.log("Tree is ready")
-                          tree._setCurrentState(o.items);
-                        });
-                      }
+                    if (o[this.children]) {
                       it.isExpanded = true;
                     }
-                    if (o.expanded) {
+                    else if (o.expanded) {
                       it.isExpanded = true;
                     }
                   }
+                  else {
+                    delete this.currentState[uid];
+                  }
                 })
-              }
-            }, 100)
+              }, 50);
+            }
           });
+        }
+        else {
+          this.isInit = true;
         }
       },
       // Keep to prevent the one from list to exexute
@@ -1327,11 +1352,12 @@
     },
     /**
      * Emits the event beforeLoad and load. And opens the nodes defined in the prop path.
+     * Definition of the root tree and parent node.
      * @event beforeCreate
      * @emits beforeLoad
      * @emits load
      */
-    beforeCreate(){
+    created(){
       this.$on('beforeUpdate', e => {
         if ( this.isAjax && (this.tree.isLoading || this.isLoading) ){
           e.preventDefault();
@@ -1356,12 +1382,6 @@
         }
         this.isLoaded = true;
       });
-    },
-    /**
-     * Definition of the root tree and parent node.
-     * @event created
-     */
-    created(){
       if ( bbn.fn.isFunction(this.source) ){
         this.isFunction = true;
       }
@@ -1381,6 +1401,9 @@
         }
         this.node = this.closest('bbn-tree-node');
       }
+      if (!this.tree.autobind) {
+        this.isInit = true;        
+      }
     },
     /**
      * Updates the data of the tree and sets the prop 'ready' to true.
@@ -1389,11 +1412,12 @@
      */
     mounted(){
       this.ready = true;
-      this.$nextTick(() => {
-        if (this.autobind) {
-          this.initLoad();
-        }
-      })
+      this.initStorage();
+      if (this.tree.autobind) {
+        this.$nextTick(() => {
+          this.init();
+        })
+      }
     },
     watch: {
       /**
@@ -1541,6 +1565,12 @@
           },
           uid: {
             type: String
+          },
+          treeState: {
+            type: Object,
+            default(){
+              return {};
+            }
           }
         },
         data(){
@@ -1868,6 +1898,25 @@
                   a.overNode = false;
                 }
               }
+
+              let scroll = this.tree.getRef('scroll');
+              if (scroll.hasScrollY && !scroll.isScrolling) {
+                let coord = this.tree.$el.getBoundingClientRect();
+                let step = Math.ceil(coord.height / 20);
+                let margin = step * 4;
+                let diff = 0;
+                if (e.clientY < (coord.y + margin)) {
+                  diff = e.clientY - coord.y - margin;
+                }
+                else if (e.clientY > (coord.y + coord.height - margin)) {
+                  diff = e.clientY - (coord.y + coord.height - margin);
+                }
+                if (diff) {
+                  let approachLevel = Math.round(diff/step);
+                  scroll.addVertical(Math.round(scroll.$el.offsetHeight / 5) * approachLevel + 1);
+                  bbn.fn.log(approachLevel);
+                }
+              }
             }
           },
           /**
@@ -2118,7 +2167,7 @@
                   else if (!o[a].expanded) {
                     o[a].expanded = true;
                   }
-                  return o[a].items;
+                  return o[a][this.children];
                 }, this.tree.currentState)
                 return true;
               }
@@ -2154,7 +2203,7 @@
                 bbn.fn.each(path, (a, i) => {
                   if (o[a]) {
                     if (i === last) {
-                      if (parent && !bbn.fn.numProperties(o[a].items)) {
+                      if (parent && !bbn.fn.numProperties(o[a][this.children])) {
                         delete parent[prev];
                       }
                       else {
@@ -2163,7 +2212,7 @@
                     }
                     else {
                       prev = a;
-                      parent = o[a].items;
+                      parent = o[a][this.children];
                     }
                   }
                 });
@@ -2205,7 +2254,7 @@
             if ( !this.parent.isAjax ){
               this.parent.currentData.splice(this.idx, 1);
             }
-          }
+          },
         },
         /**
          * Defines the props tree and parent of the node
@@ -2306,7 +2355,6 @@
               }
             }
             else {
-              bbn.fn.log("REMOVING FROM EXPANDED");
               if ( this.removeFromExpanded() ){
                 if ( this.tree.selectedNode && this.tree.isNodeOf(this.tree.selectedNode, this) ){
                   this.isActive = true;
@@ -2418,21 +2466,29 @@
   height: auto;
   min-height: 18px;
 }
+.bbn-tree .bbn-tree-node span.bbn-tree-node-block span {
+  display: inline-block;
+}
 .bbn-tree .bbn-tree-node span.bbn-tree-node-block.bbn-tree-node-block-no-component span {
   display: inline-block;
+  vertical-align: middle;
 }
 .bbn-tree .bbn-tree-node span.bbn-tree-node-block .bbn-tree-node-block-selectable {
   padding: 1px;
 }
 .bbn-tree .bbn-tree-node span.bbn-tree-node-block .bbn-tree-node-block-expander {
-  display: inline-block;
   width: 0.7em;
   padding-left: 0.2em;
   font-size: 1.1em;
 }
 .bbn-tree .bbn-tree-node span.bbn-tree-node-block .bbn-tree-node-block-icon {
-  display: inline-block;
+  text-align: center;
   width: 1.3em;
+}
+.bbn-tree .bbn-tree-node span.bbn-tree-node-block .bbn-tree-node-block-icon img {
+  width: 100%;
+  height: auto;
+  vertical-align: middle;
 }
 .bbn-tree .bbn-tree-node span.bbn-tree-node-block .bbn-tree-node-block-title {
   white-space: nowrap;

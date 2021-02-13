@@ -21,6 +21,7 @@
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.resizerComponent
+     * @mixin bbn.vue.editableListComponent
      * @mixin bbn.vue.listComponent
      * @mixin bbn.vue.dataEditorComponent
      * @mixin bbn.vue.localStorageComponent
@@ -31,6 +32,7 @@
     mixins: [
       bbn.vue.basicComponent,
       bbn.vue.resizerComponent,
+      bbn.vue.editableListComponent,
       bbn.vue.listComponent,
       bbn.vue.dataEditorComponent,
       bbn.vue.localStorageComponent,
@@ -109,13 +111,6 @@
         default: false
       },
       /**
-       * Set to true allows to edit inline table's fields if no buttons are defined for the table. Allowed values 'inline','nobuttons'.
-       * @prop {Boolean|String|Function} editable
-       */
-      editable: {
-        type: [Boolean, String, Function]
-      },
-      /**
        * In case of Ajax table, set to true will make an Ajax call to group the table by a field.
        * @prop {Boolean} [true] serverGrouping
        */
@@ -177,13 +172,6 @@
         default: false
       },
       /**
-       * If defined, the form created for the edit of the table will have this URL as action.
-       * @prop {String} url
-       */
-      url: {
-        type: String
-      },
-      /**
        * A function to define css class(es) for the rows.
        * @prop {Function} trClass
        * @todo doesn't work if a string is given
@@ -214,13 +202,7 @@
         type: Boolean,
         default: false
       },
-      /**
-       * Defines the editor to use when the edit button of a row is clicked.
-       * @prop {String|Object} editor
-       */
-      editor: {
-        type: [String, Object]
-      },
+      
       /**
        * If one or more columns have the property fixed set to true it defines the side of the fixed column(s).
        * @prop {String} ['left'] fixedDefaultSide
@@ -326,7 +308,7 @@
       }
     },
     data() {
-      let editable = bbn.fn.isFunction(this.editable) ? this.editable() : this.editable;
+      
       return {
         /**
          * @data {Boolean} [false] _observerReceived
@@ -405,26 +387,6 @@
          */
         group: this.groupBy === undefined ? false : this.groupBy,
         /**
-         * @data {String} editMode
-         */
-        editMode: editable === true ? (this.editor ? 'popup' : 'inline') : (editable === 'popup' ? 'popup' : 'inline'),
-        /**
-         * @data {Boolean|Object} [false] tmpRow
-         */
-        tmpRow: false,
-        /**
-         * @data {Boolean|Object} [false] originalRow
-         */
-        originalRow: false,
-        /**
-         * @data {Boolean|Object} [false] editedRow
-         */
-        editedRow: false,
-        /**
-         * @data {Boolean|Number} [false] editedIndex
-         */
-        editedIndex: false,
-        /**
          * @data {Array} [[]] cols
          */
         cols: [],
@@ -480,22 +442,6 @@
          * @data {Boolean} [false] focusedRow
          */
         focusedRow: false,
-        /**
-         * @data [null] viewport
-         */
-        viewport: null,
-        /**
-         * @data {Array} viewportRows
-         */
-        viewportRows: [...Array(25).keys()],
-        /**
-         * @data {Array} viewportCols
-         */
-        viewportCols: [],
-        /**
-         * @data {Number} [0] viewportUpdater
-         */
-        viewportUpdater: 0,
         /**
          * @data {} [null] rowIndexTimeOut
          */
@@ -627,36 +573,12 @@
         return (this.groupCols[0].width + this.groupCols[1].width + this.groupCols[2].width) + 'px';
       },
       /**
-       * Return true if the table isn't ajax, is editable and the edit mode is 'inline'.
-       * @computed isBatch
-       * @returns {Boolean}
-       */
-      isBatch() {
-        return this.editable && (this.editMode === 'inline') && !this.isAjax
-      },
-      /**
        * Return true if the table has the prop toolbar defined.
        * @computed hasToolbar
        * @returns {Boolean}
        */
       hasToolbar() {
         return this.toolbarButtons.length || bbn.fn.isObject(this.toolbar) || bbn.fn.isFunction(this.toolbar) || bbn.fn.isString(this.toolbar);
-      },
-      /**
-       * If the computed isBatch is true, return an array of modified rows.
-       * @computed modifiedRows
-       * @returns {Array}
-       */
-      modifiedRows() {
-        let res = [];
-        if (this.isBatch) {
-          bbn.fn.each(this.currentData, (d, i) => {
-            if (JSON.stringify(d.data) !== JSON.stringify(this.originalData[i])) {
-              res.push(d);
-            }
-          })
-        }
-        return res;
       },
       /**
        * Return an array of shown fields (the hidden ones are excluded).
@@ -1170,32 +1092,6 @@
         return res;
       },
       /**
-       * Creates the object tmpRow.
-       *
-       * @method _addTmp
-       * @param data
-       * @returns {Vue}
-       */
-      _addTmp(data) {
-        this._removeTmp().tmpRow = this._defaultRow(data);
-        if (this.$refs.scroll) {
-          this.$refs.scroll.scrollStartY();
-          this.$refs.scroll.scrollStartX();
-        }
-        return this;
-      },
-      /**
-       * Changes the values of tmpRow to false.
-       * @method _removeTmp
-       * @returns {Vue}
-       */
-      _removeTmp() {
-        if (this.tmpRow) {
-          this.tmpRow = false;
-        }
-        return this;
-      },
-      /**
        * Prepares the data to export the table to CSV.
        * @method _export
        * @returns {Array}
@@ -1271,7 +1167,6 @@
         }
         return false;
       },
-      _randomString: bbn.fn.randomString,
       /**
        * Exports to csv and download the given filename.
        * @method exportCSV
@@ -1919,95 +1814,6 @@
         }
       },
       /**
-       * After the post in case of edit of the row, update the row in originalData.
-       *
-       * @method successEdit
-       * @param {Object} d
-       * @emit editSuccess
-       * @fires saveRow
-       * @returns {Boolean}
-       */
-      successEdit(d) {
-        if (bbn.fn.isObject(d)) {
-          if ((d.success !== undefined) && !d.success) {
-            if (window.appui) {
-              let ev = new Event('editFailure', {cancelable: true});
-              this.$emit('editFailure', d, ev);
-              if (!ev.defaultPrevented) {
-                appui.error();
-              }
-            }
-          }
-          else {
-            let ev = new Event('editSuccess', {cancelable: true});
-            this.$emit('editSuccess', d, ev);
-            if (!ev.defaultPrevented) {
-              if (d.data) {
-                bbn.fn.iterate(d.data, (o, n) => {
-                  this.editedRow[n] = o;
-                });
-              }
-              this.saveRow();
-              return true;
-            }
-          }
-        }
-        return false;
-      },
-      /**
-       * Insert or update a row in originalData.
-       * @method saveRow
-       * @emit saverow
-       */
-      saveRow() {
-        // New insert
-        let ev = new Event('saverow', {cancelable: true});
-        this.$emit('saverow', this.tmpRow || this.editedRow, ev);
-        if (!ev.defaultPrevented) {
-          if (this.tmpRow) {
-            this.currentData.push({
-              data: bbn.fn.clone(this.tmpRow),
-              index: this.currentData.length
-            });
-            if (this.originalData) {
-              this.originalData.push(bbn.fn.clone(this.tmpRow));
-            }
-            this.tmpRow = false;
-          }
-          // Update
-          else if (this.editedRow) {
-            this.$set(this.currentData[this.editedIndex], 'data', bbn.fn.clone(this.editedRow));
-            if (this.originalData) {
-              this.originalData.splice(this.editedIndex, 1, bbn.fn.clone(this.editedRow));
-            }
-            this.editedRow = false;
-          }
-          return true;
-        }
-        return false;
-      },
-      /**
-       * If the prop url of the table is defined makes a post to the url to update or insert the row, else fires the method saveRow to insert or update the row in originalData.
-       * @method saveInline
-       * @fires saveRow
-       *
-       */
-      saveInline() {
-        if (this.tmpRow || this.editedRow) {
-          if (this.url) {
-            let o = bbn.fn.extend({}, this.data, this.tmpRow || this.editedRow, {
-              action: this.tmpRow ? 'insert' : 'update'
-            });
-            this.post(this.url, o, (d) => {
-              this.successEdit(d);
-            })
-          }
-          else if (this.saveRow()) {
-            this.$emit(this.tmpRow ? 'insert' : 'edit');
-          }
-        }
-      },
-      /**
        * Returns wheter or not the cell is grouped.
        * @method isGroupedCell
        * @param {Number} groupIndex
@@ -2103,40 +1909,6 @@
         this.savedConfig = this.jsonConfig;
       },
       /**
-       * Adds the given data to the object tmpRow and opens the popup with the form to insert the row.
-       * @method insert
-       * @param {Object} data
-       * @param {Object} options
-       * @param {Number} index
-       * @fires _addTmp
-       * @fires edit
-       */
-      insert(data, options, index) {
-        let d = data ? bbn.fn.clone(data) : {};
-        if (this.uid && d[this.uid]) {
-          delete d[this.uid];
-        }
-        this._addTmp(d, index);
-        this.edit(this.tmpRow, options, index);
-      },
-      /**
-       * Adds the given data to the object tmpRow and opens the popup with the form to copy the row.
-       * @method copy
-       * @param {Object} data
-       * @param {Object} options
-       * @param {Number} index
-       * @fires _addTmp
-       * @fires edit
-       */
-      copy(data, options, index) {
-        let r = bbn.fn.clone(data);
-        if (this.uid && r[this.uid]) {
-          delete r[this.uid];
-        }
-        this._addTmp(r);
-        this.edit(this.tmpRow, options, index);
-      },
-      /**
        * Emits 'select',  'unselect' or 'toggle' at change of checkbox of the row in a selectable table.
        * @method checkSelection
        * @param {Number}  index
@@ -2204,9 +1976,6 @@
               return a.data;
             })));
           }
-          setTimeout(() => {
-            //this.init();
-          })
         });
       },
       /**
@@ -2241,28 +2010,6 @@
           return (!!tr ? (tr + ' ') : '') + (bbn.fn.isFunction(column.cls) ? column.cls(data, index, column) : column.cls);
         }
         return tr || '';
-      },
-      /**
-       * Returns true if the row corresponding to the given index has changed respect to originalData.
-       * @method isModified
-       * @param {Number} idx
-       * @returns {Boolean}
-       */
-      isModified(idx) {
-        if (!this.originalData) {
-          return false;
-        }
-        let data = [];
-        let orig;
-        if ( this.filteredData[idx] === undefined ){
-          bbn.fn.each(this.currentData, (a) => data.push(a.data));
-          orig = this.originalData;
-        }
-        else{
-          data = this.filteredData[idx].data;
-          orig = this.originalData[idx];
-        }
-        return JSON.stringify(data) !== JSON.stringify(orig);
       },
       /**
        * Returns true if the given column is sorted.
@@ -2321,25 +2068,11 @@
         }
       },
       /**
-       * Handles the table resize.
+       * Deprecated. Not removed for backwards compatibility.
        * @method updateTable
-       * @fires keepCool
-       * @emit resize
        */
       updateTable() {
-        if (!this.isLoading && this.filteredData.length) {
-          this.keepCool(() => {
-            // Equalizing the height of the cells in case of fixed columns
-            if (this.groupCols[0].cols.length || this.groupCols[2].cols.length) {
-              let ele = this.getRef('table');
-              if ( ele && ele.tBodies ){
-                bbn.fn.each(ele.tBodies[0].rows, (row) => {
-                  //bbn.fn.adjustHeight([row, ...Array.from(row.cells).filter(c => c.classList.contains('bbn-table-fixed-cell'))]);
-                });
-              }
-            }
-          }, 'updateTable', 100);
-        }
+        return;
       },
       /**
        * Renders a cell according to column's config.
@@ -2356,56 +2089,6 @@
           return column.render(data, column, index, value)
         }
         return this.renderData(data, column, index);
-      },
-      /**
-       * Cancels the changes made on the row data.
-       * @method cancel
-       * @fires _removeTmp
-       */
-      cancel() {
-        if (this.tmpRow) {
-          this._removeTmp();
-        }
-        else if (this.editedRow && this.originalRow) {
-          if (this.currentData[this.editedIndex]) {
-            this.currentData[this.editedIndex].data = this.originalRow;
-          }
-        }
-        this.originalRow = false;
-        this.editedRow = false;
-        this.editedIndex = false;
-      },
-      /**
-       * @ignore
-       * @todo not used
-       * @method editTmp
-       * @param {Object} data
-       */
-      editTmp(data) {
-        if (this.tmpRow) {
-          data = bbn.fn.extend(this.tmpRow, data);
-        }
-        return this;
-      },
-      /**
-       * @ignore
-       * @method saveTmp
-       */
-      saveTmp() {},
-      /**
-       * Returns a dimension in pixels of the given param.
-       * @method getWidth
-       * @param {Number|String} w The width
-       * @returns {String}
-       */
-      getWidth(w) {
-        if (typeof (w) === 'number') {
-          return (w > 19 ? w : 20) + 'px';
-        }
-        if (bbn.fn.isDimension(w)) {
-          return w;
-        }
-        return '100px';
       },
       /**
        * Resets configuration of the table.
@@ -2467,6 +2150,7 @@
       /**
        * Resizes the table.
        * @method resizeWidth
+       * @returns {Vue}
        */
       resizeWidth(){
         let currentTot = this.groupCols[0].width + this.groupCols[1].width + this.groupCols[2].width,
@@ -2529,6 +2213,7 @@
           });
           this.isResizingWidth = false;
         }
+        return this;
       },
       /**
        * Returns if the given row is expanded.
@@ -3060,8 +2745,6 @@
           this.focusedRow = false;
         }
       },
-      saveEditedRow() {},
-      cancelEditedRow() {},
       /**
        * 
        */
@@ -3072,14 +2755,15 @@
        * Removes the focus from the given row.
        * @param {Number} idx 
        */
-      focusout(idx) {
-        this.focused = false;
-        //this.cancel();
-        setTimeout(() => {
-          if (!this.focused) {
-            this.focusedRow = false;
-          }
-        }, 50);
+      focusout(idx){
+        if ((idx === undefined) || (idx === this.focusedRow)) {
+          this.focused = false;
+          setTimeout(() => {
+            if (!this.focused) {
+              this.focusedRow = false;
+            }
+          }, 50);
+        }
       },
       /**
        * Focuses the given row.
@@ -3115,7 +2799,7 @@
      * @fires setConfig
      * @fires getStorage
      */
-    created() {
+    created(){
       // Adding bbns-column from the slot
       if (this.$slots.default) {
         let def = this.defaultObject();
@@ -3153,7 +2837,6 @@
             initColumn.push(i);
           }
         });
-        this.viewportCols = initColumn;
         this.defaultConfig.hidden = tmp;
       }
 
@@ -3164,6 +2847,14 @@
       if (cfg) {
         this.setConfig(cfg, true);
       }
+
+      this.$on('addTmp', () => {
+        let scroll = this.getRef('scroll');
+        if (scroll) {
+          scroll.scrollStartY();
+          scroll.scrollStartX();
+        }
+      })
     },
     /**
      * After the initialization of the component sets the property ready on true.
@@ -3242,14 +2933,6 @@
         }
       },
       /**
-       * @watch editedRow
-       */
-      editedRow(newVal, oldVal) {
-        if (newVal === false) {
-          this.editedIndex = false;
-        }
-      },
-      /**
        * Forces the update of the component.
        * @watch currentHidden
        * @fires setConfig
@@ -3272,7 +2955,6 @@
         this.currentExpanded = [];
         this.init();
       },
-
       /**
        * @watch focusedRow
        * @fires isModified
@@ -3282,46 +2964,42 @@
        * @emit focusout
        */
       focusedRow(newIndex, oldIndex) {
+        if (bbn.fn.isNumber(oldIndex)) {
+          this.$emit('focusout', oldIndex, this.items[oldIndex] ? this.items[oldIndex].index : undefined);
+        }
         if (this.items[newIndex]) {
-          this.$emit('focus', this.items[newIndex].data, newIndex);
+          this.$emit('focus', this.items[newIndex].data, newIndex, this.items[newIndex].index);
         }
-        else {
-          this.$emit('focusout', newIndex);
-        }
-        if (
-          this.editable &&
-          (this.editMode === 'inline')
-        ) {
-          if ((oldIndex !== false) && (this.items[oldIndex] !== undefined)) {
+        if (this.editable && (this.editMode === 'inline')) {
+          if (bbn.fn.isNumber(oldIndex) && this.items[oldIndex]) {
             let idx = this.items[oldIndex].index;
             if ((this.editedIndex === idx)
               && this.isModified(idx)
             ) {
-              //this.$forceUpdate();
               this.$emit('change', this.items[oldIndex].data, idx);
-              //this.save();
             }
-            this.editedRow = false;
           }
-          if ((newIndex !== false)
+          this.editedRow = false;
+          if (bbn.fn.isNumber(newIndex)
             && this.items[newIndex]
             && !this.items[newIndex].group
+            && !this.items[newIndex].expander
           ) {
-            let comeFromAfter = (oldIndex !== false) && (newIndex === (oldIndex - 1));
+            let comeFromAfter = bbn.fn.isNumber(oldIndex) && (newIndex === (oldIndex - 1));
             this.$nextTick(() => {
               this.edit(this.items[newIndex].data, null, newIndex);
               this.$nextTick(() => {
-                let nextInputs = this.getTr(newIndex).querySelectorAll('input');
-                let nextInput;
-                bbn.fn.each(nextInputs, (a) => {
-                  if ( a.offsetWidth ){
+                let nextInputs = this.getTr(newIndex).querySelectorAll('input'),
+                    nextInput;
+                bbn.fn.each(nextInputs, a => {
+                  if (a.offsetWidth) {
                     nextInput = a;
                     if (!comeFromAfter) {
                       return false;
                     }
                   }
                 });
-                if ( nextInput ){
+                if (nextInput) {
                   nextInput.focus();
                 }
               });

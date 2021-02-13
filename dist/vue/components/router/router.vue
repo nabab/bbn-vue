@@ -32,7 +32,7 @@
                             tabindex="0"
                             :item-component="$options.components.listItem"
                             class="bbn-h-100 bbn-vmiddle"
-                            :attach="itsMaster ? itsMaster.getRef('breadcrumb') : undefined"
+                            :attach="itsMaster ? (itsMaster.getRef('breadcrumb') || undefined) : undefined"
                             :autobind="false"
                             :style="{
                               backgroundColor: bc.getBackgroundColor(bc.selected),
@@ -260,7 +260,6 @@
        * @mixin bbn.vue.observerComponent
        */
       bbn.vue.basicComponent,
-      bbn.vue.resizerComponent,
       bbn.vue.localStorageComponent,
       bbn.vue.closeComponent,
       bbn.vue.observerComponent
@@ -1061,12 +1060,23 @@
         if ( !bbn.env.isInit ){
           return;
         }
-        if ( url !== this.currentURL ){
-          this.currentURL = url;
-        }
-        if (title !== this.currentTitle) {
+        if (title && (title !== this.currentTitle)) {
           this.currentTitle = title;
         }
+        if ( url !== this.currentURL ){
+          this.currentURL = url;
+          // Will fire again
+          return;
+        }
+
+        bbn.fn.log(
+          "changeURL",
+          url,
+          title,
+          this.parentContainer ? 
+            ["FROM PQARENT", this.parentContainer.currentTitle, this.parentContainer.title]
+            : this.currentTitle
+        );
         // Changing the current property of the view cascades on the container's currentURL
         if (
           this.views[this.selected] &&
@@ -1077,7 +1087,7 @@
         ){
           this.$set(this.views[this.selected], 'current', url);
         }
-        if ( this.parent ){
+        if ( this.parentContainer ){
           this.parentContainer.currentTitle = title + ' < ' + this.parentContainer.title;
           this.parent.changeURL(this.baseURL + url, this.parentContainer.currentTitle, replace);
         }
@@ -1721,7 +1731,7 @@
                 }
                 else{
                   let title = bbn._('Untitled');
-                  let num = 1;
+                  let num = 0;
                   while ( bbn.fn.search(this.views, {title: title}) > -1 ){
                     num++;
                     title = bbn._('Untitled') + ' ' + num;
@@ -3067,7 +3077,7 @@ div.bbn-router .bbn-router-nav div.bbn-router-tabs > div.bbn-router-tabs-contain
   top: 0px;
   bottom: 0px;
 }
-div.bbn-router .bbn-router-nav div.bbn-router-tabs > div.bbn-router-tabs-container ul.bbn-router-tabs-tabs:first-child > li div.bbn-router-tabs-icon i {
+div.bbn-router .bbn-router-nav div.bbn-router-tabs > div.bbn-router-tabs-container ul.bbn-router-tabs-tabs:first-child > li div.bbn-router-tabs-icon > i {
   display: block;
   position: absolute;
   right: 0px;
@@ -3077,10 +3087,10 @@ div.bbn-router .bbn-router-nav div.bbn-router-tabs > div.bbn-router-tabs-contain
   cursor: pointer;
   margin: 0;
 }
-div.bbn-router .bbn-router-nav div.bbn-router-tabs > div.bbn-router-tabs-container ul.bbn-router-tabs-tabs:first-child > li div.bbn-router-tabs-icon i.bbn-router-tab-close {
+div.bbn-router .bbn-router-nav div.bbn-router-tabs > div.bbn-router-tabs-container ul.bbn-router-tabs-tabs:first-child > li div.bbn-router-tabs-icon > i.bbn-router-tab-close {
   top: 0px;
 }
-div.bbn-router .bbn-router-nav div.bbn-router-tabs > div.bbn-router-tabs-container ul.bbn-router-tabs-tabs:first-child > li div.bbn-router-tabs-icon i.bbn-router-tab-menu {
+div.bbn-router .bbn-router-nav div.bbn-router-tabs > div.bbn-router-tabs-container ul.bbn-router-tabs-tabs:first-child > li div.bbn-router-tabs-icon > i.bbn-router-tab-menu {
   bottom: -2px;
 }
 div.bbn-router .bbn-router-nav div.bbn-router-tabs > div.bbn-router-tabs-container ul.bbn-router-tabs-tabs:first-child > li div.bbn-router-tabs-selected {

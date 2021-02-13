@@ -92,6 +92,12 @@ document.head.insertAdjacentElement('beforeend', css);
      */
     mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent],
     props: {
+      autofocus: {
+        type: Boolean,
+        default(){
+          return !bbn.fn.isMobile()
+        }
+      },
       /**
        *@tood not used
        * @ {Boolean} [false] autocomplete
@@ -836,7 +842,7 @@ document.head.insertAdjacentElement('beforeend', css);
           if ( !this.tab ){
             this.tab = this.closest("bbn-container");
           }
-          if (!bbn.fn.isMobile()) {
+          if (this.autofocus) {
             this.focusFirst();
           }
           this.isInit = true;

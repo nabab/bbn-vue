@@ -27,28 +27,26 @@
       <slot></slot>
     </div>
   </div>
-  <bbn-scrollbar v-if="ready && hasScrollX"
-                 :hidden="hiddenX"
+  <bbn-scrollbar v-if="scrollReady && hasScrollX"
+                 :hidden="scrollReady && hiddenX"
                  orientation="horizontal"
                  ref="xScroller"
                  :color="barColor ? barColor : ''"
                  :scrollAlso="scrollAlso"
                  :initial="currentX"
                  @scroll="scrollHorizontal"
-                 @reachLeft="$emit($event)"
-                 @reachRight="$emit($event)"
+                 :offset="offsetX"
   >
   </bbn-scrollbar>
-  <bbn-scrollbar v-if="ready && hasScrollY"
-                 :hidden="hiddenY"
+  <bbn-scrollbar v-if="scrollReady && hasScrollY"
+                 :hidden="scrollReady && hiddenY"
                  orientation="vertical"
                  ref="yScroller"
                  :color="barColor ? barColor : ''"
                  :scrollAlso="scrollAlso"
                  :initial="currentY"
                  @scroll="scrollVertical"
-                 @reachTop="$emit($event)"
-                 @reachBottom="$emit($event)"
+                 :offset="offsetY"
   >
   </bbn-scrollbar>
 </div>
@@ -182,7 +180,7 @@
        */
       latency: {
         type: Number,
-        default: 125
+        default: 25
       },
       scrollable: {
         type: Boolean,
@@ -191,7 +189,15 @@
       fullPage: {
         type: Boolean,
         default: false
-      }
+      },
+      offsetX: {
+        type: [Number, Array],
+        default: 0
+      },
+      offsetY: {
+        type: [Number, Array],
+        default: 0
+      },
     },
     data() {
       return {
@@ -288,7 +294,8 @@
         isDragging: false,
         isFocused: false,
         previousTouch: {x: null, y: null},
-        interval: null
+        interval: null,
+        scrollReady: false
       };
     },
     computed: {
@@ -316,6 +323,7 @@
           minWidth: this.minWidth ? bbn.fn.formatSize(this.minWidth) : '100%',
           minHeight: this.minHeight ? bbn.fn.formatSize(this.minHeight) : '100%',
         };
+
         if (this.isMeasuring) {
           cfg.width = '100%';
           cfg.height = '100%';
@@ -470,12 +478,6 @@
             }
           }
           this.currentX = x;
-          if (!x) {
-            this.$emit('reachLeft');
-          }
-          else if (x + ct.clientWidth >= ct.scrollWidth) {
-            this.$emit('reachRight');
-          }
         }
         let y = ct.scrollTop;
         if ( this.hasScrollY && (y !== this.currentY)) {
@@ -495,12 +497,6 @@
             }
           }
           this.currentY = y;
-          if (!y) {
-            this.$emit('reachTop');
-          }
-          else if (y + ct.clientHeight >= ct.scrollHeight) {
-            this.$emit('reachBottom');
-          }
         }
         if (this.scrollable) {
           e.stopImmediatePropagation();
@@ -519,9 +515,7 @@
         if (!this.hasScroll || !this.ready) {
           return;
         }
-        if (y === undefined) {
-          y = x;
-        }
+
         if (
           this.hasScrollX &&
           (x !== undefined) &&
@@ -530,6 +524,7 @@
         ) {
           this.$refs.xScroller.scrollTo(x);
         }
+
         if (
           this.hasScrollY &&
           (y !== undefined) &&
@@ -547,7 +542,7 @@
        */  
       scrollHorizontal(ev, left){
         this.currentX = left;
-        this.$emit('scrollx', ev, left);
+        this.$emit('scrollx', left);
       },
       /**
        * @method scrollVertical
@@ -557,7 +552,15 @@
        */ 
       scrollVertical(ev, top){
         this.currentY = top;
-        this.$emit('scrolly', ev, top);
+        this.$emit('scrolly', top);
+      },
+      addVertical(y) {
+        this.scrollTo(null, this.currentY + y)
+        this.$emit('scrolly', this.currentY);
+      },
+      addHorizontal(x) {
+        this.scrollTo(this.currentX + x)
+        this.$emit('scrollx', this.currentX);
       },
       /**
        * @method scrollStart
@@ -796,10 +799,12 @@
               this.hasScroll = this.hasScrollY || this.hasScrollX;
               /** @todo Check if this shouldn't be with - (minus) containerSize */
               if ( this.currentX > this.contentWidth ) {
-                this.currentX = 0;
+                // this.currentX = 0;
+                this.currentX = this.contentWidth - this.containerWidth;
               }
               if ( this.currentY > this.contentHeight ) {
-                this.currentY = 0;
+                // this.currentY = 0;
+                this.currentY = this.contentHeight - this.containerHeight;
               }
               container.scrollLeft = this.currentX;
               container.scrollTop = this.currentY;
@@ -862,6 +867,7 @@
             if (this.interval) {
               clearInterval(this.interval);
             }
+            // Checks every second if the scroll content has been resized and sends onResize if so
             this.interval = setInterval(() => {
               if (this.scrollable && this.$el.offsetParent) {
                 //bbn.fn.log("offsetParent ok");
@@ -890,7 +896,11 @@
                   this.onResize(true);
                 }
               }
-            }, 1000)
+            }, 1000);
+            setTimeout(() => {
+              this.scrollReady = true;
+            }, 1000);
+
           }, 100)
         }
       },
@@ -924,6 +934,28 @@
           y.onResize()
         }
       },
+      currentX(x) {
+        if (!x) {
+          this.$emit('reachLeft');
+        }
+        else {
+          let ct = this.getRef('scrollContainer');
+          if (ct && (x + ct.clientWidth >= ct.scrollWidth)) {
+            this.$emit('reachRight');
+          }
+        }
+      },
+      currentY(y) {
+        if (!y) {
+          this.$emit('reachTop');
+        }
+        else {
+          let ct = this.getRef('scrollContainer');
+          if (ct && (y + ct.clientHeight >= ct.scrollHeight)) {
+            this.$emit('reachBottom');
+          }
+        }
+    }
     }
   });
 
@@ -955,6 +987,7 @@
   display: none;
 }
 .bbn-scroll > .bbn-scroll-container > .bbn-scroll-content {
+  position: relative;
   hyphens: auto;
   float: left;
   box-sizing: border-box;

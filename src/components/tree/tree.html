@@ -5,7 +5,7 @@
   <div v-if="loading" class="loader">
     <bbn-loadicon></bbn-loadicon> <span v-text="_('Loading')"></span>...
   </div>
-  <component v-else-if="isLoaded"
+  <component v-else-if="isInit && isLoaded"
              :is="isRoot ? 'bbn-scroll' : 'div'"
              ref="scroll"
   >
@@ -36,7 +36,7 @@
                         :uid="uid"
                         :tree-state="_getTreeState(it.data[uid])"
         >
-          <li :class="['bbn-tree-node', 'bbn-unselectable', {
+          <li :class="['bbn-tree-node', 'bbn-vxxspadded', 'bbn-unselectable', {
                         'bbn-state-active': (isActive && !isSelected) || (tree.dragging && tree.overNode && !tree.overOrder && (tree.overNode === _self) && tree.draggable),
                         'bbn-state-selected': isSelected
                       }]"
@@ -107,6 +107,8 @@
                   >
                     <!-- If icon is specifically false we leave the white space -->
                     <span v-if="source.icon === false"></span>
+                    <img v-else-if="source.icon && (source.icon.indexOf('data:image') === 0)"
+                         :src="source.icon">
                     <i v-else
                         :class="getIcon()"
                         :style="iconStyle"

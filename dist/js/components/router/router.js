@@ -33,7 +33,7 @@ script.innerHTML = `<div :class="[componentClass, {
                             tabindex="0"
                             :item-component="$options.components.listItem"
                             class="bbn-h-100 bbn-vmiddle"
-                            :attach="itsMaster ? itsMaster.getRef('breadcrumb') : undefined"
+                            :attach="itsMaster ? (itsMaster.getRef('breadcrumb') || undefined) : undefined"
                             :autobind="false"
                             :style="{
                               backgroundColor: bc.getBackgroundColor(bc.selected),
@@ -266,7 +266,6 @@ document.head.insertAdjacentElement('beforeend', css);
        * @mixin bbn.vue.observerComponent
        */
       bbn.vue.basicComponent,
-      bbn.vue.resizerComponent,
       bbn.vue.localStorageComponent,
       bbn.vue.closeComponent,
       bbn.vue.observerComponent
@@ -1067,12 +1066,23 @@ document.head.insertAdjacentElement('beforeend', css);
         if ( !bbn.env.isInit ){
           return;
         }
-        if ( url !== this.currentURL ){
-          this.currentURL = url;
-        }
-        if (title !== this.currentTitle) {
+        if (title && (title !== this.currentTitle)) {
           this.currentTitle = title;
         }
+        if ( url !== this.currentURL ){
+          this.currentURL = url;
+          // Will fire again
+          return;
+        }
+
+        bbn.fn.log(
+          "changeURL",
+          url,
+          title,
+          this.parentContainer ? 
+            ["FROM PQARENT", this.parentContainer.currentTitle, this.parentContainer.title]
+            : this.currentTitle
+        );
         // Changing the current property of the view cascades on the container's currentURL
         if (
           this.views[this.selected] &&
@@ -1083,7 +1093,7 @@ document.head.insertAdjacentElement('beforeend', css);
         ){
           this.$set(this.views[this.selected], 'current', url);
         }
-        if ( this.parent ){
+        if ( this.parentContainer ){
           this.parentContainer.currentTitle = title + ' < ' + this.parentContainer.title;
           this.parent.changeURL(this.baseURL + url, this.parentContainer.currentTitle, replace);
         }
@@ -1727,7 +1737,7 @@ document.head.insertAdjacentElement('beforeend', css);
                 }
                 else{
                   let title = bbn._('Untitled');
-                  let num = 1;
+                  let num = 0;
                   while ( bbn.fn.search(this.views, {title: title}) > -1 ){
                     num++;
                     title = bbn._('Untitled') + ' ' + num;

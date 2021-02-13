@@ -90,7 +90,20 @@
    */
   let isClicked = false;
   Vue.component('bbn-list', {
-    mixins: [bbn.vue.basicComponent, bbn.vue.listComponent, bbn.vue.keynavComponent, bbn.vue.resizerComponent],
+    /**
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.inputComponent
+     * @mixin bbn.vue.keynavComponent
+     * @mixin bbn.vue.positionComponent
+     * @mixin bbn.vue.resizerComponent
+     */
+    mixins: [
+      bbn.vue.basicComponent,
+      bbn.vue.listComponent,
+      bbn.vue.keynavComponent,
+      bbn.vue.positionComponent,
+      bbn.vue.resizerComponent
+    ],
     props: {
       /**
        * @prop container
@@ -138,34 +151,6 @@
        */
       height: {
         type: [String, Number, Boolean]
-      },
-      /**
-       * The position 'left'.
-       * @prop {Number} left
-       */
-      left: {
-        type: Number
-      },
-      /**
-       * The position 'right'.
-       * @prop {Number} right
-       */
-      right: {
-        type: Number
-      },
-      /**
-       * The position 'top'.
-       * @prop {Number} top
-       */
-      top: {
-        type: Number
-      },
-      /**
-       * The position 'bottom'.
-       * @prop {Number} bottom
-       */
-      bottom: {
-        type: Number
       },
       /**
        * The source of the floater.
@@ -715,6 +700,7 @@
   display: inline-block;
   width: 1.8em;
   text-align: left;
+  line-height: 1.5em;
 }
 .bbn-list > ul > li .text {
   min-height: 1.2em;

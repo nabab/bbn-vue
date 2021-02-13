@@ -44,16 +44,15 @@ document.head.insertAdjacentElement('beforeend', css);
   Vue.component('bbn-jodit', {
     /**
      * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.inputComponent
+     * @mixin bbn.vue.positionComponent
      */
-    mixins: [bbn.vue.basicComponent],
+    mixins: [
+      bbn.vue.basicComponent,
+      bbn.vue.positionComponent
+    ],
     props: {
       value: {},
       pinned: {},
-      top: {},
-      left: {},
-      bottom: {},
-      right: {},
       /**
        * The height of the editor
        * @prop {Number|String} ['100%'] height

@@ -125,11 +125,12 @@
       }
     },
     beforeMount() {
-      if (this.storage) {
-        bbn.fn.log("BEFDORE MOUNT WITH STORAGE", this.getStorage());
-        this.emitInput(this.getStorage())
+      if (this.hasStorage) {
+        let v = this.getStorage();
+        if (v && (v !== this.value)) {
+          this.emitInput(v);
+        }
       }
-
     },
     methods: {
       /**
@@ -250,7 +251,12 @@
       },
       value(v) {
         if (this.storage) {
-          this.setStorage(v);
+          if (v) {
+            this.setStorage(v);
+          }
+          else {
+            this.unsetStorage()
+          }
         }
       }
     }

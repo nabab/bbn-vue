@@ -1872,6 +1872,7 @@
               this.prevFocused = bbn.env.focused;
             }
           }
+          /*
           if ( this.onResize !== undefined ){
             if ( v ){
               this.onResize();
@@ -1880,6 +1881,7 @@
               this.isResized = false;
             }
           }
+          */
           this.switchFocus(v);
         }
       },
@@ -1920,7 +1922,7 @@
          */
         currentVisible: {
           handler(v) {
-            this.$emit(v ? 'open' : 'close');
+            this.$emit(v ? 'show' : 'hide');
             this.changeVisible(v);
           },
           immediate: true
@@ -3118,7 +3120,9 @@
           }
           return true;
         },
-
+        hashCfg(){
+          return bbn.fn.md5(JSON.stringify(this.currentFilters) + JSON.stringify(this.currentLimit) + JSON.stringify(this.currentStart) + JSON.stringify(this.currentOrder));
+        }
       },
       methods: {
         /**
@@ -3369,9 +3373,14 @@
                   else{
                     d.data = this._map(d.data);
                     this.currentData = bbn.fn.map(d.data, (a, i) => {
-                      let o = this.hierarchy ? bbn.fn.extend(true, a, {index: i, _bbn: true}) : {
+                      let o = this.hierarchy ? bbn.fn.extend(true, a, {
+                        index: i,
+                        key: this.isAjax ? (i + '-' + this.hashCfg) : i,
+                        _bbn: true,
+                      }) : {
                         data: a,
                         index: i,
+                        key: this.isAjax ? (i + '-' + this.hashCfg) : i,
                         _bbn: true
                       };
                       if ( this.children && a[this.children] && a[this.children].length ){
@@ -3522,8 +3531,6 @@
         reload() {
           return this.updateData();
         },
-
-
         getIndex(filter) {
           if (!bbn.fn.isObject(filter) && this.uid) {
             filter = {[this.uid]: filter};
@@ -3539,8 +3546,6 @@
           });
           return idx;
         },
-
-
         /**
          * Removes the row defined by the where param from currentData
          * @method remove
@@ -3669,7 +3674,11 @@
          * @prop value
          * @memberof inputComponent
          */
-        value: {},
+        value: {
+          default(){
+            return this.default !== undefined ? this.default : ''
+          }
+        },
         /**
          * The component's name.
          * @prop {String} name 
@@ -4048,28 +4057,31 @@
           //bbn.fn.log("DEFAULT ONRESIZE FN FROM " + this.$options.name);
           return new Promise(resolve => {
             if (!this.isResizing) {
-
-            }
-            this.isResizing = true;
-            this.$nextTick(() => {
-              if (this.$el.offsetHeight) {
-                // Setting initial dimensions
-                let ms1 = this.setResizeMeasures();
-                let ms2 = this.setContainerMeasures();
-                if (ms1 || ms2) {
-                  if (!this.ready) {
-                    setTimeout(() => {
-                      bbn.fn.log("DEFAUT ONRESIZE ON TIMEOUT");
-                      this.onResize();
-                    }, 100)
-                  }
-                  else {
-                    this.$emit('resize');
+              this.isResizing = true;
+              this.$nextTick(() => {
+                if (this.$el.offsetHeight) {
+                  // Setting initial dimensions
+                  let ms1 = this.setResizeMeasures();
+                  let ms2 = this.setContainerMeasures();
+                  if (ms1 || ms2) {
+                    if (!this.ready) {
+                      setTimeout(() => {
+                        bbn.fn.log("DEFAUT ONRESIZE ON TIMEOUT");
+                        this.onResize();
+                      }, 100)
+                    }
+                    else {
+                      this.$emit('resize');
+                    }
                   }
                 }
-              }
+                this.isResizing = false;
+                resolve();
+              })
+            }
+            else {
               resolve();
-            })
+            }
           });
         },
         /**
@@ -4100,17 +4112,17 @@
           let offsetParent = this.$el.offsetParent;
           let ctH;
           let ctW;
-          if (!this.parentResizer) {
-            ctH = bbn.env.height;
-            ctW = bbn.env.width;
+          if (this.parentResizer) {
+            ctH = this.parentResizer.lastKnownHeight;
+            ctW = this.parentResizer.lastKnownWidth;
           }
           else if (offsetParent) {
             ctH = isAbsolute ? bbn.fn.outerHeight(offsetParent) : Math.round(offsetParent.clientHeight);
             ctW = isAbsolute ? bbn.fn.outerWidth(offsetParent) : Math.round(offsetParent.clientWidth);
           }
           else {
-            ctH = 0;
-            ctW = 0;
+            ctH = bbn.env.height;
+            ctW = bbn.env.width;
           }
           if (this.lastKnownCtHeight !== ctH) {
             this.lastKnownCtHeight = ctH;
@@ -4121,6 +4133,14 @@
             resize = true;
           }
           return resize;
+        },
+        getParentResizer(){
+          let parentResizer = this.closest(".bbn-resize-emitter");
+          // In case we have 2 comnponents in one
+          while (parentResizer && (parentResizer.onResize === undefined)) {
+            parentResizer = parentResizer.$parent;
+          }
+          return parentResizer.onResize !== undefined ? parentResizer : false;
         },
         /**
          * Defines the resize emitter and launches process when it resizes.
@@ -4134,11 +4154,10 @@
             clearTimeout(this.resizerTimeout);
           }
           this.setComputedStyle();
-          // This class will allow to recognize the element to listen to
-          this.parentResizer = this.closest(".bbn-resize-emitter");
+          this.parentResizer = this.getParentResizer();
+
           // Setting initial dimensions
           //this.setContainerMeasures();
-          //this.setResizeMeasures();
           // Creating the callback function which will be used in the timeout in the listener
           this.onParentResizerEmit = () => {
             // Removing previous timeout
@@ -4149,7 +4168,7 @@
             this.resizerTimeout = setTimeout(() => {
               if (this.$el.parentNode && this.$el.offsetWidth) {
                 // Checking if the parent hasn't changed (case where the child is mounted before)
-                let tmp = this.closest(".bbn-resize-emitter");
+                let tmp = this.getParentResizer();
                 if ( tmp !== this.parentResizer ){
                   // In that case we reset
                   this.unsetResizeEvent();
@@ -4158,7 +4177,7 @@
                 }
               }
               //bbn.fn.log("ON PARENT RESIZER EMIT");
-              this.onResize();
+              this.onResize(true);
             }, 50);
           };
 

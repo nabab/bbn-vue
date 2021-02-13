@@ -55,21 +55,29 @@
   height: auto;
   min-height: 18px;
 }
+.bbn-tree .bbn-tree-node span.bbn-tree-node-block span {
+  display: inline-block;
+}
 .bbn-tree .bbn-tree-node span.bbn-tree-node-block.bbn-tree-node-block-no-component span {
   display: inline-block;
+  vertical-align: middle;
 }
 .bbn-tree .bbn-tree-node span.bbn-tree-node-block .bbn-tree-node-block-selectable {
   padding: 1px;
 }
 .bbn-tree .bbn-tree-node span.bbn-tree-node-block .bbn-tree-node-block-expander {
-  display: inline-block;
   width: 0.7em;
   padding-left: 0.2em;
   font-size: 1.1em;
 }
 .bbn-tree .bbn-tree-node span.bbn-tree-node-block .bbn-tree-node-block-icon {
-  display: inline-block;
+  text-align: center;
   width: 1.3em;
+}
+.bbn-tree .bbn-tree-node span.bbn-tree-node-block .bbn-tree-node-block-icon img {
+  width: 100%;
+  height: auto;
+  vertical-align: middle;
 }
 .bbn-tree .bbn-tree-node span.bbn-tree-node-block .bbn-tree-node-block-title {
   white-space: nowrap;

@@ -60,9 +60,16 @@ document.body.insertAdjacentElement('beforeend', script);
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.inputComponent
+     * @mixin bbn.vue.localStorageComponent
      * @mixin bbn.vue.eventsComponent
+     *
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent],
+    mixins: [
+      bbn.vue.basicComponent,
+      bbn.vue.inputComponent,
+      bbn.vue.localStorageComponent,
+      bbn.vue.eventsComponent
+    ],
     props: {
       /**
        * The separator that can be inserted between the radio buttons.
@@ -172,7 +179,31 @@ document.body.insertAdjacentElement('beforeend', script);
           return '';
         }
       }
-		}
+		},
+    beforeMount() {
+      if (this.hasStorage) {
+        let v = this.getStorage();
+        if (v && (v !== this.modelValue)) {
+          this.changed(v);
+        }
+      }
+    },
+    watch: {
+      /**
+       * @watch value
+       * @param {Mixed} v
+       */
+      modelValue(v) {
+        if (this.storage) {
+          if (v) {
+            this.setStorage(v);
+          }
+          else {
+            this.unsetStorage()
+          }
+        }
+      },
+    }
   });
 
 })(bbn);

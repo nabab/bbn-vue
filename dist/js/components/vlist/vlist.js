@@ -82,7 +82,14 @@ document.head.insertAdjacentElement('beforeend', css);
    */
   let isClicked = false;
   Vue.component('bbn-vlist', {
-    mixins: [bbn.vue.basicComponent],
+    /**
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.positionComponent
+     */
+    mixins: [
+      bbn.vue.basicComponent,
+      bbn.vue.positionComponent
+    ],
     props: {
       source: {
         type: [Function, Array]
@@ -109,18 +116,6 @@ document.head.insertAdjacentElement('beforeend', css);
       level: {
         type: Number,
         default: 0
-      },
-      left: {
-        type: [Number]
-      },
-      right: {
-        type: [Number]
-      },
-      top: {
-        type: [Number]
-      },
-      bottom: {
-        type: [Number]
       },
       mapper: {
         type: Function

@@ -195,7 +195,7 @@
                 }
               }
               //bbn.fn.log("ON PARENT RESIZER EMIT");
-              this.onResize();
+              this.onResize(true);
             }, 50);
           };
 

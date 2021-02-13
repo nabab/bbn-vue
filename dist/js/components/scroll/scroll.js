@@ -28,28 +28,26 @@ script.innerHTML = `<div :class="elementClass"
       <slot></slot>
     </div>
   </div>
-  <bbn-scrollbar v-if="ready && hasScrollX"
-                 :hidden="hiddenX"
+  <bbn-scrollbar v-if="scrollReady && hasScrollX"
+                 :hidden="scrollReady && hiddenX"
                  orientation="horizontal"
                  ref="xScroller"
                  :color="barColor ? barColor : ''"
                  :scrollAlso="scrollAlso"
                  :initial="currentX"
                  @scroll="scrollHorizontal"
-                 @reachLeft="$emit($event)"
-                 @reachRight="$emit($event)"
+                 :offset="offsetX"
   >
   </bbn-scrollbar>
-  <bbn-scrollbar v-if="ready && hasScrollY"
-                 :hidden="hiddenY"
+  <bbn-scrollbar v-if="scrollReady && hasScrollY"
+                 :hidden="scrollReady && hiddenY"
                  orientation="vertical"
                  ref="yScroller"
                  :color="barColor ? barColor : ''"
                  :scrollAlso="scrollAlso"
                  :initial="currentY"
                  @scroll="scrollVertical"
-                 @reachTop="$emit($event)"
-                 @reachBottom="$emit($event)"
+                 :offset="offsetY"
   >
   </bbn-scrollbar>
 </div>`;
@@ -188,7 +186,7 @@ document.head.insertAdjacentElement('beforeend', css);
        */
       latency: {
         type: Number,
-        default: 125
+        default: 25
       },
       scrollable: {
         type: Boolean,
@@ -197,7 +195,15 @@ document.head.insertAdjacentElement('beforeend', css);
       fullPage: {
         type: Boolean,
         default: false
-      }
+      },
+      offsetX: {
+        type: [Number, Array],
+        default: 0
+      },
+      offsetY: {
+        type: [Number, Array],
+        default: 0
+      },
     },
     data() {
       return {
@@ -294,7 +300,8 @@ document.head.insertAdjacentElement('beforeend', css);
         isDragging: false,
         isFocused: false,
         previousTouch: {x: null, y: null},
-        interval: null
+        interval: null,
+        scrollReady: false
       };
     },
     computed: {
@@ -322,6 +329,7 @@ document.head.insertAdjacentElement('beforeend', css);
           minWidth: this.minWidth ? bbn.fn.formatSize(this.minWidth) : '100%',
           minHeight: this.minHeight ? bbn.fn.formatSize(this.minHeight) : '100%',
         };
+
         if (this.isMeasuring) {
           cfg.width = '100%';
           cfg.height = '100%';
@@ -476,12 +484,6 @@ document.head.insertAdjacentElement('beforeend', css);
             }
           }
           this.currentX = x;
-          if (!x) {
-            this.$emit('reachLeft');
-          }
-          else if (x + ct.clientWidth >= ct.scrollWidth) {
-            this.$emit('reachRight');
-          }
         }
         let y = ct.scrollTop;
         if ( this.hasScrollY && (y !== this.currentY)) {
@@ -501,12 +503,6 @@ document.head.insertAdjacentElement('beforeend', css);
             }
           }
           this.currentY = y;
-          if (!y) {
-            this.$emit('reachTop');
-          }
-          else if (y + ct.clientHeight >= ct.scrollHeight) {
-            this.$emit('reachBottom');
-          }
         }
         if (this.scrollable) {
           e.stopImmediatePropagation();
@@ -525,9 +521,7 @@ document.head.insertAdjacentElement('beforeend', css);
         if (!this.hasScroll || !this.ready) {
           return;
         }
-        if (y === undefined) {
-          y = x;
-        }
+
         if (
           this.hasScrollX &&
           (x !== undefined) &&
@@ -536,6 +530,7 @@ document.head.insertAdjacentElement('beforeend', css);
         ) {
           this.$refs.xScroller.scrollTo(x);
         }
+
         if (
           this.hasScrollY &&
           (y !== undefined) &&
@@ -553,7 +548,7 @@ document.head.insertAdjacentElement('beforeend', css);
        */  
       scrollHorizontal(ev, left){
         this.currentX = left;
-        this.$emit('scrollx', ev, left);
+        this.$emit('scrollx', left);
       },
       /**
        * @method scrollVertical
@@ -563,7 +558,15 @@ document.head.insertAdjacentElement('beforeend', css);
        */ 
       scrollVertical(ev, top){
         this.currentY = top;
-        this.$emit('scrolly', ev, top);
+        this.$emit('scrolly', top);
+      },
+      addVertical(y) {
+        this.scrollTo(null, this.currentY + y)
+        this.$emit('scrolly', this.currentY);
+      },
+      addHorizontal(x) {
+        this.scrollTo(this.currentX + x)
+        this.$emit('scrollx', this.currentX);
       },
       /**
        * @method scrollStart
@@ -802,10 +805,12 @@ document.head.insertAdjacentElement('beforeend', css);
               this.hasScroll = this.hasScrollY || this.hasScrollX;
               /** @todo Check if this shouldn't be with - (minus) containerSize */
               if ( this.currentX > this.contentWidth ) {
-                this.currentX = 0;
+                // this.currentX = 0;
+                this.currentX = this.contentWidth - this.containerWidth;
               }
               if ( this.currentY > this.contentHeight ) {
-                this.currentY = 0;
+                // this.currentY = 0;
+                this.currentY = this.contentHeight - this.containerHeight;
               }
               container.scrollLeft = this.currentX;
               container.scrollTop = this.currentY;
@@ -868,6 +873,7 @@ document.head.insertAdjacentElement('beforeend', css);
             if (this.interval) {
               clearInterval(this.interval);
             }
+            // Checks every second if the scroll content has been resized and sends onResize if so
             this.interval = setInterval(() => {
               if (this.scrollable && this.$el.offsetParent) {
                 //bbn.fn.log("offsetParent ok");
@@ -896,7 +902,11 @@ document.head.insertAdjacentElement('beforeend', css);
                   this.onResize(true);
                 }
               }
-            }, 1000)
+            }, 1000);
+            setTimeout(() => {
+              this.scrollReady = true;
+            }, 1000);
+
           }, 100)
         }
       },
@@ -930,6 +940,28 @@ document.head.insertAdjacentElement('beforeend', css);
           y.onResize()
         }
       },
+      currentX(x) {
+        if (!x) {
+          this.$emit('reachLeft');
+        }
+        else {
+          let ct = this.getRef('scrollContainer');
+          if (ct && (x + ct.clientWidth >= ct.scrollWidth)) {
+            this.$emit('reachRight');
+          }
+        }
+      },
+      currentY(y) {
+        if (!y) {
+          this.$emit('reachTop');
+        }
+        else {
+          let ct = this.getRef('scrollContainer');
+          if (ct && (y + ct.clientHeight >= ct.scrollHeight)) {
+            this.$emit('reachBottom');
+          }
+        }
+    }
     }
   });
 

@@ -1,6 +1,7 @@
 div.bbn-floater {
   position: fixed !important;
   box-sizing: content-box;
+  overflow: hidden;
   z-index: 100;
   font-size: inherit;
 }
@@ -10,28 +11,28 @@ div.bbn-floater:not(.bbn-invisible) {
 div.bbn-floater.bbn-invisible {
   opacity: 0 !important;
 }
-div.bbn-floater > header {
+div.bbn-floater > div > header {
   white-space: nowrap;
   padding-right: 3.6em;
 }
-div.bbn-floater > header .bbn-top-right {
+div.bbn-floater > div > header .bbn-top-right {
   height: 100%;
   text-align: right;
   line-height: 100%;
   vertical-align: middle;
 }
-div.bbn-floater > header .bbn-top-right > div {
+div.bbn-floater > div > header .bbn-top-right > div {
   width: 1.8em;
   float: left;
 }
-div.bbn-floater > header h3 {
+div.bbn-floater > div > header h3 {
   text-overflow: ellipsis;
   overflow: hidden;
 }
-div.bbn-floater > footer.bbn-button-group {
+div.bbn-floater > div > footer.bbn-button-group {
   min-height: 3em;
 }
-div.bbn-floater > footer.bbn-button-group button {
+div.bbn-floater > div > footer.bbn-button-group button {
   padding-top: 0.3em;
   padding-bottom: 0.3em;
 }
