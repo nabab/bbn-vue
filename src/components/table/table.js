@@ -494,7 +494,8 @@
         /**
          * @data {Number} [0] borderRight
          */
-        borderRight: 0
+        borderRight: 0,
+        focusedElement: null
       };
     },
     computed: {
@@ -1706,114 +1707,6 @@
         });
       },
       /**
-       * Opens the popup containing the form to edit the row.
-       * @method edit
-       * @param {Object} row
-       * @param {String|Object} winOptions
-       * @param {Number} index
-       * @fires _addTmp
-       */
-      edit(row, winOptions, index) {
-        let rowIndex = index;
-        if (!this.editable) {
-          throw new Error("The table is not editable, you cannot use the edit function in bbn-table");
-        }
-        if ( !winOptions ){
-          winOptions = {};
-        }
-        if (!row) {
-          this._addTmp();
-          row = this.tmpRow;
-        }
-        this.originalRow = bbn.fn.clone(row);
-        // EditedRow exists from now on the time of the edition
-        this.editedRow = row;
-
-        if (this.items[index]) {
-          this.editedIndex = this.items[index].index;
-        }
-        if (this.editMode === 'popup') {
-          if (typeof (winOptions) === 'string') {
-            winOptions = {
-              title: winOptions
-            };
-          }
-          if (!winOptions.height) {
-            //winOptions.height = (this.cols.length * 2) + 'rem'
-          }
-          if (winOptions.maximizable === undefined) {
-            winOptions.maximizable = true;
-          }
-          let popup = bbn.fn.extend({
-            source: {
-              row: row,
-              data: bbn.fn.isFunction(this.data) ? this.data() : this.data
-            }
-          }, {
-            title: bbn._('Row edition'),
-            width: 700
-          }, winOptions ? winOptions : {});
-          // A component is given as global editor (form)
-          if (this.editor) {
-            popup.component = this.editor;
-          }
-          // A URL is given and in this case the form will be created automatically with this URL as action
-          else if (this.url) {
-            let table = this;
-            let o = bbn.fn.extend({}, this.data, {
-              action: table.tmpRow ? 'insert' : 'update'
-            });
-            popup.component = {
-              data() {
-                let fields = [];
-                table.cols.map((a) => {
-                  let o = bbn.fn.extend(true, {}, a);
-                  if (o.ftitle) {
-                    o.title = o.ftitle;
-                  }
-                  fields.push(o);
-                });
-                return {
-                  // Table's columns are used as native form config
-                  fields: fields,
-                  data: row,
-                  obj: o
-                }
-              },
-              template: `
-<bbn-form action="` + table.url + `"
-          :schema="fields"
-          :scrollable="false"
-          :source="data"
-          :data="obj"
-          @success="success"
-          @failure="failure">
-</bbn-form>`,
-              methods: {
-                success(d, e) {
-                  e.preventDefault();
-                  if (table.successEdit(d)) {
-                    table.getPopup().close();
-                  }
-                },
-                failure(d) {
-                  table.$emit('editFailure', d);
-                },
-              },
-            };
-          } else {
-            throw new Error(bbn._("Impossible to open a window if either an editor or a URL is not set"))
-          }
-          popup.afterClose = () => {
-            //  this.currentData.push(bbn.fn.clone( this.tmpRow)); // <-- Error. This add a new row into table when it's in edit mode
-            this._removeTmp();
-            this.editedRow = false;
-            this.editedIndex = false;
-          };
-          this.getPopup().open(popup);
-        }
-      },
-      /**
        * Returns wheter or not the cell is grouped.
        * @method isGroupedCell
        * @param {Number} groupIndex
@@ -2758,6 +2651,7 @@
       focusout(idx){
         if ((idx === undefined) || (idx === this.focusedRow)) {
           this.focused = false;
+          this.focusedElement = false;
           setTimeout(() => {
             if (!this.focused) {
               this.focusedRow = false;
@@ -2790,6 +2684,9 @@
         bbn.fn.each(this.items, (a, i) => {
           this.checkSelection(i, false);
         })
+      },
+      getDataIndex(itemIndex){
+        return this.items[itemIndex] ? this.items[itemIndex].index : undefined;
       }
     },
     /**

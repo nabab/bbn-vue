@@ -426,4 +426,11 @@
     </div>
   </bbn-floater>
   <bbn-popup ref="popup" v-if="inTable === false"></bbn-popup>
+  <bbn-floater v-if="focusedElement && (editMode === 'inline') && editedRow"
+               class="bbn-widget"
+               :element="focusedElement"
+               :scrollable="true"
+               position="top">
+      <div></div>
+  </bbn-floater>
 </div>

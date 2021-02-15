@@ -173,8 +173,7 @@
          * @param {Number} index
          * @fires _addTmp
          */
-        /*edit(row, winOptions, index) {
-          let rowIndex = index;
+        edit(row, winOptions, index) {
           if (!this.editable) {
             throw new Error("The component is not editable, you cannot use the edit function");
           }
@@ -188,9 +187,7 @@
           this.originalRow = bbn.fn.clone(row);
           // EditedRow exists from now on the time of the edition
           this.editedRow = row;
-          if (this.items[index]) {
-            this.editedIndex = this.items[index].index;
-          }
+          this.editedIndex = bbn.fn.isFunction(this.getDataIndex) ? this.getDataIndex(index) : index;
           if (this.editMode === 'popup') {
             if (typeof (winOptions) === 'string') {
               winOptions = {
@@ -271,7 +268,7 @@
             };
             this.getPopup().open(popup);
           }
-        }, */
+        },
         /**
          * Cancels the changes made on the row data.
          * @method cancel
