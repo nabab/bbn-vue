@@ -186,7 +186,7 @@
             </tr>
             <template v-else v-for="(d, i) in items">
               <tr :key="d.rowKey"
-                  :index="d.index"
+                  :index="i"
                   :tabindex="0"
                   @focusout="focusout(i)"
                   @focusin="focusin(i, $event)"
@@ -282,7 +282,8 @@
                       'bbn-table-fixed-cell-left-last': col.isLeft
                         && (!currentColumns[index+1] || !currentColumns[index+1].isLeft),
                       'bbn-table-fixed-cell-right': col.isRight,
-                      'bbn-table-cell-first': !col.isLeft && !col.isRight && ((index === 0) || (!!currentColumns[index-1].isLeft))
+                      'bbn-table-cell-first': !col.isLeft && !col.isRight && ((index === 0) || (!!currentColumns[index-1].isLeft)),
+                      'bbn-table-edit-buttons': !!col.buttons && isEdited(d.data, col, i)
                     }]"
                     :style="{
                       left: col.left !== undefined ? (col.left + 'px') : 'auto',
@@ -430,7 +431,23 @@
                class="bbn-widget"
                :element="focusedElement"
                :scrollable="true"
-               position="top">
-      <div></div>
+               tabindex="-1"
+               :left="focusedElementX"
+               :top="focusedElementY">
+        <bbn-button :text="_('Save')"
+                    :disabled="!isEditedValid"
+                    icon="nf nf-fa-save"
+                    :notext="true"
+                    @click.prevent.stop="saveInline"
+                    style="margin: 0 .1em"
+                    tabindex="-1"
+        ></bbn-button>
+        <bbn-button :text="_('Cancel')"
+                    icon="nf nf-fa-times"
+                    :notext="true"
+                    @click.prevent.stop="cancel"
+                    style="margin: 0 .1em"
+                    tabindex="-1"
+        ></bbn-button>
   </bbn-floater>
 </div>

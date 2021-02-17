@@ -8,49 +8,43 @@
         <i v-if="closable"
             :title="_('Close')"
             @click="close"
-            class="bbn-lg nf nf-fa-times"
-        ></i>
+            class="bbn-lg nf nf-fa-times"/>
         <bbn-context v-if="hasMenu"
-                      :source="finalMenu"
-        >
+                      :source="finalMenu">
           <i :title="_('Menu')"
-              class="bbn-lg nf nf-fa-caret_down"
-          > </i>
+              class="bbn-lg nf nf-fa-caret_down"/>
         </bbn-context>
         <i v-for="(b, idx) in realButtonsLeft"
             :title="b.text"
             @click="actionButton(b.action, uid)"
-            :class="['bbn-lg', b.icon]"
-        ></i>
+            :class="['bbn-lg', b.icon]"/>
       </div>
       <!-- TITLE -->
       <div :class="['bbn-widget-title', 'bbn-flex-fill', 'bbn-hpadded', {'bbn-middle': !!icon}]">
-        <i v-if="icon" :class="[icon, 'bbn-right-sspace', 'bbn-m']"></i>
+        <i v-if="icon" :class="[icon, 'bbn-right-sspace', 'bbn-m']"/>
         <h3 :style="dashboard && dashboard.sortable ? 'cursor: move' : ''"
             :class="['bbn-no-margin', {'bbn-iblock': !!icon}]"
             v-html="title"
             @mousedown="$emit('sortstart')"
             @touchstart="$emit('sortstart')"
-            @dragstart="$emit('sortstart')"
-        ></h3>
+            @dragstart="$emit('sortstart')"/>
       </div>
       <!-- BUTTONS RIGHT -->
       <div class="bbn-header-buttons bbn-widget-button-right bbn-hxspadded">
         <i v-for="(b, idx) in realButtonsRight"
             :title="b.text"
             @click="actionButton(b.action, uid)"
-            :class="['bbn-lg', b.icon]"
-        ></i>
+            :class="['bbn-lg', b.icon]"/>
       </div>
     </div>
   </div>
 
   <!-- MAIN CONTENT -->
   <div :class="['bbn-content', 'bbn-radius-bottom', 'bbn-no-border', {'bbn-padded': !component || (contentPadding === true)}]"
-       :style="{padding: contentPadding ? contentPadding : false}"
-  >
+       :style="{padding: contentPadding ? contentPadding : false}">
+    <!-- LOADING -->
     <div v-if="isLoading" style="min-height: 15em">
-      <bbn-loader></bbn-loader>
+      <bbn-loader/>
     </div>
     <!-- COMPONENT -->
     <component v-else-if="component"
@@ -58,82 +52,67 @@
                 :source="currentSource"
                 @hook:mounted="$emit('loaded')"
                 v-bind="options"
-                class="bbn-widget-content"
-    ></component>
+                class="bbn-widget-content"/>
     <!-- HTML CONTENT -->
     <div v-else-if="content"
          v-html="content"
-         class="bbn-widget-content"
-    ></div>
+         class="bbn-widget-content"/>
     <!-- LIST OF ITEMS -->
     <ul v-else-if="currentItems.length" class="bbn-widget-list bbn-widget-content">
-      <template v-for="(it, idx) in currentItems"
-                v-if="limit ? idx < limit : true"
-      >
+      <template v-for="(it, idx) in currentItems">
         <li :class="itemClass"
+            v-if="limit ? idx < limit : true"
             :style="itemStyle"
-            :key="idx"
-        >
+            :key="idx">
           <component v-if="itemComponent"
                       :is="itemComponent"
                       v-bind="options"
-                      :source="it"
-          ></component>
-          <a v-else-if="it && it.text && it.url" :href="it.url" v-html="it.text"></a>
-          <span v-else-if="it && it.text" v-html="it.text"></span>
+                      :source="it"/>
+          <a v-else-if="it && it.text && it.url" :href="it.url" v-html="it.text"/>
+          <span v-else-if="it && it.text" v-html="it.text"/>
           <span v-else
-                v-html="it"
-          ></span>
+                v-html="it"/>
         </li>
-        <div v-if="separator && currentItems[idx+1]"
-              v-html="separator"
-        ></div>
+        <div v-if="(limit ? idx < limit : true) && separator && currentItems[idx+1]"
+             v-html="separator"/>
       </template>
     </ul>
     <!-- NO DATA MESSAGE -->
     <div v-else>
       <slot>
-        <div v-html="noData" class="bbn-widget-content bbn-w-100 bbn-c bbn-padded"></div>
+        <div v-html="noData" class="bbn-widget-content bbn-w-100 bbn-c bbn-padded"/>
       </slot>
     </div>
     <!-- GO FULL PAGE -->
     <div v-if="zoomable && currentItems && currentItems.length"
-          class="content-buttons zoom bbn-unselectable"
-    >
+          class="content-buttons zoom bbn-unselectable">
       <i class="nf nf-fa-arrows_alt"
-          @click="zoom"
-      ></i>
+          @click="zoom"/>
     </div>
     <!-- NAVIGATION IN LIST -->
     <div v-if="currentPage"
-          class="nav bbn-unselectable"
-    >
+          class="nav bbn-unselectable">
       <div class="content-buttons nav-first">
         <i class="nf nf-fa-angle_double_left"
             @click="nav('first')"
-            :style="{visibility: currentStart > 0 ? 'visible' : 'hidden'}"
-        ></i>
+            :style="{visibility: currentStart > 0 ? 'visible' : 'hidden'}"/>
       </div>
       <div class="content-buttons nav-prev">
         <i class="nf nf-fa-angle_left"
             @click="nav('prev')"
-            :style="{visibility: currentStart > 0 ? 'visible' : 'hidden'}"
-        ></i>
+            :style="{visibility: currentStart > 0 ? 'visible' : 'hidden'}"/>
       </div>
       <span v-text="currentPage + '/' + totalPages"></span>
       <div class="content-buttons nav-next">
         <i class="nf nf-fa-angle_right"
             @click="nav('next')"
-            :style="{visibility: currentStart < (currentTotal-limit) ? 'visible' : 'hidden'}"
-        ></i>
+            :style="{visibility: currentStart < (currentTotal-limit) ? 'visible' : 'hidden'}"/>
       </div>
       <div class="content-buttons nav-last">
         <i class="nf nf-fa-angle_double_right"
             @click="nav('last')"
-            :style="{visibility: currentStart < (currentTotal-limit) ? 'visible' : 'hidden'}"
-        ></i>
+            :style="{visibility: currentStart < (currentTotal-limit) ? 'visible' : 'hidden'}"/>
       </div>
     </div>
-    <!-- LOADING -->
   </div>
 </div>

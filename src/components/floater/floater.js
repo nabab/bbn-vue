@@ -337,7 +337,7 @@
        * @return {String}
        */
       formattedLeft() {
-        return this.currentLeft ? this.formatSize(this.currentLeft) : '0px';
+        return this.currentLeft !== null ? this.formatSize(this.currentLeft) : '0px';
       },
       /**
        * Normalizes the property 'top'.
@@ -345,7 +345,7 @@
        * @return {String}
        */
       formattedTop() {
-        return this.currentTop ? this.formatSize(this.currentTop) : '0px';
+        return this.currentTop !== null ? this.formatSize(this.currentTop) : '0px';
       },
       /**
        * Normalizes the property 'width'.
@@ -566,7 +566,8 @@
           throw new Error(bbn._("Wrong min/max width/height set in the properties"));
         }
         if (this.width || this.height) {
-          if (tmp = this.getDimensions(this.width, this.height)) {
+          tmp = this.getDimensions(this.width, this.height);
+          if (tmp) {
             if (tmp.width
               && (this.currentMaxWidth >= tmp.width)
               && (this.currentMinHeight <= tmp.width)
@@ -837,154 +838,127 @@
       },
       /**
        * @method updatePosition
-       * @fires init
        * @fires onResize
        */
       updatePosition(){
-        //this.init();
-        // The coordinates of the target position
-        let coor = this._getCoordinates();
-        // No scroll by default
-        let scrollV = false;
-        let scrollH = false;
-        // HEIGHT
-        let top = null;
-        // Natural or defined height
-        let height = this.realHeight;
-        let width = this.realWidth;
-        if (!height || !width) {
-          return;
-        }
+        let r = {
+          x: {
+            camel: 'Width',
+            posStart: 'left',
+            posEnd: 'right',
+            ideal: this.isHorizontal ? 'right' : 'left',
+            nideal: this.isHorizontal ? 'left' : 'right',
+            res: null,
+          },
+          y: {
+            camel: 'Height',
+            posStart: 'top',
+            posEnd: 'bottom',
+            ideal: this.isHorizontal ? 'top' : 'bottom',
+            nideal: this.isHorizontal ? 'bottom' : 'top',
+            res: null
+          }
+        };
 
-        let minX = 0;
-        let minY = 0;
-        /*
-        this.scrollWidth = width;
-        this.scrollHeight = height - outHeight;
-        */
-        let containerPosition = null;
-        if (this.container) {
-          containerPosition = this.container.getBoundingClientRect();
-          //minX = containerPosition.x ? Math.floor(containerPosition.x) : 0;
-          //minY = containerPosition.y ? Math.floor(containerPosition.y) : 0;
-        }
-        // If no vertical position at all, centered (same top and bottom)
-        if ((coor.top === null) && (coor.bottom === null)) {
-          coor.top = Math.floor((this.containerHeight - height) / 2) 
-                    + ((this.containerHeight - height) % 2);
-          coor.bottom = Math.floor((this.containerHeight - height) / 2);
-        }
-        else if ((coor.top === null) && coor.bottom) {
-          coor.top = this.containerHeight - coor.bottom - height;
-        }
-        else if (coor.top && (coor.bottom === null)) {
-          coor.bottom = this.containerHeight - coor.top - height;
-        }
-        if (coor.top < 0) {
-          bbn.fn.log("CASE 4", coor.top);
-          coor.top = 0;
-        }
+        let coor = this.element ?
+          JSON.parse(JSON.stringify(this.element.getBoundingClientRect()))
+          : {
+            top: bbn.fn.isNumber(this.top) ? this.top : null,
+            right: bbn.fn.isNumber(this.right) ? this.right : null,
+            bottom: bbn.fn.isNumber(this.bottom) ? this.bottom : null,
+            left: bbn.fn.isNumber(this.left) ? this.left : null
+          };
+        let ok = true;
 
-        if (this.element) {
-          if (coor.top + height > this.containerHeight) {
-            let isTopBigger = (coor.bottom < height) && coor.top > coor.bottom;
-            if (isTopBigger) {
-              if (coor.bottom + height > this.containerHeight) {
-                top = 0;
+        bbn.fn.iterate(r, a => {
+          let scroll = false;
+          let size = this['real' + a.camel];
+          if (!size) {
+            ok = false;
+            return false;
+          }
+
+          let min = 0;
+          if (this.element) {
+            // If the floater is horizontal, it will ideally start at the 
+            // top right of the element to open downwards
+            // otherwise at the bottom left
+            // if the floater cannot be put after the element
+            if (coor[a.ideal] + size > this['container' + a.camel]) {
+              let spaceAfter = this['container' + a.camel] - coor[a.ideal];
+              let spaceBefore = coor[a.nideal];
+              // Checking which of before or after is bigger
+              let isBeforeBigger = spaceBefore > spaceAfter;
+              if (isBeforeBigger) {
+                if (spaceBefore <= size) {
+                  a.res = 0;
+                  size = spaceBefore;
+                }
+                else {
+                  a.res = coor[a.nideal] - size;
+                }
               }
               else {
-                top = this.containerHeight - coor.bottom - height;
+                a.res = coor[a.ideal];
+                size = spaceAfter;
+              }
+            }
+            else {
+              a.res = coor[a.ideal];
+            }
+          }
+          else {
+            if ((coor[a.posStart] !== null) || (coor[a.posEnd] !== null)) {
+              a.res = coor[a.posStart] !== null ? coor[a.posStart] : this['container' + a.camel] - coor[a.posEnd] - size;
+              bbn.fn.log("MEASURE KNOWN", a);
+            }
+            else {
+              // If no vertical position at all, centered (same top and bottom)
+              coor[a.posStart] = Math.floor((this['container' + a.camel] - size) / 2) 
+                        + ((this['container' + a.camel] - size) % 2);
+              if (coor[a.posStart] < 0) {
+                coor[a.posStart] = 0;
+              }
+              if (coor[a.posStart] + size > this['container' + a.camel]) {
+                if (this[a.posStart] === undefined) {
+                  coor[a.posStart] = this['container' + a.camel] - size;
+                }
+                scroll = true;
+              }
+              else if (coor[a.posEnd] + size > this['container' + a.camel]) {
+                if (this[a.posEnd] !== undefined) {
+                  coor[a.posEnd] = this['container' + a.camel] - size;
+                }
+                scroll = true;
+              }
+              if (a.res === null) {
+                if (coor[a.posStart] !== undefined) {
+                  a.res = coor[a.posStart];
+                }
+                else if (scroll) {
+                  a.res = 0;
+                }
+                else {
+                  a.res = this['container' + a.camel] - (coor[a.posEnd] || 0) - size;
+                }
+              }
+              a.res = a.res ? a.res + min : min;
+              if (a.res < 0) {
+                a.res = 0;
               }
             }
           }
-        }
-        else if (coor.top + height > this.containerHeight) {
-          if (this.top === undefined) {
-            coor.top = this.containerHeight - height;
-          }
-          scrollV = true;
-        }
-        else if (coor.bottom + height > this.containerHeight) {
-          if (this.bottom !== undefined) {
-            coor.bottom = this.containerHeight - height;
-          }
-          scrollV = true;
-        }
-        if (top === null) {
-          if (coor.top) {
-            top = coor.top;
-          }
-          else if (scrollV) {
-            top = 0;
-          }
-          else {
-            top = this.containerHeight - (coor.bottom || 0) - height;
-          }
-        }
-        top = top ? top + minY : minY;
 
-        // WIDTH
-        let left = null;
-        // If no horizontal position at all, centered (same left and right)
-        if ((coor.left === null) && (coor.right === null)) {
-          coor.left = Math.floor((this.containerWidth - width) / 2) 
-                      + ((this.containerWidth - width) % 2);
-          coor.right = Math.floor((this.containerWidth - width) / 2);
-        }
-        else if ((coor.left === null) && coor.right) {
-          coor.left = this.containerWidth - coor.right - width;
-        }
-        else if (coor.left && (coor.right === null)) {
-          coor.right = this.containerWidth - coor.left - width;
-        }
-        if (coor.left < 0) {
-          coor.left = 0;
+          if (size !== this['real' + a.camel]) {
+            this['real' + a.camel] = size;
+          }
+        });
+
+        if (ok  && (r.x.res !== null) && (r.y.res !== null)) {
+          this.currentLeft = Math.ceil(r.x.res).toString() + 'px';
+          this.currentTop = Math.ceil(r.y.res).toString() + 'px';
         }
 
-        if (this.element) {
-          bbn.fn.log("ELEMENT");
-          if (coor.left + width > this.containerWidth) {
-            let isLeftBigger = (coor.right < width) && (coor.left > coor.right);
-            if (isLeftBigger) {
-              if (coor.right + width > this.containerWidth) {
-                left = 0;
-              }
-              else {
-                left = this.containerWidth - coor.right - width;
-              }
-            }
-          }
-        }
-        else if ((coor.left + width > this.containerWidth) || (coor.right + width > this.containerWidth)) {
-          if (this.left === undefined) {
-            coor.left = this.containerWidth - width;
-          }
-        }
-        else if (coor.right + width > this.containerWidth) {
-          if (this.right === undefined) {
-            coor.right = this.containerWidth - width;
-          }
-        }
-        if (left === null) {
-          if (coor.left) {
-            left = coor.left;
-          }
-          else if (scrollH) {
-            left = 0;
-          }
-          else {
-            left = this.containerWidth - coor.right - width;
-          }
-        }
-        left = left ? left + minX : minX;
-        if (left < 0) {
-          left = 0;
-        }
-        if (top < 0) {
-          top = 0;
-        }
-        this.currentLeft = left + 'px';
-        this.currentTop = top + 'px';
       },
       /**
        * Handles the resize of the scroller.

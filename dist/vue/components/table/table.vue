@@ -187,7 +187,7 @@
             </tr>
             <template v-else v-for="(d, i) in items">
               <tr :key="d.rowKey"
-                  :index="d.index"
+                  :index="i"
                   :tabindex="0"
                   @focusout="focusout(i)"
                   @focusin="focusin(i, $event)"
@@ -283,7 +283,8 @@
                       'bbn-table-fixed-cell-left-last': col.isLeft
                         && (!currentColumns[index+1] || !currentColumns[index+1].isLeft),
                       'bbn-table-fixed-cell-right': col.isRight,
-                      'bbn-table-cell-first': !col.isLeft && !col.isRight && ((index === 0) || (!!currentColumns[index-1].isLeft))
+                      'bbn-table-cell-first': !col.isLeft && !col.isRight && ((index === 0) || (!!currentColumns[index-1].isLeft)),
+                      'bbn-table-edit-buttons': !!col.buttons && isEdited(d.data, col, i)
                     }]"
                     :style="{
                       left: col.left !== undefined ? (col.left + 'px') : 'auto',
@@ -427,6 +428,29 @@
     </div>
   </bbn-floater>
   <bbn-popup ref="popup" v-if="inTable === false"></bbn-popup>
+  <bbn-floater v-if="focusedElement && (editMode === 'inline') && editedRow"
+               class="bbn-widget"
+               :element="focusedElement"
+               :scrollable="true"
+               tabindex="-1"
+               :left="focusedElementX"
+               :top="focusedElementY">
+        <bbn-button :text="_('Save')"
+                    :disabled="!isEditedValid"
+                    icon="nf nf-fa-save"
+                    :notext="true"
+                    @click.prevent.stop="saveInline"
+                    style="margin: 0 .1em"
+                    tabindex="-1"
+        ></bbn-button>
+        <bbn-button :text="_('Cancel')"
+                    icon="nf nf-fa-times"
+                    :notext="true"
+                    @click.prevent.stop="cancel"
+                    style="margin: 0 .1em"
+                    tabindex="-1"
+        ></bbn-button>
+  </bbn-floater>
 </div>
 
 </template>
@@ -927,7 +951,10 @@
         /**
          * @data {Number} [0] borderRight
          */
-        borderRight: 0
+        borderRight: 0,
+        focusedElement: undefined,
+        focusedElementX: 0,
+        focusedElementY: 0
       };
     },
     computed: {
@@ -1140,6 +1167,7 @@
           end = this.pageable ? this.currentLimit : this.currentData.length,
           aggregates = {},
           aggregateModes = [],
+          aggIndex = 0,
           i = 0,
           data = this.filteredData;
         // Aggregated
@@ -1409,13 +1437,13 @@
                 ){
                   let b = aggr.groups[aggr.groups.length - 1];
                   b.med = b.tot / b.num;
-                  bbn.fn.each(aggregateModes, (c) => {
+                  bbn.fn.each(aggregateModes, c => {
                     let tmp = {};
                     tmp[ac.field] = b[c];
                     res.push({
                       index: data[i] ? data[i].index : 0,
                       rowIndex: rowIndex,
-                      rowKey: data[i] ? data[i].key : 0,
+                      rowKey: 'a' + aggIndex + '-' + (data[i] ? data[i].key : rowIndex),
                       groupAggregated: true,
                       link: currentLink,
                       value: currentGroupValue,
@@ -1423,23 +1451,25 @@
                       data: tmp
                     });
                     rowIndex++;
+                    aggIndex++;
                   });
                 }
               }
               if (!data[i + 1] || (i === (end - 1))) {
                 aggr.med = aggr.tot / aggr.num;
-                bbn.fn.each(aggregateModes, (c) => {
+                bbn.fn.each(aggregateModes, c => {
                   let tmp = {};
                   tmp[ac.field] = aggr[c];
                   res.push({
                     index: data[i] ? data[i].index : 0,
                     rowIndex: rowIndex,
-                    rowKey: data[i] ? data[i].key : 0,
+                    rowKey: 'a' + aggIndex + '-' + (data[i] ? data[i].key : rowIndex),
                     aggregated: true,
                     name: c,
                     data: tmp
                   });
                   rowIndex++;
+                  aggIndex++;
                 });
               }
             });
@@ -2137,114 +2167,6 @@
             titleGroups: this.titleGroups
           }
         });
-      },
-      /**
-       * Opens the popup containing the form to edit the row.
-       * @method edit
-       * @param {Object} row
-       * @param {String|Object} winOptions
-       * @param {Number} index
-       * @fires _addTmp
-       */
-      edit(row, winOptions, index) {
-        let rowIndex = index;
-        if (!this.editable) {
-          throw new Error("The table is not editable, you cannot use the edit function in bbn-table");
-        }
-        if ( !winOptions ){
-          winOptions = {};
-        }
-        if (!row) {
-          this._addTmp();
-          row = this.tmpRow;
-        }
-        this.originalRow = bbn.fn.clone(row);
-        // EditedRow exists from now on the time of the edition
-        this.editedRow = row;
-
-        if (this.items[index]) {
-          this.editedIndex = this.items[index].index;
-        }
-        if (this.editMode === 'popup') {
-          if (typeof (winOptions) === 'string') {
-            winOptions = {
-              title: winOptions
-            };
-          }
-          if (!winOptions.height) {
-            //winOptions.height = (this.cols.length * 2) + 'rem'
-          }
-          if (winOptions.maximizable === undefined) {
-            winOptions.maximizable = true;
-          }
-          let popup = bbn.fn.extend({
-            source: {
-              row: row,
-              data: bbn.fn.isFunction(this.data) ? this.data() : this.data
-            }
-          }, {
-            title: bbn._('Row edition'),
-            width: 700
-          }, winOptions ? winOptions : {});
-          // A component is given as global editor (form)
-          if (this.editor) {
-            popup.component = this.editor;
-          }
-          // A URL is given and in this case the form will be created automatically with this URL as action
-          else if (this.url) {
-            let table = this;
-            let o = bbn.fn.extend({}, this.data, {
-              action: table.tmpRow ? 'insert' : 'update'
-            });
-            popup.component = {
-              data() {
-                let fields = [];
-                table.cols.map((a) => {
-                  let o = bbn.fn.extend(true, {}, a);
-                  if (o.ftitle) {
-                    o.title = o.ftitle;
-                  }
-                  fields.push(o);
-                });
-                return {
-                  // Table's columns are used as native form config
-                  fields: fields,
-                  data: row,
-                  obj: o
-                }
-              },
-              template: `
-<bbn-form action="` + table.url + `"
-          :schema="fields"
-          :scrollable="false"
-          :source="data"
-          :data="obj"
-          @success="success"
-          @failure="failure">
-</bbn-form>`,
-              methods: {
-                success(d, e) {
-                  e.preventDefault();
-                  if (table.successEdit(d)) {
-                    table.getPopup().close();
-                  }
-                },
-                failure(d) {
-                  table.$emit('editFailure', d);
-                },
-              },
-            };
-          } else {
-            throw new Error(bbn._("Impossible to open a window if either an editor or a URL is not set"))
-          }
-          popup.afterClose = () => {
-            //  this.currentData.push(bbn.fn.clone( this.tmpRow)); // <-- Error. This add a new row into table when it's in edit mode
-            this._removeTmp();
-            this.editedRow = false;
-            this.editedIndex = false;
-          };
-          this.getPopup().open(popup);
-        }
       },
       /**
        * Returns wheter or not the cell is grouped.
@@ -3140,7 +3062,16 @@
        * @returns {String}
        */
       getTr(i) {
-        return this.$refs.rows && this.$refs.rows[i] ? this.$refs.rows[i] : false;
+        let row = false;
+        if (bbn.fn.isNumber(i)) {
+          bbn.fn.each(this.getRef('tbody').rows, tr => {
+            if (tr.getAttribute('index') == i) {
+              row = tr;
+              return true;
+            }
+          });
+        }
+        return row;
       },
       /**
        * Returns an object of the default values for the different types of fields.
@@ -3191,6 +3122,7 @@
       focusout(idx){
         if ((idx === undefined) || (idx === this.focusedRow)) {
           this.focused = false;
+          //this.focusedElement = undefined;
           setTimeout(() => {
             if (!this.focused) {
               this.focusedRow = false;
@@ -3204,8 +3136,11 @@
        * @param {Event} e 
        */
       focusin(idx, e) {
-        if (e.target.tagName !== 'BUTTON') {
+        if ((e.target.tagName !== 'BUTTON')
+          || e.target.closest('td').classList.contains('bbn-table-edit-buttons')
+        ) {
           this.focused = true;
+          //this.setFocusedElement(e)
           if (this.focusedRow !== idx) {
             this.focusedRow = idx;
           }
@@ -3223,6 +3158,23 @@
         bbn.fn.each(this.items, (a, i) => {
           this.checkSelection(i, false);
         })
+      },
+      getDataIndex(itemIndex){
+        return this.items[itemIndex] ? this.items[itemIndex].index : -1;
+      },
+      setFocusedElement(ev){
+        if (this.editable
+          && (this.editMode === 'inline')
+          && (this.tmpRow || this.editedRow)
+          && (ev.target.tagName !== 'TR')
+          && (ev.target.tagName !== 'TD')
+        ) {
+          let e = ev.target.closest('td'),
+              pos = e.getBoundingClientRect();
+          this.focuseElementX = pos.x;
+          this.focusedElementY = pos.y - pos.height;
+          this.focusedElement = ev.target;
+        }
       }
     },
     /**
@@ -3409,7 +3361,12 @@
             if ((this.editedIndex === idx)
               && this.isModified(idx)
             ) {
-              this.$emit('change', this.items[oldIndex].data, idx);
+              if (this.autosave) {
+                this.saveInline();
+              }
+              else {
+                this.$emit('change', this.items[oldIndex].data, idx);
+              }
             }
           }
           this.editedRow = false;
@@ -3422,7 +3379,8 @@
             this.$nextTick(() => {
               this.edit(this.items[newIndex].data, null, newIndex);
               this.$nextTick(() => {
-                let nextInputs = this.getTr(newIndex).querySelectorAll('input'),
+                let tr = this.getTr(newIndex),
+                    nextInputs = tr ? tr.querySelectorAll('input') : [],
                     nextInput;
                 bbn.fn.each(nextInputs, a => {
                   if (a.offsetWidth) {

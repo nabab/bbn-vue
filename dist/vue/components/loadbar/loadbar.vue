@@ -1,6 +1,8 @@
 <template>
 <div :class="['bbn-100', 'bbn-unselectable', componentClass]">
-  <span class="bbn-loadbar-content bbn-right-padded bbn-flex-width" @click="info = !info">
+  <span class="bbn-loadbar-content bbn-right-padded bbn-flex-width"
+        @click="info = !info"
+        ref="bar">
     <!--span class="buttons" v-if="data.length">
       <i :title="_('History informations')"
          :class="{
@@ -72,7 +74,7 @@
     </span>
   </span>
   <bbn-floater v-if="info"
-               :element="$el"
+               :element="$refs.bar"
                ref="floater"
                :auto-hide="true"
                :title="_('Requests\' history')"

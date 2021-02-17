@@ -33,6 +33,7 @@ script.innerHTML = `<button :class="[{'bbn-button-icon-only': notext}, component
           paddingLeft: icon && (iconPosition === 'left') ? (secondary ? '1em' : '0.3em') : '',
           paddingRight: icon && (iconPosition === 'right') ? (secondary ? '1em' : '0.3em') : ''
         }"
+        :class="{'bbn-ellipsis': ellipsis}"
   ></span>
   <span v-else-if="!notext"><slot></slot></span>
   <span v-if="icon && (iconPosition === 'right')" class="bbn-iblock bbn-m">
@@ -183,6 +184,14 @@ document.body.insertAdjacentElement('beforeend', script);
        */
       action: {
         type: [Function, String]
+      },
+      /**
+       * Adds the ellipsis
+       * @prop {Boolean} [false] ellipsis
+       */
+      ellipsis: {
+        type: Boolean,
+        default: false
       }
     },
     data(){
@@ -224,7 +233,11 @@ document.body.insertAdjacentElement('beforeend', script);
        * @return {Object}
        */
       currentStyle(){
-        return this.glowing && this.glowingColor ? {animation: `bbn-button-glowing-${this.glowingID} 3s infinite`} : {};
+        let obj = this.glowing && this.glowingColor ? {animation: `bbn-button-glowing-${this.glowingID} 3s infinite`} : {};
+        if (this.ellipsis) {
+          obj['text-overflow'] = 'ellipsis';
+        }
+        return obj;
       }
     },
     methods: {

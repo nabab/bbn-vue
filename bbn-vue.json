@@ -413,6 +413,11 @@
                         "text": "action",
                         "desc": "The action that has to be performed at the event click.\r\n       *",
                         "url": "bbn-vue\/component\/button\/doc\/props#action"
+                    },
+                    {
+                        "text": "ellipsis",
+                        "desc": "Adds the ellipsis",
+                        "url": "bbn-vue\/component\/button\/doc\/props#ellipsis"
                     }
                 ],
                 "methods": [
@@ -7086,11 +7091,6 @@
                         "text": "openColumnsPicker",
                         "desc": "Opens the popup containing the column picker.",
                         "url": "bbn-vue\/component\/table\/doc\/methods#openColumnsPicker"
-                    },
-                    {
-                        "text": "edit",
-                        "desc": "Opens the popup containing the form to edit the row.",
-                        "url": "bbn-vue\/component\/table\/doc\/methods#edit"
                     },
                     {
                         "text": "isGroupedCell",

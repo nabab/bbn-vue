@@ -495,7 +495,9 @@
          * @data {Number} [0] borderRight
          */
         borderRight: 0,
-        focusedElement: null
+        focusedElement: undefined,
+        focusedElementX: 0,
+        focusedElementY: 0
       };
     },
     computed: {
@@ -708,6 +710,7 @@
           end = this.pageable ? this.currentLimit : this.currentData.length,
           aggregates = {},
           aggregateModes = [],
+          aggIndex = 0,
           i = 0,
           data = this.filteredData;
         // Aggregated
@@ -977,13 +980,13 @@
                 ){
                   let b = aggr.groups[aggr.groups.length - 1];
                   b.med = b.tot / b.num;
-                  bbn.fn.each(aggregateModes, (c) => {
+                  bbn.fn.each(aggregateModes, c => {
                     let tmp = {};
                     tmp[ac.field] = b[c];
                     res.push({
                       index: data[i] ? data[i].index : 0,
                       rowIndex: rowIndex,
-                      rowKey: data[i] ? data[i].key : 0,
+                      rowKey: 'a' + aggIndex + '-' + (data[i] ? data[i].key : rowIndex),
                       groupAggregated: true,
                       link: currentLink,
                       value: currentGroupValue,
@@ -991,23 +994,25 @@
                       data: tmp
                     });
                     rowIndex++;
+                    aggIndex++;
                   });
                 }
               }
               if (!data[i + 1] || (i === (end - 1))) {
                 aggr.med = aggr.tot / aggr.num;
-                bbn.fn.each(aggregateModes, (c) => {
+                bbn.fn.each(aggregateModes, c => {
                   let tmp = {};
                   tmp[ac.field] = aggr[c];
                   res.push({
                     index: data[i] ? data[i].index : 0,
                     rowIndex: rowIndex,
-                    rowKey: data[i] ? data[i].key : 0,
+                    rowKey: 'a' + aggIndex + '-' + (data[i] ? data[i].key : rowIndex),
                     aggregated: true,
                     name: c,
                     data: tmp
                   });
                   rowIndex++;
+                  aggIndex++;
                 });
               }
             });
@@ -2600,7 +2605,16 @@
        * @returns {String}
        */
       getTr(i) {
-        return this.$refs.rows && this.$refs.rows[i] ? this.$refs.rows[i] : false;
+        let row = false;
+        if (bbn.fn.isNumber(i)) {
+          bbn.fn.each(this.getRef('tbody').rows, tr => {
+            if (tr.getAttribute('index') == i) {
+              row = tr;
+              return true;
+            }
+          });
+        }
+        return row;
       },
       /**
        * Returns an object of the default values for the different types of fields.
@@ -2651,7 +2665,7 @@
       focusout(idx){
         if ((idx === undefined) || (idx === this.focusedRow)) {
           this.focused = false;
-          this.focusedElement = false;
+          //this.focusedElement = undefined;
           setTimeout(() => {
             if (!this.focused) {
               this.focusedRow = false;
@@ -2665,8 +2679,11 @@
        * @param {Event} e 
        */
       focusin(idx, e) {
-        if (e.target.tagName !== 'BUTTON') {
+        if ((e.target.tagName !== 'BUTTON')
+          || e.target.closest('td').classList.contains('bbn-table-edit-buttons')
+        ) {
           this.focused = true;
+          //this.setFocusedElement(e)
           if (this.focusedRow !== idx) {
             this.focusedRow = idx;
           }
@@ -2686,7 +2703,21 @@
         })
       },
       getDataIndex(itemIndex){
-        return this.items[itemIndex] ? this.items[itemIndex].index : undefined;
+        return this.items[itemIndex] ? this.items[itemIndex].index : -1;
+      },
+      setFocusedElement(ev){
+        if (this.editable
+          && (this.editMode === 'inline')
+          && (this.tmpRow || this.editedRow)
+          && (ev.target.tagName !== 'TR')
+          && (ev.target.tagName !== 'TD')
+        ) {
+          let e = ev.target.closest('td'),
+              pos = e.getBoundingClientRect();
+          this.focuseElementX = pos.x;
+          this.focusedElementY = pos.y - pos.height;
+          this.focusedElement = ev.target;
+        }
       }
     },
     /**
@@ -2873,7 +2904,12 @@
             if ((this.editedIndex === idx)
               && this.isModified(idx)
             ) {
-              this.$emit('change', this.items[oldIndex].data, idx);
+              if (this.autosave) {
+                this.saveInline();
+              }
+              else {
+                this.$emit('change', this.items[oldIndex].data, idx);
+              }
             }
           }
           this.editedRow = false;
@@ -2886,7 +2922,8 @@
             this.$nextTick(() => {
               this.edit(this.items[newIndex].data, null, newIndex);
               this.$nextTick(() => {
-                let nextInputs = this.getTr(newIndex).querySelectorAll('input'),
+                let tr = this.getTr(newIndex),
+                    nextInputs = tr ? tr.querySelectorAll('input') : [],
                     nextInput;
                 bbn.fn.each(nextInputs, a => {
                   if (a.offsetWidth) {

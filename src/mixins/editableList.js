@@ -28,8 +28,16 @@
         editable: {
           type: [Boolean, String, Function],
           default: false,
-          validator: e => bbn.fn.isFunction(e) || (typeof e === 'boolean') || ['inline', 'popup'].includes(e)
+          validator: e => bbn.fn.isFunction(e) || (typeof e === 'boolean') || ['inline', 'popup', 'nobuttons'].includes(e)
         },
+        /**
+         * Auto saves the row when edit-mode is 'inline'
+         * @prop {Boolean} [false] autosave
+         */
+        autosave: {
+          type: Boolean,
+          default: false
+        }
       },
       data(){
         let editable = bbn.fn.isFunction(this.editable) ? this.editable() : this.editable;
@@ -335,8 +343,11 @@
                 this.successEdit(d);
               })
             }
-            else if (this.saveRow()) {
-              this.$emit(this.tmpRow ? 'insert' : 'edit');
+            else {
+              let d = bbn.fn.clone(this.tmpRow || this.editedRow);
+              if (this.saveRow()) {
+                this.$emit(this.tmpRow ? 'insert' : 'edit', d);
+              }
             }
           }
         },

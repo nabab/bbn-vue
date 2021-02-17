@@ -168,9 +168,18 @@
     },
     data(){
       let isParsed = this.value && (bbn.fn.isObject(this.value) || bbn.fn.isArray(this.value));
+      let v = this.value || '';
+      if (isParsed) {
+        try {
+          v = JSON.stringify(this.value);
+        }
+        catch (e) {
+          bbn.fn.log("Impossible to parse");
+        }
+      }
       return {
         isParsed: isParsed,
-        currentValue: isParsed ? JSON.stringify(this.value) : (this.value && bbn.fn.isString(this.value) ? this.value : null)
+        currentValue: v
       };
     },
     computed: {

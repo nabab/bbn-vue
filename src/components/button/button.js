@@ -129,6 +129,14 @@
        */
       action: {
         type: [Function, String]
+      },
+      /**
+       * Adds the ellipsis
+       * @prop {Boolean} [false] ellipsis
+       */
+      ellipsis: {
+        type: Boolean,
+        default: false
       }
     },
     data(){
@@ -170,7 +178,11 @@
        * @return {Object}
        */
       currentStyle(){
-        return this.glowing && this.glowingColor ? {animation: `bbn-button-glowing-${this.glowingID} 3s infinite`} : {};
+        let obj = this.glowing && this.glowingColor ? {animation: `bbn-button-glowing-${this.glowingID} 3s infinite`} : {};
+        if (this.ellipsis) {
+          obj['text-overflow'] = 'ellipsis';
+        }
+        return obj;
       }
     },
     methods: {
