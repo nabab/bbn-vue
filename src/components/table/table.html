@@ -34,6 +34,7 @@
                  class="bbn-w-100"
                  ref="scroll"
                  :offset-y="$refs.thead ? [$refs.thead.getBoundingClientRect().height, 0] : [0,0]"
+                 @resize="resizeWidth"
       >
         <table :style="{width: totalWidth}"
                ref="table"

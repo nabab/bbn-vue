@@ -46,6 +46,23 @@
         default: false
       }
     },
+    data(){
+      return {
+        currentNumericPage: this.element.currentPage,
+        numericTimeout: false
+      }
+    },
+    computed: {
+      currentPage: {
+        get(){
+          return this.element.currentPage;
+        },
+        set(v) {
+          this.element.currentPage = v;
+        }
+      }
+
+    },
     methods: {
       /**
        * @method firstPage
@@ -98,11 +115,6 @@
      * @event created
      */
     created(){
-      if (this.element){
-        this.element.$on('ready', () => {
-          this.ready = true;
-        })
-      }
       if (this.forceMobile){
         this.isMobile = true;
       }
@@ -114,8 +126,32 @@
      * @event mounted
      */
     mounted(){
-      if (this.element && this.element.ready && !this.ready){
-        this.ready = true;
+      if (this.element){
+        if (this.element.ready && !this.ready){
+          this.ready = true;
+        }
+        else {
+          this.element.$on('ready', () => {
+            this.ready = true;
+          })
+        }
+      }
+    },
+    watch: {
+      currentPage(v) {
+        if (this.currentNumericPage !== v) {
+          this.currentNumericPage = v;
+        }
+      },
+      currentNumericPage(v){
+        if (this.numericTimeout) {
+          clearTimeout(this.numericTimeout);
+        }
+        this.numericTimeout = setTimeout(() => {
+          if (this.currentPage !== v) {
+            this.currentPage = v;
+          }
+        }, 500);
       }
     }
   });

@@ -1,39 +1,63 @@
 <div :class="[componentClass, {'bbn-flex-height': scrollable}]">
   <div v-if="isToolbarShown"
-       class="bbn-l bbn-widget bbn-gallery-toolbar"
+       class="bbn-l bbn-widget bbn-gallery-toolbar bbn-spadded"
   >
     <component v-if="toolbar && (isObject(toolbar) || isVue(toolbar))"
                :is="toolbar"
     ></component>
     <template v-else>
-      <bbn-button :text="_('Upload')"
-                  icon="nf nf-fa-upload"
-                  @click="uploadButton"
-                  v-if="!isSelecting && uploadButton"
-      ></bbn-button>
-      <bbn-button :text="_('Download')"
-                  icon="nf nf-fa-download"
-                  @click="setSelecting('download')"
-                  v-if="!isSelecting && downloadButton"
-                  :disabled="!total"
-      ></bbn-button>
-      <bbn-button :text="_('Remove')"
-                  icon="nf nf-fa-trash"
-                  @click="setSelecting('remove')"
-                  v-if="!isSelecting && removeButton"
-                  :disabled="!total"
-      ></bbn-button>
-      <bbn-button :text="_(correctCase(selectingMode))"
-                  icon="nf nf-fa-check"
-                  @click="action"
-                  v-if="isSelecting"
-                  :disabled="!currentSelected.length"
-      ></bbn-button>
-      <bbn-button :text="_('Cancel')"
-                  icon="nf nf-fa-times"
-                  @click="setSelecting(false)"
-                  v-if="isSelecting"
-      ></bbn-button>
+      <div class="bbn-flex-width">
+        <div class="bbn-flex-fill">
+          <div class="bbn-flex-width">
+            <bbn-button :text="_('Upload')"
+                        icon="nf nf-fa-upload"
+                        @click="uploadButton"
+                        v-if="uploadButton"
+                        :notext="buttonsNoText"
+                        :disabled="isSelecting"/>
+            <bbn-button :text="_('Download')"
+                        icon="nf nf-fa-download"
+                        @click="setSelecting('download')"
+                        v-if="downloadButton"
+                        :disabled="isSelecting || !total"
+                        :notext="buttonsNoText"
+                        class="bbn-left-xsspace"/>
+            <bbn-button :text="_('Remove')" 
+                        icon="nf nf-fa-trash"
+                        @click="setSelecting('remove')"
+                        v-if="removeButton"
+                        :disabled="isSelecting || !total"
+                        :notext="buttonsNoText"
+                        class="bbn-left-xsspace"/>
+            <bbn-button :text="_(correctCase(selectingMode))"
+                        icon="nf nf-fa-check"
+                        @click="action"
+                        v-if="isSelecting"
+                        :disabled="!currentSelected.length"
+                        :notext="buttonsNoText"
+                        class="bbn-left-space"/>
+            <bbn-button :text="_('Cancel')"
+                        icon="nf nf-fa-times"
+                        @click="setSelecting(false)"
+                        v-if="isSelecting"
+                        :notext="buttonsNoText"
+                        class="bbn-left-xsspace"/>
+            <div v-if="filterable"
+                  class="bbn-flex-fill bbn-hmargin">
+              <bbn-input :placeholder="_('Search')"
+                          v-model="currentSearch"
+                          class="bbn-w-100"
+                          ref="search"/>
+            </div>
+          </div>
+        </div>
+        <div class="bbn-vmiddle">
+          <bbn-range class="bbn-vmiddle"
+                     v-model="currentItemWidth"
+                     :min="itemWidth - 100"
+                     :max="itemWidth + 100"/>
+        </div>
+      </div>
     </template>
   </div>
   <div ref="gallery" :class="{'bbn-flex-fill': scrollable}">

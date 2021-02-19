@@ -2778,7 +2778,10 @@
 
       this.$on('addTmp', () => {
         let scroll = this.getRef('scroll');
-        if (scroll) {
+        if (bbn.fn.isVue(scroll)
+          && bbn.fn.isFunction(scroll.scrollStartY)
+          && bbn.fn.isFunction(scroll.scrollStartX)
+        ) {
           scroll.scrollStartY();
           scroll.scrollStartX();
         }
