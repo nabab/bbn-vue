@@ -1,3 +1,15 @@
+.bbn-cms-block.bbn-basic-component .edit-block-icon {
+  position: absolute;
+  right: 10px;
+  top: -20px;
+}
+.bbn-cms-block.bbn-basic-component .edit-block-icon i {
+  display: inline-block;
+  margin-right: 6px;
+}
+.bbn-cms-block.bbn-basic-component .edit-block {
+  border: 1px dashed #6e9ecf;
+}
 .bbn-cms-block.bbn-basic-component h1,
 .bbn-cms-block.bbn-basic-component h2,
 .bbn-cms-block.bbn-basic-component h3,

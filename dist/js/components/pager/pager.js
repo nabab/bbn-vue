@@ -43,7 +43,7 @@ script.innerHTML = `<div v-if="ready"
 			></i>
 		</span>
 		<span class="bbn-iblock" v-text="_('Page')"></span>
-		<bbn-numeric v-model="element.currentPage"
+		<bbn-numeric v-model="currentNumericPage"
 								 :min="1"
 								 :max="element.numPages"
 								 class="bbn-narrower bbn-right-sspace"
@@ -233,6 +233,23 @@ document.head.insertAdjacentElement('beforeend', css);
         default: false
       }
     },
+    data(){
+      return {
+        currentNumericPage: this.element.currentPage,
+        numericTimeout: false
+      }
+    },
+    computed: {
+      currentPage: {
+        get(){
+          return this.element.currentPage;
+        },
+        set(v) {
+          this.element.currentPage = v;
+        }
+      }
+
+    },
     methods: {
       /**
        * @method firstPage
@@ -285,11 +302,6 @@ document.head.insertAdjacentElement('beforeend', css);
      * @event created
      */
     created(){
-      if (this.element){
-        this.element.$on('ready', () => {
-          this.ready = true;
-        })
-      }
       if (this.forceMobile){
         this.isMobile = true;
       }
@@ -301,8 +313,32 @@ document.head.insertAdjacentElement('beforeend', css);
      * @event mounted
      */
     mounted(){
-      if (this.element && this.element.ready && !this.ready){
-        this.ready = true;
+      if (this.element){
+        if (this.element.ready && !this.ready){
+          this.ready = true;
+        }
+        else {
+          this.element.$on('ready', () => {
+            this.ready = true;
+          })
+        }
+      }
+    },
+    watch: {
+      currentPage(v) {
+        if (this.currentNumericPage !== v) {
+          this.currentNumericPage = v;
+        }
+      },
+      currentNumericPage(v){
+        if (this.numericTimeout) {
+          clearTimeout(this.numericTimeout);
+        }
+        this.numericTimeout = setTimeout(() => {
+          if (this.currentPage !== v) {
+            this.currentPage = v;
+          }
+        }, 500);
       }
     }
   });

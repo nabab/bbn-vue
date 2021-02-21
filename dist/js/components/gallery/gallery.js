@@ -2,40 +2,64 @@
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, {'bbn-flex-height': scrollable}]">
   <div v-if="isToolbarShown"
-       class="bbn-l bbn-widget bbn-gallery-toolbar"
+       class="bbn-l bbn-widget bbn-gallery-toolbar bbn-spadded"
   >
     <component v-if="toolbar && (isObject(toolbar) || isVue(toolbar))"
                :is="toolbar"
     ></component>
     <template v-else>
-      <bbn-button :text="_('Upload')"
-                  icon="nf nf-fa-upload"
-                  @click="uploadButton"
-                  v-if="!isSelecting && uploadButton"
-      ></bbn-button>
-      <bbn-button :text="_('Download')"
-                  icon="nf nf-fa-download"
-                  @click="setSelecting('download')"
-                  v-if="!isSelecting && downloadButton"
-                  :disabled="!total"
-      ></bbn-button>
-      <bbn-button :text="_('Remove')"
-                  icon="nf nf-fa-trash"
-                  @click="setSelecting('remove')"
-                  v-if="!isSelecting && removeButton"
-                  :disabled="!total"
-      ></bbn-button>
-      <bbn-button :text="_(correctCase(selectingMode))"
-                  icon="nf nf-fa-check"
-                  @click="action"
-                  v-if="isSelecting"
-                  :disabled="!currentSelected.length"
-      ></bbn-button>
-      <bbn-button :text="_('Cancel')"
-                  icon="nf nf-fa-times"
-                  @click="setSelecting(false)"
-                  v-if="isSelecting"
-      ></bbn-button>
+      <div class="bbn-flex-width">
+        <div class="bbn-flex-fill">
+          <div class="bbn-flex-width">
+            <bbn-button :text="_('Upload')"
+                        icon="nf nf-fa-upload"
+                        @click="uploadButton"
+                        v-if="uploadButton"
+                        :notext="buttonsNoText"
+                        :disabled="isSelecting"/>
+            <bbn-button :text="_('Download')"
+                        icon="nf nf-fa-download"
+                        @click="setSelecting('download')"
+                        v-if="downloadButton"
+                        :disabled="isSelecting || !total"
+                        :notext="buttonsNoText"
+                        class="bbn-left-xsspace"/>
+            <bbn-button :text="_('Remove')" 
+                        icon="nf nf-fa-trash"
+                        @click="setSelecting('remove')"
+                        v-if="removeButton"
+                        :disabled="isSelecting || !total"
+                        :notext="buttonsNoText"
+                        class="bbn-left-xsspace"/>
+            <bbn-button :text="_(correctCase(selectingMode))"
+                        icon="nf nf-fa-check"
+                        @click="action"
+                        v-if="isSelecting"
+                        :disabled="!currentSelected.length"
+                        :notext="buttonsNoText"
+                        class="bbn-left-space"/>
+            <bbn-button :text="_('Cancel')"
+                        icon="nf nf-fa-times"
+                        @click="setSelecting(false)"
+                        v-if="isSelecting"
+                        :notext="buttonsNoText"
+                        class="bbn-left-xsspace"/>
+            <div v-if="filterable"
+                  class="bbn-flex-fill bbn-hmargin">
+              <bbn-input :placeholder="_('Search')"
+                          v-model="currentSearch"
+                          class="bbn-w-100"
+                          ref="search"/>
+            </div>
+          </div>
+        </div>
+        <div class="bbn-vmiddle">
+          <bbn-range class="bbn-vmiddle"
+                     v-model="currentItemWidth"
+                     :min="itemWidth - 100"
+                     :max="itemWidth + 100"/>
+        </div>
+      </div>
     </template>
   </div>
   <div ref="gallery" :class="{'bbn-flex-fill': scrollable}">
@@ -82,7 +106,11 @@ document.head.insertAdjacentElement('beforeend', css);
      * @mixin bbn.vue.resizerComponent
      * @mixin bbn.vue.listComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent, bbn.vue.listComponent],
+    mixins: [
+      bbn.vue.basicComponent,
+      bbn.vue.resizerComponent,
+      bbn.vue.listComponent
+    ],
     props: {
       /**
        * Set to true to allow the component to have a scroll.
@@ -192,12 +220,52 @@ document.head.insertAdjacentElement('beforeend', css);
         type: Function
       },
       /**
+       * Sets the toolbar buttons as notext
+       * @prop {Boolean} [false] buttonsNoText
+       */
+      buttonsNoText: {
+        type: Boolean,
+        default: false
+      },
+      /**
        * Displays a preview of items below the slideshow.
        * @prop {Boolean} [true] preview
        */
       preview: {
         type: Boolean,
         default: true
+      },
+      /**
+       * The property that will be used for the image path.
+       * @prop {String} [content] pathName
+       */
+      pathName: {
+        type: String,
+        default: 'content'
+      },
+      /**
+       * The item component
+       * @prop {String|Object|Vue} itemComponent
+       */
+      itemComponent: {
+        type: [String, Object, Vue]
+      },
+      /**
+       * The context menu source of every image
+       * @prop {Function|Array} context
+       */
+      context: {
+        type: [Function, Array]
+      },
+      /**
+       * The component used by the context menu items
+       * @prop {String|Object|Vue} contextComponent
+       */
+      contextComponent: {
+        type: [String, Object, Vue]
+      },
+      buttonMenu: {
+        type: [Function, Array]
       }
     },
     data(){
@@ -221,7 +289,13 @@ document.head.insertAdjacentElement('beforeend', css);
         /**
          * @data {Boolean} [false] isLoaded
          */
-        isLoaded: false
+        isLoaded: false,
+        /**
+         * The current widht of the items
+         * @data {Number} currentItemWidth
+         */
+        currentItemWidth: this.itemWidth,
+        currentSearch: ''
       }
     },
     computed: {
@@ -231,7 +305,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @return {Number}
        */
       cols(){
-        return parseInt(this.width / (this.itemWidth + this.columnGap)) || 1
+        return parseInt(this.width / (this.currentItemWidth + this.columnGap)) || 1
       },
       /**
        * True if the toolbar is shown.
@@ -239,6 +313,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @return {Boolean}
        */
       isToolbarShown(){
+        return !!this.toolbar
         return !!(this.toolbar && (this.uploadButton || this.downloadButton || this.removeButton || this.isObject(this.toolbar) || this.isVue(this.toolbar)));
       },
       /**
@@ -342,10 +417,10 @@ document.head.insertAdjacentElement('beforeend', css);
         name: 'gallery-col',
         template: `
 <div :style="colStyle">
-  <gallery-item v-for="(item, idx) in source"
-                :source="item"
-                :key="'gallery-item-'+index+'-'+idx"
-  ></gallery-item>
+  <component :is="gallery.itemComponent || 'gallery-item'"
+             v-for="(item, idx) in source"
+             :source="item"
+             :key="'gallery-item-'+index+'-'+idx"/>
 </div>`,
         props: {
           /**
@@ -386,7 +461,7 @@ document.head.insertAdjacentElement('beforeend', css);
            */
           colStyle(){
             return {
-              width: `${this.gallery.itemWidth}px`,
+              width: `${this.gallery.currentItemWidth}px`,
               margin: `0 ${this.gallery.columnGap / 2}px`,
               verticalAlign: 'top',
               display: 'inline-block'
@@ -402,22 +477,40 @@ document.head.insertAdjacentElement('beforeend', css);
             name: 'gallery-item',
             template: `
 <a v-if="!col.gallery.isLoading"
-   :class="{'bbn-primary': isSelected, 'bbn-p': !!col.gallery.zoomable}"
-   @click="action"
-   :style="aStyle"
->
-  <img :src="isObj ? (source.data.thumb || source.data.content) : source.data"
-       :style="imgStyle"
-       @load="loaded = true"
-       :class="{'bbn-gallery-item-selected': isSelected}"
-  >
-  <span v-if="showOverlay && loaded"
-        class="bbn-gallery-overlay bbn-widget"
-        v-text="source.data.overlay"
-  ></span>
-  <i v-if="col.gallery.zoomable && loaded && !col.gallery.isSelecting"
-    class="bbn-gallery-zoverlay nf nf-fa-search"
-  ></i>
+    :class="{'bbn-primary': isSelected, 'bbn-p': !!col.gallery.zoomable}"
+    @click="action"
+    :style="aStyle">
+  <component :is="!!col.gallery.context ? 'bbn-context' : 'span'"
+            tag="span"
+            :context="true"
+            :source="!!col.gallery.context
+              ? (isFunction(col.gallery.context)
+                ? col.gallery.context()
+                : col.gallery.context)
+              : []"
+            :item-component="col.gallery.contextComponent">
+    <img :src="getImgSrc(source.data)"
+        :style="imgStyle"
+        @load="loaded = true"
+        :class="{'bbn-gallery-item-selected': isSelected}">
+    <span v-if="showOverlay && loaded"
+          class="bbn-gallery-overlay bbn-widget"
+          v-text="source.data.overlay"/>
+    <i v-if="col.gallery.zoomable && loaded && !col.gallery.isSelecting"
+       class="bbn-gallery-zoverlay nf nf-fa-search"/>
+    <bbn-context v-if="!!col.gallery.buttonMenu && loaded && !col.gallery.isSelecting"
+                 tag="span"
+                 :source="!!col.gallery.buttonMenu
+                   ? (isFunction(col.gallery.buttonMenu)
+                     ? col.gallery.buttonMenu()
+                     : col.gallery.buttonMenu)
+                   : []"
+                 :attach="buttonMenu"
+                 @hook:mounted="buttonMenu = getRef('itemMenu') || undefined">
+      <i class="bbn-gallery-button-menu nf nf-mdi-menu"
+         ref="itemMenu"/>
+    </bbn-context>
+  </component>
 </a>
             `,
             props: {
@@ -437,7 +530,8 @@ document.head.insertAdjacentElement('beforeend', css);
                  * @data {Boolean} [false] loaded
                  * @memberof gallery-item
                  */
-                loaded: false
+                loaded: false,
+                buttonMenu: undefined
               }
             },
             computed: {
@@ -510,13 +604,26 @@ document.head.insertAdjacentElement('beforeend', css);
               }
             },
             methods: {
+              getImgSrc(o) {
+                if (bbn.fn.isString(o)) {
+                  return o;
+                }
+                let prop = this.col.gallery.pathName || 'thumb' || 'content';
+                return o[prop] || null;
+              },
+              /**
+               * Alias of bbn.fn.isFunction method
+               * @methods isFunction
+               * @memberof gallery-item
+               */
+              isFunction: bbn.fn.isFunction,
               /**
                * Manages the actions.
                * @methods action
                * @memberof gallery-item
                * @fires getPopup
                */
-              action(){
+              action(ev){
                 if ( this.col.gallery.isSelecting ){
                   if ( this.isSelected ){
                     this.col.gallery.currentSelected.splice(this.col.gallery.currentSelected.indexOf(this.source.index), 1);
@@ -526,7 +633,7 @@ document.head.insertAdjacentElement('beforeend', css);
                   }
                 }
                 else {
-                  if ( this.col.gallery.zoomable ){
+                  if (!ev.target.classList.contains('bbn-gallery-button-menu') && this.col.gallery.zoomable) {
                     this.getPopup().open({
                       title: bbn._('Gallery'),
                       width: '100%',
@@ -534,7 +641,7 @@ document.head.insertAdjacentElement('beforeend', css);
                       scrollable: false,
                       resizable: false,
                       maximizable: false,
-                      component: this.$options.components.galleryZoom,
+                      component: this.col.gallery.$options.components.galleryZoom,
                       source: {
                         data: bbn.fn.map(this.col.gallery.currentData, d => {
                           return d.data;
@@ -548,15 +655,17 @@ document.head.insertAdjacentElement('beforeend', css);
                   }
                 }
               }
-            },
-            components: {
-              /**
-               * @component gallery-zoom
-               * @memberof gallery-item
-               */
-              galleryZoom: {
-                name: 'gallery-zoom',
-                template: `
+            }
+          }
+        }
+      },
+      /**
+       * @component gallery-zoom
+       * @memberof gallery-item
+       */
+      galleryZoom: {
+        name: 'gallery-zoom',
+        template: `
 <div class="bbn-overlay bbn-gallery-zoom">
   <bbn-slideshow :source="source.data"
                 :show-info="source.info"
@@ -567,19 +676,14 @@ document.head.insertAdjacentElement('beforeend', css);
                 :preview="source.preview"
   ></bbn-slideshow>
 </div>
-                        `,
-                props: {
-                  /**
-                   * The source of the component 'gallery-zoom'.
-                   * @prop {String|Object} source
-                   * @memberof gallery-zoom
-                   */
-                  source: {
-                    type: [String, Object]
-                  }
-                }
-              },
-            }
+                `,
+        props: {
+          /**
+           * The source of the component 'gallery-zoom'.
+           * @prop {String|Object} source
+           */
+          source: {
+            type: [String, Object]
           }
         }
       }

@@ -36,6 +36,7 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                  class="bbn-w-100"
                  ref="scroll"
                  :offset-y="$refs.thead ? [$refs.thead.getBoundingClientRect().height, 0] : [0,0]"
+                 @resize="resizeWidth"
       >
         <table :style="{width: totalWidth}"
                ref="table"
@@ -3241,7 +3242,10 @@ document.head.insertAdjacentElement('beforeend', css);
 
       this.$on('addTmp', () => {
         let scroll = this.getRef('scroll');
-        if (scroll) {
+        if (bbn.fn.isVue(scroll)
+          && bbn.fn.isFunction(scroll.scrollStartY)
+          && bbn.fn.isFunction(scroll.scrollStartX)
+        ) {
           scroll.scrollStartY();
           scroll.scrollStartX();
         }

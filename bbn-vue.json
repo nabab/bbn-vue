@@ -3606,9 +3606,39 @@
                         "url": "bbn-vue\/component\/gallery\/doc\/props#removeButton"
                     },
                     {
+                        "text": "buttonsNoText",
+                        "desc": "Sets the toolbar buttons as notext",
+                        "url": "bbn-vue\/component\/gallery\/doc\/props#buttonsNoText"
+                    },
+                    {
                         "text": "preview",
                         "desc": "Displays a preview of items below the slideshow.",
                         "url": "bbn-vue\/component\/gallery\/doc\/props#preview"
+                    },
+                    {
+                        "text": "pathName",
+                        "desc": "The property that will be used for the image path.",
+                        "url": "bbn-vue\/component\/gallery\/doc\/props#pathName"
+                    },
+                    {
+                        "text": "itemComponent",
+                        "desc": "The item component",
+                        "url": "bbn-vue\/component\/gallery\/doc\/props#itemComponent"
+                    },
+                    {
+                        "text": "context",
+                        "desc": "The context menu source of every image",
+                        "url": "bbn-vue\/component\/gallery\/doc\/props#context"
+                    },
+                    {
+                        "text": "contextComponent",
+                        "desc": "The component used by the context menu items",
+                        "url": "bbn-vue\/component\/gallery\/doc\/props#contextComponent"
+                    },
+                    {
+                        "text": "source",
+                        "desc": "The source of the component 'gallery-zoom'.",
+                        "url": "bbn-vue\/component\/gallery\/doc\/props#source"
                     }
                 ],
                 "methods": [
@@ -5226,6 +5256,29 @@
                         "text": "eventsComponent",
                         "desc": "",
                         "url": "bbn-vue\/component\/radio\/doc\/mixins#eventsComponent"
+                    }
+                ]
+            },
+            {
+                "text": "range",
+                "url": "bbn-vue\/component\/range\/overview",
+                "props": [],
+                "methods": [],
+                "mixins": [
+                    {
+                        "text": "basicComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/range\/doc\/mixins#basicComponent"
+                    },
+                    {
+                        "text": "eventsComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/range\/doc\/mixins#eventsComponent"
+                    },
+                    {
+                        "text": "inputComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/range\/doc\/mixins#inputComponent"
                     }
                 ]
             },

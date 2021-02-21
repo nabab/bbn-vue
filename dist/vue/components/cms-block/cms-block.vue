@@ -15,8 +15,24 @@
   <component v-if="ready" 
             :is="component(type)" 
             :source="source"
-            :class="{'edit-block' : edit}"
+            :class="{'edit-block' : (over || edit)}"
+           
   ></component>
+  <!--i class="bbn-p nf nf-fa-edit inline bbn-xlarge bbn-blue edit-block-icon"
+     @click="editMode" 
+     v-if="isAdmin && editing && !edit" 
+  ></i-->
+  <div class=" edit-block-icon">
+    <i class="bbn-p nf nf-fa-check inline bbn-xlarge bbn-blue"
+      @click="editBlock" 
+      v-if="changed" 
+    ></i>
+    <i class="bbn-p nf nf-fa-close inline bbn-xlarge bbn-red"
+      @click="cancelEdit" 
+      v-if="changed" 
+    ></i>
+  </div>  
+  
 </div>
 </template>
 <script>
@@ -43,7 +59,8 @@
   },
   templates = {
     html: {
-      view: `<div :class="['component-container', 'bbn-block-html', alignClass]"
+      view: `<div  @click="$parent.editMode" @mouseover="$parent.mouseover" @mouseleave="$parent.mouseleave"  
+                  :class="['component-container', 'bbn-block-html', alignClass]"
                   v-html="source.content" 
                   :style="style">
               
@@ -54,16 +71,16 @@
             </div>`
     },
     title: {
-      view: `<div :class="['component-container', 'bbn-block-title', {'has-hr': source.hr}, alignClass]":style="style">
+      view: `<div @click="$parent.editMode" @mouseover="$parent.mouseover" @mouseleave="$parent.mouseleave"  :class="['component-container', 'bbn-block-title', {'has-hr': source.hr}, alignClass]":style="style">
               <hr v-if="source.hr">
               <component :is="cpHTML(source.tag, 'title')" :source="source"></component>
               <hr v-if="source.hr">
              </div>`,
-      edit: `<div :class="['component-container','bbn-block-title', {'has-hr': source.hr}, alignClass]" :style="style">
-              <div class="edit-title">
-                <hr v-if="source.hr"><component :is="cpHTML(source.tag,'title')" :source="source"></component><hr v-if="source.hr">
+      edit: `<div :class="['component-container','bbn-cms-block-edit' ,'bbn-block-title', 'bbn-flex-height', {'has-hr': source.hr}, alignClass]" :style="style">
+              <div class="edit-title bbn-w-100">
+                <hr v-show="source.hr"><component :is="cpHTML(source.tag,'title')" :source="source"></component><hr v-if="source.hr">
               </div>
-              <div class="bbn-grid-fields bbn-vspadded bbn-reset bbn-w-100">
+              <div class="bbn-grid-fields bbn-vspadded bbn-w-100">
                 <label v-text="_('Title tag')"></label>
                 <div>
                   <bbn-dropdown :source="tags" v-model="source.tag"></bbn-dropdown>
@@ -117,7 +134,7 @@
       edit:     `
       <div class="component-container bbn-block-image" :class="alignClass">
         <div class="bbn-padded">
-          <div class="bbn-grid-fields bbn-vspadded bbn-reset">
+          <div class="bbn-grid-fields bbn-vspadded">
             <label v-text="_('Upload your image')"></label>
             <bbn-upload :save-url="'upload/save/' + ref"
                         remove-url="test/remove"
@@ -161,7 +178,7 @@
         </div>
       </div>
       `,
-      edit: ``
+      edit: `<div>edit</div>`
     },
     gallery: {
       view: `
@@ -175,7 +192,7 @@
           <!-- GIVE HREF TO VIEW FULL IMAGE -->
           <bbn-cms-block-gallery-item v-for="(image, idx) in source.content" :source="image" :key="idx" :index="idx"></bbn-cms-block-gallery-item>
         </div>
-        <div class="bbn-grid-fields bbn-padded bbn-reset">
+        <div class="bbn-grid-fields bbn-padded">
           <label>Columns number</label>
           <div>
             <bbn-dropdown v-model="source.columns"
@@ -218,7 +235,7 @@
         </div>`, 
       edit: `
       <div class="component-container" id="video-container">
-        <div class="bbn-grid-fields bbn-padded bbn-reset">
+        <div class="bbn-grid-fields bbn-padded">
           <label v-text="_('Video source')"></label>
           <bbn-input v-model="source.content"></bbn-input>
           <label>Muted</label>
@@ -281,7 +298,7 @@
                 <div class="bbn-grid-fields bbn-vspadded">
                   <label>Line width</label>
                   <div>
-                    <bbn-cursor v-model="source.style.width"
+                    <bbn-cursor v-model="source.style['width']"
                                 :min="0"
                                 :max="100" 
                                 unit="%"
@@ -329,6 +346,7 @@
           </div>`  
     },
   };
+  
   let borderStyle =  [{"text":"hidden","value":"hidden"},{"text":"dotted","value":"dotted"},{"text":"dashed","value":"dashed"},{"text":"solid","value":"solid"},{"text":"double","value":"double"},{"text":"groove","value":"groove"},{"text":"ridge","value":"ridge"}];
   Vue.component('bbn-cms-block', {
     /**
@@ -354,10 +372,6 @@
       index: {
         type: Number,
       },
-      editable: {
-        type: Boolean,
-        default: false
-      },
       //the path for the index showing the images ('ex: image/')
       path: {
         type: String,
@@ -367,18 +381,29 @@
       linkURL: {
         type: String,
         default: ''
-      }
+      },
+      /*edit: {
+        type: Boolean,
+        default: false
+      },*/
     },
     data(){
       return {
+        over:false,
+        edit:false,
+        isAdmin: true,
+        editing: true,
         width: '100%',
         height: '100%',
         //ready is important for the component template to be defined 
         ready: true,
-        edit: false,
+        initialSource: {}
       }
     },
     computed: {
+      changed(){
+        return !bbn.fn.isSame(this.initialSource, this.source)
+      },
       type(){
         return this.source.type
       }, 
@@ -387,6 +412,24 @@
       }
     },
     methods: {
+      mouseleave(){
+        this.over = false
+      },
+      mouseover(){
+        this.over = true
+        /*console.log('over: ' + this.over)
+        if ( !e.target.closest(".component-container") ){
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          this.over = false;
+        }
+        else{
+          this.over = true;
+        }*/
+      },
+      mouseenter(){
+        alert('enter')
+      },
       selectImg(st){
         bbn.fn.link(st);
       },
@@ -397,16 +440,20 @@
        * adds the events listener when edit = true
        * @param {boolean} edit 
        */
-      _setEvents(edit){
-        if ( edit ){
+      _setEvents(){
+        document.addEventListener('mousedown', this.checkMouseDown);
+        document.addEventListener('touchstart', this.checkMouseDown);
+        document.addEventListener('keydown', this.checkKeyCode);
+        /*if ( edit ){
           document.addEventListener('mousedown', this.checkMouseDown);
           document.addEventListener('touchstart', this.checkMouseDown);
           document.addEventListener('keydown', this.checkKeyCode);
         }
         else{
+          document.addEventListener('mouseover', this.mouseover);
           document.removeEventListener('mousedown', this.checkMouseDown);
           document.removeEventListener('touchstart', this.checkMouseDown);
-        }
+        }*/
       },
       checkKeyCode(e){
         if ( e.keyCode === 27 ){
@@ -418,18 +465,49 @@
        * @param {event} e 
        */
       checkMouseDown(e){
-        if ( !e.target.closest(".edit-block") ){
-          e.preventDefault();
-          e.stopImmediatePropagation();
+        if ( !e.target.closest(".bbn-cms-block-edit") ){
+          /*e.preventDefault();
+          e.stopImmediatePropagation();*/
+          this.edit = false;
+          alert(this.edit)
+        }
+        else{
+          alert(this.edit)
+          this.editMode();
+        }
+      },
+      editBlock(){
+        if ( this.changed ){
+          appui.success(bbn._('Block changed'))
+          //add a confirm
+         this.$nextTick(()=>{
+           this.edit = false;
+         })
+        }
+        else{
           this.edit = false;
         }
+        
+      },
+      cancelEdit(){
+        bbn.fn.iterate(this.initialSource, (v, i)=>{
+          this.source[i] = v;
+          this.edit = false;
+        })
+      },
+      editMode(){
+        let blocks = this.closest('bbn-container').getComponent().findAll('bbn-cms-block');
+        bbn.fn.each(blocks, (v, i)=>{
+          v.edit = false;
+          v.over = false;
+        })
+        this.edit = true;
       },
       /**
        * returns the object of the component basing on the given type
        * @param {string} type 
        */
       component(type){
-        bbn.fn.log(type);
         return {
           props: {
             source: {},
@@ -452,6 +530,9 @@
             }
           },
           computed: {
+            edit(){
+              return this.$parent.edit
+            },
             path(){
               return this.$parent.path
             },
@@ -467,7 +548,6 @@
                     res.push(temparray);
                     // do whatever
                 }
-                console.log(res)
                 return res;
                 
               }
@@ -561,9 +641,9 @@
                   st += 'border-color:' + this.source.style['border-color'] + ';';
                 }
                 if(this.source.type === 'line'){
-                  if (!this.source.style || !this.source.style['border-width'] ){
+                  if (bbn.fn.isEmpty(this.source.style) || !this.source.style['border-width'] ){
                     this.source.style['border-width'] = '100%';
-                    st += 'border-top-width:' + this.source.style['border-width'] + ( bbn.fn.isNumber(this.source.content['border-width']) ? 'px;' : ';');
+                    st += 'border-top-width:' + this.source.style['border-width'] + ( bbn.fn.isNumber(this.source.style['border-width']) ? 'px;' : ';');
                     st += 'border-bottom:0'
                   }
                 }
@@ -600,7 +680,6 @@
                 st = st.replace(reg, '');
               }*/
               //var st = bbn.fn.nl2br(st);
-              console.log(st)
               return decodeURIComponent(this.escape(st));
             },
             escape(st){
@@ -642,8 +721,6 @@
               this.source.style.color = a;
               this.$parent.edit = false
               //this.$forceUpdate()
-              bbn.fn.happy('hhhh')
-              console.log(arguments)
             },
             //returns the component for the blocks of type title
             cpHTML(tag, type){
@@ -805,8 +882,11 @@
             }
           },
           beforeMount(){
+            if ( bbn.fn.isEmpty(this.source.style) ){
+              this.source.style = {}
+            }
             if ( this.$parent.edit ){
-              if ( (this.source.type === 'image') && this.source.content.length ){
+              if ( (this.source.type === 'image') && this.source.content && this.source.content.length ){
                 let extension = this.source.content.substr(this.source.content.lastIndexOf('.'), this.source.content.length)
                 //take the correct size 
                 this.image.push({
@@ -815,7 +895,7 @@
                   "extension": extension
                 });  
               }
-              else if ( (this.source.type === 'gallery') && this.source.content.length ){
+              else if ( (this.source.type === 'gallery') && this.source.content && this.source.content.length ){
                 /*this.image = bbn.fn.map(this.source.content, (a) => {
                   let extension = a.src.substr(a.src.lastIndexOf('.'), a.src.length);
                   a.name = a.src; 
@@ -826,24 +906,30 @@
               }
             }
           },
-          mounted(){
+          mounted(){ 
             if ( (this.source.type === 'gallery') || (this.source.type === 'carousel') ){
               this.makeSquareImg();
             }
           },
+          
         }
       },
     },
     mounted(){
+      this.initialSource = bbn.fn.extend({}, this.source);
       this.ready = true;
-      if ( !this.source.style ){
+      if ( bbn.fn.isEmpty(this.source.style) ){
+        bbn.fn.warning(this.source.type)
         this.source.style = {};
       }
-      if ( !this.source.style.color ){
+      if ( bbn.fn.isEmpty(this.source.style) || !this.source.style.color ){
         this.source.style.color = '';
       }
       if ( !this.source.align ){
         this.source.align = 'left'
+      }
+      if ( bbn.fn.isEmpty(this.source.style) || !this.source.style.width ){
+        this.source.width = '100%'
       }
       //if alignment is already defined as style property
       if ( this.source.style && this.source.style.align ){
@@ -852,12 +938,11 @@
       
       bbn.fn.log("I AM THE BLOCK! ", this.source);
     }, 
+    
     watch: {
       edit(val){
-       
         //if adding a new block
         bbn.fn.error('watch')
-        console.log(val, this.newBlock)
         if ( ( val === false ) && ( this.newBlock === true ) ){
           this.parent.source.lines.push(this.source)
           this.parent.lines.push({
@@ -869,14 +954,27 @@
           appui.success(bbn._('New block ' + this.source.type + ' added!'))
           this.newBlock = false;
         }
-        this._setEvents(this.edit)
+        //this._setEvents()
       }
-    }
+    }, 
+ 
   });
 })(bbn);
 
 </script>
 <style scoped>
+.bbn-cms-block.bbn-basic-component .edit-block-icon {
+  position: absolute;
+  right: 10px;
+  top: -20px;
+}
+.bbn-cms-block.bbn-basic-component .edit-block-icon i {
+  display: inline-block;
+  margin-right: 6px;
+}
+.bbn-cms-block.bbn-basic-component .edit-block {
+  border: 1px dashed #6e9ecf;
+}
 .bbn-cms-block.bbn-basic-component h1,
 .bbn-cms-block.bbn-basic-component h2,
 .bbn-cms-block.bbn-basic-component h3,
