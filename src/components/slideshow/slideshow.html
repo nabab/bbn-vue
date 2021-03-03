@@ -77,7 +77,7 @@
                        :ref="'slide' + i.toString()"
                        :class="[(it.animation ? 'bbn-slideshow-effect-' + it.animation : ''), 'bbn-overlay', 'bbn-middle']"
                   >
-                    <div>
+                    <div class="bbn-overlay bbn-middle">
                       <img :src="it.content"
                           :ref="'slide-img'+ i.toString()"
                           @load="afterLoad(i)"
@@ -87,7 +87,9 @@
                           :style="{
                             marginLeft: it.imageLeftMargin || 0,
                             marginTop: it.imageTopMargin || 0,
-                            visibility: it.showImg ? 'visible' : 'hidden' ,
+                            visibility: it.showImg ? 'visible' : 'hidden',
+                            maxWidth: it.imageMaxWidth || '',
+                            maxHeight: it.imageMaxHeight || ''
                           }"
                       >
                     </div>
@@ -102,10 +104,10 @@
                   ></bbn-checkbox>
                 </div>
               </div>
-              <div class="bbn-overlay bbn-middle">
+              <div v-if="ctrl"
+                   class="bbn-overlay bbn-middle">
                 <!-- Commands-->
-                <div v-if="ctrl"
-                    class="bbn-primary-text-alt bbn-slideshow-commands bbn-middle"
+                <div class="bbn-primary-text-alt bbn-slideshow-commands bbn-middle"
                     @mouseover="ctrlPreview(true)"
                     @mouseleave="ctrlPreview(false)"
                 >

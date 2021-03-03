@@ -144,8 +144,9 @@
       },
       init(){
         if (this.pattern) {
+          let types = ['text', 'date', 'search', 'url', 'tel', 'email', 'password'];
           this.currentPattern = this.pattern;
-          this.currentType = 'text';
+          this.currentType = types.includes(this.type) ? this.type : 'text';
         }
         else if (this.type === 'hostname') {
           this.currentPattern = bbn.var.regexp.hostname.source;

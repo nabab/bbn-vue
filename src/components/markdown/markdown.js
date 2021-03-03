@@ -188,7 +188,9 @@
       });*/
       this.widget = new SimpleMDE(bbn.fn.extend({
         element: this.$refs.element
-      }, this.$data));
+      }, {
+        
+      }));
       this.widget.codemirror.on("change", () => {
         this.emitInput(this.widget.value());
       });

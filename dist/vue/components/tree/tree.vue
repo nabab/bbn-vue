@@ -1276,10 +1276,10 @@
        * @method scrollToSelected
        */
       scrollToSelected(){
-        if ( this.isRoot && this.selectedNode ){
-          let scroll = this.getRef('scroll');
+        if ( this.tree && this.tree.selectedNode ){
+          let scroll = this.tree.getRef('scroll');
           if ( scroll ){
-            scroll.scrollTo(0, this.selectedNode.$el);
+            scroll.scrollTo(0, this.tree.selectedNode.$el);
           }
         }
       },
@@ -1288,10 +1288,10 @@
        * @method scrollToActive
        */
       scrollToActive(){
-        if ( this.isRoot && this.activeNode ){
-          let scroll = this.getRef('scroll');
+        if ( this.tree && this.tree.activeNode ){
+          let scroll = this.tree.getRef('scroll');
           if ( scroll ){
-            scroll.scrollTo(0, this.activeNode.$el);
+            scroll.scrollTo(0, this.tree.activeNode.$el);
           }
         }
       },

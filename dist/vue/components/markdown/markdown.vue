@@ -201,7 +201,9 @@
       });*/
       this.widget = new SimpleMDE(bbn.fn.extend({
         element: this.$refs.element
-      }, this.$data));
+      }, {
+        
+      }));
       this.widget.codemirror.on("change", () => {
         this.emitInput(this.widget.value());
       });
@@ -219,14 +221,17 @@
 })(bbn, SimpleMDE);
 </script>
 <style scoped>
-.bbn-markdown .editor-toolbar a,
-.bbn-markdown .editor-toolbar a.active,
-.bbn-markdown .editor-toolbar a:hover {
-  color: inherit !important;
-}
 .bbn-markdown .editor-preview-side {
   top: 0;
   position: absolute;
+}
+.bbn-markdown .CodeMirror-vscrollbar,
+.bbn-markdown .CodeMirror-hscrollbar {
+  display: none !important;
+}
+.bbn-markdown .CodeMirror-scroll {
+  margin: 0px;
+  padding: 0px;
 }
 
 </style>

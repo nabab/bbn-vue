@@ -1,5 +1,9 @@
 <template>
-<textarea :class="['bbn-textbox', componentClass, {'bbn-state-disabled': !!disabled}]"
+<textarea :class="[
+            'bbn-textbox',
+            componentClass,
+            {'bbn-state-disabled': !!disabled}
+          ]"
           :value="value"
           :name="name"
           ref="element"

@@ -200,7 +200,13 @@
           document.body.insertAdjacentElement('beforeend', script)
         }
         let data = r.data || {};
-        let res = eval(r.script);
+        let res;
+        try {
+          res = eval(r.script);
+        }
+        catch (e) {
+          throw new Error("Impossible to find evaluate the content of tha component " + name);
+        }
         if ( typeof res === 'object' ){
           if ( !res.mixins ){
             res.mixins = [];
@@ -278,6 +284,7 @@
           d = d.data;
           if ( d && d.success && d.components ){
             bbn.fn.iterate(items, a => {
+              bbn.fn.log("ITEM", a);
               let cp = bbn.fn.getRow(d.components, {name: a.name});
               if ( cp && this._realDefineComponent(a.name, cp, a.mixins) && Vue.options.components[a.name]) {
                 a.resolve(Vue.options.components[a.name])
@@ -359,9 +366,21 @@
       }
       // When the script is in the storage
       if ( typeof r.script === 'string' ){
-        r.script = eval(r.script);
+        try {
+          r.script = eval(r.script);
+        }
+        catch (e) {
+          throw new Error("Impossible to define the component " + name)
+        }
       }
-      let result = r.script();
+      try {
+        // That should really define the component
+        r.script();
+      }
+      catch (e) {
+        throw new Error("Impossible to execute the component " + name + " - " + e.message)
+      }
+
       if ( Vue.options.components['bbn-' + name] !== undefined ){
         return true;
       }
@@ -392,7 +411,14 @@
             (res) => {
               if (bbn.fn.isObject(res) && res.data) {
                 // This executes the script returned by the server, which will return a new promise
-                let prom = eval(res.data);
+                let prom;
+                try {
+                  prom = eval(res.data);
+                }
+                catch (e) {
+                  bbn.fn.log("ERROR in the executed script from the server");
+                  throw new Error("Problem in the executed script from the server from " + url)
+                }
                 //bbn.fn.log("THEN", res);
                 prom.then(
                   // resolve from executed script
@@ -481,7 +507,14 @@
       }
       return bbn.fn.ajax(bbn.vue.libURL + 'dist/js/components/' + name + '/' + name + '.js', 'text').then(d => {
         if (d && d.data) {
-          let fn = eval(d.data);
+          let fn;
+          try {
+            fn = eval(d.data);
+          }
+          catch (e) {
+            throw new Error("Impossible to define the component " + name + "\n" + e.message)
+          }
+
           if (bbn.fn.isFunction(fn)) {
             fn(resolve);
           }

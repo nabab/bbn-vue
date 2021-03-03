@@ -554,7 +554,7 @@
             this.realContainer.addEventListener("mousemove", this.overContent);
             this.realContainer.addEventListener('scroll', () => {
               this.adjustFromContainer();
-            }, {passive: true});
+            });
           }
           bbn.fn.each(this.scrollableElements(), (a) => {
             a.addEventListener('scroll', () => {
@@ -658,7 +658,7 @@
           else if (bbn.fn.isNumber(val)) {
             num = val;
           }
-          if ( num !== null ){
+          if (bbn.fn.isNumber(num)){
             if ( num < 0 ){
               num = 0;
             }

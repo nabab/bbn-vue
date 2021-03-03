@@ -1,3 +1,9 @@
 {
-    "Impossible to find a popup instance. Add a bbn-popup in your root element": ""
+    "Impossible to find a popup instance. Add a bbn-popup in your root element": "Impossible de trouver une instance de popup. Ajoutez un bbn-popup dans votre élément racine",
+    "Impossible to delete the row": "Impossible de supprimer la ligne",
+    "Deleted successfully": "Supprimé avec succès",
+    "No data": "Pas de données",
+    "Are you sure you want to delete this group of conditions?": "Voulez-vous vraiment supprimer ce groupe de conditions?",
+    "Row edition": "Édition en ligne",
+    "Impossible to open a window if either an editor or a URL is not set": "Impossible d'ouvrir une fenêtre si un éditeur ou une URL n'est pas défini"
 }

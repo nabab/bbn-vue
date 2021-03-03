@@ -1,8 +1,11 @@
 {
+    "Select": "S\u00e9lectionner",
     "Upload": "Envoyer",
     "Download": "T\u00e9l\u00e9charger",
-    "Remove": "Supprimer",
+    "Delete": "Supprimer",
     "Cancel": "Annuler",
+    "Filter": "Filtre",
+    "Search": "Recherche",
     "Go to the first page": "Aller \u00e0 la premi\u00e8re page",
     "Go to the previous page": "Aller \u00e0 la page pr\u00e9c\u00e9dente",
     "Go to the next page": "Aller \u00e0 la page suivante",

@@ -101,6 +101,7 @@ document.head.insertAdjacentElement('beforeend', css);
      * @mixin bbn.vue.inputComponent
      * @mixin bbn.vue.keynavComponent
      * @mixin bbn.vue.positionComponent
+     * @mixin bbn.vue.keepCoolComponent
      * @mixin bbn.vue.resizerComponent
      */
     mixins: [
@@ -108,6 +109,7 @@ document.head.insertAdjacentElement('beforeend', css);
       bbn.vue.listComponent,
       bbn.vue.keynavComponent,
       bbn.vue.positionComponent,
+      bbn.vue.keepCoolComponent,
       bbn.vue.resizerComponent
     ],
     props: {
@@ -328,7 +330,7 @@ document.head.insertAdjacentElement('beforeend', css);
         }
       },
       suggest: {
-        type: Boolean,
+        type: [Boolean, Number],
         default: false
       },
       /**
@@ -416,7 +418,7 @@ document.head.insertAdjacentElement('beforeend', css);
          * @data {Number} [-1] overItem
          * @memberof listComponent
          */
-        overIdx: this.suggest ? 0 : null,
+        overIdx: null,
         mouseLeaveTimeout: false,
         isOpened: true,
         scroll: null,
@@ -510,9 +512,20 @@ document.head.insertAdjacentElement('beforeend', css);
           this.isOver = true;
         }
       },
+      resetOverIdx(){
+        if (this.suggest === false) {
+          this.overIdx = null;
+        }
+        else if (this.suggest === true) {
+          this.overIdx = 0;
+        }
+        else if (this.filteredData[this.suggest]) {
+          this.overIdx = this.suggest;
+        }
+      },
       mouseleave(){
         this.isOver = false;
-        this.overIdx = this.suggest ? 0 : null;
+        this.resetOverIdx();
       },
       isSelected(idx){
         let r = false;
@@ -647,7 +660,7 @@ document.head.insertAdjacentElement('beforeend', css);
         }
         this.ready = true;
         setTimeout(() => {
-          this.overIdx = this.suggest ? 0 : null;
+          this.resetOverIdx();
         }, 50);
       });
     },
@@ -657,9 +670,11 @@ document.head.insertAdjacentElement('beforeend', css);
        * @param {Boolean} newVal 
        */
       overIdx(newVal, oldVal) {
-        if (this.hasScroll && newVal && !this.isOver) {
-          this.$parent.scrollTo(this.getRef('li' + newVal));
-        }
+        this.keepCool(() => {
+          if (this.hasScroll && newVal && !this.isOver) {
+            this.closest('bbn-scroll').scrollTo(null, this.getRef('li' + newVal));
+          }
+        }, 'overIdx', 50)
       },
       /**
        * @watch source

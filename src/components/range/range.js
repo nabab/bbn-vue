@@ -20,10 +20,18 @@
       bbn.vue.inputComponent
     ],
     props: {
+      /**
+       * The min value
+       * @prop {Number} [1] min
+       */
       min: {
         type: Number,
         default: 1
       },
+      /**
+       * The max value
+       * @prop {Number} [100] max
+       */
       max: {
         type: Number,
         default: 100
@@ -35,7 +43,12 @@
          * The property 'size' normalized.
          * @data {String} [''] currentSize
          */
-        currentSize: this.size || ''
+        currentSize: this.size || '',
+        /**
+         * The original value
+         * @data {Number} originalValue
+         */
+        originalValue: this.value
       }
     },
     computed: {
@@ -46,6 +59,18 @@
        */
       currentInputSize(){
         return this.autosize ? (this.value ? this.value.toString().length : 1) : 0
+      }
+    },
+    methods: {
+      /**
+       * Resets the value to the original one
+       * @method reset
+       * @emits input
+       */
+      reset(){
+        if (!this.disabled && !this.readonly) {
+          this.emitInput(this.originalValue)
+        }
       }
     },
     /**

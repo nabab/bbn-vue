@@ -2810,14 +2810,30 @@
               }
             });
             let firstGroup = groupCols[0].visible ? 0 : 1;
-            if (this.hasExpander || this.selection) {
+            if (this.selection) {
               let o = {
-                isExpander: !!this.hasExpander,
-                isSelection: !!this.selection,
+                isExpander: false,
+                isSelection: true,
                 title: ' ',
                 filterable: false,
-                width: this.selection ? 40 : 30,
-                realWidth: this.selection ? 40 : 30
+                width: 40,
+                realWidth: 40
+              };
+              if ( firstGroup === 0 ){
+                o.fixed = true;
+                o.isLeft = true;
+              }
+              groupCols[firstGroup].cols.unshift(o);
+              groupCols[firstGroup].visible++;
+            }
+            if (this.hasExpander) {
+              let o = {
+                isExpander: true,
+                isSelection: false,
+                title: ' ',
+                filterable: false,
+                width: 30,
+                realWidth: 30
               };
               if ( firstGroup === 0 ){
                 o.fixed = true;

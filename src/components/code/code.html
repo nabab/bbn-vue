@@ -1,8 +1,16 @@
-<div :class="[{'bbn-reset': true, 'bbn-overlay': isFullScreen}, componentClass]"
+<div :class="[
+     {
+        'bbn-reset': true,
+        'bbn-overlay': isFullScreen
+     },
+     componentClass
+     ]"
      @keydown.enter.stop=""
      @keydown.escape.stop="toggleFullScreen(false)"
 >
-  <div :class="fill ? 'bbn-code-filled' : ''" ref="code" @keydown.escape.stop="toggleFullScreen(false)"></div>
+  <div :class="fill ? 'bbn-code-filled' : ''"
+       ref="code"
+       @keydown.escape.stop="toggleFullScreen(false)"/>
   <input ref="element"
         type="hidden"
         :value="value"
@@ -14,11 +22,35 @@
       v-if="themeButton"
       ref="theme_button"
   >
-    <i class="nf nf-fa-bars" @click="nextTheme()"> </i>
+    <i class="nf nf-fa-bars" @click="nextTheme"/>
   </div>
   <bbn-scrollbar v-if="fill && ready"
                 orientation="vertical"
                 ref="scrollbar"
-                :container="$el.querySelector('.CodeMirror-scroll')">
-  </bbn-scrollbar>
+                :container="$el.querySelector('.CodeMirror-scroll')"/>
+  <bbn-floater ref="fn"
+               :source="currentFn"
+               v-if="currentFn"
+               :component="$options.components.fnHelper"
+               :left="floaterLeft"
+               :top="floaterTop"
+               :right="floaterRight"
+               :bottom="floaterBottom"
+               @close="currentFn = false"
+               :focused="false"/>
+  <bbn-floater ref="hints"
+               :source="currentHints"
+               v-else-if="currentHints.length"
+               source-text="name"
+               source-value="name"
+               :left="floaterLeft"
+               :top="floaterTop"
+               :right="floaterRight"
+               :bottom="floaterBottom"
+               :suggest="floaterBottom ? currentHints.length - 1 : 0"
+               children="none"
+               :item-component="$options.components.suggestion"
+               @select="selectHint"
+               :focused="false"/>
+
 </div>

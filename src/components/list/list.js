@@ -19,6 +19,7 @@
      * @mixin bbn.vue.inputComponent
      * @mixin bbn.vue.keynavComponent
      * @mixin bbn.vue.positionComponent
+     * @mixin bbn.vue.keepCoolComponent
      * @mixin bbn.vue.resizerComponent
      */
     mixins: [
@@ -26,6 +27,7 @@
       bbn.vue.listComponent,
       bbn.vue.keynavComponent,
       bbn.vue.positionComponent,
+      bbn.vue.keepCoolComponent,
       bbn.vue.resizerComponent
     ],
     props: {
@@ -246,7 +248,7 @@
         }
       },
       suggest: {
-        type: Boolean,
+        type: [Boolean, Number],
         default: false
       },
       /**
@@ -334,7 +336,7 @@
          * @data {Number} [-1] overItem
          * @memberof listComponent
          */
-        overIdx: this.suggest ? 0 : null,
+        overIdx: null,
         mouseLeaveTimeout: false,
         isOpened: true,
         scroll: null,
@@ -428,9 +430,20 @@
           this.isOver = true;
         }
       },
+      resetOverIdx(){
+        if (this.suggest === false) {
+          this.overIdx = null;
+        }
+        else if (this.suggest === true) {
+          this.overIdx = 0;
+        }
+        else if (this.filteredData[this.suggest]) {
+          this.overIdx = this.suggest;
+        }
+      },
       mouseleave(){
         this.isOver = false;
-        this.overIdx = this.suggest ? 0 : null;
+        this.resetOverIdx();
       },
       isSelected(idx){
         let r = false;
@@ -565,7 +578,7 @@
         }
         this.ready = true;
         setTimeout(() => {
-          this.overIdx = this.suggest ? 0 : null;
+          this.resetOverIdx();
         }, 50);
       });
     },
@@ -575,9 +588,11 @@
        * @param {Boolean} newVal 
        */
       overIdx(newVal, oldVal) {
-        if (this.hasScroll && newVal && !this.isOver) {
-          this.$parent.scrollTo(this.getRef('li' + newVal));
-        }
+        this.keepCool(() => {
+          if (this.hasScroll && newVal && !this.isOver) {
+            this.closest('bbn-scroll').scrollTo(null, this.getRef('li' + newVal));
+          }
+        }, 'overIdx', 50)
       },
       /**
        * @watch source

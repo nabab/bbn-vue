@@ -1398,11 +1398,6 @@
                         "text": "unfoldAll",
                         "desc": "Undfolds all nodes.\r\n       *",
                         "url": "bbn-vue\/component\/code\/doc\/methods#unfoldAll"
-                    },
-                    {
-                        "text": "initTern",
-                        "desc": "Initializes the component\r\n       *",
-                        "url": "bbn-vue\/component\/code\/doc\/methods#initTern"
                     }
                 ],
                 "mixins": [
@@ -3586,24 +3581,34 @@
                         "url": "bbn-vue\/component\/gallery\/doc\/props#itemWidth"
                     },
                     {
+                        "text": "minItemWidth",
+                        "desc": "The min width of the items.",
+                        "url": "bbn-vue\/component\/gallery\/doc\/props#minItemWidth"
+                    },
+                    {
+                        "text": "maxItemWidth",
+                        "desc": "The width of the items.",
+                        "url": "bbn-vue\/component\/gallery\/doc\/props#maxItemWidth"
+                    },
+                    {
                         "text": "align",
                         "desc": "The horizontal alignment of the column.",
                         "url": "bbn-vue\/component\/gallery\/doc\/props#align"
                     },
                     {
-                        "text": "uploadButton",
-                        "desc": "The function called when the toolbar's upload button is clicked.",
-                        "url": "bbn-vue\/component\/gallery\/doc\/props#uploadButton"
+                        "text": "uploadable",
+                        "desc": "Enables the upload possibility",
+                        "url": "bbn-vue\/component\/gallery\/doc\/props#uploadable"
                     },
                     {
-                        "text": "downloadButton",
-                        "desc": "The function called when the toolbar's download button is clicked.",
-                        "url": "bbn-vue\/component\/gallery\/doc\/props#downloadButton"
+                        "text": "downloadable",
+                        "desc": "Enables the download possibility",
+                        "url": "bbn-vue\/component\/gallery\/doc\/props#downloadable"
                     },
                     {
-                        "text": "removeButton",
-                        "desc": "The function called when the toolbar's remove button is clicked.",
-                        "url": "bbn-vue\/component\/gallery\/doc\/props#removeButton"
+                        "text": "deletable",
+                        "desc": "Enables the delete possibility",
+                        "url": "bbn-vue\/component\/gallery\/doc\/props#deletable"
                     },
                     {
                         "text": "buttonsNoText",
@@ -3621,19 +3626,34 @@
                         "url": "bbn-vue\/component\/gallery\/doc\/props#pathName"
                     },
                     {
+                        "text": "overlayName",
+                        "desc": "The property that will be used for the image overlay.",
+                        "url": "bbn-vue\/component\/gallery\/doc\/props#overlayName"
+                    },
+                    {
+                        "text": "searchName",
+                        "desc": "The property that will be used for the researc.",
+                        "url": "bbn-vue\/component\/gallery\/doc\/props#searchName"
+                    },
+                    {
                         "text": "itemComponent",
                         "desc": "The item component",
                         "url": "bbn-vue\/component\/gallery\/doc\/props#itemComponent"
                     },
                     {
-                        "text": "context",
+                        "text": "buttonMenu",
                         "desc": "The context menu source of every image",
-                        "url": "bbn-vue\/component\/gallery\/doc\/props#context"
+                        "url": "bbn-vue\/component\/gallery\/doc\/props#buttonMenu"
                     },
                     {
                         "text": "contextComponent",
                         "desc": "The component used by the context menu items",
                         "url": "bbn-vue\/component\/gallery\/doc\/props#contextComponent"
+                    },
+                    {
+                        "text": "resizable",
+                        "desc": "Enables the resize possibility",
+                        "url": "bbn-vue\/component\/gallery\/doc\/props#resizable"
                     },
                     {
                         "text": "source",
@@ -4134,6 +4154,11 @@
                         "text": "positionComponent",
                         "desc": "",
                         "url": "bbn-vue\/component\/list\/doc\/mixins#positionComponent"
+                    },
+                    {
+                        "text": "keepCoolComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/list\/doc\/mixins#keepCoolComponent"
                     },
                     {
                         "text": "resizerComponent",
@@ -5262,8 +5287,25 @@
             {
                 "text": "range",
                 "url": "bbn-vue\/component\/range\/overview",
-                "props": [],
-                "methods": [],
+                "props": [
+                    {
+                        "text": "min",
+                        "desc": "The min value",
+                        "url": "bbn-vue\/component\/range\/doc\/props#min"
+                    },
+                    {
+                        "text": "max",
+                        "desc": "The max value",
+                        "url": "bbn-vue\/component\/range\/doc\/props#max"
+                    }
+                ],
+                "methods": [
+                    {
+                        "text": "reset",
+                        "desc": "Resets the value to the original one",
+                        "url": "bbn-vue\/component\/range\/doc\/methods#reset"
+                    }
+                ],
                 "mixins": [
                     {
                         "text": "basicComponent",

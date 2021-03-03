@@ -7,26 +7,32 @@
   -transition: all 0.1s ease-in;
   transition: all 0.1s ease-in;
 }
-.bbn-gallery a {
+.bbn-gallery a.bbn-gallery-item {
   position: relative;
   display: block;
-  border-radius: 5px;
 }
-.bbn-gallery a span.bbn-gallery-overlay {
+.bbn-gallery a.bbn-gallery-item .bbn-gallery-item-loading,
+.bbn-gallery a.bbn-gallery-item .bbn-gallery-item-loading * {
+  -webkit-transition: unset;
+  -moz-transition: unset;
+  -o-transition: unset;
+  -transition: unset;
+  transition: unset;
+}
+.bbn-gallery a.bbn-gallery-item span.bbn-gallery-overlay {
   position: absolute;
   left: 0;
   bottom: 0;
   text-align: center;
   opacity: 0.7;
   width: 100%;
-  line-height: 30px;
+  line-height: 1.7em;
   display: block;
-  border-radius: 5px;
   font-weight: bold;
   box-sizing: border-box;
 }
-.bbn-gallery a i.bbn-gallery-zoverlay {
-  font-size: 30px;
+.bbn-gallery a.bbn-gallery-item i.bbn-gallery-zoverlay {
+  font-size: 2em;
   color: white;
   left: 50%;
   margin-left: -10px;
@@ -35,14 +41,15 @@
   position: absolute;
   top: 50%;
   transition: opacity 0.3s ease 0s;
+  text-shadow: 1px 1px black;
 }
-.bbn-gallery a:hover i.bbn-gallery-zoverlay {
+.bbn-gallery a.bbn-gallery-item:hover i.bbn-gallery-zoverlay {
   opacity: 1;
 }
-.bbn-gallery a:hover img:not(.bbn-gallery-item-selected) {
+.bbn-gallery a.bbn-gallery-item:hover img:not(.bbn-gallery-item-selected) {
   filter: grayscale(1);
 }
-.bbn-gallery a i.bbn-gallery-button-menu {
+.bbn-gallery a.bbn-gallery-item i.bbn-gallery-button-menu {
   font-size: 1.5em;
   color: white;
   left: 0.5em;
@@ -50,8 +57,9 @@
   opacity: 0;
   position: absolute;
   transition: opacity 0.3s ease 0s;
+  text-shadow: 1px 1px black;
 }
-.bbn-gallery a:hover i.bbn-gallery-button-menu {
+.bbn-gallery a.bbn-gallery-item:hover i.bbn-gallery-button-menu {
   opacity: 1;
 }
 .bbn-gallery div.bbn-gallery-pager {

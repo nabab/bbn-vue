@@ -770,7 +770,7 @@ document.head.insertAdjacentElement('beforeend', css);
         // Prevent too many executions
         return this.keepCool(() => {
           // If the container measures have changed
-          if (this.setContainerMeasures() || force) {
+          if (this.scrollable && (this.setContainerMeasures() || force)) {
             // Setting up the element's measures
             this.setResizeMeasures();
             // getting current measures of element and scrollable container

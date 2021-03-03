@@ -1,3 +1,4 @@
+/*jshint esversion: 6 */
 /**
  * @file bbn-code component
  *
@@ -15,126 +16,6 @@
   "use strict";
 
   const themes = ["3024-day","3024-night","ambiance-mobile","ambiance","base16-dark","base16-light","blackboard","cobalt","eclipse","elegant","erlang-dark","lesser-dark","mbo","midnight","monokai","neat","night","paraiso-dark","paraiso-light","pastel-on-dark","rubyblue","solarized","the-matrix","tomorrow-night-eighties","twilight","vibrant-ink","xq-dark","xq-light"];
-
-  const phpFn = [
-    "str::as_var",
-    "str::cast",
-    "str::change_case",
-    "str::check_filename",
-    "str::check_json",
-    "str::check_name",
-    "str::check_path",
-    "str::clean",
-    "str::convert_size",
-    "str::correct_types",
-    "str::cut",
-    "str::encode_dbname",
-    "str::encode_filename",
-    "str::escape",
-    "str::escape_all_quotes",
-    "str::escape_apo",
-    "str::escape_dquote",
-    "str::escape_dquotes",
-    "str::escape_quote",
-    "str::escape_quotes",
-    "str::escape_squote",
-    "str::escape_squotes",
-    "str::export",
-    "str::file_ext",
-    "str::genpwd",
-    "str::get_numbers",
-    "str::has_slash",
-    "str::is_buid",
-    "str::is_clean_path",
-    "str::is_date_sql",
-    "str::is_decimal",
-    "str::is_domain",
-    "str::is_email",
-    "str::is_integer",
-    "str::is_ip",
-    "str::is_json",
-    "str::is_number",
-    "str::is_uid",
-    "str::is_url",
-    "str::make_readable",
-    "str::markdown2html",
-    "str::parse_path",
-    "str::parse_url",
-    "str::remove_accents",
-    "str::remove_comments",
-    "str::replace_once",
-    "str::sanitize",
-    "str::say_size",
-    "x::__callStatic",
-    "x::adump",
-    "x::build_options",
-    "x::clean_storage_path",
-    "x::compare_floats",
-    "x::concat",
-    "x::convert_uids",
-    "x::count",
-    "x::count_all",
-    "x::count_properties",
-    "x::curl",
-    "x::debug",
-    "x::decrement",
-    "x::dump",
-    "x::filter",
-    "x::find",
-    "x::from_csv",
-    "x::get_dump",
-    "x::get_field",
-    "x::get_hdump",
-    "x::get_row",
-    "x::get_rows",
-    "x::get_tree",
-    "x::has_deep_prop",
-    "x::has_prop",
-    "x::has_props",
-    "x::hdump",
-    "x::increment",
-    "x::indent_json",
-    "x::indexOf",
-    "x::index_by_first_val",
-    "x::is_assoc",
-    "x::is_cli",
-    "x::is_same",
-    "x::is_windows",
-    "x::join",
-    "x::js_object",
-    "x::json_base64_decode",
-    "x::json_base64_encode",
-    "x::lastIndexOf",
-    "x::last_curl_code",
-    "x::last_curl_error",
-    "x::last_curl_info",
-    "x::log",
-    "x::log_error",
-    "x::make_storage_path",
-    "x::make_tree",
-    "x::make_uid",
-    "x::map",
-    "x::max_with_key",
-    "x::merge_arrays",
-    "x::merge_objects",
-    "x::microtime",
-    "x::min_with_key",
-    "x::output",
-    "x::pick",
-    "x::remove_empty",
-    "x::retrieve_array_var",
-    "x::retrieve_object_var",
-    "x::sort",
-    "x::sort_by",
-    "x::split",
-    "x::sum",
-    "x::to_array",
-    "x::to_csv",
-    "x::to_excel",
-    "x::to_groups",
-    "x::to_keypair",
-    "x::to_object"
-  ];
 
   const baseCfg = {
     scrollbarStyle:null,
@@ -362,7 +243,14 @@
          * True if the editor is fullscreen.
          * @data {Boolan} [false] isFullScreen
          */
-        isFullScreen: false
+        isFullScreen: false,
+        currentHints: [],
+        hintTimeout: false,
+        floaterLeft: null,
+        floaterRight: null,
+        floaterTop: null,
+        floaterBottom: null,
+        currentFn: false
       };
     },
 
@@ -384,7 +272,6 @@
         if (sc) {
           sc.onResize();
           if (sc.shouldBother) {
-            bbn.fn.log("BOTHERRING")
             sc.scrollTo(bottom ? '100%' : 0);
           }
         }
@@ -407,7 +294,7 @@
             "CodeMirror-foldgutter"
           ];
           if ( o.lint ){
-            o.gutters = ["CodeMirror-lint-markers"]
+            o.gutters = ["CodeMirror-lint-markers"];
           }
           return o;
         }
@@ -421,18 +308,29 @@
        * @return {Object}
        */
       getOptions(){
-        let tmp,
-            cfg = bbn.fn.extend({}, baseCfg, {
-              mode: this.mode,
-              theme: this.currentTheme,
-              value: this.value
-            }, this.cfg);
+        let tmp;
+        let cfg = bbn.fn.extend(
+          {},
+          baseCfg,
+          {
+            mode: this.mode,
+            theme: this.currentTheme,
+            value: this.value
+          },
+          this.cfg
+        );
+        if (!this.scrollable) {
+          cfg.height = 'auto';
+        }
         if ( this.readonly || this.disabled ){
           cfg.readOnly = true;
         }
-        if ( tmp = this.getMode(this.mode) ){
+
+        tmp = this.getMode(this.mode)
+        if (tmp){
           bbn.fn.extend(true, cfg, tmp);
         }
+
         return cfg;
       },
       /**
@@ -630,83 +528,304 @@
           this.widget.foldCode({ line: i, ch: 0 }, null, "unfold");
         }
       },
-      /**
-       * Initializes the component
-       *
-       * @method initTern
-       */
-      initTern(){
-        if (this.mode === 'js') {
-          if (!bbn.vue.tern) {
-            bbn.fn.ajax({
-              url: "https://raw.githubusercontent.com/ternjs/tern/master/defs/ecmascript.json",
-              success: defs => {
-                /*
-                if (defs && this.widget) {
-                  bbn.vue.tern = new CodeMirror.TernServer({defs: [defs]});
-                  this.widget.on("cursorActivity", cm => {
-                    bbn.vue.tern.updateArgHints(cm);
-                  });
-                }
-                */
-                if (defs && this.widget) {
-                  bbn.fn.ajax({
-                    url: "https://raw.githubusercontent.com/nabab/bbn-js/master/doc/tern.json",
-                    success: res => {
-                      if (res && res.bbn) {
-                        bbn.fn.extend(defs, res);
-                        bbn.fn.ajax({
-                          url: "https://raw.githubusercontent.com/nabab/bbn-vue/master/tern.json",
-                          success: res => {
-                            if (res && res.bbn) {
-                              bbn.fn.extend(true, defs, res);
-                              bbn.fn.iterate(bbn, (a, k) => {
-                                if (!defs.bbn[k]) {
-                                  defs.bbn[k] = {};
-                                  if (bbn.fn.isObject(a)) {
-                                    bbn.fn.iterate(a, (b, n) => {
-                                      defs.bbn[k][n] = {};
-                                      if (b === null) {
-                                        defs.bbn[k][n]['!type'] = 'null';
-                                      }
-                                      else if (bbn.fn.isArray(b)) {
-                                        defs.bbn[k][n]['!type'] = 'Array';
-                                      }
-                                      else {
-                                        defs.bbn[k][n]['!type'] = typeof(b);
-                                      }
-                                    });
-                                  }
-                                  else if (a === null) {
-                                    defs.bbn[k]['!type'] = 'null';
-                                  }
-                                  else if (bbn.fn.isArray(a)) {
-                                    defs.bbn[k]['!type'] = 'Array';
-                                  }
-                                  else {
-                                    defs.bbn[k]['!type'] = typeof(a);
-                                  }
-                                }
-                              });
-                              bbn.vue.tern = new CodeMirror.TernServer({defs: [defs]});
-                              this.widget.on("cursorActivity", cm => {
-                                bbn.vue.tern.updateArgHints(cm);
-                              });
-                            }
-                          }
-                        })
-                      }
-                    }
-                  })
-                }
+      selectHint(row) {
+        bbn.fn.log("selectHint", arguments);
+        let toAdd = row.name;
+        if (row.type === 'fn') {
+          toAdd += '()';
+        }
+
+        let cursor = this.widget.getCursor();
+        let line = this.widget.getLine(cursor.line);
+        let str = line.substr(0, cursor.ch);
+        let words = [...str.matchAll(/\w+/g)].map(a => a[0]);
+        if (words) {
+          let lastWord = words[words.length - 1];
+          bbn.fn.log("LAST WORD", lastWord, toAdd);
+          let pos = toAdd.indexOf(lastWord);
+          let dollarIncrement = toAdd.substr(0, 1) === '$' ? 1 : 0;
+          if (pos === dollarIncrement) {
+            toAdd = toAdd.substr(lastWord.length + dollarIncrement);
+          }
+        }
+
+        cursor.ch += toAdd.length;
+        if (row.type === 'fn') {
+          cursor.ch--;
+        }
+
+        this.widget.replaceSelection(toAdd);
+        this.widget.setCursor(cursor);
+        this.showHint();
+      },
+      htmlHint(str, numLine){
+        bbn.fn.log(str)
+      },
+      phpHint(str, line){
+        bbn.fn.log("----PHP HINT-----", str);
+        // bbn.vue.phpLang must have been defined by an ajax call n mount
+        if (!bbn.vue.phpLang) {
+          return;
+        }
+
+        /** @var Boolean True if we are inside a function call (between the parenthesis) */
+        let isFn = false;
+        /** @var Boolean True is we are in the process to calla method (after -> or ::) */
+        let isMethod = false;
+        /** @var RegExp Alphanumeric plus ->:\ staring with a letter or a dollar */
+        let regex = new RegExp('[\\$]*[A-z]+[\\>\\:\\(A-z0-9_\\-]+', 'g');
+        // All the matches in the given string
+        let matches = [...str.matchAll(regex)];
+        if (matches.length) {
+          let search;
+          // Looking for the last expression found, that's the one we'll want to complete
+          // It must match the string just before the cursor
+          bbn.fn.each(matches, a => {
+            if (str.substr(-a[0].length) === a[0]) {
+              search = a[0];
+              return false;
+            }
+          });
+
+          // Here we have our string to complete
+          if (search) {
+            // Dividing it in words
+            let words = [...search.matchAll(/\w+/g)].map(a => a[0]);
+            if (!words.length) {
+              return;
+            }
+
+            let pos = 0;
+            // Looking if there is a dollar before (as they are not counted in the words)
+            bbn.fn.each(words, (w, k) => {
+              pos = search.indexOf(w, pos);
+              if (pos && (search.charAt(pos-1) === '$')) {
+                words[k] = '$' + w;
               }
             });
+
+            bbn.fn.log("WORDS", words);
+            let method = false;
+            let cls = false;
+            // If the previous char is an opening parenthesis we are calling a function
+            if (search.substr(-1) === '(') {
+              isFn = true;
+              method = words[words.length-1];
+            }
+            // If the 2 previous char call a method
+            else if (['::', '->'].includes(search.substr(-2))) {
+              isMethod = true;
+              cls = search.substr(0, search.length-2);
+            }
+
+            let res = [];
+            let doc = bbn.vue.phpLang;
+            for (let i = 0; i < words.length; i++) {
+              // Last word, the result must come from here
+              if (i === words.length - 1) {
+                if (isFn || isMethod) {
+                  let tmp = bbn.fn.getRow(doc, 'name', words[i], '===');
+                  if (!tmp) {
+                    return;
+                  }
+                  if (isFn) {
+                    this.setFloaterPosition();
+                    this.currentFn = {
+                      cfg: tmp,
+                      str: str,
+                      num: 0
+                    };
+                    return;
+                  }
+                  let all = [];
+                  if (tmp.items) {
+                    all.push(...tmp.items);
+                  }
+                  if (tmp.ref) {
+                    let row = bbn.fn.getRow(bbn.vue.phpLang, {name: tmp.ref});
+                    if (row && row.items) {
+                      all.push(...row.items);
+                    }
+                  }
+  
+                  res = all;
+                }
+                else {
+                  let tmp = bbn.fn.filter(
+                    doc,
+                    'name',
+                    words[i],
+                    'start' // starts is case sensitive
+                  );
+                  if (!tmp.length) {
+                    res = bbn.fn.filter(
+                      doc,
+                      'name',
+                      words[i],
+                      'contains'
+                    );
+                  }
+                  else {
+                    res = tmp;
+                  }
+                }
+              }
+              else {
+                let tmp = bbn.fn.getRow(doc, 'name', words[i], '===');
+                bbn.fn.log("TMP", tmp)
+                if (!tmp) {
+                  return;
+                }
+                let all = [];
+                if (tmp.items) {
+                  all.push(...tmp.items);
+                }
+                if (tmp.ref) {
+                  let row = bbn.fn.getRow(bbn.vue.phpLang, {name: tmp.ref});
+                  if (row && row.items) {
+                    all.push(...row.items);
+                  }
+                }
+
+                doc = all;
+              }
+            }
+
+            bbn.fn.log("RES IS " + res.length, words);
+
+            return {
+              isFn: isFn,
+              isMethod: isMethod,
+              list: res.slice()
+            };
+          }
+        }
+      },
+      jsHint(str){
+        bbn.fn.log(str)
+        if (str.substr(-1) === '(') {
+          bbn.fn.log('IS FUNCTION');
+        }
+        else if (str.substr(-1) === '.') {
+          bbn.fn.log('IS PROP');
+        }
+      },
+      cssHint(str){
+        bbn.fn.log(str)
+      },
+      vueHint(str){
+        bbn.fn.log(str)
+
+      },
+      checkFn(str) {
+        if (this.currentFn) {
+          let idx = str.lastIndexOf(this.currentFn.str);
+          if (idx > -1) {
+            // What is between the opening parenthesis and the cursor
+            str = str.substr(idx + this.currentFn.str.length);
+            let num = 0;
+            // Counting the arguments, removing parenthesis
+            let parenthesis = 0;
+            for (let i = str.length; i > 0; --i) {
+              let ch = str.charAt(i);
+              if (ch === ')') {
+                parenthesis--;
+              }
+              else if (ch === '(') {
+                parenthesis++;
+              }
+              else if (!parenthesis && (ch === ',')) {
+                num++;
+              }
+            }
+
+            if (num !== this.currentFn.num) {
+              this.$set(this.currentFn, 'num', num);
+            }
           }
           else {
-            this.widget.on("cursorActivity", cm => {
-              bbn.vue.tern.updateArgHints(cm);
-            });
+            this.currentFn = false;
           }
+
+          return;
+        }
+      },
+      showHint() {
+        if (this.hintTimeout) {
+          clearTimeout(this.hintTimeout);
+        }
+        if (this.currentHints.length) {
+          this.currentHints.splice(0, this.currentHints.length);
+        }
+        this.hintTimeout = setTimeout(() => {
+          if (!this[this.mode + 'Hint']) {
+            return this.widget.showHint({completeSingle: false})
+          }
+          
+          /** Object Cursor's info */
+          let cursor = this.widget.getCursor();
+          if (!cursor.ch) {
+            return;
+          }
+          /** Array List of tokens */
+          let tokens = this.widget.getLineTokens(cursor.line);
+          /** @var String The current line */
+          let currentLine = '';
+          /** @var Array The tokens before the cursor */
+          let realTokens = [];
+          bbn.fn.each(tokens, t => {
+            let tmp = bbn.fn.clone(t);
+            if (t.end >= cursor.ch) {
+              tmp.string = t.string.substr(0, cursor.ch - t.start);
+            }
+
+            currentLine += tmp.string;
+            realTokens.push(tmp);
+            if (t.end >= cursor.ch) {
+              return false;
+            }
+          });
+          bbn.fn.log("TOKENS", tokens);
+          let numTokens = realTokens.length;
+
+          bbn.fn.log('SHOWHINT', numTokens, currentLine);
+          if (
+            !numTokens ||
+            !currentLine.trim() ||
+            (currentLine.length > 150) ||
+            (realTokens[numTokens - 1].type === 'comment')
+          ) {
+            return;
+          }
+          if (realTokens[numTokens-1].state.curMode && realTokens[numTokens-1].state.curMode.name === 'htmlmixed') {
+            return this.widget.showHint({completeSingle: false})
+          }
+
+          let res = this[this.mode + 'Hint'](currentLine, cursor.line);
+
+          if (res && res.list && res.list.length) {
+            this.setFloaterPosition();
+            this.currentHints = res.list;
+          }
+        }, 500)
+      },
+      setFloaterPosition(){
+        let coords = this.widget.cursorCoords(true);
+        if (coords.left > bbn.env.width/2) {
+          this.floaterLeft = null;
+          this.floaterRight = bbn.env.width - coords.left;
+        }
+        else {
+          this.floaterLeft = coords.right;
+          this.floaterRight = null;
+        }
+        if (coords.top > bbn.env.height/2) {
+          this.floaterTop = null;
+          this.floaterBottom = bbn.env.height - coords.top + 10;
+        }
+        else {
+          this.floaterTop = coords.bottom + 10;
+          this.floaterBottom = null;
         }
       },
       /**
@@ -739,68 +858,95 @@
           isFS = !this.isFullScreen;
         }
         this.isFullScreen = !!isFS;
+      },
+      resetFloaters(){
+        bbn.fn.log('resetting floaters')
+        if (this.hintTimeout) {
+          clearTimeout(this.hintTimeout);
+        }
+        this.currentHints.splice(0, this.currentHints.length);
+        this.currentFn = false;
       }
     },
     /**
      * @event mounted
-     * @fires initTern
      * @fires getRef
      * @emit  input
      */
     mounted(){
+      if ((this.mode === 'php') && !bbn.vue.phpLang) {
+        bbn.fn.ajax({
+          url: "https://raw.githubusercontent.com/nabab/bbn/master/code_ref_php.json",
+          success: defs => {
+            bbn.fn.log("Success", defs);
+            bbn.vue.phpLang = defs;
+          }
+        })
+      }
       //bbn.fn.log(this.getOptions());
       if (this.getRef('code')) {
-        if (CodeMirror.hintWords.php
-          && (CodeMirror.hintWords.php.indexOf(phpFn[0]) === -1)
-        ) {
-          CodeMirror.hintWords.php = CodeMirror.hintWords.php.concat(phpFn);
-        }
-
         this.widget = CodeMirror(this.getRef('code'), this.getOptions());
 
         this.widget.on("keyup", (cm, event) => {
-          if (
-            /*Enables keyboard navigation in autocomplete list*/
-            !cm.state.completionActive
-            && !event.ctrlKey
-            && !event.altKey
-            // Dot
-            && ([":", ".", "("].includes(event.key)
-            || (
-              (event.keyCode > 64) &&
-              (event.keyCode < 91) 
-            ))
-          ){
-            let o = {completeSingle: false};
-            if (this.mode === 'js') {
-              o.hint = bbn.vue.tern.getHint;
-            }
-            cm.showHint(o);
+          if (["Shift", "Ctrl", "Alt"].includes(event.key) ||
+              bbn.var.keys.upDown.includes(event.keyCode)
+          ) {
+            return;
           }
+
+          if (["Escape"].includes(event.key) ||
+              event.ctrlKey ||
+              event.altKey
+          ) {
+            this.resetFloaters();
+            return;
+          }
+
+          this.showHint();
+        });
+
+        this.widget.on("keydown", (cm, event) => {
+          if (this.hintTimeout) {
+            clearTimeout(this.hintTimeout);
+          }
+          if (["Shift", "Ctrl", "Alt"].includes(event.key)) {
+            return;
+          }
+          if (this.currentHints.length) {
+            let lst = this.find('bbn-list');
+            if (lst) {
+              if (bbn.var.keys.upDown.includes(event.keyCode)) {
+                lst.keynav(event);
+                bbn.fn.log(lst.currentSelected);
+              }
+              else if (event.key === "Enter") {
+                event.preventDefault();
+                lst.select(lst.overIdx || 0);
+              }
+            }
+          }
+          else if (bbn.var.keys.upDown.includes(event.keyCode)) {
+            this.resetFloaters();
+            return;
+          }
+        });
+
+        this.widget.on("scroll", cm => {
+          this.$emit('scroll', cm);
+        });
+
+        this.widget.on("blur", () => {
+          this.resetFloaters();
         });
 
         this.widget.on("change", () => {
           this.emitInput(this.widget.doc.getValue());
         });
-        this.widget.on("scroll", cm => {
-          this.$emit('scroll', cm)
-        });
-        this.$nextTick(() => {
+
+        setTimeout(() => {
+          this.widget.refresh();
           this.ready = true;
-          setTimeout(() => {
-            this.widget.refresh();
-            if ( this.mode === 'js' ){
-              this.initTern();
-            }
-            /*
-            else {
-              this.widget.on("cursorActivity", (cm) => {
-                bbn.fn.log(cm);
-              });
-            }
-            */
-          }, 250)
-        })
+        }, 250);
       }
     },
 
@@ -825,6 +971,16 @@
           });
         }
       },
+      currentHints(newVal) {
+        if (newVal.length && !this.currentFn) {
+          this.$nextTick(() => {
+            let fl = this.getRef('hints');
+            if (fl) {
+              fl.onResize();
+            }
+          });
+        }
+      },
       /**
        * @watch value
        * @param {String} newVal
@@ -833,6 +989,67 @@
       value(newVal, oldVal){
         if ( (newVal !== oldVal) && (newVal !== this.widget.getValue()) ){
           this.widget.setValue(newVal);
+        }
+      }
+    },
+    components: {
+      fnHelper: {
+        props: ['source'],
+        template: `
+<div class="bbn-spadded bbn-m bbn-pre">
+  <div class="bbn-spadded bbn-nowrap">
+    <span class="bbn-b"
+          v-text="source.cfg.name"></span>
+    <span>(</span>
+    <template v-for="(a, i) of items">
+      <span class="bbn-i bbn-space-right"
+            v-if="a.type"
+            v-text="a.type"></span>
+      <span :class="a.cls"
+            v-text="a.text"></span>
+      <span v-if="!a.last">, </span>
+    </template>
+    <span>)</span>
+  </div>
+  <div v-if="source.cfg.desc"
+       class="bbn-j bbn-spadded"
+       v-html="source.cfg.desc">
+  </div>
+</div>
+    `,
+        data(){
+          return {};
+        },
+        computed: {
+          items(){
+            let res = [];
+            if (this.source.cfg.args) {
+              bbn.fn.each(this.source.cfg.args, (a, i) => {
+                res.push({
+                  text: (a.optional ? '[' : '') +
+                    '$' + a.name + 
+                    (a.optional ? ']' : ''),
+                  cls: i === this.source.num ? 'bbn-b' : '',
+                  last: i === this.source.cfg.args.length - 1,
+                  type: a.type || null
+                });
+              });
+
+            }
+            return res;
+          }
+        }
+      },
+      suggestion: {
+        props: ['source'],
+        template: `
+<div class="bbn-spadded bbn-nowrap bbn-pre bbn-m"
+     v-text="source.name"
+     :title="source.desc">
+</div>
+`,
+        data(){
+          return {}
         }
       }
     }

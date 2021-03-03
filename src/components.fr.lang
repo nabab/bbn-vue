@@ -27,7 +27,7 @@
     "No data": "Pas de data",
     "Are you sure you want to delete this group of conditions?": "",
     "Deleted successfully": "",
-    "Impossible to delete the row": "",
+    "Impossible to delete the row": "Impossible de supprimer la ligne",
     "The value you entered for this field is invalid.": "",
     "Please fill out this field.": "",
     "Please enter a valid email address.": "",

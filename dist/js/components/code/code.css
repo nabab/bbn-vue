@@ -14,6 +14,9 @@
   position: relative;
   height: auto;
 }
+.bbn-code .bbn-floater {
+  font-family: "Fira Code" !important;
+}
 .bbn-code .CodeMirror {
   padding: 0.5em 0;
   font-size: small;

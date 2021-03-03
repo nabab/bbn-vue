@@ -1,8 +1,7 @@
 (bbn_resolve) => { ((bbn) => {
 let script = document.createElement('script');
-script.innerHTML = `<span :class="componentClass"
-	   :style="(currentSize !== '') ? 'width:' + currentSize : '' "
->
+script.innerHTML = `<span :class="[componentClass, 'bbn-flex-width', 'bbn-vmiddle']"
+	    :style="(currentSize !== '') ? 'width:' + currentSize : '' ">
   <input :value="value"
          type="range"
          :name="name"
@@ -23,7 +22,10 @@ script.innerHTML = `<span :class="componentClass"
          @mouseleave="out"
          :tabindex="tabindex"
          :size="currentInputSize"
-         class="bbn-range-input bbn-radius">
+         class="bbn-range-input bbn-radius bbn-flex-fill">
+  <i class="nf nf-mdi-backup_restore bbn-p bbn-m bbn-left-xsspace"
+     @click="reset"
+     :title="_('Reset')"/>
 </span>`;
 script.setAttribute('id', 'bbn-tpl-component-range');
 script.setAttribute('type', 'text/x-template');
@@ -54,10 +56,18 @@ document.head.insertAdjacentElement('beforeend', css);
       bbn.vue.inputComponent
     ],
     props: {
+      /**
+       * The min value
+       * @prop {Number} [1] min
+       */
       min: {
         type: Number,
         default: 1
       },
+      /**
+       * The max value
+       * @prop {Number} [100] max
+       */
       max: {
         type: Number,
         default: 100
@@ -69,7 +79,12 @@ document.head.insertAdjacentElement('beforeend', css);
          * The property 'size' normalized.
          * @data {String} [''] currentSize
          */
-        currentSize: this.size || ''
+        currentSize: this.size || '',
+        /**
+         * The original value
+         * @data {Number} originalValue
+         */
+        originalValue: this.value
       }
     },
     computed: {
@@ -80,6 +95,18 @@ document.head.insertAdjacentElement('beforeend', css);
        */
       currentInputSize(){
         return this.autosize ? (this.value ? this.value.toString().length : 1) : 0
+      }
+    },
+    methods: {
+      /**
+       * Resets the value to the original one
+       * @method reset
+       * @emits input
+       */
+      reset(){
+        if (!this.disabled && !this.readonly) {
+          this.emitInput(this.originalValue)
+        }
       }
     },
     /**

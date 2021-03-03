@@ -347,7 +347,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @prop {Boolean} [false] suggest
        */
       suggest: {
-        type: Boolean,
+        type: [Boolean, Number],
         default: false
       }
     },
@@ -833,7 +833,6 @@ document.head.insertAdjacentElement('beforeend', css);
                       w: scroll.naturalWidth,
                       h: scroll.naturalHeight
                     };
-                    bbn.fn.log("NATURAL", dimensions, this.isResizing);
                     let scrollChange = false;
                     if (this.scrollWidth !== dimensions.w) {
                       scrollChange = true;
@@ -1032,7 +1031,6 @@ document.head.insertAdjacentElement('beforeend', css);
           else {
             if ((coor[a.posStart] !== null) || (coor[a.posEnd] !== null)) {
               a.res = coor[a.posStart] !== null ? coor[a.posStart] : this['container' + a.camel] - coor[a.posEnd] - size;
-              bbn.fn.log("MEASURE KNOWN", a);
             }
             else {
               // If no vertical position at all, centered (same top and bottom)

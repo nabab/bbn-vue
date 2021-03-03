@@ -15,7 +15,10 @@
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.resizerComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent],
+    mixins: [
+      bbn.vue.basicComponent,
+      bbn.vue.resizerComponent
+    ],
     props: {
       /**
        * The source of the slideshow
@@ -187,45 +190,44 @@
       let src = [],
           valuesCB = {},
           isAjax   = false;
-      if ( this.gallery ){
-
-      }
-      if ( (typeof this.source === 'string') ){
-        if ( this.separator ){
+      if (bbn.fn.isString(this.source)) {
+        if (this.separator) {
           src = this.source.split(this.separator).map((a) =>{
-            return {content: a, type: 'text'};
+            return {
+              content: a,
+              type: 'text'
+            };
           });
         }
         else{
-          src = [];
           isAjax = true;
         }
       }
-      else if ( bbn.fn.isFunction(this.source) ){
+      else if (bbn.fn.isFunction(this.source)) {
         src = this.source();
       }
-      else if ( bbn.fn.isArray(this.source) && this.checkbox ){
-        if ( this.separator ){
-          this.source.forEach((v, i) =>{
-            v.content.split(this.separator).forEach((a, k) =>{
-              let o = {
-                type: 'text',
-                content: a,
-                id: v.id
-              };
-              if ( k === 0 ){
-                o.checkable = true;
-              }
-              src.push(o);
+      else if (bbn.fn.isArray(this.source)) {
+        if (this.checkbox) {
+          if (this.separator) {
+            this.source.forEach((v, i) =>{
+              v.content.split(this.separator).forEach((a, k) =>{
+                let o = {
+                  type: 'text',
+                  content: a,
+                  id: v.id
+                };
+                if (k === 0) {
+                  o.checkable = true;
+                }
+                src.push(o);
+              });
+              valuesCB[i] = false;
             });
-          });
-          valuesCB[i] = false;
+          }
         }
-      }
-      else if ( bbn.fn.isArray(this.source)  ){
-        if ( bbn.fn.isEmpty(src) ){
-          src = this.source.slice().map((val, idx) => {
-            if ( typeof val === 'string' ){
+        else {
+          src = bbn.fn.extend(true, [], this.source).map(val => {
+            if (bbn.fn.isString(val)) {
               val = {
                 type: this.gallery ? 'img' : 'text',
                 content: val
@@ -240,7 +242,7 @@
                 });
               }
             }
-            if ( bbn.fn.isObject(val) && (!val.type || val.type !== 'img') ){
+            if (bbn.fn.isObject(val) && (!val.type || ((val.type !== 'img') && (val.type !== 'text')))) {
               val.type = 'text';
             }
             return bbn.fn.isObject(val) ? val : {};
@@ -349,9 +351,11 @@
        * @fires aspectRatio
        */
       onResize(){
-        if ( bbn.fn.isArray(this.source) && this.source.length ){
-          this.source.forEach((v, i)=>{
-            if ( v.loaded ){
+        this.setContainerMeasures();
+        this.setResizeMeasures();
+        if (bbn.fn.isArray(this.source) && this.source.length) {
+          this.source.forEach((v, i) => {
+            if (v.loaded) {
               this.aspectRatio(i);
             }
           });
@@ -364,7 +368,7 @@
        * @fires aspectRatio
        */
       afterLoad(idx){
-        this.$set(this.source[idx], 'loaded', true);
+        this.$set(this.items[idx], 'loaded', true);
         this.aspectRatio(idx);
       },
       /**
@@ -416,14 +420,12 @@
               this.$set(this.items[idx], 'imageWidth', 'auto');
               this.$set(this.items[idx], 'imageHeight', '100%');
               this.$set(this.items[idx], 'showImg', true);
-
               //this.items[idx].imageWidth = "auto";
               //this.items[idx].imageHeight = "100%";
               //this.items[idx].showImg =  true;
             }
           }
           if ( mode === 'stretch' ){
-
             this.$set(this.items[idx], 'imageWidth',  cont.offsetWidth + 'px');
             this.$set(this.items[idx], 'imageHeight', cont.offsetHeight + 'px');
             this.$set(this.items[idx], 'showImg', true);
@@ -435,6 +437,12 @@
           if ( mode === "original" ){
             this.$set(this.items[idx], 'showImg', true);
             //this.items[idx].showImg = true;
+          }
+          if (cont.offsetWidth) {
+            this.$set(this.items[idx], 'imageMaxWidth', cont.offsetWidth + 'px');
+          }
+          if (cont.offsetHeight) {
+            this.$set(this.items[idx], 'imageMaxHeight', cont.offsetHeight + 'px');
           }
         });
       },
@@ -685,25 +693,25 @@
                     ]"
                     ref="items"
                 ></i>
-                <div  v-else
-                      @click= "clickMiniature(it , i)"
-                      :class="['bbn-slideshow-zoom', 'bbn-bordered-internal', {
-                        'bbn-primary-border': mainComponent.currentIndex === i,
-                        'bbn-right-xsspace': !!items[i+1]
-                      }]"
-                      :style="{
-                        'border-width': (mainComponent.currentIndex === i) ? 'medium' : '',
-                        width: dimension +'px',
-                        height: dimension + 'px'
-                      }"
-                      ref="items"
+                <div v-else
+                     @click= "clickMiniature(it , i)"
+                     :class="['bbn-slideshow-zoom', 'bbn-bordered-internal', {
+                       'bbn-primary-border': mainComponent.currentIndex === i,
+                       'bbn-right-xsspace': !!items[i+1]
+                     }]"
+                     :style="{
+                       'border-width': (mainComponent.currentIndex === i) ? 'medium' : '',
+                       width: dimension +'px',
+                       height: dimension + 'px'
+                     }"
+                     ref="items"
                 >
                   <div v-if="it.type === 'text'"
                       v-html="it.content"
                       class="bbn-slideshow-content"
                   ></div>
                   <img v-else-if="it.type === 'img'"
-                      :src="it.content"
+                      :src="getImgSrc(it.content)"
                       width="100%"
                       height="100%"
                   >
@@ -762,9 +770,8 @@
         methods:{
           /**
            * @method clickMiniature
-           * 
-           * @param miniature 
-           * @param {Number} idx 
+           * @param miniature
+           * @param {Number} idx
            * @fires stopAutoPlay
            * @fires startAutoPlay
            * @memberof miniature
@@ -778,6 +785,17 @@
                 this.mainComponent.startAutoPlay();
               });
             }
+          },
+          /**
+           * @method getImgSrc
+           * @param {Strng} content
+           * @memberof miniature
+           * @return {String}
+           */
+          getImgSrc(content){
+            return content.match(/data\:image\/[a-zA-Z]*\;base64/)
+              ? content
+              : `${content}${content.indexOf('?') > -1 ? '&' : '?'}w=${this.dimension}&thumb=1`;
           }
         },
         /**

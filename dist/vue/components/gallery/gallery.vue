@@ -1,6 +1,6 @@
 <template>
 <div :class="[componentClass, {'bbn-flex-height': scrollable}]">
-  <div v-if="isToolbarShown"
+  <div v-if="!!toolbar"
        class="bbn-l bbn-widget bbn-gallery-toolbar bbn-spadded"
   >
     <component v-if="toolbar && (isObject(toolbar) || isVue(toolbar))"
@@ -10,29 +10,35 @@
       <div class="bbn-flex-width">
         <div class="bbn-flex-fill">
           <div class="bbn-flex-width">
+            <bbn-button :text="_('Select')"
+                        icon="nf nf-mdi-vector_selection"
+                        @click="setSelecting('selection')"
+                        :notext="buttonsNoText"
+                        :disabled="isSelecting"
+                        v-if="!!selection"/>
             <bbn-button :text="_('Upload')"
                         icon="nf nf-fa-upload"
-                        @click="uploadButton"
-                        v-if="uploadButton"
+                        @click="$emit('upload')"
+                        v-if="uploadable"
                         :notext="buttonsNoText"
                         :disabled="isSelecting"/>
             <bbn-button :text="_('Download')"
                         icon="nf nf-fa-download"
                         @click="setSelecting('download')"
-                        v-if="downloadButton"
+                        v-if="downloadable"
                         :disabled="isSelecting || !total"
                         :notext="buttonsNoText"
                         class="bbn-left-xsspace"/>
-            <bbn-button :text="_('Remove')" 
+            <bbn-button :text="_('Delete')"
                         icon="nf nf-fa-trash"
-                        @click="setSelecting('remove')"
-                        v-if="removeButton"
+                        @click="setSelecting('delete')"
+                        v-if="deletable"
                         :disabled="isSelecting || !total"
                         :notext="buttonsNoText"
                         class="bbn-left-xsspace"/>
-            <bbn-button :text="_(correctCase(selectingMode))"
+            <bbn-button :text="_('Ok')"
                         icon="nf nf-fa-check"
-                        @click="action"
+                        @click="emitAction()"
                         v-if="isSelecting"
                         :disabled="!currentSelected.length"
                         :notext="buttonsNoText"
@@ -45,25 +51,46 @@
                         class="bbn-left-xsspace"/>
             <div v-if="filterable"
                   class="bbn-flex-fill bbn-hmargin">
-              <bbn-input :placeholder="_('Search')"
-                          v-model="currentSearch"
-                          class="bbn-w-100"
-                          ref="search"/>
+              <div class="bbn-flex-width">
+                <bbn-input :placeholder="_('Search')"
+                           v-model="currentSearch"
+                           class="bbn-flex-fill"
+                           ref="search"
+                           :button-right="!!currentSearch ? 'nf nf-fa-times' : 'nf nf-fa-search'"
+                           @clickRightButton="resetSearch"
+                           :disabled="isLoading"/>
+                <!--<bbn-button icon="nf nf-fa-filter"
+                            :text="_('Filter')"
+                            :notext="buttonsNoText"
+                            @click=""
+                            class="bbn-left-xsspace"/>-->
+              </div>
             </div>
           </div>
         </div>
         <div class="bbn-vmiddle">
-          <bbn-range class="bbn-vmiddle"
+          <bbn-range v-if="resizable"
+                     class="bbn-vmiddle"
                      v-model="currentItemWidth"
-                     :min="itemWidth - 100"
-                     :max="itemWidth + 100"/>
+                     :min="currentMinItemWidth"
+                     :max="currentMaxItemWidth"
+                     :disabled="isLoading"/>
         </div>
       </div>
     </template>
   </div>
   <div ref="gallery" :class="{'bbn-flex-fill': scrollable}">
+    <div v-if="isLoading"
+         :class="['bbn-background', 'bbn-middle', 'bbn-padded', {
+           'bbn-overlay': scrollable,
+         }]">
+      <bbn-loadicon class="bbn-vmiddle"
+                    :size="24"/>
+      <span class="bbn-xl bbn-b bbn-left-sspace"
+            v-text="_('Loading') + '...'"/>
+    </div>
     <component :is="scrollable ? 'bbn-scroll' : 'div'"
-               v-if="total"
+               v-else-if="total"
     >
       <div :style="{margin: '0 auto', textAlign: align}">
         <gallery-col v-for="(col, index) in cols"
@@ -185,6 +212,20 @@
         default: 150
       },
       /**
+       * The min width of the items.
+       * @prop {Number} minItemWidth
+       */
+      minItemWidth: {
+        type: Number
+      },
+      /**
+       * The width of the items.
+       * @prop {Number} maxItemWidth
+       */
+      maxItemWidth: {
+        type: Number
+      },
+      /**
        * The horizontal alignment of the column.
        * @prop {String} ['center'] align
        */
@@ -193,25 +234,28 @@
         default: 'center'
       },
       /**
-       * The function called when the toolbar's upload button is clicked.
-       * @prop {Function} uploadButton
+       * Enables the upload possibility
+       * @prop {Boolean} [false] uploadable
        */
-      uploadButton: {
-        type: Function
+      uploadable: {
+        type: Boolean,
+        default: false
       },
       /**
-       * The function called when the toolbar's download button is clicked.
-       * @prop {Function} downloadButton
+       * Enables the download possibility
+       * @prop {Boolean} [false] downloadable
        */
-      downloadButton: {
-        type: Function
+      downloadable: {
+        type: Boolean,
+        default: false
       },
       /**
-       * The function called when the toolbar's remove button is clicked.
-       * @prop {Function} removeButton
+       * Enables the delete possibility
+       * @prop {Boolean} [false] deletable
        */
-      removeButton: {
-        type: Function
+      deletable: {
+        type: Boolean,
+        default: false
       },
       /**
        * Sets the toolbar buttons as notext
@@ -231,11 +275,27 @@
       },
       /**
        * The property that will be used for the image path.
-       * @prop {String} [content] pathName
+       * @prop {String} ['content'] pathName
        */
       pathName: {
         type: String,
         default: 'content'
+      },
+      /**
+       * The property that will be used for the image overlay.
+       * @prop {String} ['verlay] overlayName
+       */
+      overlayName: {
+        type: String,
+        default: 'overlay'
+      },
+      /**
+       * The property that will be used for the researc.
+       * @prop {String} ['title'] searchName
+       */
+      searchName: {
+        type: String,
+        default: 'title'
       },
       /**
        * The item component
@@ -246,20 +306,25 @@
       },
       /**
        * The context menu source of every image
-       * @prop {Function|Array} context
+       * @prop {Function|Array} buttonMenu
        */
-      context: {
+      buttonMenu: {
         type: [Function, Array]
       },
       /**
        * The component used by the context menu items
        * @prop {String|Object|Vue} contextComponent
        */
-      contextComponent: {
+      buttonMenuComponent: {
         type: [String, Object, Vue]
       },
-      buttonMenu: {
-        type: [Function, Array]
+      /**
+       * Enables the resize possibility
+       * @prop {Boolean} [true] resizable
+       */
+      resizable: {
+        type: Boolean,
+        default: true
       }
     },
     data(){
@@ -279,7 +344,7 @@
          * @data {Boolean|String} [false] selectingMode
          */
         selectingMode: false,
-        currentSelected: this.selected,
+        //currentSelected: this.selected,
         /**
          * @data {Boolean} [false] isLoaded
          */
@@ -289,7 +354,16 @@
          * @data {Number} currentItemWidth
          */
         currentItemWidth: this.itemWidth,
-        currentSearch: ''
+        /**
+         * The current text on the search input
+         * @data {String} [''] currentSearch
+         */
+        currentSearch: '',
+        /**
+         * The research timeout
+         * @data {Number} [0] searchTimeout
+         */
+        searchTimeout: 0
       }
     },
     computed: {
@@ -302,15 +376,6 @@
         return parseInt(this.width / (this.currentItemWidth + this.columnGap)) || 1
       },
       /**
-       * True if the toolbar is shown.
-       * @computed isToolbarShown
-       * @return {Boolean}
-       */
-      isToolbarShown(){
-        return !!this.toolbar
-        return !!(this.toolbar && (this.uploadButton || this.downloadButton || this.removeButton || this.isObject(this.toolbar) || this.isVue(this.toolbar)));
-      },
-      /**
        * The data of the current view
        * @computed viewData
        * @return {Array}
@@ -321,6 +386,23 @@
         }
         return this.filteredData;
       },
+      /**
+       * The min item width
+       * @computed currentMinItemWidth
+       * @return {Number}
+       */
+      currentMinItemWidth(){
+        let mw = this.itemWidth - 200;
+        return this.minItemWidth || (mw > 50 ? mw : 50);
+      },
+      /**
+       * The max item width
+       * @computed currentMaxItemWidth
+       * @return {Number}
+       */
+      currentMaxItemWidth(){
+        return this.minItemWidth || (this.itemWidth + 200);
+      }
     },
     methods: {
       /**
@@ -347,7 +429,7 @@
        * @param {String} mode
        */
       setSelecting(mode){
-        if ( typeof mode === 'string' ){
+        if (bbn.fn.isString(mode)){
           this.isSelecting = true;
           this.selectingMode = mode;
         }
@@ -363,20 +445,27 @@
        * @fires setSelecting
        */
       action(){
-        if ( this[this.selectingMode + 'Button'] && this.currentSelected.length ){
-          let mess = '';
+        if (this.currentSelected.length) {
+          let mess = '',
+              selected = this.currentSelected.map(v => {
+                return bbn.fn.extend(true, {}, bbn.fn.getField(this.currentData, 'data', {index: v}));
+              });
           if ( this.selectingMode === 'download' ){
             mess = bbn._("Are you sure you want to download these photos?");
           }
           else if ( this.selectingMode === 'remove' ){
             mess = bbn._("Are you sure you want to remove these photos?");
           }
-          this.confirm(bbn._(mess, this.selectingMode), () => {
-            this[this.selectingMode + 'Button'](this.currentSelected.map(v => {
-              return bbn.fn.extend(true, {}, bbn.fn.getField(this.currentData, 'data', {index: v}));
-            }));
+          if (mess.length) {
+            this.confirm(bbn._(mess, this.selectingMode), () => {
+              this.$emit(act, selected);
+              this.setSelecting(false);
+            });
+          }
+          else {
+            this.$emit(act, selected);
             this.setSelecting(false);
-          });
+          }
         }
       },
       /**
@@ -385,12 +474,14 @@
        */
       onResize(){
         this.width = this.$refs.gallery.offsetWidth;
+      },
+      resetSearch(){
+        this.currentSearch = '';
       }
     },
     /**
      * @event mounted
      * @fires onResize
-     * @fires updateData
      */
     mounted(){
       this.$nextTick(() => {
@@ -399,8 +490,31 @@
       });
     },
     watch: {
-      currentLimit(){
-          this.updateData();
+      /**
+       * @watch currentSearch
+       */
+      currentSearch(newVal){
+        if (this.searchTimeout) {
+          clearTimeout(this.searchTimeout);
+        }
+        this.searchTimeout = setTimeout(() => {
+          let idx = bbn.fn.search(this.currentFilters.conditions, {field: this.searchName});
+          if (idx > -1) {
+            if (newVal) {
+              this.currentFilters.conditions[idx].value == newVal;
+            }
+            else {
+              this.currentFilters.conditions.splice(idx, 1)
+            }
+          }
+          else if (newVal) {
+            this.currentFilters.conditions.push({
+              field: this.searchName,
+              operator: 'contains',
+              value: newVal
+            })
+          }
+        }, 1000)
       }
     },
     components: {
@@ -471,40 +585,48 @@
             name: 'gallery-item',
             template: `
 <a v-if="!col.gallery.isLoading"
-    :class="{'bbn-primary': isSelected, 'bbn-p': !!col.gallery.zoomable}"
+    :class="['bbn-gallery-item', 'bbn-box', {'bbn-primary': isSelected, 'bbn-p': !!col.gallery.zoomable}]"
     @click="action"
+    @contextmenu.prevent.stop="getRef('itemMenu').click()"
     :style="aStyle">
-  <component :is="!!col.gallery.context ? 'bbn-context' : 'span'"
-            tag="span"
-            :context="true"
-            :source="!!col.gallery.context
-              ? (isFunction(col.gallery.context)
-                ? col.gallery.context()
-                : col.gallery.context)
-              : []"
-            :item-component="col.gallery.contextComponent">
-    <img :src="getImgSrc(source.data)"
-        :style="imgStyle"
-        @load="loaded = true"
-        :class="{'bbn-gallery-item-selected': isSelected}">
+  <span :class="{
+          'bbn-spadded': !loaded,
+          'bbn-c': !loaded
+        }"
+        style="display: block">
+    <img :src="imgSrc"
+         @load="loaded = true"
+         @error="error = true"
+         :class="['bbn-radius', {
+           'bbn-gallery-item-selected': isSelected,
+           'bbn-invisible': !loaded
+         }]"
+         :style="imgStyle">
+    <bbn-loadicon class="bbn-gallery-item-loading bbn-c"
+                  v-if="!loaded && !error"/>
+    <i v-else-if="error && !loaded" class="bbn-red nf nf-mdi-image_off"/>
     <span v-if="showOverlay && loaded"
-          class="bbn-gallery-overlay bbn-widget"
-          v-text="source.data.overlay"/>
+          class="bbn-gallery-overlay bbn-widget bbn-ellipsis bbn-radius-bottom bbn-hxspadded"
+          v-text="source.data[col.gallery.overlayName]"
+          :title="source.data[col.gallery.overlayName]"/>
     <i v-if="col.gallery.zoomable && loaded && !col.gallery.isSelecting"
        class="bbn-gallery-zoverlay nf nf-fa-search"/>
     <bbn-context v-if="!!col.gallery.buttonMenu && loaded && !col.gallery.isSelecting"
                  tag="span"
                  :source="!!col.gallery.buttonMenu
                    ? (isFunction(col.gallery.buttonMenu)
-                     ? col.gallery.buttonMenu()
+                     ? col.gallery.buttonMenu(source.data, source.index, source.key)
                      : col.gallery.buttonMenu)
                    : []"
-                 :attach="buttonMenu"
-                 @hook:mounted="buttonMenu = getRef('itemMenu') || undefined">
+                 :attach="buttonMenuElement"
+                 :item-component="col.gallery.contextComponent"
+                 @hook:mounted="buttonMenuElement = getRef('itemMenu') || undefined"
+                 ref="menuButton"
+                 @click.prevent.stop>
       <i class="bbn-gallery-button-menu nf nf-mdi-menu"
          ref="itemMenu"/>
     </bbn-context>
-  </component>
+  </span>
 </a>
             `,
             props: {
@@ -525,7 +647,13 @@
                  * @memberof gallery-item
                  */
                 loaded: false,
-                buttonMenu: undefined
+                /**
+                 * The element to which the context menu is attached
+                 * @data {HTMLElement} [undefined] buttonMenuElement
+                 * @memberof gallery-item
+                 */
+                buttonMenuElement: undefined,
+                error: false
               }
             },
             computed: {
@@ -547,7 +675,7 @@
               aStyle(){
                 let style = {
                   margin: `0 0 ${this.col.gallery.rowGap}px 0`,
-                  border: this.isSelected ? '5px dotted' : 'none'
+                  border: this.isSelected ? '5px dotted' : ''
                 };
                 if ( !this.col.gallery.zoomable ){
                   style.cursor = 'default';
@@ -562,9 +690,9 @@
                */
               imgStyle(){
                 return {
-                  width: '100%',
+                  width: this.loaded ? '100%' : 0,
+                  height: this.loaded ? '' : 0,
                   margin: 0,
-                  borderRadius: '5px',
                   display: 'block',
                   visibility: this.loaded ? 'visible' : 'hidden'
                 }
@@ -585,7 +713,7 @@
                * @memberof gallery-item
                */
               showOverlay(){
-                return this.col.gallery.overlay && this.isObj && (this.source.data.overlay !== undefined);
+                return this.col.gallery.overlay && this.isObj && (this.source.data[this.col.gallery.overlayName] !== undefined);
               },
               /**
                * True if the item is selected.
@@ -595,16 +723,31 @@
                */
               isSelected(){
                 return this.col.gallery.currentSelected.includes(this.source.index);
+              },
+              /**
+               * The image source
+               * @computed imgSrc
+               * @memberof gallery-item
+               * @return {String}
+               */
+              imgSrc(){
+                let src = '';
+                if (bbn.fn.isString(this.source.data)) {
+                  src = this.source.data;
+                }
+                else {
+                  let prop = this.col.gallery.pathName || 'thumb' || 'content';
+                  if (this.source.data[prop]) {
+                    src = this.source.data[prop];
+                  }
+                }
+                if (src) {
+                  return `${src}${src.indexOf('?') > -1 ? '&' : '?'}w=${this.col.gallery.currentItemWidth}&thumb=1`;
+                }
+                return null;
               }
             },
             methods: {
-              getImgSrc(o) {
-                if (bbn.fn.isString(o)) {
-                  return o;
-                }
-                let prop = this.col.gallery.pathName || 'thumb' || 'content';
-                return o[prop] || null;
-              },
               /**
                * Alias of bbn.fn.isFunction method
                * @methods isFunction
@@ -618,6 +761,7 @@
                * @fires getPopup
                */
               action(ev){
+                bbn.fn.warning('mirko', ev.target.parentNode.tagName, ev, ev.target.closest('.bbn-gallery-button-menu-context'))
                 if ( this.col.gallery.isSelecting ){
                   if ( this.isSelected ){
                     this.col.gallery.currentSelected.splice(this.col.gallery.currentSelected.indexOf(this.source.index), 1);
@@ -626,27 +770,34 @@
                     this.col.gallery.currentSelected.push(this.source.index);
                   }
                 }
-                else {
-                  if (!ev.target.classList.contains('bbn-gallery-button-menu') && this.col.gallery.zoomable) {
-                    this.getPopup().open({
-                      title: bbn._('Gallery'),
-                      width: '100%',
-                      height: '100%',
-                      scrollable: false,
-                      resizable: false,
-                      maximizable: false,
-                      component: this.col.gallery.$options.components.galleryZoom,
-                      source: {
-                        data: bbn.fn.map(this.col.gallery.currentData, d => {
-                          return d.data;
-                        }),
-                        info: this.col.gallery.info,
-                        slide: this.source.index,
-                        preview: this.col.gallery.preview
-
-                      }
-                    });
-                  }
+                else if (!ev.target.classList.contains('bbn-gallery-button-menu')
+                  && (!ev.target.closest('.bbn-floater-list'))
+                  && this.col.gallery.zoomable
+                ) {
+                  this.getPopup().open({
+                    title: bbn._('Gallery'),
+                    width: '100%',
+                    height: '100%',
+                    scrollable: false,
+                    resizable: false,
+                    maximizable: false,
+                    component: this.col.gallery.$options.components.galleryZoom,
+                    source: {
+                      data: bbn.fn.map(this.col.gallery.currentData, d => {
+                        let obj = bbn.fn.extend(true, {}, d.data);
+                        obj.content = obj[this.col.gallery.pathName];
+                        obj.type = 'img';
+                        obj.mode = 'original';
+                        if (!obj.info) {
+                          obj.info = obj[this.col.gallery.overlayName];
+                        }
+                        return obj;
+                      }),
+                      info: this.col.gallery.info,
+                      slide: this.source.index,
+                      preview: this.col.gallery.preview
+                    }
+                  });
                 }
               }
             }
@@ -696,26 +847,32 @@
   -transition: all 0.1s ease-in;
   transition: all 0.1s ease-in;
 }
-.bbn-gallery a {
+.bbn-gallery a.bbn-gallery-item {
   position: relative;
   display: block;
-  border-radius: 5px;
 }
-.bbn-gallery a span.bbn-gallery-overlay {
+.bbn-gallery a.bbn-gallery-item .bbn-gallery-item-loading,
+.bbn-gallery a.bbn-gallery-item .bbn-gallery-item-loading * {
+  -webkit-transition: unset;
+  -moz-transition: unset;
+  -o-transition: unset;
+  -transition: unset;
+  transition: unset;
+}
+.bbn-gallery a.bbn-gallery-item span.bbn-gallery-overlay {
   position: absolute;
   left: 0;
   bottom: 0;
   text-align: center;
   opacity: 0.7;
   width: 100%;
-  line-height: 30px;
+  line-height: 1.7em;
   display: block;
-  border-radius: 5px;
   font-weight: bold;
   box-sizing: border-box;
 }
-.bbn-gallery a i.bbn-gallery-zoverlay {
-  font-size: 30px;
+.bbn-gallery a.bbn-gallery-item i.bbn-gallery-zoverlay {
+  font-size: 2em;
   color: white;
   left: 50%;
   margin-left: -10px;
@@ -724,14 +881,15 @@
   position: absolute;
   top: 50%;
   transition: opacity 0.3s ease 0s;
+  text-shadow: 1px 1px black;
 }
-.bbn-gallery a:hover i.bbn-gallery-zoverlay {
+.bbn-gallery a.bbn-gallery-item:hover i.bbn-gallery-zoverlay {
   opacity: 1;
 }
-.bbn-gallery a:hover img:not(.bbn-gallery-item-selected) {
+.bbn-gallery a.bbn-gallery-item:hover img:not(.bbn-gallery-item-selected) {
   filter: grayscale(1);
 }
-.bbn-gallery a i.bbn-gallery-button-menu {
+.bbn-gallery a.bbn-gallery-item i.bbn-gallery-button-menu {
   font-size: 1.5em;
   color: white;
   left: 0.5em;
@@ -739,8 +897,9 @@
   opacity: 0;
   position: absolute;
   transition: opacity 0.3s ease 0s;
+  text-shadow: 1px 1px black;
 }
-.bbn-gallery a:hover i.bbn-gallery-button-menu {
+.bbn-gallery a.bbn-gallery-item:hover i.bbn-gallery-button-menu {
   opacity: 1;
 }
 .bbn-gallery div.bbn-gallery-pager {

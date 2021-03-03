@@ -53,6 +53,7 @@ script.innerHTML = `<div :class="[componentClass]">
               <component :is="component"
                         v-bind="componentOptions"
                         :class="{'bbn-w-100': !scrollable}"
+                        @hook:mounted="$emit('componentMounted', component, componentOptions, s)"
               ></component>
             </div>
             <div v-else-if="(s.component)"
@@ -61,6 +62,7 @@ script.innerHTML = `<div :class="[componentClass]">
               <component :is="s.component"
                          v-bind="source[idx]['componentOptions']"
                          :class="{'bbn-w-100': !scrollable}"
+                         @hook:mounted="$emit('componentMounted', s.component, s.componentOptions, s)"
               ></component>
             </div>
           </component>

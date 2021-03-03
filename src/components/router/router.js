@@ -2524,7 +2524,7 @@
        */
       listItem: {
         template: `
-<div class="bbn-w-100 bbn-vmiddle"
+<div class="bbn-w-100 bbn-vmiddle bbn-bordered-bottom"
      style="height: 2.5em"
      @mouseenter="isHover = true"
      @mouseleave="isHover = false">
@@ -2628,7 +2628,7 @@
       &nbsp;
     </div>
     <div v-if="!source.view.static"
-          class="bbn-vmiddle bbn-h-100 bbn-hspadded"
+          class="bbn-vmiddle bbn-h-100 bbn-hpadded"
           @click.prevent.stop="close"
           :style="!isHover ? lastColors : {}">
       <i class="nf nf-fa-times_rectangle bbn-lg"/>
@@ -2673,16 +2673,24 @@
            * @memberof listItem
            */
           close(){
+            let k = this.source.key;
             if (this.source.closeAction()){
-              /* let list = this.closest('bbn-list');
+              let list = this.closest('bbn-list');
               if (bbn.fn.isVue(list)) {
-                let idx = bbn.fn.search(list.source, {'data.key': this.source.key});
+                let idx = bbn.fn.search(list.source, {'data.key': k});
                 if (idx > -1) {
                   list.source.splice(idx, 1);
-                  list.updateData();
+                  if (list.source.length) {
+                    list.updateData();
+                    this.$nextTick(() => {
+                      list.closest('bbn-floater').onResize(true);
+                    })
+                  }
+                  else {
+                    this.closest('bbn-floater').close();
+                  }
                 }
-              } */
-              this.closest('bbn-floater').close();
+              }
             }
           },
           shortTitle(src){

@@ -14,12 +14,18 @@
          */
         keynav(e){
           if (this.filteredData.length && bbn.var.keys.upDown.includes(e.keyCode)) {
-            e.preventDefault();
+            if (e.preventDefault) {
+              e.preventDefault();
+            }
             if ( !this.isOpened ){
               this.isOpened = true;
               return;
             }
             let list = this.find('bbn-list');
+            if (!list && this.is('bbn-list')) {
+              list = this;
+            }
+
             if (list) {
               list.isOver = false;
               let idx = -1;

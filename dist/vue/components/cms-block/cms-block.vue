@@ -729,6 +729,7 @@
                 template: (type === 'title') ? titleTemplates[tag] : htmlTemplates[tag], 
               }
             },
+            /** @todo Seriously these arguments names??  */
             imageSuccess(a, b, c, d){
               if (c.success && c.image.src.length ){
                 if ( this.source.type === 'gallery' ){

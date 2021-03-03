@@ -1,62 +1,5 @@
-<template>
-<div :class="[componentClass, 'bbn-overlay']"
-     @subready.stop
-     v-show="visible">
-  <transition name="fade"
-              v-if="!hidden"
-              v-on:enter="enter"
-              v-on:after-enter="onResize"
-  >
-    <div :class="{
-      'bbn-background': true,
-      'bbn-overlay': !fullScreen,
-      'bbn-container-full-screen': fullScreen,
-      'bbn-container-visible': visible
-     }">
-      <bbn-scroll v-if="isLoaded && (visible || cached)"
-                  v-show="visible"
-                  :scrollable="isScrollable"
-                  :axis="isScrollable ? 'y' : null"
-                  class="bbn-overlay">
-        <!-- This is an ad hoc component with unique name -->
-        <component v-if="isComponent"
-                  :is="$options.components[componentName]"
-                  :source="source"
-                  ref="component"
-                  @hook:mounted="ready = true"
-        ></component>
-        <!-- This is a classic component -->
-        <component v-else-if="component"
-                  :is="component"
-                  :source="source"
-                  ref="component"
-                  @hook:mounted="ready = true"
-                  v-bind="options"
-        ></component>
-        <!-- This is just HTML content -->
-        <div v-else-if="content" v-html="content">
-        </div>
-        <!-- This is the slot -->
-        <slot v-else></slot>
-        <component is="style" v-if="css" scoped="scoped" v-html="css"></component>
-        <bbn-loader v-if="hasLoader"></bbn-loader>
-      </bbn-scroll>
-      <span  v-if="fullScreen"
-            class="bbn-container-full-screen-closer bbn-xl bbn-p">
-        <i class="nf nf-fa-times_circle"
-          @click="fullScreen = false"></i>
-      </span>
-      <bbn-popup ref="popup"
-                :source="popups"
-                v-if="!hidden && ready && isLoaded && (visible || cached)">
-      </bbn-popup>
-    </div>
-  </transition>
-</div>
-
-</template>
-<script>
-  module.exports = /**
+/* jshint esversion:6 */
+/**
  * @file bbn-container component
  *
  * @description bbn-container is a uniquely identified container component that can be used by bbn-tabnav.
@@ -110,7 +53,7 @@
        */
       idx: {
         type: Number
-      },
+      }
     },
     data(){
       return {
@@ -123,7 +66,7 @@
          * The router which the container belongs to if it exists.
          * @data [null] router
          */
-        router: this.closest('bbn-router'),
+        router: null,
         /**
          * True if the container shows.
          * @data {Boolean} [false] visible
@@ -186,7 +129,8 @@
         currentTitle: this.title,
         hasLoader: false,
         _bbn_container: null,
-        isScrollable: this.scrollable
+        isScrollable: this.scrollable,
+        cpMounted: false
       };
     },
     methods: {
@@ -197,7 +141,7 @@
        * @return {String}
        */
       getFullCurrentURL(){
-        return this.router.getFullBaseURL() + this.currentURL;
+        return this.router ? this.router.getFullBaseURL() + this.currentURL : null;
       },
        /**
        * Returns the full url.
@@ -206,7 +150,7 @@
        * @return {String}
        */
       getFullURL(){
-        return this.router.getFullBaseURL() + this.url;
+        return this.router ? this.router.getFullBaseURL() + this.url : null;
       },
       /**
        * Sets the value of the property loaded to the given val.
@@ -339,8 +283,8 @@
           if ( this.$parent.views[this.idx].menu === undefined ){
             this.$parent.views[this.idx].menu = [];
           }
-          let menu = this.$parent.views[this.idx].menu || [],
-              idx = bbn.fn.isFunction(menu) ? -1 : bbn.fn.search(menu || [], {text: obj.text});
+          let menu = this.$parent.views[this.idx].menu || [];
+          let idx = bbn.fn.isFunction(menu) ? -1 : bbn.fn.search(menu || [], {text: obj.text});
           if (idx === -1) {
             if (bbn.fn.isFunction(menu) ){
               this.$parent.views[this.idx].menu = () => {
@@ -479,7 +423,7 @@
           }
           else{
             this.isComponent = false;
-            this.ready = true;
+            //this.ready = true;
           }
         }
       }
@@ -488,6 +432,8 @@
      * @event created 
      */
     created(){
+      // The router is needed
+      this.router = this.closest('bbn-router');
       this.componentClass.push('bbn-resize-emitter');
       if ( this.isComponent ){
         componentsList.push(this.componentName);
@@ -497,7 +443,6 @@
         this.onMount = () => {
           return false;
         };
-        let res;
       }
     },
     /**
@@ -505,7 +450,6 @@
      * @fires router.register
      */
     mounted(){
-      // The router is needed
       if ( !this.router ){
         throw new Error(bbn._("bbn-container cannot be rendered without a bbn-router"));
       }
@@ -561,6 +505,15 @@
       ready(v){
         bbn.fn.log("READY CONTAINER " + this.url);
         if (v) {
+          // From now on the elements will remain
+          //this.cached = true;
+          if (this.isComponent) {
+            let cp = this.getComponent();
+            if (cp && (cp.scrollable != undefined)) {
+              this.isScrollable = cp.scrollable;
+            }
+          }
+
           if (this.onMount) {
             this.onMount();
           }
@@ -586,11 +539,23 @@
         this.$nextTick(() => {
           this.$emit(nv ? 'view' : 'unview', this);
           if (nv) {
+            if (this.cpMounted && !this.ready) {
+              this.ready = true;
+            }
             this.$nextTick(() => {
               this.onResize();
             });
           }
         });
+      },
+      cpMounted(v){
+        /*
+        this.$nextTick(() => {
+          if (v && this.visible && !this.ready) {
+            this.ready = true;
+          }
+        })
+        */
       },
       /**
        * @watch content
@@ -658,51 +623,8 @@
         this.router.views[this.currentIndex].dirty = v;
         this.router.retrieveDirtyContainers();
       },
-      ready(){
-        if (this.isComponent) {
-          let cp = this.getComponent();
-          if (cp && (cp.scrollable != undefined)) {
-            this.isScrollable = cp.scrollable;
-          }
-        }
-      },
     },
 
   });
 
 })(bbn, Vue);
-
-</script>
-<style scoped>
-div.bbn-container {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-div.bbn-container > .bbn-container-visible {
-  overflow: inherit;
-}
-div.bbn-container > .bbn-container-full-screen {
-  position: fixed !important;
-  top: 0px;
-  left: 0px;
-  right: 0px;
-  bottom: 0px;
-  z-index: 10;
-}
-div.bbn-container > .bbn-container-full-screen > .bbn-container-full-screen-closer {
-  position: fixed;
-  font-size: x-large;
-  right: 5px;
-  top: 5px;
-}
-div.bbn-container .fade-enter-active,
-div.bbn-container .fade-leave-active {
-  transition: opacity .5s;
-}
-div.bbn-container .fade-enter,
-div.bbn-container .fade-leave-to {
-  opacity: 0;
-}
-
-</style>

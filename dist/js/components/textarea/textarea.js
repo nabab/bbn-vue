@@ -1,6 +1,10 @@
 (bbn_resolve) => { ((bbn) => {
 let script = document.createElement('script');
-script.innerHTML = `<textarea :class="['bbn-textbox', componentClass, {'bbn-state-disabled': !!disabled}]"
+script.innerHTML = `<textarea :class="[
+            'bbn-textbox',
+            componentClass,
+            {'bbn-state-disabled': !!disabled}
+          ]"
           :value="value"
           :name="name"
           ref="element"
