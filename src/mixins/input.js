@@ -226,11 +226,11 @@
                 }
                 // If too short
                 else if ( validity.tooShort ){
-                  mess = bbn._('Please lengthen this text to ') + elem.getAttribute('minLength') + bbn._(' characters or more. You are currently using ') + elem.value.length + bbn._(' characters.');
+                  mess = bbn._('Please lengthen this text to %d characters or more. You are currently using %d characters.', parseInt(elem.getAttribute('minLength')), elem.value.length);
                 }
                 // If too long
                 else if ( validity.tooLong ){
-                  mess = bbn._('Please shorten this text to no more than ') + elem.getAttribute('maxLength') + bbn._(' characters. You are currently using ') + elem.value.length + bbn._(' characters.');
+                  mess = bbn._('Please shorten this text to no more than %d characters. You are currently using %d characters.', parseInt(elem.getAttribute('maxLength')), elem.value.length);
                 }
                 // If number input isn't a number
                 else if ( validity.badInput ){
@@ -242,11 +242,11 @@
                 }
                 // If a number field is over the max
                 else if ( validity.rangeOverflow ){
-                  mess = bbn._('Please select a value that is no more than ') + elem.getAttribute('max') + '.';
+                  mess = bbn._('Please select a value that is no more than %d.', parseInt(elem.getAttribute('max')));
                 }
                 // If a number field is below the min
                 else if ( validity.rangeUnderflow ){
-                  mess = bbn._('Please select a value that is no less than ') + elem.getAttribute('min') + '.';
+                  mess = bbn._('Please select a value that is no less than %d.', parseInt(elem.getAttribute('min')));
                 }
                 // If pattern doesn't match
                 else if (validity.patternMismatch) {

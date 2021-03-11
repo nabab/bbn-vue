@@ -3,43 +3,43 @@
   const
     editorOperators = {
       string: {
-        contains: bbn._('Contient'),
-        eq: bbn._('Est'),
-        neq: bbn._('N’est pas'),
-        startswith: bbn._('Commence par'),
-        doesnotcontain: bbn._('Ne contient pas'),
-        endswith: bbn._('Se termine par'),
-        isempty: bbn._('Est vide'),
-        isnotempty: bbn._('N’est pas vide')
+        contains: bbn._('Contains'),
+        eq: bbn._('Is'),
+        neq: bbn._('Is not'),
+        startswith: bbn._('Starts with'),
+        doesnotcontain: bbn._('Does not contain'),
+        endswith: bbn._('To end by'),
+        isempty: bbn._('Is empty'),
+        isnotempty: bbn._('Is not empty')
       },
       number: {
-        eq: bbn._('Est égal à'),
-        neq: bbn._('N’est pas égal à'),
-        gte: bbn._('Est supérieur ou égal à'),
-        gt: bbn._('Est supérieur à'),
-        lte: bbn._('Est inférieur ou égal à'),
-        lt: bbn._('Est inférieur à'),
+        eq: bbn._('Is equal to'),
+        neq: bbn._('Is not equal to'),
+        gte: bbn._('Est supérieur ou égal àIs greater than or equal to'),
+        gt: bbn._('Is greater than'),
+        lte: bbn._('Is less than or equal to'),
+        lt: bbn._('Is inferior to'),
       },
       date: {
-        eq: bbn._('Est égal à'),
-        neq: bbn._('N’est pas égal à'),
-        gte: bbn._('Est postérieur ou égal à'),
-        gt: bbn._('Est postérieur à'),
-        lte: bbn._('Est antérieur ou égal à'),
-        lt: bbn._('Est antérieur à'),
+        eq: bbn._('Is equal to'),
+        neq: bbn._('Is not equal to'),
+        gte: bbn._('Is greater than or equal to'),
+        gt: bbn._('Is after'),
+        lte: bbn._('Is prior to or equal to'),
+        lt: bbn._('Is older than'),
       },
       enums: {
-        eq: bbn._('Est égal à'),
-        neq: bbn._('N’est pas égal à'),
+        eq: bbn._('Is equal to'),
+        neq: bbn._('Is not equal to'),
       },
       boolean: {
-        istrue: bbn._('Est vrai'),
-        isfalse: bbn._('Est faux')
+        istrue: bbn._('Is true'),
+        isfalse: bbn._('Is false')
       }
     },
     editorNullOps = {
-      isnull: bbn._('Est nul'),
-      isnotnull: bbn._('N’est pas nul')
+      isnull: bbn._('Is null'),
+      isnotnull: bbn._('Is not null')
     },
     editorNoValueOperators = ['', 'isnull', 'isnotnull', 'isempty', 'isnotempty', 'istrue', 'isfalse'];
   bbn.fn.autoExtend("vue", {
