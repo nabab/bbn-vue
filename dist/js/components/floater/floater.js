@@ -69,7 +69,7 @@ script.innerHTML = `<div :class="[
                   @resize="scrollResize">
         <component v-if="component"
                   :is="component"
-                  :source="source"/>
+                  v-bind="realComponentOptions"/>
         <slot v-else-if="$slots.default"/>
         <div v-else-if="!!content" 
             v-html="content"
@@ -150,6 +150,7 @@ document.head.insertAdjacentElement('beforeend', css);
     mixins: [
       bbn.vue.basicComponent,
       bbn.vue.listComponent,
+      bbn.vue.componentInsideComponent,
       bbn.vue.dimensionsComponent,
       bbn.vue.resizerComponent,
       bbn.vue.keepCoolComponent,
@@ -356,7 +357,13 @@ document.head.insertAdjacentElement('beforeend', css);
       if ( this.onClose ){
         fns.push(this.onClose);
       }
+      let opt = this.componentOptions || {};
+      if (this.component && this.source && !bbn.fn.numProperties(opt)) {
+        opt.source = this.source;
+      }
+
       return {
+        realComponentOptions: opt,
         /**
          * @data {Array} [[]] closingFunctions
          */
@@ -887,9 +894,6 @@ document.head.insertAdjacentElement('beforeend', css);
               }
 
               this.$forceUpdate();
-              if (!this.isResized) {
-                this.isResized = true;
-              }
 
               this.$nextTick(() => {
                 this.isResizing = false;
@@ -898,6 +902,9 @@ document.head.insertAdjacentElement('beforeend', css);
                   this.$forceUpdate();
                   this.$nextTick(() => {
                     this.updatePosition();
+                    if (!this.isResized) {
+                      this.isResized = true;
+                    }
                     this.$emit('resize');
                   });
                 });

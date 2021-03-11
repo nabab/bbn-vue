@@ -308,7 +308,6 @@
       }
     },
     data() {
-      
       return {
         /**
          * @data {Boolean} [false] _observerReceived
@@ -798,7 +797,7 @@
             rowKey: this.isAjax ? ('-1-' + this.hashCfg) : -1,
             data: this.tmpRow,
             selected: false,
-            expander: !!this.expander
+            expander: false
           });
           this.editedIndex = -1;
           rowIndex++;
@@ -895,7 +894,7 @@
               }
             } else if (this.expander && (
                 !bbn.fn.isFunction(this.expander) ||
-                (bbn.fn.isFunction(this.expander) && this.expander(a))
+                (bbn.fn.isFunction(this.expander) && this.expander(data[i], i))
               )) {
               o.expander = true;
               expanderIndex = o.index;
@@ -916,7 +915,7 @@
           }
           if (this.expander && (
               !bbn.fn.isFunction(this.expander) ||
-              (bbn.fn.isFunction(this.expander) && this.expander(a))
+              (bbn.fn.isFunction(this.expander) && this.expander(data[i], i))
             )) {
             res.push({
               index: data[i].index,
@@ -1025,7 +1024,18 @@
         }
         let fdata = [];
         res.forEach((d) => {
-          if (d.group || d.expander || this.isExpanded(d) || d.aggregated || (this.isExpanded(d) && d.groupAggregated)) {
+          //if (d.group || d.expander || this.isExpanded(d) || d.aggregated || (this.isExpanded(d) && d.groupAggregated)) {
+          if (d.group
+            || d.expander
+            || this.isExpanded(d)
+            || d.aggregated
+            || (this.isExpanded(d) && d.groupAggregated)
+            || (!d.expander
+              && !d.expansion
+              && !this.isExpanded(d)
+              && bbn.fn.isFunction(this.expander)
+              && !this.expander(d))
+          ) {
             fdata.push(d)
           }
         });
@@ -1061,6 +1071,17 @@
           });
         });
         return r;
+      },
+      /**
+       * Indicates whether the column for the expander should be shown
+       * @computed expanderColumnVisible
+       * @returns {Boolean}
+       */
+      expanderColumnVisible(){
+        if (this.items && this.items.length){
+          return !!this.items.filter(i => !!i.expander).length
+        }
+        return false
       }
     },
     methods: {
@@ -2695,7 +2716,8 @@
        * @param {Event} e 
        */
       focusin(idx, e) {
-        if ((e.target.tagName !== 'BUTTON')
+        if (!e.target.closest('td')
+          || !e.target.closest('td').classList.contains('bbn-table-buttons')
           || e.target.closest('td').classList.contains('bbn-table-edit-buttons')
         ) {
           this.focused = true;
@@ -2923,8 +2945,11 @@
             if ((this.editedIndex === idx)
               && this.isModified(idx)
             ) {
-              if (this.autosave) {
+              if (this.autoSave) {
                 this.saveInline();
+              }
+              else if (this.autoReset){
+                this.cancel();
               }
               else {
                 this.$emit('change', this.items[oldIndex].data, idx);

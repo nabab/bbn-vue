@@ -804,13 +804,13 @@ document.head.insertAdjacentElement('beforeend', css);
               }
             }
           }
-          else if (!this.single && bbn.fn.isNumber(e.key)) {
+          else if (!this.single
+            && bbn.fn.isNumber(e.key)
+            && (e.key !== '0')
+          ) {
             e.preventDefault();
             e.stopPropagation();
             let idx = parseInt(e.key);
-            if (!idx) {
-              idx = 10;
-            }
             idx--;
             this.getRef('router').activateIndex(idx);
           }

@@ -28,6 +28,7 @@
     mixins: [
       bbn.vue.basicComponent,
       bbn.vue.listComponent,
+      bbn.vue.componentInsideComponent,
       bbn.vue.dimensionsComponent,
       bbn.vue.resizerComponent,
       bbn.vue.keepCoolComponent,
@@ -234,7 +235,13 @@
       if ( this.onClose ){
         fns.push(this.onClose);
       }
+      let opt = this.componentOptions || {};
+      if (this.component && this.source && !bbn.fn.numProperties(opt)) {
+        opt.source = this.source;
+      }
+
       return {
+        realComponentOptions: opt,
         /**
          * @data {Array} [[]] closingFunctions
          */
@@ -765,17 +772,20 @@
               }
 
               this.$forceUpdate();
-              if (!this.isResized) {
-                this.isResized = true;
-              }
 
               this.$nextTick(() => {
                 this.isResizing = false;
+                if (this.element && !this.isResized) {
+                  this.isResized = true;
+                }
                 this.$nextTick(() => {
                   this.setResizeMeasures();
                   this.$forceUpdate();
                   this.$nextTick(() => {
                     this.updatePosition();
+                    if (!this.isResized) {
+                      this.isResized = true;
+                    }
                     this.$emit('resize');
                   });
                 });

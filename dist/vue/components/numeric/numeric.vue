@@ -434,7 +434,7 @@
        * @fires emitInput
        */
       changeValue(newVal, oldVal){
-        if ( (newVal === '') || (newVal === null) ){
+        if ((newVal === '') || (newVal === null) ){
           this.currentValue = '';
           this.setInputValue('');
           this.emitInput(this.nullable ? null : '');

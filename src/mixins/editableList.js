@@ -19,7 +19,7 @@
          * @prop {String|Object} editor
          */
         editor: {
-          type: [String, Object]
+          type: [String, Object, Function]
         },
         /**
          * Set to true allows to edit inline the fields if no buttons are defined for the table.
@@ -32,9 +32,17 @@
         },
         /**
          * Auto saves the row when edit-mode is 'inline'
-         * @prop {Boolean} [false] autosave
+         * @prop {Boolean} [false] autoSave
          */
-        autosave: {
+        autoSave: {
+          type: Boolean,
+          default: false
+        },
+        /**
+         * Automatically resets the original values ​​when edit-mode is 'inline'
+         * @prop {Boolean} [false] autoReset
+         */
+        autoReset: {
           type: Boolean,
           default: false
         }
@@ -219,7 +227,7 @@
             }, winOptions ? winOptions : {});
             // A component is given as global editor (form)
             if (this.editor) {
-              popup.component = this.editor;
+              popup.component = bbn.fn.isFunction(this.editor) ? this.editor(row, index) : this.editor;
             }
             // A URL is given and in this case the form will be created automatically with this URL as action
             else if (this.url) {
@@ -365,7 +373,7 @@
             if ((d.success !== undefined) && !d.success) {
               if (window.appui) {
                 let ev = new Event('editFailure', {cancelable: true});
-                this.$emit('editFailure', d, ev);
+                this.$emit('editFailfure', d, ev);
                 if (!ev.defaultPrevented) {
                   appui.error();
                 }

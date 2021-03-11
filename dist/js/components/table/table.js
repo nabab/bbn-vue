@@ -117,7 +117,6 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                   ></i>
                   <div v-if="col.isSelection" :title="_('Check all')">
                     <bbn-checkbox v-model="allRowsChecked"/>
-                    <!-- @todo an icon for selecting all/none -->
                   </div>
                   <div v-else-if="col.isExpander" :title="_('Expand all')">
                     <!-- @todo an icon for expanding all/none -->
@@ -150,11 +149,10 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                   </span>
                   <i v-if="isSorted(col)"
                     :class="{
-                  'bbn-table-sortable-icon': true,
-                  nf: true,
-                  'nf-fa-caret_up': isSorted(col).dir === 'ASC',
-                  'nf-fa-caret_down': isSorted(col).dir === 'DESC',
-                }"></i>
+                      'bbn-table-sortable-icon': true,
+                      'nf nf-fa-caret_up': isSorted(col).dir === 'ASC',
+                      'nf nf-fa-caret_down': isSorted(col).dir === 'DESC',
+                  }"></i>
                 </th>
               </template>
             </tr>
@@ -266,9 +264,12 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                             backgroundColor: 'transparent !important'
                           }">
                       <component v-if="typeof(expander) !== 'function'"
-                          :is="expander"
-                          class="bbn-spadded"
-                          :source="d.data"/>
+                                :is="expander"
+                                class="bbn-spadded"
+                                :source="d.data"/>
+                      <component v-else-if="(typeof(expander(d)) === 'object')"
+                                :is="expander(d)"
+                                :source="d.data"/>
                       <div v-else
                            v-html="expander(d.data, i)"/>
                     </div>
@@ -286,7 +287,8 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                         && (!currentColumns[index+1] || !currentColumns[index+1].isLeft),
                       'bbn-table-fixed-cell-right': col.isRight,
                       'bbn-table-cell-first': !col.isLeft && !col.isRight && ((index === 0) || (!!currentColumns[index-1].isLeft)),
-                      'bbn-table-edit-buttons': !!col.buttons && isEdited(d.data, col, i)
+                      'bbn-table-edit-buttons': !!col.buttons && isEdited(d.data, col, i),
+                      'bbn-table-buttons': !!col.buttons
                     }]"
                     :style="{
                       left: col.left !== undefined ? (col.left + 'px') : 'auto',
@@ -772,7 +774,6 @@ document.head.insertAdjacentElement('beforeend', css);
       }
     },
     data() {
-      
       return {
         /**
          * @data {Boolean} [false] _observerReceived
@@ -1262,7 +1263,7 @@ document.head.insertAdjacentElement('beforeend', css);
             rowKey: this.isAjax ? ('-1-' + this.hashCfg) : -1,
             data: this.tmpRow,
             selected: false,
-            expander: !!this.expander
+            expander: false
           });
           this.editedIndex = -1;
           rowIndex++;
@@ -1359,7 +1360,7 @@ document.head.insertAdjacentElement('beforeend', css);
               }
             } else if (this.expander && (
                 !bbn.fn.isFunction(this.expander) ||
-                (bbn.fn.isFunction(this.expander) && this.expander(a))
+                (bbn.fn.isFunction(this.expander) && this.expander(data[i], i))
               )) {
               o.expander = true;
               expanderIndex = o.index;
@@ -1380,7 +1381,7 @@ document.head.insertAdjacentElement('beforeend', css);
           }
           if (this.expander && (
               !bbn.fn.isFunction(this.expander) ||
-              (bbn.fn.isFunction(this.expander) && this.expander(a))
+              (bbn.fn.isFunction(this.expander) && this.expander(data[i], i))
             )) {
             res.push({
               index: data[i].index,
@@ -1489,7 +1490,18 @@ document.head.insertAdjacentElement('beforeend', css);
         }
         let fdata = [];
         res.forEach((d) => {
-          if (d.group || d.expander || this.isExpanded(d) || d.aggregated || (this.isExpanded(d) && d.groupAggregated)) {
+          //if (d.group || d.expander || this.isExpanded(d) || d.aggregated || (this.isExpanded(d) && d.groupAggregated)) {
+          if (d.group
+            || d.expander
+            || this.isExpanded(d)
+            || d.aggregated
+            || (this.isExpanded(d) && d.groupAggregated)
+            || (!d.expander
+              && !d.expansion
+              && !this.isExpanded(d)
+              && bbn.fn.isFunction(this.expander)
+              && !this.expander(d))
+          ) {
             fdata.push(d)
           }
         });
@@ -1525,6 +1537,17 @@ document.head.insertAdjacentElement('beforeend', css);
           });
         });
         return r;
+      },
+      /**
+       * Indicates whether the column for the expander should be shown
+       * @computed expanderColumnVisible
+       * @returns {Boolean}
+       */
+      expanderColumnVisible(){
+        if (this.items && this.items.length){
+          return !!this.items.filter(i => !!i.expander).length
+        }
+        return false
       }
     },
     methods: {
@@ -3159,7 +3182,8 @@ document.head.insertAdjacentElement('beforeend', css);
        * @param {Event} e 
        */
       focusin(idx, e) {
-        if ((e.target.tagName !== 'BUTTON')
+        if (!e.target.closest('td')
+          || !e.target.closest('td').classList.contains('bbn-table-buttons')
           || e.target.closest('td').classList.contains('bbn-table-edit-buttons')
         ) {
           this.focused = true;
@@ -3387,8 +3411,11 @@ document.head.insertAdjacentElement('beforeend', css);
             if ((this.editedIndex === idx)
               && this.isModified(idx)
             ) {
-              if (this.autosave) {
+              if (this.autoSave) {
                 this.saveInline();
+              }
+              else if (this.autoReset){
+                this.cancel();
               }
               else {
                 this.$emit('change', this.items[oldIndex].data, idx);

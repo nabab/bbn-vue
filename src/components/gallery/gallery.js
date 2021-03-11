@@ -386,6 +386,7 @@
         }
         this.searchTimeout = setTimeout(() => {
           let idx = bbn.fn.search(this.currentFilters.conditions, {field: this.searchName});
+          bbn.fn.log(idx)
           if (idx > -1) {
             if (newVal) {
               this.currentFilters.conditions[idx].value == newVal;

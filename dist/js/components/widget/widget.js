@@ -342,7 +342,7 @@ document.head.insertAdjacentElement('beforeend', css);
         let tmp = this.menu.slice();
         if ( this.url ){
           tmp.unshift({
-            text: '<i class="nf nf-fa-refresh"></i>' + bbn._("Reload"),
+            text: bbn._("Reload"),
             icon: "nf nf-fa-refresh",
             action: () => {
               this.reload();
@@ -362,6 +362,7 @@ document.head.insertAdjacentElement('beforeend', css);
           });
           tmp.push({
             text: bbn._("Limit"),
+            icon: 'nf nf-mdi-numeric',
             items: items,
             mode: "selection"
           });

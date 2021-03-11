@@ -68,7 +68,7 @@
                   @resize="scrollResize">
         <component v-if="component"
                   :is="component"
-                  :source="source"/>
+                  v-bind="realComponentOptions"/>
         <slot v-else-if="$slots.default"/>
         <div v-else-if="!!content" 
             v-html="content"
@@ -144,6 +144,7 @@
     mixins: [
       bbn.vue.basicComponent,
       bbn.vue.listComponent,
+      bbn.vue.componentInsideComponent,
       bbn.vue.dimensionsComponent,
       bbn.vue.resizerComponent,
       bbn.vue.keepCoolComponent,
@@ -350,7 +351,13 @@
       if ( this.onClose ){
         fns.push(this.onClose);
       }
+      let opt = this.componentOptions || {};
+      if (this.component && this.source && !bbn.fn.numProperties(opt)) {
+        opt.source = this.source;
+      }
+
       return {
+        realComponentOptions: opt,
         /**
          * @data {Array} [[]] closingFunctions
          */
@@ -881,9 +888,6 @@
               }
 
               this.$forceUpdate();
-              if (!this.isResized) {
-                this.isResized = true;
-              }
 
               this.$nextTick(() => {
                 this.isResizing = false;
@@ -892,6 +896,9 @@
                   this.$forceUpdate();
                   this.$nextTick(() => {
                     this.updatePosition();
+                    if (!this.isResized) {
+                      this.isResized = true;
+                    }
                     this.$emit('resize');
                   });
                 });

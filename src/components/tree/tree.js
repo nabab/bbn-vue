@@ -78,10 +78,17 @@
         type: [Function, String]
       },
       /**
-       * A component for the node.
+       * A component for the entire node block.
        * @prop {Function|String|Object} component
        */
       component: {
+        type: [Function, String, Object]
+      },
+      /**
+       * A component for the node.
+       * @prop {Function|String|Object} itemComponent
+       */
+      itemComponent: {
         type: [Function, String, Object]
       },
       /**

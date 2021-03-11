@@ -13,24 +13,22 @@
       'bbn-container-full-screen': fullScreen,
       'bbn-container-visible': visible
      }">
-      <bbn-scroll v-if="isLoaded && (visible || cached)"
-                  v-show="visible"
-                  :scrollable="isScrollable"
-                  :axis="isScrollable ? 'y' : null"
-                  class="bbn-overlay">
+      <component :is="scrollable ? 'bbn-scroll' : 'div'"
+                v-if="ready && isLoaded && (visible || cached)"
+                v-show="visible"
+                :axis="scrollable ? 'y' : null"
+                class="bbn-overlay">
         <!-- This is an ad hoc component with unique name -->
         <component v-if="isComponent"
                   :is="$options.components[componentName]"
                   :source="source"
                   ref="component"
-                  @hook:mounted="ready = true"
         ></component>
         <!-- This is a classic component -->
         <component v-else-if="component"
                   :is="component"
                   :source="source"
                   ref="component"
-                  @hook:mounted="ready = true"
                   v-bind="options"
         ></component>
         <!-- This is just HTML content -->
@@ -40,7 +38,7 @@
         <slot v-else></slot>
         <component is="style" v-if="css" scoped="scoped" v-html="css"></component>
         <bbn-loader v-if="hasLoader"></bbn-loader>
-      </bbn-scroll>
+      </component>
       <span  v-if="fullScreen"
             class="bbn-container-full-screen-closer bbn-xl bbn-p">
         <i class="nf nf-fa-times_circle"
@@ -123,7 +121,7 @@
          * The router which the container belongs to if it exists.
          * @data [null] router
          */
-        router: this.closest('bbn-router'),
+        router: null,
         /**
          * True if the container shows.
          * @data {Boolean} [false] visible
@@ -185,10 +183,10 @@
         currentURL: this.current || this.url,
         currentTitle: this.title,
         hasLoader: false,
-        _bbn_container: null,
-        isScrollable: this.scrollable
+        _bbn_container: null
       };
     },
+
     methods: {
       /**
        * Returns the full current url.
@@ -452,7 +450,7 @@
             // Adding also a few funciton to interact with the tab
             let cont = this;
             let o = bbn.fn.extend(true, res ? res : {}, {
-              template: '<div class="' + (this.isScrollable ? '' : 'bbn-overlay') + '">' + this.content + '</div>',
+              template: '<div class="' + (this.scrollable ? '' : 'bbn-overlay') + '">' + this.content + '</div>',
               methods: {
                 getContainer(){
                   if (!this._bbn_container) {
@@ -470,17 +468,15 @@
                   return this.getContainer().deleteMenu.apply(this.$parent, arguments)
                 }
               },
-              props: [
-                'source'
-              ]
+              props: ['source']
             });
             // The local anonymous component gets defined
             this.$options.components[this.componentName] = o;
           }
           else{
             this.isComponent = false;
-            this.ready = true;
           }
+          this.ready = true;
         }
       }
     },
@@ -506,6 +502,7 @@
      */
     mounted(){
       // The router is needed
+      this.router = this.closest('bbn-router');
       if ( !this.router ){
         throw new Error(bbn._("bbn-container cannot be rendered without a bbn-router"));
       }
@@ -657,15 +654,7 @@
         //bbn.fn.log("DIRTY WATCHER", this.currentIndex, this.router.views);
         this.router.views[this.currentIndex].dirty = v;
         this.router.retrieveDirtyContainers();
-      },
-      ready(){
-        if (this.isComponent) {
-          let cp = this.getComponent();
-          if (cp && (cp.scrollable != undefined)) {
-            this.isScrollable = cp.scrollable;
-          }
-        }
-      },
+      }
     },
 
   });

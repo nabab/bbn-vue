@@ -115,7 +115,6 @@
                   ></i>
                   <div v-if="col.isSelection" :title="_('Check all')">
                     <bbn-checkbox v-model="allRowsChecked"/>
-                    <!-- @todo an icon for selecting all/none -->
                   </div>
                   <div v-else-if="col.isExpander" :title="_('Expand all')">
                     <!-- @todo an icon for expanding all/none -->
@@ -148,11 +147,10 @@
                   </span>
                   <i v-if="isSorted(col)"
                     :class="{
-                  'bbn-table-sortable-icon': true,
-                  nf: true,
-                  'nf-fa-caret_up': isSorted(col).dir === 'ASC',
-                  'nf-fa-caret_down': isSorted(col).dir === 'DESC',
-                }"></i>
+                      'bbn-table-sortable-icon': true,
+                      'nf nf-fa-caret_up': isSorted(col).dir === 'ASC',
+                      'nf nf-fa-caret_down': isSorted(col).dir === 'DESC',
+                  }"></i>
                 </th>
               </template>
             </tr>
@@ -264,9 +262,12 @@
                             backgroundColor: 'transparent !important'
                           }">
                       <component v-if="typeof(expander) !== 'function'"
-                          :is="expander"
-                          class="bbn-spadded"
-                          :source="d.data"/>
+                                :is="expander"
+                                class="bbn-spadded"
+                                :source="d.data"/>
+                      <component v-else-if="(typeof(expander(d)) === 'object')"
+                                :is="expander(d)"
+                                :source="d.data"/>
                       <div v-else
                            v-html="expander(d.data, i)"/>
                     </div>
@@ -284,7 +285,8 @@
                         && (!currentColumns[index+1] || !currentColumns[index+1].isLeft),
                       'bbn-table-fixed-cell-right': col.isRight,
                       'bbn-table-cell-first': !col.isLeft && !col.isRight && ((index === 0) || (!!currentColumns[index-1].isLeft)),
-                      'bbn-table-edit-buttons': !!col.buttons && isEdited(d.data, col, i)
+                      'bbn-table-edit-buttons': !!col.buttons && isEdited(d.data, col, i),
+                      'bbn-table-buttons': !!col.buttons
                     }]"
                     :style="{
                       left: col.left !== undefined ? (col.left + 'px') : 'auto',

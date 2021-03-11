@@ -923,6 +923,16 @@ document.head.insertAdjacentElement('beforeend', css);
       }
       this.init();
     },
+    beforeDestroy(){
+      if (this.dirty) {
+        if (this.window) {
+          this.window.dirty = false;
+        }
+        if (this.tab) {
+          this.tab.dirty = false;
+        }
+      }
+    },
     watch: {
       /**
        * @watch schema

@@ -244,7 +244,7 @@
           source: null,
           title: bbn._("Untitled"),
           options: null,
-          cached: true,
+          cached: false,
           scrollable: true,
           component: null,
           icon: '',

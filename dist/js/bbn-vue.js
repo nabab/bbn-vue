@@ -3724,7 +3724,10 @@
          * @memberof inputComponent
          */
         name: {
-          type: String
+          type: String,
+          default(){
+            return bbn.fn.randomString(10, 20)
+          }
         },
         /**
          * The component's placeholder.

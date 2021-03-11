@@ -562,6 +562,10 @@
           },
           
           defaultEndLoadingFunction(url, timestamp, data, res) {
+            if (res && res.data && res.data.disconnected) {
+              window.location.reload();
+              return;
+            }
             if ( window.appui && appui.status ){
               let history = bbn.fn.getRow(bbn.env.loadersHistory, {url: url, start: timestamp});
               let loader = bbn.fn.getRow(appui.loaders, {url: url, start: timestamp});

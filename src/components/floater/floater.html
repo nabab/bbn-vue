@@ -67,7 +67,7 @@
                   @resize="scrollResize">
         <component v-if="component"
                   :is="component"
-                  :source="source"/>
+                  v-bind="realComponentOptions"/>
         <slot v-else-if="$slots.default"/>
         <div v-else-if="!!content" 
             v-html="content"

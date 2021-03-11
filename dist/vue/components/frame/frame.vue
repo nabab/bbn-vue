@@ -44,6 +44,21 @@
       }
     },
     computed: {
+      currentSandbox(){
+        if (this.sandbox === false) {
+          return 'allow-forms	allow-modals' +
+          ' allow-pointer-lock' +
+          ' allow-orientation-lock' +
+          ' allow-same-origin' +
+          ' allow-popups' +
+          ' allow-presentation' +
+          ' allow-scripts' +
+          ' allow-top-navigation' +
+          ' allow-top-navigation-by-user-activation' +
+          ' allow-popups-to-escape-sandbox';
+        }
+        return this.sandbox;
+      }
     },
     methods: {
       sendMessage(msg){

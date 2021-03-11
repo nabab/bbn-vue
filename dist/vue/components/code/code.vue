@@ -1,5 +1,11 @@
 <template>
-<div :class="[{'bbn-reset': true, 'bbn-overlay': isFullScreen}, componentClass]"
+<div :class="[
+     {
+        'bbn-reset': true,
+        'bbn-overlay': isFullScreen
+     },
+     componentClass
+     ]"
      @keydown.enter.stop=""
      @keydown.escape.stop="toggleFullScreen(false)"
 >
@@ -373,6 +379,9 @@
           },
           this.cfg
         );
+        if (!this.scrollable) {
+          cfg.height = 'auto';
+        }
         if ( this.readonly || this.disabled ){
           cfg.readOnly = true;
         }
@@ -812,7 +821,7 @@
           if (!this[this.mode + 'Hint']) {
             return this.widget.showHint({completeSingle: false})
           }
-
+          
           /** Object Cursor's info */
           let cursor = this.widget.getCursor();
           if (!cursor.ch) {
@@ -836,8 +845,9 @@
               return false;
             }
           });
-
+          bbn.fn.log("TOKENS", tokens);
           let numTokens = realTokens.length;
+
           bbn.fn.log('SHOWHINT', numTokens, currentLine);
           if (
             !numTokens ||
@@ -846,6 +856,9 @@
             (realTokens[numTokens - 1].type === 'comment')
           ) {
             return;
+          }
+          if (realTokens[numTokens-1].state.curMode && realTokens[numTokens-1].state.curMode.name === 'htmlmixed') {
+            return this.widget.showHint({completeSingle: false})
           }
 
           let res = this[this.mode + 'Hint'](currentLine, cursor.line);
@@ -935,29 +948,27 @@
         this.widget = CodeMirror(this.getRef('code'), this.getOptions());
 
         this.widget.on("keyup", (cm, event) => {
-          if (["Shift", "Ctrl", "Alt"].includes(event.key)) {
+          if (["Shift", "Ctrl", "Alt"].includes(event.key) ||
+              bbn.var.keys.upDown.includes(event.keyCode)
+          ) {
             return;
           }
 
-          if (bbn.var.keys.upDown.includes(event.keyCode)) {
-            return;
-          }
-
-          if (["Escape"].includes(event.key)) {
+          if (["Escape"].includes(event.key) ||
+              event.ctrlKey ||
+              event.altKey
+          ) {
             this.resetFloaters();
             return;
           }
 
           this.showHint();
         });
-        this.widget.on("blur", () => {
-          this.resetFloaters();
-        });
 
-        this.widget.on("change", () => {
-          this.emitInput(this.widget.doc.getValue());
-        });
         this.widget.on("keydown", (cm, event) => {
+          if (this.hintTimeout) {
+            clearTimeout(this.hintTimeout);
+          }
           if (["Shift", "Ctrl", "Alt"].includes(event.key)) {
             return;
           }
@@ -982,6 +993,14 @@
 
         this.widget.on("scroll", cm => {
           this.$emit('scroll', cm);
+        });
+
+        this.widget.on("blur", () => {
+          this.resetFloaters();
+        });
+
+        this.widget.on("change", () => {
+          this.emitInput(this.widget.doc.getValue());
         });
 
         setTimeout(() => {
