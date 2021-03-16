@@ -50,7 +50,7 @@
                     :mobile="true"
                     :z-index="3"/>
         <!-- SEARCHBAR -->
-        <div v-if="!isMobile"
+        <div v-if="!isMobile && !!searchBar"
              class="bbn-appui-search bbn-large bbn-abs bbn-h-100 bbn-vspadded bbn-vmiddle"
         >
           <bbn-search :source="searchBar.source"
@@ -72,7 +72,7 @@
           <!-- FISHEYE -->
           <bbn-fisheye v-if="plugins['appui-menu']"
                        style="z-index: 3"
-                       v-show="'?' !== searchBar.value"
+                       v-show="!searchBar || ('?' !== searchBar.value)"
                        :class="{
                          'bbn-invisible': $refs.search && $refs.search.isFocused,
                          'bbn-100': true
@@ -94,7 +94,7 @@
           >
         </div>
         <!-- SEARCHBAR (MOBILE) -->
-        <div v-if="isMobile"
+        <div v-if="isMobile && !!searchBar"
              :class="['bbn-appui-search', 'bbn-vmiddle', 'bbn-large', {'bbn-flex-fill': searchIsActive}]">
           <bbn-search :source="searchBar.source"
                       :placeholder="searchBar.placeholderFocused"
