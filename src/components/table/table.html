@@ -38,7 +38,8 @@
       >
         <table :style="{width: totalWidth}"
                ref="table"
-               v-if="currentColumns.length">
+               v-if="currentColumns.length"
+               class="bbn-table-table">
           <colgroup>
             <template v-for="(groupCol, groupIndex) in groupCols">
               <col v-for="(col, i) in groupCol.cols"
