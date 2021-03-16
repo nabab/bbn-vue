@@ -331,26 +331,26 @@
        * @method action
        * @fires setSelecting
        */
-      action(){
+       emitAction(){
         if (this.currentSelected.length) {
           let mess = '',
               selected = this.currentSelected.map(v => {
                 return bbn.fn.extend(true, {}, bbn.fn.getField(this.currentData, 'data', {index: v}));
               });
-          if ( this.selectingMode === 'download' ){
+          if (this.selectingMode === 'download') {
             mess = bbn._("Are you sure you want to download these photos?");
           }
-          else if ( this.selectingMode === 'remove' ){
-            mess = bbn._("Are you sure you want to remove these photos?");
+          else if (this.selectingMode === 'delete') {
+            mess = bbn._("Are you sure you want to delete these photos?");
           }
           if (mess.length) {
-            this.confirm(bbn._(mess, this.selectingMode), () => {
-              this.$emit(act, selected);
+            this.confirm(mess, () => {
+              this.$emit(this.selectingMode, selected);
               this.setSelecting(false);
             });
           }
           else {
-            this.$emit(act, selected);
+            this.$emit(this.selectingMode, selected);
             this.setSelecting(false);
           }
         }
@@ -649,7 +649,6 @@
                * @fires getPopup
                */
               action(ev){
-                bbn.fn.warning('mirko', ev.target.parentNode.tagName, ev, ev.target.closest('.bbn-gallery-button-menu-context'))
                 if ( this.col.gallery.isSelecting ){
                   if ( this.isSelected ){
                     this.col.gallery.currentSelected.splice(this.col.gallery.currentSelected.indexOf(this.source.index), 1);
