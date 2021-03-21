@@ -172,6 +172,9 @@
                   @change="$emit('change', $event)"
                   :breadcrumb="isMobile"
                   :scrollable="isMobile"
+                  :component="component"
+                  :component-source="componentSource"
+                  :component-url="componentUrl"
       >
         <slot/>
       </bbn-router>

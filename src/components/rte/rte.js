@@ -109,7 +109,7 @@
             ['superscript', 'subscript'],
             ['link'],
             ['insertImage', 'base64'],
-            ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'],
+            ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull', 'center'],
             ['unorderedList', 'orderedList'],
             ['horizontalRule'],
             ['fullscreen'],

@@ -475,6 +475,7 @@
         this.numRegistered++;
         this.urls[cp.url] = cp;
         let idx = this.search(cp.url);
+        bbn.fn.info('yes1', idx, cp.url, bbn.fn.clone(this.views))
         if (idx === false) {
           this.add(cp);
         }
@@ -483,6 +484,7 @@
           if ( !this.isInit && (this.numRegistered === this.views.length) ){
             this.isInit = true;
             if ( this.auto ){
+              bbn.fn.info('yes', cp.url)
               this.route(this.single ? cp.url : this.getDefaultURL(), true);
             }
           }
