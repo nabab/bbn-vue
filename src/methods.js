@@ -330,7 +330,7 @@
       if ( typeof todo  === 'string' ){
         todo = [todo];
       }
-      if ( bbn.fn.isArray(todo) ){
+      if (bbn.fn.isArray(todo) && bbn.fn.getRow(bbn.vue.knownPrefixes, {prefix: 'bbn-'})) {
         bbn.fn.each(todo, (a) => {
           if ( Vue.options.components['bbn-' + a] === undefined ){
             this.queueComponentBBN(a);
@@ -396,7 +396,15 @@
      */
     executeQueueBBNItem(todo){
       if ( todo.length ){
-        let url = bbn_root_url + bbn_root_dir + 'components/?components=' + bbn.fn.map(todo, (a) => {
+        let url = '';
+        if ((typeof bbn_root_dir !== 'undefined')
+          && (typeof bbn_root_url !== 'undefined')
+          && bbn_root_dir
+          && bbn_root_url
+        ) {
+          url += bbn_root_url + bbn_root_dir;
+        }
+        url += 'components/?components=' + bbn.fn.map(todo, (a) => {
           return a.name;
         }).join(',') + '&v=' + bbn.version;
         if ( bbn.env.isDev ){

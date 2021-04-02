@@ -1,0 +1,73 @@
+.bbn-chat .bbn-badge {
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+}
+.bbn-chat > .bbn-block > span.bbn-badge {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+.bbn-chat .bbn-chat-common {
+  position: absolute;
+  right: 0;
+  z-index: 5;
+  height: 350px;
+}
+.bbn-chat .bbn-chat-users {
+  position: absolute;
+  right: 0;
+  z-index: 5;
+  height: 350px;
+  width: 300px;
+}
+.bbn-chat .bbn-chat-conversation {
+  position: absolute;
+  right: 0;
+  z-index: 5;
+  height: 350px;
+  width: 250px;
+}
+.bbn-chat .bbn-chat-conversation .bbn-chat-conversation-message {
+  word-break: break-word;
+}
+.bbn-chat .bbn-chat-conversation .bbn-chat-conversation-message .bbn-chat-conversation-message-time {
+  align-self: flex-end;
+  flex-shrink: 0;
+}
+.bbn-chat .bbn-chat-conversation .bbn-chat-conversation-message:after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  border: 0.5em solid transparent;
+}
+.bbn-chat .bbn-chat-conversation .bbn-chat-conversation-message.bbn-chat-conversation-message-received {
+  border-top-left-radius: 0;
+}
+.bbn-chat .bbn-chat-conversation .bbn-chat-conversation-message.bbn-chat-conversation-message-received:after {
+  left: 0;
+  top: 0.5em;
+  border-right-color: inherit;
+  border-left: 0;
+  border-top: 0;
+  margin-top: -0.5em;
+  margin-left: -0.5em;
+}
+.bbn-chat .bbn-chat-conversation .bbn-chat-conversation-message.bbn-chat-conversation-message-sent {
+  border-bottom-right-radius: 0;
+}
+.bbn-chat .bbn-chat-conversation .bbn-chat-conversation-message.bbn-chat-conversation-message-sent:after {
+  right: 0;
+  bottom: 0.5em;
+  border-left-color: inherit;
+  border-right: 0;
+  border-bottom: 0;
+  margin-bottom: -0.5em;
+  margin-right: -0.5em;
+}
+.bbn-chat .bbn-chat-conversation .bbn-chat-conversation-input button {
+  border-radius: 0 !important;
+}
+.bbn-chat .bbn-chat-conversation .bbn-user-title {
+  margin-right: 5px;
+}

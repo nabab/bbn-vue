@@ -1,4 +1,5 @@
-(bbn_resolve) => { ((bbn) => {
+(bbn_resolve) => {
+((bbn) => {
 let script = document.createElement('script');
 script.innerHTML = `<component v-if="mode === 'write'"
            :is="renderedComponent"
@@ -266,4 +267,5 @@ document.head.insertAdjacentElement('beforeend', css);
 })(bbn);
 
 if (bbn_resolve) {bbn_resolve("ok");}
-})(bbn); }
+})(bbn);
+}

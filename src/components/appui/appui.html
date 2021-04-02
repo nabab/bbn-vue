@@ -179,6 +179,11 @@
         <slot/>
       </bbn-router>
     </div>
+    <!-- FOOTER -->
+    <component v-if="(typeof footer !== 'undefined') && !!footer"
+               ref="footer"
+               class="appui-footer"
+               :is="footer"/>
     <!-- STATUS -->
     <div v-if="status"
         ref="foot"

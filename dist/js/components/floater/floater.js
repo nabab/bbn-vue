@@ -1,4 +1,5 @@
-(bbn_resolve) => { ((bbn) => {
+(bbn_resolve) => {
+((bbn) => {
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[
         {
@@ -897,6 +898,9 @@ document.head.insertAdjacentElement('beforeend', css);
 
               this.$nextTick(() => {
                 this.isResizing = false;
+                if (this.element && !this.isResized) {
+                  this.isResized = true;
+                }
                 this.$nextTick(() => {
                   this.setResizeMeasures();
                   this.$forceUpdate();
@@ -1496,4 +1500,5 @@ document.head.insertAdjacentElement('beforeend', css);
 })(window.Vue, window.bbn);
 
 if (bbn_resolve) {bbn_resolve("ok");}
-})(bbn); }
+})(bbn);
+}

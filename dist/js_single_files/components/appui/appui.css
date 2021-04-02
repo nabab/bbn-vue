@@ -1,0 +1,72 @@
+.bbn-appui {
+  box-sizing: border-box;
+  transition: opacity 0.5s;
+  overflow: hidden;
+  max-width: 100%;
+}
+.bbn-appui .bbn-appui-menu-button {
+  min-width: 50px;
+  width: 50px;
+  margin-right: 90px;
+}
+.bbn-mobile .bbn-appui .bbn-appui-fisheye {
+  min-height: 4em;
+  width: 2.7em;
+}
+.bbn-appui .bbn-appui-logo {
+  border: 0;
+  max-height: 100%;
+  max-width: 100%;
+  width: auto;
+}
+.bbn-mobile .bbn-appui .bbn-appui-logo {
+  max-width: 90%;
+  height: auto;
+  max-height: 4em;
+}
+.bbn-appui .bbn-appui-search {
+  left: 50px;
+  right: 140px;
+  top: auto;
+}
+.bbn-mobile .bbn-appui .bbn-appui-search {
+  width: 4.2em;
+  justify-content: flex-end;
+  left: unset;
+  right: unset;
+  top: unset;
+}
+.bbn-appui .appui-statusbar {
+  height: 1.8em;
+}
+.bbn-appui .bbn-appui-clipboard-button {
+  transition: all 0.25s;
+  background-color: transparent;
+  color: inherit;
+}
+.bbn-appui .bbn-appui-clipboard-button:hover,
+.bbn-appui .bbn-appui-clipboard-button:active,
+.bbn-appui .bbn-appui-clipboard-button:focus-within {
+  background-color: green;
+  color: white;
+}
+.bbn-appui .bbn-appui-clipboard {
+  min-width: 25em;
+  max-width: 50vw;
+}
+.bbn-appui .bbn-appui-clipboard li {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bbn-appui .bbn-appui-big-message {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0px;
+  left: 0px;
+  background-color: black;
+  color: white;
+  font-size: 12vmin;
+  transition: opacity 250ms;
+  z-index: 10;
+}

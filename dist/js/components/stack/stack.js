@@ -1,4 +1,5 @@
-(bbn_resolve) => { ((bbn) => {
+(bbn_resolve) => {
+((bbn) => {
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[{'bbn-overlay':true}, componentClass]" v-if="currentData.length">
 	<!--bbn-toolbar></bbn-toolbar-->
@@ -47,4 +48,5 @@ document.body.insertAdjacentElement('beforeend', script);
   })(bbn);
   
 if (bbn_resolve) {bbn_resolve("ok");}
-})(bbn); }
+})(bbn);
+}

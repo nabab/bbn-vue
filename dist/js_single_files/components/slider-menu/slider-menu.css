@@ -1,0 +1,39 @@
+.bbn-slider-menu {
+  overflow: hidden;
+}
+.bbn-slider-menu .slide {
+  width: 100% !important;
+  transition: left 0.5s;
+}
+.bbn-slider-menu .slide ul > li {
+  position: relative;
+  box-sizing: border-box;
+  min-width: 7em;
+  white-space: nowrap;
+  user-select: none;
+}
+.bbn-slider-menu .slide ul > li span,
+.bbn-slider-menu .slide ul > li a {
+  user-select: none;
+}
+.bbn-slider-menu .slide ul > li.bbn-disabled {
+  opacity: 0.7;
+}
+.bbn-slider-menu .slide ul > li .space {
+  display: inline-block;
+  width: 1.8em;
+  text-align: left;
+}
+.bbn-slider-menu .slide ul > li .text {
+  min-height: 1.2em;
+  line-height: 1.2em;
+}
+.bbn-slider-menu .slide ul > li .text i {
+  margin-right: 1em;
+}
+.bbn-slider-menu .slide ul > li .text.bbn-disabled i {
+  opacity: 0.5;
+}
+.bbn-slider-menu .slide ul > li .text.hidden i {
+  opacity: 0 !important;
+}

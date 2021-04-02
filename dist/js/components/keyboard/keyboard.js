@@ -1,4 +1,5 @@
-(bbn_resolve) => { ((bbn) => {
+(bbn_resolve) => {
+((bbn) => {
 let script_dep = document.createElement('script');
 script_dep.setAttribute('src', "https://cdn.jsdelivr.net/combine/gh/hodgef/simple-keyboard@2.32.0/build/index.js");
 script_dep.onload = () => {
@@ -150,4 +151,5 @@ document.body.insertAdjacentElement('beforeend', script);
 if (bbn_resolve) {bbn_resolve("ok");}
 };
 document.head.insertAdjacentElement("beforeend", script_dep);
-})(bbn); }
+})(bbn);
+}

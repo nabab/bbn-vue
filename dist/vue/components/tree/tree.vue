@@ -89,6 +89,7 @@
                             :source="getMenu"
                             @open="isActive = true"
                             @close="isActive = false"
+                            style="cursor: unset"
               >
                 <span :class="['bbn-tree-node-block-selectable', {'bbn-p': !!selectable}]"
                       @dblclick="dblClickOnNode"
@@ -103,21 +104,26 @@
                       }"
                       tabindex="0"
                 >
-                  <span v-if="tree.icons"
-                        class="bbn-tree-node-block-icon"
-                  >
-                    <!-- If icon is specifically false we leave the white space -->
-                    <span v-if="source.icon === false"></span>
-                    <img v-else-if="source.icon && (source.icon.indexOf('data:image') === 0)"
-                         :src="source.icon">
-                    <i v-else
-                        :class="getIcon()"
-                        :style="iconStyle"
-                    ></i>
-                  </span>
-                  <span class="bbn-tree-node-block-title">
-                    <span v-html="source.text"></span>
-                  </span>
+                  <component v-if="tree.itemComponent"
+                             :is="tree.itemComponent"
+                             :source="source"/>
+                  <template v-else>
+                    <span v-if="tree.icons"
+                          class="bbn-tree-node-block-icon"
+                    >
+                      <!-- If icon is specifically false we leave the white space -->
+                      <span v-if="source.icon === false"></span>
+                      <img v-else-if="source.icon && (source.icon.indexOf('data:image') === 0)"
+                           :src="source.icon">
+                      <i v-else
+                          :class="getIcon()"
+                          :style="iconStyle"
+                      ></i>
+                    </span>
+                    <span class="bbn-tree-node-block-title">
+                      <span v-html="source.text"></span>
+                    </span>
+                  </template>
                 </span>
               </bbn-context>
             </span>
@@ -132,6 +138,7 @@
                       :path="path"
                       :autobind="false"
                       :filterable="isFilterable"
+                      :filters="tree.filters"
                       :selectable="source.selectable !== undefined ? source.selectable : tree.selectable"
                       :selection="source.selection !== undefined ? source.selection : tree.selection"
                       :cls="source.cls !== undefined ? source.cls : tree.cls"
@@ -251,10 +258,17 @@
         type: [Function, String]
       },
       /**
-       * A component for the node.
+       * A component for the entire node block.
        * @prop {Function|String|Object} component
        */
       component: {
+        type: [Function, String, Object]
+      },
+      /**
+       * A component for the node.
+       * @prop {Function|String|Object} itemComponent
+       */
+      itemComponent: {
         type: [Function, String, Object]
       },
       /**

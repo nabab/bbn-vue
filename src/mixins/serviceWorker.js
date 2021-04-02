@@ -178,7 +178,15 @@
             return d;
           })
         }
-      }
+      },
+      /**
+       * Adds the class 'bbn-service-worker-component' to the component.
+       * @event created
+       * @memberof serviceWorkerComponent
+       */
+       created(){
+        this.componentClass.push('bbn-service-worker-component');
+      },
     }
   });
 })(bbn);

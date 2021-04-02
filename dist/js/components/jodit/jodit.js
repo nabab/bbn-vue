@@ -1,4 +1,5 @@
-(bbn_resolve) => { ((bbn) => {
+(bbn_resolve) => {
+((bbn) => {
 let script_dep = document.createElement('script');
 script_dep.setAttribute('src', "https://cdn.jsdelivr.net/combine/gh/xdan/jodit@3.3.8/build/jodit.es2018.min.js");
 script_dep.onload = () => {
@@ -160,4 +161,5 @@ document.head.insertAdjacentElement('beforeend', css);
 if (bbn_resolve) {bbn_resolve("ok");}
 };
 document.head.insertAdjacentElement("beforeend", script_dep);
-})(bbn); }
+})(bbn);
+}

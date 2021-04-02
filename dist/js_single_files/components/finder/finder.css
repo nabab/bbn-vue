@@ -1,0 +1,21 @@
+.bbn-finder > .bbn-scroll-container > .bbn-scroll-content {
+  display: flex;
+}
+.bbn-finder .bbn-finder-info-dirs > div:nth-child(odd) {
+  text-align: right;
+}
+.bbn-finder .bbn-finder-info-dirs > div:nth-child(even) {
+  text-align: center;
+}
+.bbn-finder .bbn-finder-info-file-container {
+  width: 60em;
+  float: left;
+}
+.bbn-finder .bbn-finder-info-file-container .CodeMirror {
+  font-size: 10px !important;
+}
+.bbn-finder .bbn-finder-pane {
+  width: 25em;
+  border-right: 2px dotted;
+  float: left;
+}

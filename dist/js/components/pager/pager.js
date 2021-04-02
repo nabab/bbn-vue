@@ -1,4 +1,5 @@
-(bbn_resolve) => { ((bbn) => {
+(bbn_resolve) => {
+((bbn) => {
 let script = document.createElement('script');
 script.innerHTML = `<div v-if="ready"
 		 :class="[componentClass, 'bbn-widget', 'bbn-unselectable']"
@@ -346,4 +347,5 @@ document.head.insertAdjacentElement('beforeend', css);
 })(bbn);
 
 if (bbn_resolve) {bbn_resolve("ok");}
-})(bbn); }
+})(bbn);
+}

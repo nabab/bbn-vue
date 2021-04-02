@@ -1,4 +1,5 @@
-(bbn_resolve) => { ((bbn) => {
+(bbn_resolve) => {
+((bbn) => {
 let script = document.createElement('script');
 script.innerHTML = `<span :class="['bbn-iblock', componentClass]">
   <input type="checkbox"
@@ -286,4 +287,5 @@ document.head.insertAdjacentElement('beforeend', css);
 })(bbn);
 
 if (bbn_resolve) {bbn_resolve("ok");}
-})(bbn); }
+})(bbn);
+}

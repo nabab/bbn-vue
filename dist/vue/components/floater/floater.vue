@@ -891,6 +891,9 @@
 
               this.$nextTick(() => {
                 this.isResizing = false;
+                if (this.element && !this.isResized) {
+                  this.isResized = true;
+                }
                 this.$nextTick(() => {
                   this.setResizeMeasures();
                   this.$forceUpdate();

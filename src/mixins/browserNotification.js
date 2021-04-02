@@ -11,6 +11,15 @@
        * @memberof browserNotificationComponent
        */
       mixins: [bbn.vue.serviceWorkerComponent],
+      props: {
+        /**
+         * @prop {Boolean} [false] browserNotification
+         */
+        browserNotification: {
+          type: Boolean,
+          default: false
+        }
+      },
       data(){
         return {
           /**
@@ -47,6 +56,7 @@
            */
         browserNotify(title, text, options){
           if (this.ready
+            && this.browserNotification
             && this.hasBrowserPermission
             && title
             && text
@@ -121,12 +131,22 @@
         }
       },
       /**
+       * Adds the class 'bbn-browser-notification-component' to the component.
+       * @event created
+       * @memberof browserNotificationComponent
+       */
+       created(){
+        this.componentClass.push('bbn-browser-notification-component');
+      },
+      /**
        * @event mounted
        */
       mounted(){
-        Notification.requestPermission((perms) => {
-          this.hasBrowserPermission = perms === 'granted';
-        })
+        if (this.browserNotification) {
+          Notification.requestPermission((perms) => {
+            this.hasBrowserPermission = perms === 'granted';
+          })
+        }
       }
     }
   });

@@ -1,4 +1,5 @@
-(bbn_resolve) => { ((bbn) => {
+(bbn_resolve) => {
+((bbn) => {
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[{'bbn-widget': true, 'bbn-h-100': true}, componentClass]">
   <div class="bbn-flex-height">
@@ -121,10 +122,12 @@ document.head.insertAdjacentElement('beforeend', css);
         }
       },
       /**
-       * The current menu object.
-       * @prop current
+       * The initial menu
+       * @prop {String} current
        */
-      current: {}
+      current: {
+        type: String
+      }
     },
     data(){
       let isAjax = !Array.isArray(this.source)
@@ -155,7 +158,7 @@ document.head.insertAdjacentElement('beforeend', css);
          * The current menu.
          * @data [null] current
          */
-        currentMenu: null,
+        currentMenu: this.current || null,
         /**
          * The last menu.
          * @data [null] lastMenu
@@ -266,8 +269,10 @@ document.head.insertAdjacentElement('beforeend', css);
        * @method reset
        */
       reset(){
-        bbn.fn.warning('reset');
-        this.getRef('tree').reset();
+        let tree = this.getRef('tree');
+        if (bbn.fn.isVue(tree)) {
+          tree.reset();
+        }
       },
       /**
        * Gets the data of the component
@@ -285,7 +290,17 @@ document.head.insertAdjacentElement('beforeend', css);
        */
       readyTree(){
         this.$nextTick(() => {
-          this.currentMenu = this.current;
+          let dd = this.getRef('dropdown');
+          if (bbn.fn.isVue(dd)
+            && dd.value
+            && bbn.fn.getRow(this.menus, {value: dd.value})
+            && (dd.value !== this.currentMenu)
+          ){
+            this.currentMenu = dd.value;
+          }
+          else {
+            this.reset();
+          }
         })
       },
       /**
@@ -318,7 +333,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @fires reset
        */
       currentMenu(val){
-        if ( (val !== null) && (this.getRef('tree') !== undefined) ){
+        if ( (val !== null) && bbn.fn.isVue(this.getRef('tree')) ){
           this.reset();
         }
       }
@@ -328,4 +343,5 @@ document.head.insertAdjacentElement('beforeend', css);
 })(bbn);
 
 if (bbn_resolve) {bbn_resolve("ok");}
-})(bbn); }
+})(bbn);
+}

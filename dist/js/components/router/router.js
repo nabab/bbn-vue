@@ -1,4 +1,5 @@
-(bbn_resolve) => { ((bbn) => {
+(bbn_resolve) => {
+((bbn) => {
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, {
        'bbn-invisible': !ready,
@@ -231,10 +232,10 @@ script.innerHTML = `<div :class="[componentClass, {
                      v-if="!view.real && !component"
                      :key="view.url"
                      v-bind="view"/>
-      <bbn-container v-if="component && componentSource && componentURL"
+      <bbn-container v-if="component && componentSource && componentUrl"
                      :source="componentSource"
                      :component="component"
-                     :url="componentSource[componentURL]"/>
+                     :url="componentSource[componentUrl]"/>
     </div>
     <!-- END OF CONTENT -->
   </div>
@@ -2953,4 +2954,5 @@ document.head.insertAdjacentElement('beforeend', css);
 
 })(bbn, Vue);
 if (bbn_resolve) {bbn_resolve("ok");}
-})(bbn); }
+})(bbn);
+}

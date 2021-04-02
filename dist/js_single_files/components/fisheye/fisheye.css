@@ -1,0 +1,95 @@
+.bbn-fisheye {
+  text-align: center;
+  position: relative;
+  overflow-y: visible;
+  transition: opacity 0.3s;
+}
+.bbn-fisheye .bbn-fisheye-floater-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fill,minmax(7.5em,1fr));
+  justify-items: center;
+}
+.bbn-fisheye .bbn-fisheye-floater-content span {
+  width: 6em;
+}
+.bbn-fisheye .bbn-fisheye-floater-content span i {
+  min-width: 1.4em;
+  min-height: 1.4em;
+}
+.bbn-fisheye .bbn-fisheye-floater-content .bbn-fisheye-floater-icon {
+  backface-visibility: hidden;
+  font-size: 3em;
+}
+.bbn-fisheye .bbn-fisheye-dots {
+  font-size: 2em;
+}
+.bbn-fisheye a {
+  color: inherit;
+}
+.bbn-fisheye ul {
+  display: inline-flex;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  overflow: visible;
+  white-space: nowrap;
+  line-height: 100%;
+  vertical-align: middle;
+  box-sizing: border-box;
+  height: 100%;
+}
+.bbn-fisheye ul li {
+  vertical-align: middle;
+  display: inline-block;
+  backface-visibility: hidden;
+  transition: all 0.2s ease-in-out;
+  transform: translateZ(0);
+  padding: 0.5em;
+  box-sizing: border-box;
+}
+.bbn-fisheye ul li i {
+  backface-visibility: hidden;
+  font-size: 2em;
+  display: inline-block;
+  transition: all 0.2s ease-in-out;
+  transform: translateZ(0);
+}
+.bbn-fisheye ul li i:hover {
+  transform: scale(1.5);
+}
+.bbn-mobile .bbn-fisheye ul li i {
+  transform: none;
+}
+.bbn-fisheye ul li:hover {
+  transform: scale(1.4);
+}
+.bbn-mobile .bbn-fisheye ul li {
+  transform: none;
+}
+.bbn-fisheye .bbn-fisheye-text {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  top: 150%;
+  white-space: nowrap;
+  color: #FFF;
+  font-size: 3em;
+  text-shadow: 0 0 0.3em #000;
+}
+.bbn-fisheye .bbn-fisheye-bin {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  text-shadow: 0 0 0.8em #000;
+  white-space: nowrap;
+  color: #FFF;
+  z-index: 200;
+}
+.bbn-fisheye .bbn-fisheye-bin span {
+  display: inline-block;
+  min-width: 8em;
+  min-height: 8em;
+}
+.bbn-fisheye .bbn-fisheye-bin i {
+  font-size: 8em;
+}

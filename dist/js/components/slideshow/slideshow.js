@@ -1,4 +1,5 @@
-(bbn_resolve) => { ((bbn) => {
+(bbn_resolve) => {
+((bbn) => {
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-overlay']">
   <div v-if="ready"
@@ -894,7 +895,7 @@ document.head.insertAdjacentElement('beforeend', css);
                 <i v-if="type === 'circle'"
                     @click= "clickMiniature(it , i)"
                     :class="[
-                      (mainComponent.currentIndex === i ? 'nf nf-fa-dot_circle' : 'nf nf-fa-circle'),
+                      (mainComponent.currentIndex === i ? 'nf nf-fa-dot_circle_o' : 'nf nf-fa-circle'),
                       'bbn-padded',
                       'bbn-slideshow-circleMiniature',
                       'bbn-p',
@@ -1026,4 +1027,5 @@ document.head.insertAdjacentElement('beforeend', css);
 })();
 
 if (bbn_resolve) {bbn_resolve("ok");}
-})(bbn); }
+})(bbn);
+}

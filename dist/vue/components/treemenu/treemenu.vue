@@ -115,10 +115,12 @@
         }
       },
       /**
-       * The current menu object.
-       * @prop current
+       * The initial menu
+       * @prop {String} current
        */
-      current: {}
+      current: {
+        type: String
+      }
     },
     data(){
       let isAjax = !Array.isArray(this.source)
@@ -149,7 +151,7 @@
          * The current menu.
          * @data [null] current
          */
-        currentMenu: null,
+        currentMenu: this.current || null,
         /**
          * The last menu.
          * @data [null] lastMenu
@@ -260,8 +262,10 @@
        * @method reset
        */
       reset(){
-        bbn.fn.warning('reset');
-        this.getRef('tree').reset();
+        let tree = this.getRef('tree');
+        if (bbn.fn.isVue(tree)) {
+          tree.reset();
+        }
       },
       /**
        * Gets the data of the component
@@ -279,7 +283,17 @@
        */
       readyTree(){
         this.$nextTick(() => {
-          this.currentMenu = this.current;
+          let dd = this.getRef('dropdown');
+          if (bbn.fn.isVue(dd)
+            && dd.value
+            && bbn.fn.getRow(this.menus, {value: dd.value})
+            && (dd.value !== this.currentMenu)
+          ){
+            this.currentMenu = dd.value;
+          }
+          else {
+            this.reset();
+          }
         })
       },
       /**
@@ -312,7 +326,7 @@
        * @fires reset
        */
       currentMenu(val){
-        if ( (val !== null) && (this.getRef('tree') !== undefined) ){
+        if ( (val !== null) && bbn.fn.isVue(this.getRef('tree')) ){
           this.reset();
         }
       }

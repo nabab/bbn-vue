@@ -1,0 +1,38 @@
+div.bbn-floater2 {
+  position: fixed !important;
+  box-sizing: content-box;
+  overflow: hidden;
+  z-index: 100;
+  font-size: inherit;
+}
+div.bbn-floater2:not(.bbn-invisible) {
+  transition: opacity 0.1s ease-in-out;
+}
+div.bbn-floater2.bbn-invisible {
+  opacity: 0 !important;
+}
+div.bbn-floater2 > div > header {
+  white-space: nowrap;
+  padding-right: 3.6em;
+}
+div.bbn-floater2 > div > header .bbn-top-right {
+  height: 100%;
+  text-align: right;
+  line-height: 100%;
+  vertical-align: middle;
+}
+div.bbn-floater2 > div > header .bbn-top-right > div {
+  width: 1.8em;
+  float: left;
+}
+div.bbn-floater2 > div > header h3 {
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+div.bbn-floater2 > div > footer.bbn-button-group {
+  min-height: 3em;
+}
+div.bbn-floater2 > div > footer.bbn-button-group button {
+  padding-top: 0.3em;
+  padding-bottom: 0.3em;
+}

@@ -1,0 +1,68 @@
+.bbn-progressbar.bbn-progressbar-wrap {
+  display: inline-block;
+  position: relative;
+  vertical-align: middle;
+}
+.bbn-progressbar.bbn-progressbar-wrap .bbn-background-effect-primary {
+  mix-blend-mode: multiply;
+}
+.bbn-progressbar.bbn-progressbar-wrap .bar-wrap {
+  position: absolute;
+  border: 1px solid transparent;
+  line-height: 2em;
+  height: 100%;
+}
+.bbn-progressbar.bbn-progressbar-wrap .chunk {
+  display: grid;
+  grid-gap: 1px;
+}
+.bbn-progressbar.bbn-progressbar-wrap.bbn-progressbar-vertical {
+  width: 1.9em;
+}
+.bbn-progressbar.bbn-progressbar-wrap.bbn-progressbar-vertical .bbn-wrap.top .bbn-progress-status {
+  top: 10px;
+}
+.bbn-progressbar.bbn-progressbar-wrap.bbn-progressbar-vertical .bbn-wrap.bottom .bbn-progress-status {
+  bottom: 10px;
+}
+.bbn-progressbar.bbn-progressbar-wrap.bbn-progressbar-vertical .bbn-wrap.center .bbn-progress-status {
+  bottom: 49%;
+}
+.bbn-progressbar.bbn-progressbar-wrap.bbn-progressbar-vertical .bbn-wrap .bbn-progress-status {
+  position: absolute;
+  left: 0;
+  display: unset;
+  writing-mode: vertical-lr;
+  line-height: 1.9em;
+}
+.bbn-progressbar.bbn-progressbar-wrap.bbn-progressbar-vertical .chunk {
+  height: 100%;
+}
+.bbn-progressbar.bbn-progressbar-wrap.bbn-progressbar-vertical .chunk div.block {
+  width: 100%;
+}
+.bbn-progressbar.bbn-progressbar-wrap.bbn-progressbar-horizontal {
+  height: 1.9em;
+  width: 100%;
+}
+.bbn-progressbar.bbn-progressbar-wrap.bbn-progressbar-horizontal .chunk {
+  width: 100%;
+}
+.bbn-progressbar.bbn-progressbar-wrap.bbn-progressbar-horizontal .chunk div.block {
+  height: 100%;
+}
+.bbn-progressbar.bbn-progressbar-wrap.bbn-progressbar-horizontal .bbn-wrap {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  line-height: 1.9em;
+}
+.bbn-progressbar.bbn-progressbar-wrap.bbn-progressbar-horizontal .bbn-wrap.left .bbn-progress-status {
+  text-align: left;
+}
+.bbn-progressbar.bbn-progressbar-wrap.bbn-progressbar-horizontal .bbn-wrap.center .bbn-progress-status {
+  text-align: center;
+}
+.bbn-progressbar.bbn-progressbar-wrap.bbn-progressbar-horizontal .bbn-wrap.right .bbn-progress-status {
+  text-align: right;
+}

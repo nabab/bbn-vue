@@ -1,0 +1,86 @@
+.bbn-filter:first-child {
+  border-top: 0 !important;
+  padding: 1em;
+}
+.bbn-filter {
+  padding: 0em 0.4em;
+  margin: 0.3em 0;
+  border-left: 2px solid;
+  float: left;
+  clear: right;
+}
+.bbn-filter .bbn-form-full {
+  margin: 0 0 0.5em 0;
+}
+.bbn-filter h3 {
+  margin-top: 0;
+}
+.bbn-filter .bbn-filter-control {
+  border: 0;
+  border-radius: 0;
+  padding-right: 3em;
+  padding: 0;
+  margin: 0;
+}
+.bbn-filter .bbn-form-label {
+  width: 2.7em !important;
+  max-width: 2.7em;
+  min-width: 2.7em;
+  margin: 0.3em;
+}
+.bbn-filter .bbn-form-label.bbn-filter-block {
+  margin: 3em 0.3em 0.3em;
+}
+.bbn-filter .bbn-filter-left {
+  width: 5em;
+}
+.bbn-filter .bbn-filter-bordered {
+  margin: 0;
+}
+.bbn-filter .bbn-filter-bordered .bbn-filter-main {
+  margin: 0 1em;
+}
+.bbn-filter .bbn-filter-items {
+  position: relative;
+  float: left;
+  clear: right;
+}
+.bbn-filter .bbn-filter-items .bbn-filter-main {
+  float: left;
+}
+.bbn-filter .bbn-filter-items .bbn-filter-main .bbn-filter-form {
+  align-items: center;
+  white-space: nowrap;
+}
+.bbn-filter .bbn-filter-items .bbn-filter-main .bbn-filter-form > div.bbn-block {
+  display: inline-block;
+  min-height: 2em;
+  line-height: 2em;
+  vertical-align: middle;
+}
+.bbn-filter .bbn-filter-items .bbn-filter-buttons {
+  float: left;
+  clear: left;
+  max-height: 1em;
+  margin-left: 0.5em;
+}
+.bbn-filter .bbn-filter-items .bbn-filter-logic {
+  width: 4.5em;
+  font-weight: bold;
+  float: left;
+}
+.bbn-filter .bbn-filter-bordered.bbn-filter-or {
+  border-color: green;
+}
+.bbn-filter .bbn-filter-bordered.bbn-filter-or > .bbn-filter-logic {
+  color: green;
+}
+.bbn-filter .bbn-filter-items::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+.bbn-filter .bbn-filter-padding {
+  padding-left: 0.1em;
+  padding-right: 0.1em;
+}

@@ -1,0 +1,41 @@
+.bbn-numeric {
+  display: inline-block;
+  min-width: 4em;
+  box-sizing: border-box;
+}
+.bbn-numeric .bbn-flex-width {
+  border-radius: inherit;
+  height: 100%;
+}
+.bbn-numeric .bbn-flex-width .bbn-flex-fill {
+  border-top-left-radius: inherit;
+  border-bottom-left-radius: inherit;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.bbn-numeric .bbn-flex-width .bbn-numeric-buttons {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.bbn-numeric .bbn-flex-width .bbn-numeric-buttons .bbn-numeric-no-pointer-events {
+  pointer-events: none;
+}
+.bbn-numeric .bbn-flex-width .bbn-numeric-buttons .bbn-reactive-block:first-child {
+  border-bottom-right-radius: 0;
+}
+.bbn-numeric .bbn-flex-width .bbn-numeric-buttons .bbn-reactive-block:nth-child(2) {
+  border-top-right-radius: 0;
+}
+.bbn-numeric .bbn-flex-width .bbn-numeric-buttons > div {
+  width: 1.2em;
+}
+.bbn-numeric .bbn-flex-width .bbn-numeric-buttons > div i {
+  max-height: .6em;
+}
+.bbn-numeric input {
+  text-align: right !important;
+  font-size: inherit;
+  height: 100%;
+}

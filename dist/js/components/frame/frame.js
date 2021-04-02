@@ -1,4 +1,5 @@
-(bbn_resolve) => { ((bbn) => {
+(bbn_resolve) => {
+((bbn) => {
 let script = document.createElement('script');
 script.innerHTML = `<iframe :class="['bbn-reset', 'bbn-block', componentClass]"
         :sandbox="sandbox"
@@ -120,4 +121,5 @@ document.head.insertAdjacentElement('beforeend', css);
 })(bbn);
 
 if (bbn_resolve) {bbn_resolve("ok");}
-})(bbn); }
+})(bbn);
+}

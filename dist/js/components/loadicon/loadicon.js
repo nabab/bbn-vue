@@ -1,4 +1,5 @@
-(bbn_resolve) => { ((bbn) => {
+(bbn_resolve) => {
+((bbn) => {
 let script = document.createElement('script');
 script.innerHTML = `<span :class="componentClass">
   <svg xmlns:svg="http://www.w3.org/2000/svg"
@@ -75,4 +76,5 @@ document.body.insertAdjacentElement('beforeend', script);
 })(bbn);
 
 if (bbn_resolve) {bbn_resolve("ok");}
-})(bbn); }
+})(bbn);
+}

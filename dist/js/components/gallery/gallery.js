@@ -1,4 +1,5 @@
-(bbn_resolve) => { ((bbn) => {
+(bbn_resolve) => {
+((bbn) => {
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, {'bbn-flex-height': scrollable}]">
   <div v-if="!!toolbar"
@@ -450,26 +451,26 @@ document.head.insertAdjacentElement('beforeend', css);
        * @method action
        * @fires setSelecting
        */
-      action(){
+       emitAction(){
         if (this.currentSelected.length) {
           let mess = '',
               selected = this.currentSelected.map(v => {
                 return bbn.fn.extend(true, {}, bbn.fn.getField(this.currentData, 'data', {index: v}));
               });
-          if ( this.selectingMode === 'download' ){
+          if (this.selectingMode === 'download') {
             mess = bbn._("Are you sure you want to download these photos?");
           }
-          else if ( this.selectingMode === 'remove' ){
-            mess = bbn._("Are you sure you want to remove these photos?");
+          else if (this.selectingMode === 'delete') {
+            mess = bbn._("Are you sure you want to delete these photos?");
           }
           if (mess.length) {
-            this.confirm(bbn._(mess, this.selectingMode), () => {
-              this.$emit(act, selected);
+            this.confirm(mess, () => {
+              this.$emit(this.selectingMode, selected);
               this.setSelecting(false);
             });
           }
           else {
-            this.$emit(act, selected);
+            this.$emit(this.selectingMode, selected);
             this.setSelecting(false);
           }
         }
@@ -505,6 +506,7 @@ document.head.insertAdjacentElement('beforeend', css);
         }
         this.searchTimeout = setTimeout(() => {
           let idx = bbn.fn.search(this.currentFilters.conditions, {field: this.searchName});
+          bbn.fn.log(idx)
           if (idx > -1) {
             if (newVal) {
               this.currentFilters.conditions[idx].value == newVal;
@@ -767,7 +769,6 @@ document.head.insertAdjacentElement('beforeend', css);
                * @fires getPopup
                */
               action(ev){
-                bbn.fn.warning('mirko', ev.target.parentNode.tagName, ev, ev.target.closest('.bbn-gallery-button-menu-context'))
                 if ( this.col.gallery.isSelecting ){
                   if ( this.isSelected ){
                     this.col.gallery.currentSelected.splice(this.col.gallery.currentSelected.indexOf(this.source.index), 1);
@@ -843,4 +844,5 @@ document.head.insertAdjacentElement('beforeend', css);
 })(bbn);
 
 if (bbn_resolve) {bbn_resolve("ok");}
-})(bbn); }
+})(bbn);
+}

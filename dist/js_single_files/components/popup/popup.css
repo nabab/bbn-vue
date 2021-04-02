@@ -1,0 +1,56 @@
+.bbn-popup {
+  position: absolute !important;
+  top: 0px;
+  left: 0px;
+  max-width: 100%;
+  max-height: 100%;
+}
+.bbn-popup .fade-enter-active,
+.bbn-popup .fade-leave-active {
+  transition: opacity .5s;
+  opacity: 0.5;
+}
+.bbn-popup .fade-enter,
+.bbn-popup .fade-leave-to {
+  opacity: 0;
+}
+.bbn-popup .ui-resizable-handle {
+  z-index: 4 !important;
+}
+.bbn-popup > .bbn-floater {
+  position: absolute !important;
+  padding-top: 0px;
+}
+.bbn-popup > .bbn-floater .bbn-popup-title {
+  white-space: nowrap;
+}
+.bbn-popup > .bbn-floater .bbn-popup-title .bbn-top-right {
+  height: 100%;
+  text-align: right;
+  line-height: 100%;
+  vertical-align: middle;
+}
+.bbn-popup > .bbn-floater .bbn-popup-title .bbn-top-right > div {
+  width: 1.8em;
+  float: left;
+}
+.bbn-popup > .bbn-floater .bbn-popup-title .bbn-button {
+  border: 0;
+}
+.bbn-popup > .bbn-floater .bbn-popup-title h1,
+.bbn-popup > .bbn-floater .bbn-popup-title h2,
+.bbn-popup > .bbn-floater .bbn-popup-title h3,
+.bbn-popup > .bbn-floater .bbn-popup-title h4,
+.bbn-popup > .bbn-floater .bbn-popup-title h5,
+.bbn-popup > .bbn-floater .bbn-popup-title h6 {
+  margin: .2em 5em .2em 1em;
+  overflow: hidden;
+}
+.bbn-popup > .bbn-floater .bbn-popup-title .bbn-popup-actions {
+  position: absolute;
+  right: 3px;
+  top: 3px;
+}
+.bbn-popup > .bbn-floater .bbn-popup-title .bbn-popup-actions i {
+  cursor: pointer;
+}

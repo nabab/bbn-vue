@@ -1,4 +1,5 @@
-(bbn_resolve) => { ((bbn) => {
+(bbn_resolve) => {
+((bbn) => {
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scrollable}, componentClass, 'bbn-bordered']">
   <div :class="{'bbn-overlay': scrollable, 'bbn-flex-height': scrollable, 'bbn-block': !scrollable}"
@@ -40,7 +41,8 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
       >
         <table :style="{width: totalWidth}"
                ref="table"
-               v-if="currentColumns.length">
+               v-if="currentColumns.length"
+               class="bbn-table-table">
           <colgroup>
             <template v-for="(groupCol, groupIndex) in groupCols">
               <col v-for="(col, i) in groupCol.cols"
@@ -3473,4 +3475,5 @@ document.head.insertAdjacentElement('beforeend', css);
 })(window.bbn, window.Vue);
 
 if (bbn_resolve) {bbn_resolve("ok");}
-})(bbn); }
+})(bbn);
+}

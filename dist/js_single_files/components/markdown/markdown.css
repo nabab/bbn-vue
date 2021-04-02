@@ -1,0 +1,12 @@
+.bbn-markdown .editor-preview-side {
+  top: 0;
+  position: absolute;
+}
+.bbn-markdown .CodeMirror-vscrollbar,
+.bbn-markdown .CodeMirror-hscrollbar {
+  display: none !important;
+}
+.bbn-markdown .CodeMirror-scroll {
+  margin: 0px;
+  padding: 0px;
+}

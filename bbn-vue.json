@@ -6,7 +6,23 @@
             {
                 "text": "appui",
                 "url": "bbn-vue\/component\/appui\/overview",
-                "props": [],
+                "props": [
+                    {
+                        "text": "component",
+                        "desc": "If this is set, along with componentSource and componentUrl a single container with this component will be created.",
+                        "url": "bbn-vue\/component\/appui\/doc\/props#component"
+                    },
+                    {
+                        "text": "componentSource",
+                        "desc": "The source for the component.",
+                        "url": "bbn-vue\/component\/appui\/doc\/props#componentSource"
+                    },
+                    {
+                        "text": "componentUrl",
+                        "desc": "The property to get from the componentSource to use for setting the URL.",
+                        "url": "bbn-vue\/component\/appui\/doc\/props#componentUrl"
+                    }
+                ],
                 "methods": [],
                 "mixins": [
                     {
@@ -6568,6 +6584,13 @@
                 ]
             },
             {
+                "text": "splashscreen",
+                "url": "bbn-vue\/component\/splashscreen\/overview",
+                "props": [],
+                "methods": [],
+                "mixins": []
+            },
+            {
                 "text": "split-tabs",
                 "url": "bbn-vue\/component\/split-tabs\/overview",
                 "props": [],
@@ -7791,8 +7814,13 @@
                     },
                     {
                         "text": "component",
-                        "desc": "A component for the node.",
+                        "desc": "A component for the entire node block.",
                         "url": "bbn-vue\/component\/tree\/doc\/props#component"
+                    },
+                    {
+                        "text": "itemComponent",
+                        "desc": "A component for the node.",
+                        "url": "bbn-vue\/component\/tree\/doc\/props#itemComponent"
                     },
                     {
                         "text": "draggable",
@@ -8165,7 +8193,7 @@
                     },
                     {
                         "text": "current",
-                        "desc": "The current menu object.",
+                        "desc": "The initial menu",
                         "url": "bbn-vue\/component\/treemenu\/doc\/props#current"
                     }
                 ],

@@ -51,7 +51,7 @@
                     :mobile="true"
                     :z-index="3"/>
         <!-- SEARCHBAR -->
-        <div v-if="!isMobile"
+        <div v-if="!isMobile && !!searchBar"
              class="bbn-appui-search bbn-large bbn-abs bbn-h-100 bbn-vspadded bbn-vmiddle"
         >
           <bbn-search :source="searchBar.source"
@@ -73,7 +73,7 @@
           <!-- FISHEYE -->
           <bbn-fisheye v-if="plugins['appui-menu']"
                        style="z-index: 3"
-                       v-show="'?' !== searchBar.value"
+                       v-show="!searchBar || ('?' !== searchBar.value)"
                        :class="{
                          'bbn-invisible': $refs.search && $refs.search.isFocused,
                          'bbn-100': true
@@ -95,7 +95,7 @@
           >
         </div>
         <!-- SEARCHBAR (MOBILE) -->
-        <div v-if="isMobile"
+        <div v-if="isMobile && !!searchBar"
              :class="['bbn-appui-search', 'bbn-vmiddle', 'bbn-large', {'bbn-flex-fill': searchIsActive}]">
           <bbn-search :source="searchBar.source"
                       :placeholder="searchBar.placeholderFocused"
@@ -173,10 +173,18 @@
                   @change="$emit('change', $event)"
                   :breadcrumb="isMobile"
                   :scrollable="isMobile"
+                  :component="component"
+                  :component-source="componentSource"
+                  :component-url="componentUrl"
       >
         <slot/>
       </bbn-router>
     </div>
+    <!-- FOOTER -->
+    <component v-if="(typeof footer !== 'undefined') && !!footer"
+               ref="footer"
+               class="appui-footer"
+               :is="footer"/>
     <!-- STATUS -->
     <div v-if="status"
         ref="foot"
@@ -383,6 +391,27 @@
       title: {
         type: String,
         default: bbn.env.siteTitle || bbn._('App-UI')
+      },
+      /**
+       * If this is set, along with componentSource and componentUrl a single container with this component will be created.
+       * @prop {(String|Object)} component
+       */
+       component: {
+        type: [String, Object]
+      },
+      /**
+       * The source for the component.
+       * @prop {Object} componentSource
+       */
+      componentSource: {
+        type: Object
+      },
+      /**
+       * The property to get from the componentSource to use for setting the URL.
+       * @prop {String} componentUrl
+       */
+      componentUrl: {
+        type: String
       }
     },
     data(){
@@ -847,6 +876,10 @@
           },
           
           defaultEndLoadingFunction(url, timestamp, data, res) {
+            if (res && res.data && res.data.disconnected) {
+              window.location.reload();
+              return;
+            }
             if ( window.appui && appui.status ){
               let history = bbn.fn.getRow(bbn.env.loadersHistory, {url: url, start: timestamp});
               let loader = bbn.fn.getRow(appui.loaders, {url: url, start: timestamp});

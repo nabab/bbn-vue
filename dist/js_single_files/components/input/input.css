@@ -1,0 +1,29 @@
+.bbn-input {
+  display: inline-block;
+}
+.bbn-input:hover .bbn-button {
+  opacity: 1;
+}
+.bbn-input .bbn-button {
+  opacity: 0.7;
+  min-width: 2em;
+}
+.bbn-input input {
+  width: 100%;
+  font-size: inherit;
+  border-radius: inherit;
+}
+.bbn-input.bbn-input-nullable .bbn-input-nullable-container {
+  opacity: 0;
+  transition: opacity 0.2s;
+  line-height: 100%;
+  margin: auto;
+  padding-right: 0.2em;
+}
+.bbn-input.bbn-input-nullable .bbn-input-nullable-container .nf-fa-times_circle {
+  line-height: 100%;
+  margin: auto;
+}
+.bbn-input.bbn-input-nullable:hover .bbn-input-nullable-container {
+  opacity: 0.3;
+}

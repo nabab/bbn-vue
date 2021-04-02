@@ -1,0 +1,41 @@
+.bbn-scrollbar {
+  position: absolute;
+  -webkit-transition: opacity 150ms ease-in-out;
+  -moz-transition: opacity 150ms ease-in-out;
+  transition: opacity 150ms ease-in-out;
+}
+.bbn-scrollbar.vertical {
+  width: 0.7em;
+  padding: 0 0.2em 0 0.7em;
+  bottom: 0;
+  top: 0;
+  right: 0;
+}
+.bbn-scrollbar.vertical .bbn-scroll-slider {
+  width: 0.7em;
+  height: 100%;
+  right: 0.2em;
+}
+.bbn-scrollbar.vertical .bbn-scroll-slider.bbn-scroll-not-dragged {
+  transition: top 100ms;
+}
+.bbn-scrollbar.horizontal {
+  height: 0.7em;
+  padding: 0.7em 0 0.2em 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+.bbn-scrollbar.horizontal .bbn-scroll-slider {
+  height: 0.7em;
+  width: 100%;
+  bottom: 0.2em;
+}
+.bbn-scrollbar.horizontal .bbn-scroll-slider.bbn-scroll-not-dragged {
+  transition: left 100ms;
+}
+.bbn-scrollbar .bbn-scroll-slider {
+  opacity: 0.6;
+  border-radius: 0.3em;
+  position: absolute;
+}

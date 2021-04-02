@@ -1,4 +1,5 @@
-(bbn_resolve) => { ((bbn) => {
+(bbn_resolve) => {
+((bbn) => {
 let script = document.createElement('script');
 script.innerHTML = `<button :class="[{'bbn-button-icon-only': notext}, componentClass]"
         ref="element"
@@ -294,4 +295,5 @@ document.body.insertAdjacentElement('beforeend', script);
 })(bbn);
 
 if (bbn_resolve) {bbn_resolve("ok");}
-})(bbn); }
+})(bbn);
+}

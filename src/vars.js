@@ -2,7 +2,11 @@
   "use strict";
   let version = '2.0.2';
   let libURL = '';
-  if (bbn_root_dir && bbn_root_url) {
+  if ((typeof bbn_root_dir !== 'undefined')
+    && (typeof bbn_root_url !== 'undefined')
+    && bbn_root_dir
+    && bbn_root_url
+  ) {
     libURL = bbn_root_url + bbn.fn.dirName(bbn_root_dir) + '/';
   }
 

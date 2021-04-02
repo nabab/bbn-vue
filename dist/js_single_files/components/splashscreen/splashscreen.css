@@ -1,0 +1,39 @@
+.bbn-splashscreen {
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+.bbn-splashscreen .bbn-splashscreen-main {
+  position: fixed;
+  box-sizing: border-box;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 100%;
+  max-width: 100%;
+}
+.bbn-splashscreen .bbn-splashscreen-main img {
+  object-fit: cover;
+}
+.bbn-splashscreen.bbn-splashscreen-swipe-left .slide-leave-active,
+.bbn-splashscreen.bbn-splashscreen-swipe-left .slide-enter-active {
+  transition: 0.2s;
+}
+.bbn-splashscreen.bbn-splashscreen-swipe-left .slide-enter {
+  transform: translateX(100%);
+}
+.bbn-splashscreen.bbn-splashscreen-swipe-left .slide-leave-to {
+  transform: translateX(-100%);
+}
+.bbn-splashscreen.bbn-splashscreen-swipe-right .slide-leave-active,
+.bbn-splashscreen.bbn-splashscreen-swipe-right .slide-enter-active {
+  transition: 0.2s;
+}
+.bbn-splashscreen.bbn-splashscreen-swipe-right .slide-enter {
+  transform: translateX(-100%);
+}
+.bbn-splashscreen.bbn-splashscreen-swipe-right .slide-leave-to {
+  transform: translateX(100%);
+}

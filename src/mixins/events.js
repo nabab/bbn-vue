@@ -6,6 +6,32 @@
      * @component eventsComponent
      */
     eventsComponent: {
+      props: {
+        /**
+         * @memberof eventsComponent
+         * @prop {Number} [1000] touchHoldTolerance
+         */
+        touchHoldTolerance: {
+          type: Number,
+          default: 1000
+        },
+        /**
+         * @memberof eventsComponent
+         * @prop {Number} [10] touchTapTolerance
+         */
+        touchTapTolerance: {
+          type: Number,
+          default: 10
+        },
+        /**
+         * @memberof eventsComponent
+         * @prop {Number} [30] touchSwipeolerance
+         */
+        touchSwipeTolerance: {
+          type: Number,
+          default: 30
+        }
+      },
       data(){
         return {
           /**
@@ -19,7 +45,22 @@
            * @memberof eventsComponent
            * @data {Boolean} [false] isFocused
            */
-          isFocused: false
+          isFocused: false,
+          /**
+           * @memberof eventsComponent
+           * @data {Boolean|Event} [false] touchStarted
+           */
+          touchStarted: false,
+          /**
+           * @memberof eventsComponent
+           * @data {Boolean|Event} [false] touchMoved
+           */
+          touchMoved: false,
+          /**
+           * @memberof eventsComponent
+           * @data {Number} [0] touchHoldTimer
+           */
+          touchHoldTimer: 0
         }
       },
       methods: {
@@ -111,31 +152,57 @@
          * @method touchstart
          * @memberof eventsComponent
          */
-        touchstart(){
+         touchstart(ev){
           this.isTouched = true;
-          setTimeout(() => {
+          this.touchStarted = ev;
+          clearTimeout(this.touchHoldTimer);
+          this.touchHoldTimer = setTimeout(() => {
             if ( this.isTouched ){
               let event = new Event('contextmenu');
               this.$el.dispatchEvent(event);
               this.isTouched = false;
             }
-          }, 1000)
+          }, this.touchHoldTolerance);
         },
         /**
          * Sets the prop isTouched to false.
          * @method touchmove
          * @memberof eventsComponent
          */
-        touchmove(){
+        touchmove(ev){
           this.isTouched = false;
+          clearTimeout(this.touchHoldTimer);
+          if ((Math.abs(this.touchStarted.touches[0].clientX - ev.touches[0].clientX) > this.touchTapTolerance)
+            || (Math.abs(this.touchStarted.touches[0].clientY - ev.touches[0].clientY) > this.touchTapTolerance)
+          ) {
+            this.touchMoved = ev;
+          }
         },
         /**
          * Sets the prop isTouched to false.
          * @method touchend
          * @memberof eventsComponent
          */
-        touchend(){
+        touchend(ev){
+          if (this.touchStarted && this.touchMoved) {
+            let direction = false,
+                diffY = Math.abs(this.touchStarted.touches[0].clientY - this.touchMoved.touches[0].clientY),
+                diffX = Math.abs(this.touchStarted.touches[0].clientX - this.touchMoved.touches[0].clientX),
+                axisX = diffX > diffY;
+            if (axisX && (diffX > this.touchSwipeTolerance)) {
+              direction = this.touchStarted.touches[0].clientX > this.touchMoved.touches[0].clientX ? 'left' : 'right';
+            }
+            else if (!axisX && (diffY > this.touchSwipeTolerance)) {
+              direction = this.touchStarted.touches[0].clientY > this.touchMoved.touches[0].clientY ? 'top' : 'bottom';
+            }
+            if (!!direction) {
+              this.$emit('swipe', ev, this)
+              this.$emit('swipe' + direction, ev, this)
+            }
+          }
           this.isTouched = false;
+          this.touchMoved = false;
+          this.touchStarted = false;
         },
         /**
          * Sets the prop isTouched to false.
@@ -143,7 +210,10 @@
          * @memberof eventsComponent
          */
         touchcancel(){
+          clearTimeout(this.touchHoldTimer);
           this.isTouched = false;
+          this.touchStarted = false;
+          this.touchMoved = false;
         }
       },
       /**

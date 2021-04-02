@@ -1,0 +1,30 @@
+div.bbn-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+div.bbn-container > .bbn-container-visible {
+  overflow: inherit;
+}
+div.bbn-container > .bbn-container-full-screen {
+  position: fixed !important;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  z-index: 10;
+}
+div.bbn-container > .bbn-container-full-screen > .bbn-container-full-screen-closer {
+  position: fixed;
+  font-size: x-large;
+  right: 5px;
+  top: 5px;
+}
+div.bbn-container .fade-enter-active,
+div.bbn-container .fade-leave-active {
+  transition: opacity .5s;
+}
+div.bbn-container .fade-enter,
+div.bbn-container .fade-leave-to {
+  opacity: 0;
+}

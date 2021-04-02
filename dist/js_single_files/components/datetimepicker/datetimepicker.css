@@ -1,0 +1,45 @@
+.bbn-datetimepicker {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  flex-direction: row;
+}
+.bbn-datetimepicker .bbn-masked {
+  border: none;
+}
+.bbn-datetimepicker .bbn-button {
+  margin-top: 0;
+}
+.bbn-datetimepicker .bbn-button.bbn-datetimepicker-calendar {
+  border-radius: 0;
+  opacity: 0.7;
+}
+.bbn-datetimepicker .bbn-button.bbn-datetimepicker-clock {
+  opacity: 0.7;
+}
+.bbn-datetimepicker .bbn-calendar {
+  height: auto;
+  max-height: 16em;
+  max-width: 40em;
+}
+.bbn-datetimepicker .bbn-calendar .bbn-widget:first-child {
+  border: 0;
+}
+.bbn-datetimepicker .bbn-datetimepicker-timeblock {
+  width: 2em;
+  height: 2em;
+}
+.bbn-datetimepicker.bbn-input-nullable .bbn-input-nullable-container {
+  opacity: 0;
+  transition: opacity 0.2s;
+  line-height: 100%;
+  margin: auto;
+  padding-right: 0.2em;
+  width: 1.05em;
+}
+.bbn-datetimepicker.bbn-input-nullable .bbn-input-nullable-container .nf-fa-times_circle {
+  line-height: 100%;
+  margin: auto;
+}
+.bbn-datetimepicker.bbn-input-nullable:hover .bbn-input-nullable-container {
+  opacity: 0.3;
+}

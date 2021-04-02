@@ -1,0 +1,49 @@
+.bbn-panelbar .bbn-panelbar-bbn-header {
+  border-top: none;
+  border-right: none;
+  border-left: none;
+  border-radius: 0;
+  margin-bottom: 0;
+  width: 100%;
+}
+.bbn-panelbar .bbn-panelbar-bbn-header .bbn-panelbar-arrow-container {
+  width: 3em;
+  height: 100%;
+}
+.bbn-panelbar .bbn-panelbar-bbn-header .bbn-panelbar-arrow-container .bbn-panelbar-header-icon {
+  display: inline-block;
+  transform: rotate(0deg);
+  transition-duration: 0.3s;
+}
+.bbn-panelbar .bbn-panelbar-bbn-header .bbn-panelbar-arrow-container .bbn-panelbar-header-icon.bbn-panelbar-header-icon-rotate {
+  transform: rotate(90deg);
+  transition-duration: 0.3s;
+}
+.bbn-panelbar .bbn-panelbar-bbn-header .bbn-panelbar-title {
+  margin-right: 3em;
+  margin-left: 3em;
+  width: 100%;
+}
+.bbn-panelbar .bbn-panelbar-bbn-header .bbn-panelbar-title.bbn-panelbar-center {
+  justify-content: center;
+}
+.bbn-panelbar .bbn-panelbar-bbn-header .bbn-panelbar-title.bbn-panelbar-start {
+  justify-content: flex-start;
+}
+.bbn-panelbar .bbn-panelbar-bbn-header .bbn-panelbar-title.bbn-panelbar-end {
+  justify-content: flex-end;
+}
+.bbn-panelbar .bbn-panelbar-bbn-header .bbn-panelbar-title .bbn-panelbar-right-padded {
+  padding-right: 1em;
+}
+.bbn-panelbar .bbn-panelbar-bbn-header .bbn-panelbar-selected,
+.bbn-panelbar .bbn-panelbar-bbn-header .bbn-panelbar-content {
+  transition: all 2s;
+  transition: height 0.8s;
+}
+.bbn-panelbar .bbn-panelbar-bbn-header .buttons button {
+  border: 0;
+}
+.bbn-panelbar .bbn-panelbar-inline {
+  display: inline;
+}

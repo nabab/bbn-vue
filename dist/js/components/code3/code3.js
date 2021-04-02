@@ -1,4 +1,5 @@
-(bbn_resolve) => { ((bbn) => {
+(bbn_resolve) => {
+((bbn) => {
 let script_dep = document.createElement('script');
 script_dep.setAttribute('src', "https://cdn.jsdelivr.net/combine/gh/ajaxorg/ace-builds@v1.4.12/src-min-noconflict/ace.js");
 script_dep.onload = () => {
@@ -717,4 +718,5 @@ document.head.insertAdjacentElement('beforeend', css);
 if (bbn_resolve) {bbn_resolve("ok");}
 };
 document.head.insertAdjacentElement("beforeend", script_dep);
-})(bbn); }
+})(bbn);
+}

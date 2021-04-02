@@ -1,4 +1,5 @@
-(bbn_resolve) => { ((bbn) => {
+(bbn_resolve) => {
+((bbn) => {
 let script_dep = document.createElement('script');
 script_dep.setAttribute('src', "https://cdn.jsdelivr.net/combine/gh/jaames/iro.js@5.0.0/iro.js,gh/jaames/iro.js@5.0.0/plugins/iro-transparency-plugin/1.0.2/iro-transparency-plugin.js");
 script_dep.onload = () => {
@@ -520,4 +521,5 @@ document.head.insertAdjacentElement('beforeend', css);
 if (bbn_resolve) {bbn_resolve("ok");}
 };
 document.head.insertAdjacentElement("beforeend", script_dep);
-})(bbn); }
+})(bbn);
+}

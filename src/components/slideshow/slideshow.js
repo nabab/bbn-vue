@@ -685,7 +685,7 @@
                 <i v-if="type === 'circle'"
                     @click= "clickMiniature(it , i)"
                     :class="[
-                      (mainComponent.currentIndex === i ? 'nf nf-fa-dot_circle' : 'nf nf-fa-circle'),
+                      (mainComponent.currentIndex === i ? 'nf nf-fa-dot_circle_o' : 'nf nf-fa-circle'),
                       'bbn-padded',
                       'bbn-slideshow-circleMiniature',
                       'bbn-p',

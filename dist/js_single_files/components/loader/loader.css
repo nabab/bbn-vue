@@ -1,0 +1,136 @@
+div.bbn-loader {
+  align-items: center;
+  justify-content: center;
+  opacity: 0.5;
+  background-color: black;
+  color: white;
+}
+div.bbn-loader div.loader-animation {
+  margin: auto auto;
+}
+div.bbn-loader div.loader-animation h1 {
+  font-size: 3vmin;
+  text-align: center;
+  margin: 10px 0 0 0;
+  color: white;
+}
+div.bbn-loader div.loader-animation .sk-cube-grid {
+  width: 10vmin;
+  height: 10vmin;
+  margin: auto;
+}
+div.bbn-loader div.loader-animation .sk-cube-grid .sk-cube {
+  width: 33%;
+  height: 33%;
+  float: left;
+  background-color: white;
+  -webkit-animation: sk-cubeGridScaleDelay 1.3s infinite ease-in-out;
+  animation: sk-cubeGridScaleDelay 1.3s infinite ease-in-out;
+}
+div.bbn-loader div.loader-animation .sk-cube-grid .sk-cube.sk-cube1 {
+  -webkit-animation-delay: 0.2s;
+  animation-delay: 0.2s;
+}
+div.bbn-loader div.loader-animation .sk-cube-grid .sk-cube.sk-cube2 {
+  -webkit-animation-delay: 0.3s;
+  animation-delay: 0.3s;
+}
+div.bbn-loader div.loader-animation .sk-cube-grid .sk-cube.sk-cube3 {
+  -webkit-animation-delay: 0.4s;
+  animation-delay: 0.4s;
+}
+div.bbn-loader div.loader-animation .sk-cube-grid .sk-cube.sk-cube4 {
+  -webkit-animation-delay: 0.1s;
+  animation-delay: 0.1s;
+}
+div.bbn-loader div.loader-animation .sk-cube-grid .sk-cube.sk-cube5 {
+  -webkit-animation-delay: 0.2s;
+  animation-delay: 0.2s;
+}
+div.bbn-loader div.loader-animation .sk-cube-grid .sk-cube.sk-cube6 {
+  -webkit-animation-delay: 0.3s;
+  animation-delay: 0.3s;
+}
+div.bbn-loader div.loader-animation .sk-cube-grid .sk-cube.sk-cube7 {
+  -webkit-animation-delay: 0s;
+  animation-delay: 0s;
+}
+div.bbn-loader div.loader-animation .sk-cube-grid .sk-cube.sk-cube8 {
+  -webkit-animation-delay: 0.1s;
+  animation-delay: 0.1s;
+}
+div.bbn-loader div.loader-animation .sk-cube-grid .sk-cube.sk-cube9 {
+  -webkit-animation-delay: 0.2s;
+  animation-delay: 0.2s;
+}
+@-webkit-keyframes sk-cubeGridScaleDelay {
+  0%,
+  70%,
+  100% {
+    -webkit-transform: scale3D(1,1,1);
+    transform: scale3D(1,1,1);
+  }
+  35% {
+    -webkit-transform: scale3D(0,0,1);
+    transform: scale3D(0,0,1);
+  }
+}
+@keyframes sk-cubeGridScaleDelay {
+  0%,
+  70%,
+  100% {
+    -webkit-transform: scale3D(1,1,1);
+    transform: scale3D(1,1,1);
+  }
+  35% {
+    -webkit-transform: scale3D(0,0,1);
+    transform: scale3D(0,0,1);
+  }
+}
+@-webkit-keyframes sk-cubeGridScaleDelay {
+  0%,
+  70%,
+  100% {
+    -webkit-transform: scale3D(1,1,1);
+    transform: scale3D(1,1,1);
+  }
+  35% {
+    -webkit-transform: scale3D(0,0,1);
+    transform: scale3D(0,0,1);
+  }
+}
+@keyframes sk-cubeGridScaleDelay {
+  0%,
+  70%,
+  100% {
+    -webkit-transform: scale3D(1,1,1);
+    transform: scale3D(1,1,1);
+  }
+  35% {
+    -webkit-transform: scale3D(0,0,1);
+    transform: scale3D(0,0,1);
+  }
+}
+@keyframes loading {
+  0% {
+    opacity: .2;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: .2;
+  }
+}
+.dots span {
+  animation-name: loading;
+  animation-duration: 1.4s;
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+}
+.dots span:nth-child(2) {
+  animation-delay: .2s;
+}
+.dots span:nth-child(3) {
+  animation-delay: .4s;
+}

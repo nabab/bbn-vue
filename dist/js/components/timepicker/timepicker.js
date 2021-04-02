@@ -1,4 +1,5 @@
-(bbn_resolve) => { ((bbn) => {
+(bbn_resolve) => {
+((bbn) => {
 let script_dep = document.createElement('script');
 script_dep.setAttribute('src', "https://cdn.jsdelivr.net/combine/gh/moment/moment@2.27.0/min/moment-with-locales.min.js");
 script_dep.onload = () => {
@@ -925,4 +926,5 @@ document.head.insertAdjacentElement('beforeend', css);
 if (bbn_resolve) {bbn_resolve("ok");}
 };
 document.head.insertAdjacentElement("beforeend", script_dep);
-})(bbn); }
+})(bbn);
+}

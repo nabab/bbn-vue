@@ -1,4 +1,5 @@
-(bbn_resolve) => { ((bbn) => {
+(bbn_resolve) => {
+((bbn) => {
 let script = document.createElement('script');
 script.innerHTML = `<div :class="componentClass"
       :style="barStyle"
@@ -789,4 +790,5 @@ document.head.insertAdjacentElement('beforeend', css);
 })(window.bbn, window.Vue);
 
 if (bbn_resolve) {bbn_resolve("ok");}
-})(bbn); }
+})(bbn);
+}

@@ -1,4 +1,5 @@
-(bbn_resolve) => { ((bbn) => {
+(bbn_resolve) => {
+((bbn) => {
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-vmiddle']">
   <div v-if="currentChats.length"
@@ -2358,4 +2359,5 @@ document.head.insertAdjacentElement('beforeend', css);
 })(bbn, Vue);
 
 if (bbn_resolve) {bbn_resolve("ok");}
-})(bbn); }
+})(bbn);
+}

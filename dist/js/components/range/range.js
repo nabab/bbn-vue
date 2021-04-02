@@ -1,4 +1,5 @@
-(bbn_resolve) => { ((bbn) => {
+(bbn_resolve) => {
+((bbn) => {
 let script = document.createElement('script');
 script.innerHTML = `<span :class="[componentClass, 'bbn-flex-width', 'bbn-vmiddle']"
 	    :style="(currentSize !== '') ? 'width:' + currentSize : '' ">
@@ -118,4 +119,5 @@ document.head.insertAdjacentElement('beforeend', css);
   });
 })(bbn, Vue);
 if (bbn_resolve) {bbn_resolve("ok");}
-})(bbn); }
+})(bbn);
+}

@@ -2,7 +2,11 @@
   "use strict";
   let version = '2.0.2';
   let libURL = '';
-  if (bbn_root_dir && bbn_root_url) {
+  if ((typeof bbn_root_dir !== 'undefined')
+    && (typeof bbn_root_url !== 'undefined')
+    && bbn_root_dir
+    && bbn_root_url
+  ) {
     libURL = bbn_root_url + bbn.fn.dirName(bbn_root_dir) + '/';
   }
 
@@ -364,7 +368,7 @@
       if ( typeof todo  === 'string' ){
         todo = [todo];
       }
-      if ( bbn.fn.isArray(todo) ){
+      if (bbn.fn.isArray(todo) && bbn.fn.getRow(bbn.vue.knownPrefixes, {prefix: 'bbn-'})) {
         bbn.fn.each(todo, (a) => {
           if ( Vue.options.components['bbn-' + a] === undefined ){
             this.queueComponentBBN(a);
@@ -430,7 +434,15 @@
      */
     executeQueueBBNItem(todo){
       if ( todo.length ){
-        let url = bbn_root_url + bbn_root_dir + 'components/?components=' + bbn.fn.map(todo, (a) => {
+        let url = '';
+        if ((typeof bbn_root_dir !== 'undefined')
+          && (typeof bbn_root_url !== 'undefined')
+          && bbn_root_dir
+          && bbn_root_url
+        ) {
+          url += bbn_root_url + bbn_root_dir;
+        }
+        url += 'components/?components=' + bbn.fn.map(todo, (a) => {
           return a.name;
         }).join(',') + '&v=' + bbn.version;
         if ( bbn.env.isDev ){
@@ -2271,43 +2283,43 @@
   const
     editorOperators = {
       string: {
-        contains: bbn._('Contient'),
-        eq: bbn._('Est'),
-        neq: bbn._('N’est pas'),
-        startswith: bbn._('Commence par'),
-        doesnotcontain: bbn._('Ne contient pas'),
-        endswith: bbn._('Se termine par'),
-        isempty: bbn._('Est vide'),
-        isnotempty: bbn._('N’est pas vide')
+        contains: bbn._('Contains'),
+        eq: bbn._('Is'),
+        neq: bbn._('Is not'),
+        startswith: bbn._('Starts with'),
+        doesnotcontain: bbn._('Does not contain'),
+        endswith: bbn._('To end by'),
+        isempty: bbn._('Is empty'),
+        isnotempty: bbn._('Is not empty')
       },
       number: {
-        eq: bbn._('Est égal à'),
-        neq: bbn._('N’est pas égal à'),
-        gte: bbn._('Est supérieur ou égal à'),
-        gt: bbn._('Est supérieur à'),
-        lte: bbn._('Est inférieur ou égal à'),
-        lt: bbn._('Est inférieur à'),
+        eq: bbn._('Is equal to'),
+        neq: bbn._('Is not equal to'),
+        gte: bbn._('Est supérieur ou égal àIs greater than or equal to'),
+        gt: bbn._('Is greater than'),
+        lte: bbn._('Is less than or equal to'),
+        lt: bbn._('Is inferior to'),
       },
       date: {
-        eq: bbn._('Est égal à'),
-        neq: bbn._('N’est pas égal à'),
-        gte: bbn._('Est postérieur ou égal à'),
-        gt: bbn._('Est postérieur à'),
-        lte: bbn._('Est antérieur ou égal à'),
-        lt: bbn._('Est antérieur à'),
+        eq: bbn._('Is equal to'),
+        neq: bbn._('Is not equal to'),
+        gte: bbn._('Is greater than or equal to'),
+        gt: bbn._('Is after'),
+        lte: bbn._('Is prior to or equal to'),
+        lt: bbn._('Is older than'),
       },
       enums: {
-        eq: bbn._('Est égal à'),
-        neq: bbn._('N’est pas égal à'),
+        eq: bbn._('Is equal to'),
+        neq: bbn._('Is not equal to'),
       },
       boolean: {
-        istrue: bbn._('Est vrai'),
-        isfalse: bbn._('Est faux')
+        istrue: bbn._('Is true'),
+        isfalse: bbn._('Is false')
       }
     },
     editorNullOps = {
-      isnull: bbn._('Est nul'),
-      isnotnull: bbn._('N’est pas nul')
+      isnull: bbn._('Is null'),
+      isnotnull: bbn._('Is not null')
     },
     editorNoValueOperators = ['', 'isnull', 'isnotnull', 'isempty', 'isnotempty', 'istrue', 'isfalse'];
   bbn.fn.autoExtend("vue", {
@@ -2594,6 +2606,434 @@
       created(){
         this.componentClass.push('bbn-events-component');
       },
+    }
+  });
+})(bbn);
+
+
+((bbn) => {
+  "use strict";
+  bbn.fn.autoExtend("vue", {
+    /**
+     * editableListComponent
+     * @component editableListComponent
+     */
+    editableListComponent: {
+      props: {
+        /**
+         * If defined, the form created for the edit of the table will have this URL as action.
+         * @prop {String} url
+         */
+        url: {
+          type: String
+        },
+        /**
+         * Defines the editor to use when a item is in edit mode.
+         * @prop {String|Object} editor
+         */
+        editor: {
+          type: [String, Object, Function]
+        },
+        /**
+         * Set to true allows to edit inline the fields if no buttons are defined for the table.
+         * @prop {Boolean|String|Function} editable
+         */
+        editable: {
+          type: [Boolean, String, Function],
+          default: false,
+          validator: e => bbn.fn.isFunction(e) || (typeof e === 'boolean') || ['inline', 'popup', 'nobuttons'].includes(e)
+        },
+        /**
+         * Auto saves the row when edit-mode is 'inline'
+         * @prop {Boolean} [false] autoSave
+         */
+        autoSave: {
+          type: Boolean,
+          default: false
+        },
+        /**
+         * Automatically resets the original values ​​when edit-mode is 'inline'
+         * @prop {Boolean} [false] autoReset
+         */
+        autoReset: {
+          type: Boolean,
+          default: false
+        }
+      },
+      data(){
+        let editable = bbn.fn.isFunction(this.editable) ? this.editable() : this.editable;
+        return {
+          /**
+           * @data {String} editMode
+           */
+          editMode: editable === true ? (this.editor ? 'popup' : 'inline') : (editable === 'popup' ? 'popup' : 'inline'),
+          /**
+           * @data {Boolean|Object} [false] tmpRow
+           */
+          tmpRow: false,
+          /**
+           * @data {Boolean|Object} [false] originalRow
+           */
+          originalRow: false,
+          /**
+           * @data {Boolean|Object} [false] editedRow
+           */
+          editedRow: false,
+          /**
+           * @data {Boolean|Number} [false] editedIndex
+           */
+          editedIndex: false,
+        }
+      },
+      computed: {
+        /**
+         * Return true if the table isn't ajax, is editable and the edit mode is 'inline'.
+         * @computed isBatch
+         * @returns {Boolean}
+         */
+        isBatch() {
+          return this.editable && (this.editMode === 'inline') && !this.isAjax
+        },
+        /**
+         * If the computed isBatch is true, return an array of modified rows.
+         * @computed modifiedRows
+         * @returns {Array}
+         */
+        modifiedRows() {
+          let res = [];
+          if (this.isBatch) {
+            bbn.fn.each(this.currentData, (d, i) => {
+              if (JSON.stringify(d.data) !== JSON.stringify(this.originalData[i])) {
+                res.push(d);
+              }
+            })
+          }
+          return res;
+        },
+      },
+      methods: {
+        _defaultRow(data){
+          return data || {};
+        },
+        /**
+         * Creates the object tmpRow.
+         *
+         * @method _addTmp
+         * @param data
+         * @returns {Vue}
+         */
+        _addTmp(data) {
+          this._removeTmp().tmpRow = this._defaultRow(data);
+          this.$emit('addTmp', this.tmpRow);
+          return this;
+        },
+        /**
+         * Changes the values of tmpRow to false.
+         * @method _removeTmp
+         * @returns {Vue}
+         */
+        _removeTmp() {
+          if (this.tmpRow) {
+            this.tmpRow = false;
+          }
+          return this;
+        },
+        /**
+         * Returns true if the row corresponding to the given index has changed respect to originalData.
+         * @method isModified
+         * @param {Number} idx
+         * @returns {Boolean}
+         */
+        isModified(idx) {
+          if (!this.originalData) {
+            return false;
+          }
+          let data = [],
+              orig;
+          if (idx === undefined) {
+            data = bbn.fn.map(this.currentData, d => d.data);
+            orig = this.originalData;
+          }
+          else {
+            data = bbn.fn.getField(this.currentData, 'data', {index: idx}),
+            orig = this.originalData[idx];
+          }
+          return JSON.stringify(data) !== JSON.stringify(orig);
+        },
+        /**
+         * Adds the given data to the object tmpRow and opens the popup with the form to insert the row.
+         * @method insert
+         * @param {Object} data
+         * @param {Object} options
+         * @param {Number} index
+         * @fires _addTmp
+         * @fires edit
+         */
+        insert(data, options, index) {
+          let d = data ? bbn.fn.clone(data) : {};
+          if (this.uid && d[this.uid]) {
+            delete d[this.uid];
+          }
+          this._addTmp(d, index);
+          this.edit(this.tmpRow, options, index);
+        },
+        /**
+         * Adds the given data to the object tmpRow and opens the popup with the form to copy the row.
+         * @method copy
+         * @param {Object} data
+         * @param {Object} options
+         * @param {Number} index
+         * @fires _addTmp
+         * @fires edit
+         */
+        copy(data, options, index) {
+          let r = bbn.fn.clone(data);
+          if (this.uid && r[this.uid]) {
+            delete r[this.uid];
+          }
+          this._addTmp(r);
+          this.edit(this.tmpRow, options, index);
+        },
+        /**
+         * Opens the popup containing the form to edit the row.
+         * @method edit
+         * @param {Object} row
+         * @param {String|Object} winOptions
+         * @param {Number} index
+         * @fires _addTmp
+         */
+        edit(row, winOptions, index) {
+          if (!this.editable) {
+            throw new Error("The component is not editable, you cannot use the edit function");
+          }
+          if ( !winOptions ){
+            winOptions = {};
+          }
+          if (!row) {
+            this._addTmp();
+            row = this.tmpRow;
+          }
+          this.originalRow = bbn.fn.clone(row);
+          // EditedRow exists from now on the time of the edition
+          this.editedRow = row;
+          this.editedIndex = bbn.fn.isFunction(this.getDataIndex) ? this.getDataIndex(index) : index;
+          if (this.editMode === 'popup') {
+            if (typeof (winOptions) === 'string') {
+              winOptions = {
+                title: winOptions
+              };
+            }
+            if (!winOptions.height) {
+              //winOptions.height = (this.cols.length * 2) + 'rem'
+            }
+            if (winOptions.maximizable === undefined) {
+              winOptions.maximizable = true;
+            }
+            let popup = bbn.fn.extend({
+              source: {
+                row: row,
+                data: bbn.fn.isFunction(this.data) ? this.data() : this.data
+              }
+            }, {
+              title: bbn._('Row edition'),
+              width: 700
+            }, winOptions ? winOptions : {});
+            // A component is given as global editor (form)
+            if (this.editor) {
+              popup.component = bbn.fn.isFunction(this.editor) ? this.editor(row, index) : this.editor;
+            }
+            // A URL is given and in this case the form will be created automatically with this URL as action
+            else if (this.url) {
+              let table = this;
+              let o = bbn.fn.extend({}, this.data, {
+                action: table.tmpRow ? 'insert' : 'update'
+              });
+              popup.component = {
+                data() {
+                  let fields = [];
+                  table.cols.map((a) => {
+                    let o = bbn.fn.extend(true, {}, a);
+                    if (o.ftitle) {
+                      o.title = o.ftitle;
+                    }
+                    fields.push(o);
+                  });
+                  return {
+                    // Table's columns are used as native form config
+                    fields: fields,
+                    data: row,
+                    obj: o
+                  }
+                },
+                template: `
+  <bbn-form action="` + table.url + `"
+            :schema="fields"
+            :scrollable="false"
+            :source="data"
+            :data="obj"
+            @success="success"
+            @failure="failure">
+  </bbn-form>`,
+                methods: {
+                  success(d, e) {
+                    e.preventDefault();
+                    if (table.successEdit(d)) {
+                      table.getPopup().close();
+                    }
+                  },
+                  failure(d) {
+                    table.$emit('editFailure', d);
+                  },
+                },
+              };
+            } else {
+              throw new Error(bbn._("Impossible to open a window if either an editor or a URL is not set"))
+            }
+            popup.afterClose = () => {
+              //  this.currentData.push(bbn.fn.clone( this.tmpRow)); // <-- Error. This add a new row into table when it's in edit mode
+              this._removeTmp();
+              this.editedRow = false;
+              this.editedIndex = false;
+            };
+            this.getPopup().open(popup);
+          }
+        },
+        /**
+         * Cancels the changes made on the row data.
+         * @method cancel
+         * @fires _removeTmp
+         */
+        cancel() {
+          if (this.tmpRow) {
+            this._removeTmp();
+          }
+          else if (this.editedRow && this.originalRow) {
+            if (this.currentData[this.editedIndex]) {
+              this.currentData[this.editedIndex].data = this.originalRow;
+            }
+          }
+          this.originalRow = false;
+          this.editedRow = false;
+          this.editedIndex = false;
+        },
+        /**
+         * Insert or update a row in originalData.
+         * @method saveRow
+         * @emit saverow
+         */
+        saveRow() {
+          // New insert
+          let ev = new Event('saverow', {cancelable: true});
+          this.$emit('saverow', this.tmpRow || this.editedRow, ev);
+          if (!ev.defaultPrevented) {
+            if (this.tmpRow) {
+              this.currentData.push({
+                data: bbn.fn.clone(this.tmpRow),
+                index: this.currentData.length
+              });
+              if (this.originalData) {
+                this.originalData.push(bbn.fn.clone(this.tmpRow));
+              }
+              this.tmpRow = false;
+            }
+            // Update
+            else if (this.editedRow) {
+              this.$set(this.currentData[this.editedIndex], 'data', bbn.fn.clone(this.editedRow));
+              if (this.originalData) {
+                this.originalData.splice(this.editedIndex, 1, bbn.fn.clone(this.editedRow));
+              }
+              this.editedRow = false;
+            }
+            return true;
+          }
+          return false;
+        },
+        /**
+         * If the prop url of the table is defined makes a post to the url to update or insert the row, else fires the method saveRow to insert or update the row in originalData.
+         * @method saveInline
+         * @fires saveRow
+         *
+         */
+        saveInline() {
+          if (this.tmpRow || this.editedRow) {
+            if (this.url) {
+              let o = bbn.fn.extend({}, this.data, this.tmpRow || this.editedRow, {
+                action: this.tmpRow ? 'insert' : 'update'
+              });
+              this.post(this.url, o, (d) => {
+                this.successEdit(d);
+              })
+            }
+            else {
+              let d = bbn.fn.clone(this.tmpRow || this.editedRow);
+              if (this.saveRow()) {
+                this.$emit(this.tmpRow ? 'insert' : 'edit', d);
+              }
+            }
+          }
+        },
+        /**
+         * After the post in case of edit of the row, update the row in originalData.
+         *
+         * @method successEdit
+         * @param {Object} d
+         * @emit editSuccess
+         * @fires saveRow
+         * @returns {Boolean}
+         */
+        successEdit(d) {
+          if (bbn.fn.isObject(d)) {
+            if ((d.success !== undefined) && !d.success) {
+              if (window.appui) {
+                let ev = new Event('editFailure', {cancelable: true});
+                this.$emit('editFailfure', d, ev);
+                if (!ev.defaultPrevented) {
+                  appui.error();
+                }
+              }
+            }
+            else {
+              let ev = new Event('editSuccess', {cancelable: true});
+              this.$emit('editSuccess', d, ev);
+              if (!ev.defaultPrevented) {
+                if (d.data) {
+                  bbn.fn.iterate(d.data, (o, n) => {
+                    this.editedRow[n] = o;
+                  });
+                }
+                this.saveRow();
+                return true;
+              }
+            }
+          }
+          return false;
+        },
+        /**
+         * @ignore
+         * @method saveTmp
+         */
+        saveTmp() {},
+        saveEditedRow() {},
+        cancelEditedRow() {},
+      },
+      /**
+       * Adds the class 'bbn-editable-list-component' to the component.
+       * @event created
+       * @memberof editableListComponent
+       */
+      created(){
+        this.componentClass.push('bbn-editable-list-component');
+      },
+      watch: {
+        /**
+         * @watch editedRow
+         */
+        editedRow(newVal) {
+          if (newVal === false) {
+            this.editedIndex = false;
+          }
+        }
+      }
     }
   });
 })(bbn);
@@ -3927,11 +4367,11 @@
                 }
                 // If too short
                 else if ( validity.tooShort ){
-                  mess = bbn._('Please lengthen this text to ') + elem.getAttribute('minLength') + bbn._(' characters or more. You are currently using ') + elem.value.length + bbn._(' characters.');
+                  mess = bbn._('Please lengthen this text to %d characters or more. You are currently using %d characters.', parseInt(elem.getAttribute('minLength')), elem.value.length);
                 }
                 // If too long
                 else if ( validity.tooLong ){
-                  mess = bbn._('Please shorten this text to no more than ') + elem.getAttribute('maxLength') + bbn._(' characters. You are currently using ') + elem.value.length + bbn._(' characters.');
+                  mess = bbn._('Please shorten this text to no more than %d characters. You are currently using %d characters.', parseInt(elem.getAttribute('maxLength')), elem.value.length);
                 }
                 // If number input isn't a number
                 else if ( validity.badInput ){
@@ -3943,11 +4383,11 @@
                 }
                 // If a number field is over the max
                 else if ( validity.rangeOverflow ){
-                  mess = bbn._('Please select a value that is no more than ') + elem.getAttribute('max') + '.';
+                  mess = bbn._('Please select a value that is no more than %d.', parseInt(elem.getAttribute('max')));
                 }
                 // If a number field is below the min
                 else if ( validity.rangeUnderflow ){
-                  mess = bbn._('Please select a value that is no less than ') + elem.getAttribute('min') + '.';
+                  mess = bbn._('Please select a value that is no less than %d.', parseInt(elem.getAttribute('min')));
                 }
                 // If pattern doesn't match
                 else if (validity.patternMismatch) {
@@ -5269,6 +5709,391 @@
     }
   });
 })(bbn);
+
+
+((bbn) => {
+  "use strict";
+  bbn.fn.autoExtend("vue", {
+    /**
+     * serviceWorker Component.
+     * @component serviceWorkerComponent
+     */
+    serviceWorkerComponent: {
+      props: {},
+      data(){
+        return {
+          /**
+           * The registered channels list
+           * @data {Array} [[]] registeredChannels
+           * @memberof serviceWorkerComponent
+           */
+          registeredChannels: [],
+          /**
+           * The primary channel
+           * @data {String} [''] primaryChannel
+           * @memberof serviceWorkerComponent
+           */
+        }
+      },
+      methods: {
+        /**
+         * Registers a channel
+         * @method registerChannel
+         * @memberof serviceWorkerComponent
+         * @param {String} channel
+         * @fires _postMessage
+         * @return {Boolean}
+         */
+        registerChannel(channel, primary){
+          if (!this.registeredChannels.includes(channel)
+            && this._postMessage({
+              type: 'registerChannel',
+              channel: channel
+            })
+          ) {
+            this.registeredChannels.push(channel);
+            if (primary) {
+              this.primaryChannel = channel;
+            }
+            return true;
+          }
+          return false;
+        },
+        /**
+         * Unregisters a channel
+         * @method unregisterChannel
+         * @memberof serviceWorkerComponent
+         * @param {String} channel
+         * @fires _postMessage
+         * @return {Boolean}
+         */
+        unregisterChannel(channel){
+          if (this.registeredChannels.includes(channel)
+            && this._postMessage({
+              type: 'unregisterChannel',
+              channel: channel
+            })
+          ) {
+            this.registeredChannels.splice(this.registeredChannels.indexOf(channel), 1);
+            return true;
+          }
+          return false;
+        },
+        /**
+         * Sends a message to a channel
+         * @method messageChannel
+         * @memberof serviceWorkerComponent
+         * @param {String} channel
+         * @param {Object} data
+         * @fires _postMessage
+         * @return {Boolean}
+         */
+        messageChannel(channel, data){
+          if (this.registeredChannels.includes(channel)
+            && this._postMessage({
+              type: 'messageChannel',
+              channel: channel,
+              data: this._encodeMessageData(data)
+            })
+          ) {
+            return true;
+          }
+          return false;
+        },
+        /**
+         * Receives data from a channel
+         * @method messageFromChannel
+         * @memberof serviceWorkerComponent
+         * @param {Object} data
+         */
+        messageFromChannel(data){
+          data = this._decodeMessageData(data);
+          if (data.function){
+            if (bbn.fn.isFunction(data.function)) {
+              data.function(...(data.params || []));
+            }
+            else if (bbn.fn.isFunction(this[data.function])) {
+              this[data.function](...(data.params || []));
+            }
+          }
+        },
+        /**
+         * Emits messageToChannel event
+         * @method messageToChannel
+         * @memberof serviceWorkerComponent
+         * @param {Object} data
+         * @param {String} channel
+         * @emit messageToChannel
+         */
+        messageToChannel(data, channel){
+          this.$emit('messageToChannel', data, channel);
+        },
+        /**
+         * @method _checkSW
+         * @memberof serviceWorkerComponent
+         * @return {Boolean}
+         */
+        _checkSW(){
+          if ('serviceWorker' in navigator) {
+            if (navigator.serviceWorker.controller) {
+              return navigator.serviceWorker.controller.state !== 'redundant';
+            }
+            else {
+              bbn.fn.info("NO CONTROLLER FOR SW");
+            }
+          }
+          else {
+            bbn.fn.info("NO SW");
+          }
+          return false;
+        },
+        /**
+         * Postes the message to the service worker
+         * @method _postMessage
+         * @memberof serviceWorkerComponent
+         * @param {Object}
+         * @fires _checkSW
+         * @return {Boolean}
+         */
+        _postMessage(obj){
+          if (this._checkSW()) {
+            navigator.serviceWorker.controller.postMessage(obj);
+            return true;
+          }
+          return false;
+        },
+        /**
+         * Encodes the data of the message
+         * @method _encodeMessageData
+         * @memberof serviceWorkerComponent
+         * @param {Object} data
+         * @return {String}
+         */
+        _encodeMessageData(data){
+          return JSON.stringify(data, (k, d) => bbn.fn.isFunction(d) ? '/Function(' + d.toString() + ')/' : d);
+        },
+        /**
+         * Decodes the data of the message
+         * @method _decodeMessageData
+         * @memberof serviceWorkerComponent
+         * @param {String} data
+         * @return {Object}
+         */
+        _decodeMessageData(data){
+          return JSON.parse(data, (k, d) => {
+            if (bbn.fn.isString(d)
+              && d.startsWith('/Function(')
+              && d.endsWith(')/')
+            ) {
+              d = d.substring(10, d.length - 2);
+              return (0, eval)('(' + d + ')');
+            }
+            return d;
+          })
+        }
+      },
+      /**
+       * Adds the class 'bbn-service-worker-component' to the component.
+       * @event created
+       * @memberof serviceWorkerComponent
+       */
+       created(){
+        this.componentClass.push('bbn-service-worker-component');
+      },
+    }
+  });
+})(bbn);
+
+
+((bbn) => {
+  "use strict";
+  bbn.fn.autoExtend("vue", {
+    /**
+     * Browser Notification Component.
+     * @component browserNotificationComponent
+     */
+    browserNotificationComponent: {
+      /**
+       * @mixin bbn.vue.serviceWorkerComponent
+       * @memberof browserNotificationComponent
+       */
+      mixins: [bbn.vue.serviceWorkerComponent],
+      props: {
+        /**
+         * @prop {Boolean} [false] browserNotification
+         */
+        browserNotification: {
+          type: Boolean,
+          default: false
+        }
+      },
+      data(){
+        return {
+          /**
+           * @data {Boolean} [false] hasBrowserPermission
+           * @memberof browserNotificationComponent
+           */
+          hasBrowserPermission: false,
+          /**
+           * @data {Object} [{}] browserNotifications
+           * @memberof browserNotificationComponent
+           */
+          browserNotifications: {},
+          /**
+           * @data {String} [''] browserNotificationURL
+           * @memberof browserNotificationComponent
+           */
+          browserNotificationURL: '',
+          /**
+           * @data {Boolean} [false] browserNotificationSW
+           * @memberof browserNotificationComponent
+           */
+          browserNotificationSW: false
+        }
+      },
+      methods: {
+        /**
+           * @method browserNotify
+           * @memberof browserNotificationComponent
+           * @param {String} title
+           * @param {String} text,
+           * @param {Object} options
+           * @fires _postMessage
+           * @fires $set
+           */
+        browserNotify(title, text, options){
+          if (this.ready
+            && this.browserNotification
+            && this.hasBrowserPermission
+            && title
+            && text
+          ) {
+            if (bbn.fn.isObject(text)) {
+              options = text;
+            }
+            else if (bbn.fn.isString(text)) {
+              if (bbn.fn.isObject(options)) {
+                options = {
+                  body: text
+                }
+              }
+              else {
+                options = {};
+              }
+              if (!options.body || (options.body !== text)) {
+                options.body = text;
+              }
+            }
+            options.tag = options.tag || options.timestamp || n.timestamp;
+            if (this.browserNotificationSW) {
+              this._postMessage({
+                type: 'notification',
+                data: {
+                  title: title,
+                  options: options
+                }
+              })
+            }
+            else {
+              options.onclick = this.browserNotificationClick;
+              let n = new Notification(title, options);
+              this.$set(this.browserNotifications, options.tag, n);
+            }
+          }
+        },
+        /**
+         * @method browserNotificationClick
+         * @memberof browserNotificationComponent
+         * @param {Object} options
+         * @fires post
+         * @fires removeBrowserNotification
+         * @fires messageToChannel
+         */
+        browserNotificationClick(options){
+          if (this.browserNotificationURL) {
+            this.post(this.browserNotificationURL + '/actions/read', {id: options.tag}, d => {
+              if (d.success) {
+                this.removeBrowserNotification(options.tag);
+                this.messageToChannel({
+                  method: 'removeBrowserNotification',
+                  params: [options.tag]
+                });
+              }
+            })
+          }
+          else {
+            this.removeBrowserNotification(options.tag);
+          }
+        },
+        /**
+         * @method removeBrowserNotification
+         * @memberof browserNotificationComponent
+         * @param {String} id
+         * @fires $delete
+         */
+        removeBrowserNotification(id){
+          if (id && (id in this.browserNotifications)){
+            this.$delete(this.browserNotifications, id);
+          }
+        }
+      },
+      /**
+       * Adds the class 'bbn-browser-notification-component' to the component.
+       * @event created
+       * @memberof browserNotificationComponent
+       */
+       created(){
+        this.componentClass.push('bbn-browser-notification-component');
+      },
+      /**
+       * @event mounted
+       */
+      mounted(){
+        if (this.browserNotification) {
+          Notification.requestPermission((perms) => {
+            this.hasBrowserPermission = perms === 'granted';
+          })
+        }
+      }
+    }
+  });
+})(bbn);
+
+
+((bbn) => {
+  "use strict";
+  bbn.fn.autoExtend("vue", {
+    /**
+     * component Inside Component.
+     *
+     * @component componentInsideComponent
+     */
+    componentInsideComponent: {
+      props: {
+       /**
+        * The component that will be rendered inside the main component.
+        * @prop {Number|String} maxWidth
+        * @memberof dimensionsComponent
+        */
+        component: {
+          type: [String, Object, Vue]
+        },
+       /**
+        * The maximum height of the component.
+        * @prop {Number|String} maxHeight
+        * @memberof dimensionsComponent
+        */
+        componentOptions: {
+          type: Object,
+          default(){
+            return {};
+          }
+        }
+      }
+    }
+  });
+})(bbn);
+
 
 
 ((bbn) => {
