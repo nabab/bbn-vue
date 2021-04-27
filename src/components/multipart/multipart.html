@@ -1,40 +1,45 @@
-<div :class="[componentClass, 'bbn-overlay', 'bbn-flex-width']">
-  <div :class="['bbn-h-100', 'bbn-alt-background-internal', 'bbn-reactive', 'bbn-middle', 'bbn-unselectable', 'bbn-p', {'bbn-disabled': !hasPrev}]"
-       style="width: 10%; min-width: 10%"
-       @click="prev">
-    <div class="bbn-block bbn-xl">
-      <i class="nf nf-fa-chevron_left"></i>
-    </div>
-  </div>
-  <div class="bbn-h-100 bbn-flex-fill">
-    <bbn-form :full-size="true"
-              v-bind="$options.propsData"
-              ref="form">
-      <div class="bbn-abs bbn-no"
-           style="width: 1px; height: 1px; background-color: transparent"
-           tabindex="0"
-           @focus="leaveBefore"></div>
-      <bbn-router class="bbn-overlay"
-                  ref="router"
-                  @hook:mounted="init"
-                  :autoload="false"
-                  :def="def"
-                  :auto="false"
-                  @change="onRoute">
-
-        <slot></slot>
-      </bbn-router>
-      <div class="bbn-abs bbn-no"
-           style="width: 1px; height: 1px; background-color: transparent"
-           tabindex="0"
-           @focus="leaveAfter"></div>
+<div class="bbn-overlay bbn-flex-height">
+  <div class="bbn-flex-fill"
+       v-for="(name, i) in indexes"
+       v-show="currentSelected === i"
+       :key="i">
+    <bbn-form :source="data"
+              :buttons="false"
+              :ref="'form-' + i"
+              :prefilled="true"
+              @ready="readyForm = true"
+              @success="onSuccess">
+      <div :class="{
+        'bbn-overlay': true,
+        'bbn-middle': !!items[i].centered,
+        'bbn-padded': !items[i].centered
+      }">
+        <div :class="{
+          'bbn-block': !!items[i].centered,
+          'bbn-vmiddle': !!items[i].centered,
+          'bbn-overlay': !items[i].centered,
+          'bbn-flex-height': !items[i].centered
+        }"
+              style="display: block; max-height: 100%">
+          <div class="bbn-m bbn-b bbn-padded"
+               v-text="source[i].title || name"/>
+          <div :class="{
+            'bbn-block': !!items[i].centered,
+            'bbn-flex-fill': !items[i].centered
+          }">
+            <component :is="items[i].component || 'bbn-input'"
+                        v-bind="items[i].getOptions()"
+                        :required="items[i].required === undefined ? true : items[i].required"
+                        v-model="data[name]"/>
+          </div>
+        </div>
+      </div>
     </bbn-form>
   </div>
-  <div :class="['bbn-h-100', 'bbn-alt-background-internal', 'bbn-reactive', 'bbn-middle', 'bbn-unselectable', 'bbn-p', {'bbn-disabled': !hasNext}]"
-       style="width: 10%; min-width: 10%"
-       @click="next">
-    <div class="bbn-block bbn-xl">
-      <i class="nf nf-fa-chevron_right"></i>
-    </div>
+  <div class="bbn-form-footer bbn-popup-footer bbn-button-group bbn-flex-width bbn-lg">
+    <bbn-button v-for="(button, i) in currentButtons"
+                :key="button.key"
+                v-bind="button"
+    ></bbn-button>
   </div>
 </div>

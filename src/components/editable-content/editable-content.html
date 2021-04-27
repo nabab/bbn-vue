@@ -1,0 +1,32 @@
+<div :class="['bbn-block bbn-nowrap', componentClass]">
+  <div class="bbn-iblock"
+       v-if="isEditing">
+    <bbn-field mode="write"
+               v-model="currentValue"
+               field="content"/>
+  </div>
+  <div class="bbn-iblock"
+       v-else v-text="value"/>
+
+  <div class="bbn-iblock bbn-hpadded">
+    <div v-if="!isEditing"
+         class="bbn-block bbn-hspadded bbn-p"
+         tabindex="0"
+         @click="isEditing = true">
+      <i :class="editIcon"/>
+    </div>
+    <div v-if="isEditing"
+         class="bbn-block bbn-hspadded bbn-p"
+         tabindex="0"
+         @click="cancel">
+      <i :class="cancelIcon"/>
+    </div>
+    <div v-if="isEditing"
+         class="bbn-block bbn-hspadded bbn-p"
+         tabindex="0"
+         @click="save">
+      <i :class="saveIcon"/>
+    </div>
+  </div>
+       
+</div>

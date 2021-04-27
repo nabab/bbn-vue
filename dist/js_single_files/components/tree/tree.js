@@ -32,6 +32,7 @@ script.innerHTML = `<div :class="componentClass"
                         :level="level"
                         :selection="it.selection !== undefined ? it.selection : selection"
                         :path="it.path"
+                        :flat="flat"
                         ref="node"
                         :quickFilter="quickFilter"
                         :sortable="it.sortable !== undefined ? it.sortable : sortable"
@@ -58,15 +59,15 @@ script.innerHTML = `<div :class="componentClass"
                   @mouseover.stop="mouseOver"
             >
               <span :class="['bbn-tree-node-block-expander', {'bbn-p': numChildren}]"
-                    @click="if ( numChildren && (level >= tree.minExpandLevel) ){
+                    @click="if ( !flat && numChildren && (level >= tree.minExpandLevel) ){
                       isExpanded = !isExpanded;
                     }"
-                    @mouseover="if ( tree.draggable && tree.dragging && numChildren && (level >= tree.minExpandLevel) ){
+                    @mouseover="if ( !flat && tree.draggable && tree.dragging && numChildren && (level >= tree.minExpandLevel) ){
                       isExpanded = true;
                     }"
               >
                 <!-- If there are no children we leave the white space -->
-                <span v-if="!numChildren || (level < tree.minExpandLevel)"> </span>
+                <span v-if="flat || !numChildren || (level < tree.minExpandLevel)"> </span>
                 <i v-else
                     :class="{
                       'nf nf-fa-caret_down': isExpanded,
@@ -139,6 +140,7 @@ script.innerHTML = `<div :class="componentClass"
                       :path="path"
                       :autobind="false"
                       :filterable="isFilterable"
+                      :flat="flat"
                       :filters="tree.filters"
                       :selectable="source.selectable !== undefined ? source.selectable : tree.selectable"
                       :selection="source.selection !== undefined ? source.selection : tree.selection"
@@ -1587,6 +1589,10 @@ document.body.insertAdjacentElement('beforeend', script);
             default(){
               return {};
             }
+          },
+          flat: {
+            type: Boolean,
+            default: false
           }
         },
         data(){

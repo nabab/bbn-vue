@@ -44,6 +44,7 @@
     "No data": "Pas de donn\u00e9es",
     "Are you sure you want to delete this group of conditions?": "Voulez-vous vraiment supprimer ce groupe de conditions?",
     "Row edition": "\u00e9dition en ligne",
-    "Impossible to open a window if either an editor or a URL is not set": "Impossible d'ouvrir une fenêtre si un \u00e9diteur ou une URL n\u2019est pas d\u00e9fini"
+    "Impossible to open a window if either an editor or a URL is not set": "Impossible d'ouvrir une fenêtre si un \u00e9diteur ou une URL n\u2019est pas d\u00e9fini",
+    "Close:": "Fermer"
 	});
 })();

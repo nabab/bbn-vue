@@ -1476,6 +1476,49 @@
         suggest: {
           type: Boolean,
           default: false
+        },
+        /**
+         * Defines whether or not the floater has to be set mobile view.
+         * @memberof dropdownComponent
+         * @prop {Boolean} [false] mobile
+         */
+        mobile: {
+          type: Boolean,
+          default: true
+        },
+        /**
+         * Preloads the floater
+         * @memberof dropdownComponent
+         * @prop {Boolean} [false] preload
+         */
+        preload: {
+          type: Boolean,
+          default: false
+        },
+        /**
+         * Adds the close button to floater header
+         * @memberof dropdownComponent
+         * @prop {Boolean} [false] closable
+         */
+        closable: {
+          type: Boolean,
+          default: false
+        },
+        /**
+         * The floater bottom buttons
+         * @memberof dropdownComponent
+         * @prop {Array} buttons
+         */
+        buttons: {
+          type: Array
+        },
+        /**
+         * The floater title
+         * @memberof dropdownComponent
+         * @prop {String} floaterTitle
+         */
+        floaterTitle: {
+          type: String
         }
       },
       data(){
@@ -1521,7 +1564,13 @@
            * @data {Boolean} false isActive
            * @memberof dropdownComponent
            */
-          isActive: false
+          isActive: false,
+          /**
+           * The floater buttons
+           * @data {Array} [[]] realButtons
+           * @memberof dropdownComponent
+           */
+          realButtons: []
         };
       },
       computed: {
@@ -1545,8 +1594,21 @@
           }
           return '';
         },
+        /**
+         * @computed isSerching
+         * @memberof dropdownComponent
+         * @return {Boolean}
+         */
         isSearching(){
           return this.currentText !== this.currentTextValue;
+        },
+        /**
+         * @computed asMobile
+         * @memberof dropdownComponent
+         * @return {Boolean}
+         */
+        asMobile(){
+          return this.isMobile && this.mobile;
         }
       },
       methods: {
@@ -1573,9 +1635,11 @@
          * @memberof dropdownComponent
          */
         click(){
-          if (!this.disabled && this.filteredData.length && bbn.fn.isDom(this.$el)) {
+          if (!this.disabled && !this.readonly && this.filteredData.length && bbn.fn.isDom(this.$el)) {
             this.isOpened = !this.isOpened;
-            this.$el.querySelector('input:not([type=hidden])').focus();
+            if (this.writable) {
+              this.$el.querySelector('input:not([type=hidden])').focus();
+            }
             //this.getRef('input').getRef('element').focus();
           }
         },
@@ -1680,13 +1744,51 @@
          */
         unfilter(){
           this.currentFilters.conditions.splice(0, this.currentFilters.conditions.length);
+        },
+        /**
+         * Gets the buttons list
+         * @method getRealButtons
+         * @memberof dropdownComponent
+         * @return {Array}
+         */
+        getRealButtons(){
+          let btns = [];
+          if (bbn.fn.isArray(this.buttons)) {
+            bbn.fn.each(this.buttons, btn => {
+              if (bbn.fn.isString(btn)) {
+                if (btn === 'close') {
+                  btns.push({
+                    text: bbn._('Close'),
+                    icon: 'nf nf-fa-times_circle',
+                    action: () => {
+                      this.isOpened = false;
+                    }
+                  });
+                }
+              }
+              else {
+                btns.push(btn);
+              }
+            })
+          }
+          return btns;
+        },
+        /**
+         * Updates the buttons
+         * @method updateButtons
+         * @memberof dropdownComponent
+         */
+        updateButtons(){
+          this.realButtons.splice(0, this.realButtons.length, ...this.getRealButtons());
         }
+      },
+      beforeMount() {
+        this.updateButtons();
       },
       watch: {
         /**
          * @watch value
          * @memberof dropdownComponent
-         * @param newVal 
          */
         value(){
           this.$nextTick(() => {
@@ -1696,7 +1798,6 @@
         /**
          * @watch ready
          * @memberof dropdownComponent
-         * @param newVal
          */
         ready(v){
           if (v && this.suggest && !this.value && this.filteredData.length) {
@@ -1706,7 +1807,6 @@
         /**
          * @watch source
          * @memberof dropdownComponent
-         * @param newVal 
          */
         source(){
           this.updateData().then(() => {
@@ -1714,6 +1814,16 @@
               this.onResize();
             }
           });
+        },
+        /**
+         * @watch buttons
+         * @memberof dropdownComponent
+         */
+        buttons: {
+          deep: true,
+          handler(){
+            this.updateButtons();
+          }
         }
       }
     }
@@ -2458,6 +2568,32 @@
      * @component eventsComponent
      */
     eventsComponent: {
+      props: {
+        /**
+         * @memberof eventsComponent
+         * @prop {Number} [1000] touchHoldTolerance
+         */
+        touchHoldTolerance: {
+          type: Number,
+          default: 1000
+        },
+        /**
+         * @memberof eventsComponent
+         * @prop {Number} [10] touchTapTolerance
+         */
+        touchTapTolerance: {
+          type: Number,
+          default: 10
+        },
+        /**
+         * @memberof eventsComponent
+         * @prop {Number} [30] touchSwipeolerance
+         */
+        touchSwipeTolerance: {
+          type: Number,
+          default: 30
+        }
+      },
       data(){
         return {
           /**
@@ -2471,7 +2607,22 @@
            * @memberof eventsComponent
            * @data {Boolean} [false] isFocused
            */
-          isFocused: false
+          isFocused: false,
+          /**
+           * @memberof eventsComponent
+           * @data {Boolean|Event} [false] touchStarted
+           */
+          touchStarted: false,
+          /**
+           * @memberof eventsComponent
+           * @data {Boolean|Event} [false] touchMoved
+           */
+          touchMoved: false,
+          /**
+           * @memberof eventsComponent
+           * @data {Number} [0] touchHoldTimer
+           */
+          touchHoldTimer: 0
         }
       },
       methods: {
@@ -2563,31 +2714,57 @@
          * @method touchstart
          * @memberof eventsComponent
          */
-        touchstart(){
+         touchstart(ev){
           this.isTouched = true;
-          setTimeout(() => {
+          this.touchStarted = ev;
+          clearTimeout(this.touchHoldTimer);
+          this.touchHoldTimer = setTimeout(() => {
             if ( this.isTouched ){
               let event = new Event('contextmenu');
               this.$el.dispatchEvent(event);
               this.isTouched = false;
             }
-          }, 1000)
+          }, this.touchHoldTolerance);
         },
         /**
          * Sets the prop isTouched to false.
          * @method touchmove
          * @memberof eventsComponent
          */
-        touchmove(){
+        touchmove(ev){
           this.isTouched = false;
+          clearTimeout(this.touchHoldTimer);
+          if ((Math.abs(this.touchStarted.touches[0].clientX - ev.touches[0].clientX) > this.touchTapTolerance)
+            || (Math.abs(this.touchStarted.touches[0].clientY - ev.touches[0].clientY) > this.touchTapTolerance)
+          ) {
+            this.touchMoved = ev;
+          }
         },
         /**
          * Sets the prop isTouched to false.
          * @method touchend
          * @memberof eventsComponent
          */
-        touchend(){
+        touchend(ev){
+          if (this.touchStarted && this.touchMoved) {
+            let direction = false,
+                diffY = Math.abs(this.touchStarted.touches[0].clientY - this.touchMoved.touches[0].clientY),
+                diffX = Math.abs(this.touchStarted.touches[0].clientX - this.touchMoved.touches[0].clientX),
+                axisX = diffX > diffY;
+            if (axisX && (diffX > this.touchSwipeTolerance)) {
+              direction = this.touchStarted.touches[0].clientX > this.touchMoved.touches[0].clientX ? 'left' : 'right';
+            }
+            else if (!axisX && (diffY > this.touchSwipeTolerance)) {
+              direction = this.touchStarted.touches[0].clientY > this.touchMoved.touches[0].clientY ? 'top' : 'bottom';
+            }
+            if (!!direction) {
+              this.$emit('swipe', ev, this)
+              this.$emit('swipe' + direction, ev, this)
+            }
+          }
           this.isTouched = false;
+          this.touchMoved = false;
+          this.touchStarted = false;
         },
         /**
          * Sets the prop isTouched to false.
@@ -2595,7 +2772,10 @@
          * @memberof eventsComponent
          */
         touchcancel(){
+          clearTimeout(this.touchHoldTimer);
           this.isTouched = false;
+          this.touchStarted = false;
+          this.touchMoved = false;
         }
       },
       /**
@@ -3275,6 +3455,30 @@
           type: Number
         },
         /**
+         * The name of the property to be used as icon.
+         * @prop {String} sourceIcon
+         * @memberof listComponent
+         */
+         sourceIcon: {
+          type: String
+        },
+        /**
+         * The name of the property to be used as image.
+         * @prop {String} sourceImg
+         * @memberof listComponent
+         */
+         sourceImg: {
+          type: String
+        },
+        /**
+         * The name of the property to be used as class.
+         * @prop {String} sourceCls
+         * @memberof listComponent
+         */
+         sourceCls: {
+          type: String
+        },
+        /**
          * The name of the property to use for children of hierarchical source
          * @prop {String} [items] children
          * @memberof listComponent
@@ -3317,6 +3521,13 @@
          * @memberof listComponent
          */
         hierarchy: {
+          type: Boolean,
+          default: false
+        },
+        /** 
+         *  The tree will be shown on one level, with .. at the top, clicking an element with children will enter it
+         */
+        flat: {
           type: Boolean,
           default: false
         }
@@ -3483,7 +3694,12 @@
            * @data {Boolean} [false] loadingRequestID
            * @memberof listComponent 
            */
-          loadingRequestID: false
+          loadingRequestID: false,
+          /**
+           * If hirarchy and uid and flat will be set to the last entered node UID
+           * @data {false|String} the UID of the last entered node
+           */
+          parentUid: false
         };
       },
       computed: {
@@ -3537,6 +3753,7 @@
         /**
          * Return the number of pages of the list.
          * @computed numPages
+         * @memberof listComponent
          * @return {number}
          */
         numPages() {
@@ -3545,6 +3762,7 @@
         /**
          * Return the current page of the list.
          * @computed currentPage
+         * @memberof listComponent
          * @fires updateData
          * @return {Number}
          */
@@ -3601,6 +3819,72 @@
         },
         hashCfg(){
           return bbn.fn.md5(JSON.stringify(this.currentFilters) + JSON.stringify(this.currentLimit) + JSON.stringify(this.currentStart) + JSON.stringify(this.currentOrder));
+        },
+        /**
+         * Returns the current item icon
+         * @computed currentItemIcon
+         * @memberof listComponent
+         * @return {String}
+         */
+        currentItemIcon(){
+          if ((this.value !== undefined)
+            && !bbn.fn.isNull(this.value)
+            && this.sourceValue
+            && this.sourceIcon
+            && this.currentData.length
+          ){
+            let idx = bbn.fn.search(this.currentData, (a) => {
+              return a.data[this.sourceValue] === this.value;
+            });
+            if (idx > -1) {
+              return this.currentData[idx].data[this.sourceIcon];
+            }
+          }
+          return '';
+        },
+        /**
+         * Returns the current item image
+         * @computed currentItemImg
+         * @memberof listComponent
+         * @return {String}
+         */
+        currentItemImg(){
+          if ((this.value !== undefined)
+            && !bbn.fn.isNull(this.value)
+            && this.sourceValue
+            && this.sourceImg
+            && this.currentData.length
+          ){
+            let idx = bbn.fn.search(this.currentData, (a) => {
+              return a.data[this.sourceValue] === this.value;
+            });
+            if (idx > -1) {
+              return this.currentData[idx].data[this.sourceImg];
+            }
+          }
+          return '';
+        },
+        /**
+         * Returns the current item class
+         * @computed currentItemCls
+         * @memberof listComponent
+         * @return {String}
+         */
+        currentItemCls(){
+          if ((this.value !== undefined)
+            && !bbn.fn.isNull(this.value)
+            && this.sourceValue
+            && this.sourceCls
+            && this.currentData.length
+          ){
+            let idx = bbn.fn.search(this.currentData, (a) => {
+              return a.data[this.sourceValue] === this.value;
+            });
+            if (idx > -1) {
+              return this.currentData[idx].data[this.sourceCls];
+            }
+          }
+          return '';
         }
       },
       methods: {
@@ -3850,6 +4134,12 @@
                     this.updateIndexes();
                   }
                   else{
+                    if (this.parentUid && this.hierarchy && this.flat && this.uid) {
+                      d.data.unshift({
+                        [this.uid]: this.parentUid,
+                        [this.sourceText]: ".."
+                      });
+                    }
                     d.data = this._map(d.data);
                     this.currentData = bbn.fn.map(d.data, (a, i) => {
                       let o = this.hierarchy ? bbn.fn.extend(true, a, {
@@ -4259,16 +4549,35 @@
          */
         default: {
           type: [String, Number]
+        },
+        /**
+         * @prop {Boolean} [true] writable
+         * */
+        writable: {
+          type: Boolean,
+          default: true
+        },
+        /**
+         * Defines the input mode of this elemenet
+         * @prop {String} inputmode
+         */
+        inputmode: {
+          type: String
         }
       },
       data(){
+        let original = this.value;
+        if (bbn.fn.isObject(this.value) || bbn.fn.isArray(this.value)) {
+          original = bbn.fn.clone(this.value);
+        }
+
         return {
           /**
            * True if the component has a value.
            * @data {Boolean} hasVale
            */
           hasValue: !!this.value,
-
+          originalValue: original
         };
       },
       computed: {
@@ -4286,6 +4595,14 @@
         }
       },
       methods: {
+        resetValue(){
+          if (bbn.fn.isObject(this.value) || bbn.fn.isArray(this.value)) {
+            this.originalValue = bbn.fn.clone(this.value);
+          }
+          else {
+            this.originalValue = this.value;
+          }
+        },
         /**
          * Select the text of the component.
          * @method selectText
@@ -6376,6 +6693,10 @@
             "text": "Mirko",
             "isDark": true
           }, {
+            "value": "grinks",
+            "text": "Grinks",
+            "isDark": false
+          }, {
             "value": "turquoise-light2",
             "text": "Turquoise light variant",
             "isDark": false
@@ -6404,6 +6725,7 @@
     }
   })
 })(window.bbn);
+
 
 
 ((bbn) => {

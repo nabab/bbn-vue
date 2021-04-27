@@ -1,43 +1,48 @@
 ((bbn) => {
 let script = document.createElement('script');
-script.innerHTML = `<div :class="[componentClass, 'bbn-overlay', 'bbn-flex-width']">
-  <div :class="['bbn-h-100', 'bbn-alt-background-internal', 'bbn-reactive', 'bbn-middle', 'bbn-unselectable', 'bbn-p', {'bbn-disabled': !hasPrev}]"
-       style="width: 10%; min-width: 10%"
-       @click="prev">
-    <div class="bbn-block bbn-xl">
-      <i class="nf nf-fa-chevron_left"></i>
-    </div>
-  </div>
-  <div class="bbn-h-100 bbn-flex-fill">
-    <bbn-form :full-size="true"
-              v-bind="$options.propsData"
-              ref="form">
-      <div class="bbn-abs bbn-no"
-           style="width: 1px; height: 1px; background-color: transparent"
-           tabindex="0"
-           @focus="leaveBefore"></div>
-      <bbn-router class="bbn-overlay"
-                  ref="router"
-                  @hook:mounted="init"
-                  :autoload="false"
-                  :def="def"
-                  :auto="false"
-                  @change="onRoute">
-
-        <slot></slot>
-      </bbn-router>
-      <div class="bbn-abs bbn-no"
-           style="width: 1px; height: 1px; background-color: transparent"
-           tabindex="0"
-           @focus="leaveAfter"></div>
+script.innerHTML = `<div class="bbn-overlay bbn-flex-height">
+  <div class="bbn-flex-fill"
+       v-for="(name, i) in indexes"
+       v-show="currentSelected === i"
+       :key="i">
+    <bbn-form :source="data"
+              :buttons="false"
+              :ref="'form-' + i"
+              :prefilled="true"
+              @ready="readyForm = true"
+              @success="onSuccess">
+      <div :class="{
+        'bbn-overlay': true,
+        'bbn-middle': !!items[i].centered,
+        'bbn-padded': !items[i].centered
+      }">
+        <div :class="{
+          'bbn-block': !!items[i].centered,
+          'bbn-vmiddle': !!items[i].centered,
+          'bbn-overlay': !items[i].centered,
+          'bbn-flex-height': !items[i].centered
+        }"
+              style="display: block; max-height: 100%">
+          <div class="bbn-m bbn-b bbn-padded"
+               v-text="source[i].title || name"/>
+          <div :class="{
+            'bbn-block': !!items[i].centered,
+            'bbn-flex-fill': !items[i].centered
+          }">
+            <component :is="items[i].component || 'bbn-input'"
+                        v-bind="items[i].getOptions()"
+                        :required="items[i].required === undefined ? true : items[i].required"
+                        v-model="data[name]"/>
+          </div>
+        </div>
+      </div>
     </bbn-form>
   </div>
-  <div :class="['bbn-h-100', 'bbn-alt-background-internal', 'bbn-reactive', 'bbn-middle', 'bbn-unselectable', 'bbn-p', {'bbn-disabled': !hasNext}]"
-       style="width: 10%; min-width: 10%"
-       @click="next">
-    <div class="bbn-block bbn-xl">
-      <i class="nf nf-fa-chevron_right"></i>
-    </div>
+  <div class="bbn-form-footer bbn-popup-footer bbn-button-group bbn-flex-width bbn-lg">
+    <bbn-button v-for="(button, i) in currentButtons"
+                :key="button.key"
+                v-bind="button"
+    ></bbn-button>
   </div>
 </div>
 `;
@@ -64,22 +69,23 @@ document.body.insertAdjacentElement('beforeend', script);
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.localStorageComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent],
+    mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent, bbn.vue.inputComponent],
     props: {
+      source: {
+        type: Array,
+        required: true
+      },
+      value: {
+        type: Object,
+        default(){
+          return {};
+        }
+      },
       /**
        *@tood not used
        * @ {Boolean} [false] autocomplete
        */
       autocomplete: {
-        type: Boolean,
-        default: false
-      },
-      /**
-       * Set to true to enable the form's buttons without changing the form's content.
-       *
-       * @prop {Boolean} [false] prefilled
-       */
-      prefilled: {
         type: Boolean,
         default: false
       },
@@ -90,11 +96,6 @@ document.body.insertAdjacentElement('beforeend', script);
       disabled: {},
       script: {},
       scrollable: {},
-      /**
-       * The list of fields the form must contain.
-       *
-       */
-      fields: {},
       /**
        * Set to true to make a postOut instead of a post when the form is submitted.
        *
@@ -193,59 +194,6 @@ document.body.insertAdjacentElement('beforeend', script);
         }
       },
       /**
-       * The proper data used in the form.
-       *
-       * @prop {Object} source
-       */
-      // This is the proper data used in the form
-      source: {
-        type: Object,
-        default(){
-          return {}
-        }
-      },
-      /**
-       * The additional data to be sent by the form.
-       *
-       * @prop {Object} data
-       */
-      // This is additional data to be sent by the form
-      data: {
-        type: Object
-      },
-      /**
-       * Set to true to fix the form's footer.
-       *
-       * @prop {Boolean} [true] fixedFooter
-       */
-      fixedFooter: {
-        type: Boolean,
-        default: false
-      },
-      /**
-       * The form's schema generating the inputs.
-       *
-       * @prop {Array} [[]] schema
-       */
-      // That will be a form schema generating the inputs
-      schema: {
-        type: Array,
-        default: function(){
-          return [];
-        }
-      },
-      // Sets if it is the data property which must be sent, or the content of the named fields
-      // (in this case names are not necessary on form inputs)
-      /**
-       * Set to true if the data property must be sent.
-       *
-       * @prop {Boolean} [true] sendModel
-       */
-      sendModel: {
-        type: Boolean,
-        default: true
-      },
-      /**
        * Checks the fields' data before submitting the form.
        *
        * @prop {Function} validation
@@ -272,72 +220,144 @@ document.body.insertAdjacentElement('beforeend', script);
         type: Boolean,
         default: false
       },
-      def: {
-        type: String,
-        default: ''
+      centered: {
+        type: Boolean,
+        default: true
       }
     },
+    data(){
+      let data = {};
+      let items = [];
+      if (bbn.fn.isArray(this.source)) {
+        bbn.fn.each(this.source, a => {
+          a = bbn.fn.clone(a);
+          if (a.name) {
+            a.getOptions = () => {
+              if (bbn.fn.isFunction(a.options)) {
+                return a.options(this.data);
+              }
+              return a.options || {};
+            };
+            if (a.centered === undefined) {
+              a.centered = this.centered;
+            }
+            items.push(a);
+            if (a.value === undefined) {
+              if (a.default) {
+                data[a.name] = bbn.fn.isFunction(a.default) ? a.default() : a.default
+              }
+              else {
+                data[a.name] = a.nullable ? null : ''
+              }
+            }
+            else {
+              data[a.name] = a.value;
+            }
+          }
+        })
+      }
+
+      return {
+        root: appui.plugins['appui-menu'] + '/',
+        cf: null,
+        data: data,
+        items: items,
+        currentSelected: 0,
+        indexes: Object.keys(data),
+        readyForm: false,
+        currentButtons: false,
+        maxIndex: items.length - 1
+      }
+    },
+    computed: {
+    },
+    created(){
+      this.currentButtons = this.getButtons(this.currentSelected);
+
+    },
+    /*
     data(){
       return {
         router: null,
         form: null,
         hasNext: false,
         hasPrev: false,
-        isFocusing: false
+        isFocusing: false,
+        isPageValid: false
       }
     },
+    */
     methods: {
-      prev(){
-        if (this.router) {
-          this.router.prev();
+      hasForm() {
+        let form = this.getRef('form-' + this.currentSelected);
+        return !!form;
+      },
+      getButtons() {
+        let form = this.getRef('form-' + this.currentSelected);
+        if (!form) {
+          this.readyForm = false;
         }
-      },
-      next(){
-        if (this.router) {
-          this.router.next();
+        if (this.indexes[this.currentSelected]) {
+          return [
+            {
+              text: bbn._("Back"),
+              action: () => {
+                this.currentSelected--;
+              },
+              cls: 'bbn-padded',
+              disabled: !form || (this.currentSelected === 0),
+              key: bbn.fn.randomString()
+            }, {
+              text: this.currentSelected === this.maxIndex ? bbn._("Confirm") : bbn._("Next"),
+              action: () => {
+                if (this.indexes[this.currentSelected+1]) {
+                  this.currentSelected++;
+                }
+                else {
+                  this.$emit('submit', this.data);
+                  form.submit();
+                }
+              },
+              cls: 'bbn-padded',
+              disabled: !form || !form.isValid(),
+              key: bbn.fn.randomString()
+            }
+          ];
         }
+        return false;
       },
-      init(){
-        this.router = this.getRef('router');
-        this.form = this.getRef('form');
-        this.update();
-        setTimeout(() => {
-          this.router.route(this.router.getDefaultURL(), true);
-        }, 100)
+      updateButtons(){
+        this.$nextTick(() => {
+          let form = this.getRef('form-' + this.currentSelected);
+          if (form) {
+            this.currentButtons = this.getButtons()
+            this.$forceUpdate();
+            this.$nextTick(() => {
+              this.$forceUpdate()
+            })
+          }
+          else {
+            this.readyForm = false;
+          }
+        })
       },
-      focusout(e){
-        bbn.fn.log("FOCUSING OUT")
+      onSuccess(){
+        bbn.fn.log("SUCCESS", arguments, this.data)
+      }
+    },
+    watch: {
+      currentSelected(){
+        this.updateButtons();
       },
-      leaveBefore(e){
-        if (this.hasPrev) {
-          this.router.prev();
-          this.isFocusing = true;
-          setTimeout(() => {
-            this.form.focusLast();
-            this.isFocusing = false;
-          }, 100)
+      readyForm(v) {
+        this.updateButtons();
+      },
+      data: {
+        deep: true,
+        handler(){
+          this.updateButtons();
         }
-      },
-      leaveAfter(e){
-        if (this.hasNext) {
-          this.router.next();
-          this.isFocusing = true;
-          setTimeout(() => {
-            this.form.focusFirst();
-            this.isFocusing = false;
-          }, 100)
-        }
-      },
-      update(){
-        this.hasPrev = this.router.views[this.router.selected-1] !== undefined;
-        this.hasNext = this.router.views[this.router.selected+1] !== undefined;
-      },
-      onRoute(){
-        this.update();
-        if (!this.isFocusing) {
-          this.form.focusFirst();
-        }
-      },
+      }
     }
   });
 

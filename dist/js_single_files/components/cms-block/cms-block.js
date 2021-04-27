@@ -19,11 +19,11 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-block']"
             :class="{'edit-block' : (over || edit)}"
            
   ></component>
-  <!--i class="bbn-p nf nf-fa-edit inline bbn-xlarge bbn-blue edit-block-icon"
-     @click="editMode" 
-     v-if="isAdmin && editing && !edit" 
-  ></i-->
   <div class=" edit-block-icon">
+    <i class="bbn-p nf nf-fa-edit inline bbn-xlarge bbn-blue edit-block-icon"
+      @click="editMode" 
+      v-if="isAdmin && editing && !edit"
+    ></i>
     <i class="bbn-p nf nf-fa-check inline bbn-xlarge bbn-blue"
       @click="editBlock" 
       v-if="changed" 
@@ -60,6 +60,10 @@ document.body.insertAdjacentElement('beforeend', script);
 
   },
   templates = {
+    text: {
+      view: '<div v-text="source.content"/>',
+      edit: '<bbn-input v-model="source.content"/>'
+    },
     html: {
       view: `<div  @click="$parent.editMode" @mouseover="$parent.mouseover" @mouseleave="$parent.mouseleave"  
                   :class="['component-container', 'bbn-block-html', alignClass]"
@@ -407,7 +411,7 @@ document.body.insertAdjacentElement('beforeend', script);
         return !bbn.fn.isSame(this.initialSource, this.source)
       },
       type(){
-        return this.source.type
+        return this.source.type || 'text'
       }, 
       parent(){
         return this.ready ? this.closest('bbn-container').getComponent() : null;

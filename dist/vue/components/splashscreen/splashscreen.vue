@@ -281,11 +281,9 @@
           <div class="bbn-splashscreen-dots bbn-c">
             <i v-for="idx in indexes"
                @click="select(idx)"
-               :class="['bbn-padded', 'bbn-p', {
+               :class="['bbn-padded', 'bbn-p', 'nf nf-fa-circle', {
                  ' bbn-primary-text': value !== idx,
-                 'bbn-primary-text-alt': value === idx,
-                 'nf nf-fa-dot_circle_o': value === idx,
-                 'nf nf-fa-circle': value !== idx
+                 'bbn-primary-text-alt': value === idx
                }]"
                style="width: 02em; height: 0.2em"/>
           </div>
@@ -327,6 +325,8 @@
 }
 .bbn-splashscreen .bbn-splashscreen-main img {
   object-fit: cover;
+  height: 100%;
+  width: 100%;
 }
 .bbn-splashscreen.bbn-splashscreen-swipe-left .slide-leave-active,
 .bbn-splashscreen.bbn-splashscreen-swipe-left .slide-enter-active {

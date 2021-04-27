@@ -64,7 +64,7 @@ document.body.insertAdjacentElement('beforeend', script);
       return {
         /**
          * The component to render in bbn-field.
-         * @data {Boolean|String} renderedComponent 
+         * @data {Boolean|String} renderedComponent
          */
         renderedComponent: false,
         /**

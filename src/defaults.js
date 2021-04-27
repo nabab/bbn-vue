@@ -59,6 +59,10 @@
             "text": "Mirko",
             "isDark": true
           }, {
+            "value": "grinks",
+            "text": "Grinks",
+            "isDark": false
+          }, {
             "value": "turquoise-light2",
             "text": "Turquoise light variant",
             "isDark": false

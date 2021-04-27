@@ -17,11 +17,11 @@
             :class="{'edit-block' : (over || edit)}"
            
   ></component>
-  <!--i class="bbn-p nf nf-fa-edit inline bbn-xlarge bbn-blue edit-block-icon"
-     @click="editMode" 
-     v-if="isAdmin && editing && !edit" 
-  ></i-->
   <div class=" edit-block-icon">
+    <i class="bbn-p nf nf-fa-edit inline bbn-xlarge bbn-blue edit-block-icon"
+      @click="editMode" 
+      v-if="isAdmin && editing && !edit"
+    ></i>
     <i class="bbn-p nf nf-fa-check inline bbn-xlarge bbn-blue"
       @click="editBlock" 
       v-if="changed" 

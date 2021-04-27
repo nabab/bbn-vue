@@ -773,7 +773,7 @@ document.head.insertAdjacentElement('beforeend', css);
         default(){
           return !bbn.fn.isMobile() || bbn.fn.isTabletDevice();
         }
-      }
+      },
     },
     data() {
       return {
@@ -2535,6 +2535,45 @@ document.head.insertAdjacentElement('beforeend', css);
         this.setResizeMeasures();
       },
       /**
+       * Returns an object of numbers as width and height based on whatever unit given.
+       * 
+       * @method getDimensions
+       * @param {Number} width
+       * @param {Number} height
+       * @return {Number}
+       */
+      getDimensionWidth(width) {
+        if (bbn.fn.isNumber(width) && width) {
+          return parseInt(width);
+        }
+
+        let parent = this.$el || this.$root.$el;
+        let r = 0;
+
+        if (parent && width) {
+          if (!parent.insertAdjacentElement) {
+            return 0;
+          }
+
+          let el = document.createElement('div');
+          el.style.position = 'absolute';
+          el.style.opacity = 0;
+          el.className = 'bbn-reset'
+          el.style.width = this.formatSize(width);
+          try {
+            parent.insertAdjacentElement('beforeend', el);
+          }
+          catch (e){
+            bbn.fn.log("Error while inserting adjacent element for dimensioncalculation", e, this.$el);
+            return 0;
+          }
+          r = el.offsetWidth || el.clientWidth || 0;
+          el.remove();
+        }
+
+        return r;
+      },
+      /**
        * Resizes the table.
        * @method resizeWidth
        * @returns {Vue}
@@ -2574,12 +2613,15 @@ document.head.insertAdjacentElement('beforeend', css);
                       ? this.minimumColumnWidthMobile
                       : this.minimumColumnWidth;
                   }
-                  if (col.minWidth && (tmp < col.minWidth)) {
-                    tmp = col.minWidth;
+                  let minWidth = this.getDimensionWidth(col.minWidth);
+                  let maxWidth = this.getDimensionWidth(col.maxWidth);
+                  if (col.minWidth && (tmp < minWidth)) {
+                    tmp = minWidth;
                   }
-                  if (col.maxWidth && (tmp > col.maxWidth)) {
-                    tmp = col.maxWidth;
+                  if (col.maxWidth && (tmp > maxWidth)) {
+                    tmp = maxWidth;
                   }
+
                   col.realWidth = tmp;
                 }
                 sum += col.realWidth;
@@ -2587,6 +2629,7 @@ document.head.insertAdjacentElement('beforeend', css);
                   col.left = sumLeft;
                   sumLeft += col.realWidth;
                 }
+
                 if (groupIdx === 2) {
                   col.right = sumRight;
                   sumRight += col.realWidth;
@@ -2600,6 +2643,7 @@ document.head.insertAdjacentElement('beforeend', css);
           });
           this.isResizingWidth = false;
         }
+
         return this;
       },
       /**
@@ -2776,6 +2820,14 @@ document.head.insertAdjacentElement('beforeend', css);
           this.$nextTick(() => {
             bbn.fn.each(this.cols, (a, i) => {
               if (!a.hidden && (!this.groupable || (this.group !== i))) {
+                let minWidth = null;
+                let maxWidth = null;
+                if (a.minWidth) {
+                  minWidth = this.getDimensionWidth(a.minWidth)
+                }
+                if (a.maxWidth) {
+                  maxWidth = this.getDimensionWidth(a.maxWidth)
+                }
                 a.index = i;
                 if (a.hidden) {
                   a.realWidth = 0;
@@ -2790,13 +2842,13 @@ document.head.insertAdjacentElement('beforeend', css);
                   }
                   if ( a.width ){
                     if (bbn.fn.isString(a.width) && (a.width.substr(-1) === '%')) {
-                      a.realWidth = Math.floor(parentWidth * parseFloat(a.width) / 100);
+                      a.realWidth = Math.floor(parentWidth * this.getDimensionWidth(a.width) / 100);
                       if ( a.realWidth < (bbn.fn.isMobile() ? this.minimumColumnWidthMobile : this.minimumColumnWidth) ){
                         a.realWidth = bbn.fn.isMobile() ? this.minimumColumnWidthMobile : this.minimumColumnWidth;
                       }
                     }
                     else {
-                      a.realWidth = parseFloat(a.width);
+                      a.realWidth = this.getDimensionWidth(a.width);
                     }
                   }
                   else {
@@ -2805,11 +2857,11 @@ document.head.insertAdjacentElement('beforeend', css);
                       : this.minimumColumnWidth;
                     numUnknown++;
                   }
-                  if (a.minWidth && (a.realWidth < a.minWidth)) {
-                    a.realWidth = a.minWidth;
+                  if (minWidth && (a.realWidth < minWidth)) {
+                    a.realWidth = minWidth;
                   }
-                  if (a.maxWidth && (a.realWidth > a.maxWidth)) {
-                    a.realWidth = a.maxWidth;
+                  if (maxWidth && (a.realWidth > maxWidth)) {
+                    a.realWidth = maxWidth;
                   }
                   if ( a.buttons !== undefined ) {
                     colButtons = i;

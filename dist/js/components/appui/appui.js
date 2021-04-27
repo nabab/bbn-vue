@@ -183,7 +183,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-background', 'bbn-overlay
       </bbn-router>
     </div>
     <!-- FOOTER -->
-    <component v-if="footer"
+    <component v-if="(typeof footer !== 'undefined') && !!footer"
                ref="footer"
                class="appui-footer"
                :is="footer"/>

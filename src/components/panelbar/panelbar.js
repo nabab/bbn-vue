@@ -18,6 +18,10 @@
      */
     mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent, bbn.vue.resizerComponent],
     props: {
+      multiple: {
+        type: Boolean,
+        default: false
+      },
       /**
        * @prop {Boolean} [false] flex
        */
@@ -91,6 +95,7 @@
     },
     data(){
       return {
+        selectedValues: [],
         /**
          * @data {Number} [null] size
          */
@@ -119,11 +124,27 @@
       }
     },
     methods: {
+      isSelected(idx){
+        if(!this.multiple){
+          return this.selected === idx
+        }
+        else{
+          return this.selectedValues.includes(idx)
+        }
+      },
       /**
        * @method onResize
        */
       onResize(){
         this.size = this.$el.clientHeight;
+      },
+      multiselect(idx){
+        if(!this.selectedValues.includes(idx)){
+          this.selectedValues.push(idx)
+        }
+        else{
+          this.selectedValues.splice(this.selectedValues.indexOf(idx), 1)
+        }
       },
      /**
        * Shows the content of selected items and emits the event select
@@ -162,36 +183,71 @@
        * @return {Object}
        */
       getStyle(idx){
-        if (
-          (idx !== null ) &&
-          (idx === this.preselected) &&
-          (this.flex || ((this.source[idx] !== undefined) && (this.source[idx].flex === true)))
-        ){
-          return this.size ? {height: this.size + 'px', overflow: 'hidden'} : {};
-        }
-        //if this.flex === false, case of panelbar containing a table or other content that has an height
-        else if (
-          (idx !== null ) &&
-          (idx === this.preselected) &&
-          (!this.flex || ( (this.source[idx] !== undefined) && (this.source[idx].flex === false)))
-        ){
-          let children = this.getRef('container').children,
-              res = [],
-              childHeight = 0;
-          bbn.fn.each(children, (a) => {
-            if ( a.classList.contains('bbn-border-box') ){
-              res.push(a)
-            }
-          })
-          this.$nextTick(()=>{
-            if ( res[idx] && res[idx].firstElementChild.clientHeight ){
-              this.childHeight = res[idx].firstElementChild.clientHeight
-            }
-            return this.size ? {height: this.childHeight + 'px', overflow: 'hidden'} : {};
-          })
+        if(!this.multiple){
+          if (
+            (idx !== null ) &&
+            (idx === this.preselected) &&
+            (this.flex || ((this.source[idx] !== undefined) && (this.source[idx].flex === true)))
+          ){
+            return this.size ? {height: this.size + 'px', overflow: 'hidden'} : {};
+          }
+          //if this.flex === false, case of panelbar containing a table or other content that has an height
+          else if (
+            (idx !== null ) &&
+            (idx === this.preselected) &&
+            (!this.flex || ( (this.source[idx] !== undefined) && (this.source[idx].flex === false)))
+          ){
+            let children = this.getRef('container').children,
+                res = [],
+                childHeight = 0;
+            bbn.fn.each(children, (a) => {
+              if ( a.classList.contains('bbn-border-box') ){
+                res.push(a)
+              }
+            })
+            this.$nextTick(()=>{
+              if ( res[idx] && res[idx].firstElementChild.clientHeight ){
+                this.childHeight = res[idx].firstElementChild.clientHeight
+              }
+              return this.size ? {height: this.childHeight + 'px', overflow: 'hidden'} : {};
+            })
+          }
+          else{
+            return {height: '0px', overflow: 'hidden'};
+          }
         }
         else{
-          return {height: '0px', overflow: 'hidden'};
+          if (
+            this.selectedValues.includes(idx) &&
+            (idx !== null ) &&
+            (this.flex || ((this.source[idx] !== undefined) && (this.source[idx].flex === true)))
+          ){
+            return this.size ? {height: this.size + 'px', overflow: 'hidden'} : {};
+          }
+          //if this.flex === false, case of panelbar containing a table or other content that has an height
+          else if (
+            this.selectedValues.includes(idx) &&
+            (idx !== null ) &&
+            (!this.flex || ( (this.source[idx] !== undefined) && (this.source[idx].flex === false)))
+          ){
+            let children = this.getRef('container').children,
+                res = [],
+                childHeight = 0;
+            bbn.fn.each(children, (a) => {
+              if ( a.classList.contains('bbn-border-box') ){
+                res.push(a)
+              }
+            })
+            this.$nextTick(()=>{
+              if ( res[idx] && res[idx].firstElementChild.clientHeight ){
+                this.childHeight = res[idx].firstElementChild.clientHeight
+              }
+              return this.size ? {height: this.childHeight + 'px', overflow: 'hidden'} : {};
+            })
+          }
+          else{
+            return {height: '0px', overflow: 'hidden'};
+          }
         }
       }
     },

@@ -20,6 +20,10 @@
 
   },
   templates = {
+    text: {
+      view: '<div v-text="source.content"/>',
+      edit: '<bbn-input v-model="source.content"/>'
+    },
     html: {
       view: `<div  @click="$parent.editMode" @mouseover="$parent.mouseover" @mouseleave="$parent.mouseleave"  
                   :class="['component-container', 'bbn-block-html', alignClass]"
@@ -367,7 +371,7 @@
         return !bbn.fn.isSame(this.initialSource, this.source)
       },
       type(){
-        return this.source.type
+        return this.source.type || 'text'
       }, 
       parent(){
         return this.ready ? this.closest('bbn-container').getComponent() : null;

@@ -48,6 +48,7 @@ script.innerHTML = `<div :class="[
           :tabindex="tabindex"
           :class="{'bbn-flex-fill' : (buttonLeft || buttonRight || isNullable)}"
           :size="currentInputSize"
+          :inputmode="inputmode"
     >
     <bbn-loadicon v-if="loading"></bbn-loadicon>
     <div v-else-if="isNullable && hasValue && !readonly && !disabled"

@@ -56,6 +56,49 @@
         suggest: {
           type: Boolean,
           default: false
+        },
+        /**
+         * Defines whether or not the floater has to be set mobile view.
+         * @memberof dropdownComponent
+         * @prop {Boolean} [false] mobile
+         */
+        mobile: {
+          type: Boolean,
+          default: true
+        },
+        /**
+         * Preloads the floater
+         * @memberof dropdownComponent
+         * @prop {Boolean} [false] preload
+         */
+        preload: {
+          type: Boolean,
+          default: false
+        },
+        /**
+         * Adds the close button to floater header
+         * @memberof dropdownComponent
+         * @prop {Boolean} [false] closable
+         */
+        closable: {
+          type: Boolean,
+          default: false
+        },
+        /**
+         * The floater bottom buttons
+         * @memberof dropdownComponent
+         * @prop {Array} buttons
+         */
+        buttons: {
+          type: Array
+        },
+        /**
+         * The floater title
+         * @memberof dropdownComponent
+         * @prop {String} floaterTitle
+         */
+        floaterTitle: {
+          type: String
         }
       },
       data(){
@@ -101,7 +144,13 @@
            * @data {Boolean} false isActive
            * @memberof dropdownComponent
            */
-          isActive: false
+          isActive: false,
+          /**
+           * The floater buttons
+           * @data {Array} [[]] realButtons
+           * @memberof dropdownComponent
+           */
+          realButtons: []
         };
       },
       computed: {
@@ -125,8 +174,21 @@
           }
           return '';
         },
+        /**
+         * @computed isSerching
+         * @memberof dropdownComponent
+         * @return {Boolean}
+         */
         isSearching(){
           return this.currentText !== this.currentTextValue;
+        },
+        /**
+         * @computed asMobile
+         * @memberof dropdownComponent
+         * @return {Boolean}
+         */
+        asMobile(){
+          return this.isMobile && this.mobile;
         }
       },
       methods: {
@@ -153,9 +215,11 @@
          * @memberof dropdownComponent
          */
         click(){
-          if (!this.disabled && this.filteredData.length && bbn.fn.isDom(this.$el)) {
+          if (!this.disabled && !this.readonly && this.filteredData.length && bbn.fn.isDom(this.$el)) {
             this.isOpened = !this.isOpened;
-            this.$el.querySelector('input:not([type=hidden])').focus();
+            if (this.writable) {
+              this.$el.querySelector('input:not([type=hidden])').focus();
+            }
             //this.getRef('input').getRef('element').focus();
           }
         },
@@ -260,13 +324,51 @@
          */
         unfilter(){
           this.currentFilters.conditions.splice(0, this.currentFilters.conditions.length);
+        },
+        /**
+         * Gets the buttons list
+         * @method getRealButtons
+         * @memberof dropdownComponent
+         * @return {Array}
+         */
+        getRealButtons(){
+          let btns = [];
+          if (bbn.fn.isArray(this.buttons)) {
+            bbn.fn.each(this.buttons, btn => {
+              if (bbn.fn.isString(btn)) {
+                if (btn === 'close') {
+                  btns.push({
+                    text: bbn._('Close'),
+                    icon: 'nf nf-fa-times_circle',
+                    action: () => {
+                      this.isOpened = false;
+                    }
+                  });
+                }
+              }
+              else {
+                btns.push(btn);
+              }
+            })
+          }
+          return btns;
+        },
+        /**
+         * Updates the buttons
+         * @method updateButtons
+         * @memberof dropdownComponent
+         */
+        updateButtons(){
+          this.realButtons.splice(0, this.realButtons.length, ...this.getRealButtons());
         }
+      },
+      beforeMount() {
+        this.updateButtons();
       },
       watch: {
         /**
          * @watch value
          * @memberof dropdownComponent
-         * @param newVal 
          */
         value(){
           this.$nextTick(() => {
@@ -276,7 +378,6 @@
         /**
          * @watch ready
          * @memberof dropdownComponent
-         * @param newVal
          */
         ready(v){
           if (v && this.suggest && !this.value && this.filteredData.length) {
@@ -286,7 +387,6 @@
         /**
          * @watch source
          * @memberof dropdownComponent
-         * @param newVal 
          */
         source(){
           this.updateData().then(() => {
@@ -294,6 +394,16 @@
               this.onResize();
             }
           });
+        },
+        /**
+         * @watch buttons
+         * @memberof dropdownComponent
+         */
+        buttons: {
+          deep: true,
+          handler(){
+            this.updateButtons();
+          }
         }
       }
     }

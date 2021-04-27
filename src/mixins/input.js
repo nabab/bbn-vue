@@ -118,16 +118,35 @@
          */
         default: {
           type: [String, Number]
+        },
+        /**
+         * @prop {Boolean} [true] writable
+         * */
+        writable: {
+          type: Boolean,
+          default: true
+        },
+        /**
+         * Defines the input mode of this elemenet
+         * @prop {String} inputmode
+         */
+        inputmode: {
+          type: String
         }
       },
       data(){
+        let original = this.value;
+        if (bbn.fn.isObject(this.value) || bbn.fn.isArray(this.value)) {
+          original = bbn.fn.clone(this.value);
+        }
+
         return {
           /**
            * True if the component has a value.
            * @data {Boolean} hasVale
            */
           hasValue: !!this.value,
-
+          originalValue: original
         };
       },
       computed: {
@@ -145,6 +164,14 @@
         }
       },
       methods: {
+        resetValue(){
+          if (bbn.fn.isObject(this.value) || bbn.fn.isArray(this.value)) {
+            this.originalValue = bbn.fn.clone(this.value);
+          }
+          else {
+            this.originalValue = this.value;
+          }
+        },
         /**
          * Select the text of the component.
          * @method selectText

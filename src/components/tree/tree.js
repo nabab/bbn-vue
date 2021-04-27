@@ -1405,6 +1405,10 @@
             default(){
               return {};
             }
+          },
+          flat: {
+            type: Boolean,
+            default: false
           }
         },
         data(){

@@ -2,14 +2,19 @@
 let script = document.createElement('script');
 script.innerHTML = `<bbn-context :tag="tag"
             :class="componentClass"
+            ref="floater"
             tabindex="-1"
-            :source="items"
-            @click.prevent.stop="clickItem"
-            @contextmenu.prevent.stop="clickItem"
-            @keydown.space.enter.prevent="clickItem"
-            @mousedown.prevent.stop="() => {return false}"
+            position="top"
+            :content="content"
+            @click="action('click', $event)"
+            @contextmenu="action('context', $event)"
+            @keydown="action('keydown', $event)"
+            @mousedown="action('mousedown', $event)"
+            @mouseover="action('mouseover', $event)"
 >
-  <slot></slot>
+  <slot>
+    <i :class="icon"></i>
+  </slot>
 </bbn-context>`;
 script.setAttribute('id', 'bbn-tpl-component-tooltip');
 script.setAttribute('type', 'text/x-template');
@@ -26,28 +31,38 @@ document.body.insertAdjacentElement('beforeend', script);
 
 (function(bbn){
   "use strict";
+  const tpl = `
+  <div style="padding-top: 4em" class="bbn-padded">
+    <div class="bbn-top-left bbn-vmargin">
+      <i class="bbn-xl ---BBN-ICON---"></i>
+    </div>
+    <div>
+    ---BBN-CONTENT---
+    </div>
+  </div>`;
   Vue.component('bbn-tooltip', {
     /**
      * @mixin bbn.vue.basicComponent
      */
     mixins: [bbn.vue.basicComponent],
     props: {
+      component: {
+        type: [String, Object]
+      },
       /**
        * The source of the component tooltip.
        * @prop {Function|Array} source
        */
       source: {
-        type: [Function, Array],
-        default(){
-          return []
-        }
+        type: [Function, String],
+        required: true
       },
-      /**
-       * The source's option
-       * @prop {} [null] sourceOption
-       */
-      sourceOption: {
-        default: null
+      template: {
+        type: String
+      },
+      icon: {
+        type: String,
+        default: "bbn-m nf nf-mdi-information_outline"
       },
       /**
        * The html tag.
@@ -80,7 +95,7 @@ document.body.insertAdjacentElement('beforeend', script);
          * The items.
          * @data {Array} items
          */
-        items: this.getItems()
+        content: this.getContent()
       };
     },
     methods: {
@@ -89,41 +104,16 @@ document.body.insertAdjacentElement('beforeend', script);
        * @method getItems
        * @returns {Array}
        */
-      getItems(){
-        return (bbn.fn.isFunction(this.source) ? this.source(this.sourceOption) : this.source) || [];
+      getContent() {
+        let st = bbn.fn.isFunction(this.source) ? this.source() : this.source;
+        let st2 = this.template || tpl;
+        return st2.replace('---BBN-ICON---', this.icon).replace('---BBN-CONTENT---', st);
       },
-      /**
-       * The behavior of the component at the click.
-       * @param {Event} e 
-       * @fires getItems
-       */
-      clickItem(e){
-        if (
-          (e.type === 'keydown') ||
-          ((e.type === 'contextmenu') && this.context) ||
-          ((e.type === 'click') && !this.context)
-        ){
-          this.items = this.getItems();
-        }
-      },
-    },
-    watch: {
-      /**
-       * @watch source
-       */
-      source: {
-        deep: true,
-        handler(){
-          this.items = this.getItems()
-        }
-      },
-      /**
-       * @watch sourceOption
-       */
-      sourceOption(){
-        this.items = this.getItems()
+      action(type, ev) {
+
       }
-    }
+    },
+
   });
 
 })(bbn);

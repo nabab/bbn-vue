@@ -33,3 +33,7 @@
 .bbn-list > ul > li .text.hidden i {
   opacity: 0 !important;
 }
+.bbn-list > ul > li.bbn-list-group-li {
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+}

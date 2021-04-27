@@ -2505,7 +2505,13 @@
             {
                 "text": "dropdown",
                 "url": "bbn-vue\/component\/dropdown\/overview",
-                "props": [],
+                "props": [
+                    {
+                        "text": "notext",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/dropdown\/doc\/props#notext"
+                    }
+                ],
                 "methods": [
                     {
                         "text": "keydown",
@@ -2565,6 +2571,32 @@
                         "url": "bbn-vue\/component\/dropdown\/doc\/mixins#localStorageComponent"
                     }
                 ]
+            },
+            {
+                "text": "editable",
+                "url": "bbn-vue\/component\/editable\/overview",
+                "props": [
+                    {
+                        "text": "title",
+                        "desc": "The audio's title",
+                        "url": "bbn-vue\/component\/editable\/doc\/props#title"
+                    }
+                ],
+                "methods": [],
+                "mixins": [
+                    {
+                        "text": "basicComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/editable\/doc\/mixins#basicComponent"
+                    }
+                ]
+            },
+            {
+                "text": "editable-content",
+                "url": "bbn-vue\/component\/editable-content\/overview",
+                "props": [],
+                "methods": [],
+                "mixins": []
             },
             {
                 "text": "emoji",
@@ -3836,6 +3868,19 @@
                 ]
             },
             {
+                "text": "inline-editor",
+                "url": "bbn-vue\/component\/inline-editor\/overview",
+                "props": [],
+                "methods": [],
+                "mixins": [
+                    {
+                        "text": "basicComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/inline-editor\/doc\/mixins#basicComponent"
+                    }
+                ]
+            },
+            {
                 "text": "input",
                 "url": "bbn-vue\/component\/input\/overview",
                 "props": [
@@ -4157,9 +4202,9 @@
                         "url": "bbn-vue\/component\/list\/doc\/mixins#basicComponent"
                     },
                     {
-                        "text": "inputComponent",
+                        "text": "listComponent",
                         "desc": "",
-                        "url": "bbn-vue\/component\/list\/doc\/mixins#inputComponent"
+                        "url": "bbn-vue\/component\/list\/doc\/mixins#listComponent"
                     },
                     {
                         "text": "keynavComponent",
@@ -4425,11 +4470,6 @@
                 "url": "bbn-vue\/component\/multipart\/overview",
                 "props": [
                     {
-                        "text": "prefilled",
-                        "desc": "Set to true to enable the form's buttons without changing the form's content.\r\n       *",
-                        "url": "bbn-vue\/component\/multipart\/doc\/props#prefilled"
-                    },
-                    {
                         "text": "disabled",
                         "desc": "Set to true to disable the form.",
                         "url": "bbn-vue\/component\/multipart\/doc\/props#disabled"
@@ -4488,31 +4528,6 @@
                         "text": "buttons",
                         "desc": "The buttons shown on the form.\r\n       *",
                         "url": "bbn-vue\/component\/multipart\/doc\/props#buttons"
-                    },
-                    {
-                        "text": "source",
-                        "desc": "The proper data used in the form.\r\n       *",
-                        "url": "bbn-vue\/component\/multipart\/doc\/props#source"
-                    },
-                    {
-                        "text": "data",
-                        "desc": "The additional data to be sent by the form.\r\n       *",
-                        "url": "bbn-vue\/component\/multipart\/doc\/props#data"
-                    },
-                    {
-                        "text": "fixedFooter",
-                        "desc": "Set to true to fix the form's footer.\r\n       *",
-                        "url": "bbn-vue\/component\/multipart\/doc\/props#fixedFooter"
-                    },
-                    {
-                        "text": "schema",
-                        "desc": "The form's schema generating the inputs.\r\n       *",
-                        "url": "bbn-vue\/component\/multipart\/doc\/props#schema"
-                    },
-                    {
-                        "text": "sendModel",
-                        "desc": "Set to true if the data property must be sent.\r\n       *",
-                        "url": "bbn-vue\/component\/multipart\/doc\/props#sendModel"
                     },
                     {
                         "text": "validation",
@@ -4986,11 +5001,6 @@
                         "text": "zIndex",
                         "desc": "",
                         "url": "bbn-vue\/component\/popup\/doc\/props#zIndex"
-                    },
-                    {
-                        "text": "alertTitle",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/popup\/doc\/props#alertTitle"
                     },
                     {
                         "text": "alertMessage",
@@ -7296,6 +7306,11 @@
                         "url": "bbn-vue\/component\/table\/doc\/methods#onResize"
                     },
                     {
+                        "text": "getDimensions",
+                        "desc": "Returns an object of numbers as width and height based on whatever unit given.",
+                        "url": "bbn-vue\/component\/table\/doc\/methods#getDimensions"
+                    },
+                    {
                         "text": "resizeWidth",
                         "desc": "Resizes the table.",
                         "url": "bbn-vue\/component\/table\/doc\/methods#resizeWidth"
@@ -7751,11 +7766,6 @@
                         "text": "source",
                         "desc": "The source of the component tooltip.",
                         "url": "bbn-vue\/component\/tooltip\/doc\/props#source"
-                    },
-                    {
-                        "text": "sourceOption",
-                        "desc": "The source's option",
-                        "url": "bbn-vue\/component\/tooltip\/doc\/props#sourceOption"
                     },
                     {
                         "text": "tag",

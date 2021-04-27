@@ -86,13 +86,6 @@ document.body.insertAdjacentElement('beforeend', script);
         default: 10
       },
       /**
-       * @prop {String} ['<i class="nf nf-fa-warning bbn-l"> </i>  Alert'] alertTitle
-       */
-      alertTitle: {
-        type: String,
-        default: '<i class="nf nf-fa-warning bbn-l"> </i> ' + bbn._("Alert")
-      },
-      /**
        * @prop {String} ['There was a problem...'] alertMessage
        */
       alertMessage: {
@@ -287,7 +280,7 @@ document.body.insertAdjacentElement('beforeend', script);
           d = obj;
         }
         if ( d.url ){
-          this.post(d.url, d.data || {}, (r) => {
+          return this.post(d.url, d.data || {}, (r) => {
             if ( r.content || r.title ){
               if ( r.script ){
                 let tmp = eval(r.script);
@@ -385,7 +378,6 @@ document.body.insertAdjacentElement('beforeend', script);
         }
         let win = this.getWindow(idx);
         if ( this.items[idx] && win ){
-          bbn.fn.log("CLOSE", force);
           win.close(force);
           this.$forceUpdate();
         }
@@ -428,6 +420,7 @@ document.body.insertAdjacentElement('beforeend', script);
           }
           else if ( !has_title && (typeof arguments[i] === 'string') ){
             o.title = arguments[i];
+            has_title = true;
           }
           else if ( typeof arguments[i] === 'string' ){
             okText = arguments[i];
@@ -452,13 +445,13 @@ document.body.insertAdjacentElement('beforeend', script);
           if ( !o.content ){
             o.content = this.alertMessage;
           }
-          if ( !o.title ){
-            o.title = this.alertTitle;
+          if (!o.title) {
+            o.title = false;
           }
           if ( !okText ){
             okText = this.okText;
           }
-          o.content = '<div class="bbn-lpadded bbn-large bbn-c" style="min-width: 30em">' + o.content + '</div>';
+          o.content = '<div class="' + (this.isMobile || this.isTablet ? 'bbn-padded' : 'bbn-lpadded') + ' bbn-large bbn-c" style="min-width: ' + (this.isMobile || this.isTablet ? '15' : '30') + 'em">' + o.content + '</div>';
           o.buttons = [{
             text: okText,
             cls: 'bbn-primary',
@@ -498,46 +491,51 @@ document.body.insertAdjacentElement('beforeend', script);
             yesText = bbn._('Yes'),
             noText = bbn._('No'),
             o = {},
-            options = {},
             has_msg = false,
             has_yes = false,
             has_width = false,
             i;
-        for ( i = 0; i < arguments.length; i++ ){
-          if ( !has_msg && (typeof(arguments[i]) === 'string') ){
-            o.content = arguments[i];
-            has_msg = 1;
-          }
-          else if ( bbn.fn.isDimension(arguments[i]) || (arguments[i] === 'auto') ){
-            if ( has_width ){
-              o.height = arguments[i];
+        if (bbn.fn.isObject(arguments[0])) {
+          o = arguments[0];
+        }
+        else {
+          for ( i = 0; i < arguments.length; i++ ){
+            if ( !has_msg && (typeof(arguments[i]) === 'string') ){
+              o.content = arguments[i];
+              has_msg = 1;
             }
-            else{
-              o.width = arguments[i];
-              has_width = 1;
+            else if ( bbn.fn.isDimension(arguments[i]) || (arguments[i] === 'auto') ){
+              if ( has_width ){
+                o.height = arguments[i];
+              }
+              else{
+                o.width = arguments[i];
+                has_width = 1;
+              }
             }
-          }
-          else if ( (typeof arguments[i] === 'string') ){
-            if ( !has_yes ){
-              yesText = arguments[i];
-              has_yes = true;
+            else if ( (typeof arguments[i] === 'string') ){
+              if ( !has_yes ){
+                yesText = arguments[i];
+                has_yes = true;
+              }
+              else{
+                noText = arguments[i];
+              }
             }
-            else{
-              noText = arguments[i];
+            else if (bbn.fn.isFunction(arguments[i]) ){
+              if ( onYes ){
+                onNo = arguments[i];
+              }
+              else{
+                onYes = arguments[i];
+              }
             }
-          }
-          else if (bbn.fn.isFunction(arguments[i]) ){
-            if ( onYes ){
-              onNo = arguments[i];
+            else if ( typeof(arguments[i]) === 'object' ){
+              options = arguments[i];
             }
-            else{
-              onYes = arguments[i];
-            }
-          }
-          else if ( typeof(arguments[i]) === 'object' ){
-            options = arguments[i];
           }
         }
+
         if ( (typeof(o) === 'object') && onYes ){
           if ( !o.content ){
             o.content = this.confirmMessage;
@@ -546,26 +544,26 @@ document.body.insertAdjacentElement('beforeend', script);
             o.title = false;
           }
 
-          o.content = '<div class="bbn-lpadded bbn-medium">' + o.content + '</div>';
+          o.content = '<div class="' + (this.isMobile || this.isTablet ? 'bbn-padded' : 'bbn-lpadded') + ' bbn-large bbn-c" style="min-width: ' + (this.isMobile || this.isTablet ? '15' : '30') + 'em">' + o.content + '</div>';
           o.buttons = [{
             text: yesText,
             cls: 'bbn-primary',
             icon: 'nf nf-fa-check_circle',
             action($ev, btn){
-              btn.closest('bbn-floater').close();
+              btn.closest('bbn-floater').close(true);
               setTimeout(() => {
                 onYes($ev, btn);
-              }, 0)
+              }, 0);
             }
           }, {
             text: noText,
             icon: 'nf nf-fa-times_circle',
-            action($ev, btn){
-              btn.closest('bbn-floater').close();
-              if ( onNo ){
+            action($ev, btn) {
+              btn.closest('bbn-floater').close(true);
+              if (onNo) {
                 setTimeout(() => {
                   onNo($ev, btn);
-                }, 0)
+                }, 0);
               }
             }
           }];
@@ -573,7 +571,6 @@ document.body.insertAdjacentElement('beforeend', script);
           this.open(bbn.fn.extend(o, {
             resizable: false,
             maximizable: false,
-            closable: true,
             scrollable: true
           }));
         }

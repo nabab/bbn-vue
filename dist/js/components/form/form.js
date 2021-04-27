@@ -439,7 +439,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @return {Boolean}
        */
       _canSubmit(){
-        return this.prefilled || (this.isModified() && this.isValid(false, false));
+        return (this.prefilled || this.isModified()) && this.isValid(false, false);
       },
       /**
        * Returns an array containing the form's buttons.
@@ -557,6 +557,9 @@ document.head.insertAdjacentElement('beforeend', css);
         }
       },
       updateButtons(){
+        if (this.buttons === false) {
+          return;
+        }
         if (this.realButtons.length) {
           this.realButtons.splice(0, this.realButtons.length);
         }

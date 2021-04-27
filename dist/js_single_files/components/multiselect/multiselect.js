@@ -11,21 +11,19 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-w-100', 'bbn-textbox']"
          :required="required"
          :readonly="readonly"
   >
-  <div class="bbn-overlay bbn-radius">
-    <bbn-scroll ref="scroll">
-      <bbn-list :source="source"
-                :selection="true"
-                class="bbn-reset"
-                :uid="sourceValue"
-                ref="list"
-                :selected="value"
-                :component="realComponent"
-                :source-text="sourceText"
-                :source-value="sourceValue"
-                @select="select">
-      </bbn-list>
-    </bbn-scroll>
-  </div>
+  <bbn-scroll ref="scroll">
+    <bbn-list :source="source"
+              :selection="true"
+              class="bbn-reset"
+              :uid="sourceValue"
+              ref="list"
+              :selected="value"
+              :component="realComponent"
+              :source-text="sourceText"
+              :source-value="sourceValue"
+              @select="select">
+    </bbn-list>
+  </bbn-scroll>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-multiselect');
 script.setAttribute('type', 'text/x-template');

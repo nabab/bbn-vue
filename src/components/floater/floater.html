@@ -24,10 +24,11 @@
               'bbn-header': true,
               'bbn-bordered-bottom': true,
               'bbn-unselectable': true,
-              'bbn-block': isResizing,
+              'bbn-block': true,
               'bbn-w-100': !isResizing
             }">
-      <div class="bbn-w-100">
+      <div v-if="title"
+           class="bbn-w-100">
         <h3 v-html="title"
             class="bbn-no-margin bbn-spadded"
             ref="title"/>

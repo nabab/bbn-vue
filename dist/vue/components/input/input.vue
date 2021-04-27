@@ -47,6 +47,7 @@
           :tabindex="tabindex"
           :class="{'bbn-flex-fill' : (buttonLeft || buttonRight || isNullable)}"
           :size="currentInputSize"
+          :inputmode="inputmode"
     >
     <bbn-loadicon v-if="loading"></bbn-loadicon>
     <div v-else-if="isNullable && hasValue && !readonly && !disabled"
@@ -273,6 +274,7 @@
 .bbn-input input {
   width: 100%;
   font-size: inherit;
+  font-weight: inherit;
   border-radius: inherit;
 }
 .bbn-input.bbn-input-nullable .bbn-input-nullable-container {

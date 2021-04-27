@@ -37,6 +37,15 @@
       bbn.vue.dropdownComponent,
       bbn.vue.localStorageComponent
     ],
+    props: {
+      /**
+       * @prop {Boolean} [false] notext
+       */
+      notext: {
+        type: Boolean,
+        default: false
+      }
+    },
     /**
      * The current icon.
      *
@@ -144,9 +153,12 @@
      /**
       * @watch  isOpened
       */
-     isOpened(){
-      if (this.currentText === this.currentTextValue) {
+     isOpened(val){
+      if ((this.currentText === this.currentTextValue) && this.writable) {
         this.selectText();
+      }
+      if (!val && this.preload) {
+        this.getRef('list').currentVisible = true;
       }
      },
      /**

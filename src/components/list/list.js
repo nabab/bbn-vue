@@ -16,7 +16,7 @@
   Vue.component('bbn-list', {
     /**
      * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.inputComponent
+     * @mixin bbn.vue.listComponent
      * @mixin bbn.vue.keynavComponent
      * @mixin bbn.vue.positionComponent
      * @mixin bbn.vue.keepCoolComponent
@@ -258,6 +258,20 @@
       alternateBackground :{
         type: Boolean,
         default: false
+      },
+      groupable: {
+        type: Boolean,
+        default: false
+      },
+      sourceGroup: {
+        type: String,
+        default: 'group'
+      },
+      groupComponent: {
+        type: [String, Object, Vue]
+      },
+      groupStyle: {
+        type: String
       }
     },
     data(){
@@ -398,7 +412,39 @@
           s.maxHeight = this.maxHeight + (bbn.fn.isNumber(this.maxHeight) ? 'px' : '')
         }
         return s;
-      }
+      },
+      filteredData(){
+        let data = this.currentData;
+        if (this.currentData.length
+          && this.currentFilters
+          && this.currentFilters.conditions
+          && this.currentFilters.conditions.length
+          && (!this.serverFiltering || !this.isAjax)
+        ) {
+          data = bbn.fn.filter(data, (a) => {
+            return this._checkConditionsOnItem(this.currentFilters, a.data);
+          });
+        }
+        if (this.groupable && this.sourceGroup) {
+          let grouped = {},
+              ungrouped = [];
+          bbn.fn.each(data, d => {
+            if (d.data[this.sourceGroup] !== undefined) {
+              if (grouped[d.data[this.sourceGroup]] === undefined) {
+                grouped[d.data[this.sourceGroup]] = [];
+              }
+              grouped[d.data[this.sourceGroup]].push(d);
+            }
+            else {
+              ungrouped.push(d);
+            }
+          });
+          data = [];
+          bbn.fn.each(Object.values(grouped), g => data.push(...g));
+          data.push(...ungrouped);
+        }
+        return data;
+      },
     },
     methods: {
       /**
@@ -408,7 +454,7 @@
       _updateIconSituation(){
         let hasIcons = false;
         bbn.fn.each(this.filteredData, (a) => {
-          if ( a.data.icon ){
+          if ( a.data && a.data.icon ){
             hasIcons = true;
             return false;
           }
@@ -471,6 +517,7 @@
        * @emits select
        */
       select(idx){
+        bbn.fn.log('mirko', idx, this.tmpDisabled);
         if ( this.tmpDisabled === idx ){
           return;
         }
@@ -479,6 +526,7 @@
           this.tmpDisabled = false;
         }, 1000);
         let item = this.filteredData[idx] || null;
+        bbn.fn.log('mirko2', item);
         let ev = new Event('select', {cancelable: true});
         if ( item && item.data && !item.data.disabled ){
           this.currentIndex = idx;
@@ -503,15 +551,13 @@
               }
               if (v !== undefined) {
                 if (item.selected) {
-                  if (this.selected.includes(v)) {
-                    this.selected.splice(this.selected.indexOf(v), 1);
+                  if (this.unique) {
+                    this.selected.splice(0, this.selected.length);
                   }
-                  else {
-                    if (this.unique && (this.mode === 'free')) {
-                      this.selected.splice(0, this.selected.length);
-                    }
+                  if (!this.selected.includes(v)) {
                     this.selected.push(v);
                   }
+
                 }
                 else if (this.selected.includes(v)) {
                   this.selected.splice(this.selected.indexOf(v), 1);

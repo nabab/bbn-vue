@@ -21,10 +21,6 @@ script.innerHTML = `<component v-if="mode === 'write'"
 script.setAttribute('id', 'bbn-tpl-component-field');
 script.setAttribute('type', 'text/x-template');
 document.body.insertAdjacentElement('beforeend', script);
-let css = document.createElement('link');
-css.setAttribute('rel', "stylesheet");
-css.setAttribute('href', bbn.vue.libURL + "dist/js/components/field/field.css");
-document.head.insertAdjacentElement('beforeend', css);
 /*bbn-field is a generic component of simple construction, its potential lies in the versatility of use, assigning to the property "type" a well-defined value, it becomes a "bbn" component.
   * For example if we assign the value "numeric" to the property type, it will become "bbn-numeric"*/
 
@@ -69,7 +65,7 @@ document.head.insertAdjacentElement('beforeend', css);
       return {
         /**
          * The component to render in bbn-field.
-         * @data {Boolean|String} renderedComponent 
+         * @data {Boolean|String} renderedComponent
          */
         renderedComponent: false,
         /**

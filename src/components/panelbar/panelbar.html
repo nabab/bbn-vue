@@ -2,10 +2,13 @@
   <div class="bbn-bordered bbn-h-100">
     <div class="bbn-flex-height" ref="container">
       <template v-for="(s, idx) in source">
-        <div class="bbn-panelbar-bbn-header bbn-header bbn-spadded bbn-vmiddle" ref="header">
+        <div :class="['bbn-panelbar-bbn-header', 'bbn-header', 'bbn-spadded', 'bbn-vmiddle', {'bbn-panelbar-header-selected': isSelected(idx)}]"
+             ref="header"
+            
+        >
           <div class="bbn-panelbar-arrow-container bbn-hspadded bbn-p bbn-middle bbn-block"
-               @click="select(idx)">
-            <i :class="['nf nf-fa-angle_right', 'bbn-panelbar-header-icon', 'bbn-large',  {'bbn-panelbar-header-icon-rotate': preselected === idx}]"></i>
+               @click="multiple ? multiselect(idx) : select(idx)">
+            <i :class="['nf nf-fa-angle_right', 'bbn-panelbar-header-icon', 'bbn-large',  {'bbn-panelbar-header-icon-rotate': multiple ? isSelected(idx) : (preselected === idx)}]"></i>
           </div>
           <div :class="['bbn-panelbar-title', 'bbn-vmiddle', {
                   'bbn-panelbar-center': (align === 'center'),
@@ -14,7 +17,7 @@
                 }]"
           >
             <div v-html="s.header"
-                @click="select(idx)"
+                @click="multiple ? multiselect(idx) : select(idx)"
                 :class="{
                   'bbn-p':true,
                   'bbn-panelbar-inline': s.headerComponent,
@@ -33,8 +36,8 @@
         </div>
         <div :class="['bbn-border-box', {
               'bbn-w-100': !scrollable,
-              'bbn-panelbar-selected' : selected === idx,
-              'bbn-flex-fill': ((selected === idx) && (flex || source[idx].flex))
+              'bbn-panelbar-selected' : isSelected(idx),
+              'bbn-flex-fill': (isSelected(idx) & (flex || source[idx].flex))
             }]"
             :style="getStyle(idx)"
         >

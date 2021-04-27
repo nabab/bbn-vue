@@ -822,11 +822,12 @@
         if (parent && (width || height)) {
           if (!parent.insertAdjacentElement) {
             bbn.fn.log(parent);
-            throw new Error("Bouh!!!");
+            throw new Error("Impossible to insert adjacent element to calculate dimensions");
           }
 
           let el = document.createElement('div');
           el.style.position = 'absolute';
+          el.style.opacity = 0;
           el.className = 'bbn-reset'
           el.style.width = this.formatSize(width);
           el.style.height = this.formatSize(height);

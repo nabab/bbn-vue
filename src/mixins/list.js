@@ -234,6 +234,30 @@
           type: Number
         },
         /**
+         * The name of the property to be used as icon.
+         * @prop {String} sourceIcon
+         * @memberof listComponent
+         */
+         sourceIcon: {
+          type: String
+        },
+        /**
+         * The name of the property to be used as image.
+         * @prop {String} sourceImg
+         * @memberof listComponent
+         */
+         sourceImg: {
+          type: String
+        },
+        /**
+         * The name of the property to be used as class.
+         * @prop {String} sourceCls
+         * @memberof listComponent
+         */
+         sourceCls: {
+          type: String
+        },
+        /**
          * The name of the property to use for children of hierarchical source
          * @prop {String} [items] children
          * @memberof listComponent
@@ -276,6 +300,13 @@
          * @memberof listComponent
          */
         hierarchy: {
+          type: Boolean,
+          default: false
+        },
+        /** 
+         *  The tree will be shown on one level, with .. at the top, clicking an element with children will enter it
+         */
+        flat: {
           type: Boolean,
           default: false
         }
@@ -442,7 +473,12 @@
            * @data {Boolean} [false] loadingRequestID
            * @memberof listComponent 
            */
-          loadingRequestID: false
+          loadingRequestID: false,
+          /**
+           * If hirarchy and uid and flat will be set to the last entered node UID
+           * @data {false|String} the UID of the last entered node
+           */
+          parentUid: false
         };
       },
       computed: {
@@ -496,6 +532,7 @@
         /**
          * Return the number of pages of the list.
          * @computed numPages
+         * @memberof listComponent
          * @return {number}
          */
         numPages() {
@@ -504,6 +541,7 @@
         /**
          * Return the current page of the list.
          * @computed currentPage
+         * @memberof listComponent
          * @fires updateData
          * @return {Number}
          */
@@ -560,6 +598,72 @@
         },
         hashCfg(){
           return bbn.fn.md5(JSON.stringify(this.currentFilters) + JSON.stringify(this.currentLimit) + JSON.stringify(this.currentStart) + JSON.stringify(this.currentOrder));
+        },
+        /**
+         * Returns the current item icon
+         * @computed currentItemIcon
+         * @memberof listComponent
+         * @return {String}
+         */
+        currentItemIcon(){
+          if ((this.value !== undefined)
+            && !bbn.fn.isNull(this.value)
+            && this.sourceValue
+            && this.sourceIcon
+            && this.currentData.length
+          ){
+            let idx = bbn.fn.search(this.currentData, (a) => {
+              return a.data[this.sourceValue] === this.value;
+            });
+            if (idx > -1) {
+              return this.currentData[idx].data[this.sourceIcon];
+            }
+          }
+          return '';
+        },
+        /**
+         * Returns the current item image
+         * @computed currentItemImg
+         * @memberof listComponent
+         * @return {String}
+         */
+        currentItemImg(){
+          if ((this.value !== undefined)
+            && !bbn.fn.isNull(this.value)
+            && this.sourceValue
+            && this.sourceImg
+            && this.currentData.length
+          ){
+            let idx = bbn.fn.search(this.currentData, (a) => {
+              return a.data[this.sourceValue] === this.value;
+            });
+            if (idx > -1) {
+              return this.currentData[idx].data[this.sourceImg];
+            }
+          }
+          return '';
+        },
+        /**
+         * Returns the current item class
+         * @computed currentItemCls
+         * @memberof listComponent
+         * @return {String}
+         */
+        currentItemCls(){
+          if ((this.value !== undefined)
+            && !bbn.fn.isNull(this.value)
+            && this.sourceValue
+            && this.sourceCls
+            && this.currentData.length
+          ){
+            let idx = bbn.fn.search(this.currentData, (a) => {
+              return a.data[this.sourceValue] === this.value;
+            });
+            if (idx > -1) {
+              return this.currentData[idx].data[this.sourceCls];
+            }
+          }
+          return '';
         }
       },
       methods: {
@@ -809,6 +913,12 @@
                     this.updateIndexes();
                   }
                   else{
+                    if (this.parentUid && this.hierarchy && this.flat && this.uid) {
+                      d.data.unshift({
+                        [this.uid]: this.parentUid,
+                        [this.sourceText]: ".."
+                      });
+                    }
                     d.data = this._map(d.data);
                     this.currentData = bbn.fn.map(d.data, (a, i) => {
                       let o = this.hierarchy ? bbn.fn.extend(true, a, {

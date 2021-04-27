@@ -5,10 +5,13 @@ script.innerHTML = `<div :class="[componentClass]">
   <div class="bbn-bordered bbn-h-100">
     <div class="bbn-flex-height" ref="container">
       <template v-for="(s, idx) in source">
-        <div class="bbn-panelbar-bbn-header bbn-header bbn-spadded bbn-vmiddle" ref="header">
+        <div :class="['bbn-panelbar-bbn-header', 'bbn-header', 'bbn-spadded', 'bbn-vmiddle', {'bbn-panelbar-header-selected': isSelected(idx)}]"
+             ref="header"
+            
+        >
           <div class="bbn-panelbar-arrow-container bbn-hspadded bbn-p bbn-middle bbn-block"
-               @click="select(idx)">
-            <i :class="['nf nf-fa-angle_right', 'bbn-panelbar-header-icon', 'bbn-large',  {'bbn-panelbar-header-icon-rotate': preselected === idx}]"></i>
+               @click="multiple ? multiselect(idx) : select(idx)">
+            <i :class="['nf nf-fa-angle_right', 'bbn-panelbar-header-icon', 'bbn-large',  {'bbn-panelbar-header-icon-rotate': multiple ? isSelected(idx) : (preselected === idx)}]"></i>
           </div>
           <div :class="['bbn-panelbar-title', 'bbn-vmiddle', {
                   'bbn-panelbar-center': (align === 'center'),
@@ -17,7 +20,7 @@ script.innerHTML = `<div :class="[componentClass]">
                 }]"
           >
             <div v-html="s.header"
-                @click="select(idx)"
+                @click="multiple ? multiselect(idx) : select(idx)"
                 :class="{
                   'bbn-p':true,
                   'bbn-panelbar-inline': s.headerComponent,
@@ -36,8 +39,8 @@ script.innerHTML = `<div :class="[componentClass]">
         </div>
         <div :class="['bbn-border-box', {
               'bbn-w-100': !scrollable,
-              'bbn-panelbar-selected' : selected === idx,
-              'bbn-flex-fill': ((selected === idx) && (flex || source[idx].flex))
+              'bbn-panelbar-selected' : isSelected(idx),
+              'bbn-flex-fill': (isSelected(idx) & (flex || source[idx].flex))
             }]"
             :style="getStyle(idx)"
         >
@@ -99,6 +102,10 @@ document.head.insertAdjacentElement('beforeend', css);
      */
     mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent, bbn.vue.resizerComponent],
     props: {
+      multiple: {
+        type: Boolean,
+        default: false
+      },
       /**
        * @prop {Boolean} [false] flex
        */
@@ -172,6 +179,7 @@ document.head.insertAdjacentElement('beforeend', css);
     },
     data(){
       return {
+        selectedValues: [],
         /**
          * @data {Number} [null] size
          */
@@ -200,11 +208,27 @@ document.head.insertAdjacentElement('beforeend', css);
       }
     },
     methods: {
+      isSelected(idx){
+        if(!this.multiple){
+          return this.selected === idx
+        }
+        else{
+          return this.selectedValues.includes(idx)
+        }
+      },
       /**
        * @method onResize
        */
       onResize(){
         this.size = this.$el.clientHeight;
+      },
+      multiselect(idx){
+        if(!this.selectedValues.includes(idx)){
+          this.selectedValues.push(idx)
+        }
+        else{
+          this.selectedValues.splice(this.selectedValues.indexOf(idx), 1)
+        }
       },
      /**
        * Shows the content of selected items and emits the event select
@@ -243,36 +267,71 @@ document.head.insertAdjacentElement('beforeend', css);
        * @return {Object}
        */
       getStyle(idx){
-        if (
-          (idx !== null ) &&
-          (idx === this.preselected) &&
-          (this.flex || ((this.source[idx] !== undefined) && (this.source[idx].flex === true)))
-        ){
-          return this.size ? {height: this.size + 'px', overflow: 'hidden'} : {};
-        }
-        //if this.flex === false, case of panelbar containing a table or other content that has an height
-        else if (
-          (idx !== null ) &&
-          (idx === this.preselected) &&
-          (!this.flex || ( (this.source[idx] !== undefined) && (this.source[idx].flex === false)))
-        ){
-          let children = this.getRef('container').children,
-              res = [],
-              childHeight = 0;
-          bbn.fn.each(children, (a) => {
-            if ( a.classList.contains('bbn-border-box') ){
-              res.push(a)
-            }
-          })
-          this.$nextTick(()=>{
-            if ( res[idx] && res[idx].firstElementChild.clientHeight ){
-              this.childHeight = res[idx].firstElementChild.clientHeight
-            }
-            return this.size ? {height: this.childHeight + 'px', overflow: 'hidden'} : {};
-          })
+        if(!this.multiple){
+          if (
+            (idx !== null ) &&
+            (idx === this.preselected) &&
+            (this.flex || ((this.source[idx] !== undefined) && (this.source[idx].flex === true)))
+          ){
+            return this.size ? {height: this.size + 'px', overflow: 'hidden'} : {};
+          }
+          //if this.flex === false, case of panelbar containing a table or other content that has an height
+          else if (
+            (idx !== null ) &&
+            (idx === this.preselected) &&
+            (!this.flex || ( (this.source[idx] !== undefined) && (this.source[idx].flex === false)))
+          ){
+            let children = this.getRef('container').children,
+                res = [],
+                childHeight = 0;
+            bbn.fn.each(children, (a) => {
+              if ( a.classList.contains('bbn-border-box') ){
+                res.push(a)
+              }
+            })
+            this.$nextTick(()=>{
+              if ( res[idx] && res[idx].firstElementChild.clientHeight ){
+                this.childHeight = res[idx].firstElementChild.clientHeight
+              }
+              return this.size ? {height: this.childHeight + 'px', overflow: 'hidden'} : {};
+            })
+          }
+          else{
+            return {height: '0px', overflow: 'hidden'};
+          }
         }
         else{
-          return {height: '0px', overflow: 'hidden'};
+          if (
+            this.selectedValues.includes(idx) &&
+            (idx !== null ) &&
+            (this.flex || ((this.source[idx] !== undefined) && (this.source[idx].flex === true)))
+          ){
+            return this.size ? {height: this.size + 'px', overflow: 'hidden'} : {};
+          }
+          //if this.flex === false, case of panelbar containing a table or other content that has an height
+          else if (
+            this.selectedValues.includes(idx) &&
+            (idx !== null ) &&
+            (!this.flex || ( (this.source[idx] !== undefined) && (this.source[idx].flex === false)))
+          ){
+            let children = this.getRef('container').children,
+                res = [],
+                childHeight = 0;
+            bbn.fn.each(children, (a) => {
+              if ( a.classList.contains('bbn-border-box') ){
+                res.push(a)
+              }
+            })
+            this.$nextTick(()=>{
+              if ( res[idx] && res[idx].firstElementChild.clientHeight ){
+                this.childHeight = res[idx].firstElementChild.clientHeight
+              }
+              return this.size ? {height: this.childHeight + 'px', overflow: 'hidden'} : {};
+            })
+          }
+          else{
+            return {height: '0px', overflow: 'hidden'};
+          }
         }
       }
     },

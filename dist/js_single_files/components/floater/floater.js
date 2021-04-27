@@ -26,10 +26,11 @@ script.innerHTML = `<div :class="[
               'bbn-header': true,
               'bbn-bordered-bottom': true,
               'bbn-unselectable': true,
-              'bbn-block': isResizing,
+              'bbn-block': true,
               'bbn-w-100': !isResizing
             }">
-      <div class="bbn-w-100">
+      <div v-if="title"
+           class="bbn-w-100">
         <h3 v-html="title"
             class="bbn-no-margin bbn-spadded"
             ref="title"/>
@@ -940,11 +941,12 @@ document.body.insertAdjacentElement('beforeend', script);
         if (parent && (width || height)) {
           if (!parent.insertAdjacentElement) {
             bbn.fn.log(parent);
-            throw new Error("Bouh!!!");
+            throw new Error("Impossible to insert adjacent element to calculate dimensions");
           }
 
           let el = document.createElement('div');
           el.style.position = 'absolute';
+          el.style.opacity = 0;
           el.className = 'bbn-reset'
           el.style.width = this.formatSize(width);
           el.style.height = this.formatSize(height);

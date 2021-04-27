@@ -10,21 +10,16 @@
      @focusout="isActive = false"
      :title="currentText || placeholder || null"
 >
-  <div class="bbn-rel bbn-dropdown-container">
-    <div :class="[
-           'bbn-vmiddle',
-           'bbn-l',
-           'bbn-bottom-right',
-           'bbn-top-left',
-           'bbn-line-height-internal',
-           'bbn-hxspadded',
-           {'bbn-disabled': !!disabled}
-         ]"
-         :style="{'padding-right': isNullable ? '4em' : '2.5em'}"
-    >
-      <div v-html="currentText"
-           class="bbn-dropdown-content"
-      ></div>
+  <div :class="['bbn-rel', 'bbn-dropdown-container', 'bbn-flex-width', 'bbn-vmiddle', currentItemCls]">
+    <div v-if="sourceIcon && hasValue && !!currentItemIcon"
+         class="bbn-left-xspadded">
+      <i :class="currentItemIcon"
+         @click.stop="click" />
+    </div>
+    <div v-if="sourceImg && hasValue && !!currentItemImg"
+         class="bbn-left-xspadded">
+      <img src="currentItemImg"
+           @click.stop="click">
     </div>
     <bbn-input :disabled="disabled"
                 @keydown="keydown"
@@ -39,12 +34,13 @@
                 :nullable="isNullable"
                 :placeholder="placeholder"
                 :tabindex="disabled ? -1 : 0"
-                v-model="currentText"
+                v-model="notext ? undefined : currentText"
                 autocomplete="off"
                 :button-right="currentIcon"
                 @clickRightButton="click"
-                class="bbn-no-border"
+                class="bbn-no-border bbn-flex-fill"
                 :autosize="autosize"
+                :readonly="!writable"
     ></bbn-input>
   </div>
   <input type="hidden"
@@ -52,10 +48,17 @@
          ref="element"
          :name="name"
   >
-  <bbn-floater v-if="filteredData.length && !disabled && !readonly && isOpened"
+  <bbn-floater v-if="!asMobile
+                 && filteredData.length
+                 && !disabled
+                 && !readonly
+                 && (isOpened || preload)"
+               v-show="isOpened"
                :element="$el"
                :max-height="maxHeight"
                :min-width="$el.clientWidth"
+               :width="undefined"
+               :height="undefined"
                ref="list"
                :auto-hide="true"
                :uid="sourceValue"
@@ -68,6 +71,29 @@
                :source="filteredData"
                :source-text="sourceText"
                :source-value="sourceValue"
+  ></bbn-floater>
+  <bbn-floater v-if="asMobile
+                 && filteredData.length
+                 && !disabled
+                 && !readonly
+                 && (isOpened || preload)"
+               v-show="isOpened"
+               width="100%"
+               height="100%"
+               ref="list"
+               :uid="sourceValue"
+               :item-component="realComponent"
+               @select="select"
+               :children="null"
+               :suggest="true"
+               :selected="[value]"
+               @close="isOpened = false"
+               :source="filteredData"
+               :source-text="sourceText"
+               :source-value="sourceValue"
+               :closable="closable"
+               :buttons="realButtons"
+               :title="floaterTitle"
   ></bbn-floater>
 </div>
 </template>
@@ -111,6 +137,15 @@
       bbn.vue.dropdownComponent,
       bbn.vue.localStorageComponent
     ],
+    props: {
+      /**
+       * @prop {Boolean} [false] notext
+       */
+      notext: {
+        type: Boolean,
+        default: false
+      }
+    },
     /**
      * The current icon.
      *
@@ -218,9 +253,12 @@
      /**
       * @watch  isOpened
       */
-     isOpened(){
-      if (this.currentText === this.currentTextValue) {
+     isOpened(val){
+      if ((this.currentText === this.currentTextValue) && this.writable) {
         this.selectText();
+      }
+      if (!val && this.preload) {
+        this.getRef('list').currentVisible = true;
       }
      },
      /**
@@ -289,7 +327,6 @@
   height: 100%;
 }
 .bbn-dropdown .bbn-dropdown-container .bbn-input input {
-  color: transparent;
   cursor: pointer;
 }
 

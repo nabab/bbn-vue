@@ -8,68 +8,78 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-floater-list']">
       :class="['bbn-menulist', mode]"
       @mouseleave="mouseleave"
   >
-    <li v-for="(li, idx) in filteredData"
-        v-if="!pageable || ((idx >= start) && (idx < start + currentLimit))"
-        @mouseenter="mouseenter($event, idx)"
-        :ref="'li' + idx"
-        :key="uid ? li.data[uid] : idx"
-        @click="select(idx)"
-        :class="{
-          'bbn-no-padding': !!component,
-          'bbn-state-default': true,
-          'bbn-disabled': (tmpDisabled === idx) || (!component && !!li.data.disabled),
-          'bbn-state-selected': isSelected(idx),
-          'bbn-state-hover': overIdx === idx,
-          'bbn-alt': alternateBackground && (idx % 2)
-        }">
-      <component v-if="currentComponent"
-                 :is="currentComponent"
-                 :source="li.data"
-                 @remove="remove(idx)"
-                 @hook:mounted="selfEmit(true)">
-      </component>
-      <component v-else
-                :is="li.data.url && !li.data[children] ? 'a' : 'span'"
-                @click.prevent="() => {}"
-                class="bbn-w-100 bbn-hspadded"
-                :href="li.data.url || null">
-        <span class="space" v-if="selection || (mode === 'options')">
-          <i v-if="li.data.selected"
-            class="nf nf-fa-check"></i>
-        </span>
-        <span class="space" v-if="hasIcons">
-          <i v-if="li.data.icon" :class="li.data.icon"></i>
-        </span>
-        <span class="text" v-html="li.data[sourceText]"></span>
-      </component>
-      <div v-if="!currentComponent && li.data[children] && li.data[children].length"
-          class="bbn-block bbn-abs bbn-vxspadded bbn-hspadded"
-          style="right: 0px"
-      >
-        <i class="nf nf-fa-chevron_right"></i>
-      </div>
-      <bbn-floater v-if="isOpened && children &&
-                          (origin === 'floater') &&
-                          li.data[children] &&
-                          (overIdx === idx) &&
-                          getRef('li' + idx)"
-                  :uid="uid"
+    <template v-for="(li, idx) in filteredData">
+      <li v-if="groupable && (!pageable || ((idx >= start) && (idx < start + currentLimit))) && ((idx === 0) || (idx === start) || (li.data[sourceGroup] !== filteredData[idx-1].data[sourceGroup]))"
+          class="bbn-list-group-li bbn-m bbn-header bbn-hspadded bbn-unselectable bbn-vmiddle"
+          :style="groupStyle">
+        <component v-if="groupComponent"
+                   :is="groupComponent"
+                   v-bind="li"/>
+        <div v-else
+             v-text="li.data[sourceGroup]"/>
+      </li>
+      <li v-if="!pageable || ((idx >= start) && (idx < start + currentLimit))"
+          @mouseenter="mouseenter($event, idx)"
+          :ref="'li' + idx"
+          :key="uid ? li.data[uid] : idx"
+          @click="select(idx)"
+          :class="{
+            'bbn-no-padding': !!component,
+            'bbn-state-default': true,
+            'bbn-disabled': !component && !!li.data && !!li.data.disabled,
+            'bbn-state-selected': isSelected(idx),
+            'bbn-state-hover': overIdx === idx,
+            'bbn-alt': alternateBackground && (idx % 2)
+          }">
+        <component v-if="currentComponent"
+                   :is="currentComponent"
+                   :source="li.data"
+                   @remove="remove(idx)"
+                   @hook:mounted="selfEmit(true)">
+        </component>
+        <component v-else
+                  :is="li.data && li.data.url && !li.data[children] ? 'a' : 'span'"
+                  @click.prevent="() => {}"
+                  class="bbn-w-100 bbn-hspadded"
+                  :href="li.data && li.data.url ? li.data.url : null">
+          <span class="space" v-if="selection || (mode === 'options')">
+            <i v-if="li.data.selected"
+              class="nf nf-fa-check"></i>
+          </span>
+          <span class="space" v-if="hasIcons">
+            <i v-if="li.data.icon" :class="li.data.icon"></i>
+          </span>
+          <span class="text" v-html="li.data[sourceText]"></span>
+        </component>
+        <div v-if="!currentComponent && li.data[children] && li.data[children].length"
+            class="bbn-block bbn-abs bbn-vxspadded bbn-hspadded"
+            style="right: 0px"
+        >
+          <i class="nf nf-fa-chevron_right"></i>
+        </div>
+        <bbn-floater v-if="isOpened && children &&
+                            (origin === 'floater') &&
+                            li.data[children] &&
+                            (overIdx === idx) &&
+                            getRef('li' + idx)"
+                    :uid="uid"
+                    :level="level + 1"
+                    :mode="li.data.mode || 'free'"
+                    :source="li.data[children]"
+                    :element="getRef('li' + idx)"
+                    orientation="horizontal">
+        </bbn-floater>
+        <bbn-list v-else-if="(origin !== 'floater') &&
+                              children &&
+                              li.data[children] &&
+                              getRef('li' + idx)"
                   :level="level + 1"
                   :mode="li.data.mode || 'free'"
-                  :source="li.data[children]"
-                  :element="getRef('li' + idx)"
-                  orientation="horizontal">
-      </bbn-floater>
-      <bbn-list v-else-if="(origin !== 'floater') &&
-                            children &&
-                            li.data[children] &&
-                            getRef('li' + idx)"
-                :level="level + 1"
-                :mode="li.data.mode || 'free'"
-                :uid="uid"
-                :source="li.data[children]">
-      </bbn-list>
-    </li>
+                  :uid="uid"
+                  :source="li.data[children]">
+        </bbn-list>
+      </li>
+    </template>
   </ul>
 </div>
 `;
@@ -94,7 +104,7 @@ document.body.insertAdjacentElement('beforeend', script);
   Vue.component('bbn-list', {
     /**
      * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.inputComponent
+     * @mixin bbn.vue.listComponent
      * @mixin bbn.vue.keynavComponent
      * @mixin bbn.vue.positionComponent
      * @mixin bbn.vue.keepCoolComponent
@@ -336,6 +346,20 @@ document.body.insertAdjacentElement('beforeend', script);
       alternateBackground :{
         type: Boolean,
         default: false
+      },
+      groupable: {
+        type: Boolean,
+        default: false
+      },
+      sourceGroup: {
+        type: String,
+        default: 'group'
+      },
+      groupComponent: {
+        type: [String, Object, Vue]
+      },
+      groupStyle: {
+        type: String
       }
     },
     data(){
@@ -476,7 +500,39 @@ document.body.insertAdjacentElement('beforeend', script);
           s.maxHeight = this.maxHeight + (bbn.fn.isNumber(this.maxHeight) ? 'px' : '')
         }
         return s;
-      }
+      },
+      filteredData(){
+        let data = this.currentData;
+        if (this.currentData.length
+          && this.currentFilters
+          && this.currentFilters.conditions
+          && this.currentFilters.conditions.length
+          && (!this.serverFiltering || !this.isAjax)
+        ) {
+          data = bbn.fn.filter(data, (a) => {
+            return this._checkConditionsOnItem(this.currentFilters, a.data);
+          });
+        }
+        if (this.groupable && this.sourceGroup) {
+          let grouped = {},
+              ungrouped = [];
+          bbn.fn.each(data, d => {
+            if (d.data[this.sourceGroup] !== undefined) {
+              if (grouped[d.data[this.sourceGroup]] === undefined) {
+                grouped[d.data[this.sourceGroup]] = [];
+              }
+              grouped[d.data[this.sourceGroup]].push(d);
+            }
+            else {
+              ungrouped.push(d);
+            }
+          });
+          data = [];
+          bbn.fn.each(Object.values(grouped), g => data.push(...g));
+          data.push(...ungrouped);
+        }
+        return data;
+      },
     },
     methods: {
       /**
@@ -486,7 +542,7 @@ document.body.insertAdjacentElement('beforeend', script);
       _updateIconSituation(){
         let hasIcons = false;
         bbn.fn.each(this.filteredData, (a) => {
-          if ( a.data.icon ){
+          if ( a.data && a.data.icon ){
             hasIcons = true;
             return false;
           }
@@ -549,6 +605,7 @@ document.body.insertAdjacentElement('beforeend', script);
        * @emits select
        */
       select(idx){
+        bbn.fn.log('mirko', idx, this.tmpDisabled);
         if ( this.tmpDisabled === idx ){
           return;
         }
@@ -557,6 +614,7 @@ document.body.insertAdjacentElement('beforeend', script);
           this.tmpDisabled = false;
         }, 1000);
         let item = this.filteredData[idx] || null;
+        bbn.fn.log('mirko2', item);
         let ev = new Event('select', {cancelable: true});
         if ( item && item.data && !item.data.disabled ){
           this.currentIndex = idx;
@@ -581,15 +639,13 @@ document.body.insertAdjacentElement('beforeend', script);
               }
               if (v !== undefined) {
                 if (item.selected) {
-                  if (this.selected.includes(v)) {
-                    this.selected.splice(this.selected.indexOf(v), 1);
+                  if (this.unique) {
+                    this.selected.splice(0, this.selected.length);
                   }
-                  else {
-                    if (this.unique && (this.mode === 'free')) {
-                      this.selected.splice(0, this.selected.length);
-                    }
+                  if (!this.selected.includes(v)) {
                     this.selected.push(v);
                   }
+
                 }
                 else if (this.selected.includes(v)) {
                   this.selected.splice(this.selected.indexOf(v), 1);
