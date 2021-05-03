@@ -949,14 +949,16 @@
 
         this.widget.on("keyup", (cm, event) => {
           if (["Shift", "Ctrl", "Alt"].includes(event.key) ||
-              bbn.var.keys.upDown.includes(event.keyCode)
+              bbn.var.keys.upDown.includes(event.keyCode) ||
+              bbn.var.keys.leftRight.includes(event.keyCode)
           ) {
             return;
           }
 
           if (["Escape"].includes(event.key) ||
               event.ctrlKey ||
-              event.altKey
+              event.altKey ||
+              bbn.var.keys.upDown.includes(event.keyCode)
           ) {
             this.resetFloaters();
             return;
@@ -985,8 +987,10 @@
               }
             }
           }
-          else if (bbn.var.keys.upDown.includes(event.keyCode)) {
-            this.resetFloaters();
+          else if (
+            bbn.var.keys.upDown.includes(event.keyCode) ||
+            bbn.var.keys.leftRight.includes(event.keyCode)
+          ) {
             return;
           }
         });

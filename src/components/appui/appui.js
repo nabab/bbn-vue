@@ -38,6 +38,10 @@
         type: Boolean,
         default: true
       },
+      disabled: {
+        type: Boolean,
+        default: false
+      },
       options: {
         type: Object,
         default(){
@@ -130,11 +134,11 @@
         pollerObject: {
           token: bbn.env.token || null
         },
-        // For the server query (checking or not)
+        /* For the server query (checking or not) */
         chatOnline: true,
-        // No chat component if chat is not visible
+        /* No chat component if chat is not visible */
         chatVisible: false,
-        // Chat dialog windows
+        /* Chat dialog windows */
         chatWindows: [],
         usersOnline: [],
         usersOnlineHash: false,
@@ -241,8 +245,9 @@
                 }
               }
             ]
-          })
+          });
         }
+
         return res;
       },
       addToClipboard(e){
@@ -250,7 +255,6 @@
           this.clipboardContent.push(data);
         });
         return true;
-
       },
       copy(e){
         if (this.clipboard) {
@@ -259,6 +263,7 @@
             this.clipboardContent.push(data);
           });
         }
+
         return true;
       },
       onRoute(path) {
@@ -557,12 +562,16 @@
           },
 
           defaultPreLinkFunction(url) {
-            let router = appui.getRef('router');
-            bbn.fn.log(url);
-            if ( router && bbn.fn.isFunction(router.route) ){
-              router.route(url);
+            if (this.autoload) {
+              let router = appui.getRef('router');
+              bbn.fn.log(url);
+              if ( router && bbn.fn.isFunction(router.route) ){
+                router.route(url);
+              }
+              return false;
             }
-            return false;
+
+            return true;
           },
 
           defaultAlertFunction(ele) {
@@ -623,28 +632,74 @@
         this.componentClass.push('bbn-resize-emitter', 'bbn-observer');
         this.cool = true;
         let preloaded = [
-          'input',
-          'tabs',
-          'context',
-          'loadicon',
           'container',
           'router',
-          'slider',
-          'clipboard',
           'scrollbar',
           'scroll',
-          'slider',
-          'popup',
-          'notification',
-          'search',
-          'fisheye',
-          'loadbar',
-          'chat',
-          'pane',
-          'splitter',
-          'checkbox',
-          'button'
+          'floater',
+          'popup'
         ];
+
+        if (!this.single) {
+          preloaded.push(
+            'pane',
+            'splitter',
+            'tabs',
+            'context',
+            'loadicon'
+          );
+        }
+
+        if (this.header) {
+          preloaded.push(
+            'pane',
+            'splitter',
+            'search',
+            'fisheye'
+          );
+        }
+
+        if (this.plugins && this.plugins['appui-menu']) {
+          preloaded.push(
+            'slider',
+            'tree',
+            'treemenu',
+            'menu',
+            'input',
+            'list',
+            'dropdown',
+            'checkbox',
+            'button'
+          );
+        }
+
+        if (this.plugins && this.plugins['appui-notification']) {
+          preloaded.push(
+            'notification'
+          );
+        }
+
+        if (this.status) {
+          preloaded.push(
+            'splitter',
+            'input',
+            'loadbar',
+            'checkbox',
+            'button'
+          );
+          if (this.chat) {
+            preloaded.push(
+              'chat'
+            );
+          }
+        }
+
+        if (this.clipboard) {
+          preloaded.push(
+            'slider',
+            'clipboard'
+          );
+        }
         bbn.vue.preloadBBN(preloaded);
 
         window.onkeydown = (e) => {
@@ -653,7 +708,7 @@
 
         this.$on('messageToChannel', data => {
           this.messageChannel(this.primaryChannel, data);
-        })
+        });
 
         // Emissions from poller
         //appui
@@ -674,7 +729,7 @@
               break;
             case 'messageFromChannel':
               if (bbn.fn.isVue(chat)) {
-                chat.messageFromChannel(data)
+                chat.messageFromChannel(data);
               }
               break;
           }
@@ -682,7 +737,16 @@
         // appui-core
         this.$on('appui-core', (type, data) => {
           if ((type === 'message') && data.observers) {
-            bbn.fn.each(data.observers, obs => bbn.fn.each(bbn.fn.filter(this.observers, {id: obs.id}), o => this.observerEmit(obs.result, o)));
+            bbn.fn.each(
+              data.observers,
+              obs => bbn.fn.each(
+                bbn.fn.filter(
+                  this.observers,
+                  {id: obs.id}
+                ),
+                o => this.observerEmit(obs.result, o)
+              )
+            );
           }
         })
         // appui-notification
@@ -831,7 +895,7 @@
                 delete cfg.blur;
               }
               if ( cfg.change !== undefined ){
-                delete cfg.change;focus
+                delete cfg.change;
               }
               if ( cfg.style !== undefined ){
                 delete cfg.style;

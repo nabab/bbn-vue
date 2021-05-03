@@ -698,7 +698,7 @@
           let ev = new Event('submit', {cancelable: true});
           this.$emit('submit', ev, this);
           if ( ev.defaultPrevented ){
-            return false;
+            return;
           }
         }
 

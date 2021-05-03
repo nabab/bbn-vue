@@ -21,6 +21,7 @@
      * @mixin bbn.vue.positionComponent
      * @mixin bbn.vue.keepCoolComponent
      * @mixin bbn.vue.resizerComponent
+     * @mixin bbn.vue.eventsComponent
      */
     mixins: [
       bbn.vue.basicComponent,
@@ -28,7 +29,8 @@
       bbn.vue.keynavComponent,
       bbn.vue.positionComponent,
       bbn.vue.keepCoolComponent,
-      bbn.vue.resizerComponent
+      bbn.vue.resizerComponent,
+      bbn.vue.eventsComponent
     ],
     props: {
       /**

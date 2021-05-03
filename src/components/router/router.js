@@ -195,6 +195,10 @@
       maxTitleLength: {
         type: Number,
         default: 20
+      },
+      disabled: {
+        type: Boolean,
+        default: false
       }
     },
     data(){
@@ -2454,20 +2458,23 @@
        */
       currentURL(newVal, oldVal){
         if ( this.ready ){
-          this.$nextTick(() => {
-            if ( this.activeContainer ){
-              this.changeURL(newVal, this.activeContainer.title);
-            }
-            else if ( this.isLoading ){
-              this.changeURL(newVal, bbn._("Loading"));
-            }
-            let idx = this.search(newVal);
-            if ((idx !== false) && (this.selected !== idx)){
-              this.selected = idx;
-              this.views[this.selected].last = bbn.fn.timestamp();
-            }
-            this.$emit('change', newVal);
-          });
+          if (!this.disabled) {
+            this.$nextTick(() => {
+              if ( this.activeContainer ){
+                this.changeURL(newVal, this.activeContainer.title);
+              }
+              else if ( this.isLoading ){
+                this.changeURL(newVal, bbn._("Loading"));
+              }
+              let idx = this.search(newVal);
+              if ((idx !== false) && (this.selected !== idx)){
+                this.selected = idx;
+                this.views[this.selected].last = bbn.fn.timestamp();
+              }
+              this.$emit('change', newVal);
+            });
+          }
+
           this.$emit('route', newVal);
         }
       },

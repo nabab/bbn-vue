@@ -153,16 +153,19 @@
          * @memberof eventsComponent
          */
          touchstart(ev){
-          this.isTouched = true;
-          this.touchStarted = ev;
-          clearTimeout(this.touchHoldTimer);
-          this.touchHoldTimer = setTimeout(() => {
-            if ( this.isTouched ){
-              let event = new Event('contextmenu');
-              this.$el.dispatchEvent(event);
-              this.isTouched = false;
-            }
-          }, this.touchHoldTolerance);
+           this.$emit('touchstart', ev);
+           if (!ev.defaultPrevented) {
+             this.isTouched = true;
+             this.touchStarted = ev;
+             clearTimeout(this.touchHoldTimer);
+             this.touchHoldTimer = setTimeout(() => {
+               if ( this.isTouched ){
+                 let event = new Event('contextmenu');
+                 this.$el.dispatchEvent(event);
+                 this.isTouched = false;
+               }
+             }, this.touchHoldTolerance);
+           }
         },
         /**
          * Sets the prop isTouched to false.
@@ -170,12 +173,15 @@
          * @memberof eventsComponent
          */
         touchmove(ev){
-          this.isTouched = false;
-          clearTimeout(this.touchHoldTimer);
-          if ((Math.abs(this.touchStarted.touches[0].clientX - ev.touches[0].clientX) > this.touchTapTolerance)
-            || (Math.abs(this.touchStarted.touches[0].clientY - ev.touches[0].clientY) > this.touchTapTolerance)
-          ) {
-            this.touchMoved = ev;
+          this.$emit('touchmove', ev);
+          if (!ev.defaultPrevented) {
+            this.isTouched = false;
+            clearTimeout(this.touchHoldTimer);
+            if ((Math.abs(this.touchStarted.touches[0].clientX - ev.touches[0].clientX) > this.touchTapTolerance)
+              || (Math.abs(this.touchStarted.touches[0].clientY - ev.touches[0].clientY) > this.touchTapTolerance)
+            ) {
+              this.touchMoved = ev;
+            }
           }
         },
         /**
@@ -184,25 +190,28 @@
          * @memberof eventsComponent
          */
         touchend(ev){
-          if (this.touchStarted && this.touchMoved) {
-            let direction = false,
-                diffY = Math.abs(this.touchStarted.touches[0].clientY - this.touchMoved.touches[0].clientY),
-                diffX = Math.abs(this.touchStarted.touches[0].clientX - this.touchMoved.touches[0].clientX),
-                axisX = diffX > diffY;
-            if (axisX && (diffX > this.touchSwipeTolerance)) {
-              direction = this.touchStarted.touches[0].clientX > this.touchMoved.touches[0].clientX ? 'left' : 'right';
+          this.$emit('touchend', ev);
+          if (!ev.defaultPrevented) {
+            if (this.touchStarted && this.touchMoved) {
+              let direction = false,
+                  diffY = Math.abs(this.touchStarted.touches[0].clientY - this.touchMoved.touches[0].clientY),
+                  diffX = Math.abs(this.touchStarted.touches[0].clientX - this.touchMoved.touches[0].clientX),
+                  axisX = diffX > diffY;
+              if (axisX && (diffX > this.touchSwipeTolerance)) {
+                direction = this.touchStarted.touches[0].clientX > this.touchMoved.touches[0].clientX ? 'left' : 'right';
+              }
+              else if (!axisX && (diffY > this.touchSwipeTolerance)) {
+                direction = this.touchStarted.touches[0].clientY > this.touchMoved.touches[0].clientY ? 'top' : 'bottom';
+              }
+              if (!!direction) {
+                this.$emit('swipe', ev, this)
+                this.$emit('swipe' + direction, ev, this)
+              }
             }
-            else if (!axisX && (diffY > this.touchSwipeTolerance)) {
-              direction = this.touchStarted.touches[0].clientY > this.touchMoved.touches[0].clientY ? 'top' : 'bottom';
-            }
-            if (!!direction) {
-              this.$emit('swipe', ev, this)
-              this.$emit('swipe' + direction, ev, this)
-            }
+            this.isTouched = false;
+            this.touchMoved = false;
+            this.touchStarted = false;
           }
-          this.isTouched = false;
-          this.touchMoved = false;
-          this.touchStarted = false;
         },
         /**
          * Sets the prop isTouched to false.

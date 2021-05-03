@@ -1,7 +1,10 @@
 (bbn_resolve) => {
 ((bbn) => {
 let script = document.createElement('script');
-script.innerHTML = `<div :class="[componentClass, 'bbn-floater-list']">
+script.innerHTML = `<div :class="[componentClass, 'bbn-floater-list']"
+     @touchstart="touchstart"
+     @touchmove="touchmove"
+     @touchend="touchend">
   <div class="bbn-hidden" v-if="$slots.default" ref="slot">
     <slot></slot>
   </div>
@@ -12,7 +15,8 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-floater-list']">
     <template v-for="(li, idx) in filteredData">
       <li v-if="groupable && (!pageable || ((idx >= start) && (idx < start + currentLimit))) && ((idx === 0) || (idx === start) || (li.data[sourceGroup] !== filteredData[idx-1].data[sourceGroup]))"
           class="bbn-list-group-li bbn-m bbn-header bbn-hspadded bbn-unselectable bbn-vmiddle"
-          :style="groupStyle">
+          :style="groupStyle"
+          :group="li.data[sourceGroup]">
         <component v-if="groupComponent"
                    :is="groupComponent"
                    v-bind="li"/>
@@ -114,6 +118,7 @@ document.head.insertAdjacentElement('beforeend', css);
      * @mixin bbn.vue.positionComponent
      * @mixin bbn.vue.keepCoolComponent
      * @mixin bbn.vue.resizerComponent
+     * @mixin bbn.vue.eventsComponent
      */
     mixins: [
       bbn.vue.basicComponent,
@@ -121,7 +126,8 @@ document.head.insertAdjacentElement('beforeend', css);
       bbn.vue.keynavComponent,
       bbn.vue.positionComponent,
       bbn.vue.keepCoolComponent,
-      bbn.vue.resizerComponent
+      bbn.vue.resizerComponent,
+      bbn.vue.eventsComponent
     ],
     props: {
       /**

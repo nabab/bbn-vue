@@ -4225,6 +4225,11 @@
                         "text": "resizerComponent",
                         "desc": "",
                         "url": "bbn-vue\/component\/list\/doc\/mixins#resizerComponent"
+                    },
+                    {
+                        "text": "eventsComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/list\/doc\/mixins#eventsComponent"
                     }
                 ]
             },

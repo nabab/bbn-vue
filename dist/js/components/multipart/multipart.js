@@ -3,7 +3,7 @@
 let script = document.createElement('script');
 script.innerHTML = `<div class="bbn-overlay bbn-flex-height">
   <div class="bbn-flex-fill"
-       v-for="(name, i) in indexes"
+       v-for="(part, i) in parts"
        v-show="currentSelected === i"
        :key="i">
     <bbn-form :source="data"
@@ -14,24 +14,26 @@ script.innerHTML = `<div class="bbn-overlay bbn-flex-height">
               @success="onSuccess">
       <div :class="{
         'bbn-overlay': true,
-        'bbn-middle': !!items[i].centered,
-        'bbn-padded': !items[i].centered
+        'bbn-middle': centered
+        'bbn-padded': !centered
       }">
         <div :class="{
-          'bbn-block': !!items[i].centered,
-          'bbn-vmiddle': !!items[i].centered,
-          'bbn-overlay': !items[i].centered,
-          'bbn-flex-height': !items[i].centered
+          'bbn-block': !!centered,
+          'bbn-vmiddle': !!centered,
+          'bbn-overlay': !centered,
+          'bbn-flex-height': !centered
         }"
+              v-for=""
               style="display: block; max-height: 100%">
           <div class="bbn-m bbn-b bbn-padded"
                v-text="source[i].title || name"/>
           <div :class="{
-            'bbn-block': !!items[i].centered,
-            'bbn-flex-fill': !items[i].centered
+            'bbn-block': !!items[i],
+            'bbn-flex-fill': !items[i]
           }">
             <component :is="items[i].component || 'bbn-input'"
                         v-bind="items[i].getOptions()"
+                        @keydown.enter.prevent.stop="clickNext()"
                         :required="items[i].required === undefined ? true : items[i].required"
                         v-model="data[name]"/>
           </div>
@@ -45,6 +47,11 @@ script.innerHTML = `<div class="bbn-overlay bbn-flex-height">
                 v-bind="button"
     ></bbn-button>
   </div>
+  <bbn-form v-if="action"
+            :source="data"
+            class="bbn-hidden"
+            :target="target"
+            :action="action"/>
 </div>
 `;
 script.setAttribute('id', 'bbn-tpl-component-multipart');
@@ -228,32 +235,47 @@ document.body.insertAdjacentElement('beforeend', script);
     },
     data(){
       let data = {};
-      let items = [];
+      let parts = [];
       if (bbn.fn.isArray(this.source)) {
-        bbn.fn.each(this.source, a => {
-          a = bbn.fn.clone(a);
-          if (a.name) {
-            a.getOptions = () => {
-              if (bbn.fn.isFunction(a.options)) {
-                return a.options(this.data);
+        bbn.fn.each(this.source, part => {
+          let items = [];
+          let indexes = [];
+          part = bbn.fn.clone(part);
+          if (!bbn.fn.isArray(part)) {
+            part = [part];
+          }
+
+          bbn.fn.each (part, a => {
+            if (a.name) {
+              indexes.push(a.name);
+              a.getOptions = () => {
+                if (bbn.fn.isFunction(a.options)) {
+                  return a.options(this.data);
+                }
+                return a.options || {};
+              };
+              if (a.centered === undefined) {
+                a.centered = this.centered;
               }
-              return a.options || {};
-            };
-            if (a.centered === undefined) {
-              a.centered = this.centered;
-            }
-            items.push(a);
-            if (a.value === undefined) {
-              if (a.default) {
-                data[a.name] = bbn.fn.isFunction(a.default) ? a.default() : a.default
+              items.push(a);
+              if (a.value === undefined) {
+                if (a.default) {
+                  data[a.name] = bbn.fn.isFunction(a.default) ? a.default() : a.default
+                }
+                else {
+                  data[a.name] = a.nullable ? null : ''
+                }
               }
               else {
-                data[a.name] = a.nullable ? null : ''
+                data[a.name] = a.value;
               }
             }
-            else {
-              data[a.name] = a.value;
-            }
+          })
+          if (items.length) {
+            parts.push({
+              items: items,
+              indexes: indexes
+            });
           }
         })
       }
@@ -262,12 +284,13 @@ document.body.insertAdjacentElement('beforeend', script);
         root: appui.plugins['appui-menu'] + '/',
         cf: null,
         data: data,
-        items: items,
+        items: parts,
         currentSelected: 0,
         indexes: Object.keys(data),
         readyForm: false,
         currentButtons: false,
-        maxIndex: items.length - 1
+        maxIndex: items.length - 1,
+        isValidated: false
       }
     },
     computed: {
@@ -289,6 +312,29 @@ document.body.insertAdjacentElement('beforeend', script);
     },
     */
     methods: {
+      clickPrev(){
+        if (this.currentSelected) {
+          this.currentSelected--;
+        }
+      },
+      clickNext(){
+        if (!this.isValidated) {
+          return;
+        }
+
+        let form = this.getRef('form-' + this.currentSelected);
+        if (!form) {
+          return;
+        }
+
+        if (this.indexes[this.currentSelected+1]) {
+          this.currentSelected++;
+        }
+        else if (this.action) {
+          this.$emit('submit', this.data);
+          form.submit();
+        }
+      },
       hasForm() {
         let form = this.getRef('form-' + this.currentSelected);
         return !!form;
@@ -302,35 +348,30 @@ document.body.insertAdjacentElement('beforeend', script);
           return [
             {
               text: bbn._("Back"),
-              action: () => {
-                this.currentSelected--;
-              },
+              action: this.clickPrev,
               cls: 'bbn-padded',
               disabled: !form || (this.currentSelected === 0),
               key: bbn.fn.randomString()
             }, {
               text: this.currentSelected === this.maxIndex ? bbn._("Confirm") : bbn._("Next"),
-              action: () => {
-                if (this.indexes[this.currentSelected+1]) {
-                  this.currentSelected++;
-                }
-                else {
-                  this.$emit('submit', this.data);
-                  form.submit();
-                }
-              },
+              action: this.clickNext,
               cls: 'bbn-padded',
-              disabled: !form || !form.isValid(),
+              disabled: !form || !this.isValidated,
               key: bbn.fn.randomString()
             }
           ];
         }
         return false;
       },
+      onSubmit(){
+        bbn.fn.log(arguments);
+      },
       updateButtons(){
-        this.$nextTick(() => {
+        setTimeout(() => {
           let form = this.getRef('form-' + this.currentSelected);
           if (form) {
+            this.isValidated = form.isValid();
+            bbn.fn.log("FOR VALUID?", this.isValidated);
             this.currentButtons = this.getButtons()
             this.$forceUpdate();
             this.$nextTick(() => {
@@ -339,15 +380,17 @@ document.body.insertAdjacentElement('beforeend', script);
           }
           else {
             this.readyForm = false;
+            this.isValidated = false;
           }
-        })
+        }, 50)
       },
       onSuccess(){
         bbn.fn.log("SUCCESS", arguments, this.data)
       }
     },
     watch: {
-      currentSelected(){
+      currentSelected() {
+        this.isValidated = false;
         this.updateButtons();
       },
       readyForm(v) {
