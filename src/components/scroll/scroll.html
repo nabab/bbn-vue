@@ -16,8 +16,7 @@
     <div :class="{
           'bbn-scroll-content': true,
           resizing: isMeasuring,
-          'bbn-overlay': !scrollable,
-          'bbn-100': fullPage
+          'bbn-overlay': !scrollable
         }"
          ref="scrollContent"
          @subready.stop="waitReady"
@@ -34,8 +33,7 @@
                  :scrollAlso="scrollAlso"
                  :initial="currentX"
                  @scroll="scrollHorizontal"
-                 :offset="offsetX"
-  >
+                 :offset="offsetX">
   </bbn-scrollbar>
   <bbn-scrollbar v-if="scrollReady && hasScrollY"
                  :hidden="scrollReady && hiddenY"
@@ -45,7 +43,6 @@
                  :scrollAlso="scrollAlso"
                  :initial="currentY"
                  @scroll="scrollVertical"
-                 :offset="offsetY"
-  >
+                 :offset="offsetY">
   </bbn-scrollbar>
 </div>

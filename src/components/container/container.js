@@ -420,6 +420,19 @@
           else{
             this.isComponent = false;
           }
+
+          setTimeout(() => {
+            if (bbn.env.url.indexOf('#')) {
+              let hash = bbn.env.url.split('#')[1];
+              if (hash) {
+                hash = '#' + hash;
+                location.hash = null;
+                location.hash = hash;
+              }
+              
+            }
+          }, 250);
+
           this.ready = true;
         }
       }

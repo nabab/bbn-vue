@@ -383,6 +383,7 @@
             }, 250)
           }
           e.preventDefault();
+          this.$emit('touchmove');
         }
       },
       preventKeyIfScrolling(e) {
