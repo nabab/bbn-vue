@@ -423,6 +423,10 @@
 
           setTimeout(() => {
             if (bbn.env.url.indexOf('#')) {
+              let scroll = this.find('bbn-scroll');
+              if (scroll && (scroll.currentY || scroll.currentX)) {
+                return;
+              }
               let hash = bbn.env.url.split('#')[1];
               if (hash) {
                 hash = '#' + hash;
@@ -431,7 +435,7 @@
               }
               
             }
-          }, 250);
+          }, 2000);
 
           this.ready = true;
         }

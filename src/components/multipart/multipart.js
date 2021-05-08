@@ -172,6 +172,10 @@
       centered: {
         type: Boolean,
         default: true
+      },
+      closable: {
+        type: Boolean,
+        default: false
       }
     },
     data(){
@@ -225,20 +229,14 @@
         root: appui.plugins['appui-menu'] + '/',
         cf: null,
         data: data,
-        items: parts,
+        parts: parts,
         currentSelected: 0,
         indexes: Object.keys(data),
         readyForm: false,
         currentButtons: false,
-        maxIndex: items.length - 1,
+        maxIndex: parts.length - 1,
         isValidated: false
       }
-    },
-    computed: {
-    },
-    created(){
-      this.currentButtons = this.getButtons(this.currentSelected);
-
     },
     /*
     data(){
@@ -262,13 +260,11 @@
         if (!this.isValidated) {
           return;
         }
-
         let form = this.getRef('form-' + this.currentSelected);
         if (!form) {
           return;
         }
-
-        if (this.indexes[this.currentSelected+1]) {
+        if (this.parts[this.currentSelected+1]) {
           this.currentSelected++;
         }
         else if (this.action) {
@@ -276,31 +272,46 @@
           form.submit();
         }
       },
+      getCurrentForm(){
+        return this.getRef('form-' + this.currentSelected);
+      },
       hasForm() {
-        let form = this.getRef('form-' + this.currentSelected);
-        return !!form;
+        return !!this.getCurrentForm();
       },
       getButtons() {
-        let form = this.getRef('form-' + this.currentSelected);
+        let form = this.hasForm();
         if (!form) {
           this.readyForm = false;
         }
-        if (this.indexes[this.currentSelected]) {
-          return [
-            {
+        if (this.parts[this.currentSelected]) {
+          let ret = [];
+          if ((this.currentSelected === 0) && this.closable) {
+            ret.push({
+              text: bbn._("Cancel"),
+              action: () => {
+                let form = this.getCurrentForm();
+                if (form) {
+                  form.closePopup();
+                }
+              },
+              key: bbn.fn.randomString()
+            });
+          }
+          else {
+            ret.push({
               text: bbn._("Back"),
               action: this.clickPrev,
-              cls: 'bbn-padded',
               disabled: !form || (this.currentSelected === 0),
               key: bbn.fn.randomString()
-            }, {
-              text: this.currentSelected === this.maxIndex ? bbn._("Confirm") : bbn._("Next"),
-              action: this.clickNext,
-              cls: 'bbn-padded',
-              disabled: !form || !this.isValidated,
-              key: bbn.fn.randomString()
-            }
-          ];
+            });
+          }
+          ret.push({
+            text: this.currentSelected === this.maxIndex ? bbn._("Confirm") : bbn._("Next"),
+            action: this.clickNext,
+            disabled: !form || !this.isValidated,
+            key: bbn.fn.randomString()
+          });
+          return ret;
         }
         return false;
       },
@@ -328,6 +339,12 @@
       onSuccess(){
         bbn.fn.log("SUCCESS", arguments, this.data)
       }
+    },
+    created(){
+      this.currentButtons = this.getButtons(this.currentSelected);
+    },
+    mounted(){
+      this.ready = true;
     },
     watch: {
       currentSelected() {

@@ -209,9 +209,8 @@
           !e.target.closest(".bbn-treemenu") &&
           !e.target.closest(".bbn-menu-button")
         ){
-          e.preventDefault();
           e.stopImmediatePropagation();
-          this.toggle();
+          this.hide();
         }
       },
       changeVisible(v) {
@@ -230,7 +229,7 @@
      */
     created(){
       this.componentClass.push('bbn-resize-emitter');
-      this._setEvents();
+      this._setEvents(true);
     },
     /**
      * Removes the events listener.

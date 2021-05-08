@@ -19,7 +19,7 @@
      * @mixin bbn.vue.resizerComponent
      * @mixin bbn.vue.keepCoolComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent, bbn.vue.keepCoolComponent],
+    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent, bbn.vue.keepCoolComponent, bbn.vue.eventsComponent],
     props: {
       /**
        * @todo not used
@@ -241,7 +241,11 @@
         isFocused: false,
         previousTouch: {x: null, y: null},
         interval: null,
-        scrollReady: false
+        scrollReady: false,
+        touchX: false,
+        touchY: false,
+        touched: 0,
+        touchDirection: null
       };
     },
     computed: {
@@ -311,80 +315,81 @@
       }
     },
     methods: {
-      touchmove(e){
-        if (this.fullPage) {
-          if (!this.isScrolling && e.targetTouches && e.targetTouches.length) {
-            let ev = e.targetTouches[0];
-            let goingUp = false;
-            let goingDown = false;
-            let goingLeft = false;
-            let goingRight = false;
-            let dir = '';
-            let ct = this.getRef('scrollContainer');
-            if (this.previousTouch.x !== null) {
-              if (this.hasScrollX && (ev.pageX !== this.previousTouch.x)) {
-                let x = ct.scrollLeft;
-                if (ev.pageX > this.previousTouch.x) {
-                  goingLeft = true;
-                  x = this.currentX - ct.clientWidth;
-                  dir += ' left';
-                }
-                else {
-                  x = this.currentX + ct.clientWidth;
-                  goingRight = true;
-                  dir += ' right';
-                }
-                if ((x != this.currentX) && this.$refs.xScroller) {
-                  this.$refs.xScroller.scrollTo(x);
-                }
-                this.currentX = x;
-                if (!x) {
-                  this.$emit('reachLeft');
-                }
-                else if (x + ct.clientWidth >= ct.scrollWidth) {
-                  this.$emit('reachRight');
-                }
-              }
-              if (this.hasScrollY && (ev.pageY !== this.previousTouch.y)) {
-                let y = ct.scrollTop;
-                if (ev.pageY > this.previousTouch.y) {
-                  goingUp = true;
-                  y = this.currentY - ct.clientHeight;
-                  dir += ' up';
-                }
-                else {
-                  goingDown = true;
-                  y = this.currentY + ct.clientHeight;
-                  dir += ' down';
-                }
-                if ((y != this.currentY) && this.$refs.yScroller) {
-                  this.$refs.yScroller.scrollTo(y);
-                }
-                this.currentY = y;
-                if (!y) {
-                  this.$emit('reachTop');
-                }
-                else if (y + ct.clientHeight >= ct.scrollHeight) {
-                  this.$emit('reachBottom');
-                }
-              }
-              if (dir) {
-                this.isScrolling = true;
-                setTimeout(() => {
-                  this.isScrolling = false;
-                }, 200);
-              }
-            }
-            this.previousTouch.x = ev.pageX;
-            this.previousTouch.y = ev.pageY;
-            setTimeout(() => {
-              this.previousTouch.x = null;
-              this.previousTouch.y = null;
-            }, 250)
+      hashJustChanged(length = 2000){
+        if (document.location.hash) {
+          let now = (new Date()).getTime();
+          if (bbn.env.hashChanged > (now + length)) {
+            return true;
           }
-          e.preventDefault();
-          this.$emit('touchmove');
         }
+        return false;
+      },
+      onTouchstart(e){
+        bbn.fn.log("TOUCHSTART");
+        if (!this.scrollable || this.disabled) {
+          return;
+        }
+        if (e.targetTouches && e.targetTouches.length) {
+          let ev = e.targetTouches[0];
+          if (this.hasScrollX) {
+            this.touchX = ev.pageX;
+          }
+          if (this.hasScrollY) {
+            this.touchY = ev.pageY;
+          }
+          this.touched = (new Date()).getTime();
+        }
+      },
+      onTouchend(e){
+        if (!this.scrollable || this.disabled) {
+          return;
+        }
+        if (this.fullPage && this.touchDirection) {
+          let x = this.currentX;
+          let y = this.currentY;
+          let xAdd = 0;//this.currentX % this.containerWidth;
+          let yAdd = 0;//this.currentY % this.containerHeight;
+          switch (this.touchDirection) {
+            case 'down':
+              y += (this.containerHeight + yAdd);
+              break;
+            case 'up':
+              y -= (this.containerHeight + yAdd);
+              break;
+            case 'right':
+              x += (this.containerWidth + xAdd);
+              break;
+            case 'left':
+              x -= (this.containerWidth + xAdd);
+              break;
+          }
+          this.scrollTo(x, y);
+        }
+        this.touched = false;
+        this.touchDirection = null;
+      },
+      onTouchmove(e){
+        if (!this.scrollable || this.disabled) {
+          return;
+        }
+        if (this.fullPage) {
+          e.preventDefault();
+
+          if (!this.touchDirection && e.targetTouches && e.targetTouches.length) {
+            let ev = e.targetTouches[0];
+            // Priority on vertical
+            if (this.hasScrollY && (this.touchY !== ev.pageY)) {
+              this.touchDirection = this.touchY > ev.pageY ? 'down' : 'up';
+            }
+            else if (this.hasScrollX && (this.touchX !== ev.pageX)) {
+              this.touchDirection = this.touchX > ev.pageX ? 'right' : 'left';
+            }
+          }
+        }
+        if (this.scrollable && e) {
+          e.stopImmediatePropagation();
+        }
+        this.$emit('touchmove', e);
       },
       preventKeyIfScrolling(e) {
         if (this.isScrolling && (32 >= e.key <= 40)) {
@@ -400,15 +405,27 @@
         if (!this.ready || (this.scrollable === false)) {
           return;
         }
-        if (this.isScrolling || (this.fullPage && bbn.fn.isMobile())) {
+        if (this.fullPage && this.touched) {
+          e.preventDefault();
+          return;
+        }
+        /*
+
+        bbn.fn.log(e);
+
+        if (!this.hashJustChanged() && (this.isScrolling || this.fullPage)) {
           if (e && e.preventDefault) {
             e.preventDefault();
           }
-          return;
+          if (this.isScrolling) {
+            return;
+          }
         }
+        */
         let ct = this.getRef('scrollContainer');
+        bbn.fn.log("onScroll");
         let x = ct.scrollLeft;
-        if ( this.hasScrollX && (x !== this.currentX)) {
+        if (this.hasScrollX && (x !== this.currentX)) {
           if (this.fullPage) {
             this.isScrolling = true;
             setTimeout(() => {
@@ -420,7 +437,8 @@
             else if (x < this.currentX) {
               x = this.currentX - ct.clientWidth;
             }
-            if ((x != this.currentX) && this.$refs.xScroller) {
+            if (x != this.currentX) {
+              x = this.currentX + ct.clientWidth;
               this.$refs.xScroller.scrollTo(x);
             }
           }
@@ -428,24 +446,26 @@
         }
         let y = ct.scrollTop;
         if ( this.hasScrollY && (y !== this.currentY)) {
+          this.currentY = y;
           if (this.fullPage) {
             this.isScrolling = true;
             setTimeout(() => {
               this.isScrolling = false;
-            }, 1500);
+            }, 1000);
             if (y > this.currentY) {
               y = this.currentY + ct.clientHeight;
             }
             else if (y < this.currentY) {
               y = this.currentY - ct.clientHeight;
             }
+            /*
             if ((y != this.currentY) && this.$refs.yScroller) {
               this.$refs.yScroller.scrollTo(y);
             }
+            */
           }
-          this.currentY = y;
         }
-        if (this.scrollable) {
+        if (this.scrollable && e) {
           e.stopImmediatePropagation();
         }
         this.$emit('scroll', e);
@@ -717,11 +737,16 @@
             // getting current measures of element and scrollable container
             let container = this.$el;
             let content = this.getRef('scrollContent');
+            let ct = this.getRef('scrollContainer');
+            let x = ct.scrollLeft;
+            let y = ct.scrollTop;
             this.contentWidth = content.scrollWidth || content.offsetWidth;
             this.contentHeight = content.scrollHeight || content.offsetHeight;
+            this.containerWidth = container.offsetWidth;
+            this.containerHeight = container.offsetHeight;
             // With scrolling on we check the scrollbars
             if ( this.scrollable ){
-              if ( (this.axis === 'both') || (this.axis === 'x') && (this.contentWidth > this.lastKnownCtWidth) ){
+              if ( (this.axis === 'both') || (this.axis === 'x') && (this.contentWidth > this.containerWidth) ){
                 this.hasScrollX = true;
                 this.$nextTick(() => {
                   if ( this.$refs.xScroller ){
@@ -732,7 +757,7 @@
               else{
                 this.hasScrollX = false;
               }
-              if ((this.axis === 'both') || (this.axis === 'y') && (this.contentHeight > this.lastKnownCtHeight)){
+              if ((this.axis === 'both') || (this.axis === 'y') && (this.contentHeight > this.containerHeight)){
                 this.hasScrollY = true;
                 this.$nextTick(() => {
                   if ( this.$refs.yScroller ){
@@ -747,14 +772,36 @@
               /** @todo Check if this shouldn't be with - (minus) containerSize */
               if ( this.currentX > this.contentWidth ) {
                 // this.currentX = 0;
-                this.currentX = this.contentWidth - this.containerWidth;
+                x = this.contentWidth - this.containerWidth;
               }
               if ( this.currentY > this.contentHeight ) {
                 // this.currentY = 0;
-                this.currentY = this.contentHeight - this.containerHeight;
+                y = this.contentHeight - this.containerHeight;
               }
-              container.scrollLeft = this.currentX;
-              container.scrollTop = this.currentY;
+              if (this.fullPage) {
+                if (this.hasScrollX) {
+                  let tot = Math.round(x / this.containerWidth);
+                  x = this.containerWidth * tot;
+                }
+                if (this.hasScrollY) {
+                  let tot = Math.round(y / this.containerHeight);
+                  y = this.containerHeight * tot;
+                }
+              }
+              if (x !== this.currentX) {
+                this.currentX = x;
+              }
+              if (y !== this.currentY) {
+                this.currentY = y;
+              }
+
+              if (this.scrollReady && bbn.fn.isNumber(this.currentX) && (this.currentX !== ct.scrollLeft)) {
+                ct.scrollLeft = this.currentX;
+              }
+              if (this.scrollReady && bbn.fn.isNumber(this.currentY) && (this.currentY !== ct.scrollTop)) {
+                ct.scrollTop = this.currentY;
+              }
+
             }
             this.$emit('resize');
           }
@@ -891,6 +938,7 @@
             this.$emit('reachRight');
           }
         }
+        this.$emit('scrollx', x);
       },
       currentY(y) {
         if (!y) {
@@ -902,7 +950,8 @@
             this.$emit('reachBottom');
           }
         }
-    }
+        this.$emit('scrolly', y);
+      }
     }
   });
 
