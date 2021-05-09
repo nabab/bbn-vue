@@ -167,12 +167,12 @@
        */
       _setEvents(add){
         if ( add ){
-          document.addEventListener('mousedown', this.checkMouseDown);
-          document.addEventListener('touchstart', this.checkMouseDown);
+          document.addEventListener('mouseup', this.checkClick);
+          document.addEventListener('touchend', this.checkClick);
         }
         else{
-          document.removeEventListener('mousedown', this.checkMouseDown);
-          document.removeEventListener('touchstart', this.checkMouseDown);
+          document.removeEventListener('mouseup', this.checkClick);
+          document.removeEventListener('touchend', this.checkClick);
         }
       },
       /**
@@ -204,13 +204,11 @@
        * @param {Event} e 
        * @fires toggle
        */
-      checkMouseDown(e){
-        if ( this.currentVisible &&
-          !e.target.closest(".bbn-treemenu") &&
-          !e.target.closest(".bbn-menu-button")
-        ){
-          e.stopImmediatePropagation();
-          this.hide();
+       checkClick(e){
+        if (this.currentVisible) {
+          if (!e.target.closest(".bbn-menu-button")) {
+            this.hide();
+          }
         }
       },
       changeVisible(v) {
@@ -219,7 +217,6 @@
           this.hasBeenOpened = true;
         }
         this.switchFocus(v);
-        this._setEvents(!!v);
       }
     },
     /**
@@ -236,7 +233,7 @@
      * @event destroyed
      * @fires _setEvents
      */
-    destroyed(){
+    beforeDestroy(){
       this._setEvents();
     },
     /**

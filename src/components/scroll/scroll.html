@@ -4,7 +4,9 @@
   <div :class="{
          'bbn-scroll-container': true,
          'bbn-overlay': isScrolling || (!isMeasuring && !scrollable),
-         'bbn-scroll-not-dragged': !isDragging
+         'bbn-scroll-not-dragged': ready && !isDragging,
+         'bbn-scroll-x': hasX(),
+         'bbn-scroll-y': hasY()
        }"
        ref="scrollContainer"
        @scroll="onScroll"

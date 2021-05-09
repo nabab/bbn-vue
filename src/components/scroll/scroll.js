@@ -152,6 +152,10 @@
          */
         readyDelay: false,
         /**
+         * @data {Boolean} [false] Gives an extra second to scroll to previous position
+         */
+        afterReady: false,
+        /**
          * @todo not used
          */
         show: false,
@@ -315,6 +319,9 @@
       }
     },
     methods: {
+      mousedown(){
+        bbn.fn.log("mousedown");
+      },
       hashJustChanged(length = 2000){
         if (document.location.hash) {
           let now = (new Date()).getTime();
@@ -325,6 +332,7 @@
         return false;
       },
       onTouchstart(e){
+        bbn.fn.log("touch start");
         bbn.fn.log("TOUCHSTART");
         if (!this.scrollable || this.disabled) {
           return;
@@ -340,35 +348,41 @@
           this.touched = (new Date()).getTime();
         }
       },
+      page(direction) {
+        bbn.fn.page("PAGE");
+        let x = this.currentX;
+        let y = this.currentY;
+        let xAdd = this.currentX % this.containerWidth;
+        let yAdd = this.currentY % this.containerHeight;
+        switch (direction) {
+          case 'down':
+            this.currentY += (this.containerHeight - yAdd);
+            break;
+          case 'up':
+            this.currentY -= (this.containerHeight - yAdd);
+            break;
+          case 'right':
+            this.currentX += (this.containerWidth - xAdd);
+            break;
+          case 'left':
+            this.currentX -= (this.containerWidth - xAdd);
+            break;
+        }
+        this.scrollTo(this.currentX, this.currentY, true);
+      },
       onTouchend(e){
+        bbn.fn.log("touch end");
         if (!this.scrollable || this.disabled) {
           return;
         }
         if (this.fullPage && this.touchDirection) {
-          let x = this.currentX;
-          let y = this.currentY;
-          let xAdd = 0;//this.currentX % this.containerWidth;
-          let yAdd = 0;//this.currentY % this.containerHeight;
-          switch (this.touchDirection) {
-            case 'down':
-              y += (this.containerHeight + yAdd);
-              break;
-            case 'up':
-              y -= (this.containerHeight + yAdd);
-              break;
-            case 'right':
-              x += (this.containerWidth + xAdd);
-              break;
-            case 'left':
-              x -= (this.containerWidth + xAdd);
-              break;
-          }
-          this.scrollTo(x, y);
+          this.page(direction);
         }
         this.touched = false;
         this.touchDirection = null;
       },
       onTouchmove(e){
+        bbn.fn.log("touch move");
         if (!this.scrollable || this.disabled) {
           return;
         }
@@ -402,35 +416,22 @@
        * @emits scroll
        */
       onScroll(e){
+        bbn.fn.log("Scroll", this.hasScrollX, this.hasScrollY, this.currentY, this.touched, this.isSCrolling);
         if (!this.ready || (this.scrollable === false)) {
           return;
         }
-        if (this.fullPage && this.touched) {
+
+        if (this.fullPage && (this.touched || this.isScrolling)) {
           e.preventDefault();
           return;
         }
-        /*
-
-        bbn.fn.log(e);
-
-        if (!this.hashJustChanged() && (this.isScrolling || this.fullPage)) {
-          if (e && e.preventDefault) {
-            e.preventDefault();
-          }
-          if (this.isScrolling) {
-            return;
-          }
-        }
-        */
         let ct = this.getRef('scrollContainer');
-        bbn.fn.log("onScroll");
         let x = ct.scrollLeft;
+        let y = ct.scrollTop;
+        bbn.fn.log("Scroll", this.hasScrollX, this.hasScrollY, y, this.currentY);
         if (this.hasScrollX && (x !== this.currentX)) {
-          if (this.fullPage) {
+          if (this.fullPage && this.afterReady && !this.hashJustChanged()) {
             this.isScrolling = true;
-            setTimeout(() => {
-              this.isScrolling = false;
-            }, 1500);
             if (x > this.currentX) {
               x = this.currentX + ct.clientWidth;
             }
@@ -439,31 +440,30 @@
             }
             if (x != this.currentX) {
               x = this.currentX + ct.clientWidth;
-              this.$refs.xScroller.scrollTo(x);
+              this.$refs.xScroller.scrollTo(x, true).then(() => {
+                this.isScrolling = false;
+              });
             }
           }
           this.currentX = x;
         }
-        let y = ct.scrollTop;
-        if ( this.hasScrollY && (y !== this.currentY)) {
-          this.currentY = y;
-          if (this.fullPage) {
+        else if ( this.hasScrollY && (y !== this.currentY)) {
+
+          if (this.fullPage && this.afterReady && !this.hashJustChanged()) {
             this.isScrolling = true;
-            setTimeout(() => {
-              this.isScrolling = false;
-            }, 1000);
             if (y > this.currentY) {
               y = this.currentY + ct.clientHeight;
             }
             else if (y < this.currentY) {
               y = this.currentY - ct.clientHeight;
             }
-            /*
             if ((y != this.currentY) && this.$refs.yScroller) {
-              this.$refs.yScroller.scrollTo(y);
+              this.$refs.yScroller.scrollTo(y, true).then(() => {
+                this.isScrolling = false;
+              });
             }
-            */
           }
+          this.currentY = y;
         }
         if (this.scrollable && e) {
           e.stopImmediatePropagation();
@@ -478,7 +478,7 @@
        * @fires $refs.xScroller.scrollTo
        * @fires $refs.yScroller.scrollTo
        */
-      scrollTo(x, y){
+      scrollTo(x, y, anim){
         if (!this.hasScroll || !this.ready) {
           return;
         }
@@ -489,7 +489,7 @@
           (x !== null) &&
           this.$refs.xScroller
         ) {
-          this.$refs.xScroller.scrollTo(x);
+          this.$refs.xScroller.scrollTo(x, anim);
         }
 
         if (
@@ -498,7 +498,7 @@
           (y !== null) &&
           this.$refs.yScroller
         ) {
-          this.$refs.yScroller.scrollTo(y);
+          this.$refs.yScroller.scrollTo(y, anim);
         }
       },
       /**
@@ -700,6 +700,12 @@
           });
         });
       },
+      hasX(){
+        return this.scrollable && ((this.axis === 'both') || (this.axis === 'x'));
+      },
+      hasY(){
+        return this.scrollable && ((this.axis === 'both') || (this.axis === 'y'));
+      },
       /**
        * @method initSize
        * @fires getNaturalDimensions
@@ -708,7 +714,6 @@
       initSize() {
         return this.onResize().then(() => {
           this.ready = true;
-          //this.onResize();
         });
       },
       /**
@@ -893,9 +898,12 @@
             }, 1000);
             setTimeout(() => {
               this.scrollReady = true;
+              setTimeout(() => {
+                this.afterReady = true;
+              }, 1000);
             }, 1000);
 
-          }, 100)
+          }, 100);
         }
       },
       /**
