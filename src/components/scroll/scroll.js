@@ -249,7 +249,8 @@
         touchX: false,
         touchY: false,
         touched: 0,
-        touchDirection: null
+        touchDirection: null,
+        scrollTimeout: null
       };
     },
     computed: {
@@ -429,19 +430,14 @@
           e.preventDefault();
         }
       },
-      /**
-       * @method onScroll
-       * @param {Event} e 
-       * @emits scroll
-       */
-      onScroll(e){
+      realOnScroll(){
         if (!this.ready || (this.scrollable === false)) {
           return;
         }
 
         if (this.fullPage && (this.touched || this.isScrolling)) {
           if (this.isScrolling) {
-            e.preventDefault();
+            //e.preventDefault();
           }
           return;
         }
@@ -479,6 +475,17 @@
           this.page(direction);
         }
         this.$emit('scroll', e);
+      },
+      /**
+       * @method onScroll
+       * @param {Event} e 
+       * @emits scroll
+       */
+      onScroll(e){
+        clearTimeout(this.scrollTimeout);
+        this.scrollTimeout = setTimeout(() => {
+          this.realOnScroll();
+        }, 100)
       },
       /**
        * Scrolls to the given coordinates of x and y using the given animation
@@ -769,6 +776,9 @@
             let container = this.$el;
             let content = this.getRef('scrollContent');
             let ct = this.getRef('scrollContainer');
+            if (!content) {
+              return;
+            }
             let x = ct.scrollLeft;
             let y = ct.scrollTop;
             let contentBox = content.getBoundingClientRect()
