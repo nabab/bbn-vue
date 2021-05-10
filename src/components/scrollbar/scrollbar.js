@@ -184,7 +184,8 @@
         /**
          * @data {Boolean} [false] isOverSlider
          */
-        isOverSlider: false
+        isOverSlider: false,
+        currentScrollTo: false
       };
     },
     computed: {
@@ -618,8 +619,14 @@
           };
 
           const timer = setInterval(() => {
+            const current = this.currentScrollTo;
             const time = new Date().getTime() - startTime;
             let newPos = easeInOutQuart(time, start, distance, duration);
+            if (this.currentScrollTo !== current) {
+              clearInterval(timer);
+              reject();
+              return;
+            }
             if (time >= duration) {
               clearInterval(timer);
               newPos = end;
@@ -629,6 +636,7 @@
           }, 1000 / 60); // 60 fps
         });
       },
+
       /**
        * Scrolls to the given position using the given animation.
        * @method scrollTo
@@ -637,6 +645,7 @@
       scrollTo(val, anim = false) {
         return new Promise(resolve => {
           if (this.shouldBother) {
+            this.currentScrollTo = (new Date()).getTime();
             let num = 0;
             let ele = false;
             if (bbn.fn.isVue(val) && val.$el) {
@@ -645,6 +654,7 @@
             else if (bbn.fn.isDom(val)){
               ele = val;
             }
+
             if (ele) {
               let container = ele.offsetParent;
               // The position is equal to the offset of the target
