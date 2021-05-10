@@ -430,7 +430,7 @@
           e.preventDefault();
         }
       },
-      realOnScroll(){
+      realOnScroll(e){
         if (!this.ready || (this.scrollable === false)) {
           return;
         }
@@ -468,9 +468,6 @@
           }
           this.currentY = y;
         }
-        if (this.scrollable && e) {
-          e.stopImmediatePropagation();
-        }
         if (direction) {
           this.page(direction);
         }
@@ -484,8 +481,11 @@
       onScroll(e){
         clearTimeout(this.scrollTimeout);
         this.scrollTimeout = setTimeout(() => {
-          this.realOnScroll();
-        }, 100)
+          this.realOnScroll(e);
+        }, 100);
+        if (this.scrollable && e) {
+          e.stopImmediatePropagation();
+        }
       },
       /**
        * Scrolls to the given coordinates of x and y using the given animation
