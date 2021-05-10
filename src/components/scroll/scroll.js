@@ -319,9 +319,6 @@
       }
     },
     methods: {
-      mousedown(){
-        bbn.fn.log("mousedown");
-      },
       hashJustChanged(length = 2000){
         if (document.location.hash) {
           let now = (new Date()).getTime();
@@ -340,46 +337,52 @@
         if (e.targetTouches && e.targetTouches.length) {
           let ev = e.targetTouches[0];
           if (this.hasScrollX) {
-            this.touchX = ev.pageX;
+            this.touchX = ev.clientX;
           }
           if (this.hasScrollY) {
-            this.touchY = ev.pageY;
+            this.touchY = ev.clientY;
           }
           this.touched = (new Date()).getTime();
         }
       },
       page(direction) {
-        bbn.fn.page("PAGE");
-        let x = this.currentX;
-        let y = this.currentY;
         let xAdd = this.currentX % this.containerWidth;
         let yAdd = this.currentY % this.containerHeight;
+        let p;
         switch (direction) {
           case 'down':
-            this.currentY += (this.containerHeight - yAdd);
+            this.currentY += (this.containerHeight - (yAdd || 0));
+            p = this.$refs.yScroller.scrollTo(this.currentY, true);
             break;
           case 'up':
-            this.currentY -= (this.containerHeight - yAdd);
+            this.currentY -= (this.containerHeight - (yAdd || 0));
+            p = this.$refs.yScroller.scrollTo(this.currentY, true);
             break;
           case 'right':
-            this.currentX += (this.containerWidth - xAdd);
+            this.currentX += (this.containerWidth - (xAdd || 0));
+            p = this.$refs.xScroller.scrollTo(this.currentX, true);
             break;
           case 'left':
-            this.currentX -= (this.containerWidth - xAdd);
+            this.currentX -= (this.containerWidth - (xAdd || 0));
+            p = this.$refs.xScroller.scrollTo(this.currentX, true);
             break;
         }
-        this.scrollTo(this.currentX, this.currentY, true);
+        p.then(() => {
+          this.touched = false;
+        });
       },
       onTouchend(e){
-        bbn.fn.log("touch end");
         if (!this.scrollable || this.disabled) {
           return;
         }
         if (this.fullPage && this.touchDirection) {
-          this.page(direction);
+          this.page(this.touchDirection);
         }
-        this.touched = false;
+        else {
+          this.touched = false;
+        }
         this.touchDirection = null;
+        this.touchY = null;
       },
       onTouchmove(e){
         bbn.fn.log("touch move");
@@ -392,11 +395,12 @@
           if (!this.touchDirection && e.targetTouches && e.targetTouches.length) {
             let ev = e.targetTouches[0];
             // Priority on vertical
-            if (this.hasScrollY && (this.touchY !== ev.pageY)) {
-              this.touchDirection = this.touchY > ev.pageY ? 'down' : 'up';
+            if (this.hasScrollY && (this.touchY !== ev.clientY)) {
+              this.lastDirections = {touchY: this.touchY, clientY: ev.clientY};
+              this.touchDirection = this.touchY > ev.clientY ? 'down' : 'up';
             }
-            else if (this.hasScrollX && (this.touchX !== ev.pageX)) {
-              this.touchDirection = this.touchX > ev.pageX ? 'right' : 'left';
+            else if (this.hasScrollX && (this.touchX !== ev.clientX)) {
+              this.touchDirection = this.touchX > ev.clientX ? 'right' : 'left';
             }
           }
         }
@@ -422,7 +426,9 @@
         }
 
         if (this.fullPage && (this.touched || this.isScrolling)) {
-          e.preventDefault();
+          if (this.isScrolling) {
+            e.preventDefault();
+          }
           return;
         }
         let ct = this.getRef('scrollContainer');
@@ -479,27 +485,43 @@
        * @fires $refs.yScroller.scrollTo
        */
       scrollTo(x, y, anim){
-        if (!this.hasScroll || !this.ready) {
-          return;
-        }
+        return new Promise(resolve => {
+          if (!this.hasScroll || !this.ready) {
+            return;
+          }
 
-        if (
-          this.hasScrollX &&
-          (x !== undefined) &&
-          (x !== null) &&
-          this.$refs.xScroller
-        ) {
-          this.$refs.xScroller.scrollTo(x, anim);
-        }
+          if (
+            this.hasScrollX &&
+            (x !== undefined) &&
+            (x !== null) &&
+            this.$refs.xScroller
+          ) {
+            this.$refs.xScroller.scrollTo(x, anim).then(() => {
+              try {
+                resolve();
+              }
+              catch(e) {
+                
+              }
+            });
+          }
 
-        if (
-          this.hasScrollY &&
-          (y !== undefined) &&
-          (y !== null) &&
-          this.$refs.yScroller
-        ) {
-          this.$refs.yScroller.scrollTo(y, anim);
-        }
+          if (
+            this.hasScrollY &&
+            (y !== undefined) &&
+            (y !== null) &&
+            this.$refs.yScroller
+          ) {
+            this.$refs.yScroller.scrollTo(y, anim).then(() => {
+              try {
+                resolve();
+              }
+              catch(e) {
+
+              }
+            });
+          }
+        })
       },
       /**
        * @method scrollHorizontal
