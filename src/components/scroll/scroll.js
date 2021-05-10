@@ -319,10 +319,10 @@
       }
     },
     methods: {
-      hashJustChanged(length = 2000){
+      hashJustChanged(length = 600){
         if (document.location.hash) {
           let now = (new Date()).getTime();
-          if (bbn.env.hashChanged > (now + length)) {
+          if (bbn.env.hashChanged >= (now - length)) {
             return true;
           }
         }
