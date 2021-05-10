@@ -369,6 +369,7 @@
         }
         p.then(() => {
           this.touched = false;
+          this.$emit('scroll');
         });
       },
       onTouchend(e){
