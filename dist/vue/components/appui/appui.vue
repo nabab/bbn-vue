@@ -855,7 +855,7 @@
             return false;
           },
 
-          defaultPreLinkFunction(url) {
+          /* defaultPreLinkFunction(url) {
             if (this.autoload) {
               let router = appui.getRef('router');
               bbn.fn.log(url);
@@ -866,6 +866,15 @@
             }
 
             return true;
+          }, */
+
+          defaultPreLinkFunction(url) {
+            let router = appui.getRef('router');
+            if (router && bbn.fn.isFunction(router.route) && !router.disabled) {
+              router.route(url);
+              return true;
+            }
+            return false;
           },
 
           defaultAlertFunction(ele) {

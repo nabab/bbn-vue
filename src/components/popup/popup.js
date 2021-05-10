@@ -462,6 +462,7 @@
             yesText = bbn._('Yes'),
             noText = bbn._('No'),
             o = {},
+            options = {},
             has_msg = false,
             has_yes = false,
             has_width = false,
@@ -539,7 +540,7 @@
             }
           }];
 
-          this.open(bbn.fn.extend(o, {
+          this.open(bbn.fn.extend(o, options, {
             resizable: false,
             maximizable: false,
             scrollable: true

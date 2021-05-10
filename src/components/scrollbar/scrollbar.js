@@ -673,8 +673,8 @@
               if ( num < 0 ){
                 num = 0;
               }
-              else if (num > (this.contentSize - this.containerSize)) {
-                num = this.contentSize - this.containerSize;
+              else if (num > (this.contentSize - this.containerSize + 100)) {
+                //num = this.contentSize - this.containerSize;
               }
               this.containerPos = num;
               this.sliderPos = this.containerPos * this.ratio;

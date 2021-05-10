@@ -205,12 +205,12 @@ document.head.insertAdjacentElement('beforeend', css);
        */
       _setEvents(add){
         if ( add ){
-          document.addEventListener('mousedown', this.checkMouseDown);
-          document.addEventListener('touchstart', this.checkMouseDown);
+          document.addEventListener('mouseup', this.checkClick);
+          document.addEventListener('touchend', this.checkClick);
         }
         else{
-          document.removeEventListener('mousedown', this.checkMouseDown);
-          document.removeEventListener('touchstart', this.checkMouseDown);
+          document.removeEventListener('mouseup', this.checkClick);
+          document.removeEventListener('touchend', this.checkClick);
         }
       },
       /**
@@ -242,14 +242,11 @@ document.head.insertAdjacentElement('beforeend', css);
        * @param {Event} e 
        * @fires toggle
        */
-      checkMouseDown(e){
-        if ( this.currentVisible &&
-          !e.target.closest(".bbn-treemenu") &&
-          !e.target.closest(".bbn-menu-button")
-        ){
-          e.preventDefault();
-          e.stopImmediatePropagation();
-          this.toggle();
+       checkClick(e){
+        if (this.currentVisible) {
+          if (!e.target.closest(".bbn-menu-button")) {
+            this.hide();
+          }
         }
       },
       changeVisible(v) {
@@ -258,7 +255,6 @@ document.head.insertAdjacentElement('beforeend', css);
           this.hasBeenOpened = true;
         }
         this.switchFocus(v);
-        this._setEvents(!!v);
       }
     },
     /**
@@ -268,14 +264,14 @@ document.head.insertAdjacentElement('beforeend', css);
      */
     created(){
       this.componentClass.push('bbn-resize-emitter');
-      this._setEvents();
+      this._setEvents(true);
     },
     /**
      * Removes the events listener.
      * @event destroyed
      * @fires _setEvents
      */
-    destroyed(){
+    beforeDestroy(){
       this._setEvents();
     },
     /**

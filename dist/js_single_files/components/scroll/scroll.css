@@ -7,16 +7,17 @@
   width: 100%;
   height: 100%;
   box-sizing: content-box;
+  overflow: hidden;
   scrollbar-width: none;
 }
-.bbn-scroll > .bbn-scroll-container.bbn-scroll-not-dragged {
-  scroll-behavior: smooth;
+.bbn-scroll > .bbn-scroll-container.bbn-scroll-x {
+  overflow-x: scroll;
+}
+.bbn-scroll > .bbn-scroll-container.bbn-scroll-y {
+  overflow-y: scroll;
 }
 .bbn-scroll > .bbn-scroll-container.bbn-overlay {
-  overflow: hidden;
-}
-.bbn-scroll > .bbn-scroll-container:not(.bbn-overlay) {
-  overflow: scroll;
+  overflow: hidden !important;
 }
 .bbn-scroll > .bbn-scroll-container::-webkit-scrollbar {
   display: none;

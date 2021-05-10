@@ -1,48 +1,49 @@
 (bbn_resolve) => {
 ((bbn) => {
 let script = document.createElement('script');
-script.innerHTML = `<div :class="componentClass">
-  <div class="bbn-w-100" @focusout="focusout">
-    <div class="bbn-flex-width">
-      <div v-if="ready"
-           class="bbn-flex-fill"
-           style="overflow: auto">
-        <div class="bbn-100">
-          <component v-if="isEditing && component"
-                    :is="component"
-                    v-model="currentValue"
-                    v-bind="componentOptions"/>
-          <component v-else-if="isEditing"
-                    :is="componentObject"
-                    v-model="currentValue"
-                    :source="source"
-                    :class="{'edit-block' : isEditing}"
-                  
-          ></component>
-          <component v-else
-                    :is="componentObject"
-                    v-model="currentValue"
-                    :source="source"
-                    :class="{'edit-block' : isEditing}"
-                  
-          ></component>
-        </div>
-      </div>
-      <div>
-        <i :class="'bbn-p inline ' + editIcon"
-          @click.stop="edit"
-          v-if="isAdmin && !isEditing"
-        ></i>
-        <i :class="'bbn-p inline ' + cancelIcon"
-          @click.stop="onCancel"
-          v-if="isEditing" 
-        ></i>
-        <i :class="'bbn-p inline ' + saveIcon"
-          @click.stop="save"
-          v-if="isEditing" 
-        ></i>
-      </div>  
-    </div>
+script.innerHTML = `<div :class="['bbn-iblock', componentClass]"
+     @focusout="focusout"
+     @mouseenter="over = true"
+     @mouseleave="over = false"
+     >
+  <component v-if="isEditing && component"
+            :is="component"
+            v-model="currentValue"
+            v-bind="componentOptions"/>
+  <component v-else-if="isEditing"
+            :is="componentObject"
+            v-model="currentValue"
+            :source="source"
+            :class="{'edit-block' : isEditing}"
+          
+  ></component>
+  <component v-else
+            :is="componentObject"
+            v-model="currentValue"
+            :source="source"
+            :class="{'edit-block' : isEditing}"
+  ></component>
+  <div :style="{
+      position: 'absolute',
+      top: '0px',
+      right: '-8em',
+      width: '8em',
+      paddingLeft: '1em',
+      textAlign: 'left',
+      display: isEditing || (over && isAdmin) ? 'block' : 'none'
+    }">
+    <i :class="'bbn-p inline ' + editIcon"
+      @click.stop="edit"
+      v-if="isAdmin && !isEditing"
+    ></i>
+    <i :class="'bbn-p inline ' + cancelIcon"
+      @click.stop="onCancel"
+      v-if="isEditing" 
+    ></i>
+    <i :class="'bbn-p inline ' + saveIcon"
+      @click.stop="save"
+      v-if="isEditing" 
+    ></i>
   </div>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-editable');
