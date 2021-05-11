@@ -474,7 +474,7 @@
       setScrollDelay(){
         clearTimeout(this.scrollTimeout);
         this.scrollTimeout = setTimeout(() => {
-          this.afterScroll(e);
+          this.afterScroll();
         }, this.scrollInitial.touched === 'finished' ? 100 : 500);
       },
       /**
