@@ -185,7 +185,8 @@
          * @data {Boolean} [false] isOverSlider
          */
         isOverSlider: false,
-        currentScrollTo: false
+        animationInterval: false,
+        nextLevel: false
       };
     },
     computed: {
@@ -618,20 +619,18 @@
             return -distance / 2 * ((time -= 2) * time * time * time - 2) + from;
           };
 
-          const timer = setInterval(() => {
-            const current = this.currentScrollTo;
+          if (this.animationInterval) {
+            clearInterval(this.animationInterval);
+          }
+          this.animationInterval = setInterval(() => {
             const time = new Date().getTime() - startTime;
             let newPos = easeInOutQuart(time, start, distance, duration);
-            if (this.currentScrollTo !== current) {
-              clearInterval(timer);
-              reject();
-              return;
-            }
             if (time >= duration) {
-              clearInterval(timer);
+              clearInterval(this.animationInterval);
               newPos = end;
               resolve();
             }
+            this.nextLevel = Math.round(newPos);
             this.realContainer['scroll' + (this.isVertical ? 'Top' : 'Left')] = newPos;
           }, 1000 / 60); // 60 fps
         });
@@ -645,7 +644,10 @@
       scrollTo(val, anim = false) {
         return new Promise(resolve => {
           if (this.shouldBother) {
-            this.currentScrollTo = (new Date()).getTime();
+            if (this.animationInterval) {
+              clearInterval(this.animationInterval);
+            }
+
             let num = 0;
             let ele = false;
             if (bbn.fn.isVue(val) && val.$el) {
@@ -680,12 +682,14 @@
               num = val;
             }
             if (bbn.fn.isNumber(num)){
+              bbn.fn.log("Scroolto 1", num);
               if ( num < 0 ){
                 num = 0;
               }
               else if (num > (this.contentSize - this.containerSize + 100)) {
-                //num = this.contentSize - this.containerSize;
+                num = this.contentSize - this.containerSize;
               }
+              bbn.fn.log("Scroolto 1", num);
               this.containerPos = num;
               this.sliderPos = this.containerPos * this.ratio;
               if (anim) {
@@ -694,6 +698,7 @@
                 });
               }
               else {
+                this.nextLevel = Math.round(num);
                 this.realContainer['scroll' + (this.isVertical ? 'Top' : 'Left')] = num;
                 resolve();
               }
