@@ -448,11 +448,13 @@
       onScroll(e){
         let ct = this.getRef('scrollContainer');
         if (ct) {
-          if ((ct.scrollLeft < 0) || (ct.scrollLeft > this.contentWidth - ct.containerWidth)) {
+          if (this.hasScrollX && (ct.scrollLeft < 0)) {
+            ct.scrollLeft = 0;
             e.preventDefault();
             return;
           }
-          if ((ct.scrollTop < 0) || (ct.scrollTop > this.contentHeight - ct.containerHeight)) {
+          if (this.hasScrollX && (ct.scrollTop < 0)) {
+            ct.scrollTop = 0;
             e.preventDefault();
             return;
           }
