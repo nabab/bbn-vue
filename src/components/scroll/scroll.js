@@ -398,6 +398,9 @@
         this.setScrollDelay();
       },
       onTouchmove(e){
+        if (this.disabled) {
+          e.preventDefault();
+        }
         return;
         bbn.fn.log("touch move");
         if (!this.scrollable || this.disabled) {
