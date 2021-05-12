@@ -448,12 +448,22 @@
       onScroll(e){
         let ct = this.getRef('scrollContainer');
         if (ct) {
+          if ((ct.scrollLeft < 0) || (ct.scrollLeft > this.contentWidth - ct.containerWidth)) {
+            e.preventDefault();
+            return;
+          }
+          if ((ct.scrollTop < 0) || (ct.scrollTop > this.contentHeight - ct.containerHeight)) {
+            e.preventDefault();
+            return;
+          }
           this.currentX = ct.scrollLeft;
           this.currentY = ct.scrollTop;
           this.$emit('scroll', e);
           if (!e.defaultPrevented) {
             // Leaving touchscroll act normally
             if (this.scrollInitial && (this.scrollInitial.touched === true)) {
+              // Removing the finishing delay in case it was pre-recorded
+              clearTimeout(this.scrollTimeout);
               return;
             }
             // Not acting for events sent by scrollTo (scrollbars will write in nextLevel)
