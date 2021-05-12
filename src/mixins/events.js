@@ -204,7 +204,7 @@
                 direction = this.touchStarted.touches[0].clientY > this.touchMoved.touches[0].clientY ? 'top' : 'bottom';
               }
               if (!!direction) {
-                this.$emit('swipe', ev, this)
+                this.$emit('swipe', ev, this, direction)
                 this.$emit('swipe' + direction, ev, this)
               }
             }

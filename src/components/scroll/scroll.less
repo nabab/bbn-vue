@@ -6,14 +6,16 @@
     width: 100%;
     height: 100%;
     box-sizing: content-box;
-    &.bbn-scroll-not-dragged {
-      scroll-behavior: smooth;
+    overflow: hidden;
+    &.bbn-scroll-x:not(.bbn-scroll-disabled) {
+      overflow-x: scroll;
     }
+    &.bbn-scroll-y:not(.bbn-scroll-disabled) {
+      overflow-y: scroll;
+    }
+
     &.bbn-overlay{
-      overflow: hidden;
-    }
-    &:not(.bbn-overlay){
-      overflow: scroll;
+      overflow: hidden !important;
     }
     scrollbar-width: none;
     &::-webkit-scrollbar {

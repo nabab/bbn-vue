@@ -1,14 +1,12 @@
 <div :class="elementClass"
      :style="elementStyle"
 >
-  <div :class="{
-         'bbn-scroll-container': true,
-         'bbn-overlay': isScrolling || (!isMeasuring && !scrollable),
-         'bbn-scroll-not-dragged': !isDragging
-       }"
+  <div :class="containerClass"
        ref="scrollContainer"
        @scroll="onScroll"
-       @touchmove="touchmove"
+       @touchend="onTouchend"
+       @touchstart="onTouchstart"
+       @touchmove="onTouchmove"
        @focus="isFocused = true"
        @blur="isFocused = false"
        :tabindex="scrollable ? '0' : '-1'"

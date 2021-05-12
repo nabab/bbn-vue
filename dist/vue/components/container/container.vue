@@ -476,6 +476,23 @@
           else{
             this.isComponent = false;
           }
+
+          setTimeout(() => {
+            if (bbn.env.url.indexOf('#')) {
+              let scroll = this.find('bbn-scroll');
+              if (scroll && (scroll.currentY || scroll.currentX)) {
+                return;
+              }
+              let hash = bbn.env.url.split('#')[1];
+              if (hash) {
+                hash = '#' + hash;
+                location.hash = null;
+                location.hash = hash;
+              }
+              
+            }
+          }, 2000);
+
           this.ready = true;
         }
       }

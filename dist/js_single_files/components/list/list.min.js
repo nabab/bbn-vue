@@ -36,6 +36,7 @@
         <component v-if="currentComponent"
                    :is="currentComponent"
                    :source="li.data"
+                   :index="li.index"
                    @remove="remove(idx)"
                    @hook:mounted="selfEmit(true)">
         </component>

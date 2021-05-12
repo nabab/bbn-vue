@@ -184,7 +184,9 @@
         /**
          * @data {Boolean} [false] isOverSlider
          */
-        isOverSlider: false
+        isOverSlider: false,
+        animationInterval: false,
+        nextLevel: false
       };
     },
     computed: {
@@ -598,56 +600,111 @@
         }
       },
       /**
+       * Smooth scroll animation
+       * @param {int} endX: destination x coordinate
+       * @param {int} endY: destination y coordinate
+       * @param {int} duration: animation duration in ms
+       */
+      smoothScrollTo(end, duration) {
+        return new Promise((resolve, reject) => {
+          const start = this.realContainer['scroll' + (this.isVertical ? 'Top' : 'Left')];
+          const distance = end - start;
+          const startTime = new Date().getTime();
+
+          duration = typeof duration !== 'undefined' ? duration : 400;
+
+          // Easing function
+          const easeInOutQuart = (time, from, distance, duration) => {
+            if ((time /= duration / 2) < 1) return distance / 2 * time * time * time * time + from;
+            return -distance / 2 * ((time -= 2) * time * time * time - 2) + from;
+          };
+
+          if (this.animationInterval) {
+            clearInterval(this.animationInterval);
+          }
+          this.animationInterval = setInterval(() => {
+            const time = new Date().getTime() - startTime;
+            let newPos = easeInOutQuart(time, start, distance, duration);
+            if (time >= duration) {
+              clearInterval(this.animationInterval);
+              newPos = end;
+              resolve();
+            }
+            this.nextLevel = Math.round(newPos);
+            this.realContainer['scroll' + (this.isVertical ? 'Top' : 'Left')] = newPos;
+          }, 1000 / 60); // 60 fps
+        });
+      },
+
+      /**
        * Scrolls to the given position using the given animation.
        * @method scrollTo
        * @fires adjustFromContainer
        */
-      scrollTo(val) {
-        if (this.shouldBother) {
-          let num = 0;
-          let ele = false;
-          if (bbn.fn.isVue(val) && val.$el) {
-            ele = val.$el;
-          }
-          else if (bbn.fn.isDom(val)){
-            ele = val;
-          }
-          if (ele) {
-            let container = ele.offsetParent;
-            // The position is equal to the offset of the target
-            // minus the size of the viewport, which isn't scrolled,
-            // plus half the size of the viewport to center it
-            // therefore removing half of the viewport does the trick
-            num = ele[this.isVertical ? 'offsetTop' : 'offsetLeft']
-                  - Math.round(this.containerSize/2);
-            while (container && (container !== this.scroller.$el)) {
-              if (container.contains(this.scroller.$el)) {
-                break;
+      scrollTo(val, anim = false) {
+        return new Promise(resolve => {
+          if (this.shouldBother) {
+            if (this.animationInterval) {
+              clearInterval(this.animationInterval);
+            }
+
+            let num = 0;
+            let ele = false;
+            if (bbn.fn.isVue(val) && val.$el) {
+              ele = val.$el;
+            }
+            else if (bbn.fn.isDom(val)){
+              ele = val;
+            }
+
+            if (ele) {
+              let container = ele.offsetParent;
+              // The position is equal to the offset of the target
+              // minus the size of the viewport, which isn't scrolled,
+              // plus half the size of the viewport to center it
+              // therefore removing half of the viewport does the trick
+              num = ele[this.isVertical ? 'offsetTop' : 'offsetLeft']
+                    - Math.round(this.containerSize/2);
+              while (container && (container !== this.scroller.$el)) {
+                if (container.contains(this.scroller.$el)) {
+                  break;
+                }
+                else{
+                  num += container[this.isVertical ? 'offsetTop' : 'offsetLeft'];
+                  container = container.offsetParent;
+                }
               }
-              else{
-                num += container[this.isVertical ? 'offsetTop' : 'offsetLeft'];
-                container = container.offsetParent;
+            }
+            else if ( bbn.fn.isPercent(val) ){
+              num = Math.round(parseFloat(val) * this.contentSize / 100);
+            }
+            else if (bbn.fn.isNumber(val)) {
+              num = val;
+            }
+            if (bbn.fn.isNumber(num)){
+              bbn.fn.log("Scroolto 1", num);
+              if ( num < 0 ){
+                num = 0;
+              }
+              else if (num > (this.contentSize - this.containerSize + 100)) {
+                num = this.contentSize - this.containerSize;
+              }
+              bbn.fn.log("Scroolto 1", num);
+              this.containerPos = num;
+              this.sliderPos = this.containerPos * this.ratio;
+              if (anim) {
+                this.smoothScrollTo(num).then(() => {
+                  resolve();
+                });
+              }
+              else {
+                this.nextLevel = Math.round(num);
+                this.realContainer['scroll' + (this.isVertical ? 'Top' : 'Left')] = num;
+                resolve();
               }
             }
           }
-          else if ( bbn.fn.isPercent(val) ){
-            num = Math.round(parseFloat(val) * this.contentSize / 100);
-          }
-          else if (bbn.fn.isNumber(val)) {
-            num = val;
-          }
-          if (bbn.fn.isNumber(num)){
-            if ( num < 0 ){
-              num = 0;
-            }
-            else if (num > (this.contentSize - this.containerSize)) {
-              num = this.contentSize - this.containerSize;
-            }
-            this.realContainer['scroll' + (this.isVertical ? 'Top' : 'Left')] = num;
-            this.containerPos = num;
-            this.sliderPos = this.containerPos * this.ratio;
-          }
-        }
+        });
       },
       /**
        * Moves the scrollbar to the position 0.
