@@ -380,7 +380,34 @@
         this.setScrollDelay();
       },
       onTouchmove(e){
-        this.$emit('touchmove', e);
+        let ct = this.getRef('scrollContainer');
+        if (ct) {
+          if (this.hasScrollX) {
+            if (ct.scrollLeft < 0) {
+              ct.scrollLeft = 0;
+              e.preventDefault();
+              return;
+            }
+            else if (ct.scrollLeft > (ct.contentWidth - ct.containerWidth + 3)) {
+              ct.scrollLeft = ct.contentWidth - ct.containerWidth;
+              e.preventDefault();
+              return;
+            }
+          }
+          if (this.hasScrollY) {
+            if (ct.scrollTop < 0) {
+              ct.scrollTop = 0;
+              e.preventDefault();
+              return;
+            }
+            else if (ct.scrollTop > (ct.contentHeight - ct.containerHeight + 3)) {
+              ct.scrollTop = ct.contentHeight - ct.containerHeight;
+              e.preventDefault();
+              return;
+            }
+          }
+          this.$emit('touchmove', e);
+        }
       },
       /**
        * @method onScroll
@@ -399,7 +426,7 @@
             e.preventDefault();
             return;
           }
-          if (this.hasScrollX && (ct.scrollTop < 0)) {
+          if (this.hasScrollY && (ct.scrollTop < 0)) {
             ct.scrollTop = 0;
             e.preventDefault();
             return;
