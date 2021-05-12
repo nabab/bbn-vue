@@ -380,7 +380,6 @@
         this.setScrollDelay();
       },
       onTouchmove(e){
-        /*
         let ct = this.getRef('scrollContainer');
         if (ct) {
           if (this.hasScrollX) {
@@ -389,8 +388,8 @@
               e.preventDefault();
               return;
             }
-            else if (ct.scrollLeft > (ct.contentWidth - ct.containerWidth + 3)) {
-              ct.scrollLeft = ct.contentWidth - ct.containerWidth;
+            else if (ct.scrollLeft > (this.contentWidth - this.containerWidth + 3)) {
+              ct.scrollLeft = this.contentWidth - this.containerWidth;
               e.preventDefault();
               return;
             }
@@ -401,16 +400,14 @@
               e.preventDefault();
               return;
             }
-            else if (ct.scrollTop > (ct.contentHeight - ct.containerHeight + 3)) {
-              ct.scrollTop = ct.contentHeight - ct.containerHeight;
+            else if (ct.scrollTop > (this.contentHeight - this.containerHeight + 3)) {
+              ct.scrollTop = this.contentHeight - this.containerHeight;
               e.preventDefault();
               return;
             }
           }
           this.$emit('touchmove', e);
         }
-        */
-        this.$emit('touchmove', e);
       },
       /**
        * @method onScroll
@@ -424,15 +421,29 @@
             e.preventDefault();
             return;
           }
-          if (this.hasScrollX && (ct.scrollLeft < 0)) {
-            ct.scrollLeft = 0;
-            e.preventDefault();
-            return;
+          if (this.hasScrollX) {
+            if (ct.scrollLeft < 0) {
+              ct.scrollLeft = 0;
+              e.preventDefault();
+              return;
+            }
+            else if (ct.scrollLeft > (this.contentWidth - this.containerWidth + 3)) {
+              ct.scrollLeft = this.contentWidth - this.containerWidth;
+              e.preventDefault();
+              return;
+            }
           }
-          if (this.hasScrollY && (ct.scrollTop < 0)) {
-            ct.scrollTop = 0;
-            e.preventDefault();
-            return;
+          if (this.hasScrollY) {
+            if (ct.scrollTop < 0) {
+              ct.scrollTop = 0;
+              e.preventDefault();
+              return;
+            }
+            else if (ct.scrollTop > (this.contentHeight - this.containerHeight + 3)) {
+              ct.scrollTop = this.contentHeight - this.containerHeight;
+              e.preventDefault();
+              return;
+            }
           }
           this.currentX = ct.scrollLeft;
           this.currentY = ct.scrollTop;
