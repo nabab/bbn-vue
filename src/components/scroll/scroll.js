@@ -380,6 +380,7 @@
         this.setScrollDelay();
       },
       onTouchmove(e){
+        /*
         let ct = this.getRef('scrollContainer');
         if (ct) {
           if (this.hasScrollX) {
@@ -408,6 +409,8 @@
           }
           this.$emit('touchmove', e);
         }
+        */
+        this.$emit('touchmove', e);
       },
       /**
        * @method onScroll
