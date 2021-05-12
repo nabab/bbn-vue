@@ -448,6 +448,10 @@
       onScroll(e){
         let ct = this.getRef('scrollContainer');
         if (ct) {
+          if (this.disabled) {
+            e.preventDefault();
+            return;
+          }
           if (this.hasScrollX && (ct.scrollLeft < 0)) {
             ct.scrollLeft = 0;
             e.preventDefault();
