@@ -1,13 +1,7 @@
 <div :class="elementClass"
      :style="elementStyle"
 >
-  <div :class="{
-         'bbn-scroll-container': true,
-         'bbn-overlay': isScrolling || (!isMeasuring && !scrollable),
-         'bbn-scroll-not-dragged': ready && !isDragging,
-         'bbn-scroll-x': hasX(),
-         'bbn-scroll-y': hasY()
-       }"
+  <div :class="containerClass"
        ref="scrollContainer"
        @scroll="onScroll"
        @touchend="onTouchend"

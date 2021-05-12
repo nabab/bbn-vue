@@ -136,6 +136,10 @@
         type: Boolean,
         default: false
       },
+      disabled: {
+        type: Boolean,
+        default: false
+      },
       offsetX: {
         type: [Number, Array],
         default: 0
@@ -294,6 +298,25 @@
         */
         return cfg;
       },
+      containerClass() {
+        let cls = 'bbn-scroll-container';
+        if (this.disabled) {
+          cls += ' bbn-scroll-disabled';
+        }
+        if (this.ready && !this.isDragging) {
+          cls += ' bbn-scroll-not-dragged';
+        }
+        if (this.isScrolling || (!this.isMeasuring && !this.scrollable)) {
+          cls += ' bbn-overlay';
+        }
+        if (this.hasX()) {
+          cls += ' bbn-scroll-x';
+        }
+        if (this.hasY()) {
+          cls += ' bbn-scroll-y';
+        }
+        return cls;
+      },
       /**
        * @todo not used
        */
@@ -346,47 +369,6 @@
           this.scrollInitial = {x: this.currentX, y: this.currentY, touched: true};
         }
       },
-      afterScroll(){
-        bbn.fn.log("SCROLL END!!");
-        if (this.fullPage && this.scrollInitial) {
-          if (this.hasScrollX && (this.currentX !== this.scrollInitial.x)) {
-            let r1 = this.scrollInitial.x ? Math.round(this.scrollInitial.x / this.containerWidth) : 0;
-            let r2 = this.currentX ? Math.round(this.currentX / this.containerWidth) : 0;
-            let left;
-            if (r1 !== r2) {
-              left = r2 * this.containerWidth;
-            }
-            else if (this.scrollInitial.x < this.currentX) {
-              left = (r1 + 1) * this.containerWidth;
-            }
-            else if (this.scrollInitial.x > this.currentX) {
-              left = (r1 - 1) * this.containerWidth;
-            }
-            if (bbn.fn.isNumber(left) && (left !== this.currentX)) {
-              this.$refs.xScroller.scrollTo(left, true);
-            }
-          }
-          else if (this.hasScrollY && (this.currentY !== this.scrollInitial.y)) {
-            let r1 = this.scrollInitial.y ? Math.round(this.scrollInitial.y / this.containerHeight) : 0;
-            let r2 = this.currentY ? Math.round(this.currentY / this.containerHeight) : 0;
-            let top;
-            if (r1 !== r2) {
-              top = r2 * this.containerHeight;
-            }
-            else if (this.scrollInitial.y < this.currentY) {
-              top = (r1 + 1) * this.containerHeight;
-            }
-            else if (this.scrollInitial.y > this.currentY) {
-              top = (r1 - 1) * this.containerHeight;
-            }
-            bbn.fn.log("scroll endf", this.scrollInitial.y, this.currentY, r1, r2, top, '-------');
-            if (bbn.fn.isNumber(top) && (top !== this.currentY)) {
-              this.$refs.yScroller.scrollTo(top, true);
-            }
-          }
-          this.scrollInitial = false;
-        }
-      },
       onTouchend(e){
         if (!this.scrollInitial) {
           return;
@@ -398,50 +380,7 @@
         this.setScrollDelay();
       },
       onTouchmove(e){
-        if (this.disabled) {
-          e.preventDefault();
-        }
-        return;
-        bbn.fn.log("touch move");
-        if (!this.scrollable || this.disabled) {
-          return;
-        }
-        if (this.fullPage) {
-          e.preventDefault();
-
-          if (!this.touchDirection && e.targetTouches && e.targetTouches.length) {
-            let ev = e.targetTouches[0];
-            // Priority on vertical
-            if (this.hasScrollY && (this.touchY !== ev.clientY)) {
-              this.lastDirections = {touchY: this.touchY, clientY: ev.clientY};
-              this.touchDirection = this.touchY > ev.clientY ? 'down' : 'up';
-            }
-            else if (this.hasScrollX && (this.touchX !== ev.clientX)) {
-              this.touchDirection = this.touchX > ev.clientX ? 'right' : 'left';
-            }
-          }
-        }
-        if (this.scrollable && e) {
-          e.stopImmediatePropagation();
-        }
         this.$emit('touchmove', e);
-      },
-      preventKeyIfScrolling(e) {
-        if (this.isScrolling && (32 >= e.key <= 40)) {
-          e.preventDefault();
-        }
-      },
-      realOnScroll(e){
-        if (!this.ready || (this.scrollable === false)) {
-          return;
-        }
-
-        if (this.fullPage && (this.scrollInitial || this.isScrolling)) {
-          if (this.isScrolling) {
-            this.afterScroll();//e.preventDefault();
-          }
-          return;
-        }
       },
       /**
        * @method onScroll
@@ -498,6 +437,47 @@
         this.scrollTimeout = setTimeout(() => {
           this.afterScroll();
         }, this.scrollInitial.touched === 'finished' ? 100 : 500);
+      },
+      afterScroll(){
+        bbn.fn.log("SCROLL END!!");
+        if (this.fullPage && this.scrollInitial) {
+          if (this.hasScrollX && (this.currentX !== this.scrollInitial.x)) {
+            let r1 = this.scrollInitial.x ? Math.round(this.scrollInitial.x / this.containerWidth) : 0;
+            let r2 = this.currentX ? Math.round(this.currentX / this.containerWidth) : 0;
+            let left;
+            if (r1 !== r2) {
+              left = r2 * this.containerWidth;
+            }
+            else if (this.scrollInitial.x < this.currentX) {
+              left = (r1 + 1) * this.containerWidth;
+            }
+            else if (this.scrollInitial.x > this.currentX) {
+              left = (r1 - 1) * this.containerWidth;
+            }
+            if (bbn.fn.isNumber(left) && (left !== this.currentX)) {
+              this.$refs.xScroller.scrollTo(left, true);
+            }
+          }
+          else if (this.hasScrollY && (this.currentY !== this.scrollInitial.y)) {
+            let r1 = this.scrollInitial.y ? Math.round(this.scrollInitial.y / this.containerHeight) : 0;
+            let r2 = this.currentY ? Math.round(this.currentY / this.containerHeight) : 0;
+            let top;
+            if (r1 !== r2) {
+              top = r2 * this.containerHeight;
+            }
+            else if (this.scrollInitial.y < this.currentY) {
+              top = (r1 + 1) * this.containerHeight;
+            }
+            else if (this.scrollInitial.y > this.currentY) {
+              top = (r1 - 1) * this.containerHeight;
+            }
+            bbn.fn.log("scroll endf", this.scrollInitial.y, this.currentY, r1, r2, top, '-------');
+            if (bbn.fn.isNumber(top) && (top !== this.currentY)) {
+              this.$refs.yScroller.scrollTo(top, true);
+            }
+          }
+          this.scrollInitial = false;
+        }
       },
       /**
        * Scrolls to the given coordinates of x and y using the given animation

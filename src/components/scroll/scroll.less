@@ -7,12 +7,13 @@
     height: 100%;
     box-sizing: content-box;
     overflow: hidden;
-    &.bbn-scroll-x {
+    &.bbn-scroll-x:not(.bbn-scroll-disabled) {
       overflow-x: scroll;
     }
-    &.bbn-scroll-y {
+    &.bbn-scroll-y:not(.bbn-scroll-disabled) {
       overflow-y: scroll;
     }
+
     &.bbn-overlay{
       overflow: hidden !important;
     }
