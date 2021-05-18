@@ -123,6 +123,9 @@
        */
       componentUrl: {
         type: String
+      },
+      footer: {
+        type: [String, Object]
       }
     },
     data(){
