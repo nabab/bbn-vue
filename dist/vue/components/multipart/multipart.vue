@@ -1,48 +1,42 @@
 <template>
-<div class="bbn-overlay bbn-flex-height bbn-form">
-  <div class="bbn-flex-fill"
-       v-for="(part, i) in parts"
-       v-show="currentSelected === i"
-       :key="i">
-    <bbn-form :source="data"
-              :buttons="false"
-              :ref="'form-' + i"
-              :prefilled="true"
-              @ready="readyForm = true"
-              @success="currentSelected === maxIndex ? onSuccess() : false"
-              :action="currentSelected === maxIndex ? action : ''"
-              :target="currentSelected === maxIndex ? target : ''">
-      <div :class="['bbn-overlay', {
-        'bbn-middle': centered,
-        'bbn-padded': !centered
-      }]">
-        <div :class="['bbn-grid-fields', {
-               'bbn-block': !!centered,
-               'bbn-padded': !centered
-             }]"
-             style="max-height: 100%">
-          <template v-for="(item, ii) in part.items">
-            <div class="bbn-label"
-                 v-text="item.title || item.name"/>
-            <div class="bbn-block"
-                 :style="item.style">
-              <div class="bbn-h-100">
-                <component :is="item.component || 'bbn-input'"
-                            v-bind="item.getOptions()"
-                            @keydown.enter.prevent.stop="clickNext()"
-                            :required="item.required === undefined ? true : item.required"
-                            v-model="data[item.name]"/>
-              </div>
-            </div>
-          </template>
-        </div>
-      </div>
+<div :class="[componentClass, 'bbn-overlay', 'bbn-flex-width']">
+  <div :class="['bbn-h-100', 'bbn-alt-background-internal', 'bbn-reactive', 'bbn-middle', 'bbn-unselectable', 'bbn-p', {'bbn-disabled': !hasPrev}]"
+       style="width: 10%; min-width: 10%"
+       @click="prev">
+    <div class="bbn-block bbn-xl">
+      <i class="nf nf-fa-chevron_left"></i>
+    </div>
+  </div>
+  <div class="bbn-h-100 bbn-flex-fill">
+    <bbn-form :full-size="true"
+              v-bind="$options.propsData"
+              ref="form">
+      <div class="bbn-abs bbn-no"
+           style="width: 1px; height: 1px; background-color: transparent"
+           tabindex="0"
+           @focus="leaveBefore"></div>
+      <bbn-router class="bbn-overlay"
+                  ref="router"
+                  @hook:mounted="init"
+                  :autoload="false"
+                  :def="def"
+                  :auto="false"
+                  @change="onRoute">
+
+        <slot></slot>
+      </bbn-router>
+      <div class="bbn-abs bbn-no"
+           style="width: 1px; height: 1px; background-color: transparent"
+           tabindex="0"
+           @focus="leaveAfter"></div>
     </bbn-form>
   </div>
-  <div class="bbn-form-footer bbn-popup-footer bbn-button-group bbn-flex-width bbn-lg">
-    <bbn-button v-for="(button, i) in currentButtons"
-                :key="button.key"
-                v-bind="button"/>
+  <div :class="['bbn-h-100', 'bbn-alt-background-internal', 'bbn-reactive', 'bbn-middle', 'bbn-unselectable', 'bbn-p', {'bbn-disabled': !hasNext}]"
+       style="width: 10%; min-width: 10%"
+       @click="next">
+    <div class="bbn-block bbn-xl">
+      <i class="nf nf-fa-chevron_right"></i>
+    </div>
   </div>
 </div>
 
@@ -60,7 +54,7 @@
  * @author BBN Solutions
  */
 
-(function(bbn){
+ (function(bbn){
   "use strict";
 
   Vue.component('bbn-multipart', {
@@ -68,23 +62,22 @@
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.localStorageComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent, bbn.vue.inputComponent],
+    mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent],
     props: {
-      source: {
-        type: Array,
-        required: true
-      },
-      value: {
-        type: Object,
-        default(){
-          return {};
-        }
-      },
       /**
        *@tood not used
        * @ {Boolean} [false] autocomplete
        */
       autocomplete: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * Set to true to enable the form's buttons without changing the form's content.
+       *
+       * @prop {Boolean} [false] prefilled
+       */
+      prefilled: {
         type: Boolean,
         default: false
       },
@@ -95,6 +88,11 @@
       disabled: {},
       script: {},
       scrollable: {},
+      /**
+       * The list of fields the form must contain.
+       *
+       */
+      fields: {},
       /**
        * Set to true to make a postOut instead of a post when the form is submitted.
        *
@@ -193,6 +191,59 @@
         }
       },
       /**
+       * The proper data used in the form.
+       *
+       * @prop {Object} source
+       */
+      // This is the proper data used in the form
+      source: {
+        type: Object,
+        default(){
+          return {}
+        }
+      },
+      /**
+       * The additional data to be sent by the form.
+       *
+       * @prop {Object} data
+       */
+      // This is additional data to be sent by the form
+      data: {
+        type: Object
+      },
+      /**
+       * Set to true to fix the form's footer.
+       *
+       * @prop {Boolean} [true] fixedFooter
+       */
+      fixedFooter: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * The form's schema generating the inputs.
+       *
+       * @prop {Array} [[]] schema
+       */
+      // That will be a form schema generating the inputs
+      schema: {
+        type: Array,
+        default: function(){
+          return [];
+        }
+      },
+      // Sets if it is the data property which must be sent, or the content of the named fields
+      // (in this case names are not necessary on form inputs)
+      /**
+       * Set to true if the data property must be sent.
+       *
+       * @prop {Boolean} [true] sendModel
+       */
+      sendModel: {
+        type: Boolean,
+        default: true
+      },
+      /**
        * Checks the fields' data before submitting the form.
        *
        * @prop {Function} validation
@@ -219,200 +270,74 @@
         type: Boolean,
         default: false
       },
-      centered: {
-        type: Boolean,
-        default: true
-      },
-      closable: {
-        type: Boolean,
-        default: false
+      def: {
+        type: String,
+        default: ''
       }
     },
-    data(){
-      let data = {};
-      let parts = [];
-      if (bbn.fn.isArray(this.source)) {
-        bbn.fn.each(this.source, part => {
-          let items = [];
-          let indexes = [];
-          part = bbn.fn.clone(part);
-          if (!bbn.fn.isArray(part)) {
-            part = [part];
-          }
-
-          bbn.fn.each (part, a => {
-            if (a.name) {
-              indexes.push(a.name);
-              a.getOptions = () => {
-                if (bbn.fn.isFunction(a.options)) {
-                  return a.options(this.data);
-                }
-                return a.options || {};
-              };
-              if (a.centered === undefined) {
-                a.centered = this.centered;
-              }
-              items.push(a);
-              if (a.value === undefined) {
-                if (a.default) {
-                  data[a.name] = bbn.fn.isFunction(a.default) ? a.default() : a.default
-                }
-                else {
-                  data[a.name] = a.nullable ? null : ''
-                }
-              }
-              else {
-                data[a.name] = a.value;
-              }
-            }
-          })
-          if (items.length) {
-            parts.push({
-              items: items,
-              indexes: indexes
-            });
-          }
-        })
-      }
-
-      return {
-        root: appui.plugins['appui-menu'] + '/',
-        cf: null,
-        data: data,
-        parts: parts,
-        currentSelected: 0,
-        indexes: Object.keys(data),
-        readyForm: false,
-        currentButtons: false,
-        maxIndex: parts.length - 1,
-        isValidated: false
-      }
-    },
-    /*
     data(){
       return {
         router: null,
         form: null,
         hasNext: false,
         hasPrev: false,
-        isFocusing: false,
-        isPageValid: false
+        isFocusing: false
       }
     },
-    */
     methods: {
-      clickPrev(){
-        if (this.currentSelected) {
-          this.currentSelected--;
+      prev(){
+        if (this.router) {
+          this.router.prev();
         }
       },
-      clickNext(){
-        if (!this.isValidated) {
-          return;
-        }
-        let form = this.getRef('form-' + this.currentSelected);
-        if (!form) {
-          return;
-        }
-        if (this.parts[this.currentSelected+1]) {
-          this.currentSelected++;
-        }
-        else if (this.action) {
-          this.$emit('submit', this.data);
-          form.submit();
+      next(){
+        if (this.router) {
+          this.router.next();
         }
       },
-      getCurrentForm(){
-        return this.getRef('form-' + this.currentSelected);
-      },
-      hasForm() {
-        return !!this.getCurrentForm();
-      },
-      getButtons() {
-        let form = this.hasForm();
-        if (!form) {
-          this.readyForm = false;
-        }
-        if (this.parts[this.currentSelected]) {
-          let ret = [];
-          if ((this.currentSelected === 0) && this.closable) {
-            ret.push({
-              text: bbn._("Cancel"),
-              action: () => {
-                let form = this.getCurrentForm();
-                if (form) {
-                  form.closePopup();
-                }
-              },
-              key: bbn.fn.randomString()
-            });
-          }
-          else {
-            ret.push({
-              text: bbn._("Back"),
-              action: this.clickPrev,
-              disabled: !form || (this.currentSelected === 0),
-              key: bbn.fn.randomString()
-            });
-          }
-          ret.push({
-            text: this.currentSelected === this.maxIndex ? bbn._("Confirm") : bbn._("Next"),
-            action: this.clickNext,
-            disabled: !form || !this.isValidated,
-            key: bbn.fn.randomString()
-          });
-          return ret;
-        }
-        return false;
-      },
-      onSubmit(){
-        bbn.fn.log(arguments);
-      },
-      updateButtons(){
+      init(){
+        this.router = this.getRef('router');
+        this.form = this.getRef('form');
+        this.update();
         setTimeout(() => {
-          let form = this.getRef('form-' + this.currentSelected);
-          if (form) {
-            this.isValidated = form.isValid();
-            bbn.fn.log("FOR VALUID?", this.isValidated);
-            this.currentButtons = this.getButtons()
-            this.$forceUpdate();
-            this.$nextTick(() => {
-              this.$forceUpdate()
-            })
-          }
-          else {
-            this.readyForm = false;
-            this.isValidated = false;
-          }
-        }, 50)
+          this.router.route(this.router.getDefaultURL(), true);
+        }, 100)
       },
-      onSuccess(){
-        bbn.fn.log("SUCCESS", arguments, this.data)
-      }
-    },
-    created(){
-      this.currentButtons = this.getButtons(this.currentSelected);
-    },
-    mounted(){
-      this.ready = true;
-    },
-    watch: {
-      currentSelected() {
-        this.isValidated = false;
-        this.updateButtons();
+      focusout(e){
+        bbn.fn.log("FOCUSING OUT")
       },
-      readyForm(v) {
-        this.updateButtons();
-      },
-      data: {
-        deep: true,
-        handler(){
-          this.updateButtons();
+      leaveBefore(e){
+        if (this.hasPrev) {
+          this.router.prev();
+          this.isFocusing = true;
+          setTimeout(() => {
+            this.form.focusLast();
+            this.isFocusing = false;
+          }, 100)
         }
-      }
+      },
+      leaveAfter(e){
+        if (this.hasNext) {
+          this.router.next();
+          this.isFocusing = true;
+          setTimeout(() => {
+            this.form.focusFirst();
+            this.isFocusing = false;
+          }, 100)
+        }
+      },
+      update(){
+        this.hasPrev = this.router.views[this.router.selected-1] !== undefined;
+        this.hasNext = this.router.views[this.router.selected+1] !== undefined;
+      },
+      onRoute(){
+        this.update();
+        if (!this.isFocusing) {
+          this.form.focusFirst();
+        }
+      },
     }
   });
 
 })(bbn);
-
 </script>

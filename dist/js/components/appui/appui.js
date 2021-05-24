@@ -877,11 +877,13 @@ document.head.insertAdjacentElement('beforeend', css);
 
           defaultPreLinkFunction(url) {
             let router = appui.getRef('router');
-            if (router && bbn.fn.isFunction(router.route) && !router.disabled) {
-              router.route(url);
-              return true;
-            }
-            return false;
+            if (router) {
+              if (bbn.fn.isFunction(router.route) && !router.disabled) {
+                router.route(url);  
+              }
+              return false;
+            } 
+            return true;
           },
 
           defaultAlertFunction(ele) {

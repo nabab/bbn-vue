@@ -393,7 +393,7 @@
   justify-content: flex-end;
 }
 .bbn-panelbar .bbn-panelbar-bbn-header .bbn-panelbar-title .bbn-panelbar-right-padded {
-  padding-right: 1em;
+  padding-right: 2em;
 }
 .bbn-panelbar .bbn-panelbar-bbn-header .bbn-panelbar-selected,
 .bbn-panelbar .bbn-panelbar-bbn-header .bbn-panelbar-content {
