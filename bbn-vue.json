@@ -4480,74 +4480,9 @@
                         "url": "bbn-vue\/component\/multipart\/doc\/props#disabled"
                     },
                     {
-                        "text": "blank",
-                        "desc": "Set to true to make a postOut instead of a post when the form is submitted.\r\n       *",
-                        "url": "bbn-vue\/component\/multipart\/doc\/props#blank"
-                    },
-                    {
                         "text": "self",
                         "desc": "Set to true to give the attribute target the value '_self'.",
                         "url": "bbn-vue\/component\/multipart\/doc\/props#self"
-                    },
-                    {
-                        "text": "confirmMessage",
-                        "desc": "A confirmation popup with a costumized message shown before the form is submitted.\r\n       *",
-                        "url": "bbn-vue\/component\/multipart\/doc\/props#confirmMessage"
-                    },
-                    {
-                        "text": "confirmLeave",
-                        "desc": "A confirmation popup with a costumized message shown before leaving the form.\r\n       *",
-                        "url": "bbn-vue\/component\/multipart\/doc\/props#confirmLeave"
-                    },
-                    {
-                        "text": "action",
-                        "desc": "The url contacted when submitting the form.\r\n       *",
-                        "url": "bbn-vue\/component\/multipart\/doc\/props#action"
-                    },
-                    {
-                        "text": "success",
-                        "desc": "A method called after a form is correctly submitted.\r\n       *",
-                        "url": "bbn-vue\/component\/multipart\/doc\/props#success"
-                    },
-                    {
-                        "text": "failure",
-                        "desc": "A method called after a form submission fails.\r\n       *",
-                        "url": "bbn-vue\/component\/multipart\/doc\/props#failure"
-                    },
-                    {
-                        "text": "successMessage",
-                        "desc": "A popup with a costumized message shown after a form is correctly submitted.\r\n       *",
-                        "url": "bbn-vue\/component\/multipart\/doc\/props#successMessage"
-                    },
-                    {
-                        "text": "failureMessage",
-                        "desc": "A popup with a costumized message shown after a form submission fails.\r\n       *",
-                        "url": "bbn-vue\/component\/multipart\/doc\/props#failureMessage"
-                    },
-                    {
-                        "text": "method",
-                        "desc": "The form's method of submission.\r\n       *",
-                        "url": "bbn-vue\/component\/multipart\/doc\/props#method"
-                    },
-                    {
-                        "text": "buttons",
-                        "desc": "The buttons shown on the form.\r\n       *",
-                        "url": "bbn-vue\/component\/multipart\/doc\/props#buttons"
-                    },
-                    {
-                        "text": "validation",
-                        "desc": "Checks the fields' data before submitting the form.\r\n       *",
-                        "url": "bbn-vue\/component\/multipart\/doc\/props#validation"
-                    },
-                    {
-                        "text": "windowed",
-                        "desc": "If true, will consider itself as a unique element of a floater and will have its buttons incorporated in it \r\nwhereas if undefined will.\r\n       *",
-                        "url": "bbn-vue\/component\/multipart\/doc\/props#windowed"
-                    },
-                    {
-                        "text": "fullSize",
-                        "desc": "If true, will use the class bbn-overlay for its container.\r\n       *",
-                        "url": "bbn-vue\/component\/multipart\/doc\/props#fullSize"
                     }
                 ],
                 "methods": [],

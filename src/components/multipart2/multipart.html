@@ -1,0 +1,46 @@
+<div class="bbn-overlay bbn-flex-height bbn-form">
+  <div class="bbn-flex-fill"
+       v-for="(part, i) in parts"
+       v-show="currentSelected === i"
+       :key="i">
+    <bbn-form :source="data"
+              :buttons="false"
+              :ref="'form-' + i"
+              :prefilled="true"
+              @ready="readyForm = true"
+              @success="currentSelected === maxIndex ? onSuccess() : false"
+              :action="currentSelected === maxIndex ? action : ''"
+              :target="currentSelected === maxIndex ? target : ''">
+      <div :class="['bbn-overlay', {
+        'bbn-middle': centered,
+        'bbn-padded': !centered
+      }]">
+        <div :class="['bbn-grid-fields', {
+               'bbn-block': !!centered,
+               'bbn-padded': !centered
+             }]"
+             style="max-height: 100%">
+          <template v-for="(item, ii) in part.items">
+            <div class="bbn-label"
+                 v-text="item.title || item.name"/>
+            <div class="bbn-block"
+                 :style="item.style">
+              <div class="bbn-h-100">
+                <component :is="item.component || 'bbn-input'"
+                            v-bind="item.getOptions()"
+                            @keydown.enter.prevent.stop="clickNext()"
+                            :required="item.required === undefined ? true : item.required"
+                            v-model="data[item.name]"/>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+    </bbn-form>
+  </div>
+  <div class="bbn-form-footer bbn-popup-footer bbn-button-group bbn-flex-width bbn-lg">
+    <bbn-button v-for="(button, i) in currentButtons"
+                :key="button.key"
+                v-bind="button"/>
+  </div>
+</div>

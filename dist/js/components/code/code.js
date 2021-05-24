@@ -620,6 +620,10 @@ document.head.insertAdjacentElement('beforeend', css);
           bbn.fn.log("LAST WORD", lastWord, toAdd);
           let pos = toAdd.indexOf(lastWord);
           let dollarIncrement = toAdd.substr(0, 1) === '$' ? 1 : 0;
+          if ((this.mode === 'php') && (row.ref || (row.type === 'object'))) {
+            toAdd += '->';
+          }
+
           if (pos === dollarIncrement) {
             toAdd = toAdd.substr(lastWord.length + dollarIncrement);
           }
@@ -641,6 +645,10 @@ document.head.insertAdjacentElement('beforeend', css);
         bbn.fn.log("----PHP HINT-----", str);
         // bbn.vue.phpLang must have been defined by an ajax call n mount
         if (!bbn.vue.phpLang) {
+          return;
+        }
+        // if ending with a single column (ex: X:)
+        if (str.match(/[A-z0-9]+\:$/)) {
           return;
         }
 
@@ -665,6 +673,7 @@ document.head.insertAdjacentElement('beforeend', css);
 
           // Here we have our string to complete
           if (search) {
+            bbn.fn.log("Searching " + search);
             // Dividing it in words
             let words = [...search.matchAll(/\w+/g)].map(a => a[0]);
             if (!words.length) {
@@ -776,6 +785,7 @@ document.head.insertAdjacentElement('beforeend', css);
             };
           }
         }
+        bbn.fn.log("----END OF PHP HINT-----");
       },
       jsHint(str){
         bbn.fn.log(str)
@@ -861,10 +871,8 @@ document.head.insertAdjacentElement('beforeend', css);
               return false;
             }
           });
-          bbn.fn.log("TOKENS", tokens);
           let numTokens = realTokens.length;
 
-          bbn.fn.log('SHOWHINT', numTokens, currentLine);
           if (
             !numTokens ||
             !currentLine.trim() ||
@@ -873,10 +881,13 @@ document.head.insertAdjacentElement('beforeend', css);
           ) {
             return;
           }
-          if (realTokens[numTokens-1].state.curMode && realTokens[numTokens-1].state.curMode.name === 'htmlmixed') {
+          if (realTokens[numTokens-1].state.curMode
+            && (realTokens[numTokens-1].state.curMode.name === 'htmlmixed')
+          ) {
             return this.widget.showHint({completeSingle: false})
           }
 
+          bbn.fn.log('SHOWHINT', numTokens, currentLine, tokens, realTokens);
           let res = this[this.mode + 'Hint'](currentLine, cursor.line);
 
           if (res && res.list && res.list.length) {
@@ -964,14 +975,14 @@ document.head.insertAdjacentElement('beforeend', css);
         this.widget = CodeMirror(this.getRef('code'), this.getOptions());
 
         this.widget.on("keyup", (cm, event) => {
-          if (["Shift", "Ctrl", "Alt"].includes(event.key) ||
+          if (["Ctrl", "Alt"].includes(event.key) ||
               bbn.var.keys.upDown.includes(event.keyCode) ||
               bbn.var.keys.leftRight.includes(event.keyCode)
           ) {
             return;
           }
 
-          if (["Escape"].includes(event.key) ||
+          if (["Escape", "Backspace", "Delete"].includes(event.key) ||
               event.ctrlKey ||
               event.altKey ||
               bbn.var.keys.upDown.includes(event.keyCode)
@@ -979,7 +990,6 @@ document.head.insertAdjacentElement('beforeend', css);
             this.resetFloaters();
             return;
           }
-
           this.showHint();
         });
 
@@ -987,7 +997,7 @@ document.head.insertAdjacentElement('beforeend', css);
           if (this.hintTimeout) {
             clearTimeout(this.hintTimeout);
           }
-          if (["Shift", "Ctrl", "Alt"].includes(event.key)) {
+          if (["Ctrl", "Alt"].includes(event.key)) {
             return;
           }
           if (this.currentHints.length) {
@@ -1008,6 +1018,9 @@ document.head.insertAdjacentElement('beforeend', css);
             bbn.var.keys.leftRight.includes(event.keyCode)
           ) {
             return;
+          }
+          else if (event.key === 'Enter') {
+            this.resetFloaters();
           }
         });
 
@@ -1076,7 +1089,7 @@ document.head.insertAdjacentElement('beforeend', css);
       fnHelper: {
         props: ['source'],
         template: `
-<div class="bbn-spadded bbn-m bbn-pre">
+<div class="bbn-spadded bbn-m">
   <div class="bbn-spadded bbn-nowrap">
     <span class="bbn-b"
           v-text="source.cfg.name"></span>
@@ -1096,7 +1109,7 @@ document.head.insertAdjacentElement('beforeend', css);
        v-html="source.cfg.desc">
   </div>
 </div>
-    `,
+`,
         data(){
           return {};
         },

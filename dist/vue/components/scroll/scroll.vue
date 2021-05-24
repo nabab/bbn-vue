@@ -2,13 +2,7 @@
 <div :class="elementClass"
      :style="elementStyle"
 >
-  <div :class="{
-         'bbn-scroll-container': true,
-         'bbn-overlay': isScrolling || (!isMeasuring && !scrollable),
-         'bbn-scroll-not-dragged': ready && !isDragging,
-         'bbn-scroll-x': hasX(),
-         'bbn-scroll-y': hasY()
-       }"
+  <div :class="containerClass"
        ref="scrollContainer"
        @scroll="onScroll"
        @touchend="onTouchend"
@@ -191,6 +185,10 @@
         type: Boolean,
         default: false
       },
+      disabled: {
+        type: Boolean,
+        default: false
+      },
       offsetX: {
         type: [Number, Array],
         default: 0
@@ -303,8 +301,9 @@
         scrollReady: false,
         touchX: false,
         touchY: false,
-        touched: 0,
-        touchDirection: null
+        scrollInitial: false,
+        touchDirection: null,
+        scrollTimeout: null
       };
     },
     computed: {
@@ -347,6 +346,25 @@
         }
         */
         return cfg;
+      },
+      containerClass() {
+        let cls = 'bbn-scroll-container';
+        if (this.disabled) {
+          cls += ' bbn-scroll-disabled';
+        }
+        if (this.ready && !this.isDragging) {
+          cls += ' bbn-scroll-not-dragged';
+        }
+        if (this.isScrolling || (!this.isMeasuring && !this.scrollable)) {
+          cls += ' bbn-overlay';
+        }
+        if (this.hasX()) {
+          cls += ' bbn-scroll-x';
+        }
+        if (this.hasY()) {
+          cls += ' bbn-scroll-y';
+        }
+        return cls;
       },
       /**
        * @todo not used
@@ -397,92 +415,21 @@
           if (this.hasScrollY) {
             this.touchY = ev.clientY;
           }
-          this.touched = (new Date()).getTime();
-        }
-      },
-      page(direction) {
-        if (!this.isScrolling) {
-          this.isScrolling = true;
-          let x = this.currentX;
-          let y = this.currentY;
-          let xRatio = x ? Math.round(x / this.containerWidth) : 0;
-          let yRatio = y ? Math.round(y / this.containerHeight) : 0;
-          x = xRatio * this.containerWidth;
-          y = yRatio * this.containerHeight;
-          if (x > this.contentHeight - this.containerWidth) {
-            x = this.contentHeight - this.containerWidth;
-          }
-          if (y > this.contentHeight - this.containerHeight) {
-            y = this.contentHeight - this.containerHeight;
-          }
-          let p;
-          switch (direction) {
-            case 'down':
-              this.currentY = y + this.containerHeight;
-              p = this.$refs.yScroller.scrollTo(this.currentY, true);
-              break;
-            case 'up':
-              this.currentY = y - this.containerHeight;
-              p = this.$refs.yScroller.scrollTo(this.currentY, true);
-              break;
-            case 'right':
-              this.currentX = x + this.containerWidth;
-              p = this.$refs.xScroller.scrollTo(this.currentX, true);
-              break;
-            case 'left':
-              this.currentX = x - this.containerWidth;
-              p = this.$refs.xScroller.scrollTo(this.currentX, true);
-              break;
-          }
-          p.then(() => {
-            this.touched = false;
-            this.isScrolling = false;
-            this.$emit('scroll');
-          });
+          this.scrollInitial = {x: this.currentX, y: this.currentY, touched: true};
         }
       },
       onTouchend(e){
+        if (!this.scrollInitial) {
+          return;
+        }
         if (!this.scrollable || this.disabled) {
           return;
         }
-        if (this.fullPage && this.touchDirection) {
-          this.page(this.touchDirection);
-        }
-        else if (!this.isScrolling) {
-          this.touched = false;
-        }
-        this.touchDirection = null;
-        this.touchY = null;
+        this.scrollInitial.touched = 'finished';
+        this.setScrollDelay();
       },
       onTouchmove(e){
-        bbn.fn.log("touch move");
-        if (!this.scrollable || this.disabled) {
-          return;
-        }
-        if (this.fullPage) {
-          e.preventDefault();
-
-          if (!this.touchDirection && e.targetTouches && e.targetTouches.length) {
-            let ev = e.targetTouches[0];
-            // Priority on vertical
-            if (this.hasScrollY && (this.touchY !== ev.clientY)) {
-              this.lastDirections = {touchY: this.touchY, clientY: ev.clientY};
-              this.touchDirection = this.touchY > ev.clientY ? 'down' : 'up';
-            }
-            else if (this.hasScrollX && (this.touchX !== ev.clientX)) {
-              this.touchDirection = this.touchX > ev.clientX ? 'right' : 'left';
-            }
-          }
-        }
-        if (this.scrollable && e) {
-          e.stopImmediatePropagation();
-        }
         this.$emit('touchmove', e);
-      },
-      preventKeyIfScrolling(e) {
-        if (this.isScrolling && (32 >= e.key <= 40)) {
-          e.preventDefault();
-        }
       },
       /**
        * @method onScroll
@@ -490,50 +437,96 @@
        * @emits scroll
        */
       onScroll(e){
-        if (!this.ready || (this.scrollable === false)) {
-          return;
-        }
-
-        if (this.fullPage && (this.touched || this.isScrolling)) {
-          if (this.isScrolling) {
-            e.preventDefault();
-          }
-          return;
-        }
         let ct = this.getRef('scrollContainer');
-        let x = ct.scrollLeft;
-        let y = ct.scrollTop;
-        let direction;
-        bbn.fn.log("Scroll", this.hasScrollX, this.hasScrollY, y, this.currentY);
-        if (this.hasScrollX && (x !== this.currentX)) {
-          if (this.fullPage && this.afterReady && !this.hashJustChanged()) {
-            if (x > this.currentX) {
-              direction = 'right';
-            }
-            else if (x < this.currentX) {
-              direction = 'left';
-            }
+        if (ct) {
+          if (this.disabled) {
+            e.preventDefault();
+            return;
           }
-          this.currentX = x;
-        }
-        else if ( this.hasScrollY && (y !== this.currentY)) {
-          if (this.fullPage && this.afterReady && !this.hashJustChanged()) {
-            if (y > this.currentY) {
-              direction = 'down';
-            }
-            else if (y < this.currentY) {
-              direction = 'up';
-            }
+          if (this.hasScrollX && (ct.scrollLeft < 0)) {
+            ct.scrollLeft = 0;
+            e.preventDefault();
+            return;
           }
-          this.currentY = y;
+          if (this.hasScrollY && (ct.scrollTop < 0)) {
+            ct.scrollTop = 0;
+            e.preventDefault();
+            return;
+          }
+          this.currentX = ct.scrollLeft;
+          this.currentY = ct.scrollTop;
+          this.$emit('scroll', e);
+          if (!e.defaultPrevented) {
+            // Leaving touchscroll act normally
+            if (this.scrollInitial && (this.scrollInitial.touched === true)) {
+              // Removing the finishing delay in case it was pre-recorded
+              clearTimeout(this.scrollTimeout);
+              return;
+            }
+            // Not acting for events sent by scrollTo (scrollbars will write in nextLevel)
+            if (this.hasScrollX && this.$refs.xScroller && bbn.fn.isNumber(this.$refs.xScroller.nextLevel) && (Math.abs(this.currentX-this.$refs.xScroller.nextLevel) < 2)) {
+              return;
+            }
+            // Not acting for events sent by scrollTo (scrollbars will write in nextLevel)
+            if (this.hasScrollY && this.$refs.yScroller && bbn.fn.isNumber(this.$refs.yScroller.nextLevel) && (Math.abs(this.currentY-this.$refs.yScroller.nextLevel) < 2)) {
+              return;
+            }
+            if (!this.scrollInitial) {
+              this.scrollInitial = {x: this.currentX, y: this.currentY};
+            }
+            this.setScrollDelay();
+          }
         }
         if (this.scrollable && e) {
           e.stopImmediatePropagation();
         }
-        if (direction) {
-          this.page(direction);
+      },
+      setScrollDelay(){
+        clearTimeout(this.scrollTimeout);
+        this.scrollTimeout = setTimeout(() => {
+          this.afterScroll();
+        }, this.scrollInitial.touched === 'finished' ? 100 : 500);
+      },
+      afterScroll(){
+        bbn.fn.log("SCROLL END!!");
+        if (this.fullPage && this.scrollInitial) {
+          if (this.hasScrollX && (this.currentX !== this.scrollInitial.x)) {
+            let r1 = this.scrollInitial.x ? Math.round(this.scrollInitial.x / this.containerWidth) : 0;
+            let r2 = this.currentX ? Math.round(this.currentX / this.containerWidth) : 0;
+            let left;
+            if (r1 !== r2) {
+              left = r2 * this.containerWidth;
+            }
+            else if (this.scrollInitial.x < this.currentX) {
+              left = (r1 + 1) * this.containerWidth;
+            }
+            else if (this.scrollInitial.x > this.currentX) {
+              left = (r1 - 1) * this.containerWidth;
+            }
+            if (bbn.fn.isNumber(left) && (left !== this.currentX)) {
+              this.$refs.xScroller.scrollTo(left, true);
+            }
+          }
+          else if (this.hasScrollY && (this.currentY !== this.scrollInitial.y)) {
+            let r1 = this.scrollInitial.y ? Math.round(this.scrollInitial.y / this.containerHeight) : 0;
+            let r2 = this.currentY ? Math.round(this.currentY / this.containerHeight) : 0;
+            let top;
+            if (r1 !== r2) {
+              top = r2 * this.containerHeight;
+            }
+            else if (this.scrollInitial.y < this.currentY) {
+              top = (r1 + 1) * this.containerHeight;
+            }
+            else if (this.scrollInitial.y > this.currentY) {
+              top = (r1 - 1) * this.containerHeight;
+            }
+            bbn.fn.log("scroll endf", this.scrollInitial.y, this.currentY, r1, r2, top, '-------');
+            if (bbn.fn.isNumber(top) && (top !== this.currentY)) {
+              this.$refs.yScroller.scrollTo(top, true);
+            }
+          }
+          this.scrollInitial = false;
         }
-        this.$emit('scroll', e);
       },
       /**
        * Scrolls to the given coordinates of x and y using the given animation
@@ -824,6 +817,9 @@
             let container = this.$el;
             let content = this.getRef('scrollContent');
             let ct = this.getRef('scrollContainer');
+            if (!content) {
+              return;
+            }
             let x = ct.scrollLeft;
             let y = ct.scrollTop;
             let contentBox = content.getBoundingClientRect()
@@ -1063,10 +1059,10 @@
   overflow: hidden;
   scrollbar-width: none;
 }
-.bbn-scroll > .bbn-scroll-container.bbn-scroll-x {
+.bbn-scroll > .bbn-scroll-container.bbn-scroll-x:not(.bbn-scroll-disabled) {
   overflow-x: scroll;
 }
-.bbn-scroll > .bbn-scroll-container.bbn-scroll-y {
+.bbn-scroll > .bbn-scroll-container.bbn-scroll-y:not(.bbn-scroll-disabled) {
   overflow-y: scroll;
 }
 .bbn-scroll > .bbn-scroll-container.bbn-overlay {

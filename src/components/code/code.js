@@ -544,6 +544,10 @@
           bbn.fn.log("LAST WORD", lastWord, toAdd);
           let pos = toAdd.indexOf(lastWord);
           let dollarIncrement = toAdd.substr(0, 1) === '$' ? 1 : 0;
+          if ((this.mode === 'php') && (row.ref || (row.type === 'object'))) {
+            toAdd += '->';
+          }
+
           if (pos === dollarIncrement) {
             toAdd = toAdd.substr(lastWord.length + dollarIncrement);
           }
@@ -565,6 +569,10 @@
         bbn.fn.log("----PHP HINT-----", str);
         // bbn.vue.phpLang must have been defined by an ajax call n mount
         if (!bbn.vue.phpLang) {
+          return;
+        }
+        // if ending with a single column (ex: X:)
+        if (str.match(/[A-z0-9]+\:$/)) {
           return;
         }
 
@@ -589,6 +597,7 @@
 
           // Here we have our string to complete
           if (search) {
+            bbn.fn.log("Searching " + search);
             // Dividing it in words
             let words = [...search.matchAll(/\w+/g)].map(a => a[0]);
             if (!words.length) {
@@ -700,6 +709,7 @@
             };
           }
         }
+        bbn.fn.log("----END OF PHP HINT-----");
       },
       jsHint(str){
         bbn.fn.log(str)
@@ -785,10 +795,8 @@
               return false;
             }
           });
-          bbn.fn.log("TOKENS", tokens);
           let numTokens = realTokens.length;
 
-          bbn.fn.log('SHOWHINT', numTokens, currentLine);
           if (
             !numTokens ||
             !currentLine.trim() ||
@@ -797,10 +805,13 @@
           ) {
             return;
           }
-          if (realTokens[numTokens-1].state.curMode && realTokens[numTokens-1].state.curMode.name === 'htmlmixed') {
+          if (realTokens[numTokens-1].state.curMode
+            && (realTokens[numTokens-1].state.curMode.name === 'htmlmixed')
+          ) {
             return this.widget.showHint({completeSingle: false})
           }
 
+          bbn.fn.log('SHOWHINT', numTokens, currentLine, tokens, realTokens);
           let res = this[this.mode + 'Hint'](currentLine, cursor.line);
 
           if (res && res.list && res.list.length) {
@@ -826,6 +837,30 @@
         else {
           this.floaterTop = coords.bottom + 10;
           this.floaterBottom = null;
+        }
+      },
+      updateHtmlHints() {
+        let components = Object.keys(Vue.options.components).sort();
+        let hash = bbn.fn.hash(components);
+        if (hash !== bbn.var.componentsHash) {
+          bbn.var.componentsHash = hash;
+          bbn.fn.iterate(Vue.options.components, (cp, cpName) => {
+            let attrs = {
+              class: null,
+              style: null
+            };
+            if (cp.options) {
+              bbn.fn.each(Object.keys(cp.options.props).sort(), propName => {
+                attrs[bbn.fn.camelToCss(propName)] = null;
+              })
+              attrs[':class'] = null;
+              attrs[':style'] = null;
+              bbn.fn.each(Object.keys(cp.options.props).sort(), propName => {
+                attrs[':' + bbn.fn.camelToCss(propName)] = null;
+              })
+            }
+            CodeMirror.htmlSchema[cpName] = {attrs: attrs}
+          });
         }
       },
       /**
@@ -886,16 +921,15 @@
       //bbn.fn.log(this.getOptions());
       if (this.getRef('code')) {
         this.widget = CodeMirror(this.getRef('code'), this.getOptions());
-
         this.widget.on("keyup", (cm, event) => {
-          if (["Shift", "Ctrl", "Alt"].includes(event.key) ||
+          if (["Ctrl", "Alt"].includes(event.key) ||
               bbn.var.keys.upDown.includes(event.keyCode) ||
               bbn.var.keys.leftRight.includes(event.keyCode)
           ) {
             return;
           }
 
-          if (["Escape"].includes(event.key) ||
+          if (["Escape", "Backspace", "Delete"].includes(event.key) ||
               event.ctrlKey ||
               event.altKey ||
               bbn.var.keys.upDown.includes(event.keyCode)
@@ -903,7 +937,6 @@
             this.resetFloaters();
             return;
           }
-
           this.showHint();
         });
 
@@ -911,7 +944,7 @@
           if (this.hintTimeout) {
             clearTimeout(this.hintTimeout);
           }
-          if (["Shift", "Ctrl", "Alt"].includes(event.key)) {
+          if (["Ctrl", "Alt"].includes(event.key)) {
             return;
           }
           if (this.currentHints.length) {
@@ -932,6 +965,9 @@
             bbn.var.keys.leftRight.includes(event.keyCode)
           ) {
             return;
+          }
+          else if (event.key === 'Enter') {
+            this.resetFloaters();
           }
         });
 
@@ -1000,7 +1036,7 @@
       fnHelper: {
         props: ['source'],
         template: `
-<div class="bbn-spadded bbn-m bbn-pre">
+<div class="bbn-spadded bbn-m">
   <div class="bbn-spadded bbn-nowrap">
     <span class="bbn-b"
           v-text="source.cfg.name"></span>
@@ -1020,7 +1056,7 @@
        v-html="source.cfg.desc">
   </div>
 </div>
-    `,
+`,
         data(){
           return {};
         },

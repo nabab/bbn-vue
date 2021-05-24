@@ -10,10 +10,10 @@
   overflow: hidden;
   scrollbar-width: none;
 }
-.bbn-scroll > .bbn-scroll-container.bbn-scroll-x {
+.bbn-scroll > .bbn-scroll-container.bbn-scroll-x:not(.bbn-scroll-disabled) {
   overflow-x: scroll;
 }
-.bbn-scroll > .bbn-scroll-container.bbn-scroll-y {
+.bbn-scroll > .bbn-scroll-container.bbn-scroll-y:not(.bbn-scroll-disabled) {
   overflow-y: scroll;
 }
 .bbn-scroll > .bbn-scroll-container.bbn-overlay {

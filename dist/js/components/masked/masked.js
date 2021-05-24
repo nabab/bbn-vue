@@ -6,6 +6,7 @@ script.innerHTML = `<span :class="[componentClass, 'bbn-textbox', {'bbn-disabled
          :disabled="disabled"
          :required="required"
          :readonly="readonly"
+         :placeholder="placeholder"
          @click="click"
          @focus="focusEvent"
          @blur="blurEvent"
@@ -618,14 +619,12 @@ document.head.insertAdjacentElement('beforeend', css);
       */
       keyupEvent(event){
         if ( !this.disabled && !this.readonly ){
-          bbn.fn.log('ciao', event)
           if (
             !this.isShiftKey(event.keyCode) &&
             !this.isControlKey(event.keyCode) &&
             !this.isTabKey(event.keyCode) &&
             !event.ctrlKey
           ){
-            bbn.fn.log('ciao2', event)
             let pos = this.$refs.element.selectionStart
             this.$nextTick(() => {
               pos = this.getPos(pos, event)
@@ -633,7 +632,6 @@ document.head.insertAdjacentElement('beforeend', css);
                 this.$refs.element.selectionStart = pos
               }
               else {
-                bbn.fn.log('ciao3', pos)
                 this.$refs.element.setSelectionRange(pos, pos)
               }
             })
@@ -816,6 +814,12 @@ document.head.insertAdjacentElement('beforeend', css);
         if ( newVal !== oldVal ){
           this.setInputValue()
         }
+      },
+      mask(){
+        this.$nextTick(() => {
+          let pos = this.value.length;
+          this.getRef('element').setSelectionRange(pos, pos);
+        });
       }
     }
   });

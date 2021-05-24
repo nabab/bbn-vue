@@ -206,7 +206,7 @@
        */
        checkClick(e){
         if (this.currentVisible) {
-          if (!e.target.closest(".bbn-menu-button")) {
+          if (!e.target.closest(".bbn-appui-menu-button")) {
             this.hide();
           }
         }
