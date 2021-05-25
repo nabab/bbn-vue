@@ -18,6 +18,8 @@
          @cut="cutEvent"
          :size="currentInputSize"
          class="bbn-radius"
+         :inputmode="inputmode"
+         :pattern="pattern"
   >
   <input :value="value"
          ref="real_masked"
