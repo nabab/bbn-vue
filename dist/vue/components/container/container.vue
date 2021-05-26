@@ -425,7 +425,6 @@
             // if evaluating the script property returns a function that will be onMount
             if ( res ){
               if (bbn.fn.isFunction(res) ){
-                //bbn.fn.log("THERE IS SCRIPT for " + this.url + " AND IT IS A FUNCTION");
                 this.onMount = res;
                 this.isComponent = false;
               }
@@ -525,14 +524,12 @@
       }
       if ( !this.router.ready ){
         this.router.$on('ready', () => {
-          bbn.fn.log("ROUTER NOT READY")
           //this.init();
           this.router.register(this);
         });
       }
       else{
         //this.init();
-        bbn.fn.log("ROUTER READY")
         this.router.register(this);
       }
       //
@@ -543,7 +540,6 @@
      * @fires router.unregister
      */
     beforeDestroy(){
-      //bbn.fn.log("DESTROYING");
       this.router.unregister(this);
       if ( this.isComponent ){
         let idx = componentsList.indexOf(this.componentName);
@@ -573,10 +569,9 @@
         }
       },
       ready(v){
-        bbn.fn.log("READY CONTAINER " + this.url);
         if (v) {
           if (this.onMount) {
-            this.onMount();
+            this.onMount(this.$el, this.source);
           }
         }
       },

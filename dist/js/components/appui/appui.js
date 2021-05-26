@@ -408,7 +408,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * If this is set, along with componentSource and componentUrl a single container with this component will be created.
        * @prop {(String|Object)} component
        */
-       component: {
+      component: {
         type: [String, Object]
       },
       /**
@@ -542,7 +542,7 @@ document.head.insertAdjacentElement('beforeend', css);
                 icon: 'nf nf-mdi-sign_text',
                 action() {
                   let idx = router.search(tab.url);
-                  bbn.fn.log("Container with URL " + tab.url, router.urls[router.views[idx].url]);
+                  //bbn.fn.log("Container with URL " + tab.url, router.urls[router.views[idx].url]);
                 }
               }
             ]
