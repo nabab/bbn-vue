@@ -36,6 +36,13 @@
       promptChar: {
         type: String,
         default: '_'
+      },
+      /**
+         * Defines the pattern of this elemenet
+         * @prop {String} pattern
+         */
+       pattern: {
+        type: String
       }
     },
     data(){
