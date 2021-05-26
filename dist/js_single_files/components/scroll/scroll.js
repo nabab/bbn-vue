@@ -404,8 +404,6 @@ document.body.insertAdjacentElement('beforeend', script);
         return false;
       },
       onTouchstart(e){
-        bbn.fn.log("touch start");
-        bbn.fn.log("TOUCHSTART");
         if (!this.scrollable || this.disabled) {
           return;
         }
@@ -490,7 +488,6 @@ document.body.insertAdjacentElement('beforeend', script);
         }, this.scrollInitial.touched === 'finished' ? 100 : 500);
       },
       afterScroll(){
-        bbn.fn.log("SCROLL END!!");
         if (this.fullPage && this.scrollInitial) {
           if (this.hasScrollX && (this.currentX !== this.scrollInitial.x)) {
             let r1 = this.scrollInitial.x ? Math.round(this.scrollInitial.x / this.containerWidth) : 0;
@@ -522,7 +519,6 @@ document.body.insertAdjacentElement('beforeend', script);
             else if (this.scrollInitial.y > this.currentY) {
               top = (r1 - 1) * this.containerHeight;
             }
-            bbn.fn.log("scroll endf", this.scrollInitial.y, this.currentY, r1, r2, top, '-------');
             if (bbn.fn.isNumber(top) && (top !== this.currentY)) {
               this.$refs.yScroller.scrollTo(top, true);
             }

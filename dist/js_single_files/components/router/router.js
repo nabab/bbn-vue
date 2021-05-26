@@ -1075,6 +1075,7 @@ document.body.insertAdjacentElement('beforeend', script);
           return;
         }
 
+        /*
         bbn.fn.log(
           "changeURL",
           url,
@@ -1083,6 +1084,7 @@ document.body.insertAdjacentElement('beforeend', script);
             ["FROM PQARENT", this.parentContainer.currentTitle, this.parentContainer.title]
             : this.currentTitle
         );
+        */
         // Changing the current property of the view cascades on the container's currentURL
         if (
           this.views[this.selected] &&

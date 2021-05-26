@@ -10,7 +10,7 @@
               v-bind="scrollable ? {axis: 'y'} : {}"
               @ready="onResize"
               :class="{
-                'bbn-100': !scrollable
+                'bbn-overlay': !scrollable
               }">
     <div :class="'bbn-masonry bbn-margin' + (sortable ? ' bbn-dashboard-sortable' : '')"
          ref="container"

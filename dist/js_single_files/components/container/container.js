@@ -427,7 +427,6 @@ document.body.insertAdjacentElement('beforeend', script);
             // if evaluating the script property returns a function that will be onMount
             if ( res ){
               if (bbn.fn.isFunction(res) ){
-                //bbn.fn.log("THERE IS SCRIPT for " + this.url + " AND IT IS A FUNCTION");
                 this.onMount = res;
                 this.isComponent = false;
               }
@@ -527,14 +526,12 @@ document.body.insertAdjacentElement('beforeend', script);
       }
       if ( !this.router.ready ){
         this.router.$on('ready', () => {
-          bbn.fn.log("ROUTER NOT READY")
           //this.init();
           this.router.register(this);
         });
       }
       else{
         //this.init();
-        bbn.fn.log("ROUTER READY")
         this.router.register(this);
       }
       //
@@ -545,7 +542,6 @@ document.body.insertAdjacentElement('beforeend', script);
      * @fires router.unregister
      */
     beforeDestroy(){
-      //bbn.fn.log("DESTROYING");
       this.router.unregister(this);
       if ( this.isComponent ){
         let idx = componentsList.indexOf(this.componentName);
@@ -575,10 +571,9 @@ document.body.insertAdjacentElement('beforeend', script);
         }
       },
       ready(v){
-        bbn.fn.log("READY CONTAINER " + this.url);
         if (v) {
           if (this.onMount) {
-            this.onMount();
+            this.onMount(this.$el, this.source);
           }
         }
       },

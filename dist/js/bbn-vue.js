@@ -322,13 +322,12 @@
           d = d.data;
           if ( d && d.success && d.components ){
             bbn.fn.iterate(items, a => {
-              bbn.fn.log("ITEM", a);
               let cp = bbn.fn.getRow(d.components, {name: a.name});
               if ( cp && this._realDefineComponent(a.name, cp, a.mixins) && Vue.options.components[a.name]) {
                 a.resolve(Vue.options.components[a.name])
               }
               else{
-                bbn.fn.log("PROMISE REJECT OF" + a.name, a);
+                //bbn.fn.log("PROMISE REJECT OF" + a.name, a);
                 a.reject();
                 throw new Error(bbn._("Impossible to load the component") + ' ' + a.name);
               }
@@ -4571,6 +4570,13 @@
          * @prop {String} inputmode
          */
         inputmode: {
+          type: String
+        },
+        /**
+         * Defines the pattern of this elemenet
+         * @prop {String} pattern
+         */
+        pattern: {
           type: String
         }
       },

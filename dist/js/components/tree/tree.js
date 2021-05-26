@@ -669,7 +669,7 @@ document.head.insertAdjacentElement('beforeend', css);
       },
       _getTreeState(uid) {
         if (this.currentState[uid]) {
-          bbn.fn.log('CURRENT STATE FOUND', this.currentState[uid][this.children]);
+          //bbn.fn.log('CURRENT STATE FOUND', this.currentState[uid][this.children]);
           return bbn.fn.clone(this.currentState[uid][this.children]);
         }
         return {};
@@ -1319,7 +1319,7 @@ document.head.insertAdjacentElement('beforeend', css);
         }
       },
       _setCurrentState(state) {
-        bbn.fn.log("State", this, state);
+        //bbn.fn.log("State", this, state);
         this.currentState = state;
       },
       initStorage(){
@@ -1941,7 +1941,7 @@ document.head.insertAdjacentElement('beforeend', css);
                 if (diff) {
                   let approachLevel = Math.round(diff/step);
                   scroll.addVertical(Math.round(scroll.$el.offsetHeight / 5) * approachLevel + 1);
-                  bbn.fn.log(approachLevel);
+                  //bbn.fn.log(approachLevel);
                 }
               }
             }

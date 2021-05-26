@@ -1080,6 +1080,7 @@ document.head.insertAdjacentElement('beforeend', css);
           return;
         }
 
+        /*
         bbn.fn.log(
           "changeURL",
           url,
@@ -1088,6 +1089,7 @@ document.head.insertAdjacentElement('beforeend', css);
             ["FROM PQARENT", this.parentContainer.currentTitle, this.parentContainer.title]
             : this.currentTitle
         );
+        */
         // Changing the current property of the view cascades on the container's currentURL
         if (
           this.views[this.selected] &&

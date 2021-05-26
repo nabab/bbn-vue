@@ -421,7 +421,7 @@ document.body.insertAdjacentElement('beforeend', script);
         }
         if ( ctrl ){
           this.$nextTick(() => {
-            bbn.fn.log("FOCUS ON METHOD CURSOR POSITION");
+            //bbn.fn.log("FOCUS ON METHOD CURSOR POSITION");
             this.widget.focus();
             this.widget.setCursor({line: lineCode, ch: position});
           });
@@ -473,7 +473,6 @@ document.body.insertAdjacentElement('beforeend', script);
        * @fires cursorPosition
        */
       loadState( obj ){
-        bbn.fn.log("LOADING CODE STATE");
         this.widget.focus();
         let doc = this.widget.getDoc();
         if ( obj.marks && obj.marks.length ){
@@ -600,7 +599,7 @@ document.body.insertAdjacentElement('beforeend', script);
         }
       },
       selectHint(row) {
-        bbn.fn.log("selectHint", arguments);
+        //bbn.fn.log("selectHint", arguments);
         let toAdd = row.name;
         if (row.type === 'fn') {
           toAdd += '()';
@@ -612,7 +611,7 @@ document.body.insertAdjacentElement('beforeend', script);
         let words = [...str.matchAll(/\w+/g)].map(a => a[0]);
         if (words) {
           let lastWord = words[words.length - 1];
-          bbn.fn.log("LAST WORD", lastWord, toAdd);
+          //bbn.fn.log("LAST WORD", lastWord, toAdd);
           let pos = toAdd.indexOf(lastWord);
           let dollarIncrement = toAdd.substr(0, 1) === '$' ? 1 : 0;
           if ((this.mode === 'php') && (row.ref || (row.type === 'object'))) {
@@ -634,10 +633,10 @@ document.body.insertAdjacentElement('beforeend', script);
         this.showHint();
       },
       htmlHint(str, numLine){
-        bbn.fn.log(str)
+        //bbn.fn.log(str)
       },
       phpHint(str, line){
-        bbn.fn.log("----PHP HINT-----", str);
+        //bbn.fn.log("----PHP HINT-----", str);
         // bbn.vue.phpLang must have been defined by an ajax call n mount
         if (!bbn.vue.phpLang) {
           return;
@@ -668,7 +667,7 @@ document.body.insertAdjacentElement('beforeend', script);
 
           // Here we have our string to complete
           if (search) {
-            bbn.fn.log("Searching " + search);
+            //bbn.fn.log("Searching " + search);
             // Dividing it in words
             let words = [...search.matchAll(/\w+/g)].map(a => a[0]);
             if (!words.length) {
@@ -684,7 +683,7 @@ document.body.insertAdjacentElement('beforeend', script);
               }
             });
 
-            bbn.fn.log("WORDS", words);
+            //bbn.fn.log("WORDS", words);
             let method = false;
             let cls = false;
             // If the previous char is an opening parenthesis we are calling a function
@@ -752,7 +751,7 @@ document.body.insertAdjacentElement('beforeend', script);
               }
               else {
                 let tmp = bbn.fn.getRow(doc, 'name', words[i], '===');
-                bbn.fn.log("TMP", tmp)
+                //bbn.fn.log("TMP", tmp);
                 if (!tmp) {
                   return;
                 }
@@ -771,7 +770,7 @@ document.body.insertAdjacentElement('beforeend', script);
               }
             }
 
-            bbn.fn.log("RES IS " + res.length, words);
+            //bbn.fn.log("RES IS " + res.length, words);
 
             return {
               isFn: isFn,
@@ -780,15 +779,17 @@ document.body.insertAdjacentElement('beforeend', script);
             };
           }
         }
-        bbn.fn.log("----END OF PHP HINT-----");
+        //bbn.fn.log("----END OF PHP HINT-----");
       },
       jsHint(str){
-        bbn.fn.log(str)
         if (str.substr(-1) === '(') {
           bbn.fn.log('IS FUNCTION');
         }
         else if (str.substr(-1) === '.') {
           bbn.fn.log('IS PROP');
+        }
+        else {
+          bbn.fn.log(str)
         }
       },
       cssHint(str){
@@ -882,7 +883,7 @@ document.body.insertAdjacentElement('beforeend', script);
             return this.widget.showHint({completeSingle: false})
           }
 
-          bbn.fn.log('SHOWHINT', numTokens, currentLine, tokens, realTokens);
+          //bbn.fn.log('SHOWHINT', numTokens, currentLine, tokens, realTokens);
           let res = this[this.mode + 'Hint'](currentLine, cursor.line);
 
           if (res && res.list && res.list.length) {
@@ -910,6 +911,30 @@ document.body.insertAdjacentElement('beforeend', script);
           this.floaterBottom = null;
         }
       },
+      updateHtmlHints() {
+        let components = Object.keys(Vue.options.components).sort();
+        let hash = bbn.fn.hash(components);
+        if (hash !== bbn.var.componentsHash) {
+          bbn.var.componentsHash = hash;
+          bbn.fn.iterate(Vue.options.components, (cp, cpName) => {
+            let attrs = {
+              class: null,
+              style: null
+            };
+            if (cp.options) {
+              bbn.fn.each(Object.keys(cp.options.props).sort(), propName => {
+                attrs[bbn.fn.camelToCss(propName)] = null;
+              })
+              attrs[':class'] = null;
+              attrs[':style'] = null;
+              bbn.fn.each(Object.keys(cp.options.props).sort(), propName => {
+                attrs[':' + bbn.fn.camelToCss(propName)] = null;
+              })
+            }
+            CodeMirror.htmlSchema[cpName] = {attrs: attrs}
+          });
+        }
+      },
       /**
        * Adds a block of text in the editor.
        *
@@ -920,7 +945,6 @@ document.body.insertAdjacentElement('beforeend', script);
         if ( code === undefined ){
           code = "";
         }
-        bbn.fn.log("FOCUS BEFORE ADDING SNIPPET");
         this.widget.focus();
         let replace = this.widget.getDoc().replaceRange,
             state = this.getState(),
@@ -942,7 +966,6 @@ document.body.insertAdjacentElement('beforeend', script);
         this.isFullScreen = !!isFS;
       },
       resetFloaters(){
-        bbn.fn.log('resetting floaters')
         if (this.hintTimeout) {
           clearTimeout(this.hintTimeout);
         }
@@ -960,7 +983,6 @@ document.body.insertAdjacentElement('beforeend', script);
         bbn.fn.ajax({
           url: "https://raw.githubusercontent.com/nabab/bbn/master/code_ref_php.json",
           success: defs => {
-            bbn.fn.log("Success", defs);
             bbn.vue.phpLang = defs;
           }
         })
@@ -968,7 +990,6 @@ document.body.insertAdjacentElement('beforeend', script);
       //bbn.fn.log(this.getOptions());
       if (this.getRef('code')) {
         this.widget = CodeMirror(this.getRef('code'), this.getOptions());
-
         this.widget.on("keyup", (cm, event) => {
           if (["Ctrl", "Alt"].includes(event.key) ||
               bbn.var.keys.upDown.includes(event.keyCode) ||
@@ -1000,7 +1021,7 @@ document.body.insertAdjacentElement('beforeend', script);
             if (lst) {
               if (bbn.var.keys.upDown.includes(event.keyCode)) {
                 lst.keynav(event);
-                bbn.fn.log(lst.currentSelected);
+                //bbn.fn.log(lst.currentSelected);
               }
               else if (event.key === "Enter") {
                 event.preventDefault();
