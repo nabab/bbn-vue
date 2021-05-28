@@ -1,5 +1,6 @@
 <div :class="[componentClass, 'bbn-iblock']"
      @mouseleave="leave"
+     @mouseenter="enter"
      :style="{width: specialWidth}"
      @focusin="isActive = true"
      @focusout="isActive = false"
@@ -24,7 +25,7 @@
                :min-width="$el.offsetWidth"
                ref="list"
                @mouseleave.prevent
-               :auto-hide="true"
+               :auto-hide="false"
                :suggest="suggest"
                :item-component="realComponent"
                :children="null"
