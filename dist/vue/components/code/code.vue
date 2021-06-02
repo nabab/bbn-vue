@@ -177,21 +177,27 @@
       mode: {
         name: 'javascript'
       },
-      /*
+      gutters: ["CodeMirror-lint-markers"],
       lint: {
         esversion: 6
       },
+      /*
       lintWith: window.jslint || CodeMirror.lint.javascript,
       */
       autoCloseBrackets: true,
-      extraKeys: {
-        "Ctrl-Space": function(cm) { bbn.vue.tern.complete(cm);}/*,
+      /*extraKeys: {
+        "Ctrl-Space": function(cm) { bbn.vue.tern.complete(cm);},
         "Ctrl-I": function(cm) { bbn.vue.tern.showType(cm); },
         "Ctrl-O": function(cm) { bbn.vue.tern.showDocs(cm); },
         "Alt-.": function(cm) { bbn.vue.tern.jumpToDef(cm); },
         "Alt-,": function(cm) { bbn.vue.tern.jumpBack(cm); },
         "Ctrl-Q": function(cm) { bbn.vue.tern.rename(cm); },
-        "Ctrl-.": function(cm) { bbn.vue.tern.selectName(cm); }*/
+        "Ctrl-.": function(cm) { bbn.vue.tern.selectName(cm); }
+        
+      },*/
+      extraKeys: {
+        "Ctrl-Space": "autocomplete",
+        "Ctrl-J": "toMatchingTag"
       }
     },
     json: {
@@ -770,6 +776,7 @@
         }
         //bbn.fn.log("----END OF PHP HINT-----");
       },
+      /*
       jsHint(str){
         if (str.substr(-1) === '(') {
           bbn.fn.log('IS FUNCTION');
@@ -786,8 +793,8 @@
       },
       vueHint(str){
         bbn.fn.log(str)
-
       },
+      */
       checkFn(str) {
         if (this.currentFn) {
           let idx = str.lastIndexOf(this.currentFn.str);
@@ -866,19 +873,18 @@
           ) {
             return;
           }
-          if (realTokens[numTokens-1].state.curMode
-            && (realTokens[numTokens-1].state.curMode.name === 'htmlmixed')
-          ) {
+          if (this[this.mode + 'Hint']) {
+            let res = this[this.mode + 'Hint'](currentLine, cursor.line);
+            if (res && res.list && res.list.length) {
+              this.setFloaterPosition();
+              this.currentHints = res.list;
+            }
+          }
+          else {
             return this.widget.showHint({completeSingle: false})
           }
 
           //bbn.fn.log('SHOWHINT', numTokens, currentLine, tokens, realTokens);
-          let res = this[this.mode + 'Hint'](currentLine, cursor.line);
-
-          if (res && res.list && res.list.length) {
-            this.setFloaterPosition();
-            this.currentHints = res.list;
-          }
         }, 500)
       },
       setFloaterPosition(){

@@ -63,7 +63,8 @@
                       :source-value="searchBar.sourceValue"
                       :source-text="searchBar.sourceText"
                       :min-length="searchBar.minLength"
-                      class="bbn-no"/>
+                      class="bbn-no"
+                      style="z-index: 2"/>
         </div>
         <!-- CENTRAL PART -->
         <div v-if="!isMobile"
