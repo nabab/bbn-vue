@@ -1,0 +1,120 @@
+<div :class="['bbn-middle', componentClass]"
+     :style="'background-color:' + bgColor + '; transition: opacity 3s'">
+  <bbn-popup ref="popup"/>
+  <div class="bbn-login-container" :style="{maxHeight: clientHeight + 'px'}">
+    <div class="bbn-login-logo bbn-c bbn-block">
+      <img v-if="logo" :src="logo">
+    </div>
+    <div class="bbn-vlmargin bbn-block bbn-c">
+      <div v-if="currentMode === 'invalid'"
+            class="bbn-block">
+        <h3 class="bbn-c"
+            v-text="_('The link is not valid')"/>
+        <h3>
+          <a href="javascript:;"
+             class="bbn-no"
+             @click="currentMode = 'login'"
+             v-text="_('Back to the login page')"/>
+        </h3>
+      </div>
+      <bbn-form :action="currentUrl"
+                :source="currentFormData"
+                :data="{mode: currentMode}"
+                :buttons="[]"
+                :scrollable="false"
+                :fixed-footer="false"
+                ref="form"
+                @success="onSubmit"
+                key="form"
+                :validation="validation"
+                v-else
+      >
+        <div v-if="currentMode === 'login'"
+             class="bbn-w-100">
+          <div class="bbn-w-100 bbn-c bbn-vsmargin">
+            <bbn-input class="bbn-c"
+                      required="required"
+                      buttonLeft="nf nf-fa-envelope_o"
+                      :nullable="true"
+                      :placeholder="_('Login name')"
+                      v-model="currentFormData.user"/>
+          </div>
+          <div class="bbn-w-100 bbn-c">
+            <bbn-input type="password"
+                      class="bbn-c"
+                      required="required"
+                      buttonLeft="nf nf-fa-lock"
+                      :nullable="true"
+                      :placeholder="_('Password')"
+                      v-model="currentFormData.pass"/>
+          </div>
+          <div class="bbn-c bbn-w-100 bbn-vsmargin bbn-flex-width">
+            <bbn-button type="button"
+                        @click="$refs.form.submit()"
+                        :text="_('Log in')"/>
+            <div class="bbn-w-100 bbn-r bbn-xs"
+                 v-if="passwordLink">
+              <a class="bbn-p bbn-r bbn-xs"
+                  @click="currentMode = 'lost'"
+                  v-text="_('Password forgotten?')"/>
+            </div>
+          </div>
+        </div>
+        <div v-else-if="currentMode === 'lost'"
+             class="bbn-w-100">
+          <div class="bbn-w-100 bbn-c bbn-vsmargin">
+            <bbn-input style="margin-left: 10%"
+                       buttonLeft="nf nf-fa-envelope_o"
+                       required="required"
+                       :placeholder="_('Enter your e-mail address')"
+                       v-model="currentFormData.email"
+            ></bbn-input>
+          </div>
+          <div class="bbn-c bbn-flex-width bbn-w-100">
+            <bbn-button type="button"
+                        class="bbn-right-sspace"
+                        @click="currentMode = 'login'"
+                        :text="_('Cancel')"/>
+            <bbn-button type="button"
+                        @click="$refs.formLost.submit()"
+                        :text="_('Send')"/>
+          </div>
+        </div>
+        <div v-else-if="currentMode === 'change'"
+             class="bbn-w-100">
+          <div class="bbn-w-100 bbn-c bbn-vsmargin">
+            <bbn-input type="password"
+                      class="bbn-c"
+                      style="min-width: 20em"
+                      required="required"
+                      :title="_('Mandatory field, 8 characters minimum')"
+                      :placeholder="_('Choose your new password')"
+                      :button-right="passwordVisible ? 'nf nf-fa-eye_slash' : 'nf nf-fa-eye'"
+                      ref="pass1"
+                      pattern=".{8,}"
+                      v-model="currentFormData.pass1"
+                      @clickRightButton="passwordVisible = !passwordVisible"/>
+          </div>
+          <div class="bbn-c bbn-w-100 bbn-vsmargin">
+            <bbn-input type="password"
+                      class="bbn-c"
+                      style="min-width: 20em"
+                      required="required"
+                      :title="_('Mandatory field, 8 characters minimum')"
+                      :placeholder="_('Confirm your new password')"
+                      :button-right="passwordVisible ? 'nf nf-fa-eye_slash' : 'nf nf-fa-eye'"
+                      ref="pass1"
+                      pattern=".{8,}"
+                      v-model="currentFormData.pass2"
+                      @clickRightButton="passwordVisible = !passwordVisible"/>
+          </div>
+          <div class="bbn-c bbn-vmargin bbn-flex-width">
+            <bbn-button type="button"
+                        @click="$refs.form.submit()"
+                        :text="_('Log in')"/>
+          </div>
+        </div>
+      </bbn-form>
+    </div>
+  </div>
+</div>
