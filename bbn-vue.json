@@ -4330,6 +4330,35 @@
                 ]
             },
             {
+                "text": "login",
+                "url": "bbn-vue\/component\/login\/overview",
+                "props": [
+                    {
+                        "text": "bgColor",
+                        "desc": "The background color",
+                        "url": "bbn-vue\/component\/login\/doc\/props#bgColor"
+                    },
+                    {
+                        "text": "fontSize",
+                        "desc": "The size of the font. Allowed values are 's', 'm', 'l', 'xl'",
+                        "url": "bbn-vue\/component\/login\/doc\/props#fontSize"
+                    }
+                ],
+                "methods": [],
+                "mixins": [
+                    {
+                        "text": "basicComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/login\/doc\/mixins#basicComponent"
+                    },
+                    {
+                        "text": "resizerComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/login\/doc\/mixins#resizerComponent"
+                    }
+                ]
+            },
+            {
                 "text": "map",
                 "url": "bbn-vue\/component\/map\/overview",
                 "props": [],
@@ -4384,6 +4413,11 @@
                         "text": "promptChar",
                         "desc": "The character used for the prompt.",
                         "url": "bbn-vue\/component\/masked\/doc\/props#promptChar"
+                    },
+                    {
+                        "text": "pattern",
+                        "desc": "Defines the pattern of this elemenet",
+                        "url": "bbn-vue\/component\/masked\/doc\/props#pattern"
                     }
                 ],
                 "methods": [
@@ -6232,6 +6266,11 @@
                         "text": "shortPlaceholder",
                         "desc": "",
                         "url": "bbn-vue\/component\/search\/doc\/props#shortPlaceholder"
+                    },
+                    {
+                        "text": "autohide",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/search\/doc\/props#autohide"
                     }
                 ],
                 "methods": [
@@ -6254,6 +6293,16 @@
                         "text": "select",
                         "desc": "Emits the event 'select'",
                         "url": "bbn-vue\/component\/search\/doc\/methods#select"
+                    },
+                    {
+                        "text": "leave",
+                        "desc": "On mouse Leave.",
+                        "url": "bbn-vue\/component\/search\/doc\/methods#leave"
+                    },
+                    {
+                        "text": "enter",
+                        "desc": "On mouse enter.",
+                        "url": "bbn-vue\/component\/search\/doc\/methods#enter"
                     }
                 ],
                 "mixins": [

@@ -124,10 +124,10 @@
         let r = [];
         bbn.fn.each(this.items, (a, i) => {
           //r.push(this.getObject(bbn.fn.extendOut(a, {index: i})));
-          r.push(this.getObject(bbn.fn.extend(a, {
+          r.push(this.getObject(bbn.fn.extend({}, a, {
             index: i,
-            maxWidth: this.lastKnownWidth || this.lastKnownCtWidth || null,
-            maxHeight: this.lastKnownHeight || this.lastKnownCtHeight || null
+            maxWidth: a.maxWidth || this.lastKnownWidth || this.lastKnownCtWidth || null,
+            maxHeight: a.maxHeight || this.lastKnownHeight || this.lastKnownCtHeight || null
           })));
         });
         return r;

@@ -4571,13 +4571,6 @@
          */
         inputmode: {
           type: String
-        },
-        /**
-         * Defines the pattern of this elemenet
-         * @prop {String} pattern
-         */
-        pattern: {
-          type: String
         }
       },
       data(){

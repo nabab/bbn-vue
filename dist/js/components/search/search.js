@@ -3,6 +3,7 @@
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-iblock']"
      @mouseleave="leave"
+     @mouseenter="enter"
      :style="{width: specialWidth}"
      @focusin="isActive = true"
      @focusout="isActive = false"
@@ -27,7 +28,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-iblock']"
                :min-width="$el.offsetWidth"
                ref="list"
                @mouseleave.prevent
-               :auto-hide="true"
+               :auto-hide="false"
                :suggest="suggest"
                :item-component="realComponent"
                :children="null"
@@ -166,6 +167,13 @@ document.head.insertAdjacentElement('beforeend', css);
       shortPlaceholder: {
         type: String,
         default: '?'
+      },
+      /**
+       * @prop {Boolean|Number} [1500] autohide
+       */
+      autohide: {
+        type: [Boolean, Number],
+        default: 1500
       }
     },
     data(){
@@ -184,7 +192,11 @@ document.head.insertAdjacentElement('beforeend', css);
          * The timeout.
          * @data {Number|null} [null] timeout
          */
-        timeout: null
+        timeout: null,
+        /**
+         * @data {Number|null} [null] mouseTimeout
+         */
+        mouseTimeout: null
       };
     },
     methods: {
@@ -207,6 +219,7 @@ document.head.insertAdjacentElement('beforeend', css);
         clearTimeout(this.timeout);
         this.timeout = setTimeout(() => {
           this.isFocused = false;
+          this.isOpened = false;
           this.specialWidth = this.minWidth;
           this.filterString = '';
           this.currentPlaceholder = '?';
@@ -263,6 +276,30 @@ document.head.insertAdjacentElement('beforeend', css);
           this.keynav(e);
         }
       },
+      /**
+       * On mouse Leave.
+       * @method leave
+       * @fires searchBlur
+       */
+       leave(){
+        if (this.autohide) {
+          if (this.mouseTimeout) {
+            clearTimeout(this.mouseTimeout);
+          }
+          this.mouseTimeout = setTimeout(() => {
+            this.searchBlur();
+          }, this.autohide);
+        }
+      },
+      /**
+       * On mouse enter.
+       * @method enter
+       */
+      enter(){
+        if (this.mouseTimeout) {
+          clearTimeout(this.mouseTimeout);
+        }
+      }
     },
     watch: {
       /**
@@ -276,34 +313,40 @@ document.head.insertAdjacentElement('beforeend', css);
         clearTimeout(this.filterTimeout);
         if (v !== this.currentText) {
           this.isOpened = false;
-          this.filterTimeout = setTimeout(() => {
-            this.filterTimeout = false;
-            // We don't relaunch the source if the component has been left
-            if ( this.isActive ){
-              if (v && (v.length >= this.minLength)) {
-                this.currentFilters.conditions.splice(0, this.currentFilters.conditions.length ? 1 : 0, {
-                  field: this.sourceText,
-                  operator: 'startswith',
-                  value: v
-                });
-                this.$nextTick(() => {
-                  if (!this.isOpened){
-                    this.isOpened = true;
-                    
-                  }
-                  else{
-                    let list = this.find('bbn-scroll');
-                    if ( list ){
-                      list.onResize();
-                    }
-                  }
-                });
+          if (this.currentData.length) {
+            this.currentData.splice(0);
+          }
+          this.$nextTick(() => {
+            this.filterTimeout = setTimeout(() => {
+              this.filterTimeout = false;
+              // We don't relaunch the source if the component has been left
+              if ( this.isActive ){
+                if (v && (v.length >= this.minLength)) {
+                  this.$once('dataloaded', () => {
+                    this.$nextTick(() => {
+                      if (!this.isOpened){
+                        this.isOpened = true;
+                      }
+                      else{
+                        let list = this.find('bbn-scroll');
+                        if ( list ){
+                          list.onResize();
+                        }
+                      }
+                    });
+                  });
+                  this.currentFilters.conditions.splice(0, this.currentFilters.conditions.length ? 1 : 0, {
+                    field: this.sourceText,
+                    operator: 'startswith',
+                    value: v
+                  });
+                }
+                else {
+                  this.unfilter();
+                }
               }
-              else {
-                this.unfilter();
-              }
-            }
-          }, this.delay);
+            }, this.delay);
+          })
         }
       }
     }
