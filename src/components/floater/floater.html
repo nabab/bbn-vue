@@ -67,6 +67,7 @@
                   :min-height="currentMinHeight > outHeight ? currentMinHeight - outHeight : null"
                   @resize="scrollResize">
         <component v-if="component"
+                   ref="component"
                   :is="component"
                   v-bind="realComponentOptions"/>
         <slot v-else-if="$slots.default"/>

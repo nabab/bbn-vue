@@ -64,7 +64,7 @@
        * Hides the left button. 
        * @prop {Boolean} [false] autoHideLeft
        */
-      autoHideLeft: {
+       autoHideLeft: {
         type: Boolean,
         default: false
       },
@@ -75,6 +75,20 @@
       autoHideRight: {
         type: Boolean,
         default: false
+      },
+      /**
+       * Called when click the left button. 
+       * @prop {Function} actionLeft
+       */
+       actionLeft: {
+        type: Function
+      },
+      /**
+       * Called when click the right button. 
+       * @prop {Function} actionRight
+       */
+       actionRight: {
+        type: Function
       },
       /**
        * The input's attribute 'pattern'. 
@@ -96,7 +110,7 @@
       if (this.autocomplete === true) {
         currentAutocomplete = 'on';
       }
-      else if (this.autocomplete.toLowerCase && ['on', 'off'].includes(this.autocomplete.toLowerCase())) {
+      else if (this.autocomplete && bbn.fn.isString(this.autocomplete)) {
         currentAutocomplete = this.autocomplete;
       }
       return {

@@ -461,6 +461,9 @@
       },
       hasButtons(){
         return this.currentButtons.length > 0;
+      },
+      anonymousComponent(){
+        return this.$refs.component;
       }
     },
     methods: {

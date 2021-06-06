@@ -130,6 +130,11 @@
         _bbn_container: null
       };
     },
+    computed: {
+      anonymousComponent(){
+        return $vm0.$refs.component;
+      }
+    },
 
     methods: {
       /**

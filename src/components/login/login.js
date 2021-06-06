@@ -57,6 +57,10 @@
         required: true,
         validator: m => ['login', 'lost', 'change', 'invalid'].includes(m)
       },
+      expires: {
+        type: Number,
+        default: 1200000
+      },
       salt: {
         type: String,
         default: ''
@@ -87,6 +91,7 @@
         currentMode: this.mode,
         formData: {},
         passwordVisible: false,
+        hasExpired: false,
         clientHeight: document.documentElement.clientHeight
       }
     },
@@ -154,6 +159,9 @@
           default:
             return true;
         }
+      },
+      reload(){
+        window.location.reload();
       }
     },
     mounted(){
@@ -170,12 +178,18 @@
             });
           }
         }, 1000);
-        setTimeout(() => {
-          if (this.$el && this.$el.innerHTML) {
-            this.$el.innerHTML = `
-            <h2>`+ bbn._('Refresh the page to be able to log in or click') + ` <a class="bbn-p" onclick="window.location.reload();">` + bbn._('HERE') + `</a></h2>`;
+        if (this.expires) {
+          if (this.expires > 300000) {
+            setTimeout(() => {
+              this.alert(bbn._("This login form will expire in 5 minutes"));
+            }, this.expires - 300000);
           }
-        }, 1200000); // 20 minutes
+          setTimeout(() => {
+            if (this.$el && this.$el.innerHTML) {
+              this.hasExpired = true;
+            }
+          }, this.expires);
+        }
       });
       window.addEventListener('resize', this.setHeight);
     },
