@@ -234,7 +234,7 @@
        * @fires setValue
        */
       setDate(val){
-        this.setValue(moment(val, 'YYYY-MM-DD').isValid() ? moment(val, 'YYYY-MM-DD').format(this.getValueFormat(val)) : '');
+        this.setValue(dayjs(val, 'YYYY-MM-DD').isValid() ? dayjs(val, 'YYYY-MM-DD').format(this.getValueFormat(val)) : '');
       },
       /**
        * Sets the value.
@@ -248,7 +248,7 @@
        */
       setValue(val){
         let format = !!val ? this.getValueFormat(val.toString()) : false,
-            value = format ? (moment(val.toString(), format).isValid() ? moment(val.toString(), format).format(format) : '') : '';
+            value = format ? (dayjs(val.toString(), format).isValid() ? dayjs(val.toString(), format).format(format) : '') : '';
         if ( value ){
           if ( this.min && (value < this.min) ){
             value = this.min;
@@ -303,7 +303,7 @@
       inputChanged(){
         let mask = this.getRef('element'),
             newVal = mask.inputValue,
-            value = !!newVal ? moment(newVal, this.currentFormat).format(this.getValueFormat(newVal)) : '';
+            value = !!newVal ? dayjs(newVal, this.currentFormat).format(this.getValueFormat(newVal)) : '';
         if ( mask.raw(newVal) !== this.oldInputValue ){
           if ( value && this.min && (value < this.min) ){
             value = this.min;
@@ -341,7 +341,7 @@
       setInputValue(newVal){
         if ( newVal ){
           let mask = this.getRef('element'),
-              mom = moment(newVal.toString(), this.getValueFormat(newVal.toString()));
+              mom = dayjs(newVal.toString(), this.getValueFormat(newVal.toString()));
           this.inputValue = newVal && mask && mom.isValid() ?
             mask.raw(mom.format(this.currentFormat)) :
             '';
@@ -370,8 +370,8 @@
      * @event beforeCreate
      */
     beforeCreate(){
-      if ( bbn.env && bbn.env.lang && (bbn.env.lang !== moment.locale()) ){
-        moment.locale(bbn.env.lang);
+      if ( bbn.env && bbn.env.lang && (bbn.env.lang !== dayjs.locale()) ){
+        dayjs.locale(bbn.env.lang);
       }
     },
     /**

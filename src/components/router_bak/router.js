@@ -1422,7 +1422,7 @@
                 if (o.title) {
                   this.currentTitle = o.title;
                 }
-                /** @todo Find why this timeout is needed to not have this.urls sometimes empty at that moment */
+                /** @todo Find why this timeout is needed to not have this.urls sometimes empty at that dayjs */
                 setTimeout(() => {
                   this.realInit(d.url, 50);
                 }, 250)

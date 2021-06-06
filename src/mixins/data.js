@@ -26,22 +26,22 @@
           else if ( cfg.type ){
             switch ( cfg.type ){
               case "datetime":
-                if ( window.moment && cfg.format ){
-                  return v ? (new window.moment(v)).format(cfg.format) : '-';
+                if ( window.dayjs && cfg.format ){
+                  return v ? (new window.dayjs(v)).format(cfg.format) : '-';
                 }
                 else{
                   return bbn.fn.fdatetime(v, '-');
                 }
               case "date":
-                if ( window.moment && cfg.format ){
-                  return v ? (new window.moment(v)).format(cfg.format) : '-';
+                if ( window.dayjs && cfg.format ){
+                  return v ? (new window.dayjs(v)).format(cfg.format) : '-';
                 }
                 else{
                   return bbn.fn.fdate(v, '-');
                 }
               case "time":
-                if ( cfg.format && window.moment ){
-                  return v ? (new window.moment(v)).format(cfg.format) : '-';
+                if ( cfg.format && window.dayjs ){
+                  return v ? (new window.dayjs(v)).format(cfg.format) : '-';
                 }
                 else{
                   return v ? bbn.fn.ftime(v) : '-';

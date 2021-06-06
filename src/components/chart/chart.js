@@ -920,7 +920,7 @@
             cfg.xaxis.type = 'datetime';
             if ( bbn.fn.isString(this.xDate) ){
               cfg.xaxis.labels.formatter = (value, timestamp, index) => {
-                return moment(timestamp).format(this.xDate);
+                return dayjs(timestamp).format(this.xDate);
               }
             }
           }

@@ -1231,7 +1231,7 @@
            * @return {String}
            */
           getTime(t){
-            return moment.unix(t).format('HH:mm');
+            return dayjs.unix(t).format('HH:mm');
           },
           /**
            * Formats the given timestamp
@@ -1241,7 +1241,7 @@
            * @return {String}
            */
           getDate(d){
-            return moment.unix(d).format('DD MMMM YYYY');
+            return dayjs.unix(d).format('DD MMMM YYYY');
           },
           /**
            * Checks if the given timestamp is equal at today
@@ -1251,7 +1251,7 @@
            * @return {Boolean}
            */
           isToday(d){
-            return moment().format('DD/MM/YYYY') === moment.unix(d).format('DD/MM/YYYY');
+            return dayjs().format('DD/MM/YYYY') === dayjs.unix(d).format('DD/MM/YYYY');
           },
           /**
            * Load more old messages
