@@ -117,6 +117,16 @@
       onlyEvents: {
         type: Boolean,
         default: false
+      },
+      /**
+       * The calendar button's position
+       * 
+       * @prop {String} ['right'] buttonPosition
+       */
+      buttonPosition: {
+        type: String,
+        default: 'right',
+        validator: pos => ['right', 'left'].includes(pos)
       }
     },
     data(){

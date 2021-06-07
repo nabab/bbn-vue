@@ -90,6 +90,10 @@
                   :source-text="sourceText"/>
         <h3 v-else v-text="noData"/>
       </bbn-scroll>
+      <component is="style"
+                 v-if="css"
+                 scoped="scoped"
+                 v-html="css"/>
     </div>
     <footer v-if="footer"
             v-html="footer"

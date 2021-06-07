@@ -56,6 +56,9 @@
         type: String,
         default: ''
       },
+      css: {
+        type: String
+      },
       //@todo not used
       options: {
         type: Object
@@ -651,8 +654,8 @@
         this.currentVisible = false;
       },
       onResize(force){
-        bbn.fn.log("onResize", this.scrollResized, this.isVisible);
-        if (this.scrollResized
+        bbn.fn.log("onResize floater", this.scrollResized, this.isVisible);
+        if ((!this.scrollable || this.scrollResized)
             && this.isVisible
             && this.$el
             && (this.setContainerMeasures() || !this.isInit || force)
