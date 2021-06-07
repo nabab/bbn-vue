@@ -67,6 +67,7 @@
                   :min-height="currentMinHeight > outHeight ? currentMinHeight - outHeight : null"
                   @resize="scrollResize">
         <component v-if="component"
+                   ref="component"
                   :is="component"
                   v-bind="realComponentOptions"/>
         <slot v-else-if="$slots.default"/>
@@ -89,6 +90,10 @@
                   :source-text="sourceText"/>
         <h3 v-else v-text="noData"/>
       </bbn-scroll>
+      <component is="style"
+                 v-if="css"
+                 scoped="scoped"
+                 v-html="css"/>
     </div>
     <footer v-if="footer"
             v-html="footer"

@@ -1,7 +1,21 @@
 <div :class="['bbn-middle', componentClass]"
      :style="'background-color:' + bgColor + '; transition: opacity 3s'">
   <bbn-popup ref="popup"/>
-  <div class="bbn-login-container" :style="{maxHeight: clientHeight + 'px'}">
+  <h2 v-if="hasExpired">
+    <span class="bbn-nowrap" v-text="_('Refresh the page')"/>
+    <span class="bbn-nowrap" v-text="_('to be able to log in')"/>
+    <span class="bbn-nowrap">
+      <span v-text="_('or click')"/>
+      <a class="bbn-p bbn-u"
+         style="color: inherit"
+         href="javascript:;"
+         @click="reload"
+         v-text="_('here')"/>
+    </span>
+  </h2>
+  <div v-else
+       class="bbn-login-container"
+       :style="{maxHeight: clientHeight + 'px'}">
     <div class="bbn-login-logo bbn-c bbn-block">
       <img v-if="logo" :src="logo">
     </div>

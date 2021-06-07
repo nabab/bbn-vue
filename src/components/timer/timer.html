@@ -1,0 +1,15 @@
+<span :class="['bbn-iblock', componentClass]">
+  <span v-if="(mode === 'countdown') && isValid">
+    <span v-if="rendered"></span>
+    <span>
+      <span v-for="(p, i) in periods"
+            v-if="shown[p.name]"
+            v-text="text[p.name] + (periods[i+1] && shown[periods[i+1].name] ? p.separator : '')"
+      ></span>
+    </span>
+  </span>
+  <span v-else-if="mode !== 'countdown'">
+    <span v-text="currentTime"/>
+  </span>
+  <slot v-else></slot>
+</span>
