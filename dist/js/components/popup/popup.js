@@ -289,6 +289,7 @@ document.head.insertAdjacentElement('beforeend', css);
             if ( r.content || r.title ){
               if ( r.script ){
                 let tmp = eval(r.script);
+                delete r.script;
                 if (bbn.fn.isFunction(tmp) ){
                   d.open = tmp;
                 }
@@ -304,6 +305,7 @@ document.head.insertAdjacentElement('beforeend', css);
                   d.source = r.data || [];
                 }
               }
+
               bbn.fn.extend(d, r);
               delete d.url;
               delete d.data;
@@ -311,6 +313,7 @@ document.head.insertAdjacentElement('beforeend', css);
                 d.uid = 'bbn-popup-' + bbn.fn.timestamp().toString();
               }
               d.index = this.items.length;
+              bbn.fn.log("WIN", d);
               this.items.push(d);
               this.makeWindows();
             }

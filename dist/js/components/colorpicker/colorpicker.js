@@ -378,7 +378,14 @@ document.head.insertAdjacentElement('beforeend', css);
         this.initTimeout = setTimeout(() => {
           let el = this.getRef('picker');
           if ( el ){
-            let width = el.offsetParent.getBoundingClientRect().width - 100;
+            let parent = el.offsetParent;
+            let width;
+            if (parent) {
+              width = parent.getBoundingClientRect().width - 100;
+            }
+            else {
+              width = 400;
+            }
             this.widget = new iro.ColorPicker(el, bbn.fn.extend(true, {width: width}, this.currentCfg));
             this.setEvents();
           }

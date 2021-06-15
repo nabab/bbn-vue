@@ -232,6 +232,7 @@
           this.editMode = true;
           this.$nextTick(() => {
             this.focus(e);
+            this.selectText();
           })
         }
       },

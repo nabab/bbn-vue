@@ -34,22 +34,25 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-overlay']"
                   v-bind="options"
         ></component>
         <!-- This is just HTML content -->
-        <div v-else-if="content" v-html="content">
+        <div v-else-if="content"
+             v-html="content">
         </div>
         <!-- This is the slot -->
         <slot v-else></slot>
-        <component is="style" v-if="css" scoped="scoped" v-html="css"></component>
-        <bbn-loader v-if="hasLoader"></bbn-loader>
+        <component is="style"
+                   v-if="css"
+                   scoped="scoped"
+                   v-html="css"/>
+        <bbn-loader v-if="hasLoader"/>
       </component>
       <span  v-if="fullScreen"
             class="bbn-container-full-screen-closer bbn-xl bbn-p">
         <i class="nf nf-fa-times_circle"
-          @click="fullScreen = false"></i>
+          @click="fullScreen = false"/>
       </span>
       <bbn-popup ref="popup"
                 :source="popups"
-                v-if="!hidden && ready && isLoaded && (visible || cached)">
-      </bbn-popup>
+                v-if="!hidden && ready && isLoaded && (visible || cached)"/>
     </div>
   </transition>
 </div>
@@ -192,6 +195,11 @@ document.head.insertAdjacentElement('beforeend', css);
         hasLoader: false,
         _bbn_container: null
       };
+    },
+    computed: {
+      anonymousComponent(){
+        return this.$refs.component;
+      }
     },
 
     methods: {

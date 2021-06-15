@@ -203,6 +203,14 @@
       urlNavigation: {
         type: Boolean,
         default: true
+      },
+      /**
+       * Will be passed to router in order to ignore the dirty parameter.
+       * @prop {Boolean} ignoreDirty
+       */
+       ignoreDirty: {
+        type: Boolean,
+        default: false
       }
     },
     data(){
@@ -1083,7 +1091,7 @@
         if ( !this.views.length ){
           return false;
         }
-        if ( misc === undefined ){
+        if ([undefined, null].includes(misc)) {
           return this.selected;
         }
         if ( !this.isValidIndex(misc) ) {
@@ -1141,6 +1149,7 @@
           }
           if ( !ev2.defaultPrevented ){
             if (
+              !this.ignoreDirty &&
               this.isDirty &&
               this.views[idx].dirty &&
               !ev.defaultPrevented &&

@@ -4,7 +4,6 @@
 }
 .bbn-dropdown .bbn-dropdown-container {
   line-height: normal;
-  height: 100%;
 }
 .bbn-dropdown .bbn-dropdown-container .bbn-dropdown-content {
   white-space: nowrap;
@@ -19,6 +18,12 @@
 }
 .bbn-dropdown .bbn-dropdown-container .bbn-input div.bbn-flex-width {
   height: 100%;
+  box-sizing: border-box;
+}
+.bbn-dropdown .bbn-dropdown-container .bbn-input div.bbn-flex-width .bbn-button {
+  font-size: 125%;
+  line-height: 100%;
+  margin: 0;
 }
 .bbn-dropdown .bbn-dropdown-container .bbn-input input {
   cursor: pointer;

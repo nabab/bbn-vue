@@ -18,7 +18,8 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-floater-list']"
           :group="li.data[sourceGroup]">
         <component v-if="groupComponent"
                    :is="groupComponent"
-                   v-bind="li"/>
+                   v-bind="li"
+                   :key="'groupComponent' + li.key"/>
         <div v-else
              v-text="li.data[sourceGroup]"/>
       </li>
@@ -40,13 +41,15 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-floater-list']"
                    :source="li.data"
                    :index="li.index"
                    @remove="remove(idx)"
-                   @hook:mounted="selfEmit(true)">
+                   @hook:mounted="selfEmit(true)"
+                   :key="li.key">
         </component>
         <component v-else
                   :is="li.data && li.data.url && !li.data[children] ? 'a' : 'span'"
                   @click.prevent="() => {}"
                   class="bbn-w-100 bbn-hspadded"
-                  :href="li.data && li.data.url ? li.data.url : null">
+                  :href="li.data && li.data.url ? li.data.url : null"
+                  :key="li.key">
           <span class="space" v-if="selection || (mode === 'options')">
             <i v-if="li.data.selected"
               class="nf nf-fa-check"></i>

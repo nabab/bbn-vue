@@ -69,6 +69,7 @@ script.innerHTML = `<div :class="[
                   :min-height="currentMinHeight > outHeight ? currentMinHeight - outHeight : null"
                   @resize="scrollResize">
         <component v-if="component"
+                   ref="component"
                   :is="component"
                   v-bind="realComponentOptions"/>
         <slot v-else-if="$slots.default"/>
@@ -91,6 +92,10 @@ script.innerHTML = `<div :class="[
                   :source-text="sourceText"/>
         <h3 v-else v-text="noData"/>
       </bbn-scroll>
+      <component is="style"
+                 v-if="css"
+                 scoped="scoped"
+                 v-html="css"/>
     </div>
     <footer v-if="footer"
             v-html="footer"
@@ -174,6 +179,9 @@ document.body.insertAdjacentElement('beforeend', script);
       content: {
         type: String,
         default: ''
+      },
+      css: {
+        type: String
       },
       //@todo not used
       options: {
@@ -580,6 +588,9 @@ document.body.insertAdjacentElement('beforeend', script);
       },
       hasButtons(){
         return this.currentButtons.length > 0;
+      },
+      anonymousComponent(){
+        return this.$refs.component;
       }
     },
     methods: {
@@ -767,8 +778,8 @@ document.body.insertAdjacentElement('beforeend', script);
         this.currentVisible = false;
       },
       onResize(force){
-        bbn.fn.log("onResize", this.scrollResized, this.isVisible);
-        if (this.scrollResized
+        bbn.fn.log("onResize floater", this.scrollResized, this.isVisible);
+        if ((!this.scrollable || this.scrollResized)
             && this.isVisible
             && this.$el
             && (this.setContainerMeasures() || !this.isInit || force)

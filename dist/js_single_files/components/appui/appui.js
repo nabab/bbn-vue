@@ -420,6 +420,14 @@ document.body.insertAdjacentElement('beforeend', script);
        */
       componentUrl: {
         type: String
+      },
+      /**
+       * Will be passed to router in order to ignore the dirty parameter.
+       * @prop {Boolean} ignoreDirty
+       */
+       ignoreDirty: {
+        type: Boolean,
+        default: false
       }
     },
     data(){
@@ -1104,7 +1112,9 @@ document.body.insertAdjacentElement('beforeend', script);
     },
     mounted(){
       if ( this.cool ){
-        this.app = this.$refs.app;
+        if (this.$refs.app) {
+          this.app = this.$refs.app;
+        }
         this.intervalBugChrome = setInterval(() => {
           if (this.isFocused && this.$el.scrollLeft) {
             this.$el.scrollLeft = 0;

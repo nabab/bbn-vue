@@ -28,7 +28,7 @@ document.body.insertAdjacentElement('beforeend', script);
 /** @todo try this way
 
  const timestamp = 1519482900000;
- const formatted = moment(timestamp).format('L');
+ const formatted = dayjs(timestamp).format('L');
 
  console.log(formatted);*/
 
@@ -273,7 +273,7 @@ document.body.insertAdjacentElement('beforeend', script);
           if (bbn.fn.isString(tmp)) {
             tmp = bbn.fn.date(tmp);
           }
-          this.realTarget = new moment(tmp);
+          this.realTarget = new dayjs(tmp);
           this.time = this.realTarget.unix();
           let timeout = VALUES[this.precisionIdx].timeout;
           this.update();
@@ -289,7 +289,7 @@ document.body.insertAdjacentElement('beforeend', script);
        */
       update(){
         if ( this.check() ){
-          let d = new moment();
+          let d = new dayjs();
           let secs = this.time - d.unix();
           if ( secs <= 0 ){
             if (this.isValid) {
@@ -300,7 +300,7 @@ document.body.insertAdjacentElement('beforeend', script);
             }
           }
           else if (secs) {
-            let diff = moment.duration(secs, 'seconds');
+            let diff = dayjs.duration(secs, 'seconds');
             let diffs = {};
             bbn.fn.each(VALUES, (a, i) => {
               diffs[a.name] = diff['as' + a.name[0].toUpperCase() + a.name.substr(1) + 's']();
@@ -308,7 +308,7 @@ document.body.insertAdjacentElement('beforeend', script);
                 let round = Math.floor(diffs[a.name]);
                 diffs[a.name] = round;
                 if (i < this.precisionIdx) {
-                  diff = diff.subtract(moment.duration(round, a.name + 's'));
+                  diff = diff.subtract(dayjs.duration(round, a.name + 's'));
                 }
               }
             });

@@ -89,7 +89,7 @@ document.body.insertAdjacentElement('beforeend', script);
 
       _getItemHTML(cfg){
         if ( cfg.time && cfg.html ){
-          var m = moment(cfg.time);
+          var m = dayjs(cfg.time);
           return '<div class="bbn-form-label" style="width: 130px">' +
             '<div class="metadata"><span class="date">' + m.calendar() + '</span></div>' +
             '</div><div class="ui reset bbn-form-field">' +

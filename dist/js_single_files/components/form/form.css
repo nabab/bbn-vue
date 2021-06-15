@@ -1,6 +1,5 @@
 .bbn-form {
-  padding: 0px;
-  margin: 0px;
+  margin-block-end: 0;
 }
 .bbn-form .bbn-form-footer {
   clear: both;

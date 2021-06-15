@@ -2,8 +2,27 @@
 let script = document.createElement('script');
 script.innerHTML = `<div :class="['bbn-middle', componentClass]"
      :style="'background-color:' + bgColor + '; transition: opacity 3s'">
-  <bbn-popup ref="popup"/>
-  <div class="bbn-login-container" :style="{maxHeight: clientHeight + 'px'}">
+  <bbn-popup ref="popup"
+             v-if="!popup"
+            :top="0"
+            :bottom="0"
+            :left="0"
+            :right="0"/>
+  <h2 v-if="hasExpired">
+    <span class="bbn-nowrap" v-text="_('Refresh the page')"/>
+    <span class="bbn-nowrap" v-text="_('to be able to log in')"/>
+    <span class="bbn-nowrap">
+      <span v-text="_('or click')"/>
+      <a class="bbn-p bbn-u"
+         style="color: inherit"
+         href="javascript:;"
+         @click="reload"
+         v-text="_('here')"/>
+    </span>
+  </h2>
+  <div v-else
+       class="bbn-login-container"
+       :style="{maxHeight: clientHeight + 'px'}">
     <div class="bbn-login-logo bbn-c bbn-block">
       <img v-if="logo" :src="logo">
     </div>
@@ -144,7 +163,7 @@ document.body.insertAdjacentElement('beforeend', script);
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.resizerComponent 
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent],
+    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent, bbn.vue.popupComponent],
     props: {
       /**
        * The background color
@@ -183,6 +202,10 @@ document.body.insertAdjacentElement('beforeend', script);
         required: true,
         validator: m => ['login', 'lost', 'change', 'invalid'].includes(m)
       },
+      expires: {
+        type: Number,
+        default: 1200000
+      },
       salt: {
         type: String,
         default: ''
@@ -206,13 +229,15 @@ document.body.insertAdjacentElement('beforeend', script);
       passwordLink: {
         type: [Boolean, String],
         default: bbn._("Password forgotten?")
-      }
+      },
+
     },
     data(){
       return{
         currentMode: this.mode,
         formData: {},
         passwordVisible: false,
+        hasExpired: false,
         clientHeight: document.documentElement.clientHeight
       }
     },
@@ -231,16 +256,16 @@ document.body.insertAdjacentElement('beforeend', script);
         }
         else if (d.success){
           if (this.currentMode === 'lost') {
-            this.alert(bbn._('An email has been sent to') + ' ' + this.currentFormData.email, bbn._('Info'));
+            this.alert(bbn._('An email has been sent to') + ' ' + this.currentFormData.email, false);
             this.currentMode = 'login';
           }
           else if (this.currentMode === 'change') {
-            this.alert(bbn._('Your password has been changed'), bbn._('Info'));
+            this.alert(bbn._('Your password has been changed'), false);
             this.currentMode = 'login';
           }
         }
         else {
-          this.alert(d.errorMessage, bbn.lng.error);
+          this.alert(d.errorMessage, false);
         }
       },
       setHeight(){
@@ -274,12 +299,15 @@ document.body.insertAdjacentElement('beforeend', script);
             if (!this.currentFormData.pass1.length
               || !this.currentFormData.pass2.length
               || (this.currentFormData.pass1 !== this.currentFormData.pass2)) {
-                this.alert(bbn._('Passwords must match!'));
+                this.alert(bbn._('Passwords must match!'), false);
                 return false;
               }
           default:
             return true;
         }
+      },
+      reload(){
+        window.location.reload();
       }
     },
     mounted(){
@@ -296,12 +324,18 @@ document.body.insertAdjacentElement('beforeend', script);
             });
           }
         }, 1000);
-        setTimeout(() => {
-          if (this.$el && this.$el.innerHTML) {
-            this.$el.innerHTML = `
-            <h2>`+ bbn._('Refresh the page to be able to log in or click') + ` <a class="bbn-p" onclick="window.location.reload();">` + bbn._('HERE') + `</a></h2>`;
+        if (this.expires) {
+          if (this.expires > 300000) {
+            setTimeout(() => {
+              this.alert(bbn._("This login form will expire in 5 minutes"));
+            }, this.expires - 300000);
           }
-        }, 1200000); // 20 minutes
+          setTimeout(() => {
+            if (this.$el && this.$el.innerHTML) {
+              this.hasExpired = true;
+            }
+          }, this.expires);
+        }
       });
       window.addEventListener('resize', this.setHeight);
     },

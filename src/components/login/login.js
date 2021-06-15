@@ -18,7 +18,7 @@
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.resizerComponent 
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent],
+    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent, bbn.vue.popupComponent],
     props: {
       /**
        * The background color
@@ -84,7 +84,8 @@
       passwordLink: {
         type: [Boolean, String],
         default: bbn._("Password forgotten?")
-      }
+      },
+
     },
     data(){
       return{
@@ -110,16 +111,16 @@
         }
         else if (d.success){
           if (this.currentMode === 'lost') {
-            this.alert(bbn._('An email has been sent to') + ' ' + this.currentFormData.email, bbn._('Info'));
+            this.alert(bbn._('An email has been sent to') + ' ' + this.currentFormData.email, false);
             this.currentMode = 'login';
           }
           else if (this.currentMode === 'change') {
-            this.alert(bbn._('Your password has been changed'), bbn._('Info'));
+            this.alert(bbn._('Your password has been changed'), false);
             this.currentMode = 'login';
           }
         }
         else {
-          this.alert(d.errorMessage, bbn.lng.error);
+          this.alert(d.errorMessage, false);
         }
       },
       setHeight(){
@@ -153,7 +154,7 @@
             if (!this.currentFormData.pass1.length
               || !this.currentFormData.pass2.length
               || (this.currentFormData.pass1 !== this.currentFormData.pass2)) {
-                this.alert(bbn._('Passwords must match!'));
+                this.alert(bbn._('Passwords must match!'), false);
                 return false;
               }
           default:

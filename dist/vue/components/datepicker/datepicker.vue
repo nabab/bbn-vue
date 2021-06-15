@@ -1,5 +1,11 @@
 <template>
 <div :class="[componentClass, 'bbn-textbox', {'bbn-input-nullable': isNullable}]">
+  <bbn-button v-if="buttonPosition === 'left'"
+              icon="nf nf-fa-calendar"
+              @click="isOpened = !isOpened"
+              :disabled="disabled || readonly"
+              tabindex="-1"
+              class="bbn-button-left bbn-no-vborder"/>
   <bbn-masked ref="element"
               :disabled="disabled"
               :readonly="readonly"
@@ -11,27 +17,25 @@
               v-model="inputValue"
               class="bbn-flex-fill"
               :autosize="autosize"
-  ></bbn-masked>
+              :inputmode="inputmode"/>
   <div v-if="isNullable && !readonly && !disabled"
-        class="bbn-block bbn-h-100 bbn-input-nullable-container"
-  >
-    <i v-if="hasValue" class="nf nf-fa-times_circle bbn-p"
-        @mousedown.prevent.stop="clear"
-    ></i>
+       class="bbn-block bbn-h-100 bbn-input-nullable-container">
+    <i v-if="hasValue"
+       class="nf nf-fa-times_circle bbn-p"
+       @mousedown.prevent.stop="clear"/>
   </div>
-  <bbn-button icon="nf nf-fa-calendar"
+  <bbn-button v-if="buttonPosition === 'right'"
+              icon="nf nf-fa-calendar"
               @click="isOpened = !isOpened"
               :disabled="disabled || readonly"
               tabindex="-1"
-              class="bbn-button-right bbn-no-vborder"
-  ></bbn-button>
+              class="bbn-button-right bbn-no-vborder"/>
   <bbn-floater v-if="isOpened && !disabled && !readonly"
                :element="$el"
                ref="floater"
                :auto-hide="1000"
                @close="isOpened = false"
-               :element-width="false"
-  >
+               :element-width="false">
     <bbn-calendar :arrows-buttons="false"
                   @selected="setDate"
                   :value="value ? value.toString() : ''"
@@ -46,8 +50,7 @@
                   :disable-dates="disableDates"
                   :items-range="datesRange"
                   :source="source"
-                  :onlyEvents="onlyEvents"
-    ></bbn-calendar>
+                  :onlyEvents="onlyEvents"/>
   </bbn-floater>
 </div>
 
@@ -172,6 +175,16 @@
       onlyEvents: {
         type: Boolean,
         default: false
+      },
+      /**
+       * The calendar button's position
+       * 
+       * @prop {String} ['right'] buttonPosition
+       */
+      buttonPosition: {
+        type: String,
+        default: 'right',
+        validator: pos => ['right', 'left'].includes(pos)
       }
     },
     data(){
@@ -289,7 +302,7 @@
        * @fires setValue
        */
       setDate(val){
-        this.setValue(moment(val, 'YYYY-MM-DD').isValid() ? moment(val, 'YYYY-MM-DD').format(this.getValueFormat(val)) : '');
+        this.setValue(dayjs(val, 'YYYY-MM-DD').isValid() ? dayjs(val, 'YYYY-MM-DD').format(this.getValueFormat(val)) : '');
       },
       /**
        * Sets the value.
@@ -303,7 +316,7 @@
        */
       setValue(val){
         let format = !!val ? this.getValueFormat(val.toString()) : false,
-            value = format ? (moment(val.toString(), format).isValid() ? moment(val.toString(), format).format(format) : '') : '';
+            value = format ? (dayjs(val.toString(), format).isValid() ? dayjs(val.toString(), format).format(format) : '') : '';
         if ( value ){
           if ( this.min && (value < this.min) ){
             value = this.min;
@@ -358,7 +371,7 @@
       inputChanged(){
         let mask = this.getRef('element'),
             newVal = mask.inputValue,
-            value = !!newVal ? moment(newVal, this.currentFormat).format(this.getValueFormat(newVal)) : '';
+            value = !!newVal ? dayjs(newVal, this.currentFormat).format(this.getValueFormat(newVal)) : '';
         if ( mask.raw(newVal) !== this.oldInputValue ){
           if ( value && this.min && (value < this.min) ){
             value = this.min;
@@ -396,7 +409,7 @@
       setInputValue(newVal){
         if ( newVal ){
           let mask = this.getRef('element'),
-              mom = moment(newVal.toString(), this.getValueFormat(newVal.toString()));
+              mom = dayjs(newVal.toString(), this.getValueFormat(newVal.toString()));
           this.inputValue = newVal && mask && mom.isValid() ?
             mask.raw(mom.format(this.currentFormat)) :
             '';
@@ -425,8 +438,8 @@
      * @event beforeCreate
      */
     beforeCreate(){
-      if ( bbn.env && bbn.env.lang && (bbn.env.lang !== moment.locale()) ){
-        moment.locale(bbn.env.lang);
+      if ( bbn.env && bbn.env.lang && (bbn.env.lang !== dayjs.locale()) ){
+        dayjs.locale(bbn.env.lang);
       }
     },
     /**
@@ -495,7 +508,8 @@
 .bbn-datepicker .bbn-button {
   margin-top: 0;
 }
-.bbn-datepicker .bbn-button.bbn-button-right {
+.bbn-datepicker .bbn-button.bbn-button-right,
+.bbn-datepicker .bbn-button.bbn-button-left {
   width: inherit;
   opacity: 0.7;
 }

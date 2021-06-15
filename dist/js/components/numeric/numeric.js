@@ -72,7 +72,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', {
             'bbn-radius-bottom-right',
             {
               'bbn-disabled': disableDecrease,
-              'bbn-p' :disableDecrease,
+              'bbn-p': disableDecrease,
               'bbn-numeric-no-pointer-events' : disableDecrease
             }
           ]"
@@ -327,6 +327,7 @@ document.head.insertAdjacentElement('beforeend', css);
           this.editMode = true;
           this.$nextTick(() => {
             this.focus(e);
+            this.selectText();
           })
         }
       },
