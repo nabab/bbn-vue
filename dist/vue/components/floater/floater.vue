@@ -68,6 +68,7 @@
                   :min-height="currentMinHeight > outHeight ? currentMinHeight - outHeight : null"
                   @resize="scrollResize">
         <component v-if="component"
+                   ref="component"
                   :is="component"
                   v-bind="realComponentOptions"/>
         <slot v-else-if="$slots.default"/>
@@ -90,6 +91,10 @@
                   :source-text="sourceText"/>
         <h3 v-else v-text="noData"/>
       </bbn-scroll>
+      <component is="style"
+                 v-if="css"
+                 scoped="scoped"
+                 v-html="css"/>
     </div>
     <footer v-if="footer"
             v-html="footer"
@@ -172,6 +177,9 @@
       content: {
         type: String,
         default: ''
+      },
+      css: {
+        type: String
       },
       //@todo not used
       options: {
@@ -578,6 +586,9 @@
       },
       hasButtons(){
         return this.currentButtons.length > 0;
+      },
+      anonymousComponent(){
+        return this.$refs.component;
       }
     },
     methods: {
@@ -765,8 +776,8 @@
         this.currentVisible = false;
       },
       onResize(force){
-        bbn.fn.log("onResize", this.scrollResized, this.isVisible);
-        if (this.scrollResized
+        bbn.fn.log("onResize floater", this.scrollResized, this.isVisible);
+        if ((!this.scrollable || this.scrollResized)
             && this.isVisible
             && this.$el
             && (this.setContainerMeasures() || !this.isInit || force)
@@ -1508,6 +1519,9 @@ div.bbn-floater:not(.bbn-invisible) {
 }
 div.bbn-floater.bbn-invisible {
   opacity: 0 !important;
+}
+div.bbn-floater > div {
+  overflow: unset;
 }
 div.bbn-floater > div > header {
   white-space: nowrap;

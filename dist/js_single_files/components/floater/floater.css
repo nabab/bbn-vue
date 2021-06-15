@@ -11,6 +11,9 @@ div.bbn-floater:not(.bbn-invisible) {
 div.bbn-floater.bbn-invisible {
   opacity: 0 !important;
 }
+div.bbn-floater > div {
+  overflow: unset;
+}
 div.bbn-floater > div > header {
   white-space: nowrap;
   padding-right: 3.6em;

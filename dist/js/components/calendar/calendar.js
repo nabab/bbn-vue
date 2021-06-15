@@ -451,13 +451,13 @@ document.head.insertAdjacentElement('beforeend', css);
       }
     },
     data(){
-      let mom = moment();
+      let mom = dayjs();
       if ( this.date ){
-        let m = moment(this.date, this.getCfg().valueFormat);
+        let m = dayjs(this.date, this.getCfg().valueFormat);
         mom = m.isValid() ? m : mom;
       }
       else if ( this.max ){
-        let m = moment(this.max, this.getCfg().valueFormat);
+        let m = dayjs(this.max, this.getCfg().valueFormat);
         mom = m.isValid() ? m : mom;
       }
       return {
@@ -466,7 +466,7 @@ document.head.insertAdjacentElement('beforeend', css);
          *
          * @data {String} [today] today
         */
-        today: moment().format('YYYY-MM-DD'),
+        today: dayjs().format('YYYY-MM-DD'),
         /**
          * The current calendar title.
          *
@@ -557,7 +557,7 @@ document.head.insertAdjacentElement('beforeend', css);
             obj = {
               text: txt,
               value: val,
-              isCurrent: val === moment(this.today, this.currentCfg.valueFormat).format(this.currentCfg.valueFormat),
+              isCurrent: val === dayjs(this.today, this.currentCfg.valueFormat).format(this.currentCfg.valueFormat),
               hidden: !!hid,
               colored: !!col,
               over: false,
@@ -568,8 +568,8 @@ document.head.insertAdjacentElement('beforeend', css);
             };
         if (
           (this.onlyEvents && (!events || !events.length)) ||
-          (this.min && (obj.value < moment(this.min, this.currentCfg.valueFormat).format(this.currentCfg.valueFormat))) ||
-          (this.max && (obj.value > moment(this.max, this.currentCfg.valueFormat).format(this.currentCfg.valueFormat)))
+          (this.min && (obj.value < dayjs(this.min, this.currentCfg.valueFormat).format(this.currentCfg.valueFormat))) ||
+          (this.max && (obj.value > dayjs(this.max, this.currentCfg.valueFormat).format(this.currentCfg.valueFormat)))
         ){
           obj.hidden = true;
         }
@@ -590,8 +590,8 @@ document.head.insertAdjacentElement('beforeend', css);
       */
       _makeDays(){
         let items = [],
-            c = moment(this.currentDate.format('YYYY-MM-01')),
-            sunday = moment(c).day('Sunday').weekday();
+            c = dayjs(this.currentDate.format('YYYY-MM-01')),
+            sunday = dayjs(c).day('Sunday').weekday();
 
         for ( let i = 1; i <= 6; i++ ){
           if ( i > 1 ){
@@ -612,7 +612,7 @@ document.head.insertAdjacentElement('beforeend', css);
           }));
         }
         this.gridStyle = 'grid-template-columns: repeat(7, 1fr); grid-template-rows: max-content repeat(6, 1fr);';
-        this.currentLabelsDates = Array.from({length: 7}, (v, i) => moment(this.currentDate).weekday(i));
+        this.currentLabelsDates = Array.from({length: 7}, (v, i) => dayjs(this.currentDate).weekday(i));
         this.$set(this, 'items', items);
       },
       /**
@@ -623,8 +623,8 @@ document.head.insertAdjacentElement('beforeend', css);
        * @return {Object}
       */
       _makeWeeks(){
-        let c = moment(this.currentDate),
-            sunday = moment(c).day('Sunday').weekday(),
+        let c = dayjs(this.currentDate),
+            sunday = dayjs(c).day('Sunday').weekday(),
             items = Array.from({length: 7}, (v, k) => {
               let w = c.weekday(k);
               return this._makeItem(
@@ -637,7 +637,7 @@ document.head.insertAdjacentElement('beforeend', css);
               );
             });
         this.gridStyle = 'grid-template-columns: repeat(7, 1fr); grid-template-rows: max-content auto';
-        this.currentLabelsDates = Array.from({length: 7}, (v, i) => moment(this.currentDate).weekday(i));
+        this.currentLabelsDates = Array.from({length: 7}, (v, i) => dayjs(this.currentDate).weekday(i));
         this.$set(this, 'items', items);
       },
       /**
@@ -648,7 +648,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @return {Object}
       */
       _makeMonths(){
-        let c = moment(this.currentDate.format('YYYY-01-01')),
+        let c = dayjs(this.currentDate.format('YYYY-01-01')),
             items = Array.from({length: 12}, (v, k) => {
               let w = c.month(k);
               return this._makeItem(
@@ -672,7 +672,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @return {Object}
       */
       _makeYears(){
-        let c = moment(this.currentDate.format('YYYY-01-01')),
+        let c = dayjs(this.currentDate.format('YYYY-01-01')),
             year = c.format('YYYY'),
             items = Array.from({length: 12}, (v, k) => {
               let w = c.year(year - 6 + k);
@@ -734,10 +734,10 @@ document.head.insertAdjacentElement('beforeend', css);
               labelsFormatAbbr: 'ddd',
               labelsFormatFull: 'dddd',
               startFormat: () => {
-                return moment(this.currentDate).weekday(0).format('YYYY-MM-DD');
+                return dayjs(this.currentDate).weekday(0).format('YYYY-MM-DD');
               },
               endFormat: () => {
-                return moment(this.currentDate).weekday(6).format('YYYY-MM-DD');
+                return dayjs(this.currentDate).weekday(6).format('YYYY-MM-DD');
               }
             });
             break;
@@ -824,10 +824,10 @@ document.head.insertAdjacentElement('beforeend', css);
             this.$nextTick(() => {
               if ( !this.date && ( this.max || this.min) ){
                 if ( this.max && !this.min && (this.max < this.currentDate.format(this.currentCfg.valueFormat)) ){
-                  this.currentDate = moment(this.max, this.currentCfg.valueFormat);
+                  this.currentDate = dayjs(this.max, this.currentCfg.valueFormat);
                 }
                 if ( this.min && !this.max && (this.min > this.currentDate.format(this.currentCfg.valueFormat)) ){
-                  this.currentDate = moment(this.min, this.currentCfg.valueFormat);
+                  this.currentDate = dayjs(this.min, this.currentCfg.valueFormat);
                 }
                 this.currentCfg.make();
                 this.setTitle();
@@ -846,14 +846,14 @@ document.head.insertAdjacentElement('beforeend', css);
       makeEvents(){
         this.$set(this, 'events', {});
         bbn.fn.each(this.currentData, d => {
-          let tmpStart = moment(d.data[this.startField], this.startFormat).format(this.currentCfg.valueFormat),
-              tmpEnd = moment(d.data[this.endField], this.endFormat).format(this.currentCfg.valueFormat);
+          let tmpStart = dayjs(d.data[this.startField], this.startFormat).format(this.currentCfg.valueFormat),
+              tmpEnd = dayjs(d.data[this.endField], this.endFormat).format(this.currentCfg.valueFormat);
           if ( this.events[tmpStart] === undefined ){
             this.events[tmpStart] = [];
           }
           this.events[tmpStart].push(d.data);
           if ( tmpStart !== tmpEnd ){
-            let mom = moment(tmpStart, this.currentCfg.valueFormat).add(...this.currentCfg.stepEvent),
+            let mom = dayjs(tmpStart, this.currentCfg.valueFormat).add(...this.currentCfg.stepEvent),
                 tmp = mom.format(this.currentCfg.valueFormat);
             while ( tmp <= tmpEnd ){
               if ( this.events[tmp] === undefined ){
@@ -879,7 +879,7 @@ document.head.insertAdjacentElement('beforeend', css);
       init(){
         if ( this.currentCfg && bbn.fn.isFunction(this.currentCfg.make) ){
           if ( this.selection && this.autoSelection && this.currentCfg.valueFormat ){
-            this.currentValue = this.value ? moment(this.value, this.currentCfg.valueFormat).format(this.currentCfg.valueFormat) : '';
+            this.currentValue = this.value ? dayjs(this.value, this.currentCfg.valueFormat).format(this.currentCfg.valueFormat) : '';
             this.$emit('input', this.currentValue);
           }
           this.makeEvents();
@@ -904,8 +904,8 @@ document.head.insertAdjacentElement('beforeend', css);
           return this.currentData && bbn.fn.isArray(this.currentData) ?
             bbn.fn.map(bbn.fn.filter(this.currentData, ev => {
               if ( ev.data[this.startField] && ev.data[this.endField] ){
-                let start = moment(ev.data[this.startField], this.startFormat).format(this.currentCfg.valueFormat),
-                    end = moment(ev.data[this.endField], this.endFormat).format(this.currentCfg.valueFormat)
+                let start = dayjs(ev.data[this.startField], this.startFormat).format(this.currentCfg.valueFormat),
+                    end = dayjs(ev.data[this.endField], this.endFormat).format(this.currentCfg.valueFormat)
                 return (start <= v) && (end >= v)
               }
               return false
@@ -964,9 +964,9 @@ document.head.insertAdjacentElement('beforeend', css);
       next(skip){
         skip = typeof skip === 'boolean' ? skip : false;
         if ( this.currentCfg && this.currentCfg.step && bbn.fn.isFunction(this.currentCfg.make) ){
-          let check = moment(this.currentDate).add(...this.currentCfg[skip && this.currentCfg.stepSkip ? 'stepSkip' : 'step']);
+          let check = dayjs(this.currentDate).add(...this.currentCfg[skip && this.currentCfg.stepSkip ? 'stepSkip' : 'step']);
           if ( this.max && (check.format(this.currentCfg.valueFormat) > this.max) ){
-            this.currentDate = moment(this.max, this.currentCfg.valueFormat);
+            this.currentDate = dayjs(this.max, this.currentCfg.valueFormat);
           }
           else{
             this.currentDate.add(...this.currentCfg[skip && this.currentCfg.stepSkip ? 'stepSkip' : 'step']);
@@ -990,9 +990,9 @@ document.head.insertAdjacentElement('beforeend', css);
       prev(skip){
         skip = typeof skip === 'boolean' ? skip : false;
         if ( this.currentCfg && this.currentCfg.step && bbn.fn.isFunction(this.currentCfg.make) ){
-          let check = moment(this.currentDate).subtract(...this.currentCfg[skip && this.currentCfg.stepSkip ? 'stepSkip' : 'step']);
+          let check = dayjs(this.currentDate).subtract(...this.currentCfg[skip && this.currentCfg.stepSkip ? 'stepSkip' : 'step']);
           if ( this.min && (check.format(this.currentCfg.valueFormat) < this.min) ){
-            this.currentDate = moment(this.min, this.currentCfg.valueFormat);
+            this.currentDate = dayjs(this.min, this.currentCfg.valueFormat);
           }
           else {
             this.currentDate.subtract(...this.currentCfg[skip && this.currentCfg.stepSkip ? 'stepSkip' : 'step']);
@@ -1031,11 +1031,11 @@ document.head.insertAdjacentElement('beforeend', css);
        * @return {Object}
       */
       getPostData(){
-        let start = moment(this.currentDate.format(bbn.fn.isFunction(this.currentCfg.startFormat) ?
+        let start = dayjs(this.currentDate.format(bbn.fn.isFunction(this.currentCfg.startFormat) ?
               this.currentCfg.startFormat() :
               this.currentCfg.startFormat
             )),
-            end = moment(this.currentDate.format(bbn.fn.isFunction(this.currentCfg.endFormat) ?
+            end = dayjs(this.currentDate.format(bbn.fn.isFunction(this.currentCfg.endFormat) ?
               this.currentCfg.endFormat() :
               this.currentCfg.endFormat
             )),
@@ -1089,8 +1089,8 @@ document.head.insertAdjacentElement('beforeend', css);
      * @event beforeCreate
      */
     beforeCreate(){
-      if ( bbn.env && bbn.env.lang && (bbn.env.lang !== moment.locale()) ){
-        moment.locale(bbn.env.lang);
+      if ( bbn.env && bbn.env.lang && (bbn.env.lang !== dayjs.locale()) ){
+        dayjs.locale(bbn.env.lang);
       }
     },
     /**

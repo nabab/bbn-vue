@@ -177,6 +177,10 @@ document.body.insertAdjacentElement('beforeend', script);
                   this.renderedOptions.value = this.options && (this.options.value !== undefined) ? this.options.value : 1;
                   this.renderedOptions.novalue = this.options && (this.options.novalue !== undefined) ? this.options.novalue : 0;
                   break;
+                case "multilines":
+                case "textarea":
+                    this.renderedComponent = 'bbn-textarea';
+                  break;
                 default:
                   this.renderedComponent = 'bbn-input';
                   break;

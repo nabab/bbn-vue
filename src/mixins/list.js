@@ -682,6 +682,7 @@
                 return o;
               });
             }
+
             return (this.map ? data.map(this.map) : data).slice();
           }
           return [];

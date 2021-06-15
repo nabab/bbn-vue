@@ -1,7 +1,7 @@
 ((bbn) => {
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-box', 'bbn-spadded']">
-    <div v-if="ready"
+    <div v-if="ready && showList"
          style="z-index: 2">
       <div v-for="(f, idx) in currentData"
            :class="['bbn-flex-width', 'bbn-bordered', 'bbn-spadded', 'bbn-vmiddle', {
@@ -111,7 +111,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-box', 'bbn-spadded']">
         ></div>
         <div class="bbn-box bbn-spadded"
              ref="pasteContainer"
-             v-if="isEnabled && paste && canAddFile"
+             v-if="paste && canAddFile"
              style="z-index: 2"
              :title="currentText.pasteContainer"
              @paste="pasteEvent"
@@ -120,7 +120,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-box', 'bbn-spadded']">
         </div>
         <div class="bbn-box bbn-spadded bbn-p"
              ref="uploadButton"
-             v-if="isEnabled && canAddFile && !autoUpload && !!filesReady.length"
+             v-if="canAddFile && !autoUpload && !!filesReady.length"
              style="z-index: 2"
              :title="currentText.upload"
              @click="upload()"
@@ -170,6 +170,10 @@ document.body.insertAdjacentElement('beforeend', script);
      */
     mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent],
     props: {
+      showList: {
+        type: Boolean,
+        default: true
+      },
       /**
        * The value of the component.
        * @prop {Array|String} [[]] value

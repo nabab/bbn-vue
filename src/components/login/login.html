@@ -1,6 +1,11 @@
 <div :class="['bbn-middle', componentClass]"
      :style="'background-color:' + bgColor + '; transition: opacity 3s'">
-  <bbn-popup ref="popup"/>
+  <bbn-popup ref="popup"
+             v-if="!popup"
+            :top="0"
+            :bottom="0"
+            :left="0"
+            :right="0"/>
   <h2 v-if="hasExpired">
     <span class="bbn-nowrap" v-text="_('Refresh the page')"/>
     <span class="bbn-nowrap" v-text="_('to be able to log in')"/>

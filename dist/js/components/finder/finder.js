@@ -687,7 +687,7 @@ document.head.insertAdjacentElement('beforeend', css);
           file: n.data.file,
           path: this.currentPath !== n.data.value + '/' ? this.currentPath : '',
           origin: this.origin,
-          destination: this.origin + 'download/' + moment().format('x') + '/'
+          destination: this.origin + 'download/' + dayjs().format('x') + '/'
         })
       },
       /**

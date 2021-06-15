@@ -1,6 +1,6 @@
 ((bbn) => {
 let script_dep = document.createElement('script');
-script_dep.setAttribute('src', "https://cdn.jsdelivr.net/combine/gh/apexcharts/apexcharts.js@v3.19.2/dist/apexcharts.min.js,gh/moment/moment@2.27.0/min/moment-with-locales.min.js");
+script_dep.setAttribute('src', "https://cdn.jsdelivr.net/combine/gh/apexcharts/apexcharts.js@v3.19.2/dist/apexcharts.min.js");
 script_dep.onload = () => {
 
 let css_dependency;
@@ -957,7 +957,7 @@ document.body.insertAdjacentElement('beforeend', script);
             cfg.xaxis.type = 'datetime';
             if ( bbn.fn.isString(this.xDate) ){
               cfg.xaxis.labels.formatter = (value, timestamp, index) => {
-                return moment(timestamp).format(this.xDate);
+                return dayjs(timestamp).format(this.xDate);
               }
             }
           }

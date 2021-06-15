@@ -829,7 +829,7 @@
         //this.originalData = bbn.fn.extend(true, {}, this.getData());
         this.$nextTick(() => {
           let focusable = null;
-          if ( !this.window ){
+          if (!this.window && this.windowed) {
             this.window = this.closest("bbn-floater");
             if ( this.window ){
               this.window.addClose(this.closePopup);
@@ -1007,8 +1007,7 @@
 </script>
 <style scoped>
 .bbn-form {
-  padding: 0px;
-  margin: 0px;
+  margin-block-end: 0;
 }
 .bbn-form .bbn-form-footer {
   clear: both;

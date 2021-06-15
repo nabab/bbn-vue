@@ -11,6 +11,7 @@
               @keydown.enter="inputChanged"
               class="bbn-flex-fill"
               :autosize="autosize"
+              :inputmode="inputmode"
   ></bbn-masked>
   <div v-if="isNullable && !readonly && !disabled"
         class="bbn-block bbn-h-100 bbn-input-nullable-container"
@@ -477,7 +478,7 @@
         if ( !format ){
           format = !!val ? this.getValueFormat(val.toString()) : false;
         }
-        let value = !!format && !!val ? (moment(val.toString(), format).isValid() ? moment(val.toString(), format).format(format) : '') : '';
+        let value = !!format && !!val ? (dayjs(val.toString(), format).isValid() ? dayjs(val.toString(), format).format(format) : '') : '';
         if ( value ){
           if ( value && this.min && (value < this.min) ){
             value = this.min;
@@ -513,7 +514,7 @@
       inputChanged(){
         let mask = this.getRef('element'),
             newVal = mask.inputValue,
-            value = !!newVal ? moment(newVal, this.currentFormat).format(this.getValueFormat(newVal)) : '';
+            value = !!newVal ? dayjs(newVal, this.currentFormat).format(this.getValueFormat(newVal)) : '';
         if ( mask.raw(newVal) !== this.oldInputValue ){
           if ( value && this.min && (value < this.min) ){
             value = this.min;
@@ -539,7 +540,7 @@
       setInputValue(newVal){
         if ( newVal ){
           let mask = this.getRef('element'),
-              mom = moment(newVal.toString(), this.getValueFormat(newVal.toString()));
+              mom = dayjs(newVal.toString(), this.getValueFormat(newVal.toString()));
           this.inputValue = newVal && mask && mom.isValid() ?
             mask.raw(mom.format(this.currentFormat)) :
             '';
@@ -565,8 +566,8 @@
      * @event beforeCreate
      */
     beforeCreate(){
-      if ( bbn.env && bbn.env.lang && (bbn.env.lang !== moment.locale()) ){
-        moment.locale(bbn.env.lang);
+      if ( bbn.env && bbn.env.lang && (bbn.env.lang !== dayjs.locale()) ){
+        dayjs.locale(bbn.env.lang);
       }
     },
     /**
@@ -722,8 +723,8 @@
            */
           hours(){
             if ( this.comp ){
-              let min = this.comp.min ? moment(this.comp.min, this.comp.getValueFormat(this.comp.min)).format('HH') : false,
-                  max = this.comp.max  ? moment(this.comp.max, this.comp.getValueFormat(this.comp.max)).format('HH') : false;
+              let min = this.comp.min ? dayjs(this.comp.min, this.comp.getValueFormat(this.comp.min)).format('HH') : false,
+                  max = this.comp.max  ? dayjs(this.comp.max, this.comp.getValueFormat(this.comp.max)).format('HH') : false;
               return Array.from({length: 24}, (v,i) => {
                 return {
                   text: i.toString().length === 1 ? '0' + i : i,
@@ -769,7 +770,7 @@
               !bbn.fn.isNull(this.minute) &&
               (!this.comp.showSecond || !bbn.fn.isNull(this.second) )
             ){
-              let v = moment().minute(this.minute).hour(this.hour),
+              let v = dayjs().minute(this.minute).hour(this.hour),
                   f = 'HH:mm';
               if ( this.comp.showSecond ){
                 v.second(this.second);
@@ -834,7 +835,7 @@
           this.ready = false;
           if ( this.comp.value ){
             let format = this.comp.getValueFormat(this.comp.value),
-                mom = format ? moment(this.comp.value, format) : false;
+                mom = format ? dayjs(this.comp.value, format) : false;
             this.hour = mom ? mom.hour() : null;
             this.minute = mom ? mom.minute() : null;
             this.second = mom && this.comp.showSecond ? mom.second() : null;

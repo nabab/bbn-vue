@@ -21,6 +21,11 @@
                         "text": "componentUrl",
                         "desc": "The property to get from the componentSource to use for setting the URL.",
                         "url": "bbn-vue\/component\/appui\/doc\/props#componentUrl"
+                    },
+                    {
+                        "text": "ignoreDirty",
+                        "desc": "Will be passed to router in order to ignore the dirty parameter.",
+                        "url": "bbn-vue\/component\/appui\/doc\/props#ignoreDirty"
                     }
                 ],
                 "methods": [],
@@ -2351,6 +2356,11 @@
                         "text": "autosize",
                         "desc": "Set it to false if you dont' want to auto-resize the input's width based on its value (in characters).",
                         "url": "bbn-vue\/component\/datepicker\/doc\/props#autosize"
+                    },
+                    {
+                        "text": "buttonPosition",
+                        "desc": "The calendar button's position",
+                        "url": "bbn-vue\/component\/datepicker\/doc\/props#buttonPosition"
                     }
                 ],
                 "methods": [],
@@ -3920,6 +3930,16 @@
                         "url": "bbn-vue\/component\/input\/doc\/props#autoHideRight"
                     },
                     {
+                        "text": "actionLeft",
+                        "desc": "Called when click the left button.",
+                        "url": "bbn-vue\/component\/input\/doc\/props#actionLeft"
+                    },
+                    {
+                        "text": "actionRight",
+                        "desc": "Called when click the right button.",
+                        "url": "bbn-vue\/component\/input\/doc\/props#actionRight"
+                    },
+                    {
                         "text": "pattern",
                         "desc": "The input's attribute 'pattern'.",
                         "url": "bbn-vue\/component\/input\/doc\/props#pattern"
@@ -5365,7 +5385,7 @@
                     },
                     {
                         "text": "nav",
-                        "desc": "Set it to true if you wanto to see the navigation bar (tabs or breadcrumb).",
+                        "desc": "Set it to true if you want to see the navigation bar (tabs or breadcrumb).",
                         "url": "bbn-vue\/component\/router\/doc\/props#nav"
                     },
                     {
@@ -5437,6 +5457,11 @@
                         "text": "maxTitleLength",
                         "desc": "The max length for the titles",
                         "url": "bbn-vue\/component\/router\/doc\/props#maxTitleLength"
+                    },
+                    {
+                        "text": "ignoreDirty",
+                        "desc": "Will be passed to router in order to ignore the dirty parameter.",
+                        "url": "bbn-vue\/component\/router\/doc\/props#ignoreDirty"
                     }
                 ],
                 "methods": [
@@ -6993,11 +7018,6 @@
                         "url": "bbn-vue\/component\/table\/doc\/props#titleGroups"
                     },
                     {
-                        "text": "Vue",
-                        "desc": "The object popup of the table.",
-                        "url": "bbn-vue\/component\/table\/doc\/props#Vue"
-                    },
-                    {
                         "text": "scrollable",
                         "desc": "Defines the behaviour of the table about the scroll.",
                         "url": "bbn-vue\/component\/table\/doc\/props#scrollable"
@@ -7715,6 +7735,71 @@
                         "text": "eventsComponent",
                         "desc": "",
                         "url": "bbn-vue\/component\/timepicker\/doc\/mixins#eventsComponent"
+                    }
+                ]
+            },
+            {
+                "text": "timer",
+                "url": "bbn-vue\/component\/timer\/overview",
+                "props": [
+                    {
+                        "text": "precision",
+                        "desc": "The precision of the visible timer.",
+                        "url": "bbn-vue\/component\/timer\/doc\/props#precision"
+                    },
+                    {
+                        "text": "scale",
+                        "desc": "The scale of the timer (largest unit).",
+                        "url": "bbn-vue\/component\/timer\/doc\/props#scale"
+                    },
+                    {
+                        "text": "showZero",
+                        "desc": "Shows unit even if empty for countdown mode.",
+                        "url": "bbn-vue\/component\/timer\/doc\/props#showZero"
+                    },
+                    {
+                        "text": "target",
+                        "desc": "The target date(s) if countdown or alarm.",
+                        "url": "bbn-vue\/component\/timer\/doc\/props#target"
+                    },
+                    {
+                        "text": "zeroFill",
+                        "desc": "Set to true the remaining day and month and year will be displayed.",
+                        "url": "bbn-vue\/component\/timer\/doc\/props#zeroFill"
+                    }
+                ],
+                "methods": [
+                    {
+                        "text": "check",
+                        "desc": "Checks if the component has been correctly set up.",
+                        "url": "bbn-vue\/component\/timer\/doc\/methods#check"
+                    },
+                    {
+                        "text": "init",
+                        "desc": "Initializes the component.",
+                        "url": "bbn-vue\/component\/timer\/doc\/methods#init"
+                    },
+                    {
+                        "text": "update",
+                        "desc": "Udates the component.",
+                        "url": "bbn-vue\/component\/timer\/doc\/methods#update"
+                    },
+                    {
+                        "text": "getShow",
+                        "desc": "Returns the descriptive list of units used in the countdown.\r\n       *",
+                        "url": "bbn-vue\/component\/timer\/doc\/methods#getShow"
+                    },
+                    {
+                        "text": "getText",
+                        "desc": "Returns the descriptive list of units used in the countdown with the value that contains it when calling this function.\r\n       *",
+                        "url": "bbn-vue\/component\/timer\/doc\/methods#getText"
+                    }
+                ],
+                "mixins": [
+                    {
+                        "text": "basicComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/timer\/doc\/mixins#basicComponent"
                     }
                 ]
             },

@@ -64,13 +64,6 @@
         type: [Array, Function]
       },
       /**
-       * The object popup of the table.
-       * @prop {Object} Vue
-       */
-      popup: {
-        type: Vue
-      },
-      /**
        * Defines the behaviour of the table about the scroll.
        * @prop {Boolean} [true] scrollable
        */

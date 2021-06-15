@@ -418,6 +418,14 @@
        */
       componentUrl: {
         type: String
+      },
+      /**
+       * Will be passed to router in order to ignore the dirty parameter.
+       * @prop {Boolean} ignoreDirty
+       */
+       ignoreDirty: {
+        type: Boolean,
+        default: false
       }
     },
     data(){
@@ -1102,7 +1110,9 @@
     },
     mounted(){
       if ( this.cool ){
-        this.app = this.$refs.app;
+        if (this.$refs.app) {
+          this.app = this.$refs.app;
+        }
         this.intervalBugChrome = setInterval(() => {
           if (this.isFocused && this.$el.scrollLeft) {
             this.$el.scrollLeft = 0;

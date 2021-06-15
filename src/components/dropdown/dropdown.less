@@ -3,7 +3,6 @@
   cursor: pointer;
   .bbn-dropdown-container {
     line-height: normal;
-    height: 100%;
     .bbn-dropdown-content{
       white-space: nowrap;
       text-overflow: ellipsis;
@@ -17,7 +16,8 @@
       height: 100%;
       div.bbn-flex-width {
         height: 100%;
-        /* box-sizing: border-box;
+        box-sizing: border-box;
+        /* 
         position: absolute;
         top: 0px;
         left: 0px;
@@ -26,8 +26,10 @@
         overflow: hidden; */
         
         .bbn-button{
+          font-size: 125%;
+          line-height: 100%;
           //important for safari
-          //margin:0;
+          margin: 0;
         }
       }
       input{

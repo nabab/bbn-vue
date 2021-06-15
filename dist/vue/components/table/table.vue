@@ -238,7 +238,7 @@
                   </td>
                   <td :colspan="currentColumns.length - 2"
                       style="border-left: 0px"
-                      :Class="(trClass ? (typeof trClass === 'function' ? trClass(d.data) : trClass) : '')"/>
+                      :class="(trClass ? (typeof trClass === 'function' ? trClass(d.data) : trClass) : '')"/>
                 </template>
                 <!--td v-else-if="d.expansion && !selection"
                     :class="col.fixed ? cssRuleName : ''"
@@ -278,6 +278,17 @@
                       style="border-left: 0px"
                       :class="(trClass ? (typeof trClass === 'function' ? trClass(d.data) : trClass) : '')"/>
                 </template>
+                <td v-else-if="d.full"
+                    :colspan="currentColumns.length"
+                >
+                  <component v-if="d.component"
+                            :is="d.component"
+                            v-bind="d.options || {}"
+                            :source="col.mapper ? col.mapper(d.data) : d.data"
+                  ></component>
+                  <div v-else v-html="render(d.data, col, i)"></div>
+                </td>
+
                 <td v-else
                     v-for="(col, index) in currentColumns"
                     :class="[currentClass(col, d.data, i), cssRuleName, {
@@ -523,13 +534,6 @@
        */
       titleGroups: {
         type: [Array, Function]
-      },
-      /**
-       * The object popup of the table.
-       * @prop {Object} Vue
-       */
-      popup: {
-        type: Vue
       },
       /**
        * Defines the behaviour of the table about the scroll.

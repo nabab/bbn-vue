@@ -132,7 +132,7 @@
     },
     computed: {
       anonymousComponent(){
-        return $vm0.$refs.component;
+        return this.$refs.component;
       }
     },
 

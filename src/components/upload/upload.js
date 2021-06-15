@@ -18,6 +18,10 @@
      */
     mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent],
     props: {
+      showList: {
+        type: Boolean,
+        default: true
+      },
       /**
        * The value of the component.
        * @prop {Array|String} [[]] value

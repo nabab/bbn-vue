@@ -328,7 +328,7 @@ document.head.insertAdjacentElement('beforeend', css);
         default: false
       },
       /**
-       * Set it to true if you wanto to see the navigation bar (tabs or breadcrumb).
+       * Set it to true if you want to see the navigation bar (tabs or breadcrumb).
        * @prop {Boolean} [false] nav
        */
       nav: {
@@ -446,6 +446,18 @@ document.head.insertAdjacentElement('beforeend', css);
         default: 20
       },
       disabled: {
+        type: Boolean,
+        default: false
+      },
+      urlNavigation: {
+        type: Boolean,
+        default: true
+      },
+      /**
+       * Will be passed to router in order to ignore the dirty parameter.
+       * @prop {Boolean} ignoreDirty
+       */
+       ignoreDirty: {
         type: Boolean,
         default: false
       }
@@ -1100,19 +1112,21 @@ document.head.insertAdjacentElement('beforeend', css);
         ){
           this.$set(this.views[this.selected], 'current', url);
         }
-        if ( this.parentContainer ){
-          this.parentContainer.currentTitle = title + ' < ' + this.parentContainer.title;
-          this.parent.changeURL(this.baseURL + url, this.parentContainer.currentTitle, replace);
-        }
-        else if ( replace || (url !== bbn.env.path) ){
-          if ( !replace ){
-            //bbn.fn.log("NO REPLAACE", this.getFullBaseURL() + url, bbn.env.path);
+        if (this.urlNavigation) {
+          if ( this.parentContainer ){
+            this.parentContainer.currentTitle = title + ' < ' + this.parentContainer.title;
+            this.parent.changeURL(this.baseURL + url, this.parentContainer.currentTitle, replace);
           }
-          if ( !replace && ((this.getFullBaseURL() + url).indexOf(bbn.env.path) === 0) ){
-            //bbn.fn.log("REPLACING");
-            replace = true;
+          else if ( replace || (url !== bbn.env.path) ){
+            if ( !replace ){
+              //bbn.fn.log("NO REPLAACE", this.getFullBaseURL() + url, bbn.env.path);
+            }
+            if ( !replace && ((this.getFullBaseURL() + url).indexOf(bbn.env.path) === 0) ){
+              //bbn.fn.log("REPLACING");
+              replace = true;
+            }
+            bbn.fn.setNavigationVars(this.getFullBaseURL() + url, this.currentTitle, {}, replace);
           }
-          bbn.fn.setNavigationVars(this.getFullBaseURL() + url, this.currentTitle, {}, replace);
         }
       },
       /**
@@ -1326,7 +1340,7 @@ document.head.insertAdjacentElement('beforeend', css);
         if ( !this.views.length ){
           return false;
         }
-        if ( misc === undefined ){
+        if ([undefined, null].includes(misc)) {
           return this.selected;
         }
         if ( !this.isValidIndex(misc) ) {
@@ -1384,6 +1398,7 @@ document.head.insertAdjacentElement('beforeend', css);
           }
           if ( !ev2.defaultPrevented ){
             if (
+              !this.ignoreDirty &&
               this.isDirty &&
               this.views[idx].dirty &&
               !ev.defaultPrevented &&
