@@ -12,9 +12,7 @@
                v-bind="popup"
                :container="$el"
                :style="{zIndex: zIndex+i}"
-               @close="onClose(popup.index)"
-               @open="onOpen(popup.index)"
-  ></bbn-floater>
+               @close="onClose(i)"/>
   <div class="bbn-modal bbn-overlay"
       tabindex="-1"
       :style="{zIndex: zIndex+items.length-2}"

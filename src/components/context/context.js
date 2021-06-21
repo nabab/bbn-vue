@@ -100,7 +100,9 @@
          * True if the floating element of the menu is opened.
          * @data {Boolean} [false] showFloater
          */
-        showFloater: false
+        showFloater: false,
+        docEvent: false,
+
       };
     },
     methods: {
@@ -119,20 +121,49 @@
             ((e.type === 'click') && !this.context)
           )
         ){
+          if (e.preventDefault) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
           // Don't execute if in the floater
           if (!e.target.closest('.bbn-floater-context-' + this.bbnUid)) {
-            if (!this.showFloater) {
-              this.updateData().then(() => {
-                this.showFloater = !this.showFloater;
-              })
-            }
-            else {
-              this.showFloater = !this.showFloater;
-            }
+            this.toggle();
           }
         }
       },
+      clickOut(e){
+        if (!e.target.closest('.bbn-floater-context-' + this.bbnUid)) {
+          this.showFloater = false;
+        }
+      },
+      toggle(){
+        if (!this.showFloater) {
+          this.updateData().then(() => {
+            this.showFloater = !this.showFloater;
+          })
+        }
+        else {
+          this.showFloater = !this.showFloater;
+        }
+      }
     },
+    beforeDestroy() {
+      if (this.docEvent) {
+        document.removeEventListener('click', this.clickout)
+      }
+    },
+    watch: {
+      showFloater(v){
+        if (v) {
+          document.addEventListener('click', this.clickOut)
+          this.docEvent = true;
+        }
+        else {
+          document.removeEventListener('click', this.clickout)
+          this.docEvent = false;
+        }
+      }
+    }
   });
 
 })(bbn);

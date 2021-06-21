@@ -773,6 +773,7 @@
             }
           }).then((r) => {
             if (r) {
+              let wasInit = this.isInit;
               if (!this.isInit) {
                 this.isInit = true;
               }
@@ -793,9 +794,15 @@
                       this.isResized = true;
                     }
                     this.$emit('resize');
+                    if (!wasInit) {
+                      if (this.onOpen) {
+                        this.onOpen(this);
+                      }
+                      this.$emit('open', this);
+                    }
                   });
                 });
-              })
+              });
             }
             else if (go && this.isInit) {
               this.isResizing = false;
@@ -900,6 +907,9 @@
             // top right of the element to open downwards
             // otherwise at the bottom left
             // if the floater cannot be put after the element
+            if (!!this.position) {
+              
+            }
             if (coor[a.ideal] + size > this['container' + a.camel]) {
               let spaceAfter = this['container' + a.camel] - coor[a.ideal];
               let spaceBefore = coor[a.nideal];
@@ -1194,6 +1204,7 @@
       if (this.isVisible) {
         this.ready = true;
       }
+
       this.$nextTick(() => {
         let ancestors = this.ancestors('bbn-floater');
         if (this.element) {
@@ -1206,6 +1217,11 @@
           }
         }
       });
+    },
+    beforeDestroy(){
+      if (this.onClose) {
+        this.onClose(this);
+      }      
     },
     updated() {
       /*
@@ -1314,6 +1330,14 @@
           else {
             this.onResize(true);
           }
+          if (this.onOpen) {
+            this.onOpen(this);
+          }
+
+          this.$emit('open', this);
+        }
+        else if (this.onClose) {
+          this.onClose(this);
         }
       },
       scrollReady(v) {

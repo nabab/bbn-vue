@@ -1,9 +1,9 @@
 <component :is="tag"
            :class="componentClass"
            tabindex="-1"
-           @click.prevent="clickItem"
-           @contextmenu.prevent.stop="clickItem"
-           @keydown.space.enter.prevent.stop="clickItem"
+           @click="clickItem"
+           @contextmenu="clickItem"
+           @keydown.space.enter="clickItem"
            @mousedown.prevent.stop="() => {return false}"
 >
   <slot></slot>
@@ -22,9 +22,8 @@
                :auto-hide="true"
                :mode="mode"
                v-if="showFloater && !disabled"
-               @close="showFloater = false; $emit('close')"
+               @close="$emit('close'); showFloater = false;"
                @open="$emit('open')"
                :item-component="itemComponent"
-               :position="position"
-  ></bbn-floater>
+               :position="position"/>
 </component>
