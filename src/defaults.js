@@ -8,6 +8,8 @@
         header: false,
         status: false,
         nav: false,
+        footer: null,
+        urlNavigation: null,
         //root: '',
         pollerPath: 'core/poller',
         logo: 'https://bbn.solutions/logo.png',

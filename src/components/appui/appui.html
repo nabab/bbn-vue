@@ -177,15 +177,16 @@
                   :component="component"
                   :component-source="componentSource"
                   :component-url="componentUrl"
+                  :url-navigation="urlNavigation"
       >
         <slot/>
       </bbn-router>
     </div>
     <!-- FOOTER -->
-    <component v-if="(typeof footer !== 'undefined') && !!footer"
+    <component v-if="footerComponent"
                ref="footer"
                class="appui-footer"
-               :is="footer"/>
+               :is="footerComponent"/>
     <!-- STATUS -->
     <div v-if="status"
         ref="foot"
