@@ -20,11 +20,13 @@
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.listComponent
      * @mixin bbn.vue.dimensionsComponent
+     * @mixin bbn.vue.eventsComponent
      */
     mixins: [
       bbn.vue.basicComponent,
       bbn.vue.listComponent,
-      bbn.vue.dimensionsComponent
+      bbn.vue.dimensionsComponent,
+      bbn.vue.eventsComponent
     ],
     props: {
       disabled: {

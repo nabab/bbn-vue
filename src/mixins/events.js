@@ -159,7 +159,7 @@
              this.touchStarted = ev;
              clearTimeout(this.touchHoldTimer);
              this.touchHoldTimer = setTimeout(() => {
-               if ( this.isTouched ){
+               if (this.isTouched && !this.touchMoved){
                  let event = new Event('contextmenu');
                  this.$el.dispatchEvent(event);
                  this.isTouched = false;
@@ -175,11 +175,11 @@
         touchmove(ev){
           this.$emit('touchmove', ev);
           if (!ev.defaultPrevented) {
-            this.isTouched = false;
-            clearTimeout(this.touchHoldTimer);
+            //this.isTouched = false;
             if ((Math.abs(this.touchStarted.touches[0].clientX - ev.touches[0].clientX) > this.touchTapTolerance)
               || (Math.abs(this.touchStarted.touches[0].clientY - ev.touches[0].clientY) > this.touchTapTolerance)
             ) {
+              clearTimeout(this.touchHoldTimer);
               this.touchMoved = ev;
             }
           }
