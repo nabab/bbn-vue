@@ -103,6 +103,18 @@
        */
       size: {
         type: [String, Number],
+      },
+      /**
+       * @prop {String|Number} min
+       */
+      min: {
+        type: [String, Number]
+      },
+      /**
+       * @prop {String|Number} max
+       */
+      max: {
+        type: [String, Number]
       }
     },
     data(){
