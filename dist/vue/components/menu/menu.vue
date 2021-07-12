@@ -28,7 +28,8 @@
                :children="children"
                :element="getRef('li' + i)"
                :focused="false"
-               :source="item.data[children]"               
+               :source="item.data[children]"
+               @select="select"
   ></bbn-floater>
 </div>
 </template>
@@ -80,6 +81,9 @@
       onClose(){
         //getRef('li' + selectedElement).blur(); selectedElement = -1;
       },
+      select(item, idx, idx2, ev) {
+        this.$emit('select', item, idx, idx2, ev);
+      }
       /*onDataLoaded(){         
         this.$emit('onDataLoaded', this);
       }*/

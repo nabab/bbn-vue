@@ -175,7 +175,7 @@ document.head.insertAdjacentElement('beforeend', css);
        */
       position: {
         type: String,
-        default: ''
+        validator: p => ['', 'topLeft', 'topRight', 'bottomLeft', 'bottomRight', 'top', 'bottom', 'left', 'right'].includes(p)
       },
       /**
        * The html content of the floater.
@@ -213,7 +213,8 @@ document.head.insertAdjacentElement('beforeend', css);
        */
       orientation: {
         type: String,
-        default: 'vertical'
+        default: 'vertical',
+        validator: o => ['vertical', 'horizontal'].includes(o)
       },
       /**
        * Defines the ability of the floater to be scrollable.
@@ -583,7 +584,10 @@ document.head.insertAdjacentElement('beforeend', css);
        * @return {Boolean}
        */
       isHorizontal(){
-        return this.orientation === 'horizontal';
+        if (!!this.position && !this.position.startsWith('top') && !this.position.startsWith('bottom')) {
+          return (this.position === 'left') || (this.position === 'right');
+        }
+        return (this.orientation === 'horizontal');
       },
       scrollMaxHeight(){
         return this.currentMaxHeight ? this.currentMaxHeight - this.outHeight : null;
@@ -902,6 +906,7 @@ document.head.insertAdjacentElement('beforeend', css);
             }
           }).then((r) => {
             if (r) {
+              let wasInit = this.isInit;
               if (!this.isInit) {
                 this.isInit = true;
               }
@@ -922,9 +927,15 @@ document.head.insertAdjacentElement('beforeend', css);
                       this.isResized = true;
                     }
                     this.$emit('resize');
+                    if (!wasInit) {
+                      if (this.onOpen) {
+                        this.onOpen(this);
+                      }
+                      this.$emit('open', this);
+                    }
                   });
                 });
-              })
+              });
             }
             else if (go && this.isInit) {
               this.isResizing = false;
@@ -1015,7 +1026,7 @@ document.head.insertAdjacentElement('beforeend', css);
           };
         let ok = true;
 
-        bbn.fn.iterate(r, a => {
+        bbn.fn.iterate(r, (a, ax) => {
           let scroll = false;
           let size = this['real' + a.camel];
           if (!size) {
@@ -1025,11 +1036,54 @@ document.head.insertAdjacentElement('beforeend', css);
 
           let min = 0;
           if (this.element) {
+            // Fixed position
+            if (!!this.position) {
+              let isTop = this.position.startsWith('top') || (this.position === 'left') || (this.position === 'right'),
+                  isLeft = this.position.endsWith('Left') || (this.position === 'left') || (this.position === 'top') || (this.position === 'bottom'),
+                  inverted = 0;
+              if (ax === 'x') {
+                if (isLeft) {
+                  a.res = this.isHorizontal ? (coor.left - size) : coor.left;
+                  if (a.res + size > this['container' + a.camel]) {
+                    inverted = this.isHorizontal ? coor.right : (coor.right - size)
+                  }
+                }
+                else {
+                  a.res = this.isHorizontal ? coor.right : (coor.right - size);
+                  if (a.res + size > this['container' + a.camel]) {
+                    inverted = this.isHorizontal ? (coor.left - size) : coor.left;
+                  }
+                }
+              }
+              else {
+                if (isTop) {
+                  a.res = this.isHorizontal ? coor.top : (coor.top - size);
+                  if (a.res + size > this['container' + a.camel]) {
+                    inverted = this.isHorizontal ? (coor.bottom - size) : coor.bottom;
+                  }
+                }
+                else {
+                  a.res = this.isHorizontal ? (coor.bottom - size) : coor.bottom;
+                  if (a.res + size > this['container' + a.camel]) {
+                    inverted = this.isHorizontal ? coor.top : (coor.top - size);
+                  }
+                }
+              }
+              if (!!inverted) {
+                if ((inverted + size) < this['container' + a.camel]) {
+                  a.res = inverted;
+                }
+                else {
+                  a.res = 0;
+                  size = this['container' + a.camel];
+                }
+              }
+            }
             // If the floater is horizontal, it will ideally start at the 
             // top right of the element to open downwards
             // otherwise at the bottom left
             // if the floater cannot be put after the element
-            if (coor[a.ideal] + size > this['container' + a.camel]) {
+            else if (coor[a.ideal] + size > this['container' + a.camel]) {
               let spaceAfter = this['container' + a.camel] - coor[a.ideal];
               let spaceBefore = coor[a.nideal];
               // Checking which of before or after is bigger
@@ -1323,6 +1377,7 @@ document.head.insertAdjacentElement('beforeend', css);
       if (this.isVisible) {
         this.ready = true;
       }
+
       this.$nextTick(() => {
         let ancestors = this.ancestors('bbn-floater');
         if (this.element) {
@@ -1335,6 +1390,11 @@ document.head.insertAdjacentElement('beforeend', css);
           }
         }
       });
+    },
+    beforeDestroy(){
+      if (this.onClose) {
+        this.onClose(this);
+      }      
     },
     updated() {
       /*
@@ -1443,6 +1503,14 @@ document.head.insertAdjacentElement('beforeend', css);
           else {
             this.onResize(true);
           }
+          if (this.onOpen) {
+            this.onOpen(this);
+          }
+
+          this.$emit('open', this);
+        }
+        else if (this.onClose) {
+          this.onClose(this);
         }
       },
       scrollReady(v) {

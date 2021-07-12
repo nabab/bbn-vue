@@ -2076,6 +2076,11 @@
                         "text": "dimensionsComponent",
                         "desc": "",
                         "url": "bbn-vue\/component\/context\/doc\/mixins#dimensionsComponent"
+                    },
+                    {
+                        "text": "eventsComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/context\/doc\/mixins#eventsComponent"
                     }
                 ]
             },
@@ -3948,6 +3953,16 @@
                         "text": "size",
                         "desc": "The size of the input.",
                         "url": "bbn-vue\/component\/input\/doc\/props#size"
+                    },
+                    {
+                        "text": "min",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/input\/doc\/props#min"
+                    },
+                    {
+                        "text": "max",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/input\/doc\/props#max"
                     }
                 ],
                 "methods": [],
@@ -7783,16 +7798,6 @@
                         "text": "update",
                         "desc": "Udates the component.",
                         "url": "bbn-vue\/component\/timer\/doc\/methods#update"
-                    },
-                    {
-                        "text": "getShow",
-                        "desc": "Returns the descriptive list of units used in the countdown.\r\n       *",
-                        "url": "bbn-vue\/component\/timer\/doc\/methods#getShow"
-                    },
-                    {
-                        "text": "getText",
-                        "desc": "Returns the descriptive list of units used in the countdown with the value that contains it when calling this function.\r\n       *",
-                        "url": "bbn-vue\/component\/timer\/doc\/methods#getText"
                     }
                 ],
                 "mixins": [

@@ -828,7 +828,7 @@ document.body.insertAdjacentElement('beforeend', script);
             this.containerHeight = containerBox.height;
             // With scrolling on we check the scrollbars
             if ( this.scrollable ){
-              if ( (this.axis === 'both') || (this.axis === 'x') && (this.contentWidth > this.containerWidth) ){
+              if (((this.axis === 'both') || (this.axis === 'x')) && (this.contentWidth > this.containerWidth) ){
                 this.hasScrollX = true;
                 this.$nextTick(() => {
                   if ( this.$refs.xScroller ){
@@ -839,7 +839,7 @@ document.body.insertAdjacentElement('beforeend', script);
               else{
                 this.hasScrollX = false;
               }
-              if ((this.axis === 'both') || (this.axis === 'y') && (this.contentHeight > this.containerHeight)){
+              if (((this.axis === 'both') || (this.axis === 'y')) && (this.contentHeight > this.containerHeight)){
                 this.hasScrollY = true;
                 this.$nextTick(() => {
                   if ( this.$refs.yScroller ){

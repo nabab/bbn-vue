@@ -72,6 +72,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-floater-list']"
                             (overIdx === idx) &&
                             getRef('li' + idx)"
                     :uid="uid"
+                    @select="select"
                     :level="level + 1"
                     :mode="li.data.mode || 'free'"
                     :source="li.data[children]"

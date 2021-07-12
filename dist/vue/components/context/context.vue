@@ -2,10 +2,13 @@
 <component :is="tag"
            :class="componentClass"
            tabindex="-1"
-           @click.prevent="clickItem"
-           @contextmenu.prevent.stop="clickItem"
-           @keydown.space.enter.prevent.stop="clickItem"
+           @click="clickItem"
+           @contextmenu="clickItem"
+           @keydown.space.enter="clickItem"
            @mousedown.prevent.stop="() => {return false}"
+           @touchstart="touchstart"
+           @touchmove="touchmove"
+           @touchend="touchend"
 >
   <slot></slot>
   <bbn-floater :element="attach || $el"
@@ -23,11 +26,10 @@
                :auto-hide="true"
                :mode="mode"
                v-if="showFloater && !disabled"
-               @close="showFloater = false; $emit('close')"
+               @close="$emit('close'); showFloater = false;"
                @open="$emit('open')"
                :item-component="itemComponent"
-               :position="position"
-  ></bbn-floater>
+               :position="position"/>
 </component>
 </template>
 <script>
@@ -53,11 +55,13 @@
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.listComponent
      * @mixin bbn.vue.dimensionsComponent
+     * @mixin bbn.vue.eventsComponent
      */
     mixins: [
       bbn.vue.basicComponent,
       bbn.vue.listComponent,
-      bbn.vue.dimensionsComponent
+      bbn.vue.dimensionsComponent,
+      bbn.vue.eventsComponent
     ],
     props: {
       disabled: {
@@ -133,7 +137,9 @@
          * True if the floating element of the menu is opened.
          * @data {Boolean} [false] showFloater
          */
-        showFloater: false
+        showFloater: false,
+        docEvent: false,
+
       };
     },
     methods: {
@@ -152,20 +158,49 @@
             ((e.type === 'click') && !this.context)
           )
         ){
+          if (e.preventDefault) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
           // Don't execute if in the floater
           if (!e.target.closest('.bbn-floater-context-' + this.bbnUid)) {
-            if (!this.showFloater) {
-              this.updateData().then(() => {
-                this.showFloater = !this.showFloater;
-              })
-            }
-            else {
-              this.showFloater = !this.showFloater;
-            }
+            this.toggle();
           }
         }
       },
+      clickOut(e){
+        if (!e.target.closest('.bbn-floater-context-' + this.bbnUid)) {
+          this.showFloater = false;
+        }
+      },
+      toggle(){
+        if (!this.showFloater) {
+          this.updateData().then(() => {
+            this.showFloater = !this.showFloater;
+          })
+        }
+        else {
+          this.showFloater = !this.showFloater;
+        }
+      }
     },
+    beforeDestroy() {
+      if (this.docEvent) {
+        document.removeEventListener('click', this.clickout)
+      }
+    },
+    watch: {
+      showFloater(v){
+        if (v) {
+          document.addEventListener('click', this.clickOut)
+          this.docEvent = true;
+        }
+        else {
+          document.removeEventListener('click', this.clickout)
+          this.docEvent = false;
+        }
+      }
+    }
   });
 
 })(bbn);

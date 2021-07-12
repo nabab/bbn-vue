@@ -27,6 +27,7 @@
                :children="children"
                :element="getRef('li' + i)"
                :focused="false"
-               :source="item.data[children]"               
+               :source="item.data[children]"
+               @select="select"
   ></bbn-floater>
 </div>
