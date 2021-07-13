@@ -19,7 +19,7 @@
       orientation: {},
       direction: {},
       opened: {},
-      selected: {
+      selectedIndex: {
         type: Number,
         default: -1
       },
@@ -33,7 +33,7 @@
     },
     data(){
       return {
-        currentSelected: this.selected,
+        currentSelectedIndex: this.selectedIndex,
         overIdx: -1
       };
     },

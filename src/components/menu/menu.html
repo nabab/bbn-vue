@@ -4,7 +4,11 @@
       data-role="menu"
       role="menubar">
     <li v-for="(item, i) in filteredData"
-        :class="['bbn-menu-item', 'bbn-reactive-block', {'bbn-menu-selected': currentSelected === i}]"
+        :class="[
+          'bbn-menu-item',
+          'bbn-reactive-block',
+          {'bbn-menu-selected': currentSelectedIndex === i}
+        ]"
         role="menuitem"
         :ref="'li' + i"
         :key="i"
