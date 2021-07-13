@@ -314,6 +314,7 @@
                                     :value="true"
                                     :novalue="false"
                                     :strict="true"
+                                    @click.stop
                                     @change="checkSelection(i)"
                                     class="bbn-middle bbn-flex"
                       ></bbn-checkbox>
@@ -416,7 +417,7 @@
     </div>
     <!-- Footer -->
     <bbn-pager class="bbn-table-footer bbn-no-border-right bbn-no-border-left bbn-no-border-bottom"
-               v-if="pageable || saveable || filterable || isAjax || showable"
+               v-if="(pageable || saveable || filterable || isAjax || showable) && (footer !== false)"
                :element="_self"
                :buttons="footerButtons"
     ></bbn-pager>

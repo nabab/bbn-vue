@@ -45,6 +45,9 @@
       onClose(){
         //getRef('li' + selectedElement).blur(); selectedElement = -1;
       },
+      select(item, idx, idx2, ev) {
+        this.$emit('select', item, idx, idx2, ev);
+      }
       /*onDataLoaded(){         
         this.$emit('onDataLoaded', this);
       }*/

@@ -49,6 +49,8 @@ script.innerHTML = `<div :class="[
           :class="{'bbn-flex-fill' : (buttonLeft || buttonRight || isNullable)}"
           :size="currentInputSize"
           :inputmode="inputmode"
+          :min="min"
+          :max="max"
     >
     <bbn-loadicon v-if="loading"></bbn-loadicon>
     <div v-else-if="isNullable && hasValue && !readonly && !disabled"
@@ -176,6 +178,18 @@ document.body.insertAdjacentElement('beforeend', script);
        */
       size: {
         type: [String, Number],
+      },
+      /**
+       * @prop {String|Number} min
+       */
+      min: {
+        type: [String, Number]
+      },
+      /**
+       * @prop {String|Number} max
+       */
+      max: {
+        type: [String, Number]
       }
     },
     data(){

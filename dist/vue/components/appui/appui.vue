@@ -178,15 +178,16 @@
                   :component="component"
                   :component-source="componentSource"
                   :component-url="componentUrl"
+                  :url-navigation="urlNavigation"
       >
         <slot/>
       </bbn-router>
     </div>
     <!-- FOOTER -->
-    <component v-if="(typeof footer !== 'undefined') && !!footer"
+    <component v-if="footerComponent"
                ref="footer"
                class="appui-footer"
-               :is="footer"/>
+               :is="footerComponent"/>
     <!-- STATUS -->
     <div v-if="status"
         ref="foot"
@@ -480,6 +481,9 @@
             return createElement();
           }
         }, this.cfg)
+      },
+      footerComponent(){
+        return (typeof this.footer !== 'undefined') && !!this.footer ? this.footer : false;
       }
     },
     methods: {
@@ -817,7 +821,8 @@
         }
       },
       getCurrentContainer(){
-        let container = this.find('bbn-router').searchContainer(bbn.env.path, true);
+        let router = this.getRef('router'),
+            container = !!router ? router.searchContainer(bbn.env.path, true) : false;
         return container || this;
       },
       searchBarBlur(){

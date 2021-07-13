@@ -13,9 +13,7 @@
                v-bind="popup"
                :container="$el"
                :style="{zIndex: zIndex+i}"
-               @close="onClose(popup.index)"
-               @open="onOpen(popup.index)"
-  ></bbn-floater>
+               @close="onClose(i)"/>
   <div class="bbn-modal bbn-overlay"
       tabindex="-1"
       :style="{zIndex: zIndex+items.length-2}"
@@ -200,11 +198,11 @@
               d.title = false;
             }
             else if (bbn.fn.isFunction(arguments[i]) ){
-              if ( !d.open ){
-                d.open = arguments[i];
+              if ( !d.onOpen ){
+                d.onOpen = arguments[i];
               }
-              else if ( !d.close ){
-                d.close = arguments[i];
+              else if ( !d.onClose ){
+                d.onClose = arguments[i];
               }
             }
             else if ( typeof(arguments[i]) === 'object' ){
@@ -254,11 +252,11 @@
               }
             }
             else if (bbn.fn.isFunction(arguments[i]) ){
-              if ( !d.open ){
-                d.open = arguments[i];
+              if ( !d.onOpen ){
+                d.onOpen = arguments[i];
               }
               else if ( !d.close ){
-                d.close = arguments[i];
+                d.onClose = arguments[i];
               }
             }
             else if ( typeof(arguments[i]) === 'object' ){
@@ -316,18 +314,7 @@
           new Error("You must give a URL in order to load a popup")
         }
       },
-      onOpen(index){
-        if (this.items[index] && bbn.fn.isFunction(this.items[index].open)) {
-          this.items[index].open();
-        }
-      },
       onClose(index) {
-        if (this.items[index]) {
-          if (bbn.fn.isFunction(this.items[index].close)) {
-            this.items[index].close();
-          }
-        }
-
         this.items.splice(index, 1);
       },
       /**
