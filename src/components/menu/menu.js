@@ -50,7 +50,7 @@
             this.overIdx = this.overIdx === idx ? -1 : idx;
           }
           else {
-            this.select(item.data, idx, idx, ev);
+            this.select(this.filteredData[idx].data, idx, idx, ev);
           }
         }
       },
