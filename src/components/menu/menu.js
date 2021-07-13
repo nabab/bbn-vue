@@ -52,6 +52,7 @@
           else {
             this.select(this.filteredData[idx].data, idx, idx, ev);
           }
+          this.currentSelectedIndex = idx;
         }
       },
       onLeave(){
