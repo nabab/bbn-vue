@@ -153,7 +153,7 @@
          * @memberof eventsComponent
          */
          touchstart(ev){
-           this.$emit('touchstart', ev);
+           this.$emit('touchstart', ev, this);
            if (!ev.defaultPrevented) {
              this.isTouched = true;
              this.touchStarted = ev;
@@ -173,7 +173,7 @@
          * @memberof eventsComponent
          */
         touchmove(ev){
-          this.$emit('touchmove', ev);
+          this.$emit('touchmove', ev, this);
           if (!ev.defaultPrevented) {
             //this.isTouched = false;
             if ((Math.abs(this.touchStarted.touches[0].clientX - ev.touches[0].clientX) > this.touchTapTolerance)
@@ -190,7 +190,7 @@
          * @memberof eventsComponent
          */
         touchend(ev){
-          this.$emit('touchend', ev);
+          this.$emit('touchend', ev, this);
           if (!ev.defaultPrevented) {
             if (this.touchStarted && this.touchMoved) {
               let direction = false,
@@ -218,11 +218,12 @@
          * @method touchcancel
          * @memberof eventsComponent
          */
-        touchcancel(){
+        touchcancel(ev){
           clearTimeout(this.touchHoldTimer);
           this.isTouched = false;
           this.touchStarted = false;
           this.touchMoved = false;
+          this.$emit('touchcancel', ev, this);
         }
       },
       /**
