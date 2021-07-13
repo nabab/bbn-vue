@@ -10,7 +10,7 @@
         :key="i"
         :tabindex="item.data.disabled ? '-1' : '0'"
         @focus="overIdx = i"
-        @click="overIdx = i"
+        @click="select(item.data, i, i, $event)"
         @mouseenter="_enterLi(i)"
         >
       <a v-if="item.data.url" :href="item.data.url">
