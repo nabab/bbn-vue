@@ -392,11 +392,13 @@
             e.preventDefault();
             return;
           }
+
           if (this.hasScrollX && (ct.scrollLeft < 0)) {
             ct.scrollLeft = 0;
             e.preventDefault();
             return;
           }
+
           if (this.hasScrollY && (ct.scrollTop < 0)) {
             ct.scrollTop = 0;
             e.preventDefault();
@@ -484,6 +486,7 @@
        * @fires $refs.yScroller.scrollTo
        */
       scrollTo(x, y, anim){
+        this.isScrolling = true;
         return new Promise(resolve => {
           if (!this.hasScroll || !this.ready) {
             return;
@@ -496,16 +499,35 @@
             this.$refs.xScroller
           ) {
             this.$refs.xScroller.scrollTo(x, anim).then(() => {
-              try {
-                resolve();
+              if (
+                this.hasScrollY &&
+                (y !== undefined) &&
+                (y !== null) &&
+                this.$refs.yScroller
+              ) {
+                this.$refs.yScroller.scrollTo(y, anim).then(() => {
+                  try {
+                    this.isScrolling = false;
+                    resolve();
+                  }
+                  catch(e) {
+    
+                  }
+                });
               }
-              catch(e) {
-                
+              else {
+                try {
+                  this.isScrolling = false;
+                  resolve();
+                }
+                catch(e) {
+                  
+                }
               }
             });
           }
 
-          if (
+          else if (
             this.hasScrollY &&
             (y !== undefined) &&
             (y !== null) &&
@@ -513,6 +535,7 @@
           ) {
             this.$refs.yScroller.scrollTo(y, anim).then(() => {
               try {
+                this.isScrolling = false;
                 resolve();
               }
               catch(e) {

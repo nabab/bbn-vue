@@ -29,6 +29,10 @@
       bbn.vue.eventsComponent
     ],
     props: {
+      autobind: {
+        type: Boolean,
+        default: false
+      },
       disabled: {
         type: Boolean,
         default: false
