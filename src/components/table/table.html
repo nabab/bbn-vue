@@ -300,13 +300,13 @@
                       'bbn-table-edit-buttons': !!col.buttons && isEdited(d.data, col, i),
                       'bbn-table-buttons': !!col.buttons
                     }]"
+                    @click="clickCell(col, index, d.index)"
                     :style="{
                       left: col.left !== undefined ? (col.left + 'px') : 'auto',
                       right: col.right !== undefined ? (col.right + 'px') : 'auto',
                       width: col.realWidth
                     }">
-                  <div class="bbn-block bbn-spadded"
-                      @click="clickCell(col, index, d.index)">
+                  <div class="bbn-block bbn-spadded">
                     <!-- Checkboxes -->
                     <div v-if="col.isSelection" class="bbn-c bbn-w-100">
                       <bbn-checkbox v-if="d.selection"

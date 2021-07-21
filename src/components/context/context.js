@@ -146,7 +146,7 @@
         if (!this.showFloater) {
           this.updateData().then(() => {
             this.showFloater = !this.showFloater;
-          })
+          });
         }
         else {
           this.showFloater = !this.showFloater;

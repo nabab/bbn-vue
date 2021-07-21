@@ -306,7 +306,7 @@
         if (this.ready && !this.isDragging) {
           cls += ' bbn-scroll-not-dragged';
         }
-        if (this.isScrolling || (!this.isMeasuring && !this.scrollable)) {
+        if (!this.isMeasuring && !this.scrollable) {
           cls += ' bbn-overlay';
         }
         if (this.hasX()) {
@@ -486,7 +486,6 @@
        * @fires $refs.yScroller.scrollTo
        */
       scrollTo(x, y, anim){
-        this.isScrolling = true;
         return new Promise(resolve => {
           if (!this.hasScroll || !this.ready) {
             return;
@@ -507,7 +506,6 @@
               ) {
                 this.$refs.yScroller.scrollTo(y, anim).then(() => {
                   try {
-                    this.isScrolling = false;
                     resolve();
                   }
                   catch(e) {
@@ -517,7 +515,6 @@
               }
               else {
                 try {
-                  this.isScrolling = false;
                   resolve();
                 }
                 catch(e) {
@@ -535,7 +532,6 @@
           ) {
             this.$refs.yScroller.scrollTo(y, anim).then(() => {
               try {
-                this.isScrolling = false;
                 resolve();
               }
               catch(e) {

@@ -2738,6 +2738,7 @@
        * 
        */
       clickCell(col, colIndex, dataIndex) {
+        this.$emit('click-row', this.filteredData[dataIndex].data, dataIndex);
         this.$emit('click-cell', col, colIndex, dataIndex);
       },
       /**

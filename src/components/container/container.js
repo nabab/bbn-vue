@@ -427,7 +427,7 @@
 
           setTimeout(() => {
             if (bbn.env.url.indexOf('#')) {
-              let scroll = this.find('bbn-scroll');
+              let scroll = this.getRef('scroll');
               if (scroll && (scroll.currentY || scroll.currentX)) {
                 return;
               }

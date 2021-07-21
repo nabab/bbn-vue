@@ -700,9 +700,7 @@
               }
               else {
                 this.nextLevel = Math.round(num);
-                if (!this.scroller || !this.scroller.isScrolling) {
-                  this.realContainer['scroll' + (this.isVertical ? 'Top' : 'Left')] = num;
-                }
+                this.realContainer['scroll' + (this.isVertical ? 'Top' : 'Left')] = num;
                 resolve();
               }
             }

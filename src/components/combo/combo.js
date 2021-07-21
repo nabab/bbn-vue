@@ -133,9 +133,10 @@
        * @fires commonKeydown
        * @fires keynav
        */
-      keydown(e){
+      keydown(e) {
         if (e.key === 'Tab') {
-          let list = this.find('bbn-list');
+          let list = this.getRef('list');
+          list = list ? list.getRef('list') : {};
           if ( list.overIdx > -1 ) {
             this.filterString = list.filteredData[list.overIdx].data[this.sourceValue];
             return;
@@ -203,7 +204,8 @@
                     this.isOpened = true;
                   }
                   else{
-                    let list = this.find('bbn-scroll');
+                    let list = this.getRef('list');
+                    list = list ? list.getRef('scroll') : false;
                     if ( list ){
                       list.onResize();
                     }
