@@ -439,7 +439,7 @@
 
         for ( let i = 1; i <= 6; i++ ){
           if ( i > 1 ){
-            c.add(6, 'd');
+            c = c.add(6, 'd');
           }
           items = items.concat(Array.from({length: 7}, (v, k) => {
             let w = c.weekday(k),

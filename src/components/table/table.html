@@ -111,7 +111,7 @@
                       'bbn-p': true,
                       'bbn-red': hasFilter(col)
                     }"
-                    v-if="filterable && (col.filterable !== false) && ((col.filterable === true) || !col.buttons) && col.field"
+                    v-if="showFilterOnColumn(col)"
                     @click="showFilter(col, $event)"
                   ></i>
                   <div v-if="col.isSelection" :title="_('Check all')">
