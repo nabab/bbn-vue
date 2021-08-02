@@ -2713,6 +2713,23 @@
         return o;
       },
       /**
+       * Returns true if the filter should be shown on the given column.
+       * @method showFilterOnColumn
+       * @param {Object} col
+       * @returns {Boolean}
+       */
+      showFilterOnColumn(col) {
+        if (!this.filterable || (col.filterable === false) || col.hideFilter) {
+          return false;
+        }
+
+        if (col.filterable === true) {
+          return true;
+        }
+
+        return !col.buttons && col.field;
+      },
+      /**
        * Focuses the given row index.
        * @method focusRow
        * @param {Event} ev
@@ -2738,6 +2755,7 @@
        * 
        */
       clickCell(col, colIndex, dataIndex) {
+        this.$emit('click-row', this.filteredData[dataIndex].data, dataIndex);
         this.$emit('click-cell', col, colIndex, dataIndex);
       },
       /**

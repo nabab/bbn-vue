@@ -19,6 +19,10 @@
       orientation: {},
       direction: {},
       opened: {},
+      selectedIndex: {
+        type: Number,
+        default: -1
+      },
       sourceValue:{
         default: 'text'
       },
@@ -29,6 +33,7 @@
     },
     data(){
       return {
+        currentSelectedIndex: this.selectedIndex,
         overIdx: -1
       };
     },
@@ -37,6 +42,17 @@
         if ( (this.overIdx > -1) && (this.overIdx !== idx) ){
           this.overIdx = idx;
           this.getRef('li' + idx).focus();
+        }
+      },
+      clickLi(idx, ev) {
+        if (this.filteredData[idx]) {
+          if (this.filteredData[idx].data[this.children] && this.filteredData[idx].data[this.children].length) {
+            this.overIdx = this.overIdx === idx ? -1 : idx;
+          }
+          else {
+            this.select(this.filteredData[idx].data, idx, idx, ev);
+          }
+          this.currentSelectedIndex = idx;
         }
       },
       onLeave(){

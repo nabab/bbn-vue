@@ -15,6 +15,7 @@
       <component :is="scrollable ? 'bbn-scroll' : 'div'"
                 v-if="ready && isLoaded && (visible || cached)"
                 v-show="visible"
+                ref="scroll"
                 :axis="scrollable ? 'y' : null"
                 class="bbn-overlay">
         <!-- This is an ad hoc component with unique name -->

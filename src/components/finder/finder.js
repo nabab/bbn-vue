@@ -122,17 +122,20 @@
       //abort the current request
       abortRequest(i){
         bbn.fn.happy(i)
-        let loadUrl = this.closest('bbn-appui').find('bbn-loadbar').currentItem.url;
-        if ( bbn.fn.isNumber(i) && ( loadUrl === 'ide/finder') ){
-          bbn.fn.abort(this.closest('bbn-appui').find('bbn-loadbar').currentItem.key);
-          appui.success(bbn._('Current request aborted'))
-          this.currentFile = false;
-          this.dirs.splice(i, 1);
-        }
-        else if ( loadUrl.indexOf('ide/actions/finder/file') === 0 ){
-          this.currentFile = false;
-          this.isLoading = false;
-          bbn.fn.abort(this.closest('bbn-appui').find('bbn-loadbar').currentItem.key);
+        let loadBar = this.closest('bbn-appui').getRef('loading');
+        if (loadBar) {
+          let loadUrl = loadBar.currentItem.url;
+          if ( bbn.fn.isNumber(i) && ( loadUrl === 'ide/finder') ){
+            bbn.fn.abort(loadBar.currentItem.key);
+            appui.success(bbn._('Current request aborted'))
+            this.currentFile = false;
+            this.dirs.splice(i, 1);
+          }
+          else if ( loadUrl.indexOf('ide/actions/finder/file') === 0 ){
+            this.currentFile = false;
+            this.isLoading = false;
+            bbn.fn.abort(loadBar.currentItem.key);
+          }
         }
       },
       // at click on the button of the new folder/ file on the bottom of the tree defines the property path of the current tree. Is the only way to know the current context 
@@ -745,7 +748,7 @@
             return this.closest('bbn-container').getComponent().dirs;
           },
           finder(){
-            return this.closest('bbn-container').find('bbn-finder')
+            return this.closest('bbn-finder')
           }
         },
       

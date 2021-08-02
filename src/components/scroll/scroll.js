@@ -306,7 +306,7 @@
         if (this.ready && !this.isDragging) {
           cls += ' bbn-scroll-not-dragged';
         }
-        if (this.isScrolling || (!this.isMeasuring && !this.scrollable)) {
+        if (!this.isMeasuring && !this.scrollable) {
           cls += ' bbn-overlay';
         }
         if (this.hasX()) {
@@ -392,11 +392,13 @@
             e.preventDefault();
             return;
           }
+
           if (this.hasScrollX && (ct.scrollLeft < 0)) {
             ct.scrollLeft = 0;
             e.preventDefault();
             return;
           }
+
           if (this.hasScrollY && (ct.scrollTop < 0)) {
             ct.scrollTop = 0;
             e.preventDefault();
@@ -496,16 +498,33 @@
             this.$refs.xScroller
           ) {
             this.$refs.xScroller.scrollTo(x, anim).then(() => {
-              try {
-                resolve();
+              if (
+                this.hasScrollY &&
+                (y !== undefined) &&
+                (y !== null) &&
+                this.$refs.yScroller
+              ) {
+                this.$refs.yScroller.scrollTo(y, anim).then(() => {
+                  try {
+                    resolve();
+                  }
+                  catch(e) {
+    
+                  }
+                });
               }
-              catch(e) {
-                
+              else {
+                try {
+                  resolve();
+                }
+                catch(e) {
+                  
+                }
               }
             });
           }
 
-          if (
+          else if (
             this.hasScrollY &&
             (y !== undefined) &&
             (y !== null) &&
