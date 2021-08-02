@@ -229,7 +229,7 @@
        * @fires setValue
       */
       setDate(val){
-        val = dayjs(val, 'YYYY-MM-DD').isValid() ? dayjs(val, 'YYYY-MM-DD') : '';
+        val = dayjs(val, this.getValueFormat(val)).isValid() ? dayjs(val, this.getValueFormat(val)) : '';
         if ( this.value && val ){
           let mom = dayjs(this.value.toString(), this.getValueFormat(this.value.toString()));
           val.hour(mom.hour()).minute(mom.minute());
