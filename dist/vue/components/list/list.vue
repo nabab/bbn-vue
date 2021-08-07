@@ -614,7 +614,6 @@
        * @emits select
        */
       select(idx){
-        bbn.fn.log('mirko', idx, this.tmpDisabled);
         if ( this.tmpDisabled === idx ){
           return;
         }
@@ -623,7 +622,6 @@
           this.tmpDisabled = false;
         }, 1000);
         let item = this.filteredData[idx] || null;
-        bbn.fn.log('mirko2', item);
         let ev = new Event('select', {cancelable: true});
         if ( item && item.data && !item.data.disabled ){
           this.currentIndex = idx;

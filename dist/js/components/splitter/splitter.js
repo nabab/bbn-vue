@@ -480,6 +480,7 @@ document.head.insertAdjacentElement('beforeend', css);
             this.$el.style.width = w;
             this.$el.style.height = h;
             this.isResizing = false;
+            this.$emit('resize');
           }, 100)
         }
       },

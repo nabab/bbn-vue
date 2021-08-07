@@ -232,6 +232,9 @@
       suggest: {
         type: [Boolean, Number],
         default: false
+      },
+      opener: {
+        type: Vue
       }
     },
     data() {

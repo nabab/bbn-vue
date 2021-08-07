@@ -553,12 +553,12 @@
         val = dayjs(val, 'YYYY-MM-DD').isValid() ? dayjs(val, 'YYYY-MM-DD') : '';
         if ( this.value && val ){
           let mom = dayjs(this.value.toString(), this.getValueFormat(this.value.toString()));
-          val.hour(mom.hour()).minute(mom.minute());
+          val = dayjs(dayjs(val, 'YYYY-MM-DD').hour(mom.hour())).minute(mom.minute());
           if ( this.showSecond ){
-            val.second(mom.second());
+            val = dayjs(val).second(mom.second());
           }
         }
-        this.setValue(val ? val.format(this.getValueFormat(val)) : '');
+        this.setValue(val ? dayjs(val).format(this.getValueFormat(dayjs(val).format(this.currentValueFormat))) : '');
       },
       /**
        * Sets the value format from 'HH:mm' to 'HH:mm:ss'.
@@ -572,9 +572,9 @@
         val = dayjs(val, 'HH:mm' + (this.showSecond ? ':ss' : ''));
         if ( this.value ){
           let mom = dayjs(this.value.toString(), this.getValueFormat(this.value.toString()));
-          val.date(mom.date()).month(mom.month()).year(mom.year());
+          val = dayjs(dayjs(dayjs(val).date(mom.date())).month(mom.month())).year(mom.year());
         }
-        this.setValue(val.format(this.getValueFormat(val)));
+        this.setValue(dayjs(val).format(this.getValueFormat(dayjs(val).format(this.currentValueFormat))));
       },
       /**
        * Sets the value.
@@ -1063,6 +1063,7 @@
   flex-direction: row;
 }
 .bbn-datetimepicker .bbn-masked {
+  background-color: transparent;
   border: none;
 }
 .bbn-datetimepicker .bbn-button {

@@ -208,7 +208,7 @@ document.head.insertAdjacentElement('beforeend', css);
         }
       },
       paste(){
-        alert("PASET");
+        alert("PASTE");
       },
       keyup(e) {
         if ( e.key.match(/^[A-z0-9\s]{1}$/)) {

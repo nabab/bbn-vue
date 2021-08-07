@@ -66,6 +66,10 @@ document.body.insertAdjacentElement('beforeend', script);
       bbn.vue.eventsComponent
     ],
     props: {
+      autobind: {
+        type: Boolean,
+        default: false
+      },
       disabled: {
         type: Boolean,
         default: false
@@ -179,7 +183,7 @@ document.body.insertAdjacentElement('beforeend', script);
         if (!this.showFloater) {
           this.updateData().then(() => {
             this.showFloater = !this.showFloater;
-          })
+          });
         }
         else {
           this.showFloater = !this.showFloater;

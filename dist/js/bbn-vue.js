@@ -1665,10 +1665,13 @@
          * @memberof dropdownComponent
          */
         select(item, idx, dataIndex, e){
-          if ( item && (item[this.uid || this.sourceValue] !== undefined) ){
-            if (!e || !e.defaultPrevented) {
+          if (item && (!e || !e.defaultPrevented)) {
+            if (this.sourceAction && item[this.sourceAction] && bbn.fn.isFunction(item[this.sourceAction])) {
+              item[this.sourceAction](item);
+            }
+            else if (item[this.uid || this.sourceValue] !== undefined) {
               this.emitInput(item[this.uid || this.sourceValue]);
-              this.$emit('change', item[this.uid || this.sourceValue]);
+              this.$emit('change', item[this.uid || this.sourceValue], idx, dataIndex, e);
             }
           }
           this.isOpened = false;
@@ -2714,7 +2717,7 @@
          * @memberof eventsComponent
          */
          touchstart(ev){
-           this.$emit('touchstart', ev);
+           this.$emit('touchstart', ev, this);
            if (!ev.defaultPrevented) {
              this.isTouched = true;
              this.touchStarted = ev;
@@ -2734,7 +2737,7 @@
          * @memberof eventsComponent
          */
         touchmove(ev){
-          this.$emit('touchmove', ev);
+          this.$emit('touchmove', ev, this);
           if (!ev.defaultPrevented) {
             //this.isTouched = false;
             if ((Math.abs(this.touchStarted.touches[0].clientX - ev.touches[0].clientX) > this.touchTapTolerance)
@@ -2751,7 +2754,7 @@
          * @memberof eventsComponent
          */
         touchend(ev){
-          this.$emit('touchend', ev);
+          this.$emit('touchend', ev, this);
           if (!ev.defaultPrevented) {
             if (this.touchStarted && this.touchMoved) {
               let direction = false,
@@ -2779,11 +2782,12 @@
          * @method touchcancel
          * @memberof eventsComponent
          */
-        touchcancel(){
+        touchcancel(ev){
           clearTimeout(this.touchHoldTimer);
           this.isTouched = false;
           this.touchStarted = false;
           this.touchMoved = false;
+          this.$emit('touchcancel', ev, this);
         }
       },
       /**
@@ -3484,6 +3488,14 @@
          * @memberof listComponent
          */
          sourceCls: {
+          type: String
+        },
+        /**
+         * The name of the property to be used as action.
+         * @prop {String} sourceAction
+         * @memberof listComponent
+         */
+         sourceAction: {
           type: String
         },
         /**
@@ -6606,8 +6618,19 @@
       getPopup(){
         let popup = bbn.vue.getPopup(this);
         if ( arguments.length && popup ){
-          return popup.open.apply(popup, arguments)
+          let cfg = arguments[0];
+          let args = [];
+          if (bbn.fn.isObject(cfg)) {
+            cfg.opener = this;
+          }
+          args.push(cfg);
+          for (let i = 1; i < arguments.length; i++) {
+            args.push(arguments[i]);
+          }
+
+          return popup.open.apply(popup, args);
         }
+
         return popup;
       },
       /**

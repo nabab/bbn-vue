@@ -215,7 +215,8 @@ document.head.insertAdjacentElement('beforeend', css);
          */
         isOverSlider: false,
         animationInterval: false,
-        nextLevel: false
+        nextLevel: false,
+        adjustTimeout: false
       };
     },
     computed: {
@@ -718,7 +719,7 @@ document.head.insertAdjacentElement('beforeend', css);
               else if (num > (this.contentSize - this.containerSize + 100)) {
                 num = this.contentSize - this.containerSize;
               }
-              bbn.fn.log("Scroolto 1", num);
+              bbn.fn.log("Scroolto 1", num, anim);
               this.containerPos = num;
               this.sliderPos = this.containerPos * this.ratio;
               if (anim) {
@@ -825,7 +826,7 @@ document.head.insertAdjacentElement('beforeend', css);
       if ( this.realContainer && this.isInit ){
         if ( !this.container && this.scroller ){
           this.scroller.$off("resize", this.onResize);
-          this.scroller.$off("scroll", this.adjust);
+          this.scroller.$off("scroll", this.adjustFromContainer);
           this.scroller.$off("mousemove", this.overContent);
         }
         else{
@@ -833,7 +834,7 @@ document.head.insertAdjacentElement('beforeend', css);
           this.realContainer.removeEventListener('mousemove', this.overContent, {passive: true});
         }
         bbn.fn.each(this.scrollableElements(), (a) => {
-          a.removeEventListener('scroll', this.adjust, {passive: true});
+          a.removeEventListener('scroll', this.adjustFromContainer, {passive: true});
           a.removeEventListener('mousemove', this.overContent, {passive: true});
         });
       }

@@ -6,13 +6,17 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-block']"
       data-role="menu"
       role="menubar">
     <li v-for="(item, i) in filteredData"
-        class="bbn-menu-item bbn-reactive-block"
+        :class="[
+          'bbn-menu-item',
+          'bbn-reactive-block',
+          {'bbn-menu-selected': currentSelectedIndex === i}
+        ]"
         role="menuitem"
         :ref="'li' + i"
         :key="i"
         :tabindex="item.data.disabled ? '-1' : '0'"
         @focus="overIdx = i"
-        @click="overIdx = i"
+        @click="clickLi(i, $event)"
         @mouseenter="_enterLi(i)"
         >
       <a v-if="item.data.url" :href="item.data.url">
@@ -23,7 +27,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-block']"
     </li>
   </ul>
   <bbn-floater v-for="(item, i) in filteredData"
-               v-if="overIdx === i"
+               v-if="(overIdx === i) && item.data[children]"
                :key="i"
                :min-width="getRef('li' + i).clientWidth"
                :children="children"
@@ -57,6 +61,10 @@ document.body.insertAdjacentElement('beforeend', script);
       orientation: {},
       direction: {},
       opened: {},
+      selectedIndex: {
+        type: Number,
+        default: -1
+      },
       sourceValue:{
         default: 'text'
       },
@@ -67,6 +75,7 @@ document.body.insertAdjacentElement('beforeend', script);
     },
     data(){
       return {
+        currentSelectedIndex: this.selectedIndex,
         overIdx: -1
       };
     },
@@ -75,6 +84,17 @@ document.body.insertAdjacentElement('beforeend', script);
         if ( (this.overIdx > -1) && (this.overIdx !== idx) ){
           this.overIdx = idx;
           this.getRef('li' + idx).focus();
+        }
+      },
+      clickLi(idx, ev) {
+        if (this.filteredData[idx]) {
+          if (this.filteredData[idx].data[this.children] && this.filteredData[idx].data[this.children].length) {
+            this.overIdx = this.overIdx === idx ? -1 : idx;
+          }
+          else {
+            this.select(this.filteredData[idx].data, idx, idx, ev);
+          }
+          this.currentSelectedIndex = idx;
         }
       },
       onLeave(){

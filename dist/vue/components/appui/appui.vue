@@ -606,15 +606,6 @@
       },
 
 
-      /*
-      route(url, force){
-        let router = this.find('bbn-router');
-        if ( router ){
-          router.route(url, force);
-        }
-      },
-      */
-
       getField: bbn.fn.getField,
 
       toggleMenu(){

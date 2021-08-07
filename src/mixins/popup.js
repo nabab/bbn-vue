@@ -28,6 +28,7 @@
             return popup;
           }
           if (popup) {
+            cfg.opener = this;
             return popup.open(cfg);
           }
         },

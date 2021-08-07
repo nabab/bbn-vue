@@ -258,6 +258,14 @@
           type: String
         },
         /**
+         * The name of the property to be used as action.
+         * @prop {String} sourceAction
+         * @memberof listComponent
+         */
+         sourceAction: {
+          type: String
+        },
+        /**
          * The name of the property to use for children of hierarchical source
          * @prop {String} [items] children
          * @memberof listComponent

@@ -590,7 +590,7 @@ document.body.insertAdjacentElement('beforeend', script);
 
         for ( let i = 1; i <= 6; i++ ){
           if ( i > 1 ){
-            c.add(6, 'd');
+            c = c.add(6, 'd');
           }
           items = items.concat(Array.from({length: 7}, (v, k) => {
             let w = c.weekday(k),
@@ -959,12 +959,12 @@ document.body.insertAdjacentElement('beforeend', script);
       next(skip){
         skip = typeof skip === 'boolean' ? skip : false;
         if ( this.currentCfg && this.currentCfg.step && bbn.fn.isFunction(this.currentCfg.make) ){
-          let check = dayjs(this.currentDate).add(...this.currentCfg[skip && this.currentCfg.stepSkip ? 'stepSkip' : 'step']);
-          if ( this.max && (check.format(this.currentCfg.valueFormat) > this.max) ){
+          let check = dayjs(this.currentDate).add(...this.currentCfg[skip && this.currentCfg.stepSkip ? 'stepSkip' : 'step']).format(this.currentCfg.valueFormat);
+          if ( this.max && (check > this.max) ){
             this.currentDate = dayjs(this.max, this.currentCfg.valueFormat);
           }
           else{
-            this.currentDate.add(...this.currentCfg[skip && this.currentCfg.stepSkip ? 'stepSkip' : 'step']);
+            this.currentDate = dayjs(check, this.currentCfg.valueFormat);
           }
           let ev = new Event('next', {cancelable: true});
           this.$emit('next', ev, this);
@@ -985,12 +985,12 @@ document.body.insertAdjacentElement('beforeend', script);
       prev(skip){
         skip = typeof skip === 'boolean' ? skip : false;
         if ( this.currentCfg && this.currentCfg.step && bbn.fn.isFunction(this.currentCfg.make) ){
-          let check = dayjs(this.currentDate).subtract(...this.currentCfg[skip && this.currentCfg.stepSkip ? 'stepSkip' : 'step']);
-          if ( this.min && (check.format(this.currentCfg.valueFormat) < this.min) ){
+          let check = dayjs(this.currentDate).subtract(...this.currentCfg[skip && this.currentCfg.stepSkip ? 'stepSkip' : 'step']).format(this.currentCfg.valueFormat);
+          if ( this.min && (check < this.min) ){
             this.currentDate = dayjs(this.min, this.currentCfg.valueFormat);
           }
           else {
-            this.currentDate.subtract(...this.currentCfg[skip && this.currentCfg.stepSkip ? 'stepSkip' : 'step']);
+            this.currentDate = dayjs(check, this.currentCfg.valueFormat);
           }
           let ev = new Event('prev');
           this.$emit('prev', ev, this);

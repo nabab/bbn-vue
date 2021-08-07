@@ -812,6 +812,19 @@
           });
           if ( this.activeContainer ){
             this.activeContainer.show();
+            if (this.scrollable && this.nav && !this.breadcrumb) {
+              let scroll = this.getRef('horizontal-scroll');
+              if (scroll.ready) {
+                this.getRef('horizontal-scroll').scrollTo(this.getRef('tab-' + this.activeContainer.idx));
+              }
+              else if (scroll) {
+                scroll.$on('ready', () => {
+                  setTimeout(() => {
+                    this.getRef('horizontal-scroll').scrollTo(this.getRef('tab-' + this.activeContainer.idx));
+                  }, 100);
+                })
+              }
+            }
           }
         }
         else if ( url !== this.activeContainer.currentURL ){

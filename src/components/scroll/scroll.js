@@ -907,49 +907,44 @@
        */
       ready(newVal){
         if (newVal) {
-          setTimeout(() => {
-            if (this.interval) {
-              clearInterval(this.interval);
-            }
-            // Checks every second if the scroll content has been resized and sends onResize if so
-            this.interval = setInterval(() => {
-              if (this.scrollable && this.$el.offsetParent) {
-                //bbn.fn.log("offsetParent ok");
-                let content = this.getRef('scrollContent');
-                let contentBox = content ? content.getBoundingClientRect() : {};
-                let contentWidth = contentBox.width;
-                let contentHeight = contentBox.height;
-                if (
-                  (
-                    contentWidth
-                    && (this.contentWidth !== contentWidth)
-                    && (
-                      !this.contentWidth
-                      || (Math.abs(contentWidth - this.contentWidth) > 3)
-                    )
+          if (this.interval) {
+            clearInterval(this.interval);
+          }
+          // Checks every second if the scroll content has been resized and sends onResize if so
+          this.interval = setInterval(() => {
+            if (this.scrollable && this.$el.offsetParent) {
+              //bbn.fn.log("offsetParent ok");
+              let content = this.getRef('scrollContent');
+              let contentBox = content ? content.getBoundingClientRect() : {};
+              let contentWidth = contentBox.width;
+              let contentHeight = contentBox.height;
+              if (
+                (
+                  contentWidth
+                  && (this.contentWidth !== contentWidth)
+                  && (
+                    !this.contentWidth
+                    || (Math.abs(contentWidth - this.contentWidth) > 3)
                   )
-                  || (
-                    contentWidth
-                    && (this.contentWidth !== contentHeight)
-                    && (
-                      !this.contentHeight
-                      || (Math.abs(contentHeight - this.contentHeight) > 3)
-                    )
+                )
+                || (
+                  contentWidth
+                  && (this.contentWidth !== contentHeight)
+                  && (
+                    !this.contentHeight
+                    || (Math.abs(contentHeight - this.contentHeight) > 3)
                   )
-                ) {
-                  //bbn.fn.log("ON SCROLL INTERVAL");
-                  this.onResize(true);
-                }
+                )
+              ) {
+                //bbn.fn.log("ON SCROLL INTERVAL");
+                this.onResize(true);
               }
-            }, 1000);
-            setTimeout(() => {
-              this.scrollReady = true;
-              setTimeout(() => {
-                this.afterReady = true;
-              }, 1000);
-            }, 1000);
-
-          }, 100);
+            }
+          }, 1000);
+          this.scrollReady = true;
+          setTimeout(() => {
+            this.afterReady = true;
+          }, 1000);
         }
       },
       /**
@@ -969,7 +964,7 @@
       containerWidth(){
         let x = this.getRef('xScroller');
         if ( x ){
-          x.onResize()
+          x.onResize();
         }
       },
       /**
@@ -979,7 +974,7 @@
       containerHeight(){
         let y = this.getRef('yScroller');
         if ( y ){
-          y.onResize()
+          y.onResize();
         }
       },
       currentX(x) {

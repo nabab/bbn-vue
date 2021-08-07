@@ -4,6 +4,7 @@
   flex-direction: row;
 }
 .bbn-datetimepicker .bbn-masked {
+  background-color: transparent;
   border: none;
 }
 .bbn-datetimepicker .bbn-button {
