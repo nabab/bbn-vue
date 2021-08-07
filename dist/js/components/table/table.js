@@ -114,7 +114,7 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                       'bbn-p': true,
                       'bbn-red': hasFilter(col)
                     }"
-                    v-if="filterable && (col.filterable !== false) && ((col.filterable === true) || !col.buttons) && col.field"
+                    v-if="showFilterOnColumn(col)"
                     @click="showFilter(col, $event)"
                   ></i>
                   <div v-if="col.isSelection" :title="_('Check all')">
@@ -303,13 +303,13 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                       'bbn-table-edit-buttons': !!col.buttons && isEdited(d.data, col, i),
                       'bbn-table-buttons': !!col.buttons
                     }]"
+                    @click="clickCell(col, index, d.index)"
                     :style="{
                       left: col.left !== undefined ? (col.left + 'px') : 'auto',
                       right: col.right !== undefined ? (col.right + 'px') : 'auto',
                       width: col.realWidth
                     }">
-                  <div class="bbn-block bbn-spadded"
-                      @click="clickCell(col, index, d.index)">
+                  <div class="bbn-block bbn-spadded">
                     <!-- Checkboxes -->
                     <div v-if="col.isSelection" class="bbn-c bbn-w-100">
                       <bbn-checkbox v-if="d.selection"
@@ -3193,6 +3193,23 @@ document.head.insertAdjacentElement('beforeend', css);
         return o;
       },
       /**
+       * Returns true if the filter should be shown on the given column.
+       * @method showFilterOnColumn
+       * @param {Object} col
+       * @returns {Boolean}
+       */
+      showFilterOnColumn(col) {
+        if (!this.filterable || (col.filterable === false) || col.hideFilter) {
+          return false;
+        }
+
+        if (col.filterable === true) {
+          return true;
+        }
+
+        return !col.buttons && col.field;
+      },
+      /**
        * Focuses the given row index.
        * @method focusRow
        * @param {Event} ev
@@ -3218,6 +3235,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * 
        */
       clickCell(col, colIndex, dataIndex) {
+        this.$emit('click-row', this.filteredData[dataIndex].data, dataIndex);
         this.$emit('click-cell', col, colIndex, dataIndex);
       },
       /**
@@ -3395,6 +3413,28 @@ document.head.insertAdjacentElement('beforeend', css);
       }
     },
     watch: {
+      columns() {
+        this.cols.splice(0, this.cols.length);
+        if (this.columns.length) {
+          bbn.fn.each(this.columns, a => this.addColumn(a))
+        }
+  
+        if (this.defaultConfig.hidden === null) {
+          let tmp = [];
+          let initColumn = [];
+          bbn.fn.each(this.cols, (a, i) => {
+            if (a.hidden) {
+              tmp.push(i);
+            }
+            else if (initColumn.length <= 10) {
+              initColumn.push(i);
+            }
+          });
+          this.defaultConfig.hidden = tmp;
+        }
+
+        this.init();
+      },
       /**
        * Updates the data.
        * @watch observerValue

@@ -307,9 +307,10 @@ document.head.insertAdjacentElement('beforeend', css);
                   if ( !this.isOpened ){
                     this.isOpened = true;
                   }
-                  else{
-                    let list = this.find('bbn-scroll');
-                    if ( list ){
+                  else {
+                    let floater = this.getRef('list');
+                    let list = floater ? floater.getRef('scroll') : false;
+                    if (list) {
                       list.onResize();
                     }
                   }

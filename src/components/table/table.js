@@ -2933,6 +2933,28 @@
       }
     },
     watch: {
+      columns() {
+        this.cols.splice(0, this.cols.length);
+        if (this.columns.length) {
+          bbn.fn.each(this.columns, a => this.addColumn(a))
+        }
+  
+        if (this.defaultConfig.hidden === null) {
+          let tmp = [];
+          let initColumn = [];
+          bbn.fn.each(this.cols, (a, i) => {
+            if (a.hidden) {
+              tmp.push(i);
+            }
+            else if (initColumn.length <= 10) {
+              initColumn.push(i);
+            }
+          });
+          this.defaultConfig.hidden = tmp;
+        }
+
+        this.init();
+      },
       /**
        * Updates the data.
        * @watch observerValue

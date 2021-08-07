@@ -182,8 +182,19 @@
       getPopup(){
         let popup = bbn.vue.getPopup(this);
         if ( arguments.length && popup ){
-          return popup.open.apply(popup, arguments)
+          let cfg = arguments[0];
+          let args = [];
+          if (bbn.fn.isObject(cfg)) {
+            cfg.opener = this;
+          }
+          args.push(cfg);
+          for (let i = 1; i < arguments.length; i++) {
+            args.push(arguments[i]);
+          }
+
+          return popup.open.apply(popup, args);
         }
+
         return popup;
       },
       /**

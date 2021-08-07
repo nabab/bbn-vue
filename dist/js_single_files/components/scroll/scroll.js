@@ -357,7 +357,7 @@ document.body.insertAdjacentElement('beforeend', script);
         if (this.ready && !this.isDragging) {
           cls += ' bbn-scroll-not-dragged';
         }
-        if (this.isScrolling || (!this.isMeasuring && !this.scrollable)) {
+        if (!this.isMeasuring && !this.scrollable) {
           cls += ' bbn-overlay';
         }
         if (this.hasX()) {
@@ -443,11 +443,13 @@ document.body.insertAdjacentElement('beforeend', script);
             e.preventDefault();
             return;
           }
+
           if (this.hasScrollX && (ct.scrollLeft < 0)) {
             ct.scrollLeft = 0;
             e.preventDefault();
             return;
           }
+
           if (this.hasScrollY && (ct.scrollTop < 0)) {
             ct.scrollTop = 0;
             e.preventDefault();
@@ -547,16 +549,33 @@ document.body.insertAdjacentElement('beforeend', script);
             this.$refs.xScroller
           ) {
             this.$refs.xScroller.scrollTo(x, anim).then(() => {
-              try {
-                resolve();
+              if (
+                this.hasScrollY &&
+                (y !== undefined) &&
+                (y !== null) &&
+                this.$refs.yScroller
+              ) {
+                this.$refs.yScroller.scrollTo(y, anim).then(() => {
+                  try {
+                    resolve();
+                  }
+                  catch(e) {
+    
+                  }
+                });
               }
-              catch(e) {
-                
+              else {
+                try {
+                  resolve();
+                }
+                catch(e) {
+                  
+                }
               }
             });
           }
 
-          if (
+          else if (
             this.hasScrollY &&
             (y !== undefined) &&
             (y !== null) &&
@@ -939,49 +958,44 @@ document.body.insertAdjacentElement('beforeend', script);
        */
       ready(newVal){
         if (newVal) {
-          setTimeout(() => {
-            if (this.interval) {
-              clearInterval(this.interval);
-            }
-            // Checks every second if the scroll content has been resized and sends onResize if so
-            this.interval = setInterval(() => {
-              if (this.scrollable && this.$el.offsetParent) {
-                //bbn.fn.log("offsetParent ok");
-                let content = this.getRef('scrollContent');
-                let contentBox = content ? content.getBoundingClientRect() : {};
-                let contentWidth = contentBox.width;
-                let contentHeight = contentBox.height;
-                if (
-                  (
-                    contentWidth
-                    && (this.contentWidth !== contentWidth)
-                    && (
-                      !this.contentWidth
-                      || (Math.abs(contentWidth - this.contentWidth) > 3)
-                    )
+          if (this.interval) {
+            clearInterval(this.interval);
+          }
+          // Checks every second if the scroll content has been resized and sends onResize if so
+          this.interval = setInterval(() => {
+            if (this.scrollable && this.$el.offsetParent) {
+              //bbn.fn.log("offsetParent ok");
+              let content = this.getRef('scrollContent');
+              let contentBox = content ? content.getBoundingClientRect() : {};
+              let contentWidth = contentBox.width;
+              let contentHeight = contentBox.height;
+              if (
+                (
+                  contentWidth
+                  && (this.contentWidth !== contentWidth)
+                  && (
+                    !this.contentWidth
+                    || (Math.abs(contentWidth - this.contentWidth) > 3)
                   )
-                  || (
-                    contentWidth
-                    && (this.contentWidth !== contentHeight)
-                    && (
-                      !this.contentHeight
-                      || (Math.abs(contentHeight - this.contentHeight) > 3)
-                    )
+                )
+                || (
+                  contentWidth
+                  && (this.contentWidth !== contentHeight)
+                  && (
+                    !this.contentHeight
+                    || (Math.abs(contentHeight - this.contentHeight) > 3)
                   )
-                ) {
-                  //bbn.fn.log("ON SCROLL INTERVAL");
-                  this.onResize(true);
-                }
+                )
+              ) {
+                //bbn.fn.log("ON SCROLL INTERVAL");
+                this.onResize(true);
               }
-            }, 1000);
-            setTimeout(() => {
-              this.scrollReady = true;
-              setTimeout(() => {
-                this.afterReady = true;
-              }, 1000);
-            }, 1000);
-
-          }, 100);
+            }
+          }, 1000);
+          this.scrollReady = true;
+          setTimeout(() => {
+            this.afterReady = true;
+          }, 1000);
         }
       },
       /**
@@ -1001,7 +1015,7 @@ document.body.insertAdjacentElement('beforeend', script);
       containerWidth(){
         let x = this.getRef('xScroller');
         if ( x ){
-          x.onResize()
+          x.onResize();
         }
       },
       /**
@@ -1011,7 +1025,7 @@ document.body.insertAdjacentElement('beforeend', script);
       containerHeight(){
         let y = this.getRef('yScroller');
         if ( y ){
-          y.onResize()
+          y.onResize();
         }
       },
       currentX(x) {

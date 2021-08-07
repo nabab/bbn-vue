@@ -282,8 +282,6 @@
 </script>
 <style scoped>
 .bbn-switch {
-  position: relative;
-  display: inline-block;
   width: 2.96em;
   height: 1.7em;
 }

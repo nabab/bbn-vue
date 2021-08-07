@@ -302,7 +302,7 @@
        * @fires setValue
        */
       setDate(val){
-        this.setValue(dayjs(val, 'YYYY-MM-DD').isValid() ? dayjs(val, 'YYYY-MM-DD').format(this.getValueFormat(val)) : '');
+        this.setValue(dayjs(val, this.getValueFormat(val)).isValid() ? dayjs(val, this.getValueFormat(val)).format(this.getValueFormat(val)) : '');
       },
       /**
        * Sets the value.

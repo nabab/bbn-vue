@@ -494,6 +494,7 @@ document.body.insertAdjacentElement('beforeend', script);
         }
         if ( value !== this.value ){
           this.emitInput(value);
+          this.$emit('change', value);
         }
         else {
           this.setInputValue(value);
@@ -525,11 +526,6 @@ document.body.insertAdjacentElement('beforeend', script);
             value = this.max;
           }
           this.setValue(value);
-          this.$nextTick(() => {
-            if ( this.value !== value ){
-              this.$emit('change', value);
-            }
-          });
         }
       },
       /**

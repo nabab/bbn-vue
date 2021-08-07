@@ -84,7 +84,7 @@
 				 @click="lastPage"
 			></i>
 		</span>
-		<span v-if="!isMobile || isTablet" class="bbn-hmargin">
+		<span v-if="element.limits.length && !isMobile || isTablet" class="bbn-hmargin">
 			<bbn-dropdown :source="element.limits"
 										v-model.number="element.currentLimit"
 										@change="element.currentPage = 1"
@@ -106,7 +106,7 @@
 				 justifyContent: isMobile && !isTablet ? 'flex-end' : ''
 			 }"
 	>
-		<div v-if="isMobile && !isTablet && element.pageable && element.currentData.length"
+		<div v-if="element.limits.length && isMobile && !isTablet && element.pageable && element.currentData.length"
 				 class="bbn-right-space bbn-flex-fill bbn-vmiddle"
 		>
 			<bbn-dropdown :source="element.limits"

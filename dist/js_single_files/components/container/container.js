@@ -17,6 +17,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-overlay']"
       <component :is="scrollable ? 'bbn-scroll' : 'div'"
                 v-if="ready && isLoaded && (visible || cached)"
                 v-show="visible"
+                ref="scroll"
                 :axis="scrollable ? 'y' : null"
                 class="bbn-overlay">
         <!-- This is an ad hoc component with unique name -->
@@ -488,7 +489,7 @@ document.body.insertAdjacentElement('beforeend', script);
 
           setTimeout(() => {
             if (bbn.env.url.indexOf('#')) {
-              let scroll = this.find('bbn-scroll');
+              let scroll = this.getRef('scroll');
               if (scroll && (scroll.currentY || scroll.currentX)) {
                 return;
               }

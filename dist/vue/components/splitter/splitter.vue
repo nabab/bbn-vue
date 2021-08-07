@@ -473,6 +473,7 @@
             this.$el.style.width = w;
             this.$el.style.height = h;
             this.isResizing = false;
+            this.$emit('resize');
           }, 100)
         }
       },

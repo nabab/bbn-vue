@@ -79,6 +79,7 @@ script.innerHTML = `<div :class="[
             :class="scrollable ? 'bbn-block' : 'bbn-100'"/>
         <bbn-list v-else-if="filteredData.length"
                   :mode="mode"
+                  ref="list"
                   :suggest="suggest"
                   :source="filteredData"
                   :component="itemComponent"
@@ -361,6 +362,9 @@ document.head.insertAdjacentElement('beforeend', css);
       suggest: {
         type: [Boolean, Number],
         default: false
+      },
+      opener: {
+        type: Vue
       }
     },
     data() {

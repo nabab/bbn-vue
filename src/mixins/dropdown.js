@@ -246,10 +246,13 @@
          * @memberof dropdownComponent
          */
         select(item, idx, dataIndex, e){
-          if ( item && (item[this.uid || this.sourceValue] !== undefined) ){
-            if (!e || !e.defaultPrevented) {
+          if (item && (!e || !e.defaultPrevented)) {
+            if (this.sourceAction && item[this.sourceAction] && bbn.fn.isFunction(item[this.sourceAction])) {
+              item[this.sourceAction](item);
+            }
+            else if (item[this.uid || this.sourceValue] !== undefined) {
               this.emitInput(item[this.uid || this.sourceValue]);
-              this.$emit('change', item[this.uid || this.sourceValue]);
+              this.$emit('change', item[this.uid || this.sourceValue], idx, dataIndex, e);
             }
           }
           this.isOpened = false;

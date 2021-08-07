@@ -64,6 +64,10 @@
       bbn.vue.eventsComponent
     ],
     props: {
+      autobind: {
+        type: Boolean,
+        default: false
+      },
       disabled: {
         type: Boolean,
         default: false
@@ -177,7 +181,7 @@
         if (!this.showFloater) {
           this.updateData().then(() => {
             this.showFloater = !this.showFloater;
-          })
+          });
         }
         else {
           this.showFloater = !this.showFloater;
