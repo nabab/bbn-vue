@@ -252,6 +252,21 @@
         })
       },
       /**
+       * @method _change
+       * @fires change
+       * @fires checkMinMax
+       * @fires checkDecimals
+       * @param {Event} e
+       */
+       _change(e){
+        this.checkMinMax();
+        this.checkDecimals();
+        this.editMode = false;
+        this.$nextTick(() => {
+          this.change(e);
+        });
+      },
+      /**
        * @method checkDecimals
        */
       checkDecimals(){
