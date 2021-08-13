@@ -152,20 +152,21 @@
          * @method touchstart
          * @memberof eventsComponent
          */
-         touchstart(ev){
-           this.$emit('touchstart', ev, this);
-           if (!ev.defaultPrevented) {
-             this.isTouched = true;
-             this.touchStarted = ev;
-             clearTimeout(this.touchHoldTimer);
-             this.touchHoldTimer = setTimeout(() => {
-               if (this.isTouched && !this.touchMoved){
-                 let event = new Event('contextmenu');
-                 this.$el.dispatchEvent(event);
-                 this.isTouched = false;
-               }
-             }, this.touchHoldTolerance);
-           }
+        touchstart(ev){
+          this.$emit('touchstart', ev, this);
+          if (!ev.defaultPrevented) {
+            this.isTouched = true;
+            this.touchStarted = ev;
+            clearTimeout(this.touchHoldTimer);
+            this.touchHoldTimer = setTimeout(() => {
+              if (this.isTouched && !this.touchMoved && !ev.defaultPrevented){
+                ev.preventDefault();
+                let event = new Event('contextmenu');
+                this.$el.dispatchEvent(event);
+                this.isTouched = false;
+              }
+            }, this.touchHoldTolerance);
+          }
         },
         /**
          * Sets the prop isTouched to false.
