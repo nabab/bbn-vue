@@ -115,8 +115,11 @@
             this.currentMode = 'login';
           }
           else if (this.currentMode === 'change') {
-            this.alert(bbn._('Your password has been changed'), false);
-            this.currentMode = 'login';
+            //this.alert(bbn._('Your password has been changed'), false);
+            //this.currentMode = 'login';
+            this.alert(bbn._('Your password has been changed'), false, () => {}, () => {
+              window.document.location.href = bbn.env.root;
+            });
           }
         }
         else {
