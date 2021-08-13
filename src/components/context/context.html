@@ -5,9 +5,9 @@
            @contextmenu="clickItem"
            @keydown.space.enter="clickItem"
            @mousedown.prevent.stop="() => {return false}"
-           @touchstart="touchstart"
-           @touchmove="touchmove"
-           @touchend="touchend"
+           @touchstart.stop="touchstart"
+           @touchmove.stop="touchmove"
+           @touchend.stop="touchend"
 >
   <slot></slot>
   <bbn-floater :element="attach || $el"
