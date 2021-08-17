@@ -695,7 +695,6 @@
           return new Promise((resolve) => {
             // Should be triggered by the inner scroll once mounted
             if (go) {
-              bbn.fn.log("realResize", this);
               if (this.definedWidth && this.definedHeight) {
                 if ((this.realWidth !== this.definedWidth)
                   ||(this.realHeight !== this.definedHeight)
@@ -716,7 +715,6 @@
                   clearTimeout(this.resizerFn);
                 }
                 this.resizerFn = setTimeout(() => {
-                  bbn.fn.log("RESIZER FN");
                   this.resizerFn = false;
                   let scroll = this.getRef('scroll');
                   bbn.fn.log(scroll);
@@ -786,7 +784,6 @@
               }
 
               this.$forceUpdate();
-
               this.$nextTick(() => {
                 this.isResizing = false;
                 if (this.element && !this.isResized) {
@@ -812,6 +809,7 @@
               });
             }
             else if (go && this.isInit) {
+              this.updatePosition();
               this.isResizing = false;
             }
           });

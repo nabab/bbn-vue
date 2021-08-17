@@ -264,8 +264,10 @@
          * @param {Event} e 
          */
         commonKeydown(e){
-          bbn.fn.log("Common keydown from mixin");
           if (!this.filteredData.length || e.altKey || e.ctrlKey || e.metaKey) {
+            return;
+          }
+          if ((e.key.length >= 2) && (e.key[0] === 'F')) {
             return;
           }
           if (e.key === 'Tab') {
