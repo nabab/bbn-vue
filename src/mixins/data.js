@@ -61,7 +61,7 @@
                     '-',
                     '.',
                     ' ',
-                    cfg.precision === -4 ? 3 : (cfg.precision || 0)
+                    cfg.precision === -4 ? 3 : (cfg.precision || cfg.decimals || 0)
                   ) : '-';
               case "money":
                 return v ?

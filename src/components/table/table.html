@@ -221,7 +221,7 @@
                         borderRight: '0px',
                         overflow: 'unset'
                     }">
-                    <div :class="['bbn-block', currentClass(cols[group], d.data, i), {'bbn-spadded': !cols[group].component}]"
+                    <div :class="[currentClass(cols[group], d.data, i), {'bbn-spadded': !cols[group].component}]"
                          :style="{
                             width: lastKnownWidth - groupCols[currentColumns[0].isLeft ? 0 : 1].cols[0].realWidth - borderLeft - borderRight + 'px',
                             backgroundColor: 'transparent !important'
@@ -385,6 +385,11 @@
                                 v-bind="col.options"
                                 :source="col.mapper ? col.mapper(d.data) : d.data"
                       ></component>
+                      <template v-else-if="col.buttons && dropdownMode">
+                        <bbn-dropdown :source="col.buttons"
+                                      :placeholder="dropdownMode === true ? _('Action') : dropdownMode"
+                                      @select="_execCommand(button, d.data, col, i, $event)"/>
+                      </template>
                       <template v-else-if="col.buttons && (colButtons === index)">
                         <bbn-button v-for="(button, bi) in (Array.isArray(realButtons) ? realButtons : realButtons(d.data, col, i))"
                                     :key="bi"

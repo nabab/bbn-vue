@@ -229,6 +229,14 @@
         type: Number
       },
       /**
+       * If defined will show the buttons as a single dropdown, if string its value will be the placeholder.
+       * @prop {Boolean|String} dropdownMode
+       */
+       dropdownMode: {
+        type: [Boolean, String],
+        default: false
+      },
+      /**
        * @todo desc
        * @prop {Array|Function} expandedValues
        *
@@ -2049,17 +2057,6 @@
           ));
       },
       /**
-       * Handles the resize.
-       * @method onResize
-       * @fires setContainerMeasures
-       * @fires setResizeMeasures
-       * @fires keepCool
-       */
-      onResize() {
-        this.setContainerMeasures();
-        this.setResizeMeasures();
-      },
-      /**
        * Returns an object of numbers as width and height based on whatever unit given.
        * 
        * @method getDimensions
@@ -2828,7 +2825,8 @@
      * @fires setConfig
      * @fires getStorage
      */
-    created(){
+     created(){
+      this.componentClass.push('bbn-resize-emitter');
       // Adding bbns-column from the slot
       if (this.$slots.default) {
         let def = this.defaultObject();
