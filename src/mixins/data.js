@@ -89,7 +89,7 @@
                 let idx = cfg.source.indexOf(v);
                 return idx > -1 ? cfg.source[idx] : '-';
               }
-              else{
+              else {
                 let filter = {};
                 filter[this.sourceValue || 'value'] = v;
                 let idx = bbn.fn.search(bbn.fn.isFunction(cfg.source) ? cfg.source() : cfg.source, filter);

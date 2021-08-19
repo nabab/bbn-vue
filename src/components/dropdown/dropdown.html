@@ -47,7 +47,8 @@
          ref="element"
          :name="name"
   >
-  <bbn-floater v-if="!asMobile
+  <bbn-floater v-if="!popup
+                 && !asMobile
                  && filteredData.length
                  && !disabled
                  && !readonly
@@ -70,8 +71,10 @@
                :source="filteredData"
                :source-text="sourceText"
                :source-value="sourceValue"
+               :title="floaterTitle"
   ></bbn-floater>
-  <bbn-floater v-if="asMobile
+  <bbn-floater v-if="!popup
+                 && asMobile
                  && filteredData.length
                  && !disabled
                  && !readonly

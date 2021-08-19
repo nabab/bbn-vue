@@ -17,5 +17,6 @@
       tabindex="-1"
       :style="{zIndex: zIndex+items.length-2}"
       @keydown.esc.prevent.stop="close(items.length-1)"
+      v-if="popups.length && (popups[popups.length - 1].modal !== false)"
   ></div>
 </div>

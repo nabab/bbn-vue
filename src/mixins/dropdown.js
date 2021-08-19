@@ -99,6 +99,15 @@
          */
         floaterTitle: {
           type: String
+        },
+        /**
+         * Using an external popup component to open the floater
+         * @memberof dropdownComponent
+         * @prop {Boolean|Vue} popup
+         */
+        popup: {
+          type: [Boolean, Vue],
+          default: false
         }
       },
       data(){
@@ -154,6 +163,16 @@
         };
       },
       computed: {
+        popupComponent(){
+          if (this.popup) {
+            if (this.popup === true) {
+              return this.getPopup();
+            }
+            else {
+              return this.popup;
+            }
+          }
+        },
         /**
          * Returns the current 'text' corresponding to the value of the component.
          * @computed currentTextValue
