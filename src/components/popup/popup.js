@@ -307,9 +307,6 @@
         if ( (a.title === undefined) && this.untitled ){
           a.title = this.untitled;
         }
-        if ( !a.component && !a.content ){
-          a.content = ' ';
-        }
         return a;
       },
       /**

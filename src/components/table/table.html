@@ -388,6 +388,7 @@
                       <template v-else-if="col.buttons && dropdownMode">
                         <bbn-dropdown :source="col.buttons"
                                       :placeholder="dropdownMode === true ? _('Action') : dropdownMode"
+                                      :popup="true"
                                       @select="_execCommand(button, d.data, col, i, $event)"/>
                       </template>
                       <template v-else-if="col.buttons && (colButtons === index)">
