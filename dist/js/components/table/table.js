@@ -224,7 +224,7 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                         borderRight: '0px',
                         overflow: 'unset'
                     }">
-                    <div :class="['bbn-block', currentClass(cols[group], d.data, i), {'bbn-spadded': !cols[group].component}]"
+                    <div :class="[currentClass(cols[group], d.data, i), {'bbn-spadded': !cols[group].component}]"
                          :style="{
                             width: lastKnownWidth - groupCols[currentColumns[0].isLeft ? 0 : 1].cols[0].realWidth - borderLeft - borderRight + 'px',
                             backgroundColor: 'transparent !important'
@@ -388,6 +388,12 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                                 v-bind="col.options"
                                 :source="col.mapper ? col.mapper(d.data) : d.data"
                       ></component>
+                      <template v-else-if="col.buttons && dropdownMode">
+                        <bbn-dropdown :source="col.buttons"
+                                      :placeholder="dropdownMode === true ? _('Action') : dropdownMode"
+                                      :popup="true"
+                                      @select="_execCommand(button, d.data, col, i, $event)"/>
+                      </template>
                       <template v-else-if="col.buttons && (colButtons === index)">
                         <bbn-button v-for="(button, bi) in (Array.isArray(realButtons) ? realButtons : realButtons(d.data, col, i))"
                                     :key="bi"
@@ -709,6 +715,14 @@ document.head.insertAdjacentElement('beforeend', css);
         type: Number
       },
       /**
+       * If defined will show the buttons as a single dropdown, if string its value will be the placeholder.
+       * @prop {Boolean|String} dropdownMode
+       */
+       dropdownMode: {
+        type: [Boolean, String],
+        default: false
+      },
+      /**
        * @todo desc
        * @prop {Array|Function} expandedValues
        *
@@ -967,9 +981,22 @@ document.head.insertAdjacentElement('beforeend', css);
          * @data {Number} [0] borderRight
          */
         borderRight: 0,
+        /**
+         * @data {DOMElement} [undefined] focusedElement
+         */
         focusedElement: undefined,
+        /**
+         * @data {Number} [0] focusedElementX Horizontal coordinate of focused element
+         */
         focusedElementX: 0,
-        focusedElementY: 0
+        /**
+         * @data {Number} [0] focusedElementY Vertical coordinate of focused element
+         */
+        focusedElementY: 0,
+        /**
+         * @data {Boolean} [false] isTableDataUpdating Will be set to true during the whole update process
+         */
+        isTableDataUpdating: false
       };
     },
     computed: {
@@ -2266,7 +2293,16 @@ document.head.insertAdjacentElement('beforeend', css);
             this.currentLimit = cfg.limit;
           }
           if (this.sortable && (this.currentOrder !== cfg.order)) {
-            this.currentOrder = cfg.order;
+            if (bbn.fn.isObject(cfg.order)) {
+              let currentOrder = [];
+              bbn.fn.iterate(cfg.order, (v, n) => {
+                currentOrder.push({field: n, dir: v.toUpperCase() === 'DESC' ? 'DESC' : 'ASC'});
+              });
+              this.currentOrder = currentOrder;
+            }
+            else if (bbn.fn.isArray(cfg.order)) {
+              this.currentOrder = cfg.order;
+            }
           }
           if (this.showable) {
             if ((cfg.hidden !== undefined) && (cfg.hidden !== this.currentHidden)) {
@@ -2354,6 +2390,8 @@ document.head.insertAdjacentElement('beforeend', css);
        */
       updateData(withoutOriginal) {
         /** Mini reset?? */
+        this.isTableDataUpdating = true;
+        this.allRowsChecked = false;
         this.currentExpanded = [];
         this._removeTmp();
         this.editedRow = false;
@@ -2363,11 +2401,14 @@ document.head.insertAdjacentElement('beforeend', css);
           if (this.currentData.length && this.selection && this.currentSelected.length && !this.uid) {
             this.currentSelected = [];
           }
+
           if (this.editable) {
             this.originalData = JSON.parse(JSON.stringify(this.currentData.map((a) => {
               return a.data;
             })));
           }
+
+          this.isTableDataUpdating = false;
         });
       },
       /**
@@ -2527,17 +2568,6 @@ document.head.insertAdjacentElement('beforeend', css);
             this.groupCols[groupIndex + 1].cols[0] &&
             (this.groupCols[groupIndex + 1].cols[0].field === this.isAggregated)
           ));
-      },
-      /**
-       * Handles the resize.
-       * @method onResize
-       * @fires setContainerMeasures
-       * @fires setResizeMeasures
-       * @fires keepCool
-       */
-      onResize() {
-        this.setContainerMeasures();
-        this.setResizeMeasures();
       },
       /**
        * Returns an object of numbers as width and height based on whatever unit given.
@@ -3308,7 +3338,8 @@ document.head.insertAdjacentElement('beforeend', css);
      * @fires setConfig
      * @fires getStorage
      */
-    created(){
+     created(){
+      this.componentClass.push('bbn-resize-emitter');
       // Adding bbns-column from the slot
       if (this.$slots.default) {
         let def = this.defaultObject();
@@ -3462,7 +3493,7 @@ document.head.insertAdjacentElement('beforeend', css);
         if (v) {
           this.checkAll();
         }
-        else {
+        else if (!this.isTableDataUpdating) {
           this.uncheckAll();
         }
       },

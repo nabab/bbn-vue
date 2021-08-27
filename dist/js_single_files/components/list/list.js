@@ -48,16 +48,19 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-floater-list']"
                   :is="li.data && li.data.url && !li.data[children] ? 'a' : 'span'"
                   @click.prevent="() => {}"
                   class="bbn-w-100 bbn-hspadded"
+                  :title="li.data[sourceText]"
                   :href="li.data && li.data.url ? li.data.url : null"
                   :key="li.key">
-          <span class="space" v-if="selection || (mode === 'options')">
+          <span class="space"
+                v-if="selection || (mode === 'options')">
             <i v-if="li.data.selected"
-              class="nf nf-fa-check"></i>
+               class="nf nf-fa-check"></i>
           </span>
           <span class="space" v-if="hasIcons">
             <i v-if="li.data.icon" :class="li.data.icon"></i>
           </span>
-          <span class="text" v-html="li.data[sourceText]"></span>
+          <span class="text"
+                v-html="li.data[sourceText]"></span>
         </component>
         <div v-if="!currentComponent && li.data[children] && li.data[children].length"
             class="bbn-block bbn-abs bbn-vxspadded bbn-hspadded"

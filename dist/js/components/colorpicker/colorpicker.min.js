@@ -23,7 +23,7 @@
            class="nf nf-fae-thin_close bbn-s bbn-red"
         ></i>
       </div>
-      <div>
+      <div class="bbn-colorpicker-icon">
         <i :class="{'nf nf-fa-caret_down': !readonly, 'nf nf-fa-lock': !!readonly}"></i>
       </div>
     </div>

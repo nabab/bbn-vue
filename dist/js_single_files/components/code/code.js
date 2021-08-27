@@ -190,7 +190,7 @@ document.body.insertAdjacentElement('beforeend', script);
       },
       gutters: ["CodeMirror-lint-markers"],
       lint: {
-        esversion: 6
+        esversion: 8
       },
       /*
       lintWith: window.jslint || CodeMirror.lint.javascript,

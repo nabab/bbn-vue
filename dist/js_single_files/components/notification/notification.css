@@ -7,3 +7,6 @@
 .bbn-notification .bbn-notification-content {
   white-space: nowrap;
 }
+.bbn-notification .bbn-notification-content > span {
+  white-space: normal;
+}

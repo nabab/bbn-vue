@@ -48,7 +48,8 @@
          ref="element"
          :name="name"
   >
-  <bbn-floater v-if="!asMobile
+  <bbn-floater v-if="!popup
+                 && !asMobile
                  && filteredData.length
                  && !disabled
                  && !readonly
@@ -71,8 +72,10 @@
                :source="filteredData"
                :source-text="sourceText"
                :source-value="sourceValue"
+               :title="floaterTitle"
   ></bbn-floater>
-  <bbn-floater v-if="asMobile
+  <bbn-floater v-if="!popup
+                 && asMobile
                  && filteredData.length
                  && !disabled
                  && !readonly
@@ -245,25 +248,50 @@
      /**
       * @watch  isActive
       */
-     isActive(v){
-       if (!v && this.filterString) {
-        this.currentText = this.currentTextValue || '';
-       }
-     },
-     /**
-      * @watch  isOpened
-      */
-     isOpened(val){
-      if ((this.currentText === this.currentTextValue) && this.writable) {
-        this.selectText();
-      }
-      if (!val && this.preload) {
-        this.getRef('list').currentVisible = true;
-      }
-     },
-     /**
-      * @watch  currentText
-      */
+      isActive(v){
+        if (!v && this.filterString) {
+         this.currentText = this.currentTextValue || '';
+        }
+      },
+      /**
+       * @watch  isOpened
+       */
+      isOpened(val){
+        if (this.popup && val) {
+          this.popupComponent.open({
+            title: false,
+            element: this.$el,
+            maxHeight: this.maxHeight,
+            minWidth: this.$el.clientWidth,
+            autoHide: true,
+            uid: this.sourceValue,
+            itemComponent: this.realComponent,
+            onSelect: this.select,
+            position: 'bottom',
+            suggest: true,
+            modal: false,
+            selected: [this.value],
+            onClose: () => {
+              this.isOpened = false;
+            },
+            source: this.filteredData.map(a => bbn.fn.extend({value: a.data.text}, a.data)),
+            sourceAction: this.sourceAction,
+            sourceText: this.sourceText,
+            sourceValue: this.sourceValue
+          });
+        }
+
+        if ((this.currentText === this.currentTextValue) && this.writable) {
+          this.selectText();
+        }
+
+        if (!val && this.preload) {
+          this.getRef('list').currentVisible = true;
+        }
+      },
+      /**
+       * @watch  currentText
+       */
       currentText(newVal){
         if (this.ready) {
           if (!newVal && this.value && this.isNullable){

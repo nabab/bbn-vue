@@ -842,6 +842,7 @@
           if (this.autofocus) {
             this.focusFirst();
           }
+          this.canSubmit = this._canSubmit();
           this.isInit = true;
         });
       },
@@ -1023,6 +1024,10 @@
 }
 .bbn-form.bbn-flex-height .bbn-form-footer.bbn-button-group {
   font-size: 200%;
+}
+.bbn-form .bbn-grid-fields > label,
+.bbn-form .bbn-grid-fields > .bbn-label {
+  min-height: 1.8em;
 }
 
 </style>

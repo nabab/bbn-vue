@@ -97,6 +97,9 @@
       }
     },
     computed: {
+      isLogoTag(){
+        return this.logo && (this.logo.trim().substr(0, 1) === '<');
+      },
       currentFormData(){
         return this.formData[this.currentMode] || {};
       },

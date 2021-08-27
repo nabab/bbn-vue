@@ -12,15 +12,14 @@
                :top="isTop && (positions[it.id] !== undefined) ? positions[it.id] : undefined"
                :bottom="isTop || (positions[it.id] === undefined) ? undefined : positions[it.id]"
                :left="isLeft ? 0 : undefined"
+               :right="isLeft ? undefined : 0"
                :title="false"
                :scrollable="true"
                @resize="_updatePositions"
-               @hook.destroy="_updatePositions"
-               :right="isLeft ? undefined : 0">
+               @hook.destroy="_updatePositions">
     <div :class="{
         'bbn-notification-content': true,
         'bbn-block': true,
-        'bbn-nowrap': true,
         'bbn-unselectable': true,
         'bbn-white': !!it.type,
         'bbn-light': true,
@@ -34,29 +33,24 @@
     }">
       <span class="bbn-notification-icon bbn-iblock bbn-lg"
             v-if="it.icon">
-        <i :class="[it.icon, it.type ? 'bbn-white' : 'bbn-black']"></i>
+        <i :class="[it.icon, it.type ? 'bbn-white' : 'bbn-black']"/>
       </span>
       <span v-if="it.content"
             class="bbn-iblock"
-            v-html="it.content">
-      </span>
+            v-html="it.content"/>
       <span v-else-if="it.type === 'success'"
             class="bbn-iblock"
-            v-html="successMessage">
-      </span>
+            v-html="successMessage"/>
       <span v-else-if="it.type === 'warning'"
             class="bbn-iblock"
-            v-html="warningMessage">
-      </span>
+            v-html="warningMessage"/>
       <span v-else-if="it.type === 'error'"
             class="bbn-iblock"
-            v-html="errorMessage">
-      </span>
+            v-html="errorMessage"/>
       <div v-if="it.num > 1"
            class="bbn-iblock bbn-top-left bbn-hsmargin bbn-vxsmargin">
         <span class="bbn-badge bbn-small bbn-bg-red"
-              v-text="it.num"
-        ></span>
+              v-text="it.num"/>
       </div>
       <div :class="{
           'bbn-notification-closer': true,
@@ -67,7 +61,7 @@
           'bbn-white': !!it.type
       }"
           @click="close(it.id, true)">
-          <i class="bbn-lg nf nf-fa-times"></i>
+          <i class="bbn-lg nf nf-fa-times"/>
       </div>
     </div>
   </bbn-floater>
@@ -413,6 +407,9 @@
 }
 .bbn-notification .bbn-notification-content {
   white-space: nowrap;
+}
+.bbn-notification .bbn-notification-content > span {
+  white-space: normal;
 }
 
 </style>

@@ -63,6 +63,7 @@ script.innerHTML = `<div :class="[
                   v-if="ready"
                   @ready="scrollReady = true"
                   :scrollable="scrollable"
+                  :axis="axis"
                   :max-width="currentMaxWidth || null"
                   :max-height="scrollMaxHeight || null"
                   :min-width="currentMinWidth || null"
@@ -221,6 +222,14 @@ document.body.insertAdjacentElement('beforeend', script);
         default: true
       },
       /**
+       * The axis where the scroll is applied ( 'x', 'y', 'both')
+       * @prop {String} ['both'] axis
+       */
+       axis: {
+        type: String,
+        default: "both"
+      },
+      /**
        * Set to true to show the floater.
        * @prop {Boolean} [true] visible
        */
@@ -318,7 +327,13 @@ document.body.insertAdjacentElement('beforeend', script);
       /**
        * @prop {Function} onOpen
        */
-      onOpen: {
+       onOpen: {
+        type: Function
+      },
+      /**
+       * @prop {Function} onSelect
+       */
+       onSelect: {
         type: Function
       },
       /**
@@ -669,10 +684,10 @@ document.body.insertAdjacentElement('beforeend', script);
           }
         }
         if (this.left !== undefined) {
-          maxWidth.push(Math.max(this.left, bbn.env.height - this.left));
+          maxWidth.push(Math.max(this.left, bbn.env.width - this.left));
         }
         if (this.right !== undefined) {
-          maxWidth.push(Math.max(this.right, bbn.env.height - this.right));
+          maxWidth.push(Math.max(this.right, bbn.env.width - this.right));
         }
         if (this.top !== undefined) {
           maxHeight.push(Math.max(this.top, bbn.env.height - this.top));
@@ -820,7 +835,6 @@ document.body.insertAdjacentElement('beforeend', script);
           return new Promise((resolve) => {
             // Should be triggered by the inner scroll once mounted
             if (go) {
-              bbn.fn.log("realResize", this);
               if (this.definedWidth && this.definedHeight) {
                 if ((this.realWidth !== this.definedWidth)
                   ||(this.realHeight !== this.definedHeight)
@@ -841,7 +855,6 @@ document.body.insertAdjacentElement('beforeend', script);
                   clearTimeout(this.resizerFn);
                 }
                 this.resizerFn = setTimeout(() => {
-                  bbn.fn.log("RESIZER FN");
                   this.resizerFn = false;
                   let scroll = this.getRef('scroll');
                   bbn.fn.log(scroll);
@@ -911,7 +924,6 @@ document.body.insertAdjacentElement('beforeend', script);
               }
 
               this.$forceUpdate();
-
               this.$nextTick(() => {
                 this.isResizing = false;
                 if (this.element && !this.isResized) {
@@ -937,6 +949,7 @@ document.body.insertAdjacentElement('beforeend', script);
               });
             }
             else if (go && this.isInit) {
+              this.updatePosition();
               this.isResizing = false;
             }
           });
@@ -1304,7 +1317,13 @@ document.body.insertAdjacentElement('beforeend', script);
       select(item, idx, dataIndex){
         if (item && !item.disabled && !item[this.children]) {
           let ev = new Event('select', {cancelable: true});
-          this.$emit("select", item, idx, dataIndex, ev);
+          if (this.onSelect) {
+            this.onSelect(item, idx, dataIndex, ev);
+          }
+          else {
+            this.$emit("select", item, idx, dataIndex, ev);
+          }
+
           if (ev.defaultPrevented) {
             return;
           }

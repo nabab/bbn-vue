@@ -495,9 +495,22 @@
          * @data {Number} [0] borderRight
          */
         borderRight: 0,
+        /**
+         * @data {DOMElement} [undefined] focusedElement
+         */
         focusedElement: undefined,
+        /**
+         * @data {Number} [0] focusedElementX Horizontal coordinate of focused element
+         */
         focusedElementX: 0,
-        focusedElementY: 0
+        /**
+         * @data {Number} [0] focusedElementY Vertical coordinate of focused element
+         */
+        focusedElementY: 0,
+        /**
+         * @data {Boolean} [false] isTableDataUpdating Will be set to true during the whole update process
+         */
+        isTableDataUpdating: false
       };
     },
     computed: {
@@ -1794,7 +1807,16 @@
             this.currentLimit = cfg.limit;
           }
           if (this.sortable && (this.currentOrder !== cfg.order)) {
-            this.currentOrder = cfg.order;
+            if (bbn.fn.isObject(cfg.order)) {
+              let currentOrder = [];
+              bbn.fn.iterate(cfg.order, (v, n) => {
+                currentOrder.push({field: n, dir: v.toUpperCase() === 'DESC' ? 'DESC' : 'ASC'});
+              });
+              this.currentOrder = currentOrder;
+            }
+            else if (bbn.fn.isArray(cfg.order)) {
+              this.currentOrder = cfg.order;
+            }
           }
           if (this.showable) {
             if ((cfg.hidden !== undefined) && (cfg.hidden !== this.currentHidden)) {
@@ -1882,6 +1904,8 @@
        */
       updateData(withoutOriginal) {
         /** Mini reset?? */
+        this.isTableDataUpdating = true;
+        this.allRowsChecked = false;
         this.currentExpanded = [];
         this._removeTmp();
         this.editedRow = false;
@@ -1891,11 +1915,14 @@
           if (this.currentData.length && this.selection && this.currentSelected.length && !this.uid) {
             this.currentSelected = [];
           }
+
           if (this.editable) {
             this.originalData = JSON.parse(JSON.stringify(this.currentData.map((a) => {
               return a.data;
             })));
           }
+
+          this.isTableDataUpdating = false;
         });
       },
       /**
@@ -2980,7 +3007,7 @@
         if (v) {
           this.checkAll();
         }
-        else {
+        else if (!this.isTableDataUpdating) {
           this.uncheckAll();
         }
       },
