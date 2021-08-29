@@ -62,8 +62,9 @@
                   v-if="ready"
                   @ready="scrollReady = true"
                   :scrollable="scrollable"
-                  :max-width="currentMaxWidth || null"
-                  :max-height="scrollMaxHeight || null"
+                  :axis="axis"
+                  :max-width="isMaximized ? '100%' : currentMaxWidth || null"
+                  :max-height="isMaximized ? '100%' : scrollMaxHeight || null"
                   :min-width="currentMinWidth || null"
                   :min-height="currentMinHeight > outHeight ? currentMinHeight - outHeight : null"
                   @resize="scrollResize">
@@ -219,6 +220,14 @@
         default: true
       },
       /**
+       * The axis where the scroll is applied ( 'x', 'y', 'both')
+       * @prop {String} ['both'] axis
+       */
+       axis: {
+        type: String,
+        default: "both"
+      },
+      /**
        * Set to true to show the floater.
        * @prop {Boolean} [true] visible
        */
@@ -316,7 +325,13 @@
       /**
        * @prop {Function} onOpen
        */
-      onOpen: {
+       onOpen: {
+        type: Function
+      },
+      /**
+       * @prop {Function} onSelect
+       */
+       onSelect: {
         type: Function
       },
       /**
@@ -667,10 +682,10 @@
           }
         }
         if (this.left !== undefined) {
-          maxWidth.push(Math.max(this.left, bbn.env.height - this.left));
+          maxWidth.push(Math.max(this.left, bbn.env.width - this.left));
         }
         if (this.right !== undefined) {
-          maxWidth.push(Math.max(this.right, bbn.env.height - this.right));
+          maxWidth.push(Math.max(this.right, bbn.env.width - this.right));
         }
         if (this.top !== undefined) {
           maxHeight.push(Math.max(this.top, bbn.env.height - this.top));
@@ -818,7 +833,6 @@
           return new Promise((resolve) => {
             // Should be triggered by the inner scroll once mounted
             if (go) {
-              bbn.fn.log("realResize", this);
               if (this.definedWidth && this.definedHeight) {
                 if ((this.realWidth !== this.definedWidth)
                   ||(this.realHeight !== this.definedHeight)
@@ -839,7 +853,6 @@
                   clearTimeout(this.resizerFn);
                 }
                 this.resizerFn = setTimeout(() => {
-                  bbn.fn.log("RESIZER FN");
                   this.resizerFn = false;
                   let scroll = this.getRef('scroll');
                   bbn.fn.log(scroll);
@@ -854,6 +867,18 @@
                       w: scroll.naturalWidth,
                       h: scroll.naturalHeight
                     };
+                    let footer;
+                    if (this.footer) {
+                      footer = this.getRef('footer');
+                    }
+                    else if(this.currentButtons.length) {
+                      footer = this.getRef('buttons');
+                    }
+
+                    if (footer) {
+                      dimensions.h += footer.clientHeight || 0;
+                    }
+
                     let scrollChange = false;
                     if (this.scrollWidth !== dimensions.w) {
                       scrollChange = true;
@@ -909,7 +934,6 @@
               }
 
               this.$forceUpdate();
-
               this.$nextTick(() => {
                 this.isResizing = false;
                 if (this.element && !this.isResized) {
@@ -935,6 +959,7 @@
               });
             }
             else if (go && this.isInit) {
+              this.updatePosition();
               this.isResizing = false;
             }
           });
@@ -1302,7 +1327,13 @@
       select(item, idx, dataIndex){
         if (item && !item.disabled && !item[this.children]) {
           let ev = new Event('select', {cancelable: true});
-          this.$emit("select", item, idx, dataIndex, ev);
+          if (this.onSelect) {
+            this.onSelect(item, idx, dataIndex, ev);
+          }
+          else {
+            this.$emit("select", item, idx, dataIndex, ev);
+          }
+
           if (ev.defaultPrevented) {
             return;
           }

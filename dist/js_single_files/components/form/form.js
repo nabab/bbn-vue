@@ -844,6 +844,7 @@ document.body.insertAdjacentElement('beforeend', script);
           if (this.autofocus) {
             this.focusFirst();
           }
+          this.canSubmit = this._canSubmit();
           this.isInit = true;
         });
       },

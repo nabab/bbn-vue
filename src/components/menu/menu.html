@@ -1,5 +1,4 @@
-<div :class="[componentClass, 'bbn-block']"
-     @mouseleave="onLeave">
+<div :class="[componentClass, 'bbn-block']">
   <ul class="bbn-widget bbn-ul bbn-no-border"
       data-role="menu"
       role="menubar">
@@ -13,8 +12,9 @@
         :ref="'li' + i"
         :key="i"
         :tabindex="item.data.disabled ? '-1' : '0'"
-        @focus="overIdx = i"
+        @focus="onFocus(i)"
         @click="clickLi(i, $event)"
+        @keydown.stop="onKeyDown(i, $event)"
         @mouseenter="_enterLi(i)"
         >
       <a v-if="item.data.url" :href="item.data.url">
@@ -24,14 +24,15 @@
       <span v-if="item.data[children]" class="nf nf-fa-chevron_down"></span>
     </li>
   </ul>
-  <bbn-floater v-for="(item, i) in filteredData"
-               v-if="(overIdx === i) && item.data[children]"
-               :key="i"
-               :min-width="getRef('li' + i).clientWidth"
+  <bbn-floater v-if="ready && filteredData[overIdx] && filteredData[overIdx].data[children]"
+               class="bbn-menu-floater"
+               ref="floater"
+               :min-width="getRef('li' + overIdx).clientWidth"
                :children="children"
-               :element="getRef('li' + i)"
+               :auto-hide="true"
+               :element="getRef('li' + overIdx)"
                :focused="false"
-               :source="item.data[children]"
-               @select="select"
-  ></bbn-floater>
+               :source="filteredData[overIdx].data[children]"
+               @close="overIdx = -1"
+               @select="select"/>
 </div>

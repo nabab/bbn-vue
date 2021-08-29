@@ -3033,7 +3033,7 @@ div.bbn-router .bbn-router-nav div.bbn-router-tabs {
 }
 div.bbn-router .bbn-router-nav div.bbn-router-tabs div.bbn-router-tabs-ul-container {
   width: 100%;
-  height: 100%;
+  height: auto;
 }
 div.bbn-router .bbn-router-nav div.bbn-router-tabs.bbn-router-tabs-scrollable > div.bbn-router-tabs-container div.bbn-router-tabs-ul-container {
   padding: 0 !important;

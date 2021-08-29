@@ -16,7 +16,7 @@
              @keyup="keyup"
              @mouseenter="over"
              @mouseleave="out"
-             @change="change"
+             @change="_change"
              v-show="editMode"
              :size="currentInputSize"
              :style="{'paddingRight': spinners ? '0.5em !important' : ''}"
@@ -338,6 +338,21 @@
         this.$nextTick(() => {
           this.blur(e);
         })
+      },
+      /**
+       * @method _change
+       * @fires change
+       * @fires checkMinMax
+       * @fires checkDecimals
+       * @param {Event} e
+       */
+       _change(e){
+        this.checkMinMax();
+        this.checkDecimals();
+        this.editMode = false;
+        this.$nextTick(() => {
+          this.change(e);
+        });
       },
       /**
        * @method checkDecimals

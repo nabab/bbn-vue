@@ -1,6 +1,6 @@
 ((bbn) => {
 let script = document.createElement('script');
-script.innerHTML = `<div :class="['bbn-middle', componentClass]"
+script.innerHTML = `<div :class="['bbn-overlay', 'bbn-middle', componentClass]"
      :style="'background-color:' + bgColor + '; transition: opacity 3s'">
   <bbn-popup ref="popup"
              v-if="!popup"
@@ -24,7 +24,9 @@ script.innerHTML = `<div :class="['bbn-middle', componentClass]"
        class="bbn-login-container"
        :style="{maxHeight: clientHeight + 'px'}">
     <div class="bbn-login-logo bbn-c bbn-block">
-      <img v-if="logo" :src="logo">
+      <div v-if="isLogoTag"
+                v-html="logo"></div>
+      <img v-else-if="logo" :src="logo">
     </div>
     <div class="bbn-vlmargin bbn-block bbn-c">
       <div v-if="currentMode === 'invalid'"
@@ -53,7 +55,7 @@ script.innerHTML = `<div :class="['bbn-middle', componentClass]"
         <div v-if="currentMode === 'login'"
              class="bbn-w-100">
           <div class="bbn-w-100 bbn-c bbn-vsmargin">
-            <bbn-input class="bbn-c"
+            <bbn-input class="bbn-c bbn-w-100"
                       required="required"
                       buttonLeft="nf nf-fa-envelope_o"
                       :nullable="true"
@@ -62,11 +64,11 @@ script.innerHTML = `<div :class="['bbn-middle', componentClass]"
           </div>
           <div class="bbn-w-100 bbn-c">
             <bbn-input type="password"
-                      class="bbn-c"
-                      required="required"
-                      buttonLeft="nf nf-fa-lock"
-                      :nullable="true"
-                      :placeholder="_('Password')"
+                       class="bbn-c bbn-w-100"
+                       required="required"
+                       buttonLeft="nf nf-fa-lock"
+                       :nullable="true"
+                       :placeholder="_('Password')"
                       v-model="currentFormData.pass"/>
           </div>
           <div class="bbn-c bbn-w-100 bbn-vsmargin bbn-flex-width">
@@ -84,20 +86,20 @@ script.innerHTML = `<div :class="['bbn-middle', componentClass]"
         <div v-else-if="currentMode === 'lost'"
              class="bbn-w-100">
           <div class="bbn-w-100 bbn-c bbn-vsmargin">
-            <bbn-input style="margin-left: 10%"
-                       buttonLeft="nf nf-fa-envelope_o"
+            <bbn-input buttonLeft="nf nf-fa-envelope_o"
+                       class="bbn-w-100"
                        required="required"
                        :placeholder="_('Enter your e-mail address')"
                        v-model="currentFormData.email"
             ></bbn-input>
           </div>
-          <div class="bbn-c bbn-flex-width bbn-w-100">
+          <div class="bbn-c bbn-w-100">
             <bbn-button type="button"
                         class="bbn-right-sspace"
                         @click="currentMode = 'login'"
                         :text="_('Cancel')"/>
             <bbn-button type="button"
-                        @click="$refs.formLost.submit()"
+                        @click="$refs.form.submit()"
                         :text="_('Send')"/>
           </div>
         </div>
@@ -105,7 +107,7 @@ script.innerHTML = `<div :class="['bbn-middle', componentClass]"
              class="bbn-w-100">
           <div class="bbn-w-100 bbn-c bbn-vsmargin">
             <bbn-input type="password"
-                      class="bbn-c"
+                      class="bbn-c bbn-w-100"
                       style="min-width: 20em"
                       required="required"
                       :title="_('Mandatory field, 8 characters minimum')"
@@ -118,7 +120,7 @@ script.innerHTML = `<div :class="['bbn-middle', componentClass]"
           </div>
           <div class="bbn-c bbn-w-100 bbn-vsmargin">
             <bbn-input type="password"
-                      class="bbn-c"
+                      class="bbn-c bbn-w-100"
                       style="min-width: 20em"
                       required="required"
                       :title="_('Mandatory field, 8 characters minimum')"
@@ -242,6 +244,9 @@ document.body.insertAdjacentElement('beforeend', script);
       }
     },
     computed: {
+      isLogoTag(){
+        return this.logo && (this.logo.trim().substr(0, 1) === '<');
+      },
       currentFormData(){
         return this.formData[this.currentMode] || {};
       },
@@ -260,8 +265,11 @@ document.body.insertAdjacentElement('beforeend', script);
             this.currentMode = 'login';
           }
           else if (this.currentMode === 'change') {
-            this.alert(bbn._('Your password has been changed'), false);
-            this.currentMode = 'login';
+            //this.alert(bbn._('Your password has been changed'), false);
+            //this.currentMode = 'login';
+            this.alert(bbn._('Your password has been changed'), false, () => {}, () => {
+              window.document.location.href = bbn.env.root;
+            });
           }
         }
         else {

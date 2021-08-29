@@ -197,16 +197,17 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                   :class="[{
                     'bbn-alt': d.expanderIndex !== undefined ? !!(d.expanderIndex % 2) : !!(d.rowIndex % 2),
                     'bbn-header': !!(d.aggregated || d.groupAggregated),
-                  }, trClass ? trClass(d.data) : '']"
+                  }, getTrClass(d.data)]"
+                  :style="getTrStyle(d.data)"
                   ref="rows"
               >
                 <!-- Group lines just have the cell with the expander and a single big cell -->
                 <template v-if="groupable && d.group && currentColumns && currentColumns.length">
-                  <td :class="(trClass ? (typeof trClass === 'function' ? trClass(d.data) : trClass) : '') + (currentColumns[0].fixed ? ' ' + cssRuleName + ' bbn-table-fixed-cell bbn-table-fixed-cell-left' : '')"
-                      :style="{
+                  <td :class="[getTrClass(d.data), (currentColumns[0].fixed ? ' ' + cssRuleName + ' bbn-table-fixed-cell bbn-table-fixed-cell-left' : '')]"
+                      :style="[{
                         left: currentColumns[0].left !== undefined ? currentColumns[0].left + 'px' : '',
                         width: currentColumns[0].realWidth
-                      }">
+                      }, getTrStyle(d.data)]">
                     <div @click="toggleExpanded(d.index)"
                         class="bbn-table-expander bbn-p bbn-unselectable bbn-spadded bbn-c"
                         v-if="d.expander"
@@ -224,7 +225,7 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                         borderRight: '0px',
                         overflow: 'unset'
                     }">
-                    <div :class="['bbn-block', currentClass(cols[group], d.data, i), {'bbn-spadded': !cols[group].component}]"
+                    <div :class="[currentClass(cols[group], d.data, i), {'bbn-spadded': !cols[group].component}]"
                          :style="{
                             width: lastKnownWidth - groupCols[currentColumns[0].isLeft ? 0 : 1].cols[0].realWidth - borderLeft - borderRight + 'px',
                             backgroundColor: 'transparent !important'
@@ -240,7 +241,7 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                   </td>
                   <td :colspan="currentColumns.length - 2"
                       style="border-left: 0px"
-                      :class="(trClass ? (typeof trClass === 'function' ? trClass(d.data) : trClass) : '')"/>
+                      :class="getTrClass(d.data)"/>
                 </template>
                 <!--td v-else-if="d.expansion && !selection"
                     :class="col.fixed ? cssRuleName : ''"
@@ -248,12 +249,12 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                   &nbsp;
                 </td-->
                 <template v-else-if="d.expansion">
-                  <td :class="(trClass ? (typeof trClass === 'function' ? trClass(d.data) : trClass) : '') + (currentColumns[0].fixed ? ' ' + cssRuleName + ' bbn-table-fixed-cell bbn-table-fixed-cell-left' : '')"
+                  <td :class="[getTrClass(d.data), (currentColumns[0].fixed ? ' ' + cssRuleName + ' bbn-table-fixed-cell bbn-table-fixed-cell-left' : '')]"
                       :style="{
                         left: currentColumns[0].left !== undefined ? currentColumns[0].left + 'px' : '',
                         width: currentColumns[0].realWidth
                       }"/>
-                  <td :class="(trClass ? (typeof trClass === 'function' ? trClass(d.data) : trClass) : '') + (currentColumns[0].fixed ? ' ' + cssRuleName + ' bbn-table-fixed-cell bbn-table-cell-left' : '')"
+                  <td :class="[getTrClass(d.data), (currentColumns[0].fixed ? ' ' + cssRuleName + ' bbn-table-fixed-cell bbn-table-cell-left' : '')]"
                       :style="{
                         left: currentColumns[1].left !== undefined ? currentColumns[1].left + 'px' : 'auto',
                         width: 'auto',
@@ -277,8 +278,8 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                     </div>
                   </td>
                   <td :colspan="currentColumns.length - 2"
-                      style="border-left: 0px"
-                      :class="(trClass ? (typeof trClass === 'function' ? trClass(d.data) : trClass) : '')"/>
+                      :style="[getTrStyle(d.data), {borderLeft: 0}]"
+                      :class="getTrClass(d.data)"/>
                 </template>
                 <td v-else-if="d.full"
                     :colspan="currentColumns.length"
@@ -388,6 +389,12 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                                 v-bind="col.options"
                                 :source="col.mapper ? col.mapper(d.data) : d.data"
                       ></component>
+                      <template v-else-if="col.buttons && dropdownMode">
+                        <bbn-dropdown :source="col.buttons"
+                                      :placeholder="dropdownMode === true ? _('Action') : dropdownMode"
+                                      :popup="true"
+                                      @select="_execCommand(button, d.data, col, i, $event)"/>
+                      </template>
                       <template v-else-if="col.buttons && (colButtons === index)">
                         <bbn-button v-for="(button, bi) in (Array.isArray(realButtons) ? realButtons : realButtons(d.data, col, i))"
                                     :key="bi"
@@ -645,12 +652,18 @@ document.head.insertAdjacentElement('beforeend', css);
         default: false
       },
       /**
-       * A function to define css class(es) for the rows.
+       * A function to define css class(es) for each row.
        * @prop {Function} trClass
-       * @todo doesn't work if a string is given
        */
       trClass: {
-        type: [String, Function]
+        type: [String, Function, Object]
+      },
+      /**
+       * A function to define css style(s) for each row.
+       * @prop {Function} trStyle
+       */
+      trStyle: {
+        type: [String, Function, Object]
       },
       /**
        * Defines the message to show in the confirm when an action is made on the row.
@@ -707,6 +720,14 @@ document.head.insertAdjacentElement('beforeend', css);
        */
       groupBy: {
         type: Number
+      },
+      /**
+       * If defined will show the buttons as a single dropdown, if string its value will be the placeholder.
+       * @prop {Boolean|String} dropdownMode
+       */
+       dropdownMode: {
+        type: [Boolean, String],
+        default: false
       },
       /**
        * @todo desc
@@ -967,9 +988,22 @@ document.head.insertAdjacentElement('beforeend', css);
          * @data {Number} [0] borderRight
          */
         borderRight: 0,
+        /**
+         * @data {DOMElement} [undefined] focusedElement
+         */
         focusedElement: undefined,
+        /**
+         * @data {Number} [0] focusedElementX Horizontal coordinate of focused element
+         */
         focusedElementX: 0,
-        focusedElementY: 0
+        /**
+         * @data {Number} [0] focusedElementY Vertical coordinate of focused element
+         */
+        focusedElementY: 0,
+        /**
+         * @data {Boolean} [false] isTableDataUpdating Will be set to true during the whole update process
+         */
+        isTableDataUpdating: false
       };
     },
     computed: {
@@ -1558,6 +1592,29 @@ document.head.insertAdjacentElement('beforeend', css);
       }
     },
     methods: {
+      getTrClass(row) {
+        if (bbn.fn.isFunction(this.trClass)) {
+          return this.trClass(row);
+        }
+
+        if (this.trClass) {
+
+          return this.trClass;
+        }
+
+        return '';
+      },
+      getTrStyle(row){
+        if (bbn.fn.isFunction(this.trStyle)) {
+          return this.trStyle(row);
+        }
+
+        if (this.trStyle) {
+          return this.trStyle;
+        }
+
+        return '';
+      },
       /**
        * Normalizes the row's data.
        * @method _defaultRow
@@ -2266,7 +2323,16 @@ document.head.insertAdjacentElement('beforeend', css);
             this.currentLimit = cfg.limit;
           }
           if (this.sortable && (this.currentOrder !== cfg.order)) {
-            this.currentOrder = cfg.order;
+            if (bbn.fn.isObject(cfg.order)) {
+              let currentOrder = [];
+              bbn.fn.iterate(cfg.order, (v, n) => {
+                currentOrder.push({field: n, dir: v.toUpperCase() === 'DESC' ? 'DESC' : 'ASC'});
+              });
+              this.currentOrder = currentOrder;
+            }
+            else if (bbn.fn.isArray(cfg.order)) {
+              this.currentOrder = cfg.order;
+            }
           }
           if (this.showable) {
             if ((cfg.hidden !== undefined) && (cfg.hidden !== this.currentHidden)) {
@@ -2354,6 +2420,8 @@ document.head.insertAdjacentElement('beforeend', css);
        */
       updateData(withoutOriginal) {
         /** Mini reset?? */
+        this.isTableDataUpdating = true;
+        this.allRowsChecked = false;
         this.currentExpanded = [];
         this._removeTmp();
         this.editedRow = false;
@@ -2363,11 +2431,14 @@ document.head.insertAdjacentElement('beforeend', css);
           if (this.currentData.length && this.selection && this.currentSelected.length && !this.uid) {
             this.currentSelected = [];
           }
+
           if (this.editable) {
             this.originalData = JSON.parse(JSON.stringify(this.currentData.map((a) => {
               return a.data;
             })));
           }
+
+          this.isTableDataUpdating = false;
         });
       },
       /**
@@ -2527,17 +2598,6 @@ document.head.insertAdjacentElement('beforeend', css);
             this.groupCols[groupIndex + 1].cols[0] &&
             (this.groupCols[groupIndex + 1].cols[0].field === this.isAggregated)
           ));
-      },
-      /**
-       * Handles the resize.
-       * @method onResize
-       * @fires setContainerMeasures
-       * @fires setResizeMeasures
-       * @fires keepCool
-       */
-      onResize() {
-        this.setContainerMeasures();
-        this.setResizeMeasures();
       },
       /**
        * Returns an object of numbers as width and height based on whatever unit given.
@@ -3308,12 +3368,13 @@ document.head.insertAdjacentElement('beforeend', css);
      * @fires setConfig
      * @fires getStorage
      */
-    created(){
+     created(){
+      this.componentClass.push('bbn-resize-emitter');
       // Adding bbns-column from the slot
       if (this.$slots.default) {
         let def = this.defaultObject();
         for (let node of this.$slots.default) {
-          //bbn.fn.log("TRYING TO ADD COLUMN", node);
+          bbn.fn.log("TRYING TO ADD COLUMN", node);
           if (
             node.componentOptions &&
             (node.componentOptions.tag === 'bbns-column')
@@ -3414,26 +3475,28 @@ document.head.insertAdjacentElement('beforeend', css);
     },
     watch: {
       columns() {
-        this.cols.splice(0, this.cols.length);
-        if (this.columns.length) {
-          bbn.fn.each(this.columns, a => this.addColumn(a))
-        }
-  
-        if (this.defaultConfig.hidden === null) {
-          let tmp = [];
-          let initColumn = [];
-          bbn.fn.each(this.cols, (a, i) => {
-            if (a.hidden) {
-              tmp.push(i);
-            }
-            else if (initColumn.length <= 10) {
-              initColumn.push(i);
-            }
-          });
-          this.defaultConfig.hidden = tmp;
-        }
+        if (this.ready) {
+          this.cols.splice(0, this.cols.length);
+          if (this.columns.length) {
+            bbn.fn.each(this.columns, a => this.addColumn(a))
+          }
+    
+          if (this.defaultConfig.hidden === null) {
+            let tmp = [];
+            let initColumn = [];
+            bbn.fn.each(this.cols, (a, i) => {
+              if (a.hidden) {
+                tmp.push(i);
+              }
+              else if (initColumn.length <= 10) {
+                initColumn.push(i);
+              }
+            });
+            this.defaultConfig.hidden = tmp;
+          }
 
-        this.init();
+          this.init();
+        }
       },
       /**
        * Updates the data.
@@ -3462,7 +3525,7 @@ document.head.insertAdjacentElement('beforeend', css);
         if (v) {
           this.checkAll();
         }
-        else {
+        else if (!this.isTableDataUpdating) {
           this.uncheckAll();
         }
       },

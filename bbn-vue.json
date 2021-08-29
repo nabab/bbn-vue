@@ -2966,6 +2966,11 @@
                         "url": "bbn-vue\/component\/floater\/doc\/props#scrollable"
                     },
                     {
+                        "text": "axis",
+                        "desc": "The axis where the scroll is applied ( 'x', 'y', 'both')",
+                        "url": "bbn-vue\/component\/floater\/doc\/props#axis"
+                    },
+                    {
                         "text": "visible",
                         "desc": "Set to true to show the floater.",
                         "url": "bbn-vue\/component\/floater\/doc\/props#visible"
@@ -3014,6 +3019,11 @@
                         "text": "onOpen",
                         "desc": "",
                         "url": "bbn-vue\/component\/floater\/doc\/props#onOpen"
+                    },
+                    {
+                        "text": "onSelect",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/floater\/doc\/props#onSelect"
                     },
                     {
                         "text": "beforeClose",
@@ -7084,8 +7094,13 @@
                     },
                     {
                         "text": "trClass",
-                        "desc": "A function to define css class(es) for the rows.",
+                        "desc": "A function to define css class(es) for each row.",
                         "url": "bbn-vue\/component\/table\/doc\/props#trClass"
+                    },
+                    {
+                        "text": "trStyle",
+                        "desc": "A function to define css style(s) for each row.",
+                        "url": "bbn-vue\/component\/table\/doc\/props#trStyle"
                     },
                     {
                         "text": "confirmMessage",
@@ -7116,6 +7131,11 @@
                         "text": "groupBy",
                         "desc": "The index of the property to group by the table referred to the object of data of the row.",
                         "url": "bbn-vue\/component\/table\/doc\/props#groupBy"
+                    },
+                    {
+                        "text": "dropdownMode",
+                        "desc": "If defined will show the buttons as a single dropdown, if string its value will be the placeholder.",
+                        "url": "bbn-vue\/component\/table\/doc\/props#dropdownMode"
                     },
                     {
                         "text": "expandedValues",
@@ -7323,11 +7343,6 @@
                         "text": "isBeforeAggregated",
                         "desc": "Return true if the cell is before aggregated cells.",
                         "url": "bbn-vue\/component\/table\/doc\/methods#isBeforeAggregated"
-                    },
-                    {
-                        "text": "onResize",
-                        "desc": "Handles the resize.",
-                        "url": "bbn-vue\/component\/table\/doc\/methods#onResize"
                     },
                     {
                         "text": "getDimensions",

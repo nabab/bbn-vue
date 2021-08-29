@@ -22,41 +22,37 @@
     mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent, bbn.vue.keepCoolComponent, bbn.vue.eventsComponent],
     props: {
       /**
-       * @todo not used
       */
       maxWidth: {
-        type: Number
+        type: [String, Number]
       },
       /**
-       * @todo not used
        */
       maxHeight: {
-        type: Number
+        type: [String, Number]
       },
       /**
-       * @todo not used
        */
       minWidth: {
-        type: Number
+        type: [String, Number]
       },
       /**
-       * @todo not used
        */
       minHeight: {
-        type: Number
+        type: [String, Number]
       },
       /**
        * The width of the scroll, if not defined the scroll container will have the class 'bbn-overlay'
        * @prop {Number} width
        */
       width: {
-        type: Number
+        type: [String, Number]
       },
       /**
        * @todo not used defines currentheight never used
        */
       height: {
-        type: Number
+        type: [String, Number]
       },
       /**
        * @todo not used

@@ -19,6 +19,7 @@ script.innerHTML = `<div :class="['bbn-overlay', componentClass]"
       tabindex="-1"
       :style="{zIndex: zIndex+items.length-2}"
       @keydown.esc.prevent.stop="close(items.length-1)"
+      v-if="popups.length && (popups[popups.length - 1].modal !== false)"
   ></div>
 </div>
 `;
@@ -333,9 +334,6 @@ document.body.insertAdjacentElement('beforeend', script);
         }
         if ( (a.title === undefined) && this.untitled ){
           a.title = this.untitled;
-        }
-        if ( !a.component && !a.content ){
-          a.content = ' ';
         }
         return a;
       },

@@ -22,7 +22,7 @@
        class="bbn-login-container"
        :style="{maxHeight: clientHeight + 'px'}">
     <div class="bbn-login-logo bbn-c bbn-block">
-      <div v-if="logo && (logo.indexOf('<svg') === 0)"
+      <div v-if="isLogoTag"
                 v-html="logo"></div>
       <img v-else-if="logo" :src="logo">
     </div>

@@ -1518,6 +1518,15 @@
          */
         floaterTitle: {
           type: String
+        },
+        /**
+         * Using an external popup component to open the floater
+         * @memberof dropdownComponent
+         * @prop {Boolean|Vue} popup
+         */
+        popup: {
+          type: [Boolean, Vue],
+          default: false
         }
       },
       data(){
@@ -1573,6 +1582,16 @@
         };
       },
       computed: {
+        popupComponent(){
+          if (this.popup) {
+            if (this.popup === true) {
+              return this.getPopup();
+            }
+            else {
+              return this.popup;
+            }
+          }
+        },
         /**
          * Returns the current 'text' corresponding to the value of the component.
          * @computed currentTextValue
@@ -1683,8 +1702,10 @@
          * @param {Event} e 
          */
         commonKeydown(e){
-          bbn.fn.log("Common keydown from mixin");
           if (!this.filteredData.length || e.altKey || e.ctrlKey || e.metaKey) {
+            return;
+          }
+          if ((e.key.length >= 2) && (e.key[0] === 'F')) {
             return;
           }
           if (e.key === 'Tab') {
@@ -2344,7 +2365,7 @@
                     '-',
                     '.',
                     ' ',
-                    cfg.precision === -4 ? 3 : (cfg.precision || 0)
+                    cfg.precision === -4 ? 3 : (cfg.precision || cfg.decimals || 0)
                   ) : '-';
               case "money":
                 return v ?
@@ -2372,7 +2393,7 @@
                 let idx = cfg.source.indexOf(v);
                 return idx > -1 ? cfg.source[idx] : '-';
               }
-              else{
+              else {
                 let filter = {};
                 filter[this.sourceValue || 'value'] = v;
                 let idx = bbn.fn.search(bbn.fn.isFunction(cfg.source) ? cfg.source() : cfg.source, filter);
@@ -2716,20 +2737,21 @@
          * @method touchstart
          * @memberof eventsComponent
          */
-         touchstart(ev){
-           this.$emit('touchstart', ev, this);
-           if (!ev.defaultPrevented) {
-             this.isTouched = true;
-             this.touchStarted = ev;
-             clearTimeout(this.touchHoldTimer);
-             this.touchHoldTimer = setTimeout(() => {
-               if (this.isTouched && !this.touchMoved){
-                 let event = new Event('contextmenu');
-                 this.$el.dispatchEvent(event);
-                 this.isTouched = false;
-               }
-             }, this.touchHoldTolerance);
-           }
+        touchstart(ev){
+          this.$emit('touchstart', ev, this);
+          if (!ev.defaultPrevented) {
+            this.isTouched = true;
+            this.touchStarted = ev;
+            clearTimeout(this.touchHoldTimer);
+            this.touchHoldTimer = setTimeout(() => {
+              if (this.isTouched && !this.touchMoved && !ev.defaultPrevented){
+                ev.preventDefault();
+                let event = new Event('contextmenu');
+                this.$el.dispatchEvent(event);
+                this.isTouched = false;
+              }
+            }, this.touchHoldTolerance);
+          }
         },
         /**
          * Sets the prop isTouched to false.
