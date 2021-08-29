@@ -62,8 +62,8 @@
                   @ready="scrollReady = true"
                   :scrollable="scrollable"
                   :axis="axis"
-                  :max-width="currentMaxWidth || null"
-                  :max-height="scrollMaxHeight || null"
+                  :max-width="isMaximized ? '100%' : currentMaxWidth || null"
+                  :max-height="isMaximized ? '100%' : scrollMaxHeight || null"
                   :min-width="currentMinWidth || null"
                   :min-height="currentMinHeight > outHeight ? currentMinHeight - outHeight : null"
                   @resize="scrollResize">

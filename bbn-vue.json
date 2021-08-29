@@ -7094,8 +7094,13 @@
                     },
                     {
                         "text": "trClass",
-                        "desc": "A function to define css class(es) for the rows.",
+                        "desc": "A function to define css class(es) for each row.",
                         "url": "bbn-vue\/component\/table\/doc\/props#trClass"
+                    },
+                    {
+                        "text": "trStyle",
+                        "desc": "A function to define css style(s) for each row.",
+                        "url": "bbn-vue\/component\/table\/doc\/props#trStyle"
                     },
                     {
                         "text": "confirmMessage",

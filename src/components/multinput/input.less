@@ -1,0 +1,38 @@
+.bbn-input{
+  display: inline-block;
+  &:hover{
+    .bbn-button{
+      opacity: 1;
+    }
+  }
+  .bbn-button{
+    opacity: 0.7;
+    min-width: 2em;
+  }
+  input{
+    //important for safari
+    //margin: 0;
+    width: 100%;
+    font-size: inherit;
+    font-weight: inherit;
+    border-radius: inherit;
+  }
+  &.bbn-input-nullable{
+    .bbn-input-nullable-container{
+      opacity: 0;
+      transition: opacity 0.2s;
+      line-height: 100%;
+      margin: auto;
+      padding-right: 0.2em;
+      .nf-fa-times_circle{
+        line-height: 100%;
+        margin: auto;
+      }
+    }
+    &:hover{
+      .bbn-input-nullable-container{
+        opacity: 0.3;
+      }
+    }
+  }
+}

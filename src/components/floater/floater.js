@@ -743,6 +743,18 @@
                       w: scroll.naturalWidth,
                       h: scroll.naturalHeight
                     };
+                    let footer;
+                    if (this.footer) {
+                      footer = this.getRef('footer');
+                    }
+                    else if(this.currentButtons.length) {
+                      footer = this.getRef('buttons');
+                    }
+
+                    if (footer) {
+                      dimensions.h += footer.clientHeight || 0;
+                    }
+
                     let scrollChange = false;
                     if (this.scrollWidth !== dimensions.w) {
                       scrollChange = true;

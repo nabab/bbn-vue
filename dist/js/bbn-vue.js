@@ -4105,9 +4105,7 @@
           return true;
         },
         async updateData(){
-          bbn.fn.log("ALORS?");
           if (this.beforeUpdate() !== false) {
-            bbn.fn.log("ALORS 2?");
             this._dataPromise = new Promise((resolve) => {
               let prom;
               let loadingRequestID;
@@ -4136,7 +4134,6 @@
                 prom = this.post(this.source, data);
               }
               else{
-                bbn.fn.log("ALORS 3?");
                 prom = new Promise((resolve2) => {
                   let data = [];
                   if ( bbn.fn.isArray(this.source) ){
@@ -4153,7 +4150,6 @@
                       data.push(o);
                     });
                   }
-                  bbn.fn.log("ALORS 4?", data);
                   resolve2({
                     data: data,
                     total: data.length
@@ -4176,7 +4172,6 @@
                   this.$emit('dataReceived', d);
                 }
                 if ( d && bbn.fn.isArray(d.data) ){
-                  bbn.fn.log("ALORS 5?", d);
                   if (d.data.length && d.data[0]._bbn){
                     this.currentData = d.data;
                     this.updateIndexes();
@@ -4189,7 +4184,6 @@
                       });
                     }
                     d.data = this._map(d.data);
-                    bbn.fn.log("ALORS 6?", d.data);
                     this.currentData = bbn.fn.map(d.data, (a, i) => {
                       let o = this.hierarchy ? bbn.fn.extend(true, a, {
                         index: i,

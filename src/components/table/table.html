@@ -194,16 +194,17 @@
                   :class="[{
                     'bbn-alt': d.expanderIndex !== undefined ? !!(d.expanderIndex % 2) : !!(d.rowIndex % 2),
                     'bbn-header': !!(d.aggregated || d.groupAggregated),
-                  }, trClass ? trClass(d.data) : '']"
+                  }, getTrClass(d.data)]"
+                  :style="getTrStyle(d.data)"
                   ref="rows"
               >
                 <!-- Group lines just have the cell with the expander and a single big cell -->
                 <template v-if="groupable && d.group && currentColumns && currentColumns.length">
-                  <td :class="(trClass ? (typeof trClass === 'function' ? trClass(d.data) : trClass) : '') + (currentColumns[0].fixed ? ' ' + cssRuleName + ' bbn-table-fixed-cell bbn-table-fixed-cell-left' : '')"
-                      :style="{
+                  <td :class="[getTrClass(d.data), (currentColumns[0].fixed ? ' ' + cssRuleName + ' bbn-table-fixed-cell bbn-table-fixed-cell-left' : '')]"
+                      :style="[{
                         left: currentColumns[0].left !== undefined ? currentColumns[0].left + 'px' : '',
                         width: currentColumns[0].realWidth
-                      }">
+                      }, getTrStyle(d.data)]">
                     <div @click="toggleExpanded(d.index)"
                         class="bbn-table-expander bbn-p bbn-unselectable bbn-spadded bbn-c"
                         v-if="d.expander"
@@ -237,7 +238,7 @@
                   </td>
                   <td :colspan="currentColumns.length - 2"
                       style="border-left: 0px"
-                      :class="(trClass ? (typeof trClass === 'function' ? trClass(d.data) : trClass) : '')"/>
+                      :class="getTrClass(d.data)"/>
                 </template>
                 <!--td v-else-if="d.expansion && !selection"
                     :class="col.fixed ? cssRuleName : ''"
@@ -245,12 +246,12 @@
                   &nbsp;
                 </td-->
                 <template v-else-if="d.expansion">
-                  <td :class="(trClass ? (typeof trClass === 'function' ? trClass(d.data) : trClass) : '') + (currentColumns[0].fixed ? ' ' + cssRuleName + ' bbn-table-fixed-cell bbn-table-fixed-cell-left' : '')"
+                  <td :class="[getTrClass(d.data), (currentColumns[0].fixed ? ' ' + cssRuleName + ' bbn-table-fixed-cell bbn-table-fixed-cell-left' : '')]"
                       :style="{
                         left: currentColumns[0].left !== undefined ? currentColumns[0].left + 'px' : '',
                         width: currentColumns[0].realWidth
                       }"/>
-                  <td :class="(trClass ? (typeof trClass === 'function' ? trClass(d.data) : trClass) : '') + (currentColumns[0].fixed ? ' ' + cssRuleName + ' bbn-table-fixed-cell bbn-table-cell-left' : '')"
+                  <td :class="[getTrClass(d.data), (currentColumns[0].fixed ? ' ' + cssRuleName + ' bbn-table-fixed-cell bbn-table-cell-left' : '')]"
                       :style="{
                         left: currentColumns[1].left !== undefined ? currentColumns[1].left + 'px' : 'auto',
                         width: 'auto',
@@ -274,8 +275,8 @@
                     </div>
                   </td>
                   <td :colspan="currentColumns.length - 2"
-                      style="border-left: 0px"
-                      :class="(trClass ? (typeof trClass === 'function' ? trClass(d.data) : trClass) : '')"/>
+                      :style="[getTrStyle(d.data), {borderLeft: 0}]"
+                      :class="getTrClass(d.data)"/>
                 </template>
                 <td v-else-if="d.full"
                     :colspan="currentColumns.length"

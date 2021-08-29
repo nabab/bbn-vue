@@ -63,8 +63,8 @@
                   @ready="scrollReady = true"
                   :scrollable="scrollable"
                   :axis="axis"
-                  :max-width="currentMaxWidth || null"
-                  :max-height="scrollMaxHeight || null"
+                  :max-width="isMaximized ? '100%' : currentMaxWidth || null"
+                  :max-height="isMaximized ? '100%' : scrollMaxHeight || null"
                   :min-width="currentMinWidth || null"
                   :min-height="currentMinHeight > outHeight ? currentMinHeight - outHeight : null"
                   @resize="scrollResize">
@@ -867,6 +867,18 @@
                       w: scroll.naturalWidth,
                       h: scroll.naturalHeight
                     };
+                    let footer;
+                    if (this.footer) {
+                      footer = this.getRef('footer');
+                    }
+                    else if(this.currentButtons.length) {
+                      footer = this.getRef('buttons');
+                    }
+
+                    if (footer) {
+                      dimensions.h += footer.clientHeight || 0;
+                    }
+
                     let scrollChange = false;
                     if (this.scrollWidth !== dimensions.w) {
                       scrollChange = true;

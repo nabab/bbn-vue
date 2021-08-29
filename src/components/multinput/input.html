@@ -1,0 +1,70 @@
+<div :class="[
+	componentClass, 'bbn-textbox', {
+		'bbn-disabled': !!disabled,
+		'bbn-input-button-left' : !!buttonLeft,
+		'bbn-input-button-right' : !!buttonRight,
+		'bbn-invisible' : (type === 'hidden'),
+    'bbn-input-nullable': isNullable
+	}]"
+	:style="(currentSize !== '') ? 'width:' + currentSize : '' "
+>
+  <div :class="{
+    'bbn-w-100': (!buttonLeft && !buttonRight && !nullable),
+    'bbn-flex-width' : (buttonLeft || buttonRight || nullable)
+  }">
+    <bbn-button v-if="buttonLeft"
+          :icon="buttonLeft" 
+          @click="$emit('clickLeftButton')"
+          tabindex="-1"
+          :class="[
+            'bbn-button-left',
+            'bbn-no-vborder',
+            'bbn-m',
+            {'bbn-invisible' : autoHideLeft}
+          ]"
+    ></bbn-button>
+    <input :value="value"
+          :type="currentType"
+          :name="name"
+          ref="element"
+          :readonly="readonly"
+          :disabled="disabled"
+          :placeholder="placeholder"
+          :maxlength="maxlength"
+          :autocomplete="currentAutocomplete"
+          :pattern="currentPattern"
+          @input="emitInput($refs.element.value)"
+          @click="click"
+          @paste="$emit('paste', $event)"
+          @focus="focus"
+          @blur="blur"
+          @change="change"
+          @keydown="keydown"
+          @keyup="keyup"
+          @mouseenter="over"
+          @mouseleave="out"
+          :tabindex="tabindex"
+          :class="{'bbn-flex-fill' : (buttonLeft || buttonRight || isNullable)}"
+          :size="currentInputSize"
+          :inputmode="inputmode"
+          :min="min"
+          :max="max"
+    >
+    <bbn-loadicon v-if="loading"></bbn-loadicon>
+    <div v-else-if="isNullable && hasValue && !readonly && !disabled"
+         class="bbn-block bbn-h-100 bbn-input-nullable-container">
+      <i class="nf nf-fa-times_circle bbn-p"
+         @mousedown.prevent.stop="clear"></i>
+    </div>
+    <bbn-button v-if="buttonRight"
+                :icon="buttonRight"
+                tabindex="-1"
+                @click="$emit('clickRightButton')"
+                :class="[
+                  'bbn-button-right',
+                  'bbn-no-vborder',
+                  'bbn-m',
+                  {'bbn-invisible' : autoHideRight}
+                ]"
+    ></bbn-button></div>
+</div>

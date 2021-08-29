@@ -165,12 +165,18 @@
         default: false
       },
       /**
-       * A function to define css class(es) for the rows.
+       * A function to define css class(es) for each row.
        * @prop {Function} trClass
-       * @todo doesn't work if a string is given
        */
       trClass: {
-        type: [String, Function]
+        type: [String, Function, Object]
+      },
+      /**
+       * A function to define css style(s) for each row.
+       * @prop {Function} trStyle
+       */
+      trStyle: {
+        type: [String, Function, Object]
       },
       /**
        * Defines the message to show in the confirm when an action is made on the row.
@@ -1099,6 +1105,29 @@
       }
     },
     methods: {
+      getTrClass(row) {
+        if (bbn.fn.isFunction(this.trClass)) {
+          return this.trClass(row);
+        }
+
+        if (this.trClass) {
+
+          return this.trClass;
+        }
+
+        return '';
+      },
+      getTrStyle(row){
+        if (bbn.fn.isFunction(this.trStyle)) {
+          return this.trStyle(row);
+        }
+
+        if (this.trStyle) {
+          return this.trStyle;
+        }
+
+        return '';
+      },
       /**
        * Normalizes the row's data.
        * @method _defaultRow
@@ -2858,7 +2887,7 @@
       if (this.$slots.default) {
         let def = this.defaultObject();
         for (let node of this.$slots.default) {
-          //bbn.fn.log("TRYING TO ADD COLUMN", node);
+          bbn.fn.log("TRYING TO ADD COLUMN", node);
           if (
             node.componentOptions &&
             (node.componentOptions.tag === 'bbns-column')
@@ -2959,26 +2988,28 @@
     },
     watch: {
       columns() {
-        this.cols.splice(0, this.cols.length);
-        if (this.columns.length) {
-          bbn.fn.each(this.columns, a => this.addColumn(a))
-        }
-  
-        if (this.defaultConfig.hidden === null) {
-          let tmp = [];
-          let initColumn = [];
-          bbn.fn.each(this.cols, (a, i) => {
-            if (a.hidden) {
-              tmp.push(i);
-            }
-            else if (initColumn.length <= 10) {
-              initColumn.push(i);
-            }
-          });
-          this.defaultConfig.hidden = tmp;
-        }
+        if (this.ready) {
+          this.cols.splice(0, this.cols.length);
+          if (this.columns.length) {
+            bbn.fn.each(this.columns, a => this.addColumn(a))
+          }
+    
+          if (this.defaultConfig.hidden === null) {
+            let tmp = [];
+            let initColumn = [];
+            bbn.fn.each(this.cols, (a, i) => {
+              if (a.hidden) {
+                tmp.push(i);
+              }
+              else if (initColumn.length <= 10) {
+                initColumn.push(i);
+              }
+            });
+            this.defaultConfig.hidden = tmp;
+          }
 
-        this.init();
+          this.init();
+        }
       },
       /**
        * Updates the data.

@@ -63,9 +63,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-floater-list']"
                 v-html="li.data[sourceText]"></span>
         </component>
         <div v-if="!currentComponent && li.data[children] && li.data[children].length"
-            class="bbn-block bbn-abs bbn-vxspadded bbn-hspadded"
-            style="right: 0px"
-        >
+            class="bbn-block bbn-top-right bbn-vmiddle bbn-hspadded bbn-h-100">
           <i class="nf nf-fa-chevron_right"></i>
         </div>
         <bbn-floater v-if="isOpened && children &&
