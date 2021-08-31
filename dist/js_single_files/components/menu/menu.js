@@ -43,17 +43,13 @@ script.setAttribute('type', 'text/x-template');
 document.body.insertAdjacentElement('beforeend', script);
 /**
  * @file bbn-menu component
- *
  * @description The bbn menu with a simple implementation shows a hierarchical list of elements grouped in boxes that when clicked perform an action defined by the user .
- *
  * @copyright BBN Solutions
- *
  * @author BBN Solutions
- *
  * @created 10/02/2017
  */
 
-(function(bbn){
+(function(bbn, Vue) {
   "use strict";
 
   Vue.component('bbn-menu', {
@@ -66,7 +62,7 @@ document.body.insertAdjacentElement('beforeend', script);
         type: Number,
         default: -1
       },
-      sourceValue:{
+      sourceValue: {
         default: 'text'
       },
       children: {
@@ -74,14 +70,14 @@ document.body.insertAdjacentElement('beforeend', script);
         default: 'items'
       }
     },
-    data(){
+    data() {
       return {
         currentSelectedIndex: this.selectedIndex,
         overIdx: -1
       };
     },
     methods: {
-      _enterLi(idx){
+      _enterLi(idx) {
         bbn.fn.log("ENTER LI");
         if ((this.overIdx > -1) && (this.overIdx !== idx)) {
           this.overIdx = idx;
@@ -103,17 +99,15 @@ document.body.insertAdjacentElement('beforeend', script);
       },
       onKeyDown(idx, ev) {
         bbn.fn.log(ev);
-        if ((ev.key === ' ') || (ev.key === 'Enter')) {
-          this.clickLi(idx, ev);
-        }
-        else if (this.filteredData[this.overIdx] && (ev.key.indexOf('Arrow') || bbn.var.keys.upDown.includes(ev.keyCode))) {
-          let floater = this.getRef('floater');
-          if (floater) {
-            let list = floater.getRef('list');
-            if (list) {
-              list.keynav(ev);
-            }
+        let floater = this.getRef('floater');
+        if (floater) {
+          let list = floater.getRef('list');
+          if (list) {
+            list.keynav(ev);
           }
+        }
+        else if ((ev.key === ' ') || (ev.key === 'Enter')) {
+          this.clickLi(idx, ev);
         }
       },
       onFocus(idx) {
@@ -121,7 +115,7 @@ document.body.insertAdjacentElement('beforeend', script);
           this.overIdx = idx;
         }
       },
-      onClose(){
+      onClose() {
         //getRef('li' + selectedElement).blur(); selectedElement = -1;
       },
       select(item, idx, idx2, ev) {
@@ -136,12 +130,12 @@ document.body.insertAdjacentElement('beforeend', script);
         bbn.fn.log("changed overIdx from " + ov + " to " + nv);
       }
     },
-    mounted(){
+    mounted() {
       this.ready = true;
     }
   });
 
-})(bbn);
+})(window.bbn, window.Vue);
 
 
 })(bbn);

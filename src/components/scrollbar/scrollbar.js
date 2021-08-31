@@ -682,15 +682,17 @@
             else if (bbn.fn.isNumber(val)) {
               num = val;
             }
+
             if (bbn.fn.isNumber(num)){
-              bbn.fn.log("Scroolto 1", num);
+              //bbn.fn.log("scrollTo part 1", num);
               if ( num < 0 ){
                 num = 0;
               }
               else if (num > (this.contentSize - this.containerSize + 100)) {
                 num = this.contentSize - this.containerSize;
               }
-              bbn.fn.log("Scroolto 1", num, anim);
+
+              //bbn.fn.log("scrollTo part 2", num);
               this.containerPos = num;
               this.sliderPos = this.containerPos * this.ratio;
               if (anim) {
