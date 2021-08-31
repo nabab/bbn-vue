@@ -72,5 +72,9 @@
     "aliases": {
       "vue": "vue/dist/vue.js"
     }
+  },
+  "jshintConfig": {
+    "esversion": 8,
+    "indent": 2
   }
 }
