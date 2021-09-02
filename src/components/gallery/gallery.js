@@ -686,6 +686,9 @@
                     }
                   });
                 }
+                else {
+                  this.closest('bbn-gallery').$emit('click', this.source);
+                }
               }
             }
           }
