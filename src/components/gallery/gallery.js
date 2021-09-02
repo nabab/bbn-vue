@@ -687,7 +687,7 @@
                   });
                 }
                 else {
-                  this.closest('bbn-gallery').$emit('click', this.source);
+                  this.closest('bbn-gallery').$emit('clickItem', this.source);
                 }
               }
             }
