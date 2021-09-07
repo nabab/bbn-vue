@@ -806,6 +806,9 @@ document.head.insertAdjacentElement('beforeend', css);
                     }
                   });
                 }
+                else {
+                  this.closest('bbn-gallery').$emit('clickItem', this.source);
+                }
               }
             }
           }
