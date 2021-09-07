@@ -355,7 +355,11 @@
 </script>
 <style scoped>
 .bbn-json-editor {
+  overflow: visible !important;
   background-color: white;
+}
+.bbn-json-editor > div {
+  overflow: visible !important;
 }
 .bbn-json-editor .editor-toolbar a,
 .bbn-json-editor .editor-toolbar a.active,

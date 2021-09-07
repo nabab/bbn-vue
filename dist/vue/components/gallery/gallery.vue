@@ -799,6 +799,9 @@
                     }
                   });
                 }
+                else {
+                  this.closest('bbn-gallery').$emit('clickItem', this.source);
+                }
               }
             }
           }
