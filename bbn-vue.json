@@ -5641,6 +5641,11 @@
                         "url": "bbn-vue\/component\/router\/doc\/methods#add"
                     },
                     {
+                        "text": "move",
+                        "desc": "Moves a container within the router, changes its idx.",
+                        "url": "bbn-vue\/component\/router\/doc\/methods#move"
+                    },
+                    {
                         "text": "search",
                         "desc": "",
                         "url": "bbn-vue\/component\/router\/doc\/methods#search"
