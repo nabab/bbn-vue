@@ -1342,6 +1342,7 @@
                 obj.selected = false;
                 obj.idx = isValid ? idx : this.views.length;
               }
+
               bbn.fn.iterate(this.getDefaultView(), (a, n) => {
                 if ( obj[n] === undefined ){
                   // Each new property must be set with $set
@@ -1358,6 +1359,38 @@
           }
           this.fixIndexes()
         }
+      },
+      /**
+       * Moves a container within the router, changes its idx.
+       * 
+       * @method move
+       * @param {Number} from The index of the container to move
+       * @param {Number} to   The index to which the container must go
+       * @returns 
+       */
+      move(from, to) {
+        if (!bbn.fn.isNumber(from, to) || (from === to) || !this.views[from] || !this.views[to]) {
+          return;
+        }
+
+        bbn.fn.move(this.views, from, to);
+        let selectedOk = false;
+        if (from === this.selected) {
+          this.selected = to;
+          selectedOk = true;
+        }
+
+        for (let i = Math.min(from, to); i <= Math.max(from, to); i++) {
+          if (this.views[i].idx !== i) {
+            if (!selectedOk && (this.selected === this.views[i].idx)) {
+              this.selected = i;
+            }
+
+            this.views[i].idx = i;
+          }
+        }
+
+        this.setConfig();
       },
       /**
        * @method search
@@ -1440,7 +1473,7 @@
        * @fires activate
        * @emit update
       */
-      load(url, force){
+      load(url, force, index){
         if (url){
           this.isLoading = true;
           let finalURL = this.fullBaseURL + url;
@@ -1458,11 +1491,15 @@
               toAdd = true;
               this.views.splice(idx, 1);
             }
+            else if (index !== undefined) {
+              this.move(idx, index);
+            }
           }
           else{
             toAdd = true;
-            idx = this.views.length;
+            idx = index === undefined ? this.views.length : index;
           }
+
           if (toAdd){
             this.add({
               url: url,
@@ -1593,14 +1630,11 @@
             this.urls[this.views[idx].url] &&
             this.urls[this.views[idx].url].isLoaded
           ){
-            this.views[idx].loaded = false;
-            if (this.views[idx].dirty) {
-              this.views[idx].dirty = false;
-            }
-            this.urls[this.views[idx].url].isLoaded = false;
-            this.$nextTick(() => {
-              this.route(this.urls[this.views[idx].url].currentURL, true);
-            })
+            let url = this.views[idx].current;
+            this.remove(idx);
+            setTimeout(() => {
+              this.load(url, true, idx);
+            }, 250);
           }
         });
       },
@@ -1690,6 +1724,7 @@
             return false;
           }
         });
+
         if ( !this.views[idx].help ){
           let sub = this.getSubRouter(idx);
           if ( sub && sub.views && sub.views.length ){
@@ -1718,6 +1753,7 @@
             }
           }
         }
+
         if ( this.views[idx].help ){
           items.push({
             text: bbn._("Help"),
@@ -1750,6 +1786,7 @@
             }
           })
         }
+
         if ( this.autoload ){
           items.push({
             text: bbn._("Reload"),
@@ -1760,6 +1797,7 @@
             }
           });
         }
+
         items.push({
           text: bbn._("Enlarge"),
           key: "enlarge",
@@ -1768,11 +1806,13 @@
             this.getVue(idx).fullScreen = true;
           }
         });
+
         if ( tmp && tmp.length ){
           bbn.fn.each(tmp, (a, i) => {
             items.push(a)
-          })
+          });
         }
+
         if ( this.views[idx].icon && this.views[idx].title && !this.isBreadcrumb ){
           items.push({
             text: this.views[idx].notext ? bbn._("Show text") : bbn._("Show only icon"),
@@ -1783,6 +1823,7 @@
             }
           });
         }
+
         if ( !this.views[idx].static ){
           if ( this.isBreadcrumb ){
             items.push({
@@ -1825,6 +1866,7 @@
             }
           }
         }
+
         if ( others ){
           items.push({
             text: bbn._("Close Others"),
@@ -1833,8 +1875,66 @@
             action: () => {
               this.closeAllBut(idx);
             }
-          })
+          });
+
+          let directions = [];
+          if (idx) {
+            if (idx > 1) {
+              directions.push({
+                text: bbn._("First"),
+                key: "move_first",
+                icon: "nf nf-mdi-close_circle_outline",
+                action: () => {
+                  this.move(idx, 0);
+                }
+              });
+            }
+            directions.push({
+              text: bbn._("Before"),
+              key: "move_before",
+              icon: "nf nf-mdi-close_circle_outline",
+              action: () => {
+                this.move(idx, idx - 1);
+              }
+            });
+          }
+          if (idx < (this.views.length - 1)) {
+            directions.push({
+              text: bbn._("After"),
+              key: "move_after",
+              icon: "nf nf-mdi-close_circle_outline",
+              action: () => {
+                this.move(idx, idx + 1);
+              }
+            });
+            if (idx < (this.views.length - 2)) {
+              directions.push({
+                text: bbn._("Last"),
+                key: "move_last",
+                icon: "nf nf-mdi-close_circle_outline",
+                action: () => {
+                  this.move(idx, this.views.length - 1);
+                }
+              });
+            }
+          }
+
+          if (directions.length) {
+            if (directions.length === 1) {
+              directions[0].text = bbn._("Switch position");
+              items.push(directions[0]);
+            }
+            else {
+              items.push({
+                text: bbn._("Move"),
+                key: "move",
+                icon: "nf nf-mdi-close_circle_outline",
+                items: directions
+              });
+            }
+          }
         }
+
         if ( others && !this.views[idx].static ){
           items.push({
             text: bbn._("Close All"),
@@ -1843,8 +1943,9 @@
             action: () => {
               this.closeAll();
             }
-          })
+          });
         }
+
         let menu = bbn.fn.isArray(this.menu) ? this.menu : this.menu(this.views[idx], this);
         if (menu.length) {
           bbn.fn.each(menu, a => {
@@ -1863,16 +1964,16 @@
       },
       /**
        * @method close
-       * @param {Number} idx
-       * @param {Boolean} force
-       * @param {Event} ev
+       * @param {Number}  idx   The index of the container to close
+       * @param {Boolean} force Will close the container without prevention
+       * @param {Boolean} noCfg If set to true will not trigger the storage saving
        * @fires remove
        * @fires getIndex
        * @fires activateIndex
        * @fires setConfig
        * @return {Boolean}
        */
-      close(idx, force){
+      close(idx, force, noCfg) {
         let res = this.remove(idx, force);
         if ( res && (this.selected > idx) ){
           this.selected--;
@@ -1890,9 +1991,11 @@
             this.activateIndex(this.views[idx] ? idx : idx - 1);
           }
         }
-        this.$nextTick(() => {
+
+        if (!noCfg) {
           this.setConfig();
-        })
+        }
+
         return res;
       },
       /**
@@ -2133,24 +2236,27 @@
        * @method closeAll
        * @fires close
        */
-      closeAll(){
+      closeAll(force){
         for ( let i = this.views.length - 1; i >= 0; i-- ){
           if ( !this.views[i].static && !this.views[i].pinned ){
-            this.close(i);
+            this.close(i, force, true);
           }
         }
+
+        this.setConfig();
       },
       /**
        * @method closeallBut
        * @param {Number} idx
        * @fires close
        */
-      closeAllBut(idx){
+      closeAllBut(idx, force){
         for ( let i = this.views.length - 1; i >= 0; i-- ){
           if ( !this.views[i].static && !this.views[i].pinned && (i !== idx) ){
-            this.close(i);
+            this.close(i, force, true);
           }
         }
+        this.setConfig();
       },
       /**
        * @method pin
