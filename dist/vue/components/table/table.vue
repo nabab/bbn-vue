@@ -3288,8 +3288,10 @@
        * 
        */
       clickCell(col, colIndex, dataIndex) {
-        this.$emit('click-row', this.filteredData[dataIndex].data, dataIndex);
-        this.$emit('click-cell', col, colIndex, dataIndex);
+        if (this.filteredData[dataIndex]) {
+          this.$emit('click-row', this.filteredData[dataIndex].data, dataIndex);
+          this.$emit('click-cell', col, colIndex, dataIndex);
+        }
       },
       /**
        * Removes the focus from the given row.
