@@ -930,6 +930,7 @@
                     }
                     d.data = this._map(d.data);
                     this.currentData = bbn.fn.map(d.data, (a, i) => {
+                      /** @todo Is it compatible with the fact of updating the source when given an array */
                       let o = this.hierarchy ? bbn.fn.extend(true, a, {
                         index: i,
                         key: this.isAjax ? (i + '-' + this.hashCfg) : i,
@@ -940,7 +941,7 @@
                         key: this.isAjax ? (i + '-' + this.hashCfg) : i,
                         _bbn: true
                       };
-                      if ( this.children && a[this.children] && a[this.children].length ){
+                      if (this.children && a[this.children] && a[this.children].length) {
                         o.opened = true;
                       }
                       if (this.hasSelection){
@@ -1017,7 +1018,14 @@
               }), (d) => {
                 if (d.success) {
                   let data = this.currentData[index].data;
-                  this.currentData.splice(index, 1);
+                  let row = this.currentData.splice(index, 1);
+                  if (!this.isAjax && bbn.fn.isArray(this.source)) {
+                    let idx = bbn.fn.search(this.source, row[0]);
+                    if (idx > -1) {
+                      row = this.source.splice(idx, 1);
+                    }
+                  }
+
                   this.total--;
                   this.updateIndexes();
                   this.$emit('delete', data, ev);
@@ -1029,8 +1037,16 @@
                   this.alert(bbn._("Impossible to delete the row"))
                 }
               })
-            } else {
+            }
+            else {
               let row = this.currentData.splice(index, 1);
+              if (!this.isAjax && bbn.fn.isArray(this.source)) {
+                let idx = bbn.fn.search(this.source, row[0]);
+                if (idx > -1) {
+                  row = this.source.splice(idx, 1);
+                }
+              }
+
               this.total--;
               if (this.originalData) {
                 this.originalData.splice(index, 1);
@@ -1052,6 +1068,9 @@
             data: data,
             index: this.currentData.length
           });
+          if (!this.isAjax && bbn.fn.isArray(this.source)) {
+            this.source.push(data);
+          }
         },
         /**
          * Fires the method realDelete to delete the row.

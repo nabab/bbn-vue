@@ -279,8 +279,7 @@
                       :class="getTrClass(d.data)"/>
                 </template>
                 <td v-else-if="d.full"
-                    :colspan="currentColumns.length"
-                >
+                    :colspan="currentColumns.length">
                   <component v-if="d.component"
                             :is="d.component"
                             v-bind="d.options || {}"
@@ -387,7 +386,7 @@
                                 :source="col.mapper ? col.mapper(d.data) : d.data"
                       ></component>
                       <template v-else-if="col.buttons && dropdownMode">
-                        <bbn-dropdown :source="col.buttons"
+                        <bbn-dropdown :source="Array.isArray(realButtons) ? realButtons : realButtons(d.data, col, i)"
                                       :placeholder="dropdownMode === true ? _('Action') : dropdownMode"
                                       :popup="true"
                                       @select="_execCommand(button, d.data, col, i, $event)"/>

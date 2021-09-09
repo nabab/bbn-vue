@@ -521,11 +521,14 @@
     },
     computed: {
       realButtons(){
+        bbn.fn.log("WHAT BUTTONS");
         if (this.cols.length && this.cols[this.colButtons] && this.cols[this.colButtons].buttons) {
           if (bbn.fn.isFunction(this.cols[this.colButtons].buttons)) {
+            bbn.fn.log("IS FUNCTION");
             return this.cols[this.colButtons].buttons;
           }
           else if (bbn.fn.isArray(this.cols[this.colButtons].buttons)) {
+            bbn.fn.log("IS ARRAY");
             let res = [];
             bbn.fn.each(this.cols[this.colButtons].buttons, a => {
               if (bbn.fn.isString(a)) {
