@@ -314,21 +314,40 @@
           this.$emit('saverow', this.tmpRow || this.editedRow, ev);
           if (!ev.defaultPrevented) {
             if (this.tmpRow) {
+              let row = bbn.fn.clone(this.tmpRow);
               this.currentData.push({
-                data: bbn.fn.clone(this.tmpRow),
+                data: row,
                 index: this.currentData.length
               });
               if (this.originalData) {
-                this.originalData.push(bbn.fn.clone(this.tmpRow));
+                this.originalData.push(bbn.fn.clone(row));
               }
+              if (bbn.fn.isArray(this.source)) {
+                this.source.push(row);
+              }
+
               this.tmpRow = false;
             }
             // Update
             else if (this.editedRow) {
-              this.$set(this.currentData[this.editedIndex], 'data', bbn.fn.clone(this.editedRow));
+              let row = bbn.fn.clone(this.editedRow);
+              this.$set(this.currentData[this.editedIndex], 'data', row);
               if (this.originalData) {
-                this.originalData.splice(this.editedIndex, 1, bbn.fn.clone(this.editedRow));
+                let or = this.originalData.splice(this.editedIndex, 1, bbn.fn.clone(row));
+                if (bbn.fn.isArray(this.source)) {
+                  let idx = bbn.fn.search(this.source, or[0]);
+                  if (idx > -1) {
+                    this.source.splice(idx, 1, row);
+                  }
+                }
               }
+              else if (bbn.fn.isArray(this.source) && this.uid && this.source[this.uid]) {
+                let idx = bbn.fn.search(this.source, {[this.uid]: this.source[this.uid]});
+                if (idx > -1) {
+                  this.source.splice(idx, 1, row);
+                }
+              }
+
               this.editedRow = false;
             }
             return true;
