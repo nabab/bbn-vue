@@ -23,6 +23,7 @@ script.innerHTML = `<div :class="[
     <header v-if="title"
             ref="header"
             :class="{
+              'bbn-rel': true,
               'bbn-header': true,
               'bbn-bordered-bottom': true,
               'bbn-unselectable': true,

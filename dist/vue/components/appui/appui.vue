@@ -52,7 +52,7 @@
                     :z-index="3"/>
         <!-- SEARCHBAR -->
         <div v-if="!isMobile && !!searchBar"
-             class="bbn-appui-search bbn-large bbn-abs bbn-h-100 bbn-vspadded bbn-vmiddle"
+             class="bbn-appui-search bbn-large bbn-abs bbn-vspadded bbn-vmiddle"
         >
           <bbn-search :source="searchBar.source"
                       :placeholder="searchBar.placeholderFocused"

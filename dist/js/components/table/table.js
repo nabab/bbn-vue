@@ -282,8 +282,7 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                       :class="getTrClass(d.data)"/>
                 </template>
                 <td v-else-if="d.full"
-                    :colspan="currentColumns.length"
-                >
+                    :colspan="currentColumns.length">
                   <component v-if="d.component"
                             :is="d.component"
                             v-bind="d.options || {}"
@@ -390,7 +389,7 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                                 :source="col.mapper ? col.mapper(d.data) : d.data"
                       ></component>
                       <template v-else-if="col.buttons && dropdownMode">
-                        <bbn-dropdown :source="col.buttons"
+                        <bbn-dropdown :source="Array.isArray(realButtons) ? realButtons : realButtons(d.data, col, i)"
                                       :placeholder="dropdownMode === true ? _('Action') : dropdownMode"
                                       :popup="true"
                                       @select="_execCommand(button, d.data, col, i, $event)"/>
@@ -1008,11 +1007,14 @@ document.head.insertAdjacentElement('beforeend', css);
     },
     computed: {
       realButtons(){
+        bbn.fn.log("WHAT BUTTONS");
         if (this.cols.length && this.cols[this.colButtons] && this.cols[this.colButtons].buttons) {
           if (bbn.fn.isFunction(this.cols[this.colButtons].buttons)) {
+            bbn.fn.log("IS FUNCTION");
             return this.cols[this.colButtons].buttons;
           }
           else if (bbn.fn.isArray(this.cols[this.colButtons].buttons)) {
+            bbn.fn.log("IS ARRAY");
             let res = [];
             bbn.fn.each(this.cols[this.colButtons].buttons, a => {
               if (bbn.fn.isString(a)) {

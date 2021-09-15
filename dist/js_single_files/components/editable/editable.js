@@ -29,11 +29,11 @@ script.innerHTML = `<div :class="['bbn-iblock', componentClass]"
       width: '8em',
       paddingLeft: '1em',
       textAlign: 'left',
-      display: isEditing || (over && isAdmin) ? 'block' : 'none'
+      display: isEditing || over ? 'block' : 'none'
     }">
     <i :class="'bbn-p inline ' + editIcon"
       @click.stop="edit"
-      v-if="isAdmin && !isEditing"
+      v-if="!isEditing"
     ></i>
     <i :class="'bbn-p inline ' + cancelIcon"
       @click.stop="onCancel"
@@ -437,13 +437,15 @@ document.body.insertAdjacentElement('beforeend', script);
       },
       value: {
         required: true
+      },
+      novalue: {
+        type: String
       }
     },
     data(){
       return {
         over: false,
         isEditing: false,
-        isAdmin: true,
         editing: true,
         width: '100%',
         height: '100%',

@@ -205,7 +205,8 @@
           res = eval(r.script);
         }
         catch (e) {
-          throw new Error("Impossible to find evaluate the content of tha component " + name);
+          bbn.fn.log(r.script)
+          throw new Error("Impossible to evaluate the content of tha component " + name);
         }
         if ( typeof res === 'object' ){
           if ( !res.mixins ){

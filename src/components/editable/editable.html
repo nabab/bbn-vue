@@ -27,11 +27,11 @@
       width: '8em',
       paddingLeft: '1em',
       textAlign: 'left',
-      display: isEditing || (over && isAdmin) ? 'block' : 'none'
+      display: isEditing || over ? 'block' : 'none'
     }">
     <i :class="'bbn-p inline ' + editIcon"
       @click.stop="edit"
-      v-if="isAdmin && !isEditing"
+      v-if="!isEditing"
     ></i>
     <i :class="'bbn-p inline ' + cancelIcon"
       @click.stop="onCancel"
