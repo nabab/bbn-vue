@@ -46,7 +46,7 @@
       }
     },
     data(){
-      let isJSON = bbn.fn.isString(this.value);
+      let isJSON = this.value && bbn.fn.isString(this.value);
       let obj = this.value ? (isJSON ? JSON.parse(this.value) : bbn.fn.clone(this.value)) : [];
       if (!bbn.fn.isArray(obj)) {
         throw new Error("The value of bbn-values must be an array");
