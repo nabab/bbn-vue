@@ -12,13 +12,13 @@
     <bbn-input v-model="currentInput"
                :readonly="max && (value.length > max)"
                @keydown.enter.prevent="add"
-               @keyup.enter.prevent
+               @keyup.enter.stop
                ref="input"
                :placeholder="max && (value.length > max) ? _('Max number of') + ' ' + max : _('Value')"/>
     <bbn-button v-if="!max || (value.length <= max)"
                 icon="nf nf-fa-plus"
                 @click="add"
-                @keyup.prevent.enter.space="add"
+                @keyup.prevent.stop.enter.space="add"
                 text="_('Add')"
                 :notext="true"/>
   </div>
