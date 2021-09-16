@@ -1,47 +1,48 @@
 ((bbn) => {
   "use strict";
-  const
-    editorOperators = {
-      string: {
-        contains: bbn._('Contains'),
-        eq: bbn._('Is'),
-        neq: bbn._('Is not'),
-        startswith: bbn._('Starts with'),
-        doesnotcontain: bbn._('Does not contain'),
-        endswith: bbn._('To end by'),
-        isempty: bbn._('Is empty'),
-        isnotempty: bbn._('Is not empty')
-      },
-      number: {
-        eq: bbn._('Is equal to'),
-        neq: bbn._('Is not equal to'),
-        gte: bbn._('Est supérieur ou égal àIs greater than or equal to'),
-        gt: bbn._('Is greater than'),
-        lte: bbn._('Is less than or equal to'),
-        lt: bbn._('Is inferior to'),
-      },
-      date: {
-        eq: bbn._('Is equal to'),
-        neq: bbn._('Is not equal to'),
-        gte: bbn._('Is greater than or equal to'),
-        gt: bbn._('Is after'),
-        lte: bbn._('Is prior to or equal to'),
-        lt: bbn._('Is older than'),
-      },
-      enums: {
-        eq: bbn._('Is equal to'),
-        neq: bbn._('Is not equal to'),
-      },
-      boolean: {
-        istrue: bbn._('Is true'),
-        isfalse: bbn._('Is false')
-      }
+  const editorOperators = {
+    string: {
+      contains: bbn._('Contains'),
+      eq: bbn._('Is'),
+      neq: bbn._('Is not'),
+      startswith: bbn._('Starts with'),
+      doesnotcontain: bbn._('Does not contain'),
+      endswith: bbn._('To end by'),
+      isempty: bbn._('Is empty'),
+      isnotempty: bbn._('Is not empty')
     },
-    editorNullOps = {
-      isnull: bbn._('Is null'),
-      isnotnull: bbn._('Is not null')
+    number: {
+      eq: bbn._('Is equal to'),
+      neq: bbn._('Is not equal to'),
+      gte: bbn._('Est supérieur ou égal àIs greater than or equal to'),
+      gt: bbn._('Is greater than'),
+      lte: bbn._('Is less than or equal to'),
+      lt: bbn._('Is inferior to'),
     },
-    editorNoValueOperators = ['', 'isnull', 'isnotnull', 'isempty', 'isnotempty', 'istrue', 'isfalse'];
+    date: {
+      eq: bbn._('Is equal to'),
+      neq: bbn._('Is not equal to'),
+      gte: bbn._('Is greater than or equal to'),
+      gt: bbn._('Is after'),
+      lte: bbn._('Is prior to or equal to'),
+      lt: bbn._('Is older than'),
+    },
+    enums: {
+      eq: bbn._('Is equal to'),
+      neq: bbn._('Is not equal to'),
+    },
+    boolean: {
+      istrue: bbn._('Is true'),
+      isfalse: bbn._('Is false')
+    }
+  };
+
+  const editorNullOps = {
+    isnull: bbn._('Is null'),
+    isnotnull: bbn._('Is not null')
+  };
+  const editorNoValueOperators = ['', 'isnull', 'isnotnull', 'isempty', 'isnotempty', 'istrue', 'isfalse'];
+
   bbn.fn.autoExtend("vue", {
     /**
      * dataEditorComponent

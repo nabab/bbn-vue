@@ -28,8 +28,7 @@
         default: []
       },
       value: {
-        type: [Array, String],
-        required: true
+        type: [Array, String]
       },
       max: {
         type: Number
@@ -46,7 +45,7 @@
     },
     data(){
       let isJSON = bbn.fn.isString(this.value);
-      let obj = isJSON ? JSON.parse(this.value) : bbn.fn.clone(this.value);
+      let obj = this.value ? (isJSON ? JSON.parse(this.value) : bbn.fn.clone(this.value)) : [];
       if (!bbn.fn.isArray(obj)) {
         throw new Error("The value of bbn-values must be an array");
       }
