@@ -1,34 +1,31 @@
 <div :class="[componentClass]" 
      tabindex="-1"
 >
-  <bbn-form :scrollable="false" ref="form" :buttons="false" @submit="add">
-    <div class="bbn-grid-fields" style="grid-template-columns: minmax(auto,max-content) auto 3em">
-      <template v-for="v in items">
-        <div v-text="v.key" :key="v.key"/>
-        <div v-text="v.value"/>
-        <div>
-          <bbn-button icon="nf nf-fa-minus"
-                      @click="remove(v.key)"
-                      @keyup.enter="remove(v.key)"
-                      text="_('Delete')"
-                      :notext="true"/>
-        </div>
-      </template>
-      <template v-if="!max || (items.length <= max)">
-        <div>
-          <bbn-input v-model="currentKey" :required="true" ref="key" :placeholder="_('key')"/>
-        </div>
-        <div>
-          <bbn-input v-model="currentValue" :required="true" :placeholder="_('value')"/>
-        </div>
-        <div>
-          <bbn-button icon="nf nf-fa-plus"
-                      @click="getRef('form').submit()"
-                      @keyup.enter="getRef('form').submit()"
-                      text="_('Add')"
-                      :notext="true"/>
-        </div>
-      </template>
-    </div>
-  </bbn-form>
+  <div class="bbn-grid-fields"
+        style="grid-template-columns: auto 3em minmax(auto,max-content)">
+    <template v-for="v in filteredData">
+      <div v-text="v.value"/>
+      <div>
+        <bbn-button icon="nf nf-fa-minus"
+                    @click="remove(v.key)"
+                    @keyup.enter="remove(v.key)"
+                    text="_('Delete')"
+                    :notext="true"/>
+      </div>
+    </template>
+    <template v-if="!max || (items.length <= max)">
+      <div>
+        <bbn-input v-model="currentValue"
+                   :required="true"
+                   :placeholder="_('value')"/>
+      </div>
+      <div>
+        <bbn-button icon="nf nf-fa-plus"
+                    @click="add"
+                    @keyup.enter="add"
+                    text="_('Add')"
+                    :notext="true"/>
+      </div>
+    </template>
+  </div>
 </div>

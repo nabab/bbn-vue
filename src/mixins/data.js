@@ -98,6 +98,9 @@
             }
           }
           else {
+            if (bbn.fn.isString(v) && v && cfg.maxVisible) {
+              return bbn.fn.shorten(cfg.maxVisible);
+            }
             return v || '';
           }          
         }
