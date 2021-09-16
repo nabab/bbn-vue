@@ -11,7 +11,7 @@
   <div>
     <bbn-input v-model="currentInput"
                :readonly="max && (value.length > max)"
-               @keydown.enter.prevent="add"
+               @keydown.enter.stop.prevent="add"
                @keyup.enter.stop
                ref="input"
                :placeholder="max && (value.length > max) ? _('Max number of') + ' ' + max : _('Value')"/>
