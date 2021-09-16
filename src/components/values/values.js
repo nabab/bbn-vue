@@ -25,7 +25,9 @@
     props: {
       source: {
         type: Array,
-        default: []
+        default(){
+          return [];
+        }
       },
       value: {
         type: [Array, String]
