@@ -20,8 +20,7 @@
      */
     mixins: [
       bbn.vue.basicComponent,
-      bbn.vue.inputComponent,
-      bbn.vue.listComponent,
+      bbn.vue.inputComponent
     ],
     props: {
       source: {
@@ -47,10 +46,15 @@
     },
     data(){
       let isJSON = bbn.fn.isString(this.value);
+      let obj = isJSON ? JSON.parse(this.value) : bbn.fn.clone(this.value);
+      if (!bbn.fn.isArray(obj)) {
+        throw new Error("The value of bbn-values must be an array");
+      }
       return {
         isJSON: isJSON,
-        obj: isJSON ? JSON.parse(this.value) : bbn.fn.clone(this.value),
-        currentValue: ''
+        obj: obj,
+        currentValue: obj.slice(),
+        currentInput: ''
       };
     },
     computed: {
@@ -61,10 +65,22 @@
       }
     },
     methods: {
+      isValid(){
+        return bbn.fn.isArray(this.obj);
+      },
+      add(){
+        if (this.currentInput.length) {
+          this.obj.push(this.currentInput);
+          this.emitInput(this.isJSON ? JSON.stringify(this.obj) : this.obj);
+          this.currentInput = '';
+          this.$refs.input.focus();
+        }
+      },
+      remove(idx) {
+        this.obj.splice(idx, 1);
+        this.emitInput(this.isJSON ? JSON.stringify(this.obj) : this.obj);
+      }
     },
-    created(){
-      this.updateData();
-    }
   });
 
 })(bbn);

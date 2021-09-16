@@ -1,31 +1,24 @@
 <div :class="[componentClass]" 
-     tabindex="-1"
->
-  <div class="bbn-grid-fields"
-        style="grid-template-columns: auto 3em minmax(auto,max-content)">
-    <template v-for="v in filteredData">
-      <div v-text="v.value"/>
-      <div>
-        <bbn-button icon="nf nf-fa-minus"
-                    @click="remove(v.key)"
-                    @keyup.enter="remove(v.key)"
-                    text="_('Delete')"
-                    :notext="true"/>
-      </div>
-    </template>
-    <template v-if="!max || (items.length <= max)">
-      <div>
-        <bbn-input v-model="currentValue"
-                   :required="true"
-                   :placeholder="_('value')"/>
-      </div>
-      <div>
-        <bbn-button icon="nf nf-fa-plus"
-                    @click="add"
-                    @keyup.enter="add"
-                    text="_('Add')"
-                    :notext="true"/>
-      </div>
-    </template>
+     tabindex="-1">
+  <div v-for="(v, idx) in value">
+    <i class="nf nf-fa-times_circle"
+       @click="remove(idx)"
+       tabindex="0"
+       @keyup.enter.space="remove(idx)"
+       title="_('Delete')"/>
+    <span class="bbn-left-space" v-text="v"/>
+  </div>
+  <div>
+    <bbn-input v-model="currentInput"
+               :readonly="max && (value.length > max)"
+               @keydown.enter.prevent="add"
+               ref="input"
+               :placeholder="max && (value.length > max) ? _('Max number of') + ' ' + max : _('Value')"/>
+    <bbn-button v-if="!max || (value.length <= max)"
+                icon="nf nf-fa-plus"
+                @click="add"
+                @keydown.enter.space="add"
+                text="_('Add')"
+                :notext="true"/>
   </div>
 </div>
