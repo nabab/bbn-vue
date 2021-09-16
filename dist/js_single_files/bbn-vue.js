@@ -243,7 +243,8 @@
           res = eval(r.script);
         }
         catch (e) {
-          throw new Error("Impossible to find evaluate the content of tha component " + name);
+          bbn.fn.log(r.script)
+          throw new Error("Impossible to evaluate the content of tha component " + name);
         }
         if ( typeof res === 'object' ){
           if ( !res.mixins ){
@@ -3141,21 +3142,40 @@
           this.$emit('saverow', this.tmpRow || this.editedRow, ev);
           if (!ev.defaultPrevented) {
             if (this.tmpRow) {
+              let row = bbn.fn.clone(this.tmpRow);
               this.currentData.push({
-                data: bbn.fn.clone(this.tmpRow),
+                data: row,
                 index: this.currentData.length
               });
               if (this.originalData) {
-                this.originalData.push(bbn.fn.clone(this.tmpRow));
+                this.originalData.push(bbn.fn.clone(row));
               }
+              if (bbn.fn.isArray(this.source)) {
+                this.source.push(row);
+              }
+
               this.tmpRow = false;
             }
             // Update
             else if (this.editedRow) {
-              this.$set(this.currentData[this.editedIndex], 'data', bbn.fn.clone(this.editedRow));
+              let row = bbn.fn.clone(this.editedRow);
+              this.$set(this.currentData[this.editedIndex], 'data', row);
               if (this.originalData) {
-                this.originalData.splice(this.editedIndex, 1, bbn.fn.clone(this.editedRow));
+                let or = this.originalData.splice(this.editedIndex, 1, bbn.fn.clone(row));
+                if (bbn.fn.isArray(this.source)) {
+                  let idx = bbn.fn.search(this.source, or[0]);
+                  if (idx > -1) {
+                    this.source.splice(idx, 1, row);
+                  }
+                }
               }
+              else if (bbn.fn.isArray(this.source) && this.uid && this.source[this.uid]) {
+                let idx = bbn.fn.search(this.source, {[this.uid]: this.source[this.uid]});
+                if (idx > -1) {
+                  this.source.splice(idx, 1, row);
+                }
+              }
+
               this.editedRow = false;
             }
             return true;
@@ -4185,6 +4205,7 @@
                     }
                     d.data = this._map(d.data);
                     this.currentData = bbn.fn.map(d.data, (a, i) => {
+                      /** @todo Is it compatible with the fact of updating the source when given an array */
                       let o = this.hierarchy ? bbn.fn.extend(true, a, {
                         index: i,
                         key: this.isAjax ? (i + '-' + this.hashCfg) : i,
@@ -4195,7 +4216,7 @@
                         key: this.isAjax ? (i + '-' + this.hashCfg) : i,
                         _bbn: true
                       };
-                      if ( this.children && a[this.children] && a[this.children].length ){
+                      if (this.children && a[this.children] && a[this.children].length) {
                         o.opened = true;
                       }
                       if (this.hasSelection){
@@ -4273,6 +4294,13 @@
                 if (d.success) {
                   let data = this.currentData[index].data;
                   this.currentData.splice(index, 1);
+                  if (!this.isAjax && bbn.fn.isArray(this.source)) {
+                    let idx = bbn.fn.search(this.source, data);
+                    if (idx > -1) {
+                      this.source.splice(idx, 1);
+                    }
+                  }
+
                   this.total--;
                   this.updateIndexes();
                   this.$emit('delete', data, ev);
@@ -4284,14 +4312,23 @@
                   this.alert(bbn._("Impossible to delete the row"))
                 }
               })
-            } else {
-              let row = this.currentData.splice(index, 1);
+            }
+            else {
+              let data = this.currentData[index].data;
+              this.currentData.splice(index, 1);
+              if (!this.isAjax && bbn.fn.isArray(this.source)) {
+                let idx = bbn.fn.search(this.source, data);
+                if (idx > -1) {
+                  this.source.splice(idx, 1);
+                }
+              }
+
               this.total--;
               if (this.originalData) {
                 this.originalData.splice(index, 1);
               }
               this.updateIndexes();
-              this.$emit('delete', row[0], ev);
+              this.$emit('delete', data, ev);
             }
           }
         },
@@ -4307,6 +4344,9 @@
             data: data,
             index: this.currentData.length
           });
+          if (!this.isAjax && bbn.fn.isArray(this.source)) {
+            this.source.push(data);
+          }
         },
         /**
          * Fires the method realDelete to delete the row.

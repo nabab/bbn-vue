@@ -1018,11 +1018,11 @@
               }), (d) => {
                 if (d.success) {
                   let data = this.currentData[index].data;
-                  let row = this.currentData.splice(index, 1);
+                  this.currentData.splice(index, 1);
                   if (!this.isAjax && bbn.fn.isArray(this.source)) {
-                    let idx = bbn.fn.search(this.source, row[0]);
+                    let idx = bbn.fn.search(this.source, data);
                     if (idx > -1) {
-                      row = this.source.splice(idx, 1);
+                      this.source.splice(idx, 1);
                     }
                   }
 
@@ -1039,11 +1039,12 @@
               })
             }
             else {
-              let row = this.currentData.splice(index, 1);
+              let data = this.currentData[index].data;
+              this.currentData.splice(index, 1);
               if (!this.isAjax && bbn.fn.isArray(this.source)) {
-                let idx = bbn.fn.search(this.source, row[0]);
+                let idx = bbn.fn.search(this.source, data);
                 if (idx > -1) {
-                  row = this.source.splice(idx, 1);
+                  this.source.splice(idx, 1);
                 }
               }
 
@@ -1052,7 +1053,7 @@
                 this.originalData.splice(index, 1);
               }
               this.updateIndexes();
-              this.$emit('delete', row[0], ev);
+              this.$emit('delete', data, ev);
             }
           }
         },

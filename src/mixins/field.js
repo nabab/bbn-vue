@@ -234,6 +234,14 @@
           type: Number
         },
         /**
+         * Defines the max number of chars visible in reading.
+         * @prop {Number} maxVisible 
+         * @memberof fieldComponent
+         */
+        maxVisible: {
+          type: Number
+        },
+        /**
          * Defines the sqlType of the component.
          * @prop {String} sqlType 
          * @memberof fieldComponent

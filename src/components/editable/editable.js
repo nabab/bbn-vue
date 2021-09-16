@@ -387,13 +387,15 @@
       },
       value: {
         required: true
+      },
+      novalue: {
+        type: String
       }
     },
     data(){
       return {
         over: false,
         isEditing: false,
-        isAdmin: true,
         editing: true,
         width: '100%',
         height: '100%',

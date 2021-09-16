@@ -3,10 +3,8 @@
   <div class="bbn-bordered bbn-h-100">
     <div class="bbn-flex-height" ref="container">
       <template v-for="(s, idx) in source">
-        <div :class="['bbn-panelbar-bbn-header', 'bbn-header', 'bbn-spadded', 'bbn-vmiddle', {'bbn-panelbar-header-selected': isSelected(idx)}]"
-             ref="header"
-            
-        >
+        <div :class="['bbn-panelbar-bbn-header', 'bbn-header', 'bbn-unselectable', 'bbn-spadded', 'bbn-vmiddle', {'bbn-panelbar-header-selected': isSelected(idx)}]"
+             ref="header">
           <div class="bbn-panelbar-arrow-container bbn-hspadded bbn-p bbn-middle bbn-block"
                @click="multiple ? multiselect(idx) : select(idx)">
             <i :class="['nf nf-fa-angle_right', 'bbn-panelbar-header-icon', 'bbn-large',  {'bbn-panelbar-header-icon-rotate': multiple ? isSelected(idx) : (preselected === idx)}]"></i>
@@ -14,7 +12,7 @@
           <div :class="['bbn-panelbar-title', 'bbn-vmiddle', {
                   'bbn-panelbar-center': (align === 'center'),
                   'bbn-panelbar-start': (align === 'left'),
-                  'bbn-panelbar-end': (align === 'right')
+                  'bbn-panelbar-end': (align === 'right'),
                 }]"
           >
             <div v-html="s.header"

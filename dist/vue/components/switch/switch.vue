@@ -284,6 +284,7 @@
 .bbn-switch {
   width: 2.96em;
   height: 1.7em;
+  position: relative;
 }
 .bbn-switch input {
   display: none;
