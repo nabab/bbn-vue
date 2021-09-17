@@ -1540,8 +1540,12 @@
        * @method getPopup
        * @returns {Vue}
        */
-      getPopup(){
-        return this.popup || bbn.vue.getPopup(this);
+      getPopup() {
+        if (this.popup) {
+          return arguments.length ? this.popup.open(...arguments) : this.popup;
+        }
+
+        return Vue.options.methods.getPopup.apply(this, arguments);
       },
       /**
        * Returns the options for the bind of the table filter.
