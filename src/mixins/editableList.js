@@ -282,7 +282,7 @@
               this.editedRow = false;
               this.editedIndex = false;
             };
-            this.getPopup().open(popup);
+            this.getPopup(popup);
           }
         },
         /**

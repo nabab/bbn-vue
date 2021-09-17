@@ -171,7 +171,7 @@
             icon: 'nf nf-oct-organization',
             text: bbn._('New group chat'),
             action: () => {
-              this.getPopup().open({
+              this.getPopup({
                 title: bbn._('New group chat'),
                 component: this.$options.components.newGroup,
                 width: 300,
@@ -1719,7 +1719,7 @@
            * @fires getPopup
            */
           onAddUserClick(){
-            this.getPopup().open({
+            this.getPopup({
               title: bbn._('Select user'),
               component: this.$options.components.users,
               source: {
