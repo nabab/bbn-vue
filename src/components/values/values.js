@@ -61,7 +61,7 @@
     computed: {
       filteredData(){
         return bbn.fn.filter(this.source, a => {
-          return !this.value.includes(a);
+          return !this.obj.includes(a);
         });
       }
     },
