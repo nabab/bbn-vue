@@ -1,5 +1,20 @@
 <div :class="[componentClass]" 
      tabindex="-1">
+  <div>
+    <bbn-autocomplete v-model="currentInput"
+                      :readonly="max && (value.length > max)"
+                      @keydown.enter.stop.prevent="add"
+                      :source="filteredData"
+                      @keyup.enter.stop
+                      ref="input"
+                      :placeholder="max && (value.length > max) ? _('Max number of') + ' ' + max : _('Value')"/>
+    <bbn-button v-if="!max || (value.length <= max)"
+                icon="nf nf-fa-plus"
+                @click="add"
+                @keyup.prevent.stop.enter.space="add"
+                text="_('Add')"
+                :notext="true"/>
+  </div>
   <div v-for="(v, idx) in value">
     <i class="nf nf-fa-times_circle"
        @click="remove(idx)"
@@ -7,19 +22,5 @@
        @keyup.enter.space="remove(idx)"
        title="_('Delete')"/>
     <span class="bbn-left-space" v-text="v"/>
-  </div>
-  <div>
-    <bbn-input v-model="currentInput"
-               :readonly="max && (value.length > max)"
-               @keydown.enter.stop.prevent="add"
-               @keyup.enter.stop
-               ref="input"
-               :placeholder="max && (value.length > max) ? _('Max number of') + ' ' + max : _('Value')"/>
-    <bbn-button v-if="!max || (value.length <= max)"
-                icon="nf nf-fa-plus"
-                @click="add"
-                @keyup.prevent.stop.enter.space="add"
-                text="_('Add')"
-                :notext="true"/>
   </div>
 </div>
