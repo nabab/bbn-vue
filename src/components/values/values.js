@@ -17,10 +17,15 @@
   Vue.component('bbn-values', {
     /**
      * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.inputComponent
+     * @mixin bbn.vue.dropdownComponent
+     * @mixin bbn.vue.keynavComponent
      */
     mixins: [
       bbn.vue.basicComponent,
-      bbn.vue.inputComponent
+      bbn.vue.inputComponent,
+      bbn.vue.dropdownComponent,
+      bbn.vue.keynavComponent
     ],
     props: {
       source: {
@@ -61,11 +66,54 @@
     computed: {
       filteredData(){
         return bbn.fn.filter(this.source, a => {
+          if (this.currentInput.length) {
+            let ci = bbn.fn.removeAccents(this.currentInput).toLowerCase();
+            let tmp = bbn.fn.removeAccents(a).toLowerCase();
+            if (tmp.indexOf(ci) === -1) {
+              return false;
+            }
+          }
+
           return !this.obj.includes(a);
         });
       }
     },
     methods: {
+      keydown(e){
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          e.stopPropagation();
+          if (this.$refs.list && (this.$refs.list.overIdx > -1)) {
+            this.currentInput = this.filteredData[this.$refs.list.overIdx];
+          }
+
+          this.add();
+        }
+        else if (e.key === ';') {
+          e.preventDefault();
+          this.add();
+        }
+        else if (this.commonKeydown(e)) {
+          return;
+        }
+        else if (e.key === 'Escape') {
+          e.preventDefault();
+          this.isOpened = false;
+        }
+        else if (bbn.var.keys.upDown.includes(e.keyCode)) {
+          e.preventDefault();
+          if (!this.isOpened) {
+            this.isOpened = true;
+          }
+          else {
+            this.keynav(e);
+          }
+        }
+      },
+      select(value){
+        this.currentInput = value.value;
+        this.add();
+      },
       isValid(){
         return bbn.fn.isArray(this.obj);
       },
@@ -81,7 +129,7 @@
         this.obj.splice(idx, 1);
         this.emitInput(this.isJSON ? JSON.stringify(this.obj) : this.obj);
       }
-    },
+    }
   });
 
 })(bbn);

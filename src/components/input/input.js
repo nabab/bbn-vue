@@ -195,6 +195,8 @@
       if (this.required) {
         this.getRef('element').setAttribute('required', '');
       }
+
+      this.ready = true;
     },
     watch: {
       required(v){

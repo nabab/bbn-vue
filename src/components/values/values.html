@@ -1,13 +1,13 @@
-<div :class="[componentClass]" 
+<div :class="[componentClass]"
      tabindex="-1">
-  <div>
-    <bbn-combo v-model="currentInput"
-              :readonly="max && (value.length > max)"
-              @keydown.enter.stop.prevent="add"
-              :source="filteredData"
-              @keyup.enter.stop
-              ref="input"
-              :placeholder="max && (value.length > max) ? _('Max number of') + ' ' + max : _('Value')"/>
+  <div class="bbn-vspadded">
+    <bbn-input v-model="currentInput"
+               :readonly="max && (value.length > max)"
+               @keydown="keydown"
+               @focus="isOpened = true"
+               ref="input"
+               @ready="ready = true"
+               :placeholder="max && (value.length > max) ? _('Max number of') + ' ' + max : _('Value')"/>
     <bbn-button v-if="!max || (value.length <= max)"
                 icon="nf nf-fa-plus"
                 @click="add"
@@ -15,7 +15,8 @@
                 text="_('Add')"
                 :notext="true"/>
   </div>
-  <div v-for="(v, idx) in value">
+  <div v-for="(v, idx) in value"
+       class="bbn-vxspadded">
     <i class="nf nf-fa-times_circle"
        @click="remove(idx)"
        tabindex="0"
@@ -23,4 +24,16 @@
        title="_('Delete')"/>
     <span class="bbn-left-space" v-text="v"/>
   </div>
+  <bbn-floater v-if="ready && !disabled && !readonly && filteredData.length && currentInput.length"
+               :element="$refs.input.$el"
+               v-show="isOpened"
+               :min-width="$refs.input.$el.clientWidth"
+               :width="undefined"
+               :height="undefined"
+               ref="list"
+               :auto-hide="true"
+               @select="select"
+               @close="isOpened = false"
+               :source="filteredData"
+  ></bbn-floater>
 </div>
