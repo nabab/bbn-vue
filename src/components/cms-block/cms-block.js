@@ -908,6 +908,7 @@
     
     watch: {
       edit(val){
+        /*
         //if adding a new block
         bbn.fn.error('watch')
         if ( ( val === false ) && ( this.newBlock === true ) ){
@@ -922,6 +923,7 @@
           this.newBlock = false;
         }
         //this._setEvents()
+        */
       }
     }, 
  

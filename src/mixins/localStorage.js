@@ -95,9 +95,6 @@
          * @returns {String}
          */
         storageDefaultName(){
-          if ( !this.storage ){
-            return false;
-          }
           return this._getStorageRealName();
         }
       },
