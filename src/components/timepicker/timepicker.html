@@ -11,6 +11,7 @@
               class="bbn-flex-fill"
               :autosize="autosize"
               :inputmode="inputmode"
+              :placeholder="placeholder"
   ></bbn-masked>
   <div v-if="isNullable && !readonly && !disabled"
         class="bbn-block bbn-h-100 bbn-input-nullable-container"
