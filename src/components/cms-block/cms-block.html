@@ -1,8 +1,10 @@
-<div :class="[componentClass, 'bbn-block']"
-     :style="{
-       width: width,
-       height: height
-     }">
+<div :class="[
+        componentClass,
+        'bbn-w-100',
+        'bbn-block',
+        {'bbn-cms-block-over': over || edit}
+      ]"
+      @mouseenter="over = true">
   <!--bbn-rte v-if="editable && type === 'html'"
            v-model="source.content"
   >
@@ -12,24 +14,36 @@
   >
   </div-->
   <component v-if="ready" 
-            :is="component(type)" 
+            :is="component(type)"
             :source="source"
-            :class="{'edit-block' : (over || edit)}"
-           
-  ></component>
-  <div class=" edit-block-icon">
-    <i class="bbn-p nf nf-fa-edit inline bbn-xlarge bbn-blue edit-block-icon"
-      @click="editMode" 
-      v-if="isAdmin && editing && !edit"
-    ></i>
-    <i class="bbn-p nf nf-fa-check inline bbn-xlarge bbn-blue"
-      @click="editBlock" 
-      v-if="changed" 
-    ></i>
-    <i class="bbn-p nf nf-fa-close inline bbn-xlarge bbn-red"
-      @click="cancelEdit" 
-      v-if="changed" 
-    ></i>
+            :class="['bbn-cms-block-component', {'edit-block' : over || edit}]">
+  </component>
+  <div class="bbn-cms-block-icons bbn-vmiddle">
+    <div class="bbn-nowrap bbn-block">
+      <i class="bbn-p nf nf-fa-edit inline bbn-xlarge bbn-white"
+          @click="editMode" 
+          v-if="isAdmin && editing && !edit"></i>
+      <i class="bbn-p nf nf-fa-check inline bbn-xlarge bbn-white"
+          @click="editBlock" 
+          v-if="changed"></i>
+      <i class="bbn-p nf nf-fa-close inline bbn-xlarge bbn-white"
+          @click="cancelEdit"
+          v-if="changed"></i>
+    </div>
+    <div class="bbn-overlay bbn-modal"></div>
+    <div class="bbn-overlay bbn-vmiddle">
+      <div class="bbn-nowrap bbn-block">
+        <i class="bbn-p nf nf-fa-edit inline bbn-xlarge bbn-white"
+           @click="editMode" 
+           v-if="isAdmin && editing && !edit"></i>
+        <i class="bbn-p nf nf-fa-check inline bbn-xlarge bbn-white"
+           @click="editBlock" 
+           v-if="changed"></i>
+        <i class="bbn-p nf nf-fa-close inline bbn-xlarge bbn-white"
+           @click="cancelEdit"
+           v-if="changed"></i>
+      </div>
+    </div>
   </div>  
   
 </div>
