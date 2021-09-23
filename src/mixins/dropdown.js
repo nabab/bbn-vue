@@ -179,7 +179,7 @@
          * @memberof dropdownComponent
          * @returns {String}
          */
-        currentTextValue(){
+        currentTextValue() {
           if ( (this.value !== undefined) && !bbn.fn.isNull(this.value) && this.sourceValue && this.sourceText && this.currentData.length ){
             let idx = bbn.fn.search(this.currentData, (a) => {
               return a.data[this.sourceValue] === this.value;
@@ -188,7 +188,7 @@
               return this.currentData[idx].data[this.sourceText];
             }
           }
-          else if ( this.textValue ){
+          else if (this.value && this.textValue) {
             return this.textValue;
           }
           return '';
@@ -264,7 +264,7 @@
          * @emit change
          * @memberof dropdownComponent
          */
-        select(item, idx, dataIndex, e){
+        select(item, idx, dataIndex, e) {
           if (item && (!e || !e.defaultPrevented)) {
             if (this.sourceAction && item[this.sourceAction] && bbn.fn.isFunction(item[this.sourceAction])) {
               item[this.sourceAction](item);
@@ -316,7 +316,6 @@
             }
             return true;
           }
-          bbn.fn.log("Common keydown from mixin (return false)");
           return false;
         },
         /**

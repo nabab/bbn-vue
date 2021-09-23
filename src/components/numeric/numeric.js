@@ -228,7 +228,8 @@
        */
       _focus(e){
         if ( !this.disabled && !this.readonly && !this.onlySpinners ){
-          this.currentValue = this.value;
+          //this.currentValue = this.value;
+          this.currentValue = this.value === null ? '' : (bbn.fn.isNumber(this.value) ? parseFloat(this.value).toFixed(this.decimals) : this.value);
           this.editMode = true;
           this.$nextTick(() => {
             this.focus(e);

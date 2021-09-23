@@ -21,8 +21,9 @@
   },
   templates = {
     text: {
-      view: '<div v-text="source.content"/>',
-      edit: '<bbn-input v-model="source.content"/>'
+      view: `<div v-html="source.content || '&nbsp;'"/>`,
+      edit: `<bbn-textarea class="bbn-w-100"
+                           v-model="source.content"/>`
     },
     html: {
       view: `<div  @click="$parent.editMode" @mouseover="$parent.mouseover" @mouseleave="$parent.mouseleave"  
@@ -355,8 +356,8 @@
     },
     data(){
       return {
-        over:false,
-        edit:false,
+        over: false,
+        edit: false,
         isAdmin: true,
         editing: true,
         width: '100%',
@@ -378,6 +379,9 @@
       }
     },
     methods: {
+      onMyMouseEnter(){
+        alert('enter')
+      },
       mouseleave(){
         this.over = false
       },
@@ -407,6 +411,7 @@
        * @param {boolean} edit 
        */
       _setEvents(){
+        bbn.fn.log("setEvenbt")
         document.addEventListener('mousedown', this.checkMouseDown);
         document.addEventListener('touchstart', this.checkMouseDown);
         document.addEventListener('keydown', this.checkKeyCode);
@@ -422,6 +427,7 @@
         }*/
       },
       checkKeyCode(e){
+        bbn.fn.log("checkKeyCode")
         if ( e.keyCode === 27 ){
           this.edit = false;
         }
@@ -443,6 +449,7 @@
         }
       },
       editBlock(){
+        bbn.fn.log("editBlock")
         if ( this.changed ){
           appui.success(bbn._('Block changed'))
           //add a confirm
@@ -453,15 +460,16 @@
         else{
           this.edit = false;
         }
-        
       },
       cancelEdit(){
+        bbn.fn.log("cancelEdit")
         bbn.fn.iterate(this.initialSource, (v, i)=>{
           this.source[i] = v;
           this.edit = false;
         })
       },
       editMode(){
+        bbn.fn.log("editMode")
         let blocks = this.closest('bbn-container').getComponent().findAll('bbn-cms-block');
         bbn.fn.each(blocks, (v, i)=>{
           v.edit = false;
@@ -907,6 +915,12 @@
     }, 
     
     watch: {
+      changed(){
+        bbn.fn.log("changed")
+      },
+      type(){
+        bbn.fn.log("type")
+      },
       edit(val){
         /*
         //if adding a new block
