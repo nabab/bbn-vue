@@ -1444,7 +1444,7 @@
       exportExcel(){
         if ( this.isAjax && !this.isLoading ){
           if ( this.pageable ){
-            this.getPopup().open({
+            this.getPopup({
               title: bbn._('Warning'),
               content: '<div class="bbn-padded bbn-c">' + bbn._('What do you want to export?') + '</div>',
               buttons: [{
@@ -1520,7 +1520,7 @@
        */
       showQuery(){
         if (this.currentQuery) {
-          this.getPopup().open({
+          this.getPopup({
             title: bbn._('Database query and parameters'),
             scrollable: true,
             component: {
@@ -1733,7 +1733,7 @@
       openMultiFilter() {
         this.currentFilter = false;
         let table = this;
-        this.getPopup().open({
+        this.getPopup({
           title: bbn._('Multiple filters'),
           component: {
             template: `<bbn-scroll><bbn-filter v-bind="source" @change="changeConditions" :multi="true"></bbn-filter></bbn-scroll>`,
@@ -1801,7 +1801,7 @@
        */
       openColumnsPicker() {
         let table = this;
-        this.getPopup().open({
+        this.getPopup({
           title: bbn._("Columns' picker"),
           height: '90%',
           width: '90%',
@@ -2035,7 +2035,7 @@
             this.editedRow = false;
             this.editedIndex = false;
           };
-          this.getPopup().open(popup);
+          this.getPopup(popup);
         }
       },
       /**

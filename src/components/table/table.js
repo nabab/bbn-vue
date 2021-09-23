@@ -1264,7 +1264,7 @@
       exportExcel(){
         if ( this.isAjax && !this.isLoading ){
           if ( this.pageable ){
-            this.getPopup().open({
+            this.getPopup({
               title: bbn._('Warning'),
               content: '<div class="bbn-padded bbn-c">' + bbn._('What do you want to export?') + '</div>',
               buttons: [{
@@ -1340,7 +1340,7 @@
        */
       showQuery(){
         if (this.currentQuery) {
-          this.getPopup().open({
+          this.getPopup({
             title: bbn._('Database query and parameters'),
             scrollable: true,
             component: {
@@ -1540,8 +1540,12 @@
        * @method getPopup
        * @returns {Vue}
        */
-      getPopup(){
-        return this.popup || bbn.vue.getPopup(this);
+      getPopup() {
+        if (this.popup) {
+          return arguments.length ? this.popup.open(...arguments) : this.popup;
+        }
+
+        return Vue.options.methods.getPopup.apply(this, arguments);
       },
       /**
        * Returns the options for the bind of the table filter.
@@ -1572,7 +1576,7 @@
       openMultiFilter() {
         this.currentFilter = false;
         let table = this;
-        this.getPopup().open({
+        this.getPopup({
           title: bbn._('Multiple filters'),
           component: {
             template: `<bbn-scroll><bbn-filter v-bind="source" @change="changeConditions" :multi="true"></bbn-filter></bbn-scroll>`,
@@ -1649,7 +1653,7 @@
        */
       openColumnsPicker() {
         let table = this;
-        this.getPopup().open({
+        this.getPopup({
           title: bbn._("Columns' picker"),
           height: '90%',
           width: '90%',
@@ -2091,10 +2095,15 @@
        * @param {Object} obj
        */
       addColumn(obj) {
+        let def = this.defaultObject();
         if (obj.aggregate && !Array.isArray(obj.aggregate)) {
           obj.aggregate = [obj.aggregate];
         }
-        this.cols.push(obj);
+        for (let n in obj) {
+          def[bbn.fn.camelize(n)] = obj[n];
+        }
+
+        this.cols.push(def);
       },
       /**
        * Return true if the cell is before aggregated cells.
@@ -2890,20 +2899,19 @@
       this.componentClass.push('bbn-resize-emitter');
       // Adding bbns-column from the slot
       if (this.$slots.default) {
-        let def = this.defaultObject();
         for (let node of this.$slots.default) {
           bbn.fn.log("TRYING TO ADD COLUMN", node);
           if (
             node.componentOptions &&
             (node.componentOptions.tag === 'bbns-column')
           ) {
-            this.addColumn(bbn.fn.extend({}, def, node.componentOptions.propsData));
+            this.addColumn(node.componentOptions.propsData);
           }
           else if (
             (node.tag === 'bbns-column') &&
             node.data && node.data.attrs
           ) {
-            this.addColumn(bbn.fn.extend({}, def, node.data.attrs));
+            this.addColumn(node.data.attrs);
           }
           else if (node.tag === 'tr') {
             this.hasTrSlot = true

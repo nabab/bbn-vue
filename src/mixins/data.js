@@ -99,7 +99,7 @@
           }
           else {
             if (bbn.fn.isString(v) && v && cfg.maxVisible) {
-              return bbn.fn.shorten(cfg.maxVisible);
+              return bbn.fn.shorten(v, cfg.maxVisible);
             }
             return v || '';
           }          

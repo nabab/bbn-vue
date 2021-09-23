@@ -1,15 +1,25 @@
-.bbn-cms-block.bbn-basic-component{
-  .edit-block-icon{
+.bbn-cms-block {
+  .bbn-cms-block-icons {
+    display: none;
     position: absolute;
-    right: 10px;
-    top: -20px;
+    right: 0;
+    top: 0;
+    height: 1.6em;
     i{
       display: inline-block;
-      margin-right: 6px;
+      margin: 0 3px;
+    }
+  }
+  &.bbn-cms-block-over {
+    .bbn-cms-block-icons {
+      display: block;
     }
   }
   .edit-block{
     border: 1px dashed rgb(110, 158, 207);
+  }
+  .bbn-cms-block-component {
+    min-height: 1.6em;
   }
   /*margin: 15px auto;*/
  	h1,

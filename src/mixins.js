@@ -181,7 +181,7 @@
        */
       getPopup(){
         let popup = bbn.vue.getPopup(this);
-        if ( arguments.length && popup ){
+        if (arguments.length && popup) {
           let cfg = arguments[0];
           let args = [];
           if (bbn.fn.isObject(cfg)) {

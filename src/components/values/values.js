@@ -17,20 +17,25 @@
   Vue.component('bbn-values', {
     /**
      * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.inputComponent
+     * @mixin bbn.vue.dropdownComponent
+     * @mixin bbn.vue.keynavComponent
      */
     mixins: [
       bbn.vue.basicComponent,
       bbn.vue.inputComponent,
-      bbn.vue.listComponent,
+      bbn.vue.dropdownComponent,
+      bbn.vue.keynavComponent
     ],
     props: {
       source: {
         type: Array,
-        default: []
+        default(){
+          return [];
+        }
       },
       value: {
-        type: [Array, String],
-        required: true
+        type: [Array, String]
       },
       max: {
         type: Number
@@ -46,24 +51,84 @@
       }
     },
     data(){
-      let isJSON = bbn.fn.isString(this.value);
+      let isJSON = this.value && bbn.fn.isString(this.value);
+      let obj = this.value ? (isJSON ? JSON.parse(this.value) : bbn.fn.clone(this.value)) : [];
+      if (!bbn.fn.isArray(obj)) {
+        throw new Error("The value of bbn-values must be an array");
+      }
       return {
         isJSON: isJSON,
-        obj: isJSON ? JSON.parse(this.value) : bbn.fn.clone(this.value),
-        currentValue: ''
+        obj: obj,
+        currentValue: obj.slice(),
+        currentInput: ''
       };
     },
     computed: {
       filteredData(){
         return bbn.fn.filter(this.source, a => {
-          return !this.value.includes(a[this.sourceValue]);
+          if (this.currentInput.length) {
+            let ci = bbn.fn.removeAccents(this.currentInput).toLowerCase();
+            let tmp = bbn.fn.removeAccents(a).toLowerCase();
+            if (tmp.indexOf(ci) === -1) {
+              return false;
+            }
+          }
+
+          return !this.obj.includes(a);
         });
       }
     },
     methods: {
-    },
-    created(){
-      this.updateData();
+      keydown(e){
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          e.stopPropagation();
+          if (this.$refs.list && (this.$refs.list.overIdx > -1)) {
+            this.currentInput = this.filteredData[this.$refs.list.overIdx];
+          }
+
+          this.add();
+        }
+        else if (e.key === ';') {
+          e.preventDefault();
+          this.add();
+        }
+        else if (this.commonKeydown(e)) {
+          return;
+        }
+        else if (e.key === 'Escape') {
+          e.preventDefault();
+          this.isOpened = false;
+        }
+        else if (bbn.var.keys.upDown.includes(e.keyCode)) {
+          e.preventDefault();
+          if (!this.isOpened) {
+            this.isOpened = true;
+          }
+          else {
+            this.keynav(e);
+          }
+        }
+      },
+      select(value){
+        this.currentInput = value.value;
+        this.add();
+      },
+      isValid(){
+        return bbn.fn.isArray(this.obj);
+      },
+      add(){
+        if (this.currentInput.length) {
+          this.obj.push(this.currentInput);
+          this.emitInput(this.isJSON ? JSON.stringify(this.obj) : this.obj);
+          this.currentInput = '';
+          this.$refs.input.focus();
+        }
+      },
+      remove(idx) {
+        this.obj.splice(idx, 1);
+        this.emitInput(this.isJSON ? JSON.stringify(this.obj) : this.obj);
+      }
     }
   });
 

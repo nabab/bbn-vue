@@ -21,7 +21,10 @@
               this.isOpened = true;
               return;
             }
-            let list = this.find('bbn-list');
+            let list = this.getRef('list');
+            if (!list) {
+              list = this.find('bbn-list');
+            }
             if (!list && this.is('bbn-list')) {
               list = this;
             }

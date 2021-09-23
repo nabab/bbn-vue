@@ -941,7 +941,7 @@
      * @memberof bbn.vue
      * @param {Vue} vm 
      */
-    getPopup(vm){
+    getPopup(vm) {
       return vm.currentPopup || null;
     },
 

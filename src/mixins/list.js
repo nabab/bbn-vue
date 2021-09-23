@@ -578,6 +578,9 @@
             return this.currentData;
           }
         },
+        filteredTotal(){
+          return this.filteredData.length;
+        },
         /** @todo Remove: no sense and not used in any component */
         valueIndex(){
           if ( this.value || (this.selected && this.selected.length) ){
