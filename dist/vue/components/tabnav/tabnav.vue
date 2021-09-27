@@ -642,7 +642,7 @@
               if ( !title && span.querySelector("[title]").length ){
                 title = span.querySelector("[title]").getAttribute("title");
               }
-              tab.getPopup().open({
+              tab.getPopup({
                 scrollable: false,
                 component: {
                   props: ['source'],

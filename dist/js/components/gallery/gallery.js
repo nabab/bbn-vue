@@ -781,7 +781,7 @@ document.head.insertAdjacentElement('beforeend', css);
                   && (!ev.target.closest('.bbn-floater-list'))
                   && this.col.gallery.zoomable
                 ) {
-                  this.getPopup().open({
+                  this.getPopup({
                     title: bbn._('Gallery'),
                     width: '100%',
                     height: '100%',

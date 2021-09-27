@@ -11,14 +11,14 @@
   display: block;
 }
 .bbn-toolbar .bbn-toolbar-separator {
-  display: inline;
+  display: inline-block;
   margin: 1em;
 }
 .bbn-toolbar .bbn-toolbar-separator:before {
   content: '\0399';
 }
 .bbn-toolbar .bbn-toolbar-horizontal-separator {
-  display: inline;
+  display: inline-block;
   margin: 1em;
 }
 .bbn-toolbar .bbn-toolbar-horizontal-separator:before {

@@ -975,11 +975,36 @@
     },
 
     /**
+     * @method getComponentName
+     * @todo Returns a component name based on the name of the given component and a path.
+     * @memberof bbn.vue
+     * @param {Vue}    vm   The component from which the name is created.
+     * @param {String} path The relative path to the component from the given component.
+     */
+     getComponentName(vm, path){
+      if (!path || !vm.$options.name) {
+        return null;
+      }
+
+      let bits = path.split('/');
+      let resx = vm.$options.name.split('-');
+      bbn.fn.each(bits, b => {
+        if (b === '..') {
+          resx.pop();
+        }
+        else if (b && (b !== '.')) {
+          resx.push(b);
+        }
+      });
+      return resx.join('-');
+    },
+
+    /**
      * @method getPopup
      * @memberof bbn.vue
      * @param {Vue} vm 
      */
-    getPopup(vm){
+    getPopup(vm) {
       return vm.currentPopup || null;
     },
 
@@ -1599,7 +1624,7 @@
          * @memberof dropdownComponent
          * @returns {String}
          */
-        currentTextValue(){
+        currentTextValue() {
           if ( (this.value !== undefined) && !bbn.fn.isNull(this.value) && this.sourceValue && this.sourceText && this.currentData.length ){
             let idx = bbn.fn.search(this.currentData, (a) => {
               return a.data[this.sourceValue] === this.value;
@@ -1608,7 +1633,7 @@
               return this.currentData[idx].data[this.sourceText];
             }
           }
-          else if ( this.textValue ){
+          else if (this.value && this.textValue) {
             return this.textValue;
           }
           return '';
@@ -1684,7 +1709,7 @@
          * @emit change
          * @memberof dropdownComponent
          */
-        select(item, idx, dataIndex, e){
+        select(item, idx, dataIndex, e) {
           if (item && (!e || !e.defaultPrevented)) {
             if (this.sourceAction && item[this.sourceAction] && bbn.fn.isFunction(item[this.sourceAction])) {
               item[this.sourceAction](item);
@@ -1736,7 +1761,6 @@
             }
             return true;
           }
-          bbn.fn.log("Common keydown from mixin (return false)");
           return false;
         },
         /**
@@ -1878,7 +1902,10 @@
               this.isOpened = true;
               return;
             }
-            let list = this.find('bbn-list');
+            let list = this.getRef('list');
+            if (!list) {
+              list = this.find('bbn-list');
+            }
             if (!list && this.is('bbn-list')) {
               list = this;
             }
@@ -2215,9 +2242,6 @@
          * @returns {String}
          */
         storageDefaultName(){
-          if ( !this.storage ){
-            return false;
-          }
           return this._getStorageRealName();
         }
       },
@@ -2403,6 +2427,9 @@
             }
           }
           else {
+            if (bbn.fn.isString(v) && v && cfg.maxVisible) {
+              return bbn.fn.shorten(v, cfg.maxVisible);
+            }
             return v || '';
           }          
         }
@@ -2414,48 +2441,49 @@
 
 ((bbn) => {
   "use strict";
-  const
-    editorOperators = {
-      string: {
-        contains: bbn._('Contains'),
-        eq: bbn._('Is'),
-        neq: bbn._('Is not'),
-        startswith: bbn._('Starts with'),
-        doesnotcontain: bbn._('Does not contain'),
-        endswith: bbn._('To end by'),
-        isempty: bbn._('Is empty'),
-        isnotempty: bbn._('Is not empty')
-      },
-      number: {
-        eq: bbn._('Is equal to'),
-        neq: bbn._('Is not equal to'),
-        gte: bbn._('Est supérieur ou égal àIs greater than or equal to'),
-        gt: bbn._('Is greater than'),
-        lte: bbn._('Is less than or equal to'),
-        lt: bbn._('Is inferior to'),
-      },
-      date: {
-        eq: bbn._('Is equal to'),
-        neq: bbn._('Is not equal to'),
-        gte: bbn._('Is greater than or equal to'),
-        gt: bbn._('Is after'),
-        lte: bbn._('Is prior to or equal to'),
-        lt: bbn._('Is older than'),
-      },
-      enums: {
-        eq: bbn._('Is equal to'),
-        neq: bbn._('Is not equal to'),
-      },
-      boolean: {
-        istrue: bbn._('Is true'),
-        isfalse: bbn._('Is false')
-      }
+  const editorOperators = {
+    string: {
+      contains: bbn._('Contains'),
+      eq: bbn._('Is'),
+      neq: bbn._('Is not'),
+      startswith: bbn._('Starts with'),
+      doesnotcontain: bbn._('Does not contain'),
+      endswith: bbn._('To end by'),
+      isempty: bbn._('Is empty'),
+      isnotempty: bbn._('Is not empty')
     },
-    editorNullOps = {
-      isnull: bbn._('Is null'),
-      isnotnull: bbn._('Is not null')
+    number: {
+      eq: bbn._('Is equal to'),
+      neq: bbn._('Is not equal to'),
+      gte: bbn._('Est supérieur ou égal àIs greater than or equal to'),
+      gt: bbn._('Is greater than'),
+      lte: bbn._('Is less than or equal to'),
+      lt: bbn._('Is inferior to'),
     },
-    editorNoValueOperators = ['', 'isnull', 'isnotnull', 'isempty', 'isnotempty', 'istrue', 'isfalse'];
+    date: {
+      eq: bbn._('Is equal to'),
+      neq: bbn._('Is not equal to'),
+      gte: bbn._('Is greater than or equal to'),
+      gt: bbn._('Is after'),
+      lte: bbn._('Is prior to or equal to'),
+      lt: bbn._('Is older than'),
+    },
+    enums: {
+      eq: bbn._('Is equal to'),
+      neq: bbn._('Is not equal to'),
+    },
+    boolean: {
+      istrue: bbn._('Is true'),
+      isfalse: bbn._('Is false')
+    }
+  };
+
+  const editorNullOps = {
+    isnull: bbn._('Is null'),
+    isnotnull: bbn._('Is not null')
+  };
+  const editorNoValueOperators = ['', 'isnull', 'isnotnull', 'isempty', 'isnotempty', 'istrue', 'isfalse'];
+
   bbn.fn.autoExtend("vue", {
     /**
      * dataEditorComponent
@@ -3110,7 +3138,7 @@
               this.editedRow = false;
               this.editedIndex = false;
             };
-            this.getPopup().open(popup);
+            this.getPopup(popup);
           }
         },
         /**
@@ -3852,6 +3880,9 @@
           else{
             return this.currentData;
           }
+        },
+        filteredTotal(){
+          return this.filteredData.length;
         },
         /** @todo Remove: no sense and not used in any component */
         valueIndex(){
@@ -5428,6 +5459,14 @@
           type: Number
         },
         /**
+         * Defines the max number of chars visible in reading.
+         * @prop {Number} maxVisible 
+         * @memberof fieldComponent
+         */
+        maxVisible: {
+          type: Number
+        },
+        /**
          * Defines the sqlType of the component.
          * @prop {String} sqlType 
          * @memberof fieldComponent
@@ -6679,7 +6718,7 @@
        */
       getPopup(){
         let popup = bbn.vue.getPopup(this);
-        if ( arguments.length && popup ){
+        if (arguments.length && popup) {
           let cfg = arguments[0];
           let args = [];
           if (bbn.fn.isObject(cfg)) {
@@ -6720,7 +6759,18 @@
       },
       postOut(){
         return bbn.vue.postOut(this, ...arguments);
-      }
+      },
+      /**
+       * @method getComponentName
+       * @todo Returns a component name based on the name of the given component and a path.
+       * @memberof bbn.vue
+       * @param {Vue}    vm   The component from which the name is created.
+       * @param {String} path The relative path to the component from the given component.
+       */
+      getComponentName(){
+        return bbn.vue.getComponentName(this, ...arguments);
+      },
+
     }
   });
 })(window.bbn);
@@ -6827,7 +6877,7 @@
 ((bbn) => {
   "use strict";
   bbn.fn.autoExtend("vue", {
-    init(cfg) {
+    init: cfg => {
       if ( !bbn.vue ){
         throw new Error("Impossible to find the library bbn-vue")
       }

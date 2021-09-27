@@ -586,23 +586,25 @@ document.body.insertAdjacentElement('beforeend', script);
       _makeDays(){
         let items = [],
             c = dayjs(this.currentDate.format('YYYY-MM-01')),
+            currentMonth = this.currentDate.month(),
             sunday = dayjs(c).day('Sunday').weekday();
 
         for ( let i = 1; i <= 6; i++ ){
           if ( i > 1 ){
-            c = c.add(6, 'd');
+            c = c.add(1, 'w');
           }
           items = items.concat(Array.from({length: 7}, (v, k) => {
-            let w = c.weekday(k),
+            let w = dayjs(c).weekday(k),
                 val = w.format(this.currentCfg.valueFormat),
-                isHidden = !this.extraItems && (w.get('month') !== this.currentDate.get('month')) ? true : false;
+                otherMonth = dayjs(w).month() !== currentMonth,
+                isHidden = !this.extraItems && !!otherMonth ? true : false;
             return this._makeItem(
               w.get('date'),
               val,
               isHidden,
               k === sunday,
               false,
-              this.extraItems && (w.get('month') !== this.currentDate.get('month'))
+              this.extraItems && !!otherMonth
             );
           }));
         }

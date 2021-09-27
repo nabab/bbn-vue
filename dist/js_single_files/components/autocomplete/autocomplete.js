@@ -32,7 +32,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', {
                 :required="required"
                 :readonly="readonly"
                 @keydown.stop="keydown"
-                @change="ready = true"
+                @change="onChange"
                 autocorrect="off"
                 autocapitalize="off"
                 spellcheck="false"
@@ -139,7 +139,7 @@ document.body.insertAdjacentElement('beforeend', script);
        */
       delay: {
         type: Number,
-        default: 10
+        default: 250
       },
       /**
        * Specifies the mode of the filter.
@@ -172,6 +172,12 @@ document.body.insertAdjacentElement('beforeend', script);
           this.getRef('input').focus();
         })
       },
+      onChange(){
+        if (!this.ready) {
+          this.ready = true;
+        }
+
+      },
       /**
        * Puts the focus on the element.
        *
@@ -196,8 +202,8 @@ document.body.insertAdjacentElement('beforeend', script);
         if ( this.isOpened && !this.getRef('list').isOver ){
           this.isOpened = false;
         }
-        this.filterString = '';
         this.inputIsVisible = false;
+        this.filterString = '';
       },
       /**
        * Emits the event 'select'.
@@ -282,16 +288,22 @@ document.body.insertAdjacentElement('beforeend', script);
        * @param {String} v
        */
       filterString(v){
+        bbn.fn.log("on Filter String", this.disabled, this.readonly, this.isOpened, !this.disabled && !this.readonly && this.isOpened);
         if (!this.ready) {
           this.ready = true;
         }
         clearTimeout(this.filterTimeout);
-        if (v !== this.currentText) {
+        if (!v && this.nullable && this.inputIsVisible) {
+          this.unfilter();
+          this.emitInput(null);
+          this.currentText = '';
+        }
+        else if (v !== this.currentText) {
           this.isOpened = false;
           this.filterTimeout = setTimeout(() => {
-            this.filterTimeout = false;
+            // this.filterTimeout = false;
             // We don't relaunch the source if the component has been left
-            if ( this.isActive ){
+            if (this.isActive) {
               if (v && (v.length >= this.minLength)) {
                 this.currentFilters.conditions.splice(0, this.currentFilters.conditions.length ? 1 : 0, {
                   field: this.sourceText,

@@ -17,7 +17,8 @@
               v-model="inputValue"
               class="bbn-flex-fill"
               :autosize="autosize"
-              :inputmode="inputmode"/>
+              :inputmode="inputmode"
+              :placeholder="placeholder"/>
   <div v-if="isNullable && !readonly && !disabled"
        class="bbn-block bbn-h-100 bbn-input-nullable-container">
     <i v-if="hasValue"

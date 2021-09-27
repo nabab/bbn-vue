@@ -1,11 +1,13 @@
 (bbn_resolve) => {
 ((bbn) => {
 let script = document.createElement('script');
-script.innerHTML = `<div :class="[componentClass, 'bbn-block']"
-     :style="{
-       width: width,
-       height: height
-     }">
+script.innerHTML = `<div :class="[
+        componentClass,
+        'bbn-w-100',
+        'bbn-block',
+        {'bbn-cms-block-over': over || edit}
+      ]"
+      @mouseenter="over = true">
   <!--bbn-rte v-if="editable && type === 'html'"
            v-model="source.content"
   >
@@ -15,24 +17,36 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-block']"
   >
   </div-->
   <component v-if="ready" 
-            :is="component(type)" 
+            :is="component(type)"
             :source="source"
-            :class="{'edit-block' : (over || edit)}"
-           
-  ></component>
-  <div class=" edit-block-icon">
-    <i class="bbn-p nf nf-fa-edit inline bbn-xlarge bbn-blue edit-block-icon"
-      @click="editMode" 
-      v-if="isAdmin && editing && !edit"
-    ></i>
-    <i class="bbn-p nf nf-fa-check inline bbn-xlarge bbn-blue"
-      @click="editBlock" 
-      v-if="changed" 
-    ></i>
-    <i class="bbn-p nf nf-fa-close inline bbn-xlarge bbn-red"
-      @click="cancelEdit" 
-      v-if="changed" 
-    ></i>
+            :class="['bbn-cms-block-component', {'edit-block' : over || edit}]">
+  </component>
+  <div class="bbn-cms-block-icons bbn-vmiddle">
+    <div class="bbn-nowrap bbn-block">
+      <i class="bbn-p nf nf-fa-edit inline bbn-xlarge bbn-white"
+          @click="editMode" 
+          v-if="isAdmin && editing && !edit"></i>
+      <i class="bbn-p nf nf-fa-check inline bbn-xlarge bbn-white"
+          @click="editBlock" 
+          v-if="changed"></i>
+      <i class="bbn-p nf nf-fa-close inline bbn-xlarge bbn-white"
+          @click="cancelEdit"
+          v-if="changed"></i>
+    </div>
+    <div class="bbn-overlay bbn-modal"></div>
+    <div class="bbn-overlay bbn-vmiddle">
+      <div class="bbn-nowrap bbn-block">
+        <i class="bbn-p nf nf-fa-edit inline bbn-xlarge bbn-white"
+           @click="editMode" 
+           v-if="isAdmin && editing && !edit"></i>
+        <i class="bbn-p nf nf-fa-check inline bbn-xlarge bbn-white"
+           @click="editBlock" 
+           v-if="changed"></i>
+        <i class="bbn-p nf nf-fa-close inline bbn-xlarge bbn-white"
+           @click="cancelEdit"
+           v-if="changed"></i>
+      </div>
+    </div>
   </div>  
   
 </div>`;
@@ -66,11 +80,12 @@ document.head.insertAdjacentElement('beforeend', css);
   },
   templates = {
     text: {
-      view: '<div v-text="source.content"/>',
-      edit: '<bbn-input v-model="source.content"/>'
+      view: `<div v-html="source.content || '&nbsp;'"/>`,
+      edit: `<bbn-textarea class="bbn-w-100"
+                           v-model="source.content"/>`
     },
     html: {
-      view: `<div  @click="$parent.editMode" @mouseover="$parent.mouseover" @mouseleave="$parent.mouseleave"  
+      view: `<div @click="$parent.editMode" @mouseover="$parent.mouseover" @mouseleave="$parent.mouseleave"  
                   :class="['component-container', 'bbn-block-html', alignClass]"
                   v-html="source.content" 
                   :style="style">
@@ -400,8 +415,8 @@ document.head.insertAdjacentElement('beforeend', css);
     },
     data(){
       return {
-        over:false,
-        edit:false,
+        over: false,
+        edit: false,
         isAdmin: true,
         editing: true,
         width: '100%',
@@ -423,6 +438,9 @@ document.head.insertAdjacentElement('beforeend', css);
       }
     },
     methods: {
+      onMyMouseEnter(){
+        alert('enter')
+      },
       mouseleave(){
         this.over = false
       },
@@ -452,6 +470,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @param {boolean} edit 
        */
       _setEvents(){
+        bbn.fn.log("setEvenbt")
         document.addEventListener('mousedown', this.checkMouseDown);
         document.addEventListener('touchstart', this.checkMouseDown);
         document.addEventListener('keydown', this.checkKeyCode);
@@ -467,6 +486,7 @@ document.head.insertAdjacentElement('beforeend', css);
         }*/
       },
       checkKeyCode(e){
+        bbn.fn.log("checkKeyCode")
         if ( e.keyCode === 27 ){
           this.edit = false;
         }
@@ -488,6 +508,7 @@ document.head.insertAdjacentElement('beforeend', css);
         }
       },
       editBlock(){
+        bbn.fn.log("editBlock")
         if ( this.changed ){
           appui.success(bbn._('Block changed'))
           //add a confirm
@@ -498,15 +519,16 @@ document.head.insertAdjacentElement('beforeend', css);
         else{
           this.edit = false;
         }
-        
       },
       cancelEdit(){
+        bbn.fn.log("cancelEdit")
         bbn.fn.iterate(this.initialSource, (v, i)=>{
           this.source[i] = v;
           this.edit = false;
         })
       },
       editMode(){
+        bbn.fn.log("editMode")
         let blocks = this.closest('bbn-container').getComponent().findAll('bbn-cms-block');
         bbn.fn.each(blocks, (v, i)=>{
           v.edit = false;
@@ -612,13 +634,6 @@ document.head.insertAdjacentElement('beforeend', css);
             },
             youtube(){
               return this.source.src.indexOf('youtube') > -1
-            },
-            contentStyle(){
-              let st = ''
-              if ( this.source.style['border-radius'] ){
-                st += 'border-radius:' + this.source.style['border-radius'] + ( bbn.fn.isNumber(this.source.style['border-radius']) ? ( 'px;') : ';');
-              }
-              return st;
             },
             alignClass(){
               let st = 'bbn-c';
@@ -790,7 +805,9 @@ document.head.insertAdjacentElement('beforeend', css);
                        :class="['image-price',$parent.alignClass]"
                        v-text="source.price"
                   ></div>
-                  <time v-if="source.time" v-text="source.time" :class="$parent.alignClass"></time>
+                  <time v-if="source.time"
+                        v-text="source.time"
+                        :class="$parent.alignClass"/>
                 </a>
                 `
                 
@@ -952,7 +969,14 @@ document.head.insertAdjacentElement('beforeend', css);
     }, 
     
     watch: {
+      changed(){
+        bbn.fn.log("changed")
+      },
+      type(){
+        bbn.fn.log("type")
+      },
       edit(val){
+        /*
         //if adding a new block
         bbn.fn.error('watch')
         if ( ( val === false ) && ( this.newBlock === true ) ){
@@ -967,6 +991,7 @@ document.head.insertAdjacentElement('beforeend', css);
           this.newBlock = false;
         }
         //this._setEvents()
+        */
       }
     }, 
  

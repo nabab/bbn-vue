@@ -1,9 +1,11 @@
 <template>
-<div :class="[componentClass, 'bbn-block']"
-     :style="{
-       width: width,
-       height: height
-     }">
+<div :class="[
+        componentClass,
+        'bbn-w-100',
+        'bbn-block',
+        {'bbn-cms-block-over': over || edit}
+      ]"
+      @mouseenter="over = true">
   <!--bbn-rte v-if="editable && type === 'html'"
            v-model="source.content"
   >
@@ -13,24 +15,36 @@
   >
   </div-->
   <component v-if="ready" 
-            :is="component(type)" 
+            :is="component(type)"
             :source="source"
-            :class="{'edit-block' : (over || edit)}"
-           
-  ></component>
-  <div class=" edit-block-icon">
-    <i class="bbn-p nf nf-fa-edit inline bbn-xlarge bbn-blue edit-block-icon"
-      @click="editMode" 
-      v-if="isAdmin && editing && !edit"
-    ></i>
-    <i class="bbn-p nf nf-fa-check inline bbn-xlarge bbn-blue"
-      @click="editBlock" 
-      v-if="changed" 
-    ></i>
-    <i class="bbn-p nf nf-fa-close inline bbn-xlarge bbn-red"
-      @click="cancelEdit" 
-      v-if="changed" 
-    ></i>
+            :class="['bbn-cms-block-component', {'edit-block' : over || edit}]">
+  </component>
+  <div class="bbn-cms-block-icons bbn-vmiddle">
+    <div class="bbn-nowrap bbn-block">
+      <i class="bbn-p nf nf-fa-edit inline bbn-xlarge bbn-white"
+          @click="editMode" 
+          v-if="isAdmin && editing && !edit"></i>
+      <i class="bbn-p nf nf-fa-check inline bbn-xlarge bbn-white"
+          @click="editBlock" 
+          v-if="changed"></i>
+      <i class="bbn-p nf nf-fa-close inline bbn-xlarge bbn-white"
+          @click="cancelEdit"
+          v-if="changed"></i>
+    </div>
+    <div class="bbn-overlay bbn-modal"></div>
+    <div class="bbn-overlay bbn-vmiddle">
+      <div class="bbn-nowrap bbn-block">
+        <i class="bbn-p nf nf-fa-edit inline bbn-xlarge bbn-white"
+           @click="editMode" 
+           v-if="isAdmin && editing && !edit"></i>
+        <i class="bbn-p nf nf-fa-check inline bbn-xlarge bbn-white"
+           @click="editBlock" 
+           v-if="changed"></i>
+        <i class="bbn-p nf nf-fa-close inline bbn-xlarge bbn-white"
+           @click="cancelEdit"
+           v-if="changed"></i>
+      </div>
+    </div>
   </div>  
   
 </div>
@@ -59,11 +73,12 @@
   },
   templates = {
     text: {
-      view: '<div v-text="source.content"/>',
-      edit: '<bbn-input v-model="source.content"/>'
+      view: `<div v-html="source.content || '&nbsp;'"/>`,
+      edit: `<bbn-textarea class="bbn-w-100"
+                           v-model="source.content"/>`
     },
     html: {
-      view: `<div  @click="$parent.editMode" @mouseover="$parent.mouseover" @mouseleave="$parent.mouseleave"  
+      view: `<div @click="$parent.editMode" @mouseover="$parent.mouseover" @mouseleave="$parent.mouseleave"  
                   :class="['component-container', 'bbn-block-html', alignClass]"
                   v-html="source.content" 
                   :style="style">
@@ -393,8 +408,8 @@
     },
     data(){
       return {
-        over:false,
-        edit:false,
+        over: false,
+        edit: false,
         isAdmin: true,
         editing: true,
         width: '100%',
@@ -416,6 +431,9 @@
       }
     },
     methods: {
+      onMyMouseEnter(){
+        alert('enter')
+      },
       mouseleave(){
         this.over = false
       },
@@ -445,6 +463,7 @@
        * @param {boolean} edit 
        */
       _setEvents(){
+        bbn.fn.log("setEvenbt")
         document.addEventListener('mousedown', this.checkMouseDown);
         document.addEventListener('touchstart', this.checkMouseDown);
         document.addEventListener('keydown', this.checkKeyCode);
@@ -460,6 +479,7 @@
         }*/
       },
       checkKeyCode(e){
+        bbn.fn.log("checkKeyCode")
         if ( e.keyCode === 27 ){
           this.edit = false;
         }
@@ -481,6 +501,7 @@
         }
       },
       editBlock(){
+        bbn.fn.log("editBlock")
         if ( this.changed ){
           appui.success(bbn._('Block changed'))
           //add a confirm
@@ -491,15 +512,16 @@
         else{
           this.edit = false;
         }
-        
       },
       cancelEdit(){
+        bbn.fn.log("cancelEdit")
         bbn.fn.iterate(this.initialSource, (v, i)=>{
           this.source[i] = v;
           this.edit = false;
         })
       },
       editMode(){
+        bbn.fn.log("editMode")
         let blocks = this.closest('bbn-container').getComponent().findAll('bbn-cms-block');
         bbn.fn.each(blocks, (v, i)=>{
           v.edit = false;
@@ -605,13 +627,6 @@
             },
             youtube(){
               return this.source.src.indexOf('youtube') > -1
-            },
-            contentStyle(){
-              let st = ''
-              if ( this.source.style['border-radius'] ){
-                st += 'border-radius:' + this.source.style['border-radius'] + ( bbn.fn.isNumber(this.source.style['border-radius']) ? ( 'px;') : ';');
-              }
-              return st;
             },
             alignClass(){
               let st = 'bbn-c';
@@ -783,7 +798,9 @@
                        :class="['image-price',$parent.alignClass]"
                        v-text="source.price"
                   ></div>
-                  <time v-if="source.time" v-text="source.time" :class="$parent.alignClass"></time>
+                  <time v-if="source.time"
+                        v-text="source.time"
+                        :class="$parent.alignClass"/>
                 </a>
                 `
                 
@@ -945,7 +962,14 @@
     }, 
     
     watch: {
+      changed(){
+        bbn.fn.log("changed")
+      },
+      type(){
+        bbn.fn.log("type")
+      },
       edit(val){
+        /*
         //if adding a new block
         bbn.fn.error('watch')
         if ( ( val === false ) && ( this.newBlock === true ) ){
@@ -960,6 +984,7 @@
           this.newBlock = false;
         }
         //this._setEvents()
+        */
       }
     }, 
  
@@ -968,24 +993,32 @@
 
 </script>
 <style scoped>
-.bbn-cms-block.bbn-basic-component .edit-block-icon {
+.bbn-cms-block .bbn-cms-block-icons {
+  display: none;
   position: absolute;
-  right: 10px;
-  top: -20px;
+  right: 0;
+  top: 0;
+  height: 1.6em;
 }
-.bbn-cms-block.bbn-basic-component .edit-block-icon i {
+.bbn-cms-block .bbn-cms-block-icons i {
   display: inline-block;
-  margin-right: 6px;
+  margin: 0 3px;
 }
-.bbn-cms-block.bbn-basic-component .edit-block {
+.bbn-cms-block.bbn-cms-block-over .bbn-cms-block-icons {
+  display: block;
+}
+.bbn-cms-block .edit-block {
   border: 1px dashed #6e9ecf;
 }
-.bbn-cms-block.bbn-basic-component h1,
-.bbn-cms-block.bbn-basic-component h2,
-.bbn-cms-block.bbn-basic-component h3,
-.bbn-cms-block.bbn-basic-component h4,
-.bbn-cms-block.bbn-basic-component h5,
-.bbn-cms-block.bbn-basic-component h6 {
+.bbn-cms-block .bbn-cms-block-component {
+  min-height: 1.6em;
+}
+.bbn-cms-block h1,
+.bbn-cms-block h2,
+.bbn-cms-block h3,
+.bbn-cms-block h4,
+.bbn-cms-block h5,
+.bbn-cms-block h6 {
   margin: 0.5em 0 0 0;
   line-height: 1.2;
   font-weight: bold;
@@ -995,107 +1028,107 @@
   letter-spacing: 0px;
   text-transform: none;
 }
-.bbn-cms-block.bbn-basic-component hr {
+.bbn-cms-block hr {
   color: #bbb;
   background-color: #bbb;
   border-bottom-width: 0;
   border-top-width: 1px;
 }
-.bbn-cms-block.bbn-basic-component .component-container {
+.bbn-cms-block .component-container {
   padding: 12px 10px;
   margin: 0 auto;
   float: unset;
 }
-.bbn-cms-block.bbn-basic-component .component-container.bbn-block-title {
+.bbn-cms-block .component-container.bbn-block-title {
   padding: 12px 10px;
 }
-.bbn-cms-block.bbn-basic-component .component-container.has-hr {
+.bbn-cms-block .component-container.has-hr {
   display: flex;
   align-items: center;
 }
-.bbn-cms-block.bbn-basic-component .component-container.has-hr.edit-block {
+.bbn-cms-block .component-container.has-hr.edit-block {
   flex-direction: column;
 }
-.bbn-cms-block.bbn-basic-component .component-container.has-hr.edit-block .edit-title {
+.bbn-cms-block .component-container.has-hr.edit-block .edit-title {
   width: 100%;
   display: flex;
   align-items: center;
 }
-.bbn-cms-block.bbn-basic-component .component-container.has-hr hr {
+.bbn-cms-block .component-container.has-hr hr {
   margin: 0 30px;
   flex-grow: 1.5;
 }
-.bbn-cms-block.bbn-basic-component .component-container.bbn-block-html h1,
-.bbn-cms-block.bbn-basic-component .component-container.bbn-block-html h2,
-.bbn-cms-block.bbn-basic-component .component-container.bbn-block-html h3 {
+.bbn-cms-block .component-container.bbn-block-html h1,
+.bbn-cms-block .component-container.bbn-block-html h2,
+.bbn-cms-block .component-container.bbn-block-html h3 {
   margin: 0;
   white-space: pre-wrap;
 }
-.bbn-cms-block.bbn-basic-component .component-container.bbn-block-html em {
+.bbn-cms-block .component-container.bbn-block-html em {
   white-space: normal;
 }
-.bbn-cms-block.bbn-basic-component .component-container.bbn-block-gallery,
-.bbn-cms-block.bbn-basic-component .bbn-block-carousel {
+.bbn-cms-block .component-container.bbn-block-gallery,
+.bbn-cms-block .bbn-block-carousel {
   margin: 15px auto;
   padding-bottom: 12px;
   text-align: left;
   display: grid;
   grid-gap: 20px;
 }
-.bbn-cms-block.bbn-basic-component .component-container.bbn-block-gallery.cols-1,
-.bbn-cms-block.bbn-basic-component .component-container.bbn-block-gallery .cols-1,
-.bbn-cms-block.bbn-basic-component .bbn-block-carousel.cols-1,
-.bbn-cms-block.bbn-basic-component .bbn-block-carousel .cols-1 {
+.bbn-cms-block .component-container.bbn-block-gallery.cols-1,
+.bbn-cms-block .component-container.bbn-block-gallery .cols-1,
+.bbn-cms-block .bbn-block-carousel.cols-1,
+.bbn-cms-block .bbn-block-carousel .cols-1 {
   grid-template-columns: 1fr;
 }
-.bbn-cms-block.bbn-basic-component .component-container.bbn-block-gallery.cols-3,
-.bbn-cms-block.bbn-basic-component .component-container.bbn-block-gallery .cols-3,
-.bbn-cms-block.bbn-basic-component .bbn-block-carousel.cols-3,
-.bbn-cms-block.bbn-basic-component .bbn-block-carousel .cols-3 {
+.bbn-cms-block .component-container.bbn-block-gallery.cols-3,
+.bbn-cms-block .component-container.bbn-block-gallery .cols-3,
+.bbn-cms-block .bbn-block-carousel.cols-3,
+.bbn-cms-block .bbn-block-carousel .cols-3 {
   grid-template-columns: repeat(3,1fr);
 }
-.bbn-cms-block.bbn-basic-component .component-container.bbn-block-gallery.cols-4,
-.bbn-cms-block.bbn-basic-component .component-container.bbn-block-gallery .cols-4,
-.bbn-cms-block.bbn-basic-component .bbn-block-carousel.cols-4,
-.bbn-cms-block.bbn-basic-component .bbn-block-carousel .cols-4 {
+.bbn-cms-block .component-container.bbn-block-gallery.cols-4,
+.bbn-cms-block .component-container.bbn-block-gallery .cols-4,
+.bbn-cms-block .bbn-block-carousel.cols-4,
+.bbn-cms-block .bbn-block-carousel .cols-4 {
   grid-template-columns: repeat(4,1fr);
 }
-.bbn-cms-block.bbn-basic-component .component-container.bbn-block-gallery.cols-2,
-.bbn-cms-block.bbn-basic-component .component-container.bbn-block-gallery .cols-2,
-.bbn-cms-block.bbn-basic-component .bbn-block-carousel.cols-2,
-.bbn-cms-block.bbn-basic-component .bbn-block-carousel .cols-2 {
+.bbn-cms-block .component-container.bbn-block-gallery.cols-2,
+.bbn-cms-block .component-container.bbn-block-gallery .cols-2,
+.bbn-cms-block .bbn-block-carousel.cols-2,
+.bbn-cms-block .bbn-block-carousel .cols-2 {
   grid-template-columns: repeat(2,1fr);
 }
-.bbn-cms-block.bbn-basic-component .component-container.bbn-block-gallery a,
-.bbn-cms-block.bbn-basic-component .bbn-block-carousel a {
+.bbn-cms-block .component-container.bbn-block-gallery a,
+.bbn-cms-block .bbn-block-carousel a {
   overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
 }
-.bbn-cms-block.bbn-basic-component .component-container.bbn-block-gallery a .bbn-block-gallery-caption,
-.bbn-cms-block.bbn-basic-component .bbn-block-carousel a .bbn-block-gallery-caption {
+.bbn-cms-block .component-container.bbn-block-gallery a .bbn-block-gallery-caption,
+.bbn-cms-block .bbn-block-carousel a .bbn-block-gallery-caption {
   margin-top: 7px;
 }
-.bbn-cms-block.bbn-basic-component .bbn-block-carousel {
+.bbn-cms-block .bbn-block-carousel {
   display: block;
   margin: 0 auto;
 }
-.bbn-cms-block.bbn-basic-component .bbn-block-carousel .cols-1,
-.bbn-cms-block.bbn-basic-component .bbn-block-carousel .cols-2,
-.bbn-cms-block.bbn-basic-component .bbn-block-carousel .cols-3,
-.bbn-cms-block.bbn-basic-component .bbn-block-carousel .cols-4 {
+.bbn-cms-block .bbn-block-carousel .cols-1,
+.bbn-cms-block .bbn-block-carousel .cols-2,
+.bbn-cms-block .bbn-block-carousel .cols-3,
+.bbn-cms-block .bbn-block-carousel .cols-4 {
   display: grid;
   grid-gap: 20px;
 }
-.bbn-cms-block.bbn-basic-component .bbn-block-carousel time {
+.bbn-cms-block .bbn-block-carousel time {
   opacity: .7;
   margin: 0;
   font-size: 13px;
   line-height: 1.4em;
   text-transform: none;
 }
-.bbn-cms-block.bbn-basic-component .bbn-block-carousel .control i {
+.bbn-cms-block .bbn-block-carousel .control i {
   display: inline-block;
   cursor: pointer;
   opacity: .4;
@@ -1111,57 +1144,57 @@
   font-size: 20px;
   line-height: 16px;
 }
-.bbn-cms-block.bbn-basic-component .bbn-block-carousel .control i:hover {
+.bbn-cms-block .bbn-block-carousel .control i:hover {
   opacity: 1;
 }
-.bbn-cms-block.bbn-basic-component .bbn-block-carousel .control i.prev {
+.bbn-cms-block .bbn-block-carousel .control i.prev {
   margin-right: 10px;
 }
-.bbn-cms-block.bbn-basic-component .bbn-block-carousel a .bbn-block-gallery-caption {
+.bbn-cms-block .bbn-block-carousel a .bbn-block-gallery-caption {
   font-size: 20px;
 }
-.bbn-cms-block.bbn-basic-component .bbn-block-carousel a .bbn-block-gallery-caption:hover {
+.bbn-cms-block .bbn-block-carousel a .bbn-block-gallery-caption:hover {
   text-decoration: underline;
 }
-.bbn-cms-block.bbn-basic-component .bbn-block-image img {
+.bbn-cms-block .bbn-block-image img {
   max-width: 100%;
 }
-.bbn-cms-block.bbn-basic-component .bbn-block-image .image-details-title,
-.bbn-cms-block.bbn-basic-component .bbn-block-gallery .image-details-title {
+.bbn-cms-block .bbn-block-image .image-details-title,
+.bbn-cms-block .bbn-block-gallery .image-details-title {
   font-size: 1.3em;
   line-height: 1em;
   margin: 1em 0 .2em 0;
   display: inline-block;
 }
-.bbn-cms-block.bbn-basic-component .bbn-block-social ul.bbn-menulist.free {
+.bbn-cms-block .bbn-block-social ul.bbn-menulist.free {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-.bbn-cms-block.bbn-basic-component .bbn-block-social .ss-social-list-wrapper {
+.bbn-cms-block .bbn-block-social .ss-social-list-wrapper {
   left: 0 !important;
 }
-.bbn-cms-block.bbn-basic-component .bbn-block-social .bbn-block-social-button {
+.bbn-cms-block .bbn-block-social .bbn-block-social-button {
   line-height: 18px;
   font-weight: bold;
 }
-.bbn-cms-block.bbn-basic-component .bbn-block-social .bbn-block-social-button .bbn-block-social-icon {
+.bbn-cms-block .bbn-block-social .bbn-block-social-button .bbn-block-social-icon {
   color: #ebebeb;
   line-height: 18px;
 }
-.bbn-cms-block.bbn-basic-component .bbn-block-social .bbn-block-social-button:hover .nf-fa-share_alt {
+.bbn-cms-block .bbn-block-social .bbn-block-social-button:hover .nf-fa-share_alt {
   color: #5c5c5c;
 }
-.bbn-cms-block.bbn-basic-component .bbn-block-social .bbn-block-social-button:hover .nf-fa-heart {
+.bbn-cms-block .bbn-block-social .bbn-block-social-button:hover .nf-fa-heart {
   color: red;
 }
-.bbn-cms-block.bbn-basic-component .component-container .bbn-grid-fields {
+.bbn-cms-block .component-container .bbn-grid-fields {
   align-items: center;
 }
-.bbn-cms-block.bbn-basic-component .bbn-grid-fields {
+.bbn-cms-block .bbn-grid-fields {
   border: none !important;
 }
-.bbn-cms-block.bbn-basic-component .block-space-edit {
+.bbn-cms-block .block-space-edit {
   border: 1px dashed #dddddd;
   display: flex;
   align-items: flex-start;

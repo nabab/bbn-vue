@@ -3,30 +3,51 @@ let script = document.createElement('script');
 script.innerHTML = `<div :class="['bbn-header', 'bbn-unselectable', componentClass, {
         'bbn-w-100': (orientation === 'horizontal'),
         'bbn-h-100': (orientation === 'vertical'),
+        'bbn-flex-width': (orientation === 'horizontal'),
+        'bbn-flex-height': (orientation === 'vertical'),
         'bbn-vmiddle': (orientation === 'horizontal')
       }]"
-     :style="style"
->
+     :style="style">
   <slot></slot>
-  <template v-for="(s, i) in source">
-
-    <component v-if="s.component"
-              :is="s.component"
-              v-bind="s.options"
-              :key="'item' + i"/>
-    <div v-else-if="s.content !== undefined"
-         class="bbn-block bbn-spadded"
-         v-html="s.content"
-         :key="'item' + i"/>
-    <bbn-button v-else-if="(s.url || s.action) && (s.text || s.icon)"
-                v-bind="s"
-                class="bbn-hsmargin"
+  <div class="bbn-flex-fill">
+    <template v-for="(s, i) in source">
+      <component v-if="!s.end && s.component"
+                :is="s.component"
+                v-bind="s.options"
                 :key="'item' + i"/>
-    <div v-else
-         class="bbn-toolbar-separator"
-         :key="'item' + i"
-    >|</div>
-  </template>
+      <div v-else-if="!s.end && (s.content !== undefined)"
+          class="bbn-block bbn-spadded"
+          v-html="s.content"
+          :key="'item' + i"/>
+      <bbn-button v-else-if="!s.end && ((s.url || s.action) && (s.text || s.icon))"
+                  v-bind="s"
+                  class="bbn-hxsmargin"
+                  :key="'item' + i"/>
+      <div v-else-if="!s.end"
+          class="bbn-toolbar-separator"
+          :key="'item' + i"/>
+    </template>
+  </div>
+  <div class="bbn-block bbn-nowrap">
+    <template v-for="(s, i) in source">
+      <component v-if="s.end && s.component"
+                :is="s.component"
+                v-bind="s.options"
+                :key="'item' + i"/>
+      <div v-else-if="s.end && (s.content !== undefined)"
+          class="bbn-block bbn-spadded"
+          v-html="s.content"
+          :key="'item' + i"/>
+      <bbn-button v-else-if="s.end && ((s.url || s.action) && (s.text || s.icon))"
+                  v-bind="s"
+                  class="bbn-hxsmargin"
+                  :key="'item' + i"/>
+      <div v-else-if="s.end"
+          class="bbn-toolbar-separator"
+          :key="'item' + i"
+      >|</div>
+    </template>
+  </div>
 </div>
 `;
 script.setAttribute('id', 'bbn-tpl-component-toolbar');
@@ -90,11 +111,25 @@ document.body.insertAdjacentElement('beforeend', script);
         style: ''
       }
     },
+    methods: {
+      updateSlot(){
+        bbn.fn.log("UUPODATIN DLOT");
+        if (this.$slots.default) {
+          for (let node of this.$slots.default) {
+            bbn.fn.log("CHILDREN", node.children);
+            if ((node.tag === 'div') && !node.children) {
+              node.elm.classList.add('bbn-toolbar-separator');
+            }
+          }
+        }
+      },
+    },
     /**
      * Defines the current size of the bar basing on its style.
      * @event mounted
      */
-    mounted(){
+    mounted() {
+      this.updateSlot();
       if ( this.orientation ){
         if ( this.orientation === 'horizontal' ){
           if ( this.size ){

@@ -1,5 +1,5 @@
 <template>
-<button :class="[{'bbn-button-icon-only': notext}, componentClass]"
+<button :class="['bbn-iblock', {'bbn-button-icon-only': notext}, componentClass]"
         ref="element"
         @click="click($event)"
         @focus="focus($event)"
@@ -11,20 +11,10 @@
         :type="type"
         :disabled="isDisabled"
         :title="titleString"
-        :style="currentStyle"
->
-  <span v-if="icon && (iconPosition === 'left')" :class="['bbn-button-icon', {'bbn-middle': notext}]">
-    <i :class="icon"> </i>
-    <i v-if="secondary"
-       :class="secondary + ' secondary'"
-       :style="{
-        color: secondaryColor,
-        transform: 'scale(0.7)',
-        bottom: '0.15em',
-        left: '0.7em',
-        position: 'absolute'
-      }"
-    ></i>
+        :style="currentStyle">
+  <span v-if="icon && (iconPosition === 'left')"
+        :class="['bbn-button-icon', {'bbn-middle': notext}]">
+    <i :class="icon"/>
   </span>
   <span v-if="!notext && text"
         v-html="text"
@@ -32,23 +22,23 @@
           paddingLeft: icon && (iconPosition === 'left') ? (secondary ? '1em' : '0.3em') : '',
           paddingRight: icon && (iconPosition === 'right') ? (secondary ? '1em' : '0.3em') : ''
         }"
-        :class="{'bbn-ellipsis': ellipsis}"
-  ></span>
+        :class="{'bbn-ellipsis': ellipsis}"/>
   <span v-else-if="!notext"><slot></slot></span>
   <span v-if="icon && (iconPosition === 'right')" class="bbn-iblock bbn-m">
-    <i :class="icon"> </i>
-    <i v-if="secondary"
-       :class="secondary + ' secondary'"
-       :style="{
-        color: secondaryColor,
-        transform: 'scale(0.7)',
-        bottom: '0.15em',
-        left: '0.7em',
-        position: 'absolute'
-      }"
-    ></i>
+    <i :class="icon"/>
   </span>
+  <div v-if="secondary"
+       class="bbn-overlay">
+    <i :class="secondary + ' bbn-button-secondary bbn-abs'"
+       :style="{
+         color: secondaryColor,
+         transform: 'scale(0.7)',
+         bottom: '0.15em',
+         right: '0.15em'
+       }"/>
+  </div>
 </button>
+
 </template>
 <script>
   module.exports = /**

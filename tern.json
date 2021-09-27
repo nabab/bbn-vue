@@ -66,6 +66,11 @@
                 "!url": "https:\/\/bbn.io\/'bbn-vue\/function\/getChildByKey",
                 "!doc": "Finds a child component by its key."
             },
+            "getComponentName": {
+                "!type": "fn() -> mixed",
+                "!url": "https:\/\/bbn.io\/'bbn-vue\/function\/getComponentName",
+                "!doc": ""
+            },
             "getComponents": {
                 "!type": "fn() -> mixed",
                 "!url": "https:\/\/bbn.io\/'bbn-vue\/function\/getComponents",

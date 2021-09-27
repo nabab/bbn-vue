@@ -574,7 +574,7 @@
           else {
             path = tmp + '/';
           }
-          node.getPopup().open({
+          node.getPopup({
             title: bbn._('New Directory'),
             height: '150px',
             width: '350px',
@@ -600,7 +600,7 @@
             if ( idx > -1 ){
               tree = this.findAll('bbn-tree')[idx];
               treeUid = tree._uid;
-              tree.getPopup().open({
+              tree.getPopup({
                 title: bbn._('New Directory'),
                 height: '150px',
                 width: '350px',
@@ -706,7 +706,7 @@
         }
         let currentPath = path;
         this.editingNode = node;
-        node.getPopup().open({
+        node.getPopup({
           title: bbn._('Rename'),
           height: '150px',
           width: '350px',

@@ -61,7 +61,7 @@
                :width="undefined"
                :height="undefined"
                ref="list"
-               :auto-hide="true"
+               :auto-hide="500"
                :uid="sourceValue"
                :item-component="realComponent"
                @select="select"

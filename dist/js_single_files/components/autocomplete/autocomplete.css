@@ -3,9 +3,6 @@
   min-width: 4em;
   cursor: pointer;
 }
-.bbn-autocomplete > .bbn-flex-width {
-  height: 100%;
-}
 .bbn-autocomplete > .bbn-flex-width .bbn-w-100 {
   height: 100%;
 }

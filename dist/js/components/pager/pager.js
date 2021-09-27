@@ -86,7 +86,7 @@ script.innerHTML = `<div v-if="ready"
 				 @click="lastPage"
 			></i>
 		</span>
-		<span v-if="element.limits.length && !isMobile || isTablet" class="bbn-hmargin">
+		<span v-if="!!element.limits && ((element.limits.length && !isMobile) || isTablet)" class="bbn-hmargin">
 			<bbn-dropdown :source="element.limits"
 										v-model.number="element.currentLimit"
 										@change="element.currentPage = 1"

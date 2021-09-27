@@ -84,16 +84,16 @@ script.innerHTML = `<div :class="['bbn-100', 'bbn-unselectable', componentClass]
                :container="$root.$el"
                :scrollable="true"
                @close="info = false"
-               @ready="focusInput"
+               @open="focusInput"
                width="100%"
                max-height="60vw"
   >
     <div class="bbn-padded bbn-w-100">
       <bbn-input class="bbn-w-100"
-                  button-right="nf nf-mdi-send"
-                  v-model="link"
-                  @keydown.enter="go"
-                  @clickRightButton="go"
+                 button-right="nf nf-mdi-send"
+                 v-model="link"
+                 @keydown.enter="go"
+                 @clickRightButton="go"
       ></bbn-input>
       <ul class="bbn-reset bbn-w-100 bbn-ul">
         <li v-for="it of items">

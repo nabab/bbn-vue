@@ -3,7 +3,9 @@
     <div v-if="title" class="bbn-b bbn-c bbn-header" v-html="title"></div>
     <div class="bbn-flex-fill">
       <div class="bbn-overlay">
-        <bbn-scroll v-if="scrollable" v-show="!isCollapsed">
+        <bbn-scroll v-if="scrollable"
+                    v-show="!isCollapsed"
+                    ref="scroll">
           <slot></slot>
         </bbn-scroll>
         <div v-else v-show="!isCollapsed"

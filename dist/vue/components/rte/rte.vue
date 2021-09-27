@@ -208,6 +208,7 @@
         useSplitMode: true,
         height: this.height,
         tabIndex: 0,
+        maxHeight: '100%',
         uploader: {
           insertImageAsBase64URI: true
         },

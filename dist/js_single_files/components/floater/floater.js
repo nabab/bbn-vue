@@ -802,13 +802,13 @@ document.body.insertAdjacentElement('beforeend', script);
         this.currentVisible = false;
       },
       onResize(force){
-        bbn.fn.log("onResize floater", this.scrollResized, this.isVisible);
+        //bbn.fn.log("onResize floater", this.scrollResized, this.isVisible);
         if ((!this.scrollable || this.scrollResized)
             && this.isVisible
             && this.$el
             && (this.setContainerMeasures() || !this.isInit || force)
         ) {
-          bbn.fn.log("onResize2");
+          //bbn.fn.log("onResize2");
           this.realResize();
         }
       },
@@ -1559,7 +1559,6 @@ document.body.insertAdjacentElement('beforeend', script);
                 fn();
               }
               else {
-                bbn.fn.log("scroll reayd");
                 this.realResize();
               }
             }, 50)
@@ -1604,6 +1603,11 @@ document.body.insertAdjacentElement('beforeend', script);
         this.lastKnownCtWidth = 0;
         this.lastKnownCtHeight = 0;
         this.realResize();
+      },
+      filteredTotal(){
+        if (this.isVisible) {
+          this.onResize(true);
+        }
       }
     }
 

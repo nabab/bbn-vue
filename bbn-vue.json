@@ -4786,6 +4786,11 @@
                         "text": "spinners",
                         "desc": "Set to true shows the arrow buttons of the component.",
                         "url": "bbn-vue\/component\/numeric\/doc\/props#spinners"
+                    },
+                    {
+                        "text": "inputmode",
+                        "desc": "Defines the input mode of this elemenet",
+                        "url": "bbn-vue\/component\/numeric\/doc\/props#inputmode"
                     }
                 ],
                 "methods": [
@@ -8601,6 +8606,21 @@
                         "text": "basicComponent",
                         "desc": "",
                         "url": "bbn-vue\/component\/values\/doc\/mixins#basicComponent"
+                    },
+                    {
+                        "text": "inputComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/values\/doc\/mixins#inputComponent"
+                    },
+                    {
+                        "text": "dropdownComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/values\/doc\/mixins#dropdownComponent"
+                    },
+                    {
+                        "text": "keynavComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/values\/doc\/mixins#keynavComponent"
                     }
                 ]
             },
@@ -8811,6 +8831,11 @@
                 "text": "getChildByKey",
                 "url": "bbn-vue\/function\/getChildByKey",
                 "desc": "Finds a child component by its key."
+            },
+            {
+                "text": "getComponentName",
+                "url": "bbn-vue\/function\/getComponentName",
+                "desc": ""
             },
             {
                 "text": "getComponents",

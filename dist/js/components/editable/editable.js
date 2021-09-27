@@ -18,10 +18,10 @@ script.innerHTML = `<div :class="['bbn-iblock', componentClass]"
           
   ></component>
   <component v-else
-            :is="componentObject"
-            v-model="currentValue"
-            :source="source"
-            :class="{'edit-block' : isEditing}"
+             :is="componentObject"
+             v-model="currentValue"
+             :source="source"
+             :class="{'edit-block' : isEditing}"
   ></component>
   <div :style="{
       position: 'absolute',

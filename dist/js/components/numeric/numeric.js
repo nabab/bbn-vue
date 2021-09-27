@@ -22,6 +22,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', {
              v-show="editMode"
              :size="currentInputSize"
              :style="{'paddingRight': spinners ? '0.5em !important' : ''}"
+             :inputmode="inputmode"
       >
       <input autocomplete="off"
              :value="inputValue"
@@ -37,6 +38,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', {
              ref="formatted"
              :size="currentInputSize"
              :style="{'paddingRight': spinners ? '0.5em !important' : ''}"
+             :placeholder="placeholder"
       >
       <input type="hidden"
              :value="value"
@@ -171,6 +173,14 @@ document.head.insertAdjacentElement('beforeend', css);
       onlySpinners: {
         type: Boolean,
         default: false
+      },
+      /**
+       * Defines the input mode of this elemenet
+       * @prop {String} inputmode
+       */
+      inputmode: {
+        type: String,
+        default: 'decimal'
       }
     },
     data(){
@@ -323,7 +333,8 @@ document.head.insertAdjacentElement('beforeend', css);
        */
       _focus(e){
         if ( !this.disabled && !this.readonly && !this.onlySpinners ){
-          this.currentValue = this.value;
+          //this.currentValue = this.value;
+          this.currentValue = this.value === null ? '' : (bbn.fn.isNumber(this.value) ? parseFloat(this.value).toFixed(this.decimals) : this.value);
           this.editMode = true;
           this.$nextTick(() => {
             this.focus(e);
