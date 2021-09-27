@@ -937,6 +937,31 @@
     },
 
     /**
+     * @method getComponentName
+     * @todo Returns a component name based on the name of the given component and a path.
+     * @memberof bbn.vue
+     * @param {Vue}    vm   The component from which the name is created.
+     * @param {String} path The relative path to the component from the given component.
+     */
+     getComponentName(vm, path){
+      if (!path || !vm.$options.name) {
+        return null;
+      }
+
+      let bits = path.split('/');
+      let resx = vm.$options.name.split('-');
+      bbn.fn.each(bits, b => {
+        if (b === '..') {
+          resx.pop();
+        }
+        else if (b && (b !== '.')) {
+          resx.push(b);
+        }
+      });
+      return resx.join('-');
+    },
+
+    /**
      * @method getPopup
      * @memberof bbn.vue
      * @param {Vue} vm 

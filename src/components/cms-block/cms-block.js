@@ -26,7 +26,7 @@
                            v-model="source.content"/>`
     },
     html: {
-      view: `<div  @click="$parent.editMode" @mouseover="$parent.mouseover" @mouseleave="$parent.mouseleave"  
+      view: `<div @click="$parent.editMode" @mouseover="$parent.mouseover" @mouseleave="$parent.mouseleave"  
                   :class="['component-container', 'bbn-block-html', alignClass]"
                   v-html="source.content" 
                   :style="style">
@@ -576,13 +576,6 @@
             youtube(){
               return this.source.src.indexOf('youtube') > -1
             },
-            contentStyle(){
-              let st = ''
-              if ( this.source.style['border-radius'] ){
-                st += 'border-radius:' + this.source.style['border-radius'] + ( bbn.fn.isNumber(this.source.style['border-radius']) ? ( 'px;') : ';');
-              }
-              return st;
-            },
             alignClass(){
               let st = 'bbn-c';
               if ( this.source.align === 'left' ){
@@ -753,7 +746,9 @@
                        :class="['image-price',$parent.alignClass]"
                        v-text="source.price"
                   ></div>
-                  <time v-if="source.time" v-text="source.time" :class="$parent.alignClass"></time>
+                  <time v-if="source.time"
+                        v-text="source.time"
+                        :class="$parent.alignClass"/>
                 </a>
                 `
                 

@@ -76,6 +76,14 @@
       onlySpinners: {
         type: Boolean,
         default: false
+      },
+      /**
+       * Defines the input mode of this elemenet
+       * @prop {String} inputmode
+       */
+      inputmode: {
+        type: String,
+        default: 'decimal'
       }
     },
     data(){

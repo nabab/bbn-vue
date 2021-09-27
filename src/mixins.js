@@ -222,7 +222,18 @@
       },
       postOut(){
         return bbn.vue.postOut(this, ...arguments);
-      }
+      },
+      /**
+       * @method getComponentName
+       * @todo Returns a component name based on the name of the given component and a path.
+       * @memberof bbn.vue
+       * @param {Vue}    vm   The component from which the name is created.
+       * @param {String} path The relative path to the component from the given component.
+       */
+      getComponentName(){
+        return bbn.vue.getComponentName(this, ...arguments);
+      },
+
     }
   });
 })(window.bbn);

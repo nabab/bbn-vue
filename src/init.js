@@ -1,7 +1,7 @@
 ((bbn) => {
   "use strict";
   bbn.fn.autoExtend("vue", {
-    init(cfg) {
+    init: cfg => {
       if ( !bbn.vue ){
         throw new Error("Impossible to find the library bbn-vue")
       }
