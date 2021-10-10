@@ -313,6 +313,22 @@
           return !bbn.fn.isMobile() || bbn.fn.isTabletDevice();
         }
       },
+      /**
+       * The name of the `page` word as used in the pager interface.
+       * @prop {String} ['Page'] pageName
+       */
+      pageName: {
+        type: String,
+        default: bbn._("page")
+      },
+      /**
+       * The name of the `record` word as used in the pager interface.
+       * @prop {String} ['Record(s)'] itemName
+       */
+      itemName: {
+        type: String,
+        default: bbn._("rows")
+      }
     },
     data() {
       return {

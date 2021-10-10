@@ -9,10 +9,12 @@ script.innerHTML = `<div :class="[
      ]"
      @mouseleave="leave"
      @focusin="isActive = true"
-     @focusout="isActive = false"
+     @focusout="onFocusOut"
      :title="currentText || placeholder || null"
 >
-  <div :class="['bbn-rel', 'bbn-dropdown-container', 'bbn-flex-width', 'bbn-vmiddle', currentItemCls]">
+  <div :class="['bbn-rel', 'bbn-dropdown-container', 'bbn-flex-width', 'bbn-vmiddle', currentItemCls, {
+    'bbn-dropdown-container-native': native
+  }]">
     <div v-if="sourceIcon && hasValue && !!currentItemIcon"
          class="bbn-left-xspadded">
       <i :class="currentItemIcon"
@@ -23,27 +25,52 @@ script.innerHTML = `<div :class="[
       <img src="currentItemImg"
            @click.stop="click">
     </div>
-    <bbn-input :disabled="disabled"
-                @keydown="keydown"
-                @keyup="keyup"
-                @click.stop="click"
-                @paste="paste"
-                ref="input"
-                autocorrect="off"
-                autocapitalize="off"
-                spellcheck="false"
-                :required="required"
-                :nullable="isNullable"
-                :placeholder="placeholder"
-                :tabindex="disabled ? -1 : 0"
-                v-model="notext ? undefined : currentText"
-                autocomplete="off"
-                :button-right="currentIcon"
-                @clickRightButton="click"
-                class="bbn-no-border bbn-flex-fill"
-                :autosize="autosize"
-                :readonly="!writable"
+    <bbn-input v-if="!native"
+               :disabled="disabled"
+               @keydown="keydown"
+               @keyup="keyup"
+               @click.stop="click"
+               @paste="paste"
+               ref="input"
+               autocorrect="off"
+               autocapitalize="off"
+               spellcheck="false"
+               :required="required"
+               :nullable="isNullable"
+               :placeholder="placeholder"
+               :tabindex="disabled ? -1 : 0"
+               v-model="notext ? undefined : currentText"
+               autocomplete="off"
+               :button-right="currentIcon"
+               @clickRightButton="click"
+               class="bbn-no-border bbn-flex-fill"
+               :autosize="autosize"
+               :readonly="!writable"
     ></bbn-input>
+    <template v-else>
+      <select v-model="currentSelectValue"
+              class="bbn-textbox bbn-no-border bbn-flex-fill bbn-p"
+              :required="required"
+              ref="input"
+              @blur="isOpened = false"
+              @change="isOpened = false"
+              @focus="isOpened = true"
+              @click="isOpened = true"
+              :disabled="!!disabled || !!readonly">
+        <option value=""
+                v-html="placeholder"
+                :disabled="!isNullable"
+                :selected="!value"/>
+        <option v-for="d in filteredData"
+                :value="d.data[sourceValue]"
+                v-html="d.data[sourceText]"/>
+      </select>
+      <bbn-button :icon="currentIcon"
+                  tabindex="-1"
+                  :class="['bbn-dropdown-select-button', 'bbn-button-right', 'bbn-no-vborder', 'bbn-m', 'bbn-top-right', {
+                    'bbn-disabled': !!disabled || !!readonly
+                  }]"/>
+    </template>
   </div>
   <input type="hidden"
          v-model="value"
@@ -55,6 +82,7 @@ script.innerHTML = `<div :class="[
                  && filteredData.length
                  && !disabled
                  && !readonly
+                 && !native
                  && (isOpened || preload)"
                v-show="isOpened"
                :element="$el"
@@ -81,6 +109,7 @@ script.innerHTML = `<div :class="[
                  && filteredData.length
                  && !disabled
                  && !readonly
+                 && !native
                  && (isOpened || preload)"
                v-show="isOpened"
                width="100%"
@@ -234,6 +263,15 @@ document.head.insertAdjacentElement('beforeend', css);
         if (lst) {
           lst.close(true);
         }
+        if (this.native) {
+          this.isOpened = false;
+        }
+      },
+      onFocusOut(){
+        this.isActive = false;
+        if (this.native) {
+          this.isOpened = false;
+        }
       }
     },
     /**
@@ -264,7 +302,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @watch  isOpened
        */
       isOpened(val){
-        if (this.popup && val) {
+        if (this.popup && val && !this.native) {
           this.popupComponent.open({
             title: false,
             element: this.$el,
@@ -288,11 +326,11 @@ document.head.insertAdjacentElement('beforeend', css);
           });
         }
 
-        if ((this.currentText === this.currentTextValue) && this.writable) {
+        if ((this.currentText === this.currentTextValue) && this.writable && !this.native) {
           this.selectText();
         }
 
-        if (!val && this.preload) {
+        if (!val && this.preload && !this.native) {
           this.getRef('list').currentVisible = true;
         }
       },
@@ -311,6 +349,14 @@ document.head.insertAdjacentElement('beforeend', css);
           }
         }
       },
+      /**
+       * @watch  currentSelectValue
+       */
+       currentSelectValue(newVal){
+        if (this.ready && (newVal !== this.value)) {
+          this.emitInput(newVal);
+        }
+      },
       filterString(v){
         let args = [0, this.currentFilters.conditions.length ? 1 : 0];
         if (v && this.isActive) {
@@ -323,6 +369,7 @@ document.head.insertAdjacentElement('beforeend', css);
         this.currentFilters.conditions.splice(...args);
       },
       value(v) {
+        this.currentSelectValue = v;
         if (this.storage) {
           if (v) {
             this.setStorage(v);

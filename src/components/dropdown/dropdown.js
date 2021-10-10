@@ -124,6 +124,15 @@
         if (lst) {
           lst.close(true);
         }
+        if (this.native) {
+          this.isOpened = false;
+        }
+      },
+      onFocusOut(){
+        this.isActive = false;
+        if (this.native) {
+          this.isOpened = false;
+        }
       }
     },
     /**
@@ -154,7 +163,7 @@
        * @watch  isOpened
        */
       isOpened(val){
-        if (this.popup && val) {
+        if (this.popup && val && !this.native) {
           this.popupComponent.open({
             title: false,
             element: this.$el,
@@ -178,11 +187,11 @@
           });
         }
 
-        if ((this.currentText === this.currentTextValue) && this.writable) {
+        if ((this.currentText === this.currentTextValue) && this.writable && !this.native) {
           this.selectText();
         }
 
-        if (!val && this.preload) {
+        if (!val && this.preload && !this.native) {
           this.getRef('list').currentVisible = true;
         }
       },
@@ -201,6 +210,14 @@
           }
         }
       },
+      /**
+       * @watch  currentSelectValue
+       */
+       currentSelectValue(newVal){
+        if (this.ready && (newVal !== this.value)) {
+          this.emitInput(newVal);
+        }
+      },
       filterString(v){
         let args = [0, this.currentFilters.conditions.length ? 1 : 0];
         if (v && this.isActive) {
@@ -213,6 +230,7 @@
         this.currentFilters.conditions.splice(...args);
       },
       value(v) {
+        this.currentSelectValue = v;
         if (this.storage) {
           if (v) {
             this.setStorage(v);

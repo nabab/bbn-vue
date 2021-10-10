@@ -188,6 +188,21 @@
       },
       footerComponent(){
         return (typeof this.footer !== 'undefined') && !!this.footer ? this.footer : false;
+      },
+      powerColor(){
+        if (this.mode === 'dev') {
+          return 'var(--purple)';
+        }
+
+        if (this.mode === 'prod') {
+          return 'var(--green)';
+        }
+
+        if (this.mode === 'dev') {
+          return 'var(--blue)';
+        }
+
+        return '';
       }
     },
     methods: {

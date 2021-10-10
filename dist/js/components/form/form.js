@@ -523,7 +523,7 @@ document.head.insertAdjacentElement('beforeend', css);
             this.$emit('success', d, e);
             if ( !e.defaultPrevented ){
               if ( this.window ){
-                this.window.close();
+                this.window.close(true);
               }
             }
           }, !this.blank && !this.self && !this.target ? (xhr, textStatus, errorThrown) => {
@@ -542,7 +542,7 @@ document.head.insertAdjacentElement('beforeend', css);
           this.isLoading = false;
           if ( !e.defaultPrevented ){
             if ( this.window ){
-              this.window.close();
+              this.window.close(true);
             }
           }
         }

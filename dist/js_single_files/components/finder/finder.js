@@ -1,6 +1,6 @@
 ((bbn) => {
 let script = document.createElement('script');
-script.innerHTML = `<div :class="[componentClass, 'bbn-overlay']"
+script.innerHTML = `<div :class="[componentClass, 'bbn-overlay']">
   <bbn-scroll axis="x" :class="componentClass" ref="scroll">
     <!-- Each tree pane -->
     <div v-for="(p, i) in dirs"

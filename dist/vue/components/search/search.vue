@@ -57,7 +57,7 @@
  */
 
 
-(function(bbn){
+(function(bbn, Vue){
   "use strict";
 
   Vue.component('bbn-search', {
@@ -85,7 +85,7 @@
       /**
        * @prop {Boolean} [false] filterselection 
        */
-      filtselection: {
+      filterselection: {
         default: false
       },
       /**
@@ -345,7 +345,7 @@
     }
   });
 
-})(bbn);
+})(bbn, Vue);
 
 </script>
 <style scoped>

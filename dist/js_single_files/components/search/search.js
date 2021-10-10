@@ -59,7 +59,7 @@ document.body.insertAdjacentElement('beforeend', script);
  */
 
 
-(function(bbn){
+(function(bbn, Vue){
   "use strict";
 
   Vue.component('bbn-search', {
@@ -87,7 +87,7 @@ document.body.insertAdjacentElement('beforeend', script);
       /**
        * @prop {Boolean} [false] filterselection 
        */
-      filtselection: {
+      filterselection: {
         default: false
       },
       /**
@@ -347,7 +347,7 @@ document.body.insertAdjacentElement('beforeend', script);
     }
   });
 
-})(bbn);
+})(bbn, Vue);
 
 
 })(bbn);

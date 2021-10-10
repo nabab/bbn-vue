@@ -4866,6 +4866,16 @@
                         "text": "forceTablet",
                         "desc": "Force to render as tablet",
                         "url": "bbn-vue\/component\/pager\/doc\/props#forceTablet"
+                    },
+                    {
+                        "text": "pageName",
+                        "desc": "The name of the `page` word as used in the pager interface.",
+                        "url": "bbn-vue\/component\/pager\/doc\/props#pageName"
+                    },
+                    {
+                        "text": "itemName",
+                        "desc": "The name of the `record` word as used in the pager interface.",
+                        "url": "bbn-vue\/component\/pager\/doc\/props#itemName"
                     }
                 ],
                 "methods": [
@@ -7186,6 +7196,16 @@
                         "text": "footerButtons",
                         "desc": "Shows the footer's arrows as buttons",
                         "url": "bbn-vue\/component\/table\/doc\/props#footerButtons"
+                    },
+                    {
+                        "text": "pageName",
+                        "desc": "The name of the `page` word as used in the pager interface.",
+                        "url": "bbn-vue\/component\/table\/doc\/props#pageName"
+                    },
+                    {
+                        "text": "itemName",
+                        "desc": "The name of the `record` word as used in the pager interface.",
+                        "url": "bbn-vue\/component\/table\/doc\/props#itemName"
                     }
                 ],
                 "methods": [

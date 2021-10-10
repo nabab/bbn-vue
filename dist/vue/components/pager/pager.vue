@@ -9,89 +9,103 @@
 			 }"
 			 v-if="element && element.pageable"
 	>
+		<!-- 1ST BUTTON (FIRST) -->
 		<bbn-button icon="nf nf-fa-angle_double_left"
 								:notext="true"
-								:title="_('Go to the first page')"
+								:title="_('Go to the first') + ' ' + pageName"
 								:disabled="element.currentPage == 1"
 								@click="firstPage"
-								v-if="buttons"
-		></bbn-button>
+								v-if="buttons"/>
+		<!-- OR 1ST ICON -->
 		<span v-else
-					class="bbn-iblock bbn-right-xsspace bbn-pager-mobile-icon"
+					class="bbn-iblock bbn-hxspadded bbn-p bbn-pager-mobile-icon"
+					@click="firstPage"
 		>
-			<i :class="['nf nf-fa-angle_double_left', 'bbn-xl', 'bbn-pager-mobile-icon', {
-						'bbn-disabled': element.currentPage == 1
-					}]"
-				 @click="firstPage"
-			></i>
+			<i :class="[
+									'nf nf-fa-angle_double_left',
+									'bbn-xl',
+									'bbn-pager-mobile-icon',
+									{'bbn-disabled': element.currentPage == 1}
+								 ]"/>
 		</span>
+		<!-- 2ND BUTTON (PREVIOUS) -->
 		<bbn-button icon="nf nf-fa-angle_left"
 								:notext="true"
-								:title="_('Go to the previous page')"
+								:title="_('Go to the previous') + ' ' + pageName"
 								:disabled="element.currentPage == 1"
 								@click="prevPage"
-								v-if="buttons"
-		></bbn-button>
+								v-if="buttons"/>
+		<!-- OR 2ND ICON (PREVIOUS) -->
 		<span v-else
-					class="bbn-iblock bbn-right-xsspace bbn-pager-mobile-icon"
-		>
-			<i :class="['nf nf-fa-angle_left', 'bbn-xl', 'bbn-pager-mobile-icon', {
-				   'bbn-disabled': element.currentPage == 1
-				 }]"
-				 @click="prevPage"
-			></i>
+					class="bbn-iblock bbn-hxspadded bbn-p bbn-pager-mobile-icon"
+					@click="prevPage">
+			<i :class="[
+									'nf nf-fa-angle_left',
+									'bbn-xl',
+									'bbn-pager-mobile-icon',
+									{'bbn-disabled': element.currentPage == 1}
+								 ]"/>
 		</span>
-		<span class="bbn-iblock" v-text="_('Page')"></span>
+		<!-- PAGE + NUMERIC SELECTOR -->
+		<span class="bbn-iblock" v-text="pageName"/>
 		<bbn-numeric v-model="currentNumericPage"
 								 :min="1"
 								 :max="element.numPages"
 								 class="bbn-narrower bbn-right-sspace"
 								 :disabled="!!element.isLoading"
-								 :readonly="element.numPages == 1"
-		></bbn-numeric>
+								 :readonly="element.numPages == 1"/>
+		<!-- OF TOTAL -->
 		<span class="bbn-iblock bbn-right-xsspace"
-					v-text="_('of') + ' ' + element.numPages"
-		></span>
+					v-text="_('of') + ' ' + element.numPages"/>
+		<!-- 3RD BUTTON (NEXT) -->
 		<bbn-button icon="nf nf-fa-angle_right"
 								:notext="true"
-								:title="_('Go to the next page')"
+								:title="_('Go to the next') + ' ' + pageName"
 								:disabled="element.currentPage == element.numPages"
 								@click="nextPage"
-								v-if="buttons"
-		></bbn-button>
+								v-if="buttons"/>
+		<!-- OR 3RD ICON (NEXT) -->
 		<span v-else
 					class="bbn-iblock bbn-right-xsspace bbn-pager-mobile-icon"
 		>
-			<i :class="['nf nf-fa-angle_right', 'bbn-xl', 'bbn-pager-mobile-icon', {
-				   'bbn-disabled': element.currentPage == element.numPages
-				 }]"
+			<i :class="[
+									'nf nf-fa-angle_right',
+									'bbn-xl',
+									'bbn-pager-mobile-icon',
+									{'bbn-disabled': element.currentPage == element.numPages}
+								 ]"
 				 @click="nextPage"
 			></i>
 		</span>
+		<!-- 4TH BUTTON (LAST) -->
 		<bbn-button icon="nf nf-fa-angle_double_right"
 								:notext="true"
-								:title="_('Go to the last page')"
+								:title="_('Go to the last') + ' ' + pageName"
 								@click="lastPage"
 								:disabled="element.currentPage == element.numPages"
-								v-if="buttons"
-		></bbn-button>
+								v-if="buttons"/>
+		<!-- OR 4TH ICON (LAST) -->
 		<span v-else
-					class="bbn-iblock bbn-pager-mobile-icon"
-		>
-			<i :class="['nf nf-fa-angle_double_right', 'bbn-xl', 'bbn-pager-mobile-icon', {
-				   'bbn-disabled': element.currentPage == element.numPages
-				 }]"
+					class="bbn-iblock bbn-pager-mobile-icon">
+			<i :class="[
+									'nf nf-fa-angle_double_right',
+									'bbn-xl',
+									'bbn-pager-mobile-icon',
+									{'bbn-disabled': element.currentPage == element.numPages}
+								 ]"
 				 @click="lastPage"
 			></i>
 		</span>
-		<span v-if="!!element.limits && ((element.limits.length && !isMobile) || isTablet)" class="bbn-hmargin">
+		<span v-if="!!element.limits &&
+								(element.limits.length > 1) &&
+								(!isMobile || isTablet)"
+					class="bbn-hmargin">
 			<bbn-dropdown :source="element.limits"
 										v-model.number="element.currentLimit"
 										@change="element.currentPage = 1"
 										:disabled="!!element.isLoading"
-										:autosize="true"
-			></bbn-dropdown>
-			<span v-text="_('rows per page')"></span>
+										:autosize="true"/>
+			<span v-text="itemName + ' ' + _('per') + ' ' + pageName"/>
 		</span>
 	</div>
 	<div v-if="element"
@@ -104,23 +118,26 @@
 			 :style="{
 				 float: !isMobile || isTablet ? 'right' : 'left',
 				 justifyContent: isMobile && !isTablet ? 'flex-end' : ''
-			 }"
-	>
-		<div v-if="element.limits.length && isMobile && !isTablet && element.pageable && element.currentData.length"
-				 class="bbn-right-space bbn-flex-fill bbn-vmiddle"
-		>
+			 }">
+		<div v-if="element.limits.length &&
+							isMobile &&
+							!isTablet &&
+							element.pageable &&
+							element.currentData.length"
+				 class="bbn-right-space bbn-flex-fill bbn-vmiddle">
 			<bbn-dropdown :source="element.limits"
 										v-model.number="element.currentLimit"
 										@change="element.currentPage = 1"
 										:disabled="!!element.isLoading"
-										:autosize="true"
-			></bbn-dropdown>
+										:autosize="true"/>
 		</div>
 		<div>
-			<span v-if="element.filteredData.length && element.pageable && element.isAjax"
-						v-text="(element.start+1) + '-' + (element.start + element.currentLimit > element.total ? element.total : element.start + element.currentLimit) + ' ' + _('of') + ' ' + element.total"
+			<span v-if="element.filteredData.length &&
+									element.pageable && element.isAjax"
+						v-text="(element.start+1) + '-' + (element.start + element.currentLimit > element.total ? element.total : element.start + element.currentLimit) + ' / ' + element.total"
 			></span>
-			<span v-else-if="element.filteredData.length && element.pageable && !element.isAjax"
+			<span v-else-if="element.filteredData.length &&
+											 element.pageable && !element.isAjax"
 						v-text="(element.start+1) + '-' + (element.start + element.currentLimit > element.filteredData.length ? element.filteredData.length : element.start + element.currentLimit) + ' ' + _('of') + ' ' + element.filteredData.length"
 			></span>
 			<span v-else-if="!isMobile || isTablet"
@@ -135,45 +152,44 @@
 									@click="element.showQuery"
 									icon="nf nf-mdi-database"
 									:notext="true"
-									class="bbn-left-xsspace"
-			></bbn-button>
+									class="bbn-left-xsspace"/>
 			<bbn-button v-if="element.saveable"
 									:disabled="element.isSaved"
 									:title="_('Save current configuration')"
 									@click="element.$emit('save', element.currentConfig)"
 									icon="nf nf-fa-save"
 									:notext="true"
-									class="bbn-left-xsspace"
-			></bbn-button>
+									class="bbn-left-xsspace"/>
 			<bbn-button v-if="(element.filterable || element.showable) && element.reset"
 									:disabled="!element.isChanged"
 									:title="_('Reset to original configuration')"
 									@click="element.reset(false)"
 									icon="nf nf-fa-undo"
 									:notext="true"
-									class="bbn-left-xsspace"
-			></bbn-button>
+									class="bbn-left-xsspace"/>
 			<bbn-button v-if="element.showable && element.openColumnsPicker"
 									:title="_('Columns\' picker')"
 									@click="element.openColumnsPicker"
 									icon="nf nf-fa-columns"
 									:notext="true"
-									class="bbn-left-xsspace"
-			></bbn-button>
-			<bbn-button v-if="element.filterable && element.multifilter && element.openMultiFilter"
+									class="bbn-left-xsspace"/>
+			<bbn-button v-if="element.filterable &&
+												element.multifilter &&
+												element.openMultiFilter"
 									:title="_('Multi Filter')"
-									:class="['bbn-left-xsspace', {'bbn-red': element.currentFilters && element.currentFilters.conditions.length ? true : false}]"
+									:class="[
+														'bbn-left-xsspace',
+														{'bbn-red': element.currentFilters && element.currentFilters.conditions.length ? true : false}
+													]"
 									@click="element.openMultiFilter"
 									icon="nf nf-mdi-filter_variant"
-									:notext="true"
-			></bbn-button>
+									:notext="true"/>
 			<bbn-button v-if="element.isAjax && element.updateData"
 									:title="_('Refresh')"
 									@click="element.updateData"
 									icon="nf nf-fa-refresh"
 									:notext="true"
-									class="bbn-left-xsspace"
-			></bbn-button>
+									class="bbn-left-xsspace"/>
 		</div>
 	</div>
 </div>
@@ -225,6 +241,22 @@
       forceTablet: {
         type: Boolean,
         default: false
+      },
+      /**
+       * The name of the `page` word as used in the pager interface.
+       * @prop {String} ['Page'] pageName
+       */
+      pageName: {
+        type: String,
+        default: bbn._("page")
+      },
+      /**
+       * The name of the `record` word as used in the pager interface.
+       * @prop {String} ['Record(s)'] itemName
+       */
+      itemName: {
+        type: String,
+        default: bbn._("records")
       }
     },
     data(){

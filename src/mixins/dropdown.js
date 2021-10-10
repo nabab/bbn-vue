@@ -108,6 +108,15 @@
         popup: {
           type: [Boolean, Vue],
           default: false
+        },
+        /**
+         * Using the browser native render
+         * @memberof dropdownComponent
+         * @prop {Boolean} native
+         */
+        native: {
+          type: Boolean,
+          default: false
         }
       },
       data(){
@@ -159,7 +168,13 @@
            * @data {Array} [[]] realButtons
            * @memberof dropdownComponent
            */
-          realButtons: []
+          realButtons: [],
+          /**
+           * The value of the native select elemenet
+           * @data {String|Number|Boolean} currentSelectValue
+           * @memberof dropdownComponent
+           */
+          currentSelectValue: this.value
         };
       },
       computed: {
@@ -234,7 +249,7 @@
          * @memberof dropdownComponent
          */
         click(){
-          if (!this.disabled && !this.readonly && this.filteredData.length && bbn.fn.isDom(this.$el)) {
+          if (!this.disabled && !this.readonly && !this.native && this.filteredData.length && bbn.fn.isDom(this.$el)) {
             this.isOpened = !this.isOpened;
             if (this.writable) {
               this.$el.querySelector('input:not([type=hidden])').focus();

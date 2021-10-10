@@ -1,7 +1,8 @@
 ((bbn) => {
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-w-100']">
-  <label v-text="label" class="bbn-cursor-label"></label>
+  <label v-text="label"
+         class="bbn-cursor-label bbn-nowrap"/>
   <input :focused="true"
           v-bind:value="parseInt(value)"
           placeholder="Type your text here!"

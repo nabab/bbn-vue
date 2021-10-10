@@ -15,11 +15,9 @@
         <slot name="toolbar"></slot>
       </bbn-toolbar>
       <div v-else-if="typeof toolbar === 'function'"
-           v-html="toolbar()"
-      ></div>
+           v-html="toolbar()"/>
       <component v-else
-                 :is="toolbar"
-      ></component>
+                 :is="toolbar"/>
     </div>
     <div :class="['bbn-w-100', 'bbn-table-container', {'bbn-flex-fill': scrollable}]">
       <div v-if="initStarted"
@@ -123,36 +121,31 @@
                   </div>
                   <component v-else-if="col.tcomponent"
                             :is="col.tcomponent"
-                            :source="col"
-                  ></component>
+                            :source="col"/>
                   <span class="bbn-p"
                         v-else-if="sortable && (col.sortable !== false) && !col.buttons"
                         @click="sort(col)">
                     <span v-if="col.encoded"
                           v-text="col.title || col.field || ' '"
-                          :title="col.ftitle || col.title || col.field"
-                    ></span>
+                          :title="col.ftitle || col.title || col.field"/>
                     <span v-else
                           v-html="col.title || col.field || ' '"
-                          :title="col.ftitle || col.title || col.field || ' '"
-                    ></span>
+                          :title="col.ftitle || col.title || col.field || ' '"/>
                   </span>
                   <span v-else>
                     <span v-if="col.encoded"
                           v-text="col.title || col.field || ' '"
-                          :title="col.ftitle || col.title || col.field || ' '"
-                    ></span>
+                          :title="col.ftitle || col.title || col.field || ' '"/>
                     <span v-else
                           v-html="col.title || col.field || ' '"
-                          :title="col.ftitle || col.title || col.field || ' '"
-                    ></span>
+                          :title="col.ftitle || col.title || col.field || ' '"/>
                   </span>
                   <i v-if="isSorted(col)"
                     :class="{
                       'bbn-table-sortable-icon': true,
                       'nf nf-fa-caret_up': isSorted(col).dir === 'ASC',
                       'nf nf-fa-caret_down': isSorted(col).dir === 'DESC',
-                  }"></i>
+                  }"/>
                 </th>
               </template>
             </tr>
@@ -284,9 +277,8 @@
                   <component v-if="d.component"
                             :is="d.component"
                             v-bind="d.options || {}"
-                            :source="col.mapper ? col.mapper(d.data) : d.data"
-                  ></component>
-                  <div v-else v-html="render(d.data, col, i)"></div>
+                            :source="col.mapper ? col.mapper(d.data) : d.data"/>
+                  <div v-else v-html="render(d.data, col, i)"/>
                 </td>
 
                 <td v-else
@@ -317,18 +309,16 @@
                                     :strict="true"
                                     @click.stop
                                     @change="checkSelection(i)"
-                                    class="bbn-middle bbn-flex"
-                      ></bbn-checkbox>
+                                    class="bbn-middle bbn-flex"/>
                     </div>
                     <!-- Aggregate -->
                     <template v-else-if="d.aggregated || d.groupAggregated">
                       <span v-if="col.isAggregatedTitle"
                             :class="d.aggregated ? 'bbn-b' : ''"
-                            v-text="aggregateExp[d.name]"
-                      ></span>
+                            v-text="aggregateExp[d.name]"/>
                       <div v-else-if="col.aggregate"
-                          v-html="render(d.data, col, i)"></div>
-                      <span v-else></span>
+                          v-html="render(d.data, col, i)"/>
+                      <span v-else> </span>
                       <!-- The row is an aggregate and there are no other cells -->
                     </template>
                         <!-- Expander -->
@@ -337,55 +327,50 @@
                         class="bbn-table-expander bbn-lg bbn-p bbn-unselectable bbn-c">
                       <i :class="'nf nf-fa-caret_' + (isExpanded(d) ? 'down' : 'right') + ' bbn-unselectable'"
                         v-if="d.expander"
-                        tabindex="0"
-                      ></i>
+                        tabindex="0"/>
                       <span v-else>&nbsp;</span>
                     </div>
                     <template v-else>
                       <span class="bbn-table-dirty bbn-top-left"
-                            v-if="isDirty(d, col, i)"></span>
+                            v-if="isDirty(d, col, i)"/>
                       <div v-if="isEdited(d.data, col, i)">
                         <div v-if="(editMode === 'inline') && (editable !== 'nobuttons') && (col.index === colButtons)">
                           <bbn-button :text="_('Save')"
                                       :disabled="!isEditedValid"
                                       icon="nf nf-fa-save"
                                       :notext="true"
-                                      @focusin.stop=""
+                                      @focusin.stop
                                       @click.prevent.stop="saveInline"
-                                      style="margin: 0 .1em"
-                          ></bbn-button>
+                                      style="margin: 0 .1em"/>
                           <bbn-button :text="_('Cancel')"
                                       icon="nf nf-fa-times"
                                       :notext="true"
-                                      @focusin.stop=""
+                                      @focusin.stop
                                       @click.prevent.stop="cancel"
-                                      style="margin: 0 .1em"
-                          ></bbn-button>
+                                      style="margin: 0 .1em"/>
                         </div>
                         <component v-else-if="(editMode === 'inline') && col.field && (col.editable !== false)"
                                   v-bind="getEditableOptions(col, d.data)"
                                   :is="getEditableComponent(col, d.data)"
-                                  @click.stop=""
+                                  @click.stop
                                   v-model="editedRow[col.field]"
-                                  style="width: 100%"
-                        ></component>
+                                  style="width: 100%"/>
                         <bbn-field v-else-if="col.field && !col.render && !col.buttons"
                                   v-bind="col"
-                                  @click.stop=""
+                                  @click.stop
                                   :key="d.rowKey"
                                   :value="d.data[col.field]"
-                                  :data="d.data">
-                        </bbn-field>
+                                  :data="d.data"/>
                         <div v-else-if="!col.buttons && col.render"
-                            v-html="col.render(d.data, col, i)"></div>
-                        <div v-else-if="!col.buttons" v-html="render(d.data, col, i)"></div>
+                             v-html="col.render(d.data, col, i)"/>
+                        <div v-else-if="!col.buttons"
+                             v-html="render(d.data, col, i)"/>
                         <div v-else> </div>
                       </div>
                       <component v-else-if="col.component"
                                 :is="col.component"
                                 v-bind="col.options"
-                                :source="col.mapper ? col.mapper(d.data) : d.data"
-                      ></component>
+                                :source="col.mapper ? col.mapper(d.data) : d.data"/>
                       <template v-else-if="col.buttons && dropdownMode">
                         <bbn-dropdown :source="Array.isArray(realButtons) ? realButtons : realButtons(d.data, col, i)"
                                       :placeholder="dropdownMode === true ? _('Action') : dropdownMode"
@@ -396,23 +381,22 @@
                         <bbn-button v-for="(button, bi) in (Array.isArray(realButtons) ? realButtons : realButtons(d.data, col, i))"
                                     :key="bi"
                                     v-bind="button"
-                                    @focusin.prevent.stop="() => {}"
-                                    @focusout.prevent.stop="() => {}"
+                                    @focusin.prevent.stop
+                                    @focusout.prevent.stop
                                     @click.prevent.stop="_execCommand(button, d.data, col, i, $event)"
-                                    style="margin: 0 .1em"
-                        ></bbn-button>
+                                    style="margin: 0 .1em"/>
                       </template>
                       <template v-else-if="col.buttons">
                         <bbn-button v-for="(button, bi) in (Array.isArray(col.buttons) ? col.buttons : col.buttons(d.data, col, i))"
                                     :key="bi"
                                     v-bind="button"
-                                    @focusin.prevent.stop="() => {}"
-                                    @focusout.prevent.stop="() => {}"
+                                    @focusin.prevent.stop
+                                    @focusout.prevent.stop
                                     @click.prevent.stop="_execCommand(button, d.data, col, i, $event)"
-                                    style="margin: 0 .1em"
-                        ></bbn-button>
+                                    style="margin: 0 .1em"/>
                       </template>
-                      <div v-else v-html="render(d.data, col, i)"></div>
+                      <div v-else
+                           v-html="render(d.data, col, i)"></div>
                     </template>
                   </div>
                 </td>
@@ -426,8 +410,9 @@
     <bbn-pager class="bbn-table-footer bbn-no-border-right bbn-no-border-left bbn-no-border-bottom"
                v-if="(pageable || saveable || filterable || isAjax || showable) && (footer !== false)"
                :element="_self"
-               :buttons="footerButtons"
-    ></bbn-pager>
+               :item-name="itemName"
+               :page-name="pageName"
+               :buttons="footerButtons"/>
   </div>
   <bbn-floater v-if="currentFilter"
                class="bbn-table-floating-filter bbn-widget"
@@ -440,16 +425,15 @@
     <bbn-filter v-bind="getFilterOptions()"
                 @set="onSetFilter"
                 @unset="unsetCurrentFilter"
-                class="bbn-w-100"
-    ></bbn-filter>
+                class="bbn-w-100"/>
     <div v-if="multifilter"
          class="bbn-table-filter-link bbn-p bbn-b bbn-i bbn-w-100 bbn-bottom-padded bbn-left-padded bbn-right-padded bbn-r"
          @click="openMultiFilter">
-      <i class="zmdi zmdi-filter-list"></i>
-      <span v-text="_('Open the full filter')"></span>
+      <i class="zmdi zmdi-filter-list"/>
+      <span v-text="_('Open the full filter')"/>
     </div>
   </bbn-floater>
-  <bbn-popup ref="popup" v-if="inTable === false"></bbn-popup>
+  <bbn-popup ref="popup" v-if="inTable === false"/>
   <bbn-floater v-if="focusedElement && (editMode === 'inline') && editedRow"
                class="bbn-widget"
                :element="focusedElement"
@@ -463,15 +447,13 @@
                     :notext="true"
                     @click.prevent.stop="saveInline"
                     style="margin: 0 .1em"
-                    tabindex="-1"
-        ></bbn-button>
+                    tabindex="-1"/>
         <bbn-button :text="_('Cancel')"
                     icon="nf nf-fa-times"
                     :notext="true"
                     @click.prevent.stop="cancel"
                     style="margin: 0 .1em"
-                    tabindex="-1"
-        ></bbn-button>
+                    tabindex="-1"/>
   </bbn-floater>
 </div>
 
@@ -792,6 +774,22 @@
           return !bbn.fn.isMobile() || bbn.fn.isTabletDevice();
         }
       },
+      /**
+       * The name of the `page` word as used in the pager interface.
+       * @prop {String} ['Page'] pageName
+       */
+      pageName: {
+        type: String,
+        default: bbn._("page")
+      },
+      /**
+       * The name of the `record` word as used in the pager interface.
+       * @prop {String} ['Record(s)'] itemName
+       */
+      itemName: {
+        type: String,
+        default: bbn._("rows")
+      }
     },
     data() {
       return {

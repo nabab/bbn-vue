@@ -10,16 +10,16 @@
       props: {
        /**
         * The component that will be rendered inside the main component.
-        * @prop {Number|String} maxWidth
-        * @memberof dimensionsComponent
+        * @prop {String|Object|Vue} component
+        * @memberof componentInsideComponent
         */
         component: {
           type: [String, Object, Vue]
         },
        /**
-        * The maximum height of the component.
-        * @prop {Number|String} maxHeight
-        * @memberof dimensionsComponent
+        * The component's props.
+        * @prop {Object} componentOptions
+        * @memberof componentInsideComponent
         */
         componentOptions: {
           type: Object,

@@ -870,6 +870,7 @@ document.body.insertAdjacentElement('beforeend', script);
                       w: scroll.naturalWidth,
                       h: scroll.naturalHeight
                     };
+                    /*
                     let footer;
                     if (this.footer) {
                       footer = this.getRef('footer');
@@ -881,7 +882,7 @@ document.body.insertAdjacentElement('beforeend', script);
                     if (footer) {
                       dimensions.h += footer.clientHeight || 0;
                     }
-
+                    */
                     let scrollChange = false;
                     if (this.scrollWidth !== dimensions.w) {
                       scrollChange = true;

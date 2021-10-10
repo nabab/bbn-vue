@@ -241,6 +241,12 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-background', 'bbn-overlay
                   @drop.prevent.stop="getRef('clipboard').copy($event); getRef('clipboard').show()"
             >
           </div>
+          <!-- POWER/ENV ICON -->
+          <div class="bbn-iblock bbn-right-space bbn-p bbn-rel">
+            <i class="nf nf-fa-power_off bbn-m"
+               tabindex="-1"
+               :style="{color: powerColor}"></i>
+          </div>
         </div>
       </div>
     </div>
@@ -486,6 +492,21 @@ document.body.insertAdjacentElement('beforeend', script);
       },
       footerComponent(){
         return (typeof this.footer !== 'undefined') && !!this.footer ? this.footer : false;
+      },
+      powerColor(){
+        if (this.mode === 'dev') {
+          return 'var(--purple)';
+        }
+
+        if (this.mode === 'prod') {
+          return 'var(--green)';
+        }
+
+        if (this.mode === 'dev') {
+          return 'var(--blue)';
+        }
+
+        return '';
       }
     },
     methods: {
