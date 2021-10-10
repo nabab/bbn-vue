@@ -60,6 +60,13 @@
       itemName: {
         type: String,
         default: bbn._("records")
+      },
+      /**
+       * The extra controls part on the right.
+       * @prop {Boolean} [true] extraControls
+       */
+      extraControls: {
+        default: true
       }
     },
     data(){
