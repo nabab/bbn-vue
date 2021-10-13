@@ -36,6 +36,7 @@
           }">
         <component v-if="currentComponent"
                    :is="currentComponent"
+                   v-bind="componentOptions"
                    :source="li.data"
                    :index="li.index"
                    @remove="remove(idx)"
