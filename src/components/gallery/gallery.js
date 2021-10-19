@@ -610,7 +610,7 @@
                * @memberof gallery-item
                */
               isSelected(){
-                return this.col.gallery.currentSelected.includes(this.source.index);
+                return this.col.gallery.currentSelected.includes(!!this.col.gallery.uid ? this.source.data[this.col.gallery.uid] : this.source.index);
               },
               /**
                * The image source
@@ -650,11 +650,12 @@
                */
               action(ev){
                 if ( this.col.gallery.isSelecting ){
+                  let id = !!this.col.gallery.uid ? this.source.data[this.col.gallery.uid] : this.source.index;
                   if ( this.isSelected ){
-                    this.col.gallery.currentSelected.splice(this.col.gallery.currentSelected.indexOf(this.source.index), 1);
+                    this.col.gallery.currentSelected.splice(this.col.gallery.currentSelected.indexOf(id), 1);
                   }
                   else {
-                    this.col.gallery.currentSelected.push(this.source.index);
+                    this.col.gallery.currentSelected.push(id);
                   }
                 }
                 else if (!ev.target.classList.contains('bbn-gallery-button-menu')
@@ -719,6 +720,59 @@
            */
           source: {
             type: [String, Object]
+          }
+        }
+      },
+      gallerySelected: {
+        name: 'gallery-selected',
+        template: `
+<div class="bbn-rel">
+  <i class="bbn-top-right nf nf-fa-close bbn-red bbn-vxspadded bbn-hspadded bbn-lg bbn-p"
+     @click="unselect"/>
+  <img :src="imgSrc">
+</div>
+        `,
+        props: {
+          source: {
+            type: [String, Number],
+            required: true
+          }
+        },
+        computed: {
+          gallery(){
+            return this.closest('bbn-gallery');
+          },
+          imgSrc(){
+            if (this.gallery) {
+              let data = {},
+                  src = '';
+              if (!!this.gallery.uid) {
+                data = bbn.fn.getRow(this.gallery.filteredData, `data.${this.gallery.uid}`, this.source);
+              }
+              else {
+                data = bbn.fn.getField(this.gallery.filteredData, 'data', 'index', this.source);
+              }
+              if (bbn.fn.isString(data)) {
+                src = data;
+              }
+              else {
+                let prop = this.gallery.pathName || 'thumb' || 'content';
+                if (data[prop]) {
+                  src = data[prop];
+                }
+              }
+              if (src) {
+                return `${src}${src.indexOf('?') > -1 ? '&' : '?'}w=70&thumb=1`;
+              }
+            }
+            return null;
+          }
+        },
+        methods: {
+          unselect(){
+            if (this.gallery){
+              this.gallery.currentSelected.splice(this.gallery.currentSelected.indexOf(this.source), 1);
+            }
           }
         }
       }
