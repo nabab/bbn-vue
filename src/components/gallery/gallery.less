@@ -66,6 +66,19 @@
   div.bbn-gallery-toolbar {
     margin-bottom: 10px;
   }
+  div.bbn-gallery-selected-panel {
+    min-width: 150px;
+    .bbn-gallery-selected-panel-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      img {
+        width: 70px;
+        height: 70px;
+        object-fit: contain;
+      }
+    }
+    
+  }
 }
 div.bbn-gallery-zoom {
   div.bbn-slideshow-arrow-left, div.bbn-slideshow-arrow-right {

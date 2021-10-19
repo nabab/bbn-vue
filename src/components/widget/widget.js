@@ -165,6 +165,16 @@
       padding: {
         type: [Boolean, Number, String],
         default: false
+      },
+      /**
+       * The additional data to send with the ajax call
+       * @prop {Object} [{}] data
+       */
+      data: {
+        type: Object,
+        default(){
+          return {}
+        }
       }
     },
     data(){
@@ -270,7 +280,7 @@
             params.limit = this.limit;
             params.start = this.currentStart;
           }
-          return this.post(this.url, params, (d) => {
+          return this.post(this.url, bbn.fn.extend(true, params, this.data), (d) => {
             if ( d.data !== undefined ){
               this.currentItems = d.data;
               if ( d.limit && (this.limit !== d.limit) ){

@@ -78,29 +78,44 @@
       </div>
     </template>
   </div>
-  <div ref="gallery" :class="{'bbn-flex-fill': scrollable}">
-    <div v-if="isLoading"
-         :class="['bbn-background', 'bbn-middle', 'bbn-padded', {
-           'bbn-overlay': scrollable,
-         }]">
-      <bbn-loadicon class="bbn-vmiddle"
-                    :size="24"/>
-      <span class="bbn-xl bbn-b bbn-left-sspace"
-            v-text="_('Loading') + '...'"/>
-    </div>
-    <component :is="scrollable ? 'bbn-scroll' : 'div'"
-               v-else-if="total"
-    >
-      <div :style="{margin: '0 auto', textAlign: align}">
-        <gallery-col v-for="(col, index) in cols"
-                     :key="'gallery-col-'+index"
-                     :index="index"
-                     :source="currentView.filter((it, i) => {
-                        return i % cols === index;
-                      })"
-        ></gallery-col>
+  <div :class="{'bbn-flex-fill': scrollable}">
+    <div :class="['bbn-flex-width', {'bbn-overlay': scrollable}]">
+      <div v-if="!!currentSelected && currentSelected.length"
+           class="bbn-gallery-selected-panel bbn-rel">
+        <bbn-scroll>
+          <div class="bbn-gallery-selected-panel-grid bbn-hxspadded">
+            <gallery-selected v-for="(sel, idx) in currentSelected"
+                              :source="sel"
+                              :key="idx"/>
+          </div>
+        </bbn-scroll>
       </div>
-    </component>
+      <div ref="gallery"
+           class="bbn-flex-fill">
+        <div v-if="isLoading"
+            :class="['bbn-background', 'bbn-middle', 'bbn-padded', {
+              'bbn-overlay': scrollable,
+            }]">
+          <bbn-loadicon class="bbn-vmiddle"
+                        :size="24"/>
+          <span class="bbn-xl bbn-b bbn-left-sspace"
+                v-text="_('Loading') + '...'"/>
+        </div>
+        <component :is="scrollable ? 'bbn-scroll' : 'div'"
+                  v-else-if="total"
+        >
+          <div :style="{margin: '0 auto', textAlign: align}">
+            <gallery-col v-for="(col, index) in cols"
+                        :key="'gallery-col-'+index"
+                        :index="index"
+                        :source="currentView.filter((it, i) => {
+                            return i % cols === index;
+                          })"
+            ></gallery-col>
+          </div>
+        </component>
+      </div>
+    </div>
   </div>
   <bbn-pager class="bbn-gallery-pager"
               :element="_self"
