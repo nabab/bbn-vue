@@ -250,7 +250,8 @@
          * The research timeout
          * @data {Number} [0] searchTimeout
          */
-        searchTimeout: 0
+        searchTimeout: 0,
+        currentSelectedData: []
       }
     },
     computed: {
@@ -653,9 +654,18 @@
                   let id = !!this.col.gallery.uid ? this.source.data[this.col.gallery.uid] : this.source.index;
                   if ( this.isSelected ){
                     this.col.gallery.currentSelected.splice(this.col.gallery.currentSelected.indexOf(id), 1);
+                    if (!!this.col.gallery.uid) {
+                      let idx = bbn.fn.search(this.col.gallery.currentSelectedData, this.col.gallery.uid, id);
+                      if (idx > -1) {
+                        this.col.gallery.currentSelectedData.splice(idx, 1);
+                      }
+                    }
                   }
                   else {
                     this.col.gallery.currentSelected.push(id);
+                    if (!!this.col.gallery.uid) {
+                      this.col.gallery.currentSelectedData.push(this.source.data);
+                    }
                   }
                 }
                 else if (!ev.target.classList.contains('bbn-gallery-button-menu')
@@ -729,7 +739,8 @@
 <div class="bbn-rel">
   <i class="bbn-top-right nf nf-fa-close bbn-red bbn-vxspadded bbn-hspadded bbn-lg bbn-p"
      @click="unselect"/>
-  <img :src="imgSrc">
+  <img :src="imgSrc"
+       class="bbn-radius bbn-bordered">
 </div>
         `,
         props: {
@@ -747,10 +758,7 @@
               let data = {},
                   src = '';
               if (!!this.gallery.uid) {
-                data = bbn.fn.getRow(this.gallery.filteredData, `data.${this.gallery.uid}`, this.source);
-              }
-              else {
-                data = bbn.fn.getField(this.gallery.filteredData, 'data', 'index', this.source);
+                data = bbn.fn.getRow(this.gallery.currentSelectedData, this.gallery.uid, this.source);
               }
               if (bbn.fn.isString(data)) {
                 src = data;
