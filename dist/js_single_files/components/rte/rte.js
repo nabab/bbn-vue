@@ -133,7 +133,8 @@ document.body.insertAdjacentElement('beforeend', script);
        */
       buttons: {
         type: Array,
-        default(){
+        /*default(){
+          return ['source', '|', 'bold', 'italic', '|', 'ul', 'ol', '|', 'font', 'fontsize', 'brush', 'paragraph', '|','image', 'video', 'table', 'link', '|', 'left', 'center', 'right', 'justify', '|', 'undo', 'redo', '|', 'hr', 'eraser', 'fullsize'];
           return [
             ['viewHTML'],
             ['undo', 'redo'], // Only supported in Blink browsers
@@ -149,7 +150,7 @@ document.body.insertAdjacentElement('beforeend', script);
             ['fullscreen'],
 
           ];
-        }
+        }*/
       },
       /**
        * The object of configuration.
@@ -208,7 +209,7 @@ document.body.insertAdjacentElement('beforeend', script);
      * @event mounted
      */
     mounted(){
-      this.widget = new Jodit(this.getRef('element'), {
+      let cfg = {
         iframe: this.iFrame,
         disabled: this.disabled,
         readOnly: this.readOnly,
@@ -224,7 +225,11 @@ document.body.insertAdjacentElement('beforeend', script);
           insertImageAsBase64URI: true
         },
         iframeCSSLinks: this.iFrame ? this.iframeCSSLinks : []
-      });
+      };
+      if (!!this.buttons) {
+        cfg.buttons = this.buttons;
+      }
+      this.widget = new Jodit(this.getRef('element'), cfg);
       if ( this.iFrame ){
         this.widget.iframeCSSLinks = this.iframeCSSLinks
       }

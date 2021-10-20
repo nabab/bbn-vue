@@ -982,8 +982,12 @@
      * @param {String} path The relative path to the component from the given component.
      */
      getComponentName(vm, path){
-      if (!path || !vm.$options.name) {
+      if (!vm.$options.name) {
         return null;
+      }
+
+      if (!path) {
+        return vm.$options.name;
       }
 
       let bits = path.split('/');

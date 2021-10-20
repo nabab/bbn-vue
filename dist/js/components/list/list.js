@@ -39,6 +39,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-floater-list']"
           }">
         <component v-if="currentComponent"
                    :is="currentComponent"
+                   v-bind="componentOptions"
                    :source="li.data"
                    :index="li.index"
                    @remove="remove(idx)"
@@ -125,6 +126,7 @@ document.head.insertAdjacentElement('beforeend', css);
      * @mixin bbn.vue.keepCoolComponent
      * @mixin bbn.vue.resizerComponent
      * @mixin bbn.vue.eventsComponent
+     * @mixin bbn.vue.componentInsideComponent
      */
     mixins: [
       bbn.vue.basicComponent,
@@ -133,7 +135,8 @@ document.head.insertAdjacentElement('beforeend', css);
       bbn.vue.positionComponent,
       bbn.vue.keepCoolComponent,
       bbn.vue.resizerComponent,
-      bbn.vue.eventsComponent
+      bbn.vue.eventsComponent,
+      bbn.vue.componentInsideComponent
     ],
     props: {
       /**

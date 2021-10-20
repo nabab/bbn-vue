@@ -1133,7 +1133,7 @@ document.body.insertAdjacentElement('beforeend', script);
               dataLabels: {
                 total: {
                   show: true,
-                  total: bbn._('TOTAL')
+                  label: bbn._('TOTAL')
                 }
               }
             }

@@ -923,7 +923,10 @@ document.head.insertAdjacentElement('beforeend', css);
               appui.loaders.unshift(bbn.env.loadersHistory[0]);
               let i = appui.loaders.length - 1;
               while ( (i > 0) && (appui.loaders.length > bbn.env.maxLoadersHistory) ){
-                appui.loaders.splice(i, 1);
+                if (!appui.loaders[i].loading) {
+                  appui.loaders.splice(i, 1);
+                }
+
                 i--;
               }
             }

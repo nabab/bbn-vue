@@ -1046,7 +1046,7 @@ document.head.insertAdjacentElement('beforeend', css);
           if (chat.unread) {
             this.$set(chat, 'unread', 0);
           }
-          if (chat.messages.length) {
+          if (!!chat.messages && chat.messages.length) {
             for (let i = chat.messages.length - 1; i > -1; i--) {
               if ((chat.messages[i].user !== this.userId) && (chat.messages[i].unread !== undefined)) {
                 if (!chat.messages[i].unread) {

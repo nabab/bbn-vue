@@ -3377,7 +3377,7 @@
       // Adding bbns-column from the slot
       if (this.$slots.default) {
         for (let node of this.$slots.default) {
-          bbn.fn.log("TRYING TO ADD COLUMN", node);
+          //bbn.fn.log("TRYING TO ADD COLUMN", node);
           if (
             node.componentOptions &&
             (node.componentOptions.tag === 'bbns-column')

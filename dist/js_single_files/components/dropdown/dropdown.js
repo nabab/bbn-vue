@@ -101,9 +101,8 @@ script.innerHTML = `<div :class="[
                :source="filteredData"
                :source-text="sourceText"
                :source-value="sourceValue"
-               :title="floaterTitle"
-  ></bbn-floater>
-  <bbn-floater v-if="!popup
+               :title="floaterTitle"/>
+  <bbn-floater v-else-if="!popup
                  && asMobile
                  && filteredData.length
                  && !disabled
@@ -126,8 +125,7 @@ script.innerHTML = `<div :class="[
                :source-value="sourceValue"
                :closable="closable"
                :buttons="realButtons"
-               :title="floaterTitle"
-  ></bbn-floater>
+               :title="floaterTitle"/>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-dropdown');
 script.setAttribute('type', 'text/x-template');

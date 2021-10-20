@@ -32,7 +32,7 @@ script.innerHTML = `<div :class="[
               'bbn-w-100': !isResizing
             }">
       <div v-if="title"
-           class="bbn-w-100">
+          class="bbn-w-100">
         <h3 v-html="title"
             class="bbn-no-margin bbn-spadded"
             ref="title"/>
@@ -72,7 +72,7 @@ script.innerHTML = `<div :class="[
                   :min-height="currentMinHeight > outHeight ? currentMinHeight - outHeight : null"
                   @resize="scrollResize">
         <component v-if="component"
-                   ref="component"
+                  ref="component"
                   :is="component"
                   v-bind="realComponentOptions"/>
         <slot v-else-if="$slots.default"/>
@@ -97,9 +97,9 @@ script.innerHTML = `<div :class="[
         <h3 v-else v-text="noData"/>
       </bbn-scroll>
       <component is="style"
-                 v-if="css"
-                 scoped="scoped"
-                 v-html="css"/>
+                v-if="css"
+                scoped="scoped"
+                v-html="css"/>
     </div>
     <footer v-if="footer"
             v-html="footer"
@@ -122,7 +122,8 @@ script.innerHTML = `<div :class="[
                   v-bind="b"/>
     </footer>
   </div>
-</div>`;
+</div>
+`;
 script.setAttribute('id', 'bbn-tpl-component-floater');
 script.setAttribute('type', 'text/x-template');
 document.body.insertAdjacentElement('beforeend', script);
