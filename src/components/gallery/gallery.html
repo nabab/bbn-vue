@@ -9,6 +9,11 @@
       <div class="bbn-flex-width">
         <div class="bbn-flex-fill">
           <div class="bbn-flex-width">
+            <bbn-button v-if="toolbarButtons && toolbarButtons.length"
+                        v-for="(btn, idx) in toolbarButtons"
+                        :disabled="isSelecting"
+                        v-bind="btn"
+                        :key="idx"/>
             <bbn-button :text="_('Select')"
                         icon="nf nf-mdi-vector_selection"
                         @click="setSelecting('selection')"

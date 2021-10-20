@@ -1,24 +1,33 @@
-<textarea :class="[
-            'bbn-textbox',
-            componentClass,
-            {'bbn-state-disabled': !!disabled}
-          ]"
-          :value="value"
-          :name="name"
-          ref="element"
-          @input="emitInput($event.target.value)"
-          @click="click($event)"
-          @focus="focus($event)"
-          @blur="blur($event)"
-          @change="change($event)"
-          @keydown="keydown($event)"
-          @keydown.enter.stop=""
-          @keyup="keyup($event)"
-          @paste="$emit('paste', $event)"
-          :disabled="disabled"
-          :required="required"
-          :placeholder="placeholder"
-          :maxlength="maxlength"
-          :rows="rows"
-          :cols="cols"
-></textarea>
+<div :class="[
+        'bbn-textbox',
+        componentClass,
+        {'bbn-state-disabled': !!disabled}
+      ]">
+  <textarea :class="[
+              'bbn-no-border',
+              'bbn-radius',
+              'bbn-w-100',
+              'bbn-spadded',
+              {'bbn-state-disabled': !!disabled}
+            ]"
+            style="max-width: 100%; min-width: 100%; min-height: 100%"
+            :value="value"
+            :name="name"
+            ref="element"
+            @input="emitInput($event.target.value)"
+            @click="click($event)"
+            @focus="focus($event)"
+            @blur="blur($event)"
+            @change="change($event)"
+            @keydown="keydown($event)"
+            @keydown.enter.stop=""
+            @keyup="keyup($event)"
+            @paste="$emit('paste', $event)"
+            :disabled="disabled"
+            :required="required"
+            :placeholder="placeholder"
+            :maxlength="maxlength"
+            :rows="rows"
+            :cols="cols"
+  ></textarea>
+</div>

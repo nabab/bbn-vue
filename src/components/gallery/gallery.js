@@ -30,11 +30,21 @@
       },
       /**
        * The alternative component for the toolbar.
-       * @props {Vue|Object|Boolean} toolbar
+       * @prop {Vue|Object|Boolean} toolbar
        */
       toolbar: {
         type: [Vue, Object, Boolean],
         default: true
+      },
+      /**
+       * Extra buttons to add to begin of the toolbar
+       * @prop {Array} [[]] toolbatButtons
+       */
+      toolbarButtons: {
+        type: Array,
+        default(){
+          return [];
+        }
       },
       /**
        * @prop {Boolean|String} [false] overlay
@@ -251,6 +261,10 @@
          * @data {Number} [0] searchTimeout
          */
         searchTimeout: 0,
+        /**
+         * The data of the current selected items
+         * @data {Array} [[]] currentSelectedData
+         */
         currentSelectedData: []
       }
     },
@@ -325,6 +339,7 @@
           this.isSelecting = false;
           this.selectingMode = false;
           this.currentSelected.splice(0);
+          this.currentSelectedData.splice(0);
         }
       },
       /**
@@ -334,10 +349,7 @@
        */
        emitAction(){
         if (this.currentSelected.length) {
-          let mess = '',
-              selected = this.currentSelected.map(v => {
-                return bbn.fn.extend(true, {}, bbn.fn.getField(this.currentData, 'data', {index: v}));
-              });
+          let mess = '';
           if (this.selectingMode === 'download') {
             mess = bbn._("Are you sure you want to download these photos?");
           }
@@ -346,12 +358,12 @@
           }
           if (mess.length) {
             this.confirm(mess, () => {
-              this.$emit(this.selectingMode, selected);
+              this.$emit(this.selectingMode, this.currentSelectedData);
               this.setSelecting(false);
             });
           }
           else {
-            this.$emit(this.selectingMode, selected);
+            this.$emit(this.selectingMode, this.currentSelectedData);
             this.setSelecting(false);
           }
         }
@@ -630,7 +642,7 @@
                     src = this.source.data[prop];
                   }
                 }
-                if (src) {
+                if (!!src && bbn.fn.isString(src)) {
                   return `${src}${src.indexOf('?') > -1 ? '&' : '?'}w=${this.col.gallery.currentItemWidth}&thumb=1`;
                 }
                 return null;
@@ -698,7 +710,7 @@
                   });
                 }
                 else {
-                  this.closest('bbn-gallery').$emit('clickItem', this.source);
+                  this.col.gallery.$emit('clickItem', this.source);
                 }
               }
             }
@@ -707,7 +719,6 @@
       },
       /**
        * @component gallery-zoom
-       * @memberof gallery-item
        */
       galleryZoom: {
         name: 'gallery-zoom',
@@ -733,6 +744,9 @@
           }
         }
       },
+      /**
+       * @component gallery-selected
+       */
       gallerySelected: {
         name: 'gallery-selected',
         template: `
@@ -744,15 +758,30 @@
 </div>
         `,
         props: {
+          /**
+           * @prop {String|Number} source
+           * @memberof gallery-selected
+           */
           source: {
             type: [String, Number],
             required: true
           }
         },
         computed: {
+          /**
+           * @computed gallery
+           * @memberof gallery-selected
+           * @fires closest
+           * @return {Vue}
+           */
           gallery(){
             return this.closest('bbn-gallery');
           },
+          /**
+           * @computed imgSrc
+           * @memberof gallery-selected
+           * @return {String|null}
+           */
           imgSrc(){
             if (this.gallery) {
               let data = {},
@@ -769,7 +798,7 @@
                   src = data[prop];
                 }
               }
-              if (src) {
+              if (!!src && bbn.fn.isString(src)) {
                 return `${src}${src.indexOf('?') > -1 ? '&' : '?'}w=70&thumb=1`;
               }
             }
@@ -777,6 +806,10 @@
           }
         },
         methods: {
+          /**
+           * @method unselect
+           * @memberof gallery-selected
+           */
           unselect(){
             if (this.gallery){
               this.gallery.currentSelected.splice(this.gallery.currentSelected.indexOf(this.source), 1);

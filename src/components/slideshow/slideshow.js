@@ -668,7 +668,13 @@
       currentIndex(val){
         let miniatures = this.getRef('miniatures');
         if ( miniatures ){
-          miniatures.getRef('scroll').getRef('xScroller').scrollTo(miniatures.$refs.items[val]);
+          let scroll = miniatures.getRef('scroll');
+          if (scroll) {
+            let xScroller = scroll.getRef('xScroller');
+            if (xScroller) {
+              xScroller.scrollTo(miniatures.$refs.items[val]);
+            }
+          }
         }
         this.$emit('changeSlide', val);
       }

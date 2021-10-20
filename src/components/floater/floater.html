@@ -7,6 +7,7 @@
         },
         componentClass
       ]"
+      v-if="isVisible"
       tabindex="0"
       @focus="onFocus"
       @resize.stop="onResize"
@@ -16,7 +17,7 @@
       @subready.stop
       :style="currentStyle">
   <div :style="containerStyle"
-      :class="{'bbn-flex-height': outHeight > 0}">
+       :class="{'bbn-flex-height': outHeight > 0}">
     <header v-if="title"
             ref="header"
             :class="{
