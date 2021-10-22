@@ -67,7 +67,15 @@
        */
       extraControls: {
         default: true
-      }
+      },
+      /**
+       * False if you wanto to hide the limit selector
+       * @prop {Boolean} [true] limit
+       */
+       limit: {
+        type: Boolean,
+        default: true
+      },
     },
     data(){
       return {

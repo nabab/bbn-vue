@@ -222,6 +222,14 @@
       resizable: {
         type: Boolean,
         default: true
+      },
+      /**
+       * Set to false to hide the pager.
+       * @prop {Boolean} [true] pager
+       */
+      pager: {
+        type: Boolean,
+        default: true
       }
     },
     data(){
@@ -416,6 +424,9 @@
             })
           }
         }, 1000)
+      },
+      itemWidth(val){
+        this.currentItemWidth = val;
       }
     },
     components: {

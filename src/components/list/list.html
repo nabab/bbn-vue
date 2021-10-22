@@ -21,7 +21,7 @@
         <div v-else
              v-text="li.data[sourceGroup]"/>
       </li>
-      <li v-if="!pageable || ((idx >= start) && (idx < start + currentLimit))"
+      <li v-if="!pageable || ((idx >= start) && (idx < start + currentLimit)) || (!!pageable && !!serverPaging)"
           @mouseenter="mouseenter($event, idx)"
           :ref="'li' + idx"
           :key="uid ? li.data[uid] : idx"
