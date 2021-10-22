@@ -100,6 +100,9 @@
           currentUnit = match[0];
         }
       }
+      if (!!this.showUnits && !currentUnit) {
+        currentUnit = 'px';
+      }
       return {
         /**
          * The property 'size' normalized.
