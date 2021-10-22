@@ -100,9 +100,8 @@
                :source="filteredData"
                :source-text="sourceText"
                :source-value="sourceValue"
-               :title="floaterTitle"
-  ></bbn-floater>
-  <bbn-floater v-if="!popup
+               :title="floaterTitle"/>
+  <bbn-floater v-else-if="!popup
                  && asMobile
                  && filteredData.length
                  && !disabled
@@ -125,8 +124,7 @@
                :source-value="sourceValue"
                :closable="closable"
                :buttons="realButtons"
-               :title="floaterTitle"
-  ></bbn-floater>
+               :title="floaterTitle"/>
 </div>
 </template>
 <script>

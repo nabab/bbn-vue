@@ -13,7 +13,6 @@
     <bbn-list :source="source"
               :selection="true"
               class="bbn-reset"
-              :uid="sourceValue"
               ref="list"
               :selected="value"
               :component="realComponent"

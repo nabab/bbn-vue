@@ -125,6 +125,6 @@
   <bbn-pager class="bbn-gallery-pager"
               :element="_self"
               ref="pager"
-              v-if="pageable || isAjax"
+              v-if="(pageable || isAjax) && !!pager"
   ></bbn-pager>
 </div>

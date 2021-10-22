@@ -1,6 +1,9 @@
 <span :class="[componentClass, 'bbn-flex-width', 'bbn-vmiddle']"
 	    :style="(currentSize !== '') ? 'width:' + currentSize : '' ">
-  <input :value="value"
+	<span v-text="value"
+        class="bbn-right-space bbn-nowrap"
+				v-if="showLabel"/>
+  <input :value="parseInt(value)"
          type="range"
          :name="name"
          ref="element"
@@ -9,7 +12,7 @@
          :required="required"
          :min="min"
          :max="max"
-         @input="emitInput(parseInt($refs.element.value))"
+         @input="_changeValue"
          @click="click"
          @focus="focus"
          @blur="blur"
@@ -23,5 +26,10 @@
          class="bbn-range-input bbn-radius bbn-flex-fill">
   <i class="nf nf-mdi-backup_restore bbn-p bbn-m bbn-left-xsspace"
      @click="reset"
-     :title="_('Reset')"/>
+     :title="_('Reset')"
+		 v-if="showReset"/>
+	<bbn-dropdown v-if="showUnits"
+								:source="units"
+								v-model="currentUnit"
+								class="bbn-left-sspace bbn-narrow"/>
 </span>

@@ -11,6 +11,11 @@ script.innerHTML = `<div :class="[componentClass, {'bbn-flex-height': scrollable
       <div class="bbn-flex-width">
         <div class="bbn-flex-fill">
           <div class="bbn-flex-width">
+            <bbn-button v-if="toolbarButtons && toolbarButtons.length"
+                        v-for="(btn, idx) in toolbarButtons"
+                        :disabled="isSelecting"
+                        v-bind="btn"
+                        :key="idx"/>
             <bbn-button :text="_('Select')"
                         icon="nf nf-mdi-vector_selection"
                         @click="setSelecting('selection')"
@@ -80,29 +85,44 @@ script.innerHTML = `<div :class="[componentClass, {'bbn-flex-height': scrollable
       </div>
     </template>
   </div>
-  <div ref="gallery" :class="{'bbn-flex-fill': scrollable}">
-    <div v-if="isLoading"
-         :class="['bbn-background', 'bbn-middle', 'bbn-padded', {
-           'bbn-overlay': scrollable,
-         }]">
-      <bbn-loadicon class="bbn-vmiddle"
-                    :size="24"/>
-      <span class="bbn-xl bbn-b bbn-left-sspace"
-            v-text="_('Loading') + '...'"/>
-    </div>
-    <component :is="scrollable ? 'bbn-scroll' : 'div'"
-               v-else-if="total"
-    >
-      <div :style="{margin: '0 auto', textAlign: align}">
-        <gallery-col v-for="(col, index) in cols"
-                     :key="'gallery-col-'+index"
-                     :index="index"
-                     :source="currentView.filter((it, i) => {
-                        return i % cols === index;
-                      })"
-        ></gallery-col>
+  <div :class="{'bbn-flex-fill': scrollable}">
+    <div :class="['bbn-flex-width', {'bbn-overlay': scrollable}]">
+      <div v-if="!!currentSelected && currentSelected.length && !!uid"
+           class="bbn-gallery-selected-panel bbn-rel">
+        <bbn-scroll>
+          <div class="bbn-gallery-selected-panel-grid bbn-hxspadded">
+            <gallery-selected v-for="(sel, idx) in currentSelected"
+                              :source="sel"
+                              :key="idx"/>
+          </div>
+        </bbn-scroll>
       </div>
-    </component>
+      <div ref="gallery"
+           class="bbn-flex-fill">
+        <div v-if="isLoading"
+            :class="['bbn-background', 'bbn-middle', 'bbn-padded', {
+              'bbn-overlay': scrollable,
+            }]">
+          <bbn-loadicon class="bbn-vmiddle"
+                        :size="24"/>
+          <span class="bbn-xl bbn-b bbn-left-sspace"
+                v-text="_('Loading') + '...'"/>
+        </div>
+        <component :is="scrollable ? 'bbn-scroll' : 'div'"
+                  v-else-if="total"
+        >
+          <div :style="{margin: '0 auto', textAlign: align}">
+            <gallery-col v-for="(col, index) in cols"
+                        :key="'gallery-col-'+index"
+                        :index="index"
+                        :source="currentView.filter((it, i) => {
+                            return i % cols === index;
+                          })"
+            ></gallery-col>
+          </div>
+        </component>
+      </div>
+    </div>
   </div>
   <bbn-pager class="bbn-gallery-pager"
               :element="_self"
@@ -145,11 +165,21 @@ document.body.insertAdjacentElement('beforeend', script);
       },
       /**
        * The alternative component for the toolbar.
-       * @props {Vue|Object|Boolean} toolbar
+       * @prop {Vue|Object|Boolean} toolbar
        */
       toolbar: {
         type: [Vue, Object, Boolean],
         default: true
+      },
+      /**
+       * Extra buttons to add to begin of the toolbar
+       * @prop {Array} [[]] toolbatButtons
+       */
+      toolbarButtons: {
+        type: Array,
+        default(){
+          return [];
+        }
       },
       /**
        * @prop {Boolean|String} [false] overlay
@@ -365,7 +395,12 @@ document.body.insertAdjacentElement('beforeend', script);
          * The research timeout
          * @data {Number} [0] searchTimeout
          */
-        searchTimeout: 0
+        searchTimeout: 0,
+        /**
+         * The data of the current selected items
+         * @data {Array} [[]] currentSelectedData
+         */
+        currentSelectedData: []
       }
     },
     computed: {
@@ -439,6 +474,7 @@ document.body.insertAdjacentElement('beforeend', script);
           this.isSelecting = false;
           this.selectingMode = false;
           this.currentSelected.splice(0);
+          this.currentSelectedData.splice(0);
         }
       },
       /**
@@ -448,10 +484,7 @@ document.body.insertAdjacentElement('beforeend', script);
        */
        emitAction(){
         if (this.currentSelected.length) {
-          let mess = '',
-              selected = this.currentSelected.map(v => {
-                return bbn.fn.extend(true, {}, bbn.fn.getField(this.currentData, 'data', {index: v}));
-              });
+          let mess = '';
           if (this.selectingMode === 'download') {
             mess = bbn._("Are you sure you want to download these photos?");
           }
@@ -460,12 +493,12 @@ document.body.insertAdjacentElement('beforeend', script);
           }
           if (mess.length) {
             this.confirm(mess, () => {
-              this.$emit(this.selectingMode, selected);
+              this.$emit(this.selectingMode, this.currentSelectedData);
               this.setSelecting(false);
             });
           }
           else {
-            this.$emit(this.selectingMode, selected);
+            this.$emit(this.selectingMode, this.currentSelectedData);
             this.setSelecting(false);
           }
         }
@@ -725,7 +758,7 @@ document.body.insertAdjacentElement('beforeend', script);
                * @memberof gallery-item
                */
               isSelected(){
-                return this.col.gallery.currentSelected.includes(this.source.index);
+                return this.col.gallery.currentSelected.includes(!!this.col.gallery.uid ? this.source.data[this.col.gallery.uid] : this.source.index);
               },
               /**
                * The image source
@@ -744,7 +777,7 @@ document.body.insertAdjacentElement('beforeend', script);
                     src = this.source.data[prop];
                   }
                 }
-                if (src) {
+                if (!!src && bbn.fn.isString(src)) {
                   return `${src}${src.indexOf('?') > -1 ? '&' : '?'}w=${this.col.gallery.currentItemWidth}&thumb=1`;
                 }
                 return null;
@@ -765,11 +798,21 @@ document.body.insertAdjacentElement('beforeend', script);
                */
               action(ev){
                 if ( this.col.gallery.isSelecting ){
+                  let id = !!this.col.gallery.uid ? this.source.data[this.col.gallery.uid] : this.source.index;
                   if ( this.isSelected ){
-                    this.col.gallery.currentSelected.splice(this.col.gallery.currentSelected.indexOf(this.source.index), 1);
+                    this.col.gallery.currentSelected.splice(this.col.gallery.currentSelected.indexOf(id), 1);
+                    if (!!this.col.gallery.uid) {
+                      let idx = bbn.fn.search(this.col.gallery.currentSelectedData, this.col.gallery.uid, id);
+                      if (idx > -1) {
+                        this.col.gallery.currentSelectedData.splice(idx, 1);
+                      }
+                    }
                   }
                   else {
-                    this.col.gallery.currentSelected.push(this.source.index);
+                    this.col.gallery.currentSelected.push(id);
+                    if (!!this.col.gallery.uid) {
+                      this.col.gallery.currentSelectedData.push(this.source.data);
+                    }
                   }
                 }
                 else if (!ev.target.classList.contains('bbn-gallery-button-menu')
@@ -802,7 +845,7 @@ document.body.insertAdjacentElement('beforeend', script);
                   });
                 }
                 else {
-                  this.closest('bbn-gallery').$emit('clickItem', this.source);
+                  this.col.gallery.$emit('clickItem', this.source);
                 }
               }
             }
@@ -811,7 +854,6 @@ document.body.insertAdjacentElement('beforeend', script);
       },
       /**
        * @component gallery-zoom
-       * @memberof gallery-item
        */
       galleryZoom: {
         name: 'gallery-zoom',
@@ -834,6 +876,79 @@ document.body.insertAdjacentElement('beforeend', script);
            */
           source: {
             type: [String, Object]
+          }
+        }
+      },
+      /**
+       * @component gallery-selected
+       */
+      gallerySelected: {
+        name: 'gallery-selected',
+        template: `
+<div class="bbn-rel">
+  <i class="bbn-top-right nf nf-fa-close bbn-red bbn-vxspadded bbn-hspadded bbn-lg bbn-p"
+     @click="unselect"/>
+  <img :src="imgSrc"
+       class="bbn-radius bbn-bordered">
+</div>
+        `,
+        props: {
+          /**
+           * @prop {String|Number} source
+           * @memberof gallery-selected
+           */
+          source: {
+            type: [String, Number],
+            required: true
+          }
+        },
+        computed: {
+          /**
+           * @computed gallery
+           * @memberof gallery-selected
+           * @fires closest
+           * @return {Vue}
+           */
+          gallery(){
+            return this.closest('bbn-gallery');
+          },
+          /**
+           * @computed imgSrc
+           * @memberof gallery-selected
+           * @return {String|null}
+           */
+          imgSrc(){
+            if (this.gallery) {
+              let data = {},
+                  src = '';
+              if (!!this.gallery.uid) {
+                data = bbn.fn.getRow(this.gallery.currentSelectedData, this.gallery.uid, this.source);
+              }
+              if (bbn.fn.isString(data)) {
+                src = data;
+              }
+              else {
+                let prop = this.gallery.pathName || 'thumb' || 'content';
+                if (data[prop]) {
+                  src = data[prop];
+                }
+              }
+              if (!!src && bbn.fn.isString(src)) {
+                return `${src}${src.indexOf('?') > -1 ? '&' : '?'}w=70&thumb=1`;
+              }
+            }
+            return null;
+          }
+        },
+        methods: {
+          /**
+           * @method unselect
+           * @memberof gallery-selected
+           */
+          unselect(){
+            if (this.gallery){
+              this.gallery.currentSelected.splice(this.gallery.currentSelected.indexOf(this.source), 1);
+            }
           }
         }
       }

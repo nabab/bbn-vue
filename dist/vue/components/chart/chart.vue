@@ -1122,7 +1122,7 @@
               dataLabels: {
                 total: {
                   show: true,
-                  total: bbn._('TOTAL')
+                  label: bbn._('TOTAL')
                 }
               }
             }

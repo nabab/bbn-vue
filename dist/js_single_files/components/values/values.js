@@ -2,7 +2,7 @@
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass]"
      tabindex="-1">
-  <div class="bbn-vspadded">
+  <div>
     <bbn-input v-model="currentInput"
                :readonly="max && (value.length > max)"
                @keydown="keydown"

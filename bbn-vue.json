@@ -3614,6 +3614,16 @@
                         "url": "bbn-vue\/component\/gallery\/doc\/props#scrollable"
                     },
                     {
+                        "text": "toolbar",
+                        "desc": "The alternative component for the toolbar.",
+                        "url": "bbn-vue\/component\/gallery\/doc\/props#toolbar"
+                    },
+                    {
+                        "text": "toolbatButtons",
+                        "desc": "Extra buttons to add to begin of the toolbar",
+                        "url": "bbn-vue\/component\/gallery\/doc\/props#toolbatButtons"
+                    },
+                    {
                         "text": "overlay",
                         "desc": "",
                         "url": "bbn-vue\/component\/gallery\/doc\/props#overlay"
@@ -4275,6 +4285,11 @@
                         "text": "eventsComponent",
                         "desc": "",
                         "url": "bbn-vue\/component\/list\/doc\/mixins#eventsComponent"
+                    },
+                    {
+                        "text": "componentInsideComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/list\/doc\/mixins#componentInsideComponent"
                     }
                 ]
             },
@@ -4876,6 +4891,11 @@
                         "text": "itemName",
                         "desc": "The name of the `record` word as used in the pager interface.",
                         "url": "bbn-vue\/component\/pager\/doc\/props#itemName"
+                    },
+                    {
+                        "text": "extraControls",
+                        "desc": "The extra controls part on the right.",
+                        "url": "bbn-vue\/component\/pager\/doc\/props#extraControls"
                     }
                 ],
                 "methods": [
@@ -5133,6 +5153,19 @@
                 ]
             },
             {
+                "text": "portal",
+                "url": "bbn-vue\/component\/portal\/overview",
+                "props": [],
+                "methods": [],
+                "mixins": [
+                    {
+                        "text": "basicComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/portal\/doc\/mixins#basicComponent"
+                    }
+                ]
+            },
+            {
                 "text": "progressbar",
                 "url": "bbn-vue\/component\/progressbar\/overview",
                 "props": [
@@ -5341,6 +5374,65 @@
                         "text": "eventsComponent",
                         "desc": "",
                         "url": "bbn-vue\/component\/radio\/doc\/mixins#eventsComponent"
+                    }
+                ]
+            },
+            {
+                "text": "radiobuttons",
+                "url": "bbn-vue\/component\/radiobuttons\/overview",
+                "props": [
+                    {
+                        "text": "vertical",
+                        "desc": "Set to true to arrange the radio buttons vertically.",
+                        "url": "bbn-vue\/component\/radiobuttons\/doc\/props#vertical"
+                    },
+                    {
+                        "text": "sourceText",
+                        "desc": "The name of the property in the item object used as a text.",
+                        "url": "bbn-vue\/component\/radiobuttons\/doc\/props#sourceText"
+                    },
+                    {
+                        "text": "sourceText",
+                        "desc": "The name of the property in the item object used as a text.",
+                        "url": "bbn-vue\/component\/radiobuttons\/doc\/props#sourceText"
+                    },
+                    {
+                        "text": "sourceValue",
+                        "desc": "The name of the property in the item object used as a value",
+                        "url": "bbn-vue\/component\/radiobuttons\/doc\/props#sourceValue"
+                    },
+                    {
+                        "text": "source",
+                        "desc": "The source of the component.",
+                        "url": "bbn-vue\/component\/radiobuttons\/doc\/props#source"
+                    },
+                    {
+                        "text": "modelValue",
+                        "desc": "The real value used in the input emit.",
+                        "url": "bbn-vue\/component\/radiobuttons\/doc\/props#modelValue"
+                    }
+                ],
+                "methods": [],
+                "mixins": [
+                    {
+                        "text": "basicComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/radiobuttons\/doc\/mixins#basicComponent"
+                    },
+                    {
+                        "text": "inputComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/radiobuttons\/doc\/mixins#inputComponent"
+                    },
+                    {
+                        "text": "localStorageComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/radiobuttons\/doc\/mixins#localStorageComponent"
+                    },
+                    {
+                        "text": "eventsComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/radiobuttons\/doc\/mixins#eventsComponent"
                     }
                 ]
             },
@@ -8769,6 +8861,11 @@
                         "text": "padding",
                         "desc": "The padding value to assign to the content element.\r\nIf \"true\" the class \"bbn-padded\" will be assigned",
                         "url": "bbn-vue\/component\/widget\/doc\/props#padding"
+                    },
+                    {
+                        "text": "data",
+                        "desc": "The additional data to send with the ajax call",
+                        "url": "bbn-vue\/component\/widget\/doc\/props#data"
                     }
                 ],
                 "methods": [],

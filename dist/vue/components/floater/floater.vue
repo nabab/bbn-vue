@@ -30,7 +30,7 @@
               'bbn-w-100': !isResizing
             }">
       <div v-if="title"
-           class="bbn-w-100">
+          class="bbn-w-100">
         <h3 v-html="title"
             class="bbn-no-margin bbn-spadded"
             ref="title"/>
@@ -70,7 +70,7 @@
                   :min-height="currentMinHeight > outHeight ? currentMinHeight - outHeight : null"
                   @resize="scrollResize">
         <component v-if="component"
-                   ref="component"
+                  ref="component"
                   :is="component"
                   v-bind="realComponentOptions"/>
         <slot v-else-if="$slots.default"/>
@@ -95,9 +95,9 @@
         <h3 v-else v-text="noData"/>
       </bbn-scroll>
       <component is="style"
-                 v-if="css"
-                 scoped="scoped"
-                 v-html="css"/>
+                v-if="css"
+                scoped="scoped"
+                v-html="css"/>
     </div>
     <footer v-if="footer"
             v-html="footer"
@@ -121,6 +121,7 @@
     </footer>
   </div>
 </div>
+
 </template>
 <script>
   module.exports = /**

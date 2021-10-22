@@ -109,7 +109,7 @@ script.innerHTML = `<div v-if="ready"
 			<span v-text="itemName + ' ' + _('per') + ' ' + pageName"/>
 		</span>
 	</div>
-	<div v-if="element"
+	<div v-if="extraControls"
 			 :class="{
 				 'bbn-block': !isMobile || isTablet,
 				 'bbn-flex-width': isMobile && !isTablet,
@@ -135,7 +135,7 @@ script.innerHTML = `<div v-if="ready"
 		<div>
 			<span v-if="element.filteredData.length &&
 									element.pageable && element.isAjax"
-						v-text="(element.start+1) + '-' + (element.start + element.currentLimit > element.total ? element.total : element.start + element.currentLimit) + ' / ' + element.total"
+						v-text="(element.start+1) + (element.currentLimit <= 1 ? '' : '-' + (element.start + element.currentLimit > element.total ? element.total : element.start + element.currentLimit)) + ' / ' + element.total"
 			></span>
 			<span v-else-if="element.filteredData.length &&
 											 element.pageable && !element.isAjax"
@@ -259,6 +259,13 @@ document.body.insertAdjacentElement('beforeend', script);
       itemName: {
         type: String,
         default: bbn._("records")
+      },
+      /**
+       * The extra controls part on the right.
+       * @prop {Boolean} [true] extraControls
+       */
+      extraControls: {
+        default: true
       }
     },
     data(){
