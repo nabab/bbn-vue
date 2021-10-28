@@ -6,7 +6,7 @@
     <bbn-loadicon></bbn-loadicon> <span v-text="_('Loading')"></span>...
   </div>
   <component v-else-if="isInit && isLoaded"
-             :is="isRoot ? 'bbn-scroll' : 'div'"
+             :is="isRoot && !!scrollable ? 'bbn-scroll' : 'div'"
              ref="scroll"
   >
     <transition name="bbn-tree-toggle"
@@ -149,6 +149,9 @@
                       :uid="uid"
                       :state="treeState"
                       :opened="!!tree.opened"
+                      :source-text="tree.sourceText"
+                      :source-value="tree.sourceValue"
+                      :scrollable="tree.scrollable"
             ></bbn-tree>
             <span v-if="sortable"
                   :class="['bbn-w-100', 'bbn-tree-order-bottom', {
