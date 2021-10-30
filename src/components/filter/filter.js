@@ -346,7 +346,7 @@
        * @emits unset
        */
       delete_condition(condition){
-        let del = (arr) => {
+        let del = arr => {
           let idx = bbn.fn.search(arr, {time: condition.time});
           //bbn.fn.log("Is there the index?", idx);
           if ( idx > -1 ){

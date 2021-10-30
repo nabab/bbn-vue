@@ -43,7 +43,7 @@
  * @author BBN Solutions
  *
  */
-((bbn) => {
+(bbn => {
   "use strict";
   Vue.component('bbn-checkbox', {
     /**

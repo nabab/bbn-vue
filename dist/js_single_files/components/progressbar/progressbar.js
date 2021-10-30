@@ -188,7 +188,7 @@ document.body.insertAdjacentElement('beforeend', script);
       valuePosition: {
         type: String,
         default: 'right',
-        validator: (p) => ['left', 'center', 'right', 'top', 'bottom'].includes(p)
+        validator: p => ['left', 'center', 'right', 'top', 'bottom'].includes(p)
       }
     },
     data(){

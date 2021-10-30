@@ -11,7 +11,7 @@
  * @created 10/02/2020
  */
 
-((bbn) => {
+(bbn => {
   "use strict";
 
   Vue.component('bbn-chart', {
@@ -138,7 +138,7 @@
       fill: {
         type: String,
         default: 'gradient',
-        validator: (f) => ['gradient', 'solid'].includes(f)
+        validator: f => ['gradient', 'solid'].includes(f)
       },
       /**
        * Opacity adjustment.
@@ -475,7 +475,7 @@
       legendPosition: {
 			  type: String,
         default: 'bottom',
-        validator: (t) => ['top', 'bottom', 'left', 'right'].includes(t)
+        validator: t => ['top', 'bottom', 'left', 'right'].includes(t)
       },
       /**
        * Legend customize.
@@ -947,7 +947,7 @@
             if ( this.tooltip ){
               cfg.tooltip = {
                 y: {
-                  formatter: (val) => {
+                  formatter: val => {
                     return bbn.fn.money(val);
                   }
                 }
@@ -1035,7 +1035,7 @@
             if ( this.tooltip ){
               cfg.tooltip = {
                 y: {
-                  formatter: (val) => {
+                  formatter: val => {
                     return bbn.fn.money(val);
                   }
                 }

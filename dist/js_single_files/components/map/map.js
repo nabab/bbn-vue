@@ -19,7 +19,7 @@ document.body.insertAdjacentElement('beforeend', script);
  */
 
 
-((bbn) => {
+(bbn => {
   "use strict";
 
   Vue.component('bbn-map', {

@@ -1,4 +1,4 @@
-((bbn) => {
+(bbn => {
   "use strict";
   bbn.fn.autoExtend("vue", {
     /**
@@ -64,7 +64,7 @@
             delay = 0;
             this.coolTimers[idx].time = t;
           }
-          this.coolTimers[idx].promise = new Promise((resolve) => {
+          this.coolTimers[idx].promise = new Promise(resolve => {
             setTimeout(() => {
               let r = fn();
               this.coolTimers[idx].time = (new Date()).getTime();

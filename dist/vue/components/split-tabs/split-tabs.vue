@@ -178,7 +178,7 @@
       retrieveDirtyContainers(){
       // Array of unsaved views
         let r = []
-        bbn.fn.iterate(this.urls, (v) => {
+        bbn.fn.iterate(this.urls, v => {
           if ( v.dirty ){
             r.push({
               idx: v.idx,
@@ -427,7 +427,7 @@
         //bbn.fn.log("ACTIVATING " + url + " AND SENDING FOLLOWING CONTAINER:", container);
         if ( !this.activeContainer || (container && (this.activeContainer !== container)) ){
           this.activeContainer = null;
-          bbn.fn.each(this.$children, (cp) => {
+          bbn.fn.each(this.$children, cp => {
             if ( bbn.fn.isFunction(cp.hide) ){
               if ( (cp !== container) ){
                 cp.hide();
@@ -660,7 +660,7 @@
               misc = misc.$el;
             }
             if ( misc.tagName ){
-              bbn.fn.each(this.$children, (ct) => {
+              bbn.fn.each(this.$children, ct => {
                 if (
                   ct.$vnode &&
                   ct.$vnode.componentOptions &&
@@ -853,7 +853,7 @@
             });
           }
           this.$emit('update', this.views);
-          return this.post(finalURL, {_bbn_baseURL: this.fullBaseURL}, (d) => {
+          return this.post(finalURL, {_bbn_baseURL: this.fullBaseURL}, d => {
             this.isLoading = false;
             //this.remove(url);
             if ( d.url ){

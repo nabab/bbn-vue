@@ -200,7 +200,7 @@ document.head.insertAdjacentElement('beforeend', css);
           this.closingFunctions = [];
         }
         else{
-          this.closingFunctions = bbn.fn.filter(this.closingFunctions, (f) => {
+          this.closingFunctions = bbn.fn.filter(this.closingFunctions, f => {
             return fn !== f;
           })
         }
@@ -225,7 +225,7 @@ document.head.insertAdjacentElement('beforeend', css);
           }
         }
         /*
-        bbn.fn.each(this.closingFunctions, (a) => {
+        bbn.fn.each(this.closingFunctions, a => {
           if (!ev.defaultPrevented) {
             a(this, ev);
           }

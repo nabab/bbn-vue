@@ -1,4 +1,4 @@
-((bbn) => {
+(bbn => {
   "use strict";
   bbn.fn.autoExtend("vue", {
     /**
@@ -215,7 +215,7 @@
                 ele = $this.$refs.element || false,
                 inp = $this.$refs.input || false,
                 customMessage = $this.$el.hasAttribute('validationMessage') ? $this.$el.getAttribute('validationMessage') : false;
-          let check = (elem) => {
+          let check = elem => {
             if ( elem && elem.validity ){
               let validity = elem.validity,
                   $elem = $this.$el,
@@ -293,7 +293,7 @@
               }
             }
           };
-          let getLastElement = (elem) => {
+          let getLastElement = elem => {
             if ( bbn.fn.isVue(elem) && elem.$refs && elem.$refs.element ){
               return getLastElement(elem.$refs.element);
             }

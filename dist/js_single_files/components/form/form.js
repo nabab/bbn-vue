@@ -338,7 +338,7 @@ document.body.insertAdjacentElement('beforeend', script);
     },
     data(){
       let currentSchema = [];
-      this.schema.map((a) => {
+      this.schema.map(a => {
         currentSchema.push(bbn.fn.extend({}, a, {id: a.id ? a.id : bbn.fn.randomString(20, 30)}))
       });
       return {
@@ -445,7 +445,7 @@ document.body.insertAdjacentElement('beforeend', script);
       getRealButtons(){
         let r = [];
         if ( this.buttons ){
-          bbn.fn.each(this.buttons.slice(), (a) => {
+          bbn.fn.each(this.buttons.slice(), a => {
             let t = typeof(a);
             if ( t === 'string' ){
               switch ( a ){
@@ -503,7 +503,7 @@ document.body.insertAdjacentElement('beforeend', script);
         this.isPosted = true;
         this.isLoading = true;
         if ( this.action ){
-          this[this.blank || this.self || this.target ? 'postOut' : 'post'](this.action, bbn.fn.extend(true, {}, this.data || {}, this.source || {}), (d) => {
+          this[this.blank || this.self || this.target ? 'postOut' : 'post'](this.action, bbn.fn.extend(true, {}, this.data || {}, this.source || {}), d => {
             this.originalData = bbn.fn.extend(true, {}, this.source || {});
             if ( this.successMessage && p ){
               p.alert(this.successMessage);
@@ -665,7 +665,7 @@ document.body.insertAdjacentElement('beforeend', script);
         let ok = true;
         let elems = this.findAll('.bbn-input-component');
         if ( Array.isArray(elems) ){
-          bbn.fn.each(elems, (a) => {
+          bbn.fn.each(elems, a => {
             if (bbn.fn.isFunction(a.isValid) && !a.isValid(a, false) ){
               ok = false;
             }
@@ -794,7 +794,7 @@ document.body.insertAdjacentElement('beforeend', script);
           let focusable = false;
           let all = ele.querySelectorAll('input, select, .bbn-checkbox-label, textarea, [tabindex]:not([tabindex="-1"])');
           if (fromLast) {
-            bbn.fn.forir(all, (a) => {
+            bbn.fn.forir(all, a => {
               if (a.offsetHeight && a.offsetWidth && !a.disabled && !a.classList.contains('bbn-no')) {
                 focusable = a;
                 return false;
@@ -802,7 +802,7 @@ document.body.insertAdjacentElement('beforeend', script);
             })
           }
           else {
-            bbn.fn.each(all, (a) => {
+            bbn.fn.each(all, a => {
               if (a.offsetHeight && a.offsetWidth && !a.disabled && !a.classList.contains('bbn-no')) {
                 bbn.fn.log(a);
                 focusable = a;
@@ -939,7 +939,7 @@ document.body.insertAdjacentElement('beforeend', script);
        */
       schema(){
         let currentSchema = [];
-        this.schema.map((a) => {
+        this.schema.map(a => {
           currentSchema.push(bbn.fn.extend({}, a, {id: a.id ? a.id : bbn.fn.randomString(20, 30)}))
         });
         this.currentSchema = currentSchema;

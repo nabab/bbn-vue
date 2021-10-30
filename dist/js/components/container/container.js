@@ -663,7 +663,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @fires selfEmit
        */
       fullScreen(newVal){
-        let fn = (e) => {
+        let fn = e => {
           if ( e.keyCode === 27 ){
             this.fullScreen = false;
           }

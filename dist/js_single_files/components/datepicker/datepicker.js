@@ -141,7 +141,7 @@ document.body.insertAdjacentElement('beforeend', script);
       type: {
         type: String,
         default: 'days',
-        validator: (m) => ['days', 'weeks', 'months', 'years'].includes(m)
+        validator: m => ['days', 'weeks', 'months', 'years'].includes(m)
       },
       /**
        * The disabled dates.

@@ -166,7 +166,7 @@
           this.closingFunctions = [];
         }
         else{
-          this.closingFunctions = bbn.fn.filter(this.closingFunctions, (f) => {
+          this.closingFunctions = bbn.fn.filter(this.closingFunctions, f => {
             return fn !== f;
           })
         }
@@ -191,7 +191,7 @@
           }
         }
         /*
-        bbn.fn.each(this.closingFunctions, (a) => {
+        bbn.fn.each(this.closingFunctions, a => {
           if (!ev.defaultPrevented) {
             a(this, ev);
           }

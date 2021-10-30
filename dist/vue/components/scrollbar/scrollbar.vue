@@ -383,7 +383,7 @@
             this.realContainer[prop] = this.containerPos;
           }
           */
-          bbn.fn.each(this.scrollableElements(), (a) => {
+          bbn.fn.each(this.scrollableElements(), a => {
             if ( a !== container ){
               a[prop] = this.containerPos;
             }
@@ -399,7 +399,7 @@
           this.containerPos = (this.sliderPos / this.ratio);
           let prop = this.isVertical ? 'scrollTop' : 'scrollLeft';
           this.realContainer[prop] = this.containerPos;
-          bbn.fn.each(this.scrollableElements(), (a) => {
+          bbn.fn.each(this.scrollableElements(), a => {
             a[prop] = this.containerPos;
           });
           let e = new Event('scroll');
@@ -488,7 +488,7 @@
         }
         let res = [];
         if ( bbn.fn.isArray(tmp) ){
-          bbn.fn.each(tmp, (a) => {
+          bbn.fn.each(tmp, a => {
             if ( a ){
               res.push(a)
             }
@@ -559,7 +559,7 @@
               this.adjustFromContainer();
             });
           }
-          bbn.fn.each(this.scrollableElements(), (a) => {
+          bbn.fn.each(this.scrollableElements(), a => {
             a.addEventListener('scroll', () => {
               this.adjustFromContainer(a);
             }, {passive: true});
@@ -828,7 +828,7 @@
           this.realContainer.removeEventListener('scroll', this.adjust, {passive: true});
           this.realContainer.removeEventListener('mousemove', this.overContent, {passive: true});
         }
-        bbn.fn.each(this.scrollableElements(), (a) => {
+        bbn.fn.each(this.scrollableElements(), a => {
           a.removeEventListener('scroll', this.adjustFromContainer, {passive: true});
           a.removeEventListener('mousemove', this.overContent, {passive: true});
         });

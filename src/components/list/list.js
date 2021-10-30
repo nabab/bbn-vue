@@ -425,7 +425,7 @@
           && this.currentFilters.conditions.length
           && (!this.serverFiltering || !this.isAjax)
         ) {
-          data = bbn.fn.filter(data, (a) => {
+          data = bbn.fn.filter(data, a => {
             return this._checkConditionsOnItem(this.currentFilters, a.data);
           });
         }
@@ -457,7 +457,7 @@
        */
       _updateIconSituation(){
         let hasIcons = false;
-        bbn.fn.each(this.filteredData, (a) => {
+        bbn.fn.each(this.filteredData, a => {
           if ( a.data && a.data.icon ){
             hasIcons = true;
             return false;

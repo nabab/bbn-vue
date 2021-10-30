@@ -1,4 +1,4 @@
-((bbn) => {
+(bbn => {
   "use strict";
   bbn.fn.autoExtend("vue", {
     toggleComponent: {
@@ -58,8 +58,8 @@
          * @emits show      
          */
         show(){
-          let e = new Event('show', {cancelable: true});
-          this.$emit('show', e);
+          let e = new Event('beforeShow', {cancelable: true});
+          this.$emit('beforeShow', e);
           if (!e.defaultPrevented) {
             this.currentVisible = true;
           }
@@ -70,8 +70,8 @@
          * @emits hide      
          */
         hide(){
-          let e = new Event('show', {cancelable: true});
-          this.$emit('hide', e);
+          let e = new Event('beforeHide', {cancelable: true});
+          this.$emit('beforeHide', e);
           if (!e.defaultPrevented) {
             this.currentVisible = false;
           }

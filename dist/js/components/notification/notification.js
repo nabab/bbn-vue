@@ -82,7 +82,7 @@ document.head.insertAdjacentElement('beforeend', css);
  * @copyright BBN Solutions
  * @created 11/01/2017
  */
-((bbn) => {
+(bbn => {
   "use strict";
 
   Vue.component('bbn-notification', {
@@ -178,7 +178,7 @@ document.head.insertAdjacentElement('beforeend', css);
           right: true
         }
       };
-      bbn.fn.each(bits, (bit) => {
+      bbn.fn.each(bits, bit => {
         bbn.fn.iterate(pos, (o, dir) => {
           if ( o[bit.toLowerCase()] ){
             bbn.fn.iterate(o, (b, k) => {
@@ -290,7 +290,7 @@ document.head.insertAdjacentElement('beforeend', css);
         let p = {};
         let pos = 0;
         let ids = [];
-        bbn.fn.each(this.items, (a) => {
+        bbn.fn.each(this.items, a => {
           let cp = this.getRef('it' + a.id);
           let s;
           if (cp) {

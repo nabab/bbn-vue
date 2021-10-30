@@ -353,7 +353,7 @@
           });
           this.currentOrder = order;
           if ( this.url ){
-            return this.post(this.url + 'order', {order: order}, (d) => {
+            return this.post(this.url + 'order', {order: order}, d => {
               if ( d && d.data && d.data.success ){
                 appui.success();
               }
@@ -381,7 +381,7 @@
         let tab = this.closest("bbn-container");
         if ( tab ){
           if ( this.selectable && this.menu && this.menu.length ){
-            bbn.fn.each(this.menu, (a) => {
+            bbn.fn.each(this.menu, a => {
               tab.deleteMenu(a);
             });
           }
@@ -390,7 +390,7 @@
           let i = 0;
           if ( this.widgets ){
             bbn.fn.log("THERE IS A MENU AND WIDGETS IN DASHBOARD");
-            bbn.fn.each(this.originalSource, (a) => {
+            bbn.fn.each(this.originalSource, a => {
               let w = bbn.fn.getRow(this.widgets, {uid: a.uid});
               if ( w && w.showable ){
                 items.push({
@@ -514,7 +514,7 @@
               }
             });
             if ( this.url !== undefined ){
-              return this.post(this.url + 'save', params, (d) => {
+              return this.post(this.url + 'save', params, d => {
                 if ( d && d.data && d.data.success ){
                   appui.success();
                 }
@@ -597,7 +597,7 @@
           this.widgets.push(obj);
         }
         else if ( idx < this.widgets.length ){
-          this.widgets.each((a) => {
+          this.widgets.each(a => {
             if ( a.index >= idx ){
               a.index++;
             }

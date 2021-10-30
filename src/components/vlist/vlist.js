@@ -63,11 +63,11 @@
       if ( this.source ){
         items =bbn.fn.isFunction(this.source) ? this.source() : this.source.slice();
         if ( this.mapper ){
-          bbn.fn.map(items, (a) => {
+          bbn.fn.map(items, a => {
             return this.mapper(a);
           })
         }
-        bbn.fn.each(items, (a) => {
+        bbn.fn.each(items, a => {
           if ( a.icon ){
             hasIcons = true;
           }
@@ -277,7 +277,7 @@
       },
       items(){
         let hasIcons = false;
-        bbn.fn.each(this.items, (a) => {
+        bbn.fn.each(this.items, a => {
           if ( a.icon ){
             hasIcons = true;
           }

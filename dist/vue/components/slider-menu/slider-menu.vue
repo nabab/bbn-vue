@@ -151,7 +151,7 @@
         });
         if (list && list.length) {
           let hasChildren = false;
-          bbn.fn.each(list, (a) => {
+          bbn.fn.each(list, a => {
             if (a[this.children] && a[this.children].length) {
               if (!hasChildren) {
                 hasChildren = true;

@@ -1,4 +1,4 @@
-((bbn) => {
+(bbn => {
   "use strict";
   bbn.fn.autoExtend("vue", {
     /**
@@ -238,7 +238,7 @@
               popup.component = {
                 data() {
                   let fields = [];
-                  table.cols.map((a) => {
+                  table.cols.map(a => {
                     let o = bbn.fn.extend(true, {}, a);
                     if (o.ftitle) {
                       o.title = o.ftitle;
@@ -366,7 +366,7 @@
               let o = bbn.fn.extend({}, this.data, this.tmpRow || this.editedRow, {
                 action: this.tmpRow ? 'insert' : 'update'
               });
-              this.post(this.url, o, (d) => {
+              this.post(this.url, o, d => {
                 this.successEdit(d);
               })
             }

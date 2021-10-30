@@ -61,7 +61,7 @@ script.innerHTML = `<div :class="componentClass" :style="'border-left-color:' + 
                       :fields="fields"
                       :conditions="condition.conditions"
                       :logic="condition.logic"
-                      @change="(d) => {condition.logic = d.logic}"
+                      @change="d => {condition.logic = d.logic}"
                       :num="num + 1"
                       :idx="idx"
                       :multi="multi"
@@ -515,7 +515,7 @@ document.body.insertAdjacentElement('beforeend', script);
        * @emits unset
        */
       delete_condition(condition){
-        let del = (arr) => {
+        let del = arr => {
           let idx = bbn.fn.search(arr, {time: condition.time});
           //bbn.fn.log("Is there the index?", idx);
           if ( idx > -1 ){

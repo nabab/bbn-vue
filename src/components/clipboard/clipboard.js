@@ -38,6 +38,20 @@
       source: {
         type: Array
       },
+      /**
+       * @prop {Array} [[]] max The maximum number of items kept in the clipboard
+       */
+       max: {
+        type: Number,
+        default: 20
+      },
+      /**
+       * @prop {Array} [[]] max The maximum number of items kept in the clipboard
+       */
+       maxSize: {
+        type: Number,
+        default: 1000000
+      }
     },
     data(){
       return {
@@ -153,6 +167,7 @@
        * @method add
        */
       add(data){
+        bbn.fn.log("ADDING IN CB", data);
         let dt = bbn.fn.timestamp();
         let uid = dt;
         let ar = [{
@@ -164,15 +179,15 @@
           size: data.raw.length,
           mdate: null,
           content: '',
-          file: ''
+          file: '',
+          pinned: false
         }];
-        bbn.fn.log("ADDING", data);
-        if (data.files.length) {
+        if (data.files && data.files.length) {
           // No need for a list of files if there is only one
           if ( data.files.length === 1 ){
             ar = [];
           }
-          bbn.fn.each(data.files, (o) => {
+          bbn.fn.each(data.files, o => {
             uid++;
             let stype = 'text';
             if (o.type !== 'text/plain') {
@@ -206,8 +221,8 @@
             });
           });
         }
-        else if (data.str.length) {
-          bbn.fn.each(data.str, (o) => {
+        else if (data.str && data.str.length) {
+          bbn.fn.each(data.str, o => {
             if (o.type === 'text/plain') {
               ar[0].text = o.data;
             }
@@ -225,15 +240,20 @@
           });
         }
         let added = [];
-        bbn.fn.each(ar, (a) => {
+        bbn.fn.each(ar, a => {
           let idx = bbn.fn.search(this.items, {text: a.text, type: a.type});
           if (idx !== -1) {
+            this.unsetStorage(this.items[idx].uid);
             this.items.splice(idx, 1);
           }
           else{
             added.unshift(a);
           }
-          this.setStorage(JSON.stringify(a), a.uid);
+
+          if (this.hasStorage) {
+            this.setStorage(a, a.uid);
+          }
+
           this.items.unshift(a);
         });
         if (added.length) {
@@ -311,7 +331,7 @@
        */
       copy(e){
         let type = e.type;
-        bbn.fn.getEventData(e).then((data) => {
+        bbn.fn.getEventData(e).then(data => {
           this.add(data);
           this.updateSlider();
           bbn.fn.log("DATA FROM " + type, data);
@@ -325,7 +345,6 @@
        */
       setClipboard(uid, mode){
         let item = this.getItem(uid);
-        bbn.fn.log("setClipboard", item);
         if (item) {
           let doIt = () => {
             this.uid = uid;
@@ -347,11 +366,8 @@
             doIt();
           }
         }
-      }
-    },
-    mounted(){
-      document.oncopy = (e) => {
-        bbn.fn.info("COPY EV", e);
+      },
+      onCopy(e){
         if (e.clipboardData && this.isSetting && this.uid){
           let item = this.getItem(this.uid);
           if (item) {
@@ -395,13 +411,88 @@
         else{
           this.copy(e);
         }
-      };
+      },
+      addInput(){
+        let input = this.getRef('paster');
+        if (input && input.value) {
+          this.add({raw: input.value});
+          input.value = '';
+        }
+      }
+    },
+    created(){
+      if (!this.items && this.hasStorage) {
+        let items = this.getStorage(this.getComponentName(), true);
+        if (bbn.fn.isArray(items)) {
+          let tmp = [];
+          items.forEach(a => {
+            let it = this.getStorage(a);
+            if (it) {
+              tmp.push(it);
+            }
+          });
+
+          if (tmp.length) {
+            this.items = tmp;
+          }
+        }
+      }
+
+      if (!this.items) {
+        this.items = [];
+      }
+
+      if (this.hasStorage) {
+        // Checking if there is no lost clipboard items
+        let local = localStorage;
+        let uid;
+        let cp = this.getComponentName();
+        for (let n in local) {
+          if (!n.indexOf(cp + '-') && 
+              (uid = parseInt(n.substr(cp.length+1))) &&
+              !bbn.fn.getRow(this.items, {uid: uid})
+          ) {
+            this.unsetStorage(uid);
+          }
+        }
+      }
+    },
+    mounted() {
+      document.addEventListener('copy', this.onCopy);
+      this.ready = true;
+    },
+    beforeDestroy() {
+      document.removeEventListener('copy', this.onCopy);
     },
     watch: {
+      items(){
+        if (this.ready) {
+          if (this.items.length > this.max) {
+            let i;
+            for (i = this.items.length - 1; i >= 0; i--) {
+              if (!this.items[i].pinned) {
+                this.remove({uid: this.items[i].uid});
+                if (this.items.length === this.max) {
+                  break;
+                }
+              }
+            }
+
+            if (!i && (this.items.length > this.max)) {
+              this.remove({uid: this.items[0].uid});
+              this.alert(bbn._("Limit reached, unpin elements to add new ones"));
+              return;
+            }
+          }
+
+          this.setStorage(this.items.map(a => a.uid), this.getComponentName(), true);
+          this.$emit('copy');
+        }
+      },
       search(val){
         if ( val.length >= 3 ){
           let res = [];
-          res = bbn.fn.filter(this.items, (a) => {
+          res = bbn.fn.filter(this.items, a => {
             if ( a.text.toLowerCase().indexOf(this.search.toLowerCase()) >= 0 ){
               return a
             } 
@@ -412,7 +503,7 @@
           this.items = this.source;
         }
       }
-    },
+    }
   });
 
 })(window.bbn);

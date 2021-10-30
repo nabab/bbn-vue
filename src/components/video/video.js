@@ -5,7 +5,7 @@
  * @author Mirko Argentino
  * @created 10/08/2020.
  */
-((bbn) => {
+(bbn => {
   "use strict";
   Vue.component('bbn-video', {
     /**

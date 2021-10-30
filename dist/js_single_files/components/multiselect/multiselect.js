@@ -197,7 +197,7 @@ document.body.insertAdjacentElement('beforeend', script);
       },
       eventsCfg(){
         let def = {
-          focus: (e) => {
+          focus: e => {
             if ( !this.isExpanded ){
               let pane = this.closest('bbn-pane'),
                   w = pane.$children[0].$el.clientWidth + pane.$children[1].$el.clientWidth - 40;
@@ -206,7 +206,7 @@ document.body.insertAdjacentElement('beforeend', script);
               this.isExpanded = true;
             }
           },
-          blur: (e) => {
+          blur: e => {
             if ( this.isExpanded ){
               this.$set(this.style, 'width', this.source.style && this.source.style.width ? this.source.style.width : '30px');
               this.isExpanded = false;
@@ -214,7 +214,7 @@ document.body.insertAdjacentElement('beforeend', script);
               this.search = '';
             }
           },
-          change: (id) => {
+          change: id => {
             if (id && !(id instanceof Event)) {
               setTimeout(() => {
                 document.activeElement.blur();

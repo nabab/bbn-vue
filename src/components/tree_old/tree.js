@@ -576,7 +576,7 @@
           if ( !bbn.fn.isArray(arr) ){
             arr = [arr];
           }
-          arr = arr.map((v) => {
+          arr = arr.map(v => {
             if ( (typeof v === 'number') || (typeof v === 'string') ){
               return {idx: v}
             }
@@ -789,7 +789,7 @@
               break;
             case 'ArrowUp':
               if ( idx > min ){
-                ((parent) => {
+                (parent => {
                   if ( parent.$children[idx - 1].isExpanded && parent.$children[idx - 1].items.length ){
                     let p = parent.$children[idx - 1],
                         c = p.$children[p.$children.length - 1];
@@ -898,7 +898,7 @@
           this.tree.isLoading = true;
           this.loading = true;
           this.tree.$emit('beforeLoad', this.dataToSend());
-          this.post(this.tree.url, this.dataToSend(), (res) => {
+          this.post(this.tree.url, this.dataToSend(), res => {
             this.tree.isLoading = false;
             this.loading = false;
             if ( res.data ){
@@ -1545,7 +1545,7 @@
                   }
                 });
               }
-              let fn = (e) => {
+              let fn = e => {
                 this.endDrag(e);
                 document.removeEventListener('mouseup', fn);
               };
@@ -1583,7 +1583,7 @@
             }
             else{
               if ( this.tree.droppableTrees.length ){
-                bbn.fn.each(this.tree.droppableTrees, (a) => {
+                bbn.fn.each(this.tree.droppableTrees, a => {
                   let v = a && a.$el ? a.$el.querySelector('.dropping') : null;
                   if ( v && v.classList ){
                     v.classList.remove('dropping');
@@ -1622,7 +1622,7 @@
                   let ev = new Event("dragOver", {cancelable: true});
                   a.$emit("dragOver", this, ev, a.overNode);
                   if (!ev.defaultPrevented) {
-                    bbn.fn.each(a.overNode.$el.chilNodes, (ele) => {
+                    bbn.fn.each(a.overNode.$el.chilNodes, ele => {
                       if ((ele.tagName === 'SPAN') && (ele.classList.contains('node'))) {
                         ele.classList.add('dropping');
                         return false;

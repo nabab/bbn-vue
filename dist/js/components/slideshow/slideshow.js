@@ -402,7 +402,7 @@ document.head.insertAdjacentElement('beforeend', css);
           isAjax   = false;
       if (bbn.fn.isString(this.source)) {
         if (this.separator) {
-          src = this.source.split(this.separator).map((a) =>{
+          src = this.source.split(this.separator).map(a =>{
             return {
               content: a,
               type: 'text'

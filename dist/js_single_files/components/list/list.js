@@ -23,7 +23,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-floater-list']"
         <div v-else
              v-text="li.data[sourceGroup]"/>
       </li>
-      <li v-if="!pageable || ((idx >= start) && (idx < start + currentLimit))"
+      <li v-if="!pageable || ((idx >= start) && (idx < start + currentLimit)) || (!!pageable && !!serverPaging)"
           @mouseenter="mouseenter($event, idx)"
           :ref="'li' + idx"
           :key="uid ? li.data[uid] : idx"
@@ -524,7 +524,7 @@ document.body.insertAdjacentElement('beforeend', script);
           && this.currentFilters.conditions.length
           && (!this.serverFiltering || !this.isAjax)
         ) {
-          data = bbn.fn.filter(data, (a) => {
+          data = bbn.fn.filter(data, a => {
             return this._checkConditionsOnItem(this.currentFilters, a.data);
           });
         }
@@ -556,7 +556,7 @@ document.body.insertAdjacentElement('beforeend', script);
        */
       _updateIconSituation(){
         let hasIcons = false;
-        bbn.fn.each(this.filteredData, (a) => {
+        bbn.fn.each(this.filteredData, a => {
           if ( a.data && a.data.icon ){
             hasIcons = true;
             return false;

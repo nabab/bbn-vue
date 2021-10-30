@@ -163,7 +163,7 @@
     created(){
       this.$on('dataloaded', () => {
         if ( this.value !== undefined ){
-          let row = bbn.fn.getRow(this.currentData, (a) => {
+          let row = bbn.fn.getRow(this.currentData, a => {
             return a.data[this.sourceValue] === this.value;
           });
           if ( row ){

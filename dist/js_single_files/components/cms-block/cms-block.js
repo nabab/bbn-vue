@@ -920,7 +920,7 @@ document.body.insertAdjacentElement('beforeend', script);
                 });  
               }
               else if ( (this.source.type === 'gallery') && this.source.content && this.source.content.length ){
-                /*this.image = bbn.fn.map(this.source.content, (a) => {
+                /*this.image = bbn.fn.map(this.source.content, a => {
                   let extension = a.src.substr(a.src.lastIndexOf('.'), a.src.length);
                   a.name = a.src; 
                   a.size = 465464;

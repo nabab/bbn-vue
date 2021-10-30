@@ -587,7 +587,7 @@
        * @returns {Array}
        */
       selectedValues(){
-        return this.currentSelected.map((a) => {
+        return this.currentSelected.map(a => {
           return this.uid ? this.currentData[a].data[this.uid] : this.currentData[a].data;
         })
       },
@@ -628,7 +628,7 @@
        */
       shownFields() {
         let r = [];
-        bbn.fn.each(this.cols, (a) => {
+        bbn.fn.each(this.cols, a => {
           if (a.field && !a.hidden) {
             r.push(a.field);
           }
@@ -675,7 +675,7 @@
           if (!Array.isArray(ar)) {
             ar = [];
           }
-          bbn.fn.each(ar, (a) => {
+          bbn.fn.each(ar, a => {
             let o = bbn.fn.clone( a);
             if (o.action) {
               o.action = () => {
@@ -695,7 +695,7 @@
       isEditedValid() {
         let ok = true;
         if (this.tmpRow) {
-          bbn.fn.each(this.columns, (a) => {
+          bbn.fn.each(this.columns, a => {
             if (a.field && a.required && !this.tmpRow[a.field]) {
               ok = false;
               return false;
@@ -754,7 +754,7 @@
         // Aggregated
         if (this.isAggregated) {
           aggregateModes = bbn.fn.isArray(this.aggregate) ? this.aggregate : [this.aggregate];
-          bbn.fn.each(this.aggregatedColumns, (a) => {
+          bbn.fn.each(this.aggregatedColumns, a => {
             aggregates[a.field] = {
               tot: 0,
               num: 0,
@@ -786,7 +786,7 @@
           if (this.sortable && this.currentOrder.length) {
             orders = orders.concat(JSON.parse(JSON.stringify(this.currentOrder)))
           }
-          data = bbn.fn.multiorder(data, orders.map((item) => {
+          data = bbn.fn.multiorder(data, orders.map(item => {
             item.field = 'data.' + item.field;
             return item;
           }));
@@ -809,11 +809,11 @@
                 })
               }
             });
-            data = bbn.fn.multiorder(data, JSON.parse(JSON.stringify(this.currentOrder)).map((item) => {
+            data = bbn.fn.multiorder(data, JSON.parse(JSON.stringify(this.currentOrder)).map(item => {
               item.field = 'data.' + item.field;
               return item;
             }));
-            bbn.fn.each(this.cols, (col) => {
+            bbn.fn.each(this.cols, col => {
               if (col.source && col.field) {
                 bbn.fn.each(data, (d, i) => {
                   d.data[col.field] = tmpData[col.field][d.index];
@@ -821,7 +821,7 @@
               }
             });
           } else {
-            data = bbn.fn.multiorder(data, JSON.parse(JSON.stringify(this.currentOrder)).map((item) => {
+            data = bbn.fn.multiorder(data, JSON.parse(JSON.stringify(this.currentOrder)).map(item => {
               item.field = 'data.' + item.field;
               return item;
             }));
@@ -969,7 +969,7 @@
           // Group or just global aggregation
 
           if (aggregateModes.length) {
-            bbn.fn.each(this.aggregatedColumns, (ac) => {
+            bbn.fn.each(this.aggregatedColumns, ac => {
               let aggr = aggregates[ac.field];
               aggr.num++;
               aggr.tot += parseFloat(a[ac.field]);
@@ -1062,7 +1062,7 @@
           i++;
         }
         let fdata = [];
-        res.forEach((d) => {
+        res.forEach(d => {
           //if (d.group || d.expander || this.isExpanded(d) || d.aggregated || (this.isExpanded(d) && d.groupAggregated)) {
           if (d.group
             || d.expander
@@ -1100,7 +1100,7 @@
       currentColumns(){
         let r = [];
         bbn.fn.each(this.groupCols, (a, i) => {
-          bbn.fn.each(a.cols, (b) => {
+          bbn.fn.each(a.cols, b => {
             r.push(bbn.fn.extend(true, {}, b, {
               fixed: i !== 1,
               isLeft: i === 0,
@@ -1189,10 +1189,10 @@
         let span = window.document.createElement('span');
         let cols = {};
         let res = [];
-        bbn.fn.each(this.currentData, (a) => {
+        bbn.fn.each(this.currentData, a => {
           let o = bbn.fn.clone(a.data);
           let row = [];
-          bbn.fn.each(this.cols, (b) => {
+          bbn.fn.each(this.cols, b => {
             if (!b.hidden && !b.buttons && b.field) {
               if (typeof o[b.field] === 'string') {
                 span.innerHTML = o[b.field];
@@ -1428,7 +1428,7 @@
           let cells = [],
             group = null,
             corresp = {};
-          bbn.fn.each(this.groupCols[groupIndex].cols, (a) => {
+          bbn.fn.each(this.groupCols[groupIndex].cols, a => {
             if (!a.hidden) {
               if (a.group === group) {
                 cells[cells.length - 1].colspan++;
@@ -1607,7 +1607,7 @@
           width: '90%',
           height: '90%',
           source: {
-            fields: bbn.fn.filter(this.cols, (a) => {
+            fields: bbn.fn.filter(this.cols, a => {
               return (a.filterable !== false) && !a.buttons;
             }),
             conditions: this.currentFilters.conditions,
@@ -1624,7 +1624,7 @@
       getColFilters(col) {
         let r = [];
         if (col.field) {
-          bbn.fn.each(this.currentFilters.conditions, (a) => {
+          bbn.fn.each(this.currentFilters.conditions, a => {
             if (a.field === col.field) {
               r.push(a);
             }
@@ -1659,7 +1659,7 @@
        * @returns {Array}
        */
       pickableColumnList() {
-        return this.cols.slice().map((a) => {
+        return this.cols.slice().map(a => {
           return a.showable !== false;
         });
       },
@@ -1969,7 +1969,7 @@
           }
 
           if (this.editable) {
-            this.originalData = JSON.parse(JSON.stringify(this.currentData.map((a) => {
+            this.originalData = JSON.parse(JSON.stringify(this.currentData.map(a => {
               return a.data;
             })));
           }
@@ -2420,7 +2420,7 @@
               aggregatedColumns = [],
               parentWidth = this.$el.offsetParent ? this.$el.offsetParent.getBoundingClientRect().width : this.lastKnownCtWidth;
           this.groupCols = bbn.fn.clone(groupCols);
-          bbn.fn.each(this.cols, (a) => {
+          bbn.fn.each(this.cols, a => {
             a.realWidth = 0;
           });
           this.$nextTick(() => {
@@ -2533,7 +2533,7 @@
             }
 
             let tot = 0;
-            bbn.fn.each(groupCols, (a) => {
+            bbn.fn.each(groupCols, a => {
               a.sum = bbn.fn.sum(a.cols, 'realWidth');
               tot += a.sum;
             });
@@ -2661,7 +2661,7 @@
         if (!Array.isArray(colIndexes)) {
           colIndexes = [colIndexes];
         }
-        bbn.fn.each(colIndexes, (colIndex) => {
+        bbn.fn.each(colIndexes, colIndex => {
           if (this.cols[colIndex]) {
             if ((this.cols[colIndex].hidden && !hide) || (!this.cols[colIndex].hidden && hide)) {
               let idx = this.currentHidden.indexOf(colIndex);

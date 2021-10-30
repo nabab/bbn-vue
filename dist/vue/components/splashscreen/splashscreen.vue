@@ -211,7 +211,7 @@
       },
       _map(data) {
         if ( bbn.fn.isArray(data) ){
-          data = data.map((a) => {
+          data = data.map(a => {
             let o = bbn.fn.extend(true, {}, a);
             if (!o.headerComponent && (!bbn.fn.isString(o.header) || (o.header.substr(0,1) !== '<'))) {
               o.headerComponent = o.header;

@@ -274,7 +274,7 @@
   <bbn-clipboard v-if="plugins['appui-clipboard'] && clipboard"
                  :storage="true"
                  ref="clipboard"
-                 :source="clipboardContent"
+                 @copy="onCopy"
                  style="z-index: 13"/>
 
   <!-- POPUPS -->

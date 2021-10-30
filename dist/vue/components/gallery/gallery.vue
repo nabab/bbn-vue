@@ -126,7 +126,7 @@
   <bbn-pager class="bbn-gallery-pager"
               :element="_self"
               ref="pager"
-              v-if="pageable || isAjax"
+              v-if="(pageable || isAjax) && !!pager"
   ></bbn-pager>
 </div>
 </template>
@@ -138,7 +138,7 @@
  * @copyright BBN Solutions
  * @author Mirko Argentino
  */
-((bbn) => {
+(bbn => {
   "use strict";
 
   Vue.component('bbn-gallery', {
@@ -355,6 +355,14 @@
       resizable: {
         type: Boolean,
         default: true
+      },
+      /**
+       * Set to false to hide the pager.
+       * @prop {Boolean} [true] pager
+       */
+      pager: {
+        type: Boolean,
+        default: true
       }
     },
     data(){
@@ -549,6 +557,9 @@
             })
           }
         }, 1000)
+      },
+      itemWidth(val){
+        this.currentItemWidth = val;
       }
     },
     components: {

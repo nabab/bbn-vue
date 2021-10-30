@@ -993,7 +993,7 @@
                 });  
               }
               else if ((this.type === 'gallery') && this.currentValue && this.currentValue.length) {
-                /*this.image = bbn.fn.map(this.currentValue, (a) => {
+                /*this.image = bbn.fn.map(this.currentValue, a => {
                   let extension = a.src.substr(a.src.lastIndexOf('.'), a.src.length);
                   a.name = a.src; 
                   a.size = 465464;

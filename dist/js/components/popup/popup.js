@@ -284,7 +284,7 @@ document.head.insertAdjacentElement('beforeend', css);
           d = obj;
         }
         if ( d.url ){
-          return this.post(d.url, d.data || {}, (r) => {
+          return this.post(d.url, d.data || {}, r => {
             if ( r.content || r.title ){
               if ( r.script ){
                 let tmp = eval(r.script);

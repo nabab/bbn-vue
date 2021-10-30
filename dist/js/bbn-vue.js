@@ -1,4 +1,4 @@
-((bbn) => {
+(bbn => {
   "use strict";
   let version = '2.0.2';
   let libURL = '';
@@ -36,7 +36,7 @@
 
 
 
-((bbn) => {
+(bbn => {
   "use strict";
   const isReservedTag = Vue.config.isReservedTag;
   let loadingComponents = [];
@@ -270,7 +270,7 @@
               mixins = [mixins];
             }
             if ( res.mixins ){
-              bbn.fn.each(mixins, (b) => {
+              bbn.fn.each(mixins, b => {
                 res.mixins.push(b);
               })
             }
@@ -280,12 +280,12 @@
           }
           let bits = res.name.split('-'),
               st = '';
-          bbn.fn.each(bits, (b) => {
+          bbn.fn.each(bits, b => {
             st += (b + '-');
             let idx = bbn.fn.search(this.knownPrefixes, {prefix: st});
             if ( (idx > -1) && this.knownPrefixes[idx].mixins ){
               if ( bbn.fn.isArray(this.knownPrefixes[idx].mixins) ){
-                bbn.fn.each(this.knownPrefixes[idx].mixins.reverse(), (m) => {
+                bbn.fn.each(this.knownPrefixes[idx].mixins.reverse(), m => {
                   res.mixins.unshift(m)
                 })
               }
@@ -315,11 +315,11 @@
     executeQueueItems(items){
       if ( items.length ){
         let url = 'components';
-        bbn.fn.iterate(items, (a) => {
+        bbn.fn.iterate(items, a => {
           url += '/' + a.name;
         });
         url += '?v=' + bbn.version;
-        return axios.get(url, {responseType:'json'}).then((d) => {
+        return axios.get(url, {responseType:'json'}).then(d => {
           d = d.data;
           if ( d && d.success && d.components ){
             bbn.fn.iterate(items, a => {
@@ -346,7 +346,7 @@
      */
     executeQueueItem(item){
       if (item.url) {
-        return axios.get(item.url, {responseType:'json'}).then((r) => {
+        return axios.get(item.url, {responseType:'json'}).then(r => {
           r = r.data;
           if ( this._realDefineComponent(a.name, r, item.mixins)  && Vue.options.components[a.name]){
             item.resolve(Vue.options.components[a.name]);
@@ -369,7 +369,7 @@
         todo = [todo];
       }
       if (bbn.fn.isArray(todo) && bbn.fn.getRow(bbn.vue.knownPrefixes, {prefix: 'bbn-'})) {
-        bbn.fn.each(todo, (a) => {
+        bbn.fn.each(todo, a => {
           if ( Vue.options.components['bbn-' + a] === undefined ){
             this.queueComponentBBN(a);
           }
@@ -386,7 +386,7 @@
     _realDefineBBNComponent(name, r){
       
       if ( r.html && r.html.length ){
-        bbn.fn.each(r.html, (h) => {
+        bbn.fn.each(r.html, h => {
           if ( h && h.content ){
             let id = 'bbn-tpl-component-' + name + (h.name === name ? '' : '-' + h.name),
             script = document.createElement('script');
@@ -442,7 +442,7 @@
         ) {
           url += bbn_root_url + bbn_root_dir;
         }
-        url += 'components/?components=' + bbn.fn.map(todo, (a) => {
+        url += 'components/?components=' + bbn.fn.map(todo, a => {
           return a.name;
         }).join(',') + '&v=' + bbn.version;
         if ( bbn.env.isDev ){
@@ -454,7 +454,7 @@
         return bbn.fn.ajax(url, 'text')
           .then(
             // resolve from server
-            (res) => {
+            res => {
               if (bbn.fn.isObject(res) && res.data) {
                 // This executes the script returned by the server, which will return a new promise
                 let prom;
@@ -468,10 +468,10 @@
                 //bbn.fn.log("THEN", res);
                 prom.then(
                   // resolve from executed script
-                  (arr) => {
+                  arr => {
                     // arr is the answer!
                     if (bbn.fn.isArray(arr) ){
-                      bbn.fn.each(arr, (r) => {
+                      bbn.fn.each(arr, r => {
                         let resolved = false;
                         if ( (typeof(r) === 'object') && r.script && r.name ){
                           let idx = bbn.fn.search(todo, {name: r.name});
@@ -943,7 +943,7 @@
       if ( !Array.isArray(ar) ){
         ar = [];
       }
-      bbn.fn.each(vm.$children, (obj) => {
+      bbn.fn.each(vm.$children, obj => {
         ar.push(obj)
         if ( !only_children && obj.$children ){
           bbn.vue.getComponents(obj, ar);
@@ -1058,7 +1058,7 @@
         throw new Error("No argument given");
       }
       let out = args.splice(0, 1)[0];
-      bbn.fn.each(args, (a) => {
+      bbn.fn.each(args, a => {
         if ( !bbn.fn.isObject(a) ){
           throw new Error("Each argument for bbn.fn.extend must be an object, " + typeof(args[i]) + " given");
         }
@@ -1155,7 +1155,7 @@
 })(window.bbn);
 
 
-((bbn) => {
+(bbn => {
   "use strict";
   bbn.fn.autoExtend("vue", {
     /**
@@ -1228,7 +1228,7 @@
           });
           st += '>' + "\n";
           if (full) {
-            bbn.fn.each(this.$children, (a) => {
+            bbn.fn.each(this.$children, a => {
               if ( a.exportComponent !== undefined ){
                 st += a.exportComponent(true, lv+1);
               }
@@ -1278,7 +1278,7 @@
 })(bbn);
 
 
-((bbn) => {
+(bbn => {
   "use strict";
   bbn.fn.autoExtend("vue", {
     /**
@@ -1301,7 +1301,7 @@
 })(bbn);
 
 
-((bbn) => {
+(bbn => {
   "use strict";
   bbn.fn.autoExtend("vue", {
     /**
@@ -1404,7 +1404,7 @@
 })(bbn);
 
 
-((bbn) => {
+(bbn => {
   "use strict";
   bbn.fn.autoExtend("vue", {
     positionComponent: {
@@ -1447,7 +1447,7 @@
 })(bbn);
 
 
-((bbn) => {
+(bbn => {
   "use strict";
   bbn.fn.autoExtend("vue", {
     /**
@@ -1645,7 +1645,7 @@
          */
         currentTextValue() {
           if ( (this.value !== undefined) && !bbn.fn.isNull(this.value) && this.sourceValue && this.sourceText && this.currentData.length ){
-            let idx = bbn.fn.search(this.currentData, (a) => {
+            let idx = bbn.fn.search(this.currentData, a => {
               return a.data[this.sourceValue] === this.value;
             });
             if ( idx > -1 ){
@@ -1898,7 +1898,7 @@
 })(bbn);
 
 
-((bbn) => {
+(bbn => {
   "use strict";
   bbn.fn.autoExtend("vue", {
     keynavComponent: {
@@ -1987,7 +1987,7 @@
 })(bbn);
 
 
-((bbn) => {
+(bbn => {
   "use strict";
   bbn.fn.autoExtend("vue", {
     toggleComponent: {
@@ -2047,8 +2047,8 @@
          * @emits show      
          */
         show(){
-          let e = new Event('show', {cancelable: true});
-          this.$emit('show', e);
+          let e = new Event('beforeShow', {cancelable: true});
+          this.$emit('beforeShow', e);
           if (!e.defaultPrevented) {
             this.currentVisible = true;
           }
@@ -2059,8 +2059,8 @@
          * @emits hide      
          */
         hide(){
-          let e = new Event('show', {cancelable: true});
-          this.$emit('hide', e);
+          let e = new Event('beforeHide', {cancelable: true});
+          this.$emit('beforeHide', e);
           if (!e.defaultPrevented) {
             this.currentVisible = false;
           }
@@ -2164,7 +2164,7 @@
 })(bbn);
 
 
-((bbn) => {
+(bbn => {
   "use strict";
   bbn.fn.autoExtend("vue", {
     /**
@@ -2346,7 +2346,7 @@
 })(bbn);
 
 
-((bbn) => {
+(bbn => {
   "use strict";
   bbn.fn.autoExtend("vue", {
     /**
@@ -2458,7 +2458,7 @@
 })(bbn);
 
 
-((bbn) => {
+(bbn => {
   "use strict";
   const editorOperators = {
     string: {
@@ -2631,7 +2631,7 @@
 })(bbn);
 
 
-((bbn) => {
+(bbn => {
   "use strict";
   bbn.fn.autoExtend("vue", {
     /**
@@ -2873,7 +2873,7 @@
 })(bbn);
 
 
-((bbn) => {
+(bbn => {
   "use strict";
   bbn.fn.autoExtend("vue", {
     /**
@@ -3113,7 +3113,7 @@
               popup.component = {
                 data() {
                   let fields = [];
-                  table.cols.map((a) => {
+                  table.cols.map(a => {
                     let o = bbn.fn.extend(true, {}, a);
                     if (o.ftitle) {
                       o.title = o.ftitle;
@@ -3241,7 +3241,7 @@
               let o = bbn.fn.extend({}, this.data, this.tmpRow || this.editedRow, {
                 action: this.tmpRow ? 'insert' : 'update'
               });
-              this.post(this.url, o, (d) => {
+              this.post(this.url, o, d => {
                 this.successEdit(d);
               })
             }
@@ -3320,7 +3320,7 @@
 })(bbn);
 
 
-((bbn) => {
+(bbn => {
   "use strict";
   bbn.fn.autoExtend("vue", {
     /**
@@ -3822,7 +3822,7 @@
             return [];
           }
           let pass = false;
-          return bbn.fn.filter(this.limits.sort(), (a) => {
+          return bbn.fn.filter(this.limits.sort(), a => {
             if ( a > this.total ){
               if ( !pass ){
                 pass = true;
@@ -3892,7 +3892,7 @@
                                 this.currentFilters.conditions.length &&
                                 (!this.serverFiltering || !this.isAjax)
           ) {
-            return bbn.fn.filter(this.currentData, (a) => {
+            return bbn.fn.filter(this.currentData, a => {
               return this._checkConditionsOnItem(this.currentFilters, a.data);
             });
           }
@@ -3908,12 +3908,12 @@
           if ( this.value || (this.selected && this.selected.length) ){
             let v = this.value || this.selected[0];
             if ( this.uid ){
-              return bbn.fn.search(this.filteredData, (a) => {
+              return bbn.fn.search(this.filteredData, a => {
                 return a.data[this.uid] === v;
               });
             }
             else if ( this.sourceValue ){
-              return bbn.fn.search(this.filteredData, (a) => {
+              return bbn.fn.search(this.filteredData, a => {
                 return a.data[this.sourceValue] === v;
               });
             }
@@ -3945,7 +3945,7 @@
             && this.sourceIcon
             && this.currentData.length
           ){
-            let idx = bbn.fn.search(this.currentData, (a) => {
+            let idx = bbn.fn.search(this.currentData, a => {
               return a.data[this.sourceValue] === this.value;
             });
             if (idx > -1) {
@@ -3967,7 +3967,7 @@
             && this.sourceImg
             && this.currentData.length
           ){
-            let idx = bbn.fn.search(this.currentData, (a) => {
+            let idx = bbn.fn.search(this.currentData, a => {
               return a.data[this.sourceValue] === this.value;
             });
             if (idx > -1) {
@@ -3989,7 +3989,7 @@
             && this.sourceCls
             && this.currentData.length
           ){
-            let idx = bbn.fn.search(this.currentData, (a) => {
+            let idx = bbn.fn.search(this.currentData, a => {
               return a.data[this.sourceValue] === this.value;
             });
             if (idx > -1) {
@@ -4008,7 +4008,7 @@
         _map(data) {
           if ( bbn.fn.isArray(data) ){
             if ( data.length && !bbn.fn.isObject(data[0]) && this.sourceValue && this.sourceText ){
-              data = data.map((a) => {
+              data = data.map(a => {
                 let o = {};
                 o[this.sourceValue] = a;
                 o[this.sourceText] = a;
@@ -4101,7 +4101,7 @@
         removeFilter(condition) {
           if (condition.time) {
             //bbn.fn.log("There is the time", condition);
-            let del = (arr) => {
+            let del = arr => {
               let idx = bbn.fn.search(arr, {
                 time: condition.time
               });
@@ -4176,7 +4176,7 @@
         },
         async updateData(){
           if (this.beforeUpdate() !== false) {
-            this._dataPromise = new Promise((resolve) => {
+            this._dataPromise = new Promise(resolve => {
               let prom;
               let loadingRequestID;
               if ( this.isAjax ){
@@ -4226,7 +4226,7 @@
                   });
                 });
               }
-              prom.then((d) => {
+              prom.then(d => {
                 if ( this.loadingRequestID && (this.loadingRequestID === loadingRequestID)){
                   this.isLoading = false;
                   this.loadingRequestID = false;
@@ -4340,7 +4340,7 @@
             if (this.url) {
               this.post(this.url, bbn.fn.extend({}, this.data, this.currentData[index].data, {
                 action: 'delete'
-              }), (d) => {
+              }), d => {
                 if (d.success) {
                   let data = this.currentData[index].data;
                   this.currentData.splice(index, 1);
@@ -4531,7 +4531,7 @@
 })(bbn);
 
 
-((bbn) => {
+(bbn => {
   "use strict";
   bbn.fn.autoExtend("vue", {
     /**
@@ -4562,7 +4562,7 @@
 })(bbn);
 
 
-((bbn) => {
+(bbn => {
   "use strict";
   bbn.fn.autoExtend("vue", {
     /**
@@ -4779,7 +4779,7 @@
                 ele = $this.$refs.element || false,
                 inp = $this.$refs.input || false,
                 customMessage = $this.$el.hasAttribute('validationMessage') ? $this.$el.getAttribute('validationMessage') : false;
-          let check = (elem) => {
+          let check = elem => {
             if ( elem && elem.validity ){
               let validity = elem.validity,
                   $elem = $this.$el,
@@ -4857,7 +4857,7 @@
               }
             }
           };
-          let getLastElement = (elem) => {
+          let getLastElement = elem => {
             if ( bbn.fn.isVue(elem) && elem.$refs && elem.$refs.element ){
               return getLastElement(elem.$refs.element);
             }
@@ -4912,7 +4912,7 @@
 })(bbn);
 
 
-((bbn) => {
+(bbn => {
   "use strict";
   bbn.fn.autoExtend("vue", {
     /**
@@ -5198,7 +5198,7 @@
 
 
 
-((bbn) => {
+(bbn => {
   "use strict";
   bbn.fn.autoExtend("vue", {
     /**
@@ -5242,7 +5242,7 @@
 })(bbn);
 
 
-((bbn) => {
+(bbn => {
   "use strict";
   bbn.fn.autoExtend("vue", {
     /**
@@ -5530,7 +5530,7 @@
 })(bbn);
 
 
-((bbn) => {
+(bbn => {
   "use strict";
   bbn.fn.autoExtend("vue", {
     /**
@@ -5797,7 +5797,7 @@
 })(bbn);
 
 
-((bbn) => {
+(bbn => {
   "use strict";
   bbn.fn.autoExtend("vue", {
     /**
@@ -5896,7 +5896,7 @@
               value: this.observerValue
             });
             setTimeout(() => {
-              this.observationTower.$on('bbnObs' + this.observerUID + this.observerID, (newVal) => {
+              this.observationTower.$on('bbnObs' + this.observerUID + this.observerID, newVal => {
                 //bbn.fn.log("NEW VALUE!");
                 // Integration of the functionnality is done through a watcher on this property
                 this.observerDirty = true;
@@ -5921,7 +5921,7 @@
             else{
               this.observers.push(obs);
               if ( this.observerCheck() ){
-                this.observationTower.$on('bbnObs' + obs.element + obs.id, (newVal) => {
+                this.observationTower.$on('bbnObs' + obs.element + obs.id, newVal => {
                   this.observerEmit(newVal, obs);
                 });
               }
@@ -6016,7 +6016,7 @@
 })(bbn);
 
 
-((bbn) => {
+(bbn => {
   "use strict";
   bbn.fn.autoExtend("vue", {
     /**
@@ -6082,7 +6082,7 @@
             delay = 0;
             this.coolTimers[idx].time = t;
           }
-          this.coolTimers[idx].promise = new Promise((resolve) => {
+          this.coolTimers[idx].promise = new Promise(resolve => {
             setTimeout(() => {
               let r = fn();
               this.coolTimers[idx].time = (new Date()).getTime();
@@ -6098,7 +6098,7 @@
 })(bbn);
 
 
-((bbn) => {
+(bbn => {
   "use strict";
   bbn.fn.autoExtend("vue", {
     /**
@@ -6169,7 +6169,7 @@
 })(bbn);
 
 
-((bbn) => {
+(bbn => {
   "use strict";
   bbn.fn.autoExtend("vue", {
     /**
@@ -6363,7 +6363,7 @@
 })(bbn);
 
 
-((bbn) => {
+(bbn => {
   "use strict";
   bbn.fn.autoExtend("vue", {
     /**
@@ -6508,7 +6508,7 @@
        */
       mounted(){
         if (this.browserNotification) {
-          Notification.requestPermission((perms) => {
+          Notification.requestPermission(perms => {
             this.hasBrowserPermission = perms === 'granted';
           })
         }
@@ -6518,7 +6518,7 @@
 })(bbn);
 
 
-((bbn) => {
+(bbn => {
   "use strict";
   bbn.fn.autoExtend("vue", {
     /**
@@ -6554,7 +6554,7 @@
 
 
 
-((bbn) => {
+(bbn => {
   "use strict";
   if ( !bbn.vue ){
     throw new Error("Impossible to find the library bbn-vue")
@@ -6795,7 +6795,7 @@
 })(window.bbn);
 
 
-((bbn) => {
+(bbn => {
   "use strict";
   bbn.fn.autoExtend("vue", {
     defaults: {
@@ -6893,7 +6893,7 @@
 
 
 
-((bbn) => {
+(bbn => {
   "use strict";
   bbn.fn.autoExtend("vue", {
     init: cfg => {
@@ -6910,7 +6910,7 @@
         }
       }
 
-      Vue.config.isReservedTag = (tag) => {
+      Vue.config.isReservedTag = tag => {
         return bbn.vue.loadComponentsByPrefix(tag)
       };
       Vue.config.devtools = !(!bbn.env.mode || (bbn.env.mode === 'prod'));

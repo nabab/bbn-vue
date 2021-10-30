@@ -39,7 +39,7 @@ document.body.insertAdjacentElement('beforeend', script);
   *
   * @created 13/02/2017
   */
-((bbn) => {
+(bbn => {
   "use strict";
   Vue.component('bbn-switch', {
     /**

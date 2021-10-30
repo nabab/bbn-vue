@@ -185,7 +185,7 @@ document.head.insertAdjacentElement('beforeend', css);
       retrieveDirtyContainers(){
       // Array of unsaved views
         let r = []
-        bbn.fn.iterate(this.urls, (v) => {
+        bbn.fn.iterate(this.urls, v => {
           if ( v.dirty ){
             r.push({
               idx: v.idx,
@@ -434,7 +434,7 @@ document.head.insertAdjacentElement('beforeend', css);
         //bbn.fn.log("ACTIVATING " + url + " AND SENDING FOLLOWING CONTAINER:", container);
         if ( !this.activeContainer || (container && (this.activeContainer !== container)) ){
           this.activeContainer = null;
-          bbn.fn.each(this.$children, (cp) => {
+          bbn.fn.each(this.$children, cp => {
             if ( bbn.fn.isFunction(cp.hide) ){
               if ( (cp !== container) ){
                 cp.hide();
@@ -667,7 +667,7 @@ document.head.insertAdjacentElement('beforeend', css);
               misc = misc.$el;
             }
             if ( misc.tagName ){
-              bbn.fn.each(this.$children, (ct) => {
+              bbn.fn.each(this.$children, ct => {
                 if (
                   ct.$vnode &&
                   ct.$vnode.componentOptions &&
@@ -860,7 +860,7 @@ document.head.insertAdjacentElement('beforeend', css);
             });
           }
           this.$emit('update', this.views);
-          return this.post(finalURL, {_bbn_baseURL: this.fullBaseURL}, (d) => {
+          return this.post(finalURL, {_bbn_baseURL: this.fullBaseURL}, d => {
             this.isLoading = false;
             //this.remove(url);
             if ( d.url ){

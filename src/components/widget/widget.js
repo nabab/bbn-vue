@@ -280,7 +280,7 @@
             params.limit = this.limit;
             params.start = this.currentStart;
           }
-          return this.post(this.url, bbn.fn.extend(true, params, this.data), (d) => {
+          return this.post(this.url, bbn.fn.extend(true, params, this.data), d => {
             if ( d.data !== undefined ){
               this.currentItems = d.data;
               if ( d.limit && (this.limit !== d.limit) ){
@@ -317,7 +317,7 @@
           });
         }
         else {
-          return new Promise((resolve) => {
+          return new Promise(resolve => {
             let items = this.items.slice();
             if ( this.limit && 
               ((items.length > this.currentStart) && (items.length > this.limit))

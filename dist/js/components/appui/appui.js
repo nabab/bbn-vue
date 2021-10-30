@@ -277,7 +277,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-background', 'bbn-overlay
   <bbn-clipboard v-if="plugins['appui-clipboard'] && clipboard"
                  :storage="true"
                  ref="clipboard"
-                 :source="clipboardContent"
+                 @copy="onCopy"
                  style="z-index: 13"/>
 
   <!-- POPUPS -->
@@ -478,7 +478,6 @@ document.head.insertAdjacentElement('beforeend', css);
         app: false,
         cool: false,
         searchString: '',
-        clipboardContent: [],
         observerTimeout: false,
         colorEnvVisible: true,
         currentTitle: this.title,
@@ -515,6 +514,16 @@ document.head.insertAdjacentElement('beforeend', css);
       }
     },
     methods: {
+      onCopy(){
+        let cpb = this.getRef('clipboardButton');
+        //bbn.fn.log("AWATCH", cpb);
+        if (cpb) {
+          cpb.style.color = 'red';
+          setTimeout(() => {
+            cpb.style.color = null;
+          }, 250);
+        }
+      },
       setBigMessage(msg, timeout = 3000) {
         this.bigMessage = msg;
         setTimeout(() => {
@@ -584,22 +593,6 @@ document.head.insertAdjacentElement('beforeend', css);
         }
 
         return res;
-      },
-      addToClipboard(e){
-        bbn.fn.getEventData(e).then((data) => {
-          this.clipboardContent.push(data);
-        });
-        return true;
-      },
-      copy(e){
-        if (this.clipboard) {
-          let type = e.type;
-          bbn.fn.getEventData(e).then((data) => {
-            this.clipboardContent.push(data);
-          });
-        }
-
-        return true;
       },
       onRoute(path) {
         this.$emit('route', path)
@@ -819,7 +812,7 @@ document.head.insertAdjacentElement('beforeend', css);
         if ( this.plugins['appui-menu'] && data.id ){
           let idx = bbn.fn.search(this.shortcuts, {id: data.id});
           if ( idx === -1 ){
-            this.post(this.plugins['appui-menu'] + '/shortcuts/insert', data, (d) => {
+            this.post(this.plugins['appui-menu'] + '/shortcuts/insert', data, d => {
               if ( d.success ){
                 this.shortcuts.push(data);
               }
@@ -829,7 +822,7 @@ document.head.insertAdjacentElement('beforeend', css);
       },
       removeShortcut(data){
         if ( this.plugins['appui-menu'] && data.id ){
-          this.post(this.plugins['appui-menu'] + '/shortcuts/delete', data, (d) => {
+          this.post(this.plugins['appui-menu'] + '/shortcuts/delete', data, d => {
             if ( d.success ){
               let idx = bbn.fn.search(this.shortcuts, {id: data.id});
               if ( idx > -1 ){
@@ -1043,7 +1036,7 @@ document.head.insertAdjacentElement('beforeend', css);
         }
         bbn.vue.preloadBBN(preloaded);
 
-        window.onkeydown = (e) => {
+        window.onkeydown = e => {
           this.keydown(e);
         };
 
@@ -1185,19 +1178,6 @@ document.head.insertAdjacentElement('beforeend', css);
           }, 1000);
         }
       },
-      clipboardContent: {
-        deep: true,
-        handler(){
-          let cpb = this.getRef('clipboardButton');
-          //bbn.fn.log("AWATCH", cpb);
-          if (cpb) {
-            cpb.style.backgroundColor = 'red';
-            setTimeout(() => {
-              cpb.style.backgroundColor = null;
-            }, 250);
-          }
-        }
-      }
     },
     components: {
       searchBar: {
@@ -1272,7 +1252,7 @@ document.head.insertAdjacentElement('beforeend', css);
           },
           eventsCfg(){
             let def = {
-              focus: (e) => {
+              focus: e => {
                 //bbn.fn.log("FOCUS");
                 if ( !this.isExpanded ){
                   let pane = this.closest('bbn-pane'),
@@ -1282,7 +1262,7 @@ document.head.insertAdjacentElement('beforeend', css);
                   this.isExpanded = true;
                 }
               },
-              blur: (e) => {
+              blur: e => {
                 //bbn.fn.log("BLUR");
                 if ( this.isExpanded ){
                   this.$set(this.style, 'width', this.source.style && this.source.style.width ? this.source.style.width : '30px');
@@ -1291,7 +1271,7 @@ document.head.insertAdjacentElement('beforeend', css);
                   this.search = '';
                 }
               },
-              change: (id) => {
+              change: id => {
                 if (id && !(id instanceof Event)) {
                   setTimeout(() => {
                     document.activeElement.blur();

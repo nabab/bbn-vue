@@ -10,7 +10,7 @@
   * @created 13/06/2017.
   */
  
-((bbn) => {
+(bbn => {
   "use strict";
 
   Vue.component('bbn-file', {
@@ -105,7 +105,7 @@
       fileList(){
         let res = [];
         if ( this.files && this.files.length ){
-          this.files.each((a) => {
+          this.files.each(a => {
             res.push(a)
           })
         }
@@ -154,10 +154,10 @@
           } */
           xRequestedWith: 'XMLHttpRequest'
         });
-        widget.event('send', (files) => {
+        widget.event('send', files => {
           if ( !this.disabled ){
             this.uploading = true;
-            files.each((file) => {
+            files.each(file => {
               if ( !this.isAllowed(file) ){
                 appui.error(bbn._("This type of file is not allowed, only files of type") + ' ' + this.extensions.join(', '));
               }
@@ -165,7 +165,7 @@
                 appui.error(bbn._("The file si too big, the maximum size is") + ' ' + this.maxSize + 'MB');
               }
               else{
-                file.event('done', (xhr) => {
+                file.event('done', xhr => {
                   this.uploading = false;
                   appui.success('Done uploading ' + file.name);
                 });

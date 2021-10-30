@@ -1,0 +1,11 @@
+{
+  "name": "image-editor",
+  "version": "0.0.1",
+  "authors": [
+    "Quentin Robert <qr@bbn.solutions>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "tui.image-editor": "~3.15.2"
+  }
+}

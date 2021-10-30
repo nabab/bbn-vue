@@ -1,4 +1,4 @@
-((bbn) => {
+(bbn => {
   "use strict";
   let version = '2.0.2';
   let libURL = '';

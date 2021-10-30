@@ -1,4 +1,4 @@
-((bbn) => {
+(bbn => {
   "use strict";
   bbn.fn.autoExtend("vue", {
     init: cfg => {
@@ -15,7 +15,7 @@
         }
       }
 
-      Vue.config.isReservedTag = (tag) => {
+      Vue.config.isReservedTag = tag => {
         return bbn.vue.loadComponentsByPrefix(tag)
       };
       Vue.config.devtools = !(!bbn.env.mode || (bbn.env.mode === 'prod'));

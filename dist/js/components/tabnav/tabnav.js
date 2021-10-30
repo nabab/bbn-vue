@@ -529,7 +529,7 @@ document.head.insertAdjacentElement('beforeend', css);
         else if (res && (this.selected === idx)) {
           this.router.selected = false;
           if ( this.tabs.length ){
-            bbn.fn.each(this.history, (a) => {
+            bbn.fn.each(this.history, a => {
               let tmp = this.router.getIndex(a);
               if ( tmp !== false ){
                 idx = tmp;
@@ -612,7 +612,7 @@ document.head.insertAdjacentElement('beforeend', css);
           let sub = this.getSubTabNav(idx);
           if ( sub && sub.tabs && sub.tabs.length ){
             let helps = [];
-            sub.tabs.forEach((a) => {
+            sub.tabs.forEach(a => {
               if ( a.help ){
                 helps.push({
                   url: sub.getFullBaseURL() + a.url,
@@ -628,7 +628,7 @@ document.head.insertAdjacentElement('beforeend', css);
             else if ( helps.length ){
               this.tabs[idx].help = '';
               let slide1 = '';
-              helps.forEach((a) => {
+              helps.forEach(a => {
                 slide1 += '<h1><a href="#' + a.anchor + '">' + a.title + '</a></h1>\n';
                 this.tabs[idx].help += '---slide---' + '\n<a name="' + a.anchor + '">\n' + a.content;
               });
@@ -940,14 +940,14 @@ document.head.insertAdjacentElement('beforeend', css);
 
     mounted(){
       let res = [];
-      bbn.fn.each(this.source, (a) => {
+      bbn.fn.each(this.source, a => {
         res.push(a);
       });
       let parent = this.closest('bbn-container');
       let fullURL = parent ? parent.getFullURL() : this.storageName;
       let cfg = this.getStorage(fullURL);
       if ( cfg && cfg.views ){
-        bbn.fn.each(cfg.views, (a) => {
+        bbn.fn.each(cfg.views, a => {
           let idx = bbn.fn.search(res, {url: a.url});
           if ( idx > -1 ){
             //bbn.fn.log("INSIDE", JSON.stringify(res[idx]));

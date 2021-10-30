@@ -760,7 +760,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @todo not used the method getComponents() doesn't exist
        */
       updateComponents() {
-        bbn.fn.each(this.getComponents(), (a) => {
+        bbn.fn.each(this.getComponents(), a => {
           if (a.$vnode.componentOptions) {
             let type = a.$vnode.componentOptions.tag || a._uid;
             if (this.mountedComponents.indexOf(type) === -1) {
@@ -839,7 +839,7 @@ document.head.insertAdjacentElement('beforeend', css);
             this.isResizing = true;
             this._setMinMax();  
           }
-          return new Promise((resolve) => {
+          return new Promise(resolve => {
             // Should be triggered by the inner scroll once mounted
             if (go) {
               if (this.definedWidth && this.definedHeight) {
@@ -936,7 +936,7 @@ document.head.insertAdjacentElement('beforeend', css);
               resolve(0);
               return;
             }
-          }).then((r) => {
+          }).then(r => {
             if (r) {
               let wasInit = this.isInit;
               if (!this.isInit) {
@@ -1219,7 +1219,7 @@ document.head.insertAdjacentElement('beforeend', css);
           this.closingFunctions = [];
         }
         else{
-          this.closingFunctions = bbn.fn.filter(this.closingFunctions, (f) => {
+          this.closingFunctions = bbn.fn.filter(this.closingFunctions, f => {
             return fn !== f;
           })
         }
@@ -1288,7 +1288,7 @@ document.head.insertAdjacentElement('beforeend', css);
           if (this.beforeClose && (this.beforeClose(this) === false)) {
             return;
           }
-          bbn.fn.each(this.closingFunctions, (a) => {
+          bbn.fn.each(this.closingFunctions, a => {
             a(this, beforeCloseEvent);
           });
           if (beforeCloseEvent.defaultPrevented) {

@@ -282,7 +282,7 @@ document.head.insertAdjacentElement('beforeend', css);
             let children = this.getRef('container').children,
                 res = [],
                 childHeight = 0;
-            bbn.fn.each(children, (a) => {
+            bbn.fn.each(children, a => {
               if ( a.classList.contains('bbn-border-box') ){
                 res.push(a)
               }
@@ -315,7 +315,7 @@ document.head.insertAdjacentElement('beforeend', css);
             let children = this.getRef('container').children,
                 res = [],
                 childHeight = 0;
-            bbn.fn.each(children, (a) => {
+            bbn.fn.each(children, a => {
               if ( a.classList.contains('bbn-border-box') ){
                 res.push(a)
               }
