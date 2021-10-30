@@ -1661,59 +1661,59 @@
                 "props": [
                     {
                         "text": "ecma",
-                        "desc": "The ecmascript version.\n\n",
+                        "desc": "The ecmascript version.\n",
                         "url": "bbn-vue\/component\/code2\/doc\/props#ecma"
                     },
                     {
                         "text": "mode",
-                        "desc": "The language mode.\n\n",
+                        "desc": "The language mode.\n",
                         "url": "bbn-vue\/component\/code2\/doc\/props#mode"
                     },
                     {
                         "text": "theme",
-                        "desc": "Defines the style of the editor.\n\n",
+                        "desc": "Defines the style of the editor.\n",
                         "url": "bbn-vue\/component\/code2\/doc\/props#theme"
                     },
                     {
                         "text": "fill",
-                        "desc": "Takes the full height of the container if set to true.\n\n",
+                        "desc": "Takes the full height of the container if set to true.\n",
                         "url": "bbn-vue\/component\/code2\/doc\/props#fill"
                     },
                     {
                         "text": "cfg",
-                        "desc": "Configuration object.\n\n",
+                        "desc": "Configuration object.\n",
                         "url": "bbn-vue\/component\/code2\/doc\/props#cfg"
                     },
                     {
                         "text": "themeButton",
-                        "desc": "Set to true to display a button that can change the theme of the component.\n\n",
+                        "desc": "Set to true to display a button that can change the theme of the component.\n",
                         "url": "bbn-vue\/component\/code2\/doc\/props#themeButton"
                     }
                 ],
                 "methods": [
                     {
                         "text": "getMode",
-                        "desc": "Gets the preset options for the given mode from the constant modes.\n\n",
+                        "desc": "Gets the preset options for the given mode from the constant modes.\n",
                         "url": "bbn-vue\/component\/code2\/doc\/methods#getMode"
                     },
                     {
                         "text": "getOptions",
-                        "desc": "Gets the options for the editor.\n\n",
+                        "desc": "Gets the options for the editor.\n",
                         "url": "bbn-vue\/component\/code2\/doc\/methods#getOptions"
                     },
                     {
                         "text": "cursorPosition",
-                        "desc": "Places the cursor at a defined point.\n\n",
+                        "desc": "Places the cursor at a defined point.\n",
                         "url": "bbn-vue\/component\/code2\/doc\/methods#cursorPosition"
                     },
                     {
                         "text": "getState",
-                        "desc": "Returns an object with the selections, marks, folding and value.\n\n",
+                        "desc": "Returns an object with the selections, marks, folding and value.\n",
                         "url": "bbn-vue\/component\/code2\/doc\/methods#getState"
                     },
                     {
                         "text": "loadState",
-                        "desc": "Loads the state, such as the last state saved.\n\n",
+                        "desc": "Loads the state, such as the last state saved.\n",
                         "url": "bbn-vue\/component\/code2\/doc\/methods#loadState"
                     },
                     {
@@ -1723,7 +1723,7 @@
                     },
                     {
                         "text": "foldByLevel",
-                        "desc": "Folds the given level.\n\n",
+                        "desc": "Folds the given level.\n",
                         "url": "bbn-vue\/component\/code2\/doc\/methods#foldByLevel"
                     },
                     {
@@ -1733,22 +1733,22 @@
                     },
                     {
                         "text": "foldByNodeOrder",
-                        "desc": "Folds the given node.\n\n",
+                        "desc": "Folds the given node.\n",
                         "url": "bbn-vue\/component\/code2\/doc\/methods#foldByNodeOrder"
                     },
                     {
                         "text": "foldAll",
-                        "desc": "Folds all nodes.\n\n",
+                        "desc": "Folds all nodes.\n",
                         "url": "bbn-vue\/component\/code2\/doc\/methods#foldAll"
                     },
                     {
                         "text": "unfoldAll",
-                        "desc": "Undfolds all nodes.\n\n",
+                        "desc": "Undfolds all nodes.\n",
                         "url": "bbn-vue\/component\/code2\/doc\/methods#unfoldAll"
                     },
                     {
                         "text": "initTern",
-                        "desc": "Initializes the component\n\n",
+                        "desc": "Initializes the component\n",
                         "url": "bbn-vue\/component\/code2\/doc\/methods#initTern"
                     }
                 ],
@@ -1776,59 +1776,59 @@
                 "props": [
                     {
                         "text": "ecma",
-                        "desc": "The ecmascript version.\n\n",
+                        "desc": "The ecmascript version.\n",
                         "url": "bbn-vue\/component\/code3\/doc\/props#ecma"
                     },
                     {
                         "text": "mode",
-                        "desc": "The language mode.\n\n",
+                        "desc": "The language mode.\n",
                         "url": "bbn-vue\/component\/code3\/doc\/props#mode"
                     },
                     {
                         "text": "theme",
-                        "desc": "Defines the style of the editor.\n\n",
+                        "desc": "Defines the style of the editor.\n",
                         "url": "bbn-vue\/component\/code3\/doc\/props#theme"
                     },
                     {
                         "text": "fill",
-                        "desc": "Takes the full height of the container if set to true.\n\n",
+                        "desc": "Takes the full height of the container if set to true.\n",
                         "url": "bbn-vue\/component\/code3\/doc\/props#fill"
                     },
                     {
                         "text": "cfg",
-                        "desc": "Configuration object.\n\n",
+                        "desc": "Configuration object.\n",
                         "url": "bbn-vue\/component\/code3\/doc\/props#cfg"
                     },
                     {
                         "text": "themeButton",
-                        "desc": "Set to true to display a button that can change the theme of the component.\n\n",
+                        "desc": "Set to true to display a button that can change the theme of the component.\n",
                         "url": "bbn-vue\/component\/code3\/doc\/props#themeButton"
                     }
                 ],
                 "methods": [
                     {
                         "text": "getMode",
-                        "desc": "Gets the preset options for the given mode from the constant modes.\n\n",
+                        "desc": "Gets the preset options for the given mode from the constant modes.\n",
                         "url": "bbn-vue\/component\/code3\/doc\/methods#getMode"
                     },
                     {
                         "text": "getOptions",
-                        "desc": "Gets the options for the editor.\n\n",
+                        "desc": "Gets the options for the editor.\n",
                         "url": "bbn-vue\/component\/code3\/doc\/methods#getOptions"
                     },
                     {
                         "text": "cursorPosition",
-                        "desc": "Places the cursor at a defined point.\n\n",
+                        "desc": "Places the cursor at a defined point.\n",
                         "url": "bbn-vue\/component\/code3\/doc\/methods#cursorPosition"
                     },
                     {
                         "text": "getState",
-                        "desc": "Returns an object with the selections, marks, folding and value.\n\n",
+                        "desc": "Returns an object with the selections, marks, folding and value.\n",
                         "url": "bbn-vue\/component\/code3\/doc\/methods#getState"
                     },
                     {
                         "text": "loadState",
-                        "desc": "Loads the state, such as the last state saved.\n\n",
+                        "desc": "Loads the state, such as the last state saved.\n",
                         "url": "bbn-vue\/component\/code3\/doc\/methods#loadState"
                     },
                     {
@@ -1838,7 +1838,7 @@
                     },
                     {
                         "text": "foldByLevel",
-                        "desc": "Folds the given level.\n\n",
+                        "desc": "Folds the given level.\n",
                         "url": "bbn-vue\/component\/code3\/doc\/methods#foldByLevel"
                     },
                     {
@@ -1848,22 +1848,22 @@
                     },
                     {
                         "text": "foldByNodeOrder",
-                        "desc": "Folds the given node.\n\n",
+                        "desc": "Folds the given node.\n",
                         "url": "bbn-vue\/component\/code3\/doc\/methods#foldByNodeOrder"
                     },
                     {
                         "text": "foldAll",
-                        "desc": "Folds all nodes.\n\n",
+                        "desc": "Folds all nodes.\n",
                         "url": "bbn-vue\/component\/code3\/doc\/methods#foldAll"
                     },
                     {
                         "text": "unfoldAll",
-                        "desc": "Undfolds all nodes.\n\n",
+                        "desc": "Undfolds all nodes.\n",
                         "url": "bbn-vue\/component\/code3\/doc\/methods#unfoldAll"
                     },
                     {
                         "text": "initTern",
-                        "desc": "Initializes the component\n\n",
+                        "desc": "Initializes the component\n",
                         "url": "bbn-vue\/component\/code3\/doc\/methods#initTern"
                     }
                 ],
