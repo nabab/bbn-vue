@@ -1,4 +1,4 @@
-<p style=="text-align: center"><a href="https://bbn.io/bbn-vue/home"><img alt="BBN VUE" src="https://bbn.io/black/text/vue.svg"></a></p>
+<p style=="text-align: center"><a href="https://bbn.io/bbn-vue/home"><img alt="BBN VUE" src="https://bbn.io/icon/black/text/vue.svg"></a></p>
 
 # bbn-vue
 
