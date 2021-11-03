@@ -242,10 +242,10 @@ document.head.insertAdjacentElement('beforeend', css);
       },
       /**
        * The width of the items.
-       * @prop {Number} [150] itemWidth
+       * @prop {Number|s} [150] itemWidth
        */
       itemWidth: {
-        type: Number,
+        type: [Number, String],
         default: 150
       },
       /**

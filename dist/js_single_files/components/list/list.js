@@ -453,7 +453,7 @@ document.body.insertAdjacentElement('beforeend', script);
          * @data {Number} [-1] overItem
          * @memberof listComponent
          */
-        overIdx: null,
+        overIdx: -1,
         mouseLeaveTimeout: false,
         isOpened: true,
         scroll: null,
@@ -567,6 +567,7 @@ document.body.insertAdjacentElement('beforeend', script);
         }
       },
       mouseenter(e, idx){
+        bbn.fn.log("Nouse ener");
         if ( !this.isOver ){
           // if the list appears under the nouse while it is inactive
           e.target.addEventListener('mousemove', () => {
@@ -580,8 +581,9 @@ document.body.insertAdjacentElement('beforeend', script);
         }
       },
       resetOverIdx(){
+        bbn.fn.log("Reset OverIdx");
         if (this.suggest === false) {
-          this.overIdx = null;
+          this.overIdx = -1;
         }
         else if (this.suggest === true) {
           this.overIdx = 0;
@@ -591,6 +593,7 @@ document.body.insertAdjacentElement('beforeend', script);
         }
       },
       mouseleave(){
+        bbn.fn.log("Nouse leave");
         this.isOver = false;
         this.resetOverIdx();
       },
@@ -735,8 +738,11 @@ document.body.insertAdjacentElement('beforeend', script);
        * @param {Boolean} newVal 
        */
       overIdx(newVal, oldVal) {
+        bbn.fn.log("overIdx is changing")
         this.keepCool(() => {
+          bbn.fn.log("Scroll to?");
           if (this.hasScroll && newVal && !this.isOver) {
+            bbn.fn.log("Scroll to!")
             this.closest('bbn-scroll').scrollTo(null, this.getRef('li' + newVal));
           }
         }, 'overIdx', 50)

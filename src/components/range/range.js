@@ -156,7 +156,7 @@
          * The current value of the numeric input
          * @data {String} numericValue
          */
-        numericValue: Number(this.value.replace(currentUnit, ''))
+        numericValue: Number(this.value.toString().replace(currentUnit, ''))
       }
     },
     computed: {

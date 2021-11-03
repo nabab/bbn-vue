@@ -3,16 +3,24 @@
 	    :style="(currentSize !== '') ? 'width:' + currentSize : '' ">
 	<span v-text="value"
         class="bbn-right-space bbn-nowrap"
-				v-if="showLabel"/>
-  <input :value="parseInt(value)"
+				v-if="showLabel && !showNumeric"/>
+	<bbn-numeric v-if="showNumeric"
+							 v-model="numericValue"
+							 class="bbn-right-space"
+							 :min="currentMin"
+							 :max="currentMax"
+							 :step="currentStep"
+							 :decimals="currentDecimals"/>
+  <input :value="Number(value.toString().replace(currentUnit, ''))"
          type="range"
          :name="name"
          ref="element"
          :readonly="readonly"
          :disabled="disabled"
          :required="required"
-         :min="min"
-         :max="max"
+         :min="currentMin"
+         :max="currentMax"
+				 :step="currentStep"
          @input="_changeValue"
          @click="click"
          @focus="focus"
@@ -98,13 +106,39 @@
         default(){
           return [{
             text: '%',
-            value: '%'
+            value: '%',
+            min: 1,
+            max: 100,
+            step: 1,
+            decimals: 0
           }, {
             text: 'px',
-            value: 'px'
+            value: 'px',
+            min: 1,
+            max: 2000,
+            step: 1,
+            decimals: 0
           }, {
             text: 'em',
-            value: 'em'
+            value: 'em',
+            min: 0.1,
+            max: 200,
+            step: 0.1,
+            decimals: 1
+          }, {
+            text: 'vh',
+            value: 'vh',
+            min: 1,
+            max: 100,
+            step: 1,
+            decimals: 0
+          }, {
+            text: 'vw',
+            value: 'vw',
+            min: 1,
+            max: 100,
+            step: 1,
+            decimals: 0
           }]
         }
       },
@@ -126,6 +160,13 @@
        * @prop {Boolean} [false] showUnits
        */
       showUnits: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * @prop {Boolean} [false] showNumeric
+       */
+      showNumeric: {
         type: Boolean,
         default: false
       }
@@ -156,7 +197,12 @@
          * The current unit
          * @data {String} [''] currentUnit
          */
-        currentUnit: currentUnit
+        currentUnit: currentUnit,
+        /**
+         * The current value of the numeric input
+         * @data {String} numericValue
+         */
+        numericValue: Number(this.value.toString().replace(currentUnit, ''))
       }
     },
     computed: {
@@ -167,6 +213,30 @@
        */
       currentInputSize(){
         return this.autosize ? (this.value ? this.value.toString().length : 1) : 0;
+      },
+      currentMin(){
+        if (this.currentUnit) {
+          return bbn.fn.getField(this.units, 'min', 'value', this.currentUnit);
+        }
+        return this.min;
+      },
+      currentMax(){
+        if (this.currentUnit) {
+          return bbn.fn.getField(this.units, 'max', 'value', this.currentUnit);
+        }
+        return this.max;
+      },
+      currentStep(){
+        if (this.currentUnit) {
+          return bbn.fn.getField(this.units, 'step', 'value', this.currentUnit);
+        }
+        return this.step;
+      },
+      currentDecimals(){
+        if (this.currentUnit) {
+          return bbn.fn.getField(this.units, 'decimals', 'value', this.currentUnit) || 0;
+        }
+        return 0;
       }
     },
     methods: {
@@ -186,7 +256,8 @@
        * @fires emitInput
        */
       _changeValue(){
-        let val = parseInt(this.getRef('element').value);
+        let val = Number(this.getRef('element').value);
+        this.numericValue = val;
         if (this.currentUnit) {
           val += this.currentUnit;
         }
@@ -212,6 +283,17 @@
        */
       unit(val){
         this.currentUnit = val;
+      },
+      /**
+       * @watch numericValue
+       */
+      numericValue(val){
+        if (val !== this.value) {
+          if (this.currentUnit) {
+            val += this.currentUnit;
+          }
+          this.emitInput(val);
+        }
       }
     }
   });

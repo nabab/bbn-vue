@@ -10,7 +10,7 @@
 							 :max="currentMax"
 							 :step="currentStep"
 							 :decimals="currentDecimals"/>
-  <input :value="Number(value.replace(currentUnit, ''))"
+  <input :value="Number(value.toString().replace(currentUnit, ''))"
          type="range"
          :name="name"
          ref="element"
