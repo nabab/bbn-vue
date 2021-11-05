@@ -276,6 +276,12 @@
       },
       groupStyle: {
         type: String
+      },
+      /**
+       * Whatever will be given as arguments to the function action.
+       */
+      actionArguments: {
+        type: Array
       }
     },
     data(){
@@ -575,7 +581,12 @@
                   }
                 }
                 else if (bbn.fn.isFunction(item.data.action) ){
-                  item.data.action(idx, item.data);
+                  if (this.actionArguments) {
+                    item.data.action(...this.actionArguments);
+                  }
+                  else {
+                    item.data.action(idx, item.data);
+                  }
                 }
               }
               else if ( item.data.url ) {

@@ -293,6 +293,7 @@
                       'bbn-table-buttons': !!col.buttons
                     }]"
                     @click="clickCell(col, index, d.index)"
+                    @dblclick="dbclickCell(col, index, d.index, d.data, i)"
                     :style="{
                       left: col.left !== undefined ? (col.left + 'px') : 'auto',
                       right: col.right !== undefined ? (col.right + 'px') : 'auto',
@@ -375,6 +376,13 @@
                                       :placeholder="dropdownMode === true ? _('Action') : dropdownMode"
                                       :popup="true"
                                       @select="_execCommand(button, d.data, col, i, $event)"/>
+                      </template>
+                      <template v-else-if="col.buttons && (buttonMode === 'menu')">
+                        <bbn-context :source="Array.isArray(col.buttons) ? col.butttons : col.buttons(d.data, col, i)">
+                          <span class="bbn-iblock bbn-lg bbn-hspadded">
+                            <i :class="buttonIcon"/>
+                          </span>
+                        </bbn-context>
                       </template>
                       <template v-else-if="col.buttons && (colButtons === index)">
                         <bbn-button v-for="(button, bi) in (Array.isArray(realButtons) ? realButtons : realButtons(d.data, col, i))"

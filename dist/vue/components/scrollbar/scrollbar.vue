@@ -846,6 +846,7 @@
 <style scoped>
 .bbn-scrollbar {
   position: absolute;
+  overflow: hidden;
   -webkit-transition: opacity 150ms ease-in-out;
   -moz-transition: opacity 150ms ease-in-out;
   transition: opacity 150ms ease-in-out;

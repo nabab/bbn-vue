@@ -3263,7 +3263,7 @@
             },
             {
                 "text": "floater",
-                "lastmod": 1635615848,
+                "lastmod": 1636106608,
                 "url": "bbn-vue\/component\/floater\/overview",
                 "props": [
                     {
@@ -3469,6 +3469,11 @@
                         "text": "listComponent",
                         "desc": "",
                         "url": "bbn-vue\/component\/floater\/doc\/mixins#listComponent"
+                    },
+                    {
+                        "text": "componentInsideComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/floater\/doc\/mixins#componentInsideComponent"
                     },
                     {
                         "text": "resizerComponent",
@@ -3945,7 +3950,7 @@
             },
             {
                 "text": "gallery",
-                "lastmod": 1635863801,
+                "lastmod": 1635912819,
                 "url": "bbn-vue\/component\/gallery\/overview",
                 "props": [
                     {
@@ -4499,7 +4504,7 @@
             },
             {
                 "text": "list",
-                "lastmod": 1635679613,
+                "lastmod": 1636078829,
                 "url": "bbn-vue\/component\/list\/overview",
                 "props": [
                     {
@@ -5831,25 +5836,6 @@
                 ]
             },
             {
-                "text": "prose",
-                "lastmod": 1566136617,
-                "url": "bbn-vue\/component\/prose\/overview",
-                "props": [],
-                "methods": [],
-                "mixins": [
-                    {
-                        "text": "basicComponent",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/prose\/doc\/mixins#basicComponent"
-                    },
-                    {
-                        "text": "localStorageComponent",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/prose\/doc\/mixins#localStorageComponent"
-                    }
-                ]
-            },
-            {
                 "text": "radio",
                 "lastmod": 1612828990,
                 "url": "bbn-vue\/component\/radio\/overview",
@@ -5997,7 +5983,7 @@
             },
             {
                 "text": "range",
-                "lastmod": 1635868590,
+                "lastmod": 1635912819,
                 "url": "bbn-vue\/component\/range\/overview",
                 "props": [
                     {
@@ -6806,7 +6792,7 @@
             },
             {
                 "text": "scrollbar",
-                "lastmod": 1635615848,
+                "lastmod": 1635914224,
                 "url": "bbn-vue\/component\/scrollbar\/overview",
                 "props": [
                     {
@@ -6972,7 +6958,7 @@
             },
             {
                 "text": "search",
-                "lastmod": 1635725287,
+                "lastmod": 1635912819,
                 "url": "bbn-vue\/component\/search\/overview",
                 "props": [
                     {
@@ -7154,7 +7140,7 @@
             },
             {
                 "text": "slider-menu",
-                "lastmod": 1635769304,
+                "lastmod": 1635912819,
                 "url": "bbn-vue\/component\/slider-menu\/overview",
                 "props": [
                     {
@@ -7747,7 +7733,7 @@
             },
             {
                 "text": "table",
-                "lastmod": 1635615848,
+                "lastmod": 1636106876,
                 "url": "bbn-vue\/component\/table\/overview",
                 "props": [
                     {
@@ -7909,6 +7895,21 @@
                         "text": "itemName",
                         "desc": "The name of the `record` word as used in the pager interface.\n",
                         "url": "bbn-vue\/component\/table\/doc\/props#itemName"
+                    },
+                    {
+                        "text": "buttonMode",
+                        "desc": "The way `buttons` should be displayed, either as buttons or as a menu.\n",
+                        "url": "bbn-vue\/component\/table\/doc\/props#buttonMode"
+                    },
+                    {
+                        "text": "buttonIcon",
+                        "desc": "The name of the `record` word as used in the pager interface.\n",
+                        "url": "bbn-vue\/component\/table\/doc\/props#buttonIcon"
+                    },
+                    {
+                        "text": "zoomable",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/table\/doc\/props#zoomable"
                     }
                 ],
                 "methods": [
@@ -8161,6 +8162,16 @@
                         "text": "blurRow",
                         "desc": "Blurs the given row index.\n",
                         "url": "bbn-vue\/component\/table\/doc\/methods#blurRow"
+                    },
+                    {
+                        "text": "clickCell",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/table\/doc\/methods#clickCell"
+                    },
+                    {
+                        "text": "dbclickCell",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/table\/doc\/methods#dbclickCell"
                     }
                 ],
                 "mixins": [
