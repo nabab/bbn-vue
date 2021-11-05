@@ -1,6 +1,6 @@
 ((bbn) => {
 let script_dep = document.createElement('script');
-script_dep.setAttribute('src', "https://cdn.jsdelivr.net/combine/gh/nhn/tui.image-editor@v3.15.2/apps/image-editor/dist/tui-color-picker.min.js,gh/nhn/tui.image-editor@v3.15.2/apps/image-editor/dist/tui-code-snippet.min.js,gh/nhn/tui.image-editor@v3.15.2/apps/image-editor/dist/tui-image-editor.min.js");
+script_dep.setAttribute('src', "https://cdn.jsdelivr.net/combine/gh/nhn/tui.image-editor@v3.15.2/apps/image-editor/dist/tui-code-snippet.min.js,gh/nhn/tui.image-editor@v3.15.2/apps/image-editor/dist/tui-color-picker.min.js,gh/nhn/tui.image-editor@v3.15.2/apps/image-editor/dist/tui-image-editor.min.js");
 script_dep.onload = () => {
 
 let css_dependency;

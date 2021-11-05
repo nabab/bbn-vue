@@ -250,7 +250,7 @@
                         left: currentColumns[1].left !== undefined ? currentColumns[1].left + 'px' : 'auto',
                         width: 'auto',
                         borderRight: '0px',
-                        overflow: 'unset'
+                        overflow: 'unset' 
                       }">
                     <div class="bbn-block"
                          :style="{
@@ -278,7 +278,8 @@
                             :is="d.component"
                             v-bind="d.options || {}"
                             :source="col.mapper ? col.mapper(d.data) : d.data"/>
-                  <div v-else v-html="render(d.data, col, i)"/>
+                  <div v-else
+                       v-html="render(d.data, col, i)"/>
                 </td>
 
                 <td v-else
@@ -299,8 +300,10 @@
                       left: col.left !== undefined ? (col.left + 'px') : 'auto',
                       right: col.right !== undefined ? (col.right + 'px') : 'auto',
                       width: col.realWidth
-                    }">
-                  <div class="bbn-block bbn-spadded">
+                    }"
+                    :ref="'td' + i">
+                  <div class="bbn-block bbn-spadded"
+                       :style="{maxHeight: currentMaxRowHeight}">
                     <!-- Checkboxes -->
                     <div v-if="col.isSelection" class="bbn-c bbn-w-100">
                       <bbn-checkbox v-if="d.selection"
@@ -405,6 +408,13 @@
                       </template>
                       <div v-else
                            v-html="render(d.data, col, i)"></div>
+                      <table-dots :source="{
+                                        column: col,
+                                        index: index,
+                                        dataIndex: d.index,
+                                        data: d.data,
+                                        itemIndex: i
+                                      }"/>
                     </template>
                   </div>
                 </td>
@@ -815,11 +825,19 @@
         default: 'nf nf-mdi-dots_vertical'
       },
       /**
+       * Allows you to see the contents of a cell in a popup
        * @prop {Boolean} [false] zoomable
        */
       zoomable: {
         type: Boolean,
         default: false
+      },
+      /**
+       * The max row height value
+       * @prop {Number} maxRowHeight
+       */
+      maxRowHeight: {
+        type: Number
       }
     },
     data() {
@@ -1613,6 +1631,9 @@
           return !!this.items.filter(i => !!i.expander).length
         }
         return false
+      },
+      currentMaxRowHeight(){
+        return !!this.maxRowHeight ? this.maxRowHeight + 'px' : 'auto';
       }
     },
     methods: {
@@ -3356,13 +3377,12 @@
        * @param {Number} colIndex
        * @param {Number} dataIndex
        */
-      dbclickCell(col, colIndex, dataIndex, data, itemIndex) {
-        if (this.zoomable && !!col.zoomable) {
-          bbn.fn.log('mirko', col, colIndex, dataIndex);
+      dbclickCell(col, colIndex, dataIndex, data, itemIndex, force) {
+        if (this.zoomable && (!!col.zoomable || force)) {
           let obj = {
-            width: '70%',
-            height: '70%',
-            title: col.title || col.ftitle
+            title: col.title || col.ftitle,
+            minHeight: '20%',
+            minWidth: '20%'
           };
           if (!!col.component) {
             obj.component = col.component;
@@ -3703,6 +3723,77 @@
           this.$nextTick(() => {
             this.resizeWidth();
           })
+        }
+      }
+    },
+    components: {
+      /**
+       * @component table-dots
+       */
+      tableDots: {
+        name: 'table-dots',
+        template: `
+<div class="bbn-c bbn-lg"
+     v-show="visible"
+     @click="table.dbclickCell(source.column, source.index, source.dataIndex, source.data, source.itemIndex, true)">
+  <i class="nf nf-mdi-dots_horizontal bbn-p bbn-primary-text-alt"/>
+</div>
+        `,
+        props: {
+          /**
+           * @prop {Object} source
+           * @memberof bbn-table-dots
+           */
+          source: {
+            type: Object
+          }
+        },
+        data(){
+          return {
+            /**
+           * @data {Boolean} [false] visible
+           * @memberof bbn-table-dots
+           */
+            visible: false,
+            /**
+           * @data {Vue} table
+           * @memberof bbn-table-dots
+           */
+            table: this.closest('bbn-table')
+          }
+        },
+        methods: {
+          /**
+           * @method {Object} checkVisibility
+           * @memberof bbn-table-dots
+           */
+          checkVisibility(){
+            if (this.table.maxRowHeight && this.table.zoomable) {
+              let td = this.$el.closest('td');
+              if (!!td && !!td.firstElementChild && !!td.firstElementChild.firstElementChild) {
+                let styleFirst = window.getComputedStyle(td.firstElementChild),
+                    styleSecond = window.getComputedStyle(td.firstElementChild.firstElementChild);
+                this.visible = (parseFloat(styleSecond.height) + parseFloat(styleFirst.paddingTop) + parseFloat(styleFirst.paddingBottom)) > this.table.maxRowHeight;
+                if (this.visible) {
+                  td.firstElementChild.firstElementChild.style.setProperty('height', 'calc(' + this.table.maxRowHeight + 'px - 2.3em)');
+                  td.firstElementChild.firstElementChild.style.overflow = 'hidden';
+                }
+              }
+            }
+            else {
+              this.visible = false;
+            }
+          }
+        },
+        /**
+         * @event mounted
+         * @memberof bbn-table-dots
+         * @fires checkVisibility
+         */
+        mounted(){
+          this.$nextTick(() => {
+            this.checkVisibility();
+          });
         }
       }
     }

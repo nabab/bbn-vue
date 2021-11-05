@@ -7733,7 +7733,7 @@
             },
             {
                 "text": "table",
-                "lastmod": 1636106876,
+                "lastmod": 1636132333,
                 "url": "bbn-vue\/component\/table\/overview",
                 "props": [
                     {
@@ -7908,8 +7908,13 @@
                     },
                     {
                         "text": "zoomable",
-                        "desc": "",
+                        "desc": "Allows you to see the contents of a cell in a popup\n",
                         "url": "bbn-vue\/component\/table\/doc\/props#zoomable"
+                    },
+                    {
+                        "text": "maxRowHeight",
+                        "desc": "The max row height value\n",
+                        "url": "bbn-vue\/component\/table\/doc\/props#maxRowHeight"
                     }
                 ],
                 "methods": [
