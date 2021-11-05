@@ -145,6 +145,7 @@
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.listComponent
+     * @mixin bbn.vue.componentInsideComponent
      * @mixin bbn.vue.resizerComponent
      * @mixin bbn.vue.keepCoolComponent
      * @mixin bbn.vue.toggleComponent
@@ -375,6 +376,12 @@
       },
       opener: {
         type: Vue
+      },
+      /**
+       * Whatever will be given as arguments to the function action.
+       */
+       actionArguments: {
+        type: Array
       }
     },
     data() {

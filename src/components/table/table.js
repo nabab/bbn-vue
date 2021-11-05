@@ -328,6 +328,37 @@
       itemName: {
         type: String,
         default: bbn._("rows")
+      },
+      /**
+       * The way `buttons` should be displayed, either as buttons or as a menu.
+       * @prop {String} ['buttons'] buttonMode
+       */
+       buttonMode: {
+        type: String,
+        default: 'buttons'
+      },
+      /**
+       * The name of the `record` word as used in the pager interface.
+       * @prop {String} ['nf nf-mdi-dots_vertical'] buttonIcon
+       */
+       buttonIcon: {
+        type: String,
+        default: 'nf nf-mdi-dots_vertical'
+      },
+      /**
+       * Allows you to see the contents of a cell in a popup
+       * @prop {Boolean} [false] zoomable
+       */
+      zoomable: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * The max row height value
+       * @prop {Number} maxRowHeight
+       */
+      maxRowHeight: {
+        type: Number
       }
     },
     data() {
@@ -1121,9 +1152,24 @@
           return !!this.items.filter(i => !!i.expander).length
         }
         return false
+      },
+      currentMaxRowHeight(){
+        return !!this.maxRowHeight ? this.maxRowHeight + 'px' : 'auto';
       }
     },
     methods: {
+      convertActions(arr, data, col, idx){
+        return bbn.fn.map(arr, a => {
+          let b = bbn.fn.clone(a);
+          if (a.action && bbn.fn.isFunction(a.action)) {
+            b.action = e => {
+              this._execCommand(a, data, col, idx, e);
+            };
+          }
+
+          return b;
+        });
+      },
       getTrClass(row) {
         if (bbn.fn.isFunction(this.trClass)) {
           return this.trClass(row);
@@ -2833,12 +2879,41 @@
         }
       },
       /**
-       * 
+       * @method clickCell
+       * @param {Object} col
+       * @param {Number} colIndex
+       * @param {Number} dataIndex
+       * @emits click-row
+       * @emits click-cell
        */
       clickCell(col, colIndex, dataIndex) {
         if (this.filteredData[dataIndex]) {
           this.$emit('click-row', this.filteredData[dataIndex].data, dataIndex);
           this.$emit('click-cell', col, colIndex, dataIndex);
+        }
+      },
+      /**
+       * @method dbclickCell
+       * @param {Object} col
+       * @param {Number} colIndex
+       * @param {Number} dataIndex
+       */
+      dbclickCell(col, colIndex, dataIndex, data, itemIndex, force) {
+        if (this.zoomable && (!!col.zoomable || force)) {
+          let obj = {
+            title: col.title || col.ftitle,
+            minHeight: '20%',
+            minWidth: '20%'
+          };
+          if (!!col.component) {
+            obj.component = col.component;
+            obj.source = bbn.fn.isFunction(col.mapper) ? col.mapper(data) : data;
+            obj.componentOptions = col.options;
+          }
+          else if (bbn.fn.isFunction(col.render)) {
+            obj.content = `<div class="bbn-spadded">${col.render(data, col, itemIndex)}</div>`;
+          }
+          this.getPopup().open(obj);
         }
       },
       /**
@@ -3169,6 +3244,77 @@
           this.$nextTick(() => {
             this.resizeWidth();
           })
+        }
+      }
+    },
+    components: {
+      /**
+       * @component table-dots
+       */
+      tableDots: {
+        name: 'table-dots',
+        template: `
+<div class="bbn-c bbn-lg"
+     v-show="visible"
+     @click="table.dbclickCell(source.column, source.index, source.dataIndex, source.data, source.itemIndex, true)">
+  <i class="nf nf-mdi-dots_horizontal bbn-p bbn-primary-text-alt"/>
+</div>
+        `,
+        props: {
+          /**
+           * @prop {Object} source
+           * @memberof bbn-table-dots
+           */
+          source: {
+            type: Object
+          }
+        },
+        data(){
+          return {
+            /**
+           * @data {Boolean} [false] visible
+           * @memberof bbn-table-dots
+           */
+            visible: false,
+            /**
+           * @data {Vue} table
+           * @memberof bbn-table-dots
+           */
+            table: this.closest('bbn-table')
+          }
+        },
+        methods: {
+          /**
+           * @method {Object} checkVisibility
+           * @memberof bbn-table-dots
+           */
+          checkVisibility(){
+            if (this.table.maxRowHeight && this.table.zoomable) {
+              let td = this.$el.closest('td');
+              if (!!td && !!td.firstElementChild && !!td.firstElementChild.firstElementChild) {
+                let styleFirst = window.getComputedStyle(td.firstElementChild),
+                    styleSecond = window.getComputedStyle(td.firstElementChild.firstElementChild);
+                this.visible = (parseFloat(styleSecond.height) + parseFloat(styleFirst.paddingTop) + parseFloat(styleFirst.paddingBottom)) > this.table.maxRowHeight;
+                if (this.visible) {
+                  td.firstElementChild.firstElementChild.style.setProperty('height', 'calc(' + this.table.maxRowHeight + 'px - 2.3em)');
+                  td.firstElementChild.firstElementChild.style.overflow = 'hidden';
+                }
+              }
+            }
+            else {
+              this.visible = false;
+            }
+          }
+        },
+        /**
+         * @event mounted
+         * @memberof bbn-table-dots
+         * @fires checkVisibility
+         */
+        mounted(){
+          this.$nextTick(() => {
+            this.checkVisibility();
+          });
         }
       }
     }

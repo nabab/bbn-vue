@@ -294,6 +294,7 @@
                       'bbn-table-buttons': !!col.buttons
                     }]"
                     @click="clickCell(col, index, d.index)"
+                    @dblclick="dbclickCell(col, index, d.index, d.data, i)"
                     :style="{
                       left: col.left !== undefined ? (col.left + 'px') : 'auto',
                       right: col.right !== undefined ? (col.right + 'px') : 'auto',
@@ -376,6 +377,13 @@
                                       :placeholder="dropdownMode === true ? _('Action') : dropdownMode"
                                       :popup="true"
                                       @select="_execCommand(button, d.data, col, i, $event)"/>
+                      </template>
+                      <template v-else-if="col.buttons && (buttonMode === 'menu')">
+                        <bbn-context :source="Array.isArray(col.buttons) ? col.butttons : col.buttons(d.data, col, i)">
+                          <span class="bbn-iblock bbn-lg bbn-hspadded">
+                            <i :class="buttonIcon"/>
+                          </span>
+                        </bbn-context>
                       </template>
                       <template v-else-if="col.buttons && (colButtons === index)">
                         <bbn-button v-for="(button, bi) in (Array.isArray(realButtons) ? realButtons : realButtons(d.data, col, i))"
@@ -789,6 +797,29 @@
       itemName: {
         type: String,
         default: bbn._("rows")
+      },
+      /**
+       * The way `buttons` should be displayed, either as buttons or as a menu.
+       * @prop {String} ['buttons'] buttonMode
+       */
+       buttonMode: {
+        type: String,
+        default: 'buttons'
+      },
+      /**
+       * The name of the `record` word as used in the pager interface.
+       * @prop {String} ['nf nf-mdi-dots_vertical'] buttonIcon
+       */
+       buttonIcon: {
+        type: String,
+        default: 'nf nf-mdi-dots_vertical'
+      },
+      /**
+       * @prop {Boolean} [false] zoomable
+       */
+      zoomable: {
+        type: Boolean,
+        default: false
       }
     },
     data() {
@@ -1585,6 +1616,18 @@
       }
     },
     methods: {
+      convertActions(arr, data, col, idx){
+        return bbn.fn.map(arr, a => {
+          let b = bbn.fn.clone(a);
+          if (a.action && bbn.fn.isFunction(a.action)) {
+            b.action = e => {
+              this._execCommand(a, data, col, idx, e);
+            };
+          }
+
+          return b;
+        });
+      },
       getTrClass(row) {
         if (bbn.fn.isFunction(this.trClass)) {
           return this.trClass(row);
@@ -3294,12 +3337,42 @@
         }
       },
       /**
-       * 
+       * @method clickCell
+       * @param {Object} col
+       * @param {Number} colIndex
+       * @param {Number} dataIndex
+       * @emits click-row
+       * @emits click-cell
        */
       clickCell(col, colIndex, dataIndex) {
         if (this.filteredData[dataIndex]) {
           this.$emit('click-row', this.filteredData[dataIndex].data, dataIndex);
           this.$emit('click-cell', col, colIndex, dataIndex);
+        }
+      },
+      /**
+       * @method dbclickCell
+       * @param {Object} col
+       * @param {Number} colIndex
+       * @param {Number} dataIndex
+       */
+      dbclickCell(col, colIndex, dataIndex, data, itemIndex) {
+        if (this.zoomable && !!col.zoomable) {
+          bbn.fn.log('mirko', col, colIndex, dataIndex);
+          let obj = {
+            width: '70%',
+            height: '70%',
+            title: col.title || col.ftitle
+          };
+          if (!!col.component) {
+            obj.component = col.component;
+            obj.source = bbn.fn.isFunction(col.mapper) ? col.mapper(data) : data;
+            obj.componentOptions = col.options;
+          }
+          else if (bbn.fn.isFunction(col.render)) {
+            obj.content = `<div class="bbn-spadded">${col.render(data, col, itemIndex)}</div>`;
+          }
+          this.getPopup().open(obj);
         }
       },
       /**
