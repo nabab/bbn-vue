@@ -4,8 +4,5 @@
   "authors": [
     "Thomas Nabet <thomas@bbn.solutions>"
   ],
-  "license": "MIT",
-  "dependencies": {
-    "xterm.js": ">= 4.4.0"
-  }
+  "license": "MIT"
 }
