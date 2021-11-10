@@ -9,92 +9,168 @@
  *
  * @created 15/02/2017
  */
-(function(bbn){
+ (function(bbn){
   "use strict";
 
   Vue.component('bbn-window', {
     name: 'bbn-window',
-    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent],
+    /**
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.resizerComponent
+     */
+    mixins: [
+      bbn.vue.basicComponent,
+      bbn.vue.resizerComponent
+    ],
     props: {
+      /**
+       * @prop {(String|Number|Boolean)} width
+       */
       width: {
         type: [String, Number, Boolean]
       },
+      /**
+       * @prop {(String|Number|Boolean)} height
+       */
       height: {
         type: [String, Number, Boolean]
       },
+      /**
+       * @prop {(String|Number)} minWidth
+       */
       minWidth: {
         type: [String, Number]
       },
+      /**
+       * @prop {(String|Number)} minHeight
+       */
       minHeight: {
         type: [String, Number]
       },
+      /**
+       * @prop {Boolean} [true] maximazable
+       */
       maximizable: {
         type: Boolean,
         default: true
       },
+      /**
+       * @prop {Boolean} [true] closable
+       */
       closable: {
         type: Boolean,
         default: true
       },
+      /**
+       * @prop {Boolean} [true] scrollable
+       */
       scrollable: {
         type: Boolean,
         default: true
       },
+      /**
+       * @prop {Boolean} [false] draggable
+       */
       draggable: {
         type: Boolean,
         default: false
       },
+      /**
+       * @prop {Boolean} [true] resizable
+       */
       resizable: {
         type: Boolean,
         default: true
       },
+      /**
+       * @prop {Boolean} [false] maximized
+       */
       maximized: {
         type: Boolean,
         default: false
       },
+      /**
+       * @prop {Function} onOpen
+       */
       onOpen: {
         type: Function
       },
+      /**
+       * @prop {Function} beforeClose
+       */
       beforeClose: {
         type: Function
       },
+      /**
+       * @prop {Function} onClose
+       */
       onClose: {
         type: Function
       },
+      /**
+       * @prop {Function} afterClose
+       */
       afterClose: {
         type: Function
       },
+      /**
+       * @prop {(Function|String|Object)} footer
+       */
       footer: {
         type: [Function, String, Object]
       },
+      /**
+       * @prop {Array} [[]] buttons
+       */
       buttons: {
         type: Array,
         default(){
           return [];
         }
       },
+      /**
+       * @prop {Object} [{}] source
+       */
       source: {
         type: Object,
         default(){
           return {};
         }
       },
-      component: {
+      /**
+       * @prop {(String|Function|Object)} component
+       */
+       component: {
         type: [String, Function, Object]
       },
+      /**
+       * @prop {(String|Boolean)} ['Untitled'] title
+       */
       title: {
         type: [String, Boolean],
         default: bbn._("Untitled")
       },
+      /**
+       * @prop {(Number)} index
+       */
       index: {
         type: Number
       },
+      /**
+       * @prop {(String)} uid
+       */
       uid: {
         type: String
       },
+      /**
+       * @prop {(String)} content
+       */
       content: {
         type: String
       },
+      /**
+       * @prop {(String)} mode
+       */
       mode: {
         type: String
       }

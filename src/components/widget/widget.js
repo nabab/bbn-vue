@@ -9,7 +9,7 @@
  *
  * @created 15/02/2017.
  */
-(function(bbn){
+ (function(bbn){
   "use strict";
 
   var limits = [5, 10, 15, 20, 25, 30, 40, 50];
@@ -18,6 +18,12 @@
    */
   Vue.component('bbn-widget', {
     name: 'bbn-widget',
+    /**
+     * @mixin bbn.vue.basicComponent,
+     * @mixin bbn.vue.localStorageComponent,
+     * @mixin bbn.vue.observerComponent,
+     * @mixin bbn.vue.resizerComponent
+     */
     mixins: [
       bbn.vue.basicComponent,
       bbn.vue.localStorageComponent,
@@ -25,62 +31,113 @@
       bbn.vue.resizerComponent
     ],
     props: {
+      /**
+       * @prop {(String|Number)} uid
+       */
       uid: {
         type: [String, Number]
       },
+      /**
+       * @prop {String} content
+       */
       content: {
         type: String
       },
+      /**
+       * @prop {(String|Boolean)} [false] url
+       */
       url: {
         type: [String, Boolean],
         default: false
       },
+      /**
+       * @prop {Number} [0] limit
+       */
       limit: {
         type: Number,
         default: 0
       },
+      /**
+       * @prop {Number} index
+       */
       index: {
         type: Number
       },
+      /**
+       * @prop {Boolean} [false] hidden
+       */
       hidden: {
         type: Boolean,
         default: false
       },
+      /**
+       * @prop {Number} [0] start
+       */
       start: {
         type: Number,
         default: 0
       },
+      /**
+       * @prop {Number} [0] total
+       */
       total: {
         type: Number,
         default: 0
       },
+      /**
+       * @prop template
+       */
       template: {
 
       },
+      /**
+       * @prop {Boolean} [false] hideEmpty
+       */
       hideEmpty: {
         type: Boolean,
         default: false
       },
+      /**
+       * @prop {(String|Object)} component
+       */
       component: {
         type: [String, Object]
       },
+      /**
+       * @prop {String} itemTemplate
+       */
       itemTemplate: {
         type: String
       },
+      /**
+       * @prop {(String| Object)} itemComponent
+       */
       itemComponent: {
         type: [String, Object]
       },
+      /**
+       * @prop {(String|Object)} [''] itemStyle
+       */
       itemStyle: {
         type: [String, Object],
         default: ''
       },
+      /**
+       * @prop {(String|Object)} [''] itemClass
+       */
       itemClass: {
         type: [String, Object],
         default: ''
       },
+      /**
+       * @prop {String} title
+       */
       title: {
         type: String
       },
+      /**
+       * @prop {String} icon
+       */
       icon: {
         type: String
       },
@@ -319,13 +376,13 @@
         else {
           return new Promise(resolve => {
             let items = this.items.slice();
-            if ( this.limit && 
+            if ( this.limit &&
               ((items.length > this.currentStart) && (items.length > this.limit))
             ){
-              items = items.splice(this.currentStart, this.limit); 
+              items = items.splice(this.currentStart, this.limit);
             }
 
-            this.$set(this, 'currentItems', items); 
+            this.$set(this, 'currentItems', items);
             return this.$nextTick(() => {
               resolve();
               this.isLoading = false;
