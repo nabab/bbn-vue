@@ -17,7 +17,11 @@
      * @mixin bbn.vue.basicComponent
      * @minix bbn.vue.resizerComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent],
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.resizerComponent
+    ],
     props: {
       /**
        * @prop {String|Number} ['70%'] defaultWidth
@@ -251,7 +255,7 @@
           d = obj;
         }
         if ( d.url ){
-          return this.post(d.url, d.data || {}, (r) => {
+          return this.post(d.url, d.data || {}, r => {
             if ( r.content || r.title ){
               if ( r.script ){
                 let tmp = eval(r.script);

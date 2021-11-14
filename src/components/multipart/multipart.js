@@ -18,11 +18,15 @@
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.localStorageComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent],
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.localStorageComponent
+    ],
     props: {
       /**
-       *@tood not used
-       * @ {Boolean} [false] autocomplete
+       * @todo not used
+       * @prop {Boolean} [false] autocomplete
        */
       autocomplete: {
         type: Boolean,
@@ -41,12 +45,21 @@
        * Set to true to disable the form.
        * @prop {Boolean} [false] disabled
        */
-      disabled: {},
+      disabled: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * @prop {} script
+       */
       script: {},
+      /**
+       * @prop {} scrollable
+       */
       scrollable: {},
       /**
        * The list of fields the form must contain.
-       *
+       * @prop {} fields
        */
       fields: {},
       /**
@@ -66,13 +79,16 @@
         type: Boolean,
         default: false
       },
+      /**
+       * @prop {String} target
+       */
       target: {
         type: String
       },
       /**
        * A confirmation popup with a costumized message shown before the form is submitted.
        *
-       * @prop {String|Function} confirmMessage
+       * @prop {(String|Function)} confirmMessage
        */
       confirmMessage: {
         type: [String, Function]
@@ -80,7 +96,7 @@
       /**
        * A confirmation popup with a costumized message shown before leaving the form.
        *
-       * @prop {String|Function} confirmLeave
+       * @prop {(String|Function)} confirmLeave
        */
       confirmLeave: {
         type: [Boolean, String, Function],
@@ -113,7 +129,7 @@
       /**
        * A popup with a costumized message shown after a form is correctly submitted.
        *
-       * @prop {String|Function} successMessage
+       * @prop {(String|Function)} successMessage
        */
       successMessage: {
         type: [String, Function]
@@ -121,7 +137,7 @@
       /**
        * A popup with a costumized message shown after a form submission fails.
        *
-       * @prop {String|Function} failureMessage
+       * @prop {(String|Function)} failureMessage
        */
       failureMessage: {
         type: [String, Function]
@@ -138,7 +154,7 @@
       /**
        * The buttons shown on the form.
        *
-       * @prop {Boolean|Array} ['cancel', 'submit'] buttons
+       * @prop {(Boolean|Array)} ['cancel', 'submit'] buttons
        */
       buttons: {
         type: [Boolean, Array],
@@ -211,7 +227,7 @@
        * If true, will consider itself as a unique element of a floater and will have its buttons incorporated in it 
        * whereas if undefined will.
        *
-       * @prop {Boolean|String} windowed
+       * @prop {(Boolean|String)} windowed
        */
       windowed: {
         type: [Boolean, String],
@@ -226,6 +242,9 @@
         type: Boolean,
         default: false
       },
+      /**
+       * @prop {String} [''] def
+       */
       def: {
         type: String,
         default: ''

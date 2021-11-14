@@ -160,7 +160,7 @@
   * @cretaed 13/06/2017
   */
 
- ((bbn) => {
+ (bbn => {
   "use strict";
   Vue.component('bbn-upload', {
     /**
@@ -540,10 +540,10 @@
           if ( files instanceof FileList ){
             files = Object.values(files)
           }
-          files = this._filterFiles(bbn.fn.map(files, (file) => {
+          files = this._filterFiles(bbn.fn.map(files, file => {
             return this._makeFile(file, fromUser, status)
           }))
-          bbn.fn.each(files, (file) => {
+          bbn.fn.each(files, file => {
             if ( !this.ready || this.canAddFile ){
               this._addFile(file)
             }
@@ -591,7 +591,7 @@
        * @return Array
        */
       _filterFiles(files){
-        return bbn.fn.filter(files, (file) => {
+        return bbn.fn.filter(files, file => {
           if ( !file.data.name || ((file.data.size !== undefined) && !file.data.size) ){
             return false
           }
@@ -691,7 +691,7 @@
                     bbn.fn.upload(
                       this.saveUrl,
                       bbn.fn.extend(true, {}, this.data ? this.data : {}, {file: fr.data}),
-                      (res) => {
+                      res => {
                         let f = false;
                         if ( res.data.file || res.data.fichier ){
                           f = res.data.file || res.data.fichier
@@ -711,13 +711,13 @@
                           })
                         }
                       },
-                      (err) => {
+                      err => {
                         if ( this.setStatusError(fr.id) ){
                           this.$emit('error', fr.id, err)
                           bbn.fn.log('bbn-upload error', fr.id, err)
                         }
                       },
-                      (prog) => {
+                      prog => {
                         this.setProgress(fr.id, prog)
                       }
                     )

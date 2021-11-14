@@ -24,7 +24,8 @@
      * @mixin bbn.vue.eventsComponent
      * @mixin bbn.vue.componentInsideComponent
      */
-    mixins: [
+    mixins: 
+    [
       bbn.vue.basicComponent,
       bbn.vue.listComponent,
       bbn.vue.keynavComponent,
@@ -36,7 +37,7 @@
     ],
     props: {
       /**
-       * @prop container
+       * @prop {} origin
        * 
        */
       origin: {},
@@ -63,28 +64,28 @@
       },
       /**
        * The minimum height of the floater.
-       * @prop {Number} maxHeight
+       * @prop {Number} minHeight
        */
       minHeight: {
         type: Number
       },
       /**
        * The width of the floater.
-       * @prop {String|Number|Boolean} width
+       * @prop {(String|Number|Boolean)} width
        */
       width: {
         type: [String, Number, Boolean]
       },
       /**
        * The height of the floater.
-       * @prop {String|Number|Boolean} height
+       * @prop {(String|Number|Boolean)} height
        */
       height: {
         type: [String, Number, Boolean]
       },
       /**
        * The source of the floater.
-       * @prop {Function|Array|String|Object} source
+       * @prop {(Function|Array|String|Object)} source
        */
       source: {
         type: [Function, Array, String, Object]
@@ -116,12 +117,16 @@
         type: String,
         default: 'vertical'
       },
-      // @todo not used
+      /**
+       * @prop {String} ['left'] hpos
+       */
       hpos: {
         type: String,
         default: 'left'
       },
-      // @todo not used
+      /**
+       * @prop {String} ['bottom'] vpos
+       */
       vpos: {
         type: String,
         default: 'bottom'
@@ -245,12 +250,18 @@
         type: Number,
         default: 25
       },
+      /**
+       * @prop {Array} [[]] expanded
+       */
       expanded: {
         type: Array,
         default(){
           return [];
         }
       },
+      /**
+       * @prop {(Boolean|Number)} [false] suggest
+       */
       suggest: {
         type: [Boolean, Number],
         default: false
@@ -263,19 +274,38 @@
         type: Boolean,
         default: false
       },
+      /**
+       * @prop {Boolean} [false] groupable
+       */
       groupable: {
         type: Boolean,
         default: false
       },
+      /**
+       * @prop {String} ['group'] sourceGroup
+       */
       sourceGroup: {
         type: String,
         default: 'group'
       },
+      /**
+       * @prop {(String|Object|Vue)} groupComponent
+       */
       groupComponent: {
         type: [String, Object, Vue]
       },
+      /**
+       * @prop {String} groupStyle
+       */
       groupStyle: {
         type: String
+      },
+      /**
+       * Whatever will be given as arguments to the function action.
+       * @prop {Array} actionArguments
+       */
+      actionArguments: {
+        type: Array
       }
     },
     data(){
@@ -354,7 +384,7 @@
          * @data {Number} [-1] overItem
          * @memberof listComponent
          */
-        overIdx: null,
+        overIdx: -1,
         mouseLeaveTimeout: false,
         isOpened: true,
         scroll: null,
@@ -425,7 +455,7 @@
           && this.currentFilters.conditions.length
           && (!this.serverFiltering || !this.isAjax)
         ) {
-          data = bbn.fn.filter(data, (a) => {
+          data = bbn.fn.filter(data, a => {
             return this._checkConditionsOnItem(this.currentFilters, a.data);
           });
         }
@@ -457,7 +487,7 @@
        */
       _updateIconSituation(){
         let hasIcons = false;
-        bbn.fn.each(this.filteredData, (a) => {
+        bbn.fn.each(this.filteredData, a => {
           if ( a.data && a.data.icon ){
             hasIcons = true;
             return false;
@@ -468,6 +498,7 @@
         }
       },
       mouseenter(e, idx){
+        bbn.fn.log("Nouse ener");
         if ( !this.isOver ){
           // if the list appears under the nouse while it is inactive
           e.target.addEventListener('mousemove', () => {
@@ -481,8 +512,9 @@
         }
       },
       resetOverIdx(){
+        bbn.fn.log("Reset OverIdx");
         if (this.suggest === false) {
-          this.overIdx = null;
+          this.overIdx = -1;
         }
         else if (this.suggest === true) {
           this.overIdx = 0;
@@ -492,6 +524,7 @@
         }
       },
       mouseleave(){
+        bbn.fn.log("Nouse leave");
         this.isOver = false;
         this.resetOverIdx();
       },
@@ -572,7 +605,12 @@
                   }
                 }
                 else if (bbn.fn.isFunction(item.data.action) ){
-                  item.data.action(idx, item.data);
+                  if (this.actionArguments) {
+                    item.data.action(...this.actionArguments);
+                  }
+                  else {
+                    item.data.action(idx, item.data);
+                  }
                 }
               }
               else if ( item.data.url ) {
@@ -636,8 +674,11 @@
        * @param {Boolean} newVal 
        */
       overIdx(newVal, oldVal) {
+        bbn.fn.log("overIdx is changing")
         this.keepCool(() => {
+          bbn.fn.log("Scroll to?");
           if (this.hasScroll && newVal && !this.isOver) {
+            bbn.fn.log("Scroll to!")
             this.closest('bbn-scroll').scrollTo(null, this.getRef('li' + newVal));
           }
         }, 'overIdx', 50)

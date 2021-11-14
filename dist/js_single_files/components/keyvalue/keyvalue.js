@@ -48,7 +48,7 @@ document.body.insertAdjacentElement('beforeend', script);
  * @created 15/02/2017.
  */
 
-((bbn) => {
+(bbn => {
   "use strict";
   /**
    * Classic input with normalized appearance.

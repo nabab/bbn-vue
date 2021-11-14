@@ -1,6 +1,3 @@
-/*bbn-field is a generic component of simple construction, its potential lies in the versatility of use, assigning to the property "type" a well-defined value, it becomes a "bbn" component.
-  * For example if we assign the value "numeric" to the property type, it will become "bbn-numeric"*/
-
 /**
   * @file bbn-field component
   *
@@ -8,13 +5,16 @@
   * 
   * bbn-field is a versatile component that adapts itself to the type of the data given by the user. 
   *
+  * bbn-field is a generic component of simple construction, its potential lies in the versatility of use, assigning to the property "type" a well-defined value, it becomes a "bbn" component.
+  * For example if we assign the value "numeric" to the property type, it will become "bbn-numeric"
+  * 
   * @copyright BBN Solutions
   *
   * @author BBN Solutions
   *
   * @created 15/02/2017.
   */
-((bbn) => {
+(bbn => {
 
   "use strict";
   /**

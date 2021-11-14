@@ -734,7 +734,7 @@ document.head.insertAdjacentElement('beforeend', css);
                   text: i.toString().length === 1 ? '0' + i : i,
                   value: i
                 };
-              }).filter((v) => {
+              }).filter(v => {
                 return !((min && (v.value < min)) || (max && (v.value > max)))
               })
             }

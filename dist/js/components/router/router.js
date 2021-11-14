@@ -1048,7 +1048,7 @@ document.head.insertAdjacentElement('beforeend', css);
         //bbn.fn.log("ACTIVATING " + url + " AND SENDING FOLLOWING CONTAINER:", container);
         if ( !this.activeContainer || (container && (this.activeContainer !== container)) ){
           this.activeContainer = null;
-          bbn.fn.each(this.$children, (cp) => {
+          bbn.fn.each(this.$children, cp => {
             if ( bbn.fn.isFunction(cp.hide) ){
               if ( (cp !== container) ){
                 cp.hide();
@@ -1366,7 +1366,7 @@ document.head.insertAdjacentElement('beforeend', css);
               misc = misc.$el;
             }
             if ( misc.tagName ){
-              bbn.fn.each(this.$children, (ct) => {
+              bbn.fn.each(this.$children, ct => {
                 if (
                   ct.$vnode &&
                   ct.$vnode.componentOptions &&
@@ -1771,7 +1771,7 @@ document.head.insertAdjacentElement('beforeend', css);
           return this.post(
             finalURL,
             dataObj,
-            (d) => {
+            d => {
               let callRealInit = true;
               this.isLoading = false;
               //this.remove(url);
@@ -1795,7 +1795,7 @@ document.head.insertAdjacentElement('beforeend', css);
                 this.remove(this.urls[d.current].idx, true);
                 //this.views.splice(this.urls[d.current].idx, 1);
                 callRealInit = false;
-                this.$on('registered', (url) => {
+                this.$on('registered', url => {
                   if (url === d.url) {
                     this.$off('registered', url);
                     this.realInit(url);
@@ -1943,7 +1943,7 @@ document.head.insertAdjacentElement('beforeend', css);
        */
       retrieveDirtyContainers(){
         this.dirtyContainers.splice(0, this.dirtyContainers.length);
-        bbn.fn.iterate(this.urls, (v) => {
+        bbn.fn.iterate(this.urls, v => {
           if ( v.dirty ){
             this.dirtyContainers.push({
               idx: v.idx,
@@ -1978,7 +1978,7 @@ document.head.insertAdjacentElement('beforeend', css);
           let sub = this.getSubRouter(idx);
           if ( sub && sub.views && sub.views.length ){
             let helps = [];
-            sub.views.forEach((a) => {
+            sub.views.forEach(a => {
               if ( a.help ){
                 helps.push({
                   url: sub.fullBaseURL + a.url,
@@ -1994,7 +1994,7 @@ document.head.insertAdjacentElement('beforeend', css);
             else if ( helps.length ){
               this.views[idx].help = '';
               let slide1 = '';
-              helps.forEach((a) => {
+              helps.forEach(a => {
                 slide1 += '<h1><a href="#' + a.anchor + '">' + a.title + '</a></h1>\n';
                 this.views[idx].help += '---slide---' + '\n<a name="' + a.anchor + '">\n' + a.content;
               });
@@ -2230,7 +2230,7 @@ document.head.insertAdjacentElement('beforeend', css);
         else if ( res && (this.selected === idx) ){
           this.selected = false;
           if ( this.views.length ){
-            bbn.fn.each(this.history, (a) => {
+            bbn.fn.each(this.history, a => {
               let tmp = this.getIndex(a);
               if ( tmp !== false ){
                 idx = tmp;
@@ -2760,7 +2760,7 @@ document.head.insertAdjacentElement('beforeend', css);
       }
       // ---- END ----
 
-      bbn.fn.each(this.source, (a) => {
+      bbn.fn.each(this.source, a => {
         if (a.url === '') {
           if (a.load) {
             throw new Error(bbn._("You cannot use containers with empty URL for loading"));
@@ -2777,7 +2777,7 @@ document.head.insertAdjacentElement('beforeend', css);
           this.isBreadcrumb = storage.breadcrumb;
         }
         if ( storage.views ){
-          bbn.fn.each(storage.views, (a) => {
+          bbn.fn.each(storage.views, a => {
             let idx = bbn.fn.search(tmp, {url: a.url});
             if ( idx > -1 ){
               bbn.fn.extend(tmp[idx], a);
@@ -2790,7 +2790,7 @@ document.head.insertAdjacentElement('beforeend', css);
       }
 
       let url = this.getDefaultURL();
-      bbn.fn.each(tmp, (a) => {
+      bbn.fn.each(tmp, a => {
         if (!bbn.fn.isString(a.url)) {
           throw new Error(bbn._("The container must have a valid URL"));
         }

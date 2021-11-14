@@ -38,7 +38,12 @@
      * @mixin bbn.vue.localStorageComponent
      * @mixin bbn.vue.listComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent, bbn.vue.listComponent],
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.localStorageComponent, 
+      bbn.vue.listComponent
+    ],
     props: {
       /**
        *  @prop {Boolean} [false] excludedSectionFilter
@@ -103,7 +108,6 @@
        * An array (or a function returning one) of elements for the node context menu.
        * @prop {Array|Function} menu
        */
-
       menu: {
         type: [Array, Function]
       },
@@ -260,6 +264,14 @@
       hybrid: {
         type: Boolean,
         default: false
+      },
+      /**
+       * Set to false if you want remove the scroll inside the tree.
+       * @prop {Boolean} [true] scrollable
+       */
+      scrollable: {
+        type: Boolean,
+        default: true
       }
     },
     data(){
@@ -372,7 +384,7 @@
           this.currentFilters.conditions.length &&
           (!this.serverFiltering || !this.isAjax)
         ) {
-          ret = bbn.fn.filter(this.currentData, (a) => {
+          ret = bbn.fn.filter(this.currentData, a => {
             return this._checkConditionsOnItem(this.currentFilters, a.data);
           });
         }
@@ -506,8 +518,8 @@
             item = this.tree.map(item.data !== undefined ? item.data : item, this.level + 1, item.data !== undefined ? item : {});
           }
           bbn.fn.each(NODE_PROPERTIES, p => {
-            o[p] = item[p];
-          })
+            o[p] = p === 'text' ? item[this.tree.sourceText] : item[p];
+          });
           if ( item[this.tree.children] ){
             o.numChildren = item[this.tree.children].length;
           }
@@ -536,8 +548,9 @@
        * @method resize
        */
       resize(){
-        if ( this.tree.getRef('scroll') ){
-          this.tree.getRef('scroll').onResize();
+        let scroll = this.tree.getRef('scroll');
+        if (scroll && bbn.fn.isFunction(scroll.onResize)) {
+          scroll.onResize();
         }
       },
       /**
@@ -1639,7 +1652,7 @@
                     }
                   });
                 }
-                let fn = (e) => {
+                let fn = e => {
                   this.endDrag(e);
                   document.removeEventListener('mouseup', fn);
                 };
@@ -1687,7 +1700,7 @@
             }
             else{
               if ( this.tree.droppableTrees.length ){
-                bbn.fn.each(this.tree.droppableTrees, (a) => {
+                bbn.fn.each(this.tree.droppableTrees, a => {
                   let v = a && a.$el ? a.$el.querySelector('.dropping') : null;
                   if ( v && v.classList ){
                     v.classList.remove('dropping');
@@ -1724,7 +1737,7 @@
                   let ev = new Event("dragOver", {cancelable: true});
                   a.$emit("dragOver", this, ev, a.overNode);
                   if (!ev.defaultPrevented) {
-                    bbn.fn.each(a.overNode.$el.chilNodes, (ele) => {
+                    bbn.fn.each(a.overNode.$el.chilNodes, ele => {
                       if ((ele.tagName === 'SPAN') && (ele.classList.contains('node'))) {
                         ele.classList.add('dropping');
                         return false;

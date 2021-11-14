@@ -48,7 +48,7 @@ document.body.insertAdjacentElement('beforeend', script);
  * @created 10/02/2020
  */
 
-((bbn) => {
+(bbn => {
   "use strict";
 
   Vue.component('bbn-chart', {
@@ -175,7 +175,7 @@ document.body.insertAdjacentElement('beforeend', script);
       fill: {
         type: String,
         default: 'gradient',
-        validator: (f) => ['gradient', 'solid'].includes(f)
+        validator: f => ['gradient', 'solid'].includes(f)
       },
       /**
        * Opacity adjustment.
@@ -512,7 +512,7 @@ document.body.insertAdjacentElement('beforeend', script);
       legendPosition: {
 			  type: String,
         default: 'bottom',
-        validator: (t) => ['top', 'bottom', 'left', 'right'].includes(t)
+        validator: t => ['top', 'bottom', 'left', 'right'].includes(t)
       },
       /**
        * Legend customize.
@@ -984,7 +984,7 @@ document.body.insertAdjacentElement('beforeend', script);
             if ( this.tooltip ){
               cfg.tooltip = {
                 y: {
-                  formatter: (val) => {
+                  formatter: val => {
                     return bbn.fn.money(val);
                   }
                 }
@@ -1072,7 +1072,7 @@ document.body.insertAdjacentElement('beforeend', script);
             if ( this.tooltip ){
               cfg.tooltip = {
                 y: {
-                  formatter: (val) => {
+                  formatter: val => {
                     return bbn.fn.money(val);
                   }
                 }

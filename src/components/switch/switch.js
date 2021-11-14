@@ -9,7 +9,7 @@
   *
   * @created 13/02/2017
   */
-((bbn) => {
+(bbn => {
   "use strict";
   Vue.component('bbn-switch', {
     /**
@@ -17,7 +17,12 @@
      * @mixin bbn.vue.inputComponent
      * @mixin bbn.vue.eventsComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent],
+    mixins: 
+    [
+      bbn.vue.basicComponent,
+      bbn.vue.inputComponent, 
+      bbn.vue.eventsComponent
+    ],
     props: {
       /**
        * The value of the component.

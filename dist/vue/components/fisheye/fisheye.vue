@@ -229,7 +229,7 @@
       items(){
         let items = [];
         let i = 0;
-        bbn.fn.each(this.fixedLeft, (a) => {
+        bbn.fn.each(this.fixedLeft, a => {
           items.push({
             data: a,
             fixed: true,
@@ -237,7 +237,7 @@
           });
           i++;
         });
-        bbn.fn.each(this.filteredData, (a) => {
+        bbn.fn.each(this.filteredData, a => {
           items.push({
             data: a.data,
             fixed: false,
@@ -245,7 +245,7 @@
           });
           i++;
         });
-        bbn.fn.each(this.fixedRight, (a) => {
+        bbn.fn.each(this.fixedRight, a => {
           items.push({
             data: a,
             fixed: true,

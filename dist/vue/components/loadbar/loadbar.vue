@@ -131,7 +131,7 @@
  * @created 15/02/2017
  */
 
-;((bbn) => {
+;(bbn => {
   "use strict";
 
   /**
@@ -229,7 +229,7 @@
        */
       items(){
         let items = [];
-        bbn.fn.each(this.loadingItems, (a) => {
+        bbn.fn.each(this.loadingItems, a => {
           let b = bbn.fn.clone(a);
           b.duration = this.timeNow - b.start;
           items.push(b);
@@ -268,7 +268,7 @@
        */
       cancel(item){
         if (item.loading) {
-          this.confirm(bbn._("Are you sure you want to abort this request?"), (d) => {
+          this.confirm(bbn._("Are you sure you want to abort this request?"), d => {
             bbn.fn.abort(item.key);
           })
         }
@@ -276,7 +276,7 @@
       //@todo not used
       deleteHistory(){
         let tmp = [];
-        bbn.fn.each(this.data, (a) => {
+        bbn.fn.each(this.data, a => {
           if ( a.isLoading ){
             tmp.push(a);
           }

@@ -75,7 +75,11 @@
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.dataEditorComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.dataEditorComponent],
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.dataEditorComponent
+    ],
     name: 'bbn-filter',
     props: {
       /**
@@ -112,7 +116,7 @@
       },
       /**
        * The list of fields given to the filter.
-       * @prop {Object|Array} [{}] fields
+       * @prop {(Object|Array)} [{}] fields
        */
       fields: {
         type: [Object,Array],
@@ -128,7 +132,7 @@
         default: 0
       },
       /**
-       * @prop index
+       * @prop {} index
        */
       index: {},
       // @todo not used
@@ -137,7 +141,12 @@
        * The component used for a single filter.
        * @prop {Object} [{}] component
        */
-      component: {},
+      component: {
+        type: Object,
+        default(){
+          return {};
+        }
+      },
       /**
        * The component options used for a single filter.
        * @prop {Object} [{}] componentOptions
@@ -346,7 +355,7 @@
        * @emits unset
        */
       delete_condition(condition){
-        let del = (arr) => {
+        let del = arr => {
           let idx = bbn.fn.search(arr, {time: condition.time});
           //bbn.fn.log("Is there the index?", idx);
           if ( idx > -1 ){

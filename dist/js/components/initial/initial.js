@@ -250,7 +250,7 @@ document.body.insertAdjacentElement('beforeend', script);
             col = this.color;
         if ( !col ){
           let sum = 0;
-          this.currentLetters.split('').forEach((a) => {
+          this.currentLetters.split('').forEach(a => {
             sum += a.charCodeAt();
           });
           sum += name ?

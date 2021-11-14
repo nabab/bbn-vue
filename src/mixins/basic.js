@@ -1,4 +1,4 @@
-((bbn) => {
+(bbn => {
   "use strict";
   bbn.fn.autoExtend("vue", {
     /**
@@ -71,7 +71,7 @@
           });
           st += '>' + "\n";
           if (full) {
-            bbn.fn.each(this.$children, (a) => {
+            bbn.fn.each(this.$children, a => {
               if ( a.exportComponent !== undefined ){
                 st += a.exportComponent(true, lv+1);
               }

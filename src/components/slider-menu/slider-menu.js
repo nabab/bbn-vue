@@ -14,11 +14,17 @@
    */
   let isClicked = false;
   Vue.component('bbn-slider-menu', {
-    mixins: [bbn.vue.basicComponent, bbn.vue.listComponent, bbn.vue.keynavComponent, bbn.vue.resizerComponent],
+    mixins: 
+    [
+      bbn.vue.basicComponent,
+      bbn.vue.listComponent,
+      bbn.vue.keynavComponent,
+      bbn.vue.resizerComponent
+    ],
     props: {
       /**
        * The source of the floater.
-       * @prop {Function|Array|String|Object} source
+       * @prop {(Function|Array|String|Object)} source
        */
       source: {
         type: [Function, Array, String, Object]
@@ -37,6 +43,9 @@
           return []
         }
       },
+      /**
+       * @prop {(String|Object|Function)} component
+       */
       component: {
         type: [String, Object, Function]
       }
@@ -99,7 +108,7 @@
         });
         if (list && list.length) {
           let hasChildren = false;
-          bbn.fn.each(list, (a) => {
+          bbn.fn.each(list, a => {
             if (a[this.children] && a[this.children].length) {
               if (!hasChildren) {
                 hasChildren = true;

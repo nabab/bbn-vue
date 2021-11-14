@@ -1,4 +1,4 @@
-((bbn) => {
+(bbn => {
   "use strict";
   const editorOperators = {
     string: {

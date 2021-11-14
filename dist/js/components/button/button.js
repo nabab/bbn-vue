@@ -113,7 +113,7 @@ document.body.insertAdjacentElement('beforeend', script);
       iconPosition: {
         type: String,
         default: 'left',
-        validator: (p) => ['left', 'right'].includes(p)
+        validator: p => ['left', 'right'].includes(p)
       },
       /**
        * A second icon to display on the button above the main icon.

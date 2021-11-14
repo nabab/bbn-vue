@@ -754,7 +754,7 @@ document.head.insertAdjacentElement('beforeend', css);
               let d = {width: this.getRef('scrollContent').offsetWidth, height: this.getRef('scrollContent').offsetHeight};
               if ( !d.width || !d.height ){
                 if (sc && (sc.$el.clientWidth === this.$el.clientWidth) && (sc.$el.clientHeight === this.$el.clientHeight)) {
-                  sc.getNaturalDimensions().then((d) => {
+                  sc.getNaturalDimensions().then(d => {
                     this.naturalWidth = sc.naturalWidth;
                     this.naturalHeight = sc.naturalHeight;
                     this.isMeasuring = false;
@@ -776,7 +776,7 @@ document.head.insertAdjacentElement('beforeend', css);
               }
             }
             else if (sc && (sc.$el.clientWidth === this.$el.clientWidth) && (sc.$el.clientHeight === this.$el.clientHeight)) {
-              sc.getNaturalDimensions().then((d) => {
+              sc.getNaturalDimensions().then(d => {
                 this.naturalWidth = sc.naturalWidth;
                 this.naturalHeight = sc.naturalHeight;
                 this.isMeasuring = false;
@@ -819,7 +819,7 @@ document.head.insertAdjacentElement('beforeend', css);
       onResize(force) {
         // Only executed when the ocmponent is ready
         if ( !this.ready ){
-          return new Promise((resolve) => {
+          return new Promise(resolve => {
             setTimeout(() => {
               resolve();
             }, 1);

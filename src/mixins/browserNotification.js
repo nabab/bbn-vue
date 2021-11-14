@@ -1,4 +1,4 @@
-((bbn) => {
+(bbn => {
   "use strict";
   bbn.fn.autoExtend("vue", {
     /**
@@ -143,7 +143,7 @@
        */
       mounted(){
         if (this.browserNotification) {
-          Notification.requestPermission((perms) => {
+          Notification.requestPermission(perms => {
             this.hasBrowserPermission = perms === 'granted';
           })
         }

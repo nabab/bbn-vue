@@ -9,7 +9,7 @@
  * @created 15/02/2017.
  */
 
-((bbn) => {
+(bbn => {
   "use strict";
   /**
    * Classic input with normalized appearance.
@@ -21,31 +21,50 @@
      * @mixin bbn.vue.dropdownComponent
      * @mixin bbn.vue.keynavComponent
      */
-    mixins: [
+    mixins: 
+    [
       bbn.vue.basicComponent,
       bbn.vue.inputComponent,
       bbn.vue.dropdownComponent,
       bbn.vue.keynavComponent
     ],
     props: {
+      /**
+       * @prop {Array} source
+       */
       source: {
         type: Array,
         default(){
           return [];
         }
       },
+      /**
+       * @prop {(Array|String)} value
+       */
       value: {
         type: [Array, String]
       },
+      /**
+       * @prop {Number} max
+       */
       max: {
         type: Number
       },
+      /**
+       * @prop {Number} min
+       */
       min: {
         type: Number
       },
+      /**
+       * @prop {(String|Function)} validator
+       */
       validator: {
         type: [String, Function]
       },
+      /**
+       * @prop {String} url
+       */
       url: {
         type: String
       }

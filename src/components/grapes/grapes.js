@@ -13,8 +13,14 @@
   "use strict";
 
   Vue.component('bbn-grapes', {
+    /**
+     * @mixin bbn.vue.basicComponent
+     */
     mixins: [bbn.vue.basicComponent],
     props: {
+      /**
+       * @prop {(String|Function)} css
+       */
       css: {
         type: [String, Function]
       }

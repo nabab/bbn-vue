@@ -3,15 +3,14 @@
            v-bind="renderedOptions"
            v-model="currentValue"
            :class="componentClass"
-           @input="$emit('input', currentValue)"
-
->
-  <div v-if="renderedContent" v-html="renderedContent"></div>
+           @input="$emit('input', currentValue)">
+  <div v-if="renderedContent"
+       v-html="renderedContent"/>
 </component>
 <component v-else
            :is="renderedComponent"
            v-bind="renderedOptions"
-           :class="componentClass"
->
-  <div v-if="renderedContent" v-html="renderedContent"></div>
+           :class="componentClass">
+  <div v-if="renderedContent"
+       v-html="renderedContent"/>
 </component>

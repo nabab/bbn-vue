@@ -18,8 +18,15 @@
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.localStorageComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent],
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.localStorageComponent
+    ],
     props: {
+      /**
+       * @prop {Boolean} autofocus
+       */
       autofocus: {
         type: Boolean,
         default(){
@@ -47,11 +54,18 @@
        * Set to true to disable the form.
        * @prop {Boolean} [false] disabled
        */
-      disabled: {},
+      disabled: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * The list of fields the form must contain.
+       * @prop {} script
+       */
       script: {},
       /**
        * The list of fields the form must contain.
-       *
+       * @prop {} fields
        */
       fields: {},
       /**
@@ -71,6 +85,9 @@
         type: Boolean,
         default: false
       },
+      /**
+       * @prop {String} target
+       */
       target: {
         type: String
       },
@@ -270,7 +287,7 @@
     },
     data(){
       let currentSchema = [];
-      this.schema.map((a) => {
+      this.schema.map(a => {
         currentSchema.push(bbn.fn.extend({}, a, {id: a.id ? a.id : bbn.fn.randomString(20, 30)}))
       });
       return {
@@ -377,7 +394,7 @@
       getRealButtons(){
         let r = [];
         if ( this.buttons ){
-          bbn.fn.each(this.buttons.slice(), (a) => {
+          bbn.fn.each(this.buttons.slice(), a => {
             let t = typeof(a);
             if ( t === 'string' ){
               switch ( a ){
@@ -435,7 +452,7 @@
         this.isPosted = true;
         this.isLoading = true;
         if ( this.action ){
-          this[this.blank || this.self || this.target ? 'postOut' : 'post'](this.action, bbn.fn.extend(true, {}, this.data || {}, this.source || {}), (d) => {
+          this[this.blank || this.self || this.target ? 'postOut' : 'post'](this.action, bbn.fn.extend(true, {}, this.data || {}, this.source || {}), d => {
             this.originalData = bbn.fn.extend(true, {}, this.source || {});
             if ( this.successMessage && p ){
               p.alert(this.successMessage);
@@ -597,7 +614,7 @@
         let ok = true;
         let elems = this.findAll('.bbn-input-component');
         if ( Array.isArray(elems) ){
-          bbn.fn.each(elems, (a) => {
+          bbn.fn.each(elems, a => {
             if (bbn.fn.isFunction(a.isValid) && !a.isValid(a, false) ){
               ok = false;
             }
@@ -726,7 +743,7 @@
           let focusable = false;
           let all = ele.querySelectorAll('input, select, .bbn-checkbox-label, textarea, [tabindex]:not([tabindex="-1"])');
           if (fromLast) {
-            bbn.fn.forir(all, (a) => {
+            bbn.fn.forir(all, a => {
               if (a.offsetHeight && a.offsetWidth && !a.disabled && !a.classList.contains('bbn-no')) {
                 focusable = a;
                 return false;
@@ -734,7 +751,7 @@
             })
           }
           else {
-            bbn.fn.each(all, (a) => {
+            bbn.fn.each(all, a => {
               if (a.offsetHeight && a.offsetWidth && !a.disabled && !a.classList.contains('bbn-no')) {
                 bbn.fn.log(a);
                 focusable = a;
@@ -871,7 +888,7 @@
        */
       schema(){
         let currentSchema = [];
-        this.schema.map((a) => {
+        this.schema.map(a => {
           currentSchema.push(bbn.fn.extend({}, a, {id: a.id ? a.id : bbn.fn.randomString(20, 30)}))
         });
         this.currentSchema = currentSchema;

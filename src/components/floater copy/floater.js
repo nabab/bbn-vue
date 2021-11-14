@@ -591,7 +591,7 @@
        * @todo not used the method getComponents() doesn't exist
        */
       updateComponents() {
-        bbn.fn.each(this.getComponents(), (a) => {
+        bbn.fn.each(this.getComponents(), a => {
           if (a.$vnode.componentOptions && a.$vnode.componentOptions.tag) {
             if (this.mountedComponents.indexOf(a.$vnode.componentOptions.tag) === -1) {
               this.mountedComponents.push(a.$vnode.componentOptions.tag);
@@ -648,7 +648,7 @@
        * @fires setResizeMeasures
        */
       onResize(force) {
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
           // Should be triggered by the inner scroll once mounted
           if (this.isVisible && bbn.fn.isDom(this.$el) && (!this.isResizing || !this.isResized)) {
             if (this.resizerFn) {
@@ -977,7 +977,7 @@
           }
           *
          else {
-            sc.getNaturalDimensions().then((dimensions) => {
+            sc.getNaturalDimensions().then(dimensions => {
               this.scrollWidth = dimensions.w;
               this.scrollHeight = dimensions.h;
               this.onResize();
@@ -1003,7 +1003,7 @@
           this.closingFunctions = [];
         }
         else{
-          this.closingFunctions = bbn.fn.filter(this.closingFunctions, (f) => {
+          this.closingFunctions = bbn.fn.filter(this.closingFunctions, f => {
             return fn !== f;
           })
         }
@@ -1072,7 +1072,7 @@
           if (this.beforeClose && (this.beforeClose(this) === false)) {
             return;
           }
-          bbn.fn.each(this.closingFunctions, (a) => {
+          bbn.fn.each(this.closingFunctions, a => {
             a(this, beforeCloseEvent);
           });
           if (beforeCloseEvent.defaultPrevented) {

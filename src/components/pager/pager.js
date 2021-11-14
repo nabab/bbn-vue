@@ -4,7 +4,7 @@
  * @author BBN Solutions
  * @copyright BBN Solutions
  */
-((bbn) =>{
+(bbn =>{
   "use strict";
 
   Vue.component('bbn-pager', {

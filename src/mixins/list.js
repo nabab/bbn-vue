@@ -1,4 +1,4 @@
-((bbn) => {
+(bbn => {
   "use strict";
   bbn.fn.autoExtend("vue", {
     /**
@@ -500,7 +500,7 @@
             return [];
           }
           let pass = false;
-          return bbn.fn.filter(this.limits.sort(), (a) => {
+          return bbn.fn.filter(this.limits.sort(), a => {
             if ( a > this.total ){
               if ( !pass ){
                 pass = true;
@@ -570,7 +570,7 @@
                                 this.currentFilters.conditions.length &&
                                 (!this.serverFiltering || !this.isAjax)
           ) {
-            return bbn.fn.filter(this.currentData, (a) => {
+            return bbn.fn.filter(this.currentData, a => {
               return this._checkConditionsOnItem(this.currentFilters, a.data);
             });
           }
@@ -586,12 +586,12 @@
           if ( this.value || (this.selected && this.selected.length) ){
             let v = this.value || this.selected[0];
             if ( this.uid ){
-              return bbn.fn.search(this.filteredData, (a) => {
+              return bbn.fn.search(this.filteredData, a => {
                 return a.data[this.uid] === v;
               });
             }
             else if ( this.sourceValue ){
-              return bbn.fn.search(this.filteredData, (a) => {
+              return bbn.fn.search(this.filteredData, a => {
                 return a.data[this.sourceValue] === v;
               });
             }
@@ -623,7 +623,7 @@
             && this.sourceIcon
             && this.currentData.length
           ){
-            let idx = bbn.fn.search(this.currentData, (a) => {
+            let idx = bbn.fn.search(this.currentData, a => {
               return a.data[this.sourceValue] === this.value;
             });
             if (idx > -1) {
@@ -645,7 +645,7 @@
             && this.sourceImg
             && this.currentData.length
           ){
-            let idx = bbn.fn.search(this.currentData, (a) => {
+            let idx = bbn.fn.search(this.currentData, a => {
               return a.data[this.sourceValue] === this.value;
             });
             if (idx > -1) {
@@ -667,7 +667,7 @@
             && this.sourceCls
             && this.currentData.length
           ){
-            let idx = bbn.fn.search(this.currentData, (a) => {
+            let idx = bbn.fn.search(this.currentData, a => {
               return a.data[this.sourceValue] === this.value;
             });
             if (idx > -1) {
@@ -686,7 +686,7 @@
         _map(data) {
           if ( bbn.fn.isArray(data) ){
             if ( data.length && !bbn.fn.isObject(data[0]) && this.sourceValue && this.sourceText ){
-              data = data.map((a) => {
+              data = data.map(a => {
                 let o = {};
                 o[this.sourceValue] = a;
                 o[this.sourceText] = a;
@@ -779,7 +779,7 @@
         removeFilter(condition) {
           if (condition.time) {
             //bbn.fn.log("There is the time", condition);
-            let del = (arr) => {
+            let del = arr => {
               let idx = bbn.fn.search(arr, {
                 time: condition.time
               });
@@ -854,7 +854,7 @@
         },
         async updateData(){
           if (this.beforeUpdate() !== false) {
-            this._dataPromise = new Promise((resolve) => {
+            this._dataPromise = new Promise(resolve => {
               let prom;
               let loadingRequestID;
               if ( this.isAjax ){
@@ -904,7 +904,7 @@
                   });
                 });
               }
-              prom.then((d) => {
+              prom.then(d => {
                 if ( this.loadingRequestID && (this.loadingRequestID === loadingRequestID)){
                   this.isLoading = false;
                   this.loadingRequestID = false;
@@ -1018,7 +1018,7 @@
             if (this.url) {
               this.post(this.url, bbn.fn.extend({}, this.data, this.currentData[index].data, {
                 action: 'delete'
-              }), (d) => {
+              }), d => {
                 if (d.success) {
                   let data = this.currentData[index].data;
                   this.currentData.splice(index, 1);

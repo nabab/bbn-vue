@@ -16,8 +16,16 @@
      * @mixin bbn.vue.localStorageComponent
      * @mixin bbn.vue.resizerComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent, bbn.vue.resizerComponent],
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.localStorageComponent, 
+      bbn.vue.resizerComponent
+    ],
     props: {
+      /**
+       * @prop {Boolean} [false] multiple
+       */
       multiple: {
         type: Boolean,
         default: false
@@ -200,7 +208,7 @@
             let children = this.getRef('container').children,
                 res = [],
                 childHeight = 0;
-            bbn.fn.each(children, (a) => {
+            bbn.fn.each(children, a => {
               if ( a.classList.contains('bbn-border-box') ){
                 res.push(a)
               }
@@ -233,7 +241,7 @@
             let children = this.getRef('container').children,
                 res = [],
                 childHeight = 0;
-            bbn.fn.each(children, (a) => {
+            bbn.fn.each(children, a => {
               if ( a.classList.contains('bbn-border-box') ){
                 res.push(a)
               }

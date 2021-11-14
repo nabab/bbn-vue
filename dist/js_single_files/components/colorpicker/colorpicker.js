@@ -167,7 +167,7 @@ document.body.insertAdjacentElement('beforeend', script);
  * @created 10/02/2020
  */
 
-((bbn) => {
+(bbn => {
   "use strict";
   Vue.component('bbn-colorpicker', {
     /**
@@ -267,7 +267,7 @@ document.body.insertAdjacentElement('beforeend', script);
       codeColor: {
         type: String,
         default: "hex",
-        validator: (c) => ['hex', 'rgb', 'rgba', 'hsl'].includes(c)
+        validator: c => ['hex', 'rgb', 'rgba', 'hsl'].includes(c)
       }
     },
     data(){

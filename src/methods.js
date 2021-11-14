@@ -1,4 +1,4 @@
-((bbn) => {
+(bbn => {
   "use strict";
   const isReservedTag = Vue.config.isReservedTag;
   let loadingComponents = [];
@@ -232,7 +232,7 @@
               mixins = [mixins];
             }
             if ( res.mixins ){
-              bbn.fn.each(mixins, (b) => {
+              bbn.fn.each(mixins, b => {
                 res.mixins.push(b);
               })
             }
@@ -242,12 +242,12 @@
           }
           let bits = res.name.split('-'),
               st = '';
-          bbn.fn.each(bits, (b) => {
+          bbn.fn.each(bits, b => {
             st += (b + '-');
             let idx = bbn.fn.search(this.knownPrefixes, {prefix: st});
             if ( (idx > -1) && this.knownPrefixes[idx].mixins ){
               if ( bbn.fn.isArray(this.knownPrefixes[idx].mixins) ){
-                bbn.fn.each(this.knownPrefixes[idx].mixins.reverse(), (m) => {
+                bbn.fn.each(this.knownPrefixes[idx].mixins.reverse(), m => {
                   res.mixins.unshift(m)
                 })
               }
@@ -277,11 +277,11 @@
     executeQueueItems(items){
       if ( items.length ){
         let url = 'components';
-        bbn.fn.iterate(items, (a) => {
+        bbn.fn.iterate(items, a => {
           url += '/' + a.name;
         });
         url += '?v=' + bbn.version;
-        return axios.get(url, {responseType:'json'}).then((d) => {
+        return axios.get(url, {responseType:'json'}).then(d => {
           d = d.data;
           if ( d && d.success && d.components ){
             bbn.fn.iterate(items, a => {
@@ -308,7 +308,7 @@
      */
     executeQueueItem(item){
       if (item.url) {
-        return axios.get(item.url, {responseType:'json'}).then((r) => {
+        return axios.get(item.url, {responseType:'json'}).then(r => {
           r = r.data;
           if ( this._realDefineComponent(a.name, r, item.mixins)  && Vue.options.components[a.name]){
             item.resolve(Vue.options.components[a.name]);
@@ -331,7 +331,7 @@
         todo = [todo];
       }
       if (bbn.fn.isArray(todo) && bbn.fn.getRow(bbn.vue.knownPrefixes, {prefix: 'bbn-'})) {
-        bbn.fn.each(todo, (a) => {
+        bbn.fn.each(todo, a => {
           if ( Vue.options.components['bbn-' + a] === undefined ){
             this.queueComponentBBN(a);
           }
@@ -348,7 +348,7 @@
     _realDefineBBNComponent(name, r){
       
       if ( r.html && r.html.length ){
-        bbn.fn.each(r.html, (h) => {
+        bbn.fn.each(r.html, h => {
           if ( h && h.content ){
             let id = 'bbn-tpl-component-' + name + (h.name === name ? '' : '-' + h.name),
             script = document.createElement('script');
@@ -404,7 +404,7 @@
         ) {
           url += bbn_root_url + bbn_root_dir;
         }
-        url += 'components/?components=' + bbn.fn.map(todo, (a) => {
+        url += 'components/?components=' + bbn.fn.map(todo, a => {
           return a.name;
         }).join(',') + '&v=' + bbn.version;
         if ( bbn.env.isDev ){
@@ -416,7 +416,7 @@
         return bbn.fn.ajax(url, 'text')
           .then(
             // resolve from server
-            (res) => {
+            res => {
               if (bbn.fn.isObject(res) && res.data) {
                 // This executes the script returned by the server, which will return a new promise
                 let prom;
@@ -430,10 +430,10 @@
                 //bbn.fn.log("THEN", res);
                 prom.then(
                   // resolve from executed script
-                  (arr) => {
+                  arr => {
                     // arr is the answer!
                     if (bbn.fn.isArray(arr) ){
-                      bbn.fn.each(arr, (r) => {
+                      bbn.fn.each(arr, r => {
                         let resolved = false;
                         if ( (typeof(r) === 'object') && r.script && r.name ){
                           let idx = bbn.fn.search(todo, {name: r.name});
@@ -905,7 +905,7 @@
       if ( !Array.isArray(ar) ){
         ar = [];
       }
-      bbn.fn.each(vm.$children, (obj) => {
+      bbn.fn.each(vm.$children, obj => {
         ar.push(obj)
         if ( !only_children && obj.$children ){
           bbn.vue.getComponents(obj, ar);
@@ -1020,7 +1020,7 @@
         throw new Error("No argument given");
       }
       let out = args.splice(0, 1)[0];
-      bbn.fn.each(args, (a) => {
+      bbn.fn.each(args, a => {
         if ( !bbn.fn.isObject(a) ){
           throw new Error("Each argument for bbn.fn.extend must be an object, " + typeof(args[i]) + " given");
         }

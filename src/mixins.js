@@ -1,4 +1,4 @@
-((bbn) => {
+(bbn => {
   "use strict";
   if ( !bbn.vue ){
     throw new Error("Impossible to find the library bbn-vue")

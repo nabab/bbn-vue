@@ -90,7 +90,7 @@
       },
       /**
        * The scale of the timer (largest unit).
-       * @prop {string} ['year'] scale
+       * @prop {string} ['hour'] scale
        */
       scale: {
         type: String,
@@ -111,6 +111,9 @@
       source: {
         type: [Object, Array, Date, String, Function]
       },
+      /**
+       * @prop {String} ['date'] sourceDate
+       */
       sourceDate: {
         type: String,
         default: 'date'
@@ -123,6 +126,9 @@
         type: Boolean,
         default: true
       },
+      /**
+       * @prop {String} ['clock'] mode
+       */
       mode: {
         type: String,
         default: 'clock'

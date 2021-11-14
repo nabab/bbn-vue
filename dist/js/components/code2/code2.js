@@ -56,7 +56,7 @@ document.head.insertAdjacentElement('beforeend', css);
  * @copyright BBN Solutions
  */
 
-((bbn) => {
+(bbn => {
   "use strict";
   /*
 
@@ -398,7 +398,7 @@ document.head.insertAdjacentElement('beforeend', css);
             }
           }
           if ( selections ){
-            bbn.fn.each(selections, (a) => {
+            bbn.fn.each(selections, a => {
               res.selections.push({anchor: a.anchor, head: a.head});
             });
           }
@@ -727,7 +727,7 @@ document.head.insertAdjacentElement('beforeend', css);
               this.initTern();
             }
             else {
-              this.widget.on("cursorActivity", (cm) => {
+              this.widget.on("cursorActivity", cm => {
                 bbn.fn.log(cm);
               });
             }

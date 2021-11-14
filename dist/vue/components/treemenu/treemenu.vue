@@ -57,7 +57,7 @@
  * @created 15/02/2017
  */
 
-((bbn) => {
+(bbn => {
   "use strict";
 
   /**
@@ -192,6 +192,7 @@
         if ( !this.shortcuts || node.numChildren ){
           return [];
         }
+
         let obj = {
           url: node.data.link,
           icon: node.icon,
@@ -218,10 +219,12 @@
         if ( level < 3 ){
           data.cls += ' bbn-bottom-sspace';
         }
+
         if ( data.items && data.items.length ){
           data.cls += ' bbn-b';
           data.selectable = false;
         }
+
         return data;
       },
       /**

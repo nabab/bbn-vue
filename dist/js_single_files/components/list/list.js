@@ -23,7 +23,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-floater-list']"
         <div v-else
              v-text="li.data[sourceGroup]"/>
       </li>
-      <li v-if="!pageable || ((idx >= start) && (idx < start + currentLimit))"
+      <li v-if="!pageable || ((idx >= start) && (idx < start + currentLimit)) || (!!pageable && !!serverPaging)"
           @mouseenter="mouseenter($event, idx)"
           :ref="'li' + idx"
           :key="uid ? li.data[uid] : idx"
@@ -375,6 +375,12 @@ document.body.insertAdjacentElement('beforeend', script);
       },
       groupStyle: {
         type: String
+      },
+      /**
+       * Whatever will be given as arguments to the function action.
+       */
+      actionArguments: {
+        type: Array
       }
     },
     data(){
@@ -453,7 +459,7 @@ document.body.insertAdjacentElement('beforeend', script);
          * @data {Number} [-1] overItem
          * @memberof listComponent
          */
-        overIdx: null,
+        overIdx: -1,
         mouseLeaveTimeout: false,
         isOpened: true,
         scroll: null,
@@ -524,7 +530,7 @@ document.body.insertAdjacentElement('beforeend', script);
           && this.currentFilters.conditions.length
           && (!this.serverFiltering || !this.isAjax)
         ) {
-          data = bbn.fn.filter(data, (a) => {
+          data = bbn.fn.filter(data, a => {
             return this._checkConditionsOnItem(this.currentFilters, a.data);
           });
         }
@@ -556,7 +562,7 @@ document.body.insertAdjacentElement('beforeend', script);
        */
       _updateIconSituation(){
         let hasIcons = false;
-        bbn.fn.each(this.filteredData, (a) => {
+        bbn.fn.each(this.filteredData, a => {
           if ( a.data && a.data.icon ){
             hasIcons = true;
             return false;
@@ -567,6 +573,7 @@ document.body.insertAdjacentElement('beforeend', script);
         }
       },
       mouseenter(e, idx){
+        bbn.fn.log("Nouse ener");
         if ( !this.isOver ){
           // if the list appears under the nouse while it is inactive
           e.target.addEventListener('mousemove', () => {
@@ -580,8 +587,9 @@ document.body.insertAdjacentElement('beforeend', script);
         }
       },
       resetOverIdx(){
+        bbn.fn.log("Reset OverIdx");
         if (this.suggest === false) {
-          this.overIdx = null;
+          this.overIdx = -1;
         }
         else if (this.suggest === true) {
           this.overIdx = 0;
@@ -591,6 +599,7 @@ document.body.insertAdjacentElement('beforeend', script);
         }
       },
       mouseleave(){
+        bbn.fn.log("Nouse leave");
         this.isOver = false;
         this.resetOverIdx();
       },
@@ -671,7 +680,12 @@ document.body.insertAdjacentElement('beforeend', script);
                   }
                 }
                 else if (bbn.fn.isFunction(item.data.action) ){
-                  item.data.action(idx, item.data);
+                  if (this.actionArguments) {
+                    item.data.action(...this.actionArguments);
+                  }
+                  else {
+                    item.data.action(idx, item.data);
+                  }
                 }
               }
               else if ( item.data.url ) {
@@ -735,8 +749,11 @@ document.body.insertAdjacentElement('beforeend', script);
        * @param {Boolean} newVal 
        */
       overIdx(newVal, oldVal) {
+        bbn.fn.log("overIdx is changing")
         this.keepCool(() => {
+          bbn.fn.log("Scroll to?");
           if (this.hasScroll && newVal && !this.isOver) {
+            bbn.fn.log("Scroll to!")
             this.closest('bbn-scroll').scrollTo(null, this.getRef('li' + newVal));
           }
         }, 'overIdx', 50)

@@ -1,8 +1,23 @@
-((bbn) => {
+(bbn => {
   "use strict";
   bbn.fn.autoExtend("vue", {
     keynavComponent: {
       methods: {
+        getKeyNavTarget() {
+          let list = this.getRef('list');
+          if (!list && this.is('bbn-list')) {
+            list = this;
+          }
+          else if (list && !list.is('bbn-list')) {
+            list = list.getRef('list');
+          }
+          else if (!list) {
+            list = this.find('bbn-list');
+          }
+
+          return list;
+        },
+
         /**
          * States the role of the enter button on the dropdown menu.
          * @memberof keynavComponent
@@ -21,14 +36,8 @@
               this.isOpened = true;
               return;
             }
-            let list = this.getRef('list');
-            if (!list) {
-              list = this.find('bbn-list');
-            }
-            if (!list && this.is('bbn-list')) {
-              list = this;
-            }
 
+            let list = this.getKeyNavTarget();
             if (list) {
               list.isOver = false;
               let idx = -1;
@@ -40,6 +49,7 @@
               if (list.overIdx > -1) {
                 idx = list.overIdx;
               }
+
               switch ( e.keyCode ){
                 // Arrow down
                 case 40:

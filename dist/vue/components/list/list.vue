@@ -22,7 +22,7 @@
         <div v-else
              v-text="li.data[sourceGroup]"/>
       </li>
-      <li v-if="!pageable || ((idx >= start) && (idx < start + currentLimit))"
+      <li v-if="!pageable || ((idx >= start) && (idx < start + currentLimit)) || (!!pageable && !!serverPaging)"
           @mouseenter="mouseenter($event, idx)"
           :ref="'li' + idx"
           :key="uid ? li.data[uid] : idx"
@@ -373,6 +373,12 @@
       },
       groupStyle: {
         type: String
+      },
+      /**
+       * Whatever will be given as arguments to the function action.
+       */
+      actionArguments: {
+        type: Array
       }
     },
     data(){
@@ -451,7 +457,7 @@
          * @data {Number} [-1] overItem
          * @memberof listComponent
          */
-        overIdx: null,
+        overIdx: -1,
         mouseLeaveTimeout: false,
         isOpened: true,
         scroll: null,
@@ -522,7 +528,7 @@
           && this.currentFilters.conditions.length
           && (!this.serverFiltering || !this.isAjax)
         ) {
-          data = bbn.fn.filter(data, (a) => {
+          data = bbn.fn.filter(data, a => {
             return this._checkConditionsOnItem(this.currentFilters, a.data);
           });
         }
@@ -554,7 +560,7 @@
        */
       _updateIconSituation(){
         let hasIcons = false;
-        bbn.fn.each(this.filteredData, (a) => {
+        bbn.fn.each(this.filteredData, a => {
           if ( a.data && a.data.icon ){
             hasIcons = true;
             return false;
@@ -565,6 +571,7 @@
         }
       },
       mouseenter(e, idx){
+        bbn.fn.log("Nouse ener");
         if ( !this.isOver ){
           // if the list appears under the nouse while it is inactive
           e.target.addEventListener('mousemove', () => {
@@ -578,8 +585,9 @@
         }
       },
       resetOverIdx(){
+        bbn.fn.log("Reset OverIdx");
         if (this.suggest === false) {
-          this.overIdx = null;
+          this.overIdx = -1;
         }
         else if (this.suggest === true) {
           this.overIdx = 0;
@@ -589,6 +597,7 @@
         }
       },
       mouseleave(){
+        bbn.fn.log("Nouse leave");
         this.isOver = false;
         this.resetOverIdx();
       },
@@ -669,7 +678,12 @@
                   }
                 }
                 else if (bbn.fn.isFunction(item.data.action) ){
-                  item.data.action(idx, item.data);
+                  if (this.actionArguments) {
+                    item.data.action(...this.actionArguments);
+                  }
+                  else {
+                    item.data.action(idx, item.data);
+                  }
                 }
               }
               else if ( item.data.url ) {
@@ -733,8 +747,11 @@
        * @param {Boolean} newVal 
        */
       overIdx(newVal, oldVal) {
+        bbn.fn.log("overIdx is changing")
         this.keepCool(() => {
+          bbn.fn.log("Scroll to?");
           if (this.hasScroll && newVal && !this.isOver) {
+            bbn.fn.log("Scroll to!")
             this.closest('bbn-scroll').scrollTo(null, this.getRef('li' + newVal));
           }
         }, 'overIdx', 50)
@@ -778,7 +795,7 @@
   user-select: none;
 }
 .bbn-list > ul > li.bbn-disabled {
-  opacity: 0.7;
+  background-color: inherit;
 }
 .bbn-list > ul > li .space {
   display: inline-block;

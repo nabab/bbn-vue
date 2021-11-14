@@ -59,7 +59,7 @@
                       :fields="fields"
                       :conditions="condition.conditions"
                       :logic="condition.logic"
-                      @change="(d) => {condition.logic = d.logic}"
+                      @change="d => {condition.logic = d.logic}"
                       :num="num + 1"
                       :idx="idx"
                       :multi="multi"

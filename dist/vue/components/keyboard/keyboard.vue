@@ -17,7 +17,7 @@
  */
 
 
-((bbn) => {
+(bbn => {
   "use strict";
 
   Vue.component('bbn-keyboard', {

@@ -250,7 +250,7 @@
     computed: {
       mapUploaded(){
         if ( this.uploaded.length ){
-          return bbn.fn.map( this.uploaded, (a) => {
+          return bbn.fn.map( this.uploaded, a => {
             a.name = a.name.replace(' ', '_')
             return a
           })
@@ -258,7 +258,7 @@
         return [];
       },
       currentPath(){
-        return this.dirs.map((a) => {return a.name ? a.name + '/' : '';}).join('');
+        return this.dirs.map(a => {return a.name ? a.name + '/' : '';}).join('');
       },
       numCols(){
         return this.dirs.length;
@@ -304,7 +304,7 @@
       refresh(name){
         let trees = this.findAll('bbn-tree');
         if ( trees.length ){
-          let tree = bbn.fn.filter(trees, (a) => {
+          let tree = bbn.fn.filter(trees, a => {
             return a.data.name === name;
           })
           if ( tree.length ){
@@ -323,7 +323,7 @@
         this.post(this.root + 'actions/finder/dirsize', {
           path: p.path,
           origin: this.origin
-        }, (d) => {
+        }, d => {
             if ( d.success ){
               this.dirs[idx].size = d.size;
             }
@@ -411,7 +411,7 @@
                   ext: ext,
                   width: 450,
                   height: 300,
-                }, (d) => {
+                }, d => {
                   if ( d.success && d.info ) {
                     this.currentFile = {
                       node: node,
@@ -476,7 +476,7 @@
           }
         },{
           text: '<i class="nf nf-fa-paste"></i>'+ bbn._('Paste'),
-          action: (node) => {
+          action: node => {
             bbn.fn.log('context--->', arguments);
           }
         }];
@@ -493,7 +493,7 @@
           {
             icon: 'nf nf-fa-copy',
             text: bbn._('Copy'),
-            action: (node) => {
+            action: node => {
               this.copy(node)
             }
           }  
@@ -502,7 +502,7 @@
           objContext.push({
             icon: 'nf nf-fa-paste',
             text: bbn._('Create new folder'),
-            action: (node) => {
+            action: node => {
               this.newFolder(node)
             }
           });
@@ -510,7 +510,7 @@
             objContext.push({
               icon: 'nf nf-fa-paste',
               text: bbn._('Paste'),
-              action: (node) => {
+              action: node => {
                 this.paste(node)
               }
             });  
@@ -520,7 +520,7 @@
           objContext.push({
             icon: 'nf nf-fa-download',
             text: bbn._('Download'),
-            action: (node) => {
+            action: node => {
               this.download(node)
             }
           })
@@ -529,13 +529,13 @@
           objContext.push({
             icon: 'nf nf-fa-edit',
             text: bbn._('Rename'),
-            action: (node) => {
+            action: node => {
               this.edit(node)
             }
           },{
             icon: 'nf nf-fa-trash_alt',
             text: bbn._('Delete'),
-            action: (node) => {
+            action: node => {
               this.delete(node)
             }
           })
@@ -653,7 +653,7 @@
               origin: this.origin,
               old_dir: this.oldDir,
               new_dir: this.currentPath
-            }, (d) => {
+            }, d => {
               if ( d.success ){
                 bbn.fn.happy('pasted')
                 bbn.fn.log(n.tree.items)
@@ -743,7 +743,7 @@
             path: st, 
             name: name,
             origin: this.origin
-          }, (d) => {
+          }, d => {
             if ( d.success ){       
               let items = node.tree.items;
               if ( items.length ){
@@ -820,7 +820,7 @@
     },
     mounted(){
       if ( this.path ){
-        bbn.fn.each(this.path.split('/'), (a) => {
+        bbn.fn.each(this.path.split('/'), a => {
           if ( a ){
             this.add(a)
           }

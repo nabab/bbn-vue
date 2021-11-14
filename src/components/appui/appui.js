@@ -169,7 +169,6 @@
         app: false,
         cool: false,
         searchString: '',
-        clipboardContent: [],
         observerTimeout: false,
         colorEnvVisible: true,
         currentTitle: this.title,
@@ -198,14 +197,66 @@
           return 'var(--green)';
         }
 
-        if (this.mode === 'dev') {
+        if (this.mode === 'test') {
           return 'var(--blue)';
         }
 
         return '';
-      }
+      },
+      appMode(){
+        if (this.mode === 'dev') {
+          return bbn._("Application in development mode");
+        }
+
+        if (this.mode === 'prod') {
+          return bbn._("Application in production mode");
+        }
+
+        if (this.mode === 'test') {
+          return bbn._("Application in testing mode");
+        }
+      },
+      powerMenu(){
+        if (!this.plugins || !this.plugins['appui-core'] || !this.app || !this.app.user || (!this.app.user.isAdmin && !this.app.user.isDev)) {
+          return [];
+        }
+
+        return [
+          {
+            action: () => {
+              this.confirm(
+                bbn._("Are you sure you want to delete the browser storage?"),
+                () => {
+                  window.localStorage.clear();
+                  document.location.reload();
+                }
+              );
+            },
+            text: bbn._("Reload with a fresh view"),
+            icon: 'nf nf-mdi-sync_alert'
+          }, {
+            text: bbn._("Increase version"),
+            icon: 'nf nf-oct-versions',
+            action: () => {
+              bbn.fn.post(this.plugins['appui-core'] + '/service/increase').then(() => {
+                document.location.reload();
+              });
+            }
+          }
+        ];
+      },
     },
     methods: {
+      onCopy(){
+        let cpb = this.getRef('clipboardButton');
+        //bbn.fn.log("AWATCH", cpb);
+        if (cpb) {
+          cpb.style.color = 'red';
+          setTimeout(() => {
+            cpb.style.color = null;
+          }, 250);
+        }
+      },
       setBigMessage(msg, timeout = 3000) {
         this.bigMessage = msg;
         setTimeout(() => {
@@ -275,22 +326,6 @@
         }
 
         return res;
-      },
-      addToClipboard(e){
-        bbn.fn.getEventData(e).then((data) => {
-          this.clipboardContent.push(data);
-        });
-        return true;
-      },
-      copy(e){
-        if (this.clipboard) {
-          let type = e.type;
-          bbn.fn.getEventData(e).then((data) => {
-            this.clipboardContent.push(data);
-          });
-        }
-
-        return true;
       },
       onRoute(path) {
         this.$emit('route', path)
@@ -510,7 +545,7 @@
         if ( this.plugins['appui-menu'] && data.id ){
           let idx = bbn.fn.search(this.shortcuts, {id: data.id});
           if ( idx === -1 ){
-            this.post(this.plugins['appui-menu'] + '/shortcuts/insert', data, (d) => {
+            this.post(this.plugins['appui-menu'] + '/shortcuts/insert', data, d => {
               if ( d.success ){
                 this.shortcuts.push(data);
               }
@@ -520,7 +555,7 @@
       },
       removeShortcut(data){
         if ( this.plugins['appui-menu'] && data.id ){
-          this.post(this.plugins['appui-menu'] + '/shortcuts/delete', data, (d) => {
+          this.post(this.plugins['appui-menu'] + '/shortcuts/delete', data, d => {
             if ( d.success ){
               let idx = bbn.fn.search(this.shortcuts, {id: data.id});
               if ( idx > -1 ){
@@ -596,10 +631,10 @@
             let router = appui.getRef('router');
             if (router) {
               if (bbn.fn.isFunction(router.route) && !router.disabled) {
-                router.route(url);  
+                router.route(url);
               }
               return false;
-            } 
+            }
             return true;
           },
 
@@ -608,7 +643,7 @@
             let c = appui.getCurrentContainer();
             c.alert.apply(c, arguments);
           },
-          
+
           defaultStartLoadingFunction(url, id, data) {
             if ( window.appui && appui.status ){
               appui.loaders.unshift(bbn.env.loadersHistory[0]);
@@ -622,7 +657,7 @@
               }
             }
           },
-          
+
           defaultEndLoadingFunction(url, timestamp, data, res) {
             if (res && res.data && res.data.disconnected) {
               window.location.reload();
@@ -734,7 +769,7 @@
         }
         bbn.vue.preloadBBN(preloaded);
 
-        window.onkeydown = (e) => {
+        window.onkeydown = e => {
           this.keydown(e);
         };
 
@@ -876,19 +911,6 @@
           }, 1000);
         }
       },
-      clipboardContent: {
-        deep: true,
-        handler(){
-          let cpb = this.getRef('clipboardButton');
-          //bbn.fn.log("AWATCH", cpb);
-          if (cpb) {
-            cpb.style.backgroundColor = 'red';
-            setTimeout(() => {
-              cpb.style.backgroundColor = null;
-            }, 250);
-          }
-        }
-      }
     },
     components: {
       searchBar: {
@@ -963,7 +985,7 @@
           },
           eventsCfg(){
             let def = {
-              focus: (e) => {
+              focus: e => {
                 //bbn.fn.log("FOCUS");
                 if ( !this.isExpanded ){
                   let pane = this.closest('bbn-pane'),
@@ -973,7 +995,7 @@
                   this.isExpanded = true;
                 }
               },
-              blur: (e) => {
+              blur: e => {
                 //bbn.fn.log("BLUR");
                 if ( this.isExpanded ){
                   this.$set(this.style, 'width', this.source.style && this.source.style.width ? this.source.style.width : '30px');
@@ -982,7 +1004,7 @@
                   this.search = '';
                 }
               },
-              change: (id) => {
+              change: id => {
                 if (id && !(id instanceof Event)) {
                   setTimeout(() => {
                     document.activeElement.blur();

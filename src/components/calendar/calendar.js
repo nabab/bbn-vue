@@ -8,7 +8,7 @@
  * @author Mirko Argentino
  */
 
-((bbn) => {
+(bbn => {
   "use strict";
 
   Vue.component('bbn-calendar', {
@@ -48,7 +48,7 @@
       type: {
         type: String,
         default: 'days',
-        validator: (m) => ['days', 'weeks', 'months', 'years'].includes(m)
+        validator: m => ['days', 'weeks', 'months', 'years'].includes(m)
       },
       /**
        * Set to true to autoselect the date property value.
@@ -220,7 +220,7 @@
       labels: {
         type: [String, Boolean],
         default: 'auto',
-        validator: (s) => ['auto', 'letter', 'abbr', 'full', false].includes(s)
+        validator: s => ['auto', 'letter', 'abbr', 'full', false].includes(s)
       },
       /**
        * The field used for the event's start.
@@ -910,7 +910,7 @@
       */
       setLabels(d){
         if ( bbn.fn.isArray(d) && d.length ){
-          this.currentLabels = d.map((l) => {
+          this.currentLabels = d.map(l => {
             return l.format(this.getLabelsFormat());
           });
         }

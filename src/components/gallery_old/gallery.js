@@ -9,7 +9,7 @@
  *
  * @author Mirko Argentino
  */
-((bbn) => {
+(bbn => {
   "use strict";
 
   Vue.component('bbn-gallery', {

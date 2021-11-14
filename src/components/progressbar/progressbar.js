@@ -15,7 +15,12 @@
      * @mixin bbn.vue.inputComponent
      * @mixin bbn.vue.eventsComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent],
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.inputComponent, 
+      bbn.vue.eventsComponent
+    ],
     props: {
       /**
        * The value to be represented by the bar
@@ -150,7 +155,7 @@
       valuePosition: {
         type: String,
         default: 'right',
-        validator: (p) => ['left', 'center', 'right', 'top', 'bottom'].includes(p)
+        validator: p => ['left', 'center', 'right', 'top', 'bottom'].includes(p)
       }
     },
     data(){

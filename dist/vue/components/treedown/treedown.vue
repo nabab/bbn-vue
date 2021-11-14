@@ -210,7 +210,7 @@
           return this.value;
         }
         if ( this.value && this.sourceText && this.currentData.length ){
-          let idx = bbn.fn.search(this.currentData, (a) => {
+          let idx = bbn.fn.search(this.currentData, a => {
             return a.data[this.uid || this.sourceValue] === this.value;
           });
           if ( idx > -1 ){
@@ -418,7 +418,7 @@
     created(){
       this.$on('dataloaded', () => {
         if ( this.value !== undefined ){
-          let row = bbn.fn.getRow(this.currentData, (a) => {
+          let row = bbn.fn.getRow(this.currentData, a => {
             return a.data[this.sourceValue] === this.value;
           });
           if ( row ){

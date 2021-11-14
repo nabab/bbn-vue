@@ -100,7 +100,8 @@ script.innerHTML = `<div v-if="ready"
 		</span>
 		<span v-if="!!element.limits &&
 								(element.limits.length > 1) &&
-								(!isMobile || isTablet)"
+								(!isMobile || isTablet) &&
+								!!limit"
 					class="bbn-hmargin">
 			<bbn-dropdown :source="element.limits"
 										v-model.number="element.currentLimit"
@@ -208,7 +209,7 @@ document.head.insertAdjacentElement('beforeend', css);
  * @author BBN Solutions
  * @copyright BBN Solutions
  */
-((bbn) =>{
+(bbn =>{
   "use strict";
 
   Vue.component('bbn-pager', {
@@ -271,7 +272,15 @@ document.head.insertAdjacentElement('beforeend', css);
        */
       extraControls: {
         default: true
-      }
+      },
+      /**
+       * False if you wanto to hide the limit selector
+       * @prop {Boolean} [true] limit
+       */
+       limit: {
+        type: Boolean,
+        default: true
+      },
     },
     data(){
       return {

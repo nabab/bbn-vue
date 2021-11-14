@@ -9,7 +9,7 @@
  * @created 15/02/2017.
  */
 
-((bbn) => {
+(bbn => {
   "use strict";
   /**
    * Classic input with normalized appearance.
@@ -17,15 +17,23 @@
   Vue.component('bbn-keyvalue', {
     /**
      * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.inputComponent
      */
-    mixins: [
+    mixins: 
+    [
       bbn.vue.basicComponent,
       bbn.vue.inputComponent,
     ],
     props: {
+      /**
+       * @prop {Number} max
+       */
       max: {
         type: Number
       },
+      /**
+       * @prop {Number} min
+       */
       min: {
         type: Number
       }

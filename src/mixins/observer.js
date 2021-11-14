@@ -1,4 +1,4 @@
-((bbn) => {
+(bbn => {
   "use strict";
   bbn.fn.autoExtend("vue", {
     /**
@@ -97,7 +97,7 @@
               value: this.observerValue
             });
             setTimeout(() => {
-              this.observationTower.$on('bbnObs' + this.observerUID + this.observerID, (newVal) => {
+              this.observationTower.$on('bbnObs' + this.observerUID + this.observerID, newVal => {
                 //bbn.fn.log("NEW VALUE!");
                 // Integration of the functionnality is done through a watcher on this property
                 this.observerDirty = true;
@@ -122,7 +122,7 @@
             else{
               this.observers.push(obs);
               if ( this.observerCheck() ){
-                this.observationTower.$on('bbnObs' + obs.element + obs.id, (newVal) => {
+                this.observationTower.$on('bbnObs' + obs.element + obs.id, newVal => {
                   this.observerEmit(newVal, obs);
                 });
               }

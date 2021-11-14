@@ -1,8 +1,0 @@
-
-(() => {
-  bbn.fn.autoExtend('lng', {
-    "Loading": "Chargement",
-    "Requests' history": "Historique des requ\u00eates",
-    "Are you sure you want to abort this request?": "\u00cates-vous s\u00f9r de vouloir annuler cette requ\u00eate?"
-});
-})();

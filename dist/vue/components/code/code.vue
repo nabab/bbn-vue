@@ -72,7 +72,7 @@
  */
 
 
-((bbn) => {
+(bbn => {
   "use strict";
 
   const themes = ["3024-day","3024-night","ambiance-mobile","ambiance","base16-dark","base16-light","blackboard","cobalt","eclipse","elegant","erlang-dark","lesser-dark","mbo","midnight","monokai","neat","night","paraiso-dark","paraiso-light","pastel-on-dark","rubyblue","solarized","the-matrix","tomorrow-night-eighties","twilight","vibrant-ink","xq-dark","xq-light"];
@@ -452,7 +452,7 @@
             }
           }
           if ( selections ){
-            bbn.fn.each(selections, (a) => {
+            bbn.fn.each(selections, a => {
               res.selections.push({anchor: a.anchor, head: a.head});
             });
           }

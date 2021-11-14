@@ -1,4 +1,4 @@
-((bbn) => {
+(bbn => {
   "use strict";
   bbn.fn.autoExtend("vue", {
     /**
@@ -196,7 +196,7 @@
          */
         currentTextValue() {
           if ( (this.value !== undefined) && !bbn.fn.isNull(this.value) && this.sourceValue && this.sourceText && this.currentData.length ){
-            let idx = bbn.fn.search(this.currentData, (a) => {
+            let idx = bbn.fn.search(this.currentData, a => {
               return a.data[this.sourceValue] === this.value;
             });
             if ( idx > -1 ){

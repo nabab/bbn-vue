@@ -15,7 +15,8 @@
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.resizerComponent
      */
-    mixins: [
+    mixins: 
+    [
       bbn.vue.basicComponent,
       bbn.vue.resizerComponent
     ],
@@ -192,7 +193,7 @@
           isAjax   = false;
       if (bbn.fn.isString(this.source)) {
         if (this.separator) {
-          src = this.source.split(this.separator).map((a) =>{
+          src = this.source.split(this.separator).map(a =>{
             return {
               content: a,
               type: 'text'

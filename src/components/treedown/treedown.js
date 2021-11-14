@@ -23,7 +23,8 @@
      * @mixin bbn.vue.keynavComponent
      * @mixin bbn.vue.urlComponent
       */
-    mixins: [
+    mixins: 
+    [
       bbn.vue.basicComponent,
       bbn.vue.eventsComponent,
       bbn.vue.inputComponent,
@@ -32,10 +33,16 @@
       bbn.vue.urlComponent
     ],
     props: {
+      /**
+       * @prop {String} [''] textValue
+       */
       textValue: {
         type: String,
         default: ''
       },
+      /**
+       * @prop {Number} [0] minLength
+       */
       minLength: {
         type: Number,
         default: 0
@@ -80,18 +87,30 @@
       placeholder: {
         type: String
       },
+      /**
+       * @prop {String} ['selection'] mode
+       */
       mode: {
         type: String,
         default: 'selection'
       },
+      /**
+       * @prop {Boolean} [false] autocomplete
+       */
       autocomplete: {
         type: Boolean,
         default: false
       },
+      /**
+       * @prop {Number} [500] delay
+       */
       delay: {
         type: Number,
         default: 500
       },
+      /**
+       * @prop {(Number|String)} maxHeight
+       */
       maxHeight: {
         type: [Number, String]
       }
@@ -150,7 +169,7 @@
           return this.value;
         }
         if ( this.value && this.sourceText && this.currentData.length ){
-          let idx = bbn.fn.search(this.currentData, (a) => {
+          let idx = bbn.fn.search(this.currentData, a => {
             return a.data[this.uid || this.sourceValue] === this.value;
           });
           if ( idx > -1 ){
@@ -358,7 +377,7 @@
     created(){
       this.$on('dataloaded', () => {
         if ( this.value !== undefined ){
-          let row = bbn.fn.getRow(this.currentData, (a) => {
+          let row = bbn.fn.getRow(this.currentData, a => {
             return a.data[this.sourceValue] === this.value;
           });
           if ( row ){

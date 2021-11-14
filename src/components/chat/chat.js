@@ -145,9 +145,9 @@
        * @return {Array}
        */
       usersOnlineWithoutMe(){
-        return this.onlineUsers.filter((a) => {
+        return this.onlineUsers.filter(a => {
           return a !== this.userId;
-        }).map((a) => {
+        }).map(a => {
           return bbn.fn.isObject(a) ? a : {value: a}
         })
       },
@@ -1212,7 +1212,7 @@
             msg = bbn.fn.html2text(msg);
             let matches = msg.match(/(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9]\.[^\s]{2,})/g);
             if ( matches ){
-              bbn.fn.each(matches, (v) => {
+              bbn.fn.each(matches, v => {
                 if ( v.indexOf(bbn.env.host) === 0 ){
                   msg = msg.replace(v, '<a href="javascript:;" onclick="bbn.fn.link(\'' + v.substr(bbn.env.host.length + 1) + '\')">' + v.substr(bbn.env.host.length + 1) + '</a>');
                 }
@@ -1748,7 +1748,7 @@
                 this.post(cp.url + '/actions/user/add', {
                   id_chat: this.chatId,
                   id_user: idUser
-                }, (d) => {
+                }, d => {
                   if ( !d.success ){
                     this.alert(bbn._("Impossible to add the user!"))
                   }
@@ -1796,7 +1796,7 @@
                   this.post(cp.url + '/actions/user/remove', {
                     id_chat: this.chatId,
                     id_user: idUser
-                  }, (d) => {
+                  }, d => {
                     if ( d.success ){
                       remove();
                     }

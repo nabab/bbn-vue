@@ -128,7 +128,7 @@ script.innerHTML = `<div :class="[componentClass, {'bbn-flex-height': scrollable
   <bbn-pager class="bbn-gallery-pager"
               :element="_self"
               ref="pager"
-              v-if="pageable || isAjax"
+              v-if="(pageable || isAjax) && !!pager"
   ></bbn-pager>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-gallery');
@@ -145,7 +145,7 @@ document.head.insertAdjacentElement('beforeend', css);
  * @copyright BBN Solutions
  * @author Mirko Argentino
  */
-((bbn) => {
+(bbn => {
   "use strict";
 
   Vue.component('bbn-gallery', {
@@ -242,10 +242,10 @@ document.head.insertAdjacentElement('beforeend', css);
       },
       /**
        * The width of the items.
-       * @prop {Number} [150] itemWidth
+       * @prop {Number|s} [150] itemWidth
        */
       itemWidth: {
-        type: Number,
+        type: [Number, String],
         default: 150
       },
       /**
@@ -360,6 +360,14 @@ document.head.insertAdjacentElement('beforeend', css);
        * @prop {Boolean} [true] resizable
        */
       resizable: {
+        type: Boolean,
+        default: true
+      },
+      /**
+       * Set to false to hide the pager.
+       * @prop {Boolean} [true] pager
+       */
+      pager: {
         type: Boolean,
         default: true
       }
@@ -556,6 +564,9 @@ document.head.insertAdjacentElement('beforeend', css);
             })
           }
         }, 1000)
+      },
+      itemWidth(val){
+        this.currentItemWidth = val;
       }
     },
     components: {

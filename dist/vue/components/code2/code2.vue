@@ -46,7 +46,7 @@
  * @copyright BBN Solutions
  */
 
-((bbn) => {
+(bbn => {
   "use strict";
   /*
 
@@ -388,7 +388,7 @@
             }
           }
           if ( selections ){
-            bbn.fn.each(selections, (a) => {
+            bbn.fn.each(selections, a => {
               res.selections.push({anchor: a.anchor, head: a.head});
             });
           }
@@ -717,7 +717,7 @@
               this.initTern();
             }
             else {
-              this.widget.on("cursorActivity", (cm) => {
+              this.widget.on("cursorActivity", cm => {
                 bbn.fn.log(cm);
               });
             }

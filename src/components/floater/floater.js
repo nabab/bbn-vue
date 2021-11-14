@@ -19,13 +19,15 @@
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.listComponent
+     * @mixin bbn.vue.componentInsideComponent
      * @mixin bbn.vue.resizerComponent
      * @mixin bbn.vue.keepCoolComponent
      * @mixin bbn.vue.toggleComponent
      * @mixin bbn.vue.dimensionsComponent
      * @mixin bbn.vue.positionComponent
      */
-    mixins: [
+    mixins:
+    [
       bbn.vue.basicComponent,
       bbn.vue.listComponent,
       bbn.vue.componentInsideComponent,
@@ -37,7 +39,7 @@
     ],
     props: {
       /**
-       * @prop container
+       * @prop {} container
        */
       container: {},
       /**
@@ -56,6 +58,9 @@
         type: String,
         default: ''
       },
+      /**
+       * @prop {String} css
+       */
       css: {
         type: String
       },
@@ -133,10 +138,15 @@
        * The component used for the items.
        * @prop {Object} [{}] itemComponent
        */
-      itemComponent: {},
+      itemComponent: {
+        type: Object,
+        default(){
+          return {};
+        },
+      },
       /**
        * Set to true to auto-hide the component.
-       * @prop {Boolean} [false] autoHide
+       * @prop {(Number|Boolean)} [false] autoHide
        */
       autoHide: {
         type: [Number, Boolean],
@@ -144,21 +154,21 @@
       },
       /**
        * The title of the floater's header.
-       * @psop {String} title
+       * @prop {(Boolean|String)} title
        */
       title: {
         type: [Boolean, String]
       },
       /**
        * The footer of the floater.
-       * @psop {String} footer
+       * @prop {(Function|String|Object)} footer
        */
       footer: {
         type: [Function, String, Object]
       },
       /**
        * The buttons in the footer.
-       * @psop {Array} buttons
+       * @prop {Array} [[]] buttons
        */
       buttons: {
         type: Array,
@@ -247,8 +257,17 @@
         type: [Boolean, Number],
         default: false
       },
+      /**
+       * @prop {Vue} opener The opening vue component passed to the floater
+       */
       opener: {
         type: Vue
+      },
+      /**
+       * @prop {Array} actionArguments Whatever will be given as arguments to the function action.
+       */
+      actionArguments: {
+        type: Array
       }
     },
     data() {
@@ -383,7 +402,7 @@
       formattedWidth() {
         return this.formatSize(
           this.width
-          || (this.isResized ? 
+          || (this.isResized ?
             this.realWidth : this.currentMaxWidth || '100%'
           )
         );
@@ -396,14 +415,14 @@
       formattedHeight() {
         return this.formatSize(
           this.height
-          || (this.isResized ? 
+          || (this.isResized ?
             this.realHeight : this.currentMaxHeight || '100%'
           )
         );
       },
       /**
        * An object of css display properties to apply to the floater.
-       * 
+       *
        * @computed currentStyle
        * @return {Object}
        */
@@ -450,7 +469,7 @@
       },
       /**
        * True if there is some content in the component.
-       * 
+       *
        * @computed isVisible
        * @return {Boolean}
        */
@@ -459,7 +478,7 @@
       },
       /**
        * True if the component is visible.
-       * 
+       *
        * @computed isVisible
        * @return {Boolean}
        */
@@ -627,7 +646,7 @@
        * @todo not used the method getComponents() doesn't exist
        */
       updateComponents() {
-        bbn.fn.each(this.getComponents(), (a) => {
+        bbn.fn.each(this.getComponents(), a => {
           if (a.$vnode.componentOptions) {
             let type = a.$vnode.componentOptions.tag || a._uid;
             if (this.mountedComponents.indexOf(type) === -1) {
@@ -704,9 +723,9 @@
               && (!this.isResizing || !this.isResized);
           if (go) {
             this.isResizing = true;
-            this._setMinMax();  
+            this._setMinMax();
           }
-          return new Promise((resolve) => {
+          return new Promise(resolve => {
             // Should be triggered by the inner scroll once mounted
             if (go) {
               if (this.definedWidth && this.definedHeight) {
@@ -803,7 +822,7 @@
               resolve(0);
               return;
             }
-          }).then((r) => {
+          }).then(r => {
             if (r) {
               let wasInit = this.isInit;
               if (!this.isInit) {
@@ -844,7 +863,7 @@
       },
       /**
        * Returns an object of numbers as width and height based on whatever unit given.
-       * 
+       *
        * @method getDimensions
        * @param {Number} width
        * @param {Number} height
@@ -978,7 +997,7 @@
                 }
               }
             }
-            // If the floater is horizontal, it will ideally start at the 
+            // If the floater is horizontal, it will ideally start at the
             // top right of the element to open downwards
             // otherwise at the bottom left
             // if the floater cannot be put after the element
@@ -1011,7 +1030,7 @@
             }
             else {
               // If no vertical position at all, centered (same top and bottom)
-              coor[a.posStart] = Math.floor((this['container' + a.camel] - size) / 2) 
+              coor[a.posStart] = Math.floor((this['container' + a.camel] - size) / 2)
                         + ((this['container' + a.camel] - size) % 2);
               if (coor[a.posStart] < 0) {
                 coor[a.posStart] = 0;
@@ -1086,7 +1105,7 @@
           this.closingFunctions = [];
         }
         else{
-          this.closingFunctions = bbn.fn.filter(this.closingFunctions, (f) => {
+          this.closingFunctions = bbn.fn.filter(this.closingFunctions, f => {
             return fn !== f;
           })
         }
@@ -1155,7 +1174,7 @@
           if (this.beforeClose && (this.beforeClose(this) === false)) {
             return;
           }
-          bbn.fn.each(this.closingFunctions, (a) => {
+          bbn.fn.each(this.closingFunctions, a => {
             a(this, beforeCloseEvent);
           });
           if (beforeCloseEvent.defaultPrevented) {
@@ -1299,7 +1318,7 @@
     beforeDestroy(){
       if (this.onClose) {
         this.onClose(this);
-      }      
+      }
     },
     updated() {
       /*

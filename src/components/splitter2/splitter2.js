@@ -202,7 +202,7 @@
          */
         let pos = 1,
             lastVisibleResizer = false;
-        return this.panes.map((a) => {
+        return this.panes.map(a => {
               /**
                * The additions of the 3 differences:
                * - currentDiff is the current difference while resizing

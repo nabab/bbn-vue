@@ -231,7 +231,7 @@ document.body.insertAdjacentElement('beforeend', script);
       items(){
         let items = [];
         let i = 0;
-        bbn.fn.each(this.fixedLeft, (a) => {
+        bbn.fn.each(this.fixedLeft, a => {
           items.push({
             data: a,
             fixed: true,
@@ -239,7 +239,7 @@ document.body.insertAdjacentElement('beforeend', script);
           });
           i++;
         });
-        bbn.fn.each(this.filteredData, (a) => {
+        bbn.fn.each(this.filteredData, a => {
           items.push({
             data: a.data,
             fixed: false,
@@ -247,7 +247,7 @@ document.body.insertAdjacentElement('beforeend', script);
           });
           i++;
         });
-        bbn.fn.each(this.fixedRight, (a) => {
+        bbn.fn.each(this.fixedRight, a => {
           items.push({
             data: a,
             fixed: true,

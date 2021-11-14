@@ -30,43 +30,77 @@
    * @param {boolean|number} selected - The index of the currently selected tab, and false otherwise.
    */
   Vue.component("bbn-split-tabs", {
-    mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent],
+    /**
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.localStorageComponent
+     */
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.localStorageComponent
+    ],
     props: {
       // Routes automatically after mount
+      /**
+       * @prop {Boolean} [true] auto
+       */
       auto: {
         type: Boolean,
         default: true
       },
-      //
+      /**
+       * @prop {String} [''] url
+       */
       url: {
         type: String,
         default: ''
       },
+      /**
+       * @prop {Boolean} [true] autoload
+       */
       autoload: {
         type: Boolean,
         default: true
       },
+      /**
+       * @prop {Boolean} [false] observer
+       */
       observer: {
         type: Boolean,
         default: false
       },
+      /**
+       * @prop {String} [''] root
+       */
       root: {
         type: String,
         default: ''
       },
+      /**
+       * @prop {String} def
+       */
       def: {
         type: String
       },
+      /**
+       * @prop {Array} [[]] source
+       */
       source: {
         type: Array,
         default(){
           return [];
         }
       },
+      /**
+       * @prop {String} ['horizontal'] orientation
+       */
       orientation: {
         type: String,
         default: 'horizontal'
       },
+      /**
+       * @prop {Boolean} [true] resizable
+       */
       resizable: {
         type: Boolean,
         default: true
@@ -158,7 +192,7 @@
       retrieveDirtyContainers(){
       // Array of unsaved views
         let r = []
-        bbn.fn.iterate(this.urls, (v) => {
+        bbn.fn.iterate(this.urls, v => {
           if ( v.dirty ){
             r.push({
               idx: v.idx,
@@ -407,7 +441,7 @@
         //bbn.fn.log("ACTIVATING " + url + " AND SENDING FOLLOWING CONTAINER:", container);
         if ( !this.activeContainer || (container && (this.activeContainer !== container)) ){
           this.activeContainer = null;
-          bbn.fn.each(this.$children, (cp) => {
+          bbn.fn.each(this.$children, cp => {
             if ( bbn.fn.isFunction(cp.hide) ){
               if ( (cp !== container) ){
                 cp.hide();
@@ -640,7 +674,7 @@
               misc = misc.$el;
             }
             if ( misc.tagName ){
-              bbn.fn.each(this.$children, (ct) => {
+              bbn.fn.each(this.$children, ct => {
                 if (
                   ct.$vnode &&
                   ct.$vnode.componentOptions &&
@@ -833,7 +867,7 @@
             });
           }
           this.$emit('update', this.views);
-          return this.post(finalURL, {_bbn_baseURL: this.fullBaseURL}, (d) => {
+          return this.post(finalURL, {_bbn_baseURL: this.fullBaseURL}, d => {
             this.isLoading = false;
             //this.remove(url);
             if ( d.url ){

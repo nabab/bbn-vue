@@ -9,18 +9,19 @@
 
   Vue.component("bbn-router-group", {
     name: 'bbn-router-group',
-    mixins: [
-      /**
-       * @mixin bbn.vue.basicComponent
-       * @mixin bbn.vue.localStorageComponent
-       */
+    /**
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.localStorageComponent
+     */
+    mixins: 
+    [
       bbn.vue.basicComponent,
       bbn.vue.localStorageComponent,
     ],
     props: {
       /**
        * The URL on which the router will be initialized.
-       * @prop {String} ['] url
+       * @prop {String} ['!'] url
        */
       separator: {
         type: String,
@@ -28,7 +29,7 @@
       },
       /**
        * The URL on which the router will be initialized.
-       * @prop {String} ['] url
+       * @prop {String} [''] url
        */
       url: {
         type: String,
