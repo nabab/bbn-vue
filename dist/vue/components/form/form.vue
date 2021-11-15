@@ -84,8 +84,15 @@
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.localStorageComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent],
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.localStorageComponent
+    ],
     props: {
+      /**
+       * @prop {Boolean} autofocus
+       */
       autofocus: {
         type: Boolean,
         default(){
@@ -113,11 +120,18 @@
        * Set to true to disable the form.
        * @prop {Boolean} [false] disabled
        */
-      disabled: {},
+      disabled: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * The list of fields the form must contain.
+       * @prop {} script
+       */
       script: {},
       /**
        * The list of fields the form must contain.
-       *
+       * @prop {} fields
        */
       fields: {},
       /**
@@ -137,6 +151,9 @@
         type: Boolean,
         default: false
       },
+      /**
+       * @prop {String} target
+       */
       target: {
         type: String
       },

@@ -164,8 +164,13 @@ document.body.insertAdjacentElement('beforeend', script);
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.resizerComponent 
+     * @mixin bbn.vue.popupComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent, bbn.vue.popupComponent],
+    mixins: [
+      bbn.vue.basicComponent, 
+      bbn.vue.resizerComponent, 
+      bbn.vue.popupComponent
+    ],
     props: {
       /**
        * The background color
@@ -183,51 +188,90 @@ document.body.insertAdjacentElement('beforeend', script);
         type: String,
         default: 's'
       },
+      /**
+       * @prop {String} logo 
+       */
       logo: {
         type: String
       },
+      /**
+       * @prop {String} [''] url 
+       */
       url: {
         type: String,
         default: ''
       },
+      /**
+       * @prop {String} loginUrl 
+       */
       loginUrl: {
         type: String
       },
+      /**
+       * @prop {String} lostUrl 
+       */
       lostUrl: {
         type: String
       },
+      /**
+       * @prop {String} changeUrl 
+       */
       changeUrl: {
         type: String
       },
+      /**
+       * @prop {String} mode 
+       */
       mode: {
         type: String,
         required: true,
         validator: m => ['login', 'lost', 'change', 'invalid'].includes(m)
       },
+      /**
+       * @prop {Number} [1200000] expires
+       */
       expires: {
         type: Number,
         default: 1200000
       },
+      /**
+       * @prop {String} [''] salt
+       */
       salt: {
         type: String,
         default: ''
       },
+      /**
+       * @prop {String} [''] secureId
+       */
       secureId: {
         type: String,
         default: ''
       },
+      /**
+       * @prop {String} [''] secureKey
+       */
       secureKey: {
         type: String,
         default: ''
       },
+      /**
+       * @prop {String} ['appui_action'] actionName
+       */
       actionName: {
         type: String,
         default: 'appui_action'
       },
+      /**
+       * @prop {String} ['appui_salt'] saltName
+       */
       saltName: {
         type: String,
         default: 'appui_salt'
       },
+      /**
+       * @prop {(Boolean|String)} ['Password forgotten?'] passwordLink 
+       */
       passwordLink: {
         type: [Boolean, String],
         default: bbn._("Password forgotten?")

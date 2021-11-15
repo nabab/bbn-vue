@@ -41,21 +41,35 @@ document.body.insertAdjacentElement('beforeend', script);
      * @mixin bbn.vue.inputComponent
      * @mixin bbn.vue.eventsComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent],
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.inputComponent, 
+      bbn.vue.eventsComponent
+    ],
     props: {
       /**
-       * @prop extensions
+       * @prop {Array} extensions
        */
       extensions:{
         type: Array,
         // default: ["dnd"]
       },
+      /**
+       * @prop {Number} autoExpandMS
+       */
       autoExpandMS:{
         type: Number
       },
+      /**
+       * @prop {(String|Array|Object)} source
+       */
       source: {
         type: [String, Array, Object]
       },
+      /**
+       * @prop {Object} [extensions: ['dnd'], autoExpandedMS: 400, source: [], disabled: false] cfg
+       */
       cfg: {
         type: Object,
         default(){

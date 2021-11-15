@@ -154,7 +154,8 @@ document.head.insertAdjacentElement('beforeend', css);
      * @mixin bbn.vue.resizerComponent
      * @mixin bbn.vue.listComponent
      */
-    mixins: [
+    mixins: 
+    [
       bbn.vue.basicComponent,
       bbn.vue.resizerComponent,
       bbn.vue.listComponent
@@ -170,7 +171,7 @@ document.head.insertAdjacentElement('beforeend', css);
       },
       /**
        * The alternative component for the toolbar.
-       * @prop {Vue|Object|Boolean} toolbar
+       * @prop {(Vue|Object|Boolean)} toolbar
        */
       toolbar: {
         type: [Vue, Object, Boolean],
@@ -187,7 +188,7 @@ document.head.insertAdjacentElement('beforeend', css);
         }
       },
       /**
-       * @prop {Boolean|String} [false] overlay
+       * @prop {(Boolean|String)} [false] overlay
        */
       overlay: {
         type: [Boolean, String],
@@ -242,7 +243,7 @@ document.head.insertAdjacentElement('beforeend', css);
       },
       /**
        * The width of the items.
-       * @prop {Number|s} [150] itemWidth
+       * @prop {(Number|String)} [150] itemWidth
        */
       itemWidth: {
         type: [Number, String],
@@ -336,21 +337,21 @@ document.head.insertAdjacentElement('beforeend', css);
       },
       /**
        * The item component
-       * @prop {String|Object|Vue} itemComponent
+       * @prop {(String|Object|Vue)} itemComponent
        */
       itemComponent: {
         type: [String, Object, Vue]
       },
       /**
        * The context menu source of every image
-       * @prop {Function|Array} buttonMenu
+       * @prop {(Function|Array)} buttonMenu
        */
       buttonMenu: {
         type: [Function, Array]
       },
       /**
        * The component used by the context menu items
-       * @prop {String|Object|Vue} contextComponent
+       * @prop {(String|Object|Vue)} contextComponent
        */
       buttonMenuComponent: {
         type: [String, Object, Vue]

@@ -38,7 +38,8 @@ document.head.insertAdjacentElement('beforeend', css);
      * @mixin bbn.vue.eventsComponent
      *
      */
-    mixins: [
+    mixins: 
+    [
       bbn.vue.basicComponent,
       bbn.vue.inputComponent,
       bbn.vue.localStorageComponent,
@@ -92,6 +93,9 @@ document.head.insertAdjacentElement('beforeend', css);
         type: [String, Boolean, Number],
         default: undefined
       },
+      /**
+       * @prop {Boolean} [false] notext
+       */
       notext: {
         type: Boolean,
         default: false

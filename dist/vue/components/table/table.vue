@@ -250,7 +250,7 @@
                         left: currentColumns[1].left !== undefined ? currentColumns[1].left + 'px' : 'auto',
                         width: 'auto',
                         borderRight: '0px',
-                        overflow: 'unset' 
+                        overflow: 'unset'
                       }">
                     <div class="bbn-block"
                          :style="{
@@ -383,7 +383,7 @@
                       </template>
                       <template v-else-if="col.buttons && (buttonMode === 'menu')">
                         <bbn-context :source="Array.isArray(col.buttons) ? col.butttons : col.buttons(d.data, col, i)">
-                          <span class="bbn-iblock bbn-lg bbn-hspadded">
+                          <span class="bbn-iblock bbn-hspadded">
                             <i :class="buttonIcon"/>
                           </span>
                         </bbn-context>
@@ -508,7 +508,8 @@
      * @mixin bbn.vue.keepCoolComponent
      * @mixin bbn.vue.dataComponent
      */
-    mixins: [
+    mixins: 
+    [
       bbn.vue.basicComponent,
       bbn.vue.resizerComponent,
       bbn.vue.editableListComponent,
@@ -668,7 +669,6 @@
       /**
        * Defines the expander of the rows.
        * @prop  {Object|String|Function} expander
-       * 
        */
       expander: {
 

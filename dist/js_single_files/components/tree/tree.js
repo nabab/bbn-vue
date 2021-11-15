@@ -225,7 +225,12 @@ document.body.insertAdjacentElement('beforeend', script);
      * @mixin bbn.vue.localStorageComponent
      * @mixin bbn.vue.listComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent, bbn.vue.listComponent],
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.localStorageComponent, 
+      bbn.vue.listComponent
+    ],
     props: {
       /**
        *  @prop {Boolean} [false] excludedSectionFilter
@@ -290,7 +295,6 @@ document.body.insertAdjacentElement('beforeend', script);
        * An array (or a function returning one) of elements for the node context menu.
        * @prop {Array|Function} menu
        */
-
       menu: {
         type: [Array, Function]
       },

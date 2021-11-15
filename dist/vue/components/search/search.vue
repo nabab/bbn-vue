@@ -72,7 +72,8 @@
        * @mixin bbn.vue.urlComponent
        * @mixin bbn.vue.dropdownComponent
         */
-      mixins: [
+      mixins: 
+      [
         bbn.vue.basicComponent,
         bbn.vue.eventsComponent,
         bbn.vue.inputComponent,

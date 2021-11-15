@@ -74,44 +74,57 @@ document.head.insertAdjacentElement('beforeend', css);
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.resizerComponent
      * @mixin bbn.vue.keepCoolComponent
+     * @mixin bbn.vue.eventsComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent, bbn.vue.keepCoolComponent, bbn.vue.eventsComponent],
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.resizerComponent, 
+      bbn.vue.keepCoolComponent, 
+      bbn.vue.eventsComponent
+    ],
     props: {
       /**
-      */
+       * @prop {(String|Number)} maxWidth 
+       */
       maxWidth: {
         type: [String, Number]
       },
       /**
+       * @prop {(String|Number)} maxHeight
        */
       maxHeight: {
         type: [String, Number]
       },
       /**
+       * @prop {(String|Number)} minWidth 
        */
       minWidth: {
         type: [String, Number]
       },
       /**
+       * @prop {(String|Number)} maxHeight 
        */
       minHeight: {
         type: [String, Number]
       },
       /**
        * The width of the scroll, if not defined the scroll container will have the class 'bbn-overlay'
-       * @prop {Number} width
+       * @prop {(Number|Number)} width
        */
       width: {
         type: [String, Number]
       },
       /**
        * @todo not used defines currentheight never used
+       * @prop {(String|Number)} height
        */
       height: {
         type: [String, Number]
       },
       /**
        * @todo not used
+       * @prop {String} [""] classes
        */
       classes: {
         type: String,
@@ -119,6 +132,7 @@ document.head.insertAdjacentElement('beforeend', css);
       },
       /**
        * @todo not used
+       * @prop {Number} [50] speed
        */
       speed: {
         type: Number,
@@ -180,22 +194,37 @@ document.head.insertAdjacentElement('beforeend', css);
         type: Number,
         default: 25
       },
+      /**
+       * @prop {Boolean} [true] scrollable
+       */
       scrollable: {
         type: Boolean,
         default: true
       },
+      /**
+       * @prop {Boolean} [true] fullPage
+       */
       fullPage: {
         type: Boolean,
         default: false
       },
+      /**
+       * @prop {Boolean} [true] disabled
+       */
       disabled: {
         type: Boolean,
         default: false
       },
+      /**
+       * @prop {(Number|Array)} [0] offsetX
+       */
       offsetX: {
         type: [Number, Array],
         default: 0
       },
+      /**
+       * @prop {(Number|Array)} [0] offsetY
+       */
       offsetY: {
         type: [Number, Array],
         default: 0

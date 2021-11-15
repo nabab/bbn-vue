@@ -90,7 +90,8 @@ document.head.insertAdjacentElement('beforeend', css);
      * @mixin bbn.vue.keynavComponent
      * @mixin bbn.vue.urlComponent
       */
-    mixins: [
+    mixins: 
+    [
       bbn.vue.basicComponent,
       bbn.vue.eventsComponent,
       bbn.vue.inputComponent,
@@ -99,10 +100,16 @@ document.head.insertAdjacentElement('beforeend', css);
       bbn.vue.urlComponent
     ],
     props: {
+      /**
+       * @prop {String} [''] textValue
+       */
       textValue: {
         type: String,
         default: ''
       },
+      /**
+       * @prop {Number} [0] minLength
+       */
       minLength: {
         type: Number,
         default: 0
@@ -147,18 +154,30 @@ document.head.insertAdjacentElement('beforeend', css);
       placeholder: {
         type: String
       },
+      /**
+       * @prop {String} ['selection'] mode
+       */
       mode: {
         type: String,
         default: 'selection'
       },
+      /**
+       * @prop {Boolean} [false] autocomplete
+       */
       autocomplete: {
         type: Boolean,
         default: false
       },
+      /**
+       * @prop {Number} [500] delay
+       */
       delay: {
         type: Number,
         default: 500
       },
+      /**
+       * @prop {(Number|String)} maxHeight
+       */
       maxHeight: {
         type: [Number, String]
       }

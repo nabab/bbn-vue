@@ -96,7 +96,19 @@ document.head.insertAdjacentElement('beforeend', css);
    */
   let isClicked = false;
   Vue.component('bbn-list-input', {
-    mixins: [bbn.vue.basicComponent, bbn.vue.listComponent, bbn.vue.keynavComponent, bbn.vue.inputComponent],
+    /**
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.listComponent
+     * @mixin bbn.vue.keynavComponent
+     * @mixin bbn.vue.inputComponent
+     */
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.listComponent, 
+      bbn.vue.keynavComponent, 
+      bbn.vue.inputComponent
+    ],
     props: {
       //@todo not used.
       unique: {
@@ -111,6 +123,9 @@ document.head.insertAdjacentElement('beforeend', css);
         type: String,
         default: "free"
       },
+      /**
+       * @prop {Boolean} [false] suggest
+       */
       suggest: {
         type: Boolean,
         default: false

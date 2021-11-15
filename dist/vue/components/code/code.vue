@@ -1162,29 +1162,17 @@
 })(bbn);
 </script>
 <style scoped>
-@font-face {
-  font-family: 'Fira Code';
-  src: url('fonts/FiraCode-Regular.woff2') format('woff2'), url('fonts/FiraCode-Regular.ttf') format('truetype'), url('https://cdn.jsdelivr.net/gh/tonsky/FiraCode@master/distr/woff2/FiraCode-Regular.woff2') format('woof2'), url('https://cdn.jsdelivr.net/gh/tonsky/FiraCode@master/distr/ttf/FiraCode-Regular.ttf') format('truetype');
-  font-weight: 400;
-  font-style: normal;
-}
-@font-face {
-  font-family: 'Fira Code';
-  src: url('fonts/FiraCode-Bold.woff2') format('woff2'), url('fonts/FiraCode-Bold.ttf') format('truetype'), url('https://cdn.jsdelivr.net/gh/tonsky/FiraCode@master/distr/woff2/FiraCode-Bold.woff2') format('woof2'), url('https://cdn.jsdelivr.net/gh/tonsky/FiraCode@master/distr/ttf/FiraCode-Bold.ttf') format('truetype');
-  font-weight: bold;
-  font-style: normal;
-}
 .bbn-code {
   position: relative;
   height: auto;
 }
 .bbn-code .bbn-floater {
-  font-family: "Fira Code" !important;
+  font-family: FiraCode !important;
 }
 .bbn-code .CodeMirror {
   padding: 0.5em 0;
   font-size: small;
-  font-family: "Fira Code";
+  font-family: FiraCode;
   font-feature-settings: "calt" 1;
   text-rendering: optimizeLegibility;
   height: fit-content;

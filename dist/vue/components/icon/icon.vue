@@ -67,6 +67,9 @@
   "use strict";
   Vue.component('bbn-icon', {
     name: 'bbn-icon',
+    /**
+     * @mixin bbn.vue.basicComponent
+     */
     mixins: [bbn.vue.basicComponent],
     data(){
       return {

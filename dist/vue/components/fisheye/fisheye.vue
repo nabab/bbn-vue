@@ -103,7 +103,12 @@
      * @mixin bbn.vue.listComponent
      * @mixin bbn.vue.resizerComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent, bbn.vue.listComponent],
+    mixins: 
+    [
+      bbn.vue.basicComponent,
+      bbn.vue.resizerComponent, 
+      bbn.vue.listComponent
+    ],
     props: {
       /**
        * The source of the component

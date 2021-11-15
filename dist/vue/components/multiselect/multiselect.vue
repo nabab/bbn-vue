@@ -47,7 +47,8 @@
      * @mixin bbn.vue.keynavComponent
      * @mixin bbn.vue.listComponent
       */
-     mixins: [
+     mixins: 
+     [
       bbn.vue.basicComponent,
       bbn.vue.inputComponent,
       bbn.vue.eventsComponent,
@@ -56,10 +57,16 @@
     ],
     props: {
       source: {},
+      /**
+       * @prop {String} [''] textValue
+       */
       textValue: {
         type: String,
         default: ''
       },
+      /**
+       * @prop {Number} [1] minLength
+       */
       minLength: {
         type: Number,
         default: 1
@@ -104,29 +111,53 @@
       placeholder: {
         type: String
       },
+      /**
+       * @prop {Boolean} [false] autocomplete
+       */
       autocomplete: {
         type: Boolean,
         default: false
       },
+      /**
+       * @prop {Number} [500] delay
+       */
       delay: {
         type: Number,
         default: 500
       },
+      /**
+       * @prop {} [false] leftIcon
+       */
       leftIcon: {
         default: false
       },
+      /**
+       * @prop ['nf nf-fa-search'] rightIcon
+       */
       rightIcon: {
         default: 'nf nf-fa-search'
       },
+      /**
+       * @prop {} ['4em'] minWidth
+       */
       minWidth: {
         default: '4em'
       },
+      /**
+       * @prop {} ['100%'] maxWidth
+       */
       maxWidth: {
         default: '100%'
       },
+      /**
+       * @prop {} [false] filterable
+       */
       filterable: {
         default: false
       },
+      /**
+       * @prop {Array} [[]] value
+       */
       value: {
         type: Array,
         default(){

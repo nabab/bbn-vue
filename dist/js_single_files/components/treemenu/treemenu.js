@@ -71,7 +71,11 @@ document.body.insertAdjacentElement('beforeend', script);
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.resizerComponent 
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent],
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.resizerComponent
+    ],
     props: {
       /**
        * The placeholder on the search input of the tree.

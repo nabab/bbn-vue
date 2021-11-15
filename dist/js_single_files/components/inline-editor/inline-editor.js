@@ -24,9 +24,17 @@ document.body.insertAdjacentElement('beforeend', script);
   Vue.component('bbn-inline-editor', {
     /**
      * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.inputComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent],
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.inputComponent
+    ],
     props: {
+      /**
+       * @prop {String} value
+       */
       value: {
         type: String
       }

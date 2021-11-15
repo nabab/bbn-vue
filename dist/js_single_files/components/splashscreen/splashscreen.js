@@ -110,38 +110,69 @@ document.body.insertAdjacentElement('beforeend', script);
  (function (bbn, Vue) {
   "use strict";
   Vue.component('bbn-splashscreen', {
-    mixins: [
+    /**
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.listComponent
+     * @mixin bbn.vue.eventsComponent
+     * @mixin bbn.vue.resizerComponent
+     */
+    mixins: 
+    [
       bbn.vue.basicComponent,
       bbn.vue.listComponent,
       bbn.vue.eventsComponent,
       bbn.vue.resizerComponent
     ],
     props: {
+      /**
+       * @prop {Array} source
+       */
       source: {
         type: Array
       },
+      /**
+       * @prop {Boolean} [true] arrows
+       */
       arrows: {
         type: Boolean,
         default: true
       },
+      /**
+       * @prop {(Boolean|String)} ['outsideBottom'] dots
+       */
       dots: {
         type: [Boolean, String],
         default: 'outsideBottom',
         validator: d => [true, false, 'insideTop', 'insideBottom', 'outsideTop', 'outsideBottom'].includes(d)
       },
+      /**
+       * @prop {Boolean} [true] loop
+       */
       loop: {
         type: Boolean,
         default: true
       },
+      /**
+       * @prop {String} header
+       */
       header: {
         type: String
       },
+      /**
+       * @prop {(String|Object|Vue)} headerComponent
+       */
       headerComponent: {
         type: [String, Object, Vue]
       },
+      /**
+       * @prop {String} footer
+       */
       footer: {
         type: String
       },
+      /**
+       * @prop {(String|Object|Vue)} footerComponent
+       */
       footerComponent: {
         type: [String, Object, Vue]
       }

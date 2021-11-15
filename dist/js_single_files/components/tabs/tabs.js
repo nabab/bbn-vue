@@ -144,26 +144,20 @@ document.body.insertAdjacentElement('beforeend', script);
 
   Vue.component("bbn-tabs", {
     name: 'bbn-tabs',
-    mixins: [
-      /**
-       * @mixin bbn.vue.basicComponent
-       */
+    /**
+     * @mixin bbn.vue.localStorageComponent
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.closeComponent
+     * @mixin bbn.vue.observerComponent
+     * @mixin bbn.vue.resizerComponent
+     */
+    
+    mixins: 
+    [     
       bbn.vue.basicComponent,
-      /**
-       * @mixin bbn.vue.localStorageComponent
-       */
       bbn.vue.localStorageComponent,
-      /**
-       * @mixin bbn.vue.closeComponent
-       */
       bbn.vue.closeComponent,
-      /**
-       * @mixin bbn.vue.observerComponent
-       */
       bbn.vue.observerComponent,
-      /**
-       * @mixin bbn.vue.resizerComponent
-       */
       bbn.vue.resizerComponent
     ],
     props: {

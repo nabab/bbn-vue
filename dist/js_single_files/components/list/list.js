@@ -123,7 +123,8 @@ document.body.insertAdjacentElement('beforeend', script);
      * @mixin bbn.vue.eventsComponent
      * @mixin bbn.vue.componentInsideComponent
      */
-    mixins: [
+    mixins: 
+    [
       bbn.vue.basicComponent,
       bbn.vue.listComponent,
       bbn.vue.keynavComponent,
@@ -135,7 +136,7 @@ document.body.insertAdjacentElement('beforeend', script);
     ],
     props: {
       /**
-       * @prop container
+       * @prop {} origin
        * 
        */
       origin: {},
@@ -162,28 +163,28 @@ document.body.insertAdjacentElement('beforeend', script);
       },
       /**
        * The minimum height of the floater.
-       * @prop {Number} maxHeight
+       * @prop {Number} minHeight
        */
       minHeight: {
         type: Number
       },
       /**
        * The width of the floater.
-       * @prop {String|Number|Boolean} width
+       * @prop {(String|Number|Boolean)} width
        */
       width: {
         type: [String, Number, Boolean]
       },
       /**
        * The height of the floater.
-       * @prop {String|Number|Boolean} height
+       * @prop {(String|Number|Boolean)} height
        */
       height: {
         type: [String, Number, Boolean]
       },
       /**
        * The source of the floater.
-       * @prop {Function|Array|String|Object} source
+       * @prop {(Function|Array|String|Object)} source
        */
       source: {
         type: [Function, Array, String, Object]
@@ -215,12 +216,16 @@ document.body.insertAdjacentElement('beforeend', script);
         type: String,
         default: 'vertical'
       },
-      // @todo not used
+      /**
+       * @prop {String} ['left'] hpos
+       */
       hpos: {
         type: String,
         default: 'left'
       },
-      // @todo not used
+      /**
+       * @prop {String} ['bottom'] vpos
+       */
       vpos: {
         type: String,
         default: 'bottom'
@@ -344,12 +349,18 @@ document.body.insertAdjacentElement('beforeend', script);
         type: Number,
         default: 25
       },
+      /**
+       * @prop {Array} [[]] expanded
+       */
       expanded: {
         type: Array,
         default(){
           return [];
         }
       },
+      /**
+       * @prop {(Boolean|Number)} [false] suggest
+       */
       suggest: {
         type: [Boolean, Number],
         default: false
@@ -362,22 +373,35 @@ document.body.insertAdjacentElement('beforeend', script);
         type: Boolean,
         default: false
       },
+      /**
+       * @prop {Boolean} [false] groupable
+       */
       groupable: {
         type: Boolean,
         default: false
       },
+      /**
+       * @prop {String} ['group'] sourceGroup
+       */
       sourceGroup: {
         type: String,
         default: 'group'
       },
+      /**
+       * @prop {(String|Object|Vue)} groupComponent
+       */
       groupComponent: {
         type: [String, Object, Vue]
       },
+      /**
+       * @prop {String} groupStyle
+       */
       groupStyle: {
         type: String
       },
       /**
        * Whatever will be given as arguments to the function action.
+       * @prop {Array} actionArguments
        */
       actionArguments: {
         type: Array

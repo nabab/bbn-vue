@@ -61,7 +61,8 @@ document.head.insertAdjacentElement('beforeend', css);
      * @mixin bbn.vue.inputComponent
      * @mixin bbn.vue.positionComponent
      */
-    mixins: [
+    mixins: 
+    [
       bbn.vue.basicComponent,
       bbn.vue.inputComponent,
       bbn.vue.positionComponent

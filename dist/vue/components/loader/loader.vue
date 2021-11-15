@@ -44,7 +44,11 @@
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.resizerComponent 
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent],
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.resizerComponent
+    ],
     props: {
       //@todo not used
       source: {

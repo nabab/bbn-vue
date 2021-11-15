@@ -44,6 +44,9 @@
      */
     mixins: [bbn.vue.basicComponent],
     props: {
+      /**
+       * @prop {(String|Object)} component
+       */
       component: {
         type: [String, Object]
       },
@@ -55,9 +58,15 @@
         type: [Function, String],
         required: true
       },
+      /**
+       * @prop {String} template
+       */
       template: {
         type: String
       },
+      /**
+       * @prop {String} ['bbn-m nf nf-mdi-information_outline'] icon
+       */
       icon: {
         type: String,
         default: "bbn-m nf nf-mdi-information_outline"

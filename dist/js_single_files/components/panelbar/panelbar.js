@@ -93,8 +93,16 @@ document.body.insertAdjacentElement('beforeend', script);
      * @mixin bbn.vue.localStorageComponent
      * @mixin bbn.vue.resizerComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent, bbn.vue.resizerComponent],
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.localStorageComponent, 
+      bbn.vue.resizerComponent
+    ],
     props: {
+      /**
+       * @prop {Boolean} [false] multiple
+       */
       multiple: {
         type: Boolean,
         default: false

@@ -39,7 +39,11 @@
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.keepCoolComponent 
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.keepCoolComponent],
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.keepCoolComponent
+    ],
     props: {
       /**
        * The orientation of the scrollbar (required).
@@ -90,7 +94,7 @@
         default: 0
       },
       /**
-       * @prop {HTMLElement|Array|Function} [[]] scrollAlso
+       * @prop {(HTMLElement|Array|Function)} [[]] scrollAlso
        */
       scrollAlso: {
         type: [HTMLElement, Array, Function],
@@ -99,7 +103,7 @@
         }
       },
       /**
-       * @prop [Number|Object] [0] initial 
+       * @prop {(Number|Object)} [0] initial 
        */
       initial: {
         type: [Number, Object],
@@ -120,6 +124,9 @@
         type: Number,
         default: 20
       },
+      /**
+       * @prop {(Number|Array)} offset
+       */
       offset: {
         type: [Number, Array],
         default(){

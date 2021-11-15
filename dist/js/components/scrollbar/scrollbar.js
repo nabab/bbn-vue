@@ -46,7 +46,11 @@ document.head.insertAdjacentElement('beforeend', css);
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.keepCoolComponent 
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.keepCoolComponent],
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.keepCoolComponent
+    ],
     props: {
       /**
        * The orientation of the scrollbar (required).
@@ -97,7 +101,7 @@ document.head.insertAdjacentElement('beforeend', css);
         default: 0
       },
       /**
-       * @prop {HTMLElement|Array|Function} [[]] scrollAlso
+       * @prop {(HTMLElement|Array|Function)} [[]] scrollAlso
        */
       scrollAlso: {
         type: [HTMLElement, Array, Function],
@@ -106,7 +110,7 @@ document.head.insertAdjacentElement('beforeend', css);
         }
       },
       /**
-       * @prop [Number|Object] [0] initial 
+       * @prop {(Number|Object)} [0] initial 
        */
       initial: {
         type: [Number, Object],
@@ -127,6 +131,9 @@ document.head.insertAdjacentElement('beforeend', css);
         type: Number,
         default: 20
       },
+      /**
+       * @prop {(Number|Array)} offset
+       */
       offset: {
         type: [Number, Array],
         default(){

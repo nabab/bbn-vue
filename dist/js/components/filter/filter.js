@@ -249,7 +249,11 @@ document.head.insertAdjacentElement('beforeend', css);
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.dataEditorComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.dataEditorComponent],
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.dataEditorComponent
+    ],
     name: 'bbn-filter',
     props: {
       /**
@@ -286,7 +290,7 @@ document.head.insertAdjacentElement('beforeend', css);
       },
       /**
        * The list of fields given to the filter.
-       * @prop {Object|Array} [{}] fields
+       * @prop {(Object|Array)} [{}] fields
        */
       fields: {
         type: [Object,Array],
@@ -302,7 +306,7 @@ document.head.insertAdjacentElement('beforeend', css);
         default: 0
       },
       /**
-       * @prop index
+       * @prop {} index
        */
       index: {},
       // @todo not used
@@ -311,7 +315,12 @@ document.head.insertAdjacentElement('beforeend', css);
        * The component used for a single filter.
        * @prop {Object} [{}] component
        */
-      component: {},
+      component: {
+        type: Object,
+        default(){
+          return {};
+        }
+      },
       /**
        * The component options used for a single filter.
        * @prop {Object} [{}] componentOptions

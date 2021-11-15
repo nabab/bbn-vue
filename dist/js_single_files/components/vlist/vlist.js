@@ -82,40 +82,68 @@ document.body.insertAdjacentElement('beforeend', script);
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.positionComponent
      */
-    mixins: [
+    mixins: 
+    [
       bbn.vue.basicComponent,
       bbn.vue.positionComponent
     ],
     props: {
+      /**
+       * @prop {(Function|Array)} source
+       */
       source: {
         type: [Function, Array]
       },
+      /**
+       * @prop {String} ['100%'] maxHeight
+       */
       maxHeight: {
         type: String,
         default: '100%'
       },
+      /**
+       * @prop {Boolean} [false] unique
+       */
       unique: {
         type: Boolean,
         default: false
       },
+      /**
+       * @prop {String} ['free'] mode
+       */
       mode: {
         type: String,
         default: "free"
       },
+      /**
+       * @prop [false] parent
+       */
       parent: {
         default: false
       },
+      /**
+       * @prop [false] noIcon
+       */
       noIcon: {
         default: false
       },
       // The hierarchy level, root is 0, and for each generation 1 is added to the level
+      /**
+       * @prop {Number} [0] level
+       */
       level: {
         type: Number,
         default: 0
       },
+      /**
+       * @prop {Funtion} mapper
+       */
       mapper: {
         type: Function
       },
+      /**
+       * itemComponent
+       */
       itemComponent: {}
     },
     data(){

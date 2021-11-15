@@ -165,9 +165,17 @@
   Vue.component('bbn-upload', {
     /**
      * @mixin bbn.vue.inputComponent
+     * @mixin bbn.vue.basicComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent],
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.inputComponent
+    ],
     props: {
+      /**
+       * @prop {Boolean} [true] showList
+       */
       showList: {
         type: Boolean,
         default: true
@@ -256,11 +264,15 @@
       },
       /**
        * True if you want the possibility to delete a file.
+       * @prop {Boolean} [true] eliminable
       */
       eliminable: {
         type: Boolean,
         default: true
       },
+      /**
+       * @prop {Boolean} [true] uploadable
+       */
       uploadable: {
         type: Boolean,
         default: true

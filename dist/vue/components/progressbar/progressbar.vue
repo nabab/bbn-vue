@@ -51,7 +51,12 @@
      * @mixin bbn.vue.inputComponent
      * @mixin bbn.vue.eventsComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent],
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.inputComponent, 
+      bbn.vue.eventsComponent
+    ],
     props: {
       /**
        * The value to be represented by the bar

@@ -31,12 +31,19 @@
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.positionComponent
      */
-    mixins: [
+    mixins: 
+    [
       bbn.vue.basicComponent,
       bbn.vue.positionComponent
     ],
     props: {
+      /**
+       * @prop {} value
+       */
       value: {},
+      /**
+       * @prop {} pinned
+       */
       pinned: {},
       /**
        * The height of the editor
@@ -73,7 +80,7 @@
       },
       /**
        * The object of configuration
-       * @prop {Object} cfgfg
+       * @prop {Object} cfg
        */
       cfg: {
         type: Object,

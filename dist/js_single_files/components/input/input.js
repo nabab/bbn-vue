@@ -95,7 +95,12 @@ document.body.insertAdjacentElement('beforeend', script);
      * @mixin bbn.vue.eventsComponent
      * @mixin bbn.vue.inputComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.eventsComponent, bbn.vue.inputComponent],
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.eventsComponent, 
+      bbn.vue.inputComponent
+    ],
     props: {
       /**
        * Specifies whether a loading icon isshown inside the input field.
@@ -174,19 +179,19 @@ document.body.insertAdjacentElement('beforeend', script);
       },
       /**
        * The size of the input.
-       * @prop {String|Number} size
+       * @prop {(String|Number)} size
        */
       size: {
         type: [String, Number],
       },
       /**
-       * @prop {String|Number} min
+       * @prop {(String|Number)} min
        */
       min: {
         type: [String, Number]
       },
       /**
-       * @prop {String|Number} max
+       * @prop {(String|Number)} max
        */
       max: {
         type: [String, Number]

@@ -117,12 +117,17 @@ document.head.insertAdjacentElement('beforeend', css);
      * @mixin bbn.vue.eventsComponent
      * @mixin bbn.vue.inputComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.eventsComponent, bbn.vue.inputComponent],
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.eventsComponent, 
+      bbn.vue.inputComponent
+    ],
     props: {
       /**
        * Specify the number of decimals to be shown in the input, it doesn't affect the value of 
        * the component.
-       * @prop {String|Number} [0] decimals
+       * @prop {(String|Number)} [0] decimals
        */
       decimals: {
         type: [Number, String],
@@ -167,7 +172,6 @@ document.head.insertAdjacentElement('beforeend', css);
         default: true
       },
       /**
-       *
        * @prop {Boolean} [true] onlySpinners
        */
       onlySpinners: {
@@ -176,7 +180,7 @@ document.head.insertAdjacentElement('beforeend', css);
       },
       /**
        * Defines the input mode of this elemenet
-       * @prop {String} inputmode
+       * @prop {String} ['decimal'] inputmode
        */
       inputmode: {
         type: String,

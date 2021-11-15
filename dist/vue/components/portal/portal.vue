@@ -63,16 +63,28 @@
      */
     mixins: [bbn.vue.basicComponent],
     props: {
+      /**
+       * @prop {Boolean} disabled
+       */
       disabled: {
         type: Boolean,
       },
+      /**
+       * @prop {Boolean} prepend
+       */
       prepend: {
         type: Boolean,
       },
+      /**
+       * @prop {String} [''] selector
+       */
       selector: {
         type: String,
         default: () => `#${config.selector}`,
       },
+      /**
+       * @prop {String} ['div'] tag
+       */
       tag: {
         type: String,
         default: 'DIV',

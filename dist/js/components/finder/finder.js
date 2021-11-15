@@ -200,23 +200,49 @@ document.head.insertAdjacentElement('beforeend', css);
   imageExt = ['jpeg', 'png', 'jpg', 'tiff', 'gif'];
 
   Vue.component('bbn-finder', {
-    mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent],
+    /**
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.localStorageComponent
+     */
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.localStorageComponent
+    ],
     props: {
+      /**
+       * @prop {String} ['.'] path
+       */
       path: {
         type: String,
         default: '.'
       },
+      /**
+       * @prop {} source
+       */
       source: {},
+      /**
+       * @prop {String} origin
+       */
       origin: {
         type: String
       },
+      /**
+       * @prop {String} root
+       */
       root: {
         type: String
       },
+      /**
+       * @prop {Boolean} [true] preview
+       */
       preview: {
         type: Boolean,
         default: true
       },
+      /**
+       * @prop {String} ['nf nf-fa-folder bbn-yellow'] folderIcon
+       */
       folderIcon: {
         type: String,
         default: 'nf nf-fa-folder bbn-yellow'

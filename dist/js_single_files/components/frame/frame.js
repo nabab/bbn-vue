@@ -25,16 +25,28 @@ document.body.insertAdjacentElement('beforeend', script);
      */
     mixins: [bbn.vue.basicComponent],
     props: {
+      /**
+       * @prop {} [''] sandbox
+       */
       sandbox: {
         default: ''
       },
+      /**
+       * @prop {String} 
+       */
       url: {
         type: String
       },
+      /**
+       * @prop {String} [''] root
+       */
       root: {
         type: String,
         default: ''
       },
+      /**
+       * @prop {Boolean} [false] communication
+       */
       communication: {
         type: Boolean,
         default: false

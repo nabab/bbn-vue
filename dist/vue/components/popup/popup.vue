@@ -43,7 +43,11 @@
      * @mixin bbn.vue.basicComponent
      * @minix bbn.vue.resizerComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent],
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.resizerComponent
+    ],
     props: {
       /**
        * @prop {String|Number} ['70%'] defaultWidth

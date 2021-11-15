@@ -23,6 +23,9 @@ document.body.insertAdjacentElement('beforeend', script);
    * Classic input with normalized appearance
    */
   Vue.component('bbn-message', {
+    /**
+     * @mixin bbn.vue.basicComponent
+     */
     mixins: [bbn.vue.basicComponent],
     props:{
       position: {},

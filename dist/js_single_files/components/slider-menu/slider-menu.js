@@ -68,7 +68,8 @@ document.body.insertAdjacentElement('beforeend', script);
    */
   let isClicked = false;
   Vue.component('bbn-slider-menu', {
-    mixins: [
+    mixins: 
+    [
       bbn.vue.basicComponent,
       bbn.vue.listComponent,
       bbn.vue.keynavComponent,
@@ -77,7 +78,7 @@ document.body.insertAdjacentElement('beforeend', script);
     props: {
       /**
        * The source of the floater.
-       * @prop {Function|Array|String|Object} source
+       * @prop {(Function|Array|String|Object)} source
        */
       source: {
         type: [Function, Array, String, Object]
@@ -96,6 +97,9 @@ document.body.insertAdjacentElement('beforeend', script);
           return []
         }
       },
+      /**
+       * @prop {(String|Object|Function)} component
+       */
       component: {
         type: [String, Object, Function]
       }

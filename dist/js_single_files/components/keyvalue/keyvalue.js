@@ -56,15 +56,23 @@ document.body.insertAdjacentElement('beforeend', script);
   Vue.component('bbn-keyvalue', {
     /**
      * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.inputComponent
      */
-    mixins: [
+    mixins: 
+    [
       bbn.vue.basicComponent,
       bbn.vue.inputComponent,
     ],
     props: {
+      /**
+       * @prop {Number} max
+       */
       max: {
         type: Number
       },
+      /**
+       * @prop {Number} min
+       */
       min: {
         type: Number
       }

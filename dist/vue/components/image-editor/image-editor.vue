@@ -26,9 +26,15 @@
      */
     mixins: [bbn.vue.basicComponent],
     props: {
+      /**
+       * @prop {String} source²
+       */
       source: {
         type: String
       },
+      /**
+       * @prop {String} name
+       */
       name: {
         type: String
       }

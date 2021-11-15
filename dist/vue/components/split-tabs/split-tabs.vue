@@ -50,43 +50,77 @@
    * @param {boolean|number} selected - The index of the currently selected tab, and false otherwise.
    */
   Vue.component("bbn-split-tabs", {
-    mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent],
+    /**
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.localStorageComponent
+     */
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.localStorageComponent
+    ],
     props: {
       // Routes automatically after mount
+      /**
+       * @prop {Boolean} [true] auto
+       */
       auto: {
         type: Boolean,
         default: true
       },
-      //
+      /**
+       * @prop {String} [''] url
+       */
       url: {
         type: String,
         default: ''
       },
+      /**
+       * @prop {Boolean} [true] autoload
+       */
       autoload: {
         type: Boolean,
         default: true
       },
+      /**
+       * @prop {Boolean} [false] observer
+       */
       observer: {
         type: Boolean,
         default: false
       },
+      /**
+       * @prop {String} [''] root
+       */
       root: {
         type: String,
         default: ''
       },
+      /**
+       * @prop {String} def
+       */
       def: {
         type: String
       },
+      /**
+       * @prop {Array} [[]] source
+       */
       source: {
         type: Array,
         default(){
           return [];
         }
       },
+      /**
+       * @prop {String} ['horizontal'] orientation
+       */
       orientation: {
         type: String,
         default: 'horizontal'
       },
+      /**
+       * @prop {Boolean} [true] resizable
+       */
       resizable: {
         type: Boolean,
         default: true

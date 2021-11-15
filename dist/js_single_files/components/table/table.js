@@ -251,7 +251,7 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                         left: currentColumns[1].left !== undefined ? currentColumns[1].left + 'px' : 'auto',
                         width: 'auto',
                         borderRight: '0px',
-                        overflow: 'unset' 
+                        overflow: 'unset'
                       }">
                     <div class="bbn-block"
                          :style="{
@@ -384,7 +384,7 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                       </template>
                       <template v-else-if="col.buttons && (buttonMode === 'menu')">
                         <bbn-context :source="Array.isArray(col.buttons) ? col.butttons : col.buttons(d.data, col, i)">
-                          <span class="bbn-iblock bbn-lg bbn-hspadded">
+                          <span class="bbn-iblock bbn-hspadded">
                             <i :class="buttonIcon"/>
                           </span>
                         </bbn-context>
@@ -510,7 +510,8 @@ document.body.insertAdjacentElement('beforeend', script);
      * @mixin bbn.vue.keepCoolComponent
      * @mixin bbn.vue.dataComponent
      */
-    mixins: [
+    mixins: 
+    [
       bbn.vue.basicComponent,
       bbn.vue.resizerComponent,
       bbn.vue.editableListComponent,
@@ -670,7 +671,6 @@ document.body.insertAdjacentElement('beforeend', script);
       /**
        * Defines the expander of the rows.
        * @prop  {Object|String|Function} expander
-       * 
        */
       expander: {
 

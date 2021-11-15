@@ -149,7 +149,12 @@ document.body.insertAdjacentElement('beforeend', script);
      * @mixin bbn.vue.inputComponent
      * @mixin bbn.vue.eventsComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent],
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.inputComponent, 
+      bbn.vue.eventsComponent
+    ],
     props: {
       /**
        * The value of the json editor.
@@ -168,7 +173,7 @@ document.body.insertAdjacentElement('beforeend', script);
       },
       /**
        * The object of configuration.
-       * @prop {Object} cfg
+       * @prop {Object} [{}] cfg
        */
       cfg: {
         type: Object,

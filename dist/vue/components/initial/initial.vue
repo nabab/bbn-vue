@@ -50,7 +50,7 @@
     props: {
       /**
        * The user id whose initials will be represented.
-       * @prop {String|Number} userId
+       * @prop {(String|Number)} userId
        */
       userId: {
         type: [String, Number]
@@ -68,14 +68,14 @@
       },
       /**
        * The width of the rectangle containing the initials.
-       * @prop {String|Number} width
+       * @prop {(String|Number)} width
        */
       width: {
         type: [String, Number]
       },
       /**
        * The height of the rectangle containing the initials.
-       * @prop {String|Number} height
+       * @prop {(String|Number)} height
        */
       height: {
         type: [String, Number]
@@ -120,14 +120,14 @@
       },
       /**
        * The font-size of the initials.
-       * @prop {Number|String} fontSize
+       * @prop {(Number|String)} fontSize
        */
       fontSize: {
         type: [Number, String]
       },
       /**
        * The font-weight of the initials.
-       * @prop {String|Number} [400] fontWeight
+       * @prop {(String|Number)} [400] fontWeight
        */
       fontWeight: {
         type: [Number, String],
@@ -142,7 +142,7 @@
       },
       /**
        * The border-radius of the main container.
-       * @prop {Number|String} [3] radius
+       * @prop {(Number|String)} [3] radius
        * 
        */
       radius: {

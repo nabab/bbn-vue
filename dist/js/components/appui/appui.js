@@ -236,18 +236,21 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-background', 'bbn-overlay
               ref="clipboardButton"
               class="bbn-appui-clipboard-button bbn-right-space bbn-p bbn-rel"
           >
-            <i class="nf nf-fa-clipboard bbn-m" tabindex="-1"></i>
+            <i class="nf nf-fa-clipboard bbn-m" tabindex="-1"/>
             <input class="bbn-invisible bbn-overlay bbn-p"
                   @keydown.space.enter.prevent="getRef('clipboard').toggle()"
                   @drop.prevent.stop="getRef('clipboard').copy($event); getRef('clipboard').show()"
             >
           </div>
           <!-- POWER/ENV ICON -->
-          <div class="bbn-iblock bbn-right-space bbn-p bbn-rel">
+          <bbn-context class="bbn-iblock bbn-right-space bbn-p bbn-rel"
+                       :title="appMode"
+                       tag="div"
+                       :source="powerMenu">
             <i class="nf nf-fa-power_off bbn-m"
                tabindex="-1"
-               :style="{color: powerColor}"></i>
-          </div>
+               :style="{color: powerColor}"/>
+          </bbn-context>
         </div>
       </div>
     </div>
@@ -506,12 +509,54 @@ document.head.insertAdjacentElement('beforeend', css);
           return 'var(--green)';
         }
 
-        if (this.mode === 'dev') {
+        if (this.mode === 'test') {
           return 'var(--blue)';
         }
 
         return '';
-      }
+      },
+      appMode(){
+        if (this.mode === 'dev') {
+          return bbn._("Application in development mode");
+        }
+
+        if (this.mode === 'prod') {
+          return bbn._("Application in production mode");
+        }
+
+        if (this.mode === 'test') {
+          return bbn._("Application in testing mode");
+        }
+      },
+      powerMenu(){
+        if (!this.plugins || !this.plugins['appui-core'] || !this.app || !this.app.user || (!this.app.user.isAdmin && !this.app.user.isDev)) {
+          return [];
+        }
+
+        return [
+          {
+            action: () => {
+              this.confirm(
+                bbn._("Are you sure you want to delete the browser storage?"),
+                () => {
+                  window.localStorage.clear();
+                  document.location.reload();
+                }
+              );
+            },
+            text: bbn._("Reload with a fresh view"),
+            icon: 'nf nf-mdi-sync_alert'
+          }, {
+            text: bbn._("Increase version"),
+            icon: 'nf nf-oct-versions',
+            action: () => {
+              bbn.fn.post(this.plugins['appui-core'] + '/service/increase').then(() => {
+                document.location.reload();
+              });
+            }
+          }
+        ];
+      },
     },
     methods: {
       onCopy(){
@@ -898,10 +943,10 @@ document.head.insertAdjacentElement('beforeend', css);
             let router = appui.getRef('router');
             if (router) {
               if (bbn.fn.isFunction(router.route) && !router.disabled) {
-                router.route(url);  
+                router.route(url);
               }
               return false;
-            } 
+            }
             return true;
           },
 
@@ -910,7 +955,7 @@ document.head.insertAdjacentElement('beforeend', css);
             let c = appui.getCurrentContainer();
             c.alert.apply(c, arguments);
           },
-          
+
           defaultStartLoadingFunction(url, id, data) {
             if ( window.appui && appui.status ){
               appui.loaders.unshift(bbn.env.loadersHistory[0]);
@@ -924,7 +969,7 @@ document.head.insertAdjacentElement('beforeend', css);
               }
             }
           },
-          
+
           defaultEndLoadingFunction(url, timestamp, data, res) {
             if (res && res.data && res.data.disconnected) {
               window.location.reload();

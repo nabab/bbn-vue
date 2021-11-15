@@ -1,14 +1,5 @@
 (bbn_resolve) => {
 ((bbn) => {
-let script_dep = document.createElement('script');
-script_dep.setAttribute('src', "https://cdn.jsdelivr.net/combine/gh/xtermjs/xterm.js@4.4.0/lib/xterm.js,gh/xtermjs/xterm.js@4.4.0/lib/xterm-addon-web-links.js,gh/xtermjs/xterm.js@4.4.0/lib/xterm-addon-search.js,gh/xtermjs/xterm.js@4.4.0/lib/xterm-addon-fit.js,gh/xtermjs/xterm.js@4.4.0/lib/xterm-addon-attach.js");
-script_dep.onload = () => {
-
-let css_dependency;
-css_dependency = document.createElement('link');
-css_dependency.setAttribute('rel', "stylesheet");
-css_dependency.setAttribute('href', "https://cdn.jsdelivr.net/combine/gh/xtermjs/xterm.js@4.4.0/css/xterm.css");
-document.head.insertAdjacentElement('beforeend', css_dependency);
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-overlay']"></div>`;
 script.setAttribute('id', 'bbn-tpl-component-terminal');
@@ -67,7 +58,5 @@ document.body.insertAdjacentElement('beforeend', script);
 })(bbn);
 
 if (bbn_resolve) {bbn_resolve("ok");}
-};
-document.head.insertAdjacentElement("beforeend", script_dep);
 })(bbn);
 }

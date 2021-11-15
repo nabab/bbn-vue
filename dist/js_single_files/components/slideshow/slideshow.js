@@ -220,7 +220,8 @@ document.body.insertAdjacentElement('beforeend', script);
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.resizerComponent
      */
-    mixins: [
+    mixins: 
+    [
       bbn.vue.basicComponent,
       bbn.vue.resizerComponent
     ],

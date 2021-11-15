@@ -62,12 +62,13 @@ document.head.insertAdjacentElement('beforeend', css);
 
   Vue.component("bbn-range", {
     name: 'bbn-range',
-    mixins: [
-      /**
-       * @mixin bbn.vue.basicComponent
-       * @mixin bbn.vue.eventsComponent
-       * @mixin bbn.vue.inputComponent
-       */
+    /**
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.eventsComponent
+     * @mixin bbn.vue.inputComponent
+     */
+    mixins: 
+    [ 
       bbn.vue.basicComponent,
       bbn.vue.eventsComponent,
       bbn.vue.inputComponent

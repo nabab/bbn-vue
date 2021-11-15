@@ -159,7 +159,8 @@ document.head.insertAdjacentElement('beforeend', css);
      * @mixin bbn.vue.dimensionsComponent
      * @mixin bbn.vue.positionComponent
      */
-    mixins: [
+    mixins:
+    [
       bbn.vue.basicComponent,
       bbn.vue.listComponent,
       bbn.vue.componentInsideComponent,
@@ -171,7 +172,7 @@ document.head.insertAdjacentElement('beforeend', css);
     ],
     props: {
       /**
-       * @prop container
+       * @prop {} container
        */
       container: {},
       /**
@@ -190,6 +191,9 @@ document.head.insertAdjacentElement('beforeend', css);
         type: String,
         default: ''
       },
+      /**
+       * @prop {String} css
+       */
       css: {
         type: String
       },
@@ -267,10 +271,15 @@ document.head.insertAdjacentElement('beforeend', css);
        * The component used for the items.
        * @prop {Object} [{}] itemComponent
        */
-      itemComponent: {},
+      itemComponent: {
+        type: Object,
+        default(){
+          return {};
+        },
+      },
       /**
        * Set to true to auto-hide the component.
-       * @prop {Boolean} [false] autoHide
+       * @prop {(Number|Boolean)} [false] autoHide
        */
       autoHide: {
         type: [Number, Boolean],
@@ -278,21 +287,21 @@ document.head.insertAdjacentElement('beforeend', css);
       },
       /**
        * The title of the floater's header.
-       * @psop {String} title
+       * @prop {(Boolean|String)} title
        */
       title: {
         type: [Boolean, String]
       },
       /**
        * The footer of the floater.
-       * @psop {String} footer
+       * @prop {(Function|String|Object)} footer
        */
       footer: {
         type: [Function, String, Object]
       },
       /**
        * The buttons in the footer.
-       * @psop {Array} buttons
+       * @prop {Array} [[]] buttons
        */
       buttons: {
         type: Array,
@@ -381,13 +390,16 @@ document.head.insertAdjacentElement('beforeend', css);
         type: [Boolean, Number],
         default: false
       },
+      /**
+       * @prop {Vue} opener The opening vue component passed to the floater
+       */
       opener: {
         type: Vue
       },
       /**
-       * Whatever will be given as arguments to the function action.
+       * @prop {Array} actionArguments Whatever will be given as arguments to the function action.
        */
-       actionArguments: {
+      actionArguments: {
         type: Array
       }
     },
@@ -523,7 +535,7 @@ document.head.insertAdjacentElement('beforeend', css);
       formattedWidth() {
         return this.formatSize(
           this.width
-          || (this.isResized ? 
+          || (this.isResized ?
             this.realWidth : this.currentMaxWidth || '100%'
           )
         );
@@ -536,14 +548,14 @@ document.head.insertAdjacentElement('beforeend', css);
       formattedHeight() {
         return this.formatSize(
           this.height
-          || (this.isResized ? 
+          || (this.isResized ?
             this.realHeight : this.currentMaxHeight || '100%'
           )
         );
       },
       /**
        * An object of css display properties to apply to the floater.
-       * 
+       *
        * @computed currentStyle
        * @return {Object}
        */
@@ -590,7 +602,7 @@ document.head.insertAdjacentElement('beforeend', css);
       },
       /**
        * True if there is some content in the component.
-       * 
+       *
        * @computed isVisible
        * @return {Boolean}
        */
@@ -599,7 +611,7 @@ document.head.insertAdjacentElement('beforeend', css);
       },
       /**
        * True if the component is visible.
-       * 
+       *
        * @computed isVisible
        * @return {Boolean}
        */
@@ -844,7 +856,7 @@ document.head.insertAdjacentElement('beforeend', css);
               && (!this.isResizing || !this.isResized);
           if (go) {
             this.isResizing = true;
-            this._setMinMax();  
+            this._setMinMax();
           }
           return new Promise(resolve => {
             // Should be triggered by the inner scroll once mounted
@@ -984,7 +996,7 @@ document.head.insertAdjacentElement('beforeend', css);
       },
       /**
        * Returns an object of numbers as width and height based on whatever unit given.
-       * 
+       *
        * @method getDimensions
        * @param {Number} width
        * @param {Number} height
@@ -1118,7 +1130,7 @@ document.head.insertAdjacentElement('beforeend', css);
                 }
               }
             }
-            // If the floater is horizontal, it will ideally start at the 
+            // If the floater is horizontal, it will ideally start at the
             // top right of the element to open downwards
             // otherwise at the bottom left
             // if the floater cannot be put after the element
@@ -1151,7 +1163,7 @@ document.head.insertAdjacentElement('beforeend', css);
             }
             else {
               // If no vertical position at all, centered (same top and bottom)
-              coor[a.posStart] = Math.floor((this['container' + a.camel] - size) / 2) 
+              coor[a.posStart] = Math.floor((this['container' + a.camel] - size) / 2)
                         + ((this['container' + a.camel] - size) % 2);
               if (coor[a.posStart] < 0) {
                 coor[a.posStart] = 0;
@@ -1439,7 +1451,7 @@ document.head.insertAdjacentElement('beforeend', css);
     beforeDestroy(){
       if (this.onClose) {
         this.onClose(this);
-      }      
+      }
     },
     updated() {
       /*

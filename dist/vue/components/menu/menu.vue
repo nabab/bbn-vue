@@ -51,18 +51,44 @@
   "use strict";
 
   Vue.component('bbn-menu', {
-    mixins: [bbn.vue.basicComponent, bbn.vue.listComponent],
+    /**
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.listComponent
+     */
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.listComponent
+    ],
     props: {
+      /**
+       * @prop {} orientation
+       */
       orientation: {},
+      /**
+       * @prop {} direction
+       */
       direction: {},
+      /**
+       * @prop {} opened
+       */
       opened: {},
+      /**
+       * @prop {Number} [-1] selectedIndex
+       */
       selectedIndex: {
         type: Number,
         default: -1
       },
+      /**
+       * @prop {} ['text'] sourceValue
+       */
       sourceValue: {
         default: 'text'
       },
+      /**
+       * @prop {String} ['items'] children
+       */
       children: {
         type: String,
         default: 'items'

@@ -42,37 +42,72 @@ document.body.insertAdjacentElement('beforeend', script);
    * Classic input with normalized appearance
    */
   Vue.component('bbn-pane', {
-    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent],
+    /**
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.resizerComponent
+     */
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.resizerComponent
+    ],
     props: {
+      /**
+       * @prop {String} ['hidden'] overflow
+       */
       overflow: {
         type: String,
         default: 'hidden'
       },
+      /**
+       * @prop {String} title
+       */
       title: {
         type: String
       },
+      /**
+       * @prop {(String|Number)} [''] size
+       */
       size: {
         type: [String, Number],
         default: ''
       },
+      /**
+       * @prop {Boolean} resizable
+       */
       resizable: {
         type: Boolean
       },
+      /**
+       * @prop {Boolean} collapsible
+       */
       collapsible: {
         type: Boolean
       },
+      /**
+       * @prop {Boolean} [false] collapsed
+       */
       collapsed: {
         type: Boolean,
         default: false
       },
+      /**
+       * @prop {Boolean} [false] scrollable
+       */
       scrollable: {
         type: Boolean,
         default: false
       },
+      /**
+       * @prop {Number} [20] min
+       */
       min: {
         type: Number,
         default: 20
       },
+      /**
+       * @prop {Number} [10000] min
+       */
       max: {
         type: Number,
         default: 10000

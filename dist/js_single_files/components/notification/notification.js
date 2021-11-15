@@ -105,56 +105,56 @@ document.body.insertAdjacentElement('beforeend', script);
         default: 'bottom-left'
       },
       /**
-       * @prop {String|Function}, ['Success'] successMessage
+       * @prop {(String|Function)}, ['Success'] successMessage
        */
       successMessage: {
         type: [String, Function],
         default: bbn._('Success')
       },
       /**
-       * @prop {String|Function}, ['Warning'] warningMessage
+       * @prop {(String|Function)}, ['Warning'] warningMessage
        */
       warningMessage: {
         type: [String, Function],
         default: bbn._('Warning')
       },
       /**
-       * @prop {String|Function}, ['Error'] errorMessage
+       * @prop {(String|Function)}, ['Error'] errorMessage
        */
       errorMessage: {
         type: [String, Function],
         default: bbn._('Error')
       },
       /**
-       * @prop {String|Function}, ['Info'] infoMessage
+       * @prop {(String|Function)}, ['Info'] infoMessage
        */
       infoMessage: {
         type: [String, Function],
         default: bbn._('Info')
       },
       /**
-       * @prop {String|Function}, ['Success'] successMessage
+       * @prop {(String|Function)}, ['Success'] successMessage
        */
       successIcon: {
         type: [String, Boolean],
         default: 'nf nf-fa-check_square'
       },
       /**
-       * @prop {String|Function}, ['Warning'] warningMessage
+       * @prop {(String|Function)}, ['Warning'] warningMessage
        */
       warningIcon: {
         type: [String, Boolean],
         default: 'nf nf-fa-warning'
       },
       /**
-       * @prop {String|Function}, ['Error'] errorMessage
+       * @prop {(String|Function)}, ['Error'] errorMessage
        */
       errorIcon: {
         type: [String, Boolean],
         default: 'nf nf-fa-exclamation_circle'
       },
       /**
-       * @prop {String|Function}, ['Info'] infoMessage
+       * @prop {(String|Function)}, ['Info'] infoMessage
        */
       infoIcon: {
         type: [String, Boolean],

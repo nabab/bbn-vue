@@ -24,6 +24,9 @@ document.body.insertAdjacentElement('beforeend', script);
         bbn.vue.listComponent,bbn.vue.basicComponent,
       ],
       props: {
+		  /**
+		   * @prop {Array} source
+		   */
         source: {
 					type: Array
 				}

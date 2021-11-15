@@ -53,7 +53,12 @@ document.head.insertAdjacentElement('beforeend', css);
      * @mixin bbn.vue.toggleComponent
      * @mixin bbn.vue.resizerComponent 
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent, bbn.vue.toggleComponent],
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.resizerComponent, 
+      bbn.vue.toggleComponent
+    ],
     props: {
       /**
        * The orientation of the slider.

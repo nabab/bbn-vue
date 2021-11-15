@@ -1,7 +1,7 @@
 (bbn_resolve) => {
 ((bbn) => {
 let script_dep = document.createElement('script');
-script_dep.setAttribute('src', "https://cdn.jsdelivr.net/combine/gh/artf/grapesjs@v0.15.10/dist/grapes.min.js,gh/artf/grapesjs@v0.15.10/dist/grapes.js,gh/artf/grapesjs-blocks-basic@v0.1.8/dist/grapesjs-blocks-basic.min.js");
+script_dep.setAttribute('src', "https://cdn.jsdelivr.net/combine/gh/artf/grapesjs@v0.15.10/dist/grapes.min.js,gh/artf/grapesjs-blocks-basic@v0.1.8/dist/grapesjs-blocks-basic.min.js");
 script_dep.onload = () => {
 
 let css_dependency;
@@ -34,8 +34,14 @@ document.body.insertAdjacentElement('beforeend', script);
   "use strict";
 
   Vue.component('bbn-grapes', {
+    /**
+     * @mixin bbn.vue.basicComponent
+     */
     mixins: [bbn.vue.basicComponent],
     props: {
+      /**
+       * @prop {(String|Function)} css
+       */
       css: {
         type: [String, Function]
       }

@@ -31,7 +31,8 @@
      * @mixin bbn.vue.eventsComponent
      *
      */
-    mixins: [
+    mixins: 
+    [
       bbn.vue.basicComponent,
       bbn.vue.inputComponent,
       bbn.vue.localStorageComponent,
@@ -85,6 +86,9 @@
         type: [String, Boolean, Number],
         default: undefined
       },
+      /**
+       * @prop {Boolean} [false] notext
+       */
       notext: {
         type: Boolean,
         default: false
