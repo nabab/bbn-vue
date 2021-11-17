@@ -340,23 +340,40 @@
   Vue.component('bbn-editable', {
     /**
      * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.inputComponent
+     * @mixin bbn.vue.componentInsideComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.componentInsideComponent],
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.inputComponent, 
+      bbn.vue.componentInsideComponent
+    ],
     props: {
+      /**
+       * @prop {String} ['nf nf-fa-edit bbn-xlarge bbn-blue'] editIcon
+       */
       editIcon: {
         type: String,
         default: 'nf nf-fa-edit bbn-xlarge bbn-blue'
       },
+      /**
+       * @prop {String} ['nf nf-fa-check bbn-xlarge bbn-green'] saveIcon
+       */
       saveIcon: {
         type: String,
         default: 'nf nf-fa-check bbn-xlarge bbn-green'
       },
+      /**
+       * @prop {String} ['nf nf-fa-check bbn-xlarge bbn-red'] cancelIcon
+       */
       cancelIcon: {
         type: String,
         default: 'nf nf-fa-close bbn-xlarge bbn-red'
       },
       /**
        * The aduio's URL
+       * @prop {Object} [{}] source
        */
       source: {
         type: Object,
@@ -372,22 +389,37 @@
         type: String,
         default: ''
       },
+      /**
+       * @prop {Number} index
+       */
       index: {
         type: Number,
       },
       //the path for the index showing the images ('ex: image/')
+      /**
+       * @prop {String} [''] path
+       */
       path: {
         type: String,
         default: ''
       },
       //the path for the links (give a path to a controller to manage the links)
+      /**
+       * @prop {String} [''] linkURL
+       */
       linkURL: {
         type: String,
         default: ''
       },
+      /**
+       * @prop {} [true] value
+       */
       value: {
         required: true
       },
+      /**
+       * @prop {String} [] novalue
+       */
       novalue: {
         type: String
       }

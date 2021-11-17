@@ -323,6 +323,7 @@
     props: {
       /**
        * The aduio's URL
+       * @prop {Object} [true] source
        */
       source: {
         type: Object,
@@ -336,15 +337,24 @@
         type: String,
         default: ''
       },
+      /**
+       * @prop {Number} index
+       */
       index: {
         type: Number,
       },
       //the path for the index showing the images ('ex: image/')
+      /**
+       * @prop {String} [''] path
+       */
       path: {
         type: String,
         default: ''
       },
       //the path for the links (give a path to a controller to manage the links)
+      /**
+       * @prop {String} [''] linkURL
+       */
       linkURL: {
         type: String,
         default: ''

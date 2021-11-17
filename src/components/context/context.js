@@ -22,24 +22,31 @@
      * @mixin bbn.vue.dimensionsComponent
      * @mixin bbn.vue.eventsComponent
      */
-    mixins: [
+    mixins: 
+    [
       bbn.vue.basicComponent,
       bbn.vue.listComponent,
       bbn.vue.dimensionsComponent,
       bbn.vue.eventsComponent
     ],
     props: {
+      /**
+       * @prop {Boolean} [false] autobind
+       */
       autobind: {
         type: Boolean,
         default: false
       },
+      /**
+       * @prop {Boolean} [false] disabled
+       */
       disabled: {
         type: Boolean,
         default: false
       },
       /**
        * Will force the position.
-       * @prop {String} position
+       * @prop {String} [''] position
        */
       position: {
         type: String,

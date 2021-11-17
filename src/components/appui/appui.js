@@ -19,7 +19,8 @@
      * @mixin bbn.vue.observerComponent
      * @mixin bbn.vue.browserNotificationComponent
      */
-    mixins: [
+    mixins: 
+    [
       bbn.vue.basicComponent,
       bbn.vue.resizerComponent,
       bbn.vue.localStorageComponent,
@@ -27,48 +28,78 @@
       bbn.vue.browserNotificationComponent
     ],
     props: {
+      /**
+       * @prop {String} ['bbn.env.path'] url
+       */
       url: {
         type: String,
         default: bbn.env.path
       },
+      /**
+       * @prop {String} def
+       */
       def: {
         type: String
       },
+      /**
+       * @prop {Boolean} [true] autoload
+       */
       autoload: {
         type: Boolean,
         default: true
       },
+      /**
+       * @prop {Boolean} [false] disabled
+       */
       disabled: {
         type: Boolean,
         default: false
       },
+      /**
+       * @prop {Object} [{}] options
+       */
       options: {
         type: Object,
         default(){
           return {}
         }
       },
+      /**
+       * @prop {Array} [[]] menus
+       */
       menus: {
         type: Array,
         default(){
           return []
         }
       },
+      /**
+       * @prop {String} currentMenu
+       */
       currentMenu:{
         type: String
       },
+      /**
+       * @prop {Array} [[]] shortcuts
+       */
       shortcuts: {
         type: Array,
         default(){
           return []
         }
       },
+      /**
+       * @prop {Object} [{}] plugins
+       */
       plugins: {
         type: Object,
         default(){
           return {}
         }
       },
+      /**
+       * @prop {Object} [{'span'}] cfg
+       */
       cfg: {
         type: Object,
         default(){
@@ -77,6 +108,9 @@
           }
         }
       },
+      /**
+       * @prop {Array} [[]] source
+       */
       source: {
         type: Array,
         default(){
@@ -89,16 +123,25 @@
           }*/];
         }
       },
+      /**
+       * @prop {(Object|Boolean)} [{}] searchBar
+       */
       searchBar: {
         type: [Object, Boolean],
         default(){
           return {}
         }
       },
+      /**
+       * @prop {Boolean} [false] single
+       */
       single: {
         type: Boolean,
         default: false
       },
+      /**
+       * @prop {String} ['bbn.env.siteTitle || bbn._("App-UI")'] title
+       */
       title: {
         type: String,
         default: bbn.env.siteTitle || bbn._('App-UI')
@@ -126,7 +169,7 @@
       },
       /**
        * Will be passed to router in order to ignore the dirty parameter.
-       * @prop {Boolean} ignoreDirty
+       * @prop {Boolean} [false] ignoreDirty
        */
        ignoreDirty: {
         type: Boolean,
@@ -197,54 +240,12 @@
           return 'var(--green)';
         }
 
-        if (this.mode === 'test') {
+        if (this.mode === 'dev') {
           return 'var(--blue)';
         }
 
         return '';
-      },
-      appMode(){
-        if (this.mode === 'dev') {
-          return bbn._("Application in development mode");
-        }
-
-        if (this.mode === 'prod') {
-          return bbn._("Application in production mode");
-        }
-
-        if (this.mode === 'test') {
-          return bbn._("Application in testing mode");
-        }
-      },
-      powerMenu(){
-        if (!this.plugins || !this.plugins['appui-core'] || !this.app || !this.app.user || (!this.app.user.isAdmin && !this.app.user.isDev)) {
-          return [];
-        }
-
-        return [
-          {
-            action: () => {
-              this.confirm(
-                bbn._("Are you sure you want to delete the browser storage?"),
-                () => {
-                  window.localStorage.clear();
-                  document.location.reload();
-                }
-              );
-            },
-            text: bbn._("Reload with a fresh view"),
-            icon: 'nf nf-mdi-sync_alert'
-          }, {
-            text: bbn._("Increase version"),
-            icon: 'nf nf-oct-versions',
-            action: () => {
-              bbn.fn.post(this.plugins['appui-core'] + '/service/increase').then(() => {
-                document.location.reload();
-              });
-            }
-          }
-        ];
-      },
+      }
     },
     methods: {
       onCopy(){
@@ -631,10 +632,10 @@
             let router = appui.getRef('router');
             if (router) {
               if (bbn.fn.isFunction(router.route) && !router.disabled) {
-                router.route(url);
+                router.route(url);  
               }
               return false;
-            }
+            } 
             return true;
           },
 
@@ -643,7 +644,7 @@
             let c = appui.getCurrentContainer();
             c.alert.apply(c, arguments);
           },
-
+          
           defaultStartLoadingFunction(url, id, data) {
             if ( window.appui && appui.status ){
               appui.loaders.unshift(bbn.env.loadersHistory[0]);
@@ -657,7 +658,7 @@
               }
             }
           },
-
+          
           defaultEndLoadingFunction(url, timestamp, data, res) {
             if (res && res.data && res.data.disconnected) {
               window.location.reload();

@@ -180,7 +180,12 @@
      * @mixin bbn.vue.inputComponent
      * @mixin bbn.vue.eventsComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent],
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.inputComponent, 
+      bbn.vue.eventsComponent
+    ],
     props: {
       /**
        * The ecmascript version.
@@ -194,7 +199,7 @@
       /**
        * The language mode.
        *
-       * @prop {String} [php] mode
+       * @prop {(String|Object)} ['php'] mode
        */
       mode: {
         type: [String, Object],

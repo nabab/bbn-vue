@@ -14,54 +14,98 @@
   "use strict";
 
   Vue.component('bbn-file', {
-    mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent],
+    /**
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.inputComponent
+     */
+    mixins: 
+    [
+      bbn.vue.basicComponent,
+      bbn.vue.inputComponent
+    ],
     props: {
+      /**
+       * @prop {(Array|Function)} [[]] extensions
+       */
       extensions: {
         type: [Array, Function],
         default(){
           return []
         }
       },
+      /**
+       * @prop {(Array|String)} [[]] value
+       */
       value: {
         type: [Array, String],
         default(){
           return [];
         }
       },
+      /**
+       * @prop {String} [null] saveUrl 
+       */
       saveUrl: {
         type: String,
         default: null
       },
+      /**
+       * @prop {String} [null] removeUrl 
+       */
       removeUrl: {
         type: String,
         default: null
       },
+      /**
+       * @prop {Boolean} [true] autoUpload
+       */
       autoUpload : {
         type: Boolean,
         default: true
       },
+      /**
+       * @prop {Boolean} [true] multiple
+       */
       multiple: {
         type: Boolean,
         default: true
       },
+      /**
+       * @prop {Boolean} [false] disabled
+       */
       disabled: {
         type: Boolean,
         default: false
       },
+      /**
+       * @prop {String} thumbNot
+       */
       thumbNot : {
         type: String
       },
+      /**
+       * @prop {Number} [null] maxSize
+       */
       maxSize: {
         type: Number,
         default: null
       },
+      /**
+       * @prop {String} thumWaiting
+       */
       thumbWaiting: {
         type: String
       },
+      /**
+       * @prop {Boolean} [false] json
+       */
       json: {
         type: Boolean,
         default: false
       },
+      /**
+       * @prop {Object} [{}] lng
+       */
       lng: {
         type: Object,
         default(){
@@ -86,6 +130,9 @@
           }
         }
       },
+      /**
+       * @prop {String} ['nf nf-fa-upload'] icon
+       */
       icon: {
         type: String,
         default: 'nf nf-fa-upload'

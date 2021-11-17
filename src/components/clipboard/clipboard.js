@@ -23,7 +23,11 @@
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.localStorageComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.localStorageComponent],
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.localStorageComponent
+    ],
     props: {
       /**
        * @prop {String} ['right'] orientation
@@ -39,14 +43,14 @@
         type: Array
       },
       /**
-       * @prop {Array} [[]] max The maximum number of items kept in the clipboard
+       * @prop {Number} [20] max The maximum number of items kept in the clipboard
        */
        max: {
         type: Number,
         default: 20
       },
       /**
-       * @prop {Array} [[]] max The maximum number of items kept in the clipboard
+       * @prop {Number} [1000000] max The maximum number of items kept in the clipboard
        */
        maxSize: {
         type: Number,

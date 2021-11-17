@@ -26,7 +26,7 @@
      * @mixin bbn.vue.dimensionsComponent
      * @mixin bbn.vue.positionComponent
      */
-    mixins:
+    mixins: 
     [
       bbn.vue.basicComponent,
       bbn.vue.listComponent,
@@ -140,9 +140,7 @@
        */
       itemComponent: {
         type: Object,
-        default(){
-          return {};
-        },
+        default: {},
       },
       /**
        * Set to true to auto-hide the component.
@@ -257,16 +255,13 @@
         type: [Boolean, Number],
         default: false
       },
-      /**
-       * @prop {Vue} opener The opening vue component passed to the floater
-       */
       opener: {
         type: Vue
       },
       /**
-       * @prop {Array} actionArguments Whatever will be given as arguments to the function action.
+       * Whatever will be given as arguments to the function action.
        */
-      actionArguments: {
+       actionArguments: {
         type: Array
       }
     },
@@ -402,7 +397,7 @@
       formattedWidth() {
         return this.formatSize(
           this.width
-          || (this.isResized ?
+          || (this.isResized ? 
             this.realWidth : this.currentMaxWidth || '100%'
           )
         );
@@ -415,14 +410,14 @@
       formattedHeight() {
         return this.formatSize(
           this.height
-          || (this.isResized ?
+          || (this.isResized ? 
             this.realHeight : this.currentMaxHeight || '100%'
           )
         );
       },
       /**
        * An object of css display properties to apply to the floater.
-       *
+       * 
        * @computed currentStyle
        * @return {Object}
        */
@@ -469,7 +464,7 @@
       },
       /**
        * True if there is some content in the component.
-       *
+       * 
        * @computed isVisible
        * @return {Boolean}
        */
@@ -478,7 +473,7 @@
       },
       /**
        * True if the component is visible.
-       *
+       * 
        * @computed isVisible
        * @return {Boolean}
        */
@@ -723,7 +718,7 @@
               && (!this.isResizing || !this.isResized);
           if (go) {
             this.isResizing = true;
-            this._setMinMax();
+            this._setMinMax();  
           }
           return new Promise(resolve => {
             // Should be triggered by the inner scroll once mounted
@@ -863,7 +858,7 @@
       },
       /**
        * Returns an object of numbers as width and height based on whatever unit given.
-       *
+       * 
        * @method getDimensions
        * @param {Number} width
        * @param {Number} height
@@ -997,7 +992,7 @@
                 }
               }
             }
-            // If the floater is horizontal, it will ideally start at the
+            // If the floater is horizontal, it will ideally start at the 
             // top right of the element to open downwards
             // otherwise at the bottom left
             // if the floater cannot be put after the element
@@ -1030,7 +1025,7 @@
             }
             else {
               // If no vertical position at all, centered (same top and bottom)
-              coor[a.posStart] = Math.floor((this['container' + a.camel] - size) / 2)
+              coor[a.posStart] = Math.floor((this['container' + a.camel] - size) / 2) 
                         + ((this['container' + a.camel] - size) % 2);
               if (coor[a.posStart] < 0) {
                 coor[a.posStart] = 0;
@@ -1318,7 +1313,7 @@
     beforeDestroy(){
       if (this.onClose) {
         this.onClose(this);
-      }
+      }      
     },
     updated() {
       /*
