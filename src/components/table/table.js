@@ -15,6 +15,8 @@
  * @copyright BBN Solutions
  */
 
+const { toggleHeadingSmaller } = require("simplemde");
+
 (function (bbn, Vue) {
   "use strict";
   Vue.component('bbn-table', {
@@ -1391,7 +1393,10 @@
         if ( this.sortable ){
           data.order = this.currentOrder;
         }
-        if ( this.isFilterable ){
+        if (this.isFilterable
+          && !!this.currentFilters.conditions
+          && this.currentFilters.conditions.length
+        ) {
           data.filters = this.currentFilters;
         }
         return data;
