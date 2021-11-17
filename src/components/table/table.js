@@ -15,8 +15,6 @@
  * @copyright BBN Solutions
  */
 
-const { toggleHeadingSmaller } = require("simplemde");
-
 (function (bbn, Vue) {
   "use strict";
   Vue.component('bbn-table', {
