@@ -323,6 +323,7 @@
     props: {
       /**
        * The aduio's URL
+       * @prop {Object} source
        */
       source: {
         type: Object,
@@ -336,15 +337,28 @@
         type: String,
         default: ''
       },
+      /**
+       * @prop {Number} index
+       */
       index: {
         type: Number,
       },
       //the path for the index showing the images ('ex: image/')
+      /**
+       * The path for the index showing the images ('ex: image/').
+       *
+       * @prop {String} [''] path
+       */
       path: {
         type: String,
         default: ''
       },
       //the path for the links (give a path to a controller to manage the links)
+      /**
+       * The path for the links (give a path to a controller to manage the links).
+       *
+       * @prop {String} [''] linkURL
+       */
       linkURL: {
         type: String,
         default: ''
@@ -356,35 +370,79 @@
     },
     data(){
       return {
+        /**
+         * @data {Boolean} [false] over
+         */
         over: false,
+        /**
+         * @data {Boolean} [false] edit
+         */
         edit: false,
+        /**
+         * @data {Boolean} [true] isAdmin
+         */
         isAdmin: true,
+        /**
+         * @data {Boolean} [true] editing
+         */
         editing: true,
+        /**
+         * @data {String} ['100%'] width
+         */
         width: '100%',
+        /**
+         * @data {String} ['100%'] height
+         */
         height: '100%',
-        //ready is important for the component template to be defined 
+        //ready is important for the component template to be defined
+        /**
+         * Ready is important for the component template to be defined.
+         *
+         * @data {Boolean} [true] ready
+         */
         ready: true,
         initialSource: {}
       }
     },
     computed: {
+      /**
+       * changed
+       * @returns {boolean}
+       */
       changed(){
         return !bbn.fn.isSame(this.initialSource, this.source)
       },
+      /**
+       * type
+       * @returns {"all"|"sharedworker"|"window"|"worker"|string}
+       */
       type(){
         return this.source.type || 'text'
-      }, 
+      },
+      /**
+       * parent
+       * @returns {*|null}
+       */
       parent(){
         return this.ready ? this.closest('bbn-container').getComponent() : null;
       }
     },
     methods: {
+      /**
+       * @method onMyMouseEnter
+       */
       onMyMouseEnter(){
         alert('enter')
       },
+      /**
+       * @method mouseleave
+       */
       mouseleave(){
         this.over = false
       },
+      /**
+       * @method mouseover
+       */
       mouseover(){
         this.over = true
         /*console.log('over: ' + this.over)
@@ -397,17 +455,28 @@
           this.over = true;
         }*/
       },
+      /**
+       * @method mouseenter
+       */
       mouseenter(){
         alert('enter')
       },
+      /**
+       * @method selectImg
+       * @param st
+       */
       selectImg(st){
         bbn.fn.link(st);
       },
+      /**
+       * @method alert
+       */
       alert(){
         alert('test')
       }, 
       /**
        * adds the events listener when edit = true
+       * @method _setEvents
        * @param {boolean} edit 
        */
       _setEvents(){
@@ -426,6 +495,10 @@
           document.removeEventListener('touchstart', this.checkMouseDown);
         }*/
       },
+      /**
+       * @method checkKeyCode
+       * @param e
+       */
       checkKeyCode(e){
         bbn.fn.log("checkKeyCode")
         if ( e.keyCode === 27 ){
@@ -448,6 +521,9 @@
           this.editMode();
         }
       },
+      /**
+       * @method editBlock
+       */
       editBlock(){
         bbn.fn.log("editBlock")
         if ( this.changed ){
@@ -461,6 +537,9 @@
           this.edit = false;
         }
       },
+      /**
+       * @method cancelEdit
+       */
       cancelEdit(){
         bbn.fn.log("cancelEdit")
         bbn.fn.iterate(this.initialSource, (v, i)=>{
@@ -468,6 +547,9 @@
           this.edit = false;
         })
       },
+      /**
+       * @method editNode
+       */
       editMode(){
         bbn.fn.log("editMode")
         let blocks = this.closest('bbn-container').getComponent().findAll('bbn-cms-block');
@@ -479,6 +561,8 @@
       },
       /**
        * returns the object of the component basing on the given type
+       *
+       * @method component
        * @param {string} type 
        */
       component(type){

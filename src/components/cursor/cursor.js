@@ -11,9 +11,14 @@
   Vue.component('bbn-cursor', {
     /**
      * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.eventsComponent
+     * @mixin bbn.vue.inputComponent
      */
     mixins: [bbn.vue.basicComponent, bbn.vue.eventsComponent, bbn.vue.inputComponent],
     props: {
+      /**
+       * @prop {Number} [1] step
+       */
       step: {
         type: Number, 
         default: 1
@@ -26,30 +31,45 @@
         required: true
       },*/
       /**
-       * The audio's title
-       * @prop {String} [''] title
+       * @prop {Number} [0] min
        */
       min: {
         type: Number,
         default: 0  
       },
+      /**
+       * @prop {Number} [500] max
+       */
       max: {
         type: Number,
         default: 500
       },
+      /**
+       * @prop {String} [''] String
+       */
       title: {
         type: String,
         default: ''
       },
+      /**
+       * @prop {(Number|String)} value
+       */
       value: {
         type: Number | String,
       },
+      /**
+       * @prop {String} [''] unit
+       */
       unit: {
         type: String,
         default: ''
       }
     },
     computed: {
+      /**
+       * label
+       * @return {*}
+       */
       label(){
         return this.value 
       }

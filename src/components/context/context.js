@@ -29,10 +29,16 @@
       bbn.vue.eventsComponent
     ],
     props: {
+      /**
+       * @prop {Boolean} [false] autobind
+       */
       autobind: {
         type: Boolean,
         default: false
       },
+      /**
+       * @prop {Boolean} [false] disabled
+       */
       disabled: {
         type: Boolean,
         default: false
@@ -107,6 +113,9 @@
          * @data {Boolean} [false] showFloater
          */
         showFloater: false,
+        /**
+         * @data {Boolean} [false] docEvent
+         */
         docEvent: false,
 
       };
@@ -137,11 +146,18 @@
           }
         }
       },
+      /**
+       * @method clickOut
+       * @param e
+       */
       clickOut(e){
         if (!e.target.closest('.bbn-floater-context-' + this.bbnUid)) {
           this.showFloater = false;
         }
       },
+      /**
+       * @method toggle
+       */
       toggle(){
         if (!this.showFloater) {
           this.updateData().then(() => {
@@ -153,6 +169,9 @@
         }
       }
     },
+    /**
+     * @method beforeDestroy
+     */
     beforeDestroy() {
       if (this.docEvent) {
         document.removeEventListener('click', this.clickout)

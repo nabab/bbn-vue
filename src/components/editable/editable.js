@@ -340,23 +340,34 @@
   Vue.component('bbn-editable', {
     /**
      * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.inputComponent
+     * @mixin bbn.vue.componentInsideComponent
      */
     mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.componentInsideComponent],
     props: {
+      /**
+       * @prop {String} ['nf nf-fa-edit bbn-xlarge bbn-blue'] editIcon
+       */
       editIcon: {
         type: String,
         default: 'nf nf-fa-edit bbn-xlarge bbn-blue'
       },
+      /**
+       * @prop {String} ['nf nf-fa-check bbn-xlarge bbn-green'] saveIcon
+       */
       saveIcon: {
         type: String,
         default: 'nf nf-fa-check bbn-xlarge bbn-green'
       },
+      /**
+       * @prop {String} ['nf nf-fa-close bbn-xlarge bbn-red'] cancelIcon
+       */
       cancelIcon: {
         type: String,
         default: 'nf nf-fa-close bbn-xlarge bbn-red'
       },
       /**
-       * The aduio's URL
+       * @prop {Object} [{}] source
        */
       source: {
         type: Object,
@@ -372,43 +383,95 @@
         type: String,
         default: ''
       },
+      /**
+       * @prop {Number} index
+       */
       index: {
         type: Number,
       },
       //the path for the index showing the images ('ex: image/')
+      /**
+       * The path for the index showing the images.
+       *
+       * @prop {String} [''] path
+       */
       path: {
         type: String,
         default: ''
       },
       //the path for the links (give a path to a controller to manage the links)
+      /**
+       * The path for the links.
+       *
+       * @prop {String} [''] linkURL
+       */
       linkURL: {
         type: String,
         default: ''
       },
+      /**
+       * @prop value
+       */
       value: {
         required: true
       },
+      /**
+       * @prop {String} novalue
+       */
       novalue: {
         type: String
       }
     },
     data(){
       return {
+        /**
+         * @data {Boolean} [false] over
+         */
         over: false,
+        /**
+         * @data {Boolean} [false] isEditing
+         */
         isEditing: false,
+        /**
+         * @data {Boolean} [true] editing
+         */
         editing: true,
+        /***
+         * @data {String} ['100%'] width
+         */
         width: '100%',
+        /**
+         * @data {String} ['100%']
+         */
         height: '100%',
-        //ready is important for the component template to be defined 
+        /**
+         * Ready is important for the component template to be defined.
+         *
+         * @prop {Boolean} [true] ready
+         */
         ready: true,
+        /**
+         * @prop {Object} [{}] initialSource
+         */
         initialSource: {},
+        /**
+         * @prop {Mixed} currentValue
+         */
         currentValue: this.value ? bbn.fn.clone(this.value) : (this.source.nullable ? null : ''),
       }
     },
     computed: {
+      /**
+       * changed
+       * @return {boolean}
+       */
       changed(){
         return !bbn.fn.isSame(this.currentValue, this.value)
       },
+      /**
+       * type
+       * @return {ClientTypes|string}
+       */
       type(){
         if (this.component) {
           return 'component';
@@ -418,15 +481,29 @@
         }
 
         return 'text';
-      }, 
+      },
+      /**
+       * parent
+       * @return {*|null}
+       */
       parent(){
         return this.ready ? this.closest('bbn-container').getComponent() : null;
       }
     },
+    /**
+     * getCurrentValue
+     */
     methods: {
+      /**
+       * @method getCurrentValue
+       * @return {*}
+       */
       getCurrentValue(){
         return this.currentValue;
       },
+      /**
+       * @method save
+       */
       save() {
         if (this.currentValue !== this.value) {
           this.originalValue = bbn.fn.clone(this.value);
@@ -435,20 +512,32 @@
         }
         this.isEditing = false;
       },
+      /**
+       * @method focusout
+       */
       focusout(){
         if (this.isEditing) {
           this.save()
         }        
       },
+      /**
+       * @method onCancel
+       */
       onCancel() {
         bbn.fn.log("CANCEL");
         this.currentValue = this.value ? bbn.fn.clone(this.value) : (this.source.nullable ? null : '');
         this.isEditing = false;
         this.$forceUpdate();
       },
+      /**
+       * @method mouseleave
+       */
       mouseleave(){
         this.over = false
       },
+      /**
+       * @method mouseover
+       */
       mouseover(){
         this.over = true
         /*console.log('over: ' + this.over)
@@ -461,17 +550,28 @@
           this.over = true;
         }*/
       },
+      /**
+       * @method mouseenter
+       */
       mouseenter(){
         alert('enter')
       },
+      /**
+       * @method selectImg
+       * @param st
+       */
       selectImg(st){
         bbn.fn.link(st);
       },
+      /**
+       * @method alert
+       */
       alert(){
         alert('test')
       }, 
       /**
        * adds the events listener when edit = true
+       * @method _setEvents
        * @param {boolean} edit 
        */
       _setEvents(){
@@ -491,6 +591,10 @@
           document.removeEventListener('touchstart', this.checkMouseDown);
         }*/
       },
+      /**
+       * @method checkKeyCode
+       * @param e
+       */
       checkKeyCode(e){
         if ( e.keyCode === 27 ){
           this.edit = false;
@@ -498,6 +602,7 @@
       },
       /**
        * set edit to false
+       * @method checkMouseDown
        * @param {event} e 
        */
       checkMouseDown(e){
@@ -512,6 +617,9 @@
           this.editMode();
         }
       },
+      /**
+       * @method editBlock
+       */
       editBlock(){
         if ( this.changed ){
           appui.success(bbn._('Block changed'))
@@ -525,6 +633,9 @@
         }
         
       },
+      /**
+       * @method edit
+       */
       edit(){
         let ev = new Event('edit', {cancelable: true});
         this.$emit('edit', ev, this);
@@ -532,8 +643,14 @@
           this.isEditing = true;
         }
       },
+      /**
+       * @method cancelEdit
+       */
       cancelEdit(){
       },
+      /**
+       * @method editMode
+       */
       editMode(){
         let blocks = this.closest('bbn-container').getComponent().findAll('bbn-cms-block');
         bbn.fn.each(blocks, (v, i)=>{

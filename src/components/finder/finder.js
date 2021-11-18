@@ -90,19 +90,52 @@
     },
     data(){
       return {
+        /**
+         * @data {Boolean} [false] uploading
+         */
         // takes the value of the path when the upload is clicked from the context menu - used to show / hide bbn-upload
         uploading: false,
         //v-model of bbn-upload
+        /**
+         * @data {Array} [[]] uploaded
+         */
         uploaded: [],
         //defined when the button new folder/file is clicked on the bottom of the tree
+        /**
+         * @data {String} [''] currentContextPath
+         */
         currentContextPath: '',
+        /**
+         * @data {Boolean} [false] isConnected
+         */
         isConnected: false,
+        /**
+         * @data {Array} [[]] data
+         */
         data: [],
+        /**
+         * @data {String} [''] host
+         */
         host: '',
+        /**
+         * @data {String} [''] user
+         */
         user: '',
+        /**
+         * @data {String} [''] pass
+         */
         pass: '',
+        /**
+         * @data {Boolean} [false] copied
+         */
         copied: false,
+        /**
+         * @data {String} [''] oldDir
+         */
         oldDir: '',
+        /**
+         * @data {Array} [[{name:'',path:'.',empty_dirs:0,num_dirs:0,num_files:0,size:0}]] dirs
+         */
         dirs: [{
           name: '',
           path: '.',
@@ -112,15 +145,37 @@
           size: 0,
         
         }],
+        /**
+         * @data {Boolean} [false] currentFile
+         */
         currentFile: false,
+        /**
+         * @data [null] dirInfo
+         */
         dirInfo: null,
+        /**
+         * @data {Boolean} [false] editingNode
+         */
         editingNode: false,
+        /**
+         * @data {Boolean} [false] isImage
+         */
         isImage: false,
+        /**
+         * @data {Boolean} [false] isLoading}
+         */
         isLoading: false,
+        /**
+         * @data {Boolean} [false] currentTitle
+         */
         currentTitle: false,
       }
     },
     computed: {
+      /**
+       * mapUploaded
+       * @return {*[]|*}
+       */
       mapUploaded(){
         if ( this.uploaded.length ){
           return bbn.fn.map( this.uploaded, a => {
@@ -130,12 +185,20 @@
         }
         return [];
       },
+      /**
+       * currentPath
+       * @return {*}
+       */
       currentPath(){
         return this.dirs.map(a => {return a.name ? a.name + '/' : '';}).join('');
       },
       numCols(){
         return this.dirs.length;
       },
+      /**
+       * encodeURL
+       * @return {string}
+       */
       encodedURL() {
         if ( this.currentFile && this.isImage ){
           //return btoa(this.origin + this.currentPath + this.currentFile.node.data.value)
@@ -146,6 +209,12 @@
     methods: {
      
       //abort the current request
+      /**
+       * Abord the current request.
+       *
+       * @method abortRequest
+       * @param i
+       */
       abortRequest(i){
         bbn.fn.happy(i)
         let loadBar = this.closest('bbn-appui').getRef('loading');
