@@ -160,8 +160,8 @@
     },
     computed: {
       /**
-       * fileList
-       * @return {*[]}
+       * @computed fileList
+       * @return {Array}
        */
       fileList(){
         let res = [];
@@ -176,7 +176,7 @@
     methods: {
       /**
        * @method getExtension
-       * @param file
+       * @param {Object} file
        * @return {string}
        */
       getExtension(file){
@@ -188,7 +188,7 @@
       },
       /**
        * @method isAllowed
-       * @param file
+       * @param {Object} file
        * @return {boolean}
        */
       isAllowed(file){
@@ -198,6 +198,10 @@
         return (bbn.fn.isFunction(this.extensions) ? this.extensions() : this.extensions).indexOf(this.getExtension(file)) > -1;
       }
     },
+    /**
+     * @event mounted
+     * @fires $nextTick
+     */
     mounted(){
       this.ready = true;
       this.$nextTick(() => {
@@ -259,12 +263,24 @@
       });
     },
     watch: {
+      /**
+       * @watch enabled
+       * @param {Boolean} val
+       */
       enabled(val){
 				this.isEnabled = !val;
       },
+      /**
+       * @watch isEnabled
+       * @param {String} val
+       */
 			isEnabled(val){
 				this.enable(val);
 			},
+      /**
+       * @watch widgetValue
+       * @param {String} val
+       */
       widgetValue(val){
         this.$emit('input', this.getValue);
         this.$emit('change', this.getValue);

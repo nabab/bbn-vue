@@ -173,8 +173,8 @@
     },
     computed: {
       /**
-       * mapUploaded
-       * @return {*[]|*}
+       * @computed mapUploaded
+       * @return {(Array)}
        */
       mapUploaded(){
         if ( this.uploaded.length ){
@@ -186,18 +186,22 @@
         return [];
       },
       /**
-       * currentPath
-       * @return {*}
+       * @computed currentPath
+       * @return {String}
        */
       currentPath(){
         return this.dirs.map(a => {return a.name ? a.name + '/' : '';}).join('');
       },
+      /**
+       * @computed numCols
+       * @return {Number}
+       */
       numCols(){
         return this.dirs.length;
       },
       /**
-       * encodeURL
-       * @return {string}
+       * @computed encodeURL
+       * @return {String}
        */
       encodedURL() {
         if ( this.currentFile && this.isImage ){
@@ -213,7 +217,7 @@
        * Abord the current request.
        *
        * @method abortRequest
-       * @param i
+       * @param {Number} i
        */
       abortRequest(i){
         bbn.fn.happy(i)
@@ -234,15 +238,33 @@
         }
       },
       // at click on the button of the new folder/ file on the bottom of the tree defines the property path of the current tree. Is the only way to know the current context 
+      /**
+       * At click on the button of the new folder/ file on the bottom of the tree defines the property path of the current tree. Is the only way to know the current context.       *
+       *
+       * @method context
+       * @param a
+       * @param {Object} button
+       */
       context(a, button){
         this.currentContextPath = button.closest('bbn-context').data.path;
       },
+      /**
+       * Closes the preview of the file.
+       *
+       * @method closePreview
+       */
       //closes the preview of the file
       closePreview(){
         this.currentFile = false;
         this.isLoading = false;
       },
       //refresh the tree data
+      /**
+       * Refresh the tree data0
+       *
+       * @method refresh
+       * @param {String} name
+       */
       refresh(name){
         let trees = this.findAll('bbn-tree');
         if ( trees.length ){
@@ -256,9 +278,10 @@
         
       },
       /**
-       * get the size of the current tree (the selected folder of the previous tree)
-       * 
-       * @param {*} p 
+       * Get the size of the current tree (the selected folder of the previous tree).
+       *
+       * @method get_size
+       * @param {Object} p
        */
       get_size(p){
         let idx = bbn.fn.search(this.dirs, 'name', p.name);
@@ -274,6 +297,10 @@
             }
         });
       },
+      /**
+       * @method add
+       * @param {String} path
+       */
       add(path){
         let fpath = path;
         if ( this.dirs.length > 1 ){
@@ -287,13 +314,19 @@
           size: 0
         });
       },
+      /**
+       * Remove the current dirs.
+       *
+       * @method remove
+       */
       remove(){
         this.dirs.pop();
       },
       /**
-       * method at @load of bbn - rtee
-       * 
-       * @param {*} res 
+       * Method at @load of bbn-tree.
+       *
+       * @method updatInfo
+       * @param {Object} res
        */
       updateInfo(res){
         if ( res && res.path ){
@@ -308,9 +341,10 @@
         }
       },
       /**
-       * method at @select of bbn - tree, defines currentFile and makes the post to take the infos of the file
-       * 
-       * @param {*} node 
+       * Method at @select of bbn-tree, defines currentFile and makes the post to take the infos of the file.
+       *
+       * @method select
+       * @param {Object} node
        */
       select(node){
         // Reinit
@@ -381,6 +415,11 @@
           }
         }
       },
+      /**
+       * @method mapTree
+       * @param {Object} node
+       * @return {Object}
+       */
       mapTree(node){
         bbn.fn.log(node);
         let bits = node.text.split('.');
@@ -393,6 +432,10 @@
         }
         return node;
       },
+      /**
+       * @method getData
+       * @param {Object} p
+       */
       getData(p){
         //return $.extend({
         return bbn.fn.extend({
@@ -405,6 +448,12 @@
           pass: this.pass
         } : {})
       },
+      /**
+       * @method contextMenuTree
+       * @fires uploadFile
+       * @fires newFolder
+       * @return {[{action: uploadFile, text: string}, {action: newFolder, text: string}, {action: log, text: string}]}
+       */
       contextMenuTree(){
         return [{
           text: '<i class="nf nf-fa-file"></i>'+ bbn._('Add files to this folder'),
@@ -424,11 +473,18 @@
         }];
       },
       /**
-       * returns the array of buttons of the context menu
-       * 
-       * @param {*} n the node 
-       * @param {*} i the index of the node
-       * @return array
+       * Returns the array of buttons of the context menu
+       *
+       * @method itemContextMenu
+       * @param {Object} n the node
+       * @param {Number} i the index of the node
+       * @fires copy
+       * @fires newFolder
+       * @fires paste
+       * @fires download
+       * @fires edit
+       * @fires delete
+       * @return {Array}
        */
       itemsContextMenu(n, i) {
         let objContext = [
@@ -439,7 +495,7 @@
               this.copy(node)
             }
           }  
-        ]
+        ]@
         if ( n.data.dir ) {
           objContext.push({
             icon: 'nf nf-fa-paste',
@@ -484,9 +540,21 @@
         }
         return objContext;
       },
+      /**
+       *
+       * @method uploadFile
+       * @param {String} path
+       */
       uploadFile(path){
         this.uploading = this.currentContextPath
       },
+      /**
+       * @method uploadSuccess
+       * @param a
+       * @param b
+       * @param {Object} d data
+       * @fires getRef
+       */
       uploadSuccess(a, b, d){
         bbn.fn.happy('now')
         bbn.fn.log(d.data, arguments,'args')
@@ -506,6 +574,11 @@
           appui.error(bbn._('Something went wrong while uploading the file'))
         }
       },
+      /**
+       * @method newFolder
+       *
+       * @param {Object} node
+       */
       newFolder(node){
         if ( node ){
           let tmp = node.tree.data.path, 
@@ -571,8 +644,9 @@
       },
       /**
        * paste the node previously copied in the property this.copied in the current selected dir
-       * 
-       * @param {*} n the node
+       *
+       * @method paste
+       * @param {Object} n the node
        */
       paste(n){
         n.isSelected = true;
@@ -621,6 +695,10 @@
         }
       },
       //download the file
+      /**
+       * @method download
+       * @param {Object} n
+       */
       download(n){
         bbn.fn.postOut(this.root + 'actions/finder/download/' + n.data.value, {
           value: n.data.value,
@@ -631,8 +709,10 @@
         })
       },
       /**
-       * edits the name of the current selected node
-       * @param {*} node 
+       * Edits the name of the current selected node.
+       *
+       * @method edit
+       * @param {Object} node
        */
       edit(node){
         this.editingNode = false;
@@ -665,8 +745,10 @@
         })
       },
       /**
-       * Deletes the current selected node
-       * @param {*} node 
+       * Deletes the current selected node.
+       *
+       * @method delete
+       * @param {Object} node
        */
       delete(node){
         this.confirm(bbn._('Do you want to delete') + ' ' + node.data.value + '?', () => {

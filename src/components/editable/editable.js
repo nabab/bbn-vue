@@ -455,22 +455,22 @@
          */
         initialSource: {},
         /**
-         * @prop {Mixed} currentValue
+         * @prop {(Object|Null|String)} currentValue
          */
         currentValue: this.value ? bbn.fn.clone(this.value) : (this.source.nullable ? null : ''),
       }
     },
     computed: {
       /**
-       * changed
-       * @return {boolean}
+       * @computed changed
+       * @return {Boolean}
        */
       changed(){
         return !bbn.fn.isSame(this.currentValue, this.value)
       },
       /**
-       * type
-       * @return {ClientTypes|string}
+       * @computed type
+       * @return {String}
        */
       type(){
         if (this.component) {
@@ -483,8 +483,8 @@
         return 'text';
       },
       /**
-       * parent
-       * @return {*|null}
+       * @computed parent
+       * @return {(Object|null)}
        */
       parent(){
         return this.ready ? this.closest('bbn-container').getComponent() : null;
@@ -503,6 +503,7 @@
       },
       /**
        * @method save
+       * @emits save
        */
       save() {
         if (this.currentValue !== this.value) {
@@ -514,6 +515,7 @@
       },
       /**
        * @method focusout
+       * @fires save
        */
       focusout(){
         if (this.isEditing) {
@@ -558,7 +560,7 @@
       },
       /**
        * @method selectImg
-       * @param st
+       * @param {String} st
        */
       selectImg(st){
         bbn.fn.link(st);
@@ -593,7 +595,7 @@
       },
       /**
        * @method checkKeyCode
-       * @param e
+       * @param {Event} e
        */
       checkKeyCode(e){
         if ( e.keyCode === 27 ){
@@ -603,7 +605,7 @@
       /**
        * set edit to false
        * @method checkMouseDown
-       * @param {event} e 
+       * @param {Event} e
        */
       checkMouseDown(e){
         if ( !e.target.closest(".bbn-cms-block-edit") ){
@@ -635,6 +637,7 @@
       },
       /**
        * @method edit
+       * @emits edit
        */
       edit(){
         let ev = new Event('edit', {cancelable: true});
@@ -661,7 +664,8 @@
       },
       /**
        * returns the object of the component basing on the given type
-       * @param {string} type 
+       * @param {String} type
+       * @return {Object}
        */
       getComponentObject(type) {
         return {
@@ -1082,9 +1086,16 @@
       },
     },
 
+    /**
+     * @event beforeMount
+     * @fires getComponentObject
+     */
     beforeMount() {
       this.componentObject = this.getComponentObject(this.type);
     },
+    /**
+     * @event mounted
+     */
     mounted(){
       this.initialSource = bbn.fn.extend({}, this.source);
       this.ready = true;
@@ -1111,12 +1122,22 @@
 
     
     watch: {
+      /**
+       * @watch isEditing
+       */
       isEditing() {
         this.componentObject = this.getComponentObject(this.type);
       },
+      /**
+       * @watch type
+       */
       type() {
         this.componentObject = this.getComponentObject(this.type);
       },
+      /**
+       * @watch edit
+       * @param {Boolean} val
+       */
       edit(val){
         //if adding a new block
         bbn.fn.error('watch')

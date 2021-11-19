@@ -67,8 +67,8 @@
     },
     computed: {
       /**
-       * label
-       * @return {*}
+       * @computed label
+       * @return {(Number|String)}
        */
       label(){
         return this.value 
