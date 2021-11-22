@@ -792,15 +792,23 @@
           })
         });
       },
+      /**
+       * @method dragStart
+       */
       dragStart(){
         bbn.fn.log('START', arguments)
       },
+      /**
+       * @method dragEnd
+       */
       dragEnd(){
         bbn.fn.log('END', arguments)
       },
       /**
-       * Insert the current selected node in the property this.copied 
-       * @param n the node
+       * Insert the current selected node in the property this.copied.
+       * @method copy
+       * @param {Object} n the node
+       * @fires confirm
        */
       copy(n){
         bbn.fn.happy('copy')
@@ -828,6 +836,11 @@
           appui.success(st)
         })
       },
+      /**
+       * @method updateScroll
+       * @fires $nextTick
+       * @fires getRef
+       */
       updateScroll(){
         this.$nextTick(() => {
           let sc = this.getRef('scroll');
@@ -842,6 +855,10 @@
         })
       }
     },
+    /**
+     * @event mounted
+     * @fires add
+     */
     mounted(){
       if ( this.path ){
         bbn.fn.each(this.path.split('/'), a => {
@@ -851,26 +868,53 @@
         });
       }
       
-    },
+    }
     watch: {
+      /**
+       * @watch isLoading
+       * @param val
+       */
       isLoading(val){
         //bbn.fn.log('isloading->>>>', val, new Date())
       },
+      /**
+       * @watch host
+       * @param newVal
+       * @param oldVal
+       * @fires checkDisconnect
+       */
       host(newVal, oldVal){
         if ( this.isConnected ){
           this.checkDisconnect(this.getRef('host'), oldVal)
         }
       },
+      /**
+       * @watch user
+       * @param newVal
+       * @param oldVal
+       * @fires checkDisconnect
+       */
       user(newVal, oldVal){
         if ( this.isConnected ){
           this.checkDisconnect(this.getRef('user'), oldVal)
         }
       },
+      /**
+       * @watch pass
+       * @param newVal
+       * @param oldVal
+       * @fires checkDisconnect
+       */
       pass(newVal, oldVal){
         if ( this.isConnected ){
           this.checkDisconnect(this.getRef('pass'), oldVal)
         }
       },
+      /**
+       * @watch isConnected
+       * @fires remove
+       * @fires add
+       */
       isConnected(){
         while ( this.numCols ){
           this.remove()
@@ -879,12 +923,25 @@
           this.add('');
         }, 250);
       },
+      /**
+       * @watch dirs
+       * @fires updateScroll
+       */
       dirs(){
         this.updateScroll();
       },
+      /**
+       * @watch currentFile
+       * @fires updateScroll
+       */
       currentFile(){
         this.updateScroll();
       },
+      /**
+       * @watch currentPath
+       * @param v
+       * @emits change
+       */
       currentPath(v){
         this.$emit('change', v);
       }
