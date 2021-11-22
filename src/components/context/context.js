@@ -151,6 +151,18 @@
         else {
           this.showFloater = !this.showFloater;
         }
+      },
+      onMouseDown(e){
+        let event = new CustomEvent('mousedown', {
+          cancelable: true,
+          detail: e
+        });
+        this.$emit('mousedown', event);
+        if (!event.defaultPrevented) {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }
       }
     },
     beforeDestroy() {
