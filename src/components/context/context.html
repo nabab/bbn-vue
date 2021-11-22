@@ -4,7 +4,7 @@
            @click="clickItem"
            @contextmenu="clickItem"
            @keydown.space.enter="clickItem"
-           @mousedown.prevent.stop="() => {return false}"
+           @mousedown="onMouseDown"
            @touchstart="touchstart"
            @touchmove="touchmove"
            @touchend="touchend"
