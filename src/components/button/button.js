@@ -15,7 +15,11 @@
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.eventsComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.eventsComponent],
+    mixins: 
+    [
+      bbn.vue.basicComponent,
+      bbn.vue.eventsComponent
+    ],
     props: {
       /**
        * The title of the button.
@@ -98,7 +102,7 @@
       /**
        * Set to true to disable the button.
        *
-       * @prop {Boolean|Function} [false] disabled
+       * @prop {(Boolean|Function)} [false] disabled
        */
       disabled: {
         type: [Boolean, Function],
@@ -107,7 +111,7 @@
       /**
        * Set to true for the button to glow.
        *
-       * @prop {String|Boolean} [false] glowing
+       * @prop {(String|Boolean)} [false] glowing
        */
       glowing: {
         type: [String, Boolean],
@@ -125,7 +129,7 @@
       /**
        * The action that has to be performed at the event click.
        *
-       * @prop {Function|String} action
+       * @prop {(Function|String)} action
        */
       action: {
         type: [Function, String]

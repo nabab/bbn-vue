@@ -22,7 +22,8 @@
      * @mixin bbn.vue.dimensionsComponent
      * @mixin bbn.vue.eventsComponent
      */
-    mixins: [
+    mixins: 
+    [
       bbn.vue.basicComponent,
       bbn.vue.listComponent,
       bbn.vue.dimensionsComponent,
@@ -45,7 +46,7 @@
       },
       /**
        * Will force the position.
-       * @prop {String} position
+       * @prop {String} [''] position
        */
       position: {
         type: String,

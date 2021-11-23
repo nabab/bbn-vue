@@ -9,12 +9,20 @@
   *
   * @created 13/06/2017.
   */
- 
+
 (bbn => {
   "use strict";
 
   Vue.component('bbn-file', {
-    mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent],
+    /**
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.inputComponent
+     */
+    mixins:
+    [
+      bbn.vue.basicComponent,
+      bbn.vue.inputComponent
+    ],
     props: {
       /**
        * @prop {(Array|Function)} [[]] extensions
@@ -83,7 +91,7 @@
         default: null
       },
       /**
-       * @prop {String} thumbWaiting
+       * @prop {String} thumWaiting
        */
       thumbWaiting: {
         type: String
@@ -96,7 +104,7 @@
         default: false
       },
       /**
-       * @prop {Object} lng
+       * @prop {Object} [{}] lng
        */
       lng: {
         type: Object,
