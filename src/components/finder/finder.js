@@ -90,19 +90,52 @@
     },
     data(){
       return {
+        /**
+         * @data {Boolean} [false] uploading
+         */
         // takes the value of the path when the upload is clicked from the context menu - used to show / hide bbn-upload
         uploading: false,
         //v-model of bbn-upload
+        /**
+         * @data {Array} [[]] uploaded
+         */
         uploaded: [],
         //defined when the button new folder/file is clicked on the bottom of the tree
+        /**
+         * @data {String} [''] currentContextPath
+         */
         currentContextPath: '',
+        /**
+         * @data {Boolean} [false] isConnected
+         */
         isConnected: false,
+        /**
+         * @data {Array} [[]] data
+         */
         data: [],
+        /**
+         * @data {String} [''] host
+         */
         host: '',
+        /**
+         * @data {String} [''] user
+         */
         user: '',
+        /**
+         * @data {String} [''] pass
+         */
         pass: '',
+        /**
+         * @data {Boolean} [false] copied
+         */
         copied: false,
+        /**
+         * @data {String} [''] oldDir
+         */
         oldDir: '',
+        /**
+         * @data {Array} [[{name:'',path:'.',empty_dirs:0,num_dirs:0,num_files:0,size:0}]] dirs
+         */
         dirs: [{
           name: '',
           path: '.',
@@ -112,15 +145,37 @@
           size: 0,
         
         }],
+        /**
+         * @data {Boolean} [false] currentFile
+         */
         currentFile: false,
+        /**
+         * @data [null] dirInfo
+         */
         dirInfo: null,
+        /**
+         * @data {Boolean} [false] editingNode
+         */
         editingNode: false,
+        /**
+         * @data {Boolean} [false] isImage
+         */
         isImage: false,
+        /**
+         * @data {Boolean} [false] isLoading}
+         */
         isLoading: false,
+        /**
+         * @data {Boolean} [false] currentTitle
+         */
         currentTitle: false,
       }
     },
     computed: {
+      /**
+       * @computed mapUploaded
+       * @return {(Array)}
+       */
       mapUploaded(){
         if ( this.uploaded.length ){
           return bbn.fn.map( this.uploaded, a => {
@@ -130,12 +185,24 @@
         }
         return [];
       },
+      /**
+       * @computed currentPath
+       * @return {String}
+       */
       currentPath(){
         return this.dirs.map(a => {return a.name ? a.name + '/' : '';}).join('');
       },
+      /**
+       * @computed numCols
+       * @return {Number}
+       */
       numCols(){
         return this.dirs.length;
       },
+      /**
+       * @computed encodeURL
+       * @return {String}
+       */
       encodedURL() {
         if ( this.currentFile && this.isImage ){
           //return btoa(this.origin + this.currentPath + this.currentFile.node.data.value)
@@ -146,6 +213,12 @@
     methods: {
      
       //abort the current request
+      /**
+       * Abord the current request.
+       *
+       * @method abortRequest
+       * @param {Number} i
+       */
       abortRequest(i){
         bbn.fn.happy(i)
         let loadBar = this.closest('bbn-appui').getRef('loading');
@@ -165,15 +238,33 @@
         }
       },
       // at click on the button of the new folder/ file on the bottom of the tree defines the property path of the current tree. Is the only way to know the current context 
+      /**
+       * At click on the button of the new folder/ file on the bottom of the tree defines the property path of the current tree. Is the only way to know the current context.       *
+       *
+       * @method context
+       * @param a
+       * @param {Object} button
+       */
       context(a, button){
         this.currentContextPath = button.closest('bbn-context').data.path;
       },
+      /**
+       * Closes the preview of the file.
+       *
+       * @method closePreview
+       */
       //closes the preview of the file
       closePreview(){
         this.currentFile = false;
         this.isLoading = false;
       },
       //refresh the tree data
+      /**
+       * Refresh the tree data0
+       *
+       * @method refresh
+       * @param {String} name
+       */
       refresh(name){
         let trees = this.findAll('bbn-tree');
         if ( trees.length ){
@@ -187,9 +278,10 @@
         
       },
       /**
-       * get the size of the current tree (the selected folder of the previous tree)
-       * 
-       * @param {*} p 
+       * Get the size of the current tree (the selected folder of the previous tree).
+       *
+       * @method get_size
+       * @param {Object} p
        */
       get_size(p){
         let idx = bbn.fn.search(this.dirs, 'name', p.name);
@@ -205,6 +297,10 @@
             }
         });
       },
+      /**
+       * @method add
+       * @param {String} path
+       */
       add(path){
         let fpath = path;
         if ( this.dirs.length > 1 ){
@@ -218,13 +314,19 @@
           size: 0
         });
       },
+      /**
+       * Remove the current dirs.
+       *
+       * @method remove
+       */
       remove(){
         this.dirs.pop();
       },
       /**
-       * method at @load of bbn - rtee
-       * 
-       * @param {*} res 
+       * Method at @load of bbn-tree.
+       *
+       * @method updatInfo
+       * @param {Object} res
        */
       updateInfo(res){
         if ( res && res.path ){
@@ -239,9 +341,10 @@
         }
       },
       /**
-       * method at @select of bbn - tree, defines currentFile and makes the post to take the infos of the file
-       * 
-       * @param {*} node 
+       * Method at @select of bbn-tree, defines currentFile and makes the post to take the infos of the file.
+       *
+       * @method select
+       * @param {Object} node
        */
       select(node){
         // Reinit
@@ -312,6 +415,11 @@
           }
         }
       },
+      /**
+       * @method mapTree
+       * @param {Object} node
+       * @return {Object}
+       */
       mapTree(node){
         bbn.fn.log(node);
         let bits = node.text.split('.');
@@ -324,6 +432,10 @@
         }
         return node;
       },
+      /**
+       * @method getData
+       * @param {Object} p
+       */
       getData(p){
         //return $.extend({
         return bbn.fn.extend({
@@ -336,6 +448,12 @@
           pass: this.pass
         } : {})
       },
+      /**
+       * @method contextMenuTree
+       * @fires uploadFile
+       * @fires newFolder
+       * @return {[{action: uploadFile, text: string}, {action: newFolder, text: string}, {action: log, text: string}]}
+       */
       contextMenuTree(){
         return [{
           text: '<i class="nf nf-fa-file"></i>'+ bbn._('Add files to this folder'),
@@ -355,11 +473,18 @@
         }];
       },
       /**
-       * returns the array of buttons of the context menu
-       * 
-       * @param {*} n the node 
-       * @param {*} i the index of the node
-       * @return array
+       * Returns the array of buttons of the context menu
+       *
+       * @method itemContextMenu
+       * @param {Object} n the node
+       * @param {Number} i the index of the node
+       * @fires copy
+       * @fires newFolder
+       * @fires paste
+       * @fires download
+       * @fires edit
+       * @fires delete
+       * @return {Array}
        */
       itemsContextMenu(n, i) {
         let objContext = [
@@ -370,7 +495,7 @@
               this.copy(node)
             }
           }  
-        ]
+        ]@
         if ( n.data.dir ) {
           objContext.push({
             icon: 'nf nf-fa-paste',
@@ -415,9 +540,21 @@
         }
         return objContext;
       },
+      /**
+       *
+       * @method uploadFile
+       * @param {String} path
+       */
       uploadFile(path){
         this.uploading = this.currentContextPath
       },
+      /**
+       * @method uploadSuccess
+       * @param a
+       * @param b
+       * @param {Object} d data
+       * @fires getRef
+       */
       uploadSuccess(a, b, d){
         bbn.fn.happy('now')
         bbn.fn.log(d.data, arguments,'args')
@@ -437,6 +574,11 @@
           appui.error(bbn._('Something went wrong while uploading the file'))
         }
       },
+      /**
+       * @method newFolder
+       *
+       * @param {Object} node
+       */
       newFolder(node){
         if ( node ){
           let tmp = node.tree.data.path, 
@@ -502,8 +644,9 @@
       },
       /**
        * paste the node previously copied in the property this.copied in the current selected dir
-       * 
-       * @param {*} n the node
+       *
+       * @method paste
+       * @param {Object} n the node
        */
       paste(n){
         n.isSelected = true;
@@ -552,6 +695,10 @@
         }
       },
       //download the file
+      /**
+       * @method download
+       * @param {Object} n
+       */
       download(n){
         bbn.fn.postOut(this.root + 'actions/finder/download/' + n.data.value, {
           value: n.data.value,
@@ -562,8 +709,10 @@
         })
       },
       /**
-       * edits the name of the current selected node
-       * @param {*} node 
+       * Edits the name of the current selected node.
+       *
+       * @method edit
+       * @param {Object} node
        */
       edit(node){
         this.editingNode = false;
@@ -596,8 +745,10 @@
         })
       },
       /**
-       * Deletes the current selected node
-       * @param {*} node 
+       * Deletes the current selected node.
+       *
+       * @method delete
+       * @param {Object} node
        */
       delete(node){
         this.confirm(bbn._('Do you want to delete') + ' ' + node.data.value + '?', () => {
@@ -641,15 +792,23 @@
           })
         });
       },
+      /**
+       * @method dragStart
+       */
       dragStart(){
         bbn.fn.log('START', arguments)
       },
+      /**
+       * @method dragEnd
+       */
       dragEnd(){
         bbn.fn.log('END', arguments)
       },
       /**
-       * Insert the current selected node in the property this.copied 
-       * @param n the node
+       * Insert the current selected node in the property this.copied.
+       * @method copy
+       * @param {Object} n the node
+       * @fires confirm
        */
       copy(n){
         bbn.fn.happy('copy')
@@ -677,6 +836,11 @@
           appui.success(st)
         })
       },
+      /**
+       * @method updateScroll
+       * @fires $nextTick
+       * @fires getRef
+       */
       updateScroll(){
         this.$nextTick(() => {
           let sc = this.getRef('scroll');
@@ -691,6 +855,10 @@
         })
       }
     },
+    /**
+     * @event mounted
+     * @fires add
+     */
     mounted(){
       if ( this.path ){
         bbn.fn.each(this.path.split('/'), a => {
@@ -700,26 +868,53 @@
         });
       }
       
-    },
+    }
     watch: {
+      /**
+       * @watch isLoading
+       * @param val
+       */
       isLoading(val){
         //bbn.fn.log('isloading->>>>', val, new Date())
       },
+      /**
+       * @watch host
+       * @param newVal
+       * @param oldVal
+       * @fires checkDisconnect
+       */
       host(newVal, oldVal){
         if ( this.isConnected ){
           this.checkDisconnect(this.getRef('host'), oldVal)
         }
       },
+      /**
+       * @watch user
+       * @param newVal
+       * @param oldVal
+       * @fires checkDisconnect
+       */
       user(newVal, oldVal){
         if ( this.isConnected ){
           this.checkDisconnect(this.getRef('user'), oldVal)
         }
       },
+      /**
+       * @watch pass
+       * @param newVal
+       * @param oldVal
+       * @fires checkDisconnect
+       */
       pass(newVal, oldVal){
         if ( this.isConnected ){
           this.checkDisconnect(this.getRef('pass'), oldVal)
         }
       },
+      /**
+       * @watch isConnected
+       * @fires remove
+       * @fires add
+       */
       isConnected(){
         while ( this.numCols ){
           this.remove()
@@ -728,12 +923,25 @@
           this.add('');
         }, 250);
       },
+      /**
+       * @watch dirs
+       * @fires updateScroll
+       */
       dirs(){
         this.updateScroll();
       },
+      /**
+       * @watch currentFile
+       * @fires updateScroll
+       */
       currentFile(){
         this.updateScroll();
       },
+      /**
+       * @watch currentPath
+       * @param v
+       * @emits change
+       */
       currentPath(v){
         this.$emit('change', v);
       }

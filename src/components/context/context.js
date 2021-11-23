@@ -22,24 +22,31 @@
      * @mixin bbn.vue.dimensionsComponent
      * @mixin bbn.vue.eventsComponent
      */
-    mixins: [
+    mixins: 
+    [
       bbn.vue.basicComponent,
       bbn.vue.listComponent,
       bbn.vue.dimensionsComponent,
       bbn.vue.eventsComponent
     ],
     props: {
+      /**
+       * @prop {Boolean} [false] autobind
+       */
       autobind: {
         type: Boolean,
         default: false
       },
+      /**
+       * @prop {Boolean} [false] disabled
+       */
       disabled: {
         type: Boolean,
         default: false
       },
       /**
        * Will force the position.
-       * @prop {String} position
+       * @prop {String} [''] position
        */
       position: {
         type: String,
@@ -107,6 +114,9 @@
          * @data {Boolean} [false] showFloater
          */
         showFloater: false,
+        /**
+         * @data {Boolean} [false] docEvent
+         */
         docEvent: false,
 
       };
@@ -137,11 +147,18 @@
           }
         }
       },
+      /**
+       * @method clickOut
+       * @param e
+       */
       clickOut(e){
         if (!e.target.closest('.bbn-floater-context-' + this.bbnUid)) {
           this.showFloater = false;
         }
       },
+      /**
+       * @method toggle
+       */
       toggle(){
         if (!this.showFloater) {
           this.updateData().then(() => {
@@ -165,6 +182,9 @@
         }
       }
     },
+    /**
+     * @method beforeDestroy
+     */
     beforeDestroy() {
       if (this.docEvent) {
         document.removeEventListener('click', this.clickout)

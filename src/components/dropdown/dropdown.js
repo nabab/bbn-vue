@@ -26,7 +26,8 @@
      * @mixin bbn.vue.dropdownComponent
      * @mixin bbn.vue.localStorageComponent
       */
-    mixins: [
+    mixins: 
+    [
       bbn.vue.basicComponent,
       bbn.vue.eventsComponent,
       bbn.vue.inputComponent,

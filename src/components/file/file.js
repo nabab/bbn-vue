@@ -9,59 +9,103 @@
   *
   * @created 13/06/2017.
   */
- 
+
 (bbn => {
   "use strict";
 
   Vue.component('bbn-file', {
-    mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent],
+    /**
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.inputComponent
+     */
+    mixins:
+    [
+      bbn.vue.basicComponent,
+      bbn.vue.inputComponent
+    ],
     props: {
+      /**
+       * @prop {(Array|Function)} [[]] extensions
+       */
       extensions: {
         type: [Array, Function],
         default(){
           return []
         }
       },
+      /**
+       * @prop {(Array|String)} [[]] value
+       */
       value: {
         type: [Array, String],
         default(){
           return [];
         }
       },
+      /**
+       * @prop {String} [null] saveUrl
+       */
       saveUrl: {
         type: String,
         default: null
       },
+      /**
+       * @prop {String} [null] removeUrl
+       */
       removeUrl: {
         type: String,
         default: null
       },
+      /**
+       * @prop {Boolean} [true] autoUpload
+       */
       autoUpload : {
         type: Boolean,
         default: true
       },
+      /**
+       * @prop {Boolean} [true] multiple
+       */
       multiple: {
         type: Boolean,
         default: true
       },
+      /**
+       * @prop {Boolean} [false] disabled
+       */
       disabled: {
         type: Boolean,
         default: false
       },
+      /**
+       * @prop {String} thumbNot
+       */
       thumbNot : {
         type: String
       },
+      /**
+       * @prop {Number} [null] maxSize
+       */
       maxSize: {
         type: Number,
         default: null
       },
+      /**
+       * @prop {String} thumWaiting
+       */
       thumbWaiting: {
         type: String
       },
+      /**
+       * @prop {Boolean} [false] json
+       */
       json: {
         type: Boolean,
         default: false
       },
+      /**
+       * @prop {Object} [{}] lng
+       */
       lng: {
         type: Object,
         default(){
@@ -86,6 +130,9 @@
           }
         }
       },
+      /**
+       * @prop {String} ['nf nf-fa-upload'] icon
+       */
       icon: {
         type: String,
         default: 'nf nf-fa-upload'
@@ -93,15 +140,37 @@
     },
     data(){
       return {
+        /**
+         * @data {Boolean} [false] uploading
+         */
         uploading: false,
+        /**
+         * @data {Number} [0] progress
+         */
         progress: 0,
+        /**
+         * @data [null] widget
+         */
         widget: null,
-				isEnabled: !this.disabled,
+        /**
+         * @data {Boolean} [!disabled] isEnabled
+         */
+        isEnabled: !this.disabled,
+        /**
+         * @data {Array} [[]] widgedValue
+         */
         widgetValue: [],
+        /**
+         * @data {fd.FileList} files
+         */
         files: new fd.FileList
       };
     },
     computed: {
+      /**
+       * @computed fileList
+       * @return {Array}
+       */
       fileList(){
         let res = [];
         if ( this.files && this.files.length ){
@@ -113,6 +182,11 @@
       },
     },
     methods: {
+      /**
+       * @method getExtension
+       * @param {Object} file
+       * @return {string}
+       */
       getExtension(file){
         if ( file.name ){
           let bits = file.name.split('.');
@@ -120,6 +194,11 @@
         }
         return '';
       },
+      /**
+       * @method isAllowed
+       * @param {Object} file
+       * @return {boolean}
+       */
       isAllowed(file){
         if ( !this.extensions.length ){
           return true;
@@ -127,6 +206,10 @@
         return (bbn.fn.isFunction(this.extensions) ? this.extensions() : this.extensions).indexOf(this.getExtension(file)) > -1;
       }
     },
+    /**
+     * @event mounted
+     * @fires $nextTick
+     */
     mounted(){
       this.ready = true;
       this.$nextTick(() => {
@@ -188,12 +271,24 @@
       });
     },
     watch: {
+      /**
+       * @watch enabled
+       * @param {Boolean} val
+       */
       enabled(val){
 				this.isEnabled = !val;
       },
+      /**
+       * @watch isEnabled
+       * @param {String} val
+       */
 			isEnabled(val){
 				this.enable(val);
 			},
+      /**
+       * @watch widgetValue
+       * @param {String} val
+       */
       widgetValue(val){
         this.$emit('input', this.getValue);
         this.$emit('change', this.getValue);

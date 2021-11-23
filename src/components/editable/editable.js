@@ -1,6 +1,6 @@
 /**
  * @file bbn-cms-block component
- * @description bbn-cms-block 
+ * @description bbn-cms-block
  * @copyright BBN Solutions
  * @author Loredana Bruno
  * @created 09/11/2020.
@@ -39,12 +39,12 @@
       edit: '<div class="bbn-100"><component :is="component" v-bind="componentOptions" v-model="currentValue"></component></div>'
     },
     html: {
-      view: `<div  @click="$parent.editMode" @mouseover="$parent.mouseover" @mouseleave="$parent.mouseleave"  
+      view: `<div  @click="$parent.editMode" @mouseover="$parent.mouseover" @mouseleave="$parent.mouseleave"
                   :class="['component-container', 'bbn-block-html', alignClass]"
-                  v-html="currentValue" 
+                  v-html="currentValue"
                   :style="style">
-              
-            </div>`, 
+
+            </div>`,
       edit: `<div :class="['component-container', 'bbn-block-html', alignClass ]">
               <bbn-rte v-model="currentValue">
               </bbn-rte>
@@ -77,10 +77,10 @@
                 <label v-text="_('Line')"></label>
                 <bbn-checkbox v-model="source.hr"></bbn-checkbox>
               </div>
-            </div>`        
-    },  
+            </div>`
+    },
     image: {
-      //taglia originale 100% width,width 50% 33% 25% 
+      //taglia originale 100% width,width 50% 33% 25%
       view: `
       <div class="component-container bbn-block-image" :class="alignClass">
         <a v-if="source.href" target="_self" :href="$parent.linkURL + source.href" class="bbn-c">
@@ -91,23 +91,23 @@
           >
         </a>
         <img v-else
-             :src="$parent.path + source.src" 
+             :src="$parent.path + source.src"
              :style="style"
              :alt="source.alt ? source.alt : ''"
         >
-        <p class="image-caption bbn-l bbn-s bbn-vsmargin" 
-           v-if="source.caption" 
+        <p class="image-caption bbn-l bbn-s bbn-vsmargin"
+           v-if="source.caption"
            v-html="source.caption"
         ></p>
         <!--error when using decodeuricomponent on details of home image-->
-        <a class="image-details-title bbn-l bbn-vsmargin bbn-w-100" 
-           v-if="source.details_title" 
+        <a class="image-details-title bbn-l bbn-vsmargin bbn-w-100"
+           v-if="source.details_title"
            v-html="(source.details_title)"
            :href="source.href"
            target="_blank"
         ></a>
-        <p class="image-details bbn-l bbn-vsmargin" 
-           v-if="source.details" 
+        <p class="image-details bbn-l bbn-vsmargin"
+           v-if="source.details"
            v-html="(source.details)"
         ></p>
       </div>`,
@@ -120,33 +120,33 @@
                         remove-url="test/remove"
                         :json="true"
                         :paste="true"
-                        :multiple="false"	
+                        :multiple="false"
                         v-model="image"
                         @success="imageSuccess"
             ></bbn-upload>
-          
+
             <label v-text="_('Image size')"></label>
-            <bbn-cursor v-model="source.style['width']" 
+            <bbn-cursor v-model="source.style['width']"
                         unit="%"
                         :min="0"
                         :max="100"
                         :step="20"
             ></bbn-cursor>
-          
+
             <label v-text="_('Image alignment')"></label>
             <bbn-block-align-buttons></bbn-block-align-buttons>
-          </div> 
+          </div>
         </div>
         <img :src="$parent.path + source.src" :style="style">
         <p class="image-caption bbn-l bbn-s bbn-vsmargin" v-if="source.caption" v-html="source.caption"></p>
-      </div>          
+      </div>
                 `
-    }, 
+    },
     carousel: {
       view: `
       <div :class="['component-container', 'bbn-block-carousel', 'bbn-w-100',  alignClass]" :style="style" v-if="show">
         <div v-for="(group, idx) in carouselSource"
-             v-if="idx === currentCarouselIdx" 
+             v-if="idx === currentCarouselIdx"
         >
           <bbn-cms-carousel-control :source="idx"
                                     :key="idx"
@@ -184,11 +184,11 @@
                       remove-url="test/remove"
                       :data="{gallery: true}"
                       :paste="true"
-                      :multiple="true"	
+                      :multiple="true"
                       v-model="currentValue"
                       @success="imageSuccess"
           ></bbn-upload>
-        
+
         </div>
       </div>
       `
@@ -197,22 +197,22 @@
       view: `
         <div :class="['component-container', 'bbn-cms-block-video', alignClass]">
           <!--ERROR ON HOME-->
-          <!--bbn-video :width="source.width" 
-                     :style="style" 
+          <!--bbn-video :width="source.width"
+                     :style="style"
                      :height="source.height"
                      :autoplay="autoplay"
                      :muted="muted"
                      :youtube="youtube"
                      :source="source.src"
           ></bbn-video-->
-          <iframe 
-                  :style="style" 
-                  
+          <iframe
+                  :style="style"
+
                   :autoplay="false"
-                  
+
                   :src="source.src"
-           ></iframe>       
-        </div>`, 
+           ></iframe>
+        </div>`,
       edit: `
       <div class="component-container" id="video-container">
         <div class="bbn-grid-fields bbn-padded">
@@ -242,7 +242,7 @@
           <div>
             <bbn-cursor v-model="source.style['width']"
                         :min="100"
-                        :max="1000" 
+                        :max="1000"
                         :step="10"
                         class="bbn-w-70"
             ></bbn-cursor>
@@ -251,27 +251,27 @@
           <div>
             <bbn-cursor v-model="source.style['height']"
                         :min="100"
-                        :max="1000" 
+                        :max="1000"
                         :step="10"
                         class="bbn-w-70"
             ></bbn-cursor>
           </div>
         </div>
         <div :class="alignClass">
-          <bbn-video :width="source.style.width" 
-                    :style="style" 
+          <bbn-video :width="source.style.width"
+                    :style="style"
                     :height="source.style.height"
                     :autoplay="autoplay"
                     :muted="muted"
                     :youtube="youtube"
                     :source="currentValue"
           ></bbn-video>
-        </div>          
+        </div>
       </div>
-      `                     
+      `
     },
     line: {
-      view: `<div class="component-container"><hr :style="style"></div>`, 
+      view: `<div class="component-container"><hr :style="style"></div>`,
       edit: `<div class="block-line-edit component-container">
               <hr :style="style">
               <div class="block-line-edit-command bbn-padded">
@@ -280,7 +280,7 @@
                   <div>
                     <bbn-cursor v-model="source.style['width']"
                                 :min="0"
-                                :max="100" 
+                                :max="100"
                                 unit="%"
                     ></bbn-cursor>
                   </div>
@@ -288,7 +288,7 @@
                   <div>
                     <bbn-cursor v-model="source.style['border-width']"
                                 :min="1"
-                                :max="10" 
+                                :max="10"
                                 unit="px"
                     ></bbn-cursor>
                   </div>
@@ -298,7 +298,7 @@
                                   :source="borderStyle"
                     ></bbn-dropdown>
                   </div>
-                
+
                   <label>Line color</label>
                   <div>
                     <bbn-colorpicker v-model="source.style['border-color']"
@@ -317,16 +317,16 @@
       edit: `
           <div class="component-container" :style="style">
             <div :style="style" class="block-space-edit">
-              <bbn-cursor v-model="source.style.height" 
+              <bbn-cursor v-model="source.style.height"
                           unit="px"
                           :min="0"
                           :step="50"
               ></bbn-cursor>
             </div>
-          </div>`  
+          </div>`
     }
   };
-  
+
   const borderStyle =  [
     {"text":"hidden","value":"hidden"},
     {"text":"dotted","value":"dotted"},
@@ -340,23 +340,40 @@
   Vue.component('bbn-editable', {
     /**
      * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.inputComponent
+     * @mixin bbn.vue.componentInsideComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.componentInsideComponent],
+    mixins:
+    [
+      bbn.vue.basicComponent,
+      bbn.vue.inputComponent,
+      bbn.vue.componentInsideComponent
+    ],
     props: {
+      /**
+       * @prop {String} ['nf nf-fa-edit bbn-xlarge bbn-blue'] editIcon
+       */
       editIcon: {
         type: String,
         default: 'nf nf-fa-edit bbn-xlarge bbn-blue'
       },
+      /**
+       * @prop {String} ['nf nf-fa-check bbn-xlarge bbn-green'] saveIcon
+       */
       saveIcon: {
         type: String,
         default: 'nf nf-fa-check bbn-xlarge bbn-green'
       },
+      /**
+       * @prop {String} ['nf nf-fa-check bbn-xlarge bbn-red'] cancelIcon
+       */
       cancelIcon: {
         type: String,
         default: 'nf nf-fa-close bbn-xlarge bbn-red'
       },
       /**
        * The aduio's URL
+       * @prop {Object} [{}] source
        */
       source: {
         type: Object,
@@ -372,43 +389,91 @@
         type: String,
         default: ''
       },
+      /**
+       * @prop {Number} index
+       */
       index: {
         type: Number,
       },
       //the path for the index showing the images ('ex: image/')
+      /**
+       * @prop {String} [''] path
+       */
       path: {
         type: String,
         default: ''
       },
       //the path for the links (give a path to a controller to manage the links)
+      /**
+       * @prop {String} [''] linkURL
+       */
       linkURL: {
         type: String,
         default: ''
       },
+      /**
+       * @prop {} [true] value
+       */
       value: {
         required: true
       },
+      /**
+       * @prop {String} [] novalue
+       */
       novalue: {
         type: String
       }
     },
     data(){
       return {
+        /**
+         * @data {Boolean} [false] over
+         */
         over: false,
+        /**
+         * @data {Boolean} [false] isEditing
+         */
         isEditing: false,
+        /**
+         * @data {Boolean} [true] editing
+         */
         editing: true,
+        /***
+         * @data {String} ['100%'] width
+         */
         width: '100%',
+        /**
+         * @data {String} ['100%']
+         */
         height: '100%',
-        //ready is important for the component template to be defined 
+        /**
+         * Ready is important for the component template to be defined.
+         *
+         * @prop {Boolean} [true] ready
+         */
         ready: true,
+        /**
+         * @prop {Object} [{}] initialSource
+         */
         initialSource: {},
+        /**
+         * @prop {(Object|Null|String)} currentValue
+         */
         currentValue: this.value ? bbn.fn.clone(this.value) : (this.source.nullable ? null : ''),
       }
     },
     computed: {
+      /**
+       * @computed changed
+       * @return {Boolean}
+       */
       changed(){
         return !bbn.fn.isSame(this.currentValue, this.value)
       },
+      /**
+       * @computed type
+       * @return {String}
+       */
       type(){
         if (this.component) {
           return 'component';
@@ -418,15 +483,30 @@
         }
 
         return 'text';
-      }, 
+      },
+      /**
+       * @computed parent
+       * @return {(Object|null)}
+       */
       parent(){
         return this.ready ? this.closest('bbn-container').getComponent() : null;
       }
     },
+    /**
+     * getCurrentValue
+     */
     methods: {
+      /**
+       * @method getCurrentValue
+       * @return {*}
+       */
       getCurrentValue(){
         return this.currentValue;
       },
+      /**
+       * @method save
+       * @emits save
+       */
       save() {
         if (this.currentValue !== this.value) {
           this.originalValue = bbn.fn.clone(this.value);
@@ -435,20 +515,33 @@
         }
         this.isEditing = false;
       },
+      /**
+       * @method focusout
+       * @fires save
+       */
       focusout(){
         if (this.isEditing) {
           this.save()
-        }        
+        }
       },
+      /**
+       * @method onCancel
+       */
       onCancel() {
         bbn.fn.log("CANCEL");
         this.currentValue = this.value ? bbn.fn.clone(this.value) : (this.source.nullable ? null : '');
         this.isEditing = false;
         this.$forceUpdate();
       },
+      /**
+       * @method mouseleave
+       */
       mouseleave(){
         this.over = false
       },
+      /**
+       * @method mouseover
+       */
       mouseover(){
         this.over = true
         /*console.log('over: ' + this.over)
@@ -461,18 +554,29 @@
           this.over = true;
         }*/
       },
+      /**
+       * @method mouseenter
+       */
       mouseenter(){
         alert('enter')
       },
+      /**
+       * @method selectImg
+       * @param {String} st
+       */
       selectImg(st){
         bbn.fn.link(st);
       },
+      /**
+       * @method alert
+       */
       alert(){
         alert('test')
-      }, 
+      },
       /**
        * adds the events listener when edit = true
-       * @param {boolean} edit 
+       * @method _setEvents
+       * @param {boolean} edit
        */
       _setEvents(){
         /*
@@ -491,6 +595,10 @@
           document.removeEventListener('touchstart', this.checkMouseDown);
         }*/
       },
+      /**
+       * @method checkKeyCode
+       * @param {Event} e
+       */
       checkKeyCode(e){
         if ( e.keyCode === 27 ){
           this.edit = false;
@@ -498,7 +606,8 @@
       },
       /**
        * set edit to false
-       * @param {event} e 
+       * @method checkMouseDown
+       * @param {Event} e
        */
       checkMouseDown(e){
         if ( !e.target.closest(".bbn-cms-block-edit") ){
@@ -512,6 +621,9 @@
           this.editMode();
         }
       },
+      /**
+       * @method editBlock
+       */
       editBlock(){
         if ( this.changed ){
           appui.success(bbn._('Block changed'))
@@ -523,8 +635,12 @@
         else{
           this.edit = false;
         }
-        
+
       },
+      /**
+       * @method edit
+       * @emits edit
+       */
       edit(){
         let ev = new Event('edit', {cancelable: true});
         this.$emit('edit', ev, this);
@@ -532,8 +648,14 @@
           this.isEditing = true;
         }
       },
+      /**
+       * @method cancelEdit
+       */
       cancelEdit(){
       },
+      /**
+       * @method editMode
+       */
       editMode(){
         let blocks = this.closest('bbn-container').getComponent().findAll('bbn-cms-block');
         bbn.fn.each(blocks, (v, i)=>{
@@ -544,7 +666,8 @@
       },
       /**
        * returns the object of the component basing on the given type
-       * @param {string} type 
+       * @param {String} type
+       * @return {Object}
        */
       getComponentObject(type) {
         return {
@@ -597,9 +720,9 @@
                     // do whatever
                 }
                 return res;
-                
+
               }
-              
+
             },
             mobile(){
               if ( bbn.env.width <= 640 ){
@@ -671,7 +794,7 @@
               let st = '';
               if ( this.source.style ){
                 if ( this.source.style['color'] ){
-                  st += 'color: ' + this.source.style['color'] + ';' 
+                  st += 'color: ' + this.source.style['color'] + ';'
                 }
                 if ( this.source.style['font-size'] ){
                   st += 'font-size:' + this.source.style['font-size'] + ( bbn.fn.isNumber(this.source.style['font-size']) ? ( 'px;') : ';');
@@ -695,7 +818,7 @@
                     st += 'border-bottom:0'
                   }
                 }
-                else { 
+                else {
                   if ( this.source.style['border-width'] ){
                     st += 'border-width:' + this.source.style['border-width'] + ( bbn.fn.isNumber(this.source.style['border-width']) ? 'px;' : ';');
                   }
@@ -714,13 +837,13 @@
                     this.source.type === 'video' ? (margin = 'float: right') : (margin = 'margin-right: 0');
                   break;
                 }
-                st += margin; 
+                st += margin;
 
               }
               return st;
             }
-          }, 
-          methods: { 
+          },
+          methods: {
             decodeURIComponent(st){
               //the regular expression to match the new line
               /*let reg = /\r?\n|\r/g;
@@ -760,7 +883,7 @@
                       })
                     }
                   }
-    
+
                 }
               this.show = true;
               }
@@ -774,7 +897,7 @@
             cpHTML(tag, type){
               return {
                 props: ['source'],
-                template: (type === 'title') ? titleTemplates[tag] : htmlTemplates[tag], 
+                template: (type === 'title') ? titleTemplates[tag] : htmlTemplates[tag],
               }
             },
             /** @todo Seriously these arguments names??  */
@@ -786,7 +909,7 @@
                   setTimeout(() => {
                     this.show = false;
                     //this.currentValue.push(c.image);//
-                    this.makeSquareImg();  
+                    this.makeSquareImg();
                   }, 200);
                 }
                 else{
@@ -797,7 +920,7 @@
               else{
                 appui.error(bbn._('An error occurred while uploading the image'))
               }
-              
+
             }
           },
           components: {
@@ -811,26 +934,26 @@
                 <a  target="_self" @click="selectImg">
                   <!--TO TAKE IMAGE FROM THE INDEX-->
                   <img :src="path + source.src" :alt="source.alt ? source.alt : ''" :style="$parent.source.style">
-                  <div v-if="source.caption || (source.title && (type === 'carousel'))" 
+                  <div v-if="source.caption || (source.title && (type === 'carousel'))"
                        :class="['bbn-block-gallery-caption',$parent.alignClass]"
                        v-html="(source.caption && (type === 'gallery')) ? source.caption : source.title"
                   ></div>
-                  <div v-if="source.details_title" 
+                  <div v-if="source.details_title"
                        :class="['image-details-title',$parent.alignClass]"
                        v-html="source.details_title"
                   ></div>
-                  <div v-if="source.details" 
+                  <div v-if="source.details"
                        :class="['image-details',$parent.alignClass]"
                        v-html="source.details"
                   ></div>
-                  <div v-if="source.price" 
+                  <div v-if="source.price"
                        :class="['image-price',$parent.alignClass]"
                        v-text="source.price"
                   ></div>
                   <time v-if="source.time" v-text="source.time" :class="$parent.alignClass"></time>
                 </a>
                 `
-                
+
                /*template: `
                 <a :href="(source.src ? source.src : source.name)" target="_blank">
                   <!--TO TAKE IMAGE FROM THE INDEX-->
@@ -861,7 +984,7 @@
                   type(){
                     return this.$parent.source.type
                   }
-                }, 
+                },
                 mounted(){
                   bbn.fn.happy(this.source.price)
                 }
@@ -872,7 +995,7 @@
                 <span>
                   <i @click="prev" class="prev nf nf-oct-chevron_left"></i>
                   <i @click="next" class="next nf nf-oct-chevron_right"></i>
-                </span>  
+                </span>
               </div>`,
               methods: {
                 next(){
@@ -892,23 +1015,23 @@
               template: `
               <div>
                 <bbn-button icon="nf nf-fa-align_left"
-                            :title="_('Align left')" 
+                            :title="_('Align left')"
                             :notext="true"
-                            @click="align = 'left'" 
+                            @click="align = 'left'"
                             :class="{'bbn-state-active': ($parent.source.align === 'left')}"
                 ></bbn-button>
                 <bbn-button icon="nf nf-fa-align_center" :title="_('Align left')"
-                            :notext="true" 
+                            :notext="true"
                             @click="align = 'center'"
                             :class="{'bbn-state-active': ($parent.source.align === 'center')}"
                 ></bbn-button>
                 <bbn-button icon="nf nf-fa-align_right"
                             :title="_('Align left')"
-                            :notext="true" 
+                            :notext="true"
                             @click="align = 'right'"
                             :class="{'bbn-state-active': ($parent.source.align === 'right')}"
                 ></bbn-button>
-              </div>`, 
+              </div>`,
               data(){
                 return {
                   align: ''
@@ -920,8 +1043,8 @@
                   this.$parent.$parent.$forceUpdate();
                 },
               },
-            }, 
-            
+            },
+
           },
           watch:{
             'source.columns':{
@@ -937,17 +1060,17 @@
             if ( this.$parent.edit ){
               if ( (this.type === 'image') && this.currentValue && this.currentValue.length ){
                 let extension = this.currentValue.substr(this.currentValue.lastIndexOf('.'), this.currentValue.length)
-                //take the correct size 
+                //take the correct size
                 this.image.push({
                   "name": this.currentValue,
                   "size":574906,
                   "extension": extension
-                });  
+                });
               }
               else if ((this.type === 'gallery') && this.currentValue && this.currentValue.length) {
                 /*this.image = bbn.fn.map(this.currentValue, a => {
                   let extension = a.src.substr(a.src.lastIndexOf('.'), a.src.length);
-                  a.name = a.src; 
+                  a.name = a.src;
                   a.size = 465464;
                   a.extension = extension;
                   return a
@@ -955,19 +1078,26 @@
               }
             }
           },
-          mounted(){ 
+          mounted(){
             if ( (this.source.type === 'gallery') || (this.source.type === 'carousel') ){
               this.makeSquareImg();
             }
           },
-          
+
         }
       },
     },
 
+    /**
+     * @event beforeMount
+     * @fires getComponentObject
+     */
     beforeMount() {
       this.componentObject = this.getComponentObject(this.type);
     },
+    /**
+     * @event mounted
+     */
     mounted(){
       this.initialSource = bbn.fn.extend({}, this.source);
       this.ready = true;
@@ -988,25 +1118,35 @@
       if ( this.source.style && this.source.style.align ){
         this.source.align = this.source.style.align;
       }
-      
+
       bbn.fn.log("I AM THE BLOCK! ", this.source);
     },
 
-    
+
     watch: {
+      /**
+       * @watch isEditing
+       */
       isEditing() {
         this.componentObject = this.getComponentObject(this.type);
       },
+      /**
+       * @watch type
+       */
       type() {
         this.componentObject = this.getComponentObject(this.type);
       },
+      /**
+       * @watch edit
+       * @param {Boolean} val
+       */
       edit(val){
         //if adding a new block
         bbn.fn.error('watch')
         if ( ( val === false ) && ( this.newBlock === true ) ){
           this.parent.source.lines.push(this.source)
           this.parent.lines.push({
-            content: { 
+            content: {
               data:  '<div>[CONTENT]</div>'
             },
             type: ''
@@ -1016,7 +1156,7 @@
         }
         //this._setEvents()
       }
-    }, 
- 
+    },
+
   });
 })(bbn);

@@ -20,7 +20,12 @@
      * @mixin bbn.vue.eventsComponent
      * @mixin bbn.vue.inputComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.eventsComponent, bbn.vue.inputComponent],
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.eventsComponent,
+      bbn.vue.inputComponent
+    ],
     props: {
       /**
        * Specifies whether a loading icon isshown inside the input field.
@@ -32,7 +37,7 @@
       },
       /**
        * Specifies whether or not the input field should have autocomplete enabled. Accepts boolean or the strings 'on' or 'off'.
-       * @prop {Boolean|String} [true] autocomplete
+       * @prop {(Boolean|String)} [true] autocomplete
        */
       autocomplete: {
         type: [Boolean,String],
@@ -99,19 +104,19 @@
       },
       /**
        * The size of the input.
-       * @prop {String|Number} size
+       * @prop {(String|Number)} size
        */
       size: {
         type: [String, Number],
       },
       /**
-       * @prop {String|Number} min
+       * @prop {(String|Number)} min
        */
       min: {
         type: [String, Number]
       },
       /**
-       * @prop {String|Number} max
+       * @prop {(String|Number)} max
        */
       max: {
         type: [String, Number]
