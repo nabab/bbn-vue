@@ -233,18 +233,21 @@
               ref="clipboardButton"
               class="bbn-appui-clipboard-button bbn-right-space bbn-p bbn-rel"
           >
-            <i class="nf nf-fa-clipboard bbn-m" tabindex="-1"></i>
+            <i class="nf nf-fa-clipboard bbn-m" tabindex="-1"/>
             <input class="bbn-invisible bbn-overlay bbn-p"
                   @keydown.space.enter.prevent="getRef('clipboard').toggle()"
                   @drop.prevent.stop="getRef('clipboard').copy($event); getRef('clipboard').show()"
             >
           </div>
           <!-- POWER/ENV ICON -->
-          <div class="bbn-iblock bbn-right-space bbn-p bbn-rel">
+          <bbn-context class="bbn-iblock bbn-right-space bbn-p bbn-rel"
+                       :title="appMode"
+                       tag="div"
+                       :source="powerMenu">
             <i class="nf nf-fa-power_off bbn-m"
                tabindex="-1"
-               :style="{color: powerColor}"></i>
-          </div>
+               :style="{color: powerColor}"/>
+          </bbn-context>
         </div>
       </div>
     </div>
