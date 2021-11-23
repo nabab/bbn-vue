@@ -27,9 +27,15 @@
     },
     data(){
       return {
+        /**
+         * @data [null] widget
+         */
         widget: null
       }
     },
+    /**
+     * @event mounted
+     */
     mounted(){
       this.widget = grapesjs.init({
         container: this.$el,

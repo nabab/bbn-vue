@@ -1391,10 +1391,7 @@
         if ( this.sortable ){
           data.order = this.currentOrder;
         }
-        if (this.isFilterable
-          && !!this.currentFilters.conditions
-          && this.currentFilters.conditions.length
-        ) {
+        if ( this.isFilterable ){
           data.filters = this.currentFilters;
         }
         return data;
