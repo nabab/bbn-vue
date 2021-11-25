@@ -3,7 +3,7 @@
  * @file bbn-code component
  *
  * @description bbn-code is a text editor.
- * It specializes in editing the code of a supported language. 
+ * It specializes in editing the code of a supported language.
  * Various tools are provided to the users, which can be configured to their liking.
  *
  * @author BBN Solutions
@@ -133,7 +133,7 @@
         "Alt-,": function(cm) { bbn.vue.tern.jumpBack(cm); },
         "Ctrl-Q": function(cm) { bbn.vue.tern.rename(cm); },
         "Ctrl-.": function(cm) { bbn.vue.tern.selectName(cm); }
-        
+
       },*/
       extraKeys: {
         "Ctrl-Space": "autocomplete",
@@ -180,10 +180,10 @@
      * @mixin bbn.vue.inputComponent
      * @mixin bbn.vue.eventsComponent
      */
-    mixins: 
+    mixins:
     [
-      bbn.vue.basicComponent, 
-      bbn.vue.inputComponent, 
+      bbn.vue.basicComponent,
+      bbn.vue.inputComponent,
       bbn.vue.eventsComponent
     ],
     props: {
@@ -572,11 +572,14 @@
         this.widget.setCursor(cursor);
         this.showHint();
       },
-      htmlHint(str, numLine){
+      htmlHint(str, cursor, token){
+        bbn.fn.log(["----HTML HINT-----", cursor, token]);
+        this.updateHtmlHints();
+        this.widget.showHint({completeSingle: false});
         //bbn.fn.log(str)
       },
-      phpHint(str, line){
-        //bbn.fn.log("----PHP HINT-----", str);
+      phpHint(str, cursor, token){
+        bbn.fn.log(["----PHP HINT-----", cursor, token]);
         // bbn.vue.phpLang must have been defined by an ajax call n mount
         if (!bbn.vue.phpLang) {
           return;
@@ -666,7 +669,7 @@
                       all.push(...row.items);
                     }
                   }
-  
+
                   res = all;
                 }
                 else {
@@ -780,57 +783,64 @@
         if (this.currentHints.length) {
           this.currentHints.splice(0, this.currentHints.length);
         }
-        this.hintTimeout = setTimeout(() => {
-          if (!this[this.mode + 'Hint']) {
-            return this.widget.showHint({completeSingle: false})
-          }
-          
-          /** Object Cursor's info */
-          let cursor = this.widget.getCursor();
-          if (!cursor.ch) {
-            return;
-          }
-          /** Array List of tokens */
-          let tokens = this.widget.getLineTokens(cursor.line);
-          /** @var String The current line */
-          let currentLine = '';
-          /** @var Array The tokens before the cursor */
-          let realTokens = [];
-          bbn.fn.each(tokens, t => {
-            let tmp = bbn.fn.clone(t);
-            if (t.end >= cursor.ch) {
-              tmp.string = t.string.substr(0, cursor.ch - t.start);
-            }
+        this.hintTimeout = setTimeout(this.realShowHint, 500);
+      },
+      realShowHint() {
+        bbn.fn.log(["showHint", this.mode]);
+        if (!this[this.mode + 'Hint']) {
+          return this.widget.showHint({completeSingle: false})
+        }
 
-            currentLine += tmp.string;
-            realTokens.push(tmp);
-            if (t.end >= cursor.ch) {
-              return false;
-            }
-          });
-          let numTokens = realTokens.length;
-
-          if (
-            !numTokens ||
-            !currentLine.trim() ||
-            (currentLine.length > 150) ||
-            (realTokens[numTokens - 1].type === 'comment')
-          ) {
-            return;
-          }
-          if (this[this.mode + 'Hint']) {
-            let res = this[this.mode + 'Hint'](currentLine, cursor.line);
-            if (res && res.list && res.list.length) {
-              this.setFloaterPosition();
-              this.currentHints = res.list;
-            }
-          }
-          else {
-            return this.widget.showHint({completeSingle: false})
+        /** Object Cursor's info */
+        let cursor = this.widget.getCursor();
+        if (!cursor.ch) {
+          return;
+        }
+        /** Array List of tokens */
+        let tokens = this.widget.getLineTokens(cursor.line);
+        /** @var String The current line */
+        let currentLine = '';
+        /** @var Array The tokens before the cursor */
+        let realTokens = [];
+        bbn.fn.each(tokens, t => {
+          let tmp = bbn.fn.clone(t);
+          if (t.end >= cursor.ch) {
+            tmp.string = t.string.substr(0, cursor.ch - t.start);
           }
 
-          //bbn.fn.log('SHOWHINT', numTokens, currentLine, tokens, realTokens);
-        }, 500)
+          currentLine += tmp.string;
+          realTokens.push(tmp);
+          if (t.end >= cursor.ch) {
+            return false;
+          }
+        });
+        let numTokens = realTokens.length;
+
+        if (
+          !numTokens ||
+          !currentLine.trim() ||
+          (currentLine.length > 150) ||
+          (realTokens[numTokens - 1].type === 'comment')
+        ) {
+          return;
+        }
+
+        let currentToken = realTokens[numTokens - 1];
+        let mode = this.mode;
+        if (currentToken.state && currentToken.state.curMode && (currentToken.state.curMode.name === 'htmlmixed')) {
+          mode = 'html';
+        }
+
+        if (this[mode + 'Hint']) {
+          let res = this[mode + 'Hint'](currentLine, cursor, currentToken);
+          if (res && res.list && res.list.length) {
+            this.setFloaterPosition();
+            this.currentHints = res.list;
+          }
+        }
+        else {
+          return this.widget.showHint({completeSingle: false})
+        }
       },
       setFloaterPosition(){
         let coords = this.widget.cursorCoords(true);
@@ -853,7 +863,7 @@
       },
       updateHtmlHints() {
         let components = Object.keys(Vue.options.components).sort();
-        let hash = bbn.fn.hash(components);
+        let hash = bbn.fn.uniqString(components);
         if (hash !== bbn.var.componentsHash) {
           bbn.var.componentsHash = hash;
           bbn.fn.iterate(Vue.options.components, (cp, cpName) => {
@@ -911,6 +921,54 @@
         }
         this.currentHints.splice(0, this.currentHints.length);
         this.currentFn = false;
+      },
+      _onkeyDown() {
+        if (this.hintTimeout) {
+          clearTimeout(this.hintTimeout);
+        }
+        if (["Ctrl", "Alt"].includes(event.key)) {
+          return;
+        }
+        if (this.currentHints.length) {
+          let lst = this.find('bbn-list');
+          if (lst) {
+            if (bbn.var.keys.upDown.includes(event.keyCode)) {
+              lst.keynav(event);
+              //bbn.fn.log(lst.currentSelected);
+            }
+            else if (event.key === "Enter") {
+              event.preventDefault();
+              lst.select(lst.overIdx || 0);
+            }
+          }
+        }
+        else if (
+          bbn.var.keys.upDown.includes(event.keyCode) ||
+          bbn.var.keys.leftRight.includes(event.keyCode)
+        ) {
+          return;
+        }
+        else if (event.key === 'Enter') {
+          this.resetFloaters();
+        }
+      },
+      _onkeyUp(cm, event) {
+        if (["Ctrl", "Alt"].includes(event.key) ||
+            bbn.var.keys.upDown.includes(event.keyCode) ||
+            bbn.var.keys.leftRight.includes(event.keyCode)
+        ) {
+          return;
+        }
+
+        if (["Escape"/*, "Backspace", "Delete"*/].includes(event.key) ||
+            event.ctrlKey ||
+            event.altKey ||
+            bbn.var.keys.upDown.includes(event.keyCode)
+        ) {
+          this.resetFloaters();
+          return;
+        }
+        this.showHint();
       }
     },
     /**
@@ -930,67 +988,11 @@
       //bbn.fn.log(this.getOptions());
       if (this.getRef('code')) {
         this.widget = CodeMirror(this.getRef('code'), this.getOptions());
-        this.widget.on("keyup", (cm, event) => {
-          if (["Ctrl", "Alt"].includes(event.key) ||
-              bbn.var.keys.upDown.includes(event.keyCode) ||
-              bbn.var.keys.leftRight.includes(event.keyCode)
-          ) {
-            return;
-          }
-
-          if (["Escape", "Backspace", "Delete"].includes(event.key) ||
-              event.ctrlKey ||
-              event.altKey ||
-              bbn.var.keys.upDown.includes(event.keyCode)
-          ) {
-            this.resetFloaters();
-            return;
-          }
-          this.showHint();
-        });
-
-        this.widget.on("keydown", (cm, event) => {
-          if (this.hintTimeout) {
-            clearTimeout(this.hintTimeout);
-          }
-          if (["Ctrl", "Alt"].includes(event.key)) {
-            return;
-          }
-          if (this.currentHints.length) {
-            let lst = this.find('bbn-list');
-            if (lst) {
-              if (bbn.var.keys.upDown.includes(event.keyCode)) {
-                lst.keynav(event);
-                //bbn.fn.log(lst.currentSelected);
-              }
-              else if (event.key === "Enter") {
-                event.preventDefault();
-                lst.select(lst.overIdx || 0);
-              }
-            }
-          }
-          else if (
-            bbn.var.keys.upDown.includes(event.keyCode) ||
-            bbn.var.keys.leftRight.includes(event.keyCode)
-          ) {
-            return;
-          }
-          else if (event.key === 'Enter') {
-            this.resetFloaters();
-          }
-        });
-
-        this.widget.on("scroll", cm => {
-          this.$emit('scroll', cm);
-        });
-
-        this.widget.on("blur", () => {
-          this.resetFloaters();
-        });
-
-        this.widget.on("change", () => {
-          this.emitInput(this.widget.doc.getValue());
-        });
+        this.widget.on("keydown", this._onkeyDown);
+        this.widget.on("keyup", this._onkeyUp);
+        this.widget.on("scroll", cm => this.$emit('scroll', cm));
+        this.widget.on("blur", () => this.resetFloaters());
+        this.widget.on("change", () => this.emitInput(this.widget.doc.getValue()));
 
         setTimeout(() => {
           this.widget.refresh();
@@ -1076,7 +1078,7 @@
               bbn.fn.each(this.source.cfg.args, (a, i) => {
                 res.push({
                   text: (a.optional ? '[' : '') +
-                    '$' + a.name + 
+                    '$' + a.name +
                     (a.optional ? ']' : ''),
                   cls: i === this.source.num ? 'bbn-b' : '',
                   last: i === this.source.cfg.args.length - 1,
