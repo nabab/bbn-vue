@@ -167,7 +167,14 @@ document.body.insertAdjacentElement('beforeend', script);
    */
   Vue.component("bbn-tabnav", {
     name: 'bbn-tabnav',
-    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent, bbn.vue.localStorageComponent, bbn.vue.closeComponent, bbn.vue.observerComponent],
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.resizerComponent, 
+      bbn.vue.localStorageComponent, 
+      bbn.vue.closeComponent, 
+      bbn.vue.observerComponent
+    ],
     props: {
       /**
        * The URL on which the tabNav will be initialized.
@@ -186,8 +193,7 @@ document.body.insertAdjacentElement('beforeend', script);
         default: false
       },
       /**
-       *
-       * @prop {Number} maxTitleLength
+       * @prop {Number} [20] maxTitleLength
        */
       maxTitleLength: {
         type: Number,
@@ -218,7 +224,6 @@ document.body.insertAdjacentElement('beforeend', script);
         default: false
       },
       /**
-       *
        * @prop {String} ['__ROOT__'] storageName
        */
       storageName: {
@@ -234,7 +239,6 @@ document.body.insertAdjacentElement('beforeend', script);
         default: bbn._("Are you sure you want to discard the changes you made in this tab?")
       },
       /**
-       *
        * @prop {String} hideAdvertUrl
        */
       hideAdvertUrl: {

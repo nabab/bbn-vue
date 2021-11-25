@@ -269,13 +269,10 @@ document.head.insertAdjacentElement('beforeend', css);
       },
       /**
        * The component used for the items.
-       * @prop {Object} [{}] itemComponent
+       * @prop {Object} itemComponent
        */
       itemComponent: {
-        type: Object,
-        default(){
-          return {};
-        },
+        type: Object
       },
       /**
        * Set to true to auto-hide the component.
@@ -390,16 +387,13 @@ document.head.insertAdjacentElement('beforeend', css);
         type: [Boolean, Number],
         default: false
       },
-      /**
-       * @prop {Vue} opener The opening vue component passed to the floater
-       */
       opener: {
         type: Vue
       },
       /**
-       * @prop {Array} actionArguments Whatever will be given as arguments to the function action.
+       * Whatever will be given as arguments to the function action.
        */
-      actionArguments: {
+       actionArguments: {
         type: Array
       }
     },

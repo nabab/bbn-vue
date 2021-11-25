@@ -320,7 +320,8 @@
      * @mixin bbn.vue.resizerComponent
      * @mixin bbn.vue.serviceWorkerComponent
      */
-    mixins: [
+    mixins: 
+    [
       bbn.vue.basicComponent,
       bbn.vue.localStorageComponent,
       bbn.vue.resizerComponent,

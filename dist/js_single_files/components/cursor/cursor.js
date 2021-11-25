@@ -19,22 +19,32 @@ script.setAttribute('type', 'text/x-template');
 document.body.insertAdjacentElement('beforeend', script);
 /**
  * @file bbn-block component
- * @description bbn-block 
+ * @description bbn-block
  * @copyright BBN Solutions
  * @author Loredana Bruno
  * @created 09/11/2020.
  */
 (function(bbn){
   "use strict";
-  
+
   Vue.component('bbn-cursor', {
     /**
      * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.eventsComponent
+     * @mixin bbn.vue.inputComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.eventsComponent, bbn.vue.inputComponent],
+    mixins:
+    [
+      bbn.vue.basicComponent,
+      bbn.vue.eventsComponent,
+      bbn.vue.inputComponent
+    ],
     props: {
+      /**
+       * @prop {Number} [1] step
+       */
       step: {
-        type: Number, 
+        type: Number,
         default: 1
       },
       /**
@@ -46,23 +56,38 @@ document.body.insertAdjacentElement('beforeend', script);
       },*/
       /**
        * The audio's title
-       * @prop {String} [''] title
+       * {String} [''] title
+       */
+      /**
+       * @prop {Number} [0] min
        */
       min: {
         type: Number,
-        default: 0  
+        default: 0
       },
+      /**
+       * @prop {Number} [500] max
+       */
       max: {
         type: Number,
         default: 500
       },
+      /**
+       * @prop {String} [''] title
+       */
       title: {
         type: String,
         default: ''
       },
+      /**
+       * @prop {(Number|String)} [] value
+       */
       value: {
         type: Number | String,
       },
+      /**
+       * @prop {String} [''] unit
+       */
       unit: {
         type: String,
         default: ''
@@ -70,7 +95,7 @@ document.body.insertAdjacentElement('beforeend', script);
     },
     computed: {
       label(){
-        return this.value 
+        return this.value
       }
     }
   });

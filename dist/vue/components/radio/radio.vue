@@ -27,14 +27,9 @@
       <label class="bbn-radio-label bbn-iflex bbn-vmiddle"
              :for="id + '_' + idx"
       >
-        <component v-if="d.component"
-                   :is="d.component"
-                   :source="d.componentOptions.source || d"
-                   v-bind="d.componentOptions"
-                   class="bbn-left-sspace"/>
-        <span v-else
-              class="bbn-left-sspace"
-              v-html="render ? render(d) : d[sourceText]"/>
+         <span class="bbn-left-sspace"
+               v-html="render ? render(d) : d[sourceText]"
+         ></span>
       </label>
       <br v-if="!vertical && step && ((idx+1) % step === 0)">
       <div v-if="(source[idx+1] !== undefined) && !!separator"

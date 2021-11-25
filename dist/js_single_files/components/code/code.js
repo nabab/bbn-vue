@@ -74,7 +74,7 @@ document.body.insertAdjacentElement('beforeend', script);
  * @file bbn-code component
  *
  * @description bbn-code is a text editor.
- * It specializes in editing the code of a supported language. 
+ * It specializes in editing the code of a supported language.
  * Various tools are provided to the users, which can be configured to their liking.
  *
  * @author BBN Solutions
@@ -204,7 +204,7 @@ document.body.insertAdjacentElement('beforeend', script);
         "Alt-,": function(cm) { bbn.vue.tern.jumpBack(cm); },
         "Ctrl-Q": function(cm) { bbn.vue.tern.rename(cm); },
         "Ctrl-.": function(cm) { bbn.vue.tern.selectName(cm); }
-        
+
       },*/
       extraKeys: {
         "Ctrl-Space": "autocomplete",
@@ -251,7 +251,12 @@ document.body.insertAdjacentElement('beforeend', script);
      * @mixin bbn.vue.inputComponent
      * @mixin bbn.vue.eventsComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent],
+    mixins:
+    [
+      bbn.vue.basicComponent,
+      bbn.vue.inputComponent,
+      bbn.vue.eventsComponent
+    ],
     props: {
       /**
        * The ecmascript version.
@@ -265,7 +270,7 @@ document.body.insertAdjacentElement('beforeend', script);
       /**
        * The language mode.
        *
-       * @prop {String} [php] mode
+       * @prop {(String|Object)} ['php'] mode
        */
       mode: {
         type: [String, Object],
@@ -327,7 +332,8 @@ document.body.insertAdjacentElement('beforeend', script);
         floaterRight: null,
         floaterTop: null,
         floaterBottom: null,
-        currentFn: false
+        currentFn: false,
+        currentToken: false
       };
     },
 
@@ -621,7 +627,12 @@ document.body.insertAdjacentElement('beforeend', script);
           let pos = toAdd.indexOf(lastWord);
           let dollarIncrement = toAdd.substr(0, 1) === '$' ? 1 : 0;
           if ((this.mode === 'php') && (row.ref || (row.type === 'object'))) {
-            toAdd += '->';
+            if (['X', 'Str'].includes(row.ref)) {
+              toAdd += '::';
+            }
+            else {
+              toAdd += '->';
+            }
           }
 
           if (pos === dollarIncrement) {
@@ -634,15 +645,20 @@ document.body.insertAdjacentElement('beforeend', script);
           cursor.ch--;
         }
 
+        bbn.fn.log("EPLACING WITH", toAdd, this.currentToken);
+
         this.widget.replaceSelection(toAdd);
         this.widget.setCursor(cursor);
         this.showHint();
       },
-      htmlHint(str, numLine){
+      htmlHint(str, cursor, token){
+        bbn.fn.log(["----HTML HINT-----", cursor, token]);
+        this.updateHtmlHints();
+        this.widget.showHint({completeSingle: false});
         //bbn.fn.log(str)
       },
-      phpHint(str, line){
-        //bbn.fn.log("----PHP HINT-----", str);
+      phpHint(str, cursor, token){
+        bbn.fn.log(["----PHP HINT-----", cursor, token]);
         // bbn.vue.phpLang must have been defined by an ajax call n mount
         if (!bbn.vue.phpLang) {
           return;
@@ -654,9 +670,9 @@ document.body.insertAdjacentElement('beforeend', script);
 
         /** @var Boolean True if we are inside a function call (between the parenthesis) */
         let isFn = false;
-        /** @var Boolean True is we are in the process to calla method (after -> or ::) */
+        /** @var Boolean True is we are in the process to call a method (after -> or ::) */
         let isMethod = false;
-        /** @var RegExp Alphanumeric plus ->:\ staring with a letter or a dollar */
+        /** @var RegExp Alphanumeric plus ->:\ starting with a letter or a dollar */
         let regex = new RegExp('[\\$]*[A-z]+[\\>\\:\\(A-z0-9_\\-]+', 'g');
         // All the matches in the given string
         let matches = [...str.matchAll(regex)];
@@ -673,7 +689,7 @@ document.body.insertAdjacentElement('beforeend', script);
 
           // Here we have our string to complete
           if (search) {
-            //bbn.fn.log("Searching " + search);
+            bbn.fn.log("Searching " + search);
             // Dividing it in words
             let words = [...search.matchAll(/\w+/g)].map(a => a[0]);
             if (!words.length) {
@@ -689,7 +705,7 @@ document.body.insertAdjacentElement('beforeend', script);
               }
             });
 
-            //bbn.fn.log("WORDS", words);
+            bbn.fn.log("WORDS", words);
             let method = false;
             let cls = false;
             // If the previous char is an opening parenthesis we are calling a function
@@ -702,6 +718,7 @@ document.body.insertAdjacentElement('beforeend', script);
               isMethod = true;
               cls = search.substr(0, search.length-2);
             }
+            bbn.fn.log(isFn ? "METH" : "CLASS", isFn ? method : cls);
 
             let res = [];
             let doc = bbn.vue.phpLang;
@@ -714,6 +731,7 @@ document.body.insertAdjacentElement('beforeend', script);
                     return;
                   }
                   if (isFn) {
+                    bbn.fn.log("IS FUNCTION", tmp);
                     this.setFloaterPosition();
                     this.currentFn = {
                       cfg: tmp,
@@ -732,7 +750,7 @@ document.body.insertAdjacentElement('beforeend', script);
                       all.push(...row.items);
                     }
                   }
-  
+
                   res = all;
                 }
                 else {
@@ -840,63 +858,71 @@ document.body.insertAdjacentElement('beforeend', script);
         }
       },
       showHint() {
+        this.currentToken = false;
         if (this.hintTimeout) {
           clearTimeout(this.hintTimeout);
         }
         if (this.currentHints.length) {
           this.currentHints.splice(0, this.currentHints.length);
         }
-        this.hintTimeout = setTimeout(() => {
-          if (!this[this.mode + 'Hint']) {
-            return this.widget.showHint({completeSingle: false})
-          }
-          
-          /** Object Cursor's info */
-          let cursor = this.widget.getCursor();
-          if (!cursor.ch) {
-            return;
-          }
-          /** Array List of tokens */
-          let tokens = this.widget.getLineTokens(cursor.line);
-          /** @var String The current line */
-          let currentLine = '';
-          /** @var Array The tokens before the cursor */
-          let realTokens = [];
-          bbn.fn.each(tokens, t => {
-            let tmp = bbn.fn.clone(t);
-            if (t.end >= cursor.ch) {
-              tmp.string = t.string.substr(0, cursor.ch - t.start);
-            }
+        this.hintTimeout = setTimeout(this.realShowHint, 500);
+      },
+      realShowHint() {
+        bbn.fn.log(["showHint", this.mode]);
+        if (!this[this.mode + 'Hint']) {
+          return this.widget.showHint({completeSingle: false})
+        }
 
-            currentLine += tmp.string;
-            realTokens.push(tmp);
-            if (t.end >= cursor.ch) {
-              return false;
-            }
-          });
-          let numTokens = realTokens.length;
-
-          if (
-            !numTokens ||
-            !currentLine.trim() ||
-            (currentLine.length > 150) ||
-            (realTokens[numTokens - 1].type === 'comment')
-          ) {
-            return;
-          }
-          if (this[this.mode + 'Hint']) {
-            let res = this[this.mode + 'Hint'](currentLine, cursor.line);
-            if (res && res.list && res.list.length) {
-              this.setFloaterPosition();
-              this.currentHints = res.list;
-            }
-          }
-          else {
-            return this.widget.showHint({completeSingle: false})
+        /** Object Cursor's info */
+        let cursor = this.widget.getCursor();
+        if (!cursor.ch) {
+          return;
+        }
+        /** Array List of tokens */
+        let tokens = this.widget.getLineTokens(cursor.line);
+        /** @var String The current line */
+        let currentLine = '';
+        /** @var Array The tokens before the cursor */
+        let realTokens = [];
+        bbn.fn.each(tokens, t => {
+          let tmp = bbn.fn.clone(t);
+          if (t.end >= cursor.ch) {
+            tmp.string = t.string.substr(0, cursor.ch - t.start);
           }
 
-          //bbn.fn.log('SHOWHINT', numTokens, currentLine, tokens, realTokens);
-        }, 500)
+          currentLine += tmp.string;
+          realTokens.push(tmp);
+          if (t.end >= cursor.ch) {
+            return false;
+          }
+        });
+        let numTokens = realTokens.length;
+
+        if (
+          !numTokens ||
+          !currentLine.trim() ||
+          (currentLine.length > 150) ||
+          (realTokens[numTokens - 1].type === 'comment')
+        ) {
+          return;
+        }
+
+        this.currentToken = realTokens[numTokens - 1];
+        let mode = this.mode;
+        if (this.currentToken.state && this.currentToken.state.curMode && (this.currentToken.state.curMode.name === 'htmlmixed')) {
+          mode = 'html';
+        }
+
+        if (this[mode + 'Hint']) {
+          let res = this[mode + 'Hint'](currentLine, cursor, this.currentToken);
+          if (res && res.list && res.list.length) {
+            this.setFloaterPosition();
+            this.currentHints = res.list;
+          }
+        }
+        else {
+          return this.widget.showHint({completeSingle: false})
+        }
       },
       setFloaterPosition(){
         let coords = this.widget.cursorCoords(true);
@@ -919,7 +945,7 @@ document.body.insertAdjacentElement('beforeend', script);
       },
       updateHtmlHints() {
         let components = Object.keys(Vue.options.components).sort();
-        let hash = bbn.fn.hash(components);
+        let hash = bbn.fn.uniqString(components);
         if (hash !== bbn.var.componentsHash) {
           bbn.var.componentsHash = hash;
           bbn.fn.iterate(Vue.options.components, (cp, cpName) => {
@@ -977,6 +1003,54 @@ document.body.insertAdjacentElement('beforeend', script);
         }
         this.currentHints.splice(0, this.currentHints.length);
         this.currentFn = false;
+      },
+      _onkeyDown() {
+        if (this.hintTimeout) {
+          clearTimeout(this.hintTimeout);
+        }
+        if (["Ctrl", "Alt"].includes(event.key)) {
+          return;
+        }
+        if (this.currentHints.length) {
+          let lst = this.find('bbn-list');
+          if (lst) {
+            if (bbn.var.keys.upDown.includes(event.keyCode)) {
+              lst.keynav(event);
+              //bbn.fn.log(lst.currentSelected);
+            }
+            else if (event.key === "Enter") {
+              event.preventDefault();
+              lst.select(lst.overIdx || 0);
+            }
+          }
+        }
+        else if (
+          bbn.var.keys.upDown.includes(event.keyCode) ||
+          bbn.var.keys.leftRight.includes(event.keyCode)
+        ) {
+          return;
+        }
+        else if (event.key === 'Enter') {
+          this.resetFloaters();
+        }
+      },
+      _onkeyUp(cm, event) {
+        if (["Ctrl", "Alt"].includes(event.key) ||
+            bbn.var.keys.upDown.includes(event.keyCode) ||
+            bbn.var.keys.leftRight.includes(event.keyCode)
+        ) {
+          return;
+        }
+
+        if (["Escape"/*, "Backspace", "Delete"*/].includes(event.key) ||
+            event.ctrlKey ||
+            event.altKey ||
+            bbn.var.keys.upDown.includes(event.keyCode)
+        ) {
+          this.resetFloaters();
+          return;
+        }
+        this.showHint();
       }
     },
     /**
@@ -996,67 +1070,11 @@ document.body.insertAdjacentElement('beforeend', script);
       //bbn.fn.log(this.getOptions());
       if (this.getRef('code')) {
         this.widget = CodeMirror(this.getRef('code'), this.getOptions());
-        this.widget.on("keyup", (cm, event) => {
-          if (["Ctrl", "Alt"].includes(event.key) ||
-              bbn.var.keys.upDown.includes(event.keyCode) ||
-              bbn.var.keys.leftRight.includes(event.keyCode)
-          ) {
-            return;
-          }
-
-          if (["Escape", "Backspace", "Delete"].includes(event.key) ||
-              event.ctrlKey ||
-              event.altKey ||
-              bbn.var.keys.upDown.includes(event.keyCode)
-          ) {
-            this.resetFloaters();
-            return;
-          }
-          this.showHint();
-        });
-
-        this.widget.on("keydown", (cm, event) => {
-          if (this.hintTimeout) {
-            clearTimeout(this.hintTimeout);
-          }
-          if (["Ctrl", "Alt"].includes(event.key)) {
-            return;
-          }
-          if (this.currentHints.length) {
-            let lst = this.find('bbn-list');
-            if (lst) {
-              if (bbn.var.keys.upDown.includes(event.keyCode)) {
-                lst.keynav(event);
-                //bbn.fn.log(lst.currentSelected);
-              }
-              else if (event.key === "Enter") {
-                event.preventDefault();
-                lst.select(lst.overIdx || 0);
-              }
-            }
-          }
-          else if (
-            bbn.var.keys.upDown.includes(event.keyCode) ||
-            bbn.var.keys.leftRight.includes(event.keyCode)
-          ) {
-            return;
-          }
-          else if (event.key === 'Enter') {
-            this.resetFloaters();
-          }
-        });
-
-        this.widget.on("scroll", cm => {
-          this.$emit('scroll', cm);
-        });
-
-        this.widget.on("blur", () => {
-          this.resetFloaters();
-        });
-
-        this.widget.on("change", () => {
-          this.emitInput(this.widget.doc.getValue());
-        });
+        this.widget.on("keydown", this._onkeyDown);
+        this.widget.on("keyup", this._onkeyUp);
+        this.widget.on("scroll", cm => this.$emit('scroll', cm));
+        this.widget.on("blur", () => this.resetFloaters());
+        this.widget.on("change", () => this.emitInput(this.widget.doc.getValue()));
 
         setTimeout(() => {
           this.widget.refresh();
@@ -1142,7 +1160,7 @@ document.body.insertAdjacentElement('beforeend', script);
               bbn.fn.each(this.source.cfg.args, (a, i) => {
                 res.push({
                   text: (a.optional ? '[' : '') +
-                    '$' + a.name + 
+                    '$' + a.name +
                     (a.optional ? ']' : ''),
                   cls: i === this.source.num ? 'bbn-b' : '',
                   last: i === this.source.cfg.args.length - 1,
@@ -1153,6 +1171,9 @@ document.body.insertAdjacentElement('beforeend', script);
             }
             return res;
           }
+        },
+        mounted(){
+          bbn.fn.log("fnHelper", this.source)
         }
       },
       suggestion: {
@@ -1171,6 +1192,7 @@ document.body.insertAdjacentElement('beforeend', script);
   });
 
 })(bbn);
+
 
 };
 document.head.insertAdjacentElement("beforeend", script_dep);

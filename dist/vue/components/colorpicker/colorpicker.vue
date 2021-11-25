@@ -171,7 +171,13 @@
      * @mixin bbn.vue.eventsComponent
      * @mixin bbn.vue.resizerComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent, bbn.vue.resizerComponent],
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.inputComponent, 
+      bbn.vue.eventsComponent, 
+      bbn.vue.resizerComponent
+    ],
     props: {
       /**
        * The colorpicker's value.

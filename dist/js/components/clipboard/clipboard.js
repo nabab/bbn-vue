@@ -96,19 +96,19 @@ let css = document.createElement('link');
 css.setAttribute('rel', "stylesheet");
 css.setAttribute('href', bbn.vue.libURL + "dist/js/components/clipboard/clipboard.css");
 document.head.insertAdjacentElement('beforeend', css);
- /**
-  * @file bbn-clipboard component
-  *
-  * @description bbn-clipboard Classic input with normalized appearance.
-  *
-  * @author BBN Solutions
-  *
-  * @copyright BBN Solutions
-  *
-  * @created 15/08/2019.
-  */
+/**
+ * @file bbn-clipboard component
+ *
+ * @description bbn-clipboard Classic input with normalized appearance.
+ *
+ * @author BBN Solutions
+ *
+ * @copyright BBN Solutions
+ *
+ * @created 15/08/2019.
+ */
 
-(function(bbn){
+(function (bbn) {
   "use strict";
 
   let app;
@@ -117,7 +117,7 @@ document.head.insertAdjacentElement('beforeend', css);
    */
 
   Vue.component('bbn-clipboard', {
-     /**
+    /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.localStorageComponent
      */
@@ -139,19 +139,19 @@ document.head.insertAdjacentElement('beforeend', css);
       /**
        * @prop {Array} [[]] max The maximum number of items kept in the clipboard
        */
-       max: {
+      max: {
         type: Number,
         default: 20
       },
       /**
        * @prop {Array} [[]] max The maximum number of items kept in the clipboard
        */
-       maxSize: {
+      maxSize: {
         type: Number,
         default: 1000000
       }
     },
-    data(){
+    data() {
       return {
         /**
          * @data {Number} [0] opacity
@@ -179,58 +179,58 @@ document.head.insertAdjacentElement('beforeend', css);
         isOpened: false
       };
     },
-    computed: {
-    },
+    computed: {},
     methods: {
-       /**
+      /**
        * Emits a change when the state of the checkbox changes.
        *
        * @method unsearch
        */
-      unsearch(){
-        if ( this.search.length ){
+      unsearch() {
+        if (this.search.length) {
           this.search = '';
           this.items = this.source;
         }
       },
-       /**
+      /**
        * @todo empty function
        *
        * @method test
        */
-      test(uid){
+      test(uid) {
         bbn.fn.log("TEST", uid);
       },
-       /**
-       * 
+      /**
+       *
        *
        * @method togle
+       *
        */
-      toggle(){
+      toggle() {
         return this.getRef('slider').toggle();
       },
       /**
        *
-       *
+       * @fires getRef
        * @method show
        */
-      show(){
+      show() {
         return this.getRef('slider').show();
       },
       /**
        *
-       *
+       * @fires getRef
        * @method hide
        */
-      hide(){
+      hide() {
         return this.getRef('slider').hide();
       },
       /**
        *
-       *
+       * @fires getItem
        * @method save
        */
-      save(uid, title){
+      save(uid, title) {
         let item = this.getItem(uid);
         if (item) {
           let content = item.file || item.text;
@@ -244,12 +244,13 @@ document.head.insertAdjacentElement('beforeend', css);
           bbn.fn.download(title, content, item.type);
         }
       },
-       /**
-       * 
+      /**
        *
+       * @fires getItem
+       * @fires save
        * @method saveAs
        */
-      saveAs(uid){
+      saveAs(uid) {
         let item = this.getItem(uid);
         if (item) {
           let bits = item.text.split('.');
@@ -259,12 +260,14 @@ document.head.insertAdjacentElement('beforeend', css);
           }
         }
       },
-       /**
-       * 
-       *
+      /**
        * @method add
+       * @param data
+       * @emits add
+       * @fires setStorage
+       * @fires unsetStorage
        */
-      add(data){
+      add(data) {
         bbn.fn.log("ADDING IN CB", data);
         let dt = bbn.fn.timestamp();
         let uid = dt;
@@ -282,7 +285,7 @@ document.head.insertAdjacentElement('beforeend', css);
         }];
         if (data.files && data.files.length) {
           // No need for a list of files if there is only one
-          if ( data.files.length === 1 ){
+          if (data.files.length === 1) {
             ar = [];
           }
           bbn.fn.each(data.files, o => {
@@ -291,18 +294,14 @@ document.head.insertAdjacentElement('beforeend', css);
             if (o.type !== 'text/plain') {
               if (o.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
                 stype = 'ms.word';
-              }
-              else if (o.type === 'application/vnd.oasis.opendocument.text') {
+              } else if (o.type === 'application/vnd.oasis.opendocument.text') {
                 stype = 'oo.text';
-              }
-              else if (o.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+              } else if (o.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
                 stype = 'oo.sheet';
-              }
-              else if (o.type.indexOf('image/') !== 0){
+              } else if (o.type.indexOf('image/') !== 0) {
                 let bits = o.type.split('/');
                 stype = bits[1] || bits[0];
-              }
-              else{
+              } else {
                 stype = o.type.length > 15 ? bbn._('Other') : o.type;
               }
             }
@@ -318,33 +317,33 @@ document.head.insertAdjacentElement('beforeend', css);
               file: o.data
             });
           });
-        }
-        else if (data.str && data.str.length) {
+        } else if (data.str && data.str.length) {
           bbn.fn.each(data.str, o => {
             if (o.type === 'text/plain') {
               ar[0].text = o.data;
-            }
-            else {
+            } else {
               ar[0].type = o.type;
-              if (o.type.indexOf('image/') !== 0){
+              if (o.type.indexOf('image/') !== 0) {
                 let bits = o.type.split('/');
                 ar[0].stype = bits[1] || bits[0];
-              }
-              else{
+              } else {
                 stype = o.type;
               }
               ar[0].content = o.data;
             }
           });
         }
+
         let added = [];
         bbn.fn.each(ar, a => {
-          let idx = bbn.fn.search(this.items, {text: a.text, type: a.type});
+          let idx = bbn.fn.search(this.items, {
+            text: a.text,
+            type: a.type
+          });
           if (idx !== -1) {
             this.unsetStorage(this.items[idx].uid);
             this.items.splice(idx, 1);
-          }
-          else{
+          } else {
             added.unshift(a);
           }
 
@@ -354,37 +353,40 @@ document.head.insertAdjacentElement('beforeend', css);
 
           this.items.unshift(a);
         });
+
         if (added.length) {
           bbn.fn.each(added, o => {
-            bbn.fn.upload('core/upload', {
-              type: 'clipboard',
-              file: o.data
-            },
-            // success
-            res => {
-              bbn.fn.log('success', res);
-            },
-            // failure
-            res => {
-              bbn.fn.log('failure', res);
-            },
-            // progress
-            res => {
-              bbn.fn.log('progress', res)
-            });
+            bbn.fn.upload(
+              'core/upload', {
+                type: 'clipboard',
+                file: o.data
+              },
+              // success
+              res => bbn.fn.log('success', res),
+              // failure
+              res => bbn.fn.log('failure', res),
+              // progress
+              res => bbn.fn.log('progress', res)
+            );
           });
           this.$emit('add', added);
         }
         this.$forceUpdate();
       },
-       /**
-       * 
+      /**
+       *
        * @method remove
+       * @emits remove
+       * @fires unsetStorage
        */
-      remove(src){
-        let idx = bbn.fn.search(this.items, {uid: src.uid});
+      remove(src) {
+        let idx = bbn.fn.search(this.items, {
+          uid: src.uid
+        });
         if (idx > -1) {
-          let e = new Event('remove', {cancelable: true});
+          let e = new Event('remove', {
+            cancelable: true
+          });
           this.$emit('remove', e, this.items[idx]);
           if (!e.defaultPrevented) {
             this.unsetStorage(src.uid);
@@ -392,42 +394,47 @@ document.head.insertAdjacentElement('beforeend', css);
           }
         }
       },
-       /**
-       * 
+      /**
+       *
        *
        * @method getItem
-       */
-      getItem(uid){
-        return bbn.fn.getRow(this.items, {uid: uid});
-      },
-       /**
-       * 
        *
+       */
+      getItem(uid) {
+        return bbn.fn.getRow(this.items, {
+          uid: uid
+        });
+      },
+      /**
+       *
+       * @fires getRef
        * @method updateSlider
        */
-      updateSlider(){
+      updateSlider() {
         this.$nextTick(() => {
           this.getRef('slider').onResize();
         });
       },
-       /**
-       * 
+      /**
        *
+       * @fires remove
        * @method clear
        */
-      clear(){
+      clear() {
         this.confirm(bbn._('Are you sure you want to delete the whole content of the clipboard?'), () => {
-          while (this.items.length){
-            this.remove(this.items[this.items.length-1]);
+          while (this.items.length) {
+            this.remove(this.items[this.items.length - 1]);
           }
         });
       },
-       /**
-       * 
+      /**
        *
+       * @fires add
+       * @fires updateSlider
        * @method copy
+       * @return {Boolean}
        */
-      copy(e){
+      copy(e) {
         let type = e.type;
         bbn.fn.getEventData(e).then(data => {
           this.add(data);
@@ -437,11 +444,12 @@ document.head.insertAdjacentElement('beforeend', css);
         return true;
       },
       /**
-       * 
        *
+       * @fires getRef
+       * @fires getItem
        * @method setClipboard
        */
-      setClipboard(uid, mode){
+      setClipboard(uid, mode) {
         let item = this.getItem(uid);
         if (item) {
           let doIt = () => {
@@ -459,14 +467,18 @@ document.head.insertAdjacentElement('beforeend', css);
               doIt();
             };
             reader.readAsBinaryString(item.file);
-          }
-          else{
+          } else {
             doIt();
           }
         }
       },
-      onCopy(e){
-        if (e.clipboardData && this.isSetting && this.uid){
+      /**
+       * @fires getItem
+       * @fires copy
+       * @param {Object} e
+       */
+      onCopy(e) {
+        if (e.clipboardData && this.isSetting && this.uid) {
           let item = this.getItem(this.uid);
           if (item) {
             e.clipboardData.setData('text/plain', this.mode === 'html' ? item.content : item.text);
@@ -505,20 +517,31 @@ document.head.insertAdjacentElement('beforeend', css);
           this.isSetting = false;
           this.uid = null;
           this.file = null;
-        }
-        else{
+        } else {
           this.copy(e);
         }
       },
-      addInput(){
+      /**
+       * @method addInput
+       * @fires getRed
+       * @fires add
+       */
+      addInput() {
         let input = this.getRef('paster');
         if (input && input.value) {
-          this.add({raw: input.value});
+          this.add({
+            raw: input.value
+          });
           input.value = '';
         }
       }
     },
-    created(){
+    /**
+     * @method created
+     * @fires getStorage
+     * @fires unsetStorage
+     */
+    created() {
       if (!this.items && this.hasStorage) {
         let items = this.getStorage(this.getComponentName(), true);
         if (bbn.fn.isArray(items)) {
@@ -546,30 +569,47 @@ document.head.insertAdjacentElement('beforeend', css);
         let uid;
         let cp = this.getComponentName();
         for (let n in local) {
-          if (!n.indexOf(cp + '-') && 
-              (uid = parseInt(n.substr(cp.length+1))) &&
-              !bbn.fn.getRow(this.items, {uid: uid})
+          if (!n.indexOf(cp + '-') &&
+            (uid = parseInt(n.substr(cp.length + 1))) &&
+            !bbn.fn.getRow(this.items, {
+              uid: uid
+            })
           ) {
             this.unsetStorage(uid);
           }
         }
       }
     },
+    /**
+     * @event mounted
+     */
     mounted() {
       document.addEventListener('copy', this.onCopy);
       this.ready = true;
     },
+    /**
+     * @event beforeDestroy
+     */
     beforeDestroy() {
       document.removeEventListener('copy', this.onCopy);
     },
     watch: {
-      items(){
+      /**
+       * @watch items
+       * @fires remove
+       * @fires alert
+       * @fires setStorage
+       * @emits copy
+       */
+      items() {
         if (this.ready) {
           if (this.items.length > this.max) {
             let i;
             for (i = this.items.length - 1; i >= 0; i--) {
               if (!this.items[i].pinned) {
-                this.remove({uid: this.items[i].uid});
+                this.remove({
+                  uid: this.items[i].uid
+                });
                 if (this.items.length === this.max) {
                   break;
                 }
@@ -577,7 +617,9 @@ document.head.insertAdjacentElement('beforeend', css);
             }
 
             if (!i && (this.items.length > this.max)) {
-              this.remove({uid: this.items[0].uid});
+              this.remove({
+                uid: this.items[0].uid
+              });
               this.alert(bbn._("Limit reached, unpin elements to add new ones"));
               return;
             }
@@ -587,17 +629,19 @@ document.head.insertAdjacentElement('beforeend', css);
           this.$emit('copy');
         }
       },
-      search(val){
-        if ( val.length >= 3 ){
+      /**
+       * @watch search
+       */
+      search(val) {
+        if (val.length >= 3) {
           let res = [];
           res = bbn.fn.filter(this.items, a => {
-            if ( a.text.toLowerCase().indexOf(this.search.toLowerCase()) >= 0 ){
+            if (a.text.toLowerCase().indexOf(this.search.toLowerCase()) >= 0) {
               return a
-            } 
+            }
           })
           this.items = res;
-        }
-        else{
+        } else {
           this.items = this.source;
         }
       }

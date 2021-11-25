@@ -168,7 +168,12 @@ document.body.insertAdjacentElement('beforeend', script);
      * @mixin bbn.vue.listComponent
      * @mixin bbn.vue.resizerComponent
     */
-    mixins: [bbn.vue.basicComponent, bbn.vue.listComponent, bbn.vue.resizerComponent],
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.listComponent, 
+      bbn.vue.resizerComponent
+    ],
     props: {
       /**
        * Auto-loads the data at mount of the component if it's set as "true".
@@ -182,7 +187,7 @@ document.body.insertAdjacentElement('beforeend', script);
        * The array of events for each day.
        * When a string is set, an ajax call will be made to the corresponding url.
        *
-       * @prop {String|Array} [[]] source
+       * @prop {(String|Array)} [[]] source
       */
       source: {
         type: [String, Array],

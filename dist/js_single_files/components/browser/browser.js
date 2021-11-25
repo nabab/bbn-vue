@@ -104,13 +104,29 @@ document.body.insertAdjacentElement('beforeend', script);
         `,
         data(){
           return {
+            /**
+             * @data {Boolean} [false] ssl
+             */
             ssl: false,
+            /**
+             * @data {String} ['home'] url
+             */
             url: 'home',
+            /**
+             * @data {String} [null] rawURL
+             */
             rawURL: null,
+            /**
+             * @data {String} [null] realURL
+             */
             realURL: null
           }
         },
         methods: {
+          /**
+           * @method keydown
+           * @param e
+           */
           keydown(e){
             bbn.fn.log(e)
           }

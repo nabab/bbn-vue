@@ -250,7 +250,7 @@
                         left: currentColumns[1].left !== undefined ? currentColumns[1].left + 'px' : 'auto',
                         width: 'auto',
                         borderRight: '0px',
-                        overflow: 'unset'
+                        overflow: 'unset' 
                       }">
                     <div class="bbn-block"
                          :style="{
@@ -383,7 +383,7 @@
                       </template>
                       <template v-else-if="col.buttons && (buttonMode === 'menu')">
                         <bbn-context :source="Array.isArray(col.buttons) ? col.butttons : col.buttons(d.data, col, i)">
-                          <span class="bbn-iblock bbn-hspadded">
+                          <span class="bbn-iblock bbn-lg bbn-hspadded">
                             <i :class="buttonIcon"/>
                           </span>
                         </bbn-context>

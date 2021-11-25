@@ -7,7 +7,7 @@ script.innerHTML = `<component :is="tag"
            @click="clickItem"
            @contextmenu="clickItem"
            @keydown.space.enter="clickItem"
-           @mousedown.prevent.stop="() => {return false}"
+           @mousedown="onMouseDown"
            @touchstart="touchstart"
            @touchmove="touchmove"
            @touchend="touchend"
@@ -64,24 +64,31 @@ document.head.insertAdjacentElement('beforeend', css);
      * @mixin bbn.vue.dimensionsComponent
      * @mixin bbn.vue.eventsComponent
      */
-    mixins: [
+    mixins: 
+    [
       bbn.vue.basicComponent,
       bbn.vue.listComponent,
       bbn.vue.dimensionsComponent,
       bbn.vue.eventsComponent
     ],
     props: {
+      /**
+       * @prop {Boolean} [false] autobind
+       */
       autobind: {
         type: Boolean,
         default: false
       },
+      /**
+       * @prop {Boolean} [false] disabled
+       */
       disabled: {
         type: Boolean,
         default: false
       },
       /**
        * Will force the position.
-       * @prop {String} position
+       * @prop {String} [''] position
        */
       position: {
         type: String,
@@ -149,6 +156,9 @@ document.head.insertAdjacentElement('beforeend', css);
          * @data {Boolean} [false] showFloater
          */
         showFloater: false,
+        /**
+         * @data {Boolean} [false] docEvent
+         */
         docEvent: false,
 
       };
@@ -179,11 +189,18 @@ document.head.insertAdjacentElement('beforeend', css);
           }
         }
       },
+      /**
+       * @method clickOut
+       * @param e
+       */
       clickOut(e){
         if (!e.target.closest('.bbn-floater-context-' + this.bbnUid)) {
           this.showFloater = false;
         }
       },
+      /**
+       * @method toggle
+       */
       toggle(){
         if (!this.showFloater) {
           this.updateData().then(() => {
@@ -193,8 +210,23 @@ document.head.insertAdjacentElement('beforeend', css);
         else {
           this.showFloater = !this.showFloater;
         }
+      },
+      onMouseDown(e){
+        let event = new CustomEvent('mousedown', {
+          cancelable: true,
+          detail: e
+        });
+        this.$emit('mousedown', event);
+        if (!event.defaultPrevented) {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }
       }
     },
+    /**
+     * @method beforeDestroy
+     */
     beforeDestroy() {
       if (this.docEvent) {
         document.removeEventListener('click', this.clickout)

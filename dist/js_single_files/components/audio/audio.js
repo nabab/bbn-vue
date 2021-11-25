@@ -87,6 +87,7 @@ document.body.insertAdjacentElement('beforeend', script);
     props: {
       /**
        * The aduio's URL
+       * @prop {String} [true] source
        */
       source: {
         type: String,

@@ -135,7 +135,7 @@ document.body.insertAdjacentElement('beforeend', script);
       /**
        * Specifies the time of delay.
        *
-       * @prop {Number} [10] delay
+       * @prop {Number} [250] delay
        */
       delay: {
         type: Number,

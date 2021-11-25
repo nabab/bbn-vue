@@ -106,7 +106,13 @@ document.body.insertAdjacentElement('beforeend', script);
      * @mixin bbn.vue.viewComponent
      * @mixin bbn.vue.observerComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent, bbn.vue.viewComponent, bbn.vue.observerComponent],
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.resizerComponent, 
+      bbn.vue.viewComponent, 
+      bbn.vue.observerComponent
+    ],
     props: {
       /**
        * The index of the container

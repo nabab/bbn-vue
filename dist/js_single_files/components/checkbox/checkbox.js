@@ -54,7 +54,8 @@ document.body.insertAdjacentElement('beforeend', script);
      * @mixin bbn.vue.eventsComponent
      *
      */
-    mixins: [
+    mixins: 
+    [
       bbn.vue.basicComponent,
       bbn.vue.inputComponent,
       bbn.vue.eventsComponent

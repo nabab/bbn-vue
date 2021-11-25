@@ -4,29 +4,30 @@
            v-bind="renderedOptions"
            v-model="currentValue"
            :class="componentClass"
-           @input="$emit('input', currentValue)">
-  <div v-if="renderedContent"
-       v-html="renderedContent"/>
+           @input="$emit('input', currentValue)"
+
+>
+  <div v-if="renderedContent" v-html="renderedContent"></div>
 </component>
 <component v-else
            :is="renderedComponent"
            v-bind="renderedOptions"
-           :class="componentClass">
-  <div v-if="renderedContent"
-       v-html="renderedContent"/>
+           :class="componentClass"
+>
+  <div v-if="renderedContent" v-html="renderedContent"></div>
 </component>
 </template>
 <script>
-  module.exports = /**
+  module.exports = /*bbn-field is a generic component of simple construction, its potential lies in the versatility of use, assigning to the property "type" a well-defined value, it becomes a "bbn" component.
+  * For example if we assign the value "numeric" to the property type, it will become "bbn-numeric"*/
+
+/**
   * @file bbn-field component
   *
   * @description 
   * 
   * bbn-field is a versatile component that adapts itself to the type of the data given by the user. 
   *
-  * bbn-field is a generic component of simple construction, its potential lies in the versatility of use, assigning to the property "type" a well-defined value, it becomes a "bbn" component.
-  * For example if we assign the value "numeric" to the property type, it will become "bbn-numeric"
-  * 
   * @copyright BBN Solutions
   *
   * @author BBN Solutions
@@ -43,8 +44,14 @@
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.fieldComponent
+     * @mixin bbn.vue.dataComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.fieldComponent, bbn.vue.dataComponent],
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.fieldComponent, 
+      bbn.vue.dataComponent
+    ],
     props: {
       value: {},
       /**

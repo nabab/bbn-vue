@@ -31,7 +31,7 @@
                             min-width="10em"
                             tabindex="0"
                             :item-component="$options.components.listItem"
-                            class="bbn-h-100"
+                            class="bbn-h-100 bbn-vmiddle"
                             :attach="itsMaster ? (itsMaster.getRef('breadcrumb') || undefined) : undefined"
                             :autobind="false"
                             :style="{
@@ -45,7 +45,7 @@
                              tabindex="0"
                              :context="true"
                              :autobind="false"
-                             class="bbn-h-100">
+                             class="bbn-vmiddle bbn-h-100">
                   <div class="bbn-vmiddle bbn-h-100">
                     <div class="bbn-router-breadcrumb-badge-container bbn-middle"
                           v-if="isNumber(bc.selected) && bc.views[bc.selected] && numProperties(bc.views[bc.selected].events)">
@@ -68,7 +68,8 @@
                       <span v-if="isNumber(bc.selected) && bc.views[bc.selected] && bc.views[bc.selected].icon"
                             :title="bc.views[bc.selected].title"
                             :class="'bbn-router-breadcrumb-element-icon bbn-h-100 bbn-vmiddle bbn-right-xsspace' + (bc.views[bc.selected].notext ? ' bbn-lg' : ' bbn-m')">
-                        <i :class="bc.views[bc.selected].icon"/>
+                        <i :class="bc.views[bc.selected].icon"
+                            style="zoom: 1.1"/>
                       </span>
                       <span v-if="isNumber(bc.selected) && bc.views[bc.selected] && !bc.views[bc.selected].notext"
                             :class="['bbn-router-breadcrumb-element-text', {'bbn-b': !breadcrumbs[i+1]}]"
@@ -168,7 +169,8 @@
                       <span v-if="tab.icon"
                             :title="tab.title"
                             :class="'bbn-router-tabs-main-icon bbn-iblock' + (tab.notext ? ' bbn-lg' : ' bbn-m')">
-                        <i :class="tab.icon"/>
+                        <i :class="tab.icon"
+                            :style="{zoom: iconsReady ? 1.1 : 1}"/>
                       </span>
                       <span v-if="!tab.notext && tab.title"
                             class="bbn-router-tab-text"

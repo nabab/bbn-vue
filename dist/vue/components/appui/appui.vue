@@ -324,7 +324,8 @@
      * @mixin bbn.vue.observerComponent
      * @mixin bbn.vue.browserNotificationComponent
      */
-    mixins: [
+    mixins:
+    [
       bbn.vue.basicComponent,
       bbn.vue.resizerComponent,
       bbn.vue.localStorageComponent,
@@ -332,48 +333,78 @@
       bbn.vue.browserNotificationComponent
     ],
     props: {
+      /**
+       * @prop {String} ['bbn.env.path'] url
+       */
       url: {
         type: String,
         default: bbn.env.path
       },
+      /**
+       * @prop {String} def
+       */
       def: {
         type: String
       },
+      /**
+       * @prop {Boolean} [true] autoload
+       */
       autoload: {
         type: Boolean,
         default: true
       },
+      /**
+       * @prop {Boolean} [false] disabled
+       */
       disabled: {
         type: Boolean,
         default: false
       },
+      /**
+       * @prop {Object} [{}] options
+       */
       options: {
         type: Object,
         default(){
           return {}
         }
       },
+      /**
+       * @prop {Array} [[]] menus
+       */
       menus: {
         type: Array,
         default(){
           return []
         }
       },
+      /**
+       * @prop {String} currentMenu
+       */
       currentMenu:{
         type: String
       },
+      /**
+       * @prop {Array} [[]] shortcuts
+       */
       shortcuts: {
         type: Array,
         default(){
           return []
         }
       },
+      /**
+       * @prop {Object} [{}] plugins
+       */
       plugins: {
         type: Object,
         default(){
           return {}
         }
       },
+      /**
+       * @prop {Object} [{'span'}] cfg
+       */
       cfg: {
         type: Object,
         default(){
@@ -382,6 +413,9 @@
           }
         }
       },
+      /**
+       * @prop {Array} [[]] source
+       */
       source: {
         type: Array,
         default(){
@@ -394,16 +428,25 @@
           }*/];
         }
       },
+      /**
+       * @prop {(Object|Boolean)} [{}] searchBar
+       */
       searchBar: {
         type: [Object, Boolean],
         default(){
           return {}
         }
       },
+      /**
+       * @prop {Boolean} [false] single
+       */
       single: {
         type: Boolean,
         default: false
       },
+      /**
+       * @prop {String} ['bbn.env.siteTitle || bbn._("App-UI")'] title
+       */
       title: {
         type: String,
         default: bbn.env.siteTitle || bbn._('App-UI')
@@ -431,7 +474,7 @@
       },
       /**
        * Will be passed to router in order to ignore the dirty parameter.
-       * @prop {Boolean} ignoreDirty
+       * @prop {Boolean} [false] ignoreDirty
        */
        ignoreDirty: {
         type: Boolean,
@@ -493,21 +536,6 @@
       footerComponent(){
         return (typeof this.footer !== 'undefined') && !!this.footer ? this.footer : false;
       },
-      powerColor(){
-        if (this.mode === 'dev') {
-          return 'var(--purple)';
-        }
-
-        if (this.mode === 'prod') {
-          return 'var(--green)';
-        }
-
-        if (this.mode === 'test') {
-          return 'var(--blue)';
-        }
-
-        return '';
-      },
       appMode(){
         if (this.mode === 'dev') {
           return bbn._("Application in development mode");
@@ -550,6 +578,21 @@
           }
         ];
       },
+      powerColor(){
+        if (this.mode === 'dev') {
+          return 'var(--purple)';
+        }
+
+        if (this.mode === 'prod') {
+          return 'var(--green)';
+        }
+
+        if (this.mode === 'dev') {
+          return 'var(--blue)';
+        }
+
+        return '';
+      }
     },
     methods: {
       onCopy(){

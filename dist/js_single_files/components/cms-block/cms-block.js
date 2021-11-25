@@ -54,7 +54,7 @@ script.setAttribute('type', 'text/x-template');
 document.body.insertAdjacentElement('beforeend', script);
 /**
  * @file bbn-cms-block component
- * @description bbn-cms-block 
+ * @description bbn-cms-block
  * @copyright BBN Solutions
  * @author Loredana Bruno
  * @created 09/11/2020.
@@ -80,12 +80,12 @@ document.body.insertAdjacentElement('beforeend', script);
                            v-model="source.content"/>`
     },
     html: {
-      view: `<div @click="$parent.editMode" @mouseover="$parent.mouseover" @mouseleave="$parent.mouseleave"  
+      view: `<div @click="$parent.editMode" @mouseover="$parent.mouseover" @mouseleave="$parent.mouseleave"
                   :class="['component-container', 'bbn-block-html', alignClass]"
-                  v-html="source.content" 
+                  v-html="source.content"
                   :style="style">
-              
-            </div>`, 
+
+            </div>`,
       edit: `<div :class="['component-container', 'bbn-block-html', alignClass ]">
               <bbn-rte v-model="source.content">
               </bbn-rte>
@@ -118,10 +118,10 @@ document.body.insertAdjacentElement('beforeend', script);
                 <label v-text="_('Line')"></label>
                 <bbn-checkbox v-model="source.hr"></bbn-checkbox>
               </div>
-            </div>`        
-    },  
+            </div>`
+    },
     image: {
-      //taglia originale 100% width,width 50% 33% 25% 
+      //taglia originale 100% width,width 50% 33% 25%
       view: `
       <div class="component-container bbn-block-image" :class="alignClass">
         <a v-if="source.href" target="_self" :href="$parent.linkURL + source.href" class="bbn-c">
@@ -132,23 +132,23 @@ document.body.insertAdjacentElement('beforeend', script);
           >
         </a>
         <img v-else
-             :src="$parent.path + source.src" 
+             :src="$parent.path + source.src"
              :style="style"
              :alt="source.alt ? source.alt : ''"
         >
-        <p class="image-caption bbn-l bbn-s bbn-vsmargin" 
-           v-if="source.caption" 
+        <p class="image-caption bbn-l bbn-s bbn-vsmargin"
+           v-if="source.caption"
            v-html="source.caption"
         ></p>
         <!--error when using decodeuricomponent on details of home image-->
-        <a class="image-details-title bbn-l bbn-vsmargin bbn-w-100" 
-           v-if="source.details_title" 
+        <a class="image-details-title bbn-l bbn-vsmargin bbn-w-100"
+           v-if="source.details_title"
            v-html="(source.details_title)"
            :href="source.href"
            target="_blank"
         ></a>
-        <p class="image-details bbn-l bbn-vsmargin" 
-           v-if="source.details" 
+        <p class="image-details bbn-l bbn-vsmargin"
+           v-if="source.details"
            v-html="(source.details)"
         ></p>
       </div>`,
@@ -161,33 +161,33 @@ document.body.insertAdjacentElement('beforeend', script);
                         remove-url="test/remove"
                         :json="true"
                         :paste="true"
-                        :multiple="false"	
+                        :multiple="false"
                         v-model="image"
                         @success="imageSuccess"
             ></bbn-upload>
-          
+
             <label v-text="_('Image size')"></label>
-            <bbn-cursor v-model="source.style['width']" 
+            <bbn-cursor v-model="source.style['width']"
                         unit="%"
                         :min="0"
                         :max="100"
                         :step="20"
             ></bbn-cursor>
-          
+
             <label v-text="_('Image alignment')"></label>
             <bbn-block-align-buttons></bbn-block-align-buttons>
-          </div> 
+          </div>
         </div>
         <img :src="$parent.path + source.src" :style="style">
         <p class="image-caption bbn-l bbn-s bbn-vsmargin" v-if="source.caption" v-html="source.caption"></p>
-      </div>          
+      </div>
                 `
-    }, 
+    },
     carousel: {
       view: `
       <div :class="['component-container', 'bbn-block-carousel', 'bbn-w-100',  alignClass]" :style="style" v-if="show">
         <div v-for="(group, idx) in carouselSource"
-             v-if="idx === currentCarouselIdx" 
+             v-if="idx === currentCarouselIdx"
         >
           <bbn-cms-carousel-control :source="idx"
                                     :key="idx"
@@ -225,11 +225,11 @@ document.body.insertAdjacentElement('beforeend', script);
                       remove-url="test/remove"
                       :data="{gallery: true}"
                       :paste="true"
-                      :multiple="true"	
+                      :multiple="true"
                       v-model="source.content"
                       @success="imageSuccess"
           ></bbn-upload>
-        
+
         </div>
       </div>
       `
@@ -238,22 +238,22 @@ document.body.insertAdjacentElement('beforeend', script);
       view: `
         <div :class="['component-container', 'bbn-cms-block-video', alignClass]">
           <!--ERROR ON HOME-->
-          <!--bbn-video :width="source.width" 
-                     :style="style" 
+          <!--bbn-video :width="source.width"
+                     :style="style"
                      :height="source.height"
                      :autoplay="autoplay"
                      :muted="muted"
                      :youtube="youtube"
                      :source="source.src"
           ></bbn-video-->
-          <iframe 
-                  :style="style" 
-                  
+          <iframe
+                  :style="style"
+
                   :autoplay="false"
-                  
+
                   :src="source.src"
-           ></iframe>       
-        </div>`, 
+           ></iframe>
+        </div>`,
       edit: `
       <div class="component-container" id="video-container">
         <div class="bbn-grid-fields bbn-padded">
@@ -283,7 +283,7 @@ document.body.insertAdjacentElement('beforeend', script);
           <div>
             <bbn-cursor v-model="source.style['width']"
                         :min="100"
-                        :max="1000" 
+                        :max="1000"
                         :step="10"
                         class="bbn-w-70"
             ></bbn-cursor>
@@ -292,27 +292,27 @@ document.body.insertAdjacentElement('beforeend', script);
           <div>
             <bbn-cursor v-model="source.style['height']"
                         :min="100"
-                        :max="1000" 
+                        :max="1000"
                         :step="10"
                         class="bbn-w-70"
             ></bbn-cursor>
           </div>
         </div>
         <div :class="alignClass">
-          <bbn-video :width="source.style.width" 
-                    :style="style" 
+          <bbn-video :width="source.style.width"
+                    :style="style"
                     :height="source.style.height"
                     :autoplay="autoplay"
                     :muted="muted"
                     :youtube="youtube"
                     :source="source.content"
           ></bbn-video>
-        </div>          
+        </div>
       </div>
-      `                     
+      `
     },
     line: {
-      view: `<div class="component-container"><hr :style="style"></div>`, 
+      view: `<div class="component-container"><hr :style="style"></div>`,
       edit: `<div class="block-line-edit component-container">
               <hr :style="style">
               <div class="block-line-edit-command bbn-padded">
@@ -321,7 +321,7 @@ document.body.insertAdjacentElement('beforeend', script);
                   <div>
                     <bbn-cursor v-model="source.style['width']"
                                 :min="0"
-                                :max="100" 
+                                :max="100"
                                 unit="%"
                     ></bbn-cursor>
                   </div>
@@ -329,7 +329,7 @@ document.body.insertAdjacentElement('beforeend', script);
                   <div>
                     <bbn-cursor v-model="source.style['border-width']"
                                 :min="1"
-                                :max="10" 
+                                :max="10"
                                 unit="px"
                     ></bbn-cursor>
                   </div>
@@ -339,7 +339,7 @@ document.body.insertAdjacentElement('beforeend', script);
                                   :source="borderStyle"
                     ></bbn-dropdown>
                   </div>
-                
+
                   <label>Line color</label>
                   <div>
                     <bbn-colorpicker v-model="source.style['border-color']"
@@ -358,16 +358,16 @@ document.body.insertAdjacentElement('beforeend', script);
       edit: `
           <div class="component-container" :style="style">
             <div :style="style" class="block-space-edit">
-              <bbn-cursor v-model="source.style.height" 
+              <bbn-cursor v-model="source.style.height"
                           unit="px"
                           :min="0"
                           :step="50"
               ></bbn-cursor>
             </div>
-          </div>`  
+          </div>`
     },
   };
-  
+
   let borderStyle =  [{"text":"hidden","value":"hidden"},{"text":"dotted","value":"dotted"},{"text":"dashed","value":"dashed"},{"text":"solid","value":"solid"},{"text":"double","value":"double"},{"text":"groove","value":"groove"},{"text":"ridge","value":"ridge"}];
   Vue.component('bbn-cms-block', {
     /**
@@ -377,6 +377,7 @@ document.body.insertAdjacentElement('beforeend', script);
     props: {
       /**
        * The aduio's URL
+       * @prop {Object} [true] source
        */
       source: {
         type: Object,
@@ -390,15 +391,26 @@ document.body.insertAdjacentElement('beforeend', script);
         type: String,
         default: ''
       },
+      /**
+       * @prop {Number} index
+       */
       index: {
         type: Number,
       },
-      //the path for the index showing the images ('ex: image/')
+      /**
+       * The path for the index showing the images ('ex: image/').
+       *
+       * @prop {String} [''] path
+       */
       path: {
         type: String,
         default: ''
       },
-      //the path for the links (give a path to a controller to manage the links)
+      /**
+       * The path for the links (give a path to a controller to manage the links).
+       *
+       * @prop {String} [''] linkURL
+       */
       linkURL: {
         type: String,
         default: ''
@@ -410,35 +422,79 @@ document.body.insertAdjacentElement('beforeend', script);
     },
     data(){
       return {
+        /**
+         * @data {Boolean} [false] over
+         */
         over: false,
+        /**
+         * @data {Boolean} [false] edit
+         */
         edit: false,
+        /**
+         * @data {Boolean} [true] isAdmin
+         */
         isAdmin: true,
+        /**
+         * @data {Boolean} [true] editing
+         */
         editing: true,
+        /**
+         * @data {String} ['100%'] width
+         */
         width: '100%',
+        /**
+         * @data {String} ['100%'] height
+         */
         height: '100%',
-        //ready is important for the component template to be defined 
+        //ready is important for the component template to be defined
+        /**
+         * Ready is important for the component template to be defined.
+         *
+         * @data {Boolean} [true] ready
+         */
         ready: true,
         initialSource: {}
       }
     },
     computed: {
+      /**
+       * changed
+       * @returns {boolean}
+       */
       changed(){
         return !bbn.fn.isSame(this.initialSource, this.source)
       },
+      /**
+       * type
+       * @returns {"all"|"sharedworker"|"window"|"worker"|string}
+       */
       type(){
         return this.source.type || 'text'
-      }, 
+      },
+      /**
+       * parent
+       * @returns {*|null}
+       */
       parent(){
         return this.ready ? this.closest('bbn-container').getComponent() : null;
       }
     },
     methods: {
+      /**
+       * @method onMyMouseEnter
+       */
       onMyMouseEnter(){
         alert('enter')
       },
+      /**
+       * @method mouseleave
+       */
       mouseleave(){
         this.over = false
       },
+      /**
+       * @method mouseover
+       */
       mouseover(){
         this.over = true
         /*console.log('over: ' + this.over)
@@ -451,18 +507,29 @@ document.body.insertAdjacentElement('beforeend', script);
           this.over = true;
         }*/
       },
+      /**
+       * @method mouseenter
+       */
       mouseenter(){
         alert('enter')
       },
+      /**
+       * @method selectImg
+       * @param st
+       */
       selectImg(st){
         bbn.fn.link(st);
       },
+      /**
+       * @method alert
+       */
       alert(){
         alert('test')
-      }, 
+      },
       /**
        * adds the events listener when edit = true
-       * @param {boolean} edit 
+       * @method _setEvents
+       * @param {boolean} edit
        */
       _setEvents(){
         bbn.fn.log("setEvenbt")
@@ -480,6 +547,10 @@ document.body.insertAdjacentElement('beforeend', script);
           document.removeEventListener('touchstart', this.checkMouseDown);
         }*/
       },
+      /**
+       * @method checkKeyCode
+       * @param e
+       */
       checkKeyCode(e){
         bbn.fn.log("checkKeyCode")
         if ( e.keyCode === 27 ){
@@ -488,7 +559,7 @@ document.body.insertAdjacentElement('beforeend', script);
       },
       /**
        * set edit to false
-       * @param {event} e 
+       * @param {event} e
        */
       checkMouseDown(e){
         if ( !e.target.closest(".bbn-cms-block-edit") ){
@@ -502,6 +573,9 @@ document.body.insertAdjacentElement('beforeend', script);
           this.editMode();
         }
       },
+      /**
+       * @method editBlock
+       */
       editBlock(){
         bbn.fn.log("editBlock")
         if ( this.changed ){
@@ -515,6 +589,9 @@ document.body.insertAdjacentElement('beforeend', script);
           this.edit = false;
         }
       },
+      /**
+       * @method cancelEdit
+       */
       cancelEdit(){
         bbn.fn.log("cancelEdit")
         bbn.fn.iterate(this.initialSource, (v, i)=>{
@@ -522,6 +599,9 @@ document.body.insertAdjacentElement('beforeend', script);
           this.edit = false;
         })
       },
+      /**
+       * @method editNode
+       */
       editMode(){
         bbn.fn.log("editMode")
         let blocks = this.closest('bbn-container').getComponent().findAll('bbn-cms-block');
@@ -533,7 +613,9 @@ document.body.insertAdjacentElement('beforeend', script);
       },
       /**
        * returns the object of the component basing on the given type
-       * @param {string} type 
+       *
+       * @method component
+       * @param {string} type
        */
       component(type){
         return {
@@ -577,9 +659,9 @@ document.body.insertAdjacentElement('beforeend', script);
                     // do whatever
                 }
                 return res;
-                
+
               }
-              
+
             },
             mobile(){
               if ( bbn.env.width <= 640 ){
@@ -644,7 +726,7 @@ document.body.insertAdjacentElement('beforeend', script);
               let st = '';
               if ( this.source.style ){
                 if ( this.source.style['color'] ){
-                  st += 'color: ' + this.source.style['color'] + ';' 
+                  st += 'color: ' + this.source.style['color'] + ';'
                 }
                 if ( this.source.style['font-size'] ){
                   st += 'font-size:' + this.source.style['font-size'] + ( bbn.fn.isNumber(this.source.style['font-size']) ? ( 'px;') : ';');
@@ -668,7 +750,7 @@ document.body.insertAdjacentElement('beforeend', script);
                     st += 'border-bottom:0'
                   }
                 }
-                else { 
+                else {
                   if ( this.source.style['border-width'] ){
                     st += 'border-width:' + this.source.style['border-width'] + ( bbn.fn.isNumber(this.source.content['border-width']) ? 'px;' : ';');
                   }
@@ -687,13 +769,13 @@ document.body.insertAdjacentElement('beforeend', script);
                     this.source.type === 'video' ? (margin = 'float: right') : (margin = 'margin-right: 0');
                   break;
                 }
-                st += margin; 
+                st += margin;
 
               }
               return st;
             }
-          }, 
-          methods: { 
+          },
+          methods: {
             decodeURIComponent(st){
               //the regular expression to match the new line
               /*let reg = /\r?\n|\r/g;
@@ -733,7 +815,7 @@ document.body.insertAdjacentElement('beforeend', script);
                       })
                     }
                   }
-    
+
                 }
               this.show = true;
               }
@@ -747,7 +829,7 @@ document.body.insertAdjacentElement('beforeend', script);
             cpHTML(tag, type){
               return {
                 props: ['source'],
-                template: (type === 'title') ? titleTemplates[tag] : htmlTemplates[tag], 
+                template: (type === 'title') ? titleTemplates[tag] : htmlTemplates[tag],
               }
             },
             /** @todo Seriously these arguments names??  */
@@ -759,18 +841,18 @@ document.body.insertAdjacentElement('beforeend', script);
                   setTimeout(() => {
                     this.show = false;
                     //this.source.content.push(c.image);//
-                    this.makeSquareImg();  
+                    this.makeSquareImg();
                   }, 200);
                 }
                 else{
-                  this.source.content = c.image.name; 
+                  this.source.content = c.image.name;
                 }
                 appui.success(bbn._('Image correctly uploaded'))
               }
               else{
                 appui.error(bbn._('An error occurred while uploading the image'))
               }
-              
+
             }
           },
           components: {
@@ -784,19 +866,19 @@ document.body.insertAdjacentElement('beforeend', script);
                 <a  target="_self" @click="selectImg">
                   <!--TO TAKE IMAGE FROM THE INDEX-->
                   <img :src="path + source.src" :alt="source.alt ? source.alt : ''" :style="$parent.source.style">
-                  <div v-if="source.caption || (source.title && (type === 'carousel'))" 
+                  <div v-if="source.caption || (source.title && (type === 'carousel'))"
                        :class="['bbn-block-gallery-caption',$parent.alignClass]"
                        v-html="(source.caption && (type === 'gallery')) ? source.caption : source.title"
                   ></div>
-                  <div v-if="source.details_title" 
+                  <div v-if="source.details_title"
                        :class="['image-details-title',$parent.alignClass]"
                        v-html="source.details_title"
                   ></div>
-                  <div v-if="source.details" 
+                  <div v-if="source.details"
                        :class="['image-details',$parent.alignClass]"
                        v-html="source.details"
                   ></div>
-                  <div v-if="source.price" 
+                  <div v-if="source.price"
                        :class="['image-price',$parent.alignClass]"
                        v-text="source.price"
                   ></div>
@@ -805,7 +887,7 @@ document.body.insertAdjacentElement('beforeend', script);
                         :class="$parent.alignClass"/>
                 </a>
                 `
-                
+
                /*template: `
                 <a :href="(source.src ? source.src : source.name)" target="_blank">
                   <!--TO TAKE IMAGE FROM THE INDEX-->
@@ -836,7 +918,7 @@ document.body.insertAdjacentElement('beforeend', script);
                   type(){
                     return this.$parent.source.type
                   }
-                }, 
+                },
                 mounted(){
                   bbn.fn.happy(this.source.price)
                 }
@@ -847,7 +929,7 @@ document.body.insertAdjacentElement('beforeend', script);
                 <span>
                   <i @click="prev" class="prev nf nf-oct-chevron_left"></i>
                   <i @click="next" class="next nf nf-oct-chevron_right"></i>
-                </span>  
+                </span>
               </div>`,
               methods: {
                 next(){
@@ -867,23 +949,23 @@ document.body.insertAdjacentElement('beforeend', script);
               template: `
               <div>
                 <bbn-button icon="nf nf-fa-align_left"
-                            :title="_('Align left')" 
+                            :title="_('Align left')"
                             :notext="true"
-                            @click="align = 'left'" 
+                            @click="align = 'left'"
                             :class="{'bbn-state-active': ($parent.source.align === 'left')}"
                 ></bbn-button>
                 <bbn-button icon="nf nf-fa-align_center" :title="_('Align left')"
-                            :notext="true" 
+                            :notext="true"
                             @click="align = 'center'"
                             :class="{'bbn-state-active': ($parent.source.align === 'center')}"
                 ></bbn-button>
                 <bbn-button icon="nf nf-fa-align_right"
                             :title="_('Align left')"
-                            :notext="true" 
+                            :notext="true"
                             @click="align = 'right'"
                             :class="{'bbn-state-active': ($parent.source.align === 'right')}"
                 ></bbn-button>
-              </div>`, 
+              </div>`,
               data(){
                 return {
                   align: ''
@@ -895,8 +977,8 @@ document.body.insertAdjacentElement('beforeend', script);
                   this.$parent.$parent.$forceUpdate();
                 },
               },
-            }, 
-            
+            },
+
           },
           watch:{
             'source.columns':{
@@ -912,17 +994,17 @@ document.body.insertAdjacentElement('beforeend', script);
             if ( this.$parent.edit ){
               if ( (this.source.type === 'image') && this.source.content && this.source.content.length ){
                 let extension = this.source.content.substr(this.source.content.lastIndexOf('.'), this.source.content.length)
-                //take the correct size 
+                //take the correct size
                 this.image.push({
                   "name": this.source.content,
                   "size":574906,
                   "extension": extension
-                });  
+                });
               }
               else if ( (this.source.type === 'gallery') && this.source.content && this.source.content.length ){
                 /*this.image = bbn.fn.map(this.source.content, a => {
                   let extension = a.src.substr(a.src.lastIndexOf('.'), a.src.length);
-                  a.name = a.src; 
+                  a.name = a.src;
                   a.size = 465464;
                   a.extension = extension;
                   return a
@@ -930,12 +1012,12 @@ document.body.insertAdjacentElement('beforeend', script);
               }
             }
           },
-          mounted(){ 
+          mounted(){
             if ( (this.source.type === 'gallery') || (this.source.type === 'carousel') ){
               this.makeSquareImg();
             }
           },
-          
+
         }
       },
     },
@@ -959,10 +1041,10 @@ document.body.insertAdjacentElement('beforeend', script);
       if ( this.source.style && this.source.style.align ){
         this.source.align = this.source.style.align;
       }
-      
+
       bbn.fn.log("I AM THE BLOCK! ", this.source);
-    }, 
-    
+    },
+
     watch: {
       changed(){
         bbn.fn.log("changed")
@@ -977,7 +1059,7 @@ document.body.insertAdjacentElement('beforeend', script);
         if ( ( val === false ) && ( this.newBlock === true ) ){
           this.parent.source.lines.push(this.source)
           this.parent.lines.push({
-            content: { 
+            content: {
               data:  '<div>[CONTENT]</div>'
             },
             type: ''
@@ -988,8 +1070,8 @@ document.body.insertAdjacentElement('beforeend', script);
         //this._setEvents()
         */
       }
-    }, 
- 
+    },
+
   });
 })(bbn);
 

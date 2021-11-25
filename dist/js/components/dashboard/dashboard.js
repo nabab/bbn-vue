@@ -90,7 +90,12 @@ document.head.insertAdjacentElement('beforeend', css);
      * @mixin bbn.vue.resizerComponent
      * @mixin bbn.vue.localStorageComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent, bbn.vue.localStorageComponent],
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.resizerComponent, 
+      bbn.vue.localStorageComponent
+    ],
     props: {
       /**
        * @prop {Object} [{}] components

@@ -261,7 +261,8 @@
         floaterRight: null,
         floaterTop: null,
         floaterBottom: null,
-        currentFn: false
+        currentFn: false,
+        currentToken: false
       };
     },
 
@@ -555,7 +556,12 @@
           let pos = toAdd.indexOf(lastWord);
           let dollarIncrement = toAdd.substr(0, 1) === '$' ? 1 : 0;
           if ((this.mode === 'php') && (row.ref || (row.type === 'object'))) {
-            toAdd += '->';
+            if (['X', 'Str'].includes(row.ref)) {
+              toAdd += '::';
+            }
+            else {
+              toAdd += '->';
+            }
           }
 
           if (pos === dollarIncrement) {
@@ -567,6 +573,8 @@
         if (row.type === 'fn') {
           cursor.ch--;
         }
+
+        bbn.fn.log("EPLACING WITH", toAdd, this.currentToken);
 
         this.widget.replaceSelection(toAdd);
         this.widget.setCursor(cursor);
@@ -591,9 +599,9 @@
 
         /** @var Boolean True if we are inside a function call (between the parenthesis) */
         let isFn = false;
-        /** @var Boolean True is we are in the process to calla method (after -> or ::) */
+        /** @var Boolean True is we are in the process to call a method (after -> or ::) */
         let isMethod = false;
-        /** @var RegExp Alphanumeric plus ->:\ staring with a letter or a dollar */
+        /** @var RegExp Alphanumeric plus ->:\ starting with a letter or a dollar */
         let regex = new RegExp('[\\$]*[A-z]+[\\>\\:\\(A-z0-9_\\-]+', 'g');
         // All the matches in the given string
         let matches = [...str.matchAll(regex)];
@@ -610,7 +618,7 @@
 
           // Here we have our string to complete
           if (search) {
-            //bbn.fn.log("Searching " + search);
+            bbn.fn.log("Searching " + search);
             // Dividing it in words
             let words = [...search.matchAll(/\w+/g)].map(a => a[0]);
             if (!words.length) {
@@ -626,7 +634,7 @@
               }
             });
 
-            //bbn.fn.log("WORDS", words);
+            bbn.fn.log("WORDS", words);
             let method = false;
             let cls = false;
             // If the previous char is an opening parenthesis we are calling a function
@@ -639,6 +647,7 @@
               isMethod = true;
               cls = search.substr(0, search.length-2);
             }
+            bbn.fn.log(isFn ? "METH" : "CLASS", isFn ? method : cls);
 
             let res = [];
             let doc = bbn.vue.phpLang;
@@ -651,6 +660,7 @@
                     return;
                   }
                   if (isFn) {
+                    bbn.fn.log("IS FUNCTION", tmp);
                     this.setFloaterPosition();
                     this.currentFn = {
                       cfg: tmp,
@@ -777,6 +787,7 @@
         }
       },
       showHint() {
+        this.currentToken = false;
         if (this.hintTimeout) {
           clearTimeout(this.hintTimeout);
         }
@@ -825,14 +836,14 @@
           return;
         }
 
-        let currentToken = realTokens[numTokens - 1];
+        this.currentToken = realTokens[numTokens - 1];
         let mode = this.mode;
-        if (currentToken.state && currentToken.state.curMode && (currentToken.state.curMode.name === 'htmlmixed')) {
+        if (this.currentToken.state && this.currentToken.state.curMode && (this.currentToken.state.curMode.name === 'htmlmixed')) {
           mode = 'html';
         }
 
         if (this[mode + 'Hint']) {
-          let res = this[mode + 'Hint'](currentLine, cursor, currentToken);
+          let res = this[mode + 'Hint'](currentLine, cursor, this.currentToken);
           if (res && res.list && res.list.length) {
             this.setFloaterPosition();
             this.currentHints = res.list;
@@ -1089,6 +1100,9 @@
             }
             return res;
           }
+        },
+        mounted(){
+          bbn.fn.log("fnHelper", this.source)
         }
       },
       suggestion: {

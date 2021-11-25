@@ -140,7 +140,7 @@ document.head.insertAdjacentElement('beforeend', css);
       /**
        * Specifies the time of delay.
        *
-       * @prop {Number} [10] delay
+       * @prop {Number} [250] delay
        */
       delay: {
         type: Number,

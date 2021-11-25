@@ -3,12 +3,12 @@
   height: auto;
 }
 .bbn-code .bbn-floater {
-  font-family: FiraCode !important;
+  font-family: "Fira Code" !important;
 }
 .bbn-code .CodeMirror {
   padding: 0.5em 0;
   font-size: small;
-  font-family: FiraCode;
+  font-family: "Fira Code";
   font-feature-settings: "calt" 1;
   text-rendering: optimizeLegibility;
   height: fit-content;

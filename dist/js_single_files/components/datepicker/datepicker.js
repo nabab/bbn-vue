@@ -78,13 +78,18 @@ document.body.insertAdjacentElement('beforeend', script);
      * @mixin bbn.vue.inputComponent
      * @mixin bbn.vue.eventsComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent],
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.inputComponent, 
+      bbn.vue.eventsComponent
+    ],
     props: {
       /**
        * The array of events for each day.
        * When a string is set, an ajax call will be made to the corresponding url.
        *
-       * @prop {String|Array} [[]] source
+       * @prop {(String|Array)} [[]] source
       */
       source: {
         type: [String, Array],
@@ -103,7 +108,7 @@ document.body.insertAdjacentElement('beforeend', script);
       /**
        * The format of the value.
        *
-       * @prop {String|Function} valueFormat
+       * @prop {(String|Function)} valueFormat
        */
       valueFormat: {
         type: [String, Function]
@@ -146,7 +151,7 @@ document.body.insertAdjacentElement('beforeend', script);
       /**
        * The disabled dates.
        *
-       * @prop {Array|Function} disableDates
+       * @prop {(Array|Function)} disableDates
        */
       disableDates: {
         type: [Array, Function]

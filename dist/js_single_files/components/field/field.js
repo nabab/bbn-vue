@@ -5,20 +5,24 @@ script.innerHTML = `<component v-if="mode === 'write'"
            v-bind="renderedOptions"
            v-model="currentValue"
            :class="componentClass"
-           @input="$emit('input', currentValue)">
-  <div v-if="renderedContent"
-       v-html="renderedContent"/>
+           @input="$emit('input', currentValue)"
+
+>
+  <div v-if="renderedContent" v-html="renderedContent"></div>
 </component>
 <component v-else
            :is="renderedComponent"
            v-bind="renderedOptions"
-           :class="componentClass">
-  <div v-if="renderedContent"
-       v-html="renderedContent"/>
+           :class="componentClass"
+>
+  <div v-if="renderedContent" v-html="renderedContent"></div>
 </component>`;
 script.setAttribute('id', 'bbn-tpl-component-field');
 script.setAttribute('type', 'text/x-template');
 document.body.insertAdjacentElement('beforeend', script);
+/*bbn-field is a generic component of simple construction, its potential lies in the versatility of use, assigning to the property "type" a well-defined value, it becomes a "bbn" component.
+  * For example if we assign the value "numeric" to the property type, it will become "bbn-numeric"*/
+
 /**
   * @file bbn-field component
   *
@@ -26,9 +30,6 @@ document.body.insertAdjacentElement('beforeend', script);
   * 
   * bbn-field is a versatile component that adapts itself to the type of the data given by the user. 
   *
-  * bbn-field is a generic component of simple construction, its potential lies in the versatility of use, assigning to the property "type" a well-defined value, it becomes a "bbn" component.
-  * For example if we assign the value "numeric" to the property type, it will become "bbn-numeric"
-  * 
   * @copyright BBN Solutions
   *
   * @author BBN Solutions
@@ -45,8 +46,14 @@ document.body.insertAdjacentElement('beforeend', script);
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.fieldComponent
+     * @mixin bbn.vue.dataComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.fieldComponent, bbn.vue.dataComponent],
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.fieldComponent, 
+      bbn.vue.dataComponent
+    ],
     props: {
       value: {},
       /**

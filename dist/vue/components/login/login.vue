@@ -105,7 +105,7 @@
         <div v-else-if="currentMode === 'change'"
              class="bbn-w-100">
           <div class="bbn-w-100 bbn-c bbn-vsmargin">
-            <bbn-input type="password"
+            <bbn-input :type="!!passwordVisible ? 'text' : 'password'"
                       class="bbn-c bbn-w-100"
                       style="min-width: 20em"
                       required="required"
@@ -118,7 +118,7 @@
                       @clickRightButton="passwordVisible = !passwordVisible"/>
           </div>
           <div class="bbn-c bbn-w-100 bbn-vsmargin">
-            <bbn-input type="password"
+            <bbn-input :type="!!passwordVisible ? 'text' : 'password'"
                       class="bbn-c bbn-w-100"
                       style="min-width: 20em"
                       required="required"

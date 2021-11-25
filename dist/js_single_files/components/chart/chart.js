@@ -56,7 +56,11 @@ document.body.insertAdjacentElement('beforeend', script);
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.resizerComponent
      */
-    mixins: [bbn.vue.basicComponent, bbn.vue.resizerComponent],
+    mixins: 
+    [
+      bbn.vue.basicComponent, 
+      bbn.vue.resizerComponent
+    ],
     props: {
       /**
        * The component's data.
@@ -67,7 +71,7 @@ document.body.insertAdjacentElement('beforeend', script);
       },
       /**
        * The type of chart.
-       * @prop {String} [line] type
+       * @prop {String} ['line'] type
        */
       type: {
         type: String,
