@@ -3255,8 +3255,8 @@
         name: 'table-dots',
         template: `
 <div class="bbn-c bbn-lg"
-     v-show="visible"
-     @click="table.dbclickCell(source.column, source.index, source.dataIndex, source.data, source.itemIndex, true)">
+     @click="table.dbclickCell(source.column, source.index, source.dataIndex, source.data, source.itemIndex, true)"
+     :style="{display: visible ? 'block !important' : 'none !important'}">
   <i class="nf nf-mdi-dots_horizontal bbn-p bbn-primary-text-alt"/>
 </div>
         `,
