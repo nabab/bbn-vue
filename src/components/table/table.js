@@ -2144,6 +2144,7 @@
        */
       reset(noCfg) {
         this.initReady = false;
+        this.$emit('reset', this);
         if (!noCfg) {
           this.setConfig(false);
         }
