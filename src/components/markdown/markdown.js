@@ -11,7 +11,7 @@
 
 
 //Markdown editor use simpleMDe
-(function(bbn, SimpleMDE){
+(function(bbn, EasyMDE){
   "use strict";
 
   const toolbar = [
@@ -129,8 +129,8 @@
     },
     data(){
       return {
-        widgetName: "SimpleMDE",
-        autoDownloadFontAwesome: this.cfg.autoDownloadFontAwesome || false,
+        widgetName: "EasyMDE",
+        nativeSpellcheck: this.cfg.nativeSpellCheck || false,
         spellChecker: this.cfg.spellChecker || false,
         indentWithTabs: this.cfg.indentWithTabs === undefined ? true : this.cfg.indentWithTabs,
         initialValue: this.cfg.initialValue || '',
@@ -191,7 +191,7 @@
           return true
         }
       });*/
-      this.widget = new SimpleMDE(bbn.fn.extend({
+      this.widget = new EasyMDE(bbn.fn.extend({
         element: this.$refs.element
       }, {
         
@@ -210,4 +210,4 @@
 
   });
 
-})(bbn, SimpleMDE);
+})(bbn, EasyMDE);
