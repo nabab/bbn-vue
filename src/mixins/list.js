@@ -849,10 +849,92 @@
           this.$emit('beforeUpdate', e);
           return e.defaultPrevented ? false : true;
         },
-        afterUpdate(){
+        afterUpdate() {
           return true;
         },
-        async updateData(){
+        getData() {
+          let data = {
+            limit: this.currentLimit,
+            start: this.start,
+            data: this.getPostData()
+          };
+          if ( this.sortable ){
+            data.order = this.currentOrder;
+          }
+          if ( this.isFilterable ){
+            data.filters = this.currentFilters;
+          }
+          if ( this.showable ){
+            data.fields = this.shownFields;
+          }
+          return data;
+        },
+        appendData(step) {
+          if (this.isAjax) {
+            this.isLoading = true;
+            this.$emit('startloading');
+            let data = this.getData();
+            data.step = step;
+            this.loadingRequestID = bbn.fn.getRequestId(this.source, data);
+            this.isLoading = true;
+            this.post(this.source, data, d => {
+              this.isLoading = false;
+              this.loadingRequestID = false;
+              if (d && d.data) {
+                if (d.data.length) {
+                  let data = this.treatData(d.data);
+                  if (this.currentData.length) {
+                    this.currentData.push(...data);
+                  }
+                  else {
+                    this.currentData = data;
+                  }
+
+                  this.updateIndexes();
+                }
+
+                if (d.next_step) {
+                  this.appendData(d.next_step);
+                }
+              }
+            });
+          }
+        },
+        treatData(data) {
+          if (this.parentUid && this.hierarchy && this.flat && this.uid) {
+            data.unshift({
+              [this.uid]: this.parentUid,
+              [this.sourceText]: ".."
+            });
+          }
+          data = this._map(data);
+          return bbn.fn.map(data, (a, i) => {
+            /** @todo Is it compatible with the fact of updating the source when given an array */
+            let o = this.hierarchy ? bbn.fn.extend(true, a, {
+              index: i,
+              key: this.isAjax ? (i + '-' + this.hashCfg) : i,
+              _bbn: true,
+            }) : {
+              data: a,
+              index: i,
+              key: this.isAjax ? (i + '-' + this.hashCfg) : i,
+              _bbn: true
+            };
+            if (this.children && a[this.children] && a[this.children].length) {
+              o.opened = true;
+            }
+            if (this.hasSelection){
+              if ( this.uid ){
+                o.selected = this.selected.includes(a[this.uid]);
+              }
+              else if ( this.sourceValue ){
+                o.selected = this.selected.includes(a[this.sourceValue]);
+              }
+            }
+            return o;
+          });
+        },
+        async updateData() {
           if (this.beforeUpdate() !== false) {
             this._dataPromise = new Promise(resolve => {
               let prom;
@@ -863,20 +945,7 @@
                 }
                 this.isLoading = true;
                 this.$emit('startloading');
-                let data = {
-                  limit: this.currentLimit,
-                  start: this.start,
-                  data: this.getPostData()
-                };
-                if ( this.sortable ){
-                  data.order = this.currentOrder;
-                }
-                if ( this.isFilterable ){
-                  data.filters = this.currentFilters;
-                }
-                if ( this.showable ){
-                  data.fields = this.shownFields;
-                }
+                let data = this.getData();
                 loadingRequestID = bbn.fn.getRequestId(this.source, data);
                 this.loadingRequestID = loadingRequestID;
                 prom = this.post(this.source, data);
@@ -925,38 +994,7 @@
                     this.updateIndexes();
                   }
                   else{
-                    if (this.parentUid && this.hierarchy && this.flat && this.uid) {
-                      d.data.unshift({
-                        [this.uid]: this.parentUid,
-                        [this.sourceText]: ".."
-                      });
-                    }
-                    d.data = this._map(d.data);
-                    this.currentData = bbn.fn.map(d.data, (a, i) => {
-                      /** @todo Is it compatible with the fact of updating the source when given an array */
-                      let o = this.hierarchy ? bbn.fn.extend(true, a, {
-                        index: i,
-                        key: this.isAjax ? (i + '-' + this.hashCfg) : i,
-                        _bbn: true,
-                      }) : {
-                        data: a,
-                        index: i,
-                        key: this.isAjax ? (i + '-' + this.hashCfg) : i,
-                        _bbn: true
-                      };
-                      if (this.children && a[this.children] && a[this.children].length) {
-                        o.opened = true;
-                      }
-                      if (this.hasSelection){
-                        if ( this.uid ){
-                          o.selected = this.selected.includes(a[this.uid]);
-                        }
-                        else if ( this.sourceValue ){
-                          o.selected = this.selected.includes(a[this.sourceValue]);
-                        }
-                      }
-                      return o;
-                    });
+                    this.currentData = this.treatData(d.data);
                   }
                   if (d.query) {
                     this.currentQuery = d.query;
@@ -990,6 +1028,9 @@
                   this.isLoaded = true;
                 }
                 this.$emit('dataloaded');
+                if (this.isAjax && d.next_step) {
+                  this.appendData(d.next_step);
+                }
                 //this._dataPromise = false;
               });
             });

@@ -6,6 +6,6 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "simplemde-markdown-editor": "~1.11.2"
+    "easy-markdown-editor": "2.15.*"
   }
 }
