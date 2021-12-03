@@ -1210,9 +1210,23 @@
             else if (a.default !== undefined) {
               res[a.field] = bbn.fn.isFunction(a.default) ? a.default() : a.default;
             }
+            else if (a.nullable){
+              res[a.field] = null;
+            }
+            else if (a.type) {
+              switch (a.type) {
+                case 'number':
+                case 'money':
+                  res[a.field] = a.min > 0 ? a.min : 0;
+                  break;
+                default:
+                  res[a.field] = '';
+              }
+            }
             else {
               res[a.field] = '';
             }
+
             if (bbn.fn.isArray(res[a.field])) {
               res[a.field] = res[a.field].slice();
             }
