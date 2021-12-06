@@ -485,34 +485,43 @@
      * @param {Function} reject
      */
     queueComponentBBN(name, resolve, reject) {
-      if (bbn.env.host.indexOf('test') === -1) {
-        if ( bbn.fn.search(this.queueBBN, {name: name}) === -1 ){
-          clearTimeout(this.queueTimerBBN);
-          let def = false;
-          if ( def ){
-            this._realDefineBBNComponent(name, def);
-            this.queueTimer = setTimeout(() => {
-              if ( resolve ){
-                resolve(true);
-              }
-              return true;
-            })
-          }
-          else{
-            this.queueBBN.push({
-              name: name,
-              resolve: resolve || (function(){}),
-              reject: reject || (function(){})
-            });
-            this.queueTimerBBN = setTimeout(() => {
-              if ( this.queueBBN.length ){
-                this.executeQueueBBNItem(this.queueBBN.splice(0, this.queueBBN.length));
-              }
-            }, this.loadDelay);
-          }
+      if ( bbn.fn.search(this.queueBBN, {name: name}) === -1 ){
+        clearTimeout(this.queueTimerBBN);
+        let def = false;
+        if ( def ){
+          this._realDefineBBNComponent(name, def);
+          this.queueTimer = setTimeout(() => {
+            if ( resolve ){
+              resolve(true);
+            }
+            return true;
+          })
         }
-        return this.queueTimerBBN;
+        else{
+          this.queueBBN.push({
+            name: name,
+            resolve: resolve || (function(){}),
+            reject: reject || (function(){})
+          });
+          this.queueTimerBBN = setTimeout(() => {
+            if ( this.queueBBN.length ){
+              this.executeQueueBBNItem(this.queueBBN.splice(0, this.queueBBN.length));
+            }
+          }, this.loadDelay);
+        }
       }
+      return this.queueTimerBBN;
+    },
+
+
+    /**
+     * @method queueComponentBBNNoCDN
+     * @memberof bbn.vue
+     * @param {String} name 
+     * @param {Function} resolve
+     * @param {Function} reject
+     */
+    queueComponentBBNNoCDN(name, resolve, reject) {
       return bbn.fn.ajax(bbn.vue.libURL + 'dist/js/components/' + name + '/' + name + '.js', 'text').then(d => {
         if (d && d.data) {
           let fn;
