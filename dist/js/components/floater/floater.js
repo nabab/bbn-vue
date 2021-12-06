@@ -272,7 +272,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @prop {Object} itemComponent
        */
       itemComponent: {
-        type: Object
+        type: [Object, String, Function]
       },
       /**
        * Set to true to auto-hide the component.

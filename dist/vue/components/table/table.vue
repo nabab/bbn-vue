@@ -1689,9 +1689,23 @@
             else if (a.default !== undefined) {
               res[a.field] = bbn.fn.isFunction(a.default) ? a.default() : a.default;
             }
+            else if (a.nullable){
+              res[a.field] = null;
+            }
+            else if (a.type) {
+              switch (a.type) {
+                case 'number':
+                case 'money':
+                  res[a.field] = a.min > 0 ? a.min : 0;
+                  break;
+                default:
+                  res[a.field] = '';
+              }
+            }
             else {
               res[a.field] = '';
             }
+
             if (bbn.fn.isArray(res[a.field])) {
               res[a.field] = res[a.field].slice();
             }
@@ -2623,6 +2637,7 @@
        */
       reset(noCfg) {
         this.initReady = false;
+        this.$emit('reset', this);
         if (!noCfg) {
           this.setConfig(false);
         }
@@ -3734,8 +3749,8 @@
         name: 'table-dots',
         template: `
 <div class="bbn-c bbn-lg"
-     v-show="visible"
-     @click="table.dbclickCell(source.column, source.index, source.dataIndex, source.data, source.itemIndex, true)">
+     @click="table.dbclickCell(source.column, source.index, source.dataIndex, source.data, source.itemIndex, true)"
+     :style="{display: visible ? 'block !important' : 'none !important'}">
   <i class="nf nf-mdi-dots_horizontal bbn-p bbn-primary-text-alt"/>
 </div>
         `,

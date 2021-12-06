@@ -28,7 +28,7 @@
                @mouseleave.prevent
                :auto-hide="false"
                :suggest="suggest"
-               :item-component="realComponent"
+               :item-component="searchComponent"
                :children="null"
                @select="select"
                @close="searchClose"
@@ -193,6 +193,31 @@
            */
           mouseTimeout: null
         };
+      },
+      computed: {
+        /**
+         * Returns the component object. 
+         * @computed realComponent
+         * @memberof listComponent
+         */
+         searchComponent(){
+          let cp = bbn.fn.isString(this.component) || (bbn.fn.isObject(this.component) && Object.keys(this.component).length) ? this.component : null;
+          if (!cp) {
+            cp = {
+              props: ['source'],
+              data(){
+                return this.source;
+              },
+              template: `<component :is="myCp" :source="source"></component>`,
+              computed: {
+                myCp() {
+                  return this.source.component ? this.source.component : 'div';
+                }
+              }
+            };
+          }
+          return cp;
+        },
       },
       methods: {
         /***

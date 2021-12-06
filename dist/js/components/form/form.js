@@ -356,6 +356,15 @@ document.head.insertAdjacentElement('beforeend', css);
       fullSize: {
         type: Boolean,
         default: false
+      },
+      /**
+       * If true and inside a popup the popup will close after submit
+       *
+       * @prop {Boolean} closeAfter
+       */
+       closeAfter: {
+        type: Boolean,
+        default: true
       }
     },
     data(){
@@ -524,23 +533,32 @@ document.head.insertAdjacentElement('beforeend', css);
       _post(){
         this.isPosted = true;
         this.isLoading = true;
-        if ( this.action ){
+        if (this.action) {
           this[this.blank || this.self || this.target ? 'postOut' : 'post'](this.action, bbn.fn.extend(true, {}, this.data || {}, this.source || {}), d => {
-            this.originalData = bbn.fn.extend(true, {}, this.source || {});
-            if ( this.successMessage && p ){
+            this.originalData = bbn.fn.clone(this.source || {});
+            if (this.successMessage && p) {
               p.alert(this.successMessage);
               bbn.fn.info(this.successMessage, p);
             }
+
             let e = new Event('success', {cancelable: true});
+            /*
             if ( this.sendModel && this.source ){
               this.originalData = bbn.fn.extend(true, {}, this.source || {});
             }
+            */
+
             this.dirty = false;
             this.isLoading = false;
-            this.$emit('success', d, e);
-            if ( !e.defaultPrevented ){
-              if ( this.window ){
-                this.window.close(true);
+            if (d && (d.success === false)) {
+
+            }
+            else {
+              this.$emit('success', d, e);
+              if (!e.defaultPrevented && this.window) {
+                this.$nextTick(() => {
+                  this.window.close(true);
+                });
               }
             }
           }, !this.blank && !this.self && !this.target ? (xhr, textStatus, errorThrown) => {
