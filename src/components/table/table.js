@@ -235,14 +235,6 @@
         type: Number
       },
       /**
-       * If defined will show the buttons as a single dropdown, if string its value will be the placeholder.
-       * @prop {Boolean|String} dropdownMode
-       */
-       dropdownMode: {
-        type: [Boolean, String],
-        default: false
-      },
-      /**
        * @todo desc
        * @prop {Array|Function} expandedValues
        *
@@ -330,12 +322,15 @@
         default: bbn._("rows")
       },
       /**
-       * The way `buttons` should be displayed, either as buttons or as a menu.
+       * The way `buttons` should be displayed, either as buttons, dropdown or as a menu.
        * @prop {String} ['buttons'] buttonMode
        */
-       buttonMode: {
+      buttonMode: {
         type: String,
-        default: 'buttons'
+        default: 'buttons',
+        validator(v) {
+          return ['buttons', 'dropdown', 'menu'].includes(v);
+        }
       },
       /**
        * The name of the `record` word as used in the pager interface.
@@ -1158,6 +1153,17 @@
       }
     },
     methods: {
+      buttonSource() {
+        if (bbn.fn.isFunction(this.realButtons)) {
+          return this.realButtons(...arguments);
+        }
+
+        if (bbn.fn.isArray(this.realButtons)) {
+          return this.realButtons;
+        }
+
+        return [];
+      },
       convertActions(arr, data, col, idx){
         return bbn.fn.map(arr, a => {
           let b = bbn.fn.clone(a);
