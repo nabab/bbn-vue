@@ -438,7 +438,7 @@
                 return;
               }
               let hash = bbn.env.url.split('#')[1];
-              if (hash) {
+              if (hash > 0) {
                 hash = '#' + hash;
                 location.hash = null;
                 location.hash = hash;
