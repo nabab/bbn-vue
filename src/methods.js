@@ -331,9 +331,11 @@
         todo = [todo];
       }
       if (bbn.fn.isArray(todo) && bbn.fn.getRow(bbn.vue.knownPrefixes, {prefix: 'bbn-'})) {
-        bbn.fn.each(todo, a => {
-          if ( Vue.options.components['bbn-' + a] === undefined ){
-            this.queueComponentBBN(a);
+        bbn.fn.each(todo, cp => {
+          if ( Vue.options.components['bbn-' + cp] === undefined ){
+            Vue.component('bbn-' + cp, (resolve, reject) => {
+              bbn.vue.queueComponentBBN(cp, resolve, reject);
+            });
           }
         })
       }
