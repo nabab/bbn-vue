@@ -434,11 +434,14 @@
           setTimeout(() => {
             if (bbn.env.url.indexOf('#')) {
               let scroll = this.getRef('scroll');
+              /**
+               * @todo  Does it mean the scroll manage the hash? Check it out
+               */
               if (scroll && (scroll.currentY || scroll.currentX)) {
                 return;
               }
               let hash = bbn.env.url.split('#')[1];
-              if (hash > 0) {
+              if (hash) {
                 hash = '#' + hash;
                 location.hash = null;
                 location.hash = hash;
