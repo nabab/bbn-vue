@@ -236,12 +236,6 @@
         type: Function
       },
       /**
-       * @prop {Number} index
-       */
-      index: {
-        type: Number
-      },
-      /**
        * @prop {String} uid
        */
       uid: {

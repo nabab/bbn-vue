@@ -263,7 +263,7 @@
          * @memberof listComponent
          */
          sourceAction: {
-          type: String
+          type: [String, Function]
         },
         /**
          * The name of the property to use for children of hierarchical source
@@ -1211,6 +1211,10 @@
           handler() {
             if (this.ready) {
               this.currentFilter = false;
+              if (this.pageable) {
+                this.start = 0;
+              }
+
               this.updateData();
               if ( bbn.fn.isFunction(this.setConfig) ){
                 this.setConfig(true);
