@@ -65,19 +65,16 @@
               options = text;
             }
             else if (bbn.fn.isString(text)) {
-              if (bbn.fn.isObject(options)) {
-                options = {
-                  body: text
-                }
-              }
-              else {
+              if (!bbn.fn.isObject(options)) {
                 options = {};
               }
               if (!options.body || (options.body !== text)) {
                 options.body = text;
               }
             }
-            options.tag = options.tag || options.timestamp || n.timestamp;
+            let date = bbn.fn.date();
+            options.tag = options.tag || options.timestamp || date.getTime();
+            options.timestamp = options.timestamp || date.getTime();
             if (this.browserNotificationSW) {
               this._postMessage({
                 type: 'notification',
