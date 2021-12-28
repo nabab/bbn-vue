@@ -1151,28 +1151,30 @@
           if (!this.closable && !this.autoHide && !force) {
             return;
           }
-          let beforeCloseEvent = new Event('beforeClose', {
-            cancelable: true
-          });
-          if (this.popup) {
-            this.popup.$emit('beforeClose', beforeCloseEvent, this);
+          if (bbn.fn.isFunction(this.beforeClose)) {
+            if (this.beforeClose(this) === false) {
+              return;
+            }
           }
           else {
+            let beforeCloseEvent = new Event('beforeClose', {
+              cancelable: true
+            });
             this.$emit('beforeClose', beforeCloseEvent, this);
+            if (beforeCloseEvent.defaultPrevented) {
+              return;
+            }
           }
-          if (beforeCloseEvent.defaultPrevented) {
-            return;
-          }
-          if (this.beforeClose && (this.beforeClose(this) === false)) {
-            return;
-          }
-          bbn.fn.each(this.closingFunctions, a => {
-            a(this, beforeCloseEvent);
-          });
-          if (beforeCloseEvent.defaultPrevented) {
-            return;
+
+          if (this.closingFunctions) {
+            for (let i = 0; i < this.closingFunctions.length; i++) {
+              if (this.closingFunctions[i](this) === false) {
+                return;
+              }
+            }
           }
         }
+
         let form = this.find('bbn-form');
         if ( (form !== undefined)  && !confirm ){
           form.closePopup();
