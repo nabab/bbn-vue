@@ -68,14 +68,6 @@
       },
       /**
        * @todo not used
-       * @prop {String} [""] classes
-       */
-      classes: {
-        type: String,
-        default: ""
-      },
-      /**
-       * @todo not used
        * @prop {Number} [50] speed
        */
       speed: {
