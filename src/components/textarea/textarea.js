@@ -56,6 +56,14 @@
 			}
     },
     methods: {
+      textareaKeydown(ev) {
+        if (this.maxlength && (this.value.length >= this.maxlength)) {
+          ev.preventDefault();
+        }
+        else {
+          this.keydown(ev);
+        }
+      },
       /**
        * Clears the textarea.
        * @method clear
