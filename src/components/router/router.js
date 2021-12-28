@@ -399,6 +399,7 @@
       },
       /**
        * Returns the bbn-tabs component of this router.
+       * @todo Kill this function, there is no anymore tabs component
        * @computed itsTabs
        * @fires getRef
        * @return {Vue|Boolean}
