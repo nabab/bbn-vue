@@ -179,7 +179,7 @@
       let cfg = {
         iframe: this.iFrame,
         disabled: this.disabled,
-        readOnly: this.readOnly,
+        readonly: this.readonly,
         required: this.required,
         allowResizeX: false,
         allowResizeY: false,

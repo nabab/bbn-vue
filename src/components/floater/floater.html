@@ -1,8 +1,8 @@
 <div :class="[
         {
           'bbn-reset': true,
-          'bbn-bordered': true,
-          'bbn-background-internal': true,
+          'bbn-bordered': !modal,
+          'bbn-background-internal': !modal,
           'bbn-invisible': !isResized
         },
         componentClass
@@ -18,6 +18,8 @@
       :style="currentStyle">
   <div :style="containerStyle"
        :class="{'bbn-flex-height': outHeight > 0}">
+    <div v-if="modal"
+         class="bbn-overlay bbn-modal"/>
     <header v-if="title"
             ref="header"
             :class="{
@@ -51,6 +53,7 @@
         </div>
       </div>
     </header>
+    
     <div :class="{
           'bbn-flex-fill': footer || title || (buttons && buttons.length),
           'bbn-h-100': !title && !footer && (!buttons || !buttons.length),
@@ -97,6 +100,12 @@
                 v-if="css"
                 scoped="scoped"
                 v-html="css"/>
+    </div>
+    <div v-if="modal && closable">
+      <div class="bbn-top-right bbn-spadded bbn-xl bbn-white">
+        <i class="nf nf-fa-times bbn-p"
+           @click="close"/>
+      </div>
     </div>
     <footer v-if="footer"
             v-html="footer"

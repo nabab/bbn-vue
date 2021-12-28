@@ -256,6 +256,10 @@
        */
        actionArguments: {
         type: Array
+      },
+      modal: {
+        type: Boolean,
+        default: false
       }
     },
     data() {
