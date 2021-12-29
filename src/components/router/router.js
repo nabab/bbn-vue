@@ -154,14 +154,6 @@
         default: true
       },
       /**
-       * Set it to false if you want to hide the switch.
-       * @prop {Boolean} [true] switch
-       */
-      showSwitch: {
-        type: Boolean,
-        default: true
-      },
-      /**
        * If this is set, along with componentSource and componentUrl a single container with this component will be created.
        * @prop {(String|Object)} component
        */
