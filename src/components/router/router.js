@@ -112,13 +112,6 @@
         default: bbn._("Are you sure you want to discard the changes you made in this page?")
       },
       /**
-       *
-       * @prop {String} hideAdvertUrl
-       */
-      hideAdvertUrl: {
-        type: String
-      },
-      /**
        * The max length of the history.
        * @prop {Number} [10] historyMaxLength
        */
