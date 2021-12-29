@@ -1147,7 +1147,7 @@
        * @fires afterClose
        */
       close(force, confirm = false) {
-        if (!force) {
+        if (force !== true) {
           if (!this.closable && !this.autoHide && !force) {
             return;
           }
