@@ -143,7 +143,7 @@
       },
       /**
        * Other trees where nodes can be dropped on.
-       * @prop {Arrayu} [[]] droppables
+       * @prop {Array} [[]] droppables
        */
       droppables: {
         type: Array,
@@ -169,7 +169,7 @@
       },
       /**
        * Helper to transform data when passing from one tree to another.
-       * @prop {Function} trasferData
+       * @prop {Function} transferData
        */
       transferData: {
         type: Function

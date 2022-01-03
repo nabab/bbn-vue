@@ -112,7 +112,7 @@
         /**
          * @data [[]] items
          */
-        items: []
+        items: this.source
       };
     },
     computed: {
