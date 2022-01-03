@@ -1014,7 +1014,7 @@
               if ( this.tree.isAjax ){
                 let nodeSource = bbn.fn.extend(true, {}, parent.currentData[idx]);
                 nodeSource.num = targetTree.currentData.length || 1;
-                nodeSource.index = nodeSource.num - 1
+                nodeSource.index = nodeSource.num - 1;
                 targetTree.currentData.push(nodeSource);
               }
               else {
