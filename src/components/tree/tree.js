@@ -973,80 +973,112 @@
        * @param {Boolean} [false] force 
        */
       move(node, target, force = false){
-        let ev = false;
-        if ( !force ){
-          ev = new Event("move", {cancelable: true});
-          this.tree.$emit('move', node, target, ev);
-        }
-        if ( force || (ev && !ev.defaultPrevented) ){
-          let idx = node.idx,
-              parent = node.parent,
-              nodes = node.findAll('bbn-tree-node'),
-              expanded = nodes.filter(n => !!n.isExpanded),
-              selected = nodes.filter(n => !!n.isSelected),
-              toPath = [];
+        // initializing and sending an event cancelable if force is false
+        let ev = new Event("move", {cancelable: !force});
+        this.tree.$emit('move', node, target, ev);
+        // if the action has not been prevented
+        if (!ev.defaultPrevented){
+          // getting the position of the source node
+          let idx = node.idx;
+          // getting the parent of the source node
+          let parent = node.parent;
+          // getting all the nodes at a lower level than the source node
+          let nodes = node.findAll('bbn-tree-node');
+          // filtered by those who are expanded
+          let expanded = nodes.filter(n => !!n.isExpanded);
+          // and by those who are selected
+          let selected = nodes.filter(n => !!n.isSelected);
+          // this path will be the targetTree path
+          let toPath = [];
+          // verification if the node had parent et his index is greater than or equel to 0 
           if ( (idx >= 0) && parent ){
+            // if there is no children then we set the number of children to 1 
             if ( !target.numChildren ){
               target.$set(target, 'numChildren', 1);
             }
+            // otherwhise we increase the number of children by one
             else{
               target.numChildren++;
             }
+            // updating the DOM of VUE
             this.$nextTick(() => {
+              // get the ref and put it in the targetTree
               let targetTree = target.getRef('tree');
               if ( node.isExpanded ){
+                // if the node is expanded we're adding it to the expanded 
                 expanded.unshift(node);
               }
+              // adding the path of the parent of the source node
               bbn.fn.each(expanded, n => {
+                // getting the parent node path
                 let p = parent.getNodePath(n);
                 p.push(false);
+                // adding the parent path to the target node 
                 toPath.push(p);
               });
+              // if the node is selected we're adding it to the selected 
               if ( node.isSelected ){
                 selected.unshift(node);
               }
+              // and we're adding to the path the parent path to the target selected
               bbn.fn.each(selected, n => {
                 toPath.push(parent.getNodePath(n));
               });
+              // If the source node is inside a parent node and is moved then we lower the number of children by one
               if ( parent.node ){
                 parent.node.numChildren--;
               }
+              // adding the node and push it to the tree
               if ( this.tree.isAjax ){
                 let nodeSource = bbn.fn.extend(true, {}, parent.currentData[idx]);
+                // adding in the node source the length of the target tree if there is no length then we set it at 1
                 nodeSource.num = targetTree.currentData.length || 1;
+                // we're adding the index also
                 nodeSource.index = nodeSource.num - 1;
+                // and then we push node source in the targetTree
                 targetTree.currentData.push(nodeSource);
               }
+              // replace the old node with the new node 
               else {
                 let nodeSource = parent.source.splice(idx, 1)[0];
+                // if the array is empty we set one
                 if ( !bbn.fn.isArray(target.source.data[this.tree.children]) ){
                   target.$set(target.source.data, this.tree.children, []);
                 }
+                // otherwise we just push the data inside the array 
                 target.source.data[this.tree.children].push(nodeSource);
               }
+              // we remove the expanded node
               bbn.fn.each(expanded, n => {
                 n.removeFromExpanded(false);
               });
+              // we remove the selected node
               bbn.fn.each(selected, n => {
                 n.removeFromSelected(false);
               });
+              // updating the DOM of VUE
               this.$nextTick(() => {
                 let callOpenPath = false;
+                // if the target node isn't expanded we do it 
                 if ( !target.isExpanded ){
                     target.isExpanded = true;
                 }
+                // then we update the data
                 else if ( !this.tree.isAjax ){
                   targetTree.updateData();
                   callOpenPath = true;
                 }
+                // and then push the new path to the targetTree
                 if ( toPath.length ){
                   bbn.fn.each(toPath, p => {
                     targetTree.path.push(p);
                   })
                 }
+                // call a fonction to open the path of the targetTree
                 if ( callOpenPath ){
                   targetTree.openPath();
                 }
+                // and replace the old node with the new node
                 parent.currentData.splice(idx, 1);
               });
             });
