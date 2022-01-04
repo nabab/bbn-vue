@@ -87,7 +87,17 @@
       infoIcon: {
         type: [String, Boolean],
         default: 'nf nf-mdi-information'
-      }
+      },
+      /**
+       * The source of the component.
+       * @prop {Array} [[{id:'id1', type:'info', content: 'info content', num: 2},{id:'id2', type:'error', content: 'error content'}]] source
+       */
+      source: {
+        type: Array,
+        default(){
+          return [];
+        }
+      },
     },
     data: function(){
       let bits = this.position.split('-');
@@ -119,7 +129,7 @@
         /**
          * @data {Array} [[]] items
          */
-        items: [],
+        items: this.source,
         /**
          * @data {Boolean} isTop
          */
