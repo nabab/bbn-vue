@@ -94,7 +94,9 @@
        */
       source: {
         type: Array,
-        default: []
+        default(){
+          return [];
+        }
       },
     },
     data: function(){
