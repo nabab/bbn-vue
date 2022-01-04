@@ -342,7 +342,7 @@ Vue.component('bbn-tree', {
        */
       disabled: [],
       /**
-       * An array containing the indexes of expanded nodes.
+       * An array containing the components of expanded nodes.
        * @data {Array} [[]] currentExpanded
        */
       currentExpanded: [],
@@ -2043,35 +2043,37 @@ Vue.component('bbn-tree', {
         },
         addToExpanded(emit = true, storage = true) {
           if (!this.tree.currentExpanded.includes(this)) {
-            // initializing and sending an event cancelable if emit is false
+            // initializing and sending a cancelable event if emit is true
             let ev;
             if (emit) {
               ev = new Event('beforeUnfold', {cancelable: true});
               this.tree.$emit('beforeUnfold', this, ev);
             }
             if (!emit || !ev.defaultPrevented) {
+              // adding to the list of nodes that are currently expanded 
               this.tree.currentExpanded.push(this);
-              // if storage is here we call setLocalStorage 
+              // if storage is true we update its content 
               if ( storage ){
                 this.$nextTick(() => {
                   this.tree.setLocalStorage();
                 })
               }
-              // if emit is here we call unfold
+              // if emit is true we call unfold event
               if ( emit ){
                 this.tree.$emit('unfold', this);
               }
-              // getting the parent 
+              // Starting from the parent 
               let parent = this.parent;
-              // while the parent exists and is different from tree
+              // going up until there is no parent anymore
               while (parent && (parent !== this.tree)) {
-                // we're adding it to the currentExpanded
+                // adding itself to the currentExpanded 
                 parent.currentExpanded.push(this);
-                // parent become parent node if it exists otherwise it's null
+                // parent becomes the next parent tree if it exists otherwise it's null
                 parent = parent.node ? parent.node.parent : null;
               }
-              // getting the path from the current tree
+              // getting all the nodes from root until this
               let path = this.tree.getNodePath(this);
+              // Adds for each of them the expanded property and sets to true
               path.reduce((o, a) => {
                 if (!a || !o) {
                   return undefined;
@@ -2092,47 +2094,44 @@ Vue.component('bbn-tree', {
           }
           return false;
         },
-        // à commenter
         removeFromExpanded(emit = true, storage = true) {
-          // getting the index of the tree which is expanded
+          // Getting the index of the tree which is expanded
           let idx = this.tree.currentExpanded.indexOf(this);
-          // if the function indexOf works and return a good index
+          // If the function indexOf works and return a good index
           if (idx > -1) {
-            // creating an event
-            /*let ev;
+            let ev;
             if (emit) {
               ev = new Event('beforeFold', {cancelable: true});
               this.tree.$emit('beforeFold', this, ev);
-            }*/
-            // initializing and sending an event cancelable if emit is false
-            let ev = new Event("move", {cancelable: emit});
-            this.tree.$emit('move', node, target, ev);
-            
+            }
+            // Initializing and sending an event cancelable if emit is true            
             // if the action has not been prevented
-            if (/*!emit || */!ev.defaultPrevented) {
-              // getting the parent 
+            if (!emit || !ev.defaultPrevented) {
+              // Starting from the parent 
               let parent = this.parent;
-              // while the parent exists and is different from tree
+              // Going up until there is no parent anymore
               while (parent && (parent !== this.tree)) {
-                // getting the index of a parent currently expanded to remove it
+                // Getting the index of the first parent after tree
                 let idx2 = parent.currentExpanded.indexOf(this);
                 if (idx2 > -1) {
-                  // If the return of the function allows it we remove it
+                  // If the return of the function allows it we remove it from the currentExpanded
                   parent.currentExpanded.splice(idx2, 1);
                 }
-                // parent become parent node if it exists otherwise it's null
+                // Parent becomes the next parent tree if it exists otherwise it's null
                 parent = parent.node ? parent.node.parent : null;
               }
 
-              // remove the current expanded from the current tree
+              // And suppress the root currentExpanded
               this.tree.currentExpanded.splice(idx, 1);
-              // getting the path of the node in the tree
+              // Getting all the nodes from root until this
               let path = this.tree.getNodePath(this);
               let o = this.tree.currentState;
-              // index of the last node
+              // Index of the last node
               let last = path.length - 1;
               let prev;
+              // Sets the parent to false since we are at root 
               parent = false;
+              // for each nodes which has the expanded property setted to true it's setted to false
               bbn.fn.each(path, (a, i) => {
                 if (o[a]) {
                   if (i === last) {
@@ -2151,12 +2150,12 @@ Vue.component('bbn-tree', {
               });
 
               if (storage) {
-                // set the localStorage with the tree
+                // Set the localStorage with the data we get
                 this.tree.setLocalStorage();
               }
 
               if ( emit ){
-                // call the fold function
+                // Call the fold event
                 this.tree.$emit('fold', this);
               }
             }
