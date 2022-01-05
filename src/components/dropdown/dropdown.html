@@ -4,7 +4,8 @@
        'bbn-textbox',
        {'bbn-disabled': !!disabled}
      ]"
-     @mouseleave="leave"
+     @mouseenter="isOverDropdown = true"
+     @mouseleave="isOverDropdown = false"
      @focusin="isActive = true"
      @focusout="onFocusOut"
      :title="currentText || placeholder || null"

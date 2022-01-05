@@ -2,23 +2,28 @@
      tabindex="0"
      @keydown.up.down.left.right.enter.space.page-down.page-up.end.home.prevent.stop="keyNav"
 >
+  <!-- A loader -->
   <div v-if="loading" class="loader">
     <bbn-loadicon></bbn-loadicon> <span v-text="_('Loading')"></span>...
   </div>
+  <!-- The container: a scroll if root and scrollable, a div otherwise -->
   <component v-else-if="isInit && isLoaded"
              :is="isRoot && !!scrollable ? 'bbn-scroll' : 'div'"
              ref="scroll"
   >
+    <!-- Is this transition working? -->
     <transition name="bbn-tree-toggle"
                 @after-enter="onOpen"
                 @after-leave="onClose"
     >
+      <!-- start of the list -->
       <ul v-if="filteredData.length && (isRoot || $parent.isExpanded)"
           :class="{
             'bbn-tree-child': !!level,
             'bbn-tree-root': isRoot
           }"
       >
+        <!-- Tree node component -->
         <bbn-tree-node inline-template
                         v-for="(it, i) in filteredData"
                         :source="it"
@@ -35,15 +40,14 @@
                         :quickFilter="quickFilter"
                         :sortable="it.sortable !== undefined ? it.sortable : sortable"
                         :uid="uid"
-                        :tree-state="_getTreeState(it.data[uid])"
-        >
+                        :tree-state="_getTreeState(it.data[uid])">
           <li :class="['bbn-tree-node', 'bbn-vxxspadded', 'bbn-unselectable', {
                         'bbn-state-active': (isActive && !isSelected) || (tree.dragging && tree.overNode && !tree.overOrder && (tree.overNode === _self) && tree.draggable),
                         'bbn-state-selected': isSelected
                       }]"
               v-show="isVisible"
-              :title="source.tooltip || textFromText"
-          >
+              :title="source.tooltip || textFromText">
+            <!-- Sortable interface is set at the top -->
             <span v-if="sortable && (source.num === 1)"
                   :class="['bbn-w-100', 'bbn-tree-order-top', {
                     'bbn-tree-order': tree.dragging && (tree.dragging.parent === parent) && !quickFilter,
@@ -51,46 +55,48 @@
                   }]"
                   style="height: 2px; line-height: 2px;"
                   ref="orderTop"
-                  @mouseover.stop="mouseOver"
-            ></span>
+                  @mouseover.stop="mouseOver"/>
+            
+            <!-- The node starts here -->
             <span :class="['bbn-tree-node-block', source.cls || '', {'bbn-tree-node-block-no-component': !!component}]"
-                  @mouseover.stop="mouseOver"
-            >
+                  @mouseover.stop="mouseOver">
+              <!-- The expander -->
               <span :class="['bbn-tree-node-block-expander', {'bbn-p': numChildren}]"
                     @click="if ( !flat && numChildren && (level >= tree.minExpandLevel) ){
                       isExpanded = !isExpanded;
                     }"
                     @mouseover="if ( !flat && tree.draggable && tree.dragging && numChildren && (level >= tree.minExpandLevel) ){
                       isExpanded = true;
-                    }"
-              >
+                    }">
                 <!-- If there are no children we leave the white space -->
-                <span v-if="flat || !numChildren || (level < tree.minExpandLevel)"> </span>
+                <span v-if="flat || !numChildren || (level < tree.minExpandLevel)" v-html=" "/>
                 <i v-else
-                    :class="{
+                   :class="{
                       'nf nf-fa-caret_down': isExpanded,
                       'nf nf-fa-caret_right': !isExpanded
-                    }"
-                ></i>
+                    }"/>
               </span>
+
+              <!-- The checkobox if selection -->
               <span v-if="tree.uid && (tree.selection || !!selection)">
                 <bbn-checkbox :value="data[tree.uid]"
                               :checked="isChecked(data[tree.uid])"
                               @change="checkNode"
-                              :disabled="isDisabled()"
-                ></bbn-checkbox>
+                              :disabled="isDisabled()"/>
               </span>
+
+              <!-- The component if given -->
               <component v-if="!!component"
                           :is="component"
-                          :source="data"
-              ></component>
+                          :source="data"/>
+
+              <!-- Or the default context -->
               <bbn-context v-else
                             :context="true"
                             :source="getMenu"
                             @open="isActive = true"
                             @close="isActive = false"
-                            style="cursor: unset"
-              >
+                            style="cursor: unset">
                 <span :class="['bbn-tree-node-block-selectable', {'bbn-p': !!selectable}]"
                       @dblclick="dblClickOnNode"
                       @click="clickOnNode"
@@ -104,22 +110,27 @@
                       }"
                       tabindex="0"
                 >
+                  <!-- The item component if given -->
                   <component v-if="tree.itemComponent"
                              :is="tree.itemComponent"
                              :source="source"/>
+                  <!-- Or the default template -->
                   <template v-else>
                     <span v-if="tree.icons"
                           class="bbn-tree-node-block-icon"
                     >
                       <!-- If icon is specifically false we leave the white space -->
                       <span v-if="source.icon === false"></span>
+                      <!-- or if it's an image -->
                       <img v-else-if="source.icon && (source.icon.indexOf('data:image') === 0)"
                            :src="source.icon">
+                      <!-- or if it's a class icon -->
                       <i v-else
                           :class="getIcon()"
                           :style="iconStyle"
                       ></i>
                     </span>
+                    <!-- The node's text -->
                     <span class="bbn-tree-node-block-title">
                       <span v-html="source.text"></span>
                     </span>
@@ -127,6 +138,8 @@
                 </span>
               </bbn-context>
             </span>
+
+            <!-- If it has children another tree -->
             <bbn-tree v-if="!!numChildren"
                       ref="tree"
                       :key="'tree-' + level + '-' + idx"
@@ -153,6 +166,8 @@
                       :source-value="tree.sourceValue"
                       :scrollable="tree.scrollable"
             ></bbn-tree>
+
+            <!-- Sortable interface is set at the bottom -->
             <span v-if="sortable"
                   :class="['bbn-w-100', 'bbn-tree-order-bottom', {
                     'bbn-tree-order': tree.dragging && (tree.dragging.parent === parent) && !quickFilter,

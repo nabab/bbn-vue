@@ -149,6 +149,9 @@
         };
       },
       computed: {
+        isNullable(){
+          return this.nullable && this.isActive;
+        },
         /**
          * Returns the component object. 
          * @computed realComponent
@@ -165,7 +168,7 @@
               template: `<component :is="myCp" :source="source"></component>`,
               computed: {
                 myCp() {
-                  return this.source.component ? this.source.component : 'div';
+                  return this.source.component || 'div';
                 }
               }
             };
@@ -195,7 +198,6 @@
             this.isFocused = false;
             this.isOpened = false;
             this.specialWidth = this.minWidth;
-            this.filterString = '';
             this.currentPlaceholder = '?';
             this.$emit('blur', this);
           }, 250);
@@ -222,8 +224,6 @@
             if ( !ev.defaultPrevented ){
               this.currentText = item[this.sourceText];
               this.filterString = item[this.sourceText];
-              this.emitInput(item[this.sourceValue]);
-              this.$emit('change', item[this.sourceValue]);
               this.$nextTick(() => {
                 this.getRef('input').focus();
               });
@@ -286,6 +286,8 @@
           }
           clearTimeout(this.filterTimeout);
           if (v !== this.currentText) {
+            this.emitInput(v);
+            this.$emit('change', v);
             this.isOpened = false;
             if (this.currentData.length) {
               this.currentData.splice(0);

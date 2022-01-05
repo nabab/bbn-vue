@@ -114,21 +114,6 @@
           }
         }
       },
-      /**
-       * Leave list.
-       *
-       * @method keydown
-       * @fires getRef
-       */
-      leave(){
-        let lst = this.getRef('list');
-        if (lst) {
-          lst.close(true);
-        }
-        if (this.native) {
-          this.isOpened = false;
-        }
-      },
       onFocusOut(){
         this.isActive = false;
         if (this.native) {

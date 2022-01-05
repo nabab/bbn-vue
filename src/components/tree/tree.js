@@ -1280,9 +1280,6 @@ Vue.component('bbn-tree', {
       }
       this.node = this.closest('bbn-tree-node');
     }
-    if (!this.tree.autobind) {
-      this.isInit = true;        
-    }
   },
   /**
    * Updates the data of the tree and sets the prop 'ready' to true.
@@ -1296,6 +1293,9 @@ Vue.component('bbn-tree', {
       this.$nextTick(() => {
         this.init();
       })
+    }
+    else {
+      this.isInit = true;        
     }
   },
   watch: {

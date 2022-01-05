@@ -824,9 +824,6 @@
               this.$forceUpdate();
               this.$nextTick(() => {
                 this.isResizing = false;
-                if (this.element && !this.isResized) {
-                  this.isResized = true;
-                }
                 this.$nextTick(() => {
                   this.setResizeMeasures();
                   this.$forceUpdate();
@@ -834,7 +831,9 @@
                     this.updatePosition();
                     if (!this.isResized) {
                       this.isResized = true;
+                      bbn.fn.log("Floater: resized gets TRUE");
                     }
+                    bbn.fn.log("Floater: resizing again");
                     this.$emit('resize');
                     if (!wasInit) {
                       if (this.onOpen) {
@@ -1291,9 +1290,9 @@
      * @fires closeAll
      */
     mounted() {
-      bbn.fn.startChrono('scroll');
       if (this.isVisible) {
         this.ready = true;
+        bbn.fn.log("Floater: IS ready");
       }
 
       this.$nextTick(() => {
@@ -1413,6 +1412,9 @@
       visible(v) {
         this.currentVisible = v;
       },
+      isResized(){
+        bbn.fn.log("Floater: IS resized");
+      },
       isVisible(v) {
         if (v) {
           if (!this.ready) {
@@ -1432,6 +1434,7 @@
         }
       },
       scrollReady(v) {
+        bbn.fn.log("Floater: SCROLL ready");
         if (v) {
           let nb = this.mountedComponents.length;
           let to = null;

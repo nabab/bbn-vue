@@ -122,6 +122,18 @@
       data(){
         return {
           /**
+           * True when the user's mouse is over the dropdown element or its list
+           * @data {Bool} [false] isOverDropdown
+           * @memberof dropdownComponent
+           */
+          isOverDropdown: false,
+          /**
+           * The timeout before closing the floater
+           * @data {int} [0] closeTimeout
+           * @memberof dropdownComponent
+           */
+          closeTimeout: 0,
+          /**
            * The icon representing the arrow up.
            * @data {String} ['nf nf-fa-caret_up'] iconUp
            * @memberof dropdownComponent
@@ -255,18 +267,6 @@
               this.$el.querySelector('input:not([type=hidden])').focus();
             }
             //this.getRef('input').getRef('element').focus();
-          }
-        },
-        /**
-         * Closes the floater menu of the component.
-         * @method leave
-         * @param element 
-         * @memberof dropdownComponent
-         */
-        leave(){
-          let lst = this.getRef('list');
-          if ( lst ){
-            lst.close(true);
           }
         },
         /**
@@ -412,6 +412,25 @@
           this.$nextTick(() => {
             this.currentText = this.currentTextValue;
           });
+        },
+        /**
+         * Closes the floater menu of the component.
+         * @method leave
+         * @param element 
+         * @memberof dropdownComponent
+         */
+         isOverDropdown(v) {
+           if (v) {
+             clearTimeout(this.closeTimeout);
+           }
+           else {
+            this.closeTimeout = setTimeout(() => {
+              let lst = this.getRef('list');
+              if ( lst ){
+                lst.close(true);
+              }
+            }, 1000);
+          }
         },
         /**
          * @watch ready

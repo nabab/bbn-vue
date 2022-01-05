@@ -160,6 +160,7 @@
           if ( this.nullable === null ){
             isNullable = this.required ? false : !!this.placeholder;
           }
+
           return isNullable;
         }
       },
