@@ -670,6 +670,7 @@
               }
             }
             let st = url ? this.getRoute(url) : '';
+            /** @todo There is asomething to do here */
             //bbn.fn.log("ROUTING FUNCTION EXECUTING FOR " + url + " (CORRESPONDING TO " + st + ")");
             if (!url || (!force && (this.currentURL === url))) {
               if (bits[1]) {
@@ -1504,7 +1505,8 @@
               scrollable: !this.single,
               current: url,
               error: false,
-              loaded: false
+              loaded: false,
+              hidden: false
             }, idx);
           }
           if ( this.isBreadcrumb ){

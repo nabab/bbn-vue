@@ -192,15 +192,17 @@
          * Blurs the search input.
          * @method searchBlur
          */
-        searchBlur(){
-          clearTimeout(this.timeout);
-          this.timeout = setTimeout(() => {
-            this.isFocused = false;
-            this.isOpened = false;
-            this.specialWidth = this.minWidth;
-            this.currentPlaceholder = '?';
-            this.$emit('blur', this);
-          }, 250);
+        searchBlur(e) {
+          if (this.isFocused && ev.target && this.$el && !this.$el.contains(e.target)) {
+            clearTimeout(this.timeout);
+            this.timeout = setTimeout(() => {
+              this.isFocused = false;
+              this.isOpened = false;
+              this.specialWidth = this.minWidth;
+              this.currentPlaceholder = '?';
+              this.$emit('blur', this);
+            }, 250);
+          }
         },
         /**
          * Closes the search.
@@ -274,6 +276,12 @@
             clearTimeout(this.mouseTimeout);
           }
         }
+      },
+      created() {
+        document.addEventListener('click', this.searchBlur);
+      },
+      beforeDestroy() {
+        document.removeEventListener('click', this.searchBlur);
       },
       watch: {
         /**

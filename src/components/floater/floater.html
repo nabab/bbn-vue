@@ -57,45 +57,68 @@
     <div :class="{
           'bbn-flex-fill': footer || title || (buttons && buttons.length),
           'bbn-h-100': !title && !footer && (!buttons || !buttons.length),
-          'bbn-w-100': true
+          'bbn-w-100': true,
+          'bbn-flex-height': pageable
         }">
-          <!--v-if="isMounted">-->
-      <bbn-scroll :latency="latency"
-                  ref="scroll"
-                  v-if="ready"
-                  @ready="scrollReady = true"
-                  :scrollable="scrollable"
-                  :axis="axis"
-                  :max-width="isMaximized ? '100%' : currentMaxWidth || null"
-                  :max-height="isMaximized ? '100%' : scrollMaxHeight || null"
-                  :min-width="currentMinWidth || null"
-                  :min-height="currentMinHeight > outHeight ? currentMinHeight - outHeight : null"
-                  @resize="scrollResize">
-        <component v-if="component"
-                  ref="component"
-                  :is="component"
-                  v-bind="realComponentOptions"/>
-        <slot v-else-if="$slots.default"/>
-        <div v-else-if="!!content" 
-            v-html="content"
-            :class="scrollable ? 'bbn-block' : 'bbn-100'"/>
-        <bbn-list v-else-if="filteredData.length"
-                  :mode="mode"
-                  ref="list"
-                  :suggest="suggest"
-                  :source="filteredData"
-                  :component="itemComponent"
-                  :template="template"
-                  :uid="uid"
-                  :children="children"
-                  :selected="selected"
-                  :class="'bbn-floater-list bbn-menulist ' + mode"
-                  origin="floater"
-                  @select="select"
-                  :source-value="sourceValue"
-                  :source-text="sourceText"/>
-        <h3 v-else v-text="noData"/>
-      </bbn-scroll>
+      <div v-if="pageable && ready">
+        <bbn-pager class="bbn-table-footer bbn-no-border-right bbn-no-border-left bbn-no-border-bottom"
+                  :element="pagerElement || _self"
+                  @click.stop
+                  @mousedown.stop
+                  @mouseup.stop
+                  @keydown.stop
+                  @keyup.stop
+                  :extra-controls="false"/>
+      </div>
+      <div :class="{'bbn-100': !ready || !pageable, 'bbn-flex-fill': pageable}">
+        <bbn-scroll :latency="latency"
+                    ref="scroll"
+                    :class="{'bbn-flex-fill': pageable}"
+                    v-if="ready"
+                    @ready="scrollReady = true"
+                    :scrollable="scrollable"
+                    :axis="axis"
+                    :max-width="isMaximized ? '100%' : currentMaxWidth || null"
+                    :max-height="isMaximized ? '100%' : scrollMaxHeight || null"
+                    :min-width="currentMinWidth || null"
+                    :min-height="currentMinHeight > outHeight ? currentMinHeight - outHeight : null"
+                    @resize="scrollResize">
+          <component v-if="component"
+                    ref="component"
+                    :is="component"
+                    v-bind="realComponentOptions"/>
+          <slot v-else-if="$slots.default"/>
+          <div v-else-if="!!content" 
+              v-html="content"
+              :class="scrollable ? 'bbn-block' : 'bbn-100'"/>
+          <bbn-list v-else-if="filteredData.length"
+                    :mode="mode"
+                    ref="list"
+                    :suggest="suggest"
+                    :source="filteredData"
+                    :component="itemComponent"
+                    :template="template"
+                    :uid="uid"
+                    :children="children"
+                    :selected="selected"
+                    :class="'bbn-floater-list bbn-menulist ' + mode"
+                    origin="floater"
+                    @select="select"
+                    :source-value="sourceValue"
+                    :source-text="sourceText"/>
+          <h3 v-else v-text="noData"/>
+        </bbn-scroll>
+      </div>
+      <div v-if="pageable && ready">
+        <bbn-pager class="bbn-table-footer bbn-no-border-right bbn-no-border-left bbn-no-border-bottom"
+                  :element="_self"
+                  @click.stop
+                  @mousedown.stop
+                  @mouseup.stop
+                  @keydown.stop
+                  @keyup.stop
+                  :extra-controls="false"/>
+      </div>
       <component is="style"
                 v-if="css"
                 scoped="scoped"

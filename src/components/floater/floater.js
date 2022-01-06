@@ -260,6 +260,9 @@
       modal: {
         type: Boolean,
         default: false
+      },
+      pagerElement: {
+        type: Vue
       }
     },
     data() {

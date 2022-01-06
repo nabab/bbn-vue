@@ -1,12 +1,11 @@
 <div :class="[componentClass, 'bbn-overlay']"
      @subready.stop
-     v-show="visible">
+     v-if="!hidden">
   <transition name="fade"
-              v-if="!hidden"
               v-on:enter="enter"
-              v-on:after-enter="onResize"
-  >
-    <div :class="{
+              v-on:after-enter="onResize">
+    <div v-show="visible"
+         :class="{
       'bbn-background': true,
       'bbn-overlay': !fullScreen,
       'bbn-container-full-screen': fullScreen,

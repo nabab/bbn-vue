@@ -66,13 +66,14 @@
        * @prop {Boolean} [true] extraControls
        */
       extraControls: {
+        type: Boolean,
         default: true
       },
       /**
        * False if you wanto to hide the limit selector
        * @prop {Boolean} [true] limit
        */
-       limit: {
+      limit: {
         type: Boolean,
         default: true
       },

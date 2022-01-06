@@ -10,7 +10,6 @@
               type="search"
               ref="input"
               @focus="searchFocus"
-              @blur="searchBlur"
               @keydown.esc.prevent="isOpened ? isOpened = false : searchBlur() && getRef('input').getRef('element').blur()"
               @keydown="keydown"
               :nullable="isNullable"
@@ -32,6 +31,8 @@
                @close="searchClose"
                :source-text="sourceText"
                :source-value="sourceValue"
+               :pageable="filteredData.length > limit"
+               :pager-element="_self"
                :source="filteredData"/>
   <input type="hidden"
          v-model="value"
