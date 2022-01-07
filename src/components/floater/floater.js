@@ -989,6 +989,7 @@
                   a.res = 0;
                   size = this['container' + a.camel];
                 }
+                bbn.fn.log(a.res)
               }
             }
             // If the floater is horizontal, it will ideally start at the

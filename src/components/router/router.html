@@ -182,24 +182,26 @@
                           :style="{
                             backgroundColor: getFontColor(tabIndex)
                           }"/>
-                    <div class="bbn-router-tabs-icon">
-                      <i v-if="!tab.static && !tab.pinned"
-                        class="nf nf-fa-times bbn-p bbn-router-tab-close"
-                        tabindex="-1"
-                        :ref="'closer-' + tabIndex"
-                        @keydown.left.down.prevent.stop="getRef('menu-' + tabIndex) ? getRef('menu-' + tabIndex).$el.focus() : null"
-                        @keydown.space.enter.prevent.stop="close(tabIndex)"
-                        @click.stop.prevent="close(tabIndex)"/>
-                      <bbn-context v-if="(tab.menu !== false) && (tabIndex === selected)"
-                                  class="nf nf-fa-caret_down bbn-router-tab-menu bbn-p"
-                                  tabindex="-1"
-                                  min-width="10em"
-                                  tag="i"
-                                  :source="getMenuFn"
-                                  :autobind="false"
-                                  :source-index="tabIndex"
-                                  :ref="'menu-' + tabIndex"/>
-                    </div>
+                    <span v-if="!tab.static && !tab.pinned"
+                          class="bbn-p bbn-router-tab-close bbn-iblock bbn-top-right bbn-hxspadded"
+                          tabindex="-1"
+                          :ref="'closer-' + tabIndex"
+                          @keydown.left.down.prevent.stop="getRef('menu-' + tabIndex) ? getRef('menu-' + tabIndex).$el.focus() : null"
+                          @keydown.space.enter.prevent.stop="close(tabIndex)"
+                          @click.stop.prevent="close(tabIndex)">
+                      <i class="nf nf-fa-times"/>
+                    </span>
+                    <bbn-context v-if="(tab.menu !== false) && (tabIndex === selected)"
+                                class="bbn-iblock bbn-router-tab-menu bbn-p bbn-bottom-right bbn-hxspadded"
+                                tabindex="-1"
+                                min-width="10em"
+                                tag="span"
+                                :source="getMenuFn"
+                                :autobind="false"
+                                :source-index="tabIndex"
+                                :ref="'menu-' + tabIndex">
+                      <i class="nf nf-fa-caret_down"/>
+                    </bbn-context>
                   </li>
                 </ul>
               </component>

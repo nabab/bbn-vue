@@ -124,8 +124,14 @@
                 scoped="scoped"
                 v-html="css"/>
     </div>
-    <div v-if="modal && closable">
-      <div class="bbn-top-right bbn-spadded bbn-xl bbn-white">
+    <div v-if="!title && closable">
+      <div :class="{
+        'bbn-top-right': true,
+        'bbn-spadded': true,
+        'bbn-xl': !!modal,
+        'bbn-white': !!modal,
+        'bbn-lg': !modal
+      }">
         <i class="nf nf-fa-times bbn-p"
            @click="close"/>
       </div>
