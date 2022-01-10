@@ -1,5 +1,6 @@
 (bbn_resolve) => {
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="['bbn-unselectable', componentClass]"
      :style="getStyles()"
@@ -58,12 +59,14 @@ script.innerHTML = `<div :class="['bbn-unselectable', componentClass]"
 </div>
 `;
 script.setAttribute('id', 'bbn-tpl-component-vlist');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
+
 let css = document.createElement('link');
-css.setAttribute('rel', "stylesheet");
-css.setAttribute('href', bbn.vue.libURL + "dist/js/components/vlist/vlist.css");
+css.setAttribute('rel', 'stylesheet');
+css.setAttribute('href', bbn.vue.libURL + 'dist/js/components/vlist/vlist.css');
 document.head.insertAdjacentElement('beforeend', css);
+
 /**
  * @file bbn-vlist component
  *

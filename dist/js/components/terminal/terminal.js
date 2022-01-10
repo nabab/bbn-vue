@@ -1,10 +1,11 @@
 (bbn_resolve) => {
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-overlay']"></div>`;
 script.setAttribute('id', 'bbn-tpl-component-terminal');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-textarea component
  *

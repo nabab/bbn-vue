@@ -1,5 +1,6 @@
 (bbn_resolve) => {
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="['bbn-overlay', componentClass]"
      :style="{
@@ -165,12 +166,14 @@ script.innerHTML = `<div :class="['bbn-overlay', componentClass]"
   </div>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-splitter2');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
+
 let css = document.createElement('link');
-css.setAttribute('rel', "stylesheet");
-css.setAttribute('href', bbn.vue.libURL + "dist/js/components/splitter2/splitter2.css");
+css.setAttribute('rel', 'stylesheet');
+css.setAttribute('href', bbn.vue.libURL + 'dist/js/components/splitter2/splitter2.css');
 document.head.insertAdjacentElement('beforeend', css);
+
 /**
  * @file bbn-splitter component
  *

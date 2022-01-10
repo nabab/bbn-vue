@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-floater-list']">
   <div class="bbn-hidden" v-if="$slots.default" ref="slot">
@@ -73,8 +74,8 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-floater-list']">
 </div>
 `;
 script.setAttribute('id', 'bbn-tpl-component-list-input');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-list component
  *

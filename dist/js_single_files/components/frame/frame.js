@@ -1,12 +1,13 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<iframe :class="['bbn-reset', 'bbn-block', componentClass]"
         :sandbox="sandbox"
         :src="url"
         @load="load"></iframe>`;
 script.setAttribute('id', 'bbn-tpl-component-frame');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-browser component
  *

@@ -1,5 +1,6 @@
 (bbn_resolve) => {
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<span :class="['bbn-iblock', componentClass]">
   <input type="checkbox"
@@ -27,12 +28,14 @@ script.innerHTML = `<span :class="['bbn-iblock', componentClass]">
 </span>
 `;
 script.setAttribute('id', 'bbn-tpl-component-switch');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
+
 let css = document.createElement('link');
-css.setAttribute('rel', "stylesheet");
-css.setAttribute('href', bbn.vue.libURL + "dist/js/components/switch/switch.css");
+css.setAttribute('rel', 'stylesheet');
+css.setAttribute('href', bbn.vue.libURL + 'dist/js/components/switch/switch.css');
 document.head.insertAdjacentElement('beforeend', css);
+
  /**
   * @file bbn-switch component
   *

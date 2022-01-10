@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-vmiddle']">
   <div v-if="currentChats.length"
@@ -299,8 +300,8 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-vmiddle']">
 </div>
 `;
 script.setAttribute('id', 'bbn-tpl-component-chat');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-chat component
  * @description bbn-chat component allows the user to communicate in chat sessions with other users online.

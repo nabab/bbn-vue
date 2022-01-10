@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', {'bbn-disabled': !!disabled}]"
      @click.stop>
@@ -88,8 +89,8 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', {
   </div>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-numeric');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-numeric component
  *

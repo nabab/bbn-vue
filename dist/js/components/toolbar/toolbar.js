@@ -1,5 +1,6 @@
 (bbn_resolve) => {
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="['bbn-header', 'bbn-unselectable', componentClass, {
         'bbn-w-100': (orientation === 'horizontal'),
@@ -52,12 +53,14 @@ script.innerHTML = `<div :class="['bbn-header', 'bbn-unselectable', componentCla
 </div>
 `;
 script.setAttribute('id', 'bbn-tpl-component-toolbar');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
+
 let css = document.createElement('link');
-css.setAttribute('rel', "stylesheet");
-css.setAttribute('href', bbn.vue.libURL + "dist/js/components/toolbar/toolbar.css");
+css.setAttribute('rel', 'stylesheet');
+css.setAttribute('href', bbn.vue.libURL + 'dist/js/components/toolbar/toolbar.css');
 document.head.insertAdjacentElement('beforeend', css);
+
 /**
  * @file bbn-toolbar component
  * @description bbn-toolbar is an horizontal or vertical layout containing elements or components performing actions defined by the user.

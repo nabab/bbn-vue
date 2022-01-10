@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, {
        'bbn-invisible': !ready,
@@ -11,8 +12,8 @@ script.innerHTML = `<div :class="[componentClass, {
   </bbn-splitter>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-router-group');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-router component
  * @description bbn-router is a component that allows and manages the navigation (url) between the various containers of an application

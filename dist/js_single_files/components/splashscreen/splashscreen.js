@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, currentSwipeClass, 'bbn-overlay']"
      @touchstart="touchstart"
@@ -98,8 +99,8 @@ script.innerHTML = `<div :class="[componentClass, currentSwipeClass, 'bbn-overla
   </div>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-splashscreen');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-splashscreen component
  * @description  bbn-splashscreen.

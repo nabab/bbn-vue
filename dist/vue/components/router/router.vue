@@ -183,24 +183,26 @@
                           :style="{
                             backgroundColor: getFontColor(tabIndex)
                           }"/>
-                    <div class="bbn-router-tabs-icon">
-                      <i v-if="!tab.static && !tab.pinned"
-                        class="nf nf-fa-times bbn-p bbn-router-tab-close"
-                        tabindex="-1"
-                        :ref="'closer-' + tabIndex"
-                        @keydown.left.down.prevent.stop="getRef('menu-' + tabIndex) ? getRef('menu-' + tabIndex).$el.focus() : null"
-                        @keydown.space.enter.prevent.stop="close(tabIndex)"
-                        @click.stop.prevent="close(tabIndex)"/>
-                      <bbn-context v-if="(tab.menu !== false) && (tabIndex === selected)"
-                                  class="nf nf-fa-caret_down bbn-router-tab-menu bbn-p"
-                                  tabindex="-1"
-                                  min-width="10em"
-                                  tag="i"
-                                  :source="getMenuFn"
-                                  :autobind="false"
-                                  :source-index="tabIndex"
-                                  :ref="'menu-' + tabIndex"/>
-                    </div>
+                    <span v-if="!tab.static && !tab.pinned"
+                          class="bbn-p bbn-router-tab-close bbn-iblock bbn-top-right bbn-hxspadded"
+                          tabindex="-1"
+                          :ref="'closer-' + tabIndex"
+                          @keydown.left.down.prevent.stop="getRef('menu-' + tabIndex) ? getRef('menu-' + tabIndex).$el.focus() : null"
+                          @keydown.space.enter.prevent.stop="close(tabIndex)"
+                          @click.stop.prevent="close(tabIndex)">
+                      <i class="nf nf-fa-times"/>
+                    </span>
+                    <bbn-context v-if="(tab.menu !== false) && (tabIndex === selected)"
+                                class="bbn-iblock bbn-router-tab-menu bbn-p bbn-bottom-right bbn-hxspadded"
+                                tabindex="-1"
+                                min-width="10em"
+                                tag="span"
+                                :source="getMenuFn"
+                                :autobind="false"
+                                :source-index="tabIndex"
+                                :ref="'menu-' + tabIndex">
+                      <i class="nf nf-fa-caret_down"/>
+                    </bbn-context>
                   </li>
                 </ul>
               </component>
@@ -354,13 +356,6 @@
         default: bbn._("Are you sure you want to discard the changes you made in this page?")
       },
       /**
-       *
-       * @prop {String} hideAdvertUrl
-       */
-      hideAdvertUrl: {
-        type: String
-      },
-      /**
        * The max length of the history.
        * @prop {Number} [10] historyMaxLength
        */
@@ -399,14 +394,6 @@
        * @prop {Boolean} [true] master
        */
       postBaseUrl: {
-        type: Boolean,
-        default: true
-      },
-      /**
-       * Set it to false if you want to hide the switch.
-       * @prop {Boolean} [true] switch
-       */
-      showSwitch: {
         type: Boolean,
         default: true
       },
@@ -641,6 +628,7 @@
       },
       /**
        * Returns the bbn-tabs component of this router.
+       * @todo Kill this function, there is no anymore tabs component
        * @computed itsTabs
        * @fires getRef
        * @return {Vue|Boolean}
@@ -926,6 +914,7 @@
               }
             }
             let st = url ? this.getRoute(url) : '';
+            /** @todo There is asomething to do here */
             //bbn.fn.log("ROUTING FUNCTION EXECUTING FOR " + url + " (CORRESPONDING TO " + st + ")");
             if (!url || (!force && (this.currentURL === url))) {
               if (bits[1]) {
@@ -1760,7 +1749,8 @@
               scrollable: !this.single,
               current: url,
               error: false,
-              loaded: false
+              loaded: false,
+              hidden: false
             }, idx);
           }
           if ( this.isBreadcrumb ){

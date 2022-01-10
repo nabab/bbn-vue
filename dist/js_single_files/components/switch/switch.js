@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<span :class="['bbn-iblock', componentClass]">
   <input type="checkbox"
@@ -26,8 +27,8 @@ script.innerHTML = `<span :class="['bbn-iblock', componentClass]">
 </span>
 `;
 script.setAttribute('id', 'bbn-tpl-component-switch');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
  /**
   * @file bbn-switch component
   *

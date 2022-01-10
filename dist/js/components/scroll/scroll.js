@@ -1,5 +1,6 @@
 (bbn_resolve) => {
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="elementClass"
      :style="elementStyle"
@@ -27,7 +28,7 @@ script.innerHTML = `<div :class="elementClass"
     </div>
   </div>
   <bbn-scrollbar v-if="scrollReady && hasScrollX"
-                 :hidden="scrollReady && hiddenX"
+                 :hidden="isResizing || !scrollReady || hiddenX"
                  orientation="horizontal"
                  ref="xScroller"
                  :color="barColor ? barColor : ''"
@@ -37,7 +38,7 @@ script.innerHTML = `<div :class="elementClass"
                  :offset="offsetX">
   </bbn-scrollbar>
   <bbn-scrollbar v-if="scrollReady && hasScrollY"
-                 :hidden="scrollReady && hiddenY"
+                 :hidden="isResizing || !scrollReady || hiddenY"
                  orientation="vertical"
                  ref="yScroller"
                  :color="barColor ? barColor : ''"
@@ -48,12 +49,14 @@ script.innerHTML = `<div :class="elementClass"
   </bbn-scrollbar>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-scroll');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
+
 let css = document.createElement('link');
-css.setAttribute('rel', "stylesheet");
-css.setAttribute('href', bbn.vue.libURL + "dist/js/components/scroll/scroll.css");
+css.setAttribute('rel', 'stylesheet');
+css.setAttribute('href', bbn.vue.libURL + 'dist/js/components/scroll/scroll.css');
 document.head.insertAdjacentElement('beforeend', css);
+
  /**
   * @file bbn-scroll component
   *
@@ -121,14 +124,6 @@ document.head.insertAdjacentElement('beforeend', css);
        */
       height: {
         type: [String, Number]
-      },
-      /**
-       * @todo not used
-       * @prop {String} [""] classes
-       */
-      classes: {
-        type: String,
-        default: ""
       },
       /**
        * @todo not used

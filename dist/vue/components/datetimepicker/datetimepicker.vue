@@ -492,7 +492,7 @@
        * @return {String}
        */
       currentValueFormat(){
-        return this.valueFormat || (this.showSecond ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD HH:mm');
+        return this.valueFormat || 'YYYY-MM-DD HH:mm:ss';
       },
       /**
        * The current format shown on the input.

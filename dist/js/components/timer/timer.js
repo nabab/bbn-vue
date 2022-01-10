@@ -1,5 +1,6 @@
 (bbn_resolve) => {
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<span :class="['bbn-iblock', componentClass]">
   <span v-if="(mode === 'countdown') && isValid">
@@ -17,8 +18,8 @@ script.innerHTML = `<span :class="['bbn-iblock', componentClass]">
   <slot v-else></slot>
 </span>`;
 script.setAttribute('id', 'bbn-tpl-component-timer');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-countdown component
  * @description bbn-countdown is a component that performs a countdown of a user-defined date, based on the measure of time defined in the construction.

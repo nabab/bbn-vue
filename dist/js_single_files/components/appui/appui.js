@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-background', 'bbn-overlay', {
       'bbn-desktop': !isMobile
@@ -50,23 +51,24 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-background', 'bbn-overlay
                     :fixed-left="leftShortcuts"
                     :fixed-right="rightShortcuts"
                     :mobile="true"
-                    :z-index="3"/>
+                    :z-index="6"/>
         <!-- SEARCHBAR -->
         <div v-if="!isMobile && !!searchBar"
-             class="bbn-appui-search bbn-large bbn-abs bbn-vspadded bbn-vmiddle"
+             class="bbn-appui-search bbn-large bbn-abs bbn-vspadded bbn-h-100 bbn-vmiddle"
         >
           <bbn-search :source="searchBar.source"
                       :placeholder="searchBar.placeholderFocused"
                       ref="search"
                       @select="searchBar.select"
-                      :component="searchBar.component"
                       v-model="searchBar.value"
                       :suggest="true"
                       :source-value="searchBar.sourceValue"
                       :source-text="searchBar.sourceText"
                       :min-length="searchBar.minLength"
+                      :limit="50"
+                      :pageable="true"
                       class="bbn-no"
-                      style="z-index: 2"/>
+                      style="z-index: 5"/>
         </div>
         <!-- CENTRAL PART -->
         <div v-if="!isMobile"
@@ -74,7 +76,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-background', 'bbn-overlay
         >
           <!-- FISHEYE -->
           <bbn-fisheye v-if="plugins['appui-menu']"
-                       style="z-index: 3"
+                       style="z-index: 6"
                        v-show="!searchBar || ('?' !== searchBar.value)"
                        :class="{
                          'bbn-invisible': $refs.search && $refs.search.isFocused,
@@ -303,8 +305,8 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-background', 'bbn-overlay
 </div>
 `;
 script.setAttribute('id', 'bbn-tpl-component-appui');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file appui component
  * @description The autocomplete allows to select a single value from a list of items by proposeing suggestions based on the typed characters.

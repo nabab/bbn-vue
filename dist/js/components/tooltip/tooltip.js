@@ -1,5 +1,6 @@
 (bbn_resolve) => {
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<bbn-context :tag="tag"
             :class="componentClass"
@@ -18,12 +19,14 @@ script.innerHTML = `<bbn-context :tag="tag"
   </slot>
 </bbn-context>`;
 script.setAttribute('id', 'bbn-tpl-component-tooltip');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
+
 let css = document.createElement('link');
-css.setAttribute('rel', "stylesheet");
-css.setAttribute('href', bbn.vue.libURL + "dist/js/components/tooltip/tooltip.css");
+css.setAttribute('rel', 'stylesheet');
+css.setAttribute('href', bbn.vue.libURL + 'dist/js/components/tooltip/tooltip.css');
 document.head.insertAdjacentElement('beforeend', css);
+
 /**
  * @file bbn-tooltip component
  *

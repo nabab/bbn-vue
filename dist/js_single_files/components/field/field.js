@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<component v-if="mode === 'write'"
            :is="renderedComponent"
@@ -18,8 +19,8 @@ script.innerHTML = `<component v-if="mode === 'write'"
   <div v-if="renderedContent" v-html="renderedContent"></div>
 </component>`;
 script.setAttribute('id', 'bbn-tpl-component-field');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /*bbn-field is a generic component of simple construction, its potential lies in the versatility of use, assigning to the property "type" a well-defined value, it becomes a "bbn" component.
   * For example if we assign the value "numeric" to the property type, it will become "bbn-numeric"*/
 

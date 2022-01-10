@@ -1,8 +1,11 @@
 (bbn_resolve) => {
 ((bbn) => {
+
 let script_dep = document.createElement('script');
-script_dep.setAttribute('src', "https://cdn.jsdelivr.net/combine/gh/jaames/iro.js@5.0.0/iro.js,gh/jaames/iro.js@5.0.0/plugins/iro-transparency-plugin/1.0.2/iro-transparency-plugin.js");
+script_dep.setAttribute('src', 'https://cdn.jsdelivr.net/combine/gh/jaames/iro.js@5.0.0/iro.js,gh/jaames/iro.js@5.0.0/plugins/iro-transparency-plugin/1.0.2/iro-transparency-plugin.js');
 script_dep.onload = () => {
+
+
 let script = document.createElement('script');
 script.innerHTML = `<span :class="['bbn-iblock', componentClass, {'bbn-disabled': !!disabled}]">
   <input :value="value"
@@ -151,12 +154,14 @@ script.innerHTML = `<span :class="['bbn-iblock', componentClass, {'bbn-disabled'
 </span>
 `;
 script.setAttribute('id', 'bbn-tpl-component-colorpicker');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
+
 let css = document.createElement('link');
-css.setAttribute('rel', "stylesheet");
-css.setAttribute('href', bbn.vue.libURL + "dist/js/components/colorpicker/colorpicker.css");
+css.setAttribute('rel', 'stylesheet');
+css.setAttribute('href', bbn.vue.libURL + 'dist/js/components/colorpicker/colorpicker.css');
 document.head.insertAdjacentElement('beforeend', css);
+
 //* This component allows you to create an intuitive interface for color manipulations
 
 /**

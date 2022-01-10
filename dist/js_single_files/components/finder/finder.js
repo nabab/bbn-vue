@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-overlay']">
   <bbn-scroll axis="x" :class="componentClass" ref="scroll">
@@ -151,8 +152,8 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-overlay']">
 </div>
 `;
 script.setAttribute('id', 'bbn-tpl-component-finder');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * Created by BBN on 15/08/2019.
  */

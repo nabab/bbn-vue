@@ -1,5 +1,6 @@
 (bbn_resolve) => {
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-overlay']">
   <div class="bbn-hidden" v-if="$slots.default" ref="slot">
@@ -51,12 +52,14 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-overlay']">
 </div>
 `;
 script.setAttribute('id', 'bbn-tpl-component-slider-menu');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
+
 let css = document.createElement('link');
-css.setAttribute('rel', "stylesheet");
-css.setAttribute('href', bbn.vue.libURL + "dist/js/components/slider-menu/slider-menu.css");
+css.setAttribute('rel', 'stylesheet');
+css.setAttribute('href', bbn.vue.libURL + 'dist/js/components/slider-menu/slider-menu.css');
 document.head.insertAdjacentElement('beforeend', css);
+
 /**
  * @file bbn-lists component
  *

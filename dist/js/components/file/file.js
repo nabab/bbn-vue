@@ -1,14 +1,19 @@
 (bbn_resolve) => {
 ((bbn) => {
+
 let script_dep = document.createElement('script');
-script_dep.setAttribute('src', "https://cdn.jsdelivr.net/combine/gh/ProgerXP/FileDrop@master/filedrop-min.js");
+script_dep.setAttribute('src', 'https://cdn.jsdelivr.net/combine/gh/ProgerXP/FileDrop@master/filedrop-min.js');
 script_dep.onload = () => {
 
+
 let css_dependency;
+
 css_dependency = document.createElement('link');
-css_dependency.setAttribute('rel', "stylesheet");
-css_dependency.setAttribute('href', "https://cdn.jsdelivr.net/combine/gh/ProgerXP/FileDrop@master/filedrop.css");
+css_dependency.setAttribute('rel', 'stylesheet');
+css_dependency.setAttribute('href', 'https://cdn.jsdelivr.net/combine/gh/ProgerXP/FileDrop@master/filedrop.css');
 document.head.insertAdjacentElement('beforeend', css_dependency);
+
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-w-100', 'bbn-widget']">
   <input value="value" type="hidden" name="name">
@@ -34,12 +39,14 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-w-100', 'bbn-widget']">
 </div>
 `;
 script.setAttribute('id', 'bbn-tpl-component-file');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
+
 let css = document.createElement('link');
-css.setAttribute('rel', "stylesheet");
-css.setAttribute('href', bbn.vue.libURL + "dist/js/components/file/file.css");
+css.setAttribute('rel', 'stylesheet');
+css.setAttribute('href', bbn.vue.libURL + 'dist/js/components/file/file.css');
 document.head.insertAdjacentElement('beforeend', css);
+
  /**
   * @file bbn-file component
   *

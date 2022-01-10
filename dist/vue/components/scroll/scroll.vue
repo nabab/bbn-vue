@@ -25,7 +25,7 @@
     </div>
   </div>
   <bbn-scrollbar v-if="scrollReady && hasScrollX"
-                 :hidden="scrollReady && hiddenX"
+                 :hidden="isResizing || !scrollReady || hiddenX"
                  orientation="horizontal"
                  ref="xScroller"
                  :color="barColor ? barColor : ''"
@@ -35,7 +35,7 @@
                  :offset="offsetX">
   </bbn-scrollbar>
   <bbn-scrollbar v-if="scrollReady && hasScrollY"
-                 :hidden="scrollReady && hiddenY"
+                 :hidden="isResizing || !scrollReady || hiddenY"
                  orientation="vertical"
                  ref="yScroller"
                  :color="barColor ? barColor : ''"
@@ -114,14 +114,6 @@
        */
       height: {
         type: [String, Number]
-      },
-      /**
-       * @todo not used
-       * @prop {String} [""] classes
-       */
-      classes: {
-        type: String,
-        default: ""
       },
       /**
        * @todo not used

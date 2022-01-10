@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-background']">
   <div :class="['bbn-overlay', $parent.currentOrientation === 'vertical' ? 'bbn-flex-height' : 'bbn-flex-width']">
@@ -20,8 +21,8 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-background']">
   </div>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-pane');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file the bbn-pane component
  *

@@ -1,5 +1,6 @@
 (bbn_resolve) => {
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[
         {
@@ -124,12 +125,14 @@ script.innerHTML = `<div :class="[
   </div>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-floater2');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
+
 let css = document.createElement('link');
-css.setAttribute('rel', "stylesheet");
-css.setAttribute('href', bbn.vue.libURL + "dist/js/components/floater2/floater2.css");
+css.setAttribute('rel', 'stylesheet');
+css.setAttribute('href', bbn.vue.libURL + 'dist/js/components/floater2/floater2.css');
 document.head.insertAdjacentElement('beforeend', css);
+
 /**
  * @file bbn-floater component
  *

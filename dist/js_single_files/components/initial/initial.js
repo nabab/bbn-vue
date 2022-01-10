@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<span :class="['bbn-iblock', 'bbn-unselectable', componentClass]"
       :title="userName || name"
@@ -18,8 +19,8 @@ script.innerHTML = `<span :class="['bbn-iblock', 'bbn-unselectable', componentCl
   </div>
 </span>`;
 script.setAttribute('id', 'bbn-tpl-component-initial');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * Based on https://github.com/judesfernando/initial.js
  */

@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<bbn-context :tag="tag"
             :class="componentClass"
@@ -17,8 +18,8 @@ script.innerHTML = `<bbn-context :tag="tag"
   </slot>
 </bbn-context>`;
 script.setAttribute('id', 'bbn-tpl-component-tooltip');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-tooltip component
  *

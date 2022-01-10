@@ -1,5 +1,6 @@
 (bbn_resolve) => {
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-bordered', 'bbn-radius', 'bbn-alt-background', full ? 'full' : '']"
      @mouseenter="$emit('mouseenter')">
@@ -121,12 +122,14 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-bordered', 'bbn-radius', 
 </div>
 `;
 script.setAttribute('id', 'bbn-tpl-component-widget');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
+
 let css = document.createElement('link');
-css.setAttribute('rel', "stylesheet");
-css.setAttribute('href', bbn.vue.libURL + "dist/js/components/widget/widget.css");
+css.setAttribute('rel', 'stylesheet');
+css.setAttribute('href', bbn.vue.libURL + 'dist/js/components/widget/widget.css');
 document.head.insertAdjacentElement('beforeend', css);
+
 /**
  * @file bbn-widget component
  *

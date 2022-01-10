@@ -1,20 +1,25 @@
 ((bbn) => {
+
 let script_dep = document.createElement('script');
-script_dep.setAttribute('src', "https://cdn.jsdelivr.net/combine/gh/nhn/tui.image-editor@v3.15.2/apps/image-editor/dist/tui-code-snippet.min.js,gh/nhn/tui.image-editor@v3.15.2/apps/image-editor/dist/tui-color-picker.min.js,gh/nhn/tui.image-editor@v3.15.2/apps/image-editor/dist/tui-image-editor.min.js");
+script_dep.setAttribute('src', 'https://cdn.jsdelivr.net/combine/gh/nhn/tui.image-editor@v3.15.2/apps/image-editor/dist/tui-code-snippet.min.js,gh/nhn/tui.image-editor@v3.15.2/apps/image-editor/dist/tui-color-picker.min.js,gh/nhn/tui.image-editor@v3.15.2/apps/image-editor/dist/tui-image-editor.min.js');
 script_dep.onload = () => {
 
+
 let css_dependency;
+
 css_dependency = document.createElement('link');
-css_dependency.setAttribute('rel', "stylesheet");
-css_dependency.setAttribute('href', "https://cdn.jsdelivr.net/combine/gh/nhn/tui.image-editor@v3.15.2/apps/image-editor/dist/tui-image-editor.min.css");
+css_dependency.setAttribute('rel', 'stylesheet');
+css_dependency.setAttribute('href', 'https://cdn.jsdelivr.net/combine/gh/nhn/tui.image-editor@v3.15.2/apps/image-editor/dist/tui-image-editor.min.css');
 document.head.insertAdjacentElement('beforeend', css_dependency);
+
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-overlay']">
   <div ref="element" class="bbn-100"/>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-image-editor');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-markdown component
  *

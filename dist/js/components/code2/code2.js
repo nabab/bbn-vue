@@ -1,8 +1,11 @@
 (bbn_resolve) => {
 ((bbn) => {
+
 let script_dep = document.createElement('script');
-script_dep.setAttribute('src', "https://cdn.jsdelivr.net/combine/gh/ashraymehta/codemirror-bundler@1.0.0/dist/codemirror.js");
+script_dep.setAttribute('src', 'https://cdn.jsdelivr.net/combine/gh/ashraymehta/codemirror-bundler@1.0.0/dist/codemirror.js');
 script_dep.onload = () => {
+
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[{'bbn-reset': true, 'bbn-overlay': isFullScreen}, componentClass]"
      @keydown.enter.stop=""
@@ -38,12 +41,14 @@ script.innerHTML = `<div :class="[{'bbn-reset': true, 'bbn-overlay': isFullScree
 </div>
 `;
 script.setAttribute('id', 'bbn-tpl-component-code2');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
+
 let css = document.createElement('link');
-css.setAttribute('rel', "stylesheet");
-css.setAttribute('href', bbn.vue.libURL + "dist/js/components/code2/code2.css");
+css.setAttribute('rel', 'stylesheet');
+css.setAttribute('href', bbn.vue.libURL + 'dist/js/components/code2/code2.css');
 document.head.insertAdjacentElement('beforeend', css);
+
 /**
  * @file bbn-code component
  *

@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<span :class="[componentClass, 'bbn-textbox', {'bbn-disabled': !!disabled}]">
   <input ref="element"
@@ -34,8 +35,8 @@ script.innerHTML = `<span :class="[componentClass, 'bbn-textbox', {'bbn-disabled
 </span>
 `;
 script.setAttribute('id', 'bbn-tpl-component-masked');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-masked component
  * @description bbn-masked is a component that allows the full control of data to be processed.

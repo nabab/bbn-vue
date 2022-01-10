@@ -5,7 +5,8 @@
        'bbn-textbox',
        {'bbn-disabled': !!disabled}
      ]"
-     @mouseleave="leave"
+     @mouseenter="isOverDropdown = true"
+     @mouseleave="isOverDropdown = false"
      @focusin="isActive = true"
      @focusout="onFocusOut"
      :title="currentText || placeholder || null"
@@ -242,21 +243,6 @@
           if (this.currentText === this.currentTextValue) {
             this.currentText = '';
           }
-        }
-      },
-      /**
-       * Leave list.
-       *
-       * @method keydown
-       * @fires getRef
-       */
-      leave(){
-        let lst = this.getRef('list');
-        if (lst) {
-          lst.close(true);
-        }
-        if (this.native) {
-          this.isOpened = false;
         }
       },
       onFocusOut(){

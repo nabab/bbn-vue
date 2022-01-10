@@ -4,13 +4,13 @@
         componentClass,
         {'bbn-state-disabled': !!disabled}
       ]">
-  <textarea :class="[
-              'bbn-no-border',
-              'bbn-radius',
-              'bbn-w-100',
-              'bbn-spadded',
-              {'bbn-state-disabled': !!disabled}
-            ]"
+  <textarea :class="{
+              'bbn-no-border': true,
+              'bbn-radius': true,
+              'bbn-w-100': !cols,
+              'bbn-spadded': true,
+              'bbn-state-disabled': !!disabled
+            }"
             style="max-width: 100%; min-width: 100%; min-height: 100%"
             :value="value"
             :name="name"
@@ -20,11 +20,12 @@
             @focus="focus($event)"
             @blur="blur($event)"
             @change="change($event)"
-            @keydown="keydown($event)"
-            @keydown.enter.stop=""
+            @keydown="textareaKeydown($event)"
+            @keydown.enter.stop
             @keyup="keyup($event)"
             @paste="$emit('paste', $event)"
             :disabled="disabled"
+            :readonly="readonly"
             :required="required"
             :placeholder="placeholder"
             :maxlength="maxlength"
@@ -93,6 +94,14 @@
 			}
     },
     methods: {
+      textareaKeydown(ev) {
+        if (this.maxlength && (this.value.length >= this.maxlength)) {
+          ev.preventDefault();
+        }
+        else {
+          this.keydown(ev);
+        }
+      },
       /**
        * Clears the textarea.
        * @method clear

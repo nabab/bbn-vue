@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="componentClass"
       :style="barStyle"
@@ -20,8 +21,8 @@ script.innerHTML = `<div :class="componentClass"
   </div>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-scrollbar');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-scrollbar component
  *

@@ -1,5 +1,6 @@
 (bbn_resolve) => {
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="componentClass">
   <bbn-floater v-for="(it, idx) in items"
@@ -69,12 +70,14 @@ script.innerHTML = `<div :class="componentClass">
   </bbn-floater>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-notification');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
+
 let css = document.createElement('link');
-css.setAttribute('rel', "stylesheet");
-css.setAttribute('href', bbn.vue.libURL + "dist/js/components/notification/notification.css");
+css.setAttribute('rel', 'stylesheet');
+css.setAttribute('href', bbn.vue.libURL + 'dist/js/components/notification/notification.css');
 document.head.insertAdjacentElement('beforeend', css);
+
 /**
  * @file bbn-notification component
  * @description bbn-notification is a component that allows the display of a brief information message, for example to confirm the success of an action that has taken place.
@@ -164,7 +167,17 @@ document.head.insertAdjacentElement('beforeend', css);
       infoIcon: {
         type: [String, Boolean],
         default: 'nf nf-mdi-information'
-      }
+      },
+      /**
+       * The source of the component.
+       * @prop {Array} [[{id:'id1', type:'info', content: 'info content', num: 2},{id:'id2', type:'error', content: 'error content'}]] source
+       */
+      source: {
+        type: Array,
+        default(){
+          return [];
+        }
+      },
     },
     data: function(){
       let bits = this.position.split('-');
@@ -196,7 +209,7 @@ document.head.insertAdjacentElement('beforeend', css);
         /**
          * @data {Array} [[]] items
          */
-        items: [],
+        items: this.source,
         /**
          * @data {Boolean} isTop
          */

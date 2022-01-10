@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<span :class="[componentClass, 'bbn-textbox', {'bbn-input-nullable': isNullable}]">
   <bbn-masked v-model="inputValue"
@@ -292,8 +293,8 @@ script.innerHTML = `<span :class="[componentClass, 'bbn-textbox', {'bbn-input-nu
 </span>
 `;
 script.setAttribute('id', 'bbn-tpl-component-timepicker');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-timepicker component
  *

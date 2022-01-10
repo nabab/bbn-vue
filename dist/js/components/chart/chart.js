@@ -1,14 +1,19 @@
 (bbn_resolve) => {
 ((bbn) => {
+
 let script_dep = document.createElement('script');
-script_dep.setAttribute('src', "https://cdn.jsdelivr.net/combine/gh/apexcharts/apexcharts.js@v3.19.2/dist/apexcharts.min.js");
+script_dep.setAttribute('src', 'https://cdn.jsdelivr.net/combine/gh/apexcharts/apexcharts.js@v3.19.2/dist/apexcharts.min.js');
 script_dep.onload = () => {
 
+
 let css_dependency;
+
 css_dependency = document.createElement('link');
-css_dependency.setAttribute('rel', "stylesheet");
-css_dependency.setAttribute('href', "https://cdn.jsdelivr.net/combine/gh/apexcharts/apexcharts.js@v3.19.2/dist/apexcharts.css");
+css_dependency.setAttribute('rel', 'stylesheet');
+css_dependency.setAttribute('href', 'https://cdn.jsdelivr.net/combine/gh/apexcharts/apexcharts.js@v3.19.2/dist/apexcharts.css');
 document.head.insertAdjacentElement('beforeend', css_dependency);
+
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="['bbn-flex-height', componentClass]"
      :style="{
@@ -34,12 +39,14 @@ script.innerHTML = `<div :class="['bbn-flex-height', componentClass]"
   </div>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-chart');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
+
 let css = document.createElement('link');
-css.setAttribute('rel', "stylesheet");
-css.setAttribute('href', bbn.vue.libURL + "dist/js/components/chart/chart.css");
+css.setAttribute('rel', 'stylesheet');
+css.setAttribute('href', bbn.vue.libURL + 'dist/js/components/chart/chart.css');
 document.head.insertAdjacentElement('beforeend', css);
+
 /**
  * @file bbn-chart component
  *

@@ -1,5 +1,6 @@
 (bbn_resolve) => {
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<button :class="['bbn-iblock', {'bbn-button-icon-only': notext}, componentClass]"
         ref="element"
@@ -42,8 +43,8 @@ script.innerHTML = `<button :class="['bbn-iblock', {'bbn-button-icon-only': note
 </button>
 `;
 script.setAttribute('id', 'bbn-tpl-component-button');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-button component
  *

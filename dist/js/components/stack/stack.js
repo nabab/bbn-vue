@@ -1,5 +1,6 @@
 (bbn_resolve) => {
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[{'bbn-overlay':true}, componentClass]" v-if="currentData.length">
 	<!--bbn-toolbar></bbn-toolbar-->
@@ -10,8 +11,8 @@ script.innerHTML = `<div :class="[{'bbn-overlay':true}, componentClass]" v-if="c
 </div>
 `;
 script.setAttribute('id', 'bbn-tpl-component-stack');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 
 
 (function(bbn){

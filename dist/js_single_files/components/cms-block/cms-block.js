@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[
         componentClass,
@@ -50,8 +51,8 @@ script.innerHTML = `<div :class="[
   
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-cms-block');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-cms-block component
  * @description bbn-cms-block

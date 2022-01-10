@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<span :class="[componentClass, 'bbn-textbox', {'bbn-input-nullable': isNullable}]">
   <bbn-masked ref="element"
@@ -320,8 +321,8 @@ script.innerHTML = `<span :class="[componentClass, 'bbn-textbox', {'bbn-input-nu
   </bbn-floater>
 </span>`;
 script.setAttribute('id', 'bbn-tpl-component-datetimepicker');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-datetimepicker component
  *
@@ -494,7 +495,7 @@ document.body.insertAdjacentElement('beforeend', script);
        * @return {String}
        */
       currentValueFormat(){
-        return this.valueFormat || (this.showSecond ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD HH:mm');
+        return this.valueFormat || 'YYYY-MM-DD HH:mm:ss';
       },
       /**
        * The current format shown on the input.

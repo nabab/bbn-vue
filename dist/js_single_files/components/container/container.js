@@ -1,65 +1,69 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-overlay']"
      @subready.stop
      v-show="visible">
   <transition name="fade"
-              v-if="!hidden"
               v-on:enter="enter"
               v-on:after-enter="onResize"
   >
-    <div :class="{
-      'bbn-background': true,
-      'bbn-overlay': !fullScreen,
-      'bbn-container-full-screen': fullScreen,
-      'bbn-container-visible': visible
-     }">
-      <component :is="scrollable ? 'bbn-scroll' : 'div'"
-                v-if="ready && isLoaded && (visible || cached)"
-                v-show="visible"
-                ref="scroll"
-                :axis="scrollable ? 'y' : null"
-                class="bbn-overlay">
-        <!-- This is an ad hoc component with unique name -->
-        <component v-if="isComponent"
-                  :is="$options.components[componentName]"
-                  :source="source"
-                  ref="component"
-        ></component>
-        <!-- This is a classic component -->
-        <component v-else-if="component"
-                  :is="component"
-                  :source="source"
-                  ref="component"
-                  v-bind="options"
-        ></component>
-        <!-- This is just HTML content -->
-        <div v-else-if="content"
-             v-html="content">
-        </div>
-        <!-- This is the slot -->
-        <slot v-else></slot>
-        <component is="style"
-                   v-if="css"
-                   scoped="scoped"
-                   v-html="css"/>
-        <bbn-loader v-if="hasLoader"/>
-      </component>
-      <span  v-if="fullScreen"
-            class="bbn-container-full-screen-closer bbn-xl bbn-p">
-        <i class="nf nf-fa-times_circle"
-          @click="fullScreen = false"/>
-      </span>
-      <bbn-popup ref="popup"
-                :source="popups"
-                v-if="!hidden && ready && isLoaded && (visible || cached)"/>
+    <div class="bbn-overlay"
+         v-show="visible">
+      <div v-if="!hidden"
+           :class="{
+        'bbn-background': true,
+        'bbn-overlay': !fullScreen,
+        'bbn-container-full-screen': fullScreen,
+        'bbn-container-visible': visible
+      }">
+        <component :is="scrollable ? 'bbn-scroll' : 'div'"
+                  v-if="ready && isLoaded && (visible || cached)"
+                  v-show="visible"
+                  ref="scroll"
+                  :axis="scrollable ? 'y' : null"
+                  class="bbn-overlay">
+          <!-- This is an ad hoc component with unique name -->
+          <component v-if="isComponent"
+                    :is="$options.components[componentName]"
+                    :source="source"
+                    ref="component"
+          ></component>
+          <!-- This is a classic component -->
+          <component v-else-if="component"
+                    :is="component"
+                    :source="source"
+                    ref="component"
+                    v-bind="options"
+          ></component>
+          <!-- This is just HTML content -->
+          <div v-else-if="content"
+              v-html="content">
+          </div>
+          <!-- This is the slot -->
+          <slot v-else></slot>
+          <component is="style"
+                    v-if="css"
+                    scoped="scoped"
+                    v-html="css"/>
+          <bbn-loader v-if="hasLoader"/>
+        </component>
+        <span  v-if="fullScreen"
+              class="bbn-container-full-screen-closer bbn-xl bbn-p">
+          <i class="nf nf-fa-times_circle"
+            @click="fullScreen = false"/>
+        </span>
+        <bbn-popup ref="popup"
+                  :source="popups"
+                  v-if="!hidden && ready && isLoaded && (visible || cached)"/>
+      </div>
     </div>
   </transition>
 </div>
 `;
 script.setAttribute('id', 'bbn-tpl-component-container');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-container component
  *
@@ -496,6 +500,9 @@ document.body.insertAdjacentElement('beforeend', script);
           setTimeout(() => {
             if (bbn.env.url.indexOf('#')) {
               let scroll = this.getRef('scroll');
+              /**
+               * @todo  Does it mean the scroll manage the hash? Check it out
+               */
               if (scroll && (scroll.currentY || scroll.currentX)) {
                 return;
               }

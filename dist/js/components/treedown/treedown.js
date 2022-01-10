@@ -1,5 +1,6 @@
 (bbn_resolve) => {
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', 'bbn-reactive', {'bbn-disabled': !!disabled}]"
      @mouseleave="leave"
@@ -59,12 +60,14 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', '
 </div>
 `;
 script.setAttribute('id', 'bbn-tpl-component-treedown');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
+
 let css = document.createElement('link');
-css.setAttribute('rel', "stylesheet");
-css.setAttribute('href', bbn.vue.libURL + "dist/js/components/treedown/treedown.css");
+css.setAttribute('rel', 'stylesheet');
+css.setAttribute('href', bbn.vue.libURL + 'dist/js/components/treedown/treedown.css');
 document.head.insertAdjacentElement('beforeend', css);
+
 /**
  * @file bbn-dropdown component
  *

@@ -1,5 +1,6 @@
 (bbn_resolve) => {
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="['bbn-iblock', componentClass]"
      @focusout="focusout"
@@ -47,12 +48,14 @@ script.innerHTML = `<div :class="['bbn-iblock', componentClass]"
   </div>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-editable');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
+
 let css = document.createElement('link');
-css.setAttribute('rel', "stylesheet");
-css.setAttribute('href', bbn.vue.libURL + "dist/js/components/editable/editable.css");
+css.setAttribute('rel', 'stylesheet');
+css.setAttribute('href', bbn.vue.libURL + 'dist/js/components/editable/editable.css');
 document.head.insertAdjacentElement('beforeend', css);
+
 /**
  * @file bbn-cms-block component
  * @description bbn-cms-block

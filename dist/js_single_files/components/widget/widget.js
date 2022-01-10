@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-bordered', 'bbn-radius', 'bbn-alt-background', full ? 'full' : '']"
      @mouseenter="$emit('mouseenter')">
@@ -120,8 +121,8 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-bordered', 'bbn-radius', 
 </div>
 `;
 script.setAttribute('id', 'bbn-tpl-component-widget');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-widget component
  *

@@ -1,14 +1,19 @@
 (bbn_resolve) => {
 ((bbn) => {
+
 let script_dep = document.createElement('script');
-script_dep.setAttribute('src', "https://cdn.jsdelivr.net/combine/gh/artf/grapesjs@v0.15.10/dist/grapes.min.js,gh/artf/grapesjs-blocks-basic@v0.1.8/dist/grapesjs-blocks-basic.min.js");
+script_dep.setAttribute('src', 'https://cdn.jsdelivr.net/combine/gh/artf/grapesjs@v0.15.10/dist/grapes.min.js,gh/artf/grapesjs-blocks-basic@v0.1.8/dist/grapesjs-blocks-basic.min.js');
 script_dep.onload = () => {
 
+
 let css_dependency;
+
 css_dependency = document.createElement('link');
-css_dependency.setAttribute('rel', "stylesheet");
-css_dependency.setAttribute('href', "https://cdn.jsdelivr.net/combine/gh/artf/grapesjs@v0.15.10/dist/css/grapes.min.css");
+css_dependency.setAttribute('rel', 'stylesheet');
+css_dependency.setAttribute('href', 'https://cdn.jsdelivr.net/combine/gh/artf/grapesjs@v0.15.10/dist/css/grapes.min.css');
 document.head.insertAdjacentElement('beforeend', css_dependency);
+
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-overlay']">
   <slot>
@@ -17,8 +22,8 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-overlay']">
   </slot>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-grapes');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
  /**
   * @file bbn-grapes component
   *

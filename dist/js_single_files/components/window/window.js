@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-modal']"
      :style="containerCSS"
@@ -25,8 +26,8 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-modal']"
   </bbn-floater>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-window');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-window component
  *

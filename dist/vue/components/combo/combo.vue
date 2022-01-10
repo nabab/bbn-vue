@@ -5,7 +5,8 @@
        'bbn-textbox',
        {'bbn-disabled': !!disabled}
      ]"
-     @mouseleave="leave"
+     @mouseleave="isOverDropdown = false"
+     @mouseenter="isOverDropdown = true"
      @focusin="isActive = true"
      @focusout="isActive = false"
      :title="filterString || placeholder || null"
@@ -99,6 +100,7 @@
        * @prop {Boolean} [true] filterable
        */
       filterable: {
+        type: Boolean,
         default: true
       },
       /**

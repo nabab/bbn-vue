@@ -1,5 +1,6 @@
 (bbn_resolve) => {
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-overlay']">
   <bbn-scroll axis="x" :class="componentClass" ref="scroll">
@@ -152,12 +153,14 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-overlay']">
 </div>
 `;
 script.setAttribute('id', 'bbn-tpl-component-finder');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
+
 let css = document.createElement('link');
-css.setAttribute('rel', "stylesheet");
-css.setAttribute('href', bbn.vue.libURL + "dist/js/components/finder/finder.css");
+css.setAttribute('rel', 'stylesheet');
+css.setAttribute('href', bbn.vue.libURL + 'dist/js/components/finder/finder.css');
 document.head.insertAdjacentElement('beforeend', css);
+
 /**
  * Created by BBN on 15/08/2019.
  */

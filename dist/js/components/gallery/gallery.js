@@ -1,5 +1,6 @@
 (bbn_resolve) => {
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, {'bbn-flex-height': scrollable}]">
   <div v-if="!!toolbar"
@@ -132,12 +133,14 @@ script.innerHTML = `<div :class="[componentClass, {'bbn-flex-height': scrollable
   ></bbn-pager>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-gallery');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
+
 let css = document.createElement('link');
-css.setAttribute('rel', "stylesheet");
-css.setAttribute('href', bbn.vue.libURL + "dist/js/components/gallery/gallery.css");
+css.setAttribute('rel', 'stylesheet');
+css.setAttribute('href', bbn.vue.libURL + 'dist/js/components/gallery/gallery.css');
 document.head.insertAdjacentElement('beforeend', css);
+
 // It has a multitude of customizations to better your gallery.
 /**
  * @file bbn-gallery component

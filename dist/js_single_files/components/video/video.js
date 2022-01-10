@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-flex-height', {'bbn-box': skin}]"
      :style="{
@@ -69,8 +70,8 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-flex-height', {'bbn-box':
   ></div>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-video');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-video component
  * @description bbn-video allows the execution and visualization of video files.

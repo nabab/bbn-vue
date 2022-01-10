@@ -1,5 +1,6 @@
 (bbn_resolve) => {
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<span :class="[componentClass, 'bbn-textbox', {'bbn-disabled': !!disabled}]">
   <input ref="element"
@@ -35,12 +36,14 @@ script.innerHTML = `<span :class="[componentClass, 'bbn-textbox', {'bbn-disabled
 </span>
 `;
 script.setAttribute('id', 'bbn-tpl-component-masked');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
+
 let css = document.createElement('link');
-css.setAttribute('rel', "stylesheet");
-css.setAttribute('href', bbn.vue.libURL + "dist/js/components/masked/masked.css");
+css.setAttribute('rel', 'stylesheet');
+css.setAttribute('href', bbn.vue.libURL + 'dist/js/components/masked/masked.css');
 document.head.insertAdjacentElement('beforeend', css);
+
 /**
  * @file bbn-masked component
  * @description bbn-masked is a component that allows the full control of data to be processed.

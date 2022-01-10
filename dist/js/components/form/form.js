@@ -1,5 +1,6 @@
 (bbn_resolve) => {
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<form :action="action"
       :disabled="disabled"
@@ -65,12 +66,14 @@ script.innerHTML = `<form :action="action"
   </div>
 </form>`;
 script.setAttribute('id', 'bbn-tpl-component-form');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
+
 let css = document.createElement('link');
-css.setAttribute('rel', "stylesheet");
-css.setAttribute('href', bbn.vue.libURL + "dist/js/components/form/form.css");
+css.setAttribute('rel', 'stylesheet');
+css.setAttribute('href', bbn.vue.libURL + 'dist/js/components/form/form.css');
 document.head.insertAdjacentElement('beforeend', css);
+
 /**
  * @file bbn-form component
  *

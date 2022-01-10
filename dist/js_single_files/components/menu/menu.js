@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-block']">
   <ul class="bbn-widget bbn-ul bbn-no-border"
@@ -39,8 +40,8 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-block']">
                @select="select"/>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-menu');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-menu component
  * @description The bbn menu with a simple implementation shows a hierarchical list of elements grouped in boxes that when clicked perform an action defined by the user .

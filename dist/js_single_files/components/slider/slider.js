@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="['bbn-abs', 'bbn-bordered', 'bbn-background', componentClass, {
   'bbn-no-hborder': !isVertical,
@@ -29,8 +30,8 @@ script.innerHTML = `<div :class="['bbn-abs', 'bbn-bordered', 'bbn-background', c
   </div>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-slider');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-slider component
  *
@@ -289,6 +290,9 @@ document.body.insertAdjacentElement('beforeend', script);
       currentSize(v){
         this.$el.style[this.isVertical ? 'width' : 'height'] = v;
       },
+      visible(v){
+        this.currentVisible = v;
+      }
     }
   });
 

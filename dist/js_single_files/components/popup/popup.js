@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="['bbn-overlay', componentClass]"
      v-show="showPopup"
@@ -24,8 +25,8 @@ script.innerHTML = `<div :class="['bbn-overlay', componentClass]"
 </div>
 `;
 script.setAttribute('id', 'bbn-tpl-component-popup');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 
 /**
  * @file bbn-popup component
@@ -140,7 +141,7 @@ document.body.insertAdjacentElement('beforeend', script);
         /**
          * @data [[]] items
          */
-        items: []
+        items: this.source
       };
     },
     computed: {

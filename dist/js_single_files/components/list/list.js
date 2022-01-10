@@ -1,16 +1,16 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-floater-list']"
      @touchstart="touchstart"
+     @mouseleave="mouseleave"
      @touchmove="touchmove"
      @touchend="touchend">
   <div class="bbn-hidden" v-if="$slots.default" ref="slot">
     <slot></slot>
   </div>
   <ul v-if="filteredData.length && ready"
-      :class="['bbn-menulist', mode]"
-      @mouseleave="mouseleave"
-  >
+      :class="['bbn-menulist', mode]">
     <template v-for="(li, idx) in filteredData">
       <li v-if="groupable && (!pageable || ((idx >= start) && (idx < start + currentLimit))) && ((idx === 0) || (idx === start) || (li.data[sourceGroup] !== filteredData[idx-1].data[sourceGroup]))"
           class="bbn-list-group-li bbn-m bbn-header bbn-hspadded bbn-unselectable bbn-vmiddle"
@@ -95,8 +95,8 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-floater-list']"
 </div>
 `;
 script.setAttribute('id', 'bbn-tpl-component-list');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-list component
  *
@@ -197,10 +197,6 @@ document.body.insertAdjacentElement('beforeend', script);
         type: String,
         default: ''
       },
-      //@todo not used
-      options: {
-        type: Object
-      },
       /**
        * The element used in the render of the floater.
        * @prop {Element} element
@@ -250,16 +246,6 @@ document.body.insertAdjacentElement('beforeend', script);
       unique: {
         type: Boolean,
         default: true
-      },
-      /**
-       * The mode of the component.
-       * Possible values: 'free', 'options', 'selection'.
-       * @prop {String} ['free'] mode
-       */
-      mode: {
-        type: String,
-        default: "free",
-        validator: m => ['free', 'options', 'selection'].includes(m)
       },
       //@todo not used
       parent: {
@@ -743,20 +729,6 @@ document.body.insertAdjacentElement('beforeend', script);
      * @event mounted
      */
     mounted(){
-      this.currentComponent = this.realComponent;
-      if (!this.component && !this.template && this.$slots.default) {
-        let tpl = this.getRef('slot').innerHTML;
-        if (tpl) {
-          this.currentTemplate = tpl;
-          this.currentComponent = {
-            props: ['source'],
-            data(){
-              return this.source;
-            },
-            template: this.currentTemplate
-          };
-        }
-      }
       this.$nextTick(() => {
         if (this.$parent.$options && (this.$parent.$options._componentTag === 'bbn-scroll')) {
           this.hasScroll = true;

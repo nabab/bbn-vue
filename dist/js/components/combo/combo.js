@@ -1,5 +1,6 @@
 (bbn_resolve) => {
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[
        componentClass,
@@ -7,7 +8,8 @@ script.innerHTML = `<div :class="[
        'bbn-textbox',
        {'bbn-disabled': !!disabled}
      ]"
-     @mouseleave="leave"
+     @mouseleave="isOverDropdown = false"
+     @mouseenter="isOverDropdown = true"
      @focusin="isActive = true"
      @focusout="isActive = false"
      :title="filterString || placeholder || null"
@@ -63,12 +65,14 @@ script.innerHTML = `<div :class="[
 </div>
 `;
 script.setAttribute('id', 'bbn-tpl-component-combo');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
+
 let css = document.createElement('link');
-css.setAttribute('rel', "stylesheet");
-css.setAttribute('href', bbn.vue.libURL + "dist/js/components/combo/combo.css");
+css.setAttribute('rel', 'stylesheet');
+css.setAttribute('href', bbn.vue.libURL + 'dist/js/components/combo/combo.css');
 document.head.insertAdjacentElement('beforeend', css);
+
 /**
  * @file bbn-combo component
  * @description The easy-to-implement bbn-combo component allows you to choose a single value from a user-supplied list or to write new.
@@ -106,6 +110,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @prop {Boolean} [true] filterable
        */
       filterable: {
+        type: Boolean,
         default: true
       },
       /**

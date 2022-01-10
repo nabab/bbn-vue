@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-overlay', 'bbn-flex-width']">
   <div :class="['bbn-h-100', 'bbn-alt-background-internal', 'bbn-reactive', 'bbn-middle', 'bbn-unselectable', 'bbn-p', {'bbn-disabled': !hasPrev}]"
@@ -42,8 +43,8 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-overlay', 'bbn-flex-width
 </div>
 `;
 script.setAttribute('id', 'bbn-tpl-component-multipart');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-form component
  *

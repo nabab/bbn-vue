@@ -119,6 +119,7 @@
        * @prop {Boolean} filterable
        */
       filterable: {
+        type: Boolean,
         default: true
       },
       /**

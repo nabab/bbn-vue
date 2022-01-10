@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', 'bbn-reactive', {'bbn-disabled': !!disabled}]"
      @mouseleave="leave"
@@ -58,8 +59,8 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', '
 </div>
 `;
 script.setAttribute('id', 'bbn-tpl-component-treedown');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-dropdown component
  *

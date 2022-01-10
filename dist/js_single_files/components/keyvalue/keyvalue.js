@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass]" 
      tabindex="-1"
@@ -35,8 +36,8 @@ script.innerHTML = `<div :class="[componentClass]"
   </bbn-form>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-keyvalue');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-context component
  *

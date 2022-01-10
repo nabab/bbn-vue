@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="['bbn-100', 'bbn-unselectable', componentClass]">
   <span class="bbn-loadbar-content bbn-right-padded bbn-flex-width"
@@ -118,8 +119,8 @@ script.innerHTML = `<div :class="['bbn-100', 'bbn-unselectable', componentClass]
   </bbn-floater>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-loadbar');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-loadbar component
  *

@@ -1,5 +1,6 @@
 (bbn_resolve) => {
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<span :class="componentClass">
   <svg xmlns:svg="http://www.w3.org/2000/svg"
@@ -30,8 +31,8 @@ script.innerHTML = `<span :class="componentClass">
 </span>
 `;
 script.setAttribute('id', 'bbn-tpl-component-loadicon');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-loadicon component
  *

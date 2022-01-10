@@ -1,17 +1,20 @@
 (bbn_resolve) => {
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<iframe :class="['bbn-reset', 'bbn-block', componentClass]"
         :sandbox="sandbox"
         :src="url"
         @load="load"></iframe>`;
 script.setAttribute('id', 'bbn-tpl-component-frame');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
+
 let css = document.createElement('link');
-css.setAttribute('rel', "stylesheet");
-css.setAttribute('href', bbn.vue.libURL + "dist/js/components/frame/frame.css");
+css.setAttribute('rel', 'stylesheet');
+css.setAttribute('href', bbn.vue.libURL + 'dist/js/components/frame/frame.css');
 document.head.insertAdjacentElement('beforeend', css);
+
 /**
  * @file bbn-browser component
  *

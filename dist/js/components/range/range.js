@@ -1,5 +1,6 @@
 (bbn_resolve) => {
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<span :class="[componentClass, 'bbn-flex-width', 'bbn-vmiddle']"
 	    :style="(currentSize !== '') ? 'width:' + currentSize : '' ">
@@ -22,7 +23,7 @@ script.innerHTML = `<span :class="[componentClass, 'bbn-flex-width', 'bbn-vmiddl
          :required="required"
          :min="currentMin"
          :max="currentMax"
-				 :step="currentStep"
+         :step="currentStep"
          @input="_changeValue"
          @click="click"
          @focus="focus"
@@ -38,19 +39,21 @@ script.innerHTML = `<span :class="[componentClass, 'bbn-flex-width', 'bbn-vmiddl
   <i class="nf nf-mdi-backup_restore bbn-p bbn-m bbn-left-xsspace"
      @click="reset"
      :title="_('Reset')"
-		 v-if="showReset"/>
-	<bbn-dropdown v-if="showUnits"
-								:source="units"
-								v-model="currentUnit"
-								class="bbn-left-sspace bbn-narrow"/>
+     v-if="showReset"/>
+  <bbn-dropdown v-if="showUnits"
+                :source="units"
+                v-model="currentUnit"
+                class="bbn-left-sspace bbn-narrow"/>
 </span>`;
 script.setAttribute('id', 'bbn-tpl-component-range');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
+
 let css = document.createElement('link');
-css.setAttribute('rel', "stylesheet");
-css.setAttribute('href', bbn.vue.libURL + "dist/js/components/range/range.css");
+css.setAttribute('rel', 'stylesheet');
+css.setAttribute('href', bbn.vue.libURL + 'dist/js/components/range/range.css');
 document.head.insertAdjacentElement('beforeend', css);
+
 /**
  * @file bbn-range component
  * @description bbn-range is a 'range' input type

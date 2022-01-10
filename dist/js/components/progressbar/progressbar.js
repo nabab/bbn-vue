@@ -1,5 +1,6 @@
 (bbn_resolve) => {
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `
   <div :class="['bbn-widget', componentClass, 'bbn-primary-border' ,'bbn-progressbar-wrap', {
@@ -35,12 +36,14 @@ script.innerHTML = `
     </div>
   </div>`;
 script.setAttribute('id', 'bbn-tpl-component-progressbar');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
+
 let css = document.createElement('link');
-css.setAttribute('rel', "stylesheet");
-css.setAttribute('href', bbn.vue.libURL + "dist/js/components/progressbar/progressbar.css");
+css.setAttribute('rel', 'stylesheet');
+css.setAttribute('href', bbn.vue.libURL + 'dist/js/components/progressbar/progressbar.css');
 document.head.insertAdjacentElement('beforeend', css);
+
 /**
  * @file The bbn-progessbar component is a bar that indicates the progress status, it can be customized as the user desires: vertical bar, horizontal, reverse mode or chunk type.
  *

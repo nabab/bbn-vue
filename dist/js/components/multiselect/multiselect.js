@@ -1,5 +1,6 @@
 (bbn_resolve) => {
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-w-100', 'bbn-textbox']"
      tabindex="0"
@@ -26,8 +27,8 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-w-100', 'bbn-textbox']"
   </bbn-scroll>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-multiselect');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-search component
  *
@@ -151,12 +152,6 @@ document.body.insertAdjacentElement('beforeend', script);
        */
       maxWidth: {
         default: '100%'
-      },
-      /**
-       * @prop {} [false] filterable
-       */
-      filterable: {
-        default: false
       },
       /**
        * @prop {Array} [[]] value

@@ -20,7 +20,7 @@
          :required="required"
          :min="currentMin"
          :max="currentMax"
-				 :step="currentStep"
+         :step="currentStep"
          @input="_changeValue"
          @click="click"
          @focus="focus"
@@ -36,11 +36,11 @@
   <i class="nf nf-mdi-backup_restore bbn-p bbn-m bbn-left-xsspace"
      @click="reset"
      :title="_('Reset')"
-		 v-if="showReset"/>
-	<bbn-dropdown v-if="showUnits"
-								:source="units"
-								v-model="currentUnit"
-								class="bbn-left-sspace bbn-narrow"/>
+     v-if="showReset"/>
+  <bbn-dropdown v-if="showUnits"
+                :source="units"
+                v-model="currentUnit"
+                class="bbn-left-sspace bbn-narrow"/>
 </span>
 </template>
 <script>

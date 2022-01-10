@@ -146,6 +146,11 @@
                 "!url": "https:\/\/bbn.io\/'bbn-vue\/function\/queueComponentBBN",
                 "!doc": ""
             },
+            "queueComponentBBNNoCDN": {
+                "!type": "fn() -> mixed",
+                "!url": "https:\/\/bbn.io\/'bbn-vue\/function\/queueComponentBBNNoCDN",
+                "!doc": ""
+            },
             "replaceArrays": {
                 "!type": "fn() -> mixed",
                 "!url": "https:\/\/bbn.io\/'bbn-vue\/function\/replaceArrays",

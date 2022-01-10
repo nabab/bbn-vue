@@ -1,5 +1,6 @@
 (bbn_resolve) => {
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, {
        'bbn-invisible': !ready,
@@ -12,12 +13,14 @@ script.innerHTML = `<div :class="[componentClass, {
   </bbn-splitter>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-router-group');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
+
 let css = document.createElement('link');
-css.setAttribute('rel', "stylesheet");
-css.setAttribute('href', bbn.vue.libURL + "dist/js/components/router-group/router-group.css");
+css.setAttribute('rel', 'stylesheet');
+css.setAttribute('href', bbn.vue.libURL + 'dist/js/components/router-group/router-group.css');
 document.head.insertAdjacentElement('beforeend', css);
+
 /**
  * @file bbn-router component
  * @description bbn-router is a component that allows and manages the navigation (url) between the various containers of an application

@@ -1,5 +1,6 @@
 (bbn_resolve) => {
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<bbn-slider :orientation="orientation"
             :class="componentClass"
@@ -90,12 +91,14 @@ script.innerHTML = `<bbn-slider :orientation="orientation"
   </div>
 </bbn-slider>`;
 script.setAttribute('id', 'bbn-tpl-component-clipboard');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
+
 let css = document.createElement('link');
-css.setAttribute('rel', "stylesheet");
-css.setAttribute('href', bbn.vue.libURL + "dist/js/components/clipboard/clipboard.css");
+css.setAttribute('rel', 'stylesheet');
+css.setAttribute('href', bbn.vue.libURL + 'dist/js/components/clipboard/clipboard.css');
 document.head.insertAdjacentElement('beforeend', css);
+
 /**
  * @file bbn-clipboard component
  *

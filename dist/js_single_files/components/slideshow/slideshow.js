@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-overlay']">
   <div v-if="ready"
@@ -201,8 +202,8 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-overlay']">
 </div>
 `;
 script.setAttribute('id', 'bbn-tpl-component-slideshow');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-slideshow component
  * @description bbn-slideshow is a highly configurable component, it also allows the display of reactive elements such as components, images, or texts; having full control of the transitions.

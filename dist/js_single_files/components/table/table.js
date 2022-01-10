@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scrollable}, componentClass, 'bbn-bordered']">
   <div :class="{'bbn-overlay': scrollable, 'bbn-flex-height': scrollable, 'bbn-block': !scrollable}"
@@ -179,8 +180,9 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                 </div>
               </td>
             </tr>
-            <template v-else v-for="(d, i) in items">
-              <tr :key="d.rowKey"
+            <template v-else>
+              <tr v-for="(d, i) in items"
+                  :key="d.rowKey"
                   :index="i"
                   :tabindex="0"
                   @focusout="focusout(i)"
@@ -374,23 +376,23 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                       </div>
                       <component v-else-if="col.component"
                                 :is="col.component"
-                                v-bind="col.options"
+                                v-bind="getColOptions(d.data, col, i)"
                                 :source="col.mapper ? col.mapper(d.data) : d.data"/>
-                      <template v-else-if="col.buttons && dropdownMode">
-                        <bbn-dropdown :source="Array.isArray(realButtons) ? realButtons : realButtons(d.data, col, i)"
-                                      :placeholder="dropdownMode === true ? _('Action') : dropdownMode"
+                      <template v-else-if="col.buttons && (buttonMode === 'dropdown')">
+                        <bbn-dropdown :source="buttonSource(d.data, col, i)"
+                                      :placeholder="col.title.trim() === '' ? _('Action') : col.title"
                                       :popup="true"
                                       @select="_execCommand(button, d.data, col, i, $event)"/>
                       </template>
                       <template v-else-if="col.buttons && (buttonMode === 'menu')">
-                        <bbn-context :source="Array.isArray(col.buttons) ? col.butttons : col.buttons(d.data, col, i)">
-                          <span class="bbn-iblock bbn-lg bbn-hspadded">
+                        <bbn-context :source="buttonSource(d.data, col, i)">
+                          <span class="bbn-iblock bbn-lg">
                             <i :class="buttonIcon"/>
                           </span>
                         </bbn-context>
                       </template>
                       <template v-else-if="col.buttons && (colButtons === index)">
-                        <bbn-button v-for="(button, bi) in (Array.isArray(realButtons) ? realButtons : realButtons(d.data, col, i))"
+                        <bbn-button v-for="(button, bi) in buttonSource(d.data, col, i)"
                                     :key="bi"
                                     v-bind="button"
                                     @focusin.prevent.stop
@@ -477,8 +479,8 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
 </div>
 `;
 script.setAttribute('id', 'bbn-tpl-component-table');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-table component
  *
@@ -716,14 +718,6 @@ document.body.insertAdjacentElement('beforeend', script);
         type: Number
       },
       /**
-       * If defined will show the buttons as a single dropdown, if string its value will be the placeholder.
-       * @prop {Boolean|String} dropdownMode
-       */
-       dropdownMode: {
-        type: [Boolean, String],
-        default: false
-      },
-      /**
        * @todo desc
        * @prop {Array|Function} expandedValues
        *
@@ -811,12 +805,15 @@ document.body.insertAdjacentElement('beforeend', script);
         default: bbn._("rows")
       },
       /**
-       * The way `buttons` should be displayed, either as buttons or as a menu.
+       * The way `buttons` should be displayed, either as buttons, dropdown or as a menu.
        * @prop {String} ['buttons'] buttonMode
        */
-       buttonMode: {
+      buttonMode: {
         type: String,
-        default: 'buttons'
+        default: 'buttons',
+        validator(v) {
+          return ['buttons', 'dropdown', 'menu'].includes(v);
+        }
       },
       /**
        * The name of the `record` word as used in the pager interface.
@@ -1639,6 +1636,17 @@ document.body.insertAdjacentElement('beforeend', script);
       }
     },
     methods: {
+      buttonSource() {
+        if (bbn.fn.isFunction(this.realButtons)) {
+          return this.realButtons(...arguments);
+        }
+
+        if (bbn.fn.isArray(this.realButtons)) {
+          return this.realButtons;
+        }
+
+        return [];
+      },
       convertActions(arr, data, col, idx){
         return bbn.fn.map(arr, a => {
           let b = bbn.fn.clone(a);
@@ -3473,6 +3481,14 @@ document.body.insertAdjacentElement('beforeend', script);
           this.focusedElementY = pos.y - pos.height;
           this.focusedElement = ev.target;
         }
+      },
+      getColOptions(data, col, idx) {
+        if (col.options) {
+          return bbn.fn.isFunction(col.options) ?
+            col.options(data, col, idx) : col.options;
+        }
+
+        return {};
       }
     },
     /**

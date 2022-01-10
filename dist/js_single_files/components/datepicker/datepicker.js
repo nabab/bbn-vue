@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-textbox', {'bbn-input-nullable': isNullable}]">
   <bbn-button v-if="buttonPosition === 'left'"
@@ -57,8 +58,8 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-textbox', {'bbn-input-nul
 </div>
 `;
 script.setAttribute('id', 'bbn-tpl-component-datepicker');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
   * @file bbn-datepicker component
   *

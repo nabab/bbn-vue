@@ -48,23 +48,24 @@
                     :fixed-left="leftShortcuts"
                     :fixed-right="rightShortcuts"
                     :mobile="true"
-                    :z-index="3"/>
+                    :z-index="6"/>
         <!-- SEARCHBAR -->
         <div v-if="!isMobile && !!searchBar"
-             class="bbn-appui-search bbn-large bbn-abs bbn-vspadded bbn-vmiddle"
+             class="bbn-appui-search bbn-large bbn-abs bbn-vspadded bbn-h-100 bbn-vmiddle"
         >
           <bbn-search :source="searchBar.source"
                       :placeholder="searchBar.placeholderFocused"
                       ref="search"
                       @select="searchBar.select"
-                      :component="searchBar.component"
                       v-model="searchBar.value"
                       :suggest="true"
                       :source-value="searchBar.sourceValue"
                       :source-text="searchBar.sourceText"
                       :min-length="searchBar.minLength"
+                      :limit="50"
+                      :pageable="true"
                       class="bbn-no"
-                      style="z-index: 2"/>
+                      style="z-index: 5"/>
         </div>
         <!-- CENTRAL PART -->
         <div v-if="!isMobile"
@@ -72,7 +73,7 @@
         >
           <!-- FISHEYE -->
           <bbn-fisheye v-if="plugins['appui-menu']"
-                       style="z-index: 3"
+                       style="z-index: 6"
                        v-show="!searchBar || ('?' !== searchBar.value)"
                        :class="{
                          'bbn-invisible': $refs.search && $refs.search.isFocused,

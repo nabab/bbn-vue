@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="componentClass" :style="'border-left-color:' + border_color">
   <h3 v-if="first"
@@ -165,8 +166,8 @@ script.innerHTML = `<div :class="componentClass" :style="'border-left-color:' + 
   </div>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-filter');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
  /**
   * @file bbn-filter component
   *

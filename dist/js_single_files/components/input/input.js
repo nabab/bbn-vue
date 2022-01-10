@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[
 	componentClass, 'bbn-textbox', {
@@ -23,8 +24,7 @@ script.innerHTML = `<div :class="[
             'bbn-no-vborder',
             'bbn-m',
             {'bbn-invisible' : autoHideLeft}
-          ]"
-    ></bbn-button>
+          ]"/>
     <input :value="value"
           :type="currentType"
           :name="name"
@@ -50,9 +50,8 @@ script.innerHTML = `<div :class="[
           :size="currentInputSize"
           :inputmode="inputmode"
           :min="min"
-          :max="max"
-    >
-    <bbn-loadicon v-if="loading"></bbn-loadicon>
+          :max="max">
+    <bbn-loadicon v-if="loading"/>
     <div v-else-if="isNullable && hasValue && !readonly && !disabled"
          class="bbn-block bbn-h-100 bbn-input-nullable-container">
       <i class="nf nf-fa-times_circle bbn-p"
@@ -67,12 +66,12 @@ script.innerHTML = `<div :class="[
                   'bbn-no-vborder',
                   'bbn-m',
                   {'bbn-invisible' : autoHideRight}
-                ]"
-    ></bbn-button></div>
+                ]"/>
+  </div>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-input');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-input component
  *

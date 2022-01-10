@@ -1,13 +1,18 @@
 ((bbn) => {
+
 let script_dep = document.createElement('script');
-script_dep.setAttribute('src', "https://cdn.jsdelivr.net/combine/gh/josdejong/jsoneditor@v6.2.1/dist/jsoneditor.min.js");
+script_dep.setAttribute('src', 'https://cdn.jsdelivr.net/combine/gh/josdejong/jsoneditor@v6.2.1/dist/jsoneditor.min.js');
 script_dep.onload = () => {
 
+
 let css_dependency;
+
 css_dependency = document.createElement('link');
-css_dependency.setAttribute('rel', "stylesheet");
-css_dependency.setAttribute('href', "https://cdn.jsdelivr.net/combine/gh/josdejong/jsoneditor@v6.2.1/dist/jsoneditor.min.css");
+css_dependency.setAttribute('rel', 'stylesheet');
+css_dependency.setAttribute('href', 'https://cdn.jsdelivr.net/combine/gh/josdejong/jsoneditor@v6.2.1/dist/jsoneditor.min.css');
 document.head.insertAdjacentElement('beforeend', css_dependency);
+
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[{'bbn-100': true, 'bbn-block': true}, componentClass]"
      @keydown.enter.stop=""
@@ -31,8 +36,8 @@ script.innerHTML = `<div :class="[{'bbn-100': true, 'bbn-block': true}, componen
   >
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-json-editor');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-json-editor component
  *

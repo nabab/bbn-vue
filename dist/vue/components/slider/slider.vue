@@ -287,6 +287,9 @@
       currentSize(v){
         this.$el.style[this.isVertical ? 'width' : 'height'] = v;
       },
+      visible(v){
+        this.currentVisible = v;
+      }
     }
   });
 

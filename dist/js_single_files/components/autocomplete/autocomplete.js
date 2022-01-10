@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', {'bbn-disabled': !!disabled}]"
      @mouseleave="leave"
@@ -79,8 +80,8 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', {
 </div>
 `;
 script.setAttribute('id', 'bbn-tpl-component-autocomplete');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-autocomplete component
  * @description The autocomplete allows to select a single value from a list of items by proposeing suggestions based on the typed characters.
@@ -121,6 +122,7 @@ document.body.insertAdjacentElement('beforeend', script);
        * @prop {Boolean} filterable
        */
       filterable: {
+        type: Boolean,
         default: true
       },
       /**

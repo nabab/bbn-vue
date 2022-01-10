@@ -5,7 +5,7 @@
         "items": [
             {
                 "text": "appui",
-                "lastmod": 1638038520,
+                "lastmod": 1641263482,
                 "url": "bbn-vue\/component\/appui\/overview",
                 "props": [
                     {
@@ -130,7 +130,7 @@
             },
             {
                 "text": "audio",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/audio\/overview",
                 "props": [
                     {
@@ -220,7 +220,7 @@
             },
             {
                 "text": "autocomplete",
-                "lastmod": 1638038520,
+                "lastmod": 1641646739,
                 "url": "bbn-vue\/component\/autocomplete\/overview",
                 "props": [
                     {
@@ -315,8 +315,32 @@
                 ]
             },
             {
+                "text": "block-list",
+                "lastmod": 1641776985,
+                "url": "bbn-vue\/component\/block-list\/overview",
+                "props": [],
+                "methods": [],
+                "mixins": [
+                    {
+                        "text": "basicComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/block-list\/doc\/mixins#basicComponent"
+                    },
+                    {
+                        "text": "listComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/block-list\/doc\/mixins#listComponent"
+                    },
+                    {
+                        "text": "componentInsideComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/block-list\/doc\/mixins#componentInsideComponent"
+                    }
+                ]
+            },
+            {
                 "text": "breadcrumb",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/breadcrumb\/overview",
                 "props": [
                     {
@@ -422,7 +446,7 @@
             },
             {
                 "text": "browser",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/browser\/overview",
                 "props": [
                     {
@@ -458,7 +482,7 @@
             },
             {
                 "text": "button",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/button\/overview",
                 "props": [
                     {
@@ -549,7 +573,7 @@
             },
             {
                 "text": "calendar",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/calendar\/overview",
                 "props": [
                     {
@@ -795,7 +819,7 @@
             },
             {
                 "text": "chart",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/chart\/overview",
                 "props": [
                     {
@@ -1216,7 +1240,7 @@
             },
             {
                 "text": "chat",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/chat\/overview",
                 "props": [
                     {
@@ -1412,7 +1436,7 @@
             },
             {
                 "text": "checkbox",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/checkbox\/overview",
                 "props": [
                     {
@@ -1508,7 +1532,7 @@
             },
             {
                 "text": "clipboard",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/clipboard\/overview",
                 "props": [
                     {
@@ -1629,7 +1653,7 @@
             },
             {
                 "text": "cms-block",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/cms-block\/overview",
                 "props": [
                     {
@@ -1725,7 +1749,7 @@
             },
             {
                 "text": "code",
-                "lastmod": 1638038520,
+                "lastmod": 1639349702,
                 "url": "bbn-vue\/component\/code\/overview",
                 "props": [
                     {
@@ -1836,7 +1860,7 @@
             },
             {
                 "text": "code2",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/code2\/overview",
                 "props": [
                     {
@@ -1952,7 +1976,7 @@
             },
             {
                 "text": "code3",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/code3\/overview",
                 "props": [
                     {
@@ -2068,7 +2092,7 @@
             },
             {
                 "text": "colorpicker",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/colorpicker\/overview",
                 "props": [
                     {
@@ -2209,7 +2233,7 @@
             },
             {
                 "text": "combo",
-                "lastmod": 1638038520,
+                "lastmod": 1641646746,
                 "url": "bbn-vue\/component\/combo\/overview",
                 "props": [
                     {
@@ -2305,7 +2329,7 @@
             },
             {
                 "text": "container",
-                "lastmod": 1638038520,
+                "lastmod": 1641477913,
                 "url": "bbn-vue\/component\/container\/overview",
                 "props": [
                     {
@@ -2416,7 +2440,7 @@
             },
             {
                 "text": "context",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/context\/overview",
                 "props": [
                     {
@@ -2512,7 +2536,7 @@
             },
             {
                 "text": "countdown",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/countdown\/overview",
                 "props": [
                     {
@@ -2578,7 +2602,7 @@
             },
             {
                 "text": "cursor",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/cursor\/overview",
                 "props": [
                     {
@@ -2633,7 +2657,7 @@
             },
             {
                 "text": "dashboard",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/dashboard\/overview",
                 "props": [
                     {
@@ -2819,7 +2843,7 @@
             },
             {
                 "text": "datepicker",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/datepicker\/overview",
                 "props": [
                     {
@@ -2940,7 +2964,7 @@
             },
             {
                 "text": "datetimepicker",
-                "lastmod": 1638038520,
+                "lastmod": 1639713395,
                 "url": "bbn-vue\/component\/datetimepicker\/overview",
                 "props": [
                     {
@@ -3071,7 +3095,7 @@
             },
             {
                 "text": "dropdown",
-                "lastmod": 1638038520,
+                "lastmod": 1641263051,
                 "url": "bbn-vue\/component\/dropdown\/overview",
                 "props": [
                     {
@@ -3084,11 +3108,6 @@
                     {
                         "text": "keydown",
                         "desc": "States the role of the enter key on the dropdown menu.\n\n",
-                        "url": "bbn-vue\/component\/dropdown\/doc\/methods#keydown"
-                    },
-                    {
-                        "text": "keydown",
-                        "desc": "Leave list.\n\n",
                         "url": "bbn-vue\/component\/dropdown\/doc\/methods#keydown"
                     }
                 ],
@@ -3142,7 +3161,7 @@
             },
             {
                 "text": "editable",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/editable\/overview",
                 "props": [
                     {
@@ -3308,7 +3327,7 @@
             },
             {
                 "text": "editable-content",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/editable-content\/overview",
                 "props": [
                     {
@@ -3373,7 +3392,7 @@
             },
             {
                 "text": "emoji",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/emoji\/overview",
                 "props": [],
                 "methods": [
@@ -3403,7 +3422,7 @@
             },
             {
                 "text": "field",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/field\/overview",
                 "props": [
                     {
@@ -3439,7 +3458,7 @@
             },
             {
                 "text": "file",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/file\/overview",
                 "props": [
                     {
@@ -3535,7 +3554,7 @@
             },
             {
                 "text": "filter",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/filter\/overview",
                 "props": [
                     {
@@ -3671,7 +3690,7 @@
             },
             {
                 "text": "finder",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/finder\/overview",
                 "props": [
                     {
@@ -3842,7 +3861,7 @@
             },
             {
                 "text": "fisheye",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/fisheye\/overview",
                 "props": [
                     {
@@ -3948,7 +3967,7 @@
             },
             {
                 "text": "floater",
-                "lastmod": 1638233746,
+                "lastmod": 1641519537,
                 "url": "bbn-vue\/component\/floater\/overview",
                 "props": [
                     {
@@ -4082,11 +4101,6 @@
                         "url": "bbn-vue\/component\/floater\/doc\/props#afterClose"
                     },
                     {
-                        "text": "index",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/floater\/doc\/props#index"
-                    },
-                    {
                         "text": "uid",
                         "desc": "",
                         "url": "bbn-vue\/component\/floater\/doc\/props#uid"
@@ -4209,7 +4223,7 @@
             },
             {
                 "text": "floater2",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/floater2\/overview",
                 "props": [
                     {
@@ -4435,7 +4449,7 @@
             },
             {
                 "text": "form",
-                "lastmod": 1638789013,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/form\/overview",
                 "props": [
                     {
@@ -4666,7 +4680,7 @@
             },
             {
                 "text": "frame",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/frame\/overview",
                 "props": [
                     {
@@ -4696,7 +4710,7 @@
             },
             {
                 "text": "gallery",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/gallery\/overview",
                 "props": [
                     {
@@ -4892,7 +4906,7 @@
             },
             {
                 "text": "grapes",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/grapes\/overview",
                 "props": [
                     {
@@ -4912,7 +4926,7 @@
             },
             {
                 "text": "icon",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/icon\/overview",
                 "props": [],
                 "methods": [],
@@ -4926,7 +4940,7 @@
             },
             {
                 "text": "image-editor",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/image-editor\/overview",
                 "props": [
                     {
@@ -4951,7 +4965,7 @@
             },
             {
                 "text": "initial",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/initial\/overview",
                 "props": [
                     {
@@ -5046,7 +5060,7 @@
             },
             {
                 "text": "inline-editor",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/inline-editor\/overview",
                 "props": [
                     {
@@ -5071,7 +5085,7 @@
             },
             {
                 "text": "input",
-                "lastmod": 1638038520,
+                "lastmod": 1641296418,
                 "url": "bbn-vue\/component\/input\/overview",
                 "props": [
                     {
@@ -5161,7 +5175,7 @@
             },
             {
                 "text": "jodit",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/jodit\/overview",
                 "props": [
                     {
@@ -5206,7 +5220,7 @@
             },
             {
                 "text": "json-editor",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/json-editor\/overview",
                 "props": [
                     {
@@ -5252,7 +5266,7 @@
             },
             {
                 "text": "key",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/key\/overview",
                 "props": [
                     {
@@ -5272,7 +5286,7 @@
             },
             {
                 "text": "keyboard",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/keyboard\/overview",
                 "props": [],
                 "methods": [],
@@ -5286,7 +5300,7 @@
             },
             {
                 "text": "keyvalue",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/keyvalue\/overview",
                 "props": [
                     {
@@ -5316,7 +5330,7 @@
             },
             {
                 "text": "list",
-                "lastmod": 1638038520,
+                "lastmod": 1641752854,
                 "url": "bbn-vue\/component\/list\/overview",
                 "props": [
                     {
@@ -5393,11 +5407,6 @@
                         "text": "visible",
                         "desc": "Set to true to show the floater.\n",
                         "url": "bbn-vue\/component\/list\/doc\/props#visible"
-                    },
-                    {
-                        "text": "mode",
-                        "desc": "The mode of the component.\nPossible values: 'free', 'options', 'selection'.\n",
-                        "url": "bbn-vue\/component\/list\/doc\/props#mode"
                     },
                     {
                         "text": "level",
@@ -5527,7 +5536,7 @@
             },
             {
                 "text": "list-input",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/list-input\/overview",
                 "props": [
                     {
@@ -5567,7 +5576,7 @@
             },
             {
                 "text": "loadbar",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/loadbar\/overview",
                 "props": [
                     {
@@ -5598,7 +5607,7 @@
             },
             {
                 "text": "loader",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/loader\/overview",
                 "props": [
                     {
@@ -5633,7 +5642,7 @@
             },
             {
                 "text": "loadicon",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/loadicon\/overview",
                 "props": [
                     {
@@ -5653,7 +5662,7 @@
             },
             {
                 "text": "login",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/login\/overview",
                 "props": [
                     {
@@ -5753,7 +5762,7 @@
             },
             {
                 "text": "map",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/map\/overview",
                 "props": [],
                 "methods": [],
@@ -5767,7 +5776,7 @@
             },
             {
                 "text": "markdown",
-                "lastmod": 1638242388,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/markdown\/overview",
                 "props": [
                     {
@@ -5797,7 +5806,7 @@
             },
             {
                 "text": "masked",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/masked\/overview",
                 "props": [
                     {
@@ -5948,7 +5957,7 @@
             },
             {
                 "text": "menu",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/menu\/overview",
                 "props": [
                     {
@@ -5998,7 +6007,7 @@
             },
             {
                 "text": "message",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/message\/overview",
                 "props": [],
                 "methods": [],
@@ -6012,7 +6021,7 @@
             },
             {
                 "text": "multipart",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/multipart\/overview",
                 "props": [
                     {
@@ -6167,7 +6176,7 @@
             },
             {
                 "text": "multiselect",
-                "lastmod": 1638038520,
+                "lastmod": 1641646645,
                 "url": "bbn-vue\/component\/multiselect\/overview",
                 "props": [
                     {
@@ -6241,11 +6250,6 @@
                         "url": "bbn-vue\/component\/multiselect\/doc\/props#maxWidth"
                     },
                     {
-                        "text": "filterable",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/multiselect\/doc\/props#filterable"
-                    },
-                    {
                         "text": "value",
                         "desc": "",
                         "url": "bbn-vue\/component\/multiselect\/doc\/props#value"
@@ -6288,7 +6292,7 @@
             },
             {
                 "text": "notification",
-                "lastmod": 1638038520,
+                "lastmod": 1641313708,
                 "url": "bbn-vue\/component\/notification\/overview",
                 "props": [
                     {
@@ -6345,6 +6349,11 @@
                         "text": "infoMessage",
                         "desc": "",
                         "url": "bbn-vue\/component\/notification\/doc\/props#infoMessage"
+                    },
+                    {
+                        "text": "source",
+                        "desc": "The source of the component.\n",
+                        "url": "bbn-vue\/component\/notification\/doc\/props#source"
                     }
                 ],
                 "methods": [
@@ -6394,7 +6403,7 @@
             },
             {
                 "text": "numeric",
-                "lastmod": 1638498618,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/numeric\/overview",
                 "props": [
                     {
@@ -6495,7 +6504,7 @@
             },
             {
                 "text": "pager",
-                "lastmod": 1638038520,
+                "lastmod": 1641778399,
                 "url": "bbn-vue\/component\/pager\/overview",
                 "props": [
                     {
@@ -6532,6 +6541,11 @@
                         "text": "limit",
                         "desc": "False if you wanto to hide the limit selector\n",
                         "url": "bbn-vue\/component\/pager\/doc\/props#limit"
+                    },
+                    {
+                        "text": "numericSelector",
+                        "desc": "Shows the bbn-numeric field for selecting the page\n",
+                        "url": "bbn-vue\/component\/pager\/doc\/props#numericSelector"
                     }
                 ],
                 "methods": [
@@ -6566,7 +6580,7 @@
             },
             {
                 "text": "pane",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/pane\/overview",
                 "props": [
                     {
@@ -6631,7 +6645,7 @@
             },
             {
                 "text": "pane2",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/pane2\/overview",
                 "props": [],
                 "methods": [],
@@ -6639,7 +6653,7 @@
             },
             {
                 "text": "panelbar",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/panelbar\/overview",
                 "props": [
                     {
@@ -6730,7 +6744,7 @@
             },
             {
                 "text": "popup",
-                "lastmod": 1638038520,
+                "lastmod": 1641212150,
                 "url": "bbn-vue\/component\/popup\/overview",
                 "props": [
                     {
@@ -6856,7 +6870,7 @@
             },
             {
                 "text": "portal",
-                "lastmod": 1638038520,
+                "lastmod": 1639285137,
                 "url": "bbn-vue\/component\/portal\/overview",
                 "props": [
                     {
@@ -6891,7 +6905,7 @@
             },
             {
                 "text": "progressbar",
-                "lastmod": 1638038520,
+                "lastmod": 1639285138,
                 "url": "bbn-vue\/component\/progressbar\/overview",
                 "props": [
                     {
@@ -7001,7 +7015,7 @@
             },
             {
                 "text": "radio",
-                "lastmod": 1638038520,
+                "lastmod": 1639285138,
                 "url": "bbn-vue\/component\/radio\/overview",
                 "props": [
                     {
@@ -7087,7 +7101,7 @@
             },
             {
                 "text": "radiobuttons",
-                "lastmod": 1638038520,
+                "lastmod": 1639285138,
                 "url": "bbn-vue\/component\/radiobuttons\/overview",
                 "props": [
                     {
@@ -7152,7 +7166,7 @@
             },
             {
                 "text": "range",
-                "lastmod": 1638038520,
+                "lastmod": 1641217834,
                 "url": "bbn-vue\/component\/range\/overview",
                 "props": [
                     {
@@ -7228,7 +7242,7 @@
             },
             {
                 "text": "router",
-                "lastmod": 1638038520,
+                "lastmod": 1641519436,
                 "url": "bbn-vue\/component\/router\/overview",
                 "props": [
                     {
@@ -7287,11 +7301,6 @@
                         "url": "bbn-vue\/component\/router\/doc\/props#confirmLeave"
                     },
                     {
-                        "text": "hideAdvertUrl",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/router\/doc\/props#hideAdvertUrl"
-                    },
-                    {
                         "text": "historyMaxLength",
                         "desc": "The max length of the history.\n",
                         "url": "bbn-vue\/component\/router\/doc\/props#historyMaxLength"
@@ -7315,11 +7324,6 @@
                         "text": "master",
                         "desc": "Set it to true if you want to send the variable _baseUrl.\n",
                         "url": "bbn-vue\/component\/router\/doc\/props#master"
-                    },
-                    {
-                        "text": "switch",
-                        "desc": "Set it to false if you want to hide the switch.\n",
-                        "url": "bbn-vue\/component\/router\/doc\/props#switch"
                     },
                     {
                         "text": "component",
@@ -7704,7 +7708,7 @@
             },
             {
                 "text": "router-group",
-                "lastmod": 1638038520,
+                "lastmod": 1639285138,
                 "url": "bbn-vue\/component\/router-group\/overview",
                 "props": [
                     {
@@ -7734,7 +7738,7 @@
             },
             {
                 "text": "rte",
-                "lastmod": 1638038520,
+                "lastmod": 1640706069,
                 "url": "bbn-vue\/component\/rte\/overview",
                 "props": [
                     {
@@ -7810,7 +7814,7 @@
             },
             {
                 "text": "scroll",
-                "lastmod": 1638038520,
+                "lastmod": 1641472573,
                 "url": "bbn-vue\/component\/scroll\/overview",
                 "props": [
                     {
@@ -7842,11 +7846,6 @@
                         "text": "height",
                         "desc": "",
                         "url": "bbn-vue\/component\/scroll\/doc\/props#height"
-                    },
-                    {
-                        "text": "classes",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/scroll\/doc\/props#classes"
                     },
                     {
                         "text": "speed",
@@ -8036,7 +8035,7 @@
             },
             {
                 "text": "scrollbar",
-                "lastmod": 1638038520,
+                "lastmod": 1639285138,
                 "url": "bbn-vue\/component\/scrollbar\/overview",
                 "props": [
                     {
@@ -8207,7 +8206,7 @@
             },
             {
                 "text": "search",
-                "lastmod": 1638233746,
+                "lastmod": 1641646754,
                 "url": "bbn-vue\/component\/search\/overview",
                 "props": [
                     {
@@ -8348,7 +8347,7 @@
             },
             {
                 "text": "slider",
-                "lastmod": 1638038520,
+                "lastmod": 1640705425,
                 "url": "bbn-vue\/component\/slider\/overview",
                 "props": [
                     {
@@ -8389,7 +8388,7 @@
             },
             {
                 "text": "slider-menu",
-                "lastmod": 1638038520,
+                "lastmod": 1639285138,
                 "url": "bbn-vue\/component\/slider-menu\/overview",
                 "props": [
                     {
@@ -8419,7 +8418,7 @@
             },
             {
                 "text": "slideshow",
-                "lastmod": 1638038520,
+                "lastmod": 1639285138,
                 "url": "bbn-vue\/component\/slideshow\/overview",
                 "props": [
                     {
@@ -8590,7 +8589,7 @@
             },
             {
                 "text": "splashscreen",
-                "lastmod": 1638038520,
+                "lastmod": 1639285138,
                 "url": "bbn-vue\/component\/splashscreen\/overview",
                 "props": [
                     {
@@ -8660,7 +8659,7 @@
             },
             {
                 "text": "split-tabs",
-                "lastmod": 1638038520,
+                "lastmod": 1639285138,
                 "url": "bbn-vue\/component\/split-tabs\/overview",
                 "props": [
                     {
@@ -8725,7 +8724,7 @@
             },
             {
                 "text": "splitter",
-                "lastmod": 1638038520,
+                "lastmod": 1639285138,
                 "url": "bbn-vue\/component\/splitter\/overview",
                 "props": [
                     {
@@ -8856,7 +8855,7 @@
             },
             {
                 "text": "splitter2",
-                "lastmod": 1638038520,
+                "lastmod": 1639285138,
                 "url": "bbn-vue\/component\/splitter2\/overview",
                 "props": [
                     {
@@ -8976,7 +8975,7 @@
             },
             {
                 "text": "stack",
-                "lastmod": 1638038520,
+                "lastmod": 1639285138,
                 "url": "bbn-vue\/component\/stack\/overview",
                 "props": [
                     {
@@ -8996,7 +8995,7 @@
             },
             {
                 "text": "switch",
-                "lastmod": 1638038520,
+                "lastmod": 1639285138,
                 "url": "bbn-vue\/component\/switch\/overview",
                 "props": [
                     {
@@ -9112,7 +9111,7 @@
             },
             {
                 "text": "table",
-                "lastmod": 1638789013,
+                "lastmod": 1641774357,
                 "url": "bbn-vue\/component\/table\/overview",
                 "props": [
                     {
@@ -9221,11 +9220,6 @@
                         "url": "bbn-vue\/component\/table\/doc\/props#groupBy"
                     },
                     {
-                        "text": "dropdownMode",
-                        "desc": "If defined will show the buttons as a single dropdown, if string its value will be the placeholder.\n",
-                        "url": "bbn-vue\/component\/table\/doc\/props#dropdownMode"
-                    },
-                    {
                         "text": "expandedValues",
                         "desc": "",
                         "url": "bbn-vue\/component\/table\/doc\/props#expandedValues"
@@ -9277,7 +9271,7 @@
                     },
                     {
                         "text": "buttonMode",
-                        "desc": "The way `buttons` should be displayed, either as buttons or as a menu.\n",
+                        "desc": "The way `buttons` should be displayed, either as buttons, dropdown or as a menu.\n",
                         "url": "bbn-vue\/component\/table\/doc\/props#buttonMode"
                     },
                     {
@@ -9607,208 +9601,8 @@
                 ]
             },
             {
-                "text": "tabnav",
-                "lastmod": 1638038520,
-                "url": "bbn-vue\/component\/tabnav\/overview",
-                "props": [
-                    {
-                        "text": "url",
-                        "desc": "The URL on which the tabNav will be initialized.\n",
-                        "url": "bbn-vue\/component\/tabnav\/doc\/props#url"
-                    },
-                    {
-                        "text": "autoload",
-                        "desc": "Defines if the tab will be automatically loaded based on URLs. False by default except if it is true for the parent.\n",
-                        "url": "bbn-vue\/component\/tabnav\/doc\/props#autoload"
-                    },
-                    {
-                        "text": "maxTitleLength",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/tabnav\/doc\/props#maxTitleLength"
-                    },
-                    {
-                        "text": "orientation",
-                        "desc": "The position of the tabs' titles: top (default) or bottom.\n",
-                        "url": "bbn-vue\/component\/tabnav\/doc\/props#orientation"
-                    },
-                    {
-                        "text": "root",
-                        "desc": "The root URL of the tabNav, will be only taken into account for the top parents' tabNav, will be automatically calculated for the children.\n",
-                        "url": "bbn-vue\/component\/tabnav\/doc\/props#root"
-                    },
-                    {
-                        "text": "scrollable",
-                        "desc": "Sets if the tabs' titles will be scrollable in case they have a greater width than the page (true), or if they will be shown multilines (false, default).\n",
-                        "url": "bbn-vue\/component\/tabnav\/doc\/props#scrollable"
-                    },
-                    {
-                        "text": "storageName",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/tabnav\/doc\/props#storageName"
-                    },
-                    {
-                        "text": "confirmLeave",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/tabnav\/doc\/props#confirmLeave"
-                    },
-                    {
-                        "text": "hideAdvertUrl",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/tabnav\/doc\/props#hideAdvertUrl"
-                    },
-                    {
-                        "text": "historyMaxLength",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/tabnav\/doc\/props#historyMaxLength"
-                    },
-                    {
-                        "text": "source",
-                        "desc": "The tabs shown at init.\n",
-                        "url": "bbn-vue\/component\/tabnav\/doc\/props#source"
-                    },
-                    {
-                        "text": "menu",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/tabnav\/doc\/props#menu"
-                    }
-                ],
-                "methods": [],
-                "mixins": []
-            },
-            {
-                "text": "tabs",
-                "lastmod": 1638038520,
-                "url": "bbn-vue\/component\/tabs\/overview",
-                "props": [
-                    {
-                        "text": "source",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/tabs\/doc\/props#source"
-                    },
-                    {
-                        "text": "value",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/tabs\/doc\/props#value"
-                    },
-                    {
-                        "text": "content",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/tabs\/doc\/props#content"
-                    },
-                    {
-                        "text": "scrollable",
-                        "desc": "Sets if the tabs' titles will be scrollable in case they have a greater width than the page (true), or if they will be shown multilines (false, default).\n",
-                        "url": "bbn-vue\/component\/tabs\/doc\/props#scrollable"
-                    },
-                    {
-                        "text": "maxTitleLength",
-                        "desc": "The max length for the tab's title\n",
-                        "url": "bbn-vue\/component\/tabs\/doc\/props#maxTitleLength"
-                    },
-                    {
-                        "text": "menu",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/tabs\/doc\/props#menu"
-                    }
-                ],
-                "methods": [
-                    {
-                        "text": "numProperties",
-                        "desc": "Alias of bbn.fn.numProperties\n",
-                        "url": "bbn-vue\/component\/tabs\/doc\/methods#numProperties"
-                    },
-                    {
-                        "text": "cutTitle",
-                        "desc": "Cuts the given string by 'maxTitleLength' property value\n",
-                        "url": "bbn-vue\/component\/tabs\/doc\/methods#cutTitle"
-                    },
-                    {
-                        "text": "getMenuFn",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/tabs\/doc\/methods#getMenuFn"
-                    },
-                    {
-                        "text": "getFullTitle",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/tabs\/doc\/methods#getFullTitle"
-                    },
-                    {
-                        "text": "getTabColor",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/tabs\/doc\/methods#getTabColor"
-                    },
-                    {
-                        "text": "scrollTabs",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/tabs\/doc\/methods#scrollTabs"
-                    },
-                    {
-                        "text": "getTab",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/tabs\/doc\/methods#getTab"
-                    },
-                    {
-                        "text": "close",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/tabs\/doc\/methods#close"
-                    },
-                    {
-                        "text": "closeAll",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/tabs\/doc\/methods#closeAll"
-                    },
-                    {
-                        "text": "closeallBut",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/tabs\/doc\/methods#closeallBut"
-                    },
-                    {
-                        "text": "ping",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/tabs\/doc\/methods#ping"
-                    },
-                    {
-                        "text": "unpin",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/tabs\/doc\/methods#unpin"
-                    },
-                    {
-                        "text": "isValidIndex",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/tabs\/doc\/methods#isValidIndex"
-                    }
-                ],
-                "mixins": [
-                    {
-                        "text": "localStorageComponent",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/tabs\/doc\/mixins#localStorageComponent"
-                    },
-                    {
-                        "text": "basicComponent",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/tabs\/doc\/mixins#basicComponent"
-                    },
-                    {
-                        "text": "closeComponent",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/tabs\/doc\/mixins#closeComponent"
-                    },
-                    {
-                        "text": "observerComponent",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/tabs\/doc\/mixins#observerComponent"
-                    },
-                    {
-                        "text": "resizerComponent",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/tabs\/doc\/mixins#resizerComponent"
-                    }
-                ]
-            },
-            {
                 "text": "terminal",
-                "lastmod": 1638038520,
+                "lastmod": 1639285138,
                 "url": "bbn-vue\/component\/terminal\/overview",
                 "props": [],
                 "methods": [],
@@ -9816,7 +9610,7 @@
             },
             {
                 "text": "textarea",
-                "lastmod": 1638038520,
+                "lastmod": 1640733385,
                 "url": "bbn-vue\/component\/textarea\/overview",
                 "props": [
                     {
@@ -9867,7 +9661,7 @@
             },
             {
                 "text": "timepicker",
-                "lastmod": 1638038520,
+                "lastmod": 1639285138,
                 "url": "bbn-vue\/component\/timepicker\/overview",
                 "props": [
                     {
@@ -9958,7 +9752,7 @@
             },
             {
                 "text": "timer",
-                "lastmod": 1638038520,
+                "lastmod": 1639285138,
                 "url": "bbn-vue\/component\/timer\/overview",
                 "props": [
                     {
@@ -10034,7 +9828,7 @@
             },
             {
                 "text": "toolbar",
-                "lastmod": 1638038520,
+                "lastmod": 1639285138,
                 "url": "bbn-vue\/component\/toolbar\/overview",
                 "props": [
                     {
@@ -10064,7 +9858,7 @@
             },
             {
                 "text": "tooltip",
-                "lastmod": 1638038520,
+                "lastmod": 1639285138,
                 "url": "bbn-vue\/component\/tooltip\/overview",
                 "props": [
                     {
@@ -10120,7 +9914,7 @@
             },
             {
                 "text": "tree",
-                "lastmod": 1638038520,
+                "lastmod": 1641353967,
                 "url": "bbn-vue\/component\/tree\/overview",
                 "props": [
                     {
@@ -10199,9 +9993,9 @@
                         "url": "bbn-vue\/component\/tree\/doc\/props#selfDrop"
                     },
                     {
-                        "text": "trasferData",
+                        "text": "transferData",
                         "desc": "Helper to transform data when passing from one tree to another.\n",
-                        "url": "bbn-vue\/component\/tree\/doc\/props#trasferData"
+                        "url": "bbn-vue\/component\/tree\/doc\/props#transferData"
                     },
                     {
                         "text": "expanded",
@@ -10381,7 +10175,7 @@
             },
             {
                 "text": "tree-input",
-                "lastmod": 1638038520,
+                "lastmod": 1639285138,
                 "url": "bbn-vue\/component\/tree-input\/overview",
                 "props": [
                     {
@@ -10426,7 +10220,7 @@
             },
             {
                 "text": "treedown",
-                "lastmod": 1638038520,
+                "lastmod": 1639285138,
                 "url": "bbn-vue\/component\/treedown\/overview",
                 "props": [
                     {
@@ -10547,7 +10341,7 @@
             },
             {
                 "text": "treemenu",
-                "lastmod": 1638038520,
+                "lastmod": 1639285138,
                 "url": "bbn-vue\/component\/treemenu\/overview",
                 "props": [
                     {
@@ -10643,7 +10437,7 @@
             },
             {
                 "text": "upload",
-                "lastmod": 1638038520,
+                "lastmod": 1639285138,
                 "url": "bbn-vue\/component\/upload\/overview",
                 "props": [
                     {
@@ -10899,7 +10693,7 @@
             },
             {
                 "text": "values",
-                "lastmod": 1638038520,
+                "lastmod": 1639285138,
                 "url": "bbn-vue\/component\/values\/overview",
                 "props": [
                     {
@@ -10959,7 +10753,7 @@
             },
             {
                 "text": "video",
-                "lastmod": 1638038520,
+                "lastmod": 1639285138,
                 "url": "bbn-vue\/component\/video\/overview",
                 "props": [
                     {
@@ -11059,7 +10853,7 @@
             },
             {
                 "text": "vlist",
-                "lastmod": 1638038520,
+                "lastmod": 1639285138,
                 "url": "bbn-vue\/component\/vlist\/overview",
                 "props": [
                     {
@@ -11119,7 +10913,7 @@
             },
             {
                 "text": "widget",
-                "lastmod": 1638038520,
+                "lastmod": 1639285138,
                 "url": "bbn-vue\/component\/widget\/overview",
                 "props": [
                     {
@@ -11334,7 +11128,7 @@
             },
             {
                 "text": "window",
-                "lastmod": 1638038520,
+                "lastmod": 1639508903,
                 "url": "bbn-vue\/component\/window\/overview",
                 "props": [
                     {
@@ -11616,6 +11410,11 @@
             {
                 "text": "queueComponentBBN",
                 "url": "bbn-vue\/function\/queueComponentBBN",
+                "desc": ""
+            },
+            {
+                "text": "queueComponentBBNNoCDN",
+                "url": "bbn-vue\/function\/queueComponentBBNNoCDN",
                 "desc": ""
             },
             {

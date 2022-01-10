@@ -1,5 +1,6 @@
 (bbn_resolve) => {
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-floater-list']">
   <div class="bbn-hidden" v-if="$slots.default" ref="slot">
@@ -74,12 +75,14 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-floater-list']">
 </div>
 `;
 script.setAttribute('id', 'bbn-tpl-component-list-input');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
+
 let css = document.createElement('link');
-css.setAttribute('rel', "stylesheet");
-css.setAttribute('href', bbn.vue.libURL + "dist/js/components/list-input/list-input.css");
+css.setAttribute('rel', 'stylesheet');
+css.setAttribute('href', bbn.vue.libURL + 'dist/js/components/list-input/list-input.css');
 document.head.insertAdjacentElement('beforeend', css);
+
 /**
  * @file bbn-list component
  *

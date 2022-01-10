@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-button-group']">
   <input type="hidden"
@@ -13,8 +14,8 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-button-group']">
               :notext="notext"/>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-radiobuttons');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-radio component
  * @description bbn-radio is a component that can be used to select a particular choice from a range of options.

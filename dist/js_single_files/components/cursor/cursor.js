@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-w-100']">
   <label v-text="label"
@@ -15,8 +16,8 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-w-100']">
   >
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-cursor');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-block component
  * @description bbn-block

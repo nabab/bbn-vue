@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="componentClass">
   <bbn-floater v-for="(it, idx) in items"
@@ -68,8 +69,8 @@ script.innerHTML = `<div :class="componentClass">
   </bbn-floater>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-notification');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-notification component
  * @description bbn-notification is a component that allows the display of a brief information message, for example to confirm the success of an action that has taken place.
@@ -159,7 +160,17 @@ document.body.insertAdjacentElement('beforeend', script);
       infoIcon: {
         type: [String, Boolean],
         default: 'nf nf-mdi-information'
-      }
+      },
+      /**
+       * The source of the component.
+       * @prop {Array} [[{id:'id1', type:'info', content: 'info content', num: 2},{id:'id2', type:'error', content: 'error content'}]] source
+       */
+      source: {
+        type: Array,
+        default(){
+          return [];
+        }
+      },
     },
     data: function(){
       let bits = this.position.split('-');
@@ -191,7 +202,7 @@ document.body.insertAdjacentElement('beforeend', script);
         /**
          * @data {Array} [[]] items
          */
-        items: [],
+        items: this.source,
         /**
          * @data {Boolean} isTop
          */

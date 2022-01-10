@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="['bbn-iblock', componentClass]"
      @focusout="focusout"
@@ -46,8 +47,8 @@ script.innerHTML = `<div :class="['bbn-iblock', componentClass]"
   </div>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-editable');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-cms-block component
  * @description bbn-cms-block

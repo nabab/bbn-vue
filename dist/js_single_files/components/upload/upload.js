@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-box', 'bbn-spadded']">
     <div v-if="ready && showList"
@@ -148,8 +149,8 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-box', 'bbn-spadded']">
     </div>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-upload');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
   * @file bbn-upload component
   *

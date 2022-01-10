@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, {'bbn-flex-height': scrollable}]">
   <div v-if="!!toolbar"
@@ -131,8 +132,8 @@ script.innerHTML = `<div :class="[componentClass, {'bbn-flex-height': scrollable
   ></bbn-pager>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-gallery');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 // It has a multitude of customizations to better your gallery.
 /**
  * @file bbn-gallery component

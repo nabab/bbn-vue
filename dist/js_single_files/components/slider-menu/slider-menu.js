@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-overlay']">
   <div class="bbn-hidden" v-if="$slots.default" ref="slot">
@@ -50,8 +51,8 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-overlay']">
 </div>
 `;
 script.setAttribute('id', 'bbn-tpl-component-slider-menu');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-lists component
  *

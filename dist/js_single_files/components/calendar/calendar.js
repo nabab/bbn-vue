@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-w-100']"
      v-show="ready"
@@ -147,8 +148,8 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-w-100']"
   </div>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-calendar');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-calendar component
  *

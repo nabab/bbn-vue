@@ -1,9 +1,10 @@
 (bbn_resolve) => {
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-iblock']"
-     @mouseleave="leave"
-     @mouseenter="enter"
+     @mouseleave="isOverDropdown = false"
+     @mouseenter="isOverDropdown = true"
      :style="{width: specialWidth}"
      @focusin="isActive = true"
      @focusout="isActive = false"
@@ -13,15 +14,13 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-iblock']"
               type="search"
               ref="input"
               @focus="searchFocus"
-              @blur="searchBlur"
               @keydown.esc.prevent="isOpened ? isOpened = false : searchBlur() && getRef('input').getRef('element').blur()"
               @keydown="keydown"
-              :nullable="nullable"
+              :nullable="isNullable"
               autocomplete="off"
               v-model="filterString"
               :loading="isAjax && isLoading"
-              button-right="nf nf-fa-search">
-  </bbn-input>
+              button-right="nf nf-fa-search"/>
   <bbn-floater v-if="filteredData.length && !disabled && !readonly && isOpened"
                :element="$el"
                :max-height="maxHeight"
@@ -36,8 +35,9 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-iblock']"
                @close="searchClose"
                :source-text="sourceText"
                :source-value="sourceValue"
-               :source="filteredData">
-  </bbn-floater>
+               :pageable="filteredData.length > limit"
+               :pager-element="_self"
+               :source="filteredData"/>
   <input type="hidden"
          v-model="value"
          ref="element"
@@ -45,12 +45,14 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-iblock']"
 </div>
 `;
 script.setAttribute('id', 'bbn-tpl-component-search');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
+
 let css = document.createElement('link');
-css.setAttribute('rel', "stylesheet");
-css.setAttribute('href', bbn.vue.libURL + "dist/js/components/search/search.css");
+css.setAttribute('rel', 'stylesheet');
+css.setAttribute('href', bbn.vue.libURL + 'dist/js/components/search/search.css');
 document.head.insertAdjacentElement('beforeend', css);
+
 /**
  * @file bbn-search component
  *
@@ -102,14 +104,15 @@ document.head.insertAdjacentElement('beforeend', css);
          * @prop {Boolean} [true] filterable 
          */
         filterable: {
+          type: Boolean,
           default: true
         },
         /**
          * Set to true will automatically update the data before mount.
-         * @prop {Boolean} [true] autobind 
+         * @prop {Boolean} [false] autobind 
          */
         autobind: {
-          default: true
+          default: false
         },
         /**
          * Defines if the search can have a null value.
@@ -202,6 +205,9 @@ document.head.insertAdjacentElement('beforeend', css);
         };
       },
       computed: {
+        isNullable(){
+          return this.nullable && this.isActive;
+        },
         /**
          * Returns the component object. 
          * @computed realComponent
@@ -218,7 +224,7 @@ document.head.insertAdjacentElement('beforeend', css);
               template: `<component :is="myCp" :source="source"></component>`,
               computed: {
                 myCp() {
-                  return this.source.component ? this.source.component : 'div';
+                  return this.source.component || 'div';
                 }
               }
             };
@@ -242,16 +248,17 @@ document.head.insertAdjacentElement('beforeend', css);
          * Blurs the search input.
          * @method searchBlur
          */
-        searchBlur(){
-          clearTimeout(this.timeout);
-          this.timeout = setTimeout(() => {
-            this.isFocused = false;
-            this.isOpened = false;
-            this.specialWidth = this.minWidth;
-            this.filterString = '';
-            this.currentPlaceholder = '?';
-            this.$emit('blur', this);
-          }, 250);
+        searchBlur(e) {
+          if (this.isFocused && ev.target && this.$el && !this.$el.contains(e.target)) {
+            clearTimeout(this.timeout);
+            this.timeout = setTimeout(() => {
+              this.isFocused = false;
+              this.isOpened = false;
+              this.specialWidth = this.minWidth;
+              this.currentPlaceholder = '?';
+              this.$emit('blur', this);
+            }, 250);
+          }
         },
         /**
          * Closes the search.
@@ -275,8 +282,6 @@ document.head.insertAdjacentElement('beforeend', css);
             if ( !ev.defaultPrevented ){
               this.currentText = item[this.sourceText];
               this.filterString = item[this.sourceText];
-              this.emitInput(item[this.sourceValue]);
-              this.$emit('change', item[this.sourceValue]);
               this.$nextTick(() => {
                 this.getRef('input').focus();
               });
@@ -328,6 +333,12 @@ document.head.insertAdjacentElement('beforeend', css);
           }
         }
       },
+      created() {
+        document.addEventListener('click', this.searchBlur);
+      },
+      beforeDestroy() {
+        document.removeEventListener('click', this.searchBlur);
+      },
       watch: {
         /**
          * @watch filterString
@@ -339,6 +350,8 @@ document.head.insertAdjacentElement('beforeend', css);
           }
           clearTimeout(this.filterTimeout);
           if (v !== this.currentText) {
+            this.emitInput(v);
+            this.$emit('change', v);
             this.isOpened = false;
             if (this.currentData.length) {
               this.currentData.splice(0);

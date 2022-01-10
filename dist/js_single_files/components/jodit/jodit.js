@@ -1,13 +1,18 @@
 ((bbn) => {
+
 let script_dep = document.createElement('script');
-script_dep.setAttribute('src', "https://cdn.jsdelivr.net/combine/gh/xdan/jodit@3.3.8/build/jodit.es2018.min.js");
+script_dep.setAttribute('src', 'https://cdn.jsdelivr.net/combine/gh/xdan/jodit@3.3.8/build/jodit.es2018.min.js');
 script_dep.onload = () => {
 
+
 let css_dependency;
+
 css_dependency = document.createElement('link');
-css_dependency.setAttribute('rel', "stylesheet");
-css_dependency.setAttribute('href', "https://cdn.jsdelivr.net/combine/gh/xdan/jodit@3.3.8/build/jodit.es2018.min.css");
+css_dependency.setAttribute('rel', 'stylesheet');
+css_dependency.setAttribute('href', 'https://cdn.jsdelivr.net/combine/gh/xdan/jodit@3.3.8/build/jodit.es2018.min.css');
 document.head.insertAdjacentElement('beforeend', css_dependency);
+
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-textbox']"
      @keydown.enter.stop=""
@@ -17,8 +22,8 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-textbox']"
   </div>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-jodit');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-rte component
  *

@@ -1,5 +1,6 @@
 (bbn_resolve) => {
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-modal']"
      :style="containerCSS"
@@ -26,12 +27,14 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-modal']"
   </bbn-floater>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-window');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
+
 let css = document.createElement('link');
-css.setAttribute('rel', "stylesheet");
-css.setAttribute('href', bbn.vue.libURL + "dist/js/components/window/window.css");
+css.setAttribute('rel', 'stylesheet');
+css.setAttribute('href', bbn.vue.libURL + 'dist/js/components/window/window.css');
 document.head.insertAdjacentElement('beforeend', css);
+
 /**
  * @file bbn-window component
  *

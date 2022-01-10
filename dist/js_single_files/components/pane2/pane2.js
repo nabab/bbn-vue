@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-background', 'bbn-border-box']"
      :style="currentStyle"
@@ -25,8 +26,8 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-background', 'bbn-border-
   </div>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-pane2');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file the bbn-pane component
  *

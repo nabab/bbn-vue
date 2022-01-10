@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="componentClass"
      :style="{zIndex: zIndex}"
@@ -83,8 +84,8 @@ script.innerHTML = `<div :class="componentClass"
   ></div>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-fisheye');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-fisheye component
  *

@@ -1,5 +1,6 @@
 (bbn_resolve) => {
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[{'bbn-iblock':true}, componentClass]"
 >
@@ -23,8 +24,8 @@ script.innerHTML = `<div :class="[{'bbn-iblock':true}, componentClass]"
   </bbn-button>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-tree-input');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-tree-oinput component
  *

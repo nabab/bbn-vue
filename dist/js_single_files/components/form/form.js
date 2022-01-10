@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<form :action="action"
       :disabled="disabled"
@@ -64,8 +65,8 @@ script.innerHTML = `<form :action="action"
   </div>
 </form>`;
 script.setAttribute('id', 'bbn-tpl-component-form');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-form component
  *

@@ -1,5 +1,6 @@
 (bbn_resolve) => {
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, 'bbn-w-100']">
   <label v-text="label"
@@ -16,12 +17,14 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-w-100']">
   >
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-cursor');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
+
 let css = document.createElement('link');
-css.setAttribute('rel', "stylesheet");
-css.setAttribute('href', bbn.vue.libURL + "dist/js/components/cursor/cursor.css");
+css.setAttribute('rel', 'stylesheet');
+css.setAttribute('href', bbn.vue.libURL + 'dist/js/components/cursor/cursor.css');
 document.head.insertAdjacentElement('beforeend', css);
+
 /**
  * @file bbn-block component
  * @description bbn-block

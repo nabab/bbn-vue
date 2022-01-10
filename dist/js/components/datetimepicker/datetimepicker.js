@@ -1,5 +1,6 @@
 (bbn_resolve) => {
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<span :class="[componentClass, 'bbn-textbox', {'bbn-input-nullable': isNullable}]">
   <bbn-masked ref="element"
@@ -321,12 +322,14 @@ script.innerHTML = `<span :class="[componentClass, 'bbn-textbox', {'bbn-input-nu
   </bbn-floater>
 </span>`;
 script.setAttribute('id', 'bbn-tpl-component-datetimepicker');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
+
 let css = document.createElement('link');
-css.setAttribute('rel', "stylesheet");
-css.setAttribute('href', bbn.vue.libURL + "dist/js/components/datetimepicker/datetimepicker.css");
+css.setAttribute('rel', 'stylesheet');
+css.setAttribute('href', bbn.vue.libURL + 'dist/js/components/datetimepicker/datetimepicker.css');
 document.head.insertAdjacentElement('beforeend', css);
+
 /**
  * @file bbn-datetimepicker component
  *
@@ -499,7 +502,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @return {String}
        */
       currentValueFormat(){
-        return this.valueFormat || (this.showSecond ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD HH:mm');
+        return this.valueFormat || 'YYYY-MM-DD HH:mm:ss';
       },
       /**
        * The current format shown on the input.

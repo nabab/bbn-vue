@@ -1,5 +1,6 @@
 (bbn_resolve) => {
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="['bbn-overlay', 'bbn-padded', 'bbn-middle', componentClass]"
      :style="'background-color:' + bgColor"   
@@ -22,12 +23,14 @@ script.innerHTML = `<div :class="['bbn-overlay', 'bbn-padded', 'bbn-middle', com
 </div>
 `;
 script.setAttribute('id', 'bbn-tpl-component-loader');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
+
 let css = document.createElement('link');
-css.setAttribute('rel', "stylesheet");
-css.setAttribute('href', bbn.vue.libURL + "dist/js/components/loader/loader.css");
+css.setAttribute('rel', 'stylesheet');
+css.setAttribute('href', bbn.vue.libURL + 'dist/js/components/loader/loader.css');
 document.head.insertAdjacentElement('beforeend', css);
+
 /**
  * @file bbn-loader component
  *

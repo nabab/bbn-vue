@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="['bbn-block bbn-nowrap', componentClass]">
   <div class="bbn-iblock"
@@ -33,8 +34,8 @@ script.innerHTML = `<div :class="['bbn-block bbn-nowrap', componentClass]">
        
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-editable-content');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-icon component
  *

@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="['bbn-header', 'bbn-unselectable', componentClass, {
         'bbn-w-100': (orientation === 'horizontal'),
@@ -51,8 +52,8 @@ script.innerHTML = `<div :class="['bbn-header', 'bbn-unselectable', componentCla
 </div>
 `;
 script.setAttribute('id', 'bbn-tpl-component-toolbar');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-toolbar component
  * @description bbn-toolbar is an horizontal or vertical layout containing elements or components performing actions defined by the user.

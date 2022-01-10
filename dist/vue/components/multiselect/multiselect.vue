@@ -150,12 +150,6 @@
         default: '100%'
       },
       /**
-       * @prop {} [false] filterable
-       */
-      filterable: {
-        default: false
-      },
-      /**
        * @prop {Array} [[]] value
        */
       value: {

@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<bbn-slider :orientation="orientation"
             :class="componentClass"
@@ -89,8 +90,8 @@ script.innerHTML = `<bbn-slider :orientation="orientation"
   </div>
 </bbn-slider>`;
 script.setAttribute('id', 'bbn-tpl-component-clipboard');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-clipboard component
  *

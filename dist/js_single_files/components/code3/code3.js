@@ -1,7 +1,10 @@
 ((bbn) => {
+
 let script_dep = document.createElement('script');
-script_dep.setAttribute('src', "https://cdn.jsdelivr.net/combine/gh/ajaxorg/ace-builds@v1.4.12/src-min-noconflict/ace.js");
+script_dep.setAttribute('src', 'https://cdn.jsdelivr.net/combine/gh/ajaxorg/ace-builds@v1.4.12/src-min-noconflict/ace.js');
 script_dep.onload = () => {
+
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[{'bbn-reset': true, 'bbn-overlay': isFullScreen}, componentClass]"
      @keydown.enter.stop=""
@@ -37,8 +40,8 @@ script.innerHTML = `<div :class="[{'bbn-reset': true, 'bbn-overlay': isFullScree
 </div>
 `;
 script.setAttribute('id', 'bbn-tpl-component-code3');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-code component
  *

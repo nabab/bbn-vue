@@ -369,9 +369,11 @@
         todo = [todo];
       }
       if (bbn.fn.isArray(todo) && bbn.fn.getRow(bbn.vue.knownPrefixes, {prefix: 'bbn-'})) {
-        bbn.fn.each(todo, a => {
-          if ( Vue.options.components['bbn-' + a] === undefined ){
-            this.queueComponentBBN(a);
+        bbn.fn.each(todo, cp => {
+          if ( Vue.options.components['bbn-' + cp] === undefined ){
+            Vue.component('bbn-' + cp, (resolve, reject) => {
+              bbn.vue.queueComponentBBN(cp, resolve, reject);
+            });
           }
         })
       }
@@ -523,34 +525,43 @@
      * @param {Function} reject
      */
     queueComponentBBN(name, resolve, reject) {
-      if (bbn.env.host.indexOf('test') === -1) {
-        if ( bbn.fn.search(this.queueBBN, {name: name}) === -1 ){
-          clearTimeout(this.queueTimerBBN);
-          let def = false;
-          if ( def ){
-            this._realDefineBBNComponent(name, def);
-            this.queueTimer = setTimeout(() => {
-              if ( resolve ){
-                resolve(true);
-              }
-              return true;
-            })
-          }
-          else{
-            this.queueBBN.push({
-              name: name,
-              resolve: resolve || (function(){}),
-              reject: reject || (function(){})
-            });
-            this.queueTimerBBN = setTimeout(() => {
-              if ( this.queueBBN.length ){
-                this.executeQueueBBNItem(this.queueBBN.splice(0, this.queueBBN.length));
-              }
-            }, this.loadDelay);
-          }
+      if ( bbn.fn.search(this.queueBBN, {name: name}) === -1 ){
+        clearTimeout(this.queueTimerBBN);
+        let def = false;
+        if ( def ){
+          this._realDefineBBNComponent(name, def);
+          this.queueTimer = setTimeout(() => {
+            if ( resolve ){
+              resolve(true);
+            }
+            return true;
+          })
         }
-        return this.queueTimerBBN;
+        else{
+          this.queueBBN.push({
+            name: name,
+            resolve: resolve || (function(){}),
+            reject: reject || (function(){})
+          });
+          this.queueTimerBBN = setTimeout(() => {
+            if ( this.queueBBN.length ){
+              this.executeQueueBBNItem(this.queueBBN.splice(0, this.queueBBN.length));
+            }
+          }, this.loadDelay);
+        }
       }
+      return this.queueTimerBBN;
+    },
+
+
+    /**
+     * @method queueComponentBBNNoCDN
+     * @memberof bbn.vue
+     * @param {String} name 
+     * @param {Function} resolve
+     * @param {Function} reject
+     */
+    queueComponentBBNNoCDN(name, resolve, reject) {
       return bbn.fn.ajax(bbn.vue.libURL + 'dist/js/components/' + name + '/' + name + '.js', 'text').then(d => {
         if (d && d.data) {
           let fn;
@@ -1571,6 +1582,18 @@
       data(){
         return {
           /**
+           * True when the user's mouse is over the dropdown element or its list
+           * @data {Bool} [false] isOverDropdown
+           * @memberof dropdownComponent
+           */
+          isOverDropdown: false,
+          /**
+           * The timeout before closing the floater
+           * @data {int} [0] closeTimeout
+           * @memberof dropdownComponent
+           */
+          closeTimeout: 0,
+          /**
            * The icon representing the arrow up.
            * @data {String} ['nf nf-fa-caret_up'] iconUp
            * @memberof dropdownComponent
@@ -1704,18 +1727,6 @@
               this.$el.querySelector('input:not([type=hidden])').focus();
             }
             //this.getRef('input').getRef('element').focus();
-          }
-        },
-        /**
-         * Closes the floater menu of the component.
-         * @method leave
-         * @param element 
-         * @memberof dropdownComponent
-         */
-        leave(){
-          let lst = this.getRef('list');
-          if ( lst ){
-            lst.close(true);
           }
         },
         /**
@@ -1861,6 +1872,25 @@
           this.$nextTick(() => {
             this.currentText = this.currentTextValue;
           });
+        },
+        /**
+         * Closes the floater menu of the component.
+         * @method leave
+         * @param element 
+         * @memberof dropdownComponent
+         */
+         isOverDropdown(v) {
+           if (v) {
+             clearTimeout(this.closeTimeout);
+           }
+           else {
+            this.closeTimeout = setTimeout(() => {
+              let lst = this.getRef('list');
+              if ( lst ){
+                lst.close(true);
+              }
+            }, 1000);
+          }
         },
         /**
          * @watch ready
@@ -3570,7 +3600,7 @@
          * @prop {String} sourceIcon
          * @memberof listComponent
          */
-         sourceIcon: {
+        sourceIcon: {
           type: String
         },
         /**
@@ -3578,7 +3608,7 @@
          * @prop {String} sourceImg
          * @memberof listComponent
          */
-         sourceImg: {
+        sourceImg: {
           type: String
         },
         /**
@@ -3586,7 +3616,7 @@
          * @prop {String} sourceCls
          * @memberof listComponent
          */
-         sourceCls: {
+        sourceCls: {
           type: String
         },
         /**
@@ -3594,8 +3624,8 @@
          * @prop {String} sourceAction
          * @memberof listComponent
          */
-         sourceAction: {
-          type: String
+        sourceAction: {
+          type: [String, Function]
         },
         /**
          * The name of the property to use for children of hierarchical source
@@ -3605,6 +3635,16 @@
         children: {
           type: String,
           default: 'items'
+        },
+        /**
+         * The mode of the component.
+         * Possible values: 'free', 'options', 'selection'.
+         * @prop {String} ['free'] mode
+         */
+        mode: {
+          type: String,
+          default: "free",
+          validator: m => ['free', 'options', 'selection'].includes(m)
         },
         /**
          * A component for each element of the list.
@@ -3867,6 +3907,7 @@
               template: this.currentTemplate
             };
           }
+
           return cp;
         },
         /**
@@ -4523,6 +4564,16 @@
       beforeMount(){
         this.listOnBeforeMount();
       },
+      mounted() {
+        if (!this.component && !this.template && this.$slots.default) {
+          let tpl = this.getRef('slot');;
+          if (tpl) {
+            this.currentTemplate = tpl.innerHTML;
+          }
+        }
+
+        this.currentComponent = this.realComponent;
+      },
       watch: {
         /**
          * @watch currentLimit
@@ -4543,6 +4594,10 @@
           handler() {
             if (this.ready) {
               this.currentFilter = false;
+              if (this.pageable) {
+                this.start = 0;
+              }
+
               this.updateData();
               if ( bbn.fn.isFunction(this.setConfig) ){
                 this.setConfig(true);
@@ -4775,6 +4830,7 @@
           if ( this.nullable === null ){
             isNullable = this.required ? false : !!this.placeholder;
           }
+
           return isNullable;
         }
       },
@@ -6481,19 +6537,16 @@
               options = text;
             }
             else if (bbn.fn.isString(text)) {
-              if (bbn.fn.isObject(options)) {
-                options = {
-                  body: text
-                }
-              }
-              else {
+              if (!bbn.fn.isObject(options)) {
                 options = {};
               }
               if (!options.body || (options.body !== text)) {
                 options.body = text;
               }
             }
-            options.tag = options.tag || options.timestamp || n.timestamp;
+            let date = bbn.fn.date();
+            options.tag = options.tag || options.timestamp || date.getTime();
+            options.timestamp = options.timestamp || date.getTime();
             if (this.browserNotificationSW) {
               this._postMessage({
                 type: 'notification',
@@ -6605,6 +6658,10 @@
 
 
 
+/**
+ * @file A set of global functions available to all components.
+ * @author Rowina Sanela 
+ */
 (bbn => {
   "use strict";
   if ( !bbn.vue ){
@@ -6665,7 +6722,7 @@
        */
       _: bbn._,
       /**
-       * Fires the function bbn.vue.getRef
+       * Returns the given ref (will return $refs[name] or $refs[name][0])
        * @method getRef
        * @param {String} name 
        * @fires bbn.vue.getRef
@@ -6675,8 +6732,7 @@
         return bbn.vue.getRef(this, name);
       },
       /**
-       * Fires the
-       function bbn.vue.is.
+       * Checks if the component corresponds to the selector
        * @method is
        * @fires bbn.vue.is
        * @param {String} selector 
@@ -6686,7 +6742,7 @@
         return bbn.vue.is(this, selector);
       },
       /**
-       * Fires the function bbn.vue.closest.
+       * Returns the closest component matching the given selector
        * @method closest
        * @param {String} selector 
        * @param {Boolean} checkEle 
@@ -6696,7 +6752,7 @@
         return bbn.vue.closest(this, selector, checkEle);
       },
       /**
-       * Fires the function bbn.vue.ancestors.
+       * Returns an array of parent components until $root
        * @method ancestors
        * @param {String} selector 
        * @param {Boolean} checkEle 
@@ -6710,6 +6766,7 @@
        * @method getChildByKey
        * @param {String} key 
        * @param {String} selector 
+       * @todo Remove for Vue3
        * @return {Function}
        */
       getChildByKey(key, selector){
@@ -6721,49 +6778,53 @@
        * @param {String} key 
        * @param {String} selector 
        * @param {Array} ar 
+       * @todo Remove for Vue3
        * @return {Function}
        */
       findByKey(key, selector, ar){
         return bbn.vue.findByKey(this, key, selector, ar);
       },
       /**
-      * Fires the function bbn.vue.findAllByKey.
-      * @method findAllByKey
-      * @param {String} key 
-      * @param {String} selector 
-      * @return {Function}
-      */
+       * Fires the function bbn.vue.findAllByKey.
+       * @method findAllByKey
+       * @param {String} key 
+       * @param {String} selector 
+       * @todo Remove for Vue3
+       * @return {Function}
+       */
       findAllByKey(key, selector){
         return bbn.vue.findAllByKey(this, key, selector);
       },
       /**
-      * Fires the function bbn.vue.find.
-      * @method find
-      * @param {String} selector 
-      * @param {Number} index 
-      * @return {Function}
-      */  
+       * Fires the function bbn.vue.find.
+       * @method find
+       * @param {String} selector 
+       * @param {Number} index 
+       * @todo Remove for Vue3
+       * @return {Function}
+       */  
       find(selector, index){
         return bbn.vue.find(this, selector, index);
       },
       /**
-      * Fires the function bbn.vue.findAll.
-      * @method findAll
-      * @param {String} selector 
-      * @param {Boolean} only_children 
-      * @return {Function}
-      */  
+       * Fires the function bbn.vue.findAll.
+       * @method findAll
+       * @param {String} selector 
+       * @param {Boolean} only_children 
+       * @todo Remove for Vue3
+       * @return {Function}
+       */  
       findAll(selector, only_children){
         return bbn.vue.findAll(this, selector, only_children);
       },
       /**
-      * Extends an object with Vue.$set
-      * @method extend
-      * @param {Boolean} selector 
-      * @param {Object} source The object to be extended
-      * @param {Object} obj1 
-      * @return {Object}
-      */  
+       * Extends an object with Vue.$set
+       * @method extend
+       * @param {Boolean} selector 
+       * @param {Object} source The object to be extended
+       * @param {Object} obj1 
+       * @return {Object}
+       */  
       extend(deep, src, obj1){
         let args = [this];
         for ( let i = 0; i < arguments.length; i++ ){
@@ -6772,17 +6833,18 @@
         return bbn.vue.extend(...args);
       },
       /**
-      * Fires the function bbn.vue.getComponents.
-      * @method getComponents
-      * @param {Array} ar 
-      * @param {Boolean} only_children 
-      * @return {Function}
-      */
+       * Fires the function bbn.vue.getComponents.
+       * @method getComponents
+       * @param {Array} ar 
+       * @param {Boolean} only_children 
+       * @todo Remove for Vue3
+       * @return {Function}
+       */
       getComponents(ar, only_children){
         return bbn.vue.getComponents(this, ar, only_children);
       },
       /**
-       * Opens the object popup.
+       * Opens the closest object popup.
        * @method getPopup
        * @return {Object}
        */
@@ -6805,7 +6867,7 @@
         return popup;
       },
       /**
-       * Opens the confirm.
+       * Opens a confirmation from the closest popup
        * @method confirm
        */  
       confirm(){
@@ -6815,7 +6877,7 @@
         }
       },
       /**
-       * Opens the alert.
+       * Opens an alert from the closest popup
        * @method alert
        */  
       alert(){
@@ -6824,9 +6886,23 @@
           popup.alert.apply(popup, arguments)
         }
       },
-      post(){
+      /**
+       * Executes bbn.fn.post
+       * @method post
+       * @see {@link https://bbn.io/bbn-js/doc/ajax/post|bbn.fn.post} documentation
+       * @todo Stupid idea, it should be removed.
+       * @return {Promise} 
+       */
+       post(){
         return bbn.vue.post(this, arguments);
       },
+      /**
+       * Executes bbn.fn.postOut
+       * @method postOut
+       * @see {@link https://bbn.io/bbn-js/doc/ajax/postOut|bbn.fn.postOut} documentation
+       * @todo Stupid idea, it should be removed.
+       * @return {void}
+       */
       postOut(){
         return bbn.vue.postOut(this, ...arguments);
       },

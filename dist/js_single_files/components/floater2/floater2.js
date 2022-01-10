@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[
         {
@@ -123,8 +124,8 @@ script.innerHTML = `<div :class="[
   </div>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-floater2');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-floater component
  *

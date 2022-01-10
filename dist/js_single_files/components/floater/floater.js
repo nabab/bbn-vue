@@ -1,10 +1,11 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[
         {
           'bbn-reset': true,
-          'bbn-bordered': true,
-          'bbn-background-internal': true,
+          'bbn-bordered': !modal,
+          'bbn-background-internal': !modal,
           'bbn-invisible': !isResized
         },
         componentClass
@@ -20,6 +21,8 @@ script.innerHTML = `<div :class="[
       :style="currentStyle">
   <div :style="containerStyle"
        :class="{'bbn-flex-height': outHeight > 0}">
+    <div v-if="modal"
+         class="bbn-overlay bbn-modal"/>
     <header v-if="title"
             ref="header"
             :class="{
@@ -53,52 +56,88 @@ script.innerHTML = `<div :class="[
         </div>
       </div>
     </header>
+    
     <div :class="{
           'bbn-flex-fill': footer || title || (buttons && buttons.length),
           'bbn-h-100': !title && !footer && (!buttons || !buttons.length),
-          'bbn-w-100': true
+          'bbn-w-100': true,
+          'bbn-flex-height': pageable
         }">
-          <!--v-if="isMounted">-->
-      <bbn-scroll :latency="latency"
-                  ref="scroll"
-                  v-if="ready"
-                  @ready="scrollReady = true"
-                  :scrollable="scrollable"
-                  :axis="axis"
-                  :max-width="isMaximized ? '100%' : currentMaxWidth || null"
-                  :max-height="isMaximized ? '100%' : scrollMaxHeight || null"
-                  :min-width="currentMinWidth || null"
-                  :min-height="currentMinHeight > outHeight ? currentMinHeight - outHeight : null"
-                  @resize="scrollResize">
-        <component v-if="component"
-                  ref="component"
-                  :is="component"
-                  v-bind="realComponentOptions"/>
-        <slot v-else-if="$slots.default"/>
-        <div v-else-if="!!content" 
-            v-html="content"
-            :class="scrollable ? 'bbn-block' : 'bbn-100'"/>
-        <bbn-list v-else-if="filteredData.length"
-                  :mode="mode"
-                  ref="list"
-                  :suggest="suggest"
-                  :source="filteredData"
-                  :component="itemComponent"
-                  :template="template"
-                  :uid="uid"
-                  :children="children"
-                  :selected="selected"
-                  :class="'bbn-floater-list bbn-menulist ' + mode"
-                  origin="floater"
-                  @select="select"
-                  :source-value="sourceValue"
-                  :source-text="sourceText"/>
-        <h3 v-else v-text="noData"/>
-      </bbn-scroll>
+      <div v-if="pageable && ready">
+        <bbn-pager class="bbn-table-footer bbn-no-border-right bbn-no-border-left bbn-no-border-bottom"
+                  :element="pagerElement || _self"
+                  @click.stop
+                  @mousedown.stop
+                  @mouseup.stop
+                  @keydown.stop
+                  @keyup.stop
+                  :extra-controls="false"/>
+      </div>
+      <div :class="{'bbn-100': !ready || !pageable, 'bbn-flex-fill': pageable}">
+        <bbn-scroll :latency="latency"
+                    ref="scroll"
+                    :class="{'bbn-flex-fill': pageable}"
+                    v-if="ready"
+                    @ready="scrollReady = true"
+                    :scrollable="scrollable"
+                    :axis="axis"
+                    :max-width="isMaximized ? '100%' : currentMaxWidth || null"
+                    :max-height="isMaximized ? '100%' : scrollMaxHeight || null"
+                    :min-width="currentMinWidth || null"
+                    :min-height="currentMinHeight > outHeight ? currentMinHeight - outHeight : null"
+                    @resize="scrollResize">
+          <component v-if="component"
+                    ref="component"
+                    :is="component"
+                    v-bind="realComponentOptions"/>
+          <slot v-else-if="$slots.default"/>
+          <div v-else-if="!!content" 
+              v-html="content"
+              :class="scrollable ? 'bbn-block' : 'bbn-100'"/>
+          <bbn-list v-else-if="filteredData.length"
+                    :mode="mode"
+                    ref="list"
+                    :suggest="suggest"
+                    :source="filteredData"
+                    :component="itemComponent"
+                    :template="template"
+                    :uid="uid"
+                    :children="children"
+                    :selected="selected"
+                    :class="'bbn-floater-list bbn-menulist ' + mode"
+                    origin="floater"
+                    @select="select"
+                    :source-value="sourceValue"
+                    :source-text="sourceText"/>
+          <h3 v-else v-text="noData"/>
+        </bbn-scroll>
+      </div>
+      <div v-if="pageable && ready">
+        <bbn-pager class="bbn-table-footer bbn-no-border-right bbn-no-border-left bbn-no-border-bottom"
+                  :element="_self"
+                  @click.stop
+                  @mousedown.stop
+                  @mouseup.stop
+                  @keydown.stop
+                  @keyup.stop
+                  :extra-controls="false"/>
+      </div>
       <component is="style"
                 v-if="css"
                 scoped="scoped"
                 v-html="css"/>
+    </div>
+    <div v-if="!title && closable">
+      <div :class="{
+        'bbn-top-right': true,
+        'bbn-spadded': true,
+        'bbn-xl': !!modal,
+        'bbn-white': !!modal,
+        'bbn-lg': !modal
+      }">
+        <i class="nf nf-fa-times bbn-p"
+           @click="close"/>
+      </div>
     </div>
     <footer v-if="footer"
             v-html="footer"
@@ -124,8 +163,8 @@ script.innerHTML = `<div :class="[
 </div>
 `;
 script.setAttribute('id', 'bbn-tpl-component-floater');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-floater component
  *
@@ -364,12 +403,6 @@ document.body.insertAdjacentElement('beforeend', script);
         type: Function
       },
       /**
-       * @prop {Number} index
-       */
-      index: {
-        type: Number
-      },
-      /**
        * @prop {String} uid
        */
       uid: {
@@ -390,6 +423,13 @@ document.body.insertAdjacentElement('beforeend', script);
        */
        actionArguments: {
         type: Array
+      },
+      modal: {
+        type: Boolean,
+        default: false
+      },
+      pagerElement: {
+        type: Vue
       }
     },
     data() {
@@ -954,9 +994,6 @@ document.body.insertAdjacentElement('beforeend', script);
               this.$forceUpdate();
               this.$nextTick(() => {
                 this.isResizing = false;
-                if (this.element && !this.isResized) {
-                  this.isResized = true;
-                }
                 this.$nextTick(() => {
                   this.setResizeMeasures();
                   this.$forceUpdate();
@@ -964,7 +1001,9 @@ document.body.insertAdjacentElement('beforeend', script);
                     this.updatePosition();
                     if (!this.isResized) {
                       this.isResized = true;
+                      bbn.fn.log("Floater: resized gets TRUE");
                     }
+                    bbn.fn.log("Floater: resizing again");
                     this.$emit('resize');
                     if (!wasInit) {
                       if (this.onOpen) {
@@ -1117,6 +1156,7 @@ document.body.insertAdjacentElement('beforeend', script);
                   a.res = 0;
                   size = this['container' + a.camel];
                 }
+                bbn.fn.log(a.res)
               }
             }
             // If the floater is horizontal, it will ideally start at the
@@ -1277,32 +1317,34 @@ document.body.insertAdjacentElement('beforeend', script);
        * @fires afterClose
        */
       close(force, confirm = false) {
-        if (!force) {
+        if (force !== true) {
           if (!this.closable && !this.autoHide && !force) {
             return;
           }
-          let beforeCloseEvent = new Event('beforeClose', {
-            cancelable: true
-          });
-          if (this.popup) {
-            this.popup.$emit('beforeClose', beforeCloseEvent, this);
+          if (bbn.fn.isFunction(this.beforeClose)) {
+            if (this.beforeClose(this) === false) {
+              return;
+            }
           }
           else {
+            let beforeCloseEvent = new Event('beforeClose', {
+              cancelable: true
+            });
             this.$emit('beforeClose', beforeCloseEvent, this);
+            if (beforeCloseEvent.defaultPrevented) {
+              return;
+            }
           }
-          if (beforeCloseEvent.defaultPrevented) {
-            return;
-          }
-          if (this.beforeClose && (this.beforeClose(this) === false)) {
-            return;
-          }
-          bbn.fn.each(this.closingFunctions, a => {
-            a(this, beforeCloseEvent);
-          });
-          if (beforeCloseEvent.defaultPrevented) {
-            return;
+
+          if (this.closingFunctions) {
+            for (let i = 0; i < this.closingFunctions.length; i++) {
+              if (this.closingFunctions[i](this) === false) {
+                return;
+              }
+            }
           }
         }
+
         let form = this.find('bbn-form');
         if ( (form !== undefined)  && !confirm ){
           form.closePopup();
@@ -1419,9 +1461,9 @@ document.body.insertAdjacentElement('beforeend', script);
      * @fires closeAll
      */
     mounted() {
-      bbn.fn.startChrono('scroll');
       if (this.isVisible) {
         this.ready = true;
+        bbn.fn.log("Floater: IS ready");
       }
 
       this.$nextTick(() => {
@@ -1541,6 +1583,9 @@ document.body.insertAdjacentElement('beforeend', script);
       visible(v) {
         this.currentVisible = v;
       },
+      isResized(){
+        bbn.fn.log("Floater: IS resized");
+      },
       isVisible(v) {
         if (v) {
           if (!this.ready) {
@@ -1560,6 +1605,7 @@ document.body.insertAdjacentElement('beforeend', script);
         }
       },
       scrollReady(v) {
+        bbn.fn.log("Floater: SCROLL ready");
         if (v) {
           let nb = this.mountedComponents.length;
           let to = null;

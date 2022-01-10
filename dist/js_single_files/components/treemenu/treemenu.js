@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[{'bbn-widget': true, 'bbn-h-100': true}, componentClass]">
   <div class="bbn-flex-height">
@@ -44,8 +45,8 @@ script.innerHTML = `<div :class="[{'bbn-widget': true, 'bbn-h-100': true}, compo
 </div>
 `;
 script.setAttribute('id', 'bbn-tpl-component-treemenu');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-treemenu component
  *

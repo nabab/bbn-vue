@@ -1,5 +1,6 @@
 (bbn_resolve) => {
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="['bbn-abs', 'bbn-bordered', 'bbn-background', componentClass, {
   'bbn-no-hborder': !isVertical,
@@ -30,12 +31,14 @@ script.innerHTML = `<div :class="['bbn-abs', 'bbn-bordered', 'bbn-background', c
   </div>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-slider');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
+
 let css = document.createElement('link');
-css.setAttribute('rel', "stylesheet");
-css.setAttribute('href', bbn.vue.libURL + "dist/js/components/slider/slider.css");
+css.setAttribute('rel', 'stylesheet');
+css.setAttribute('href', bbn.vue.libURL + 'dist/js/components/slider/slider.css');
 document.head.insertAdjacentElement('beforeend', css);
+
 /**
  * @file bbn-slider component
  *
@@ -294,6 +297,9 @@ document.head.insertAdjacentElement('beforeend', css);
       currentSize(v){
         this.$el.style[this.isVertical ? 'width' : 'height'] = v;
       },
+      visible(v){
+        this.currentVisible = v;
+      }
     }
   });
 

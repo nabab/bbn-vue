@@ -13,7 +13,7 @@
 		<bbn-button icon="nf nf-fa-angle_double_left"
 								:notext="true"
 								:title="_('Go to the first') + ' ' + pageName"
-								:disabled="element.currentPage == 1"
+								:disabled="element.currentPage <= 2"
 								@click="firstPage"
 								v-if="buttons"/>
 		<!-- OR 1ST ICON -->
@@ -25,7 +25,7 @@
 									'nf nf-fa-angle_double_left',
 									'bbn-xl',
 									'bbn-pager-mobile-icon',
-									{'bbn-disabled': element.currentPage == 1}
+									{'bbn-invisible': element.currentPage <= 2}
 								 ]"/>
 		</span>
 		<!-- 2ND BUTTON (PREVIOUS) -->
@@ -43,17 +43,21 @@
 									'nf nf-fa-angle_left',
 									'bbn-xl',
 									'bbn-pager-mobile-icon',
-									{'bbn-disabled': element.currentPage == 1}
+									{'bbn-invisible': element.currentPage == 1}
 								 ]"/>
 		</span>
 		<!-- PAGE + NUMERIC SELECTOR -->
 		<span class="bbn-iblock" v-text="pageName"/>
-		<bbn-numeric v-model="currentNumericPage"
+		<bbn-numeric v-if="numericSelector"
+								 v-model="currentNumericPage"
 								 :min="1"
 								 :max="element.numPages"
 								 class="bbn-narrower bbn-right-sspace"
 								 :disabled="!!element.isLoading"
 								 :readonly="element.numPages == 1"/>
+		<span v-else
+		      class="bbn-iblock bbn-right-xsspace"
+					v-text="currentPage"/>
 		<!-- OF TOTAL -->
 		<span class="bbn-iblock bbn-right-xsspace"
 					v-text="_('of') + ' ' + element.numPages"/>
@@ -66,32 +70,30 @@
 								v-if="buttons"/>
 		<!-- OR 3RD ICON (NEXT) -->
 		<span v-else
-					class="bbn-iblock bbn-right-xsspace bbn-pager-mobile-icon"
-		>
+		      class="bbn-iblock bbn-hxspadded bbn-p bbn-pager-mobile-icon">
 			<i :class="[
 									'nf nf-fa-angle_right',
 									'bbn-xl',
 									'bbn-pager-mobile-icon',
-									{'bbn-disabled': element.currentPage == element.numPages}
+									{'bbn-invisible': element.currentPage == element.numPages}
 								 ]"
-				 @click="nextPage"
-			></i>
+				 @click="nextPage"/>
 		</span>
 		<!-- 4TH BUTTON (LAST) -->
 		<bbn-button icon="nf nf-fa-angle_double_right"
 								:notext="true"
 								:title="_('Go to the last') + ' ' + pageName"
 								@click="lastPage"
-								:disabled="element.currentPage == element.numPages"
+								:disabled="element.currentPage >= element.numPages - 1"
 								v-if="buttons"/>
 		<!-- OR 4TH ICON (LAST) -->
 		<span v-else
-					class="bbn-iblock bbn-pager-mobile-icon">
+					class="bbn-iblock bbn-hxspadded bbn-p bbn-pager-mobile-icon">
 			<i :class="[
 									'nf nf-fa-angle_double_right',
 									'bbn-xl',
 									'bbn-pager-mobile-icon',
-									{'bbn-disabled': element.currentPage == element.numPages}
+									{'bbn-invisible': element.currentPage >= element.numPages - 1}
 								 ]"
 				 @click="lastPage"
 			></i>
@@ -264,16 +266,25 @@
        * @prop {Boolean} [true] extraControls
        */
       extraControls: {
+        type: Boolean,
         default: true
       },
       /**
        * False if you wanto to hide the limit selector
        * @prop {Boolean} [true] limit
        */
-       limit: {
+      limit: {
         type: Boolean,
         default: true
       },
+      /**
+       * Shows the bbn-numeric field for selecting the page
+       * @prop {Boolean} [true] numericSelector
+       */
+       numericSelector: {
+        type: Boolean,
+        default: true
+      }
     },
     data(){
       return {

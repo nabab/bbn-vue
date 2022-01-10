@@ -1,4 +1,5 @@
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="['bbn-overlay', 'bbn-padded', 'bbn-middle', componentClass]"
      :style="'background-color:' + bgColor"   
@@ -21,8 +22,8 @@ script.innerHTML = `<div :class="['bbn-overlay', 'bbn-padded', 'bbn-middle', com
 </div>
 `;
 script.setAttribute('id', 'bbn-tpl-component-loader');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
 /**
  * @file bbn-loader component
  *

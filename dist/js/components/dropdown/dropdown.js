@@ -1,5 +1,6 @@
 (bbn_resolve) => {
 ((bbn) => {
+
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[
        componentClass,
@@ -7,7 +8,8 @@ script.innerHTML = `<div :class="[
        'bbn-textbox',
        {'bbn-disabled': !!disabled}
      ]"
-     @mouseleave="leave"
+     @mouseenter="isOverDropdown = true"
+     @mouseleave="isOverDropdown = false"
      @focusin="isActive = true"
      @focusout="onFocusOut"
      :title="currentText || placeholder || null"
@@ -129,12 +131,14 @@ script.innerHTML = `<div :class="[
                :title="floaterTitle"/>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-dropdown');
-script.setAttribute('type', 'text/x-template');
-document.body.insertAdjacentElement('beforeend', script);
+script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
+
 let css = document.createElement('link');
-css.setAttribute('rel', "stylesheet");
-css.setAttribute('href', bbn.vue.libURL + "dist/js/components/dropdown/dropdown.css");
+css.setAttribute('rel', 'stylesheet');
+css.setAttribute('href', bbn.vue.libURL + 'dist/js/components/dropdown/dropdown.css');
 document.head.insertAdjacentElement('beforeend', css);
+
 /**
  * @file bbn-dropdown component
  *
@@ -249,21 +253,6 @@ document.head.insertAdjacentElement('beforeend', css);
           if (this.currentText === this.currentTextValue) {
             this.currentText = '';
           }
-        }
-      },
-      /**
-       * Leave list.
-       *
-       * @method keydown
-       * @fires getRef
-       */
-      leave(){
-        let lst = this.getRef('list');
-        if (lst) {
-          lst.close(true);
-        }
-        if (this.native) {
-          this.isOpened = false;
         }
       },
       onFocusOut(){
