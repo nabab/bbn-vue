@@ -77,6 +77,14 @@
         type: Boolean,
         default: true
       },
+      /**
+       * Shows the bbn-numeric field for selecting the page
+       * @prop {Boolean} [true] numericSelector
+       */
+       numericSelector: {
+        type: Boolean,
+        default: true
+      }
     },
     data(){
       return {

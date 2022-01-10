@@ -35,6 +35,7 @@
        * @prop {Boolean} [true] filterable
        */
       filterable: {
+        type: Boolean,
         default: true
       },
       /**

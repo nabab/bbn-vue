@@ -238,7 +238,7 @@
          * @prop {String} sourceIcon
          * @memberof listComponent
          */
-         sourceIcon: {
+        sourceIcon: {
           type: String
         },
         /**
@@ -246,7 +246,7 @@
          * @prop {String} sourceImg
          * @memberof listComponent
          */
-         sourceImg: {
+        sourceImg: {
           type: String
         },
         /**
@@ -254,7 +254,7 @@
          * @prop {String} sourceCls
          * @memberof listComponent
          */
-         sourceCls: {
+        sourceCls: {
           type: String
         },
         /**
@@ -262,7 +262,7 @@
          * @prop {String} sourceAction
          * @memberof listComponent
          */
-         sourceAction: {
+        sourceAction: {
           type: [String, Function]
         },
         /**
@@ -273,6 +273,16 @@
         children: {
           type: String,
           default: 'items'
+        },
+        /**
+         * The mode of the component.
+         * Possible values: 'free', 'options', 'selection'.
+         * @prop {String} ['free'] mode
+         */
+        mode: {
+          type: String,
+          default: "free",
+          validator: m => ['free', 'options', 'selection'].includes(m)
         },
         /**
          * A component for each element of the list.
@@ -535,6 +545,7 @@
               template: this.currentTemplate
             };
           }
+
           return cp;
         },
         /**
@@ -1190,6 +1201,16 @@
       },
       beforeMount(){
         this.listOnBeforeMount();
+      },
+      mounted() {
+        if (!this.component && !this.template && this.$slots.default) {
+          let tpl = this.getRef('slot');;
+          if (tpl) {
+            this.currentTemplate = tpl.innerHTML;
+          }
+        }
+
+        this.currentComponent = this.realComponent;
       },
       watch: {
         /**

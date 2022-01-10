@@ -49,14 +49,15 @@
          * @prop {Boolean} [true] filterable 
          */
         filterable: {
+          type: Boolean,
           default: true
         },
         /**
          * Set to true will automatically update the data before mount.
-         * @prop {Boolean} [true] autobind 
+         * @prop {Boolean} [false] autobind 
          */
         autobind: {
-          default: true
+          default: false
         },
         /**
          * Defines if the search can have a null value.

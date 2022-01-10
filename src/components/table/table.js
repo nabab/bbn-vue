@@ -2998,6 +2998,14 @@
           this.focusedElementY = pos.y - pos.height;
           this.focusedElement = ev.target;
         }
+      },
+      getColOptions(data, col, idx) {
+        if (col.options) {
+          return bbn.fn.isFunction(col.options) ?
+            col.options(data, col, idx) : col.options;
+        }
+
+        return {};
       }
     },
     /**

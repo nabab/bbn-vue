@@ -177,8 +177,9 @@
                 </div>
               </td>
             </tr>
-            <template v-else v-for="(d, i) in items">
-              <tr :key="d.rowKey"
+            <template v-else>
+              <tr v-for="(d, i) in items"
+                  :key="d.rowKey"
                   :index="i"
                   :tabindex="0"
                   @focusout="focusout(i)"
@@ -372,7 +373,7 @@
                       </div>
                       <component v-else-if="col.component"
                                 :is="col.component"
-                                v-bind="col.options"
+                                v-bind="getColOptions(d.data, col, i)"
                                 :source="col.mapper ? col.mapper(d.data) : d.data"/>
                       <template v-else-if="col.buttons && (buttonMode === 'dropdown')">
                         <bbn-dropdown :source="buttonSource(d.data, col, i)"
