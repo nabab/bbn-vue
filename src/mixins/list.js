@@ -555,7 +555,7 @@
          * @return {number}
          */
         numPages() {
-          return Math.ceil(this.filteredTotal / this.currentLimit);
+          return Math.ceil(this.total / this.currentLimit);
         },
         /**
          * Return the current page of the list.
@@ -1011,7 +1011,6 @@
                     this.currentQuery = d.query;
                     this.currentQueryValues = d.queryValues || {};
                   }
-                  this.total = d.total || 0;
                   if (d.order) {
                     this.currentOrder.splice(0, this.currentOrder.length);
                     this.currentOrder.push({
@@ -1019,6 +1018,7 @@
                       dir: (d.dir || '').toUpperCase() === 'DESC' ? 'DESC' : 'ASC'
                     });
                   }
+                  this.total = d.total || this.filteredData.length;
                   /** @todo Observer part to dissociate */
                   if (d.observer && bbn.fn.isFunction(this.observerCheck) && this.observerCheck()) {
                     this._observerReceived = d.observer.value;
