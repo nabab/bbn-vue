@@ -2190,7 +2190,7 @@ Vue.component('bbn-tree', {
           }
         },
         getCls(source, tree) {
-          return source.cls !== undefined ? (bbn.fn.isFunction(source.cls) ? source.cls() : source.cls) : (bbn.fn.isFunction(tree.cls) ? tree.cls() : tree.cls);
+          return source.cls !== undefined ? source.cls : (bbn.fn.isFunction(tree.cls) ? tree.cls() : tree.cls || '');
         }
       },
       /**
