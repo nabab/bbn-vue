@@ -58,7 +58,7 @@
                   @mouseover.stop="mouseOver"/>
             
             <!-- The node starts here -->
-            <span :class="['bbn-tree-node-block', cls || '', {'bbn-tree-node-block-no-component': !!component}]"
+            <span :class="['bbn-tree-node-block', {{source.cls !== undefined ? source.cls : tree.cls}} || '', {'bbn-tree-node-block-no-component': !!component}]"
                   @mouseover.stop="mouseOver">
               <!-- The expander -->
               <span :class="['bbn-tree-node-block-expander', {'bbn-p': numChildren}]"
