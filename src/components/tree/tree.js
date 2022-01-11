@@ -1227,6 +1227,9 @@ Vue.component('bbn-tree', {
     // Keep to prevent the one from list to exexute
     listOnBeforeMount(){
 
+    },
+    getCls(source, tree) {
+      return source.cls !== undefined ? (bbn.fn.isFunction(source.cls) ? source.cls() : source.cls) : (bbn.fn.isFunction(tree.cls) ? tree.cls() : tree.cls);
     }
   },
   /**
