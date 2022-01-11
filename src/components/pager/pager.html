@@ -1,4 +1,4 @@
-<div v-if="ready"
+<div v-if="ready && (numPages || extraControls)"
 		 :class="[componentClass, 'bbn-widget', 'bbn-unselectable']"
 >
   <div :class="{

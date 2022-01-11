@@ -555,7 +555,7 @@
          * @return {number}
          */
         numPages() {
-          return Math.ceil(this.total / this.currentLimit);
+          return Math.ceil(this.filteredTotal / this.currentLimit);
         },
         /**
          * Return the current page of the list.
@@ -1213,6 +1213,9 @@
         this.currentComponent = this.realComponent;
       },
       watch: {
+        filters() {
+          this.currentFilters = bbn.fn.clone(this.filters)
+        },
         /**
          * @watch currentLimit
          * @fires setConfig
