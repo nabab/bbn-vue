@@ -288,6 +288,7 @@
        * Removes the past tasks
        */
       cleanTasks(){
+        let now = (new Date()).getTime();
         for (let i = 0; i < this.currentTasks.length; i++) {
           while (now > this.currentTasks[i].timestamp) {
             this.currentTasks.shift();
