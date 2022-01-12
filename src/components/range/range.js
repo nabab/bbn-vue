@@ -4,7 +4,7 @@
  * @copyright BBN Solutions
  * @author BBN Solutions
  */
-(function(bbn, Vue){
+ (function(bbn, Vue){
   "use strict";
 
   Vue.component("bbn-range", {
@@ -167,7 +167,7 @@
         return this.autosize ? (this.value ? this.value.toString().length : 1) : 0;
       },
       currentMin(){
-        if (!!this.min) {
+        if (this.min !== undefined) {
           return this.min;
         }
         if (this.currentUnit) {
@@ -176,7 +176,7 @@
         return 1;
       },
       currentMax(){
-        if (!!this.max) {
+        if (this.max !== und) {
           return this.max;
         }
         if (this.currentUnit) {
