@@ -91,8 +91,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @prop {Number} [1] step
        */
       step: {
-        type: Number, 
-        default: 1
+        type: Number
       },
       /**
        * The unit used for the value
@@ -231,10 +230,16 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         return this.max;
       },
       currentStep(){
-        if (this.currentUnit) {
-          return bbn.fn.getField(this.units, 'step', 'value', this.currentUnit);
+        if (this.step) {
+          return this.step;
         }
-        return this.step;
+        if (this.currentUnit) {
+          let step = bbn.fn.getField(this.units, 'step', 'value', this.currentUnit);
+          if (step) {
+            return step;
+          }
+        }
+        return 1;
       },
       currentDecimals(){
         if (this.currentUnit) {

@@ -2665,7 +2665,10 @@
         for (let n in obj) {
           def[bbn.fn.camelize(n)] = obj[n];
         }
-
+        if (!!obj.buttons) {
+          def.filterable = false;
+          def.sortable = false;
+        }
         this.cols.push(def);
       },
       /**

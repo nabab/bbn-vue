@@ -5957,7 +5957,7 @@
             },
             {
                 "text": "menu",
-                "lastmod": 1639285137,
+                "lastmod": 1641869380,
                 "url": "bbn-vue\/component\/menu\/overview",
                 "props": [
                     {
@@ -6504,7 +6504,7 @@
             },
             {
                 "text": "pager",
-                "lastmod": 1641778399,
+                "lastmod": 1641869165,
                 "url": "bbn-vue\/component\/pager\/overview",
                 "props": [
                     {
@@ -6744,7 +6744,7 @@
             },
             {
                 "text": "popup",
-                "lastmod": 1641212150,
+                "lastmod": 1641923872,
                 "url": "bbn-vue\/component\/popup\/overview",
                 "props": [
                     {
@@ -7166,7 +7166,7 @@
             },
             {
                 "text": "range",
-                "lastmod": 1641217834,
+                "lastmod": 1641831940,
                 "url": "bbn-vue\/component\/range\/overview",
                 "props": [
                     {
@@ -7242,7 +7242,7 @@
             },
             {
                 "text": "router",
-                "lastmod": 1641519436,
+                "lastmod": 1641831940,
                 "url": "bbn-vue\/component\/router\/overview",
                 "props": [
                     {
@@ -7344,11 +7344,6 @@
                         "text": "maxTitleLength",
                         "desc": "The max length for the titles\n",
                         "url": "bbn-vue\/component\/router\/doc\/props#maxTitleLength"
-                    },
-                    {
-                        "text": "disabled",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/router\/doc\/props#disabled"
                     },
                     {
                         "text": "urlNavigation",
@@ -7683,11 +7678,6 @@
                         "text": "basicComponent",
                         "desc": "",
                         "url": "bbn-vue\/component\/router\/doc\/mixins#basicComponent"
-                    },
-                    {
-                        "text": "resizerComponent",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/router\/doc\/mixins#resizerComponent"
                     },
                     {
                         "text": "localStorageComponent",
@@ -9111,7 +9101,7 @@
             },
             {
                 "text": "table",
-                "lastmod": 1641774357,
+                "lastmod": 1641923906,
                 "url": "bbn-vue\/component\/table\/overview",
                 "props": [
                     {

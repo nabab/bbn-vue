@@ -265,13 +265,12 @@ document.head.insertAdjacentElement('beforeend', css);
     name: 'bbn-router',
     /**
      * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.resizerComponent
      * @mixin bbn.vue.localStorageComponent
      * @mixin bbn.vue.closeComponent
      * @mixin bbn.vue.observerComponent
      */
-    mixins: 
-    [ 
+    mixins:
+    [
       bbn.vue.basicComponent,
       bbn.vue.localStorageComponent,
       bbn.vue.closeComponent,
@@ -435,13 +434,6 @@ document.head.insertAdjacentElement('beforeend', css);
       maxTitleLength: {
         type: Number,
         default: 20
-      },
-      /**
-       * @prop {Boolean} [false] disabled
-       */
-      disabled: {
-        type: Boolean,
-        default: false
       },
       /**
        * @prop {Boolean} [true] urlNavigation
@@ -2843,23 +2835,20 @@ document.head.insertAdjacentElement('beforeend', css);
        */
       currentURL(newVal, oldVal){
         if ( this.ready ){
-          if (!this.disabled) {
-            this.$nextTick(() => {
-              if ( this.activeContainer ){
-                this.changeURL(newVal, this.activeContainer.title);
-              }
-              else if ( this.isLoading ){
-                this.changeURL(newVal, bbn._("Loading"));
-              }
-              let idx = this.search(newVal);
-              if ((idx !== false) && (this.selected !== idx)){
-                this.selected = idx;
-                this.views[this.selected].last = bbn.fn.timestamp();
-              }
-              this.$emit('change', newVal);
-            });
-          }
-
+          this.$nextTick(() => {
+            if ( this.activeContainer ){
+              this.changeURL(newVal, this.activeContainer.title);
+            }
+            else if ( this.isLoading ){
+              this.changeURL(newVal, bbn._("Loading"));
+            }
+            let idx = this.search(newVal);
+            if ((idx !== false) && (this.selected !== idx)){
+              this.selected = idx;
+              this.views[this.selected].last = bbn.fn.timestamp();
+            }
+            this.$emit('change', newVal);
+          });
           this.$emit('route', newVal);
         }
       },

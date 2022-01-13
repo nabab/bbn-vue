@@ -16,13 +16,14 @@
         @focus="onFocus(i)"
         @click="clickLi(i, $event)"
         @keydown.stop="onKeyDown(i, $event)"
-        @mouseenter="_enterLi(i)"
-        >
-      <a v-if="item.data.url" :href="item.data.url">
-        <span v-html="item.data.text"></span>
-      </a>
-      <span v-else v-html="item.data.text"></span>
-      <span v-if="item.data[children]" class="nf nf-fa-chevron_down"></span>
+        @mouseenter="_enterLi(i)">
+      <a v-if="item.data.url"
+         :href="item.data.url"
+         v-html="item.data.text"/>
+      <span v-else
+            v-html="item.data.text"/>
+      <span v-if="item.data[children]"
+            class="nf nf-fa-chevron_down"/>
     </li>
   </ul>
   <bbn-floater v-if="ready && filteredData[overIdx] && filteredData[overIdx].data[children]"

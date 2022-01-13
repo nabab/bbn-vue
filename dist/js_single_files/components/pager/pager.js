@@ -1,7 +1,7 @@
 ((bbn) => {
 
 let script = document.createElement('script');
-script.innerHTML = `<div v-if="ready"
+script.innerHTML = `<div v-if="ready && (numPages || extraControls)"
 		 :class="[componentClass, 'bbn-widget', 'bbn-unselectable']"
 >
   <div :class="{
@@ -291,8 +291,9 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
     },
     data(){
       return {
+        numericTimeout: false,
         currentNumericPage: this.element.currentPage,
-        numericTimeout: false
+        numPages: this.element.numPages
       }
     },
     computed: {
@@ -304,9 +305,12 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           this.element.currentPage = v;
         }
       }
-
     },
     methods: {
+      updatePager() {
+        this.currentNumericPage = this.element.currentPage;
+        this.numPages = this.element.numPages;
+      },
       /**
        * @method firstPage
        */
@@ -378,7 +382,12 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
             this.ready = true;
           })
         }
+
+        this.element.$on('dataloaded', this.updatePager);
       }
+    },
+    beforeDestroy() {
+      this.element.$off('dataloaded');
     },
     watch: {
       currentPage(v) {

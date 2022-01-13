@@ -226,7 +226,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         }
         if ( d ){
           if ( !d.uid ){
-            d.uid = 'bbn-popup-' + bbn.fn.timestamp().toString();
+            d.uid = 'bbn-popup-' + bbn.fn.timestamp().toString() + '-' + bbn.fn.randomString(4, 6);
           }
           d.index = this.items.length;
           this.items.push(d);

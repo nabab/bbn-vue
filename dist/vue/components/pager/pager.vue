@@ -1,5 +1,5 @@
 <template>
-<div v-if="ready"
+<div v-if="ready && (numPages || extraControls)"
 		 :class="[componentClass, 'bbn-widget', 'bbn-unselectable']"
 >
   <div :class="{
@@ -288,8 +288,9 @@
     },
     data(){
       return {
+        numericTimeout: false,
         currentNumericPage: this.element.currentPage,
-        numericTimeout: false
+        numPages: this.element.numPages
       }
     },
     computed: {
@@ -301,9 +302,12 @@
           this.element.currentPage = v;
         }
       }
-
     },
     methods: {
+      updatePager() {
+        this.currentNumericPage = this.element.currentPage;
+        this.numPages = this.element.numPages;
+      },
       /**
        * @method firstPage
        */
@@ -375,7 +379,12 @@
             this.ready = true;
           })
         }
+
+        this.element.$on('dataloaded', this.updatePager);
       }
+    },
+    beforeDestroy() {
+      this.element.$off('dataloaded');
     },
     watch: {
       currentPage(v) {

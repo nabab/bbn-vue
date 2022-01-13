@@ -2,7 +2,7 @@
 ((bbn) => {
 
 let script = document.createElement('script');
-script.innerHTML = `<div v-if="ready"
+script.innerHTML = `<div v-if="ready && (numPages || extraControls)"
 		 :class="[componentClass, 'bbn-widget', 'bbn-unselectable']"
 >
   <div :class="{
@@ -298,8 +298,9 @@ document.head.insertAdjacentElement('beforeend', css);
     },
     data(){
       return {
+        numericTimeout: false,
         currentNumericPage: this.element.currentPage,
-        numericTimeout: false
+        numPages: this.element.numPages
       }
     },
     computed: {
@@ -311,9 +312,12 @@ document.head.insertAdjacentElement('beforeend', css);
           this.element.currentPage = v;
         }
       }
-
     },
     methods: {
+      updatePager() {
+        this.currentNumericPage = this.element.currentPage;
+        this.numPages = this.element.numPages;
+      },
       /**
        * @method firstPage
        */
@@ -385,7 +389,12 @@ document.head.insertAdjacentElement('beforeend', css);
             this.ready = true;
           })
         }
+
+        this.element.$on('dataloaded', this.updatePager);
       }
+    },
+    beforeDestroy() {
+      this.element.$off('dataloaded');
     },
     watch: {
       currentPage(v) {
