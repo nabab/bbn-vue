@@ -176,7 +176,7 @@
         return 1;
       },
       currentMax(){
-        if (this.max !== und) {
+        if (this.max !== undefined) {
           return this.max;
         }
         if (this.currentUnit) {
