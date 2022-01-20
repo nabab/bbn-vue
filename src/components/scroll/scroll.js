@@ -294,16 +294,22 @@
        */
       elementStyle(){
         let cfg = {
-          maxWidth: this.maxWidth ? bbn.fn.formatSize(this.maxWidth) : '100%',
-          maxHeight: this.maxHeight ? bbn.fn.formatSize(this.maxHeight) : '100%',
-          minWidth: this.minWidth ? bbn.fn.formatSize(this.minWidth) : '100%',
-          minHeight: this.minHeight ? bbn.fn.formatSize(this.minHeight) : '100%',
+          maxWidth: this.maxWidth ? bbn.fn.formatSize(this.maxWidth) : '',
+          maxHeight: this.maxHeight ? bbn.fn.formatSize(this.maxHeight) : '',
+          minWidth: this.minWidth ? bbn.fn.formatSize(this.minWidth) : '',
+          minHeight: this.minHeight ? bbn.fn.formatSize(this.minHeight) : '',
         };
 
         if (this.isMeasuring) {
           cfg.width = '100%';
           cfg.height = '100%';
           cfg.opacity = 0;
+        }
+        if (this.currentWidth) {
+          cfg.width = bbn.fn.formatSize(this.currentWidth);
+        }
+        if (this.currentHeight) {
+          cfg.height = bbn.fn.formatSize(this.currentHeight);
         }
         /*
         if ( this.currentWidth ){
