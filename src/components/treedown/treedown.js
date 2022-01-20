@@ -368,6 +368,36 @@
 
       unfilter(){
         this.currentFilters.conditions.splice(0, this.currentFilters.conditions.length);
+      },
+
+      filter(filterBy) {
+        this.isOpened = false;
+        this.filterTimeout = setTimeout(() => {
+          this.filterTimeout = false;
+          if ( this.isActive ){
+            if (filterBy && (filterBy.length >= this.minLength)) {
+              this.currentFilters.conditions.splice(0, this.currentFilters.conditions.length ? 1 : 0, {
+                field: this.sourceText,
+                operator: 'startswith',
+                value: filterBy
+              });
+              this.$nextTick(() => {
+                if (!this.isOpened){
+                  this.isOpened = true;
+                }
+                else{
+                  let list = this.find('bbn-scroll');
+                  if ( list ){
+                    list.onResize();
+                  }
+                }
+              });
+            }
+            else {
+              this.unfilter();
+            }
+          }
+        }, this.delay);
       }
     },
     /**
@@ -387,6 +417,7 @@
         if ( !this.currentText && !this.isNullable && this.filteredData.length ){
           this.emitInput(this.filteredData[0][this.sourceValue]);
         }
+        this.filter(this.filterString);
       });
     },
     watch: {
@@ -415,33 +446,7 @@
         }
         clearTimeout(this.filterTimeout);
         // if (v !== this.currentText) {
-        this.isOpened = false;
-        this.filterTimeout = setTimeout(() => {
-          this.filterTimeout = false;
-          if ( this.isActive ){
-            if (v && (v.length >= this.minLength)) {
-              this.currentFilters.conditions.splice(0, this.currentFilters.conditions.length ? 1 : 0, {
-                field: this.sourceText,
-                operator: 'startswith',
-                value: v
-              });
-              this.$nextTick(() => {
-                if (!this.isOpened){
-                  this.isOpened = true;
-                }
-                else{
-                  let list = this.find('bbn-scroll');
-                  if ( list ){
-                    list.onResize();
-                  }
-                }
-              });
-            }
-            else {
-              this.unfilter();
-            }
-          }
-        }, this.delay);
+        this.filter(v);
         // }
         // else if ( !v ){
         //   this.unfilter();
