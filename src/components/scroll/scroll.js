@@ -861,10 +861,10 @@
                   y = this.containerHeight * tot;
                 }
               }
-              if ( this.currentX > this.contentWidth ) {
+              if ( this.currentX > this.contentWidth && this.hasX()) {
                 this.currentX = x;
               }
-              if ( this.currentY > this.contentHeight ) {
+              if ( this.currentY > this.contentHeight && this.hasY()) {
                 this.currentY = y;
               }
               // if (x !== this.currentX) {
