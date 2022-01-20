@@ -427,6 +427,9 @@
             e.preventDefault();
             return;
           }
+          bbn.fn.log("-----onScroll-----------");
+          bbn.fn.log(ct.scrollLeft)
+          bbn.fn.log(ct.scrollTop)
           this.currentX = ct.scrollLeft;
           this.currentY = ct.scrollTop;
           this.$emit('scroll', e);
@@ -571,6 +574,8 @@
        * @emits scrollx
        */  
       scrollHorizontal(ev, left){
+        bbn.fn.log("scrollHorizontal");
+        bbn.fn.log(left);
         this.currentX = left;
         this.$emit('scrollx', left);
       },
@@ -862,6 +867,8 @@
                 }
               }
               if (x !== this.currentX) {
+                bbn.fn.log("resize")
+                bbn.fn.log(x)
                 this.currentX = x;
               }
               if (y !== this.currentY) {
@@ -914,6 +921,8 @@
       setTimeout(() => {
         if (!this.readyDelay && !this.ready) {
           this.waitReady();
+          this.currentX = this.x;
+          this.currentY = this.y;
         }
       }, 100)
     },
