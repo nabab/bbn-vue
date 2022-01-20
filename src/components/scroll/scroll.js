@@ -184,12 +184,12 @@
          * The position on the x axis basing on the prop x
          * @data {Number} [0] currentX
          */
-        currentX: this.x,
+        currentX: this.x || null,
         /**
          * The position on the y axis basing on the prop y
          * @data {Number} [0] currentY
          */
-        currentY: this.y,
+        currentY: this.y || null,
         /**
          * Defines the position ofthe scroll container
          * @data {String} scrollPos
@@ -427,9 +427,6 @@
             e.preventDefault();
             return;
           }
-          bbn.fn.log("-----onScroll-----------");
-          bbn.fn.log(ct.scrollLeft)
-          bbn.fn.log(ct.scrollTop)
           this.currentX = ct.scrollLeft;
           this.currentY = ct.scrollTop;
           this.$emit('scroll', e);
@@ -574,8 +571,6 @@
        * @emits scrollx
        */  
       scrollHorizontal(ev, left){
-        bbn.fn.log("scrollHorizontal");
-        bbn.fn.log(left);
         this.currentX = left;
         this.$emit('scrollx', left);
       },
@@ -866,9 +861,13 @@
                   y = this.containerHeight * tot;
                 }
               }
+              if ( this.currentX > this.contentWidth ) {
+                this.currentX = x;
+              }
+              if ( this.currentY > this.contentHeight ) {
+                this.currentY = y;
+              }
               if (x !== this.currentX) {
-                bbn.fn.log("resize")
-                bbn.fn.log(x)
                 this.currentX = x;
               }
               if (y !== this.currentY) {
@@ -921,8 +920,6 @@
       setTimeout(() => {
         if (!this.readyDelay && !this.ready) {
           this.waitReady();
-          this.currentX = this.x;
-          this.currentY = this.y;
         }
       }, 100)
     },
