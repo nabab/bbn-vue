@@ -526,8 +526,10 @@
       _post(){
         this.isPosted = true;
         this.isLoading = true;
-        if (this.action) {
-          this[this.blank || this.self || this.target ? 'postOut' : 'post'](this.action, bbn.fn.extend(true, {}, this.data || {}, this.source || {}), d => {
+        if (this.action && !this.target) {
+          let data = bbn.fn.extend(true, {}, this.data || {}, this.source || {});
+          let method = this.blank || this.self || this.target ? 'postOut' : 'post';
+          this[method](this.action, data, d => {
             this.originalData = bbn.fn.clone(this.source || {});
             if (this.successMessage && p) {
               p.alert(this.successMessage);
@@ -546,7 +548,7 @@
             if (d && (d.success === false)) {
 
             }
-            else {
+            else if (d && d.success) {
               this.$emit('success', d, e);
               if (!e.defaultPrevented && this.window) {
                 this.$nextTick(() => {

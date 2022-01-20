@@ -31,7 +31,7 @@
     <video v-else
            :autoplay="autoplay"
            :controls="controls"
-           :loop="false"
+           :loop="loop"
            :muted="muted"
            preload="auto"
            :poster="poster"
@@ -253,7 +253,7 @@
        * @return String
        */
       youtubeSource(){
-        return this.youtube ? `${document.location.protocol}//youtube.com/embed/${this.source}?autoplay=${this.autoplay ? 1 : 0}&controls=${this.controls ? 1 : 0}&loop=${this.loop ? 1 : 0}` : '';
+        return this.youtube ? `${document.location.protocol}//youtube.com/embed/${this.source}?rel=0&amp;autoplay=${this.autoplay ? 1 : 0}&controls=${this.controls ? 1 : 0}&mute=${this.muted ? 1 : 0}&loop=${this.loop ? 1 : 0}&playlist=${this.source}` : '';
       }
     }
   });

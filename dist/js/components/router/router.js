@@ -71,8 +71,7 @@ script.innerHTML = `<div :class="[componentClass, {
                       <span v-if="isNumber(bc.selected) && bc.views[bc.selected] && bc.views[bc.selected].icon"
                             :title="bc.views[bc.selected].title"
                             :class="'bbn-router-breadcrumb-element-icon bbn-h-100 bbn-vmiddle bbn-right-xsspace' + (bc.views[bc.selected].notext ? ' bbn-lg' : ' bbn-m')">
-                        <i :class="bc.views[bc.selected].icon"
-                            style="zoom: 1.1"/>
+                        <i :class="bc.views[bc.selected].icon"/>
                       </span>
                       <span v-if="isNumber(bc.selected) && bc.views[bc.selected] && !bc.views[bc.selected].notext"
                             :class="['bbn-router-breadcrumb-element-text', {'bbn-b': !breadcrumbs[i+1]}]"
@@ -172,8 +171,7 @@ script.innerHTML = `<div :class="[componentClass, {
                       <span v-if="tab.icon"
                             :title="tab.title"
                             :class="'bbn-router-tabs-main-icon bbn-iblock' + (tab.notext ? ' bbn-lg' : ' bbn-m')">
-                        <i :class="tab.icon"
-                            :style="{zoom: iconsReady ? 1.1 : 1}"/>
+                        <i :class="tab.icon"/>
                       </span>
                       <span v-if="!tab.notext && tab.title"
                             class="bbn-router-tab-text"
@@ -2930,8 +2928,7 @@ document.head.insertAdjacentElement('beforeend', css);
             <span v-if="p.view.icon"
                   :title="p.view.title"
                   :class="'bbn-router-breadcrumb-element-icon bbn-h-100 bbn-vmiddle bbn-right-xsspace' + (p.view.notext ? ' bbn-lg' : ' bbn-m')">
-              <i :class="p.view.icon"
-                style="zoom: 1.1"/>
+              <i :class="p.view.icon"/>
             </span>
             <span v-if="!p.view.notext"
                   class="bbn-router-breadcrumb-element-text"
@@ -2961,8 +2958,7 @@ document.head.insertAdjacentElement('beforeend', css);
           <span v-if="source.view.icon"
                 :title="source.view.title"
                 :class="'bbn-router-breadcrumb-element-icon bbn-h-100 bbn-vmiddle bbn-right-xsspace' + (source.view.notext ? ' bbn-lg' : ' bbn-m')">
-            <i :class="source.view.icon"
-               style="zoom: 1.1"/>
+            <i :class="source.view.icon"/>
           </span>
           <span v-if="!source.view.notext"
                 class="bbn-router-breadcrumb-element-text"
@@ -2993,8 +2989,7 @@ document.head.insertAdjacentElement('beforeend', css);
             <span v-if="p.view.icon"
                   :title="p.view.title"
                   :class="'bbn-router-breadcrumb-element-icon bbn-h-100 bbn-vmiddle bbn-right-xsspace' + (p.view.notext ? ' bbn-lg' : ' bbn-m')">
-              <i :class="p.view.icon"
-                style="zoom: 1.1"/>
+              <i :class="p.view.icon"/>
             </span>
             <span v-if="!p.view.notext"
                   class="bbn-router-breadcrumb-element-text"

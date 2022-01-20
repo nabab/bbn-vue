@@ -316,7 +316,7 @@
             },
             {
                 "text": "block-list",
-                "lastmod": 1641776985,
+                "lastmod": 1642045347,
                 "url": "bbn-vue\/component\/block-list\/overview",
                 "props": [],
                 "methods": [],
@@ -4449,7 +4449,7 @@
             },
             {
                 "text": "form",
-                "lastmod": 1639285137,
+                "lastmod": 1642445350,
                 "url": "bbn-vue\/component\/form\/overview",
                 "props": [
                     {
@@ -5330,7 +5330,7 @@
             },
             {
                 "text": "list",
-                "lastmod": 1641752854,
+                "lastmod": 1642044595,
                 "url": "bbn-vue\/component\/list\/overview",
                 "props": [
                     {
@@ -6504,7 +6504,7 @@
             },
             {
                 "text": "pager",
-                "lastmod": 1641869165,
+                "lastmod": 1642044826,
                 "url": "bbn-vue\/component\/pager\/overview",
                 "props": [
                     {
@@ -7101,7 +7101,7 @@
             },
             {
                 "text": "radiobuttons",
-                "lastmod": 1639285138,
+                "lastmod": 1642395903,
                 "url": "bbn-vue\/component\/radiobuttons\/overview",
                 "props": [
                     {
@@ -7166,7 +7166,7 @@
             },
             {
                 "text": "range",
-                "lastmod": 1641831940,
+                "lastmod": 1642395903,
                 "url": "bbn-vue\/component\/range\/overview",
                 "props": [
                     {
@@ -7242,7 +7242,7 @@
             },
             {
                 "text": "router",
-                "lastmod": 1641831940,
+                "lastmod": 1642533797,
                 "url": "bbn-vue\/component\/router\/overview",
                 "props": [
                     {
@@ -8196,7 +8196,7 @@
             },
             {
                 "text": "search",
-                "lastmod": 1641646754,
+                "lastmod": 1642563801,
                 "url": "bbn-vue\/component\/search\/overview",
                 "props": [
                     {
@@ -9742,7 +9742,7 @@
             },
             {
                 "text": "timer",
-                "lastmod": 1639285138,
+                "lastmod": 1642395903,
                 "url": "bbn-vue\/component\/timer\/overview",
                 "props": [
                     {
@@ -10683,7 +10683,7 @@
             },
             {
                 "text": "values",
-                "lastmod": 1639285138,
+                "lastmod": 1642395903,
                 "url": "bbn-vue\/component\/values\/overview",
                 "props": [
                     {
@@ -10710,11 +10710,6 @@
                         "text": "validator",
                         "desc": "",
                         "url": "bbn-vue\/component\/values\/doc\/props#validator"
-                    },
-                    {
-                        "text": "url",
-                        "desc": "",
-                        "url": "bbn-vue\/component\/values\/doc\/props#url"
                     }
                 ],
                 "methods": [],
@@ -10743,7 +10738,7 @@
             },
             {
                 "text": "video",
-                "lastmod": 1639285138,
+                "lastmod": 1642395903,
                 "url": "bbn-vue\/component\/video\/overview",
                 "props": [
                     {
