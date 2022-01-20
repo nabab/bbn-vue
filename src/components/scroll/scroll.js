@@ -871,6 +871,11 @@
               } else {
                 this.currentY = 0;
               }
+              console.log("console.log(this.hasX())")
+              console.log(this.hasX())
+              console.log(this.hasY())
+              console.log(this.currentX)
+              console.log(this.currentY)
               // if (x !== this.currentX) {
               //   this.currentX = x;
               // }
