@@ -863,9 +863,13 @@
               }
               if ( this.currentX > this.contentWidth && this.hasX()) {
                 this.currentX = x;
+              } else {
+                this.currentX = 0;
               }
               if ( this.currentY > this.contentHeight && this.hasY()) {
                 this.currentY = y;
+              } else {
+                this.currentY = 0;
               }
               // if (x !== this.currentX) {
               //   this.currentX = x;
