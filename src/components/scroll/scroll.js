@@ -861,21 +861,12 @@
                   y = this.containerHeight * tot;
                 }
               }
-              if ( (this.currentX > this.contentWidth) && this.hasX()) {
+              if ( this.currentX > this.contentWidth ) {
                 this.currentX = x;
-              } else {
-                this.currentX = 0;
               }
-              if ( (this.currentY > this.contentHeight) && this.hasY()) {
+              if ( this.currentY > this.contentHeight ) {
                 this.currentY = y;
-              } else {
-                this.currentY = 0;
               }
-              console.log("console.log(this.hasX())")
-              console.log(this.hasX())
-              console.log(this.hasY())
-              console.log(this.currentX)
-              console.log(this.currentY)
               // if (x !== this.currentX) {
               //   this.currentX = x;
               // }
