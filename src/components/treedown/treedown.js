@@ -388,6 +388,13 @@
           this.emitInput(this.filteredData[0][this.sourceValue]);
         }
       });
+      if (this.filterString && (this.filterString.length >= this.minLength)) {
+        this.currentFilters.conditions.splice(0, this.currentFilters.conditions.length ? 1 : 0, {
+          field: this.sourceText,
+          operator: 'startswith',
+          value: this.filterString
+        });
+      }
     },
     watch: {
       /**
