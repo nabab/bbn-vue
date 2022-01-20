@@ -867,12 +867,12 @@
               if ( this.currentY > this.contentHeight ) {
                 this.currentY = y;
               }
-              if (x !== this.currentX) {
-                this.currentX = x;
-              }
-              if (y !== this.currentY) {
-                this.currentY = y;
-              }
+              // if (x !== this.currentX) {
+              //   this.currentX = x;
+              // }
+              // if (y !== this.currentY) {
+              //   this.currentY = y;
+              // }
 
               if (this.scrollReady && bbn.fn.isNumber(this.currentX) && (this.currentX !== ct.scrollLeft)) {
                 ct.scrollLeft = this.currentX;
