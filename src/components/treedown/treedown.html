@@ -14,7 +14,7 @@
               readonly="readonly"
               :placeholder="filterString ? '' : placeholder"
               :tabindex="autocomplete || disabled || readonly ? -1 : 0"
-              :value="filterString ? '' : currentText">
+              :value="filterString">
       <input v-if="autocomplete && !disabled && !readonly"
               tabindex="0"
               class="bbn-textbox bbn-no-border"
