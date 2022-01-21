@@ -2189,6 +2189,9 @@ Vue.component('bbn-tree', {
             this.parent.currentData.splice(this.idx, 1);
           }
         },
+        getCls(source, tree) {
+          return source.cls !== undefined ? source.cls : (bbn.fn.isFunction(tree.cls) ? tree.cls() : tree.cls || '');
+        }
       },
       /**
        * Defines the props tree and parent of the node
