@@ -10,7 +10,6 @@
               'bbn-spadded': true,
               'bbn-state-disabled': !!disabled
             }"
-            style="max-width: 100%; min-width: 100%; min-height: 100%"
             :value="value"
             :name="name"
             ref="element"

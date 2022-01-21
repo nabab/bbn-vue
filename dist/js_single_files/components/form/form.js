@@ -551,7 +551,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
             if (d && (d.success === false)) {
 
             }
-            else if (d && d.success) {
+            else if (d) {
               this.$emit('success', d, e);
               if (!e.defaultPrevented && this.window) {
                 this.$nextTick(() => {

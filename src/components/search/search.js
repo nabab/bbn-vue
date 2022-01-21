@@ -194,17 +194,13 @@
          * @method searchBlur
          */
         searchBlur(e) {
-          bbn.fn.log("Search blur");
           if (this.isFocused && e.target && this.$el && !this.$el.contains(e.target)) {
-            bbn.fn.log("Search blur 2");
             clearTimeout(this.timeout);
             this.timeout = setTimeout(() => {
-              bbn.fn.log("Search blur 3");
               this.isFocused = false;
               this.isOpened = false;
               this.specialWidth = this.minWidth;
               this.currentPlaceholder = '?';
-              this.$emit('blur', this);
             }, 250);
           }
         },

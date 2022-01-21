@@ -4,7 +4,7 @@
      :style="{width: specialWidth}"
      @focusin="isActive = true"
      @focusout="isActive = false"
->
+     @click.stop>
   <bbn-input :placeholder="currentPlaceholder"
               :style="{width: specialWidth, transition: 'width 0.5s'}"
               type="search"

@@ -558,7 +558,7 @@ document.head.insertAdjacentElement('beforeend', css);
             if (d && (d.success === false)) {
 
             }
-            else if (d && d.success) {
+            else if (d) {
               this.$emit('success', d, e);
               if (!e.defaultPrevented && this.window) {
                 this.$nextTick(() => {
