@@ -1651,6 +1651,8 @@ Vue.component('bbn-tree', {
          * @fires tree.getMenu
          */
         getMenu(){
+          console.log("this.tree.getMenu(this)")
+          console.log(this.tree.getMenu(this))
           return this.tree.getMenu(this);
         },
         beforeEnter(){
