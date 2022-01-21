@@ -675,9 +675,6 @@ Vue.component('bbn-tree', {
           })
         }
       }
-      console.log("-----------------------------");
-      console.log(menu)
-      console.log(this.menu)
       return menu;
     },
     /**
@@ -1230,7 +1227,7 @@ Vue.component('bbn-tree', {
     // Keep to prevent the one from list to exexute
     listOnBeforeMount(){
 
-    },
+    }
   },
   /**
    * Emits the event beforeLoad and load. And opens the nodes defined in the prop path.
@@ -1651,8 +1648,6 @@ Vue.component('bbn-tree', {
          * @fires tree.getMenu
          */
         getMenu(){
-          console.log("this.tree.getMenu(this)")
-          console.log(this.tree.getMenu(this))
           return this.tree.getMenu(this);
         },
         beforeEnter(){
@@ -2194,9 +2189,6 @@ Vue.component('bbn-tree', {
             this.parent.currentData.splice(this.idx, 1);
           }
         },
-        getCls(source, tree) {
-          return source.cls !== undefined ? source.cls : (bbn.fn.isFunction(tree.cls) ? tree.cls() : tree.cls || '');
-        }
       },
       /**
        * Defines the props tree and parent of the node
