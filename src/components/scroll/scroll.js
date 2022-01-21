@@ -184,12 +184,12 @@
          * The position on the x axis basing on the prop x
          * @data {Number} [0] currentX
          */
-        currentX: this.x,
+        currentX: this.x || null,
         /**
          * The position on the y axis basing on the prop y
          * @data {Number} [0] currentY
          */
-        currentY: this.y,
+        currentY: this.y || null,
         /**
          * Defines the position ofthe scroll container
          * @data {String} scrollPos
@@ -294,16 +294,22 @@
        */
       elementStyle(){
         let cfg = {
-          maxWidth: this.maxWidth ? bbn.fn.formatSize(this.maxWidth) : '100%',
-          maxHeight: this.maxHeight ? bbn.fn.formatSize(this.maxHeight) : '100%',
-          minWidth: this.minWidth ? bbn.fn.formatSize(this.minWidth) : '100%',
-          minHeight: this.minHeight ? bbn.fn.formatSize(this.minHeight) : '100%',
+          maxWidth: this.maxWidth ? bbn.fn.formatSize(this.maxWidth) : '',
+          maxHeight: this.maxHeight ? bbn.fn.formatSize(this.maxHeight) : '',
+          minWidth: this.minWidth ? bbn.fn.formatSize(this.minWidth) : '',
+          minHeight: this.minHeight ? bbn.fn.formatSize(this.minHeight) : '',
         };
 
         if (this.isMeasuring) {
           cfg.width = '100%';
           cfg.height = '100%';
           cfg.opacity = 0;
+        }
+        if (this.currentWidth) {
+          cfg.width = bbn.fn.formatSize(this.currentWidth);
+        }
+        if (this.currentHeight) {
+          cfg.height = bbn.fn.formatSize(this.currentHeight);
         }
         /*
         if ( this.currentWidth ){
@@ -855,12 +861,18 @@
                   y = this.containerHeight * tot;
                 }
               }
-              if (x !== this.currentX) {
+              if ( this.currentX > this.contentWidth ) {
                 this.currentX = x;
               }
-              if (y !== this.currentY) {
+              if ( this.currentY > this.contentHeight ) {
                 this.currentY = y;
               }
+              // if (x !== this.currentX) {
+              //   this.currentX = x;
+              // }
+              // if (y !== this.currentY) {
+              //   this.currentY = y;
+              // }
 
               if (this.scrollReady && bbn.fn.isNumber(this.currentX) && (this.currentX !== ct.scrollLeft)) {
                 ct.scrollLeft = this.currentX;
