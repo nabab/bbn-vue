@@ -675,6 +675,9 @@ Vue.component('bbn-tree', {
           })
         }
       }
+      console.log("-----------------------------");
+      console.log(menu)
+      console.log(this.menu)
       return menu;
     },
     /**
@@ -1648,6 +1651,8 @@ Vue.component('bbn-tree', {
          * @fires tree.getMenu
          */
         getMenu(){
+          console.log("this.tree.getMenu(this)")
+          console.log(this.tree.getMenu(this))
           return this.tree.getMenu(this);
         },
         beforeEnter(){
