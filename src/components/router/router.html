@@ -220,23 +220,32 @@
     <!-- END OF TABS -->
     <!-- START OF CONTENT FOR VISUALNAV -->
     <div v-if="ready && visualNav"
-         class="bbn-overlay bbn-left-sspace bbn-vspadded">
+         class="bbn-overlay bbn-vspadded">
       <div class="bbn-100 bbn-router-visual"
            :style="visualStyle">
         <slot></slot>
-        <template v-for="(view, i) in views">
-          <bbn-container v-if="!view.real && !component"
-                        :key="view.url"
-                        v-show="(i < maxVisible) || (selected === i)"
+        <template v-for="a in visualList">
+          <bbn-container v-if="!a.view.real && !component"
+                        :key="a.view.url"
+                        v-show="a.visible"
                         :visual="true"
-                        v-bind="view"/>
+                        v-bind="a.view"/>
           <bbn-container v-else-if="component && componentSource && componentUrl"
                         :source="componentSource"
-                        v-show="(i < maxVisible) || (selected === i)"
+                        v-show="a.visible"
                         :visual="true"
                         :component="component"
                         :url="componentSource[componentUrl]"/>
         </template>
+        <div v-if="(selected !== null) && (views.length > maxVisible)"
+             class="bbn-bg-black bbn-white bbn-p"
+             @click="visualShowAll = !visualShowAll">
+          <div class="bbn-100 bbn-middle">
+            <div class="bbn-block bbn-xxxl">
+              <i :class="'nf nf-fa-' + (visualShowAll ? 'minus' : 'plus')"/>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <!-- END OF CONTENT FOR VISUALNAV -->

@@ -359,7 +359,8 @@
          * @data breadcrumbWatcher
          */
         breadcrumbWatcher: false,
-        breadcrumbsList: []
+        breadcrumbsList: [],
+        visualShowAll: false
       };
     },
     computed: {
@@ -468,10 +469,6 @@
           return 0;
         }
 
-        if (this.views.length <= this.maxVisible) {
-          return this.views.length - 1;
-        }
-
         return this.maxVisible - 1;
       },
 
@@ -487,13 +484,38 @@
         let st = 'display: grid; grid-column-gap: 0.5em; grid-row-gap: 0.5em; ';
 
         if (this.visualOrientation === 'up') {
-          st += 'grid-template-rows: 1fr ' + this.numVisuals + 'fr; grid-template-columns: repeat(' + this.numVisuals + ', 1fr)';
+          st += 'grid-template-rows: ' + (this.router.visualShowAll ? 'repeat(' + this.numVisuals + ', 1fr)' : '1fr ' + this.numVisuals + 'fr') + '; grid-template-columns: repeat(' + this.numVisuals + ', 1fr)';
         }
         else {
-          st += 'grid-template-columns: 1fr ' + this.numVisuals + 'fr; grid-template-rows: repeat(' + this.numVisuals + ', 1fr)';
+          st += 'grid-template-columns: ' + (this.router.visualShowAll ? 'repeat(' + this.numVisuals + ', 1fr)' : '1fr ' + this.numVisuals + 'fr') + '; grid-template-rows: repeat(' + this.numVisuals + ', 1fr)';
         }
 
         return st;
+      },
+      visualList() {
+        if (!this.visualNav) {
+          return [];
+        }
+
+        return bbn.fn.map(
+          bbn.fn.multiorder(
+            this.views,
+            {static: 'desc', visible: 'desc', pinned: 'desc', idx: 'asc'}
+          ),
+          (a, i) => {
+            let moreViewsThanSlots = this.maxVisible < this.views.length;
+            let numAvailableSlots = this.maxVisible - (moreViewsThanSlots ? 1 : 0);
+            let visible = false;
+            if (this.visualShowAll || (i < numAvailableSlots) || (this.selected === a.index)) {
+              visible = true;
+
+            }
+            return {
+              view: a,
+              visible: visible
+            }
+          }
+        );
       }
     },
 
@@ -535,6 +557,7 @@
         this.urls[cp.url] = cp;
         if (this.visualNav) {
           cp.$on('view', () => {
+            this.visualShowAll = false;
             if (this.activeContainer && (this.activeContainer.url !== cp.url)) {
               this.activeContainer.hide();
             }

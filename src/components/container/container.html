@@ -88,17 +88,21 @@
       <div class="bbn-bottom-left bbn-w-100 bbn-bg-black bbn-white"
            v-show="isOver"
            :style="{
-               height: '250px',
-               fontSize: visible ? null : '10em'
+               fontSize: visible ? null : '12em'
              }">
-        <div class="bbn-bottom-left bbn-p bbn-spadded"
+        <div class="bbn-w-50 bbn-p bbn-spadded"
              @click.stop="">
           <i class="nf nf-fa-bars"/>
         </div>
-        <div class="bbn-bottom-right bbn-p bbn-spadded"
+        <div class="bbn-w-50 bbn-right bbn-p bbn-spadded"
             @click.stop="close"
-            v-if="!pinned">
+            v-if="!pinned && !static">
             <i class="nf nf-fa-times"/>
+        </div>
+        <div class="bbn-w-50 bbn-right bbn-p bbn-spadded"
+            @click.stop="unpin"
+            v-else-if="pinned">
+            <i class="nf nf-oct-pin"/>
         </div>
       </div>
     </transition>

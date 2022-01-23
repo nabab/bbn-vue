@@ -25,37 +25,31 @@
                'bbn-vmiddle': isMobile,
                'bbn-middle': !isMobile,
                'bbn-right-sspace': isMobile && searchIsActive
-              }"
-        >
+              }">
           <div tabindex="0"
                @keydown.enter="toggleMenu"
                @keydown.space="toggleMenu"
                @mousedown.prevent.stop="toggleMenu"
-               class="bbn-c bbn-p bbn-padded"
-          >
+               class="bbn-c bbn-p bbn-padded">
             <i ref="icon" class="nf nf-fa-bars bbn-xxxl"> </i>
           </div>
         </div>
         <!-- LOGO -->
         <div v-if="!isMobile"
-             class="bbn-block bbn-logo-container"
-        >
+             class="bbn-block bbn-logo-container">
           <div class="bbn-100 bbn-vmiddle" style="justify-content: center;">
             <img v-if="!!logo"
                  :src="logo"
                  style="background-color: white;"
-                 class="bbn-right-padded bbn-appui-logo"
-            >
+                 class="bbn-right-padded bbn-appui-logo">
           </div>
         </div>
         <!-- LOGO (MOBILE) -->
         <div class="bbn-flex-fill bbn-hspadded bbn-middle"
-              v-else-if="!searchIsActive && !!logo && isMobile"
-        >
+              v-else-if="!searchIsActive && !!logo && isMobile">
           <img :src="logo"
                 style="background-color: white;"
-                class="bbn-appui-logo"
-          >
+                class="bbn-appui-logo">
         </div>
         <!-- FISHEYE (MOBILE) -->
         <bbn-fisheye v-if="plugins['appui-menu'] && isMobile && !searchIsActive"
@@ -71,8 +65,7 @@
         <!-- SEARCHBAR -->
         <!-- CENTRAL PART -->
         <div v-if="!isMobile"
-             class="bbn-splitter-top-center bbn-flex-fill"
-        >
+             class="bbn-splitter-top-center bbn-flex-fill">
           <!-- FISHEYE -->
           <bbn-fisheye v-if="plugins['appui-menu']"
                        style="z-index: 6"
@@ -91,12 +84,15 @@
         </div>
         <!-- SEARCHBAR (MOBILE) -->
         <div class="bbn-appui-search bbn-vmiddle bbn-hpadded">
-          <div class="bbn-block bbn-right-lspace"><i ref="icon" class="nf nf-fa-search bbn-xxxl"> </i></div>
+          <div class="bbn-block bbn-p">
+            <i ref="icon" class="nf nf-oct-search bbn-xxxl"> </i>
+          </div>
+          <div class="bbn-block bbn-right-lspace"> </div>
           <bbn-context tag="div"
                        class="bbn-block"
                        :source="userMenu">
             <bbn-initial font-size="2em" :user-name="app.user.name"/>
-            <div style="position: absolute; bottom: -5px; right: -5px; border: #CCC 1px solid; width: 1.1em; height: 1.1e"
+            <div style="position: absolute; bottom: -0.4em; right: -0.4em; border: #CCC 1px solid; width: 1.1em; height: 1.1e"
                  class="bbn-bg-white bbn-black bbn-middle">
               <i class="nf nf-fa-bars bbn-xs"/>
             </div>
@@ -157,8 +153,7 @@
                   :component="component"
                   :component-source="componentSource"
                   :component-url="componentUrl"
-                  :url-navigation="urlNavigation"
-      >
+                  :url-navigation="urlNavigation">
         <slot/>
       </bbn-router>
     </div>
@@ -171,8 +166,7 @@
     <div v-if="status"
         ref="foot"
         class="bbn-header bbn-bordered-top appui-statusbar"
-        style="overflow: visible"
-    >
+        style="overflow: visible">
       <div class="bbn-flex-width bbn-h-100">
         <!-- LOADBAR -->
         <div class="bbn-flex-fill">
@@ -183,14 +177,12 @@
         <div class="bbn-vmiddle">
           <!-- TASK TRACKER -->
           <div v-if="plugins['appui-task']"
-              class="bbn-right-space"
-          >
+              class="bbn-right-space">
             <appui-task-tracker/>
           </div>
           <!-- CHAT -->
           <div v-if="plugins['appui-chat']"
-               class="bbn-right-space"
-          >
+               class="bbn-right-space">
             <bbn-chat ref="chat"
                       :url="plugins['appui-chat']"
                       :user-id="app.user.id"
@@ -203,21 +195,18 @@
           </div>
           <!-- NOTIFICATIONS -->
           <div v-if="plugins['appui-notification'] && pollerObject['appui-notification']"
-               class="bbn-right-space"
-          >
+               class="bbn-right-space">
             <appui-notification-tray ref="notificationsTray"/>
           </div>
           <!-- CLIPBOARD BUTTON -->
           <div v-if="plugins['appui-clipboard'] && clipboard"
               @click.stop.prevent="getRef('clipboard').toggle()"
               ref="clipboardButton"
-              class="bbn-appui-clipboard-button bbn-right-space bbn-p bbn-rel"
-          >
+              class="bbn-appui-clipboard-button bbn-right-space bbn-p bbn-rel">
             <i class="nf nf-fa-clipboard bbn-m" tabindex="-1"/>
             <input class="bbn-invisible bbn-overlay bbn-p"
                   @keydown.space.enter.prevent="getRef('clipboard').toggle()"
-                  @drop.prevent.stop="getRef('clipboard').copy($event); getRef('clipboard').show()"
-            >
+                  @drop.prevent.stop="getRef('clipboard').copy($event); getRef('clipboard').show()">
           </div>
           <!-- POWER/ENV ICON -->
           <bbn-context class="bbn-iblock bbn-right-space bbn-p bbn-rel"
@@ -266,7 +255,8 @@
              ref="popup"
              :z-index="14"/>
   <!-- NOTIFICATIONS -->
-  <bbn-notification ref="notification" :z-index="15"/>
+  <bbn-notification ref="notification"
+                    :z-index="15"/>
   <!-- APP COMPONENT -->
   <div class="bbn-appui-big-message"
        v-if="bigMessage"
@@ -278,5 +268,6 @@
     <i class="bbn-top-right bbn-p nf nf-fa-times"
        @click="closeBigMessage"/>
   </div>
-  <component ref="app" :is="appComponent"/>
+  <component ref="app"
+             :is="appComponent"/>
 </div>

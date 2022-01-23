@@ -144,7 +144,7 @@
     computed: {
       visualStyle() {
         if (this.visual) {
-          if (!this.visible) {
+          if (!this.visible || this.router.visualShowAll) {
             return 'zoom: 0.1';
           }
 
