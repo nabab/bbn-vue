@@ -9,7 +9,7 @@
         'bbn-overlay': !nav
       }">
     <!-- START OF BREADCRUMB -->
-    <div v-if="nav && isBreadcrumb"
+    <div v-if="nav && isBreadcrumb && !visualNav"
         ref="breadcrumb"
         :class="['bbn-router-breadcrumb', {'bbn-router-breadcrumb-master': master}]">
       <div v-if="master"
@@ -101,7 +101,7 @@
     </div>
     <!-- END OF BREADCRUMB -->
     <!-- START OF TABS -->
-    <div v-else-if="nav && !isBreadcrumb"
+    <div v-else-if="nav && !isBreadcrumb && !visualNav"
          :class="['bbn-router-tabs', {'bbn-router-tabs-scrollable': scrollable}]"
          ref="tabs">
       <div class="bbn-router-tabs-container">
@@ -218,12 +218,34 @@
       </div>
     </div>
     <!-- END OF TABS -->
+    <!-- START OF CONTENT FOR VISUALNAV -->
+    <div v-if="ready && visualNav"
+         class="bbn-overlay bbn-left-sspace bbn-vspadded">
+      <div class="bbn-100 bbn-router-visual"
+           :style="visualStyle">
+        <slot></slot>
+        <template v-for="(view, i) in views">
+          <bbn-container v-if="!view.real && !component"
+                        :key="view.url"
+                        v-show="(i < maxVisible) || (selected === i)"
+                        :visual="true"
+                        v-bind="view"/>
+          <bbn-container v-else-if="component && componentSource && componentUrl"
+                        :source="componentSource"
+                        v-show="(i < maxVisible) || (selected === i)"
+                        :visual="true"
+                        :component="component"
+                        :url="componentSource[componentUrl]"/>
+        </template>
+      </div>
+    </div>
+    <!-- END OF CONTENT FOR VISUALNAV -->
     <!-- START OF CONTENT -->
     <div :class="{
            'bbn-flex-fill': !!nav,
            'bbn-overlay': !nav
          }"
-         v-if="ready">
+         v-else-if="ready">
       <slot></slot>
       <bbn-container v-for="view in views"
                      v-if="!view.real && !component"
@@ -235,5 +257,6 @@
                      :url="componentSource[componentUrl]"/>
     </div>
     <!-- END OF CONTENT -->
+    <bbn-loader v-else/>
   </div>
 </div>

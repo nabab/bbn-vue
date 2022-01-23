@@ -59,6 +59,10 @@
       idx: {
         type: Number
       },
+      visual: {
+        type: Boolean,
+        default: false
+      }
     },
     data(){
       return {
@@ -133,10 +137,26 @@
         currentURL: this.current || this.url,
         currentTitle: this.title,
         hasLoader: false,
+        isOver: false,
         _bbn_container: null
       };
     },
     computed: {
+      visualStyle() {
+        if (this.visual) {
+          if (!this.visible) {
+            return 'zoom: 0.1';
+          }
+
+          if (this.router.visualOrientation === 'up') {
+            return 'grid-column-start: 1; grid-row-start: 2; grid-column-end: ' + (this.router.numVisuals + 1) + '; zoom: 1';
+          }
+
+          return 'grid-row-start: 1; grid-column-start: 2; grid-row-end: ' + (this.router.numVisuals + 1) + '; zoom: 1';
+        }
+
+        return '';
+      },
       anonymousComponent(){
         return this.$refs.component;
       }
@@ -198,6 +218,9 @@
        */
       hide(){
         this.visible = false
+      },
+      close() {
+        this.router.close(this.idx);
       },
       /**
        * Sets the current url.
@@ -469,17 +492,18 @@
         };
         let res;
       }
+      // The router is needed
+      this.router = this.closest('bbn-router');
     },
     /**
      * @event mounted
      * @fires router.register
      */
     mounted(){
-      // The router is needed
-      this.router = this.closest('bbn-router');
       if ( !this.router ){
         throw new Error(bbn._("bbn-container cannot be rendered without a bbn-router"));
       }
+
       if ( !this.router.ready ){
         this.router.$on('ready', () => {
           //this.init();
@@ -555,7 +579,65 @@
           if (nv) {
             this.$nextTick(() => {
               this.onResize();
+
             });
+          }
+          else if (this.visual) {
+            /*
+            setTimeout(() => {
+              let ct = this.getRef('canvasSource');
+              let w = Math.ceil(ct.clientWidth);
+              let h = Math.ceil(ct.clientHeight);
+              ct.style.width = w + 'px';
+              ct.style.height = h + 'px';
+              bbn.fn.log("CANVAS", w, h);
+              html2canvas(this.getRef('canvasSource'), {
+                width: w,
+                height: h
+              }).then(canvas => {
+                let img = bbn.fn.canvasToImage(canvas);
+                let ctx = camnvas.getContext('2D');
+                ctx.drawImage(img, 0, 0, w, h, 0, 0, Math.ceil(w/10), Math.ceil(h/10));
+                ct.style.width = null;
+                ct.style.height = null;
+                this.getPopup({
+                  component: {
+                    render(createElement) {
+                      return createElement(
+                        'div',
+                        {
+                          class: {
+                            'bbn-block': true
+                          },
+                          style: {
+                            width: Math.ceil(w/10) + 'px',
+                            height: Math.ceil(h/10) + 'px'
+                          }
+                        },
+                        [
+                          createElement(
+                            'img',
+                            {
+                              style: {
+                                maxWidth: '100%',
+                                maxHeight: '100%',
+                                width: 'auto',
+                                height: 'auto'
+                              },
+                              attrs: {
+                                src: img.src
+                              }
+                            }
+                          )
+                        ]
+                      )
+                    }
+                  },
+                  title: false
+                })
+              });
+            },2000)
+            */
           }
         });
       },

@@ -1,22 +1,40 @@
-<div :class="[componentClass, 'bbn-overlay']"
+<div :class="[componentClass, visual ? '' : 'bbn-overlay']"
      @subready.stop
-     v-show="visible">
+     :style="visualStyle">
   <transition name="fade"
               v-on:enter="enter"
-              v-on:after-enter="onResize"
-  >
-    <div class="bbn-overlay"
-         v-show="visible">
-      <div v-if="!hidden"
-           :class="{
+              v-on:after-enter="onResize">
+    <div :class="{
+      'bbn-overlay': !visual,
+      'bbn-flex-height': visual,
+      'bbn-w-100': visual
+    }"
+         v-show="visible || visual">
+      <div v-if="visual && (!visible || ready)"
+           :class="'bbn-b bbn-hpadded bbn-vspadded ' + (visible ? ' bbn-m' : '')"
+           :style="{
+             fontSize: visible ? null : '10em',
+             backgroundColor: bcolor || '#666',
+             color: fcolor || '#EEE'
+           }">
+        <span v-if="icon"
+              class="bbn-right-sspace bbn-lg">
+          <i :class="icon"/>
+        </span>
+        <span v-text="currentTitle"
+              style="overflow: hidden"/>
+      </div>
+      <div :class="{
         'bbn-background': true,
-        'bbn-overlay': !fullScreen,
+        'bbn-overlay': !fullScreen && !visual,
+        'bbn-flex-fill': !fullScreen && visual,
         'bbn-container-full-screen': fullScreen,
         'bbn-container-visible': visible
-      }">
+      }"
+           ref="canvasSource">
         <component :is="scrollable ? 'bbn-scroll' : 'div'"
-                  v-if="ready && isLoaded && (visible || cached)"
-                  v-show="visible"
+                  v-if="ready && isLoaded && (visible || cached || visual)"
+                  v-show="visible || visual"
                   ref="scroll"
                   :axis="scrollable ? 'y' : null"
                   class="bbn-overlay">
@@ -48,7 +66,7 @@
         <span  v-if="fullScreen"
               class="bbn-container-full-screen-closer bbn-xl bbn-p">
           <i class="nf nf-fa-times_circle"
-            @click="fullScreen = false"/>
+             @click="fullScreen = false"/>
         </span>
         <bbn-popup ref="popup"
                   :source="popups"
@@ -56,4 +74,33 @@
       </div>
     </div>
   </transition>
+  <div v-if="visual && !visible"
+       class="bbn-overlay"
+       style="z-index: 12; background-color: black; opacity: 0.2;">
+  </div>
+  <div v-if="visual && !visible"
+       class="bbn-overlay"
+       @click="show()"
+       @mouseenter="isOver = true"
+       @mouseleave="isOver = false"
+       style="z-index: 12">
+    <transition name="fade">
+      <div class="bbn-bottom-left bbn-w-100 bbn-bg-black bbn-white"
+           v-show="isOver"
+           :style="{
+               height: '250px',
+               fontSize: visible ? null : '10em'
+             }">
+        <div class="bbn-bottom-left bbn-p bbn-spadded"
+             @click.stop="">
+          <i class="nf nf-fa-bars"/>
+        </div>
+        <div class="bbn-bottom-right bbn-p bbn-spadded"
+            @click.stop="close"
+            v-if="!pinned">
+            <i class="nf nf-fa-times"/>
+        </div>
+      </div>
+    </transition>
+  </div>
 </div>

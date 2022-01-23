@@ -78,11 +78,27 @@
         type: Boolean,
         default: false
       },
+      maxVisible: {
+        type: Number,
+        default: 10
+      },
+      maxTotal: {
+        type: Number,
+        default: 25
+      },
       /**
        * Set it to true if you want to see the navigation bar (tabs or breadcrumb).
        * @prop {Boolean} [false] nav
        */
       nav: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * Set it to true if you want to see the visual navigation bar
+       * @prop {Boolean} [false] visualNav
+       */
+      visualNav: {
         type: Boolean,
         default: false
       },
@@ -195,6 +211,16 @@
        ignoreDirty: {
         type: Boolean,
         default: false
+      },
+      orientation: {
+        type: String,
+        default(){
+          if (bbn.env.width > bbn.env.height) {
+            return 'left';
+          }
+
+          return 'up'
+        }
       }
     },
     data(){
@@ -436,6 +462,38 @@
           res.push(...this.getBreadcrumbs(this.selected))
         }
         return res;
+      },
+      numVisuals() {
+        if (!this.visualNav) {
+          return 0;
+        }
+
+        if (this.views.length <= this.maxVisible) {
+          return this.views.length - 1;
+        }
+
+        return this.maxVisible - 1;
+      },
+
+      visualOrientation() {
+        return this.orientation;
+      },
+
+      visualStyle() {
+        if (!this.visualNav) {
+          return '';
+        }
+
+        let st = 'display: grid; grid-column-gap: 0.5em; grid-row-gap: 0.5em; ';
+
+        if (this.visualOrientation === 'up') {
+          st += 'grid-template-rows: 1fr ' + this.numVisuals + 'fr; grid-template-columns: repeat(' + this.numVisuals + ', 1fr)';
+        }
+        else {
+          st += 'grid-template-columns: 1fr ' + this.numVisuals + 'fr; grid-template-rows: repeat(' + this.numVisuals + ', 1fr)';
+        }
+
+        return st;
       }
     },
 
@@ -475,6 +533,18 @@
         }
         this.numRegistered++;
         this.urls[cp.url] = cp;
+        if (this.visualNav) {
+          cp.$on('view', () => {
+            if (this.activeContainer && (this.activeContainer.url !== cp.url)) {
+              this.activeContainer.hide();
+            }
+            if (cp.idx) {
+              this.move(cp.idx, 0);
+              this.activateIndex(0);
+              return;
+            }
+          })
+        }
         let idx = this.search(cp.url);
         if (idx === false) {
           this.add(cp);
@@ -797,6 +867,10 @@
             }
           });
           if ( this.activeContainer ){
+            if (this.visualNav && this.activeContainer.idx) {
+              bbn.fn.log("ACTIVATE");
+              this.move(this.activeContainer.idx, 0);
+            }
             this.activeContainer.show();
             if (this.scrollable && this.nav && !this.breadcrumb) {
               let scroll = this.getRef('horizontal-scroll');
@@ -1264,7 +1338,11 @@
               this.hasEmptyURL = true;
             }
             if (this.search(obj2.url) === false) {
-              if (this.isValidIndex(idx)) {
+              if (this.visualNav) {
+                this.views.unshift(obj2);
+
+              }
+              else if (this.isValidIndex(idx)) {
                 this.views.splice(idx, 0, obj2);
               }
               else {
@@ -1290,10 +1368,12 @@
             if ( obj.content ){
               obj.loaded = true;
             }
+
             obj.events = {};
             if ( obj.menu === undefined ){
               obj.menu = [];
             }
+
             index = this.search(obj.url);
             //bbn.fn.warning("ADDING CONTAINER " + obj.current + " (" + index + ")");
             if ( index !== false ){
@@ -1335,7 +1415,14 @@
                   this.$set(obj, n, a);
                 }
               });
-              if (isValid) {
+              if (this.visualNav) {
+                obj.idx = 0;
+                bbn.fn.each(this.views, a => {
+                  a.idx++;
+                });
+                this.views.unshift(obj);
+              }
+              else if (isValid) {
                 this.views.splice(obj.idx, 0, obj);
               }
               else {
@@ -1359,6 +1446,7 @@
           return;
         }
 
+        bbn.fn.log("ABOUT TO MOVE");
         bbn.fn.move(this.views, from, to);
         let selectedOk = false;
         if (from === this.selected) {
@@ -1501,6 +1589,12 @@
               hidden: false
             }, idx);
           }
+          else if (this.visualNav && idx) {
+            bbn.fn.log("CALLED FROM LOADING");
+            this.move(idx, 0);
+            idx = 0;
+          }
+
           if ( this.isBreadcrumb ){
             this.selected = idx;
           }
@@ -1590,7 +1684,7 @@
           );
         }
       },
-      realInit(url) {    
+      realInit(url) {
         if (this.urls[url]) {
           this.urls[url].setLoaded(true);
           // Otherwise the changes we just did on the props wont be taken into account at container level
@@ -2393,8 +2487,7 @@
               view: window
             });
         ele.dispatchEvent(e);
-      }
-      
+      },
     },
 
     /**
@@ -2537,7 +2630,8 @@
         }
         this.add(a);
       });
-      
+
+     
       //Breadcrumb
       if (!this.master && this.parent) {
         this.parent.registerBreadcrumb(this);

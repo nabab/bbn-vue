@@ -3,19 +3,17 @@
   transition: opacity 0.5s;
   overflow: hidden;
   max-width: 100%;
-  .bbn-appui-menu-button {
-    min-width: 50px;
-    width: 50px;
-    margin-right: 90px;
-  }
   .bbn-mobile & .bbn-appui-fisheye {
     min-height: 4em;
     width: 2.7em;
   }
+  .bbn-logo-container {
+    height: 100%;
+  }
   .bbn-appui-logo {
     border: 0;
-    max-height: 100%;
-    max-width: 100%;
+    max-height: 80%;
+    max-width: min(20vw, 100%);
     width: auto;
   }
   .bbn-mobile & .bbn-appui-logo {
@@ -24,11 +22,8 @@
     max-height: 4em;
   }
   .bbn-appui-search {
-    left: 50px;
-    right: 140px;
-    top: auto;
   }
-  .bbn-mobile & .bbn-appui-search {
+  .bbn-mobile.bbn-appui-search {
     width: 4.2em;
     justify-content: flex-end;
     left: unset;
@@ -36,7 +31,8 @@
     top: unset;
   }
   .appui-statusbar {
-    height: 1.8em;
+    height: 2.8em;
+    font-size: initial;
   }
   .bbn-appui-clipboard-button{
     transition: all 0.25s;
