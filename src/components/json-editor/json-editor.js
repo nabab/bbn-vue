@@ -248,31 +248,29 @@
            * @data {String} ['en'] language
            */
           language: bbn.env.lang || 'en',
-          languages: {},
-          onChange: (!this.readonly && this.cfg.onChange) ? this.cfg.onChange : null
+          languages: {}
         };
         if (bbn.env.lang) {
           cfg.languages[bbn.env.lang || 'en'] = lang;
         }
-        // if ( !this.readonly ){
-        //   let cp = this;
-        //   cfg.onChange = () => {
-        //     let v = this.widget.getText();
-        //     if (this.isParsed) {
-        //       try{
-        //         v = JSON.parse(v)
-        //       }
-        //       catch(e){
-        //         bbn.fn.log('Impossible to read the JSON');
-        //         v = '';
-        //       }
-        //     }
-        //     if (this.value !== v) {
-        //       bbn.fn.log("REAL CHANGE", v);
-        //       this.emitInput(v);
-        //     }
-        //   };
-        // }
+        if ( !this.readonly ){
+          cfg.onChange = () => {
+            let v = this.widget.getText();
+            if (this.isParsed) {
+              try{
+                v = JSON.parse(v)
+              }
+              catch(e){
+                bbn.fn.log('Impossible to read the JSON');
+                v = '';
+              }
+            }
+            if (this.value !== v) {
+              bbn.fn.log("REAL CHANGE", v);
+              this.emitInput(v);
+            }
+          };
+        }
         return cfg;
       },
       /**
