@@ -191,7 +191,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
            * @data {Number|null} [null] timeout
            */
           timeout: null,
-          /**
+           /**
            * @data {Number|null} [null] mouseTimeout
            */
           mouseTimeout: null
@@ -242,9 +242,12 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
          * @method searchBlur
          */
         searchBlur(e) {
-          if (this.isFocused && ev.target && this.$el && !this.$el.contains(e.target)) {
+          bbn.fn.log("Search blur");
+          if (this.isFocused && e.target && this.$el && !this.$el.contains(e.target)) {
+            bbn.fn.log("Search blur 2");
             clearTimeout(this.timeout);
             this.timeout = setTimeout(() => {
+              bbn.fn.log("Search blur 3");
               this.isFocused = false;
               this.isOpened = false;
               this.specialWidth = this.minWidth;

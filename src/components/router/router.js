@@ -2676,8 +2676,7 @@
             <span v-if="p.view.icon"
                   :title="p.view.title"
                   :class="'bbn-router-breadcrumb-element-icon bbn-h-100 bbn-vmiddle bbn-right-xsspace' + (p.view.notext ? ' bbn-lg' : ' bbn-m')">
-              <i :class="p.view.icon"
-                style="zoom: 1.1"/>
+              <i :class="p.view.icon"/>
             </span>
             <span v-if="!p.view.notext"
                   class="bbn-router-breadcrumb-element-text"
@@ -2707,8 +2706,7 @@
           <span v-if="source.view.icon"
                 :title="source.view.title"
                 :class="'bbn-router-breadcrumb-element-icon bbn-h-100 bbn-vmiddle bbn-right-xsspace' + (source.view.notext ? ' bbn-lg' : ' bbn-m')">
-            <i :class="source.view.icon"
-               style="zoom: 1.1"/>
+            <i :class="source.view.icon"/>
           </span>
           <span v-if="!source.view.notext"
                 class="bbn-router-breadcrumb-element-text"
@@ -2739,8 +2737,7 @@
             <span v-if="p.view.icon"
                   :title="p.view.title"
                   :class="'bbn-router-breadcrumb-element-icon bbn-h-100 bbn-vmiddle bbn-right-xsspace' + (p.view.notext ? ' bbn-lg' : ' bbn-m')">
-              <i :class="p.view.icon"
-                style="zoom: 1.1"/>
+              <i :class="p.view.icon"/>
             </span>
             <span v-if="!p.view.notext"
                   class="bbn-router-breadcrumb-element-text"

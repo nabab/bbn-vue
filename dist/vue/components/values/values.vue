@@ -104,12 +104,6 @@
       validator: {
         type: [String, Function]
       },
-      /**
-       * @prop {String} url
-       */
-      url: {
-        type: String
-      }
     },
     data(){
       let isJSON = this.value && bbn.fn.isString(this.value);

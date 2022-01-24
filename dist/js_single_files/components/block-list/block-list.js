@@ -45,7 +45,7 @@ script.innerHTML = `<div :class="componentClass">
     </div>
   </div>
   <div class="bbn-w-100 bbn-c"
-        v-if="pageable">
+        v-if="pageable && (numPages > 1)">
     <div class="bbn-iblock">
       <bbn-pager :element="_self"
                  :extra-controls="false"

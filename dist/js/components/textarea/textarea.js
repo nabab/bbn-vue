@@ -14,7 +14,6 @@ script.innerHTML = `<div :class="[
               'bbn-spadded': true,
               'bbn-state-disabled': !!disabled
             }"
-            style="max-width: 100%; min-width: 100%; min-height: 100%"
             :value="value"
             :name="name"
             ref="element"
@@ -39,6 +38,12 @@ script.innerHTML = `<div :class="[
 `;
 script.setAttribute('id', 'bbn-tpl-component-textarea');
 script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
+
+let css = document.createElement('link');
+css.setAttribute('rel', 'stylesheet');
+css.setAttribute('href', bbn.vue.libURL + 'dist/js/components/textarea/textarea.css');
+document.head.insertAdjacentElement('beforeend', css);
 
 /**
  * @file bbn-textarea component

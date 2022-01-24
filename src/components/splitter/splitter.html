@@ -1,4 +1,11 @@
-<div :class="[{'bbn-overlay': true}, componentClass]"
+<div :class="[
+       {
+         'bbn-overlay': true,
+         'bbn-splitter-horizontal': currentOrientation === 'horizontal',
+         'bbn-splitter-vertical': currentOrientation === 'vertical'
+       },
+       componentClass
+     ]"
      :style="{
        gridTemplateColumns: columnsCfg,
        gridTemplateRows: rowsCfg,

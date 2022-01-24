@@ -3917,7 +3917,11 @@
          * @return {number}
          */
         numPages() {
-          return Math.ceil(this.total / this.currentLimit);
+          if (this.isAjax) {
+            return Math.ceil(this.total / this.currentLimit);
+          }
+
+          return Math.ceil(this.filteredTotal / this.currentLimit);
         },
         /**
          * Return the current page of the list.

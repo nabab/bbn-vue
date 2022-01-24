@@ -53,7 +53,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
  * @copyright BBN Solutions
  * @author BBN Solutions
  */
-(function(bbn, Vue){
+ (function(bbn, Vue){
   "use strict";
 
   Vue.component("bbn-range", {
@@ -63,8 +63,8 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
      * @mixin bbn.vue.eventsComponent
      * @mixin bbn.vue.inputComponent
      */
-    mixins: 
-    [ 
+    mixins:
+    [
       bbn.vue.basicComponent,
       bbn.vue.eventsComponent,
       bbn.vue.inputComponent
@@ -75,16 +75,14 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @prop {Number} [1] min
        */
       min: {
-        type: Number,
-        default: 1
+        type: Number
       },
       /**
        * The max value
        * @prop {Number} [100] max
        */
       max: {
-        type: Number,
-        default: 100
+        type: Number
       },
       /**
        * The step value
@@ -95,7 +93,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       },
       /**
        * The unit used for the value
-       * @prop {String} [''] unit
+       * @prop {String} [''] unit
        */
       unit: {
         type: String,
@@ -218,16 +216,22 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         return this.autosize ? (this.value ? this.value.toString().length : 1) : 0;
       },
       currentMin(){
+        if (this.min !== undefined) {
+          return this.min;
+        }
         if (this.currentUnit) {
           return bbn.fn.getField(this.units, 'min', 'value', this.currentUnit);
         }
-        return this.min;
+        return 1;
       },
       currentMax(){
+        if (this.max !== undefined) {
+          return this.max;
+        }
         if (this.currentUnit) {
           return bbn.fn.getField(this.units, 'max', 'value', this.currentUnit);
         }
-        return this.max;
+        return 100;
       },
       currentStep(){
         if (this.step) {

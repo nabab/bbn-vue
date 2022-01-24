@@ -62,7 +62,7 @@ script.innerHTML = `<div :class="componentClass"
                   @mouseover.stop="mouseOver"/>
             
             <!-- The node starts here -->
-            <span :class="['bbn-tree-node-block', source.cls || '', {'bbn-tree-node-block-no-component': !!component}]"
+            <span :class="['bbn-tree-node-block', getCls(source, tree) || '', {'bbn-tree-node-block-no-component': !!component}]"
                   @mouseover.stop="mouseOver">
               <!-- The expander -->
               <span :class="['bbn-tree-node-block-expander', {'bbn-p': numChildren}]"
@@ -1437,7 +1437,7 @@ Vue.component('bbn-tree', {
     // Keep to prevent the one from list to exexute
     listOnBeforeMount(){
 
-    }
+    },
   },
   /**
    * Emits the event beforeLoad and load. And opens the nodes defined in the prop path.
@@ -2399,6 +2399,9 @@ Vue.component('bbn-tree', {
             this.parent.currentData.splice(this.idx, 1);
           }
         },
+        getCls(source, tree) {
+          return source.cls !== undefined ? source.cls : (bbn.fn.isFunction(tree.cls) ? tree.cls() : tree.cls || '');
+        }
       },
       /**
        * Defines the props tree and parent of the node

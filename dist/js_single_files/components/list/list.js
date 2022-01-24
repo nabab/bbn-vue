@@ -648,7 +648,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         }, 1000);
         let item = this.filteredData[idx] || null;
         let ev = new Event('select', {cancelable: true});
-        if ( item && item.data && !item.data.disabled ){
+        if ( item && item.data && !item.data.disabled ) {
           this.currentIndex = idx;
           if ( item.data[this.children] && item.data[this.children].length ){
             this.isOpened = !this.isOpened;
