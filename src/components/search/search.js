@@ -196,14 +196,12 @@
           if ( item && (item[this.sourceValue] !== undefined) ){
             let ev = new Event('select', {cancelable: true});
             this.$emit('select', ev, item, idx, dataIndex);
+            /*
             if ( !ev.defaultPrevented ){
               this.currentText = item[this.sourceText];
               this.filterString = item[this.sourceText];
-              this.$nextTick(() => {
-                this.getRef('input').focus();
-              });
             }
-            this.isOpened = false;
+            */
           }
         },
         /**

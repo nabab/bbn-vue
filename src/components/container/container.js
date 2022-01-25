@@ -126,16 +126,10 @@
          */
         isStatic: this.static,
         /**
-         * The index of the container.
-         * @data {Number} currentIndex
-         */
-        currentIndex: this.idx,
-        /**
          * The current url.
          * @data {String} currentURL
          */
         currentURL: this.current || this.url,
-        currentTitle: this.title,
         hasLoader: false,
         isOver: false,
         _bbn_container: null
@@ -263,7 +257,7 @@
        */
       setTitle(title){
         if ( this.router ){
-          this.router.views[this.currentIndex].title = title;
+          this.router.views[this.idx].title = title;
         }
       },
       /**
@@ -276,10 +270,10 @@
       setColor(bcolor, fcolor){
         if ( this.router ){
           if ( bcolor ){
-            this.router.$set(this.router.views[this.currentIndex], "bcolor", bcolor);
+            this.router.$set(this.router.views[this.idx], "bcolor", bcolor);
           }
           if ( fcolor ){
-            this.router.$set(this.router.views[this.currentIndex], "fcolor", fcolor);
+            this.router.$set(this.router.views[this.idx], "fcolor", fcolor);
           }
         }
       },
@@ -318,7 +312,7 @@
        * @fires $parent.reload
        */
       reload(){
-        this.router.reload(this.currentIndex);
+        this.router.reload(this.idx);
       },
       /**
        * Handles the configuration of the container's menu.
@@ -562,9 +556,6 @@
           this.isOver = false;
         }
       },
-      title(v) {
-        this.currentTitle = v;
-      },
       current(newVal){
         if (newVal.indexOf(this.url) === 0){
           this.currentURL = newVal;
@@ -733,8 +724,8 @@
         })
       },
       dirty(v){
-        //bbn.fn.log("DIRTY WATCHER", this.currentIndex, this.router.views);
-        this.router.views[this.currentIndex].dirty = v;
+        //bbn.fn.log("DIRTY WATCHER", this.idx, this.router.views);
+        this.router.views[this.idx].dirty = v;
         this.router.retrieveDirtyContainers();
       }
     },
