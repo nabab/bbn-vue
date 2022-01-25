@@ -515,8 +515,6 @@
         this.resetOverIdx();
       },
       isSelected(idx){
-        // console.log(idx, "isSelectedIdx")
-        // console.log(this.filteredData, "this.filteredData")
         let r = false;
         if ( this.filteredData[idx] ){
           if ( this.selection ){
@@ -542,9 +540,6 @@
        * @emits select
        */
       select(idx){
-        console.log(idx, "idx");
-        console.log(this.tmpDisabled, "this.tmpDisabled");
-        console.log(this.filteredData, "this.filteredData");
         if ( this.tmpDisabled === idx ){
           return;
         }
@@ -571,13 +566,9 @@
                   this.currentData[prev.index].selected = false;
                 }
                 item.selected = true;
-                console.log("item.selected = true;")
               }
               else {
                 item.selected = !item.selected;
-                console.log("item.selected = !item.selected;")
-                console.log(item.selected)
-                console.log(item)
                 item.selected = !this.isSelected(idx);
               }
               if (v !== undefined) {
