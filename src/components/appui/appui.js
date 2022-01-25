@@ -174,7 +174,7 @@
        ignoreDirty: {
         type: Boolean,
         default: false
-      }
+      },
     },
     data(){
       return {
@@ -217,7 +217,8 @@
         currentTitle: this.title,
         searchIsActive: false,
         bigMessage: false,
-        hasBigMessage: false
+        hasBigMessage: false,
+        searchOn: false
       }
     },
     computed: {
@@ -670,6 +671,10 @@
             this.getRef('router').activateIndex(idx);
           }
         }
+      },
+      searchSelect() {
+        bbn.fn.log(arguments);
+        this.searchOn = false;
       }
     },
     beforeCreate(){

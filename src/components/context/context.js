@@ -56,9 +56,17 @@
        * The html tag used to render the property content.
        * @prop {String} ['span'] tag
        */
-      tag: {
+       tag: {
         type: String,
         default: 'span'
+      },
+      /**
+       * If defined it will be show at the top of the list.
+       * @prop {String} [false] floaterTitle
+       */
+       floaterTitle: {
+        type: [Boolean, String],
+        default: false
       },
       /**
        * Set to true to show the floating element containing the menu.

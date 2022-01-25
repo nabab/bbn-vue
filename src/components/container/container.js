@@ -148,11 +148,34 @@
             return 'zoom: 0.1';
           }
 
-          if (this.router.visualOrientation === 'up') {
-            return 'grid-column-start: 1; grid-row-start: 2; grid-column-end: ' + (this.router.numVisuals + 1) + '; zoom: 1';
-          }
+          let num = this.routernumVisuals;
 
-          return 'grid-row-start: 1; grid-column-start: 2; grid-row-end: ' + (this.router.numVisuals + 1) + '; zoom: 1';
+          switch (this.router.visualOrientation) {
+            case 'up':
+              return 'grid-column-start: 1;' +
+                     'grid-column-end: ' + num + ';' +
+                     'grid-row-start: 2;' +
+                     'grid-row-end: ' + num + ';' +
+                     'zoom: 1';
+            case 'down':
+              return 'grid-column-start: 1;' +
+                     'grid-column-end: ' + num + ';' +
+                     'grid-row-start: 1;' +
+                     'grid-row-end: ' + (num - 1) + ';' +
+                     'zoom: 1';
+            case 'left':
+              return 'grid-column-start: 2;' +
+                     'grid-column-end: ' + num + ';' +
+                     'grid-row-start: 1;' +
+                     'grid-row-end: ' + num + ';' +
+                     'zoom: 1';
+            case 'down':
+              return 'grid-column-start: 1;' +
+                     'grid-column-end: ' + (num-1) + ';' +
+                     'grid-row-start: 1;' +
+                     'grid-row-end: ' + num + ';' +
+                     'zoom: 1';
+          }
         }
 
         return '';
@@ -475,6 +498,11 @@
 
           this.ready = true;
         }
+      },
+      showMenu() {
+        if (this.visual) {
+          return this.router.getMenuFn(this.idx);
+        }
       }
     },
     /**
@@ -532,6 +560,11 @@
     },
 
     watch: {
+      idx() {
+        if (this.visual) {
+          this.isOver = false;
+        }
+      },
       title(v) {
         this.currentTitle = v;
       },

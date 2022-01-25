@@ -174,6 +174,8 @@
               }
             };
           }
+
+          bbn.fn.log(cp, this.source);
           return cp;
         },
       },
@@ -182,35 +184,6 @@
          * Focuses the search input.
          * @method searchFocus
          */
-        searchFocus(){
-          clearTimeout(this.timeout);
-          this.$emit('focus', this);
-          this.isFocused = true;
-          this.specialWidth = this.maxWidth;
-          this.currentPlaceholder = this.placeholder;
-        },
-        /**
-         * Blurs the search input.
-         * @method searchBlur
-         */
-        searchBlur(e) {
-          if (this.isFocused && e.target && this.$el && !this.$el.contains(e.target)) {
-            clearTimeout(this.timeout);
-            this.timeout = setTimeout(() => {
-              this.isFocused = false;
-              this.isOpened = false;
-              this.specialWidth = this.minWidth;
-              this.currentPlaceholder = '?';
-            }, 250);
-          }
-        },
-        /**
-         * Closes the search.
-         * @method searchClose
-         */
-        searchClose(){
-          this.isOpened = false;
-        },
         /**
          * Emits the event 'select' 
          * @method select
@@ -252,36 +225,6 @@
             this.keynav(e);
           }
         },
-        /**
-         * On mouse Leave.
-         * @method leave
-         * @fires searchBlur
-         */
-        leave(){
-          if (this.autohide) {
-            if (this.mouseTimeout) {
-              clearTimeout(this.mouseTimeout);
-            }
-            this.mouseTimeout = setTimeout(() => {
-              this.searchBlur();
-            }, this.autohide);
-          }
-        },
-        /**
-         * On mouse enter.
-         * @method enter
-         */
-        enter(){
-          if (this.mouseTimeout) {
-            clearTimeout(this.mouseTimeout);
-          }
-        }
-      },
-      created() {
-        document.addEventListener('click', this.searchBlur);
-      },
-      beforeDestroy() {
-        document.removeEventListener('click', this.searchBlur);
       },
       watch: {
         /**
@@ -292,11 +235,11 @@
           if (!this.ready) {
             this.ready = true;
           }
+
           clearTimeout(this.filterTimeout);
           if (v !== this.currentText) {
             this.emitInput(v);
             this.$emit('change', v);
-            this.isOpened = false;
             if (this.currentData.length) {
               this.currentData.splice(0);
             }
@@ -304,30 +247,23 @@
               this.filterTimeout = setTimeout(() => {
                 this.filterTimeout = false;
                 // We don't relaunch the source if the component has been left
-                if ( this.isActive ){
-                  if (v && (v.length >= this.minLength)) {
-                    this.$once('dataloaded', () => {
-                      this.$nextTick(() => {
-                        if (!this.isOpened){
-                          this.isOpened = true;
-                        }
-                        else{
-                          let list = this.find('bbn-scroll');
-                          if ( list ){
-                            list.onResize();
-                          }
-                        }
-                      });
+                if (v && (v.length >= this.minLength)) {
+                  this.$once('dataloaded', () => {
+                    this.$nextTick(() => {
+                      let list = this.find('bbn-scroll');
+                      if ( list ){
+                        list.onResize();
+                      }
                     });
-                    this.currentFilters.conditions.splice(0, this.currentFilters.conditions.length ? 1 : 0, {
-                      field: this.sourceText,
-                      operator: 'startswith',
-                      value: v
-                    });
-                  }
-                  else {
-                    this.unfilter();
-                  }
+                  });
+                  this.currentFilters.conditions.splice(0, this.currentFilters.conditions.length ? 1 : 0, {
+                    field: this.sourceText,
+                    operator: 'startswith',
+                    value: v
+                  });
+                }
+                else {
+                  this.unfilter();
                 }
               }, this.delay);
             })

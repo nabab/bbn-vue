@@ -84,8 +84,11 @@
         </div>
         <!-- SEARCHBAR (MOBILE) -->
         <div class="bbn-appui-search bbn-vmiddle bbn-hpadded">
-          <div class="bbn-block bbn-p">
-            <i ref="icon" class="nf nf-oct-search bbn-xxxl"> </i>
+          <div class="bbn-block bbn-p"
+               @click="searchOn = true"
+               tabindex="0">
+            <i ref="icon"
+               class="nf nf-oct-search bbn-xxxl"> </i>
           </div>
           <div class="bbn-block bbn-right-lspace"> </div>
           <bbn-context tag="div"
@@ -243,6 +246,32 @@
                   @shortcut="addShortcut"
                   @ready="menuMounted = true"/>
   </bbn-slider>
+  <!-- POPUPS -->
+  <bbn-popup :source="popups"
+             ref="popup"
+             :z-index="13"/>
+  <!-- SEARCH -->
+  <div v-if="searchOn"
+       class="bbn-overlay bbn-secondary"
+       style="z-index: 13">
+    <bbn-search :source="searchBar.source"
+                :placeholder="_('Try anything, find anything')"
+                ref="search"
+                v-model="searchBar.value"
+                :suggest="true"
+                :autofocus="true"
+                :source-value="searchBar.sourceValue"
+                :source-text="searchBar.sourceText"
+                :min-length="searchBar.minLength"
+                @select="searchSelect"
+                :limit="50"
+                :pageable="true"
+                class="bbn-no"/>
+    <div class="bbn-top-right bbn-p bbn-spadded bbn-xxxl"
+         @click.stop="searchOn = false">
+      <i class="nf nf-fa-times"/>
+    </div>
+  </div>
   <!-- CLIPBOARD SLIDER -->
   <bbn-clipboard v-if="plugins['appui-clipboard'] && clipboard"
                  :storage="true"
@@ -250,10 +279,6 @@
                  @copy="onCopy"
                  style="z-index: 13"/>
 
-  <!-- POPUPS -->
-  <bbn-popup :source="popups"
-             ref="popup"
-             :z-index="14"/>
   <!-- NOTIFICATIONS -->
   <bbn-notification ref="notification"
                     :z-index="15"/>

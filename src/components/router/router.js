@@ -14,13 +14,16 @@
      * @mixin bbn.vue.localStorageComponent
      * @mixin bbn.vue.closeComponent
      * @mixin bbn.vue.observerComponent
+     * @mixin bbn.vue.resizerComponent
      */
     mixins:
     [
       bbn.vue.basicComponent,
       bbn.vue.localStorageComponent,
       bbn.vue.closeComponent,
-      bbn.vue.observerComponent
+      bbn.vue.observerComponent,
+      bbn.vue.resizerComponent,
+      bbn.vue.keepCoolComponent
     ],
     props: {
       /**
@@ -215,11 +218,10 @@
       orientation: {
         type: String,
         default(){
-          if (bbn.env.width > bbn.env.height) {
-            return 'left';
-          }
-
-          return 'up'
+          return 'auto'
+        },
+        validator(v) {
+          return ['left', 'up', 'bottom', 'right', 'auto']
         }
       }
     },
@@ -360,7 +362,9 @@
          */
         breadcrumbWatcher: false,
         breadcrumbsList: [],
-        visualShowAll: false
+        visualShowAll: false,
+        visualOrientation: this.orientation,
+        lockedOrientation: false
       };
     },
     computed: {
@@ -454,6 +458,7 @@
           hidden: true
         } : {};
       },
+
       breadcrumbs(){
         let res = [];
         if (this.isBreadcrumb) {
@@ -464,18 +469,8 @@
         }
         return res;
       },
-      numVisuals() {
-        if (!this.visualNav) {
-          return 0;
-        }
 
-        return this.maxVisible - 1;
-      },
-
-      visualOrientation() {
-        return this.orientation;
-      },
-
+      /*
       visualStyle() {
         if (!this.visualNav) {
           return '';
@@ -483,7 +478,7 @@
 
         let st = 'display: grid; grid-column-gap: 0.5em; grid-row-gap: 0.5em; ';
 
-        if (this.visualOrientation === 'up') {
+        if (this.visualOrientation === 'left') {
           st += 'grid-template-rows: ' + (this.router.visualShowAll ? 'repeat(' + this.numVisuals + ', 1fr)' : '1fr ' + this.numVisuals + 'fr') + '; grid-template-columns: repeat(' + this.numVisuals + ', 1fr)';
         }
         else {
@@ -491,22 +486,75 @@
         }
 
         return st;
+      },*/
+
+      visualStyle() {
+        if (!this.visualNav) {
+          return '';
+        }
+
+        let num = this.numVisuals;
+        let st = 'display: grid; grid-column-gap: 0.5em; grid-row-gap: 0.5em; ';
+        let rowTpl = 'grid-template-rows: repeat(' + num + ', 1fr); ';
+        let colTpl = 'grid-template-columns: repeat(' + num + ', 1fr); ';
+        if (this.router.visualShowAll) {
+          st += rowTpl;
+          st += colTpl;
+        }
+        else {
+          switch (this.visualOrientation) {
+            case 'left':
+              st += 'grid-template-columns: 1fr ' + (num-1) + 'fr; ';
+              st += rowTpl;
+              break
+
+            case 'right':
+              st += 'grid-template-columns: ' + (num-1) + 'fr 1fr; ';
+              st += rowTpl;
+              break
+
+            case 'top':
+              st += 'grid-template-rows: 1fr ' + (num-1) + 'fr; ';
+              st += colTpl;
+              break
+
+            case 'bottom':
+              st += 'grid-template-rows: ' + (num-1) + 'fr 1fr; ';
+              st += colTpl;
+              break
+          }
+        }
+
+        return st;
       },
+
+      numVisuals() {
+        if (this.visualNav) {
+          let prop = 'lastKnown' + (['left', 'right'].includes(this.visualOrientation) ? 'Width' : 'Height');
+          if (this[prop]) {
+            return Math.ceil(this[prop]/200);
+          }
+
+          return 1;
+        }
+      },
+
+
       visualList() {
         if (!this.visualNav) {
           return [];
         }
 
+        let moreViewsThanSlots = this.numVisuals < this.views.length;
+        let numAvailableSlots = this.numVisuals - (moreViewsThanSlots ? 1 : 0);
         return bbn.fn.map(
           bbn.fn.multiorder(
             this.views,
-            {static: 'desc', visible: 'desc', pinned: 'desc', idx: 'asc'}
+            {selected: 'desc', static: 'desc', pinned: 'desc', idx: 'asc'}
           ),
           (a, i) => {
-            let moreViewsThanSlots = this.maxVisible < this.views.length;
-            let numAvailableSlots = this.maxVisible - (moreViewsThanSlots ? 1 : 0);
             let visible = false;
-            if (this.visualShowAll || (i < numAvailableSlots) || (this.selected === a.index)) {
+            if (this.visualShowAll || (i <= numAvailableSlots) || (this.selected === a.index)) {
               visible = true;
 
             }
@@ -1981,60 +2029,62 @@
             }
           });
 
-          let directions = [];
-          if (idx) {
-            if (idx > 1) {
+          if (!this.visualNav) {
+            let directions = [];
+            if (idx) {
+              if (idx > 1) {
+                directions.push({
+                  text: bbn._("First"),
+                  key: "move_first",
+                  icon: "nf nf-mdi-close_circle_outline",
+                  action: () => {
+                    this.move(idx, 0);
+                  }
+                });
+              }
               directions.push({
-                text: bbn._("First"),
-                key: "move_first",
+                text: bbn._("Before"),
+                key: "move_before",
                 icon: "nf nf-mdi-close_circle_outline",
                 action: () => {
-                  this.move(idx, 0);
+                  this.move(idx, idx - 1);
                 }
               });
             }
-            directions.push({
-              text: bbn._("Before"),
-              key: "move_before",
-              icon: "nf nf-mdi-close_circle_outline",
-              action: () => {
-                this.move(idx, idx - 1);
-              }
-            });
-          }
-          if (idx < (this.views.length - 1)) {
-            directions.push({
-              text: bbn._("After"),
-              key: "move_after",
-              icon: "nf nf-mdi-close_circle_outline",
-              action: () => {
-                this.move(idx, idx + 1);
-              }
-            });
-            if (idx < (this.views.length - 2)) {
+            if (idx < (this.views.length - 1)) {
               directions.push({
-                text: bbn._("Last"),
-                key: "move_last",
+                text: bbn._("After"),
+                key: "move_after",
                 icon: "nf nf-mdi-close_circle_outline",
                 action: () => {
-                  this.move(idx, this.views.length - 1);
+                  this.move(idx, idx + 1);
                 }
               });
+              if (idx < (this.views.length - 2)) {
+                directions.push({
+                  text: bbn._("Last"),
+                  key: "move_last",
+                  icon: "nf nf-mdi-close_circle_outline",
+                  action: () => {
+                    this.move(idx, this.views.length - 1);
+                  }
+                });
+              }
             }
-          }
 
-          if (directions.length) {
-            if (directions.length === 1) {
-              directions[0].text = bbn._("Switch position");
-              items.push(directions[0]);
-            }
-            else {
-              items.push({
-                text: bbn._("Move"),
-                key: "move",
-                icon: "nf nf-mdi-close_circle_outline",
-                items: directions
-              });
+            if (directions.length) {
+              if (directions.length === 1) {
+                directions[0].text = bbn._("Switch position");
+                items.push(directions[0]);
+              }
+              else {
+                items.push({
+                  text: bbn._("Move"),
+                  key: "move",
+                  icon: "nf nf-mdi-close_circle_outline",
+                  items: directions
+                });
+              }
             }
           }
         }
@@ -2511,6 +2561,15 @@
             });
         ele.dispatchEvent(e);
       },
+      onResize() {
+        if (this.visualNav && (this.orientation === 'auto')) {
+          this.keepCool(() => {
+            this.setResizeMeasures();
+            this.setContainerMeasures();
+            this.visualOrientation = this.lastKnownWidth > this.lastKnownHeight ? 'left' : 'top';
+          }, 'resize', 250);
+        }
+      }
     },
 
     /**
@@ -2760,7 +2819,7 @@
         this.$nextTick(() => {
           this.setConfig();
         })
-      }
+      },
     },
     components: {
       /**

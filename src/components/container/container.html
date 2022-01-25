@@ -1,6 +1,7 @@
 <div :class="[componentClass, visual ? '' : 'bbn-overlay']"
      @subready.stop
-     :style="visualStyle">
+     :style="visual ? visualStyle : ''"
+     v-show="visible || visual">
   <transition name="fade"
               v-on:enter="enter"
               v-on:after-enter="onResize">
@@ -17,6 +18,13 @@
              backgroundColor: bcolor || '#666',
              color: fcolor || '#EEE'
            }">
+        <bbn-context v-if="visible"
+                     class="bbn-right-sspace bbn-lg bbn-p"
+                     :floater-title="_('Container menu')"
+                     tag="span"
+                     :source="showMenu">
+          <i class="nf nf-fa-bars"/>
+        </bbn-context>
         <span v-if="icon"
               class="bbn-right-sspace bbn-lg">
           <i :class="icon"/>

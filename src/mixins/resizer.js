@@ -178,6 +178,11 @@
           //this.setContainerMeasures();
           // Creating the callback function which will be used in the timeout in the listener
           this.onParentResizerEmit = () => {
+            let ct = this.closest('bbn-container');
+            if (ct && !ct.visible) {
+              return;
+            }
+
             // Removing previous timeout
             if (this.resizerTimeout) {
               clearTimeout(this.resizerTimeout);
