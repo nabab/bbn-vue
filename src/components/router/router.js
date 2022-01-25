@@ -490,44 +490,18 @@
         }
 
         let num = this.numVisuals;
-        let style = {
+        return {
           display: 'grid',
           gridColumnGap: '0.5em',
           gridRowGap: '0.5em',
           gridTemplateRows: 'repeat(' + num + ', 1fr)',
           gridTemplateColumns: 'repeat(' + num + ', 1fr)'
         }
-        let st = '; ';
-        let rowTpl = 'grid-template-rows: repeat(' + num + ', 1fr); ';
-        let colTpl = 'grid-template-columns: repeat(' + num + ', 1fr); ';
-        /*
-        if (!this.router.visualShowAll) {
-          switch (this.visualOrientation) {
-            case 'left':
-              st += 'grid-template-columns: 1fr ' + (num-1) + 'fr; ';
-              break
-
-            case 'right':
-              st += 'grid-template-columns: ' + (num-1) + 'fr 1fr; ';
-              break
-
-            case 'top':
-              st += 'grid-template-rows: 1fr ' + (num-1) + 'fr; ';
-              break
-
-            case 'bottom':
-              st += 'grid-template-rows: ' + (num-1) + 'fr 1fr; ';
-              break
-          }
-        }
-        */
-
-        return style;
       },
 
       numVisuals() {
         if (this.visualNav) {
-          let prop = 'lastKnown' + (['left', 'right'].includes(this.visualOrientation) ? 'Width' : 'Height');
+          let prop = 'lastKnown' + (['left', 'right'].includes(this.visualOrientation) ? 'Height' : 'Width');
           if (this[prop]) {
             return Math.ceil(this[prop]/200);
           }
