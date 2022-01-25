@@ -571,9 +571,12 @@
                   this.currentData[prev.index].selected = false;
                 }
                 item.selected = true;
+                console.log("item.selected = true;")
               }
               else {
                 item.selected = !item.selected;
+                console.log("item.selected = !item.selected;")
+                console.log(item.selected)
               }
               if (v !== undefined) {
                 if (item.selected) {
