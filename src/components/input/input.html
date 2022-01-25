@@ -57,7 +57,7 @@
     <bbn-button v-if="buttonRight"
                 :icon="buttonRight"
                 tabindex="-1"
-                @click="$emit('clickRightButton')"
+                @click="currentActionRight"
                 :class="[
                   'bbn-button-right',
                   'bbn-no-vborder',
