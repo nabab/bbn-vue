@@ -515,8 +515,8 @@
         this.resetOverIdx();
       },
       isSelected(idx){
-        console.log(idx, "isSelectedIdx")
-        console.log(this.filteredData, "this.filteredData")
+        // console.log(idx, "isSelectedIdx")
+        // console.log(this.filteredData, "this.filteredData")
         let r = false;
         if ( this.filteredData[idx] ){
           if ( this.selection ){
