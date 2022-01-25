@@ -577,6 +577,8 @@
                 item.selected = !item.selected;
                 console.log("item.selected = !item.selected;")
                 console.log(item.selected)
+                console.log(item)
+                item.selected = !this.isSelected(idx);
               }
               if (v !== undefined) {
                 if (item.selected) {
