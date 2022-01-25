@@ -667,7 +667,6 @@
        */
       getRoute(url, force){
         if (!bbn.fn.isString(url)) {
-          bbn.fn.log("error in getRoute with url", url);
           throw Error(bbn._('The component bbn-container must have a valid URL defined'));
         }
 
@@ -772,7 +771,6 @@
        */
       route(url, force) {
         if (!bbn.fn.isString(url)) {
-          bbn.fn.log("error in route with url", url);
           throw Error(bbn._('The component bbn-container must have a valid URL defined'));
         }
         url = bbn.fn.replaceAll('//', '/', url);
@@ -847,7 +845,6 @@
        */
       realRoute(url, st, force, anchor){
         if (!bbn.fn.isString(url) && !bbn.fn.isNumber(url)){
-          bbn.fn.log("error in realRoute with url", url);
           throw Error(bbn._('The component bbn-container must have a valid URL defined'));
         }
         if (this.urls[st]) {
@@ -917,7 +914,6 @@
        */
       activate(url, container){
         if (!bbn.fn.isString(url) ){
-          bbn.fn.log("error in activate with url", url);
           throw Error(bbn._('The component bbn-container must have a valid URL defined'));
         }
         let todo = false;
@@ -937,7 +933,6 @@
           });
           if ( this.activeContainer ){
             if (this.visualNav && this.activeContainer.idx) {
-              bbn.fn.log("ACTIVATE");
               this.move(this.activeContainer.idx, 0);
             }
             this.activeContainer.show();
@@ -970,7 +965,6 @@
        */
       changeURL(url, title, replace){
         if (!bbn.fn.isString(url) ){
-          bbn.fn.log("error in changeURL with url", url);
           throw Error(bbn._('The component bbn-container must have a valid URL defined'));
         }
         if ( !bbn.env.isInit ){
@@ -1515,7 +1509,6 @@
           return;
         }
 
-        bbn.fn.log("ABOUT TO MOVE");
         bbn.fn.move(this.views, from, to);
         let selectedOk = false;
         if (from === this.selected) {
@@ -1542,7 +1535,6 @@
        */
       search(url){
         if (!bbn.fn.isString(url) ){
-          bbn.fn.log("error in search with url", url);
           throw Error(bbn._('The component bbn-container must have a valid URL defined'));
         }
         let r = bbn.fn.search(this.views, "url", url);
@@ -1565,7 +1557,6 @@
        */
       callRouter(url, st){
         if (!bbn.fn.isString(url) ){
-          bbn.fn.log("error in callRouter with url", url);
           throw Error(bbn._('The component bbn-container must have a valid URL defined'));
         }
         if ( this.parent ){
@@ -1659,7 +1650,6 @@
             }, idx);
           }
           else if (this.visualNav && idx) {
-            bbn.fn.log("CALLED FROM LOADING");
             this.move(idx, 0);
             idx = 0;
           }
@@ -2565,7 +2555,6 @@
             this.setResizeMeasures();
             this.setContainerMeasures();
             this.$nextTick(() => {
-              bbn.fn.log("RESIZEEE");
               this.visualOrientation = this.lastKnownWidth > this.lastKnownHeight ? 'left' : 'top';
             })
           }, 'resize', 250);
@@ -2578,7 +2567,6 @@
 
         let num = this.numVisuals + 1;
         let coord = [1, num, 1, num];
-        bbn.fn.log("NNUM VISUALS", num, this.visualOrientation);
         switch (this.visualOrientation) {
           case 'up':
             coord[2] = 2;

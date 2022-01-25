@@ -151,7 +151,6 @@
           let num = this.router.numVisuals + 1;
           let r = this.router;
           let coord = [1, r.numVisualCols + 1, 1, r.numVisualRows + 1];
-          bbn.fn.log("NNUM VISUALS", num, r.visualOrientation);
           switch (r.visualOrientation) {
             case 'top':
               coord[2] = 2;
