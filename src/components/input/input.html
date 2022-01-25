@@ -14,7 +14,7 @@
   }">
     <bbn-button v-if="buttonLeft"
           :icon="buttonLeft" 
-          @click="$emit('clickLeftButton')"
+          @click="currentActionLeft"
           tabindex="-1"
           :class="[
             'bbn-button-left',
@@ -57,7 +57,7 @@
     <bbn-button v-if="buttonRight"
                 :icon="buttonRight"
                 tabindex="-1"
-                @click="$emit('clickRightButton')"
+                @click="currentActionRight"
                 :class="[
                   'bbn-button-right',
                   'bbn-no-vborder',
