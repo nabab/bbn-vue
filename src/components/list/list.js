@@ -568,7 +568,6 @@
                 item.selected = true;
               }
               else {
-                item.selected = !item.selected;
                 item.selected = !this.isSelected(idx);
               }
               if (v !== undefined) {
