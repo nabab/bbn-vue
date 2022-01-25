@@ -149,20 +149,21 @@
           }
 
           let num = this.router.numVisuals + 1;
-          let coord = [1, num, 1, num];
-          bbn.fn.log("NNUM VISUALS", num, this.router.visualOrientation);
-          switch (this.router.visualOrientation) {
+          let r = this.router;
+          let coord = [1, r.numVisualCols + 1, 1, r.numVisualRows + 1];
+          bbn.fn.log("NNUM VISUALS", num, r.visualOrientation);
+          switch (r.visualOrientation) {
             case 'top':
-              coord[2] = (2).toString();
+              coord[2] = 2;
               break;
             case 'bottom':
-              coord[3] = num - 1;
+              coord[3] = coord[3] - 1;
               break;
             case 'left':
               coord[0] = 2;
               break;
             case 'right':
-              coord[1] = num - 1;
+              coord[1] = coord[1] - 1;
               break;
           }
 

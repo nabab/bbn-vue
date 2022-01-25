@@ -207,11 +207,23 @@
        * Will be passed to router in order to ignore the dirty parameter.
        * @prop {Boolean} ignoreDirty
        */
-       ignoreDirty: {
+      ignoreDirty: {
         type: Boolean,
         default: false
       },
-      orientation: {
+      /**
+       * The size of every grid cell on which is based the visual view
+       * @prop {Number} [180] visualSize
+       */
+       visualSize: {
+        type: Number,
+        default: 180
+      },
+      /**
+       * The position of the visual mini containers
+       * @prop {Number} [180] visualSize
+       */
+       orientation: {
         type: String,
         default(){
           return 'auto'
@@ -489,24 +501,39 @@
           return '';
         }
 
-        let num = this.numVisuals;
         return {
           display: 'grid',
           gridColumnGap: '0.5em',
           gridRowGap: '0.5em',
-          gridTemplateRows: 'repeat(' + num + ', 1fr)',
-          gridTemplateColumns: 'repeat(' + num + ', 1fr)'
+          gridTemplateRows: 'repeat(' + this.numVisualRows + ', 1fr)',
+          gridTemplateColumns: 'repeat(' + this.numVisualCols + ', 1fr)'
         }
+      },
+
+      numVisualRows() {
+        if (this.visualNav) {
+          return Math.ceil(this.lastKnownHeight / this.visualSize);
+        }
+
+        return 1;
+      },
+
+      numVisualCols() {
+        if (this.visualNav) {
+          return Math.ceil(this.lastKnownWidth / this.visualSize);
+        }
+
+        return 1;
       },
 
       numVisuals() {
         if (this.visualNav) {
-          let prop = 'lastKnown' + (['left', 'right'].includes(this.visualOrientation) ? 'Height' : 'Width');
-          if (this[prop]) {
-            return Math.ceil(this[prop]/200);
+          if (['left', 'right'].includes(this.visualOrientation)) {
+            return this.numVisualRows;
           }
-
-          return 1;
+          else {
+            return this.numVisualCols;
+          }
         }
       },
 
@@ -2538,6 +2565,7 @@
             this.setResizeMeasures();
             this.setContainerMeasures();
             this.$nextTick(() => {
+              bbn.fn.log("RESIZEEE");
               this.visualOrientation = this.lastKnownWidth > this.lastKnownHeight ? 'left' : 'top';
             })
           }, 'resize', 250);
