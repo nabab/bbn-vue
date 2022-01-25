@@ -2,7 +2,9 @@
      @touchstart="touchstart"
      @mouseleave="mouseleave"
      @touchmove="touchmove"
-     @touchend="touchend">
+     @touchend="touchend"
+     :style="currentStyle"
+     >
   <div class="bbn-hidden" v-if="$slots.default" ref="slot">
     <slot></slot>
   </div>
