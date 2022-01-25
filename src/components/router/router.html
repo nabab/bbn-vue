@@ -237,7 +237,7 @@
                         :component="component"
                         :url="componentSource[componentUrl]"/>
         </template>
-        <div v-if="(selected !== null) && (views.length > maxVisible)"
+        <div v-if="(selected !== null) && (views.length > numVisuals)"
              class="bbn-bg-black bbn-white bbn-p"
              @click="visualShowAll = !visualShowAll">
           <div class="bbn-100 bbn-middle">

@@ -144,38 +144,35 @@
     computed: {
       visualStyle() {
         if (this.visual) {
-          if (!this.visible || this.router.visualShowAll) {
-            return 'zoom: 0.1';
+          if (!this.visible || this.router.visualShowAll || !this.ready) {
+            return {zoom: 0.1};
           }
 
-          let num = this.routernumVisuals;
-
+          let num = this.router.numVisuals + 1;
+          let coord = [1, num, 1, num];
+          bbn.fn.log("NNUM VISUALS", num, this.router.visualOrientation);
           switch (this.router.visualOrientation) {
-            case 'up':
-              return 'grid-column-start: 1;' +
-                     'grid-column-end: ' + num + ';' +
-                     'grid-row-start: 2;' +
-                     'grid-row-end: ' + num + ';' +
-                     'zoom: 1';
-            case 'down':
-              return 'grid-column-start: 1;' +
-                     'grid-column-end: ' + num + ';' +
-                     'grid-row-start: 1;' +
-                     'grid-row-end: ' + (num - 1) + ';' +
-                     'zoom: 1';
+            case 'top':
+              coord[2] = (2).toString();
+              break;
+            case 'bottom':
+              coord[3] = num - 1;
+              break;
             case 'left':
-              return 'grid-column-start: 2;' +
-                     'grid-column-end: ' + num + ';' +
-                     'grid-row-start: 1;' +
-                     'grid-row-end: ' + num + ';' +
-                     'zoom: 1';
-            case 'down':
-              return 'grid-column-start: 1;' +
-                     'grid-column-end: ' + (num-1) + ';' +
-                     'grid-row-start: 1;' +
-                     'grid-row-end: ' + num + ';' +
-                     'zoom: 1';
+              coord[0] = 2;
+              break;
+            case 'right':
+              coord[1] = num - 1;
+              break;
           }
+
+          return {
+            gridColumnStart: coord[0],
+            gridColumnEnd: coord[1],
+            gridRowStart: coord[2],
+            gridRowEnd: coord[3],
+            zoom: 1
+          };
         }
 
         return '';

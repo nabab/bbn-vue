@@ -81,10 +81,6 @@
         type: Boolean,
         default: false
       },
-      maxVisible: {
-        type: Number,
-        default: 10
-      },
       maxTotal: {
         type: Number,
         default: 25
@@ -494,38 +490,39 @@
         }
 
         let num = this.numVisuals;
-        let st = 'display: grid; grid-column-gap: 0.5em; grid-row-gap: 0.5em; ';
+        let style = {
+          display: 'grid',
+          gridColumnGap: '0.5em',
+          gridRowGap: '0.5em',
+          gridTemplateRows: 'repeat(' + num + ', 1fr)',
+          gridTemplateColumns: 'repeat(' + num + ', 1fr)'
+        }
+        let st = '; ';
         let rowTpl = 'grid-template-rows: repeat(' + num + ', 1fr); ';
         let colTpl = 'grid-template-columns: repeat(' + num + ', 1fr); ';
-        if (this.router.visualShowAll) {
-          st += rowTpl;
-          st += colTpl;
-        }
-        else {
+        /*
+        if (!this.router.visualShowAll) {
           switch (this.visualOrientation) {
             case 'left':
               st += 'grid-template-columns: 1fr ' + (num-1) + 'fr; ';
-              st += rowTpl;
               break
 
             case 'right':
               st += 'grid-template-columns: ' + (num-1) + 'fr 1fr; ';
-              st += rowTpl;
               break
 
             case 'top':
               st += 'grid-template-rows: 1fr ' + (num-1) + 'fr; ';
-              st += colTpl;
               break
 
             case 'bottom':
               st += 'grid-template-rows: ' + (num-1) + 'fr 1fr; ';
-              st += colTpl;
               break
           }
         }
+        */
 
-        return st;
+        return style;
       },
 
       numVisuals() {
@@ -2566,8 +2563,41 @@
           this.keepCool(() => {
             this.setResizeMeasures();
             this.setContainerMeasures();
-            this.visualOrientation = this.lastKnownWidth > this.lastKnownHeight ? 'left' : 'top';
+            this.$nextTick(() => {
+              this.visualOrientation = this.lastKnownWidth > this.lastKnownHeight ? 'left' : 'top';
+            })
           }, 'resize', 250);
+        }
+      },
+      visualStyleContainer(ct) {
+        if (!ct.visible || this.visualShowAll) {
+          return {zoom: 0.1};
+        }
+
+        let num = this.numVisuals + 1;
+        let coord = [1, num, 1, num];
+        bbn.fn.log("NNUM VISUALS", num, this.visualOrientation);
+        switch (this.visualOrientation) {
+          case 'up':
+            coord[2] = 2;
+            break;
+          case 'down':
+            coord[3] = num - 1;
+            break;
+          case 'left':
+            coord[0] = 2;
+            break;
+          case 'right':
+            coord[1] = num - 1;
+            break;
+        }
+
+        return {
+          gridColumnStart: coord[0],
+          gridColumnEnd: coord[1],
+          gridRowStart: coord[2],
+          gridRowEnd: coord[3],
+          zoom: 1
         }
       }
     },
