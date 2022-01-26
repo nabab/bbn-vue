@@ -70,7 +70,7 @@
           },
           // Digit or space. Accepts any digit between 0 and 9, plus space.
           9: {
-            pattern: /^[0-9\s]*$/
+            pattern: '[0-9\\s]'
           },
           // Digit or space. Like 9 rule, but allows also (+) and (-) signs.
           '#': {
@@ -82,11 +82,11 @@
           },
           // Letter or space. Restricts the input to letters a-z and A-Z. This rule is equivalent to [a-zA-Z] in regular expressions.
           '?': {
-            pattern: '[a-zA-Z\s]'
+            pattern: '[a-zA-Z\\s]'
           },
           // Character. Accepts any character. The rule is equivalent to \S in regular expressions.
           '&': {
-            pattern: '[^ \t\r\n\v\f]'
+            pattern: '\S'
           },
           // Character or space. Accepts any character. The rule is equivalent to . in regular expressions.
           'C': {
@@ -98,7 +98,7 @@
           },
           // Alphanumeric or space. Accepts letters, digits and spaces only.
           'a': {
-            pattern: /^[a-zA-Z0-9\s]*$/
+            pattern: '[0-9a-zA-Z\\s]'
           },
           // Decimal placeholder. The decimal separator will be generated from the bbn.env.money property.
           '.': {
