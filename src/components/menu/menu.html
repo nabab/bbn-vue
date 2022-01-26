@@ -23,7 +23,6 @@
             v-html="item.data.text"/>
       <span v-if="item.data[children]"
             class="nf nf-fa-chevron_down"/>
-            {{i}}
     </li>
   </ul>
   <bbn-floater v-if="ready && filteredData[overIdx] && filteredData[overIdx].data[children]"
