@@ -86,11 +86,11 @@
           },
           // Character. Accepts any character. The rule is equivalent to \S in regular expressions.
           '&': {
-            pattern: '?'
+            pattern: '\S'
           },
           // Character or space. Accepts any character. The rule is equivalent to . in regular expressions.
           'C': {
-            pattern: '?'
+            pattern: '.'
           },
           // Alphanumeric. Accepts letters and digits only.
           'A': {
