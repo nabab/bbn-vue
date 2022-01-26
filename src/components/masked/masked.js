@@ -86,11 +86,11 @@
           },
           // Character. Accepts any character. The rule is equivalent to \S in regular expressions.
           '&': {
-            pattern: '^[a-zA-Z0-9 !@#$%^&*)(]{2,20}$'
+            pattern: '[^ ]'
           },
           // Character or space. Accepts any character. The rule is equivalent to . in regular expressions.
           'C': {
-            pattern: '(?s).*'
+            pattern: '[^\\s]'
           },
           // Alphanumeric. Accepts letters and digits only.
           'A': {
