@@ -133,15 +133,11 @@
        * @return {Number}
        */
       renderDuration(d){
-        console.log("renderDuration")
-        console.log(d)
         let tmp = d / 1000;
         if ( tmp < 10){
-          console.log(tmp.toFixed(3)+ ' s', "tmp.toFixed(3)+ ' s'");
           return tmp.toFixed(3)+ ' s';
         }
         else {
-          console.log(parseInt(tmp) + ' s', "parseInt(tmp) + ' s'");
           return parseInt(tmp) + ' s';
         }
       },
