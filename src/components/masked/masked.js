@@ -92,7 +92,7 @@
           // Character or space. Accepts any character. The rule is equivalent to . in regular expressions.
           // in this case, promptChar can't be special character. eg: It can't be "_"
           'C': {
-            pattern: '[0-9a-zA-Z\\s\\S]'
+            pattern: '.'
           },
           // Alphanumeric. Accepts letters and digits only.
           'A': {
