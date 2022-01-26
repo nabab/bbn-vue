@@ -14,7 +14,7 @@
       <div v-if="visual && (!visible || ready)"
            :class="'bbn-b bbn-hpadded bbn-vspadded ' + (visible ? ' bbn-m' : '')"
            :style="{
-             fontSize: visible ? null : '10em',
+             fontSize: visible && !router.visualShowAll ? null : '10em',
              backgroundColor: bcolor || '#666',
              color: fcolor || '#EEE'
            }">
@@ -71,6 +71,7 @@
                     v-html="css"/>
           <bbn-loader v-if="hasLoader"/>
         </component>
+        <bbn-loader v-else-if="visible || loading"/>
         <span  v-if="fullScreen"
               class="bbn-container-full-screen-closer bbn-xl bbn-p">
           <i class="nf nf-fa-times_circle"

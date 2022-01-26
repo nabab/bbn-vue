@@ -124,7 +124,25 @@
         autohide: {
           type: [Boolean, Number],
           default: 1500
-        }
+        },
+        /**
+         * The name of the property to be used as action to execute when selected.
+         * @prop {String} sourceAction
+         * @memberof listComponent
+         */
+        sourceAction: {
+          type: [String, Function],
+          default: 'action'
+        },
+        /**
+         * The name of the property to be used as URL to go to when selected.
+         * @prop {String} sourceUrl
+         * @memberof listComponent
+         */
+        sourceUrl: {
+          type: [String, Function],
+          default: 'url'
+        },
       },
       data() {
         return {
@@ -193,15 +211,37 @@
          * @emit change
          */
         select(item, idx, dataIndex){
-          if ( item && (item[this.sourceValue] !== undefined) ){
+          if (!this.disabled) {
             let ev = new Event('select', {cancelable: true});
             this.$emit('select', ev, item, idx, dataIndex);
-            /*
-            if ( !ev.defaultPrevented ){
-              this.currentText = item[this.sourceText];
-              this.filterString = item[this.sourceText];
+            bbn.fn.log("EMITTING SELECT");
+            if (!ev.defaultPrevented) {
+              bbn.fn.log("NO RPEVENT", item);
+              if (this.sourceAction && item[this.sourceAction]) {
+                if ( typeof(item[this.sourceAction]) === 'string' ){
+                  if ( bbn.fn.isFunction(this[item[this.sourceAction]]) ){
+                    this[item[this.sourceAction]]();
+                  }
+                }
+                else if (bbn.fn.isFunction(item[this.sourceAction]) ){
+                  if (this.actionArguments) {
+                    item[this.sourceAction](...this.actionArguments);
+                  }
+                  else {
+                    item[this.sourceAction](idx, item.data);
+                  }
+                }
+              }
+              else if (this.sourceUrl && item[this.sourceUrl]) {
+                bbn.fn.log("SOURCE URL OK");
+                let url = bbn.fn.isFunction(this.sourceUrl) ?
+                  this.sourceUrl(item, idx, dataIndex)
+                  : item[this.sourceUrl];
+                if (url) {
+                  bbn.fn.link(url);
+                }
+              }
             }
-            */
           }
         },
         /**

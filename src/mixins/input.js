@@ -134,10 +134,10 @@
           type: String
         },
         /**
-         * If true the element will focus on mount
+         * If true the element will focus on insert
          * @prop {Boolean} autofocus
          */
-         autofocus: {
+         focused: {
           type: Boolean,
           default: false
         }

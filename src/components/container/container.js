@@ -138,26 +138,27 @@
     computed: {
       visualStyle() {
         if (this.visual) {
-          if (!this.visible || this.router.visualShowAll || !this.ready) {
+          let r = this.router;
+          if ((r.views.length > 1) && (!this.visible || r.visualShowAll)) {
             return {zoom: 0.1};
           }
 
-          let num = this.router.numVisuals + 1;
-          let r = this.router;
           let coord = [1, r.numVisualCols + 1, 1, r.numVisualRows + 1];
-          switch (r.visualOrientation) {
-            case 'top':
-              coord[2] = 2;
-              break;
-            case 'bottom':
-              coord[3] = coord[3] - 1;
-              break;
-            case 'left':
-              coord[0] = 2;
-              break;
-            case 'right':
-              coord[1] = coord[1] - 1;
-              break;
+          if (r.views.length > 1) {
+            switch (r.visualOrientation) {
+              case 'top':
+                coord[2] = 2;
+                break;
+              case 'bottom':
+                coord[3] = coord[3] - 1;
+                break;
+              case 'left':
+                coord[0] = 2;
+                break;
+              case 'right':
+                coord[1] = coord[1] - 1;
+                break;
+            }
           }
 
           return {
@@ -600,7 +601,6 @@
           if (nv) {
             this.$nextTick(() => {
               this.onResize();
-
             });
           }
           else if (this.visual) {

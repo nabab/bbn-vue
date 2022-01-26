@@ -673,8 +673,9 @@
         }
       },
       searchSelect() {
-        bbn.fn.log(arguments);
-        this.searchOn = false;
+        this.$nextTick(() => {
+          this.searchOn = false;
+        })
       }
     },
     beforeCreate(){
