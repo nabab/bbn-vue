@@ -102,6 +102,10 @@
         //getRef('li' + selectedElement).blur(); selectedElement = -1;
       },
       select(item, idx, idx2, ev) {
+        console.log(item, "item")
+        console.log(idx, "item")
+        console.log(idx2, "item")
+        console.log(ev, "item")
         this.$emit('select', item, idx, idx2, ev);
       }
       /*onDataLoaded(){         
