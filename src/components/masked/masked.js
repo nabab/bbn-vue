@@ -74,7 +74,7 @@
           },
           // Digit or space. Like 9 rule, but allows also (+) and (-) signs.
           '#': {
-            pattern: '[0-9\s\\+\\-]'
+            pattern: '[0-9\\s\\+\\-]'
           },
           // Letter. Restricts the input to letters a-z and A-Z. This rule is equivalent to [a-zA-Z] in regular expressions.
           'L': {
