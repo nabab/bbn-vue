@@ -111,6 +111,7 @@
     watch: {
       overIdx(nv, ov) {
         bbn.fn.log("changed overIdx from " + ov + " to " + nv);
+        this.currentSelectedIndex = ov;
       }
     },
     mounted() {
