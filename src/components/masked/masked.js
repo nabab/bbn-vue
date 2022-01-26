@@ -85,12 +85,14 @@
             pattern: '[a-zA-Z\\s]'
           },
           // Character. Accepts any character. The rule is equivalent to \S in regular expressions.
+          // in this case, promptChar can't be special character. eg: It can't be "_"
           '&': {
             pattern: '[0-9a-zA-Z\\S]'
           },
           // Character or space. Accepts any character. The rule is equivalent to . in regular expressions.
+          // in this case, promptChar can't be special character. eg: It can't be "_"
           'C': {
-            pattern: '[0-9a-zA-Z\\S\\s]'
+            pattern: '.'
           },
           // Alphanumeric. Accepts letters and digits only.
           'A': {
