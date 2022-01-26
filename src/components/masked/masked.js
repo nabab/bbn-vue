@@ -70,7 +70,7 @@
           },
           // Digit or space. Accepts any digit between 0 and 9, plus space.
           9: {
-            pattern: '[0-9\s]'
+            pattern: '/^[0-9\s]*$/'
           },
           // Digit or space. Like 9 rule, but allows also (+) and (-) signs.
           '#': {
@@ -90,7 +90,7 @@
           },
           // Character or space. Accepts any character. The rule is equivalent to . in regular expressions.
           'C': {
-            pattern: /^[.\s]*$/
+            pattern: '.'
           },
           // Alphanumeric. Accepts letters and digits only.
           'A': {
