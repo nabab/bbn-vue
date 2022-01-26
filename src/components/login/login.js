@@ -123,11 +123,11 @@
         default: 'appui_salt'
       },
       /**
-       * @prop {(Boolean|String)} ['Password forgotten?'] passwordLink 
+       * @prop {(Boolean)} [true] show passwordLink 
        */
       passwordLink: {
-        type: [Boolean, String],
-        default: bbn._("Password forgotten?")
+        type: Boolean,
+        default: true
       },
 
     },
