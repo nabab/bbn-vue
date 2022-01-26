@@ -90,7 +90,7 @@
           },
           // Character or space. Accepts any character. The rule is equivalent to . in regular expressions.
           'C': {
-            pattern: '.'
+            pattern: /^[.\s]*$/
           },
           // Alphanumeric. Accepts letters and digits only.
           'A': {
