@@ -98,7 +98,7 @@
           },
           // Alphanumeric or space. Accepts letters, digits and spaces only.
           'a': {
-            pattern: '[0-9a-zA-Z\s]'
+            pattern: '[0-9a-zA-Z_ ]'
           },
           // Decimal placeholder. The decimal separator will be generated from the bbn.env.money property.
           '.': {
