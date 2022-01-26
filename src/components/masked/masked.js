@@ -70,7 +70,7 @@
           },
           // Digit or space. Accepts any digit between 0 and 9, plus space.
           9: {
-            pattern: '/^[0-9\s]*$/'
+            pattern: /^[0-9\s]*$/
           },
           // Digit or space. Like 9 rule, but allows also (+) and (-) signs.
           '#': {
