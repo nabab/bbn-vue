@@ -594,7 +594,7 @@
     mounted(){
       console.log("mounted")
       console.log(this.items, "mounted this.items")
-      bbn.fn.each(this.popups, a => this.open(a, false));
+      bbn.fn.each(this.source, a => this.open(a, false));
     },
     watch: {
       /**
