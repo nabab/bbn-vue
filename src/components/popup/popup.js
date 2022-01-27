@@ -593,6 +593,7 @@
      */
     mounted(){
       console.log("mounted")
+      console.log(this.source, "this.source");
       console.log(this.items, "mounted this.items")
       bbn.fn.each(this.source, a => this.open(a, false));
     },
