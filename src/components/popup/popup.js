@@ -158,7 +158,7 @@
        * @param {Object} obj
        * @return {String|Boolean}
        */
-      open(obj){
+      open(obj, isNew=true){
         console.log("open() function");
         console.log(arguments, "arguments");
         let d = {};
@@ -207,7 +207,12 @@
           d.index = this.items.length;
           console.log("----------------------------------")
           console.log("this.items.push(d)")
-          this.items.push(d);
+          if (isNew) {
+            this.items.push(d);
+          } else {
+            this.items = d;
+          }
+          console.log(this.items);
           //this.makeWindows();
           return d.uid;
         }
@@ -581,7 +586,7 @@
      * @event mounted
      */
     mounted(){
-      bbn.fn.each(this.popups, a => this.open(a));
+      bbn.fn.each(this.popups, a => this.open(a, false));
     },
     watch: {
       /**
