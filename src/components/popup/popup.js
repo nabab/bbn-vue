@@ -186,6 +186,7 @@
                 d.onOpen = arguments[i];
               }
               else if ( !d.onClose ){
+                console.log("d.onClose = arguments[i];")
                 d.onClose = arguments[i];
               }
             }
@@ -247,6 +248,7 @@
                 d.onOpen = arguments[i];
               }
               else if ( !d.close ){
+                console.log("else if ( !d.close ){")
                 d.onClose = arguments[i];
               }
             }
@@ -306,6 +308,7 @@
         }
       },
       onClose(index) {
+        console.log("=========onclose============")
         this.items.splice(index, 1);
       },
       /**
@@ -404,6 +407,7 @@
           }
           else if (bbn.fn.isFunction(arguments[i]) ){
             if ( has_callback ){
+              console.log("if ( has_callback ){")
               onClose = arguments[i];
             }
             else{
@@ -435,6 +439,7 @@
             icon: 'nf nf-fa-check_circle',
             action($ev, btn){
               if ( onClose ){
+                console.log("if ( onClose ){")
                 onClose($ev, btn);
               }
               btn.closest('bbn-floater').close(true);
