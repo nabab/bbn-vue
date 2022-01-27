@@ -59,7 +59,6 @@
                     ref="fisheye"
                     :source="shortcuts"
                     :fixed-left="leftShortcuts || []"
-                    :fixed-right="rightShortcuts || []"
                     :mobile="true"
                     :z-index="6"/>
         <!-- SEARCHBAR -->
@@ -78,8 +77,7 @@
                        @remove="removeShortcut"
                        ref="fisheye"
                        :source="shortcuts"
-                       :fixed-left="leftShortcuts"
-                       :fixed-right="rightShortcuts"/>
+                       :fixed-left="leftShortcuts"/>
           <div v-else v-html="' '"/>
         </div>
         <!-- SEARCHBAR (MOBILE) -->
@@ -254,7 +252,7 @@
        class="bbn-overlay bbn-secondary"
        style="z-index: 13">
     <bbn-search :source="searchBar.source"
-                :placeholder="_('Try anything, find anything')"
+                :placeholder="searchBar.placeholder"
                 ref="search"
                 v-model="searchBar.value"
                 :suggest="true"

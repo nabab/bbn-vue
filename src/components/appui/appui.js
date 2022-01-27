@@ -290,28 +290,7 @@
         return '';
       },
       userMenu() {
-        let menu = [{
-          action(){
-            bbn.fn.toggleFullScreen();
-          },
-          text: bbn._("Full screen"),
-          icon: 'nf nf-fa-arrows_alt'
-        }, {
-          text: bbn._("Log out"),
-          icon: 'nf nf-fa-sign_out',
-          action(){
-            bbn.fn.post(appui.plugins['appui-core'] + '/logout', d => {
-              if (d.success && d.data && d.data.url) {
-                document.location.href = d.data.url;
-              }
-              else {
-                appui.error();
-              }
-            });
-          }
-        }]
-
-        return menu;
+        return this.rightShortcuts;
       }
     },
     methods: {
