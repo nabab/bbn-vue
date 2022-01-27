@@ -159,7 +159,7 @@
        * @param {Object} obj
        * @return {String|Boolean}
        */
-      open(obj, isNew=true){
+      open(obj){
         console.log("open() function");
         console.log(arguments, "arguments");
         let d = {};
@@ -209,11 +209,11 @@
           d.index = this.items.length;
           console.log("----------------------------------")
           console.log("this.items.push(d)")
-          if (isNew) {
-            this.items.push(d);
-          } else {
-            this.items = [d];
-          }
+          // if (isNew) {
+          this.items.push(d);
+          // } else {
+          //   this.items = [d];
+          // }
           console.log(this.items);
           //this.makeWindows();
           return d.uid;
@@ -595,7 +595,7 @@
       console.log("mounted")
       console.log(this.source, "this.source");
       console.log(this.items, "mounted this.items")
-      bbn.fn.each(this.source, a => this.open(a, false));
+      bbn.fn.each(this.items, a => this.open(a));
     },
     watch: {
       /**
