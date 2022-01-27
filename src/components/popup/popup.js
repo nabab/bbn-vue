@@ -113,8 +113,6 @@
          * @data [[]] items
          */
         items: this.source,
-        /* isOpened is used to prevent opening same dialog two times */
-        isOpened: false,
       };
     },
     computed: {
@@ -209,6 +207,13 @@
             this.items.push(d);
           } else {
             console.log("isNew is true----------------")
+            console.log("-----------before this.items------------")
+            console.log(this.items)
+            console.log(this.popups, "before this.popups")
+            this.items.push(d);
+            console.log("---------------after this.items---------------")
+            console.log(this.items)
+            console.log(this.popups, "after this.popups")
           }
           
           //this.makeWindows();
@@ -585,10 +590,8 @@
       console.log(this.isOpened, "-------------this.isOpened------------")
       console.log(this.items, "-------------this.items----------------")
       console.log(this.popups, "-----------------this.popups------------------")
-      if (!this.isOpened) {
-        bbn.fn.each(this.popups, a => this.open(a, true));
-        this.isOpened = true;
-      }
+      bbn.fn.each(this.popups, a => this.open(a, true));
+      console.log("-------------finish open function-----------------")
     },
     watch: {
       /**
