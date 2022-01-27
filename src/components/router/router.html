@@ -9,7 +9,7 @@
         'bbn-overlay': !nav
       }">
     <!-- START OF BREADCRUMB -->
-    <div v-if="nav && isBreadcrumb && !visualNav"
+    <div v-if="nav && isBreadcrumb && !isVisual"
         ref="breadcrumb"
         :class="['bbn-router-breadcrumb', {'bbn-router-breadcrumb-master': master}]">
       <div v-if="master"
@@ -101,7 +101,7 @@
     </div>
     <!-- END OF BREADCRUMB -->
     <!-- START OF TABS -->
-    <div v-else-if="nav && !isBreadcrumb && !visualNav"
+    <div v-else-if="nav && !isBreadcrumb && !isVisual"
          :class="['bbn-router-tabs', {'bbn-router-tabs-scrollable': scrollable}]"
          ref="tabs">
       <div class="bbn-router-tabs-container">
@@ -219,7 +219,7 @@
     </div>
     <!-- END OF TABS -->
     <!-- START OF CONTENT FOR VISUALNAV -->
-    <div v-if="ready && visualNav"
+    <div v-if="ready && isVisual"
          class="bbn-overlay bbn-vspadded">
       <div class="bbn-100 bbn-router-visual"
            :style="visualStyle">
@@ -259,10 +259,12 @@
       <bbn-container v-for="view in views"
                      v-if="!view.real && !component"
                      :key="view.url"
+                     :visual="false"
                      v-bind="view"/>
       <bbn-container v-if="component && componentSource && componentUrl"
                      :source="componentSource"
                      :component="component"
+                     :visual="false"
                      :url="componentSource[componentUrl]"/>
     </div>
     <!-- END OF CONTENT -->

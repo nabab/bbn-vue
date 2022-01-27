@@ -1,6 +1,6 @@
 <div :class="[componentClass, visual ? '' : 'bbn-overlay']"
      @subready.stop
-     :style="visual ? visualStyle : ''"
+     :style="visual ? visualStyle : {}"
      v-show="visible || visual">
   <transition name="fade"
               v-on:enter="enter"
@@ -87,31 +87,50 @@
        class="bbn-overlay"
        style="z-index: 12; background-color: black; opacity: 0.2;">
   </div>
-  <div v-if="visual && !visible"
+  <div v-if="visual && (!visible || router.visualShowAll)"
        class="bbn-overlay"
        @click="show()"
        @mouseenter="isOver = true"
        @mouseleave="isOver = false"
        style="z-index: 12">
     <transition name="fade">
-      <div class="bbn-bottom-left bbn-w-100 bbn-bg-black bbn-white"
+      <div class="bbn-bottom-left bbn-w-100"
            v-show="isOver"
            :style="{
                fontSize: visible ? null : '12em'
              }">
-        <div class="bbn-w-50 bbn-p bbn-spadded"
+        <div class="bbn-bottom-left bbn-w-100 bbn-bg-black"
+             style="opacity: 0.6; color: transparent">
+             <div class="bbn-w-50 bbn-p bbn-spadded"
              @click.stop="">
-          <i class="nf nf-fa-bars"/>
-        </div>
-        <div class="bbn-w-50 bbn-right bbn-p bbn-spadded"
-            @click.stop="close"
-            v-if="!pinned && !static">
-            <i class="nf nf-fa-times"/>
-        </div>
-        <div class="bbn-w-50 bbn-right bbn-p bbn-spadded"
-            @click.stop="unpin"
-            v-else-if="pinned">
-            <i class="nf nf-oct-pin"/>
+           <i class="nf nf-fa-bars"/>
+         </div>
+         <div class="bbn-w-50 bbn-right bbn-p bbn-spadded"
+             @click.stop="close"
+             v-if="!pinned && !static">
+             <i class="nf nf-fa-times"/>
+         </div>
+         <div class="bbn-w-50 bbn-right bbn-p bbn-spadded"
+             @click.stop="unpin"
+             v-else-if="pinned">
+             <i class="nf nf-oct-pin"/>
+         </div>
+       </div>
+        <div class="bbn-bottom-left bbn-w-100 bbn-white">
+          <div class="bbn-w-50 bbn-p bbn-spadded"
+              @click.stop="">
+            <i class="nf nf-fa-bars"/>
+          </div>
+          <div class="bbn-w-50 bbn-right bbn-p bbn-spadded"
+              @click.stop="close"
+              v-if="!pinned && !static">
+              <i class="nf nf-fa-times"/>
+          </div>
+          <div class="bbn-w-50 bbn-right bbn-p bbn-spadded"
+              @click.stop="unpin"
+              v-else-if="pinned">
+              <i class="nf nf-oct-pin"/>
+          </div>
         </div>
       </div>
     </transition>

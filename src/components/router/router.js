@@ -95,9 +95,9 @@
       },
       /**
        * Set it to true if you want to see the visual navigation bar
-       * @prop {Boolean} [false] visualNav
+       * @prop {Boolean} [false] visual
        */
-      visualNav: {
+      visual: {
         type: Boolean,
         default: false
       },
@@ -229,7 +229,7 @@
           return 'auto'
         },
         validator(v) {
-          return ['left', 'up', 'bottom', 'right', 'auto']
+          return ['left', 'up', 'bottom', 'right', 'auto'].includes(v)
         }
       }
     },
@@ -372,7 +372,8 @@
         breadcrumbsList: [],
         visualShowAll: false,
         visualOrientation: this.orientation,
-        lockedOrientation: false
+        lockedOrientation: false,
+        isVisual: this.visual
       };
     },
     computed: {
@@ -477,27 +478,8 @@
         }
         return res;
       },
-
-      /*
       visualStyle() {
-        if (!this.visualNav) {
-          return '';
-        }
-
-        let st = 'display: grid; grid-column-gap: 0.5em; grid-row-gap: 0.5em; ';
-
-        if (this.visualOrientation === 'left') {
-          st += 'grid-template-rows: ' + (this.router.visualShowAll ? 'repeat(' + this.numVisuals + ', 1fr)' : '1fr ' + this.numVisuals + 'fr') + '; grid-template-columns: repeat(' + this.numVisuals + ', 1fr)';
-        }
-        else {
-          st += 'grid-template-columns: ' + (this.router.visualShowAll ? 'repeat(' + this.numVisuals + ', 1fr)' : '1fr ' + this.numVisuals + 'fr') + '; grid-template-rows: repeat(' + this.numVisuals + ', 1fr)';
-        }
-
-        return st;
-      },*/
-
-      visualStyle() {
-        if (!this.visualNav) {
+        if (!this.isVisual) {
           return '';
         }
 
@@ -511,7 +493,7 @@
       },
 
       numVisualRows() {
-        if (this.visualNav) {
+        if (this.isVisual) {
           return Math.ceil(this.lastKnownHeight / this.visualSize);
         }
 
@@ -519,7 +501,7 @@
       },
 
       numVisualCols() {
-        if (this.visualNav) {
+        if (this.isVisual) {
           return Math.ceil(this.lastKnownWidth / this.visualSize);
         }
 
@@ -527,7 +509,7 @@
       },
 
       numVisuals() {
-        if (this.visualNav) {
+        if (this.isVisual) {
           if (['left', 'right'].includes(this.visualOrientation)) {
             return this.numVisualRows;
           }
@@ -539,7 +521,7 @@
 
 
       visualList() {
-        if (!this.visualNav) {
+        if (!this.isVisual) {
           return [];
         }
 
@@ -554,7 +536,6 @@
             let visible = false;
             if (this.visualShowAll || (i <= numAvailableSlots) || (this.selected === a.index)) {
               visible = true;
-
             }
             return {
               view: a,
@@ -601,7 +582,7 @@
         }
         this.numRegistered++;
         this.urls[cp.url] = cp;
-        if (this.visualNav) {
+        if (this.isVisual) {
           cp.$on('view', () => {
             this.visualShowAll = false;
             if (this.activeContainer && (this.activeContainer.url !== cp.url)) {
@@ -932,7 +913,7 @@
             }
           });
           if ( this.activeContainer ){
-            if (this.visualNav && this.activeContainer.idx) {
+            if (this.isVisual && this.activeContainer.idx) {
               this.move(this.activeContainer.idx, 0);
             }
             this.activeContainer.show();
@@ -1401,7 +1382,7 @@
               this.hasEmptyURL = true;
             }
             if (this.search(obj2.url) === false) {
-              if (this.visualNav) {
+              if (this.isVisual) {
                 this.views.unshift(obj2);
 
               }
@@ -1478,7 +1459,7 @@
                   this.$set(obj, n, a);
                 }
               });
-              if (this.visualNav) {
+              if (this.isVisual) {
                 obj.idx = 0;
                 bbn.fn.each(this.views, a => {
                   a.idx++;
@@ -1649,7 +1630,7 @@
               hidden: false
             }, idx);
           }
-          else if (this.visualNav && idx) {
+          else if (this.isVisual && idx) {
             this.move(idx, 0);
             idx = 0;
           }
@@ -2017,7 +1998,7 @@
             }
           });
 
-          if (!this.visualNav) {
+          if (!this.isVisual) {
             let directions = [];
             if (idx) {
               if (idx > 1) {
@@ -2094,14 +2075,100 @@
             items.push(a);
           });
         }
-        items.push({
-          text: bbn._('Switch to ') + (this.isBreadcrumb ? bbn._('tabs') : bbn._('breadcrumb')) + ' ' + bbn._('mode'),
-          key: 'switch',
-          icon: this.isBreadcrumb ? 'nf nf-mdi-tab' : 'nf nf-fa-ellipsis_h',
-          action: () => {
-            this.itsMaster.isBreadcrumb = !this.itsMaster.isBreadcrumb;
+
+        if (!this.isVisual) {
+          items.push({
+            text: bbn._('Switch to') + ' ' + (this.isBreadcrumb ? bbn._('tabs') : bbn._('breadcrumb')) + ' ' + bbn._('mode'),
+            key: 'switch',
+            icon: this.isBreadcrumb ? 'nf nf-mdi-tab' : 'nf nf-fa-ellipsis_h',
+            action: () => {
+              this.itsMaster.isBreadcrumb = !this.itsMaster.isBreadcrumb;
+            }
+          });
+
+          if (!this.parents.length) {
+            let go = () => {
+              this.isVisual = true;
+              this.onResize();
+              setTimeout(() => {
+                this.activateIndex(this.getIndex(this.getFullCurrentURL()));
+              }, 250)
+            };
+
+            items.push({
+              text: bbn._('Switch to') + ' ' + bbn._('visual') + ' ' + bbn._('mode'),
+              key: 'visual',
+              icon: 'nf nf-fa-eye',
+              action: () => {
+                if (!this.isDirty) {
+                  go();
+                  return;
+                }
+
+                this.confirm(
+                  bbn._("The pages already loaded will be reinitialized") +
+                      '<br>' + bbn._("If you have any unsaved work opened it will be lost.") +
+                      '<br>' + bbn._("Is it ok to continue?"),
+                  () => {
+                    go()
+                  }
+                );
+            }
+            });
           }
-        });
+        }
+        else {
+          const go = () => {
+            this.isVisual = false;
+            this.itsMaster.isBreadcrumb = false;
+            setTimeout(() => {
+              this.activateIndex(this.getIndex(this.getFullCurrentURL()));
+            }, 250)
+          };
+
+          items.push({
+            text: bbn._('Switch to') + ' ' + bbn._('tabs') + ' ' + bbn._('mode'),
+            key: 'tabs',
+            icon: 'nf nf-mdi-tab',
+            action: () => {
+              if (!this.isDirty) {
+                go();
+                return;
+              }
+
+              this.confirm(
+                bbn._("The pages already loaded will be reinitialized") +
+                    '<br>' + bbn._("You should save your unsaved content or it will be lost.") +
+                    '<br>' + bbn._("Is it ok to continue?"),
+                () => {
+                  go();
+                }
+              );
+            }
+          });
+
+          items.push({
+            text: bbn._('Switch to') + ' ' + bbn._('breadcrumb') + ' ' + bbn._('mode'),
+            key: 'breadcrumbs',
+            icon: 'nf nf-fa-ellipsis_h',
+            action: () => {
+              if (!this.isDirty) {
+                go();
+                return;
+              }
+
+              this.confirm(
+                bbn._("The pages already loaded will be reloaded") +
+                    '<br>' + bbn._("If you have any unsaved work opened it will be lost.") +
+                    '<br>' + bbn._("Is it ok to continue?"),
+                () => {
+                  go();
+                }
+              );
+            }
+          });
+        }
+
         return items;
       },
       /**
@@ -2159,7 +2226,8 @@
         let cfg = {
               baseURL: this.parentContainer ? this.parentContainer.getFullURL() : this.storageName,
               views: [],
-              breadcrumb: this.isBreadcrumb
+              breadcrumb: this.isBreadcrumb,
+              visual: this.isVisual
             };
         bbn.fn.each(this.views, (obj, i) => {
           if (obj.url && obj.load) {
@@ -2550,15 +2618,15 @@
         ele.dispatchEvent(e);
       },
       onResize() {
-        if (this.visualNav && (this.orientation === 'auto')) {
-          this.keepCool(() => {
-            this.setResizeMeasures();
-            this.setContainerMeasures();
+        this.keepCool(() => {
+          this.setResizeMeasures();
+          this.setContainerMeasures();
+          if (this.isVisual && (this.orientation === 'auto')) {
             this.$nextTick(() => {
               this.visualOrientation = this.lastKnownWidth > this.lastKnownHeight ? 'left' : 'top';
             })
-          }, 'resize', 250);
-        }
+          }
+        }, 'resize', 250);
       },
       visualStyleContainer(ct) {
         if (!ct.visible || this.visualShowAll) {
@@ -2709,6 +2777,9 @@
         if ( storage.breadcrumb !== undefined ){
           this.isBreadcrumb = storage.breadcrumb;
         }
+        if ( storage.visual !== undefined ){
+          this.isVisual = storage.visual;
+        }
         if ( storage.views ){
           bbn.fn.each(storage.views, a => {
             let idx = bbn.fn.search(tmp, {url: a.url});
@@ -2840,6 +2911,15 @@
           this.setConfig();
         })
       },
+      /**
+       * @watch isVisual
+       * @fires setConfig
+       */
+       isVisual() {
+        this.$nextTick(() => {
+          this.setConfig();
+        })
+      }
     },
     components: {
       /**

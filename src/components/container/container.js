@@ -170,7 +170,7 @@
           };
         }
 
-        return '';
+        return {};
       },
       anonymousComponent(){
         return this.$refs.component;
@@ -224,7 +224,10 @@
        * @method show
        */
       show(){
-        this.visible = true
+        this.visible = true;
+        if (this.visual && this.router.visualShowAll) {
+          this.router.visualShowAll = false;
+        }
       },
       /**
        * Hides the container.
