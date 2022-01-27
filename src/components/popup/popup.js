@@ -134,6 +134,9 @@
             maxHeight: a.maxHeight || this.lastKnownHeight || this.lastKnownCtHeight || null
           })));
         });
+        console.log("popups");
+        console.log(this.items, "this.items");
+        console.log(r);
         return r;
       },
       /**
