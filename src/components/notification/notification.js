@@ -115,10 +115,10 @@
         bbn.fn.iterate(pos, (o, dir) => {
           console.log(o, "o")
           console.log(dir, "dir")
+          console.log(bit, "bit")
           console.log(o[bit.toLowerCase()], "o[bit.toLowerCase()]")
           if ( o[bit.toLowerCase()] ){
             bbn.fn.iterate(o, (b, k) => {
-              console.log(bit, "bit")
               console.log(k, "k")
               if ( bit === k ){
                 pos[dir][k] = true;
