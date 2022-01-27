@@ -258,11 +258,19 @@
           type: String
         },
         /**
-         * The name of the property to be used as action.
+         * The name of the property to be used as action to execute when selected.
          * @prop {String} sourceAction
          * @memberof listComponent
          */
-        sourceAction: {
+         sourceAction: {
+          type: [String, Function]
+        },
+        /**
+         * The name of the property to be used as URL to go to when selected.
+         * @prop {String} sourceUrl
+         * @memberof listComponent
+         */
+         sourceUrl: {
           type: [String, Function]
         },
         /**

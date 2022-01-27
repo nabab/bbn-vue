@@ -59,6 +59,10 @@
       idx: {
         type: Number
       },
+      visual: {
+        type: Boolean,
+        default: false
+      }
     },
     data(){
       return {
@@ -122,21 +126,52 @@
          */
         isStatic: this.static,
         /**
-         * The index of the container.
-         * @data {Number} currentIndex
-         */
-        currentIndex: this.idx,
-        /**
          * The current url.
          * @data {String} currentURL
          */
         currentURL: this.current || this.url,
-        currentTitle: this.title,
         hasLoader: false,
+        isOver: false,
         _bbn_container: null
       };
     },
     computed: {
+      visualStyle() {
+        if (this.visual) {
+          let r = this.router;
+          if ((r.views.length > 1) && (!this.visible || r.visualShowAll)) {
+            return {zoom: 0.1};
+          }
+
+          let coord = [1, r.numVisualCols + 1, 1, r.numVisualRows + 1];
+          if (r.views.length > 1) {
+            switch (r.visualOrientation) {
+              case 'top':
+                coord[2] = 2;
+                break;
+              case 'bottom':
+                coord[3] = coord[3] - 1;
+                break;
+              case 'left':
+                coord[0] = 2;
+                break;
+              case 'right':
+                coord[1] = coord[1] - 1;
+                break;
+            }
+          }
+
+          return {
+            gridColumnStart: coord[0],
+            gridColumnEnd: coord[1],
+            gridRowStart: coord[2],
+            gridRowEnd: coord[3],
+            zoom: 1
+          };
+        }
+
+        return {};
+      },
       anonymousComponent(){
         return this.$refs.component;
       }
@@ -189,7 +224,10 @@
        * @method show
        */
       show(){
-        this.visible = true
+        this.visible = true;
+        if (this.visual && this.router.visualShowAll) {
+          this.router.visualShowAll = false;
+        }
       },
       /**
        * Hides the container.
@@ -198,6 +236,9 @@
        */
       hide(){
         this.visible = false
+      },
+      close() {
+        this.router.close(this.idx);
       },
       /**
        * Sets the current url.
@@ -220,7 +261,7 @@
        */
       setTitle(title){
         if ( this.router ){
-          this.router.views[this.currentIndex].title = title;
+          this.router.views[this.idx].title = title;
         }
       },
       /**
@@ -233,10 +274,10 @@
       setColor(bcolor, fcolor){
         if ( this.router ){
           if ( bcolor ){
-            this.router.$set(this.router.views[this.currentIndex], "bcolor", bcolor);
+            this.router.$set(this.router.views[this.idx], "bcolor", bcolor);
           }
           if ( fcolor ){
-            this.router.$set(this.router.views[this.currentIndex], "fcolor", fcolor);
+            this.router.$set(this.router.views[this.idx], "fcolor", fcolor);
           }
         }
       },
@@ -275,7 +316,7 @@
        * @fires $parent.reload
        */
       reload(){
-        this.router.reload(this.currentIndex);
+        this.router.reload(this.idx);
       },
       /**
        * Handles the configuration of the container's menu.
@@ -452,6 +493,11 @@
 
           this.ready = true;
         }
+      },
+      showMenu() {
+        if (this.visual) {
+          return this.router.getMenuFn(this.idx);
+        }
       }
     },
     /**
@@ -469,17 +515,18 @@
         };
         let res;
       }
+      // The router is needed
+      this.router = this.closest('bbn-router');
     },
     /**
      * @event mounted
      * @fires router.register
      */
     mounted(){
-      // The router is needed
-      this.router = this.closest('bbn-router');
       if ( !this.router ){
         throw new Error(bbn._("bbn-container cannot be rendered without a bbn-router"));
       }
+
       if ( !this.router.ready ){
         this.router.$on('ready', () => {
           //this.init();
@@ -508,8 +555,10 @@
     },
 
     watch: {
-      title(v) {
-        this.currentTitle = v;
+      idx() {
+        if (this.visual) {
+          this.isOver = false;
+        }
       },
       current(newVal){
         if (newVal.indexOf(this.url) === 0){
@@ -556,6 +605,63 @@
             this.$nextTick(() => {
               this.onResize();
             });
+          }
+          else if (this.visual) {
+            /*
+            setTimeout(() => {
+              let ct = this.getRef('canvasSource');
+              let w = Math.ceil(ct.clientWidth);
+              let h = Math.ceil(ct.clientHeight);
+              ct.style.width = w + 'px';
+              ct.style.height = h + 'px';
+              bbn.fn.log("CANVAS", w, h);
+              html2canvas(this.getRef('canvasSource'), {
+                width: w,
+                height: h
+              }).then(canvas => {
+                let img = bbn.fn.canvasToImage(canvas);
+                let ctx = camnvas.getContext('2D');
+                ctx.drawImage(img, 0, 0, w, h, 0, 0, Math.ceil(w/10), Math.ceil(h/10));
+                ct.style.width = null;
+                ct.style.height = null;
+                this.getPopup({
+                  component: {
+                    render(createElement) {
+                      return createElement(
+                        'div',
+                        {
+                          class: {
+                            'bbn-block': true
+                          },
+                          style: {
+                            width: Math.ceil(w/10) + 'px',
+                            height: Math.ceil(h/10) + 'px'
+                          }
+                        },
+                        [
+                          createElement(
+                            'img',
+                            {
+                              style: {
+                                maxWidth: '100%',
+                                maxHeight: '100%',
+                                width: 'auto',
+                                height: 'auto'
+                              },
+                              attrs: {
+                                src: img.src
+                              }
+                            }
+                          )
+                        ]
+                      )
+                    }
+                  },
+                  title: false
+                })
+              });
+            },2000)
+            */
           }
         });
       },
@@ -621,8 +727,8 @@
         })
       },
       dirty(v){
-        //bbn.fn.log("DIRTY WATCHER", this.currentIndex, this.router.views);
-        this.router.views[this.currentIndex].dirty = v;
+        //bbn.fn.log("DIRTY WATCHER", this.idx, this.router.views);
+        this.router.views[this.idx].dirty = v;
         this.router.retrieveDirtyContainers();
       }
     },

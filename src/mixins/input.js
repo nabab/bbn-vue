@@ -132,6 +132,14 @@
          */
         inputmode: {
           type: String
+        },
+        /**
+         * If true the element will focus on insert
+         * @prop {Boolean} autofocus
+         */
+         focused: {
+          type: Boolean,
+          default: false
         }
       },
       data(){
@@ -320,7 +328,15 @@
           this.componentClass.push('bbn-auto-width');
         }
       },
-      watch:{
+      mounted() {
+        setTimeout(() => {
+          if (this.autofocus) {
+            const ele = this.$refs.element || this.$refs.input || this.$el;
+            ele.focus();
+          }
+        }, 100)
+      },
+      watch: {
         /**
          * @watch value
          * @param newVal 

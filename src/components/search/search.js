@@ -124,7 +124,25 @@
         autohide: {
           type: [Boolean, Number],
           default: 1500
-        }
+        },
+        /**
+         * The name of the property to be used as action to execute when selected.
+         * @prop {String} sourceAction
+         * @memberof listComponent
+         */
+        sourceAction: {
+          type: [String, Function],
+          default: 'action'
+        },
+        /**
+         * The name of the property to be used as URL to go to when selected.
+         * @prop {String} sourceUrl
+         * @memberof listComponent
+         */
+        sourceUrl: {
+          type: [String, Function],
+          default: 'url'
+        },
       },
       data() {
         return {
@@ -174,6 +192,8 @@
               }
             };
           }
+
+          bbn.fn.log(cp, this.source);
           return cp;
         },
       },
@@ -182,35 +202,6 @@
          * Focuses the search input.
          * @method searchFocus
          */
-        searchFocus(){
-          clearTimeout(this.timeout);
-          this.$emit('focus', this);
-          this.isFocused = true;
-          this.specialWidth = this.maxWidth;
-          this.currentPlaceholder = this.placeholder;
-        },
-        /**
-         * Blurs the search input.
-         * @method searchBlur
-         */
-        searchBlur(e) {
-          if (this.isFocused && e.target && this.$el && !this.$el.contains(e.target)) {
-            clearTimeout(this.timeout);
-            this.timeout = setTimeout(() => {
-              this.isFocused = false;
-              this.isOpened = false;
-              this.specialWidth = this.minWidth;
-              this.currentPlaceholder = '?';
-            }, 250);
-          }
-        },
-        /**
-         * Closes the search.
-         * @method searchClose
-         */
-        searchClose(){
-          this.isOpened = false;
-        },
         /**
          * Emits the event 'select' 
          * @method select
@@ -220,17 +211,37 @@
          * @emit change
          */
         select(item, idx, dataIndex){
-          if ( item && (item[this.sourceValue] !== undefined) ){
+          if (!this.disabled) {
             let ev = new Event('select', {cancelable: true});
             this.$emit('select', ev, item, idx, dataIndex);
-            if ( !ev.defaultPrevented ){
-              this.currentText = item[this.sourceText];
-              this.filterString = item[this.sourceText];
-              this.$nextTick(() => {
-                this.getRef('input').focus();
-              });
+            bbn.fn.log("EMITTING SELECT");
+            if (!ev.defaultPrevented) {
+              bbn.fn.log("NO RPEVENT", item);
+              if (this.sourceAction && item[this.sourceAction]) {
+                if ( typeof(item[this.sourceAction]) === 'string' ){
+                  if ( bbn.fn.isFunction(this[item[this.sourceAction]]) ){
+                    this[item[this.sourceAction]]();
+                  }
+                }
+                else if (bbn.fn.isFunction(item[this.sourceAction]) ){
+                  if (this.actionArguments) {
+                    item[this.sourceAction](...this.actionArguments);
+                  }
+                  else {
+                    item[this.sourceAction](idx, item.data);
+                  }
+                }
+              }
+              else if (this.sourceUrl && item[this.sourceUrl]) {
+                bbn.fn.log("SOURCE URL OK");
+                let url = bbn.fn.isFunction(this.sourceUrl) ?
+                  this.sourceUrl(item, idx, dataIndex)
+                  : item[this.sourceUrl];
+                if (url) {
+                  bbn.fn.link(url);
+                }
+              }
             }
-            this.isOpened = false;
           }
         },
         /**
@@ -252,36 +263,6 @@
             this.keynav(e);
           }
         },
-        /**
-         * On mouse Leave.
-         * @method leave
-         * @fires searchBlur
-         */
-        leave(){
-          if (this.autohide) {
-            if (this.mouseTimeout) {
-              clearTimeout(this.mouseTimeout);
-            }
-            this.mouseTimeout = setTimeout(() => {
-              this.searchBlur();
-            }, this.autohide);
-          }
-        },
-        /**
-         * On mouse enter.
-         * @method enter
-         */
-        enter(){
-          if (this.mouseTimeout) {
-            clearTimeout(this.mouseTimeout);
-          }
-        }
-      },
-      created() {
-        document.addEventListener('click', this.searchBlur);
-      },
-      beforeDestroy() {
-        document.removeEventListener('click', this.searchBlur);
       },
       watch: {
         /**
@@ -292,11 +273,11 @@
           if (!this.ready) {
             this.ready = true;
           }
+
           clearTimeout(this.filterTimeout);
           if (v !== this.currentText) {
             this.emitInput(v);
             this.$emit('change', v);
-            this.isOpened = false;
             if (this.currentData.length) {
               this.currentData.splice(0);
             }
@@ -304,30 +285,23 @@
               this.filterTimeout = setTimeout(() => {
                 this.filterTimeout = false;
                 // We don't relaunch the source if the component has been left
-                if ( this.isActive ){
-                  if (v && (v.length >= this.minLength)) {
-                    this.$once('dataloaded', () => {
-                      this.$nextTick(() => {
-                        if (!this.isOpened){
-                          this.isOpened = true;
-                        }
-                        else{
-                          let list = this.find('bbn-scroll');
-                          if ( list ){
-                            list.onResize();
-                          }
-                        }
-                      });
+                if (v && (v.length >= this.minLength)) {
+                  this.$once('dataloaded', () => {
+                    this.$nextTick(() => {
+                      let list = this.find('bbn-scroll');
+                      if ( list ){
+                        list.onResize();
+                      }
                     });
-                    this.currentFilters.conditions.splice(0, this.currentFilters.conditions.length ? 1 : 0, {
-                      field: this.sourceText,
-                      operator: 'startswith',
-                      value: v
-                    });
-                  }
-                  else {
-                    this.unfilter();
-                  }
+                  });
+                  this.currentFilters.conditions.splice(0, this.currentFilters.conditions.length ? 1 : 0, {
+                    field: this.sourceText,
+                    operator: 'startswith',
+                    value: v
+                  });
+                }
+                else {
+                  this.unfilter();
                 }
               }, this.delay);
             })

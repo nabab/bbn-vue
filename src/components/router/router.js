@@ -14,13 +14,16 @@
      * @mixin bbn.vue.localStorageComponent
      * @mixin bbn.vue.closeComponent
      * @mixin bbn.vue.observerComponent
+     * @mixin bbn.vue.resizerComponent
      */
     mixins:
     [
       bbn.vue.basicComponent,
       bbn.vue.localStorageComponent,
       bbn.vue.closeComponent,
-      bbn.vue.observerComponent
+      bbn.vue.observerComponent,
+      bbn.vue.resizerComponent,
+      bbn.vue.keepCoolComponent
     ],
     props: {
       /**
@@ -78,11 +81,23 @@
         type: Boolean,
         default: false
       },
+      maxTotal: {
+        type: Number,
+        default: 25
+      },
       /**
        * Set it to true if you want to see the navigation bar (tabs or breadcrumb).
        * @prop {Boolean} [false] nav
        */
       nav: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * Set it to true if you want to see the visual navigation bar
+       * @prop {Boolean} [false] visual
+       */
+      visual: {
         type: Boolean,
         default: false
       },
@@ -192,9 +207,30 @@
        * Will be passed to router in order to ignore the dirty parameter.
        * @prop {Boolean} ignoreDirty
        */
-       ignoreDirty: {
+      ignoreDirty: {
         type: Boolean,
         default: false
+      },
+      /**
+       * The size of every grid cell on which is based the visual view
+       * @prop {Number} [180] visualSize
+       */
+       visualSize: {
+        type: Number,
+        default: 180
+      },
+      /**
+       * The position of the visual mini containers
+       * @prop {Number} [180] visualSize
+       */
+       orientation: {
+        type: String,
+        default(){
+          return 'auto'
+        },
+        validator(v) {
+          return ['left', 'up', 'bottom', 'right', 'auto'].includes(v)
+        }
       }
     },
     data(){
@@ -333,7 +369,11 @@
          * @data breadcrumbWatcher
          */
         breadcrumbWatcher: false,
-        breadcrumbsList: []
+        breadcrumbsList: [],
+        visualShowAll: false,
+        visualOrientation: this.orientation,
+        lockedOrientation: false,
+        isVisual: this.visual
       };
     },
     computed: {
@@ -427,6 +467,7 @@
           hidden: true
         } : {};
       },
+
       breadcrumbs(){
         let res = [];
         if (this.isBreadcrumb) {
@@ -436,6 +477,72 @@
           res.push(...this.getBreadcrumbs(this.selected))
         }
         return res;
+      },
+      visualStyle() {
+        if (!this.isVisual) {
+          return '';
+        }
+
+        return {
+          display: 'grid',
+          gridColumnGap: '0.5em',
+          gridRowGap: '0.5em',
+          gridTemplateRows: 'repeat(' + this.numVisualRows + ', 1fr)',
+          gridTemplateColumns: 'repeat(' + this.numVisualCols + ', 1fr)'
+        }
+      },
+
+      numVisualRows() {
+        if (this.isVisual) {
+          return Math.ceil(this.lastKnownHeight / this.visualSize);
+        }
+
+        return 1;
+      },
+
+      numVisualCols() {
+        if (this.isVisual) {
+          return Math.ceil(this.lastKnownWidth / this.visualSize);
+        }
+
+        return 1;
+      },
+
+      numVisuals() {
+        if (this.isVisual) {
+          if (['left', 'right'].includes(this.visualOrientation)) {
+            return this.numVisualRows;
+          }
+          else {
+            return this.numVisualCols;
+          }
+        }
+      },
+
+
+      visualList() {
+        if (!this.isVisual) {
+          return [];
+        }
+
+        let moreViewsThanSlots = this.numVisuals < this.views.length;
+        let numAvailableSlots = this.numVisuals - (moreViewsThanSlots ? 1 : 0);
+        return bbn.fn.map(
+          bbn.fn.multiorder(
+            this.views,
+            {selected: 'desc', static: 'desc', pinned: 'desc', idx: 'asc'}
+          ),
+          (a, i) => {
+            let visible = false;
+            if (this.visualShowAll || (i <= numAvailableSlots) || (this.selected === a.index)) {
+              visible = true;
+            }
+            return {
+              view: a,
+              visible: visible
+            }
+          }
+        );
       }
     },
 
@@ -475,6 +582,19 @@
         }
         this.numRegistered++;
         this.urls[cp.url] = cp;
+        if (this.isVisual) {
+          cp.$on('view', () => {
+            this.visualShowAll = false;
+            if (this.activeContainer && (this.activeContainer.url !== cp.url)) {
+              this.activeContainer.hide();
+            }
+            if (cp.idx) {
+              this.move(cp.idx, 0);
+              this.activateIndex(0);
+              return;
+            }
+          })
+        }
         let idx = this.search(cp.url);
         if (idx === false) {
           this.add(cp);
@@ -528,7 +648,6 @@
        */
       getRoute(url, force){
         if (!bbn.fn.isString(url)) {
-          bbn.fn.log("error in getRoute with url", url);
           throw Error(bbn._('The component bbn-container must have a valid URL defined'));
         }
 
@@ -633,7 +752,6 @@
        */
       route(url, force) {
         if (!bbn.fn.isString(url)) {
-          bbn.fn.log("error in route with url", url);
           throw Error(bbn._('The component bbn-container must have a valid URL defined'));
         }
         url = bbn.fn.replaceAll('//', '/', url);
@@ -708,7 +826,6 @@
        */
       realRoute(url, st, force, anchor){
         if (!bbn.fn.isString(url) && !bbn.fn.isNumber(url)){
-          bbn.fn.log("error in realRoute with url", url);
           throw Error(bbn._('The component bbn-container must have a valid URL defined'));
         }
         if (this.urls[st]) {
@@ -778,7 +895,6 @@
        */
       activate(url, container){
         if (!bbn.fn.isString(url) ){
-          bbn.fn.log("error in activate with url", url);
           throw Error(bbn._('The component bbn-container must have a valid URL defined'));
         }
         let todo = false;
@@ -797,6 +913,9 @@
             }
           });
           if ( this.activeContainer ){
+            if (this.isVisual && this.activeContainer.idx) {
+              this.move(this.activeContainer.idx, 0);
+            }
             this.activeContainer.show();
             if (this.scrollable && this.nav && !this.breadcrumb) {
               let scroll = this.getRef('horizontal-scroll');
@@ -827,7 +946,6 @@
        */
       changeURL(url, title, replace){
         if (!bbn.fn.isString(url) ){
-          bbn.fn.log("error in changeURL with url", url);
           throw Error(bbn._('The component bbn-container must have a valid URL defined'));
         }
         if ( !bbn.env.isInit ){
@@ -1264,7 +1382,11 @@
               this.hasEmptyURL = true;
             }
             if (this.search(obj2.url) === false) {
-              if (this.isValidIndex(idx)) {
+              if (this.isVisual) {
+                this.views.unshift(obj2);
+
+              }
+              else if (this.isValidIndex(idx)) {
                 this.views.splice(idx, 0, obj2);
               }
               else {
@@ -1290,10 +1412,12 @@
             if ( obj.content ){
               obj.loaded = true;
             }
+
             obj.events = {};
             if ( obj.menu === undefined ){
               obj.menu = [];
             }
+
             index = this.search(obj.url);
             //bbn.fn.warning("ADDING CONTAINER " + obj.current + " (" + index + ")");
             if ( index !== false ){
@@ -1335,7 +1459,14 @@
                   this.$set(obj, n, a);
                 }
               });
-              if (isValid) {
+              if (this.isVisual) {
+                obj.idx = 0;
+                bbn.fn.each(this.views, a => {
+                  a.idx++;
+                });
+                this.views.unshift(obj);
+              }
+              else if (isValid) {
                 this.views.splice(obj.idx, 0, obj);
               }
               else {
@@ -1385,7 +1516,6 @@
        */
       search(url){
         if (!bbn.fn.isString(url) ){
-          bbn.fn.log("error in search with url", url);
           throw Error(bbn._('The component bbn-container must have a valid URL defined'));
         }
         let r = bbn.fn.search(this.views, "url", url);
@@ -1408,7 +1538,6 @@
        */
       callRouter(url, st){
         if (!bbn.fn.isString(url) ){
-          bbn.fn.log("error in callRouter with url", url);
           throw Error(bbn._('The component bbn-container must have a valid URL defined'));
         }
         if ( this.parent ){
@@ -1501,6 +1630,11 @@
               hidden: false
             }, idx);
           }
+          else if (this.isVisual && idx) {
+            this.move(idx, 0);
+            idx = 0;
+          }
+
           if ( this.isBreadcrumb ){
             this.selected = idx;
           }
@@ -1590,7 +1724,7 @@
           );
         }
       },
-      realInit(url) {    
+      realInit(url) {
         if (this.urls[url]) {
           this.urls[url].setLoaded(true);
           // Otherwise the changes we just did on the props wont be taken into account at container level
@@ -1864,60 +1998,62 @@
             }
           });
 
-          let directions = [];
-          if (idx) {
-            if (idx > 1) {
+          if (!this.isVisual) {
+            let directions = [];
+            if (idx) {
+              if (idx > 1) {
+                directions.push({
+                  text: bbn._("First"),
+                  key: "move_first",
+                  icon: "nf nf-mdi-close_circle_outline",
+                  action: () => {
+                    this.move(idx, 0);
+                  }
+                });
+              }
               directions.push({
-                text: bbn._("First"),
-                key: "move_first",
+                text: bbn._("Before"),
+                key: "move_before",
                 icon: "nf nf-mdi-close_circle_outline",
                 action: () => {
-                  this.move(idx, 0);
+                  this.move(idx, idx - 1);
                 }
               });
             }
-            directions.push({
-              text: bbn._("Before"),
-              key: "move_before",
-              icon: "nf nf-mdi-close_circle_outline",
-              action: () => {
-                this.move(idx, idx - 1);
-              }
-            });
-          }
-          if (idx < (this.views.length - 1)) {
-            directions.push({
-              text: bbn._("After"),
-              key: "move_after",
-              icon: "nf nf-mdi-close_circle_outline",
-              action: () => {
-                this.move(idx, idx + 1);
-              }
-            });
-            if (idx < (this.views.length - 2)) {
+            if (idx < (this.views.length - 1)) {
               directions.push({
-                text: bbn._("Last"),
-                key: "move_last",
+                text: bbn._("After"),
+                key: "move_after",
                 icon: "nf nf-mdi-close_circle_outline",
                 action: () => {
-                  this.move(idx, this.views.length - 1);
+                  this.move(idx, idx + 1);
                 }
               });
+              if (idx < (this.views.length - 2)) {
+                directions.push({
+                  text: bbn._("Last"),
+                  key: "move_last",
+                  icon: "nf nf-mdi-close_circle_outline",
+                  action: () => {
+                    this.move(idx, this.views.length - 1);
+                  }
+                });
+              }
             }
-          }
 
-          if (directions.length) {
-            if (directions.length === 1) {
-              directions[0].text = bbn._("Switch position");
-              items.push(directions[0]);
-            }
-            else {
-              items.push({
-                text: bbn._("Move"),
-                key: "move",
-                icon: "nf nf-mdi-close_circle_outline",
-                items: directions
-              });
+            if (directions.length) {
+              if (directions.length === 1) {
+                directions[0].text = bbn._("Switch position");
+                items.push(directions[0]);
+              }
+              else {
+                items.push({
+                  text: bbn._("Move"),
+                  key: "move",
+                  icon: "nf nf-mdi-close_circle_outline",
+                  items: directions
+                });
+              }
             }
           }
         }
@@ -1939,14 +2075,100 @@
             items.push(a);
           });
         }
-        items.push({
-          text: bbn._('Switch to ') + (this.isBreadcrumb ? bbn._('tabs') : bbn._('breadcrumb')) + ' ' + bbn._('mode'),
-          key: 'switch',
-          icon: this.isBreadcrumb ? 'nf nf-mdi-tab' : 'nf nf-fa-ellipsis_h',
-          action: () => {
-            this.itsMaster.isBreadcrumb = !this.itsMaster.isBreadcrumb;
+
+        if (!this.isVisual) {
+          items.push({
+            text: bbn._('Switch to') + ' ' + (this.isBreadcrumb ? bbn._('tabs') : bbn._('breadcrumb')) + ' ' + bbn._('mode'),
+            key: 'switch',
+            icon: this.isBreadcrumb ? 'nf nf-mdi-tab' : 'nf nf-fa-ellipsis_h',
+            action: () => {
+              this.itsMaster.isBreadcrumb = !this.itsMaster.isBreadcrumb;
+            }
+          });
+
+          if (!this.parents.length) {
+            let go = () => {
+              this.isVisual = true;
+              this.onResize();
+              setTimeout(() => {
+                this.activateIndex(this.getIndex(this.getFullCurrentURL()));
+              }, 250)
+            };
+
+            items.push({
+              text: bbn._('Switch to') + ' ' + bbn._('visual') + ' ' + bbn._('mode'),
+              key: 'visual',
+              icon: 'nf nf-fa-eye',
+              action: () => {
+                if (!this.isDirty) {
+                  go();
+                  return;
+                }
+
+                this.confirm(
+                  bbn._("The pages already loaded will be reinitialized") +
+                      '<br>' + bbn._("If you have any unsaved work opened it will be lost.") +
+                      '<br>' + bbn._("Is it ok to continue?"),
+                  () => {
+                    go()
+                  }
+                );
+            }
+            });
           }
-        });
+        }
+        else {
+          const go = () => {
+            this.isVisual = false;
+            this.itsMaster.isBreadcrumb = false;
+            setTimeout(() => {
+              this.activateIndex(this.getIndex(this.getFullCurrentURL()));
+            }, 250)
+          };
+
+          items.push({
+            text: bbn._('Switch to') + ' ' + bbn._('tabs') + ' ' + bbn._('mode'),
+            key: 'tabs',
+            icon: 'nf nf-mdi-tab',
+            action: () => {
+              if (!this.isDirty) {
+                go();
+                return;
+              }
+
+              this.confirm(
+                bbn._("The pages already loaded will be reinitialized") +
+                    '<br>' + bbn._("You should save your unsaved content or it will be lost.") +
+                    '<br>' + bbn._("Is it ok to continue?"),
+                () => {
+                  go();
+                }
+              );
+            }
+          });
+
+          items.push({
+            text: bbn._('Switch to') + ' ' + bbn._('breadcrumb') + ' ' + bbn._('mode'),
+            key: 'breadcrumbs',
+            icon: 'nf nf-fa-ellipsis_h',
+            action: () => {
+              if (!this.isDirty) {
+                go();
+                return;
+              }
+
+              this.confirm(
+                bbn._("The pages already loaded will be reloaded") +
+                    '<br>' + bbn._("If you have any unsaved work opened it will be lost.") +
+                    '<br>' + bbn._("Is it ok to continue?"),
+                () => {
+                  go();
+                }
+              );
+            }
+          });
+        }
+
         return items;
       },
       /**
@@ -2004,7 +2226,8 @@
         let cfg = {
               baseURL: this.parentContainer ? this.parentContainer.getFullURL() : this.storageName,
               views: [],
-              breadcrumb: this.isBreadcrumb
+              breadcrumb: this.isBreadcrumb,
+              visual: this.isVisual
             };
         bbn.fn.each(this.views, (obj, i) => {
           if (obj.url && obj.load) {
@@ -2393,8 +2616,48 @@
               view: window
             });
         ele.dispatchEvent(e);
+      },
+      onResize() {
+        this.keepCool(() => {
+          this.setResizeMeasures();
+          this.setContainerMeasures();
+          if (this.isVisual && (this.orientation === 'auto')) {
+            this.$nextTick(() => {
+              this.visualOrientation = this.lastKnownWidth > this.lastKnownHeight ? 'left' : 'top';
+            })
+          }
+        }, 'resize', 250);
+      },
+      visualStyleContainer(ct) {
+        if (!ct.visible || this.visualShowAll) {
+          return {zoom: 0.1};
+        }
+
+        let num = this.numVisuals + 1;
+        let coord = [1, num, 1, num];
+        switch (this.visualOrientation) {
+          case 'up':
+            coord[2] = 2;
+            break;
+          case 'down':
+            coord[3] = num - 1;
+            break;
+          case 'left':
+            coord[0] = 2;
+            break;
+          case 'right':
+            coord[1] = num - 1;
+            break;
+        }
+
+        return {
+          gridColumnStart: coord[0],
+          gridColumnEnd: coord[1],
+          gridRowStart: coord[2],
+          gridRowEnd: coord[3],
+          zoom: 1
+        }
       }
-      
     },
 
     /**
@@ -2514,6 +2777,9 @@
         if ( storage.breadcrumb !== undefined ){
           this.isBreadcrumb = storage.breadcrumb;
         }
+        if ( storage.visual !== undefined ){
+          this.isVisual = storage.visual;
+        }
         if ( storage.views ){
           bbn.fn.each(storage.views, a => {
             let idx = bbn.fn.search(tmp, {url: a.url});
@@ -2537,7 +2803,8 @@
         }
         this.add(a);
       });
-      
+
+     
       //Breadcrumb
       if (!this.master && this.parent) {
         this.parent.registerBreadcrumb(this);
@@ -2640,6 +2907,15 @@
        * @fires setConfig
        */
       isBreadcrumb(newVal){
+        this.$nextTick(() => {
+          this.setConfig();
+        })
+      },
+      /**
+       * @watch isVisual
+       * @fires setConfig
+       */
+       isVisual() {
         this.$nextTick(() => {
           this.setConfig();
         })

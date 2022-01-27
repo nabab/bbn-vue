@@ -9,7 +9,7 @@
         'bbn-overlay': !nav
       }">
     <!-- START OF BREADCRUMB -->
-    <div v-if="nav && isBreadcrumb"
+    <div v-if="nav && isBreadcrumb && !isVisual"
         ref="breadcrumb"
         :class="['bbn-router-breadcrumb', {'bbn-router-breadcrumb-master': master}]">
       <div v-if="master"
@@ -101,7 +101,7 @@
     </div>
     <!-- END OF BREADCRUMB -->
     <!-- START OF TABS -->
-    <div v-else-if="nav && !isBreadcrumb"
+    <div v-else-if="nav && !isBreadcrumb && !isVisual"
          :class="['bbn-router-tabs', {'bbn-router-tabs-scrollable': scrollable}]"
          ref="tabs">
       <div class="bbn-router-tabs-container">
@@ -218,22 +218,56 @@
       </div>
     </div>
     <!-- END OF TABS -->
+    <!-- START OF CONTENT FOR VISUALNAV -->
+    <div v-if="ready && isVisual"
+         class="bbn-overlay bbn-vspadded">
+      <div class="bbn-100 bbn-router-visual"
+           :style="visualStyle">
+        <slot></slot>
+        <template v-for="a in visualList">
+          <bbn-container v-if="!a.view.real && !component"
+                        :key="a.view.url"
+                        v-show="a.visible"
+                        :visual="true"
+                        v-bind="a.view"/>
+          <bbn-container v-else-if="component && componentSource && componentUrl"
+                        :source="componentSource"
+                        v-show="a.visible"
+                        :visual="true"
+                        :component="component"
+                        :url="componentSource[componentUrl]"/>
+        </template>
+        <div v-if="(selected !== null) && (views.length > numVisuals)"
+             class="bbn-bg-black bbn-white bbn-p"
+             @click="visualShowAll = !visualShowAll">
+          <div class="bbn-100 bbn-middle">
+            <div class="bbn-block bbn-xxxl">
+              <i :class="'nf nf-fa-' + (visualShowAll ? 'minus' : 'plus')"/>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- END OF CONTENT FOR VISUALNAV -->
     <!-- START OF CONTENT -->
     <div :class="{
            'bbn-flex-fill': !!nav,
            'bbn-overlay': !nav
          }"
-         v-if="ready">
+         v-else-if="ready">
       <slot></slot>
       <bbn-container v-for="view in views"
                      v-if="!view.real && !component"
                      :key="view.url"
+                     :visual="false"
                      v-bind="view"/>
       <bbn-container v-if="component && componentSource && componentUrl"
                      :source="componentSource"
                      :component="component"
+                     :visual="false"
                      :url="componentSource[componentUrl]"/>
     </div>
     <!-- END OF CONTENT -->
+    <bbn-loader v-else/>
   </div>
 </div>
