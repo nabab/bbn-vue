@@ -115,7 +115,6 @@
         bbn.fn.iterate(pos, (o, dir) => {
           if ( o[bit.toLowerCase()] !== undefined){
             bbn.fn.iterate(o, (b, k) => {
-              console.log(k, "k")
               if ( bit === k ){
                 pos[dir][k] = true;
               }
