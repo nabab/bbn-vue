@@ -113,10 +113,6 @@
       };
       bbn.fn.each(bits, bit => {
         bbn.fn.iterate(pos, (o, dir) => {
-          console.log(o, "o")
-          console.log(dir, "dir")
-          console.log(bit, "bit")
-          console.log(o[bit.toLowerCase()], "o[bit.toLowerCase()]")
           if ( o[bit.toLowerCase()] !== undefined){
             bbn.fn.iterate(o, (b, k) => {
               console.log(k, "k")
@@ -130,7 +126,6 @@
           }
         });
       });
-      console.log(pos, "--------------pos-----------------")
       return {
         /**
          * @data {Array} [[]] items
