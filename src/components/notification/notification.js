@@ -117,7 +117,7 @@
           console.log(dir, "dir")
           console.log(bit, "bit")
           console.log(o[bit.toLowerCase()], "o[bit.toLowerCase()]")
-          if ( o[bit.toLowerCase()] ){
+          if ( o[bit.toLowerCase()] !== undefined){
             bbn.fn.iterate(o, (b, k) => {
               console.log(k, "k")
               if ( bit === k ){
