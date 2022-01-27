@@ -160,6 +160,7 @@
        */
       open(obj){
         console.log("open() function");
+        console.log(arguments, "arguments");
         let d = {};
         if ( typeof(obj) !== 'object' ){
           for ( let i = 0; i < arguments.length; i++ ){
@@ -206,7 +207,7 @@
           d.index = this.items.length;
           console.log("----------------------------------")
           console.log("this.items.push(d)")
-          // this.items.push(d);
+          this.items.push(d);
           //this.makeWindows();
           return d.uid;
         }
