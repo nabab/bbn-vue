@@ -126,6 +126,8 @@
        */
       popups(){
         let r = [];
+        console.log("popups");
+        console.log(this.items, "this.items----------------");
         bbn.fn.each(this.items, (a, i) => {
           //r.push(this.getObject(bbn.fn.extendOut(a, {index: i})));
           r.push(this.getObject(bbn.fn.extend({}, a, {
@@ -134,7 +136,6 @@
             maxHeight: a.maxHeight || this.lastKnownHeight || this.lastKnownCtHeight || null
           })));
         });
-        console.log("popups");
         console.log(this.items, "this.items");
         console.log(r);
         return r;
@@ -591,6 +592,8 @@
      * @event mounted
      */
     mounted(){
+      console.log("mounted")
+      console.log(this.items, "mounted this.items")
       bbn.fn.each(this.popups, a => this.open(a, false));
     },
     watch: {
