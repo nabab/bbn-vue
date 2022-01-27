@@ -112,7 +112,9 @@
         /**
          * @data [[]] items
          */
-        items: this.source
+        items: this.source,
+        /* isOpened is used to prevent opening same dialog two times */
+        isOpened: false,
       };
     },
     computed: {
@@ -134,8 +136,6 @@
             maxHeight: a.maxHeight || this.lastKnownHeight || this.lastKnownCtHeight || null
           })));
         });
-        console.log(this.items, "popups------------------------")
-        console.log(r, "---------------------------")
         return r;
       },
       /**
@@ -157,8 +157,7 @@
        * @param {Object} obj
        * @return {String|Boolean}
        */
-      open(obj, isNew=false){
-        console.log("open(obj)")
+      open(obj){
         let d = {};
         if ( typeof(obj) !== 'object' ){
           for ( let i = 0; i < arguments.length; i++ ){
@@ -203,15 +202,7 @@
             d.uid = 'bbn-popup-' + bbn.fn.timestamp().toString() + '-' + bbn.fn.randomString(4, 6);
           }
           d.index = this.items.length;
-          console.log(this.items, "------------before push----------")
-          if (isNew) {
-            // this.items = [d];
-            this.items = [];  
-            this.items.push(d);
-          } else {
-            this.items.push(d);
-          }
-          console.log(this.items, "------------after push----------")
+          this.items.push(d);
           //this.makeWindows();
           return d.uid;
         }
@@ -578,17 +569,15 @@
     },
     created(){
       this.componentClass.push('bbn-resize-emitter');
-      console.log("--------- created---------------")
-      bbn.fn.each(this.popups, a => this.open(a, true));
     },
     /**
      * @event mounted
      */
     mounted(){
-      console.log("--------- mounted---------------")
-      // console.log(this.items, "this.items")
-      // console.log(this.source, "this.source")
-      // bbn.fn.each(this.popups, a => this.open(a, true));
+      if (!isOpened) {
+        bbn.fn.each(this.popups, a => this.open(a));
+        isOpened = true;
+      }
     },
     watch: {
       /**
