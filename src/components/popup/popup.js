@@ -126,8 +126,6 @@
        */
       popups(){
         let r = [];
-        console.log("popups");
-        console.log(this.items, "this.items----------------");
         bbn.fn.each(this.items, (a, i) => {
           //r.push(this.getObject(bbn.fn.extendOut(a, {index: i})));
           r.push(this.getObject(bbn.fn.extend({}, a, {
@@ -136,8 +134,6 @@
             maxHeight: a.maxHeight || this.lastKnownHeight || this.lastKnownCtHeight || null
           })));
         });
-        console.log(this.items, "this.items");
-        console.log(r);
         return r;
       },
       /**
@@ -160,8 +156,6 @@
        * @return {String|Boolean}
        */
       open(obj){
-        console.log("open() function");
-        console.log(arguments, "arguments");
         let d = {};
         if ( typeof(obj) !== 'object' ){
           for ( let i = 0; i < arguments.length; i++ ){
@@ -187,7 +181,6 @@
                 d.onOpen = arguments[i];
               }
               else if ( !d.onClose ){
-                console.log("d.onClose = arguments[i];")
                 d.onClose = arguments[i];
               }
             }
@@ -207,14 +200,7 @@
             d.uid = 'bbn-popup-' + bbn.fn.timestamp().toString() + '-' + bbn.fn.randomString(4, 6);
           }
           d.index = this.items.length;
-          console.log("----------------------------------")
-          console.log("this.items.push(d)")
-          // if (isNew) {
           this.items.push(d);
-          // } else {
-          //   this.items = [d];
-          // }
-          console.log(this.items);
           //this.makeWindows();
           return d.uid;
         }
@@ -249,7 +235,6 @@
                 d.onOpen = arguments[i];
               }
               else if ( !d.close ){
-                console.log("else if ( !d.close ){")
                 d.onClose = arguments[i];
               }
             }
@@ -309,7 +294,6 @@
         }
       },
       onClose(index) {
-        console.log("=========onclose============")
         this.items.splice(index, 1);
       },
       /**
@@ -335,7 +319,6 @@
        * @return {String|Boolean}
        */
       loading(){
-        console.log("loading()")
         return this.open({
           title: false,
           content: `
@@ -408,7 +391,6 @@
           }
           else if (bbn.fn.isFunction(arguments[i]) ){
             if ( has_callback ){
-              console.log("if ( has_callback ){")
               onClose = arguments[i];
             }
             else{
@@ -440,7 +422,6 @@
             icon: 'nf nf-fa-check_circle',
             action($ev, btn){
               if ( onClose ){
-                console.log("if ( onClose ){")
                 onClose($ev, btn);
               }
               btn.closest('bbn-floater').close(true);
@@ -457,7 +438,6 @@
             }, 50)
           }
           */
-         console.log("this.open(bbn.fn.extend(o, {")
           this.open(bbn.fn.extend(o, {
             maximizable: false,
             scrollable: true,
@@ -552,7 +532,7 @@
               }
             }
           }];
-          console.log("confirm Open")
+
           this.open(bbn.fn.extend(o, options, {
             resizable: false,
             maximizable: false,
@@ -592,10 +572,10 @@
      * @event mounted
      */
     mounted(){
-      console.log("mounted")
-      console.log(this.source, "this.source");
-      console.log(this.items, "mounted this.items")
-      bbn.fn.each(this.items, a => this.open(a));
+      console.log("--------- mounted---------------")
+      console.log(this.items, "this.items")
+      console.log(this.source, "this.source")
+      bbn.fn.each(this.popups, a => this.open(a));
     },
     watch: {
       /**
