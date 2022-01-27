@@ -584,9 +584,9 @@
      */
     mounted(){
       console.log("--------- mounted---------------")
-      console.log(this.items, "this.items")
-      console.log(this.source, "this.source")
-      bbn.fn.each(this.popups, a => this.open(a, true));
+      // console.log(this.items, "this.items")
+      // console.log(this.source, "this.source")
+      // bbn.fn.each(this.popups, a => this.open(a, true));
     },
     watch: {
       /**
