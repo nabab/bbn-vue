@@ -159,6 +159,7 @@
        * @return {String|Boolean}
        */
       open(obj){
+        console.log("open() function");
         let d = {};
         if ( typeof(obj) !== 'object' ){
           for ( let i = 0; i < arguments.length; i++ ){
@@ -203,6 +204,8 @@
             d.uid = 'bbn-popup-' + bbn.fn.timestamp().toString() + '-' + bbn.fn.randomString(4, 6);
           }
           d.index = this.items.length;
+          console.log("----------------------------------")
+          console.log("this.items.push(d)")
           this.items.push(d);
           //this.makeWindows();
           return d.uid;
@@ -322,6 +325,7 @@
        * @return {String|Boolean}
        */
       loading(){
+        console.log("loading()")
         return this.open({
           title: false,
           content: `
@@ -441,6 +445,7 @@
             }, 50)
           }
           */
+         console.log("this.open(bbn.fn.extend(o, {")
           this.open(bbn.fn.extend(o, {
             maximizable: false,
             scrollable: true,
@@ -535,7 +540,7 @@
               }
             }
           }];
-
+          console.log("confirm Open")
           this.open(bbn.fn.extend(o, options, {
             resizable: false,
             maximizable: false,
