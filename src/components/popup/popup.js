@@ -128,6 +128,8 @@
        */
       popups(){
         let r = [];
+        console.log("-------popups----------")
+        console.log(this.items, "---------this.items---------")
         bbn.fn.each(this.items, (a, i) => {
           //r.push(this.getObject(bbn.fn.extendOut(a, {index: i})));
           r.push(this.getObject(bbn.fn.extend({}, a, {
@@ -136,6 +138,7 @@
             maxHeight: a.maxHeight || this.lastKnownHeight || this.lastKnownCtHeight || null
           })));
         });
+        console.log(r, "---------------r--------------")
         return r;
       },
       /**
@@ -157,7 +160,7 @@
        * @param {Object} obj
        * @return {String|Boolean}
        */
-      open(obj){
+      open(obj, isNew=false){
         let d = {};
         if ( typeof(obj) !== 'object' ){
           for ( let i = 0; i < arguments.length; i++ ){
@@ -202,7 +205,12 @@
             d.uid = 'bbn-popup-' + bbn.fn.timestamp().toString() + '-' + bbn.fn.randomString(4, 6);
           }
           d.index = this.items.length;
-          this.items.push(d);
+          if (!isNew) {
+            this.items.push(d);
+          } else {
+            console.log("isNew is true----------------")
+          }
+          
           //this.makeWindows();
           return d.uid;
         }
@@ -574,8 +582,11 @@
      * @event mounted
      */
     mounted(){
+      console.log(this.isOpened, "-------------this.isOpened------------")
+      console.log(this.items, "-------------this.items----------------")
+      console.log(this.popups, "-----------------this.popups------------------")
       if (!this.isOpened) {
-        bbn.fn.each(this.popups, a => this.open(a));
+        bbn.fn.each(this.popups, a => this.open(a, true));
         this.isOpened = true;
       }
     },
