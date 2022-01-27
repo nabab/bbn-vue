@@ -155,7 +155,7 @@
        * @param {Object} obj
        * @return {String|Boolean}
        */
-      open(obj){
+      open(obj, isNew=false){
         console.log("open(obj)")
         let d = {};
         if ( typeof(obj) !== 'object' ){
@@ -202,7 +202,11 @@
           }
           d.index = this.items.length;
           console.log(this.items, "------------before push----------")
-          this.items.push(d);
+          if (isNew) {
+            this.items = [d];  
+          } else {
+            this.items.push(d);
+          }
           console.log(this.items, "------------after push----------")
           //this.makeWindows();
           return d.uid;
@@ -578,7 +582,7 @@
       console.log("--------- mounted---------------")
       console.log(this.items, "this.items")
       console.log(this.source, "this.source")
-      bbn.fn.each(this.popups, a => this.open(a));
+      bbn.fn.each(this.popups, a => this.open(a, true));
     },
     watch: {
       /**
