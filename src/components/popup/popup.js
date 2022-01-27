@@ -156,6 +156,7 @@
        * @return {String|Boolean}
        */
       open(obj){
+        console.log("open(obj)")
         let d = {};
         if ( typeof(obj) !== 'object' ){
           for ( let i = 0; i < arguments.length; i++ ){
@@ -200,7 +201,9 @@
             d.uid = 'bbn-popup-' + bbn.fn.timestamp().toString() + '-' + bbn.fn.randomString(4, 6);
           }
           d.index = this.items.length;
+          console.log(this.items, "------------before push----------")
           this.items.push(d);
+          console.log(this.items, "------------after push----------")
           //this.makeWindows();
           return d.uid;
         }
