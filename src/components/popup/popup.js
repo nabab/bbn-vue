@@ -206,7 +206,7 @@
           d.index = this.items.length;
           console.log("----------------------------------")
           console.log("this.items.push(d)")
-          this.items.push(d);
+          // this.items.push(d);
           //this.makeWindows();
           return d.uid;
         }
