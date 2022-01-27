@@ -574,9 +574,9 @@
      * @event mounted
      */
     mounted(){
-      if (!isOpened) {
+      if (!this.isOpened) {
         bbn.fn.each(this.popups, a => this.open(a));
-        isOpened = true;
+        this.isOpened = true;
       }
     },
     watch: {
