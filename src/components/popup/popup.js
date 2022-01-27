@@ -211,7 +211,7 @@
           if (isNew) {
             this.items.push(d);
           } else {
-            this.items = d;
+            this.items = [d];
           }
           console.log(this.items);
           //this.makeWindows();
