@@ -578,6 +578,7 @@
     },
     created(){
       this.componentClass.push('bbn-resize-emitter');
+      console.log("--------- created---------------")
       bbn.fn.each(this.popups, a => this.open(a, true));
     },
     /**
