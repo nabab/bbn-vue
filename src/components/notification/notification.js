@@ -15,11 +15,11 @@
     mixins: [bbn.vue.basicComponent],
     props: {
       /**
-       * @prop {Number}, [0] delay
+       * @prop {Number}, [5000] delay
        */
       delay: {
         type: Number,
-        default: 0
+        default: 5000
       },
       /**
        * @prop pinned
@@ -144,15 +144,6 @@
          */
         positions: {}
       };
-    },
-    mounted() {
-      bbn.fn.each(this.source, item => {
-        let delay = item.delay ? item.delay : this.delay;
-        console.log(delay, "delay");
-        setTimeout(() => {
-          this.items.push(item);
-        }, delay);
-      });
     },
     methods: {
       /**
