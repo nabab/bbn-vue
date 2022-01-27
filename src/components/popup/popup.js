@@ -205,7 +205,8 @@
           d.index = this.items.length;
           console.log(this.items, "------------before push----------")
           if (isNew) {
-            this.items = [d];  
+            // this.items = [d];  
+            this.items.push(d);
           } else {
             this.items.push(d);
           }
