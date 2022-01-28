@@ -22,10 +22,6 @@
         default: 5000
       },
       /**
-       * @prop pinned
-       */
-      pinned: {},
-      /**
        * @prop {String}, ['bottom-left'] position
        */
       position: {
