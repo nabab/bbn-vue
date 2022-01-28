@@ -8,14 +8,6 @@
        :style="orientationStyle"
        type="type"
   >
-    <div :class="['bbn-wrap', realValuePosition, 'bbn-no-border']"
-         style="height: 100%"
-    >
-      <div :class="['bbn-progress-status', {'bbn-hspadded': (orientation === 'horizontal')}]"
-            v-text="(showValue ? (value + ( showUnit ? unit : '' ) ) : '') + (!!text ? ( showValue ? ' ' : '') + '(' + text + ')' : '')"
-            :style="textColor.length ? 'color: '+ textColor : ''"
-      ></div>
-    </div>
     <div :class="['bbn-overlay', barClass]"
          :style="style"
          v-if="type !== 'chunk'"
@@ -29,5 +21,13 @@
            :style="barColor.length && ( ((!reverse) && (n <= selectedChunks)) || ((reverse) && (n > chunknumber - selectedChunks))) ? 'background-color:'+ barColor : ''"
            v-for="n in chunknumber"
       ></div>
+    </div>
+    <div :class="['bbn-wrap', realValuePosition, 'bbn-no-border']"
+        style="height: 100%"
+    >
+    <div :class="['bbn-progress-status', {'bbn-hspadded': (orientation === 'horizontal')}]"
+          v-text="(showValue ? (value + ( showUnit ? unit : '' ) ) : '') + (!!text ? ( showValue ? ' ' : '') + '(' + text + ')' : '')"
+          :style="textColor.length ? 'color: '+ textColor + '!important' : ''"
+    ></div>
     </div>
   </div>

@@ -190,6 +190,7 @@
          * @data {String} [''] realValuePosition
          */
         realValuePosition: '',
+        percent: 0,
       }
     },
     computed: {
@@ -215,16 +216,19 @@
       style(){
         let st = '';
         if ( this.orientation === 'horizontal' ){
-          st += 'width:' + this.value  + '%;'
+          st += 'width:' + this.percent  + '%;'
         }
         else if ( this.orientation === 'vertical' ){
-          st += 'height:' + this.value  + '%;'
+          st += 'height:' + this.percent  + '%;'
         }
         if ( this.barColor ){
           st += 'background-color: ' + this.barColor + '!important;border-color: '+ this.barColor + '!important;'
         }
+        if (this.reverse) {
+          st += 'margin-left: auto;'
+        }
         return st;
-      }
+      },
     },
     /**
      * Checks the type of the value 
@@ -234,6 +238,10 @@
     beforeMount(){
       if ( this.type === 'percent' ){
         this.unit = '%';
+        this.percent = this.value;
+      }
+      if(this.type === 'value') {
+        this.percent = (this.value - this.min) / (this.max - this.min) * 100;
       }
       if ( this.value ){
         if( bbn.fn.isString(this.value) ){
@@ -250,14 +258,16 @@
           this.realValuePosition = this.valuePosition;
         }
       }
-      else if ( (this.orientation === 'horizontal') && (this.width) ){
+      else if (this.orientation === 'horizontal') {
         this.realValuePosition = this.valuePosition;
+      }
+      if ( (this.orientation === 'horizontal') && (this.width) ){
         st += 'height: 1.9em; min-width: ' + (bbn.fn.isNumber(this.width) ? ( this.width  + 'px') : this.width);
       }
       this.orientationStyle = st += ';';
       if ( this.type === 'chunk' ){
         this.chunknumber = ( this.max - this.min ) / this.step,
-        this.selectedChunks = this.value / this.chunknumber;
+        this.selectedChunks = (this.value / 100) * this.chunknumber;
       }
       if ( this.max && ( this.value > this.max ) ){
         this.emitInput(this.max);
