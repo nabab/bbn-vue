@@ -252,7 +252,7 @@
        */
       isValidChar(char, pos){
         let k = this.mask.charAt(this.posLink[pos])
-        return !!(this.patterns[k] && this.patterns[k].pattern && char.match(this.patterns[k].pattern))
+        return !!(this.patterns[k] && this.patterns[k].pattern && char.match(this.patterns[k].pattern) && (char !== this.promptChar))
       },
       /**
        * Checks if the pressed key is a special key.
@@ -763,7 +763,7 @@
               this.patterns[this.mask[this.posLink[i]]] &&
               this.patterns[this.mask[this.posLink[i]]].pattern
             ){
-              if ( c.match(this.patterns[this.mask[this.posLink[i]]].pattern) ){
+              if ( c.match(this.patterns[this.mask[this.posLink[i]]].pattern) && (c !== this.promptChar)){
                 ret += c
               }
             }
