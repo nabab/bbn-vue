@@ -70,11 +70,11 @@
           },
           // Digit or space. Accepts any digit between 0 and 9, plus space.
           9: {
-            pattern: '[0-9\s]'
+            pattern: '[0-9\\s]'
           },
           // Digit or space. Like 9 rule, but allows also (+) and (-) signs.
           '#': {
-            pattern: '[0-9\s\\+\\-]'
+            pattern: '[0-9\\s\\+\\-]'
           },
           // Letter. Restricts the input to letters a-z and A-Z. This rule is equivalent to [a-zA-Z] in regular expressions.
           'L': {
@@ -82,13 +82,15 @@
           },
           // Letter or space. Restricts the input to letters a-z and A-Z. This rule is equivalent to [a-zA-Z] in regular expressions.
           '?': {
-            pattern: '[a-zA-Z\s]'
+            pattern: '[a-zA-Z\\s]'
           },
           // Character. Accepts any character. The rule is equivalent to \S in regular expressions.
+          // in this case, promptChar can't be special character. eg: It can't be "_"
           '&': {
-            pattern: '\S'
+            pattern: '[0-9a-zA-Z\\S]'
           },
           // Character or space. Accepts any character. The rule is equivalent to . in regular expressions.
+          // in this case, promptChar can't be special character. eg: It can't be "_"
           'C': {
             pattern: '.'
           },
@@ -98,7 +100,7 @@
           },
           // Alphanumeric or space. Accepts letters, digits and spaces only.
           'a': {
-            pattern: '[0-9a-zA-Z\s]'
+            pattern: '[0-9a-zA-Z\\s]'
           },
           // Decimal placeholder. The decimal separator will be generated from the bbn.env.money property.
           '.': {
