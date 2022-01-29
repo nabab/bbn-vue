@@ -7,6 +7,48 @@
 (function(bbn, Vue){
   "use strict";
 
+  const possibleOrientations = [
+    {
+      name: 'auto',
+      text: bbn._("Position automatically")
+    }, {
+      name: 'left',
+      text: bbn._("Position on the left side")
+    }, {
+      name: 'top',
+      text: bbn._("Position on the top side")
+    }, {
+      name: 'bottom',
+      text: bbn._("Position on the bottom side")
+    }, {
+      name: 'right',
+      text: bbn._("Position on the right side")
+    }
+  ];
+
+  let db = false;
+  if (bbn.db && bbn.db.ok && window.html2canvas) {
+    db = true;
+    if (!bbn.db._structures.bbn || !bbn.db._structures.bbn.containers) {
+      bbn.db.add('bbn', 'containers', {
+        keys: {
+          PRIMARY: {
+            columns: ['url'],
+            unique: true
+          }
+        },
+        fields: {
+          url: {
+
+          },
+          image: {
+
+          }
+        }
+      });
+    }
+  }
+
   Vue.component("bbn-router", {
     name: 'bbn-router',
     /**
@@ -215,7 +257,7 @@
        * The size of every grid cell on which is based the visual view
        * @prop {Number} [180] visualSize
        */
-       visualSize: {
+      visualSize: {
         type: Number,
         default: 180
       },
@@ -223,18 +265,19 @@
        * The position of the visual mini containers
        * @prop {Number} [180] visualSize
        */
-       orientation: {
+      orientation: {
         type: String,
         default(){
           return 'auto'
         },
         validator(v) {
-          return ['left', 'up', 'bottom', 'right', 'auto'].includes(v)
+          return !!bbn.fn.getRow(possibleOrientations, {name: v})
         }
       }
     },
     data(){
       return {
+        db: null,
         /**
          * Number of conatainers registered - as they say it.
          * @data {Number} [0] numRegistered
@@ -544,6 +587,7 @@
           }
         );
       }
+
     },
 
     methods: {
@@ -2126,6 +2170,36 @@
             }, 250)
           };
 
+          let visualPositions = [];
+          bbn.fn.each(possibleOrientations, a => {
+            if ((a.name === 'auto') && (this.orientation === 'auto') && !this.lockedOrientation) {
+              return;
+            }
+
+            if (this.visualOrientation !== a.name) {
+              visualPositions.push({
+                text: a.text,
+                icon: a.name === 'auto' ? 'nf nf-mdi-auto_fix' : 'nf nf-mdi-border_' + a.name,
+                action: () => {
+                  if (a.name === 'auto') {
+                    this.lockedOrientation = false;
+                  }
+                  else {
+                    this.visualOrientation = a.name;
+                    this.lockedOrientation = true;
+                  }
+                  this.onResize();
+                  this.setConfig();
+                }
+              });
+            }
+          });
+          items.push({
+            text: bbn._("Change visual blocks' position"),
+            icon: 'nf nf-mdi-cursor_move',
+            items: visualPositions
+          });
+
           items.push({
             text: bbn._('Switch to') + ' ' + bbn._('tabs') + ' ' + bbn._('mode'),
             key: 'tabs',
@@ -2224,11 +2298,13 @@
        */
       getConfig(){
         let cfg = {
-              baseURL: this.parentContainer ? this.parentContainer.getFullURL() : this.storageName,
-              views: [],
-              breadcrumb: this.isBreadcrumb,
-              visual: this.isVisual
-            };
+          baseURL: this.parentContainer ? this.parentContainer.getFullURL() : this.storageName,
+          views: [],
+          breadcrumb: this.isBreadcrumb,
+          visual: this.isVisual,
+          orientation: this.lockedOrientation ? this.visualOrientation : null
+        };
+
         bbn.fn.each(this.views, (obj, i) => {
           if (obj.url && obj.load) {
             let res = {
@@ -2621,7 +2697,7 @@
         this.keepCool(() => {
           this.setResizeMeasures();
           this.setContainerMeasures();
-          if (this.isVisual && (this.orientation === 'auto')) {
+          if (this.isVisual && (this.orientation === 'auto') && !this.lockedOrientation) {
             this.$nextTick(() => {
               this.visualOrientation = this.lastKnownWidth > this.lastKnownHeight ? 'left' : 'top';
             })
@@ -2665,7 +2741,7 @@
      */
     created(){
       this.componentClass.push('bbn-resize-emitter');
-        /**
+      /**
        * @event route
        * @fires setconfig
        */
@@ -2705,6 +2781,14 @@
         this.baseURL = this.setBaseURL(uri);
       }
       else{
+        if (db) {
+          bbn.db.open('bbn').then(r => {
+            this.db = r;
+          }, err => {
+            bbn.fn.log("Connection error in router", err);
+          });
+        }
+
         window.addEventListener("beforeunload", e =>{
           e = e || window.event;
           //if ( $(".bbn-tabnav-unsaved").length ){
@@ -2777,9 +2861,16 @@
         if ( storage.breadcrumb !== undefined ){
           this.isBreadcrumb = storage.breadcrumb;
         }
-        if ( storage.visual !== undefined ){
+
+        if (storage.visual !== undefined) {
           this.isVisual = storage.visual;
         }
+
+        if (storage.orientation) {
+          this.visualOrientation = storage.orientation;
+          this.lockedOrientation = true;
+        }
+
         if ( storage.views ){
           bbn.fn.each(storage.views, a => {
             let idx = bbn.fn.search(tmp, {url: a.url});

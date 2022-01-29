@@ -342,10 +342,6 @@
          */
         currentButtons: this.buttons.slice(),
         /**
-         * @data {Array} [[]] mountedComponents
-         */
-        mountedComponents: [],
-        /**
          * @data {Boolean} [false] isOver
          */
         isOver: false,
@@ -638,19 +634,6 @@
         }
       },
       /**
-       * @todo not used the method getComponents() doesn't exist
-       */
-      updateComponents() {
-        bbn.fn.each(this.getComponents(), a => {
-          if (a.$vnode.componentOptions) {
-            let type = a.$vnode.componentOptions.tag || a._uid;
-            if (this.mountedComponents.indexOf(type) === -1) {
-              this.mountedComponents.push(type);
-            }
-          }
-        })
-      },
-      /**
        * Defines the position of the floater.
        * @method _getCoordinates
        * @return {Object}
@@ -824,12 +807,10 @@
                 this.isInit = true;
               }
 
-              this.$forceUpdate();
               this.$nextTick(() => {
                 this.isResizing = false;
                 this.$nextTick(() => {
                   this.setResizeMeasures();
-                  this.$forceUpdate();
                   this.$nextTick(() => {
                     this.updatePosition();
                     if (!this.isResized) {
@@ -1440,24 +1421,9 @@
       scrollReady(v) {
         bbn.fn.log("Floater: SCROLL ready");
         if (v) {
-          let nb = this.mountedComponents.length;
-          let to = null;
-          let fn = () => {
-            if (to) {
-              clearTimeout(to);
-            }
-            to = setTimeout(() => {
-              this.updateComponents();
-              if (this.mountedComponents.length !== nb) {
-                nb = this.mountedComponents.length;
-                fn();
-              }
-              else {
-                this.realResize();
-              }
-            }, 50)
-          };
-          fn();
+          to = setTimeout(() => {
+            this.realResize();
+          }, 150)
         }
       },
       /**

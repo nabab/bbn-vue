@@ -1,6 +1,7 @@
 (() => {
   Vue.directive('focused', {
     inserted(el, binding) {
+      bbn.fn.log("INSERTED FOCUSED DIRECTIVE", el, binding);
       if (binding.value === false) {
         return;
       }

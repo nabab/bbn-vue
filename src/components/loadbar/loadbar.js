@@ -167,12 +167,6 @@
         if (this.link) {
           bbn.fn.link(this.link);
         }
-      },
-      focusInput(){
-        let input = this.find('bbn-input');
-        if (input) {
-          input.getRef('element').focus();
-        }
       }
     },
     /**

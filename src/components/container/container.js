@@ -132,7 +132,8 @@
         currentURL: this.current || this.url,
         hasLoader: false,
         isOver: false,
-        _bbn_container: null
+        _bbn_container: null,
+        thumbnail: false
       };
     },
     computed: {
@@ -498,6 +499,70 @@
         if (this.visual) {
           return this.router.getMenuFn(this.idx);
         }
+      },
+      takeScreenshot(num_tries = 0) {
+        if (this.router.db && window.html2canvas) {
+          setTimeout(() => {
+            let prom;
+            let scroll = this.getRef('scroll');
+            if (!scroll) {
+              if (num_tries <= 10) {
+                this.takeScreenshot(num_tries + 1);
+              }
+
+              return;
+            }
+
+            let w  = scroll.lastKnownWidth;
+            let h  = scroll.lastKnownHeight;
+            let ct = this.getRef('canvasSource');
+            if (!w || !h) {
+              if (num_tries <= 10) {
+                this.takeScreenshot(num_tries + 1);
+              }
+
+              return;
+            }
+
+            ct.style.width = w + 'px';
+            ct.style.height = h + 'px';
+            try {
+              prom = html2canvas(this.getRef('canvasSource'), {
+                width: w,
+                height: h
+              });
+            }
+            catch (e) {
+              bbn.fn.log("Error");
+              return;
+            }
+
+            prom.then(
+              canvas => {
+                let img = bbn.fn.canvasToImage(canvas);
+                if (!img) {
+                  bbn.fn.log("Error for screenshot image");
+                  return;
+                }
+                ct.style.width = null;
+                ct.style.height = null;
+
+                let ctx   = canvas.getContext('2d');
+                let size  = Math.min(w, h);
+                let num   = Math.min(this.router.numVisualCols, this.router.numVisualRows);
+                let msize = Math.ceil(size / num);
+                ctx.drawImage(img, 0, 0, size, size, 0, 0, msize, msize);
+                this.router.db.insert('containers', {
+                  url: this.getFullURL(),
+                  image: img.src
+                });
+              },
+              error => {
+                bbn.fn.log("ERROR", error);
+              }
+            );
+          }, 1000)
+        }
       }
     },
     /**
@@ -517,6 +582,14 @@
       }
       // The router is needed
       this.router = this.closest('bbn-router');
+      if (this.visual && this.router.db) {
+        let url = this.getFullURL();
+        this.router.db.selectOne('containers', 'image', {url: url}).then(res => {
+          if (res) {
+            this.thumbnail = res;
+          }
+        })
+      }
     },
     /**
      * @event mounted
@@ -580,6 +653,9 @@
           if (this.onMount) {
             this.onMount(this.$el, this.source);
           }
+          if (this.visual && this.visible) {
+            this.takeScreenshot();
+          }
         }
       },
       load(nv, ov){
@@ -605,63 +681,9 @@
             this.$nextTick(() => {
               this.onResize();
             });
-          }
-          else if (this.visual) {
-            /*
-            setTimeout(() => {
-              let ct = this.getRef('canvasSource');
-              let w = Math.ceil(ct.clientWidth);
-              let h = Math.ceil(ct.clientHeight);
-              ct.style.width = w + 'px';
-              ct.style.height = h + 'px';
-              bbn.fn.log("CANVAS", w, h);
-              html2canvas(this.getRef('canvasSource'), {
-                width: w,
-                height: h
-              }).then(canvas => {
-                let img = bbn.fn.canvasToImage(canvas);
-                let ctx = camnvas.getContext('2D');
-                ctx.drawImage(img, 0, 0, w, h, 0, 0, Math.ceil(w/10), Math.ceil(h/10));
-                ct.style.width = null;
-                ct.style.height = null;
-                this.getPopup({
-                  component: {
-                    render(createElement) {
-                      return createElement(
-                        'div',
-                        {
-                          class: {
-                            'bbn-block': true
-                          },
-                          style: {
-                            width: Math.ceil(w/10) + 'px',
-                            height: Math.ceil(h/10) + 'px'
-                          }
-                        },
-                        [
-                          createElement(
-                            'img',
-                            {
-                              style: {
-                                maxWidth: '100%',
-                                maxHeight: '100%',
-                                width: 'auto',
-                                height: 'auto'
-                              },
-                              attrs: {
-                                src: img.src
-                              }
-                            }
-                          )
-                        ]
-                      )
-                    }
-                  },
-                  title: false
-                })
-              });
-            },2000)
-            */
+            if (this.ready && this.visual) {
+              this.takeScreenshot();
+            }
           }
         });
       },

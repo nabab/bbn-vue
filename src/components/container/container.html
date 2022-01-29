@@ -12,25 +12,32 @@
     }"
          v-show="visible || visual">
       <div v-if="visual && (!visible || ready)"
-           :class="'bbn-b bbn-hpadded bbn-vspadded ' + (visible ? ' bbn-m' : '')"
+           :class="'bbn-b bbn-hpadded bbn-vspadded bbn-flex-width ' + (visible ? ' bbn-m' : '')"
            :style="{
              fontSize: visible && !router.visualShowAll ? null : '10em',
              backgroundColor: bcolor || '#666',
              color: fcolor || '#EEE'
            }">
-        <bbn-context v-if="visible"
-                     class="bbn-right-sspace bbn-lg bbn-p"
-                     :floater-title="_('Container menu')"
-                     tag="span"
-                     :source="showMenu">
-          <i class="nf nf-fa-bars"/>
-        </bbn-context>
-        <span v-if="icon"
-              class="bbn-right-sspace bbn-lg">
-          <i :class="icon"/>
-        </span>
-        <span v-text="title"
-              style="overflow: hidden"/>
+        <div class="bbn-flex-fill bbn-vmiddle">
+          <bbn-context v-if="visible"
+                      class="bbn-right-sspace bbn-lg bbn-p"
+                      :floater-title="_('Container menu')"
+                      tag="span"
+                      :source="showMenu">
+            <i class="nf nf-fa-bars"/>
+          </bbn-context>
+          <span v-if="icon"
+                class="bbn-right-sspace bbn-lg">
+            <i :class="icon"/>
+          </span>
+          <span v-text="title"
+                style="overflow: hidden"/>
+        </div>
+        <div v-if="visible"
+             class="bbn-block bbn-p bbn-vmiddle bbn-h-100"
+             @click="close">
+          <i class="nf nf-fa-times bbn-lg"/>
+        </div>
       </div>
       <div :class="{
         'bbn-background': true,
@@ -72,6 +79,13 @@
           <bbn-loader v-if="hasLoader"/>
         </component>
         <bbn-loader v-else-if="visible || loading"/>
+        <div v-else-if="visual && thumbnail"
+             style="overflow: hidden"
+             class="bbn-overlay">
+          <img :src="thumbnail"
+               style="width: 100%; max-height: 100%; height: auto">
+        </div>
+            
         <span  v-if="fullScreen"
               class="bbn-container-full-screen-closer bbn-xl bbn-p">
           <i class="nf nf-fa-times_circle"
