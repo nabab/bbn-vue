@@ -263,6 +263,10 @@
       },
       pagerElement: {
         type: Vue
+      },
+      headerTitle: {
+        type: Boolean,
+        default: false
       }
     },
     data() {
@@ -447,12 +451,6 @@
         return s;
       },
       containerStyle(){
-        if (this.isResizing && this.currentMaxWidth) {
-          return {
-            width: this.formatSize(this.currentMaxWidth),
-            height: this.formatSize(this.currentMaxHeight)
-          };
-        }
         return {
           width: '100%',
           height: '100%'
@@ -671,14 +669,12 @@
       hide() {
         this.currentVisible = false;
       },
-      onResize(force){
-        //bbn.fn.log("onResize floater", this.scrollResized, this.isVisible);
+      onResize(force) {
         if ((!this.scrollable || this.scrollResized)
             && this.isVisible
             && this.$el
             && (this.setContainerMeasures() || !this.isInit || force)
         ) {
-          //bbn.fn.log("onResize2");
           this.realResize();
         }
       },
@@ -714,10 +710,10 @@
                   this.realWidth = this.definedWidth;
                   this.currentHeight = this.definedHeight;
                   this.realHeight = this.definedHeight;
-                  this.updatePosition();
                   resolve(1);
                   return;
                 }
+
                 resolve(0);
                 return;
               }
@@ -728,71 +724,95 @@
                 this.resizerFn = setTimeout(() => {
                   this.resizerFn = false;
                   let scroll = this.getRef('scroll');
-                  bbn.fn.log(scroll);
                   if (!scroll || !scroll.ready){
                     // We do nothing and wait that the scroll does the resize
                     resolve(0);
                     return;
                   }
-                  // this will change the dimension and the visibility the time to calculate the sizes
-                  scroll.getNaturalDimensions().then(() => {
-                    let dimensions = {
-                      w: scroll.naturalWidth,
-                      h: scroll.naturalHeight
-                    };
-                    /*
-                    let footer;
-                    if (this.footer) {
-                      footer = this.getRef('footer');
-                    }
-                    else if(this.currentButtons.length) {
-                      footer = this.getRef('buttons');
+
+                  let naturalWidth;
+                  let naturalHeight;
+                  if (!this.isResized) {
+                    scroll.$el.style.width = this.formatSize(this.currentMaxWidth || '100%');
+                    scroll.$el.style.height = this.formatSize(this.currentMinHeight || '0px');
+                    let contentEle = scroll.getRef('scrollContent');
+                    let containerEle = scroll.getRef('scrollContainer');
+                    naturalHeight = contentEle.scrollHeight;
+                    if (!naturalHeight) {
+                      this.isResizing = false;
+                      resolve();
+                      return;
                     }
 
-                    if (footer) {
-                      dimensions.h += footer.clientHeight || 0;
+                    let w = scroll.$el.clientWidth;
+                    let step = Math.ceil(w/10);
+                    let num = 1;
+                    scroll.$el.style.height = this.formatSize(naturalHeight);
+                    let testWidth = w;
+                    naturalWidth = w;
+                    while (
+                      (testWidth > 0)
+                      && (naturalHeight === containerEle.scrollHeight)
+                      && (containerEle.scrollWidth === containerEle.clientWidth)
+                    ) {
+                      naturalWidth = testWidth;
+                      testWidth = w - (num * step);
+                      scroll.$el.style.width = this.formatSize(testWidth);
+                      num++;
                     }
-                    */
-                    let scrollChange = false;
-                    if (this.scrollWidth !== dimensions.w) {
-                      scrollChange = true;
-                      this.scrollWidth = dimensions.w;
-                    }
-                    if (this.scrollHeight !== dimensions.h) {
-                      scrollChange = true;
-                      this.scrollHeight = dimensions.h;
-                    }
-                    let currentHeight = this.definedHeight || 0;
-                    let currentWidth = this.definedWidth || 0;
-                    if ( !currentHeight ){
-                      currentHeight = this.scrollHeight + this.outHeight;
-                    }
-                    if ( currentHeight > this.currentMaxHeight ){
-                      currentHeight = this.currentMaxHeight;
-                    }
-                    if ( !currentWidth ){
-                      currentWidth = this.scrollWidth;
-                    }
-                    if ( currentWidth > this.currentMaxWidth ){
-                      currentWidth = this.currentMaxWidth;
-                    }
-                    if ( currentHeight < this.currentMinHeight ){
-                      currentHeight = this.currentMinHeight;
-                    }
-                    if ( currentWidth < this.currentMinWidth ){
-                      currentWidth = this.currentMinWidth;
-                    }
-                    let isChanged = 0;
-                    if (!this.realWidth || (Math.abs(this.realWidth - currentWidth) > 2)) {
-                      isChanged = 1;
-                      this.realWidth = currentWidth;
-                    }
-                    if (!this.realHeight || (Math.abs(this.realHeight - currentHeight) > 2)) {
-                      isChanged = 1;
-                      this.realHeight = currentHeight;
-                    }
-                    resolve(isChanged);
-                  });
+                    scroll.$el.style.width = null;
+                    scroll.$el.style.height = null;
+                  }
+                  else {
+                    let contentEle = scroll.getRef('scrollContent');
+                    naturalWidth = contentEle.scrollWidth;
+                    naturalHeight = contentEle.scrollHeight;
+                  }
+                  let dimensions = {
+                    w: naturalWidth,
+                    h: naturalHeight
+                  };
+                  let scrollChange = false;
+                  if (this.scrollWidth !== dimensions.w) {
+                    scrollChange = true;
+                    this.scrollWidth = dimensions.w;
+                  }
+
+                  if (this.scrollHeight !== dimensions.h) {
+                    scrollChange = true;
+                    this.scrollHeight = dimensions.h;
+                  }
+
+                  let currentHeight = this.definedHeight || 0;
+                  let currentWidth = this.definedWidth || 0;
+                  if ( !currentHeight ){
+                    currentHeight = this.scrollHeight + this.outHeight;
+                  }
+                  if ( currentHeight > this.currentMaxHeight ){
+                    currentHeight = this.currentMaxHeight;
+                  }
+                  if ( !currentWidth ){
+                    currentWidth = this.scrollWidth;
+                  }
+                  if ( currentWidth > this.currentMaxWidth ){
+                    currentWidth = this.currentMaxWidth;
+                  }
+                  if ( currentHeight < this.currentMinHeight ){
+                    currentHeight = this.currentMinHeight;
+                  }
+                  if ( currentWidth < this.currentMinWidth ){
+                    currentWidth = this.currentMinWidth;
+                  }
+                  let isChanged = 0;
+                  if (!this.realWidth || (Math.abs(this.realWidth - currentWidth) > 2)) {
+                    isChanged = 1;
+                    this.realWidth = currentWidth;
+                  }
+                  if (!this.realHeight || (Math.abs(this.realHeight - currentHeight) > 2)) {
+                    isChanged = 1;
+                    this.realHeight = currentHeight;
+                  }
+                  resolve(isChanged);
                 }, this.latency);
               }
             }
@@ -815,9 +835,8 @@
                     this.updatePosition();
                     if (!this.isResized) {
                       this.isResized = true;
-                      bbn.fn.log("Floater: resized gets TRUE");
                     }
-                    bbn.fn.log("Floater: resizing again");
+
                     this.$emit('resize');
                     if (!wasInit) {
                       if (this.onOpen) {
@@ -970,7 +989,6 @@
                   a.res = 0;
                   size = this['container' + a.camel];
                 }
-                bbn.fn.log(a.res)
               }
             }
             // If the floater is horizontal, it will ideally start at the
@@ -1058,9 +1076,14 @@
        * @fires onResize
        * @fires updateComponents
        */
-      scrollResize() {
+      scrollResize(e, dimensions) {
         if (!this.scrollResized) {
           this.scrollResized = true;
+        }
+
+        e.preventDefault();
+        if ((dimensions.width !== this.scrollWidth) || (dimensions.height !== this.scrollHeight)) {
+          this.onResize(true);
         }
       },
       /**
@@ -1239,19 +1262,6 @@
         }
       },
       /**
-       * @method onFocus
-       * @fires getRef
-       */
-      onFocus(){
-        if (this.currentButtons.length && !this.isMobile){
-          //bbn.fn.log("onFocus", this.getRef('buttons'), this.getRef('button' + (this.currentButtons.length - 1)));
-          let lastButton = this.getRef('button' + (this.currentButtons.length - 1));
-          if (lastButton && lastButton.$el) {
-            lastButton.$el.focus();
-          }
-        }
-      },
-      /**
        * @method updateData
        * @return {Promise}
        */
@@ -1277,7 +1287,6 @@
     mounted() {
       if (this.isVisible) {
         this.ready = true;
-        bbn.fn.log("Floater: IS ready");
       }
 
       this.$nextTick(() => {
@@ -1397,9 +1406,6 @@
       visible(v) {
         this.currentVisible = v;
       },
-      isResized(){
-        bbn.fn.log("Floater: IS resized");
-      },
       isVisible(v) {
         if (v) {
           if (!this.ready) {
@@ -1419,11 +1425,10 @@
         }
       },
       scrollReady(v) {
-        bbn.fn.log("Floater: SCROLL ready");
         if (v) {
-          to = setTimeout(() => {
+          setTimeout(() => {
             this.realResize();
-          }, 150)
+          }, 50);
         }
       },
       /**

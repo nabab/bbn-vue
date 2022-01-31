@@ -8,8 +8,6 @@
         componentClass
       ]"
       v-if="isVisible"
-      tabindex="0"
-      @focus="onFocus"
       @resize.stop="onResize"
       @mouseleave="isResized ? isOver = false : (() => {})()"
       @mouseenter="isResized ? isOver = true : (() => {})()"
@@ -17,17 +15,16 @@
       @subready.stop
       :style="currentStyle">
   <div :style="containerStyle"
-       :class="{'bbn-flex-height': outHeight > 0}">
+       :class="{'bbn-flex-height': !isResizing && (outHeight > 0)}">
     <div v-if="modal"
          class="bbn-overlay bbn-modal"/>
     <header v-if="title"
             ref="header"
             :class="{
               'bbn-rel': true,
-              'bbn-header': true,
+              'bbn-header': headerTitle,
               'bbn-bordered-bottom': true,
               'bbn-unselectable': true,
-              'bbn-block': true,
               'bbn-w-100': !isResizing
             }">
       <div v-if="title"
@@ -82,7 +79,7 @@
                     :max-height="isMaximized ? '100%' : scrollMaxHeight || null"
                     :min-width="currentMinWidth || null"
                     :min-height="currentMinHeight > outHeight ? currentMinHeight - outHeight : null"
-                    @resize="scrollResize">
+                    @resizeContent="scrollResize">
           <component v-if="component"
                     ref="component"
                     :is="component"
@@ -138,17 +135,10 @@
     </div>
     <footer v-if="footer"
             v-html="footer"
-            :class="{
-              'bbn-w-100': !isResizing,
-              'bbn-block': isResizing
-            }"
+            class="bbn-w-100"
             ref="footer"/>
     <footer v-else-if="currentButtons.length"
-            :class="{
-              'bbn-w-100': !isResizing,
-              'bbn-block': isResizing,
-              'bbn-button-group': true
-            }"
+            class="bbn-w-100 bbn-button-group"
             ref="buttons">
       <bbn-button v-for="(b, i) in currentButtons"
                   :key="i"

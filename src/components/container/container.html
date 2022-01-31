@@ -11,10 +11,11 @@
       'bbn-w-100': visual
     }"
          v-show="visible || visual">
-      <div v-if="visual && (!visible || ready)"
+      <!-- The header -->
+      <div v-if="visual"
            :class="'bbn-b bbn-hpadded bbn-vspadded bbn-flex-width ' + (visible ? ' bbn-m' : '')"
            :style="{
-             fontSize: visible && !router.visualShowAll ? null : '10em',
+             fontSize: selected && !router.visualShowAll ? null : '10em',
              backgroundColor: bcolor || '#666',
              color: fcolor || '#EEE'
            }">
@@ -33,23 +34,25 @@
           <span v-text="title"
                 style="overflow: hidden"/>
         </div>
-        <div v-if="visible"
+        <div v-if="selected && !static && !pinned"
              class="bbn-block bbn-p bbn-vmiddle bbn-h-100"
              @click="close">
           <i class="nf nf-fa-times bbn-lg"/>
         </div>
       </div>
+      <!-- The main container (the one we take screenshots of) -->
       <div :class="{
         'bbn-background': true,
         'bbn-overlay': !fullScreen && !visual,
         'bbn-flex-fill': !fullScreen && visual,
         'bbn-container-full-screen': fullScreen,
-        'bbn-container-visible': visible
+        'bbn-container-visible': selected || visible
       }"
            ref="canvasSource">
+        <!-- This is shown when it's ready -->
         <component :is="scrollable ? 'bbn-scroll' : 'div'"
-                  v-if="ready && isLoaded && (visible || cached || visual)"
-                  v-show="visible || visual"
+                  v-if="ready && isLoaded && (selected || cached || visual)"
+                  v-show="visible || (visual && !thumbnail)"
                   ref="scroll"
                   :axis="scrollable ? 'y' : null"
                   class="bbn-overlay">
@@ -72,38 +75,43 @@
           </div>
           <!-- This is the slot -->
           <slot v-else></slot>
+          <!-- Adding style as acomponent -->
           <component is="style"
                     v-if="css"
                     scoped="scoped"
                     v-html="css"/>
           <bbn-loader v-if="hasLoader"/>
         </component>
-        <bbn-loader v-else-if="visible || loading"/>
-        <div v-else-if="visual && thumbnail"
+        <!-- If loading showing loader -->
+        <bbn-loader v-else-if="selected && !isLoaded"/>
+        <!-- Thumbnail image -->
+        <div v-if="!selected && visual && thumbnail"
              style="overflow: hidden"
              class="bbn-overlay">
           <img :src="thumbnail"
                style="width: 100%; max-height: 100%; height: auto">
         </div>
-            
+        <!-- Icon for closing when in full screen mode -->
         <span  v-if="fullScreen"
               class="bbn-container-full-screen-closer bbn-xl bbn-p">
           <i class="nf nf-fa-times_circle"
              @click="fullScreen = false"/>
         </span>
+        <!-- The container's popup, from each floater will come -->
         <bbn-popup ref="popup"
                   :source="popups"
                   v-if="!hidden && ready && isLoaded && (visible || cached)"/>
       </div>
     </div>
   </transition>
-  <div v-if="visual && !visible"
+  <!-- When in visual mode a layer prevents interaction with the content -->
+  <div v-if="visual && !selected"
        class="bbn-overlay"
        style="z-index: 12; background-color: black; opacity: 0.2;">
   </div>
-  <div v-if="visual && (!visible || router.visualShowAll)"
+  <div v-if="visual && (!selected || router.visualShowAll)"
        class="bbn-overlay"
-       @click="show()"
+       @click="router.selected = idx"
        @mouseenter="isOver = true"
        @mouseleave="isOver = false"
        style="z-index: 12">
@@ -111,7 +119,7 @@
       <div class="bbn-bottom-left bbn-w-100"
            v-show="isOver"
            :style="{
-               fontSize: visible ? null : '12em'
+               fontSize: selected ? null : '12em'
              }">
         <div class="bbn-bottom-left bbn-w-100 bbn-bg-black"
              style="opacity: 0.6; color: transparent">

@@ -141,6 +141,14 @@
       ellipsis: {
         type: Boolean,
         default: false
+      },
+      /**
+       * If true the button will be focused when inserted in the DOM
+       * @prop {Boolean} [false] focused
+       */
+      focused: {
+        type: Boolean,
+        default: false
       }
     },
     data(){

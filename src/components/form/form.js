@@ -346,16 +346,14 @@
       currentClass(){
         let st = this.componentClass.join(' ');
         if (this.isInit) {
-          if ( this.window ){
-            st += ' bbn-flex-height';
-          }
-          else if ( (this.hasFooter || this.realButtons.length || this.footer) && (this.scrollable || this.fullSize) ){
+          if (!this.window && (this.hasFooter || this.realButtons.length || this.footer) && (this.scrollable || this.fullSize) ){
             st += ' bbn-flex-height';
           }
           if ( this.scrollable || this.fullSize ){
             st += ' bbn-overlay';
           }
         }
+
         return st;
       },
       currentStyle(){

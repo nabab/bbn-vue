@@ -66,11 +66,12 @@
     },
     data(){
       return {
+        subrouter: null,
         /**
          * True if the container is visible.
          * @data {Boolean} [false] isVisible
          */
-        isVisible: false,
+        isVisible: this.selected,
         /**
          * The router which the container belongs to if it exists.
          * @data [null] router
@@ -80,7 +81,7 @@
          * True if the container shows.
          * @data {Boolean} [false] visible
          */
-        visible: false,
+        visible: this.selected,
         /**
          * True if the data changes and is unsaved.
          * @data {Boolan} [false] dirty
@@ -111,11 +112,6 @@
          */
         isComponentActive: false,
         /**
-         * True when the component finishes loading.
-         * @data {Boolean} isLoaded
-         */
-        isLoaded: !this.load || this.loaded,
-        /**
          * True if the container is pinned.
          * @data {Boolean} isPinned
          */
@@ -137,10 +133,21 @@
       };
     },
     computed: {
+      /**
+       * True when the component finishes loading.
+       * @data {Boolean} isLoaded
+       */
+      isLoaded() {
+        if (!this.load) {
+          return true;
+        }
+
+        return this.loaded;
+      },
       visualStyle() {
         if (this.visual) {
           let r = this.router;
-          if ((r.views.length > 1) && (!this.visible || r.visualShowAll)) {
+          if ((r.views.length > 1) && (!this.selected || r.visualShowAll)) {
             return {zoom: 0.1};
           }
 
@@ -204,7 +211,7 @@
        * @param {Boolean} val 
        */
       setLoaded(val){
-        this.isLoaded = !!val;
+        this.loaded = !!val;
       },
       /**
        * Generates a random name used for the component.
@@ -224,11 +231,8 @@
        * 
        * @method show
        */
-      show(){
+      show() {
         this.visible = true;
-        if (this.visual && this.router.visualShowAll) {
-          this.router.visualShowAll = false;
-        }
       },
       /**
        * Hides the container.
@@ -658,15 +662,21 @@
           }
         }
       },
-      load(nv, ov){
-        /** Why????
+      load(nv, ov) {
         if ( nv && this.$options.components[this.componentName] ){
           delete this.$options.components[this.componentName];
         }
         else if ( !nv && ov ){
           this.init()
         }
-         */
+      },
+      selected(v) {
+        if (v) {
+          this.show();
+        }
+        else {
+          this.hide();
+        }
       },
       /**
        * @watch visible

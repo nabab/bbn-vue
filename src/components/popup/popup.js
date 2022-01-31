@@ -420,6 +420,7 @@
             text: okText,
             cls: 'bbn-primary',
             icon: 'nf nf-fa-check_circle',
+            focused: true,
             action($ev, btn){
               if ( onClose ){
                 onClose($ev, btn);
@@ -511,6 +512,18 @@
 
           o.content = '<div class="' + (this.isMobile || this.isTablet ? 'bbn-padded' : 'bbn-lpadded') + ' bbn-large bbn-c" style="min-width: ' + (this.isMobile || this.isTablet ? '15' : '30') + 'em">' + o.content + '</div>';
           o.buttons = [{
+            text: noText,
+            icon: 'nf nf-fa-times_circle',
+            focused: true,
+            action($ev, btn) {
+              btn.closest('bbn-floater').close(true);
+              if (onNo) {
+                setTimeout(() => {
+                  onNo($ev, btn);
+                }, 0);
+              }
+            }
+          }, {
             text: yesText,
             cls: 'bbn-primary',
             icon: 'nf nf-fa-check_circle',
@@ -519,17 +532,6 @@
               setTimeout(() => {
                 onYes($ev, btn);
               }, 0);
-            }
-          }, {
-            text: noText,
-            icon: 'nf nf-fa-times_circle',
-            action($ev, btn) {
-              btn.closest('bbn-floater').close(true);
-              if (onNo) {
-                setTimeout(() => {
-                  onNo($ev, btn);
-                }, 0);
-              }
             }
           }];
 

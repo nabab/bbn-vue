@@ -173,10 +173,6 @@
          */
         readyDelay: false,
         /**
-         * @data {Boolean} [false] Gives an extra second to scroll to previous position
-         */
-        afterReady: false,
-        /**
          * @todo not used
          */
         show: false,
@@ -965,15 +961,21 @@
                   )
                 )
               ) {
-                //bbn.fn.log("ON SCROLL INTERVAL");
-                this.onResize(true);
+                let e = new Event('resizeContent', {
+                  cancelable: true
+                });
+                this.$emit('resizeContent', e, {
+                  width: contentWidth,
+                  height: contentHeight
+                });
+
+                if (!e.defaultPrevented) {
+                  this.onResize(true);
+                }
               }
             }
           }, 1000);
           this.scrollReady = true;
-          setTimeout(() => {
-            this.afterReady = true;
-          }, 1000);
         }
       },
       /**

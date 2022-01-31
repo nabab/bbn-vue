@@ -10,7 +10,8 @@
         :type="type"
         :disabled="isDisabled"
         :title="titleString"
-        :style="currentStyle">
+        :style="currentStyle"
+        v-focused="focused">
   <span v-if="icon && (iconPosition === 'left')"
         :class="['bbn-button-icon', {'bbn-middle': notext}]">
     <i :class="icon"/>
