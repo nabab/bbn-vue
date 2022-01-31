@@ -407,8 +407,11 @@
                   props       = JSON.parse(JSON.stringify(pane.$vnode.componentOptions.propsData)),
                   resizable   = (this.resizable || props.resizable) && (props.resizable !== false),
                   collapsible = (this.collapsible || props.collapsible) && (props.collapsible !== false),
-                  value       = parseInt(props.size) || 0;
-              if ( props.size ){
+                  value       = parseInt(props.size) || 150;
+              // if ( props.size ){
+                // if (resizable && !props.size) {
+                //   props.size = "150px";
+                // }
                 isFixed = true;
                 if ( props.size === 'auto' ){
                   props.size = false;
@@ -425,10 +428,10 @@
                 else if ( (typeof props.size === 'number') ){
                   isNumber = true;
                 }
-              }
-              else {
-                hasAuto = true;
-              }
+              // }
+              // else {
+              //   hasAuto = true;
+              // }
               let obj = bbn.fn.extend({
                 index: i,
                 value: value,
