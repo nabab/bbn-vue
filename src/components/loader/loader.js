@@ -38,9 +38,9 @@
        * The text below the loader icon
        * @prop {String} ['Loading'] loadingText
        */
-      loadingText: {
+      text: {
         type: String,
-        default: 'Loading'
+        default: bbn._('Loading')
       },
       /**
        * The background color
@@ -58,6 +58,13 @@
         type: String,
         default: 's'
       },
+      type: {
+        type: String,
+        default: 'cube_grid',
+        validator(v) {
+          return ['plane', 'chase', 'bounce', 'wave', 'pulse', 'flow', 'swing', 'circle', 'circle_fade', 'grid', 'fold', 'wander', 'cube_grid'].includes(v);
+        }
+      }
     },
     data(){
       return{
@@ -65,6 +72,7 @@
         minHeight: true,
         //@todo not used
         height: false,
+        currentType: this.type
       }
     },
     mounted(){
@@ -118,6 +126,11 @@
     
       }
     },
+    watch: {
+      type(v) {
+        this.currentType = v;
+      }
+    }
 
   });
 

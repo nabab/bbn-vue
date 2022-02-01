@@ -478,6 +478,7 @@
           }
 
           setTimeout(() => {
+
             if (bbn.env.url.indexOf('#')) {
               let scroll = this.getRef('scroll');
               /**
@@ -492,9 +493,8 @@
                 location.hash = null;
                 location.hash = hash;
               }
-              
             }
-          }, 2000);
+          }, 1000)
 
           this.ready = true;
         }
@@ -543,6 +543,8 @@
 
             prom.then(
               canvas => {
+                bbn.fn.log(canvas);
+                bbn.fn.log(canvas.height);
                 let img = bbn.fn.canvasToImage(canvas);
                 if (!img) {
                   bbn.fn.log("Error for screenshot image");
@@ -560,11 +562,10 @@
                   url: this.getFullURL(),
                   image: img.src
                 });
-              },
-              error => {
-                bbn.fn.log("ERROR", error);
               }
-            );
+            ).catch(e => {
+              bbn.fn.log("ERROR", e);
+            });
           }, 1000)
         }
       }
@@ -632,6 +633,11 @@
     },
 
     watch: {
+      subrouter(v) {
+        if (v) {
+          v.route(this.currentURL.substr(this.url.length+1));
+        }
+      },
       idx() {
         if (this.visual) {
           this.isOver = false;

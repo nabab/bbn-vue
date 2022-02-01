@@ -7,6 +7,7 @@
 (function(bbn, Vue){
   "use strict";
 
+  // Orientations of the thumbnails for visual mode
   const possibleOrientations = [
     {
       name: 'auto',
@@ -26,6 +27,7 @@
     }
   ];
 
+  // IndexedDb access for storing thumbnails in visual mode
   let db = false;
   if (bbn.db && bbn.db.ok && window.html2canvas) {
     db = true;
@@ -882,18 +884,6 @@
             bbn.fn.log("STILL EXISTS " + url);
             this.urls[st].currentURL = url;
             this.urls[st].init();
-            this.$nextTick(() => {
-              //bbn.fn.log("LOOKING FOR CHILD", child);
-              if (this.urls[st].subrouter) {
-                this.urls[st].subrouter.route(url.substr(st.length + 1), force);
-              }
-              else {
-                let ifr = this.urls[st].find('bbn-frame');
-                if (ifr) {
-                  ifr.route(url.substr(st.length+1));
-                }
-              }
-            });
           }
         }
       },
@@ -1405,11 +1395,7 @@
               this.hasEmptyURL = true;
             }
             if (this.search(obj2.url) === false) {
-              if (this.isVisual) {
-                this.views.unshift(obj2);
-
-              }
-              else if (this.isValidIndex(idx)) {
+              if (this.isValidIndex(idx)) {
                 this.views.splice(idx, 0, obj2);
               }
               else {
@@ -2732,10 +2718,14 @@
           ov = this.selected;
         }
 
-        bbn.fn.log("SET SELECTED", nv, ov, this.urls[this.views[nv].url]);
-        if ((ov !== nv) && this.views[ov] && this.views[ov].selected) {
-          this.views[ov].selected = false;
-        }
+        bbn.fn.map(
+          bbn.fn.filter(this.views, {selected: true}),
+          a => {
+            if (a.idx !== nv) {
+              a.selected = false;
+            }
+          }
+        );
 
         if (!this.views[nv]) {
           bbn.fn.log("No views with INDEX " + nv);

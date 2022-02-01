@@ -52,7 +52,7 @@
         <!-- This is shown when it's ready -->
         <component :is="scrollable ? 'bbn-scroll' : 'div'"
                   v-if="ready && isLoaded && (selected || cached || visual)"
-                  v-show="visible || (visual && !thumbnail)"
+                  v-show="selected || (visual && !thumbnail)"
                   ref="scroll"
                   :axis="scrollable ? 'y' : null"
                   class="bbn-overlay">
