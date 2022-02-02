@@ -83,7 +83,8 @@
          * The items.
          * @data {Array} items
          */
-        content: this.getContent()
+        content: this.getContent(),
+        visible: false,
       };
     },
     methods: {
