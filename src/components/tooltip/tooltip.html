@@ -4,7 +4,7 @@
   <!-- <slot>
     <i :class="icon"></i>
   </slot> -->
-  <div class="bbn-abs" @click="visible=true">
+  <div class="bbn-abs" @click="visible=true" ref="helper">
     <i class="bbn-m nf nf-fa-info_circle"></i>
   </div>
   <bbn-floater
@@ -12,7 +12,7 @@
               :tag="tag"
               ref="floater"
               tabindex="-1"
-              position="top"
+              :position="position"
               :content="content"
               @click="action('click', $event)"
               @contextmenu="action('context', $event)"
@@ -20,7 +20,9 @@
               @mousedown="action('mousedown', $event)"
               @mouseover="action('mouseover', $event)"
               @close="visible=false"
-              :itemComponent="component"
+              :auto-hide="true"
+              :component="component"
+              :element="$refs.helper"
   >
   </bbn-floater>
 </div>

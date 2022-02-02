@@ -75,7 +75,15 @@
       mode: {
         type: String,
         default: 'free'
-      }
+      },
+      /**
+       * If an element is given this will force the position.
+       * @prop {String} position
+       */
+      position: {
+        type: String,
+        validator: p => ['', 'topLeft', 'topRight', 'bottomLeft', 'bottomRight', 'top', 'bottom', 'left', 'right'].includes(p)
+      },
     },
     data(){
       return {
