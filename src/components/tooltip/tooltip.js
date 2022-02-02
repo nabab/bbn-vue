@@ -37,7 +37,7 @@
        */
       source: {
         type: [Function, String],
-        required: true
+        default: ""
       },
       /**
        * @prop {String} template
@@ -82,7 +82,8 @@
        */
       position: {
         type: String,
-        validator: p => ['', 'topLeft', 'topRight', 'bottomLeft', 'bottomRight', 'top', 'bottom', 'left', 'right'].includes(p)
+        validator: p => ['', 'topLeft', 'topRight', 'bottomLeft', 'bottomRight', 'top', 'bottom', 'left', 'right'].includes(p),
+        default: 'bottom'
       },
     },
     data(){

@@ -1,10 +1,9 @@
 <div
   :class="componentClass"
 >
-  <!-- <slot>
-    <i :class="icon"></i>
-  </slot> -->
   <div class="bbn-abs" @click="visible=true" ref="helper">
+    <slot>
+    </slot>
     <i class="bbn-m nf nf-fa-info_circle"></i>
   </div>
   <bbn-floater
