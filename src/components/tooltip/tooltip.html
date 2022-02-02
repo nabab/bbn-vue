@@ -1,11 +1,11 @@
 <div
   :class="componentClass"
 >
-  <div class="bbn-abs" @click="visible=true" ref="helper">
-    <slot>
-    </slot>
+<slot>
+</slot>
+  <span class="bbn-abs" @click="visible=true" ref="helper">
     <i class="bbn-m nf nf-fa-info_circle"></i>
-  </div>
+  </span>
   <bbn-floater
               v-if="visible" 
               :tag="tag"
