@@ -186,6 +186,7 @@
     },
     mounted() {
       this.widget = this.getRef("audio");
+      this.onMuted();
     },
   });
 })(bbn);
