@@ -5,9 +5,9 @@
  * @author Mirko Argentino
  * * @created 11/08/2020.
  */
-(function(bbn){
+(function (bbn) {
   "use strict";
-  Vue.component('bbn-audio', {
+  Vue.component("bbn-audio", {
     /**
      * @mixin bbn.vue.basicComponent
      */
@@ -19,7 +19,7 @@
        */
       source: {
         type: String,
-        required: true
+        required: true,
       },
       /**
        * The audio's title
@@ -27,37 +27,37 @@
        */
       title: {
         type: String,
-        default: ''
+        default: "",
       },
       /**
        * The title's position(top or bottom)
        * @prop {String} ['top'] titlePosition
        */
       titlePosition: {
-			  type: String,
-        default: 'top',
-        validator: p => ['top', 'bottom'].includes(p)
+        type: String,
+        default: "top",
+        validator: (p) => ["top", "bottom"].includes(p),
       },
       /**
        * The title's background
        * @prop {String} titleBackground
        */
       titleBackground: {
-        type: String
+        type: String,
       },
       /**
        * The title's color
        * @prop {String} titleColor
        */
       titleColor: {
-        type: String
+        type: String,
       },
       /**
        * Additional classes for the title
        * @prop {String} titleCls
        */
       titleCls: {
-        type: String
+        type: String,
       },
       /**
        * The player's width
@@ -65,14 +65,14 @@
        */
       width: {
         type: String,
-        default: '100%'
+        default: "100%",
       },
       /**
        * The player's height
        * @prop {String} height
        */
       height: {
-        type: String
+        type: String,
       },
       /**
        * Specifies that the audio will start playing as soon as it is ready
@@ -80,7 +80,7 @@
        */
       autoplay: {
         type: Boolean,
-        default: false
+        default: false,
       },
       /**
        * Specifies that audio controls should be displayed
@@ -88,7 +88,7 @@
        */
       controls: {
         type: Boolean,
-        default: true
+        default: true,
       },
       /**
        * Specifies that the audio will start over again, every time it is finished
@@ -96,7 +96,7 @@
        */
       loop: {
         type: Boolean,
-        default: false
+        default: false,
       },
       /**
        * Specifies that the audio output should be muted
@@ -104,7 +104,7 @@
        */
       muted: {
         type: Boolean,
-        default: false
+        default: false,
       },
       /**
        * Set it to true if yuo want to use a skinned player
@@ -112,36 +112,36 @@
        */
       skin: {
         type: Boolean,
-        default: false
+        default: false,
       },
       /**
        * A custom background for the player
        * @prop {String} background
        */
       background: {
-        type: String
+        type: String,
       },
       /**
        * Additional classes for the player
        * @prop {String} cls
        */
       cls: {
-        type: String
-      }
+        type: String,
+      },
     },
-    data(){
+    data() {
       return {
         /**
          * This text will only be displayed in browsers that do not support the <video> element.
          * @data {String} ['Your browser does not support the audio tag.'] browserMessage
          */
-        browserMessage: bbn._('Your browser does not support the audio tag.'),
+        browserMessage: bbn._("Your browser does not support the audio tag."),
         /**
          * The native audio element
          * @data {HTMLElement} widget
          */
-        widget: null
-      }
+        widget: null,
+      };
     },
     computed: {
       /**
@@ -149,38 +149,43 @@
        * @computed type
        * @return String|Boolean
        */
-      type(){
-        if ( this.source ){
-          switch ( this.source.substr(this.source.lastIndexOf('.') + 1).toLowerCase() ){
-            case 'mp3':
-              return 'audio/mpeg';
-            case 'wav':
-              return 'video/wav';
-            case 'ogg':
-              return 'audio/ogg';
+      type() {
+        if (this.source) {
+          switch (
+            this.source.substr(this.source.lastIndexOf(".") + 1).toLowerCase()
+          ) {
+            case "mp3":
+              return "audio/mpeg";
+            case "wav":
+              return "video/wav";
+            case "ogg":
+              return "audio/ogg";
             default:
-              return '';
+              return "";
           }
         }
         return false;
-      }
+      },
     },
     methods: {
-      play(){
+      play() {
         this.widget.play();
       },
-      pause(){
+      pause() {
         this.widget.pause();
       },
-      onPlay(ev){
-        this.$emit('play', ev, this);
+      onPlay(ev) {
+        this.$emit("play", ev, this);
       },
-      onPause(ev){
-        this.$emit('pause', ev, this);
+      onPause(ev) {
+        this.$emit("pause", ev, this);
+      },
+      onMuted() {
+        this.widget.volume = this.muted ? 0 : 1;
       },
     },
-    mounted(){
-      this.widget = this.getRef('audio');
-    }
+    mounted() {
+      this.widget = this.getRef("audio");
+    },
   });
 })(bbn);
