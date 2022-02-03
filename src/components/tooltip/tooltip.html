@@ -3,11 +3,12 @@
 >
 <slot>
 </slot>
-  <span class="bbn-abs" @click="visible=true" ref="helper">
+  <span class="bbn-abs" @click="visible=true" @mouseenter="visible=true" ref="helper">
     <i class="bbn-m nf nf-fa-info_circle"></i>
   </span>
   <bbn-floater
               v-if="visible" 
+              :class="position"
               :tag="tag"
               ref="floater"
               tabindex="-1"
@@ -19,9 +20,10 @@
               @mousedown="action('mousedown', $event)"
               @mouseover="action('mouseover', $event)"
               @close="visible=false"
-              :auto-hide="true"
               :component="component"
               :element="$refs.helper"
+              :arrow="true"
+              :distance="distance"
   >
   </bbn-floater>
 </div>

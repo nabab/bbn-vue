@@ -11,11 +11,11 @@
 (function(bbn){
   "use strict";
   const tpl = `
-  <div style="padding-top: 4em" class="bbn-padded">
-    <div class="bbn-top-left bbn-vmargin">
+  <div style="display: flex;" class="bbn-padded bbn-vmargin">
+    <div>
       <i class="bbn-xl ---BBN-ICON---"></i>
     </div>
-    <div>
+    <div style="display: flex; align-items: center; margin-left: 5px;">
     ---BBN-CONTENT---
     </div>
   </div>`;
@@ -84,6 +84,14 @@
         type: String,
         validator: p => ['', 'topLeft', 'topRight', 'bottomLeft', 'bottomRight', 'top', 'bottom', 'left', 'right'].includes(p),
         default: 'bottom'
+      },
+      /**
+        * Tooltip offset from the icon
+        * @prop {Number} ['0'] pixel
+      */
+      distance: {
+        type: Number,
+        default: 0
       },
     },
     data(){

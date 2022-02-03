@@ -263,7 +263,22 @@
       },
       pagerElement: {
         type: Vue
-      }
+      },
+      /**
+       * Set to true to make an arrow with position
+       * @prop {Boolean} [false]
+       */
+      arrow: {
+        type: Boolean,
+        default: false
+      },
+      /*
+        Tooltip offset from the icon
+      */
+      distance: {
+        type: Number,
+        default: 0
+      },
     },
     data() {
       let fns = [];
@@ -379,7 +394,14 @@
        * @return {String}
        */
       formattedLeft() {
-        return this.currentLeft !== null ? this.formatSize(this.currentLeft) : '0px';
+        let offset = 0;
+        if (this.position == 'left') {
+          offset = -this.distance;
+        }
+        if (this.position == 'right') {
+          offset = this.distance;
+        }
+        return this.currentLeft !== null ? this.formatSize(this.currentLeft + offset) : '0px';
       },
       /**
        * Normalizes the property 'top'.
@@ -387,7 +409,16 @@
        * @return {String}
        */
       formattedTop() {
-        return this.currentTop !== null ? this.formatSize(this.currentTop) : '0px';
+        let topPositions = ['topLeft', 'topRight', 'top'];
+        let bottomPositions = ['bottomLeft', 'bottomRight', 'bottom'];
+        let offset = 0;
+        if (topPositions.indexOf(this.position) !== -1) {
+          offset = -this.distance;
+        }
+        if (bottomPositions.indexOf(this.position) !== -1) {
+          offset = this.distance;
+        }
+        return this.currentTop !== null ? this.formatSize(this.currentTop + offset) : '0px';
       },
       /**
        * Normalizes the property 'width'.
@@ -1066,8 +1097,8 @@
         });
 
         if (ok  && (r.x.res !== null) && (r.y.res !== null)) {
-          this.currentLeft = Math.ceil(r.x.res).toString() + 'px';
-          this.currentTop = Math.ceil(r.y.res).toString() + 'px';
+          this.currentLeft = Math.ceil(r.x.res);
+          this.currentTop = Math.ceil(r.y.res);
         }
 
       },
