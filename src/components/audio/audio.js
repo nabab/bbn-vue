@@ -180,12 +180,15 @@
       onPause(ev) {
         this.$emit("pause", ev, this);
       },
+      // This function will check muted condition and it will set audio volume using this.widget
+      // function will invoke in vue life cycle
       onMuted() {
         this.widget.volume = this.muted ? 0 : 1;
       },
     },
     mounted() {
       this.widget = this.getRef("audio");
+      // check mounted condition and set volume of the  widget
       this.onMuted();
     },
   });
