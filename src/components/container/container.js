@@ -59,6 +59,16 @@
       idx: {
         type: Number
       },
+      /**
+       * A unique id for the container that will ben used as index by the router
+       * @prop {String} uid
+       */
+      uid: {
+        type: String,
+        default() {
+          return bbn.fn.randomString();
+        }
+      },
       visual: {
         type: Boolean,
         default: false
@@ -129,26 +139,28 @@
         hasLoader: false,
         isOver: false,
         _bbn_container: null,
-        thumbnail: false
+        thumbnail: false,
+        isSelected: this.selected,
+        isLoaded: !this.load || this.loaded,
+        currentIndex: this.index,
+        /**
+         * A list of form components contained in this container
+         * @data {Array} [[]] forms
+         */
+        forms: []
       };
     },
     computed: {
-      /**
-       * True when the component finishes loading.
-       * @data {Boolean} isLoaded
-       */
-      isLoaded() {
-        if (!this.load) {
-          return true;
-        }
-
-        return this.loaded;
-      },
       visualStyle() {
         if (this.visual) {
           let r = this.router;
           if ((r.views.length > 1) && (!this.selected || r.visualShowAll)) {
-            return {zoom: 0.1};
+            return {
+              zoom: 0.1,
+              width: '100%',
+              height: '100%',
+              overflow: 'hidden'
+            };
           }
 
           let coord = [1, r.numVisualCols + 1, 1, r.numVisualRows + 1];
@@ -211,7 +223,7 @@
        * @param {Boolean} val 
        */
       setLoaded(val){
-        this.loaded = !!val;
+        this.isLoaded = !!val;
       },
       /**
        * Generates a random name used for the component.
@@ -226,24 +238,8 @@
         }
         return n;
       },
-      /**
-       * Shows the container.
-       * 
-       * @method show
-       */
-      show() {
-        this.visible = true;
-      },
-      /**
-       * Hides the container.
-       * 
-       * @method hide
-       */
-      hide(){
-        this.visible = false
-      },
       close() {
-        this.router.close(this.idx);
+        this.router.close(this.currentIndex);
       },
       /**
        * Sets the current url.
@@ -266,7 +262,7 @@
        */
       setTitle(title){
         if ( this.router ){
-          this.router.views[this.idx].title = title;
+          this.router.views[this.currentIndex].title = title;
         }
       },
       /**
@@ -279,10 +275,10 @@
       setColor(bcolor, fcolor){
         if ( this.router ){
           if ( bcolor ){
-            this.router.$set(this.router.views[this.idx], "bcolor", bcolor);
+            this.router.$set(this.router.views[this.currentIndex], "bcolor", bcolor);
           }
           if ( fcolor ){
-            this.router.$set(this.router.views[this.idx], "fcolor", fcolor);
+            this.router.$set(this.router.views[this.currentIndex], "fcolor", fcolor);
           }
         }
       },
@@ -321,7 +317,7 @@
        * @fires $parent.reload
        */
       reload(){
-        this.router.reload(this.idx);
+        this.router.reload(this.currentIndex);
       },
       /**
        * Handles the configuration of the container's menu.
@@ -330,19 +326,19 @@
        */
       addMenu(obj){
         if (
-          (this.idx > -1) &&
+          (this.currentIndex > -1) &&
           obj.text &&
           this.$parent.views &&
-          this.$parent.views[this.idx]
+          this.$parent.views[this.currentIndex]
         ){
-          if ( this.$parent.views[this.idx].menu === undefined ){
-            this.$parent.views[this.idx].menu = [];
+          if ( this.$parent.views[this.currentIndex].menu === undefined ){
+            this.$parent.views[this.currentIndex].menu = [];
           }
-          let menu = this.$parent.views[this.idx].menu || [],
+          let menu = this.$parent.views[this.currentIndex].menu || [],
               idx = bbn.fn.isFunction(menu) ? -1 : bbn.fn.search(menu || [], {text: obj.text});
           if (idx === -1) {
             if (bbn.fn.isFunction(menu) ){
-              this.$parent.views[this.idx].menu = () => {
+              this.$parent.views[this.currentIndex].menu = () => {
                 let items = menu() || [];
                 if ( bbn.fn.search(items, obj) === -1 ){
                   if ( !obj.key ){
@@ -364,7 +360,7 @@
             obj.key = menu[idx].key;
             menu.splice(idx, 1, obj);
           }
-          this.$parent.views[this.idx].menu = menu;
+          this.$parent.views[this.currentIndex].menu = menu;
           return obj.key;
         }
         return false;
@@ -377,18 +373,18 @@
        */
       deleteMenu(key){
         if (
-          (this.idx > -1) &&
+          (this.currentIndex > -1) &&
           this.$parent.views &&
-          this.$parent.views[this.idx]
+          this.$parent.views[this.currentIndex]
         ){
-          let menu = this.$parent.views[this.idx].menu || [];
+          let menu = this.$parent.views[this.currentIndex].menu || [];
           if (bbn.fn.isFunction(menu) ){
             menu = () => {
               let items = menu() || [];
               let idx = bbn.fn.search(items, "key", key);
               if ( idx > -1 ){
                 items.splice(idx, 1);
-                this.$parent.views[this.idx].menu = items;
+                this.$parent.views[this.currentIndex].menu = items;
                 this.$parent.$forceUpdate();
                 return true;
               }
@@ -398,7 +394,7 @@
             let idx = bbn.fn.search(menu, "key", key);
             if ( idx > -1 ){
               menu.splice(idx, 1);
-              this.$parent.views[this.idx].menu = menu;
+              this.$parent.views[this.currentIndex].menu = menu;
               this.$parent.$forceUpdate();
               return true;
             }
@@ -447,8 +443,7 @@
             // We create a local component with a random name,
             // the content as template
             // and the object returned as component definition
-            // Adding also a few funciton to interact with the tab
-            let cont = this;
+            // Adding also a few function to interact with the tab if applicable
             let o = bbn.fn.extend(true, res ? res : {}, {
               template: '<div class="' + (this.scrollable ? '' : 'bbn-overlay') + '">' + this.content + '</div>',
               methods: {
@@ -496,16 +491,24 @@
             }
           }, 1000)
 
+          if (this.onMount) {
+            this.onMount(this.$el, this.source);
+          }
+
           this.ready = true;
+          this.router.callRouter(this.current, this.url);
+          if (this.visual) {
+            this.takeScreenshot();
+          }
         }
       },
       showMenu() {
         if (this.visual) {
-          return this.router.getMenuFn(this.idx);
+          return this.router.getMenuFn(this.currentIndex);
         }
       },
       takeScreenshot(num_tries = 0) {
-        if (this.router.db && window.html2canvas) {
+        if (this.visual && this.router.db && window.html2canvas) {
           setTimeout(() => {
             let prom;
             let scroll = this.getRef('scroll');
@@ -568,6 +571,15 @@
             });
           }, 1000)
         }
+      },
+      register() {
+        this.router.register(this);
+        this.$nextTick(() => {
+          if (this.isSelected) {
+            this.router.onContainerView(this);
+            this.init();
+          }
+        });
       }
     },
     /**
@@ -601,19 +613,14 @@
      * @fires router.register
      */
     mounted(){
+      bbn.fn.log("MOUNTED CONTAINER WITH URL " + this.url);
       if ( !this.router ){
         throw new Error(bbn._("bbn-container cannot be rendered without a bbn-router"));
       }
 
-      if ( !this.router.ready ){
-        this.router.$on('ready', () => {
-          //this.init();
-          this.router.register(this);
-        });
-      }
-      else{
-        //this.init();
-        this.router.register(this);
+      this.register();
+      if (this.isLoaded && this.isSelected) {
+        this.init();
       }
       //
       // The container is registered
@@ -635,10 +642,14 @@
     watch: {
       subrouter(v) {
         if (v) {
+          bbn.fn.log("There is a sub, routing to " + this.currentURL);
           v.route(this.currentURL.substr(this.url.length+1));
         }
       },
-      idx() {
+      idx(v) {
+        this.currentIndex = v;
+      },
+      currentIndex(v) {
         if (this.visual) {
           this.isOver = false;
         }
@@ -654,92 +665,43 @@
        * @param {String} oldVal 
        */
       currentURL(newVal, oldVal){
-        if ( !newVal || (newVal.indexOf(this.url) !== 0) ){
+        if (!newVal || (newVal.indexOf(this.url) !== 0)) {
           this.currentURL = this.url;
         }
       },
-      ready(v){
+      isSelected(v) {
         if (v) {
-          if (this.onMount) {
-            this.onMount(this.$el, this.source);
+          if (!this.visible) {
+            this.visible = true;
           }
-          if (this.visual && this.visible) {
-            this.takeScreenshot();
+          if (!this.ready && this.isLoaded) {
+            this.init();
           }
         }
-      },
-      load(nv, ov) {
-        if ( nv && this.$options.components[this.componentName] ){
-          delete this.$options.components[this.componentName];
+        else if (this.visible) {
+          this.visible = false;
         }
-        else if ( !nv && ov ){
-          this.init()
-        }
-      },
-      selected(v) {
-        if (v) {
-          this.show();
-        }
-        else {
-          this.hide();
-        }
-      },
-      /**
-       * @watch visible
-       * @param {Boolean} nv 
-       * @param {Boolean} ov 
-       * @fires selfEmit
-       */
-      visible(nv, ov){
         this.$nextTick(() => {
-          this.$emit(nv ? 'view' : 'unview', this);
-          if (nv) {
+          this.$emit(v ? 'view' : 'unview', this);
+          if (v) {
+            this.router.onContainerView(this);
             this.$nextTick(() => {
               this.onResize();
             });
-            if (this.ready && this.visual) {
-              this.takeScreenshot();
-            }
           }
         });
       },
-      /**
-       * @watch content
-       * @param {Boolean} newVal 
-       * @param {Boolean} oldVal 
-       */
-      content(newVal, oldVal){
-        if ( newVal ){
-          this.isComponentActive = false;
-          /*
-          setTimeout(() => {
-            this.onMount = () => {
-              return false;
-            };
-            let res;
-            if ( this.script ){
-              res = typeof this.script === 'string' ? eval(this.script) : this.script;
-              if (bbn.fn.isFunction(res) ){
-                this.onMount = res;
-                this.isComponent = false;
-              }
-              else if ( typeof(res) === 'object' ){
-                this.isComponent = true;
-              }
-            }
-            else if ( this.source && this.content ){
-              bbn.fn.extend(res ? res : {}, {
-                name: this.name,
-                template: '<div class="bbn-overlay">' + this.content + '</div>',
-                props: ['source']
-              });
-            }
-            else{
-              this.isComponent = false;
-            }
-            this.isComponentActive = true;
-          }, oldVal ? 200 : 0)
-          */
+      selected(v) {
+        this.isSelected = v;
+      },
+      isLoaded(v) {
+        if (v && !this.ready && this.isSelected) {
+          this.init();
+        }
+      },
+      loaded(v) {
+        if (this.load) {
+          this.isLoaded = v;
         }
       },
       /**
@@ -765,8 +727,8 @@
         })
       },
       dirty(v){
-        //bbn.fn.log("DIRTY WATCHER", this.idx, this.router.views);
-        this.router.views[this.idx].dirty = v;
+        //bbn.fn.log("DIRTY WATCHER", this.currentIndex, this.router.views);
+        this.router.views[this.currentIndex].dirty = v;
         this.router.retrieveDirtyContainers();
       }
     },

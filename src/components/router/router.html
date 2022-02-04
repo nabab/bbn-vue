@@ -226,7 +226,7 @@
         <slot></slot>
         <template v-for="a in visualList">
           <bbn-container v-if="!a.view.real && !component"
-                        :key="a.view.url"
+                        :key="a.view.uid"
                         v-show="a.visible"
                         :visual="true"
                         v-bind="a.view"/>
@@ -235,6 +235,7 @@
                         v-show="a.visible"
                         :visual="true"
                         :component="component"
+                        :key="componentSource[componentUrl]"
                         :url="componentSource[componentUrl]"/>
         </template>
         <div v-if="(selected !== null) && (views.length > numVisuals)"
@@ -258,7 +259,7 @@
       <slot></slot>
       <bbn-container v-for="view in views"
                      v-if="!view.real && !component"
-                     :key="view.url"
+                     :key="view.uid"
                      :visual="false"
                      v-bind="view"/>
       <bbn-container v-if="component && componentSource && componentUrl"

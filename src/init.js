@@ -55,7 +55,7 @@
               }
             }
             obj.real = false;
-            router.register(obj, true);
+            router.add(obj);
           }
         }
       }, bbn.vue.viewComponent));

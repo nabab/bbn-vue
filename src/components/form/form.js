@@ -831,10 +831,16 @@
       }
     },
     /**
+     * Registers in each container until root.
+     * 
      * @event mounted
      * @fires init
      */
     mounted(){
+      let container = this;
+      while (container = container.closest('bbn-container')) {
+        container.forms.push(this);
+      }
       if (this.storage){
         let data = this.getStorage();
         if (data) {
@@ -890,14 +896,21 @@
       }
       this.init();
     },
-    beforeDestroy(){
-      if (this.dirty) {
-        if (this.window) {
-          this.window.dirty = false;
-        }
-        if (this.tab) {
-          this.tab.dirty = false;
-        }
+    /**
+     * Registers in each container until root.
+     * 
+     * @event mounted
+     * @fires init
+     */
+     beforeDestroy() {
+      let container = this;
+      while (container = container.closest('bbn-container')) {
+        bbn.fn.each(container.forms, (f, i) => {
+          if (f === this) {
+            container.forms.splice(i, 1);
+            return false;
+          }
+        });
       }
     },
     watch: {
