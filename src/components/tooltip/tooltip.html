@@ -1,26 +1,16 @@
-<div
-  :class="componentClass"
+<bbn-context :tag="tag"
+            :class="componentClass"
+            ref="floater"
+            tabindex="-1"
+            position="top"
+            :content="content"
+            @click="action('click', $event)"
+            @contextmenu="action('context', $event)"
+            @keydown="action('keydown', $event)"
+            @mousedown="action('mousedown', $event)"
+            @mouseover="action('mouseover', $event)"
 >
-  <!-- <slot>
+  <slot>
     <i :class="icon"></i>
-  </slot> -->
-  <div class="bbn-abs" @click="visible=true">
-    <i class="bbn-m nf nf-fa-info_circle"></i>
-  </div>
-  <bbn-floater
-              v-if="visible" 
-              :tag="tag"
-              ref="floater"
-              tabindex="-1"
-              position="top"
-              :content="content"
-              @click="action('click', $event)"
-              @contextmenu="action('context', $event)"
-              @keydown="action('keydown', $event)"
-              @mousedown="action('mousedown', $event)"
-              @mouseover="action('mouseover', $event)"
-              @close="visible=false"
-              :itemComponent="component"
-  >
-  </bbn-floater>
-</div>
+  </slot>
+</bbn-context>
