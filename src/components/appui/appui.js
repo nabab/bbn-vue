@@ -388,22 +388,25 @@
           throw new Error(bbn._("The component") + ' ' + name + ' ' + bbn._("does not exist"));
         }
       },
-      unregister(name){
+      unregister(name, ignore) {
         if (registeredComponents[name]) {
           delete registeredComponents[name];
         }
-        else{
+        else if (!ignore) {
           throw new Error(bbn._("The component") + ' ' + name + ' ' + bbn._("is not registered"));
         }
       },
-      getRegistered(name){
+      getRegistered(name, ignore) {
         if (registeredComponents[name]) {
           return registeredComponents[name];
         }
         if (name === undefined) {
           return registeredComponents;
         }
-        throw new Error(bbn._("The component") + ' ' + name + ' ' + bbn._("cannot be found"));
+
+        if (!ignore) {
+          throw new Error(bbn._("The component") + ' ' + name + ' ' + bbn._("cannot be found"));
+        }
       },
 
 

@@ -2980,6 +2980,7 @@
        */
       currentURL(newVal, oldVal){
         if (this.ready) {
+          bbn.fn.log("currentURL watcher");
           let idx = this.search(newVal);
           if ((idx !== false) && (this.selected !== idx)){
             this.selected = idx;
@@ -2989,7 +2990,9 @@
             if (this.activeContainer) {
               this.changeURL(newVal, this.activeContainer.title);
               this.views[this.selected].last = bbn.fn.timestamp();
-              this.$emit('change', newVal);
+              if (this.activeContainer.subrouter) {
+                this.activeContainer.subrouter.route(newVal.substr(this.activeContainer.url.length + 1));
+              }
             }
             else if (this.autoload && (!this.activeContainer || (this.activeContainer.currentURL !== newVal))) {
               this.route(newVal);
@@ -2997,6 +3000,7 @@
             else {
               throw new Error(bbn._("Impossible to find the container"));
             }
+            this.$emit('change', newVal);
           });
           this.$emit('route', newVal);
           this.onRoute(newVal);
