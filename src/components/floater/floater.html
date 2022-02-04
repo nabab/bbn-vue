@@ -16,6 +16,11 @@
       @keydown.esc.prevent.stop="close"
       @subready.stop
       :style="currentStyle">
+  <div
+        v-if="arrow"
+        :class="'arrow ' + position"
+  >
+  </div>
   <div :style="containerStyle"
        :class="{'bbn-flex-height': outHeight > 0}">
     <div v-if="modal"
