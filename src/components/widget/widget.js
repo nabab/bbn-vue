@@ -317,6 +317,10 @@
         }
         return this.padding;
       },
+      isClosable() {
+        return this.dadhboard && this.dashboard.closable && this.closable;
+
+      },
       currentPage(){
         if ( this.currentTotal > this.limit ){
           return (this.currentStart + this.limit) / this.limit;

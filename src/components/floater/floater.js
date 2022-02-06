@@ -720,6 +720,7 @@
        * @fires setResizeMeasures
        */
       realResize() {
+        return this.keepCool(() => {
           let p;
           let go = this.isVisible
               && this.scrollReady
@@ -764,10 +765,9 @@
                   let naturalHeight;
                   if (!this.isResized) {
                     scroll.$el.style.width = this.formatSize(this.currentMaxWidth || '100%');
-                    scroll.$el.style.height = this.formatSize(this.currentMinHeight || '10px');
-                    let contentEle = scroll.getRef('scrollContent');
+                    scroll.$el.style.height = this.formatSize(this.currentMinHeight || '0px');
                     let containerEle = scroll.getRef('scrollContainer');
-                    naturalHeight = contentEle.scrollHeight;
+                    naturalHeight = containerEle.scrollHeight;
                     if (!naturalHeight) {
                       this.isResizing = false;
                       resolve();
@@ -789,6 +789,23 @@
                       testWidth = w - (num * step);
                       scroll.$el.style.width = this.formatSize(testWidth);
                       num++;
+                    }
+                    if (step >= 40) {
+                      scroll.$el.style.width = this.formatSize(naturalWidth);
+                      num = 1;
+                      w = naturalWidth;
+                      testWidth = naturalWidth;
+                      step = 20;
+                      while (
+                        (testWidth > 0)
+                        && (naturalHeight === containerEle.scrollHeight)
+                        && (containerEle.scrollWidth === containerEle.clientWidth)
+                      ) {
+                        naturalWidth = testWidth;
+                        testWidth = w - (num * step);
+                        scroll.$el.style.width = this.formatSize(testWidth);
+                        num++;
+                      }
                     }
                     scroll.$el.style.width = null;
                     scroll.$el.style.height = null;
@@ -883,6 +900,7 @@
               this.isResizing = false;
             }
           });
+        }, 'scroll', 20);
       },
       /**
        * Returns an object of numbers as width and height based on whatever unit given.
