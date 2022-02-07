@@ -10,7 +10,30 @@
             @mousedown="action('mousedown', $event)"
             @mouseover="action('mouseover', $event)"
 >
-  <slot>
-    <i :class="icon"></i>
-  </slot>
-</bbn-context>
+<slot>
+</slot>
+  <span class="bbn-abs" @click="visible=true" @mouseenter="visible=true" ref="helper">
+    <i class="bbn-m nf nf-fa-info_circle"></i>
+  </span>
+  <bbn-floater
+              v-if="visible" 
+              :class="position"
+              :tag="tag"
+              ref="floater"
+              tabindex="-1"
+              :position="position"
+              :content="content"
+              @click="action('click', $event)"
+              @contextmenu="action('context', $event)"
+              @keydown="action('keydown', $event)"
+              @mousedown="action('mousedown', $event)"
+              @mouseover="action('mouseover', $event)"
+              @close="visible=false"
+              :component="component"
+              :element="$refs.helper"
+              :arrow="true"
+              :distance="distance"
+              :auto-hide="true"
+  >
+  </bbn-floater>
+</div>
