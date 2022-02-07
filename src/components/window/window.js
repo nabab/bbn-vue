@@ -133,7 +133,7 @@
        * @prop {Object} [{}] source
        */
       source: {
-        type: Object,
+        type: [Function, Array, String, Object],
         default(){
           return {};
         }
@@ -170,11 +170,15 @@
         type: String
       },
       /**
-       * @prop {(String)} mode
+       * The list selection mode.
+       * Possible values: 'free', 'options', 'selection'.
+       * @prop {String} ['free'] mode
        */
       mode: {
-        type: String
-      }
+        type: String,
+        default: "free",
+        validator: m => ['free', 'options', 'selection'].includes(m)
+      },
     },
     data(){
       let fns = [];
