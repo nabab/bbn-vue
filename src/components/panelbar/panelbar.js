@@ -173,7 +173,7 @@
             this.selected = idx;
           }
           this.$emit('select', idx, this.source[idx])
-          if ( !this.scrollable && !this.flex ){
+          if ( !this.flex ){
             this.$nextTick(()=>{
               this.getStyle(idx)
             })
