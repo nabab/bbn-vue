@@ -2149,7 +2149,7 @@
        * @returns {Function}
        */
       render(data, column, index) {
-        let value = data && column.field ? data[column.field] || '' : undefined;
+        let value = data && this.isValidField(column.field) ? data[column.field] : undefined;
         if (column.render) {
           return column.render(data, column, index, value)
         }

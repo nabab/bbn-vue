@@ -16,7 +16,7 @@
          * @returns {String}
          */
         renderData(data, cfg){
-          if ( !cfg.field || !data ){
+          if ((!bbn.fn.isString(cfg.field) && !bbn.fn.isNumber(cfg.field)) || !data ){
             return '';
           }
           let v = data[cfg.field] || '';

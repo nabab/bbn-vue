@@ -708,7 +708,7 @@
          */
         _map(data) {
           if ( bbn.fn.isArray(data) ){
-            if ( data.length && !bbn.fn.isObject(data[0]) && this.sourceValue && this.sourceText ){
+            if ( data.length && !bbn.fn.isObject(data[0]) && !bbn.fn.isArray(data[0]) && this.sourceValue && this.sourceText ){
               data = data.map(a => {
                 let o = {};
                 o[this.sourceValue] = a;
@@ -753,6 +753,15 @@
             }
           }
           return pass;
+        },
+        /**
+         * Checks if the field's name is valid (0 must be accepted)
+         *
+         * @param {*} field
+         * @return {*} 
+         */
+        isValidField(field) {
+          return bbn.fn.isString(field) || bbn.fn.isNumber(field);
         },
         /**
          * @method select
