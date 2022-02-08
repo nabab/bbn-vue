@@ -938,11 +938,10 @@
           // Checks every second if the scroll content has been resized and sends onResize if so
           this.interval = setInterval(() => {
             if (this.scrollable && this.$el.offsetParent) {
-              //bbn.fn.log("offsetParent ok");
-              let content = this.getRef('scrollContent');
-              let contentBox = content ? content.getBoundingClientRect() : {};
-              let contentWidth = contentBox.width;
-              let contentHeight = contentBox.height;
+              let container = this.getRef('scrollContainer');
+              let contentWidth = container.scrollWidth;
+              let contentHeight = container.scrollHeight;
+              bbn.fn.log("offsetParent ok", contentHeight, this.contentHeight);
               if (
                 (
                   contentWidth
@@ -964,6 +963,7 @@
                 let e = new Event('resizeContent', {
                   cancelable: true
                 });
+                bbn.fn.log("RESIZE CONTENT");
                 this.$emit('resizeContent', e, {
                   width: contentWidth,
                   height: contentHeight

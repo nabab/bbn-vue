@@ -26,7 +26,7 @@
        */
       position: {
         type: String,
-        default: 'bottom-left'
+        default: 'bottom-right'
       },
       /**
        * @prop {String|Function}, ['Success'] successMessage

@@ -502,7 +502,6 @@
         }
       },
       mouseenter(e, idx){
-        bbn.fn.log("Nouse ener");
         if ( !this.isOver ){
           // if the list appears under the nouse while it is inactive
           e.target.addEventListener('mousemove', () => {
@@ -516,7 +515,6 @@
         }
       },
       resetOverIdx(){
-        bbn.fn.log("Reset OverIdx");
         if (this.suggest === false) {
           this.overIdx = -1;
         }
@@ -528,7 +526,6 @@
         }
       },
       mouseleave(){
-        bbn.fn.log("Nouse leave");
         this.isOver = false;
         this.resetOverIdx();
       },

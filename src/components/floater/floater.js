@@ -741,6 +741,7 @@
                   this.realWidth = this.definedWidth;
                   this.currentHeight = this.definedHeight;
                   this.realHeight = this.definedHeight;
+                  this.updatePosition();
                   resolve(1);
                   return;
                 }
@@ -767,35 +768,22 @@
                     scroll.$el.style.width = this.formatSize(this.currentMaxWidth || '100%');
                     scroll.$el.style.height = this.formatSize(this.currentMinHeight || '0px');
                     let containerEle = scroll.getRef('scrollContainer');
+                    let contentEle = scroll.getRef('scrollContent');
                     naturalHeight = containerEle.scrollHeight;
                     if (!naturalHeight) {
                       this.isResizing = false;
                       resolve();
                       return;
                     }
-
+                    naturalHeight += 10;
                     let w = scroll.$el.clientWidth;
-                    let step = Math.ceil(w/10);
-                    let num = 1;
-                    scroll.$el.style.height = this.formatSize(naturalHeight);
-                    let testWidth = w;
-                    naturalWidth = w;
-                    while (
-                      (testWidth > 0)
-                      && (naturalHeight === containerEle.scrollHeight)
-                      && (containerEle.scrollWidth === containerEle.clientWidth)
-                    ) {
-                      naturalWidth = testWidth;
-                      testWidth = w - (num * step);
-                      scroll.$el.style.width = this.formatSize(testWidth);
-                      num++;
-                    }
-                    if (step >= 40) {
-                      scroll.$el.style.width = this.formatSize(naturalWidth);
-                      num = 1;
-                      w = naturalWidth;
-                      testWidth = naturalWidth;
-                      step = 20;
+                    naturalWidth = contentEle.children[0].clientWidth;
+                    if (!naturalWidth || (naturalWidth >= w)) {
+                      let step = Math.ceil(w/10);
+                      let num = 1;
+                      scroll.$el.style.height = this.formatSize(naturalHeight);
+                      let testWidth = w;
+                      naturalWidth = w;
                       while (
                         (testWidth > 0)
                         && (naturalHeight === containerEle.scrollHeight)
@@ -805,6 +793,23 @@
                         testWidth = w - (num * step);
                         scroll.$el.style.width = this.formatSize(testWidth);
                         num++;
+                      }
+                      if (step >= 40) {
+                        scroll.$el.style.width = this.formatSize(naturalWidth);
+                        num = 1;
+                        w = naturalWidth;
+                        testWidth = naturalWidth;
+                        step = 20;
+                        while (
+                          (testWidth > 0)
+                          && (naturalHeight === containerEle.scrollHeight)
+                          && (containerEle.scrollWidth === containerEle.clientWidth)
+                        ) {
+                          naturalWidth = testWidth;
+                          testWidth = w - (num * step);
+                          scroll.$el.style.width = this.formatSize(testWidth);
+                          num++;
+                        }
                       }
                     }
                     scroll.$el.style.width = null;
@@ -1515,6 +1520,12 @@
         this.lastKnownCtWidth = 0;
         this.lastKnownCtHeight = 0;
         this.realResize();
+      },
+      filteredData: {
+        deep: true,
+        handler(){
+          this.realResize()
+        }
       },
       filteredTotal(){
         if (this.isVisible) {

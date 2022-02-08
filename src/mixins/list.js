@@ -1207,7 +1207,6 @@
         remove(where) {
           let idx;
           while ((idx = bbn.fn.search(this.filteredData, a => {
-            bbn.fn.log("COMPOARE", a.data);
             return bbn.fn.compareConditions(a.data, where);
           })) > -1) {
             this.realDelete(this.filteredData[idx].index, 1);
