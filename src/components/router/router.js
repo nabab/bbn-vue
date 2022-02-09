@@ -648,22 +648,22 @@
        remove(misc, force){
         let idx = this.getIndex(misc);
         if ( idx > -1 ){
-          let ev = new Event('close', {cancelable: !force}),
-              ev2 = new Event('beforeClose', {cancelable: !force});
-          if ( !force ){
-            this.$emit('beforeClose', idx, ev2);
-          }
-          if ( !ev2.defaultPrevented ){
+          /** @var {Event} onBeforeClose beforeClose event, cancelable only if not force */
+          let onBeforeClose = new Event('beforeClose', {cancelable: !force});
+          /** @var {Event} onClose close event, cancelable only if not force */
+          let onClose = new Event('close', {cancelable: !force});
+          this.$emit('beforeClose', idx, onBeforeClose);
+          if (force || !onBeforeClose.defaultPrevented) {
             if (
               !this.ignoreDirty &&
               this.isDirty &&
               this.views[idx].dirty &&
-              !ev.defaultPrevented &&
               !force
-            ){
+            ) {
               ev.preventDefault();
               this.confirm(this.confirmLeave, () => {
-                let forms = this.urls[this.views[idx].url].findAll('bbn-form');
+                // Looking for dirty ones in registered forms of each container
+                let forms = this.urls[this.views[idx].url].forms;
                 if ( Array.isArray(forms) && forms.length ){
                   bbn.fn.each(forms, (f, k) => {
                     f.reset();
@@ -683,9 +683,7 @@
                 this.fixIndexes()
               }
               else {
-                if ( !force ){
-                  this.$emit('close', idx, ev);
-                }
+                this.$emit('close', idx, onClose);
                 if (force || !ev.defaultPrevented) {
                   let url = this.views[idx].url;
                   this.views.splice(idx, 1);

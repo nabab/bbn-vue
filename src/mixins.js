@@ -196,6 +196,7 @@
           if (bbn.fn.isObject(cfg)) {
             cfg.opener = this;
           }
+
           args.push(cfg);
           for (let i = 1; i < arguments.length; i++) {
             args.push(arguments[i]);
@@ -212,8 +213,23 @@
        */  
       confirm(){
         let popup = this.getPopup();
-        if ( popup ){
-          popup.confirm.apply(popup, arguments)
+        if (arguments.length && popup) {
+          let cfg = arguments[0];
+          let args = [];
+          if (bbn.fn.isObject(cfg)) {
+            cfg.opener = this;
+          }
+
+          args.push(cfg);
+          for (let i = 1; i < arguments.length; i++) {
+            args.push(arguments[i]);
+          }
+
+          if (!bbn.fn.isObject(cfg)) {
+            args.push(this);
+          }
+
+          return popup.confirm.apply(popup, args)
         }
       },
       /**
@@ -221,9 +237,23 @@
        * @method alert
        */  
       alert(){
-        let popup = this.getPopup();
-        if ( popup ){
-          popup.alert.apply(popup, arguments)
+        if (arguments.length && popup) {
+          let cfg = arguments[0];
+          let args = [];
+          if (bbn.fn.isObject(cfg)) {
+            cfg.opener = this;
+          }
+
+          args.push(cfg);
+          for (let i = 1; i < arguments.length; i++) {
+            args.push(arguments[i]);
+          }
+
+          if (!bbn.fn.isObject(cfg)) {
+            args.push(this);
+          }
+
+          return popup.alert.apply(popup, args)
         }
       },
       /**

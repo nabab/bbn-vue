@@ -807,12 +807,15 @@
             }
             let x = ct.scrollLeft;
             let y = ct.scrollTop;
-            let contentBox = content.getBoundingClientRect()
-            let containerBox = container.getBoundingClientRect()
-            this.contentWidth = contentBox.width;
-            this.contentHeight = contentBox.height;
-            this.containerWidth = containerBox.width;
-            this.containerHeight = containerBox.height;
+            let sendResizeContent = false;
+            if ((content.clientWidth !== this.contentWidth) || (content.clientHeight !== this.contentHeight)) {
+              sendResizeContent = true;
+            }
+
+            this.contentWidth = content.clientWidth;
+            this.contentHeight = content.clientHeight;
+            this.containerWidth = container.clientWidth;
+            this.containerHeight = container.clientHeight;
             // With scrolling on we check the scrollbars
             if ( this.scrollable ){
               if (((this.axis === 'both') || (this.axis === 'x')) && (this.contentWidth > this.containerWidth) ){
@@ -879,6 +882,15 @@
 
             }
             this.$emit('resize');
+            if (sendResizeContent) {
+              let e = new Event('resizeContent', {
+                cancelable: true
+              });
+              this.$emit('resizeContent', e, {
+                width: content.clientWidth,
+                height: content.clientHeight
+              });
+            }
           }
         }, 'onResize', 20);
       },

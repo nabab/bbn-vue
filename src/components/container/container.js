@@ -144,6 +144,11 @@
         isOver: false,
         _bbn_container: null,
         thumbnail: false,
+        /**
+         * A list of form components contained in this container
+         * @data {Array} [[]] forms
+         */
+        forms: []
       };
     },
     computed: {

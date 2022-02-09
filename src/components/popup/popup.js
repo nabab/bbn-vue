@@ -451,16 +451,16 @@
        * @fires open
        */
       confirm(){
-        let onYes = false,
-            onNo = false,
-            yesText = bbn._('Yes'),
-            noText = bbn._('No'),
-            o = {},
-            options = {},
-            has_msg = false,
-            has_yes = false,
-            has_width = false,
-            i;
+        let onYes = false;
+        let onNo = false;
+        let yesText = bbn._('Yes');
+        let noText = bbn._('No');
+        let o = {};
+        let options = {};
+        let has_msg = false;
+        let has_yes = false;
+        let has_width = false;
+        let i;
         if (bbn.fn.isObject(arguments[0])) {
           o = arguments[0];
         }
@@ -496,6 +496,9 @@
                 onYes = arguments[i];
               }
             }
+            else if (bbn.fn.isVue(arguments[i])) {
+              o.opener = arguments[i];
+            }
             else if ( typeof(arguments[i]) === 'object' ){
               options = arguments[i];
             }
@@ -528,6 +531,7 @@
             cls: 'bbn-primary',
             icon: 'nf nf-fa-check_circle',
             action($ev, btn){
+              bbn.fn.log("HHHHHHHH", btn);
               btn.closest('bbn-floater').close(true);
               setTimeout(() => {
                 onYes($ev, btn);

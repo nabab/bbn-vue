@@ -320,7 +320,8 @@
         isInit: false,
         realButtons: [],
         canSubmit: false,
-        sourceTimeout: 0
+        sourceTimeout: 0,
+        isClosing: false
       };
     },
     computed: {
@@ -580,16 +581,18 @@
        * @fires isModified
        */
       closePopup(window, ev){
-        if ( this.window && this.$el ){
+        if ( this.window && this.$el && !this.isClosing){
+          this.isClosing = true;
           if ( !this.isPosted && this.confirmLeave && this.isModified() ){
             if ( ev ){
               ev.preventDefault();
             }
-            this.getPopup().confirm(this.confirmLeave, () => {
+            this.confirm(this.confirmLeave, () => {
               if ( this.reset() ){
                 this.$nextTick(() => {
                   if (this.window) {
                     this.window.close(true, true);
+                    this.isClosing = false;
                   }
                 });
               }
@@ -600,6 +603,7 @@
               this.$nextTick(() => {
                 if (this.window) {
                   this.window.close(true, true);
+                  this.isClosing = false;
                 }
               });
             }
@@ -841,6 +845,11 @@
       while (container = container.closest('bbn-container')) {
         container.forms.push(this);
       }
+      container = this;
+      while (container = container.closest('bbn-floater')) {
+        container.forms.push(this);
+      }
+
       if (this.storage){
         let data = this.getStorage();
         if (data) {
@@ -905,6 +914,15 @@
      beforeDestroy() {
       let container = this;
       while (container = container.closest('bbn-container')) {
+        bbn.fn.each(container.forms, (f, i) => {
+          if (f === this) {
+            container.forms.splice(i, 1);
+            return false;
+          }
+        });
+      }
+      container = this;
+      while (container = container.closest('bbn-floater')) {
         bbn.fn.each(container.forms, (f, i) => {
           if (f === this) {
             container.forms.splice(i, 1);

@@ -384,8 +384,13 @@
         definedHeight: null,
         resizerFn: null,
         scrollReady: false,
-        scrollResized: false
-      };
+        scrollResized: false,
+         /**
+         * A list of form components contained in this container
+         * @data {Array} [[]] forms
+         */
+          forms: []
+        };
     },
     computed: {
       /**
@@ -1234,9 +1239,8 @@
           }
         }
 
-        let form = this.find('bbn-form');
-        if ( (form !== undefined)  && !confirm ){
-          form.closePopup();
+        if (this.forms.length && !confirm) {
+          this.forms[0].closePopup();
         }
         else{
           let closeEvent = new Event('close');
