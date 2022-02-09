@@ -676,17 +676,20 @@
               });
             }
             else {
-              if (this.views[idx].real) {
-                let url = this.views[idx].url;
-                this.views.splice(idx, 1);
-                this.$delete(this.urls, url);
-                this.fixIndexes()
-              }
-              else {
-                this.$emit('close', idx, onClose);
-                let url = this.views[idx].url;
-                this.views.splice(idx, 1);
-                this.$delete(this.urls, url);
+              if (this.views[idx]) {
+
+                if (this.views[idx].real) {
+                  return;
+                  let url = this.views[idx].url;
+                  this.views.splice(idx, 1);
+                  this.$delete(this.urls, url);
+                }
+                else {
+                  this.$emit('close', idx, onClose);
+                  let url = this.views[idx].url;
+                  this.views.splice(idx, 1);
+                  this.$delete(this.urls, url);
+                }
                 this.fixIndexes()
                 return true;
               }
@@ -712,7 +715,6 @@
           this.selected--;
         }
         else if ( res && (this.selected === idx) ){
-          this.selected = false;
           if ( this.views.length ){
             bbn.fn.each(this.history, a => {
               let tmp = this.getIndex(a);
@@ -722,6 +724,9 @@
               }
             });
             this.activateIndex(this.views[idx] ? idx : idx - 1);
+          }
+          else {
+            this.selected = false;
           }
         }
 
