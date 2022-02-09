@@ -775,7 +775,7 @@
                       resolve();
                       return;
                     }
-                    naturalHeight += 10;
+
                     let w = scroll.$el.clientWidth;
                     naturalWidth = contentEle.children[0].clientWidth;
                     if (!naturalWidth || (naturalWidth >= w)) {

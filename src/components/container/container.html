@@ -16,7 +16,7 @@
         <div v-if="visual"
             :class="'bbn-b bbn-hpadded bbn-vspadded bbn-flex-width ' + (visible ? ' bbn-m' : '')"
             :style="{
-              fontSize: isSelected && !router.visualShowAll ? null : '10em',
+              fontSize: visible && !router.visualShowAll ? null : '10em',
               backgroundColor: bcolor || '#666',
               color: fcolor || '#EEE'
             }">
@@ -35,7 +35,7 @@
             <span v-text="title"
                   style="overflow: hidden"/>
           </div>
-          <div v-if="isSelected && !static && !pinned"
+          <div v-if="visible && !static && !pinned && !router.visualShowAll"
               class="bbn-block bbn-p bbn-vmiddle bbn-h-100"
               @click="close">
             <i class="nf nf-fa-times bbn-lg"/>
@@ -47,13 +47,13 @@
           'bbn-overlay': !fullScreen && !visual,
           'bbn-flex-fill': !fullScreen && visual,
           'bbn-container-full-screen': fullScreen,
-          'bbn-container-visible': isSelected || visible
+          'bbn-container-visible': visible
         }"
             ref="canvasSource">
           <!-- This is shown when it's ready -->
           <component :is="scrollable ? 'bbn-scroll' : 'div'"
-                    v-if="ready && isLoaded && (isSelected || cached || visual)"
-                    v-show="isSelected || (visual && !thumbnail)"
+                    v-if="ready && isLoaded && (visible || cached || visual)"
+                    v-show="visible || (visual && !thumbnail)"
                     ref="scroll"
                     :axis="scrollable ? 'y' : null"
                     class="bbn-overlay">
@@ -84,9 +84,9 @@
             <bbn-loader v-if="hasLoader"/>
           </component>
           <!-- If loading showing loader -->
-          <bbn-loader v-else-if="isSelected && !isLoaded"/>
+          <bbn-loader v-else-if="visible && !isLoaded"/>
           <!-- Thumbnail image -->
-          <div v-if="!isSelected && visual && thumbnail"
+          <div v-if="!visible && visual && thumbnail"
               style="overflow: hidden"
               class="bbn-overlay">
             <img :src="thumbnail"
@@ -106,13 +106,13 @@
       </div>
     </transition>
     <!-- When in visual mode a layer prevents interaction with the content -->
-    <div v-if="visual && !isSelected"
+    <div v-if="visual && (!visible || router.visualShowAll)"
         class="bbn-overlay"
         style="z-index: 12; background-color: black; opacity: 0.2;">
     </div>
-    <div v-if="visual && (!isSelected || router.visualShowAll)"
+    <div v-if="visual && (!visible || router.visualShowAll)"
         class="bbn-overlay"
-        @click="router.selected = currentIndex"
+        @click="show() && router.route(current, true)"
         @mouseenter="isOver = true"
         @mouseleave="isOver = false"
         style="z-index: 12">
@@ -120,7 +120,7 @@
         <div class="bbn-bottom-left bbn-w-100"
             v-show="isOver"
             :style="{
-                fontSize: isSelected ? null : '12em'
+                fontSize: visible ? null : '12em'
               }">
           <div class="bbn-bottom-left bbn-w-100 bbn-bg-black"
               style="opacity: 0.6; color: transparent">

@@ -941,7 +941,6 @@
               let container = this.getRef('scrollContainer');
               let contentWidth = container.scrollWidth;
               let contentHeight = container.scrollHeight;
-              bbn.fn.log("offsetParent ok", contentHeight, this.contentHeight);
               if (
                 (
                   contentWidth
@@ -963,7 +962,6 @@
                 let e = new Event('resizeContent', {
                   cancelable: true
                 });
-                bbn.fn.log("RESIZE CONTENT");
                 this.$emit('resizeContent', e, {
                   width: contentWidth,
                   height: contentHeight

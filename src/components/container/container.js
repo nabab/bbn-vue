@@ -10,7 +10,7 @@
  * @created 15/02/2017
  */
 
-(function(bbn, Vue){
+ (function(bbn, Vue){
   "use strict";
 
   /**
@@ -63,7 +63,7 @@
        * A unique id for the container that will ben used as index by the router
        * @prop {String} uid
        */
-      uid: {
+       uid: {
         type: String,
         default() {
           return bbn.fn.randomString();
@@ -76,12 +76,11 @@
     },
     data(){
       return {
-        subrouter: null,
         /**
          * True if the container is visible.
          * @data {Boolean} [false] isVisible
          */
-        isVisible: this.selected,
+        isVisible: false,
         /**
          * The router which the container belongs to if it exists.
          * @data [null] router
@@ -91,7 +90,7 @@
          * True if the container shows.
          * @data {Boolean} [false] visible
          */
-        visible: this.selected,
+        visible: false,
         /**
          * True if the data changes and is unsaved.
          * @data {Boolan} [false] dirty
@@ -122,6 +121,11 @@
          */
         isComponentActive: false,
         /**
+         * True when the component finishes loading.
+         * @data {Boolean} isLoaded
+         */
+        isLoaded: !this.load || this.loaded,
+        /**
          * True if the container is pinned.
          * @data {Boolean} isPinned
          */
@@ -140,21 +144,13 @@
         isOver: false,
         _bbn_container: null,
         thumbnail: false,
-        isSelected: this.selected,
-        isLoaded: !this.load || this.loaded,
-        currentIndex: this.index,
-        /**
-         * A list of form components contained in this container
-         * @data {Array} [[]] forms
-         */
-        forms: []
       };
     },
     computed: {
       visualStyle() {
         if (this.visual) {
           let r = this.router;
-          if ((r.views.length > 1) && (!this.selected || r.visualShowAll)) {
+          if ((r.views.length > 1) && (!this.visible || r.visualShowAll)) {
             return {
               zoom: 0.1,
               width: '100%',
@@ -238,8 +234,29 @@
         }
         return n;
       },
+      /**
+       * Shows the container.
+       * 
+       * @method show
+       */
+      show(){
+        this.visible = true;
+        if (this.visual && this.router.visualShowAll) {
+          this.router.visualShowAll = false;
+        }
+        return true;
+      },
+      /**
+       * Hides the container.
+       * 
+       * @method hide
+       */
+      hide(){
+        this.visible = false
+        return true;
+      },
       close() {
-        this.router.close(this.currentIndex);
+        this.router.close(this.idx);
       },
       /**
        * Sets the current url.
@@ -262,7 +279,7 @@
        */
       setTitle(title){
         if ( this.router ){
-          this.router.views[this.currentIndex].title = title;
+          this.router.views[this.idx].title = title;
         }
       },
       /**
@@ -275,10 +292,10 @@
       setColor(bcolor, fcolor){
         if ( this.router ){
           if ( bcolor ){
-            this.router.$set(this.router.views[this.currentIndex], "bcolor", bcolor);
+            this.router.$set(this.router.views[this.idx], "bcolor", bcolor);
           }
           if ( fcolor ){
-            this.router.$set(this.router.views[this.currentIndex], "fcolor", fcolor);
+            this.router.$set(this.router.views[this.idx], "fcolor", fcolor);
           }
         }
       },
@@ -317,7 +334,7 @@
        * @fires $parent.reload
        */
       reload(){
-        this.router.reload(this.currentIndex);
+        this.router.reload(this.idx);
       },
       /**
        * Handles the configuration of the container's menu.
@@ -326,19 +343,19 @@
        */
       addMenu(obj){
         if (
-          (this.currentIndex > -1) &&
+          (this.idx > -1) &&
           obj.text &&
           this.$parent.views &&
-          this.$parent.views[this.currentIndex]
+          this.$parent.views[this.idx]
         ){
-          if ( this.$parent.views[this.currentIndex].menu === undefined ){
-            this.$parent.views[this.currentIndex].menu = [];
+          if ( this.$parent.views[this.idx].menu === undefined ){
+            this.$parent.views[this.idx].menu = [];
           }
-          let menu = this.$parent.views[this.currentIndex].menu || [],
+          let menu = this.$parent.views[this.idx].menu || [],
               idx = bbn.fn.isFunction(menu) ? -1 : bbn.fn.search(menu || [], {text: obj.text});
           if (idx === -1) {
             if (bbn.fn.isFunction(menu) ){
-              this.$parent.views[this.currentIndex].menu = () => {
+              this.$parent.views[this.idx].menu = () => {
                 let items = menu() || [];
                 if ( bbn.fn.search(items, obj) === -1 ){
                   if ( !obj.key ){
@@ -360,7 +377,7 @@
             obj.key = menu[idx].key;
             menu.splice(idx, 1, obj);
           }
-          this.$parent.views[this.currentIndex].menu = menu;
+          this.$parent.views[this.idx].menu = menu;
           return obj.key;
         }
         return false;
@@ -373,18 +390,18 @@
        */
       deleteMenu(key){
         if (
-          (this.currentIndex > -1) &&
+          (this.idx > -1) &&
           this.$parent.views &&
-          this.$parent.views[this.currentIndex]
+          this.$parent.views[this.idx]
         ){
-          let menu = this.$parent.views[this.currentIndex].menu || [];
+          let menu = this.$parent.views[this.idx].menu || [];
           if (bbn.fn.isFunction(menu) ){
             menu = () => {
               let items = menu() || [];
               let idx = bbn.fn.search(items, "key", key);
               if ( idx > -1 ){
                 items.splice(idx, 1);
-                this.$parent.views[this.currentIndex].menu = items;
+                this.$parent.views[this.idx].menu = items;
                 this.$parent.$forceUpdate();
                 return true;
               }
@@ -394,7 +411,7 @@
             let idx = bbn.fn.search(menu, "key", key);
             if ( idx > -1 ){
               menu.splice(idx, 1);
-              this.$parent.views[this.currentIndex].menu = menu;
+              this.$parent.views[this.idx].menu = menu;
               this.$parent.$forceUpdate();
               return true;
             }
@@ -443,7 +460,8 @@
             // We create a local component with a random name,
             // the content as template
             // and the object returned as component definition
-            // Adding also a few function to interact with the tab if applicable
+            // Adding also a few funciton to interact with the tab
+            let cont = this;
             let o = bbn.fn.extend(true, res ? res : {}, {
               template: '<div class="' + (this.scrollable ? '' : 'bbn-overlay') + '">' + this.content + '</div>',
               methods: {
@@ -473,7 +491,6 @@
           }
 
           setTimeout(() => {
-
             if (bbn.env.url.indexOf('#')) {
               let scroll = this.getRef('scroll');
               /**
@@ -488,23 +505,19 @@
                 location.hash = null;
                 location.hash = hash;
               }
+              
             }
-          }, 1000)
-
-          if (this.onMount) {
-            this.onMount(this.$el, this.source);
-          }
+            if (this.visual) {
+              this.takeScreenshot();
+            }
+          }, 2000);
 
           this.ready = true;
-          this.router.callRouter(this.current, this.url);
-          if (this.visual) {
-            this.takeScreenshot();
-          }
         }
       },
       showMenu() {
         if (this.visual) {
-          return this.router.getMenuFn(this.currentIndex);
+          return this.router.getMenuFn(this.idx);
         }
       },
       takeScreenshot(num_tries = 0) {
@@ -572,15 +585,6 @@
           }, 1000)
         }
       },
-      register() {
-        this.router.register(this);
-        this.$nextTick(() => {
-          if (this.isSelected) {
-            this.router.onContainerView(this);
-            this.init();
-          }
-        });
-      }
     },
     /**
      * @event created 
@@ -613,14 +617,19 @@
      * @fires router.register
      */
     mounted(){
-      bbn.fn.log("MOUNTED CONTAINER WITH URL " + this.url);
       if ( !this.router ){
         throw new Error(bbn._("bbn-container cannot be rendered without a bbn-router"));
       }
 
-      this.register();
-      if (this.isLoaded && this.isSelected) {
-        this.init();
+      if ( !this.router.ready ){
+        this.router.$on('ready', () => {
+          //this.init();
+          this.router.register(this);
+        });
+      }
+      else{
+        //this.init();
+        this.router.register(this);
       }
       //
       // The container is registered
@@ -640,16 +649,7 @@
     },
 
     watch: {
-      subrouter(v) {
-        if (v) {
-          bbn.fn.log("There is a sub, routing to " + this.currentURL);
-          v.route(this.currentURL.substr(this.url.length+1));
-        }
-      },
-      idx(v) {
-        this.currentIndex = v;
-      },
-      currentIndex(v) {
+      idx() {
         if (this.visual) {
           this.isOver = false;
         }
@@ -665,43 +665,137 @@
        * @param {String} oldVal 
        */
       currentURL(newVal, oldVal){
-        if (!newVal || (newVal.indexOf(this.url) !== 0)) {
+        if ( !newVal || (newVal.indexOf(this.url) !== 0) ){
           this.currentURL = this.url;
         }
       },
-      isSelected(v) {
+      ready(v){
         if (v) {
-          if (!this.visible) {
-            this.visible = true;
-          }
-          if (!this.ready && this.isLoaded) {
-            this.init();
+          if (this.onMount) {
+            this.onMount(this.$el, this.source);
           }
         }
-        else if (this.visible) {
-          this.visible = false;
+      },
+      load(nv, ov){
+        /** Why????
+        if ( nv && this.$options.components[this.componentName] ){
+          delete this.$options.components[this.componentName];
         }
+        else if ( !nv && ov ){
+          this.init()
+        }
+         */
+      },
+      /**
+       * @watch visible
+       * @param {Boolean} nv 
+       * @param {Boolean} ov 
+       * @fires selfEmit
+       */
+      visible(nv, ov){
         this.$nextTick(() => {
-          this.$emit(v ? 'view' : 'unview', this);
-          if (v) {
-            this.router.onContainerView(this);
+          this.$emit(nv ? 'view' : 'unview', this);
+          if (nv) {
             this.$nextTick(() => {
               this.onResize();
             });
           }
+          else if (this.visual) {
+            /*
+            setTimeout(() => {
+              let ct = this.getRef('canvasSource');
+              let w = Math.ceil(ct.clientWidth);
+              let h = Math.ceil(ct.clientHeight);
+              ct.style.width = w + 'px';
+              ct.style.height = h + 'px';
+              bbn.fn.log("CANVAS", w, h);
+              html2canvas(this.getRef('canvasSource'), {
+                width: w,
+                height: h
+              }).then(canvas => {
+                let img = bbn.fn.canvasToImage(canvas);
+                let ctx = camnvas.getContext('2D');
+                ctx.drawImage(img, 0, 0, w, h, 0, 0, Math.ceil(w/10), Math.ceil(h/10));
+                ct.style.width = null;
+                ct.style.height = null;
+                this.getPopup({
+                  component: {
+                    render(createElement) {
+                      return createElement(
+                        'div',
+                        {
+                          class: {
+                            'bbn-block': true
+                          },
+                          style: {
+                            width: Math.ceil(w/10) + 'px',
+                            height: Math.ceil(h/10) + 'px'
+                          }
+                        },
+                        [
+                          createElement(
+                            'img',
+                            {
+                              style: {
+                                maxWidth: '100%',
+                                maxHeight: '100%',
+                                width: 'auto',
+                                height: 'auto'
+                              },
+                              attrs: {
+                                src: img.src
+                              }
+                            }
+                          )
+                        ]
+                      )
+                    }
+                  },
+                  title: false
+                })
+              });
+            },2000)
+            */
+          }
         });
       },
-      selected(v) {
-        this.isSelected = v;
-      },
-      isLoaded(v) {
-        if (v && !this.ready && this.isSelected) {
-          this.init();
-        }
-      },
-      loaded(v) {
-        if (this.load) {
-          this.isLoaded = v;
+      /**
+       * @watch content
+       * @param {Boolean} newVal 
+       * @param {Boolean} oldVal 
+       */
+      content(newVal, oldVal){
+        if ( newVal ){
+          this.isComponentActive = false;
+          /*
+          setTimeout(() => {
+            this.onMount = () => {
+              return false;
+            };
+            let res;
+            if ( this.script ){
+              res = typeof this.script === 'string' ? eval(this.script) : this.script;
+              if (bbn.fn.isFunction(res) ){
+                this.onMount = res;
+                this.isComponent = false;
+              }
+              else if ( typeof(res) === 'object' ){
+                this.isComponent = true;
+              }
+            }
+            else if ( this.source && this.content ){
+              bbn.fn.extend(res ? res : {}, {
+                name: this.name,
+                template: '<div class="bbn-overlay">' + this.content + '</div>',
+                props: ['source']
+              });
+            }
+            else{
+              this.isComponent = false;
+            }
+            this.isComponentActive = true;
+          }, oldVal ? 200 : 0)
+          */
         }
       },
       /**
@@ -727,8 +821,8 @@
         })
       },
       dirty(v){
-        //bbn.fn.log("DIRTY WATCHER", this.currentIndex, this.router.views);
-        this.router.views[this.currentIndex].dirty = v;
+        //bbn.fn.log("DIRTY WATCHER", this.idx, this.router.views);
+        this.router.views[this.idx].dirty = v;
         this.router.retrieveDirtyContainers();
       }
     },
