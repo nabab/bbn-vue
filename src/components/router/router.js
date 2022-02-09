@@ -651,7 +651,7 @@
           /** @var {Event} onBeforeClose beforeClose event, cancelable only if not force */
           let onBeforeClose = new Event('beforeClose', {cancelable: !force});
           /** @var {Event} onClose close event, cancelable only if not force */
-          let onClose = new Event('close', {cancelable: !force});
+          let onClose = new Event('close');
           this.$emit('beforeClose', idx, onBeforeClose);
           if (force || !onBeforeClose.defaultPrevented) {
             if (
@@ -670,7 +670,7 @@
                   });
                 }
                 this.$nextTick(() => {
-                  this.$emit('close', idx, ev);
+                  this.$emit('close', idx, onClose);
                   this.close(idx, true);
                 });
               });
@@ -684,12 +684,10 @@
               }
               else {
                 this.$emit('close', idx, onClose);
-                if (force || !ev.defaultPrevented) {
-                  let url = this.views[idx].url;
-                  this.views.splice(idx, 1);
-                  this.$delete(this.urls, url);
-                  this.fixIndexes()
-                }
+                let url = this.views[idx].url;
+                this.views.splice(idx, 1);
+                this.$delete(this.urls, url);
+                this.fixIndexes()
                 return true;
               }
             }
