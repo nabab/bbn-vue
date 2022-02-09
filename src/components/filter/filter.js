@@ -153,7 +153,7 @@
        *
        */
       componentOptions: {
-        type: Object,
+        type: [Object, String],
         default(){
           return {};
         }

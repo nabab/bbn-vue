@@ -9,9 +9,10 @@
       @keyup.esc="cancel"
 >
   <div :class="{
-         'bbn-flex-fill': isInit && scrollable || !!fullSize,
+         'bbn-flex-fill': !window && isInit && scrollable || !!fullSize,
          'bbn-w-100': scrollable,
-         'bbn-flex-height': !scrollable && hasFooter
+         'bbn-flex-height': !scrollable && hasFooter,
+         'bbn-overlay': !!window
        }"
   >
     <component :is="scrollable ? 'bbn-scroll' : 'div'"
