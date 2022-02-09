@@ -1140,7 +1140,12 @@
 
         e.preventDefault();
         if ((dimensions.width !== this.scrollWidth) || (dimensions.height !== this.scrollHeight)) {
-          this.onResize(true);
+          setTimeout(() => {
+            this.onResize(true);
+          }, 50)
+        }
+        else {
+          //this.onResize(true);
         }
       },
       /**
@@ -1354,6 +1359,7 @@
             scroll.$once('scroll', () => {
               this.close();
             });
+            this.realResize();
           }
         }
       });

@@ -20,7 +20,7 @@
   >
   </div>
   <div :style="containerStyle"
-       :class="{'bbn-flex-height': !isResizing && (outHeight > 0)}">
+       :class="{'bbn-flex-height': !isResizing}">
     <div v-if="modal"
          class="bbn-overlay bbn-modal"/>
     <header v-if="title"
