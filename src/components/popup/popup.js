@@ -359,16 +359,15 @@
        * @fires open
        */
       alert(){
-        let has_msg = false,
-            has_title = false,
-            has_width = false,
-            has_callback = false,
-            okText,
-            onOpen,
-            onClose,
-            i,
-            o = {};
-        for ( i = 0; i < arguments.length; i++ ){
+        let has_msg = false;
+        let has_title = false;
+        let has_width = false;
+        let has_callback = false;
+        let okText;
+        let onOpen;
+        let onClose;
+        let o = {};
+        for (let i = 0; i < arguments.length; i++ ){
           if ( !has_msg && (typeof(arguments[i]) === 'string') ){
             o.content = arguments[i];
             has_msg = 1;
@@ -397,6 +396,9 @@
               onOpen = arguments[i];
               has_callback = 1;
             }
+          }
+          else if (bbn.fn.isVue(arguments[i])) {
+            o.opener = arguments[i];
           }
           else if (bbn.fn.isObject(arguments[i])) {
             bbn.fn.extend(o, arguments[i]);
