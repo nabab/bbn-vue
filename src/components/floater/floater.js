@@ -782,7 +782,7 @@
                     }
 
                     let w = scroll.$el.clientWidth;
-                    naturalWidth = contentEle.children[0].clientWidth;
+                    naturalWidth = contentEle && contentEle.children[0] ? contentEle.children[0].clientWidth : 0;
                     if (!naturalWidth || (naturalWidth >= w)) {
                       let step = Math.ceil(w/10);
                       let num = 1;

@@ -1685,7 +1685,7 @@
        * @emit update
       */
       load(url, force, index){
-        bbn.fn.log("LOADING??", url);
+        //bbn.fn.log("LOADING??", url);
         if (url){
           this.isLoading = true;
           let finalURL = this.fullBaseURL + url;
@@ -2708,14 +2708,13 @@
       },
       onResize() {
         this.keepCool(() => {
-          this.setResizeMeasures();
-          this.setContainerMeasures();
-          if (this.isVisual && (this.orientation === 'auto') && !this.lockedOrientation) {
-            this.$nextTick(() => {
+          if (this.setResizeMeasures() && this.setContainerMeasures()) {
+            if (this.isVisual && (this.orientation === 'auto') && !this.lockedOrientation) {
               this.visualOrientation = this.lastKnownWidth > this.lastKnownHeight ? 'left' : 'top';
-            })
+            }
           }
-        }, 'resize', 250);
+          this.$emit('resize');
+        }, 'resize', 50);
       },
       visualStyleContainer(ct) {
         if (!ct.visible || this.visualShowAll) {
