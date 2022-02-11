@@ -242,6 +242,10 @@
       themeButton: {
         type: Boolean,
         default: false
+      },
+      definitionUrl: {
+        type: String,
+        default: ''
       }
     },
 
@@ -735,6 +739,22 @@
         }
         //bbn.fn.log("----END OF PHP HINT-----");
       },
+      addDefinition(className, varName) {
+        if (!bbn.fn.getRow(bbn.vue.phpLang, {name: className})) {
+          if (this.definitionUrl) {
+            // ... for now we add a static method with a static url in the props
+            bbn.fn.post(this.definitionUrl, {className: className}, d => {
+              if (d.success && d.res) {
+                bbn.vue.phpLang.push(d.res);
+              }
+            })
+          }
+        } else {
+          let newObj = bbn.fn.extend(bbn.fn.getRow(bbn.vue.phpLang, {name: className}), {name: varName});
+          bbn.vue.phpLang.push(newObj);
+        }
+      },
+
       /*
       jsHint(str){
         if (str.substr(-1) === '(') {
