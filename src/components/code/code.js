@@ -212,6 +212,7 @@
        */
       theme: {
         type: String,
+        default: 'pastel-on-dark'
       },
       /**
        * Takes the full height of the container if set to true.
