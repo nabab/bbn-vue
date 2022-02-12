@@ -285,7 +285,7 @@
             let diff = dayjs.duration(secs, 'seconds');
             let diffs = {};
             bbn.fn.each(VALUES, (a, i) => {
-              diffs[a.name] = diff['as' + a.name[0].toUpperCase() + a.name.substr(1) + 's']();
+              diffs[a.name] = diff['as' + a.name[0].toUpperCase() + bbn.fn.substr(a.name, 1) + 's']();
               if ((i >= this.scaleIdx) && (i <= this.precisionIdx)) {
                 let round = Math.floor(diffs[a.name]);
                 diffs[a.name] = round;

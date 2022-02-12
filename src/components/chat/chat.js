@@ -1215,7 +1215,7 @@
             if ( matches ){
               bbn.fn.each(matches, v => {
                 if ( v.indexOf(bbn.env.host) === 0 ){
-                  msg = msg.replace(v, '<a href="javascript:;" onclick="bbn.fn.link(\'' + v.substr(bbn.env.host.length + 1) + '\')">' + v.substr(bbn.env.host.length + 1) + '</a>');
+                  msg = msg.replace(v, '<a href="javascript:;" onclick="bbn.fn.link(\'' + bbn.fn.substr(v, bbn.env.host.length + 1) + '\')">' + bbn.fn.substr(v, bbn.env.host.length + 1) + '</a>');
                 }
                 else{
                   msg = msg.replace(v, '<a href="' + v + '" target="_blank">' + v + '</a>');

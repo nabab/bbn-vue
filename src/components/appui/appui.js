@@ -338,7 +338,7 @@
           });
           let url = this.plugins['appui-project'] + '/router/' + bbn.env.appName + '/ide/editor/file/';
           if (plugin){
-            url += 'lib/' + plugin + '/mvc' + tab.url.substr(this.plugins[plugin].length);
+            url += 'lib/' + plugin + '/mvc' + bbn.fn.substr(tab.url, this.plugins[plugin].length);
           }
           else {
             url += 'app/main/mvc/' + tab.url;

@@ -163,7 +163,7 @@
        */
       type(){
         if ( this.source ){
-          switch ( this.source.substr(this.source.lastIndexOf('.') + 1).toLowerCase() ){
+          switch ( bbn.fn.substr(this.source, this.source.lastIndexOf('.') + 1).toLowerCase() ){
             case 'mp4':
               return 'video/mp4';
             case 'webm':

@@ -144,15 +144,15 @@
         if ( bbn.fn.isArray(data) ){
           data = data.map(a => {
             let o = bbn.fn.extend(true, {}, a);
-            if (!o.headerComponent && (!bbn.fn.isString(o.header) || (o.header.substr(0,1) !== '<'))) {
+            if (!o.headerComponent && (!bbn.fn.isString(o.header) || (bbn.fn.substr(o.header, 0,1) !== '<'))) {
               o.headerComponent = o.header;
               delete o.header;
             }
-            if (!o.headerComponent && (!bbn.fn.isString(o.body) || (o.body.substr(0,1) !== '<'))) {
+            if (!o.headerComponent && (!bbn.fn.isString(o.body) || (bbn.fn.substr(o.body, 0,1) !== '<'))) {
               o.bodyComponent = o.body;
               delete o.body;
             }
-            if (!o.footerComponent && (!bbn.fn.isString(o.footer) || (o.footer.substr(0,1) !== '<'))) {
+            if (!o.footerComponent && (!bbn.fn.isString(o.footer) || (bbn.fn.substr(o.footer, 0,1) !== '<'))) {
               o.footerComponent = o.footer;
               delete o.footer;
             }

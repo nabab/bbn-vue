@@ -118,7 +118,7 @@
             st += name;
           }
           else{
-            st += window.location.pathname.substr(1) + '-' + this.storageName;
+            st += bbn.fn.substr(window.location.pathname, 1) + '-' + this.storageName;
           }
           return st;
         },

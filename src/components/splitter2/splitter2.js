@@ -412,13 +412,13 @@
                   props.size = false;
                 }
                 else if ( bbn.fn.isString(props.size) ){
-                  if (  props.size.substr(-1) === '%' ){
+                  if (  bbn.fn.substr(props.size, -1) === '%' ){
                     isPercent = true;
                     isRelative = true;
                     unit = '%';
                   }
                   else {
-                    switch ( props.size.substr(-2) ){
+                    switch ( bbn.fn.substr(props.size, -2) ){
                       case 'px':
                         isNumber = true;
                         props.size = parseInt(props.size);
@@ -427,7 +427,7 @@
                       case 'fr':
                       case 'em':
                         isRelative = true;
-                        unit = props.size.substr(-2);
+                        unit = bbn.fn.substr(props.size, -2);
                         break;
                     }
                   }

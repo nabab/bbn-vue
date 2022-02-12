@@ -32,7 +32,7 @@
       bbn.vue.fullComponent = bbn.fn.extend(true, {}, bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent);
 
       bbn.vue.addPrefix('bbn', (tag, resolve, reject) => {
-        bbn.vue.queueComponentBBN(tag.substr(4), resolve, reject);
+        bbn.vue.queueComponentBBN(bbn.fn.substr(tag, 4), resolve, reject);
       });
 
       Vue.component('bbns-container', bbn.fn.extend({

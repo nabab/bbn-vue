@@ -939,7 +939,7 @@
             }
             if ( this.$parent.edit ){
               if ( (this.source.type === 'image') && this.source.content && this.source.content.length ){
-                let extension = this.source.content.substr(this.source.content.lastIndexOf('.'), this.source.content.length)
+                let extension = bbn.fn.substr(this.source.content, this.source.content.lastIndexOf('.'), this.source.content.length)
                 //take the correct size
                 this.image.push({
                   "name": this.source.content,
@@ -949,7 +949,7 @@
               }
               else if ( (this.source.type === 'gallery') && this.source.content && this.source.content.length ){
                 /*this.image = bbn.fn.map(this.source.content, a => {
-                  let extension = a.src.substr(a.src.lastIndexOf('.'), a.src.length);
+                  let extension = bbn.fn.substr(a.src, a.src.lastIndexOf('.'), a.src.length);
                   a.name = a.src;
                   a.size = 465464;
                   a.extension = extension;
