@@ -142,8 +142,8 @@
        * @prop {Object} [{}] component
        */
       component: {
-        type: Object,
-        default(){
+        type: [String, Object, Function],
+        default() {
           return {};
         }
       },

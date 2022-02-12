@@ -654,8 +654,19 @@
                     src = this.source.data[prop];
                   }
                 }
-                if (!!src && bbn.fn.isString(src)) {
-                  return `${src}${src.indexOf('?') > -1 ? '&' : '?'}w=${this.col.gallery.currentItemWidth}&thumb=1`;
+                if (src && bbn.fn.isString(src)) {
+                  let url = bbn.fn.dirName(src) + '/';
+                  src = bbn.fn.baseName(src);
+                  let sep = '?';
+                  let params = '';
+                  if (src.indexOf(sep)) {
+                    let tmp = src.split('?');
+                    sep = '&';
+                    params = '?' + tmp[1];
+                    src = tmp[0];
+                  }
+  
+                  return url + encodeURIComponent(src) + params + sep + 'w=' + this.col.gallery.currentItemWidth + '&thumb=1';
                 }
                 return null;
               }
@@ -810,8 +821,20 @@
                   src = data[prop];
                 }
               }
-              if (!!src && bbn.fn.isString(src)) {
-                return `${src}${src.indexOf('?') > -1 ? '&' : '?'}w=70&thumb=1`;
+
+              if (src && bbn.fn.isString(src)) {
+                let url = bbn.fn.dirName(src) + '/';
+                src = bbn.fn.baseName(src);
+                let sep = '?';
+                let params = '';
+                if (src.indexOf(sep)) {
+                  let tmp = src.split('?');
+                  sep = '&';
+                  params = '?' + tmp[1];
+                  src = tmp[0];
+                }
+
+                return url + encodeURIComponent(src) + params + sep + 'w=70&thumb=1';
               }
             }
             return null;
