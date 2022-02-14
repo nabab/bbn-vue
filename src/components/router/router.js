@@ -151,7 +151,7 @@
        */
       scrollable: {
         type: Boolean,
-        default: false
+        default: true
       },
       /**
        * The name used for the storage.

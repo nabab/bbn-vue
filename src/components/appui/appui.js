@@ -38,6 +38,10 @@
       popup: {
         type: Vue
       },
+      scrollable: {
+        type: Boolean,
+        default: true
+      },
       /**
        * @prop {String} def
        */

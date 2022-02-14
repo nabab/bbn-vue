@@ -2,18 +2,24 @@
 ((bbn) => {
 
 let script = document.createElement('script');
-script.innerHTML = `<div :class="[componentClass, visual ? '' : 'bbn-overlay']"
+script.innerHTML = `<div :class="[componentClass, {
+  'bbn-overlay': !visual && scrollable,
+  'bbn-w-100': !scrollable
+}]"
      @subready.stop
      :style="visual ? visualStyle : {}"
      v-show="visible || visual">
-  <div class="bbn-100">
+  <div :class="{
+    'bbn-100': scrollable,
+    'bbn-w-100': !scrollable
+  }">
     <transition name="fade"
                 v-on:enter="enter"
                 v-on:after-enter="onResize">
       <div :class="{
-        'bbn-overlay': !visual,
-        'bbn-flex-height': visual,
-        'bbn-w-100': visual
+        'bbn-overlay': !visual && scrollable,
+        'bbn-flex-height': visual && scrollable,
+        'bbn-w-100': visual || !scrollable
       }"
           v-show="visible || visual">
         <!-- The header -->
@@ -48,8 +54,9 @@ script.innerHTML = `<div :class="[componentClass, visual ? '' : 'bbn-overlay']"
         <!-- The main container (the one we take screenshots of) -->
         <div :class="{
           'bbn-background': true,
-          'bbn-overlay': !fullScreen && !visual,
-          'bbn-flex-fill': !fullScreen && visual,
+          'bbn-overlay': !fullScreen && !visual && scrollable,
+          'bbn-flex-fill': !fullScreen && visual && scrollable,
+          'bbn-w-100': !scrollable,
           'bbn-container-full-screen': fullScreen,
           'bbn-container-visible': visible
         }"
@@ -60,7 +67,10 @@ script.innerHTML = `<div :class="[componentClass, visual ? '' : 'bbn-overlay']"
                     v-show="visible || (visual && !thumbnail)"
                     ref="scroll"
                     :axis="scrollable ? 'y' : null"
-                    class="bbn-overlay">
+                    :class="{
+                      'bbn-overlay': scrollable,
+                      'bbn-w-100': !scrollable
+                    }">
             <!-- This is an ad hoc component with unique name -->
             <component v-if="isComponent"
                       :is="$options.components[componentName]"
@@ -644,7 +654,7 @@ document.head.insertAdjacentElement('beforeend', css);
             // Adding also a few funciton to interact with the tab
             let cont = this;
             let o = bbn.fn.extend(true, res ? res : {}, {
-              template: '<div class="' + (this.scrollable ? '' : 'bbn-overlay') + '">' + this.content + '</div>',
+              template: '<div class="' + (this.scrollable ? '' : 'bbn-w-100') + '">' + this.content + '</div>',
               methods: {
                 getContainer(){
                   if (!this._bbn_container) {

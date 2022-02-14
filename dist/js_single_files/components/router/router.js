@@ -3,13 +3,15 @@
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, {
   'bbn-invisible': !ready,
-  'bbn-overlay': nav,
+  'bbn-overlay': nav && scrollable,
+  'bbn-w-100': !scrollable
 }]">
 <div :class="{
-   'bbn-flex-height': nav,
+   'bbn-flex-height': nav && scrollable,
    'bbn-router-nav': nav,
    'bbn-router-nav-bc': nav && isBreadcrumb,
-   'bbn-overlay': !nav
+   'bbn-overlay': !nav && scrollable,
+   'bbn-w-100': !scrollable
  }">
 <!-- START OF BREADCRUMB -->
 <div v-if="nav && isBreadcrumb && !isVisual"
@@ -223,8 +225,16 @@ script.innerHTML = `<div :class="[componentClass, {
 <!-- END OF TABS -->
 <!-- START OF CONTENT FOR VISUALNAV -->
 <div v-if="ready && isVisual"
-    class="bbn-overlay bbn-vspadded">
- <div class="bbn-100 bbn-router-visual"
+    :class="{
+      'bbn-overlay': scrollable,
+      'bbn-w-100': !scrollable,
+      'bbn-vspadded': true
+    }">
+ <div :class="{
+   'bbn-100': scrollable,
+   'bbn-w-100': !scrollable,
+   'bbn-router-visual': true
+  }"
       :style="visualStyle">
    <slot></slot>
    <template v-for="a in visualList">
@@ -255,8 +265,9 @@ script.innerHTML = `<div :class="[componentClass, {
 <!-- END OF CONTENT FOR VISUALNAV -->
 <!-- START OF CONTENT -->
 <div :class="{
-      'bbn-flex-fill': !!nav,
-      'bbn-overlay': !nav
+      'bbn-flex-fill': !!nav && scrollable,
+      'bbn-overlay': !nav && scrollable,
+      'bbn-w-100':  !scrollable
     }"
     v-else-if="ready">
  <slot></slot>
@@ -432,7 +443,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        */
       scrollable: {
         type: Boolean,
-        default: false
+        default: true
       },
       /**
        * The name used for the storage.

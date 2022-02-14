@@ -1,5 +1,7 @@
 <template>
-<div :class="[componentClass, 'bbn-background', 'bbn-overlay', {
+<div :class="[componentClass, 'bbn-background', {
+      'bbn-overlay': scrollable,
+      'bbn-w-100': !scrollable,
       'bbn-desktop': !isMobile
      }]"
      :style="{opacity: opacity}"
@@ -9,7 +11,10 @@
        class="bbn-middle bbn-xl"
        v-text="_('Appui is already defined') + '... :('">
   </div>
-  <div class="bbn-flex-height" v-else-if="ready">
+  <div :class="{
+    'bbn-flex-height': scrollable,
+    'bbn-w-100': !scrollable
+  }" v-else-if="ready">
     <!-- HEADER -->
     <div v-if="header"
          class="bbn-w-100"
@@ -123,8 +128,11 @@
       </div>
     </div>
     <!-- MAIN -->
-    <div class="bbn-flex-fill">
-      <!--bbn-split-tabs v-if="tabnav"
+    <div :class="{
+      'bbn-flex-fill': scrollable,
+      'bbn-w-100': !scrollable
+    }">
+        <!--bbn-split-tabs v-if="tabnav"
                       orientation="horizontal"
                       ref="tabnav"
                       :root="root"
@@ -145,12 +153,11 @@
                   ref="router"
                   :nav="nav"
                   :master="true"
-                  :class="{'bbn-overlay': !nav}"
                   :url="!!nav ? undefined : url"
                   @route="onRoute"
                   @change="$emit('change', $event)"
                   :breadcrumb="isMobile"
-                  :scrollable="isMobile"
+                  :scrollable="scrollable"
                   :component="component"
                   :component-source="componentSource"
                   :component-url="componentUrl"
@@ -337,6 +344,10 @@
       },
       popup: {
         type: Vue
+      },
+      scrollable: {
+        type: Boolean,
+        default: true
       },
       /**
        * @prop {String} def
