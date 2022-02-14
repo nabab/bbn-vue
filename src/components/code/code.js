@@ -745,8 +745,6 @@
             // ... for now we add a static method with a static url in the props
             bbn.fn.post(this.definitionUrl, {"className": className}, d => {
               if (d.success && d.res) {
-                console.log("-----------------------------------")
-                console.log(d)
                 bbn.vue.phpLang.push(bbn.fn.extend(d.res, {"ref": varName}));
                 if (!bbn.fn.getRow(bbn.vue.phpLang, {"name": varName})) {
                   let ref = {
