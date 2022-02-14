@@ -740,17 +740,28 @@
         //bbn.fn.log("----END OF PHP HINT-----");
       },
       addDefinition(className, varName) {
-        if (!bbn.fn.getRow(bbn.vue.phpLang, {name: className})) {
+        if (!bbn.fn.getRow(bbn.vue.phpLang, {"name": className})) {
           if (this.definitionUrl) {
             // ... for now we add a static method with a static url in the props
-            bbn.fn.post(this.definitionUrl, {className: className}, d => {
+            bbn.fn.post(this.definitionUrl, {"className": className}, d => {
               if (d.success && d.res) {
-                bbn.vue.phpLang.push(d.res);
+                console.log("-----------------------------------")
+                console.log(d)
+                bbn.vue.phpLang.push(bbn.fn.extend(d.res, {"ref": varName}));
+                if (!bbn.fn.getRow(bbn.vue.phpLang, {"name": varName})) {
+                  let ref = {
+                    "name": varName,
+                    "type": "class",
+                    "items": [],
+                  }
+                  bbn.vue.phpLang.push(ref);
+                }
               }
             })
           }
         } else {
-          let newObj = bbn.fn.extend(bbn.fn.getRow(bbn.vue.phpLang, {name: className}), {name: varName});
+          let obj = JSON.parse(JSON.stringify(bbn.fn.getRow(bbn.vue.phpLang, {"name": className})));
+          let newObj = bbn.fn.extend(obj, {"name": varName});
           bbn.vue.phpLang.push(newObj);
         }
       },
