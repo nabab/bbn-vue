@@ -244,7 +244,8 @@
                   @ready="menuMounted = true"/>
   </bbn-slider>
   <!-- POPUPS -->
-  <bbn-popup :source="popups"
+  <bbn-popup v-if="!popup"
+             :source="popups"
              ref="popup"
              :z-index="13"/>
   <!-- SEARCH -->

@@ -91,7 +91,7 @@
         return this.isEscape || this.isFunction || ['print screen', 'prt', 'prt sc', 'prt sc.', 'screen lock', 'screen', 'scr lk', 'pause'].includes(this.k);
       },
       isFunction(){
-        return this.isSpecial && (this.k.substr(0, 1) === 'f');
+        return this.isSpecial && (bbn.fn.substr(this.k, 0, 1) === 'f');
       },
       isArrow(){
         return (this.k.indexOf('arrow') === 0) || DIRECTIONS.includes(this.k)

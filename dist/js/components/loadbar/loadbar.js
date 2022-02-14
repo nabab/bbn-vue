@@ -3,7 +3,7 @@
 
 let script = document.createElement('script');
 script.innerHTML = `<div :class="['bbn-100', 'bbn-unselectable', componentClass]">
-  <span class="bbn-loadbar-content bbn-right-padded bbn-flex-width"
+  <span class="bbn-loadbar-content bbn-h-100 bbn-flex-width"
         @click="info = !info"
         ref="bar">
     <!--span class="buttons" v-if="data.length">
@@ -58,7 +58,7 @@ script.innerHTML = `<div :class="['bbn-100', 'bbn-unselectable', componentClass]
       ></i>
     </span-->
     <span class="bbn-loadbar-state bbn-hxspadded bbn-c bbn-block bbn-h-100 bbn-middle">
-      <bbn-loadicon v-if="currentItem.loading" class="bbn-blue bbn-h-100"></bbn-loadicon>
+      <bbn-loadicon v-if="currentItem.loading" class="bbn-blue"></bbn-loadicon>
       <i v-else-if="currentItem.error" class="nf nf-fa-times_circle bbn-red"></i>
       <i v-else-if="currentItem.success" class="nf nf-fa-check bbn-green"></i>
       <i v-else-if="currentItem.abort" class="nf nf-mdi-stop bbn-orange"></i>
@@ -85,7 +85,6 @@ script.innerHTML = `<div :class="['bbn-100', 'bbn-unselectable', componentClass]
                :container="$root.$el"
                :scrollable="true"
                @close="info = false"
-               @open="focusInput"
                width="100%"
                max-height="60vw"
   >
@@ -94,11 +93,13 @@ script.innerHTML = `<div :class="['bbn-100', 'bbn-unselectable', componentClass]
                  button-right="nf nf-mdi-send"
                  v-model="link"
                  @keydown.enter="go"
+                 :focused="true"
                  @clickRightButton="go"
       ></bbn-input>
       <ul class="bbn-reset bbn-w-100 bbn-ul">
         <li v-for="it of items">
-          <div @click="cancel(it)">
+          <div class="bbn-vmiddle"
+               @click="cancel(it)">
             <span class="bbn-loadbar-state bbn-hxspadded bbn-c">
               <bbn-loadicon v-if="it.loading" class="bbn-blue"></bbn-loadicon>
               <i v-else-if="it.error" class="nf nf-fa-times_circle bbn-red"></i>
@@ -296,12 +297,6 @@ document.head.insertAdjacentElement('beforeend', css);
       go(){
         if (this.link) {
           bbn.fn.link(this.link);
-        }
-      },
-      focusInput(){
-        let input = this.find('bbn-input');
-        if (input) {
-          input.getRef('element').focus();
         }
       }
     },

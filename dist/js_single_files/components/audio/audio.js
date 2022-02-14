@@ -224,7 +224,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        */
       type(){
         if ( this.source ){
-          switch ( this.source.substr(this.source.lastIndexOf('.') + 1).toLowerCase() ){
+          switch ( bbn.fn.substr(this.source, this.source.lastIndexOf('.') + 1).toLowerCase() ){
             case 'mp3':
               return 'audio/mpeg';
             case 'wav':

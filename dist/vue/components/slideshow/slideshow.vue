@@ -1059,6 +1059,7 @@
   left: 0;
   bottom: 0;
   font-size: initial;
+  z-index: 1;
 }
 .bbn-slideshow a {
   color: inherit;

@@ -482,7 +482,7 @@
           this.parent = this.router.parent.itsBreadcrumb;
           this.router.parent.itsBreadcrumb.register(
             this,
-            this.router.baseURL.substr(0, this.router.baseURL.length - 1)
+            bbn.fn.substr(this.router.baseURL, 0, this.router.baseURL.length - 1)
           );
         }
       })
@@ -504,7 +504,7 @@
       ){
         this.router.parent.itsBreadcrumb.unregister(
           this,
-          this.router.baseURL.substr(0, this.router.baseURL.length - 1)
+          bbn.fn.substr(this.router.baseURL, 0, this.router.baseURL.length - 1)
         );
       }
     },

@@ -1,7 +1,7 @@
 ((bbn) => {
 
 let script_dep = document.createElement('script');
-script_dep.setAttribute('src', 'https://cdn.jsdelivr.net/combine/gh/acornjs/acorn@v8.5.0/dist/acorn.js,gh/acornjs/acorn@v8.5.0/dist/acorn-loose.js,gh/acornjs/acorn@v8.5.0/dist/walk.js,gh/ternjs/tern@0.21.0/doc/demo/polyfill.js,gh/ternjs/tern@0.21.0/lib/signal.js,gh/ternjs/tern@0.21.0/lib/tern.js,gh/ternjs/tern@0.21.0/lib/def.js,gh/ternjs/tern@0.21.0/lib/comment.js,gh/ternjs/tern@0.21.0/lib/infer.js,gh/ternjs/tern@0.21.0/plugin/doc_comment.js,gh/google/diff-match-patch@master/javascript/diff_match_patch.min.js,gh/jshint/jshint@2.12.0/dist/jshint.js,npm/jsonlint@1.6.3/web/jsonlint.js,npm/codemirror-minified@5.59.2/lib/codemirror.js,npm/codemirror-minified@5.59.2/addon/dialog/dialog.js,npm/codemirror-minified@5.59.2/addon/edit/matchbrackets.js,npm/codemirror-minified@5.59.2/addon/edit/matchtags.js,npm/codemirror-minified@5.59.2/addon/edit/closebrackets.js,npm/codemirror-minified@5.59.2/addon/edit/closetag.js,npm/codemirror-minified@5.59.2/addon/edit/trailingspace.js,npm/codemirror-minified@5.59.2/addon/edit/continuelist.js,npm/codemirror-minified@5.59.2/addon/runmode/colorize.js,npm/codemirror-minified@5.59.2/addon/search/search.js,npm/codemirror-minified@5.59.2/addon/search/searchcursor.js,npm/codemirror-minified@5.59.2/addon/fold/foldcode.js,npm/codemirror-minified@5.59.2/addon/fold/foldgutter.js,npm/codemirror-minified@5.59.2/addon/fold/brace-fold.js,npm/codemirror-minified@5.59.2/addon/fold/comment-fold.js,npm/codemirror-minified@5.59.2/addon/fold/xml-fold.js,npm/codemirror-minified@5.59.2/addon/fold/markdown-fold.js,npm/codemirror-minified@5.59.2/addon/fold/indent-fold.js,npm/codemirror-minified@5.59.2/addon/mode/overlay.js,npm/codemirror-minified@5.59.2/mode/meta.js,npm/codemirror-minified@5.59.2/addon/mode/multiplex.js,npm/codemirror-minified@5.59.2/addon/search/match-highlighter.js,npm/codemirror-minified@5.59.2/addon/search/jump-to-line.js,npm/codemirror-minified@5.59.2/addon/selection/active-line.js,npm/codemirror-minified@5.59.2/addon/runmode/runmode.js,npm/codemirror-minified@5.59.2/addon/selection/mark-selection.js,npm/codemirror-minified@5.59.2/addon/merge/merge.js,npm/codemirror-minified@5.59.2/addon/hint/show-hint.js,npm/codemirror-minified@5.59.2/addon/tern/tern.js,npm/codemirror-minified@5.59.2/mode/clike/clike.js,npm/codemirror-minified@5.59.2/mode/css/css.js,npm/codemirror-minified@5.59.2/mode/diff/diff.js,npm/codemirror-minified@5.59.2/mode/htmlmixed/htmlmixed.js,npm/codemirror-minified@5.59.2/mode/javascript/javascript.js,npm/codemirror-minified@5.59.2/mode/markdown/markdown.js,npm/codemirror-minified@5.59.2/mode/php/php.js,npm/codemirror-minified@5.59.2/mode/sql/sql.js,npm/codemirror-minified@5.59.2/mode/vue/vue.js,npm/codemirror-minified@5.59.2/mode/xml/xml.js,npm/codemirror-minified@5.59.2/mode/stex/stex.js,npm/codemirror-minified@5.59.2/mode/yaml/yaml.js,npm/codemirror-minified@5.59.2/addon/hint/html-hint.js,npm/codemirror-minified@5.59.2/addon/hint/css-hint.js,npm/codemirror-minified@5.59.2/addon/hint/sql-hint.js,npm/codemirror-minified@5.59.2/addon/hint/xml-hint.js,npm/codemirror-minified@5.59.2/addon/lint/lint.js,npm/codemirror-minified@5.59.2/addon/lint/javascript-lint.js,npm/codemirror-minified@5.59.2/addon/lint/json-lint.js');
+script_dep.setAttribute('src', 'https://cdn.jsdelivr.net/combine/gh/acornjs/acorn@v8.5.0/dist/acorn.js,gh/acornjs/acorn@v8.5.0/dist/acorn-loose.js,gh/acornjs/acorn@v8.5.0/dist/walk.js,gh/ternjs/tern@0.21.0/doc/demo/polyfill.js,gh/ternjs/tern@0.21.0/lib/signal.js,gh/ternjs/tern@0.21.0/lib/tern.js,gh/ternjs/tern@0.21.0/lib/def.js,gh/ternjs/tern@0.21.0/lib/comment.js,gh/ternjs/tern@0.21.0/lib/infer.js,gh/ternjs/tern@0.21.0/plugin/doc_comment.js,gh/google/diff-match-patch@master/javascript/diff_match_patch.min.js,gh/jshint/jshint@2.13.4/dist/jshint.js,npm/jsonlint@1.6.3/web/jsonlint.js,npm/codemirror-minified@5.59.2/lib/codemirror.js,npm/codemirror-minified@5.59.2/addon/dialog/dialog.js,npm/codemirror-minified@5.59.2/addon/edit/matchbrackets.js,npm/codemirror-minified@5.59.2/addon/edit/matchtags.js,npm/codemirror-minified@5.59.2/addon/edit/closebrackets.js,npm/codemirror-minified@5.59.2/addon/edit/closetag.js,npm/codemirror-minified@5.59.2/addon/edit/trailingspace.js,npm/codemirror-minified@5.59.2/addon/edit/continuelist.js,npm/codemirror-minified@5.59.2/addon/runmode/colorize.js,npm/codemirror-minified@5.59.2/addon/search/search.js,npm/codemirror-minified@5.59.2/addon/search/searchcursor.js,npm/codemirror-minified@5.59.2/addon/fold/foldcode.js,npm/codemirror-minified@5.59.2/addon/fold/foldgutter.js,npm/codemirror-minified@5.59.2/addon/fold/brace-fold.js,npm/codemirror-minified@5.59.2/addon/fold/comment-fold.js,npm/codemirror-minified@5.59.2/addon/fold/xml-fold.js,npm/codemirror-minified@5.59.2/addon/fold/markdown-fold.js,npm/codemirror-minified@5.59.2/addon/fold/indent-fold.js,npm/codemirror-minified@5.59.2/addon/mode/overlay.js,npm/codemirror-minified@5.59.2/mode/meta.js,npm/codemirror-minified@5.59.2/addon/mode/multiplex.js,npm/codemirror-minified@5.59.2/addon/search/match-highlighter.js,npm/codemirror-minified@5.59.2/addon/search/jump-to-line.js,npm/codemirror-minified@5.59.2/addon/selection/active-line.js,npm/codemirror-minified@5.59.2/addon/runmode/runmode.js,npm/codemirror-minified@5.59.2/addon/selection/mark-selection.js,npm/codemirror-minified@5.59.2/addon/merge/merge.js,npm/codemirror-minified@5.59.2/addon/hint/show-hint.js,npm/codemirror-minified@5.59.2/addon/tern/tern.js,npm/codemirror-minified@5.59.2/mode/clike/clike.js,npm/codemirror-minified@5.59.2/mode/css/css.js,npm/codemirror-minified@5.59.2/mode/diff/diff.js,npm/codemirror-minified@5.59.2/mode/htmlmixed/htmlmixed.js,npm/codemirror-minified@5.59.2/mode/javascript/javascript.js,npm/codemirror-minified@5.59.2/mode/markdown/markdown.js,npm/codemirror-minified@5.59.2/mode/php/php.js,npm/codemirror-minified@5.59.2/mode/sql/sql.js,npm/codemirror-minified@5.59.2/mode/vue/vue.js,npm/codemirror-minified@5.59.2/mode/xml/xml.js,npm/codemirror-minified@5.59.2/mode/stex/stex.js,npm/codemirror-minified@5.59.2/mode/yaml/yaml.js,npm/codemirror-minified@5.59.2/addon/hint/html-hint.js,npm/codemirror-minified@5.59.2/addon/hint/css-hint.js,npm/codemirror-minified@5.59.2/addon/hint/sql-hint.js,npm/codemirror-minified@5.59.2/addon/hint/xml-hint.js,npm/codemirror-minified@5.59.2/addon/lint/lint.js,npm/codemirror-minified@5.59.2/addon/lint/javascript-lint.js,npm/codemirror-minified@5.59.2/addon/lint/json-lint.js');
 script_dep.onload = () => {
 
 
@@ -624,13 +624,13 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
 
         let cursor = this.widget.getCursor();
         let line = this.widget.getLine(cursor.line);
-        let str = line.substr(0, cursor.ch);
+        let str = bbn.fn.substr(line, 0, cursor.ch);
         let words = [...str.matchAll(/\w+/g)].map(a => a[0]);
         if (words) {
           let lastWord = words[words.length - 1];
           //bbn.fn.log("LAST WORD", lastWord, toAdd);
           let pos = toAdd.indexOf(lastWord);
-          let dollarIncrement = toAdd.substr(0, 1) === '$' ? 1 : 0;
+          let dollarIncrement = bbn.fn.substr(toAdd, 0, 1) === '$' ? 1 : 0;
           if ((this.mode === 'php') && (row.ref || (row.type === 'object'))) {
             if (['X', 'Str'].includes(row.ref)) {
               toAdd += '::';
@@ -641,7 +641,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           }
 
           if (pos === dollarIncrement) {
-            toAdd = toAdd.substr(lastWord.length + dollarIncrement);
+            toAdd = bbn.fn.substr(toAdd, lastWord.length + dollarIncrement);
           }
         }
 
@@ -686,7 +686,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           // Looking for the last expression found, that's the one we'll want to complete
           // It must match the string just before the cursor
           bbn.fn.each(matches, a => {
-            if (str.substr(-a[0].length) === a[0]) {
+            if (bbn.fn.substr(str, -a[0].length) === a[0]) {
               search = a[0];
               return false;
             }
@@ -714,14 +714,14 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
             let method = false;
             let cls = false;
             // If the previous char is an opening parenthesis we are calling a function
-            if (search.substr(-1) === '(') {
+            if (bbn.fn.substr(search, -1) === '(') {
               isFn = true;
               method = words[words.length-1];
             }
             // If the 2 previous char call a method
-            else if (['::', '->'].includes(search.substr(-2))) {
+            else if (['::', '->'].includes(bbn.fn.substr(search, -2))) {
               isMethod = true;
-              cls = search.substr(0, search.length-2);
+              cls = bbn.fn.substr(search, 0, search.length-2);
             }
             bbn.fn.log(isFn ? "METH" : "CLASS", isFn ? method : cls);
 
@@ -812,10 +812,10 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       },
       /*
       jsHint(str){
-        if (str.substr(-1) === '(') {
+        if (bbn.fn.substr(str, -1) === '(') {
           bbn.fn.log('IS FUNCTION');
         }
-        else if (str.substr(-1) === '.') {
+        else if (bbn.fn.substr(str, -1) === '.') {
           bbn.fn.log('IS PROP');
         }
         else {
@@ -834,7 +834,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           let idx = str.lastIndexOf(this.currentFn.str);
           if (idx > -1) {
             // What is between the opening parenthesis and the cursor
-            str = str.substr(idx + this.currentFn.str.length);
+            str = bbn.fn.substr(str, idx + this.currentFn.str.length);
             let num = 0;
             // Counting the arguments, removing parenthesis
             let parenthesis = 0;
@@ -892,7 +892,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         bbn.fn.each(tokens, t => {
           let tmp = bbn.fn.clone(t);
           if (t.end >= cursor.ch) {
-            tmp.string = t.string.substr(0, cursor.ch - t.start);
+            tmp.string = bbn.fn.substr(t.string, 0, cursor.ch - t.start);
           }
 
           currentLine += tmp.string;

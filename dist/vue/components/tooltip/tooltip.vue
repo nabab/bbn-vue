@@ -1,20 +1,34 @@
 <template>
-<bbn-context :tag="tag"
-            :class="componentClass"
-            ref="floater"
-            tabindex="-1"
-            position="top"
-            :content="content"
-            @click="action('click', $event)"
-            @contextmenu="action('context', $event)"
-            @keydown="action('keydown', $event)"
-            @mousedown="action('mousedown', $event)"
-            @mouseover="action('mouseover', $event)"
+<div
+  :class="componentClass"
 >
-  <slot>
-    <i :class="icon"></i>
-  </slot>
-</bbn-context>
+<slot>
+</slot>
+  <span class="bbn-abs" @click="visible=true" @mouseenter="visible=true" ref="helper">
+    <i class="bbn-m nf nf-fa-info_circle"></i>
+  </span>
+  <bbn-floater
+              v-if="visible" 
+              :class="position"
+              :tag="tag"
+              ref="floater"
+              tabindex="-1"
+              :position="position"
+              :content="content"
+              @click="action('click', $event)"
+              @contextmenu="action('context', $event)"
+              @keydown="action('keydown', $event)"
+              @mousedown="action('mousedown', $event)"
+              @mouseover="action('mouseover', $event)"
+              @close="visible=false"
+              :component="component"
+              :element="$refs.helper"
+              :arrow="true"
+              :distance="distance"
+              :auto-hide="true"
+  >
+  </bbn-floater>
+</div>
 </template>
 <script>
   module.exports = /**
@@ -30,11 +44,11 @@
 (function(bbn){
   "use strict";
   const tpl = `
-  <div style="padding-top: 4em" class="bbn-padded">
-    <div class="bbn-top-left bbn-vmargin">
+  <div style="display: flex;" class="bbn-padded bbn-vmargin">
+    <div>
       <i class="bbn-xl ---BBN-ICON---"></i>
     </div>
-    <div>
+    <div style="display: flex; align-items: center; margin-left: 5px;">
     ---BBN-CONTENT---
     </div>
   </div>`;
@@ -56,7 +70,7 @@
        */
       source: {
         type: [Function, String],
-        required: true
+        default: ""
       },
       /**
        * @prop {String} template
@@ -94,7 +108,24 @@
       mode: {
         type: String,
         default: 'free'
-      }
+      },
+      /**
+       * If an element is given this will force the position.
+       * @prop {String} position
+       */
+      position: {
+        type: String,
+        validator: p => ['', 'topLeft', 'topRight', 'bottomLeft', 'bottomRight', 'top', 'bottom', 'left', 'right'].includes(p),
+        default: 'bottom'
+      },
+      /**
+        * Tooltip offset from the icon
+        * @prop {Number} ['0'] pixel
+      */
+      distance: {
+        type: Number,
+        default: 0
+      },
     },
     data(){
       return {
@@ -102,7 +133,8 @@
          * The items.
          * @data {Array} items
          */
-        content: this.getContent()
+        content: this.getContent(),
+        visible: false,
       };
     },
     methods: {
@@ -129,6 +161,10 @@
 <style scoped>
 .bbn-tooltip {
   cursor: pointer;
+}
+.bbn-tooltip .bbn-abs i {
+  margin-left: 3px;
+  margin-top: -1px;
 }
 
 </style>

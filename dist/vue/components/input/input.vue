@@ -15,7 +15,7 @@
   }">
     <bbn-button v-if="buttonLeft"
           :icon="buttonLeft" 
-          @click="$emit('clickLeftButton')"
+          @click="currentActionLeft"
           tabindex="-1"
           :class="[
             'bbn-button-left',
@@ -25,6 +25,7 @@
           ]"/>
     <input :value="value"
           :type="currentType"
+          v-focused.selected="focused"
           :name="name"
           ref="element"
           :readonly="readonly"
@@ -58,7 +59,7 @@
     <bbn-button v-if="buttonRight"
                 :icon="buttonRight"
                 tabindex="-1"
-                @click="$emit('clickRightButton')"
+                @click="currentActionRight"
                 :class="[
                   'bbn-button-right',
                   'bbn-no-vborder',
@@ -220,12 +221,12 @@
          * The action performed by the left button.
          * @data {Function} currentActionLeft
          */
-        currentActionLeft: bbn.fn.isFunction(this.actionLeft) ? this.actionLeft : ()=>{},
+        currentActionLeft: bbn.fn.isFunction(this.actionLeft) ? this.actionLeft : ()=>{this.$emit('clickLeftButton')},
         /**
          * The action performed by the right button.
          * @data {Function} currentActionRight
          */
-        currentActionRight: bbn.fn.isFunction(this.actionRight) ? this.actionRight : ()=>{},
+        currentActionRight: bbn.fn.isFunction(this.actionRight) ? this.actionRight : ()=>{this.$emit('clickRightButton')},
         currentPattern: null,
         currentType: null
       }
@@ -323,6 +324,9 @@
 }
 .bbn-input.bbn-input-nullable:hover .bbn-input-nullable-container {
   opacity: 0.3;
+}
+.bbn-input .bbn-invisible {
+  opacity: 0;
 }
 
 </style>

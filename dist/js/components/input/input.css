@@ -28,3 +28,6 @@
 .bbn-input.bbn-input-nullable:hover .bbn-input-nullable-container {
   opacity: 0.3;
 }
+.bbn-input .bbn-invisible {
+  opacity: 0;
+}

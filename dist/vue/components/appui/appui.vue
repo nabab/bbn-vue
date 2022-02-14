@@ -4,8 +4,7 @@
      }]"
      :style="{opacity: opacity}"
      @focusin="isFocused = true"
-     @focusout="isFocused = false"
->
+     @focusout="isFocused = false">
   <div v-if="!cool"
        class="bbn-middle bbn-xl"
        v-text="_('Appui is already defined') + '... :('">
@@ -14,30 +13,44 @@
     <!-- HEADER -->
     <div v-if="header"
          class="bbn-w-100"
-         style="overflow: visible"
-    >
-      <div :class="['bbn-header', 'bbn-flex-width', 'bbn-unselectable', 'bbn-no-border', {
+         style="overflow: visible">
+      <div :class="['bbn-w-100', 'bbn-flex-width', 'bbn-unselectable', 'bbn-no-border', {
              'bbn-h-100': !isMobile,
              'bbn-spadded': isMobile
-           }]"
-      >
+           }]">
         <!-- MENU BUTTON -->
         <div :class="{
                'bbn-block': !isMobile,
                'bbn-h-100': !isMobile,
                'bbn-appui-menu-button': !isMobile,
                'bbn-vmiddle': isMobile,
+               'bbn-middle': !isMobile,
                'bbn-right-sspace': isMobile && searchIsActive
-              }"
-        >
+              }">
           <div tabindex="0"
                @keydown.enter="toggleMenu"
                @keydown.space="toggleMenu"
                @mousedown.prevent.stop="toggleMenu"
-               class="bbn-centered bbn-p"
-          >
+               class="bbn-c bbn-p bbn-padded">
             <i ref="icon" class="nf nf-fa-bars bbn-xxxl"> </i>
           </div>
+        </div>
+        <!-- LOGO -->
+        <div v-if="!isMobile"
+             class="bbn-block bbn-logo-container">
+          <div class="bbn-100 bbn-vmiddle" style="justify-content: center;">
+            <img v-if="!!logo"
+                 :src="logo"
+                 style="background-color: white;"
+                 class="bbn-right-padded bbn-appui-logo">
+          </div>
+        </div>
+        <!-- LOGO (MOBILE) -->
+        <div class="bbn-flex-fill bbn-hspadded bbn-middle"
+              v-else-if="!searchIsActive && !!logo && isMobile">
+          <img :src="logo"
+                style="background-color: white;"
+                class="bbn-appui-logo">
         </div>
         <!-- FISHEYE (MOBILE) -->
         <bbn-fisheye v-if="plugins['appui-menu'] && isMobile && !searchIsActive"
@@ -46,32 +59,13 @@
                     @remove="removeShortcut"
                     ref="fisheye"
                     :source="shortcuts"
-                    :fixed-left="leftShortcuts"
-                    :fixed-right="rightShortcuts"
+                    :fixed-left="leftShortcuts || []"
                     :mobile="true"
                     :z-index="6"/>
         <!-- SEARCHBAR -->
-        <div v-if="!isMobile && !!searchBar"
-             class="bbn-appui-search bbn-large bbn-abs bbn-vspadded bbn-h-100 bbn-vmiddle"
-        >
-          <bbn-search :source="searchBar.source"
-                      :placeholder="searchBar.placeholderFocused"
-                      ref="search"
-                      @select="searchBar.select"
-                      v-model="searchBar.value"
-                      :suggest="true"
-                      :source-value="searchBar.sourceValue"
-                      :source-text="searchBar.sourceText"
-                      :min-length="searchBar.minLength"
-                      :limit="50"
-                      :pageable="true"
-                      class="bbn-no"
-                      style="z-index: 5"/>
-        </div>
         <!-- CENTRAL PART -->
         <div v-if="!isMobile"
-             class="bbn-splitter-top-center bbn-flex-fill"
-        >
+             class="bbn-splitter-top-center bbn-flex-fill">
           <!-- FISHEYE -->
           <bbn-fisheye v-if="plugins['appui-menu']"
                        style="z-index: 6"
@@ -84,47 +78,28 @@
                        @remove="removeShortcut"
                        ref="fisheye"
                        :source="shortcuts"
-                       :fixed-left="leftShortcuts"
-                       :fixed-right="rightShortcuts"/>
+                       :fixed-left="leftShortcuts"/>
           <div v-else v-html="' '"/>
         </div>
-        <!-- LOGO (MOBILE) -->
-        <div class="bbn-flex-fill bbn-hspadded bbn-middle"
-              v-if="!searchIsActive && !!logo && isMobile"
-        >
-          <img :src="logo"
-               class="bbn-appui-logo"
-          >
-        </div>
         <!-- SEARCHBAR (MOBILE) -->
-        <div v-if="isMobile && !!searchBar"
-             :class="['bbn-appui-search', 'bbn-vmiddle', 'bbn-large', {'bbn-flex-fill': searchIsActive}]">
-          <bbn-search :source="searchBar.source"
-                      :placeholder="searchBar.placeholderFocused"
-                      ref="search"
-                      @select="searchBar.select"
-                      :component="searchBar.component"
-                      v-model="searchBar.value"
-                      :suggest="true"
-                      :source-value="searchBar.sourceValue"
-                      :source-text="searchBar.sourceText"
-                      :min-length="searchBar.minLength"
-                      max-width="100%"
-                      class="bbn-no"
-                      @focus="searchIsActive = true"
-                      @blur="searchBarBlur"/>
-        </div>
-        <!-- LOGO -->
-        <div v-if="!isMobile"
-             class="bbn-block bbn-logo-container"
-             style="max-width: 25%; min-height: 100%; width: 10em"
-        >
-          <div class="bbn-100 bbn-vmiddle" style="justify-content: flex-end;">
-            <img v-if="!!logo"
-                 :src="logo"
-                 class="bbn-right-padded bbn-appui-logo"
-            >
+        <div class="bbn-appui-search bbn-vmiddle bbn-hpadded">
+          <div class="bbn-block bbn-p"
+               @click="searchOn = true"
+               tabindex="0">
+            <i ref="icon"
+               class="nf nf-oct-search bbn-xxxl"> </i>
           </div>
+          <div class="bbn-block bbn-right-lspace"> </div>
+          <bbn-context tag="div"
+                       class="bbn-block"
+                       :source="userMenu">
+            <bbn-initial font-size="2em" :user-name="app.user.name"/>
+            <div style="position: absolute; bottom: -0.4em; right: -0.4em; border: #CCC 1px solid; width: 1.1em; height: 1.1e"
+                 class="bbn-bg-white bbn-black bbn-middle">
+              <i class="nf nf-fa-bars bbn-xs"/>
+            </div>
+          </bbn-context>
+
         </div>
         <!-- DEBUGGER? -->
         <div v-if="debug"
@@ -179,8 +154,7 @@
                   :component="component"
                   :component-source="componentSource"
                   :component-url="componentUrl"
-                  :url-navigation="urlNavigation"
-      >
+                  :url-navigation="urlNavigation">
         <slot/>
       </bbn-router>
     </div>
@@ -193,8 +167,7 @@
     <div v-if="status"
         ref="foot"
         class="bbn-header bbn-bordered-top appui-statusbar"
-        style="overflow: visible"
-    >
+        style="overflow: visible">
       <div class="bbn-flex-width bbn-h-100">
         <!-- LOADBAR -->
         <div class="bbn-flex-fill">
@@ -205,14 +178,12 @@
         <div class="bbn-vmiddle">
           <!-- TASK TRACKER -->
           <div v-if="plugins['appui-task']"
-              class="bbn-right-space"
-          >
+              class="bbn-right-space">
             <appui-task-tracker/>
           </div>
           <!-- CHAT -->
           <div v-if="plugins['appui-chat']"
-               class="bbn-right-space"
-          >
+               class="bbn-right-space">
             <bbn-chat ref="chat"
                       :url="plugins['appui-chat']"
                       :user-id="app.user.id"
@@ -225,21 +196,18 @@
           </div>
           <!-- NOTIFICATIONS -->
           <div v-if="plugins['appui-notification'] && pollerObject['appui-notification']"
-               class="bbn-right-space"
-          >
+               class="bbn-right-space">
             <appui-notification-tray ref="notificationsTray"/>
           </div>
           <!-- CLIPBOARD BUTTON -->
           <div v-if="plugins['appui-clipboard'] && clipboard"
               @click.stop.prevent="getRef('clipboard').toggle()"
               ref="clipboardButton"
-              class="bbn-appui-clipboard-button bbn-right-space bbn-p bbn-rel"
-          >
+              class="bbn-appui-clipboard-button bbn-right-space bbn-p bbn-rel">
             <i class="nf nf-fa-clipboard bbn-m" tabindex="-1"/>
             <input class="bbn-invisible bbn-overlay bbn-p"
                   @keydown.space.enter.prevent="getRef('clipboard').toggle()"
-                  @drop.prevent.stop="getRef('clipboard').copy($event); getRef('clipboard').show()"
-            >
+                  @drop.prevent.stop="getRef('clipboard').copy($event); getRef('clipboard').show()">
           </div>
           <!-- POWER/ENV ICON -->
           <bbn-context class="bbn-iblock bbn-right-space bbn-p bbn-rel"
@@ -260,6 +228,7 @@
               ref="slider"
               :style="{
                 width: isMobile && !isTablet ? '100%' : '35em',
+                zIndex: 100,
                 maxWidth: '100%'
               }"
               @show="focusSearchMenu"
@@ -275,6 +244,33 @@
                   @shortcut="addShortcut"
                   @ready="menuMounted = true"/>
   </bbn-slider>
+  <!-- POPUPS -->
+  <bbn-popup v-if="!popup"
+             :source="popups"
+             ref="popup"
+             :z-index="13"/>
+  <!-- SEARCH -->
+  <div v-if="searchOn"
+       class="bbn-overlay bbn-secondary"
+       style="z-index: 13">
+    <bbn-search :source="searchBar.source"
+                :placeholder="searchBar.placeholder"
+                ref="search"
+                v-model="searchBar.value"
+                :suggest="true"
+                :autofocus="true"
+                :source-value="searchBar.sourceValue"
+                :source-text="searchBar.sourceText"
+                :min-length="searchBar.minLength"
+                @select="searchSelect"
+                :limit="50"
+                :pageable="true"
+                class="bbn-no"/>
+    <div class="bbn-top-right bbn-p bbn-spadded bbn-xxxl"
+         @click.stop="searchOn = false">
+      <i class="nf nf-fa-times"/>
+    </div>
+  </div>
   <!-- CLIPBOARD SLIDER -->
   <bbn-clipboard v-if="plugins['appui-clipboard'] && clipboard"
                  :storage="true"
@@ -282,12 +278,9 @@
                  @copy="onCopy"
                  style="z-index: 13"/>
 
-  <!-- POPUPS -->
-  <bbn-popup :source="popups"
-             ref="popup"
-             :z-index="14"/>
   <!-- NOTIFICATIONS -->
-  <bbn-notification ref="notification" :z-index="15"/>
+  <bbn-notification ref="notification"
+                    :z-index="15"/>
   <!-- APP COMPONENT -->
   <div class="bbn-appui-big-message"
        v-if="bigMessage"
@@ -299,7 +292,8 @@
     <i class="bbn-top-right bbn-p nf nf-fa-times"
        @click="closeBigMessage"/>
   </div>
-  <component ref="app" :is="appComponent"/>
+  <component ref="app"
+             :is="appComponent"/>
 </div>
 
 </template>
@@ -340,6 +334,9 @@
       url: {
         type: String,
         default: bbn.env.path
+      },
+      popup: {
+        type: Vue
       },
       /**
        * @prop {String} def
@@ -477,10 +474,10 @@
        * Will be passed to router in order to ignore the dirty parameter.
        * @prop {Boolean} [false] ignoreDirty
        */
-       ignoreDirty: {
+      ignoreDirty: {
         type: Boolean,
         default: false
-      }
+      },
     },
     data(){
       return {
@@ -523,7 +520,8 @@
         currentTitle: this.title,
         searchIsActive: false,
         bigMessage: false,
-        hasBigMessage: false
+        hasBigMessage: false,
+        searchOn: false
       }
     },
     computed: {
@@ -593,6 +591,9 @@
         }
 
         return '';
+      },
+      userMenu() {
+        return this.rightShortcuts;
       }
     },
     methods: {
@@ -640,7 +641,7 @@
           });
           let url = this.plugins['appui-project'] + '/router/' + bbn.env.appName + '/ide/editor/file/';
           if (plugin){
-            url += 'lib/' + plugin + '/mvc' + tab.url.substr(this.plugins[plugin].length);
+            url += 'lib/' + plugin + '/mvc' + bbn.fn.substr(tab.url, this.plugins[plugin].length);
           }
           else {
             url += 'app/main/mvc/' + tab.url;
@@ -690,22 +691,25 @@
           throw new Error(bbn._("The component") + ' ' + name + ' ' + bbn._("does not exist"));
         }
       },
-      unregister(name){
+      unregister(name, ignore) {
         if (registeredComponents[name]) {
           delete registeredComponents[name];
         }
-        else{
+        else if (!ignore) {
           throw new Error(bbn._("The component") + ' ' + name + ' ' + bbn._("is not registered"));
         }
       },
-      getRegistered(name){
+      getRegistered(name, ignore) {
         if (registeredComponents[name]) {
           return registeredComponents[name];
         }
         if (name === undefined) {
           return registeredComponents;
         }
-        throw new Error(bbn._("The component") + ' ' + name + ' ' + bbn._("cannot be found"));
+
+        if (!ignore) {
+          throw new Error(bbn._("The component") + ' ' + name + ' ' + bbn._("cannot be found"));
+        }
       },
 
 
@@ -718,18 +722,17 @@
         }
       },
 
-      popup(){
-        let p = this.getPopup();
-        if ( p ){
-          if ( arguments.length ){
-            return p.open.apply(this, arguments);
-          }
-          return p;
+      getPopup(){
+        let popup = this.popup || this.getRef('popup');
+        if (arguments.length) {
+          return popup.open(...arguments);
         }
+
+        return popup;
       },
 
       loadPopup(obj){
-        return this.popup().load.apply(this, arguments);
+        return this.getPopup().load.apply(this, arguments);
       },
 
       userName(d){
@@ -764,12 +767,12 @@
       },
 
       confirm(){
-        let p = appui.popup();
+        let p = appui.getPopup();
         return p.confirm.apply(p, arguments);
       },
 
       alert(){
-        let p = appui.popup();
+        let p = appui.getPopup();
         return p.alert.apply(p, arguments);
       },
 
@@ -952,6 +955,11 @@
             this.getRef('router').activateIndex(idx);
           }
         }
+      },
+      searchSelect() {
+        this.$nextTick(() => {
+          this.searchOn = false;
+        })
       }
     },
     beforeCreate(){
@@ -1314,8 +1322,7 @@
               clearButton: false,
               suggest: true,
               source: [],
-              placeholder: '?',
-              placeholderFocused: bbn._("Search.."),
+              placeholder: bbn._("Search anything..."),
               icon: 'nf nf-fa-search',
               minLength: 1,
               height: bbn.env.height - 100,
@@ -1389,32 +1396,25 @@
   overflow: hidden;
   max-width: 100%;
 }
-.bbn-appui .bbn-appui-menu-button {
-  min-width: 50px;
-  width: 50px;
-  margin-right: 90px;
-}
-.bbn-mobile .bbn-appui .bbn-appui-fisheye {
+.bbn-screen-small .bbn-appui .bbn-appui-fisheye {
   min-height: 4em;
   width: 2.7em;
 }
+.bbn-appui .bbn-logo-container {
+  height: 100%;
+}
 .bbn-appui .bbn-appui-logo {
   border: 0;
-  max-height: 100%;
-  max-width: 100%;
+  max-height: 80%;
+  max-width: min(20vw,100%);
   width: auto;
 }
-.bbn-mobile .bbn-appui .bbn-appui-logo {
+.bbn-screen-small .bbn-appui .bbn-appui-logo {
   max-width: 90%;
   height: auto;
   max-height: 4em;
 }
-.bbn-appui .bbn-appui-search {
-  left: 50px;
-  right: 140px;
-  top: auto;
-}
-.bbn-mobile .bbn-appui .bbn-appui-search {
+.bbn-appui .bbn-screen-small.bbn-appui-search {
   width: 4.2em;
   justify-content: flex-end;
   left: unset;
@@ -1422,7 +1422,7 @@
   top: unset;
 }
 .bbn-appui .appui-statusbar {
-  height: 1.8em;
+  font-size: initial;
 }
 .bbn-appui .bbn-appui-clipboard-button {
   transition: all 0.25s;

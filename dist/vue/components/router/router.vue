@@ -1,242 +1,278 @@
 <template>
 <div :class="[componentClass, {
-       'bbn-invisible': !ready,
-       'bbn-overlay': nav,
-     }]">
-  <div :class="{
-        'bbn-flex-height': nav,
-        'bbn-router-nav': nav,
-        'bbn-router-nav-bc': nav && isBreadcrumb,
-        'bbn-overlay': !nav
-      }">
-    <!-- START OF BREADCRUMB -->
-    <div v-if="nav && isBreadcrumb"
-        ref="breadcrumb"
-        :class="['bbn-router-breadcrumb', {'bbn-router-breadcrumb-master': master}]">
-      <div v-if="master"
-          class="bbn-router-breadcrumb-container">
-        <div class="bbn-h-100 bbn-alt bbn-bordered-bottom bbn-no-border-top bbn-no-border-right bbn-vmiddle"
+  'bbn-invisible': !ready,
+  'bbn-overlay': nav,
+}]">
+<div :class="{
+   'bbn-flex-height': nav,
+   'bbn-router-nav': nav,
+   'bbn-router-nav-bc': nav && isBreadcrumb,
+   'bbn-overlay': !nav
+ }">
+<!-- START OF BREADCRUMB -->
+<div v-if="nav && isBreadcrumb && !isVisual"
+   ref="breadcrumb"
+   :class="['bbn-router-breadcrumb', {'bbn-router-breadcrumb-master': master}]">
+ <div v-if="master"
+     class="bbn-router-breadcrumb-container">
+   <div class="bbn-h-100 bbn-alt bbn-bordered-bottom bbn-no-border-top bbn-no-border-right bbn-vmiddle"
+       :style="{
+         backgroundColor: getBackgroundColor(selected),
+         color: getFontColor(selected)
+       }">
+     <div class="bbn-flex-width bbn-h-100 bbn-vmiddle">
+       <template v-if="breadcrumbs.length"
+                 v-for="(bc, i) in breadcrumbs">
+         <div v-if="i > 0">
+           <i class="nf nf-fa-angle_right bbn-hsmargin bbn-large bbn-router-breadcrumb-arrow"/>
+         </div>
+         <bbn-context :source="bc.getList(i)"
+                       tag="div"
+                       min-width="10em"
+                       tabindex="0"
+                       :item-component="$options.components.listItem"
+                       class="bbn-h-100 bbn-vmiddle"
+                       :attach="itsMaster ? (itsMaster.getRef('breadcrumb') || undefined) : undefined"
+                       :autobind="false"
+                       :style="{
+                         backgroundColor: bc.getBackgroundColor(bc.selected),
+                         color: bc.getFontColor(bc.selected)
+                       }">
+           <bbn-context :source="bc.getMenuFn"
+                        :source-index="isNumber(bc.selected) ? bc.selected : undefined"
+                        tag="div"
+                        min-width="10em"
+                        tabindex="0"
+                        :context="true"
+                        :autobind="false"
+                        class="bbn-vmiddle bbn-h-100">
+             <div class="bbn-vmiddle bbn-h-100">
+               <div class="bbn-router-breadcrumb-badge-container bbn-middle"
+                     v-if="isNumber(bc.selected) && bc.views[bc.selected] && numProperties(bc.views[bc.selected].events)">
+                 <span class="bbn-badge bbn-small bbn-bg-red"
+                       v-text="numProperties(bc.views[bc.selected].events)"/>
+               </div>
+               <div class="bbn-router-breadcrumb-loader bbn-border-text"
+                   :style="{borderColor: isNumber(bc.selected) && bc.views[bc.selected] && bc.views[bc.selected].fcolor ? bc.views[bc.selected].fcolor : null}"
+                   v-show="isNumber(bc.selected) && bc.views[bc.selected] && bc.views[bc.selected].loading"/>
+               <div :class="[
+                      'bbn-router-breadcrumb-element',
+                      'bbn-h-100',
+                      'bbn-vmiddle',
+                      {
+                       'bbn-router-breadcrumb-dirty': isNumber(bc.selected)
+                                                     && bc.views[bc.selected]
+                                                     && !!bc.views[bc.selected].dirty
+                     }
+                    ]">
+                 <span v-if="isNumber(bc.selected) && bc.views[bc.selected] && bc.views[bc.selected].icon"
+                       :title="bc.views[bc.selected].title"
+                       :class="'bbn-router-breadcrumb-element-icon bbn-h-100 bbn-vmiddle bbn-right-xsspace' + (bc.views[bc.selected].notext ? ' bbn-lg' : ' bbn-m')">
+                   <i :class="bc.views[bc.selected].icon"/>
+                 </span>
+                 <span v-if="isNumber(bc.selected) && bc.views[bc.selected] && !bc.views[bc.selected].notext"
+                       :class="['bbn-router-breadcrumb-element-text', {'bbn-b': !breadcrumbs[i+1]}]"
+                       :title="bc.views[bc.selected].title && (bc.views[bc.selected].title.length > bc.maxTitleLength) ? bc.views[bc.selected].title : ''"
+                       v-html="bc.views[bc.selected].title ? bc.cutTitle(bc.views[bc.selected].title) : _('Untitled')"/>
+               </div>
+               <i v-if="isNumber(bc.selected)
+                         && bc.views[bc.selected]
+                         && !bc.views[bc.selected].static
+                         && !bc.views[bc.selected].pinned"
+                    class="nf nf-fa-times bbn-p bbn-router-breadcrumb-close bbn-router-breadcrumb-icon"
+                    @click.prevent.stop="bc.close(bc.selected)"/>
+               <i v-if="isNumber(bc.selected) && bc.views[bc.selected] && bc.views[bc.selected].menu"
+                  class="nf nf-fa-caret_down bbn-router-breadcrumb-menu bbn-router-breadcrumb-icon bbn-p"
+                  @click.prevent.stop="openMenu($event)"/>
+             </div>
+           </bbn-context>
+         </bbn-context>
+       </template>
+       <div v-if="breadcrumbs.length"
+            class="bbn-flex-fill bbn-h-100"
             :style="{
-              backgroundColor: getBackgroundColor(selected),
-              color: getFontColor(selected)
+              backgroundColor: breadcrumbs[breadcrumbs.length-1].getBackgroundColor(breadcrumbs[breadcrumbs.length-1].selected),
+              color: breadcrumbs[breadcrumbs.length-1].getFontColor(breadcrumbs[breadcrumbs.length-1].selected)
             }">
-          <div class="bbn-flex-width bbn-h-100 bbn-vmiddle">
-            <template v-if="breadcrumbs.length"
-                      v-for="(bc, i) in breadcrumbs">
-              <div v-if="i > 0">
-                <i class="nf nf-fa-angle_right bbn-hsmargin bbn-large bbn-router-breadcrumb-arrow"/>
-              </div>
-              <bbn-context :source="bc.getList(i)"
-                            tag="div"
-                            min-width="10em"
-                            tabindex="0"
-                            :item-component="$options.components.listItem"
-                            class="bbn-h-100 bbn-vmiddle"
-                            :attach="itsMaster ? (itsMaster.getRef('breadcrumb') || undefined) : undefined"
-                            :autobind="false"
-                            :style="{
-                              backgroundColor: bc.getBackgroundColor(bc.selected),
-                              color: bc.getFontColor(bc.selected)
-                            }">
-                <bbn-context :source="bc.getMenuFn"
-                             :source-index="isNumber(bc.selected) ? bc.selected : undefined"
-                             tag="div"
-                             min-width="10em"
-                             tabindex="0"
-                             :context="true"
-                             :autobind="false"
-                             class="bbn-vmiddle bbn-h-100">
-                  <div class="bbn-vmiddle bbn-h-100">
-                    <div class="bbn-router-breadcrumb-badge-container bbn-middle"
-                          v-if="isNumber(bc.selected) && bc.views[bc.selected] && numProperties(bc.views[bc.selected].events)">
-                      <span class="bbn-badge bbn-small bbn-bg-red"
-                            v-text="numProperties(bc.views[bc.selected].events)"/>
-                    </div>
-                    <div class="bbn-router-breadcrumb-loader bbn-border-text"
-                        :style="{borderColor: isNumber(bc.selected) && bc.views[bc.selected] && bc.views[bc.selected].fcolor ? bc.views[bc.selected].fcolor : null}"
-                        v-show="isNumber(bc.selected) && bc.views[bc.selected] && bc.views[bc.selected].loading"/>
-                    <div :class="[
-                           'bbn-router-breadcrumb-element',
-                           'bbn-h-100',
-                           'bbn-vmiddle',
-                           {
-                            'bbn-router-breadcrumb-dirty': isNumber(bc.selected)
-                                                          && bc.views[bc.selected]
-                                                          && !!bc.views[bc.selected].dirty
-                          }
-                         ]">
-                      <span v-if="isNumber(bc.selected) && bc.views[bc.selected] && bc.views[bc.selected].icon"
-                            :title="bc.views[bc.selected].title"
-                            :class="'bbn-router-breadcrumb-element-icon bbn-h-100 bbn-vmiddle bbn-right-xsspace' + (bc.views[bc.selected].notext ? ' bbn-lg' : ' bbn-m')">
-                        <i :class="bc.views[bc.selected].icon"/>
-                      </span>
-                      <span v-if="isNumber(bc.selected) && bc.views[bc.selected] && !bc.views[bc.selected].notext"
-                            :class="['bbn-router-breadcrumb-element-text', {'bbn-b': !breadcrumbs[i+1]}]"
-                            :title="bc.views[bc.selected].title && (bc.views[bc.selected].title.length > bc.maxTitleLength) ? bc.views[bc.selected].title : ''"
-                            v-html="bc.views[bc.selected].title ? bc.cutTitle(bc.views[bc.selected].title) : _('Untitled')"/>
-                    </div>
-                    <i v-if="isNumber(bc.selected)
-                              && bc.views[bc.selected]
-                              && !bc.views[bc.selected].static
-                              && !bc.views[bc.selected].pinned"
-                         class="nf nf-fa-times bbn-p bbn-router-breadcrumb-close bbn-router-breadcrumb-icon"
-                         @click.prevent.stop="bc.close(bc.selected)"/>
-                    <i v-if="isNumber(bc.selected) && bc.views[bc.selected] && bc.views[bc.selected].menu"
-                       class="nf nf-fa-caret_down bbn-router-breadcrumb-menu bbn-router-breadcrumb-icon bbn-p"
-                       @click.prevent.stop="openMenu($event)"/>
-                  </div>
-                </bbn-context>
-              </bbn-context>
-            </template>
-            <div v-if="breadcrumbs.length"
-                 class="bbn-flex-fill bbn-h-100"
+         &nbsp;
+       </div>
+     </div>
+   </div>
+ </div>
+</div>
+<!-- END OF BREADCRUMB -->
+<!-- START OF TABS -->
+<div v-else-if="nav && !isBreadcrumb && !isVisual"
+    :class="['bbn-router-tabs', {'bbn-router-tabs-scrollable': scrollable}]"
+    ref="tabs">
+ <div class="bbn-router-tabs-container">
+   <div class="bbn-router-tabs-ul-container">
+     <div class="bbn-flex-width">
+       <div v-if="scrollable"
+           class="bbn-router-tabs-button bbn-router-tabs-button-prev bbn-p">
+         <div class="bbn-100 bbn-middle"
+             @click="scrollTabs('left')">
+           <div class="bbn-block">
+             <i class="nf nf-fa-angle_left bbn-xlarge"/>
+           </div>
+         </div>
+       </div>
+       <div class="bbn-flex-fill">
+         <component :is="scrollable ? 'bbn-scroll' : 'div'"
+                     ref="horizontal-scroll"
+                     v-bind="scrollCfg">
+           <ul ref="tabgroup"
+               class="bbn-alt bbn-router-tabs-tabs bbn-bordered-bottom bbn-flex-fill">
+             <li v-for="(tab, tabIndex) in views"
+                 @click="!tab.disabled && (tabIndex !== selected) ? activateIndex(tabIndex) : false"
+                 :ref="'tab-' + tabIndex"
+                 v-show="!tab.hidden"
                  :style="{
-                   backgroundColor: breadcrumbs[breadcrumbs.length-1].getBackgroundColor(breadcrumbs[breadcrumbs.length-1].selected),
-                   color: breadcrumbs[breadcrumbs.length-1].getFontColor(breadcrumbs[breadcrumbs.length-1].selected)
-                 }">
-              &nbsp;
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- END OF BREADCRUMB -->
-    <!-- START OF TABS -->
-    <div v-else-if="nav && !isBreadcrumb"
-         :class="['bbn-router-tabs', {'bbn-router-tabs-scrollable': scrollable}]"
-         ref="tabs">
-      <div class="bbn-router-tabs-container">
-        <div class="bbn-router-tabs-ul-container">
-          <div class="bbn-flex-width">
-            <div v-if="scrollable"
-                class="bbn-router-tabs-button bbn-router-tabs-button-prev bbn-p">
-              <div class="bbn-100 bbn-middle"
-                  @click="scrollTabs('left')">
-                <div class="bbn-block">
-                  <i class="nf nf-fa-angle_left bbn-xlarge"/>
-                </div>
-              </div>
-            </div>
-            <div class="bbn-flex-fill">
-              <component :is="scrollable ? 'bbn-scroll' : 'div'"
-                          ref="horizontal-scroll"
-                          v-bind="scrollCfg">
-                <ul ref="tabgroup"
-                    class="bbn-alt bbn-router-tabs-tabs bbn-bordered-bottom bbn-flex-fill">
-                  <li v-for="(tab, tabIndex) in views"
-                      @click="!tab.disabled && (tabIndex !== selected) ? activateIndex(tabIndex) : false"
-                      :ref="'tab-' + tabIndex"
-                      v-show="!tab.hidden"
-                      :style="{
-                        backgroundColor: tab.bcolor || null,
-                        color: tab.fcolor || null
-                      }"
-                      :data-index="tabIndex"
-                      :class="['bbn-iblock', 'bbn-bordered', 'bbn-radius-top', 'bbn-state-default', 'bbn-unselectable', {
-                        'bbn-router-tabs-static': !!tab.static,
-                        'bbn-background-effect-internal': tabIndex === selected,
-                        'bbn-router-tabs-active': tabIndex === selected,
-                        'bbn-disabled': tab.disabled,
-                        'bbn-router-tabs-alarm': tab.alarm
-                      }, tab.cls || '']">
-                    <div class="bbn-router-tabs-badge-container bbn-middle"
-                          v-if="numProperties(tab.events)">
-                      <span class="bbn-badge bbn-small bbn-bg-red"
-                            v-text="numProperties(tab.events)"/>
-                    </div>
-                    <div class="bbn-router-tabs-tab-loader bbn-border-text"
-                          :style="{borderColor: tab.fcolor || null}"
-                          v-show="tab.loading"/>
-                    <bbn-context :context="true"
-                                 @keydown.space.enter.prevent.stop="tabIndex !== selected ? activateIndex(tabIndex) : false"
-                                 @keydown.right.down.prevent.stop="getRef('menu-' + tabIndex) ? getRef('menu-' + tabIndex).$el.focus() : (getRef('closer-' + tabIndex) ? getRef('closer-' + tabIndex).focus() : null)"
-                                 :source="getMenuFn"
-                                 :source-index="tabIndex"
-                                 :autobind="false"
-                                 tag="div"
-                                 :disabled="tabIndex !== selected"
-                                 min-width="10em"
-                                 :class="['bbn-router-tabs-tab', 'bbn-iblock', {
-                                   'bbn-router-tabs-dirty': tab.dirty,
-                                   'bbn-router-tabs-icononly': tab.notext
-                                 }]"
-                                 :ref="'title-' + tabIndex"
-                                 :style="{
-                                   color: tab.fcolor ? tab.fcolor : null
-                                 }"
-                                 tabindex="0">
-                      <span v-if="tab.icon"
-                            :title="tab.title"
-                            :class="'bbn-router-tabs-main-icon bbn-iblock' + (tab.notext ? ' bbn-lg' : ' bbn-m')">
-                        <i :class="tab.icon"/>
-                      </span>
-                      <span v-if="!tab.notext && tab.title"
-                            class="bbn-router-tab-text"
-                            :title="getFullTitle(tab)"
-                            v-html="tab.title.length > maxTitleLength ? cutTitle(tab.title) : tab.title"/>
-                    </bbn-context>
-                    <div class="bbn-router-tabs-selected"
-                          :ref="'selector-' + tabIndex"
-                          v-show="tabIndex === selected"
-                          :style="{
-                            backgroundColor: getFontColor(tabIndex)
-                          }"/>
-                    <span v-if="!tab.static && !tab.pinned"
-                          class="bbn-p bbn-router-tab-close bbn-iblock bbn-top-right bbn-hxspadded"
-                          tabindex="-1"
-                          :ref="'closer-' + tabIndex"
-                          @keydown.left.down.prevent.stop="getRef('menu-' + tabIndex) ? getRef('menu-' + tabIndex).$el.focus() : null"
-                          @keydown.space.enter.prevent.stop="close(tabIndex)"
-                          @click.stop.prevent="close(tabIndex)">
-                      <i class="nf nf-fa-times"/>
-                    </span>
-                    <bbn-context v-if="(tab.menu !== false) && (tabIndex === selected)"
-                                class="bbn-iblock bbn-router-tab-menu bbn-p bbn-bottom-right bbn-hxspadded"
-                                tabindex="-1"
-                                min-width="10em"
-                                tag="span"
-                                :source="getMenuFn"
-                                :autobind="false"
-                                :source-index="tabIndex"
-                                :ref="'menu-' + tabIndex">
-                      <i class="nf nf-fa-caret_down"/>
-                    </bbn-context>
-                  </li>
-                </ul>
-              </component>
-            </div>
-            <div v-if="scrollable"
-              class="bbn-router-tabs-button bbn-router-tabs-button-next bbn-p">
-              <div class="bbn-100 bbn-middle"
-                   @click="scrollTabs('right')">
-                <div class="bbn-block">
-                  <i class="nf nf-fa-angle_right bbn-xlarge"/>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- END OF TABS -->
-    <!-- START OF CONTENT -->
-    <div :class="{
-           'bbn-flex-fill': !!nav,
-           'bbn-overlay': !nav
-         }"
-         v-if="ready">
-      <slot></slot>
-      <bbn-container v-for="view in views"
-                     v-if="!view.real && !component"
-                     :key="view.url"
-                     v-bind="view"/>
-      <bbn-container v-if="component && componentSource && componentUrl"
-                     :source="componentSource"
-                     :component="component"
-                     :url="componentSource[componentUrl]"/>
-    </div>
-    <!-- END OF CONTENT -->
-  </div>
+                   backgroundColor: tab.bcolor || null,
+                   color: tab.fcolor || null
+                 }"
+                 :data-index="tabIndex"
+                 :class="['bbn-iblock', 'bbn-bordered', 'bbn-radius-top', 'bbn-state-default', 'bbn-unselectable', {
+                   'bbn-router-tabs-static': !!tab.static,
+                   'bbn-background-effect-internal': tabIndex === selected,
+                   'bbn-router-tabs-active': tabIndex === selected,
+                   'bbn-disabled': tab.disabled,
+                   'bbn-router-tabs-alarm': tab.alarm
+                 }, tab.cls || '']">
+               <div class="bbn-router-tabs-badge-container bbn-middle"
+                     v-if="numProperties(tab.events)">
+                 <span class="bbn-badge bbn-small bbn-bg-red"
+                       v-text="numProperties(tab.events)"/>
+               </div>
+               <div class="bbn-router-tabs-tab-loader bbn-border-text"
+                     :style="{borderColor: tab.fcolor || null}"
+                     v-show="tab.loading"/>
+               <bbn-context :context="true"
+                            @keydown.space.enter.prevent.stop="tabIndex !== selected ? activateIndex(tabIndex) : false"
+                            @keydown.right.down.prevent.stop="getRef('menu-' + tabIndex) ? getRef('menu-' + tabIndex).$el.focus() : (getRef('closer-' + tabIndex) ? getRef('closer-' + tabIndex).focus() : null)"
+                            :source="getMenuFn"
+                            :source-index="tabIndex"
+                            :autobind="false"
+                            tag="div"
+                            :disabled="tabIndex !== selected"
+                            min-width="10em"
+                            :class="['bbn-router-tabs-tab', 'bbn-iblock', {
+                              'bbn-router-tabs-dirty': tab.dirty,
+                              'bbn-router-tabs-icononly': tab.notext
+                            }]"
+                            :ref="'title-' + tabIndex"
+                            :style="{
+                              color: tab.fcolor ? tab.fcolor : null
+                            }"
+                            tabindex="0">
+                 <span v-if="tab.icon"
+                       :title="tab.title"
+                       :class="'bbn-router-tabs-main-icon bbn-iblock' + (tab.notext ? ' bbn-lg' : ' bbn-m')">
+                   <i :class="tab.icon"/>
+                 </span>
+                 <span v-if="!tab.notext && tab.title"
+                       class="bbn-router-tab-text"
+                       :title="getFullTitle(tab)"
+                       v-html="tab.title.length > maxTitleLength ? cutTitle(tab.title) : tab.title"/>
+               </bbn-context>
+               <div class="bbn-router-tabs-selected"
+                     :ref="'selector-' + tabIndex"
+                     v-show="tabIndex === selected"
+                     :style="{
+                       backgroundColor: getFontColor(tabIndex)
+                     }"/>
+               <span v-if="!tab.static && !tab.pinned"
+                     class="bbn-p bbn-router-tab-close bbn-iblock bbn-top-right bbn-hxspadded"
+                     tabindex="-1"
+                     :ref="'closer-' + tabIndex"
+                     @keydown.left.down.prevent.stop="getRef('menu-' + tabIndex) ? getRef('menu-' + tabIndex).$el.focus() : null"
+                     @keydown.space.enter.prevent.stop="close(tabIndex)"
+                     @click.stop.prevent="close(tabIndex)">
+                 <i class="nf nf-fa-times"/>
+               </span>
+               <bbn-context v-if="(tab.menu !== false) && (tabIndex === selected)"
+                           class="bbn-iblock bbn-router-tab-menu bbn-p bbn-bottom-right bbn-hxspadded"
+                           tabindex="-1"
+                           min-width="10em"
+                           tag="span"
+                           :source="getMenuFn"
+                           :autobind="false"
+                           :source-index="tabIndex"
+                           :ref="'menu-' + tabIndex">
+                 <i class="nf nf-fa-caret_down"/>
+               </bbn-context>
+             </li>
+           </ul>
+         </component>
+       </div>
+       <div v-if="scrollable"
+         class="bbn-router-tabs-button bbn-router-tabs-button-next bbn-p">
+         <div class="bbn-100 bbn-middle"
+              @click="scrollTabs('right')">
+           <div class="bbn-block">
+             <i class="nf nf-fa-angle_right bbn-xlarge"/>
+           </div>
+         </div>
+       </div>
+     </div>
+   </div>
+ </div>
+</div>
+<!-- END OF TABS -->
+<!-- START OF CONTENT FOR VISUALNAV -->
+<div v-if="ready && isVisual"
+    class="bbn-overlay bbn-vspadded">
+ <div class="bbn-100 bbn-router-visual"
+      :style="visualStyle">
+   <slot></slot>
+   <template v-for="a in visualList">
+     <bbn-container v-if="!a.view.real && !component"
+                   :key="a.view.uid"
+                   v-show="a.visible"
+                   :visual="true"
+                   v-bind="a.view"/>
+     <bbn-container v-else-if="component && componentSource && componentUrl"
+                   :source="componentSource"
+                   v-show="a.visible"
+                   :visual="true"
+                   :component="component"
+                   :key="componentSource[componentUrl]"
+                   :url="componentSource[componentUrl]"/>
+   </template>
+   <div v-if="(selected !== null) && (views.length > numVisuals)"
+        class="bbn-bg-black bbn-white bbn-p"
+        @click="visualShowAll = !visualShowAll">
+     <div class="bbn-100 bbn-middle">
+       <div class="bbn-block bbn-xxxl">
+         <i :class="'nf nf-fa-' + (visualShowAll ? 'minus' : 'plus')"/>
+       </div>
+     </div>
+   </div>
+ </div>
+</div>
+<!-- END OF CONTENT FOR VISUALNAV -->
+<!-- START OF CONTENT -->
+<div :class="{
+      'bbn-flex-fill': !!nav,
+      'bbn-overlay': !nav
+    }"
+    v-else-if="ready">
+ <slot></slot>
+ <bbn-container v-for="view in views"
+                v-if="!view.real && !component"
+                :key="view.uid"
+                :visual="false"
+                v-bind="view"/>
+ <bbn-container v-if="component && componentSource && componentUrl"
+                :source="componentSource"
+                :component="component"
+                :visual="false"
+                :key="componentSource[componentUrl]"
+                :url="componentSource[componentUrl]"/>
+</div>
+<!-- END OF CONTENT -->
+<bbn-loader v-else/>
+</div>
 </div>
 </template>
 <script>
@@ -246,9 +282,53 @@
  * @copyright BBN Solutions
  * @author BBN Solutions
  */
-(function(bbn, Vue){
+ (function(bbn, Vue){
   "use strict";
 
+  // Orientations of the thumbnails for visual mode
+  const possibleOrientations = [
+    {
+      name: 'auto',
+      text: bbn._("Position automatically")
+    }, {
+      name: 'left',
+      text: bbn._("Position on the left side")
+    }, {
+      name: 'top',
+      text: bbn._("Position on the top side")
+    }, {
+      name: 'bottom',
+      text: bbn._("Position on the bottom side")
+    }, {
+      name: 'right',
+      text: bbn._("Position on the right side")
+    }
+  ];
+
+  // IndexedDb access for storing thumbnails in visual mode
+  let db = false;
+  if (bbn.db && bbn.db.ok && window.html2canvas) {
+    db = true;
+    if (!bbn.db._structures.bbn || !bbn.db._structures.bbn.containers) {
+      bbn.db.add('bbn', 'containers', {
+        keys: {
+          PRIMARY: {
+            columns: ['url'],
+            unique: true
+          }
+        },
+        fields: {
+          url: {
+
+          },
+          image: {
+
+          }
+        }
+      });
+    }
+  }
+  
   Vue.component("bbn-router", {
     name: 'bbn-router',
     /**
@@ -256,13 +336,16 @@
      * @mixin bbn.vue.localStorageComponent
      * @mixin bbn.vue.closeComponent
      * @mixin bbn.vue.observerComponent
+     * @mixin bbn.vue.resizerComponent
      */
     mixins:
     [
       bbn.vue.basicComponent,
       bbn.vue.localStorageComponent,
       bbn.vue.closeComponent,
-      bbn.vue.observerComponent
+      bbn.vue.observerComponent,
+      bbn.vue.resizerComponent,
+      bbn.vue.keepCoolComponent
     ],
     props: {
       /**
@@ -320,11 +403,23 @@
         type: Boolean,
         default: false
       },
+      maxTotal: {
+        type: Number,
+        default: 25
+      },
       /**
        * Set it to true if you want to see the navigation bar (tabs or breadcrumb).
        * @prop {Boolean} [false] nav
        */
       nav: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * Set it to true if you want to see the visual navigation bar
+       * @prop {Boolean} [false] visual
+       */
+      visual: {
         type: Boolean,
         default: false
       },
@@ -434,14 +529,40 @@
        * Will be passed to router in order to ignore the dirty parameter.
        * @prop {Boolean} ignoreDirty
        */
-       ignoreDirty: {
+      ignoreDirty: {
         type: Boolean,
         default: false
+      },
+      /**
+       * The size of every grid cell on which is based the visual view
+       * @prop {Number} [180] visualSize
+       */
+       visualSize: {
+        type: Number,
+        default: 180
+      },
+      /**
+       * The position of the visual mini containers
+       * @prop {Number} [180] visualSize
+       */
+       orientation: {
+        type: String,
+        default(){
+          return 'auto'
+        },
+        validator(v) {
+          return !!bbn.fn.getRow(possibleOrientations, {name: v})
+        }
       }
     },
     data(){
       return {
         /**
+         * IndexedDb connection
+         * @return {Object} 
+         */
+         db: null,
+         /**
          * Number of conatainers registered - as they say it.
          * @data {Number} [0] numRegistered
          */
@@ -495,8 +616,8 @@
          * Relative root of the router (set by user or by parent router).
          * @data {String} baseURL
          */
-        baseURL: this.setBaseURL(this.root),
-        /**
+        baseURL: this.formatBaseURL(this.root),
+         /**
          * An array of the parents router.
          * @data {Array} [[]] parents
          */
@@ -575,7 +696,11 @@
          * @data breadcrumbWatcher
          */
         breadcrumbWatcher: false,
-        breadcrumbsList: []
+        breadcrumbsList: [],
+        visualShowAll: false,
+        visualOrientation: this.orientation,
+        lockedOrientation: false,
+        isVisual: this.visual
       };
     },
     computed: {
@@ -643,7 +768,7 @@
         return false;
       },
       /**
-       * The last router.
+       * The last router i.e. the deepest in the current active container - or this one if none
        * @computed activeRouter
        * @fires getSubRouter
        * @return {Vue}
@@ -669,6 +794,7 @@
           hidden: true
         } : {};
       },
+
       breadcrumbs(){
         let res = [];
         if (this.isBreadcrumb) {
@@ -678,6 +804,98 @@
           res.push(...this.getBreadcrumbs(this.selected))
         }
         return res;
+      },
+
+      /**
+       * The grid style for showing the router in visual mode
+       *
+       * @return {Object} 
+       */
+       visualStyle() {
+        if (!this.isVisual) {
+          return {};
+        }
+
+        return {
+          display: 'grid',
+          gridColumnGap: '0.5em',
+          gridRowGap: '0.5em',
+          gridTemplateRows: 'repeat(' + this.numVisualRows + ', 1fr)',
+          gridTemplateColumns: 'repeat(' + this.numVisualCols + ', 1fr)'
+        }
+      },
+
+      /**
+       * The number of rows for the visual mode
+       *
+       * @return {Number} 
+       */
+       numVisualRows() {
+        if (this.isVisual) {
+          return Math.ceil(this.lastKnownHeight / this.visualSize);
+        }
+
+        return 1;
+      },
+
+      /**
+       * The number of columns for the visual mode
+       *
+       * @return {Number} 
+       */
+       numVisualCols() {
+        if (this.isVisual) {
+          return Math.ceil(this.lastKnownWidth / this.visualSize);
+        }
+
+        return 1;
+      },
+
+      /**
+       * The number of cells on the side where the thumbnails are shown in the visual mode
+       *
+       * @return {Number} 
+       */
+       numVisuals() {
+        if (this.isVisual) {
+          if (['left', 'right'].includes(this.visualOrientation)) {
+            return this.numVisualRows;
+          }
+          else {
+            return this.numVisualCols;
+          }
+        }
+      },
+
+
+      /**
+       * The views to show, in a specific different order, for the visual mode
+       *
+       * @return {Array} 
+       */
+       visualList() {
+        if (!this.isVisual) {
+          return [];
+        }
+
+        let moreViewsThanSlots = this.numVisuals < this.views.length;
+        let numAvailableSlots = this.numVisuals - (moreViewsThanSlots ? 1 : 0);
+        return bbn.fn.map(
+          bbn.fn.multiorder(
+            this.views,
+            {selected: 'desc', static: 'desc', pinned: 'desc', last: 'desc', idx: 'asc'}
+          ),
+          (a, i) => {
+            let visible = false;
+            if (this.visualShowAll || (i <= numAvailableSlots) || (this.selected === a.index)) {
+              visible = true;
+            }
+            return {
+              view: a,
+              visible: visible
+            }
+          }
+        );
       }
     },
 
@@ -694,6 +912,265 @@
        * @return {Number|Boolean}
        */
       numProperties: bbn.fn.numProperties,
+      /**
+       * Removes an element from the views
+       * 
+       * @method remove
+       * @param {*} misc Index, URL or element
+       * @param {Boolean} noCfg If set to true will not trigger the storage saving
+       * @fires getIndex
+       * @fires remove
+       * @emit close
+       * @return {Boolean}
+       */
+       remove(misc, force){
+        let idx = this.getIndex(misc);
+        if ( idx > -1 ){
+          /** @var {Event} onBeforeClose beforeClose event, cancelable only if not force */
+          let onBeforeClose = new Event('beforeClose', {cancelable: !force});
+          /** @var {Event} onClose close event, cancelable only if not force */
+          let onClose = new Event('close');
+          this.$emit('beforeClose', idx, onBeforeClose);
+          if (force || !onBeforeClose.defaultPrevented) {
+            if (
+              !this.ignoreDirty &&
+              this.isDirty &&
+              this.views[idx].dirty &&
+              !force
+            ) {
+              ev.preventDefault();
+              this.confirm(this.confirmLeave, () => {
+                // Looking for dirty ones in registered forms of each container
+                let forms = this.urls[this.views[idx].url].forms;
+                if ( Array.isArray(forms) && forms.length ){
+                  bbn.fn.each(forms, (f, k) => {
+                    f.reset();
+                  });
+                }
+                this.$nextTick(() => {
+                  this.$emit('close', idx, onClose);
+                  this.close(idx, true);
+                });
+              });
+            }
+            else {
+              if (this.views[idx]) {
+
+                if (this.views[idx].real) {
+                  return;
+                  let url = this.views[idx].url;
+                  this.views.splice(idx, 1);
+                  this.$delete(this.urls, url);
+                }
+                else {
+                  this.$emit('close', idx, onClose);
+                  let url = this.views[idx].url;
+                  this.views.splice(idx, 1);
+                  this.$delete(this.urls, url);
+                }
+                this.fixIndexes()
+                return true;
+              }
+            }
+          }
+        }
+        return false;
+      },
+      /**
+       * @method close
+       * @param {Number}  idx   The index of the container to close
+       * @param {Boolean} force Will close the container without prevention
+       * @param {Boolean} noCfg If set to true will not trigger the storage saving
+       * @fires remove
+       * @fires getIndex
+       * @fires activateIndex
+       * @fires setConfig
+       * @return {Boolean}
+       */
+       close(idx, force, noCfg) {
+        let res = this.remove(idx, force);
+        if ( res && (this.selected > idx) ){
+          this.selected--;
+        }
+        else if ( res && (this.selected === idx) ){
+          if ( this.views.length ){
+            bbn.fn.each(this.history, a => {
+              let tmp = this.getIndex(a);
+              if ( tmp !== false ){
+                idx = tmp;
+                return false;
+              }
+            });
+            this.activateIndex(this.views[idx] ? idx : idx - 1);
+          }
+          else {
+            this.selected = false;
+          }
+        }
+
+        if (!noCfg) {
+          this.setConfig();
+        }
+
+        return res;
+      },
+      /**
+       * Adds an object with a valid url to the views.
+       * @method add
+       * @param {Object} obj
+       * @param {Number} idx
+       * @fires getFullBaseURL
+       * @fires search
+       * @fires isValidIndex
+       * @fires getDefaultView
+       */
+      add(obj, idx){
+        let index;
+        //obj must be an object with property url
+        if (
+          (typeof(obj) === 'object') &&
+          bbn.fn.isString(obj.url)
+        ){
+          obj.url = bbn.fn.replaceAll('//', '/', obj.url);
+          if (obj.$options) {
+            if (!obj.current && !obj.currentURL) {
+              if ( bbn.env.path.indexOf(this.getFullBaseURL() + (obj.url ? obj.url + '/' : '')) === 0 ){
+                obj.currentURL = bbn.fn.substr(bbn.env.path, this.getFullBaseURL().length);
+              }
+              else{
+                obj.currentURL = obj.url;
+              }
+            }
+            else {
+              if (obj.currentURL) {
+                obj.currentURL = bbn.fn.replaceAll(obj.currentURL);
+              }
+            }
+            let obj2 = bbn.fn.extend(true, {}, obj.$options.propsData),
+                props = obj.$options.props;
+            bbn.fn.iterate(props, (v, i) => {
+              if (!(i in obj2) && ('default' in v)) {
+                obj2[i] = v.default;
+              }
+            });
+            bbn.fn.iterate(this.getDefaultView(), (a, n) => {
+              if ( obj2[n] === undefined ){
+                obj2[n] = a;
+              }
+            });
+
+            // ---- ADDED 16/12/20 (Mirko) ----
+            if ( !obj2.current ){
+              if ( bbn.env.path.indexOf(this.getFullBaseURL() + (obj2.url ? obj2.url + '/' : '')) === 0 ){
+                obj2.current = bbn.fn.substr(bbn.env.path, this.getFullBaseURL().length);
+              }
+              else{
+                obj2.current = obj2.url;
+              }
+            }
+            else if ( (obj2.current !== obj2.url) && (obj2.current.indexOf(obj2.url + '/') !== 0) ){
+              obj2.current = obj2.url;
+            }
+            if ( !obj2.current ){
+              obj2.current = obj2.url;
+            }
+            if ( obj2.content ){
+              obj2.loaded = true;
+            }
+            // ---- END ----
+
+            if (obj2.real && !this.hasRealContainers) {
+              this.hasRealContainers = true;
+            }
+            if (obj2.url === '') {
+              this.hasEmptyURL = true;
+            }
+            if (this.search(obj2.url) === false) {
+              if (this.isValidIndex(idx)) {
+                this.views.splice(idx, 0, obj2);
+              }
+              else {
+                this.views.push(obj2);
+              }
+            }
+          }
+          else{
+            if ( !obj.current ){
+              if ( bbn.env.path.indexOf(this.getFullBaseURL() + (obj.url ? obj.url + '/' : '')) === 0 ){
+                obj.current = bbn.fn.substr(bbn.env.path, this.getFullBaseURL().length);
+              }
+              else{
+                obj.current = obj.url;
+              }
+            }
+            else if ( (obj.current !== obj.url) && (obj.current.indexOf(obj.url + '/') !== 0) ){
+              obj.current = obj.url;
+            }
+            if ( !obj.current ){
+              obj.current = obj.url;
+            }
+            if ( obj.content ){
+              obj.loaded = true;
+            }
+
+            obj.events = {};
+            if ( obj.menu === undefined ){
+              obj.menu = [];
+            }
+
+            index = this.search(obj.url);
+            //bbn.fn.warning("ADDING CONTAINER " + obj.current + " (" + index + ")");
+            if ( index !== false ){
+              let o = this.views[index],
+                  cn = this.urls[this.views[index].url];
+              if ( idx === undefined ){
+                idx = index;
+              }
+              if (cn && this.isValidIndex(idx)) {
+                cn.currentIndex = idx;
+              }
+              if ( obj.real ){
+                return;
+              }
+              bbn.fn.iterate(obj, (a, n) => {
+                if ( o[n] !== a ){
+                  // Each new property must be set with $set
+                  this.$set(o, n, a)
+                }
+              });
+            }
+            else{
+              let isValid = this.isValidIndex(idx);
+              if (this.single) {
+                if (this.views.length){
+                  this.views.splice(0, this.views.length);
+                }
+                obj.selected = true;
+                obj.idx = this.views.length;
+              }
+              else{
+                obj.selected = false;
+                obj.idx = isValid ? idx : this.views.length;
+              }
+
+              bbn.fn.iterate(this.getDefaultView(), (a, n) => {
+                if ( obj[n] === undefined ){
+                  // Each new property must be set with $set
+                  this.$set(obj, n, a);
+                }
+              });
+              obj.uid = bbn.fn.randomString();
+              if (isValid) {
+                this.views.splice(obj.idx, 0, obj);
+              }
+              else {
+                this.views.push(obj);
+              }
+            }
+          }
+          this.fixIndexes()
+        }
+      },
       /**
        * Function used by container to make themselves known when they are mounted.
        * @method register
@@ -717,6 +1194,14 @@
         }
         this.numRegistered++;
         this.urls[cp.url] = cp;
+        if (this.isVisual) {
+          cp.$on('view', () => {
+            this.visualShowAll = false;
+            if (this.activeContainer && (this.activeContainer.url !== cp.url)) {
+              this.activeContainer.hide();
+            }
+          })
+        }
         let idx = this.search(cp.url);
         if (idx === false) {
           this.add(cp);
@@ -770,7 +1255,6 @@
        */
       getRoute(url, force){
         if (!bbn.fn.isString(url)) {
-          bbn.fn.log("error in getRoute with url", url);
           throw Error(bbn._('The component bbn-container must have a valid URL defined'));
         }
 
@@ -810,16 +1294,16 @@
 
       /**
        * Formats a baseURL correctly (without 1st slash and with end slash.
-       * @method setBaseURL
+       * @method formatBaseURL
        * @param {String} baseURL
        * @returns {String}
        */
-      setBaseURL(baseURL){
-        while ( baseURL.substr(-1) === '/' ){
-          baseURL = baseURL.substr(0, baseURL.length-1);
+       formatBaseURL(baseURL){
+        while ( bbn.fn.substr(baseURL, -1) === '/' ){
+          baseURL = bbn.fn.substr(baseURL, 0, baseURL.length-1);
         }
-        while ( baseURL.substr(0, 1) === '/' ){
-          baseURL = baseURL.substr(1);
+        while ( bbn.fn.substr(baseURL, 0, 1) === '/' ){
+          baseURL = bbn.fn.substr(baseURL, 1);
         }
         return baseURL ? baseURL + '/' : '';
       },
@@ -875,7 +1359,6 @@
        */
       route(url, force) {
         if (!bbn.fn.isString(url)) {
-          bbn.fn.log("error in route with url", url);
           throw Error(bbn._('The component bbn-container must have a valid URL defined'));
         }
         url = bbn.fn.replaceAll('//', '/', url);
@@ -950,7 +1433,6 @@
        */
       realRoute(url, st, force, anchor){
         if (!bbn.fn.isString(url) && !bbn.fn.isNumber(url)){
-          bbn.fn.log("error in realRoute with url", url);
           throw Error(bbn._('The component bbn-container must have a valid URL defined'));
         }
         if (this.urls[st]) {
@@ -972,12 +1454,12 @@
               let child = this.urls[st].find('bbn-router');
               //bbn.fn.log("LOOKING FOR CHILD", child);
               if ( child ){
-                child.route(url.substr(st.length + 1), force);
+                child.route(bbn.fn.substr(url, st.length + 1), force);
               }
               else {
                 let ifr = this.urls[st].find('bbn-frame');
                 if (ifr) {
-                  ifr.route(url.substr(st.length+1));
+                  ifr.route(bbn.fn.substr(url, st.length+1));
                 }
               }
             });
@@ -1020,7 +1502,6 @@
        */
       activate(url, container){
         if (!bbn.fn.isString(url) ){
-          bbn.fn.log("error in activate with url", url);
           throw Error(bbn._('The component bbn-container must have a valid URL defined'));
         }
         let todo = false;
@@ -1069,7 +1550,6 @@
        */
       changeURL(url, title, replace){
         if (!bbn.fn.isString(url) ){
-          bbn.fn.log("error in changeURL with url", url);
           throw Error(bbn._('The component bbn-container must have a valid URL defined'));
         }
         if ( !bbn.env.isInit ){
@@ -1187,7 +1667,7 @@
           fullURL = fullURL.toString();
         }
         if ( fullURL.indexOf(bbn.env.root) === 0 ){
-          fullURL = fullURL.substr(bbn.env.root.length);
+          fullURL = bbn.fn.substr(fullURL, bbn.env.root.length);
         }
         fullURL = bbn.fn.removeTrailingChars(fullURL, '/');
         if (this.fullBaseURL === (fullURL + '/')) {
@@ -1195,7 +1675,7 @@
         }
         if ( this.fullBaseURL ){
           if (fullURL.indexOf(this.fullBaseURL) === 0){
-            fullURL = fullURL.substr(this.fullBaseURL.length);
+            fullURL = bbn.fn.substr(fullURL, this.fullBaseURL.length);
           }
           else{
             fullURL = '';
@@ -1372,223 +1852,6 @@
         });
       },
       /**
-       * @method remove
-       * @param misc
-       * @param force
-       * @fires getIndex
-       * @fires remove
-       * @emit close
-       * @return {Boolean}
-       */
-      remove(misc, force){
-        let idx = this.getIndex(misc);
-        if ( idx > -1 ){
-          let ev = new Event('close', {cancelable: !force}),
-              ev2 = new Event('beforeClose', {cancelable: !force});
-          if ( !force ){
-            this.$emit('beforeClose', idx, ev2);
-          }
-          if ( !ev2.defaultPrevented ){
-            if (
-              !this.ignoreDirty &&
-              this.isDirty &&
-              this.views[idx].dirty &&
-              !ev.defaultPrevented &&
-              !force
-            ){
-              ev.preventDefault();
-              this.confirm(this.confirmLeave, () => {
-                let forms = this.urls[this.views[idx].url].findAll('bbn-form');
-                if ( Array.isArray(forms) && forms.length ){
-                  bbn.fn.each(forms, (f, k) => {
-                    f.reset();
-                  });
-                }
-                this.$nextTick(() => {
-                  this.$emit('close', idx, ev);
-                  this.close(idx, true);
-                });
-              });
-            }
-            else {
-              if (this.views[idx].real) {
-                let url = this.views[idx].url;
-                this.views.splice(idx, 1);
-                this.$delete(this.urls, url);
-                this.fixIndexes()
-              }
-              else {
-                if ( !force ){
-                  this.$emit('close', idx, ev);
-                }
-                if (force || !ev.defaultPrevented) {
-                  let url = this.views[idx].url;
-                  this.views.splice(idx, 1);
-                  this.$delete(this.urls, url);
-                  this.fixIndexes()
-                }
-                return true;
-              }
-            }
-          }
-        }
-        return false;
-      },
-      /**
-       * Adds an object with a valid url to the views.
-       * @method add
-       * @param {Object} obj
-       * @param {Number} idx
-       * @fires getFullBaseURL
-       * @fires search
-       * @fires isValidIndex
-       * @fires getDefaultView
-       */
-      add(obj, idx){
-        let index;
-        //obj must be an object with property url
-        if (
-          (typeof(obj) === 'object') &&
-          bbn.fn.isString(obj.url)
-        ){
-          obj.url = bbn.fn.replaceAll('//', '/', obj.url);
-          if (obj.$options) {
-            if (!obj.current && !obj.currentURL) {
-              if ( bbn.env.path.indexOf(this.getFullBaseURL() + (obj.url ? obj.url + '/' : '')) === 0 ){
-                obj.currentURL = bbn.env.path.substr(this.getFullBaseURL().length);
-              }
-              else{
-                obj.currentURL = obj.url;
-              }
-            }
-            else {
-              if (obj.currentURL) {
-                obj.currentURL = bbn.fn.replaceAll(obj.currentURL);
-              }
-            }
-            let obj2 = bbn.fn.extend(true, {}, obj.$options.propsData),
-                props = obj.$options.props;
-            bbn.fn.iterate(props, (v, i) => {
-              if (!(i in obj2) && ('default' in v)) {
-                obj2[i] = v.default;
-              }
-            });
-            bbn.fn.iterate(this.getDefaultView(), (a, n) => {
-              if ( obj2[n] === undefined ){
-                obj2[n] = a;
-              }
-            });
-
-            // ---- ADDED 16/12/20 (Mirko) ----
-            if ( !obj2.current ){
-              if ( bbn.env.path.indexOf(this.getFullBaseURL() + (obj2.url ? obj2.url + '/' : '')) === 0 ){
-                obj2.current = bbn.env.path.substr(this.getFullBaseURL().length);
-              }
-              else{
-                obj2.current = obj2.url;
-              }
-            }
-            else if ( (obj2.current !== obj2.url) && (obj2.current.indexOf(obj2.url + '/') !== 0) ){
-              obj2.current = obj2.url;
-            }
-            if ( !obj2.current ){
-              obj2.current = obj2.url;
-            }
-            if ( obj2.content ){
-              obj2.loaded = true;
-            }
-            // ---- END ----
-
-            if (obj2.real && !this.hasRealContainers) {
-              this.hasRealContainers = true;
-            }
-            if (obj2.url === '') {
-              this.hasEmptyURL = true;
-            }
-            if (this.search(obj2.url) === false) {
-              if (this.isValidIndex(idx)) {
-                this.views.splice(idx, 0, obj2);
-              }
-              else {
-                this.views.push(obj2);
-              }
-            }
-          }
-          else{
-            if ( !obj.current ){
-              if ( bbn.env.path.indexOf(this.getFullBaseURL() + (obj.url ? obj.url + '/' : '')) === 0 ){
-                obj.current = bbn.env.path.substr(this.getFullBaseURL().length);
-              }
-              else{
-                obj.current = obj.url;
-              }
-            }
-            else if ( (obj.current !== obj.url) && (obj.current.indexOf(obj.url + '/') !== 0) ){
-              obj.current = obj.url;
-            }
-            if ( !obj.current ){
-              obj.current = obj.url;
-            }
-            if ( obj.content ){
-              obj.loaded = true;
-            }
-            obj.events = {};
-            if ( obj.menu === undefined ){
-              obj.menu = [];
-            }
-            index = this.search(obj.url);
-            //bbn.fn.warning("ADDING CONTAINER " + obj.current + " (" + index + ")");
-            if ( index !== false ){
-              let o = this.views[index],
-                  cn = this.urls[this.views[index].url];
-              if ( idx === undefined ){
-                idx = index;
-              }
-              if (cn && this.isValidIndex(idx)) {
-                cn.currentIndex = idx;
-              }
-              if ( obj.real ){
-                return;
-              }
-              bbn.fn.iterate(obj, (a, n) => {
-                if ( o[n] !== a ){
-                  // Each new property must be set with $set
-                  this.$set(o, n, a)
-                }
-              });
-            }
-            else{
-              let isValid = this.isValidIndex(idx);
-              if (this.single) {
-                if (this.views.length){
-                  this.views.splice(0, this.views.length);
-                }
-                obj.selected = true;
-                obj.idx = this.views.length;
-              }
-              else{
-                obj.selected = false;
-                obj.idx = isValid ? idx : this.views.length;
-              }
-
-              bbn.fn.iterate(this.getDefaultView(), (a, n) => {
-                if ( obj[n] === undefined ){
-                  // Each new property must be set with $set
-                  this.$set(obj, n, a);
-                }
-              });
-              if (isValid) {
-                this.views.splice(obj.idx, 0, obj);
-              }
-              else {
-                this.views.push(obj);
-              }
-            }
-          }
-          this.fixIndexes()
-        }
-      },
-      /**
        * Moves a container within the router, changes its idx.
        * 
        * @method move
@@ -1627,7 +1890,6 @@
        */
       search(url){
         if (!bbn.fn.isString(url) ){
-          bbn.fn.log("error in search with url", url);
           throw Error(bbn._('The component bbn-container must have a valid URL defined'));
         }
         let r = bbn.fn.search(this.views, "url", url);
@@ -1650,7 +1912,6 @@
        */
       callRouter(url, st){
         if (!bbn.fn.isString(url) ){
-          bbn.fn.log("error in callRouter with url", url);
           throw Error(bbn._('The component bbn-container must have a valid URL defined'));
         }
         if ( this.parent ){
@@ -1680,7 +1941,7 @@
           if (deep && container) {
             let router = container.find('bbn-router');
             if (router) {
-              let real = router.searchContainer(url.substr(router.baseURL.length), true);
+              let real = router.searchContainer(bbn.fn.substr(url, router.baseURL.length), true);
               if (real) {
                 return real;
               }
@@ -1702,6 +1963,7 @@
        * @emit update
       */
       load(url, force, index){
+        //bbn.fn.log("LOADING??", url);
         if (url){
           this.isLoading = true;
           let finalURL = this.fullBaseURL + url;
@@ -1743,6 +2005,7 @@
               hidden: false
             }, idx);
           }
+
           if ( this.isBreadcrumb ){
             this.selected = idx;
           }
@@ -1832,7 +2095,7 @@
           );
         }
       },
-      realInit(url) {    
+      realInit(url) {
         if (this.urls[url]) {
           this.urls[url].setLoaded(true);
           // Otherwise the changes we just did on the props wont be taken into account at container level
@@ -1878,7 +2141,7 @@
           return this.url;
         }
         if ( this.parentContainer && (this.parentContainer.currentURL !== this.parentContainer.url) ){
-          return this.parentContainer.currentURL.substr(this.parentContainer.url.length + 1);
+          return bbn.fn.substr(this.parentContainer.currentURL, this.parentContainer.url.length + 1);
         }
         if ( this.def ){
           return this.def;
@@ -2106,60 +2369,62 @@
             }
           });
 
-          let directions = [];
-          if (idx) {
-            if (idx > 1) {
+          if (!this.isVisual) {
+            let directions = [];
+            if (idx) {
+              if (idx > 1) {
+                directions.push({
+                  text: bbn._("First"),
+                  key: "move_first",
+                  icon: "nf nf-mdi-close_circle_outline",
+                  action: () => {
+                    this.move(idx, 0);
+                  }
+                });
+              }
               directions.push({
-                text: bbn._("First"),
-                key: "move_first",
+                text: bbn._("Before"),
+                key: "move_before",
                 icon: "nf nf-mdi-close_circle_outline",
                 action: () => {
-                  this.move(idx, 0);
+                  this.move(idx, idx - 1);
                 }
               });
             }
-            directions.push({
-              text: bbn._("Before"),
-              key: "move_before",
-              icon: "nf nf-mdi-close_circle_outline",
-              action: () => {
-                this.move(idx, idx - 1);
-              }
-            });
-          }
-          if (idx < (this.views.length - 1)) {
-            directions.push({
-              text: bbn._("After"),
-              key: "move_after",
-              icon: "nf nf-mdi-close_circle_outline",
-              action: () => {
-                this.move(idx, idx + 1);
-              }
-            });
-            if (idx < (this.views.length - 2)) {
+            if (idx < (this.views.length - 1)) {
               directions.push({
-                text: bbn._("Last"),
-                key: "move_last",
+                text: bbn._("After"),
+                key: "move_after",
                 icon: "nf nf-mdi-close_circle_outline",
                 action: () => {
-                  this.move(idx, this.views.length - 1);
+                  this.move(idx, idx + 1);
                 }
               });
+              if (idx < (this.views.length - 2)) {
+                directions.push({
+                  text: bbn._("Last"),
+                  key: "move_last",
+                  icon: "nf nf-mdi-close_circle_outline",
+                  action: () => {
+                    this.move(idx, this.views.length - 1);
+                  }
+                });
+              }
             }
-          }
 
-          if (directions.length) {
-            if (directions.length === 1) {
-              directions[0].text = bbn._("Switch position");
-              items.push(directions[0]);
-            }
-            else {
-              items.push({
-                text: bbn._("Move"),
-                key: "move",
-                icon: "nf nf-mdi-close_circle_outline",
-                items: directions
-              });
+            if (directions.length) {
+              if (directions.length === 1) {
+                directions[0].text = bbn._("Switch position");
+                items.push(directions[0]);
+              }
+              else {
+                items.push({
+                  text: bbn._("Move"),
+                  key: "move",
+                  icon: "nf nf-mdi-close_circle_outline",
+                  items: directions
+                });
+              }
             }
           }
         }
@@ -2181,51 +2446,131 @@
             items.push(a);
           });
         }
-        items.push({
-          text: bbn._('Switch to ') + (this.isBreadcrumb ? bbn._('tabs') : bbn._('breadcrumb')) + ' ' + bbn._('mode'),
-          key: 'switch',
-          icon: this.isBreadcrumb ? 'nf nf-mdi-tab' : 'nf nf-fa-ellipsis_h',
-          action: () => {
-            this.itsMaster.isBreadcrumb = !this.itsMaster.isBreadcrumb;
-          }
-        });
-        return items;
-      },
-      /**
-       * @method close
-       * @param {Number}  idx   The index of the container to close
-       * @param {Boolean} force Will close the container without prevention
-       * @param {Boolean} noCfg If set to true will not trigger the storage saving
-       * @fires remove
-       * @fires getIndex
-       * @fires activateIndex
-       * @fires setConfig
-       * @return {Boolean}
-       */
-      close(idx, force, noCfg) {
-        let res = this.remove(idx, force);
-        if ( res && (this.selected > idx) ){
-          this.selected--;
-        }
-        else if ( res && (this.selected === idx) ){
-          this.selected = false;
-          if ( this.views.length ){
-            bbn.fn.each(this.history, a => {
-              let tmp = this.getIndex(a);
-              if ( tmp !== false ){
-                idx = tmp;
-                return false;
-              }
+
+        if (!this.isVisual) {
+          items.push({
+            text: bbn._('Switch to') + ' ' + (this.isBreadcrumb ? bbn._('tabs') : bbn._('breadcrumb')) + ' ' + bbn._('mode'),
+            key: 'switch',
+            icon: this.isBreadcrumb ? 'nf nf-mdi-tab' : 'nf nf-fa-ellipsis_h',
+            action: () => {
+              this.itsMaster.isBreadcrumb = !this.itsMaster.isBreadcrumb;
+            }
+          });
+
+          if (!this.parents.length) {
+            let go = () => {
+              this.isVisual = true;
+              this.onResize();
+              setTimeout(() => {
+                this.activateIndex(this.getIndex(this.getFullCurrentURL()));
+              }, 250)
+            };
+
+            items.push({
+              text: bbn._('Switch to') + ' ' + bbn._('visual') + ' ' + bbn._('mode'),
+              key: 'visual',
+              icon: 'nf nf-fa-eye',
+              action: () => {
+                if (!this.isDirty) {
+                  go();
+                  return;
+                }
+
+                this.confirm(
+                  bbn._("The pages already loaded will be reinitialized") +
+                      '<br>' + bbn._("If you have any unsaved work opened it will be lost.") +
+                      '<br>' + bbn._("Is it ok to continue?"),
+                  () => {
+                    go()
+                  }
+                );
+            }
             });
-            this.activateIndex(this.views[idx] ? idx : idx - 1);
           }
         }
+        else {
+          const go = () => {
+            this.isVisual = false;
+            this.itsMaster.isBreadcrumb = false;
+            setTimeout(() => {
+              this.activateIndex(this.getIndex(this.getFullCurrentURL()));
+            }, 250)
+          };
 
-        if (!noCfg) {
-          this.setConfig();
+          let visualPositions = [];
+          bbn.fn.each(possibleOrientations, a => {
+            if ((a.name === 'auto') && (this.orientation === 'auto') && !this.lockedOrientation) {
+              return;
+            }
+
+            if (this.visualOrientation !== a.name) {
+              visualPositions.push({
+                text: a.text,
+                icon: a.name === 'auto' ? 'nf nf-mdi-auto_fix' : 'nf nf-mdi-border_' + a.name,
+                action: () => {
+                  if (a.name === 'auto') {
+                    this.lockedOrientation = false;
+                  }
+                  else {
+                    this.visualOrientation = a.name;
+                    this.lockedOrientation = true;
+                  }
+                  this.onResize();
+                  this.setConfig();
+                }
+              });
+            }
+          });
+          items.push({
+            text: bbn._("Change visual blocks' position"),
+            icon: 'nf nf-mdi-cursor_move',
+            items: visualPositions
+          });
+
+          items.push({
+            text: bbn._('Switch to') + ' ' + bbn._('tabs') + ' ' + bbn._('mode'),
+            key: 'tabs',
+            icon: 'nf nf-mdi-tab',
+            action: () => {
+              if (!this.isDirty) {
+                go();
+                return;
+              }
+
+              this.confirm(
+                bbn._("The pages already loaded will be reinitialized") +
+                    '<br>' + bbn._("You should save your unsaved content or it will be lost.") +
+                    '<br>' + bbn._("Is it ok to continue?"),
+                () => {
+                  go();
+                }
+              );
+            }
+          });
+
+          items.push({
+            text: bbn._('Switch to') + ' ' + bbn._('breadcrumb') + ' ' + bbn._('mode'),
+            key: 'breadcrumbs',
+            icon: 'nf nf-fa-ellipsis_h',
+            action: () => {
+              if (!this.isDirty) {
+                go();
+                return;
+              }
+
+              this.confirm(
+                bbn._("The pages already loaded will be reloaded") +
+                    '<br>' + bbn._("If you have any unsaved work opened it will be lost.") +
+                    '<br>' + bbn._("Is it ok to continue?"),
+                () => {
+                  go();
+                }
+              );
+            }
+          });
         }
 
-        return res;
+        return items;
       },
       /**
        * @method setconfig
@@ -2244,10 +2589,13 @@
        */
       getConfig(){
         let cfg = {
-              baseURL: this.parentContainer ? this.parentContainer.getFullURL() : this.storageName,
-              views: [],
-              breadcrumb: this.isBreadcrumb
-            };
+          baseURL: this.parentContainer ? this.parentContainer.getFullURL() : this.storageName,
+          views: [],
+          breadcrumb: this.isBreadcrumb,
+          visual: this.isVisual,
+          orientation: this.lockedOrientation ? this.visualOrientation : null
+        };
+
         bbn.fn.each(this.views, (obj, i) => {
           if (obj.url && obj.load) {
             let res = {
@@ -2537,7 +2885,7 @@
        * @param {String} url
        */
       registerBreadcrumb(bc){
-        let url = bc.baseURL.substr(0, bc.baseURL.length - 1);
+        let url = bbn.fn.substr(bc.baseURL, 0, bc.baseURL.length - 1);
         this.breadcrumbsList.push(bc);
         if (this.itsMaster && !this.master) {
           this.itsMaster.breadcrumbsList.push(bc);
@@ -2549,7 +2897,7 @@
        * @param {String} url
        */
       unregisterBreadcrumb(bc){
-        let url = bc.baseURL.substr(0, bc.baseURL.length - 1);
+        let url = bbn.fn.substr(bc.baseURL, 0, bc.baseURL.length - 1);
         let idx = bbn.fn.search(this.breadcrumbsList, {baseURL: bc.baseURL});
         if (idx !== -1) {
           this.breadcrumbsList.splice(idx, 1);
@@ -2635,8 +2983,47 @@
               view: window
             });
         ele.dispatchEvent(e);
+      },
+      onResize() {
+        this.keepCool(() => {
+          if (this.setResizeMeasures() && this.setContainerMeasures()) {
+            if (this.isVisual && (this.orientation === 'auto') && !this.lockedOrientation) {
+              this.visualOrientation = this.lastKnownWidth > this.lastKnownHeight ? 'left' : 'top';
+            }
+          }
+          this.$emit('resize');
+        }, 'resize', 50);
+      },
+      visualStyleContainer(ct) {
+        if (!ct.visible || this.visualShowAll) {
+          return {zoom: 0.1};
+        }
+
+        let num = this.numVisuals + 1;
+        let coord = [1, num, 1, num];
+        switch (this.visualOrientation) {
+          case 'up':
+            coord[2] = 2;
+            break;
+          case 'down':
+            coord[3] = num - 1;
+            break;
+          case 'left':
+            coord[0] = 2;
+            break;
+          case 'right':
+            coord[1] = num - 1;
+            break;
+        }
+
+        return {
+          gridColumnStart: coord[0],
+          gridColumnEnd: coord[1],
+          gridRowStart: coord[2],
+          gridRowEnd: coord[3],
+          zoom: 1
+        }
       }
-      
     },
 
     /**
@@ -2681,9 +3068,16 @@
         if (this.root && (uri !== this.root) && (uri.indexOf(this.root) === 0) ){
           uri = this.root;
         }
-        this.baseURL = this.setBaseURL(uri);
+        this.baseURL = this.formatBaseURL(uri);
       }
       else{
+        if (db) {
+          bbn.db.open('bbn').then(r => {
+            this.db = r;
+          }, err => {
+            bbn.fn.log("Connection error in router", err);
+          });
+        }
         window.addEventListener("beforeunload", e =>{
           e = e || window.event;
           //if ( $(".bbn-tabnav-unsaved").length ){
@@ -2702,6 +3096,22 @@
 
       let tmp = [];
 
+      //Get config from the storage
+      let storage = this.getStorage(this.parentContainer ? this.parentContainer.getFullURL() : this.storageName);
+      if ( storage ){
+        if ( storage.breadcrumb !== undefined ){
+          this.isBreadcrumb = storage.breadcrumb;
+        }
+
+        if (storage.visual !== undefined) {
+          this.isVisual = storage.visual;
+        }
+
+        if (storage.orientation) {
+          this.visualOrientation = storage.orientation;
+          this.lockedOrientation = true;
+        }
+      }
       // ---- ADDED 16/12/20 (Mirko) ----
       // Adding bbns-container from the slot
       if ( this.$slots.default ){
@@ -2751,22 +3161,18 @@
       });
 
       //Get config from the storage
-      let storage = this.getStorage(this.parentContainer ? this.parentContainer.getFullURL() : this.storageName);
-      if ( storage ){
-        if ( storage.breadcrumb !== undefined ){
-          this.isBreadcrumb = storage.breadcrumb;
-        }
-        if ( storage.views ){
-          bbn.fn.each(storage.views, a => {
-            let idx = bbn.fn.search(tmp, {url: a.url});
-            if ( idx > -1 ){
-              bbn.fn.extend(tmp[idx], a);
-            }
-            else{
-              tmp.push(a);
-            }
-          });
-        }
+      if ( storage && storage.views ){
+        bbn.fn.each(storage.views, a => {
+          let idx = bbn.fn.search(tmp, {url: a.url});
+          if ( idx > -1 ){
+            // Static comes only form configuration
+            let isStatic = tmp[idx].static;
+            bbn.fn.extend(tmp[idx], a, {static: isStatic});
+          }
+          else{
+            tmp.push(a);
+          }
+        });
       }
 
       let url = this.getDefaultURL();
@@ -2779,7 +3185,8 @@
         }
         this.add(a);
       });
-      
+
+     
       //Breadcrumb
       if (!this.master && this.parent) {
         this.parent.registerBreadcrumb(this);
@@ -2882,6 +3289,15 @@
        * @fires setConfig
        */
       isBreadcrumb(newVal){
+        this.$nextTick(() => {
+          this.setConfig();
+        })
+      },
+      /**
+       * @watch isVisual
+       * @fires setConfig
+       */
+       isVisual() {
         this.$nextTick(() => {
           this.setConfig();
         })

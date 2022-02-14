@@ -97,7 +97,7 @@ document.head.insertAdjacentElement('beforeend', css);
         }
         if (this.root) {
           let ev = new Event('load', {cancelable: true});
-          let url = this.$el.contentWindow.location.href.substr(this.root.length);
+          let url = this.$bbn.fn.substr(el.contentWindow.location.href, this.root.length);
           this.$emit('load', ev, url);
           if (!ev.defaultPrevented) {
             let ct = this.closest('bbn-container');

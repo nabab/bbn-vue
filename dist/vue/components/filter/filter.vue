@@ -309,8 +309,8 @@
        * @prop {Object} [{}] component
        */
       component: {
-        type: Object,
-        default(){
+        type: [String, Object, Function],
+        default() {
           return {};
         }
       },
@@ -320,7 +320,7 @@
        *
        */
       componentOptions: {
-        type: Object,
+        type: [Object, String],
         default(){
           return {};
         }

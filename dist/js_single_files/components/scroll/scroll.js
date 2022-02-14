@@ -225,10 +225,6 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
          */
         readyDelay: false,
         /**
-         * @data {Boolean} [false] Gives an extra second to scroll to previous position
-         */
-        afterReady: false,
-        /**
          * @todo not used
          */
         show: false,
@@ -863,12 +859,15 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
             }
             let x = ct.scrollLeft;
             let y = ct.scrollTop;
-            let contentBox = content.getBoundingClientRect()
-            let containerBox = container.getBoundingClientRect()
-            this.contentWidth = contentBox.width;
-            this.contentHeight = contentBox.height;
-            this.containerWidth = containerBox.width;
-            this.containerHeight = containerBox.height;
+            let sendResizeContent = false;
+            if ((content.clientWidth !== this.contentWidth) || (content.clientHeight !== this.contentHeight)) {
+              sendResizeContent = true;
+            }
+
+            this.contentWidth = content.clientWidth;
+            this.contentHeight = content.clientHeight;
+            this.containerWidth = container.clientWidth;
+            this.containerHeight = container.clientHeight;
             // With scrolling on we check the scrollbars
             if ( this.scrollable ){
               if (((this.axis === 'both') || (this.axis === 'x')) && (this.contentWidth > this.containerWidth) ){
@@ -935,6 +934,15 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
 
             }
             this.$emit('resize');
+            if (sendResizeContent) {
+              let e = new Event('resizeContent', {
+                cancelable: true
+              });
+              this.$emit('resizeContent', e, {
+                width: content.clientWidth,
+                height: content.clientHeight
+              });
+            }
           }
         }, 'onResize', 20);
       },
@@ -994,11 +1002,9 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           // Checks every second if the scroll content has been resized and sends onResize if so
           this.interval = setInterval(() => {
             if (this.scrollable && this.$el.offsetParent) {
-              //bbn.fn.log("offsetParent ok");
-              let content = this.getRef('scrollContent');
-              let contentBox = content ? content.getBoundingClientRect() : {};
-              let contentWidth = contentBox.width;
-              let contentHeight = contentBox.height;
+              let container = this.getRef('scrollContainer');
+              let contentWidth = container.scrollWidth;
+              let contentHeight = container.scrollHeight;
               if (
                 (
                   contentWidth
@@ -1017,15 +1023,21 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
                   )
                 )
               ) {
-                //bbn.fn.log("ON SCROLL INTERVAL");
-                this.onResize(true);
+                let e = new Event('resizeContent', {
+                  cancelable: true
+                });
+                this.$emit('resizeContent', e, {
+                  width: contentWidth,
+                  height: contentHeight
+                });
+
+                if (!e.defaultPrevented) {
+                  this.onResize(true);
+                }
               }
             }
           }, 1000);
           this.scrollReady = true;
-          setTimeout(() => {
-            this.afterReady = true;
-          }, 1000);
         }
       },
       /**

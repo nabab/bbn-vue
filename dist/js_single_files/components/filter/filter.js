@@ -312,8 +312,8 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @prop {Object} [{}] component
        */
       component: {
-        type: Object,
-        default(){
+        type: [String, Object, Function],
+        default() {
           return {};
         }
       },
@@ -323,7 +323,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        *
        */
       componentOptions: {
-        type: Object,
+        type: [Object, String],
         default(){
           return {};
         }

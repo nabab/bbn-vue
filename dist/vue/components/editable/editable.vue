@@ -1107,7 +1107,7 @@
             }
             if ( this.$parent.edit ){
               if ( (this.type === 'image') && this.currentValue && this.currentValue.length ){
-                let extension = this.currentValue.substr(this.currentValue.lastIndexOf('.'), this.currentValue.length)
+                let extension = bbn.fn.substr(this.currentValue, this.currentValue.lastIndexOf('.'), this.currentValue.length)
                 //take the correct size
                 this.image.push({
                   "name": this.currentValue,
@@ -1117,7 +1117,7 @@
               }
               else if ((this.type === 'gallery') && this.currentValue && this.currentValue.length) {
                 /*this.image = bbn.fn.map(this.currentValue, a => {
-                  let extension = a.src.substr(a.src.lastIndexOf('.'), a.src.length);
+                  let extension = bbn.fn.substr(a.src, a.src.lastIndexOf('.'), a.src.length);
                   a.name = a.src;
                   a.size = 465464;
                   a.extension = extension;

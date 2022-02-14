@@ -655,18 +655,7 @@
                   }
                 }
                 if (src && bbn.fn.isString(src)) {
-                  let url = bbn.fn.dirName(src) + '/';
-                  src = bbn.fn.baseName(src);
-                  let sep = '?';
-                  let params = '';
-                  if (src.indexOf(sep)) {
-                    let tmp = src.split('?');
-                    sep = '&';
-                    params = '?' + tmp[1];
-                    src = tmp[0];
-                  }
-  
-                  return url + encodeURIComponent(src) + params + sep + 'w=' + this.col.gallery.currentItemWidth + '&thumb=1';
+                  return bbn.fn.escapeUrl(src, 'w=' + this.col.gallery.currentItemWidth + '&thumb=1');
                 }
                 return null;
               }
@@ -685,6 +674,7 @@
                * @fires getPopup
                */
               action(ev){
+                bbn.fn.log("ACTION");
                 if ( this.col.gallery.isSelecting ){
                   let id = !!this.col.gallery.uid ? this.source.data[this.col.gallery.uid] : this.source.index;
                   if ( this.isSelected ){
@@ -707,6 +697,7 @@
                   && (!ev.target.closest('.bbn-floater-list'))
                   && this.col.gallery.zoomable
                 ) {
+                  bbn.fn.log("ACTION 2");
                   this.getPopup({
                     title: bbn._('Gallery'),
                     width: '100%',
@@ -823,18 +814,7 @@
               }
 
               if (src && bbn.fn.isString(src)) {
-                let url = bbn.fn.dirName(src) + '/';
-                src = bbn.fn.baseName(src);
-                let sep = '?';
-                let params = '';
-                if (src.indexOf(sep)) {
-                  let tmp = src.split('?');
-                  sep = '&';
-                  params = '?' + tmp[1];
-                  src = tmp[0];
-                }
-
-                return url + encodeURIComponent(src) + params + sep + 'w=70&thumb=1';
+                return bbn.fn.escapeUrl(src, 'w=70&thumb=1');
               }
             }
             return null;

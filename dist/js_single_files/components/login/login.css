@@ -21,15 +21,15 @@ div.bbn-login div.bbn-login-container div.bbn-login-logo img {
   max-width: 500px;
   height: auto;
 }
-.bbn-mobile div.bbn-login div.bbn-login-container div.bbn-login-logo img {
+.bbn-screen-small div.bbn-login div.bbn-login-container div.bbn-login-logo img {
   max-width: 90%;
 }
-.bbn-mobile.bbn-tablet div.bbn-login div.bbn-login-container div.bbn-login-logo img {
+.bbn-screen-small.bbn-tablet div.bbn-login div.bbn-login-container div.bbn-login-logo img {
   max-width: 80%;
 }
 div.bbn-login div.bbn-login-container form .bbn-button:not(.bbn-input .bbn-button) {
   width: 40%;
 }
-.bbn-mobile div.bbn-login div.bbn-login-container .bbn-input {
+.bbn-screen-small div.bbn-login div.bbn-login-container .bbn-input {
   width: 90%;
 }

@@ -2,7 +2,7 @@
 ((bbn) => {
 
 let script = document.createElement('script');
-script.innerHTML = `<div :class="componentClass"
+script.innerHTML = `<div :class="[componentClass, 'bbn-100']"
      :style="{zIndex: zIndex}"
 >
   <bbn-scroll :scrollable="scrollable"

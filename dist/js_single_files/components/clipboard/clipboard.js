@@ -234,7 +234,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
             bbn.fn.log("NO TITLE");
             title = item.text;
             if (!item.file && (title.length > 15)) {
-              title = bbn.fn.sanitize(title.substr(0, 50)).substr(15);
+              title = bbn.fn.sanitize(bbn.fn.substr(title, 0, 50)).substr(15);
             }
           }
           bbn.fn.download(title, content, item.type);
@@ -566,7 +566,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         let cp = this.getComponentName();
         for (let n in local) {
           if (!n.indexOf(cp + '-') &&
-            (uid = parseInt(n.substr(cp.length + 1))) &&
+            (uid = parseInt(bbn.fn.substr(n, cp.length + 1))) &&
             !bbn.fn.getRow(this.items, {
               uid: uid
             })

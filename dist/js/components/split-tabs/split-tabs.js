@@ -274,11 +274,11 @@ document.head.insertAdjacentElement('beforeend', css);
        * @returns {String}
        */
       setBaseURL(baseURL){
-        while ( baseURL.substr(-1) === '/' ){
-          baseURL = baseURL.substr(0, baseURL.length-1);
+        while ( bbn.fn.substr(baseURL, -1) === '/' ){
+          baseURL = bbn.fn.substr(baseURL, 0, baseURL.length-1);
         }
-        while ( baseURL.substr(0, 1) === '/' ){
-          baseURL = baseURL.substr(1);
+        while ( bbn.fn.substr(baseURL, 0, 1) === '/' ){
+          baseURL = bbn.fn.substr(baseURL, 1);
         }
         return baseURL ? baseURL + '/' : '';
       },
@@ -426,8 +426,8 @@ document.head.insertAdjacentElement('beforeend', css);
             this.$nextTick(() => {
               let child = this.urls[st].find('bbn-router');
               if ( child ){
-                //bbn.fn.log("CHILD ROUTER ROUTING: " + url.substr(st.length + 1));
-                child.route(url.substr(st.length + 1), force);
+                //bbn.fn.log("CHILD ROUTER ROUTING: " + bbn.fn.substr(url, st.length + 1));
+                child.route(bbn.fn.substr(url, st.length + 1), force);
               }
             });
           }
@@ -594,7 +594,7 @@ document.head.insertAdjacentElement('beforeend', css);
           fullURL = fullURL.toString();
         }
         if ( fullURL.indexOf(bbn.env.root) === 0 ){
-          fullURL = fullURL.substr(bbn.env.root.length);
+          fullURL = bbn.fn.substr(fullURL, bbn.env.root.length);
         }
         fullURL = bbn.fn.removeTrailingChars(fullURL, '/');
         if ( (this.fullBaseURL === (fullURL + '/'))  || (fullURL === '') ){
@@ -602,7 +602,7 @@ document.head.insertAdjacentElement('beforeend', css);
         }
         if ( this.fullBaseURL ){
           if (fullURL.indexOf(this.fullBaseURL) === 0){
-            fullURL = fullURL.substr(this.fullBaseURL.length);
+            fullURL = bbn.fn.substr(fullURL, this.fullBaseURL.length);
           }
           else{
             fullURL = '';
@@ -770,7 +770,7 @@ document.head.insertAdjacentElement('beforeend', css);
         ){
           if ( !obj.current ){
             if ( bbn.env.path.indexOf(this.getFullBaseURL() + obj.url + '/') === 0 ){
-              obj.current = bbn.env.path.substr(this.getFullBaseURL().length);
+              obj.current = bbn.fn.substr(bbn.env.path, this.getFullBaseURL().length);
             }
             else{
               obj.current = obj.url;
@@ -1010,7 +1010,7 @@ document.head.insertAdjacentElement('beforeend', css);
           return this.url;
         }
         else if ( this.parentContainer && (this.parentContainer.currentURL !== this.parentContainer.url) ){
-          return this.parentContainer.currentURL.substr(this.parentContainer.url.length + 1);
+          return bbn.fn.substr(this.parentContainer.currentURL, this.parentContainer.url.length + 1);
         }
         if ( this.def ){
           return this.def;

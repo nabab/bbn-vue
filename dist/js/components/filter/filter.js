@@ -319,8 +319,8 @@ document.head.insertAdjacentElement('beforeend', css);
        * @prop {Object} [{}] component
        */
       component: {
-        type: Object,
-        default(){
+        type: [String, Object, Function],
+        default() {
           return {};
         }
       },
@@ -330,7 +330,7 @@ document.head.insertAdjacentElement('beforeend', css);
        *
        */
       componentOptions: {
-        type: Object,
+        type: [Object, String],
         default(){
           return {};
         }

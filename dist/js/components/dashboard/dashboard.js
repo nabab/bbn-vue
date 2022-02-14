@@ -22,28 +22,30 @@ script.innerHTML = `<div :class="['bbn-overlay' , componentClass, {'bbn-unselect
               '-webkit-column-count': numCols,
               'column-count': numCols
             }">
-      <bbn-widget v-for="w in widgets"
-                  :ref="'widget_' + w.key"
-                  v-if="!w.hidden"
-                  @loaded="resizeScroll"
-                  v-bind="w"
-                  :options="w.options"
-                  :uid="w.key"
-                  @close="hideWidget(w.key)"
-                  :key="w.key"
-                  :index="w.index"
-                  @mouseenter="mouseEnterWidget(w.index)"
-                  :class="{'bbn-selected-border': 
-                    (sortOriginIndex !== w.index) && (
-                      sortOriginIndex > w.index ?
-                        (w.index === sortTargetIndex) :
-                        (sortTargetIndex !== null) &&
-                        (w.index - 1 === sortTargetIndex)
-                    )
-                  }"
-                  @sortstart="isSorting = true; sortOriginIndex = w.index; sortTargetIndex = null"
-                  :title="w.title ? w.title : (w.text ? w.text : '')"
-      ></bbn-widget>
+      <template v-for="w in widgets">
+        <bbn-widget :ref="'widget_' + w.key"
+                    v-if="!w.hidden"
+                    :key="w.key"
+                    @loaded="resizeScroll"
+                    v-bind="w"
+                    :options="w.options"
+                    :uid="w.key"
+                    @close="hideWidget(w.key)"
+                    
+                    :index="w.index"
+                    @mouseenter="mouseEnterWidget(w.index)"
+                    :class="{'bbn-selected-border': 
+                      (sortOriginIndex !== w.index) && (
+                        sortOriginIndex > w.index ?
+                          (w.index === sortTargetIndex) :
+                          (sortTargetIndex !== null) &&
+                          (w.index - 1 === sortTargetIndex)
+                      )
+                    }"
+                    @sortstart="isSorting = true; sortOriginIndex = w.index; sortTargetIndex = null"
+                    :title="w.title ? w.title : (w.text ? w.text : '')"
+        ></bbn-widget>
+      </template>
       <slot v-if="!widgets.length"></slot>
     </div>
     <div class="bbn-widget bbn-sort-helper"

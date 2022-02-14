@@ -18,7 +18,7 @@ script.innerHTML = `<div :class="[
   }">
     <bbn-button v-if="buttonLeft"
           :icon="buttonLeft" 
-          @click="$emit('clickLeftButton')"
+          @click="currentActionLeft"
           tabindex="-1"
           :class="[
             'bbn-button-left',
@@ -28,6 +28,7 @@ script.innerHTML = `<div :class="[
           ]"/>
     <input :value="value"
           :type="currentType"
+          v-focused.selected="focused"
           :name="name"
           ref="element"
           :readonly="readonly"
@@ -61,7 +62,7 @@ script.innerHTML = `<div :class="[
     <bbn-button v-if="buttonRight"
                 :icon="buttonRight"
                 tabindex="-1"
-                @click="$emit('clickRightButton')"
+                @click="currentActionRight"
                 :class="[
                   'bbn-button-right',
                   'bbn-no-vborder',
@@ -230,12 +231,12 @@ document.head.insertAdjacentElement('beforeend', css);
          * The action performed by the left button.
          * @data {Function} currentActionLeft
          */
-        currentActionLeft: bbn.fn.isFunction(this.actionLeft) ? this.actionLeft : ()=>{},
+        currentActionLeft: bbn.fn.isFunction(this.actionLeft) ? this.actionLeft : ()=>{this.$emit('clickLeftButton')},
         /**
          * The action performed by the right button.
          * @data {Function} currentActionRight
          */
-        currentActionRight: bbn.fn.isFunction(this.actionRight) ? this.actionRight : ()=>{},
+        currentActionRight: bbn.fn.isFunction(this.actionRight) ? this.actionRight : ()=>{this.$emit('clickRightButton')},
         currentPattern: null,
         currentType: null
       }

@@ -35,6 +35,9 @@
         type: String,
         default: bbn.env.path
       },
+      popup: {
+        type: Vue
+      },
       /**
        * @prop {String} def
        */
@@ -171,7 +174,7 @@
        * Will be passed to router in order to ignore the dirty parameter.
        * @prop {Boolean} [false] ignoreDirty
        */
-       ignoreDirty: {
+      ignoreDirty: {
         type: Boolean,
         default: false
       },
@@ -419,18 +422,17 @@
         }
       },
 
-      popup(){
-        let p = this.getPopup();
-        if ( p ){
-          if ( arguments.length ){
-            return p.open.apply(this, arguments);
-          }
-          return p;
+      getPopup(){
+        let popup = this.popup || this.getRef('popup');
+        if (arguments.length) {
+          return popup.open(...arguments);
         }
+
+        return popup;
       },
 
       loadPopup(obj){
-        return this.popup().load.apply(this, arguments);
+        return this.getPopup().load.apply(this, arguments);
       },
 
       userName(d){
@@ -465,12 +467,12 @@
       },
 
       confirm(){
-        let p = appui.popup();
+        let p = appui.getPopup();
         return p.confirm.apply(p, arguments);
       },
 
       alert(){
-        let p = appui.popup();
+        let p = appui.getPopup();
         return p.alert.apply(p, arguments);
       },
 

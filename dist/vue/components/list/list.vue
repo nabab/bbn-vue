@@ -388,7 +388,25 @@
        */
       actionArguments: {
         type: Array
-      }
+      },
+      /**
+       * The name of the property to be used as action to execute when selected.
+       * @prop {String} sourceAction
+       * @memberof listComponent
+       */
+       sourceAction: {
+        type: [String, Function],
+        default: 'action'
+      },
+      /**
+       * The name of the property to be used as URL to go to when selected.
+       * @prop {String} sourceUrl
+       * @memberof listComponent
+       */
+      sourceUrl: {
+        type: [String, Function],
+        default: 'url'
+      },
     },
     data(){
       return {
@@ -580,7 +598,6 @@
         }
       },
       mouseenter(e, idx){
-        bbn.fn.log("Nouse ener");
         if ( !this.isOver ){
           // if the list appears under the nouse while it is inactive
           e.target.addEventListener('mousemove', () => {
@@ -594,7 +611,6 @@
         }
       },
       resetOverIdx(){
-        bbn.fn.log("Reset OverIdx");
         if (this.suggest === false) {
           this.overIdx = -1;
         }
@@ -606,7 +622,6 @@
         }
       },
       mouseleave(){
-        bbn.fn.log("Nouse leave");
         this.isOver = false;
         this.resetOverIdx();
       },
@@ -680,23 +695,23 @@
                   this.selected.splice(this.selected.indexOf(v), 1);
                 }
               }
-              if ( item.data.action ){
-                if ( typeof(item.data.action) === 'string' ){
-                  if ( bbn.fn.isFunction(this[item.data.action]) ){
-                    this[item.data.action]();
+              if ( item.data[this.sourceAction] ){
+                if ( typeof(item.data[this.sourceAction]) === 'string' ){
+                  if ( bbn.fn.isFunction(this[item.data[this.sourceAction]]) ){
+                    this[item.data[this.sourceAction]]();
                   }
                 }
-                else if (bbn.fn.isFunction(item.data.action) ){
+                else if (bbn.fn.isFunction(item.data[this.sourceAction]) ){
                   if (this.actionArguments) {
-                    item.data.action(...this.actionArguments);
+                    item.data[this.sourceAction](...this.actionArguments);
                   }
                   else {
-                    item.data.action(idx, item.data);
+                    item.data[this.sourceAction](idx, item.data);
                   }
                 }
               }
-              else if ( item.data.url ) {
-                bbn.fn.link(item.data.url);
+              else if ( item.data[this.sourceUrl]) {
+                bbn.fn.link(item.data[this.sourceUrl]);
               }
             }
           }

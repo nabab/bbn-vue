@@ -24,6 +24,8 @@ script.innerHTML = `<component :is="tag"
                :maxWidth="maxWidth"
                :maxHeight="maxHeight"
                children="items"
+               :title="floaterTitle"
+               :closable="!!floaterTitle"
                :content="content"
                :auto-hide="true"
                :mode="mode"
@@ -94,9 +96,17 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * The html tag used to render the property content.
        * @prop {String} ['span'] tag
        */
-      tag: {
+       tag: {
         type: String,
         default: 'span'
+      },
+      /**
+       * If defined it will be show at the top of the list.
+       * @prop {String} [false] floaterTitle
+       */
+       floaterTitle: {
+        type: [Boolean, String],
+        default: false
       },
       /**
        * Set to true to show the floating element containing the menu.
@@ -143,7 +153,25 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        */
       attach: {
         type: HTMLElement
-      }
+      },
+      /**
+       * The name of the property to be used as action to execute when selected.
+       * @prop {String} sourceAction
+       * @memberof listComponent
+       */
+      sourceAction: {
+        type: [String, Function],
+        default: 'action'
+      },
+      /**
+       * The name of the property to be used as URL to go to when selected.
+       * @prop {String} sourceUrl
+       * @memberof listComponent
+       */
+      sourceUrl: {
+        type: [String, Function],
+        default: 'url'
+      },
     },
     data(){
       return {
