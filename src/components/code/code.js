@@ -574,14 +574,11 @@
           }
         }
 
+        this.widget.replaceRange(toAdd, cursor);
         cursor.ch += toAdd.length;
         if (row.type === 'fn') {
           cursor.ch--;
         }
-
-        bbn.fn.log("EPLACING WITH", toAdd, this.currentToken);
-
-        this.widget.replaceSelection(toAdd);
         this.widget.setCursor(cursor);
         this.showHint();
       },
