@@ -151,6 +151,14 @@
        */
       scrollable: {
         type: Boolean,
+        default: false
+      },
+      /**
+       * Sets if the router and the ocntainers inside it should be themselves scrollable or part of the global scroll.
+       * @prop {Boolean} [false] scrollContent
+       */
+      scrollContent: {
+        type: Boolean,
         default: true
       },
       /**

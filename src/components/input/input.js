@@ -120,6 +120,9 @@
        */
       max: {
         type: [String, Number]
+      },
+      prefix: {
+        type: String
       }
     },
     data(){
@@ -130,11 +133,17 @@
       else if (this.autocomplete && bbn.fn.isString(this.autocomplete)) {
         currentAutocomplete = this.autocomplete;
       }
+
+      let currentValue = this.value;
+      if (this.prefix && (this.value.indexOf(this.prefix) === 0)) {
+        currentValue = bbn.fn.substr(currentValue, this.prefix.length);
+      }
+
       return {
         /**
          * @todo not used
          */
-        currentValue: this.value,
+        currentValue: currentValue,
         /**
          * The property 'autocomplete' normalized.
          * @data {String} [''] currentAutocomplete
@@ -171,7 +180,8 @@
     },
     methods: {
       clear(){
-        this.emitInput('');
+        this.emitInput(this.prefix || '');
+        this.currentValue = '';
       },
       init(){
         if (this.pattern) {
@@ -191,6 +201,13 @@
           this.currentPattern = this.pattern;
           this.currentType = this.type;
         }
+      },
+      emitValue(v) {
+        if (this.prefix && (v.indexOf(this.prefix) !== 0)) {
+          v = this.prefix + v;
+        }
+
+        this.emitInput(v);
       }
     },
     created() {
@@ -204,6 +221,18 @@
       this.ready = true;
     },
     watch: {
+      value(v) {
+        if (this.prefix && (v.indexOf(this.prefix) === 0)) {
+          v = bbn.fn.substr(v, this.prefix.length);
+        }
+
+        this.currentValue = v;
+      },
+      currentValue(v) {
+        if (this.value !== (this.prefix || '') + this.currentValue) {
+          this.emitValue(v);
+        }
+      },
       required(v){
         if (v) {
           this.getRef('element').setAttribute('required', '');

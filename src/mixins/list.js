@@ -1060,7 +1060,7 @@
                   this.isLoaded = true;
                 }
                 this.$emit('dataloaded');
-                if (this.isAjax && d.next_step) {
+                if (this.isAjax && d && d.next_step) {
                   this.appendData(d.next_step);
                 }
                 //this._dataPromise = false;

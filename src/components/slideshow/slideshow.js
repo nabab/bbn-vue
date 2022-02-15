@@ -686,7 +686,9 @@
        */
       miniature: {
         template: `
-          <bbn-scroll axis="x" ref="scroll">
+          <bbn-scroll axis="x"
+                      ref="scroll"
+                      @ready="init">
             <div class="bbn-w-100 bbn-middle">
               <template  v-for="(it, i) in items">
                 <i v-if="type === 'circle'"
@@ -803,21 +805,17 @@
             return content.match(/data\:image\/[a-zA-Z]*\;base64/)
               ? content
               : `${content}${content.indexOf('?') > -1 ? '&' : '?'}w=${this.dimension}&thumb=1`;
-          }
-        },
-        /**
-         * @event mounted
-         * @memberof miniature
-         */
-        mounted(){
-          const elem = this.$el.querySelector('div.bbn-slideshow-zoom div.bbn-slideshow-content');
-          if ( elem ){
-            elem.style.transform = 'scale(0.2)';
-            if ( elem.querySelector('img') ){
-              elem.querySelector('img').style.transform = 'scale(0.1)';
+          },
+          init(){
+            const elem = this.$el.querySelector('div.bbn-slideshow-zoom div.bbn-slideshow-content');
+            if ( elem ){
+              elem.style.transform = 'scale(0.2)';
+              if ( elem.querySelector('img') ){
+                elem.querySelector('img').style.transform = 'scale(0.1)';
+              }
             }
           }
-        }
+        },
       }
     }
   });

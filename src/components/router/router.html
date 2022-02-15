@@ -1,14 +1,14 @@
 <div :class="[componentClass, {
   'bbn-invisible': !ready,
-  'bbn-overlay': nav && scrollable,
-  'bbn-w-100': !scrollable
+  'bbn-overlay': nav && scrollContent,
+  'bbn-w-100': !scrollContent
 }]">
 <div :class="{
-   'bbn-flex-height': nav && scrollable,
+   'bbn-flex-height': nav && scrollContent,
    'bbn-router-nav': nav,
    'bbn-router-nav-bc': nav && isBreadcrumb,
-   'bbn-overlay': !nav && scrollable,
-   'bbn-w-100': !scrollable
+   'bbn-overlay': !nav && scrollContent,
+   'bbn-w-100': !scrollContent
  }">
 <!-- START OF BREADCRUMB -->
 <div v-if="nav && isBreadcrumb && !isVisual"
@@ -223,13 +223,13 @@
 <!-- START OF CONTENT FOR VISUALNAV -->
 <div v-if="ready && isVisual"
     :class="{
-      'bbn-overlay': scrollable,
-      'bbn-w-100': !scrollable,
+      'bbn-overlay': scrollContent,
+      'bbn-w-100': !scrollContent,
       'bbn-vspadded': true
     }">
  <div :class="{
-   'bbn-100': scrollable,
-   'bbn-w-100': !scrollable,
+   'bbn-100': scrollContent,
+   'bbn-w-100': !scrollContent,
    'bbn-router-visual': true
   }"
       :style="visualStyle">
@@ -262,9 +262,9 @@
 <!-- END OF CONTENT FOR VISUALNAV -->
 <!-- START OF CONTENT -->
 <div :class="{
-      'bbn-flex-fill': !!nav && scrollable,
-      'bbn-overlay': !nav && scrollable,
-      'bbn-w-100':  !scrollable
+      'bbn-flex-fill': !!nav && scrollContent,
+      'bbn-overlay': !nav && scrollContent,
+      'bbn-w-100':  !scrollContent
     }"
     v-else-if="ready">
  <slot></slot>
