@@ -1,6 +1,6 @@
 <div :class="[componentClass, {
   'bbn-invisible': !ready,
-  'bbn-overlay': nav || scrollContent,
+  'bbn-overlay': (nav || scrollContent),
   'bbn-w-100': !scrollContent
 }]">
 <div :class="{
