@@ -1855,8 +1855,12 @@
             let url = this.views[idx].current;
             this.remove(idx);
             setTimeout(() => {
+              bbn.fn.log("INSIDE")
               this.load(url, true, idx);
-            }, 250);
+              this.$nextTick(() => {
+                this.selected = idx;
+              })
+            }, 100);
           }
         });
       },

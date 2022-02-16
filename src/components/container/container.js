@@ -468,7 +468,7 @@
             // Adding also a few funciton to interact with the tab
             let cont = this;
             let o = bbn.fn.extend(true, res ? res : {}, {
-              template: '<div class="' + (this.scrollable ? '' : 'bbn-w-100') + '">' + this.content + '</div>',
+              template: '<div class="' + (this.router.scrollContent ? '' : 'bbn-w-100') + '">' + this.content + '</div>',
               methods: {
                 getContainer(){
                   if (!this._bbn_container) {
