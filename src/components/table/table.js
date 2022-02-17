@@ -2278,7 +2278,7 @@
                   let tmp = col.realWidth + newWidth;
                   if ((col.width !== undefined)
                     && (!bbn.fn.isString(col.width)
-                      || bbn.fn.isNumber(col.width.substr(-1)))
+                      || bbn.fn.isNumber(bbn.fn.substr(col.width, -1)))
                   ) {
                     if (tmp < parseFloat(col.width)) {
                       tmp = parseFloat(col.width);
@@ -2517,7 +2517,7 @@
                     aggregatedColumns.push(a);
                   }
                   if ( a.width ){
-                    if (bbn.fn.isString(a.width) && (a.width.substr(-1) === '%')) {
+                    if (bbn.fn.isString(a.width) && (bbn.fn.substr(a.width, -1) === '%')) {
                       a.realWidth = Math.floor(parentWidth * this.getDimensionWidth(a.width) / 100);
                       if ( a.realWidth < (bbn.fn.isMobile() ? this.minimumColumnWidthMobile : this.minimumColumnWidth) ){
                         a.realWidth = bbn.fn.isMobile() ? this.minimumColumnWidthMobile : this.minimumColumnWidth;

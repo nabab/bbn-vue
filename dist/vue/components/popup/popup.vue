@@ -385,16 +385,15 @@
        * @fires open
        */
       alert(){
-        let has_msg = false,
-            has_title = false,
-            has_width = false,
-            has_callback = false,
-            okText,
-            onOpen,
-            onClose,
-            i,
-            o = {};
-        for ( i = 0; i < arguments.length; i++ ){
+        let has_msg = false;
+        let has_title = false;
+        let has_width = false;
+        let has_callback = false;
+        let okText;
+        let onOpen;
+        let onClose;
+        let o = {};
+        for (let i = 0; i < arguments.length; i++ ){
           if ( !has_msg && (typeof(arguments[i]) === 'string') ){
             o.content = arguments[i];
             has_msg = 1;
@@ -424,6 +423,9 @@
               has_callback = 1;
             }
           }
+          else if (bbn.fn.isVue(arguments[i])) {
+            o.opener = arguments[i];
+          }
           else if (bbn.fn.isObject(arguments[i])) {
             bbn.fn.extend(o, arguments[i]);
           }
@@ -446,6 +448,7 @@
             text: okText,
             cls: 'bbn-primary',
             icon: 'nf nf-fa-check_circle',
+            focused: true,
             action($ev, btn){
               if ( onClose ){
                 onClose($ev, btn);
@@ -476,16 +479,16 @@
        * @fires open
        */
       confirm(){
-        let onYes = false,
-            onNo = false,
-            yesText = bbn._('Yes'),
-            noText = bbn._('No'),
-            o = {},
-            options = {},
-            has_msg = false,
-            has_yes = false,
-            has_width = false,
-            i;
+        let onYes = false;
+        let onNo = false;
+        let yesText = bbn._('Yes');
+        let noText = bbn._('No');
+        let o = {};
+        let options = {};
+        let has_msg = false;
+        let has_yes = false;
+        let has_width = false;
+        let i;
         if (bbn.fn.isObject(arguments[0])) {
           o = arguments[0];
         }
@@ -521,6 +524,9 @@
                 onYes = arguments[i];
               }
             }
+            else if (bbn.fn.isVue(arguments[i])) {
+              o.opener = arguments[i];
+            }
             else if ( typeof(arguments[i]) === 'object' ){
               options = arguments[i];
             }
@@ -537,18 +543,9 @@
 
           o.content = '<div class="' + (this.isMobile || this.isTablet ? 'bbn-padded' : 'bbn-lpadded') + ' bbn-large bbn-c" style="min-width: ' + (this.isMobile || this.isTablet ? '15' : '30') + 'em">' + o.content + '</div>';
           o.buttons = [{
-            text: yesText,
-            cls: 'bbn-primary',
-            icon: 'nf nf-fa-check_circle',
-            action($ev, btn){
-              btn.closest('bbn-floater').close(true);
-              setTimeout(() => {
-                onYes($ev, btn);
-              }, 0);
-            }
-          }, {
             text: noText,
             icon: 'nf nf-fa-times_circle',
+            focused: true,
             action($ev, btn) {
               btn.closest('bbn-floater').close(true);
               if (onNo) {
@@ -556,6 +553,17 @@
                   onNo($ev, btn);
                 }, 0);
               }
+            }
+          }, {
+            text: yesText,
+            cls: 'bbn-primary',
+            icon: 'nf nf-fa-check_circle',
+            action($ev, btn){
+              bbn.fn.log("HHHHHHHH", btn);
+              btn.closest('bbn-floater').close(true);
+              setTimeout(() => {
+                onYes($ev, btn);
+              }, 0);
             }
           }];
 

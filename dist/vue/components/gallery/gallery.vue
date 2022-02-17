@@ -1,11 +1,9 @@
 <template>
 <div :class="[componentClass, {'bbn-flex-height': scrollable}]">
-  <div v-if="!!toolbar"
-       class="bbn-l bbn-widget bbn-gallery-toolbar bbn-spadded"
-  >
-    <component v-if="toolbar && (isObject(toolbar) || isVue(toolbar))"
-               :is="toolbar"
-    ></component>
+  <div v-if="toolbar"
+       class="bbn-l bbn-widget bbn-gallery-toolbar bbn-spadded">
+    <component v-if="isObject(toolbar) || isVue(toolbar)"
+               :is="toolbar"/>
     <template v-else>
       <div class="bbn-flex-width">
         <div class="bbn-flex-fill">
@@ -108,16 +106,14 @@
                 v-text="_('Loading') + '...'"/>
         </div>
         <component :is="scrollable ? 'bbn-scroll' : 'div'"
-                  v-else-if="total"
-        >
+                  v-else-if="total">
           <div :style="{margin: '0 auto', textAlign: align}">
             <gallery-col v-for="(col, index) in cols"
                         :key="'gallery-col-'+index"
                         :index="index"
                         :source="currentView.filter((it, i) => {
                             return i % cols === index;
-                          })"
-            ></gallery-col>
+                          })"/>
           </div>
         </component>
       </div>
@@ -126,8 +122,7 @@
   <bbn-pager class="bbn-gallery-pager"
               :element="_self"
               ref="pager"
-              v-if="(pageable || isAjax) && !!pager"
-  ></bbn-pager>
+              v-if="(pageable || isAjax) && !!pager"/>
 </div>
 </template>
 <script>
@@ -787,8 +782,8 @@
                     src = this.source.data[prop];
                   }
                 }
-                if (!!src && bbn.fn.isString(src)) {
-                  return `${src}${src.indexOf('?') > -1 ? '&' : '?'}w=${this.col.gallery.currentItemWidth}&thumb=1`;
+                if (src && bbn.fn.isString(src)) {
+                  return bbn.fn.escapeUrl(src, 'w=' + this.col.gallery.currentItemWidth + '&thumb=1');
                 }
                 return null;
               }
@@ -807,6 +802,7 @@
                * @fires getPopup
                */
               action(ev){
+                bbn.fn.log("ACTION");
                 if ( this.col.gallery.isSelecting ){
                   let id = !!this.col.gallery.uid ? this.source.data[this.col.gallery.uid] : this.source.index;
                   if ( this.isSelected ){
@@ -829,6 +825,7 @@
                   && (!ev.target.closest('.bbn-floater-list'))
                   && this.col.gallery.zoomable
                 ) {
+                  bbn.fn.log("ACTION 2");
                   this.getPopup({
                     title: bbn._('Gallery'),
                     width: '100%',
@@ -943,8 +940,9 @@
                   src = data[prop];
                 }
               }
-              if (!!src && bbn.fn.isString(src)) {
-                return `${src}${src.indexOf('?') > -1 ? '&' : '?'}w=70&thumb=1`;
+
+              if (src && bbn.fn.isString(src)) {
+                return bbn.fn.escapeUrl(src, 'w=70&thumb=1');
               }
             }
             return null;

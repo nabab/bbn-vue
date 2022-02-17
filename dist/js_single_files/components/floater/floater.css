@@ -1,9 +1,8 @@
 div.bbn-floater {
   position: fixed !important;
-  box-sizing: content-box;
+  box-sizing: border-box;
   overflow: hidden;
   z-index: 100;
-  font-size: inherit;
 }
 div.bbn-floater:not(.bbn-invisible) {
   transition: opacity 0.1s ease-in-out;
@@ -39,4 +38,108 @@ div.bbn-floater > div > footer.bbn-button-group {
 div.bbn-floater > div > footer.bbn-button-group button {
   padding-top: 0.3em;
   padding-bottom: 0.3em;
+}
+div.bbn-floater .arrow {
+  position: absolute;
+  overflow: hidden;
+}
+div.bbn-floater .arrow:after {
+  content: '';
+  width: 11.315417256011px;
+  height: 11.315417256011px;
+  position: absolute;
+  background: white;
+  transform-origin: 0 0;
+  border: 1px solid var(--default-border);
+}
+div.bbn-floater .bottomLeft,
+div.bbn-floater .bottom {
+  width: 16px;
+  height: 8px;
+  left: 7px;
+  top: -8px;
+  margin-left: -8px;
+}
+div.bbn-floater .bottomLeft:after,
+div.bbn-floater .bottom:after {
+  left: 8px;
+  top: 0;
+  transform: rotate(45deg);
+}
+div.bbn-floater .bottomRight {
+  width: 16px;
+  height: 8px;
+  right: -2px;
+  top: -8px;
+  margin-left: -8px;
+}
+div.bbn-floater .bottomRight:after {
+  left: 8px;
+  top: 0;
+  transform: rotate(45deg);
+}
+div.bbn-floater .topLeft,
+div.bbn-floater .top {
+  width: 16px;
+  height: 8px;
+  left: 6px;
+  bottom: -8px;
+  margin-left: -8px;
+}
+div.bbn-floater .topLeft:after,
+div.bbn-floater .top:after {
+  left: 16px;
+  top: 0;
+  transform: rotate(135deg);
+}
+div.bbn-floater .topRight {
+  width: 16px;
+  height: 8px;
+  right: -2px;
+  bottom: -8px;
+  margin-left: -8px;
+}
+div.bbn-floater .topRight:after {
+  left: 16px;
+  top: 0;
+  transform: rotate(135deg);
+}
+div.bbn-floater .left {
+  width: 8px;
+  height: 16px;
+  top: 8px;
+  right: -8px;
+  margin-top: -8px;
+}
+div.bbn-floater .left:after {
+  left: 0;
+  top: 0;
+  transform: rotate(45deg);
+}
+div.bbn-floater .right {
+  width: 8px;
+  height: 16px;
+  top: 8px;
+  left: -8px;
+  margin-top: -8px;
+}
+div.bbn-floater .right:after {
+  left: 0;
+  top: 8px;
+  transform: rotate(-45deg);
+}
+div.bbn-floater.bottomLeft,
+div.bbn-floater.bottom,
+div.bbn-floater.bottomRight {
+  overflow: unset;
+  margin-top: 3px;
+}
+div.bbn-floater.topLeft,
+div.bbn-floater.top,
+div.bbn-floater.topRight {
+  overflow: unset;
+}
+div.bbn-floater.left,
+div.bbn-floater.right {
+  overflow: unset;
 }

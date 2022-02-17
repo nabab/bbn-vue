@@ -357,13 +357,13 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                                       @click.prevent.stop="cancel"
                                       style="margin: 0 .1em"/>
                         </div>
-                        <component v-else-if="(editMode === 'inline') && col.field && (col.editable !== false)"
+                        <component v-else-if="(editMode === 'inline') && isValidField(col.field) && (col.editable !== false)"
                                   v-bind="getEditableOptions(col, d.data)"
                                   :is="getEditableComponent(col, d.data)"
                                   @click.stop
                                   v-model="editedRow[col.field]"
                                   style="width: 100%"/>
-                        <bbn-field v-else-if="col.field && !col.render && !col.buttons"
+                        <bbn-field v-else-if="isValidField(col.field) && !col.render && !col.buttons"
                                   v-bind="col"
                                   @click.stop
                                   :key="d.rowKey"
@@ -2639,7 +2639,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @returns {Function}
        */
       render(data, column, index) {
-        let value = data && column.field ? data[column.field] || '' : undefined;
+        let value = data && this.isValidField(column.field) ? data[column.field] : undefined;
         if (column.render) {
           return column.render(data, column, index, value)
         }
@@ -2768,7 +2768,7 @@ document.head.insertAdjacentElement('beforeend', css);
                   let tmp = col.realWidth + newWidth;
                   if ((col.width !== undefined)
                     && (!bbn.fn.isString(col.width)
-                      || bbn.fn.isNumber(col.width.substr(-1)))
+                      || bbn.fn.isNumber(bbn.fn.substr(col.width, -1)))
                   ) {
                     if (tmp < parseFloat(col.width)) {
                       tmp = parseFloat(col.width);
@@ -3007,7 +3007,7 @@ document.head.insertAdjacentElement('beforeend', css);
                     aggregatedColumns.push(a);
                   }
                   if ( a.width ){
-                    if (bbn.fn.isString(a.width) && (a.width.substr(-1) === '%')) {
+                    if (bbn.fn.isString(a.width) && (bbn.fn.substr(a.width, -1) === '%')) {
                       a.realWidth = Math.floor(parentWidth * this.getDimensionWidth(a.width) / 100);
                       if ( a.realWidth < (bbn.fn.isMobile() ? this.minimumColumnWidthMobile : this.minimumColumnWidth) ){
                         a.realWidth = bbn.fn.isMobile() ? this.minimumColumnWidthMobile : this.minimumColumnWidth;

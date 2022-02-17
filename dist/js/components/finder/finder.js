@@ -747,7 +747,7 @@ document.head.insertAdjacentElement('beforeend', css);
           let tmp = node.tree.data.path, 
           path = '';
           if ( tmp.indexOf('/') === 0 ){
-            path = tmp.substr(1, tmp.length);
+            path = bbn.fn.substr(tmp, 1, tmp.length);
           }  
           else {
             path = tmp + '/';
@@ -884,7 +884,7 @@ document.head.insertAdjacentElement('beforeend', css);
           path = '';
 
         if ( tmp.indexOf('/') === 0 ){
-          path = tmp.substr(1, tmp.length);
+          path = bbn.fn.substr(tmp, 1, tmp.length);
         }  
         else {
           path = tmp + '/';

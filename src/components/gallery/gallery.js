@@ -654,8 +654,8 @@
                     src = this.source.data[prop];
                   }
                 }
-                if (!!src && bbn.fn.isString(src)) {
-                  return `${src}${src.indexOf('?') > -1 ? '&' : '?'}w=${this.col.gallery.currentItemWidth}&thumb=1`;
+                if (src && bbn.fn.isString(src)) {
+                  return bbn.fn.escapeUrl(src, 'w=' + this.col.gallery.currentItemWidth + '&thumb=1');
                 }
                 return null;
               }
@@ -674,6 +674,7 @@
                * @fires getPopup
                */
               action(ev){
+                bbn.fn.log("ACTION");
                 if ( this.col.gallery.isSelecting ){
                   let id = !!this.col.gallery.uid ? this.source.data[this.col.gallery.uid] : this.source.index;
                   if ( this.isSelected ){
@@ -696,6 +697,7 @@
                   && (!ev.target.closest('.bbn-floater-list'))
                   && this.col.gallery.zoomable
                 ) {
+                  bbn.fn.log("ACTION 2");
                   this.getPopup({
                     title: bbn._('Gallery'),
                     width: '100%',
@@ -810,8 +812,9 @@
                   src = data[prop];
                 }
               }
-              if (!!src && bbn.fn.isString(src)) {
-                return `${src}${src.indexOf('?') > -1 ? '&' : '?'}w=70&thumb=1`;
+
+              if (src && bbn.fn.isString(src)) {
+                return bbn.fn.escapeUrl(src, 'w=70&thumb=1');
               }
             }
             return null;

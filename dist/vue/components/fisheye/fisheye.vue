@@ -1,5 +1,5 @@
 <template>
-<div :class="componentClass"
+<div :class="[componentClass, 'bbn-100']"
      :style="{zIndex: zIndex}"
 >
   <bbn-scroll :scrollable="scrollable"
@@ -490,13 +490,13 @@
 .bbn-fisheye ul li i:hover {
   transform: scale(1.5);
 }
-.bbn-mobile .bbn-fisheye ul li i {
+.bbn-screen-small .bbn-fisheye ul li i {
   transform: none;
 }
 .bbn-fisheye ul li:hover {
   transform: scale(1.4);
 }
-.bbn-mobile .bbn-fisheye ul li {
+.bbn-screen-small .bbn-fisheye ul li {
   transform: none;
 }
 .bbn-fisheye .bbn-fisheye-text {

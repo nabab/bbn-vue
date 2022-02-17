@@ -237,6 +237,7 @@
        * @method alert
        */  
       alert(){
+        let popup = this.getPopup();
         if (arguments.length && popup) {
           let cfg = arguments[0];
           let args = [];

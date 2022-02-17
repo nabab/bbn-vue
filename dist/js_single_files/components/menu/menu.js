@@ -106,14 +106,14 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
     },
     methods: {
       _enterLi(idx) {
-        bbn.fn.log("ENTER LI");
+        //bbn.fn.log("ENTER LI");
         if ((this.overIdx > -1) && (this.overIdx !== idx)) {
           this.overIdx = idx;
           this.getRef('li' + idx).focus();
         }
       },
       clickLi(idx, ev) {
-        bbn.fn.log("clickLi", idx, this.overIdx);
+        //bbn.fn.log("clickLi", idx, this.overIdx);
         if (this.filteredData[idx]) {
           if (this.filteredData[idx].data[this.children] && this.filteredData[idx].data[this.children].length) {
             this.overIdx = this.overIdx === idx ? -1 : idx;
@@ -126,7 +126,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         }
       },
       onKeyDown(idx, ev) {
-        bbn.fn.log(ev);
+        //bbn.fn.log(ev);
         let floater = this.getRef('floater');
         if (floater) {
           let list = floater.getRef('list');
@@ -155,7 +155,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
     },
     watch: {
       overIdx(nv, ov) {
-        bbn.fn.log("changed overIdx from " + ov + " to " + nv);
+        //bbn.fn.log("changed overIdx from " + ov + " to " + nv);
       }
     },
     mounted() {

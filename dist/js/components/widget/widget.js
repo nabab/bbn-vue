@@ -9,7 +9,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-bordered', 'bbn-radius', 
     <div class="bbn-flex-width bbn-vxspadded bbn-vmiddle">
       <!-- BUTTONS LEFT -->
       <div class="bbn-header-buttons bbn-widget-button-left bbn-hxspadded">
-        <i v-if="closable"
+        <i v-if="isClosable"
             :title="_('Close')"
             @click="close"
             class="bbn-lg nf nf-fa-times"/>
@@ -48,7 +48,8 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-bordered', 'bbn-radius', 
        :style="{padding: contentPadding ? contentPadding : false}">
     <!-- LOADING -->
     <div v-if="isLoading" style="min-height: 15em">
-      <bbn-loader/>
+      <bbn-loader text=""
+                  type="swing"/>
     </div>
     <!-- COMPONENT -->
     <component v-else-if="component"
@@ -448,6 +449,10 @@ document.head.insertAdjacentElement('beforeend', css);
           return this.padding + 'px';
         }
         return this.padding;
+      },
+      isClosable() {
+        return this.dadhboard && this.dashboard.closable && this.closable;
+
       },
       currentPage(){
         if ( this.currentTotal > this.limit ){

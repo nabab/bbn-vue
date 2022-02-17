@@ -10,9 +10,10 @@
       @keyup.esc="cancel"
 >
   <div :class="{
-         'bbn-flex-fill': isInit && scrollable || !!fullSize,
+         'bbn-flex-fill': !window && isInit && scrollable || !!fullSize,
          'bbn-w-100': scrollable,
-         'bbn-flex-height': !scrollable && hasFooter
+         'bbn-flex-height': !scrollable && hasFooter,
+         'bbn-overlay': !!window
        }"
   >
     <component :is="scrollable ? 'bbn-scroll' : 'div'"
@@ -386,7 +387,8 @@
         isInit: false,
         realButtons: [],
         canSubmit: false,
-        sourceTimeout: 0
+        sourceTimeout: 0,
+        isClosing: false
       };
     },
     computed: {
@@ -412,16 +414,14 @@
       currentClass(){
         let st = this.componentClass.join(' ');
         if (this.isInit) {
-          if ( this.window ){
-            st += ' bbn-flex-height';
-          }
-          else if ( (this.hasFooter || this.realButtons.length || this.footer) && (this.scrollable || this.fullSize) ){
+          if (!this.window && (this.hasFooter || this.realButtons.length || this.footer) && (this.scrollable || this.fullSize) ){
             st += ' bbn-flex-height';
           }
           if ( this.scrollable || this.fullSize ){
             st += ' bbn-overlay';
           }
         }
+
         return st;
       },
       currentStyle(){
@@ -648,16 +648,18 @@
        * @fires isModified
        */
       closePopup(window, ev){
-        if ( this.window && this.$el ){
+        if ( this.window && this.$el && !this.isClosing){
+          this.isClosing = true;
           if ( !this.isPosted && this.confirmLeave && this.isModified() ){
             if ( ev ){
               ev.preventDefault();
             }
-            this.getPopup().confirm(this.confirmLeave, () => {
+            this.confirm(this.confirmLeave, () => {
               if ( this.reset() ){
                 this.$nextTick(() => {
                   if (this.window) {
                     this.window.close(true, true);
+                    this.isClosing = false;
                   }
                 });
               }
@@ -668,6 +670,7 @@
               this.$nextTick(() => {
                 if (this.window) {
                   this.window.close(true, true);
+                  this.isClosing = false;
                 }
               });
             }
@@ -899,10 +902,21 @@
       }
     },
     /**
+     * Registers in each container until root.
+     * 
      * @event mounted
      * @fires init
      */
     mounted(){
+      let container = this;
+      while (container = container.closest('bbn-container')) {
+        container.forms.push(this);
+      }
+      container = this;
+      while (container = container.closest('bbn-floater')) {
+        container.forms.push(this);
+      }
+
       if (this.storage){
         let data = this.getStorage();
         if (data) {
@@ -958,14 +972,30 @@
       }
       this.init();
     },
-    beforeDestroy(){
-      if (this.dirty) {
-        if (this.window) {
-          this.window.dirty = false;
-        }
-        if (this.tab) {
-          this.tab.dirty = false;
-        }
+    /**
+     * Registers in each container until root.
+     * 
+     * @event mounted
+     * @fires init
+     */
+     beforeDestroy() {
+      let container = this;
+      while (container = container.closest('bbn-container')) {
+        bbn.fn.each(container.forms, (f, i) => {
+          if (f === this) {
+            container.forms.splice(i, 1);
+            return false;
+          }
+        });
+      }
+      container = this;
+      while (container = container.closest('bbn-floater')) {
+        bbn.fn.each(container.forms, (f, i) => {
+          if (f === this) {
+            container.forms.splice(i, 1);
+            return false;
+          }
+        });
       }
     },
     watch: {

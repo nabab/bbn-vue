@@ -414,11 +414,11 @@
                   props.size = false;
                   hasAuto = true;
                 }
-                else if ( (typeof props.size === 'string') && (props.size.substr(-1) === '%') ){
+                else if ( (typeof props.size === 'string') && (bbn.fn.substr(props.size, -1) === '%') ){
                   isPercent = true;
                   hasPercent = true;
                 }
-                else if ( (typeof props.size === 'string') && (props.size.substr(-2) === 'px') ){
+                else if ( (typeof props.size === 'string') && (bbn.fn.substr(props.size, -2) === 'px') ){
                   isNumber = true;
                   props.size = parseInt(props.size);
                 }

@@ -399,14 +399,7 @@
        * @return {String}
        */
       formattedLeft() {
-        let offset = 0;
-        if (this.position == 'left') {
-          offset = -this.distance;
-        }
-        if (this.position == 'right') {
-          offset = this.distance;
-        }
-        return this.currentLeft !== null ? this.formatSize(this.currentLeft + offset) : '0px';
+        return this.currentLeft !== null ? this.formatSize(this.currentLeft) : '0px';
       },
       /**
        * Normalizes the property 'top'.
@@ -414,16 +407,7 @@
        * @return {String}
        */
       formattedTop() {
-        let topPositions = ['topLeft', 'topRight', 'top'];
-        let bottomPositions = ['bottomLeft', 'bottomRight', 'bottom'];
-        let offset = 0;
-        if (topPositions.indexOf(this.position) !== -1) {
-          offset = -this.distance;
-        }
-        if (bottomPositions.indexOf(this.position) !== -1) {
-          offset = this.distance;
-        }
-        return this.currentTop !== null ? this.formatSize(this.currentTop + offset) : '0px';
+        return this.currentTop !== null ? this.formatSize(this.currentTop) : '0px';
       },
       /**
        * Normalizes the property 'width'.
@@ -782,7 +766,7 @@
                     }
 
                     let w = scroll.$el.clientWidth;
-                    naturalWidth = contentEle.children[0].clientWidth;
+                    naturalWidth = contentEle && contentEle.children[0] ? contentEle.children[0].clientWidth : 0;
                     if (!naturalWidth || (naturalWidth >= w)) {
                       let step = Math.ceil(w/10);
                       let num = 1;
@@ -1122,8 +1106,26 @@
         });
 
         if (ok  && (r.x.res !== null) && (r.y.res !== null)) {
-          this.currentLeft = Math.ceil(r.x.res);
-          this.currentTop = Math.ceil(r.y.res);
+          // calculate offset for tooltip position
+          let offset = 0;
+          if (this.position == 'left') {
+            offset = -this.distance;
+          }
+          if (this.position == 'right') {
+            offset = this.distance;
+          }
+          this.currentLeft = Math.ceil(r.x.res + offset);
+
+          let topPositions = ['topLeft', 'topRight', 'top'];
+          let bottomPositions = ['bottomLeft', 'bottomRight', 'bottom'];
+          offset = 0;
+          if (topPositions.indexOf(this.position) !== -1) {
+            offset = -this.distance;
+          }
+          if (bottomPositions.indexOf(this.position) !== -1) {
+            offset = this.distance;
+          }
+          this.currentTop = Math.ceil(r.y.res + offset);
         }
 
       },

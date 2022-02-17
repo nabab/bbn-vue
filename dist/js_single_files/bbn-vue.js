@@ -92,7 +92,7 @@
     setComponentRule(url, prefix){
       if ( url ){
         bbn.vue.localURL = url;
-        if ( bbn.vue.localURL.substr(-1) !== '/' ){
+        if ( bbn.fn.substr(bbn.vue.localURL, -1) !== '/' ){
           bbn.vue.localURL += '/';
         }
         bbn.vue.localPrefix = prefix || '';
@@ -672,7 +672,7 @@
         throw new Error("Handler must be a function!");
         return;
       }
-      if ( prefix.substr(-1) !== '-' ){
+      if ( bbn.fn.substr(prefix, -1) !== '-' ){
         prefix += '-';
       }
       bbn.vue.knownPrefixes.push({
@@ -2324,7 +2324,7 @@
             st += name;
           }
           else{
-            st += window.location.pathname.substr(1) + '-' + this.storageName;
+            st += bbn.fn.substr(window.location.pathname, 1) + '-' + this.storageName;
           }
           return st;
         },
@@ -2404,7 +2404,7 @@
          * @returns {String}
          */
         renderData(data, cfg){
-          if ( !cfg.field || !data ){
+          if ((!bbn.fn.isString(cfg.field) && !bbn.fn.isNumber(cfg.field)) || !data ){
             return '';
           }
           let v = data[cfg.field] || '';
@@ -3620,11 +3620,19 @@
           type: String
         },
         /**
-         * The name of the property to be used as action.
+         * The name of the property to be used as action to execute when selected.
          * @prop {String} sourceAction
          * @memberof listComponent
          */
-        sourceAction: {
+         sourceAction: {
+          type: [String, Function]
+        },
+        /**
+         * The name of the property to be used as URL to go to when selected.
+         * @prop {String} sourceUrl
+         * @memberof listComponent
+         */
+         sourceUrl: {
           type: [String, Function]
         },
         /**
@@ -4062,7 +4070,7 @@
          */
         _map(data) {
           if ( bbn.fn.isArray(data) ){
-            if ( data.length && !bbn.fn.isObject(data[0]) && this.sourceValue && this.sourceText ){
+            if ( data.length && !bbn.fn.isObject(data[0]) && !bbn.fn.isArray(data[0]) && this.sourceValue && this.sourceText ){
               data = data.map(a => {
                 let o = {};
                 o[this.sourceValue] = a;
@@ -4107,6 +4115,15 @@
             }
           }
           return pass;
+        },
+        /**
+         * Checks if the field's name is valid (0 must be accepted)
+         *
+         * @param {*} field
+         * @return {*} 
+         */
+        isValidField(field) {
+          return bbn.fn.isString(field) || bbn.fn.isNumber(field);
         },
         /**
          * @method select
@@ -4552,7 +4569,6 @@
         remove(where) {
           let idx;
           while ((idx = bbn.fn.search(this.filteredData, a => {
-            bbn.fn.log("COMPOARE", a.data);
             return bbn.fn.compareConditions(a.data, where);
           })) > -1) {
             this.realDelete(this.filteredData[idx].index, 1);
@@ -4809,6 +4825,14 @@
          */
         inputmode: {
           type: String
+        },
+        /**
+         * If true the element will focus on insert
+         * @prop {Boolean} autofocus
+         */
+         focused: {
+          type: Boolean,
+          default: false
         }
       },
       data(){
@@ -4997,7 +5021,15 @@
           this.componentClass.push('bbn-auto-width');
         }
       },
-      watch:{
+      mounted() {
+        setTimeout(() => {
+          if (this.autofocus) {
+            const ele = this.$refs.element || this.$refs.input || this.$el;
+            ele.focus();
+          }
+        }, 100)
+      },
+      watch: {
         /**
          * @watch value
          * @param newVal 
@@ -5206,6 +5238,11 @@
           //this.setContainerMeasures();
           // Creating the callback function which will be used in the timeout in the listener
           this.onParentResizerEmit = () => {
+            let ct = this.closest('bbn-container');
+            if (ct && !ct.visible) {
+              return;
+            }
+
             // Removing previous timeout
             if (this.resizerTimeout) {
               clearTimeout(this.resizerTimeout);
@@ -6863,6 +6900,7 @@
           if (bbn.fn.isObject(cfg)) {
             cfg.opener = this;
           }
+
           args.push(cfg);
           for (let i = 1; i < arguments.length; i++) {
             args.push(arguments[i]);
@@ -6879,8 +6917,23 @@
        */  
       confirm(){
         let popup = this.getPopup();
-        if ( popup ){
-          popup.confirm.apply(popup, arguments)
+        if (arguments.length && popup) {
+          let cfg = arguments[0];
+          let args = [];
+          if (bbn.fn.isObject(cfg)) {
+            cfg.opener = this;
+          }
+
+          args.push(cfg);
+          for (let i = 1; i < arguments.length; i++) {
+            args.push(arguments[i]);
+          }
+
+          if (!bbn.fn.isObject(cfg)) {
+            args.push(this);
+          }
+
+          return popup.confirm.apply(popup, args)
         }
       },
       /**
@@ -6889,8 +6942,23 @@
        */  
       alert(){
         let popup = this.getPopup();
-        if ( popup ){
-          popup.alert.apply(popup, arguments)
+        if (arguments.length && popup) {
+          let cfg = arguments[0];
+          let args = [];
+          if (bbn.fn.isObject(cfg)) {
+            cfg.opener = this;
+          }
+
+          args.push(cfg);
+          for (let i = 1; i < arguments.length; i++) {
+            args.push(arguments[i]);
+          }
+
+          if (!bbn.fn.isObject(cfg)) {
+            args.push(this);
+          }
+
+          return popup.alert.apply(popup, args)
         }
       },
       /**
@@ -7061,7 +7129,7 @@
       bbn.vue.fullComponent = bbn.fn.extend(true, {}, bbn.vue.basicComponent, bbn.vue.inputComponent, bbn.vue.eventsComponent);
 
       bbn.vue.addPrefix('bbn', (tag, resolve, reject) => {
-        bbn.vue.queueComponentBBN(tag.substr(4), resolve, reject);
+        bbn.vue.queueComponentBBN(bbn.fn.substr(tag, 4), resolve, reject);
       });
 
       Vue.component('bbns-container', bbn.fn.extend({
@@ -7084,7 +7152,7 @@
               }
             }
             obj.real = false;
-            router.register(obj, true);
+            router.add(obj);
           }
         }
       }, bbn.vue.viewComponent));

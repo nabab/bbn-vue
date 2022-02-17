@@ -14,7 +14,8 @@ script.innerHTML = `<button :class="['bbn-iblock', {'bbn-button-icon-only': note
         :type="type"
         :disabled="isDisabled"
         :title="titleString"
-        :style="currentStyle">
+        :style="currentStyle"
+        v-focused="focused">
   <span v-if="icon && (iconPosition === 'left')"
         :class="['bbn-button-icon', {'bbn-middle': notext}]">
     <i :class="icon"/>
@@ -186,6 +187,14 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @prop {Boolean} [false] ellipsis
        */
       ellipsis: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * If true the button will be focused when inserted in the DOM
+       * @prop {Boolean} [false] focused
+       */
+      focused: {
         type: Boolean,
         default: false
       }

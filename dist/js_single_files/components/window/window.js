@@ -213,9 +213,9 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       }
       return {
         isMaximized: this.maximized,
-        widthUnit: (typeof this.width === 'string') && (this.width.substr(-1) === '%') ? '%' : 'px',
+        widthUnit: (typeof this.width === 'string') && (bbn.fn.substr(this.width, -1) === '%') ? '%' : 'px',
         currentWidth: this.width,
-        heightUnit: (typeof this.height === 'string') && (this.height.substr(-1) === '%') ? '%' : 'px',
+        heightUnit: (typeof this.height === 'string') && (bbn.fn.substr(this.height, -1) === '%') ? '%' : 'px',
         currentHeight: this.height,
         closingFunctions: fns,
         showContent: false,

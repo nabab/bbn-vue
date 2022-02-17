@@ -2,64 +2,177 @@
 ((bbn) => {
 
 let script = document.createElement('script');
-script.innerHTML = `<div :class="[componentClass, 'bbn-overlay']"
+script.innerHTML = `<div :class="[componentClass, {
+  'bbn-overlay': !visual && scrollable,
+  'bbn-w-100': !scrollable
+}]"
      @subready.stop
-     v-show="visible">
-  <transition name="fade"
-              v-on:enter="enter"
-              v-on:after-enter="onResize"
-  >
-    <div class="bbn-overlay"
-         v-show="visible">
-      <div v-if="!hidden"
-           :class="{
-        'bbn-background': true,
-        'bbn-overlay': !fullScreen,
-        'bbn-container-full-screen': fullScreen,
-        'bbn-container-visible': visible
-      }">
-        <component :is="scrollable ? 'bbn-scroll' : 'div'"
-                  v-if="ready && isLoaded && (visible || cached)"
-                  v-show="visible"
-                  ref="scroll"
-                  :axis="scrollable ? 'y' : null"
-                  class="bbn-overlay">
-          <!-- This is an ad hoc component with unique name -->
-          <component v-if="isComponent"
-                    :is="$options.components[componentName]"
-                    :source="source"
-                    ref="component"
-          ></component>
-          <!-- This is a classic component -->
-          <component v-else-if="component"
-                    :is="component"
-                    :source="source"
-                    ref="component"
-                    v-bind="options"
-          ></component>
-          <!-- This is just HTML content -->
-          <div v-else-if="content"
-              v-html="content">
+     :style="visual ? visualStyle : {}"
+     v-show="visible || visual">
+  <div :class="{
+    'bbn-100': scrollable,
+    'bbn-w-100': !scrollable
+  }">
+    <transition name="fade"
+                v-on:enter="enter"
+                v-on:after-enter="onResize">
+      <div :class="{
+        'bbn-overlay': !visual && scrollable,
+        'bbn-flex-height': visual && scrollable,
+        'bbn-w-100': visual || !scrollable
+      }"
+          v-show="visible || visual">
+        <!-- The header -->
+        <div v-if="visual"
+            :class="'bbn-b bbn-hpadded bbn-vspadded bbn-flex-width ' + (visible ? ' bbn-m' : '')"
+            :style="{
+              fontSize: visible && !router.visualShowAll ? null : '10em',
+              backgroundColor: bcolor || '#666',
+              color: fcolor || '#EEE'
+            }">
+          <div class="bbn-flex-fill bbn-vmiddle">
+            <bbn-context v-if="visible"
+                        class="bbn-right-sspace bbn-lg bbn-p"
+                        :floater-title="_('Container menu')"
+                        tag="span"
+                        :source="showMenu">
+              <i class="nf nf-fa-bars"/>
+            </bbn-context>
+            <span v-if="icon"
+                  class="bbn-right-sspace bbn-lg">
+              <i :class="icon"/>
+            </span>
+            <span v-text="title"
+                  style="overflow: hidden"/>
           </div>
-          <!-- This is the slot -->
-          <slot v-else></slot>
-          <component is="style"
-                    v-if="css"
-                    scoped="scoped"
-                    v-html="css"/>
-          <bbn-loader v-if="hasLoader"/>
-        </component>
-        <span  v-if="fullScreen"
-              class="bbn-container-full-screen-closer bbn-xl bbn-p">
-          <i class="nf nf-fa-times_circle"
-            @click="fullScreen = false"/>
-        </span>
-        <bbn-popup ref="popup"
-                  :source="popups"
-                  v-if="!hidden && ready && isLoaded && (visible || cached)"/>
+          <div v-if="visible && !static && !pinned && !router.visualShowAll"
+              class="bbn-block bbn-p bbn-vmiddle bbn-h-100"
+              @click="close">
+            <i class="nf nf-fa-times bbn-lg"/>
+          </div>
+        </div>
+        <!-- The main container (the one we take screenshots of) -->
+        <div :class="{
+          'bbn-background': true,
+          'bbn-overlay': !fullScreen && !visual && scrollable,
+          'bbn-flex-fill': !fullScreen && visual && scrollable,
+          'bbn-w-100': !scrollable,
+          'bbn-container-full-screen': fullScreen,
+          'bbn-container-visible': visible
+        }"
+            ref="canvasSource">
+          <!-- This is shown when it's ready -->
+          <component :is="scrollable ? 'bbn-scroll' : 'div'"
+                    v-if="ready && isLoaded && (visible || cached || visual)"
+                    v-show="visible || (visual && !thumbnail)"
+                    ref="scroll"
+                    :axis="scrollable ? 'y' : null"
+                    :class="{
+                      'bbn-overlay': scrollable,
+                      'bbn-w-100': !scrollable
+                    }">
+            <!-- This is an ad hoc component with unique name -->
+            <component v-if="isComponent"
+                      :is="$options.components[componentName]"
+                      :source="source"
+                      ref="component"
+            ></component>
+            <!-- This is a classic component -->
+            <component v-else-if="component"
+                      :is="component"
+                      :source="source"
+                      ref="component"
+                      v-bind="options"
+            ></component>
+            <!-- This is just HTML content -->
+            <div v-else-if="content"
+                v-html="content">
+            </div>
+            <!-- This is the slot -->
+            <slot v-else></slot>
+            <!-- Adding style as acomponent -->
+            <component is="style"
+                      v-if="css"
+                      scoped="scoped"
+                      v-html="css"/>
+            <bbn-loader v-if="hasLoader"/>
+          </component>
+          <!-- If loading showing loader -->
+          <bbn-loader v-else-if="visible && !isLoaded"/>
+          <!-- Thumbnail image -->
+          <div v-if="!visible && visual && thumbnail"
+              style="overflow: hidden"
+              class="bbn-overlay">
+            <img :src="thumbnail"
+                style="width: 100%; max-height: 100%; height: auto">
+          </div>
+          <!-- Icon for closing when in full screen mode -->
+          <span  v-if="fullScreen"
+                class="bbn-container-full-screen-closer bbn-xl bbn-p">
+            <i class="nf nf-fa-times_circle"
+              @click="fullScreen = false"/>
+          </span>
+          <!-- The container's popup, from each floater will come -->
+          <bbn-popup ref="popup"
+                    :source="popups"
+                    v-if="!hidden && ready && isLoaded && (visible || cached)"/>
+        </div>
       </div>
+    </transition>
+    <!-- When in visual mode a layer prevents interaction with the content -->
+    <div v-if="visual && (!visible || router.visualShowAll)"
+        class="bbn-overlay"
+        style="z-index: 12; background-color: black; opacity: 0.2;">
     </div>
-  </transition>
+    <div v-if="visual && (!visible || router.visualShowAll)"
+        class="bbn-overlay"
+        @click="show() && router.route(current, true)"
+        @mouseenter="isOver = true"
+        @mouseleave="isOver = false"
+        style="z-index: 12">
+      <transition name="fade">
+        <div class="bbn-bottom-left bbn-w-100"
+            v-show="isOver"
+            :style="{
+                fontSize: visible ? null : '12em'
+              }">
+          <div class="bbn-bottom-left bbn-w-100 bbn-bg-black"
+              style="opacity: 0.6; color: transparent">
+              <div class="bbn-w-50 bbn-p bbn-spadded"
+              @click.stop="">
+            <i class="nf nf-fa-bars"/>
+          </div>
+          <div class="bbn-w-50 bbn-right bbn-p bbn-spadded"
+              @click.stop="close"
+              v-if="!pinned && !static">
+              <i class="nf nf-fa-times"/>
+          </div>
+          <div class="bbn-w-50 bbn-right bbn-p bbn-spadded"
+              @click.stop="unpin"
+              v-else-if="pinned">
+              <i class="nf nf-oct-pin"/>
+          </div>
+        </div>
+          <div class="bbn-bottom-left bbn-w-100 bbn-white">
+            <div class="bbn-w-50 bbn-p bbn-spadded"
+                @click.stop="">
+              <i class="nf nf-fa-bars"/>
+            </div>
+            <div class="bbn-w-50 bbn-right bbn-p bbn-spadded"
+                @click.stop="close"
+                v-if="!pinned && !static">
+                <i class="nf nf-fa-times"/>
+            </div>
+            <div class="bbn-w-50 bbn-right bbn-p bbn-spadded"
+                @click.stop="unpin"
+                v-else-if="pinned">
+                <i class="nf nf-oct-pin"/>
+            </div>
+          </div>
+        </div>
+      </transition>
+    </div>
+  </div>
 </div>
 `;
 script.setAttribute('id', 'bbn-tpl-component-container');
@@ -83,7 +196,7 @@ document.head.insertAdjacentElement('beforeend', css);
  * @created 15/02/2017
  */
 
-(function(bbn, Vue){
+ (function(bbn, Vue){
   "use strict";
 
   /**
@@ -132,6 +245,20 @@ document.head.insertAdjacentElement('beforeend', css);
       idx: {
         type: Number
       },
+      /**
+       * A unique id for the container that will ben used as index by the router
+       * @prop {String} uid
+       */
+       uid: {
+        type: String,
+        default() {
+          return bbn.fn.randomString();
+        }
+      },
+      visual: {
+        type: Boolean,
+        default: false
+      }
     },
     data(){
       return {
@@ -195,21 +322,63 @@ document.head.insertAdjacentElement('beforeend', css);
          */
         isStatic: this.static,
         /**
-         * The index of the container.
-         * @data {Number} currentIndex
-         */
-        currentIndex: this.idx,
-        /**
          * The current url.
          * @data {String} currentURL
          */
         currentURL: this.current || this.url,
-        currentTitle: this.title,
         hasLoader: false,
-        _bbn_container: null
+        isOver: false,
+        _bbn_container: null,
+        thumbnail: false,
+        /**
+         * A list of form components contained in this container
+         * @data {Array} [[]] forms
+         */
+        forms: []
       };
     },
     computed: {
+      visualStyle() {
+        if (this.visual) {
+          let r = this.router;
+          if ((r.views.length > 1) && (!this.visible || r.visualShowAll)) {
+            return {
+              zoom: 0.1,
+              width: '100%',
+              height: '100%',
+              overflow: 'hidden'
+            };
+          }
+
+          let coord = [1, r.numVisualCols + 1, 1, r.numVisualRows + 1];
+          if (r.views.length > 1) {
+            switch (r.visualOrientation) {
+              case 'top':
+                coord[2] = 2;
+                break;
+              case 'bottom':
+                coord[3] = coord[3] - 1;
+                break;
+              case 'left':
+                coord[0] = 2;
+                break;
+              case 'right':
+                coord[1] = coord[1] - 1;
+                break;
+            }
+          }
+
+          return {
+            gridColumnStart: coord[0],
+            gridColumnEnd: coord[1],
+            gridRowStart: coord[2],
+            gridRowEnd: coord[3],
+            zoom: 1
+          };
+        }
+
+        return {};
+      },
       anonymousComponent(){
         return this.$refs.component;
       }
@@ -262,7 +431,11 @@ document.head.insertAdjacentElement('beforeend', css);
        * @method show
        */
       show(){
-        this.visible = true
+        this.visible = true;
+        if (this.visual && this.router.visualShowAll) {
+          this.router.visualShowAll = false;
+        }
+        return true;
       },
       /**
        * Hides the container.
@@ -271,6 +444,10 @@ document.head.insertAdjacentElement('beforeend', css);
        */
       hide(){
         this.visible = false
+        return true;
+      },
+      close() {
+        this.router.close(this.idx);
       },
       /**
        * Sets the current url.
@@ -293,7 +470,7 @@ document.head.insertAdjacentElement('beforeend', css);
        */
       setTitle(title){
         if ( this.router ){
-          this.router.views[this.currentIndex].title = title;
+          this.router.views[this.idx].title = title;
         }
       },
       /**
@@ -306,10 +483,10 @@ document.head.insertAdjacentElement('beforeend', css);
       setColor(bcolor, fcolor){
         if ( this.router ){
           if ( bcolor ){
-            this.router.$set(this.router.views[this.currentIndex], "bcolor", bcolor);
+            this.router.$set(this.router.views[this.idx], "bcolor", bcolor);
           }
           if ( fcolor ){
-            this.router.$set(this.router.views[this.currentIndex], "fcolor", fcolor);
+            this.router.$set(this.router.views[this.idx], "fcolor", fcolor);
           }
         }
       },
@@ -348,7 +525,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @fires $parent.reload
        */
       reload(){
-        this.router.reload(this.currentIndex);
+        this.router.reload(this.idx);
       },
       /**
        * Handles the configuration of the container's menu.
@@ -477,7 +654,7 @@ document.head.insertAdjacentElement('beforeend', css);
             // Adding also a few funciton to interact with the tab
             let cont = this;
             let o = bbn.fn.extend(true, res ? res : {}, {
-              template: '<div class="' + (this.scrollable ? '' : 'bbn-overlay') + '">' + this.content + '</div>',
+              template: '<div class="' + (this.scrollable ? '' : 'bbn-w-100') + '">' + this.content + '</div>',
               methods: {
                 getContainer(){
                   if (!this._bbn_container) {
@@ -521,11 +698,84 @@ document.head.insertAdjacentElement('beforeend', css);
               }
               
             }
+            if (this.visual) {
+              this.takeScreenshot();
+            }
           }, 2000);
 
           this.ready = true;
         }
-      }
+      },
+      showMenu() {
+        if (this.visual) {
+          return this.router.getMenuFn(this.idx);
+        }
+      },
+      takeScreenshot(num_tries = 0) {
+        if (this.visual && this.router.db && window.html2canvas) {
+          setTimeout(() => {
+            let prom;
+            let scroll = this.getRef('scroll');
+            if (!scroll) {
+              if (num_tries <= 10) {
+                this.takeScreenshot(num_tries + 1);
+              }
+
+              return;
+            }
+
+            let w  = scroll.lastKnownWidth;
+            let h  = scroll.lastKnownHeight;
+            let ct = this.getRef('canvasSource');
+            if (!w || !h) {
+              if (num_tries <= 10) {
+                this.takeScreenshot(num_tries + 1);
+              }
+
+              return;
+            }
+
+            ct.style.width = w + 'px';
+            ct.style.height = h + 'px';
+            try {
+              prom = html2canvas(this.getRef('canvasSource'), {
+                width: w,
+                height: h
+              });
+            }
+            catch (e) {
+              bbn.fn.log("Error");
+              return;
+            }
+
+            prom.then(
+              canvas => {
+                bbn.fn.log(canvas);
+                bbn.fn.log(canvas.height);
+                let img = bbn.fn.canvasToImage(canvas);
+                if (!img) {
+                  bbn.fn.log("Error for screenshot image");
+                  return;
+                }
+                ct.style.width = null;
+                ct.style.height = null;
+
+                let ctx   = canvas.getContext('2d');
+                let size  = Math.min(w, h);
+                let num   = Math.min(this.router.numVisualCols, this.router.numVisualRows);
+                let msize = Math.ceil(size / num);
+                ctx.drawImage(img, 0, 0, size, size, 0, 0, msize, msize);
+                this.router.db.insert('containers', {
+                  url: this.getFullURL(),
+                  image: img.src
+                });
+              }
+            ).catch(e => {
+              bbn.fn.log("ERROR", e);
+            });
+          }, 1000)
+        }
+      },
     },
     /**
      * @event created 
@@ -542,17 +792,26 @@ document.head.insertAdjacentElement('beforeend', css);
         };
         let res;
       }
+      // The router is needed
+      this.router = this.closest('bbn-router');
+      if (this.visual && this.router.db) {
+        let url = this.getFullURL();
+        this.router.db.selectOne('containers', 'image', {url: url}).then(res => {
+          if (res) {
+            this.thumbnail = res;
+          }
+        })
+      }
     },
     /**
      * @event mounted
      * @fires router.register
      */
     mounted(){
-      // The router is needed
-      this.router = this.closest('bbn-router');
       if ( !this.router ){
         throw new Error(bbn._("bbn-container cannot be rendered without a bbn-router"));
       }
+
       if ( !this.router.ready ){
         this.router.$on('ready', () => {
           //this.init();
@@ -581,8 +840,10 @@ document.head.insertAdjacentElement('beforeend', css);
     },
 
     watch: {
-      title(v) {
-        this.currentTitle = v;
+      idx() {
+        if (this.visual) {
+          this.isOver = false;
+        }
       },
       current(newVal){
         if (newVal.indexOf(this.url) === 0){
@@ -629,6 +890,63 @@ document.head.insertAdjacentElement('beforeend', css);
             this.$nextTick(() => {
               this.onResize();
             });
+          }
+          else if (this.visual) {
+            /*
+            setTimeout(() => {
+              let ct = this.getRef('canvasSource');
+              let w = Math.ceil(ct.clientWidth);
+              let h = Math.ceil(ct.clientHeight);
+              ct.style.width = w + 'px';
+              ct.style.height = h + 'px';
+              bbn.fn.log("CANVAS", w, h);
+              html2canvas(this.getRef('canvasSource'), {
+                width: w,
+                height: h
+              }).then(canvas => {
+                let img = bbn.fn.canvasToImage(canvas);
+                let ctx = camnvas.getContext('2D');
+                ctx.drawImage(img, 0, 0, w, h, 0, 0, Math.ceil(w/10), Math.ceil(h/10));
+                ct.style.width = null;
+                ct.style.height = null;
+                this.getPopup({
+                  component: {
+                    render(createElement) {
+                      return createElement(
+                        'div',
+                        {
+                          class: {
+                            'bbn-block': true
+                          },
+                          style: {
+                            width: Math.ceil(w/10) + 'px',
+                            height: Math.ceil(h/10) + 'px'
+                          }
+                        },
+                        [
+                          createElement(
+                            'img',
+                            {
+                              style: {
+                                maxWidth: '100%',
+                                maxHeight: '100%',
+                                width: 'auto',
+                                height: 'auto'
+                              },
+                              attrs: {
+                                src: img.src
+                              }
+                            }
+                          )
+                        ]
+                      )
+                    }
+                  },
+                  title: false
+                })
+              });
+            },2000)
+            */
           }
         });
       },
@@ -694,8 +1012,8 @@ document.head.insertAdjacentElement('beforeend', css);
         })
       },
       dirty(v){
-        //bbn.fn.log("DIRTY WATCHER", this.currentIndex, this.router.views);
-        this.router.views[this.currentIndex].dirty = v;
+        //bbn.fn.log("DIRTY WATCHER", this.idx, this.router.views);
+        this.router.views[this.idx].dirty = v;
         this.router.retrieveDirtyContainers();
       }
     },

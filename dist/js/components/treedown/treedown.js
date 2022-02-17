@@ -16,9 +16,9 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', '
               ref="input"
               :required="required"
               readonly="readonly"
-              :placeholder="placeholder"
+              :placeholder="filterString ? '' : placeholder"
               :tabindex="autocomplete || disabled || readonly ? -1 : 0"
-              :value="filterString ? '' : currentText">
+              :value="filterString">
       <input v-if="autocomplete && !disabled && !readonly"
               tabindex="0"
               class="bbn-textbox bbn-no-border"
@@ -458,6 +458,13 @@ document.head.insertAdjacentElement('beforeend', css);
           this.emitInput(this.filteredData[0][this.sourceValue]);
         }
       });
+      if (this.filterString && (this.filterString.length >= this.minLength)) {
+        this.currentFilters.conditions.splice(0, this.currentFilters.conditions.length ? 1 : 0, {
+          field: this.sourceText,
+          operator: 'startswith',
+          value: this.filterString
+        });
+      }
     },
     watch: {
       /**
@@ -484,38 +491,38 @@ document.head.insertAdjacentElement('beforeend', css);
           this.emitInput(v);
         }
         clearTimeout(this.filterTimeout);
-        if (v !== this.currentText) {
-          this.isOpened = false;
-          this.filterTimeout = setTimeout(() => {
-            this.filterTimeout = false;
-            if ( this.isActive ){
-              if (v && (v.length >= this.minLength)) {
-                this.currentFilters.conditions.splice(0, this.currentFilters.conditions.length ? 1 : 0, {
-                  field: this.sourceText,
-                  operator: 'startswith',
-                  value: v
-                });
-                this.$nextTick(() => {
-                  if (!this.isOpened){
-                    this.isOpened = true;
+        // if (v !== this.currentText) {
+        this.isOpened = false;
+        this.filterTimeout = setTimeout(() => {
+          this.filterTimeout = false;
+          if ( this.isActive ){
+            if (v && (v.length >= this.minLength)) {
+              this.currentFilters.conditions.splice(0, this.currentFilters.conditions.length ? 1 : 0, {
+                field: this.sourceText,
+                operator: 'startswith',
+                value: v
+              });
+              this.$nextTick(() => {
+                if (!this.isOpened){
+                  this.isOpened = true;
+                }
+                else{
+                  let list = this.find('bbn-scroll');
+                  if ( list ){
+                    list.onResize();
                   }
-                  else{
-                    let list = this.find('bbn-scroll');
-                    if ( list ){
-                      list.onResize();
-                    }
-                  }
-                });
-              }
-              else {
-                this.unfilter();
-              }
+                }
+              });
             }
-          }, this.delay);
-        }
-        else if ( !v ){
-          this.unfilter();
-        }
+            else {
+              this.unfilter();
+            }
+          }
+        }, this.delay);
+        // }
+        // else if ( !v ){
+        //   this.unfilter();
+        // }
       },
       source(){
         this.$once('dataloaded', () => {

@@ -103,14 +103,14 @@
     },
     methods: {
       _enterLi(idx) {
-        bbn.fn.log("ENTER LI");
+        //bbn.fn.log("ENTER LI");
         if ((this.overIdx > -1) && (this.overIdx !== idx)) {
           this.overIdx = idx;
           this.getRef('li' + idx).focus();
         }
       },
       clickLi(idx, ev) {
-        bbn.fn.log("clickLi", idx, this.overIdx);
+        //bbn.fn.log("clickLi", idx, this.overIdx);
         if (this.filteredData[idx]) {
           if (this.filteredData[idx].data[this.children] && this.filteredData[idx].data[this.children].length) {
             this.overIdx = this.overIdx === idx ? -1 : idx;
@@ -123,7 +123,7 @@
         }
       },
       onKeyDown(idx, ev) {
-        bbn.fn.log(ev);
+        //bbn.fn.log(ev);
         let floater = this.getRef('floater');
         if (floater) {
           let list = floater.getRef('list');
@@ -152,7 +152,7 @@
     },
     watch: {
       overIdx(nv, ov) {
-        bbn.fn.log("changed overIdx from " + ov + " to " + nv);
+        //bbn.fn.log("changed overIdx from " + ov + " to " + nv);
       }
     },
     mounted() {
@@ -188,6 +188,12 @@
 }
 .bbn-menu > ul > li.bbn-menu-item span.bbn-menu-icon {
   margin-right: 0.5em;
+}
+.bbn-menu > ul > li.bbn-reactive-block:focus:not(.bbn-disabled) {
+  border-color: var(--default-border);
+}
+.bbn-menu > ul > li.bbn-menu-selected {
+  border-color: var(--selected-border) !important;
 }
 .bbn-menu .bbn-menu-floater .bbn-menulist li {
   line-height: 2.5em !important;

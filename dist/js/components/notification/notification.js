@@ -102,67 +102,63 @@ document.head.insertAdjacentElement('beforeend', css);
         default: 5000
       },
       /**
-       * @prop pinned
-       */
-      pinned: {},
-      /**
        * @prop {String}, ['bottom-left'] position
        */
       position: {
         type: String,
-        default: 'bottom-left'
+        default: 'bottom-right'
       },
       /**
-       * @prop {(String|Function)}, ['Success'] successMessage
+       * @prop {String|Function}, ['Success'] successMessage
        */
       successMessage: {
         type: [String, Function],
         default: bbn._('Success')
       },
       /**
-       * @prop {(String|Function)}, ['Warning'] warningMessage
+       * @prop {String|Function}, ['Warning'] warningMessage
        */
       warningMessage: {
         type: [String, Function],
         default: bbn._('Warning')
       },
       /**
-       * @prop {(String|Function)}, ['Error'] errorMessage
+       * @prop {String|Function}, ['Error'] errorMessage
        */
       errorMessage: {
         type: [String, Function],
         default: bbn._('Error')
       },
       /**
-       * @prop {(String|Function)}, ['Info'] infoMessage
+       * @prop {String|Function}, ['Info'] infoMessage
        */
       infoMessage: {
         type: [String, Function],
         default: bbn._('Info')
       },
       /**
-       * @prop {(String|Function)}, ['Success'] successMessage
+       * @prop {String|Boolean}, ['nf nf-fa-check_square'] successIcon
        */
       successIcon: {
         type: [String, Boolean],
         default: 'nf nf-fa-check_square'
       },
       /**
-       * @prop {(String|Function)}, ['Warning'] warningMessage
+       * @prop {String|Boolean}, ['nf nf-fa-warning'] warningIcon
        */
       warningIcon: {
         type: [String, Boolean],
         default: 'nf nf-fa-warning'
       },
       /**
-       * @prop {(String|Function)}, ['Error'] errorMessage
+       * @prop {String|Boolean}, ['nf nf-fa-exclamation_circle'] errorIcon
        */
       errorIcon: {
         type: [String, Boolean],
         default: 'nf nf-fa-exclamation_circle'
       },
       /**
-       * @prop {(String|Function)}, ['Info'] infoMessage
+       * @prop {String|Boolean}, ['nf nf-mdi-information'] infoIcon
        */
       infoIcon: {
         type: [String, Boolean],
@@ -170,7 +166,7 @@ document.head.insertAdjacentElement('beforeend', css);
       },
       /**
        * The source of the component.
-       * @prop {Array} [[{id:'id1', type:'info', content: 'info content', num: 2},{id:'id2', type:'error', content: 'error content'}]] source
+       * @prop {Array} [[]] source
        */
       source: {
         type: Array,
@@ -179,7 +175,7 @@ document.head.insertAdjacentElement('beforeend', css);
         }
       },
     },
-    data: function(){
+    data(){
       let bits = this.position.split('-');
       let pos = {
         v: {
@@ -193,7 +189,7 @@ document.head.insertAdjacentElement('beforeend', css);
       };
       bbn.fn.each(bits, bit => {
         bbn.fn.iterate(pos, (o, dir) => {
-          if ( o[bit.toLowerCase()] ){
+          if ( o[bit.toLowerCase()] !== undefined){
             bbn.fn.iterate(o, (b, k) => {
               if ( bit === k ){
                 pos[dir][k] = true;

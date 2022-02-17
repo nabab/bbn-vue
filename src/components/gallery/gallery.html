@@ -1,10 +1,8 @@
 <div :class="[componentClass, {'bbn-flex-height': scrollable}]">
-  <div v-if="!!toolbar"
-       class="bbn-l bbn-widget bbn-gallery-toolbar bbn-spadded"
-  >
-    <component v-if="toolbar && (isObject(toolbar) || isVue(toolbar))"
-               :is="toolbar"
-    ></component>
+  <div v-if="toolbar"
+       class="bbn-l bbn-widget bbn-gallery-toolbar bbn-spadded">
+    <component v-if="isObject(toolbar) || isVue(toolbar)"
+               :is="toolbar"/>
     <template v-else>
       <div class="bbn-flex-width">
         <div class="bbn-flex-fill">
@@ -107,16 +105,14 @@
                 v-text="_('Loading') + '...'"/>
         </div>
         <component :is="scrollable ? 'bbn-scroll' : 'div'"
-                  v-else-if="total"
-        >
+                  v-else-if="total">
           <div :style="{margin: '0 auto', textAlign: align}">
             <gallery-col v-for="(col, index) in cols"
                         :key="'gallery-col-'+index"
                         :index="index"
                         :source="currentView.filter((it, i) => {
                             return i % cols === index;
-                          })"
-            ></gallery-col>
+                          })"/>
           </div>
         </component>
       </div>
@@ -125,6 +121,5 @@
   <bbn-pager class="bbn-gallery-pager"
               :element="_self"
               ref="pager"
-              v-if="(pageable || isAjax) && !!pager"
-  ></bbn-pager>
+              v-if="(pageable || isAjax) && !!pager"/>
 </div>

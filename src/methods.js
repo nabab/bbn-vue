@@ -54,7 +54,7 @@
     setComponentRule(url, prefix){
       if ( url ){
         bbn.vue.localURL = url;
-        if ( bbn.vue.localURL.substr(-1) !== '/' ){
+        if ( bbn.fn.substr(bbn.vue.localURL, -1) !== '/' ){
           bbn.vue.localURL += '/';
         }
         bbn.vue.localPrefix = prefix || '';
@@ -634,7 +634,7 @@
         throw new Error("Handler must be a function!");
         return;
       }
-      if ( prefix.substr(-1) !== '-' ){
+      if ( bbn.fn.substr(prefix, -1) !== '-' ){
         prefix += '-';
       }
       bbn.vue.knownPrefixes.push({

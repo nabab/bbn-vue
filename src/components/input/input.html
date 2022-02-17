@@ -22,7 +22,10 @@
             'bbn-m',
             {'bbn-invisible' : autoHideLeft}
           ]"/>
-    <input :value="value"
+    <div v-if="prefix"
+         class="bbn-block bbn-h-100 bbn-vmiddle bbn-nowrap"
+         v-text="prefix"/>
+    <input :value="currentValue"
           :type="currentType"
           v-focused.selected="focused"
           :name="name"
@@ -33,7 +36,7 @@
           :maxlength="maxlength"
           :autocomplete="currentAutocomplete"
           :pattern="currentPattern"
-          @input="emitInput($refs.element.value)"
+          @input="emitValue($refs.element.value)"
           @click="click"
           @paste="$emit('paste', $event)"
           @focus="focus"
@@ -48,7 +51,10 @@
           :size="currentInputSize"
           :inputmode="inputmode"
           :min="min"
-          :max="max">
+          :max="max"
+          :style="{
+            paddingLeft: prefix ? 0 : null
+          }">
     <bbn-loadicon v-if="loading"/>
     <div v-else-if="isNullable && hasValue && !readonly && !disabled"
          class="bbn-block bbn-h-100 bbn-input-nullable-container">

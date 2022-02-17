@@ -831,12 +831,12 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
             return {
               name: f.data.name,
               size: f.data.size,
-              extension: f.data.name.substr(f.data.name.lastIndexOf('.'))
+              extension: bbn.fn.substr(f.data.name, f.data.name.lastIndexOf('.'))
             }
           }
           return bbn.fn.extend(true, {}, f.data, {
             size: f. data.size,
-            extension: f.data.name.substr(f.data.name.lastIndexOf('.'))
+            extension: bbn.fn.substr(f.data.name, f.data.name.lastIndexOf('.'))
           });
         })
         this.emitInput(this.json ? JSON.stringify(value) : value)
@@ -862,7 +862,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @param {Object} file
        */
       edit(file){
-        file.edit = file.data.name.substr(0, file.data.name.lastIndexOf('.'))
+        file.edit = bbn.fn.substr(file.data.name, 0, file.data.name.lastIndexOf('.'))
       },
       /**
        * Saves the change did to the filename.
@@ -1061,7 +1061,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @return String
        */
       getFileExt(file){
-        return file.fromUser ? file.data.name.substring(file.data.name.lastIndexOf('.')+1) : file.data.extension.substr(1)
+        return file.fromUser ? file.data.name.substring(file.data.name.lastIndexOf('.')+1) : bbn.fn.substr(file.data.extension, 1)
       }
     },
     /**

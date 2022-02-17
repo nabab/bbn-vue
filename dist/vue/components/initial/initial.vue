@@ -231,11 +231,11 @@
           }
           for ( let i = 0; i < tmp.length; i++ ){
             if ( !this.charCount || (currentLetters.length <= this.charCount) ){
-              currentLetters += tmp[i].substr(0, 1);
+              currentLetters += bbn.fn.substr(tmp[i], 0, 1);
             }
           }
         }
-        return this.charCount && !this.letters ? currentLetters.substr(0, this.charCount) : currentLetters;
+        return this.charCount && !this.letters ? bbn.fn.substr(currentLetters, 0, this.charCount) : currentLetters;
       },
       /**
        * The color of the text.
@@ -251,8 +251,8 @@
             sum += a.charCodeAt();
           });
           sum += name ?
-            this.userName.substr(-1).charCodeAt() :
-            this.currentLetters.substr(0, 1).charCodeAt();
+            bbn.fn.substr(this.userName, -1).charCodeAt() :
+            bbn.fn.substr(this.currentLetters, 0, 1).charCodeAt();
           let colorIndex = Math.floor(sum % colors.length);
           col = colors[colorIndex]
         }
