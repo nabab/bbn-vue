@@ -1751,7 +1751,9 @@
             }, idx);
           }
 
-          this.selected = idx;
+          if (!this.single) {
+            this.selected = idx;
+          }
           this.$emit('update', this.views);
           let dataObj = this.postBaseUrl ? {_bbn_baseURL: this.fullBaseURL} : {};
           return this.post(
@@ -1870,7 +1872,9 @@
             setTimeout(() => {
               this.load(url, true, idx);
               this.$nextTick(() => {
-                this.selected = idx;
+                if (!this.single) {
+                  this.selected = idx;
+                }
                 this.views[idx].selected = true;
               })
             }, 100);
@@ -3001,10 +3005,11 @@
               this.changeURL(newVal, bbn._("Loading"));
             }
             let idx = this.search(newVal);
-            if (idx !== false) {
+            if (!this.single && (idx !== false)) {
               this.selected = idx;
               this.views[this.selected].last = bbn.fn.timestamp();
             }
+
             this.$emit('change', newVal);
           });
           this.$emit('route', newVal);
