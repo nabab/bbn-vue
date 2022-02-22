@@ -1218,6 +1218,7 @@
        * @fires afterClose
        */
       close(force, confirm = false) {
+        bbn.fn.log("------------close---------------", force, confirm)
         if (force !== true) {
           if (!this.closable && !this.autoHide && !force) {
             return;
@@ -1514,6 +1515,7 @@
        * @watch isOver
        */
       isOver(v, oldV){
+        bbn.fn.log("-------------isOver------------", v, oldV)
         if (this.autoHide && this.isResized && this.ready && !this.isResizing) {
           if (v && this.mouseLeaveTimeout) {
             clearTimeout(this.mouseLeaveTimeout);
