@@ -389,8 +389,8 @@
          * A list of form components contained in this container
          * @data {Array} [[]] forms
          */
-          forms: []
-        };
+        forms: [],
+      };
     },
     computed: {
       /**
@@ -462,7 +462,7 @@
             bbn.fn.extend(s, {
               maxWidth: this.formatSize(this.currentMaxWidth),
               minWidth: this.formatSize(this.currentMinWidth),
-              maxHeight: this.formatSize(this.currentMaxHeight),
+              maxHeight: this.formatSize(Math.min(this.currentMaxHeight, this.scrollMaxHeight - this.currentTop)),
               minHeight: this.formatSize(this.currentMinHeight)
             });
           }
@@ -475,6 +475,15 @@
           width: '100%',
           height: '100%'
         }
+      },
+      HTMLStyle() {
+        this.scrollWidth = Math.min(this.scrollWidth, this.currentMaxWidth);
+        this.scrollHeight = Math.min(this.scrollHeight, this.scrollMaxHeight - this.currentTop);
+        let s = {
+          maxWidth: this.isMaximized ? '100%' : (this.currentMaxWidth + 'px') || null,
+          maxHeight: this.isMaximized ? '100%' : ((this.scrollMaxHeight - this.currentTop) + 'px') || null
+        };
+        return s;  
       },
       /**
        * True if there is some content in the component.
@@ -516,7 +525,7 @@
       },
       anonymousComponent(){
         return this.$refs.component;
-      }
+      },
     },
     methods: {
       /**
