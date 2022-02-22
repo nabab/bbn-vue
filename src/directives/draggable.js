@@ -1,229 +1,138 @@
 (() => {
-  let timeout;
-  /**
-   * Handles the start of dragging of the tree
-   * @method startDrag  
-   * @param {Event} e The event
-   * @memberof bbn-tree-node
-   */
-  const startDrag = (e, ele, obj) => {
-    if (timeout) {
-      clearTimeout(timeout);
+  const startDrag = (e, ele, options) => {
+    let ev = new CustomEvent("dragStart", {
+      cancelable: true,
+      bubbles: true,
+      detail: options
+    });
+    ele.dispatchEvent(ev);
+    if (!e.defaultPrevented) {
+      e.stopImmediatePropagation();
+      options.helper.style.left = e.pageX + 'px';
+      options.helper.style.top = e.pageY + 'px';
+      options.helper.style.position = 'fixed';
+      options.helper.style.zIndex = '1000';
+      options.helper.style.opacity = 0.7;
+      options.helper.style.pointerEvents = 'none';
+      ele.parentElement.append(options.helper);
+      let v = new Vue({
+        el: '#bbn-draggable-current > *'
+      });
+      let fnDrag = e => {
+        drag(e, ele, options);
+      };
+      let fnEnd = e => {
+        endDrag(e, ele, options);
+        document.removeEventListener('mousemove', fnDrag);
+      };
+      bbn.fn.log('startDrag', e, ele, options)
+      document.addEventListener('mouseup', fnEnd, {once: true});
+      document.addEventListener('mousemove', fnDrag);
     }
-
-    timeout = setTimeout(() => {
-
-      if (!this.doubleClk && (this.tree.draggable || this.sortable)  ){
-        let ev = new CustomEvent("dragStart", {
-          cancelable: true,
-          bubbles: true,
-          details: obj
-        });
-        ele.dispatchEvent(ev);
-        if (!e.defaultPrevented) {
-          e.stopImmediatePropagation();
-        }
-
-        let fnDrag = e => {
-          drag(e, ele, obj);
-        };
-
-        let fnEnd = e => {
-          endDrag(e, ele, obj);
-          document.removeEventListener('mouseup', fnEnd);
-          document.removeEventListener('mousemove', fnDrag);
-        };
-        document.addEventListener('mouseup', fnEnd);
-        document.addEventListener('mousemove', fnDrag);
-      }
-    }, 100)
   };
-  /**
-   * Handles the dragging of the node
-   * @method drag
-   * @param {Event} e The event
-   * @emits tree.dragStart
-   * @emits  dragOver
-   * @memberof bbn-tree-node
-   */
-  const drag = (e, ele, obj) => {
+
+  const drag = (e, ele, options) => {
     // we prevent default from the event
     e.stopImmediatePropagation();
     e.preventDefault();
-    // create helper
-    let helper = document.createElement('div');
-    helper.innerHTML = 
-    helper.style.left = (e.pageX + 2) + 'px';
-    helper.style.top = (e.pageY + 2) + 'px';
-    if ( this.sortable ){
-      if ( e.target.classList.contains('bbn-tree-order') ){
-        if ( this.tree.overOrder !== e.target ){
-          this.tree.overOrder = e.target;
-        }
-      }
-      else {
-        this.tree.overOrder = false;
-      }
+    options.helper.style.left = e.pageX + 'px';
+    options.helper.style.top = e.pageY + 'px';
+    if (e.target
+      && e.target.classList.contains('bbn-droppable')
+    ) {
+      let ev = new CustomEvent("dragOverDroppable", {
+        cancelable: true,
+        bubbles: true,
+        detail: options
+      });
+      e.target.dispatchEvent(ev)
     }
-    if ( !this.tree.realDragging ){
-      if ( this.tree.selectedNode ){
-        //this.tree.selectedNode.isSelected = false;
-      }
-      let ev = new Event("dragStart");
-      this.tree.$emit("dragStart", this, ev);
-      if (!ev.defaultPrevented) {
-        this.tree.realDragging = true;
-        let helper = this.tree.getRef('helper');
-        if ( helper ) {
-          helper.innerHTML = this.$el.outerHTML;
-        }
-      }
-    }
-    else{
-      if ( this.tree.droppableTrees.length ){
-        bbn.fn.each(this.tree.droppableTrees, a => {
-          let v = a && a.$el ? a.$el.querySelector('.dropping') : null;
-          if ( v && v.classList ){
-            v.classList.remove('dropping');
-          }
-        });
-      }
-      let ok = false;
-      for ( let a of this.tree.droppableTrees ){
-        if (
-          a.overNode &&
-          (a.dragging !== a.overNode) &&
-          !a.isNodeOf(a.overNode, this.tree.dragging) &&
-          (!a.overNode.$refs.tree || (a.overNode.$refs.tree[0] !== this.parent))
-        ){
-          let t = e.target,
-              parents = [];
-          while (t) {
-            parents.unshift(t);
-            t = t.parentNode;
-          }
-          if ( parents.length ){
-            bbn.fn.each(parents, (b, i) => {
-              if ( b === a.overNode.$el ){
-                ok = 1;
-                return false;
-              }
-              else if ( b === this.$el ){
-                return false;
-              }
-            })
-          }
-        }
-        if ( ok ){
-          let ev = new Event("dragOver", {cancelable: true});
-          a.$emit("dragOver", this, ev, a.overNode);
-          if (!ev.defaultPrevented) {
-            bbn.fn.each(a.overNode.$el.chilNodes, ele => {
-              if ((ele.tagName === 'SPAN') && (ele.classList.contains('node'))) {
-                ele.classList.add('dropping');
-                return false;
-              }
-            })
-          }
-        }
-        else{
-          a.overNode = false;
-        }
-      }
 
-      let scroll = this.tree.getRef('scroll');
-      if (scroll.hasScrollY && !scroll.isScrolling) {
-        let coord = this.tree.$el.getBoundingClientRect();
-        let step = Math.ceil(coord.height / 20);
-        let margin = step * 4;
-        let diff = 0;
-        if (e.clientY < (coord.y + margin)) {
-          diff = e.clientY - coord.y - margin;
-        }
-        else if (e.clientY > (coord.y + coord.height - margin)) {
-          diff = e.clientY - (coord.y + coord.height - margin);
-        }
-        if (diff) {
-          let approachLevel = Math.round(diff/step);
-          scroll.addVertical(Math.round(scroll.$el.offsetHeight / 5) * approachLevel + 1);
-          //bbn.fn.log(approachLevel);
-        }
-      }
-    }
   };
-  /**
-   * Handles the end of dragging
-   * @method endDrag
-   * @param {Event} e The event
-   * @emits tree.dragEnd
-   * @memberof bbn-tree-node
-   */
-  const endDrag = e => {
+
+  const endDrag = (e, ele, options) => {
     e.preventDefault();
     e.stopImmediatePropagation();
-    let removed = false;
-    if ( this.tree.realDragging ){
-      this.tree.getRef('helper').innerHTML = '';
-      this.tree.realDragging = false;
-      if ( this.tree.droppableTrees.length ){
-        for ( let a of this.tree.droppableTrees ){
-          if (
-            a.overNode &&
-            (this.tree.dragging !== a.overNode) &&
-            !a.isNodeOf(a.overNode, this.tree.dragging)
-          ){
-            if ( a.overOrder ){
-              let numBefore = this.tree.dragging.source.num,
-                  numAfter = a.overOrder.classList.contains('bbn-tree-order-top') ? 1 : a.overNode.source.num + 1;
-                  if ( numBefore !== numAfter ){
-                    this.reorder(this.tree.dragging.source.num, numAfter);
-                  }
-            }
-            else if ( this.tree.draggable ){
-              if( a.overNode.$el.querySelector('span.node') && a.overNode.$el.querySelector('span.node').classList ){
-                if ( a.overNode.$el.querySelector('span.node').classList.contains('dropping') ){
-                  a.overNode.$el.querySelector('span.node').classList.remove('dropping')
-                }
-              }
-              this.removeDragging();
-              removed = true;
-              let ev = new Event("dragEnd", {cancelable: true});
-              a.tree.$emit("dragEnd", ev, this, a.overNode);
-              if ( !ev.defaultPrevented ){
-                if ( a === this.tree ){
-                  this.tree.move(this, a.overNode);
-                }
-              }
-            }
-          }
-        }
-      }
-      else{
-        let ev = new Event("dragEnd");
-        this.removeDragging();
-        removed = true;
-        this.tree.$emit("dragEnd", this, ev);
-      }
+    if (e.target.classList.contains('bbn-droppable-over')) {
+      let ev = new CustomEvent("dragEnd", {
+        cancelable: true,
+        bubbles: true,
+        detail: options
+      });
+      e.target.dispatchEvent(ev);
     }
-    if ( !removed ){
-      this.removeDragging();
-    }
+    options.helper.remove();
   };
 
-  Vue.directive('draggable', {
-    bind: function (el, binding, vnode) {
-
-
-    },
-    inserted(el, binding) {
-      if (binding.value !== false) {
-        let fn = ev => {
-          startDrag(ev, el, binding);
-        };
-
-        el.addEventListener('mousedown', fn);
+  Vue.directive('draggable', (el, binding) => {
+    bbn.fn.log('Draggable directive', el, binding)
+    if (binding.value !== false) {
+      if (!el.classList.contains('bbn-draggable')) {
+        el.classList.add('bbn-draggable');
       }
+      let options = {},
+          isComponent = !!binding.modifiers && !!binding.modifiers.component,
+          component = false,
+          helper = false;
+      if (bbn.fn.isObject(binding.value)) {
+        options = binding.value;
+        if (!!options.helper) {
+          helper = options.helper;
+        }
+        if (isComponent) {
+          if ((options.component === undefined)
+            || (bbn.fn.isObject(options.component) && !bbn.fn.numProperties(options.component))
+            || (bbn.fn.isString(options.component) && !options.component.length)
+          ) {
+            throw bbn._('No "component" property found');
+          }
+          component = options.component;
+        }
+      }
+      else if (bbn.fn.isString(binding.value)) {
+        switch (binding.value) {
+          case 'clone':
+            helper = el.cloneNode(true);
+            break;
+          default:
+            // The helper is a component name
+            component = binding.value;
+            break;
+        }
+      }
+      if (isComponent && component) {
+        helper = document.createElement('component');
+        helper.setAttribute(bbn.fn.isString(component) ? 'is' : ':is', component);
+        if (bbn.fn.isObject(options)
+          && bbn.fn.isObject(options.componentOptions)
+        ) {
+          helper.setAttribute('v-bind', JSON.stringify(options.componentOptions));
+        }
+      }
+      // If the helper is not defined we crate a clone of the dragged node
+      if (!helper) {
+        helper = el.cloneNode(true);
+      }
+      options.helper = document.createElement('div');
+      options.helper.setAttribute('id', 'bbn-draggable-current');
+      options.helper.append(helper);
+      // Add the events listener to capture the long press click and start the drag
+      let clickTimeout = 0,
+          holdClick = false;
+      el.addEventListener('mousedown', ev => {
+        if (clickTimeout) {
+          clearTimeout(clickTimeout);
+        }
+        holdClick = true;
+        clickTimeout = setTimeout(() => {
+          if (holdClick) {
+            startDrag(ev, el, options);
+          }
+        }, 150);
+      });
+      el.addEventListener('mouseup', ev => {
+        holdClick = false;
+      });
     }
   });
-})()
-
+})();
