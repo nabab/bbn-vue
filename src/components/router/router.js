@@ -283,6 +283,22 @@
         validator(v) {
           return !!bbn.fn.getRow(possibleOrientations, {name: v})
         }
+      },
+      /**
+       * The default background color for the title bar
+       * @prop {String} [#666] bcolor
+       */
+       bcolor: {
+        type: String,
+        default: '#666'
+      },
+      /**
+       * The default text color for the title bar
+       * @prop {String} [#EEE] fcolor
+       */
+       fcolor: {
+        type: String,
+        default: '#EEE'
       }
     },
     data(){
@@ -668,7 +684,6 @@
               this.views[idx].dirty &&
               !force
             ) {
-              ev.preventDefault();
               this.confirm(this.confirmLeave, () => {
                 // Looking for dirty ones in registered forms of each container
                 let forms = this.urls[this.views[idx].url].forms;
@@ -1736,7 +1751,7 @@
             }, idx);
           }
 
-          if ( this.isBreadcrumb ){
+          if (!this.single) {
             this.selected = idx;
           }
           this.$emit('update', this.views);
@@ -1855,10 +1870,12 @@
             let url = this.views[idx].current;
             this.remove(idx);
             setTimeout(() => {
-              bbn.fn.log("INSIDE")
               this.load(url, true, idx);
               this.$nextTick(() => {
-                this.selected = idx;
+                if (!this.single) {
+                  this.selected = idx;
+                }
+                this.views[idx].selected = true;
               })
             }, 100);
           }
@@ -2950,6 +2967,22 @@
       }
     },
     watch: {
+      selected(idx) {
+        if (this.views[idx]) {
+          bbn.fn.log("In selected watcher ", bbn.fn.filter(this.views, {selected: true}));
+          bbn.fn.map(bbn.fn.filter(this.views, {selected: true}), a => {
+            if (a.idx !== idx) {
+              a.selected = false;
+            }
+          });
+          if (!this.views[idx].selected) {
+            this.views[idx].selected = true;
+          }
+        }
+        else {
+          throw new Error("The view with index " + idx + " doesn't not exist");
+        }
+      },
       currentTitle(v){
         if (!this.parent) {
           document.title = v + ' - ' + bbn.env.siteTitle;
@@ -2972,10 +3005,11 @@
               this.changeURL(newVal, bbn._("Loading"));
             }
             let idx = this.search(newVal);
-            if ((idx !== false) && (this.selected !== idx)){
+            if (!this.single && (idx !== false)) {
               this.selected = idx;
               this.views[this.selected].last = bbn.fn.timestamp();
             }
+
             this.$emit('change', newVal);
           });
           this.$emit('route', newVal);

@@ -559,20 +559,21 @@
             }
             catch (e) {
               bbn.fn.log("Error");
+              ct.style.width = null;
+              ct.style.height = null;
               return;
             }
 
             prom.then(
               canvas => {
-                bbn.fn.log(canvas);
-                bbn.fn.log(canvas.height);
+                ct.style.width = null;
+                ct.style.height = null;
+
                 let img = bbn.fn.canvasToImage(canvas);
                 if (!img) {
                   bbn.fn.log("Error for screenshot image");
                   return;
                 }
-                ct.style.width = null;
-                ct.style.height = null;
 
                 let ctx   = canvas.getContext('2d');
                 let size  = Math.min(w, h);
