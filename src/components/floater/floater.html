@@ -92,7 +92,9 @@
           <slot v-else-if="$slots.default"/>
           <div v-else-if="!!content" 
               v-html="content"
-              :class="scrollable ? 'bbn-block' : 'bbn-100'"/>
+              :class="scrollable ? 'bbn-block' : 'bbn-100'"
+              :style="HTMLStyle"
+          />
           <bbn-list v-else-if="filteredData.length"
                     :mode="mode"
                     ref="list"

@@ -212,6 +212,7 @@
        */
       theme: {
         type: String,
+        default: 'pastel-on-dark'
       },
       /**
        * Takes the full height of the container if set to true.
@@ -241,6 +242,10 @@
       themeButton: {
         type: Boolean,
         default: false
+      },
+      definitionUrl: {
+        type: String,
+        default: ''
       }
     },
 
@@ -569,14 +574,11 @@
           }
         }
 
+        this.widget.replaceRange(toAdd, cursor);
         cursor.ch += toAdd.length;
         if (row.type === 'fn') {
           cursor.ch--;
         }
-
-        bbn.fn.log("EPLACING WITH", toAdd, this.currentToken);
-
-        this.widget.replaceSelection(toAdd);
         this.widget.setCursor(cursor);
         this.showHint();
       },
@@ -734,6 +736,31 @@
         }
         //bbn.fn.log("----END OF PHP HINT-----");
       },
+      addDefinition(className, varName) {
+        if (!bbn.fn.getRow(bbn.vue.phpLang, {"name": className})) {
+          if (this.definitionUrl) {
+            // ... for now we add a static method with a static url in the props
+            bbn.fn.post(this.definitionUrl, {"className": className}, d => {
+              if (d.success && d.res) {
+                bbn.vue.phpLang.push(bbn.fn.extend(d.res, {"ref": varName}));
+                if (!bbn.fn.getRow(bbn.vue.phpLang, {"name": varName})) {
+                  let ref = {
+                    "name": varName,
+                    "type": "class",
+                    "items": [],
+                  }
+                  bbn.vue.phpLang.push(ref);
+                }
+              }
+            })
+          }
+        } else {
+          let obj = JSON.parse(JSON.stringify(bbn.fn.getRow(bbn.vue.phpLang, {"name": className})));
+          let newObj = bbn.fn.extend(obj, {"name": varName});
+          bbn.vue.phpLang.push(newObj);
+        }
+      },
+
       /*
       jsHint(str){
         if (bbn.fn.substr(str, -1) === '(') {
