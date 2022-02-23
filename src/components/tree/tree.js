@@ -1796,7 +1796,6 @@ Vue.component('bbn-tree', {
         endDrag(e){
           e.preventDefault();
           e.stopImmediatePropagation();
-          return
           bbn.fn.log('endDrag')
           let removed = false;
           if ( this.tree.realDragging ){

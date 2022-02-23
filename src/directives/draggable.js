@@ -57,16 +57,17 @@
     e.preventDefault();
     options.helper.style.left = e.pageX + 'px';
     options.helper.style.top = e.pageY + 'px';
-    if (e.target
-      && e.target.classList.contains('bbn-droppable')
-      && (e.target !== ele)
-    ) {
+    let target = e.target;
+    if (!target.classList.contains('bbn-droppable')) {
+      target = target.closest('.bbn-droppable');
+    }
+    if (target && (target !== ele)) {
       let ev = new CustomEvent('dragOverDroppable', {
         cancelable: true,
         bubbles: true,
         detail: options
       });
-      e.target.dispatchEvent(ev)
+      target.dispatchEvent(ev)
     }
 
   };

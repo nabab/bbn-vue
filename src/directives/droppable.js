@@ -29,7 +29,7 @@
           }
         }
         options.data = data;
-        el.addEventListener('mouseover', e => {
+        el.addEventListener('mouseenter', e => {
           mouseOver = true;
         });
         el.addEventListener('mouseleave', e => {
