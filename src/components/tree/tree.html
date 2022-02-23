@@ -11,6 +11,14 @@
              :is="isRoot && !!scrollable ? 'bbn-scroll' : 'div'"
              ref="scroll"
   >
+    <div class="bbn-tree-helper-container"
+         v-if="(draggable || sortable) && isRoot"
+         ref="helperContainer">
+      <ul class="bbn-tree-helper"
+          ref="helper"
+          v-show="!!tree.realDragging"
+      ></ul>
+    </div>
     <!-- Is this transition working? -->
     <transition name="bbn-tree-toggle"
                 @after-enter="onOpen"
@@ -55,8 +63,8 @@
                   }]"
                   style="height: 2px; line-height: 2px;"
                   ref="orderTop"
-                  @mouseover.stop="mouseOver"/>
-            
+                  @mouseover.stop="mouseOver"
+                  v-draggable:data="{node: _self}"/>
             <!-- The node starts here -->
             <span :class="['bbn-tree-node-block', getCls(source, tree) || '', {'bbn-tree-node-block-no-component': !!component}]"
                   @mouseover.stop="mouseOver">
@@ -100,7 +108,9 @@
                 <span :class="['bbn-tree-node-block-selectable', {'bbn-p': !!selectable}]"
                       @dblclick="dblClickOnNode"
                       @click="clickOnNode"
-                      @mousedown.left="startDrag"
+                      @dragStart="startDrag"
+                      @dragOver="drag"
+                      @dragDrop="endDrag"
                       @mouseup.left="
                       if ( !doubleClk ){
                         if ( !tree.realDragging && selectable ){
@@ -109,6 +119,8 @@
                         doubleClk = true;
                       }"
                       tabindex="0"
+                      v-draggable.container.data="{container: tree.getRef('helperContainer'), data: {node: _self}}"
+                      v-droppable:data="{node: _self}"
                 >
                   <!-- The item component if given -->
                   <component v-if="tree.itemComponent"
@@ -176,19 +188,12 @@
                   style="height: 2px; line-height: 2px;"
                   ref="orderBottom"
                   @mouseover.stop="mouseOver"
+                  v-draggable:data="{node: _self}"
             ></span>
           </li>
         </bbn-tree-node>
       </ul>
     </transition>
-    <div class="bbn-tree-helper-container"
-         v-if="(draggable || sortable) && isRoot"
-         ref="helperContainer">
-      <ul class="bbn-tree-helper"
-          ref="helper"
-          v-show="!!tree.realDragging"
-      ></ul>
-    </div>
   </component>
   <h2 v-else-if="isRoot"
       v-html="_('No items') + '...'"

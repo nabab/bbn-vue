@@ -1673,23 +1673,25 @@ Vue.component('bbn-tree', {
          */
         startDrag(e){
           setTimeout(() => {
-            if ( !this.doubleClk && (this.tree.draggable || this.sortable)  ){
-              e.preventDefault();
-              e.stopImmediatePropagation();
-              this.tree.dragging = this;
-              if ( this.tree.droppableTrees.length ){
-                bbn.fn.each(this.tree.droppableTrees, (a, i) => {
-                  if ( a !== this.tree ){
-                    a.dragging = this;
+            if ((this.tree.draggable || this.sortable) && !this.tree.realDragging) {
+                if ( this.tree.selectedNode ){
+                  //this.tree.selectedNode.isSelected = false;
+                }
+                this.tree.$emit("dragStart", this, e);
+                if (!e.defaultPrevented) {
+                  this.tree.realDragging = true;
+                  this.tree.dragging = this;
+                  if ( this.tree.droppableTrees.length ){
+                    bbn.fn.each(this.tree.droppableTrees, (a, i) => {
+                      if ( a !== this.tree ){
+                        a.dragging = this;
+                      }
+                    });
                   }
-                });
-              }
-              let fn = e => {
-                this.endDrag(e);
-                document.removeEventListener('mouseup', fn);
-              };
-              document.addEventListener('mouseup', fn);
-              document.addEventListener('mousemove', this.drag);
+                }
+            }
+            else {
+              e.preventDefault();
             }
           }, 100)
         },
@@ -1703,10 +1705,6 @@ Vue.component('bbn-tree', {
          */
         drag(e){
           // we prevent default from the event
-          e.stopImmediatePropagation();
-          e.preventDefault();
-          this.tree.getRef('helper').style.left = (e.pageX + 2) + 'px';
-          this.tree.getRef('helper').style.top = (e.pageY + 2) + 'px';
           if ( this.sortable ){
             if ( e.target.classList.contains('bbn-tree-order') ){
               if ( this.tree.overOrder !== e.target ){
@@ -1717,21 +1715,7 @@ Vue.component('bbn-tree', {
               this.tree.overOrder = false;
             }
           }
-          if ( !this.tree.realDragging ){
-            if ( this.tree.selectedNode ){
-              //this.tree.selectedNode.isSelected = false;
-            }
-            let ev = new Event("dragStart");
-            this.tree.$emit("dragStart", this, ev);
-            if (!ev.defaultPrevented) {
-              this.tree.realDragging = true;
-              let helper = this.tree.getRef('helper');
-              if ( helper ) {
-                helper.innerHTML = this.$el.outerHTML;
-              }
-            }
-          }
-          else{
+          if (!!this.tree.realDragging) {
             if ( this.tree.droppableTrees.length ){
               bbn.fn.each(this.tree.droppableTrees, a => {
                 let v = a && a.$el ? a.$el.querySelector('.dropping') : null;
@@ -1767,9 +1751,8 @@ Vue.component('bbn-tree', {
                 }
               }
               if ( ok ){
-                let ev = new Event("dragOver", {cancelable: true});
-                a.$emit("dragOver", this, ev, a.overNode);
-                if (!ev.defaultPrevented) {
+                a.$emit("dragOver", this, e, a.overNode);
+                if (!e.defaultPrevented) {
                   bbn.fn.each(a.overNode.$el.chilNodes, ele => {
                     if ((ele.tagName === 'SPAN') && (ele.classList.contains('node'))) {
                       ele.classList.add('dropping');
@@ -1813,9 +1796,10 @@ Vue.component('bbn-tree', {
         endDrag(e){
           e.preventDefault();
           e.stopImmediatePropagation();
+          return
+          bbn.fn.log('endDrag')
           let removed = false;
           if ( this.tree.realDragging ){
-            this.tree.getRef('helper').innerHTML = '';
             this.tree.realDragging = false;
             if ( this.tree.droppableTrees.length ){
               for ( let a of this.tree.droppableTrees ){
@@ -1862,7 +1846,6 @@ Vue.component('bbn-tree', {
           }
         },
         removeDragging(){
-          document.removeEventListener('mousemove', this.drag);
           for ( let a of this.tree.droppableTrees ){
             a.dragging = false;
           }
