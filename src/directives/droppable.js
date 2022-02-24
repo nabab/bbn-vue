@@ -33,14 +33,22 @@
           mouseOver = true;
         });
         el.addEventListener('mouseleave', e => {
-          if (el.classList.contains('bbn-droppable-over')) {
-            el.classList.remove('bbn-droppable-over');
-          }
+          let ev = new CustomEvent('dragLeave', {
+            cancelable: true,
+            bubbles: true,
+            detail: dragOver
+          });
           mouseOver = false;
           dragOver = false;
+          el.dispatchEvent(ev);
+          if (!ev.defaultPrevented) {
+            if (el.classList.contains('bbn-droppable-over')) {
+              el.classList.remove('bbn-droppable-over');
+            }
+          }
         });
         el.addEventListener('dragOverDroppable', e => {
-          if (!dragOver && !!mouseOver) {
+          if (!e.defaultPrevented && !dragOver && !!mouseOver) {
             dragOver = {
               from: e.detail,
               to: options
@@ -59,14 +67,13 @@
             }
           }
         });
-        el.addEventListener('dragDrop', e => {
+        el.addEventListener('beforeDragDrop', e => {
           bbn.fn.log('ciao')
           if (el.classList.contains('bbn-droppable-over')) {
             el.classList.remove('bbn-droppable-over');
           }
-          if (!e.defaultPrevented) {
-            bbn.fn.log('beforeDragEnd')
-            let ev = new CustomEvent('dragEnd', {
+          if (!e.defaultPrevented && !!dragOver) {
+            let ev = new CustomEvent('dragDrop', {
               cancelable: true,
               bubbles: true,
               detail: dragOver
@@ -75,11 +82,28 @@
             if (!ev.defaultPrevented) {
               el.appendChild(e.detail.originalElement);
             }
-            else if (!!e.detail.mode && (e.detail.mode === 'move')) {
-              e.detail.originalParent.insertBefore(e.detail.originalElement, e.datail.nextElement);
+            else {
+              let ev = new CustomEvent('dragEnd', {
+                cancelable: true,
+                bubbles: true,
+                detail: dragOver
+              });
+              e.detail.originalElement.dispatchEvent(ev);
+              if (!ev.defaultPrevented) {
+                if (!!e.detail.mode && (e.detail.mode === 'move')) {
+                  e.detail.originalParent.insertBefore(e.detail.originalElement, e.detail.nextElement);
+                }
+              }
             }
           }
         });
+      }
+    },
+    update: (el, binding) => {
+      if (binding.value !== false) {
+        if (!el.classList.contains('bbn-droppable')) {
+          el.classList.add('bbn-droppable');
+        }
       }
     }
   });

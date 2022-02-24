@@ -19,7 +19,7 @@
           helper.setAttribute('v-bind', JSON.stringify(options.componentOptions));
         }
       }
-      options.originalElement = ele.cloneNode(true);
+      options.originalElement = ele;
       options.originalParent = ele.parentElement;
       options.originalNextElement = ele.nextElementSibling;
       options.helper = document.createElement('div');
@@ -80,15 +80,25 @@
       target = target.closest('.bbn-droppable.bbn-droppable-over');
     }
     if (bbn.fn.isDom(target)) {
-      let ev = new CustomEvent('dragDrop', {
+      let ev = new CustomEvent('beforeDragDrop', {
         cancelable: true,
         bubbles: true,
         detail: options
       });
       target.dispatchEvent(ev);
     }
-    else if (!!options.mode && (options.mode === 'move')) {
-      options.originalParent.insertBefore(options.originalElement, options.originalNextElement);
+    else {
+      let ev = new CustomEvent('dragEnd', {
+        cancelable: true,
+        bubbles: true,
+        detail: options
+      });
+      ele.dispatchEvent(ev);
+      if (!ev.defaultPrevented) {
+        if (!!options.mode && (options.mode === 'move')) {
+          options.originalParent.insertBefore(options.originalElement, options.originalNextElement);
+        }
+      }
     }
     options.helper.remove();
   };
@@ -196,6 +206,13 @@
         el.addEventListener('mouseup', ev => {
           holdClick = false;
         });
+      }
+    },
+    update: (el, binding) => {
+      if (binding.value !== false) {
+        if (!el.classList.contains('bbn-draggable')) {
+          el.classList.add('bbn-draggable');
+        }
       }
     }
   });

@@ -50,7 +50,7 @@
                         :uid="uid"
                         :tree-state="_getTreeState(it.data[uid])">
           <li :class="['bbn-tree-node', 'bbn-vxxspadded', 'bbn-unselectable', {
-                        'bbn-state-active': (isActive && !isSelected) || (tree.dragging && tree.overNode && !tree.overOrder && (tree.overNode === _self) && tree.draggable),
+                        'bbn-state-active': (isActive && !isSelected) || (tree.draggable && tree.dragging && (tree.dragging === _self)),
                         'bbn-state-selected': isSelected
                       }]"
               v-show="isVisible"
@@ -58,16 +58,23 @@
             <!-- Sortable interface is set at the top -->
             <span v-if="sortable && (source.num === 1)"
                   :class="['bbn-w-100', 'bbn-tree-order-top', {
-                    'bbn-tree-order': tree.dragging && (tree.dragging.parent === parent) && !quickFilter,
-                    'bbn-state-active': !!isOverOrderTop
+                    'bbn-tree-order': tree.dragging && (tree.dragging.parent === parent) && !quickFilter
                   }]"
-                  style="height: 2px; line-height: 2px;"
+                  :style="{
+                    visibility: !!tree.dragging
+                      && !!tree.overNode
+                      && (tree.dragging.parent === tree.overNode.parent)
+                      && (tree.overNode.source.num === 1)
+                      && (tree.dragging.source.num > 1) ? 'visible' : 'hidden'
+                  }"
                   ref="orderTop"
-                  @mouseover.stop="mouseOver"
-                  v-draggable:data="{node: _self}"/>
+                  @dragOver="drag"
+                  @dragLeave="leaveDrag"
+                  @dragDrop="drop"
+                  @dragEnd="endDrag"
+                  v-droppable:data="{node: _self}"/>
             <!-- The node starts here -->
-            <span :class="['bbn-tree-node-block', getCls(source, tree) || '', {'bbn-tree-node-block-no-component': !!component}]"
-                  @mouseover.stop="mouseOver">
+            <span :class="['bbn-tree-node-block', getCls(source, tree) || '', {'bbn-tree-node-block-no-component': !!component}]">
               <!-- The expander -->
               <span :class="['bbn-tree-node-block-expander', {'bbn-p': numChildren}]"
                     @click="if ( !flat && numChildren && (level >= tree.minExpandLevel) ){
@@ -110,7 +117,9 @@
                       @click="clickOnNode"
                       @dragStart="startDrag"
                       @dragOver="drag"
-                      @dragDrop="endDrag"
+                      @dragLeave="leaveDrag"
+                      @dragDrop="drop"
+                      @dragEnd="endDrag"
                       @mouseup.left="
                       if ( !doubleClk ){
                         if ( !tree.realDragging && selectable ){
@@ -182,13 +191,20 @@
             <!-- Sortable interface is set at the bottom -->
             <span v-if="sortable"
                   :class="['bbn-w-100', 'bbn-tree-order-bottom', {
-                    'bbn-tree-order': tree.dragging && (tree.dragging.parent === parent) && !quickFilter,
-                    'bbn-state-active': !!isOverOrderBottom
+                    'bbn-tree-order': tree.dragging && (tree.dragging.parent === parent) && !quickFilter
                   }]"
-                  style="height: 2px; line-height: 2px;"
+                  :style="{
+                    visibility: !!tree.dragging
+                      && !!tree.overNode
+                      && (tree.dragging.parent === tree.overNode.parent)
+                      && (tree.overNode !== tree.dragging) ? 'visible' : 'hidden'
+                  }"
                   ref="orderBottom"
-                  @mouseover.stop="mouseOver"
-                  v-draggable:data="{node: _self}"
+                  @dragOver="drag"
+                  @dragLeave="leaveDrag"
+                  @dragDrop="drop"
+                  @dragEnd="endDrag"
+                  v-droppable:data="{node: _self}"
             ></span>
           </li>
         </bbn-tree-node>
