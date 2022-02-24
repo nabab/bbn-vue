@@ -8,14 +8,6 @@
     throw new Error("Impossible to find the library bbn-vue")
   }
   Vue.mixin({
-    data(){
-      return {
-        /**
-         * @data _currentPopup
-         */
-        _currentPopup: null
-      };
-    },
     computed: {
       /**
        * Return the object of the currentPopup.

@@ -172,8 +172,8 @@
          * @memberof viewComponent
          */
         imessages: {
-          type: Array,
-          default(){
+          type: [Array, Function],
+          default() {
             return []
           }
         },

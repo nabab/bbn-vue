@@ -462,7 +462,8 @@
             bbn.fn.extend(s, {
               maxWidth: this.formatSize(this.currentMaxWidth),
               minWidth: this.formatSize(this.currentMinWidth),
-              maxHeight: this.formatSize(Math.min(this.currentMaxHeight, this.scrollMaxHeight - this.currentTop)),
+              //maxHeight: this.formatSize(Math.min(this.currentMaxHeight, this.scrollMaxHeight - this.currentTop)),
+              maxHeight: this.formatSize(this.currentMaxHeight),
               minHeight: this.formatSize(this.currentMinHeight)
             });
           }
