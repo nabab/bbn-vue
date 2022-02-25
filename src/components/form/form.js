@@ -618,13 +618,12 @@
        */
       cancel(){
         let ev = new Event('cancel', {cancelable: true});
-        this.$emit('cancel', ev, this);
+        this.$emit('beforeCancel');
         if ( !ev.defaultPrevented ){
+          this.$emit('cancel', ev, this);
+          this.reset();
           if ( this.window ){
             this.window.close();
-          }
-          else if (!bbn.fn.getRow(this.realButtons, {text: bbn._('Reset')})) {
-            this.reset();
           }
         }
       },

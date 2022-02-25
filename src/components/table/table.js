@@ -159,13 +159,6 @@
         default: false
       },
       /**
-       * @todo not used in the component
-       */
-      search: {
-        type: Boolean,
-        default: false
-      },
-      /**
        * A function to define css class(es) for each row.
        * @prop {Function} trClass
        */
@@ -354,6 +347,14 @@
        */
       maxRowHeight: {
         type: Number
+      },
+      /**
+       * Property sloBefore for the toolbar
+       * @prop {Boolean} toolbarSlotBefore
+       */
+      toolbarSlotBefore: {
+        type: Boolean,
+        default: true
       }
     },
     data() {
@@ -558,7 +559,8 @@
         /**
          * @data {Boolean} [false] isTableDataUpdating Will be set to true during the whole update process
          */
-        isTableDataUpdating: false
+        isTableDataUpdating: false,
+        searchValue: ''
       };
     },
     computed: {
@@ -1888,6 +1890,7 @@
        */
       getConfig() {
         return {
+          searchValue: this.searchValue,
           limit: this.currentLimit,
           order: this.currentOrder,
           filters: this.currentFilters,
@@ -1924,6 +1927,9 @@
           if (this.pageable && (this.currentLimit !== cfg.limit)) {
             this.currentLimit = cfg.limit;
           }
+          if (this.search) {
+            this.searchValue = cfg.searchValue || '';
+          }
           if (this.sortable && (this.currentOrder !== cfg.order)) {
             if (bbn.fn.isObject(cfg.order)) {
               let currentOrder = [];
@@ -1949,6 +1955,7 @@
             });
           }
           this.currentConfig = {
+            searchValue: this.searchValue,
             limit: this.currentLimit,
             order: this.currentOrder,
             filters: this.currentFilters,
@@ -3277,7 +3284,7 @@
             this.resizeWidth();
           })
         }
-      }
+      },
     },
     components: {
       /**

@@ -335,7 +335,20 @@
         flat: {
           type: Boolean,
           default: false
-        }
+        },
+        /**
+         * @todo not used in the component
+         */
+        search: {
+          type: Boolean,
+          default: false
+        },
+        /**
+         * @todo not used in the component
+         */
+        searchFields: {
+          type: Array
+        },
       },
       data(){
         let order = this.order;
@@ -1289,6 +1302,43 @@
               /*
               this.updateData();
               */
+            }
+          }
+        },
+        /**
+         * 
+         */
+        searchValue(v) {
+          bbn.fn.log("WATCHER!!", v);
+          if (this.search) {
+            this.unsetFilter();
+            if (v) {
+              let cond = [];
+              if (this.searchFields) {
+                bbn.fn.each(this.searchFields, a => {
+                  cond.push({
+                    field: a,
+                    operator: 'contains',
+                    value: v
+                  });
+                });
+              }
+              else {
+                bbn.fn.each(this.cols, a => {
+                  if (a.field && !bbn.fn.getRow(cond, {field: a.field})) {
+                    cond.push({
+                      field: a.field,
+                      operator: 'contains',
+                      value: v
+                    });
+                  }
+                });
+              }
+              bbn.fn.log("TABLE FILTER", this.searchFields, cond);
+              this.currentFilters.conditions.push({
+                logic: 'OR',
+                conditions: cond
+              });
             }
           }
         }

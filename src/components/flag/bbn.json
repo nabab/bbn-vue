@@ -1,0 +1,11 @@
+{
+  "name": "bbn-flag",
+  "version": "0.1.1",
+  "authors": [
+    "Thomas Nabet <thomas.nabet@gmail.com>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "flag-icons": ">=4.1.5"
+  }
+}
