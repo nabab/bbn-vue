@@ -1673,6 +1673,7 @@ Vue.component('bbn-tree', {
          * Handles the start of dragging of the tree
          * @method startDrag  
          * @param {Event} e The event
+         * @emits tree.dragstart
          * @memberof bbn-tree-node
          */
         startDrag(e){
@@ -1680,7 +1681,7 @@ Vue.component('bbn-tree', {
               if ( this.tree.selectedNode ){
                 //this.tree.selectedNode.isSelected = false;
               }
-              this.tree.$emit("dragStart", this, e);
+              this.tree.$emit("dragstart", this, e);
               if (!e.defaultPrevented) {
                 this.tree.dragging = this;
                 this.tree.realDragging = true;
@@ -1701,8 +1702,8 @@ Vue.component('bbn-tree', {
          * Handles the dragging of the node
          * @method drag
          * @param {Event} e The event
-         * @emits tree.dragStart
-         * @emits  dragOver
+         * @emits tree.dragstart
+         * @emits  dragover
          * @memberof bbn-tree-node
          */
         drag(e){
@@ -1726,7 +1727,7 @@ Vue.component('bbn-tree', {
               && !this.tree.isNodeOf(this, this.tree.dragging)
               && ((!subTree || (subTree !== this.parent)))
             ) {
-              this.tree.$emit("dragOver", this, this.tree.dragging, e);
+              this.tree.$emit("dragover", this, this.tree.dragging, e);
               if (e.defaultPrevented) {
                 this.tree.overNode = false;
               }
@@ -1768,6 +1769,7 @@ Vue.component('bbn-tree', {
          * Handles the drop of dragging
          * @method drop
          * @param {Event} e The event
+         * @emits dragend
          * @memberof bbn-tree-node
          */
         drop(e){
@@ -1777,13 +1779,13 @@ Vue.component('bbn-tree', {
             && this.tree.overNode
             && (this === this.tree.overNode)
           ) {
-            let ev = new CustomEvent('dragDrop', {
+            let ev = new CustomEvent('drop', {
               cancelable: true,
               bubbles: true,
               detail: e.detail
             });
             let originalTree = this.tree.dragging.tree;
-            this.tree.$emit('dragDrop', this.tree.dragging, this, ev);
+            this.tree.$emit('drop', this.tree.dragging, this, ev);
             if (!ev.defaultPrevented) {
               if (this.tree.overOrder) {
                 let numBefore = this.tree.dragging.source.num,
@@ -1803,17 +1805,17 @@ Vue.component('bbn-tree', {
               }
             }
           }
-          let ev = new CustomEvent('dragEnd', {
+          let ev = new CustomEvent('dragend', {
             cancelable: true,
             bubbles: true
           });
-          this.tree.dragging.$emit('dragEnd', ev);
+          this.tree.dragging.$emit('dragend', ev);
         },
         /**
          * Handles the end of dragging
          * @method endDrag
          * @param {Event} e The event
-         * @emits tree.dragEnd
+         * @emits tree.dragend
          * @memberof bbn-tree-node
          */
         endDrag(e){

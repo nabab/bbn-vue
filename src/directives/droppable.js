@@ -1,8 +1,8 @@
 (() => {
   Vue.directive('droppable', {
     inserted: (el, binding) => {
-      bbn.fn.log('droppable',binding)
       if (binding.value !== false) {
+        el.dataset.droppable = true;
         if (!el.classList.contains('bbn-droppable')) {
           el.classList.add('bbn-droppable');
         }
@@ -31,30 +31,38 @@
         }
         options.data = data;
         el.addEventListener('mouseenter', e => {
-          mouseOver = true;
+          if (el.dataset.droppable === 'true') {
+            mouseOver = true;
+          }
         });
         el.addEventListener('mouseleave', e => {
-          let ev = new CustomEvent('dragLeave', {
-            cancelable: true,
-            bubbles: true,
-            detail: dragOver
-          });
-          mouseOver = false;
-          dragOver = false;
-          el.dispatchEvent(ev);
-          if (!ev.defaultPrevented) {
-            if (el.classList.contains('bbn-droppable-over')) {
-              el.classList.remove('bbn-droppable-over');
+          if (el.dataset.droppable === 'true') {
+            let ev = new CustomEvent('dragLeave', {
+              cancelable: true,
+              bubbles: true,
+              detail: dragOver
+            });
+            mouseOver = false;
+            dragOver = false;
+            el.dispatchEvent(ev);
+            if (!ev.defaultPrevented) {
+              if (el.classList.contains('bbn-droppable-over')) {
+                el.classList.remove('bbn-droppable-over');
+              }
             }
           }
         });
-        el.addEventListener('dragOverDroppable', e => {
-          if (!e.defaultPrevented && !dragOver && !!mouseOver) {
+        el.addEventListener('dragoverdroppable', e => {
+          if ((el.dataset.droppable === 'true')
+            && !e.defaultPrevented
+            && !dragOver
+            && !!mouseOver
+          ) {
             dragOver = {
               from: e.detail,
               to: options
             };
-            let ev = new CustomEvent('dragOver', {
+            let ev = new CustomEvent('dragover', {
               cancelable: true,
               bubbles: true,
               detail: dragOver
@@ -67,45 +75,51 @@
             }
           }
         });
-        el.addEventListener('beforeDragDrop', e => {
-          if (el.classList.contains('bbn-droppable-over')) {
-            el.classList.remove('bbn-droppable-over');
-          }
-          if (!e.defaultPrevented && !!dragOver) {
-            let ev = new CustomEvent('dragDrop', {
-              cancelable: true,
-              bubbles: true,
-              detail: dragOver
-            });
-            el.dispatchEvent(ev);
-            if (!ev.defaultPrevented) {
-              el.appendChild(e.detail.originalElement);
+        el.addEventListener('beforedrop', e => {
+          if (el.dataset.droppable === 'true') {
+            if (el.classList.contains('bbn-droppable-over')) {
+              el.classList.remove('bbn-droppable-over');
             }
-            else {
-              let ev = new CustomEvent('dragEnd', {
+            if (!e.defaultPrevented && !!dragOver) {
+              let ev = new CustomEvent('drop', {
                 cancelable: true,
                 bubbles: true,
                 detail: dragOver
               });
-              e.detail.originalElement.dispatchEvent(ev);
+              el.dispatchEvent(ev);
               if (!ev.defaultPrevented) {
-                if (!!e.detail.mode && (e.detail.mode === 'move')) {
-                  e.detail.originalParent.insertBefore(e.detail.originalElement, e.detail.nextElement);
+                el.appendChild(e.detail.originalElement);
+              }
+              else {
+                let ev = new CustomEvent('dragend', {
+                  cancelable: true,
+                  bubbles: true,
+                  detail: dragOver
+                });
+                e.detail.originalElement.dispatchEvent(ev);
+                if (!ev.defaultPrevented) {
+                  if (!!e.detail.mode && (e.detail.mode === 'move')) {
+                    e.detail.originalParent.insertBefore(e.detail.originalElement, e.detail.nextElement);
+                  }
                 }
               }
             }
           }
         });
       }
+      else {
+        el.dataset.droppable = false;
+      }
     },
     update: (el, binding) => {
       if (binding.value !== false) {
-        bbn.fn.log('updateeeee')
+        el.dataset.droppable = true;
         if (!el.classList.contains('bbn-droppable')) {
           el.classList.add('bbn-droppable');
         }
       }
       else {
+        el.dataset.droppable = false;
         if (el.classList.contains('bbn-droppable')) {
           el.classList.remove('bbn-droppable');
         }
