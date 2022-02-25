@@ -128,8 +128,8 @@
                         doubleClk = true;
                       }"
                       tabindex="0"
-                      v-draggable.container.data="{container: tree.getRef('helperContainer'), data: {node: _self}}"
-                      v-droppable:data="{node: _self}"
+                      v-draggable.container.data="tree.draggable ? {container: tree.getRef('helperContainer'), data: {node: _self}} : false"
+                      v-droppable:data="tree.selfDrop ? {node: _self} : false"
                 >
                   <!-- The item component if given -->
                   <component v-if="tree.itemComponent"

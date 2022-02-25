@@ -1,6 +1,7 @@
 (() => {
   Vue.directive('droppable', {
     inserted: (el, binding) => {
+      bbn.fn.log('droppable',binding)
       if (binding.value !== false) {
         if (!el.classList.contains('bbn-droppable')) {
           el.classList.add('bbn-droppable');
@@ -58,7 +59,6 @@
               bubbles: true,
               detail: dragOver
             });
-            bbn.fn.log('dravOver', ev)
             el.dispatchEvent(ev);
             if (!ev.defaultPrevented) {
               if (!el.classList.contains('bbn-droppable-over')) {
@@ -68,7 +68,6 @@
           }
         });
         el.addEventListener('beforeDragDrop', e => {
-          bbn.fn.log('ciao')
           if (el.classList.contains('bbn-droppable-over')) {
             el.classList.remove('bbn-droppable-over');
           }
@@ -101,8 +100,14 @@
     },
     update: (el, binding) => {
       if (binding.value !== false) {
+        bbn.fn.log('updateeeee')
         if (!el.classList.contains('bbn-droppable')) {
           el.classList.add('bbn-droppable');
+        }
+      }
+      else {
+        if (el.classList.contains('bbn-droppable')) {
+          el.classList.remove('bbn-droppable');
         }
       }
     }

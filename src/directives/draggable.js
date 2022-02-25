@@ -45,7 +45,6 @@
         endDrag(e, ele, options);
         document.removeEventListener('mousemove', fnDrag);
       };
-      bbn.fn.log('startDrag', ev, ele, options)
       document.addEventListener('mouseup', fnEnd, {once: true});
       document.addEventListener('mousemove', fnDrag);
     }
@@ -184,9 +183,6 @@
         }
         options.container = container;
         options.data = data;
-
-        bbn.fn.log('Draggable directive', el, binding, options)
-
         // Add the events listener to capture the long press click and start the drag
         let clickTimeout = 0,
             holdClick = false;
@@ -212,6 +208,11 @@
       if (binding.value !== false) {
         if (!el.classList.contains('bbn-draggable')) {
           el.classList.add('bbn-draggable');
+        }
+      }
+      else {
+        if (el.classList.contains('bbn-draggable')) {
+          el.classList.remove('bbn-draggable');
         }
       }
     }
