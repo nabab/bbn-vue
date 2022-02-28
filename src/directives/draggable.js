@@ -1,6 +1,6 @@
 (() => {
   const startDrag = (e, ele, options) => {
-    if (ele.dataset.draggable === 'true') {
+    if (ele.dataset.bbn_draggable === 'true') {
       let ev = new CustomEvent('dragstart', {
         cancelable: true,
         bubbles: true,
@@ -20,6 +20,9 @@
             helper.setAttribute('v-bind', JSON.stringify(options.componentOptions));
           }
         }
+        if (!!options.helper) {
+          helper = isMove ? options.helper : options.helper.cloneNode(true)
+        }
         options.originalElement = ele;
         options.originalParent = ele.parentElement;
         options.originalNextElement = ele.nextElementSibling;
@@ -33,7 +36,7 @@
         options.helper.style.opacity = 0.7;
         options.helper.style.pointerEvents = 'none';
         if (!options.container) {
-          options.container = document.body;
+          options.container = bbn.fn.isDom(ele.parentElement) ? ele.parentElement : document.body;
         }
         options.container[isMove ? 'appendChild' : 'append'](options.helper);
         let v = new Vue({
@@ -53,7 +56,7 @@
   };
 
   const drag = (e, ele, options) => {
-    if (ele.dataset.draggable === 'true') {
+    if (ele.dataset.bbn_draggable === 'true') {
       // we prevent default from the event
       e.stopImmediatePropagation();
       e.preventDefault();
@@ -75,12 +78,12 @@
   };
 
   const endDrag = (e, ele, options) => {
-    if (ele.dataset.draggable === 'true') {
+    if (ele.dataset.bbn_draggable === 'true') {
       e.preventDefault();
       e.stopImmediatePropagation();
       let target = e.target;
-      if (!target.classList.contains('bbn-droppable-over')) {
-        target = target.closest('.bbn-droppable.bbn-droppable-over');
+      if (target.dataset.bbn_droppable_over !== 'true') {
+        target = target.closest('[bbn_droppable_over]');
       }
       if (bbn.fn.isDom(target)) {
         let ev = new CustomEvent('beforedrop', {
@@ -110,7 +113,7 @@
   Vue.directive('draggable', {
     inserted: (el, binding) => {
       if (binding.value !== false) {
-        el.dataset.draggable = true;
+        el.dataset.bbn_draggable = true;
         if (!el.classList.contains('bbn-draggable')) {
           el.classList.add('bbn-draggable');
         }
@@ -121,10 +124,12 @@
             asContainerFromMods = asMods && !!binding.modifiers.container,
             asModeFromMods = asMods && !!binding.modifiers.mode,
             asDataFromMods = asMods && !!binding.modifiers.data,
+            asHelperFromMods = asMods && !!binding.modifiers.helper,
             component = false,
             container = false,
             mode = 'clone',
-            data = {};
+            data = {},
+            helper = false;
 
         if (asArg) {
           switch (binding.arg) {
@@ -139,6 +144,9 @@
               break;
             case 'mode':
               mode = binding.value;
+              break;
+            case 'helper':
+              helper = binding.value;
               break;
           }
         }
@@ -178,6 +186,16 @@
               }
               mode = options.mode;
             }
+            if (asHelperFromMods) {
+              bbn.fn.log('helper', options.helper)
+              if ((options.helper === undefined)
+                || (!bbn.fn.isString(options.helper)
+                  && !bbn.fn.isDom(options.helper))
+              ) {
+                throw bbn._('No "helper" property found or not a string or not a DOM element');
+              }
+              helper = options.helper;
+            }
           }
           else if (bbn.fn.isString(binding.value)) {
             switch (binding.value) {
@@ -200,11 +218,15 @@
         options.container = container;
         options.data = data;
         options.mode = mode;
+        if (helper) {
+          options.helper = helper;
+        }
+        bbn.fn.log('aaaaaaaa', options)
         // Add the events listener to capture the long press click and start the drag
         let clickTimeout = 0,
             holdClick = false;
         el.addEventListener('mousedown', ev => {
-          if (el.dataset.draggable === 'true') {
+          if (el.dataset.bbn_draggable === 'true') {
             if (clickTimeout) {
               clearTimeout(clickTimeout);
             }
@@ -219,24 +241,24 @@
           }
         });
         el.addEventListener('mouseup', ev => {
-          if (el.dataset.draggable === 'true') {
+          if (el.dataset.bbn_draggable === 'true') {
             holdClick = false;
           }
         });
       }
       else {
-        el.dataset.draggable = false;
+        el.dataset.bbn_draggable = false;
       }
     },
     update: (el, binding) => {
       if (binding.value !== false) {
-        el.dataset.draggable = true;
+        el.dataset.bbn_draggable = true;
         if (!el.classList.contains('bbn-draggable')) {
           el.classList.add('bbn-draggable');
         }
       }
       else {
-        el.dataset.draggable = false;
+        el.dataset.bbn_draggable = false;
         if (el.classList.contains('bbn-draggable')) {
           el.classList.remove('bbn-draggable');
         }

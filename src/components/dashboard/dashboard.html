@@ -29,7 +29,7 @@
                     @close="hideWidget(w.key)"
                     
                     :index="w.index"
-                    @mouseenter="mouseEnterWidget(w.index)"
+                    @dragover="mouseEnterWidget(w.index)"
                     :class="{'bbn-selected-border': 
                       (sortOriginIndex !== w.index) && (
                         sortOriginIndex > w.index ?
@@ -44,6 +44,7 @@
       </template>
       <slot v-if="!widgets.length"></slot>
     </div>
+    <!--
     <div class="bbn-widget bbn-sort-helper"
          ref="sortHelper"
          :style="{
@@ -52,6 +53,8 @@
            height: sortHelperHeight + 'px',
            left: sortHelperX + 'px',
            top: sortHelperY + 'px'
-         }"></div>
+         }">
+    </div>
+    -->
   </bbn-scroll>
 </div>

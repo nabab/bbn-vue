@@ -780,14 +780,14 @@
           this.sortTargetIndex = null;
           this.isDragging = false;
         }
-        else if (this.widgets[this.sortOriginIndex]) {
+        /* else if (this.widgets[this.sortOriginIndex]) {
           let w = this.widgets[this.sortOriginIndex];
           this.sortingElement = this.getRef('widget_' + w.key);
           let pos = this.sortingElement.$el.getBoundingClientRect();
           this.sortHelperWidth = pos.width;
           this.sortHelperHeight = pos.height;
           this.getRef('sortHelper').innerHTML = this.sortingElement.$el.innerHTML;
-        }
+        } */
       },
       /**
        * @watch source
