@@ -869,6 +869,13 @@
         let realTokens = [];
         const beforeToken = tokens.find(element => element.end == cursor.ch);
         const afterToken = tokens.find(element => element.start == cursor.ch);
+        /** show hint only inside the tag in the html mode */
+        if (this.mode === "html") {
+          let visibleSuggestions = tokens.find(element => element.end <= cursor.ch && element.string === "<");
+          if (!visibleSuggestions) {
+            return;
+          }
+        }
         /** if cursor is between tags, don't show the hint */
         if (beforeToken.string === '>' && afterToken.string === "</")
         {
