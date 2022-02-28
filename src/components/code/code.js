@@ -831,16 +831,19 @@
           /** @var String The current line */
           if (tokens.length >=3) {
             if (tokens[tokens.length-1].string === '>' && tokens[tokens.length-3].string === '</') {
-              let tabSize = '';
-              if (tokens.length >=4) {
-                tabSize = tokens[tokens.length-4].string;
+              let tabString = '';
+              if (tokens.length >= 4) {
+                tabString = tokens[tokens.length-4].string;
               }
               let pos = {
                 line: cursor.line,
                 ch: 0,
               }
-              this.widget.replaceRange(tabSize+'  \n', pos);
-              cursor.ch = tabSize.length + 2;
+              for(let i = 0; i < this.cfg.tabSize; i++) {
+                tabString += ' ';
+              }
+              this.widget.replaceRange(tabString + '\n', pos);
+              cursor.ch = tabString.length + 2;
               this.widget.setCursor(cursor);
               return;
             }
@@ -864,9 +867,9 @@
         let currentLine = '';
         /** @var Array The tokens before the cursor */
         let realTokens = [];
-        /** if cursor is between tags, don't show the hint */
         const beforeToken = tokens.find(element => element.end == cursor.ch);
         const afterToken = tokens.find(element => element.start == cursor.ch);
+        /** if cursor is between tags, don't show the hint */
         if (beforeToken.string === '>' && afterToken.string === "</")
         {
           return;
