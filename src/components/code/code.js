@@ -828,7 +828,6 @@
           let cursor = this.widget.getCursor();
           /** Array List of tokens */
           let tokens = this.widget.getLineTokens(cursor.line);
-          /** @var String The current line */
           if (tokens.length >=3) {
             if (tokens[tokens.length-1].string === '>' && tokens[tokens.length-3].string === '</') {
               let tabString = '';
@@ -867,19 +866,15 @@
         let currentLine = '';
         /** @var Array The tokens before the cursor */
         let realTokens = [];
-        const beforeToken = tokens.find(element => element.end == cursor.ch);
-        const afterToken = tokens.find(element => element.start == cursor.ch);
-        /** show hint only inside the tag in the html mode */
         if (this.mode === "html") {
+          const beforeToken = tokens.find(element => element.end == cursor.ch);
+          const afterToken = tokens.find(element => element.start == cursor.ch);
           let visibleSuggestions = tokens.find(element => element.end <= cursor.ch && element.string === "<");
-          if (!visibleSuggestions) {
+          /** show hint only inside the tag in the html mode */
+          /** or if cursor is between tags, don't show the hint */
+          if (!visibleSuggestions || (beforeToken.string === '>' && afterToken.string === "</")) {
             return;
           }
-        }
-        /** if cursor is between tags, don't show the hint */
-        if (beforeToken.string === '>' && afterToken.string === "</")
-        {
-          return;
         }
         bbn.fn.each(tokens, t => {
           let tmp = bbn.fn.clone(t);
