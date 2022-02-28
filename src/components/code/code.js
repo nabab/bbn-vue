@@ -823,7 +823,7 @@
           this.currentHints.splice(0, this.currentHints.length);
         }
         // if Enter key is pressed inside the tag(eg: span tag), set cursor automatically
-        if (this.eventKey == "Enter") {
+        if (this.eventKey == 'Enter') {
           /** Object Cursor's info */
           let cursor = this.widget.getCursor();
           /** Array List of tokens */
@@ -866,15 +866,20 @@
         let currentLine = '';
         /** @var Array The tokens before the cursor */
         let realTokens = [];
-        if (this.mode === "html") {
-          const beforeToken = tokens.find(element => element.end == cursor.ch);
-          const afterToken = tokens.find(element => element.start == cursor.ch);
+        const beforeCursorToken = tokens.find(element => element.end == cursor.ch);
+        const afterCursorToken = tokens.find(element => element.start == cursor.ch);
+        if (this.mode === 'html') {
           let visibleSuggestions = tokens.find(element => element.end <= cursor.ch && element.string === "<");
           /** show hint only inside the tag in the html mode */
           /** or if cursor is between tags, don't show the hint */
-          if (!visibleSuggestions || (beforeToken.string === '>' && afterToken.string === "</")) {
+          if (!visibleSuggestions || (beforeCursorToken.string === '>' && afterCursorToken.string === "</")) {
             return;
           }
+        }
+        /** replace --> to -> when the suggestion is selected by Enter key */
+        if (this.mode === 'php' && this.eventKey == 'Enter' && beforeCursorToken.string.includes('-->')) {
+          this.widget.replaceRange("->", {line: cursor.line, ch: beforeCursorToken.start}, {line: cursor.line, ch: beforeCursorToken.end});
+          tokens = this.widget.getLineTokens(cursor.line);
         }
         bbn.fn.each(tokens, t => {
           let tmp = bbn.fn.clone(t);
@@ -887,8 +892,8 @@
             return false;
           }
         });
-        let numTokens = realTokens.length;
 
+        let numTokens = realTokens.length;
         if (
           !numTokens ||
           !currentLine.trim() ||
