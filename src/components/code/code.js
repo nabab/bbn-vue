@@ -849,20 +849,21 @@
         this.hintTimeout = setTimeout(this.realShowHint, 500);
       },
       realShowHint() {
+        bbn.fn.log(["showHint", this.mode]);
         if (!this[this.mode + 'Hint']) {
           return this.widget.showHint({completeSingle: false})
         }
         /** Object Cursor's info */
         let cursor = this.widget.getCursor();
+        if (!cursor.ch) {
+          return;
+        }
         /** Array List of tokens */
         let tokens = this.widget.getLineTokens(cursor.line);
         /** @var String The current line */
         let currentLine = '';
         /** @var Array The tokens before the cursor */
         let realTokens = [];
-        if (!cursor.ch) {
-          return;
-        }
         /** if cursor is between tags, don't show the hint */
         const beforeToken = tokens.find(element => element.end == cursor.ch);
         const afterToken = tokens.find(element => element.start == cursor.ch);

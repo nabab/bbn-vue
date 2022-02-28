@@ -661,7 +661,7 @@
        * @param {Boolean} newVal 
        */
       overIdx(newVal, oldVal) {
-        bbn.fn.log("overIdx is changing", newVal, oldVal)
+        bbn.fn.log("overIdx is changing")
         this.keepCool(() => {
           bbn.fn.log("Scroll to?");
           if (this.hasScroll && newVal && !this.isOver) {
