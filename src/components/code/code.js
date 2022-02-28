@@ -267,7 +267,8 @@
         floaterTop: null,
         floaterBottom: null,
         currentFn: false,
-        currentToken: false
+        currentToken: false,
+        eventKey: "",
       };
     },
 
@@ -821,31 +822,59 @@
         if (this.currentHints.length) {
           this.currentHints.splice(0, this.currentHints.length);
         }
+        // if Enter key is pressed inside the tag(eg: span tag), set cursor automatically
+        if (this.eventKey == "Enter") {
+          /** Object Cursor's info */
+          let cursor = this.widget.getCursor();
+          /** Array List of tokens */
+          let tokens = this.widget.getLineTokens(cursor.line);
+          /** @var String The current line */
+          if (tokens.length >=3) {
+            if (tokens[tokens.length-1].string === '>' && tokens[tokens.length-3].string === '</') {
+              let tabSize = '';
+              if (tokens.length >=4) {
+                tabSize = tokens[tokens.length-4].string;
+              }
+              let pos = {
+                line: cursor.line,
+                ch: 0,
+              }
+              this.widget.replaceRange(tabSize+'  \n', pos);
+              cursor.ch = tabSize.length + 2;
+              this.widget.setCursor(cursor);
+              return;
+            }
+          }
+        }
         this.hintTimeout = setTimeout(this.realShowHint, 500);
       },
       realShowHint() {
-        bbn.fn.log(["showHint", this.mode]);
         if (!this[this.mode + 'Hint']) {
           return this.widget.showHint({completeSingle: false})
         }
-
         /** Object Cursor's info */
         let cursor = this.widget.getCursor();
-        if (!cursor.ch) {
-          return;
-        }
         /** Array List of tokens */
         let tokens = this.widget.getLineTokens(cursor.line);
         /** @var String The current line */
         let currentLine = '';
         /** @var Array The tokens before the cursor */
         let realTokens = [];
+        if (!cursor.ch) {
+          return;
+        }
+        /** if cursor is between tags, don't show the hint */
+        const beforeToken = tokens.find(element => element.end == cursor.ch);
+        const afterToken = tokens.find(element => element.start == cursor.ch);
+        if (beforeToken.string === '>' && afterToken.string === "</")
+        {
+          return;
+        }
         bbn.fn.each(tokens, t => {
           let tmp = bbn.fn.clone(t);
           if (t.end >= cursor.ch) {
             tmp.string = bbn.fn.substr(t.string, 0, cursor.ch - t.start);
           }
-
           currentLine += tmp.string;
           realTokens.push(tmp);
           if (t.end >= cursor.ch) {
@@ -1006,6 +1035,7 @@
           this.resetFloaters();
           return;
         }
+        this.eventKey = event.key;
         this.showHint();
       }
     },

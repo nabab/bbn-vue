@@ -25,6 +25,7 @@
           :ref="'li' + idx"
           :key="uid ? li.data[uid] : idx"
           @click="select(idx)"
+          @mousedown="select(idx)"
           :class="{
             'bbn-no-padding': !!component,
             'bbn-state-default': true,
