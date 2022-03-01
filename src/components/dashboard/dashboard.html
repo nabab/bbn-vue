@@ -1,9 +1,5 @@
 <div :class="['bbn-overlay' , componentClass, {'bbn-unselectable': isSorting}]"
-     @mouseleave="sortTargetIndex = null; isSorting = false"
-     @touchend="isSorting = false"
-     @dragend="isSorting = false"
-     @mousemove="dragging"
-     @mouseup="isSorting = false">
+     @mouseleave="sortTargetIndex = null; isSorting = false">
   <bbn-scroll :scrollable="scrollable"
               ref="scroll"
               v-bind="scrollable ? {axis: 'y'} : {}"
@@ -27,10 +23,11 @@
                     :options="w.options"
                     :uid="w.key"
                     @close="hideWidget(w.key)"
-                    
                     :index="w.index"
                     @dragover="mouseEnterWidget(w.index)"
-                    :class="{'bbn-selected-border': 
+                    @dragend="isDragging = false; isSorting = false;"
+                    @drop.prevent="drop"
+                    :class="{'bbn-selected-border':
                       (sortOriginIndex !== w.index) && (
                         sortOriginIndex > w.index ?
                           (w.index === sortTargetIndex) :
@@ -38,23 +35,11 @@
                           (w.index - 1 === sortTargetIndex)
                       )
                     }"
-                    @sortstart="isSorting = true; sortOriginIndex = w.index; sortTargetIndex = null"
+                    @sortstart="isSorting = true; sortOriginIndex = w.index; sortTargetIndex = null; isDragging = true;"
                     :title="w.title ? w.title : (w.text ? w.text : '')"
         ></bbn-widget>
       </template>
       <slot v-if="!widgets.length"></slot>
     </div>
-    <!--
-    <div class="bbn-widget bbn-sort-helper"
-         ref="sortHelper"
-         :style="{
-           display: isDragging ? 'block' : 'none',
-           width: sortHelperWidth + 'px',
-           height: sortHelperHeight + 'px',
-           left: sortHelperX + 'px',
-           top: sortHelperY + 'px'
-         }">
-    </div>
-    -->
   </bbn-scroll>
 </div>

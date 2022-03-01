@@ -1735,25 +1735,6 @@ Vue.component('bbn-tree', {
             else {
               this.tree.overNode = false;
             }
-
-            let scroll = this.tree.getRef('scroll');
-            if (scroll.hasScrollY && !scroll.isScrolling) {
-              let coord = this.tree.$el.getBoundingClientRect();
-              let step = Math.ceil(coord.height / 20);
-              let margin = step * 4;
-              let diff = 0;
-              if (e.clientY < (coord.y + margin)) {
-                diff = e.clientY - coord.y - margin;
-              }
-              else if (e.clientY > (coord.y + coord.height - margin)) {
-                diff = e.clientY - (coord.y + coord.height - margin);
-              }
-              if (diff) {
-                let approachLevel = Math.round(diff/step);
-                scroll.addVertical(Math.round(scroll.$el.offsetHeight / 5) * approachLevel + 1);
-                //bbn.fn.log(approachLevel);
-              }
-            }
           }
         },
         /**

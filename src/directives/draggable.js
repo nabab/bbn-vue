@@ -20,8 +20,10 @@
             helper.setAttribute('v-bind', JSON.stringify(options.componentOptions));
           }
         }
-        if (!!options.helper) {
-          helper = isMove ? options.helper : options.helper.cloneNode(true)
+        let rect = ele.getBoundingClientRect();
+        if (!!options.helperElement) {
+          rect = options.helperElement.getBoundingClientRect();
+          helper = isMove ? options.helperElement : options.helperElement.cloneNode(true)
         }
         options.originalElement = ele;
         options.originalParent = ele.parentElement;
@@ -35,10 +37,14 @@
         options.helper.style.zIndex = '1000';
         options.helper.style.opacity = 0.7;
         options.helper.style.pointerEvents = 'none';
+        options.helper.style.width = rect.width + 'px';
+        options.helper.style.height = rect.height + 'px';
         if (!options.container) {
-          options.container = bbn.fn.isDom(ele.parentElement) ? ele.parentElement : document.body;
+          options.container = bbn.fn.isDom(options.originalParent) ? options.originalParent : document.body;
         }
         options.container[isMove ? 'appendChild' : 'append'](options.helper);
+        let scroll = options.container.closest('.bbn-scroll');
+        options.scroll = !!scroll && (scroll.__vue__ !== undefined) ? scroll.__vue__ : false;
         let v = new Vue({
           el: '#bbn-draggable-current > *'
         });
@@ -62,9 +68,44 @@
       e.preventDefault();
       options.helper.style.left = e.pageX + 'px';
       options.helper.style.top = e.pageY + 'px';
+      if (!!options.scroll
+        && (options.scroll.hasScrollY || options.scroll.hasScrollX)
+        && !options.scroll.isScrolling
+      ) {
+        let getDiff = axis => {
+          let coord = options.scroll.$el.getBoundingClientRect(),
+              client = 'client' + axis.toUpperCase(),
+              dim = axis === 'y' ? 'height' : 'width',
+              step = Math.ceil(coord[dim] / 20),
+              margin = step * 4,
+              diff = 0;
+          if (e[client] < (coord[axis] + margin)) {
+            diff = e[client] - coord[axis] - margin;
+          }
+          else if (e[client] > (coord[axis] + coord[dim] - margin)) {
+            diff = e[client] - (coord[axis] + coord[dim] - margin);
+          }
+          if (diff) {
+            let approachLevel = Math.round(diff/step);
+            return Math.round(options.scroll.$el['offset' + dim.charAt(0).toUpperCase() + dim.slice(1)] / 5) * approachLevel + 1;
+          }
+        };
+        if (options.scroll.hasScrollY) {
+          let diff = getDiff('y');
+          if (diff) {
+            options.scroll.addVertical(diff);
+          }
+        }
+        if (options.scroll.hasScrollX) {
+          let diff = getDiff('x');
+          if (diff) {
+            options.scroll.addHorizontal(diff);
+          }
+        }
+      }
       let target = e.target;
-      if (!target.classList.contains('bbn-droppable')) {
-        target = target.closest('.bbn-droppable');
+      if (target.dataset.bbn_droppable !== 'true') {
+        target = target.closest('[data-bbn_droppable=true]');
       }
       if (target && (target !== ele)) {
         let ev = new CustomEvent('dragoverdroppable', {
@@ -83,7 +124,7 @@
       e.stopImmediatePropagation();
       let target = e.target;
       if (target.dataset.bbn_droppable_over !== 'true') {
-        target = target.closest('[bbn_droppable_over]');
+        target = target.closest('[data-bbn_droppable_over=true]');
       }
       if (bbn.fn.isDom(target)) {
         let ev = new CustomEvent('beforedrop', {
@@ -112,7 +153,9 @@
 
   Vue.directive('draggable', {
     inserted: (el, binding) => {
-      if (binding.value !== false) {
+      if ((binding.value !== false)
+        && !el.classList.contains('bbn-undraggable')
+      ) {
         el.dataset.bbn_draggable = true;
         if (!el.classList.contains('bbn-draggable')) {
           el.classList.add('bbn-draggable');
@@ -187,7 +230,6 @@
               mode = options.mode;
             }
             if (asHelperFromMods) {
-              bbn.fn.log('helper', options.helper)
               if ((options.helper === undefined)
                 || (!bbn.fn.isString(options.helper)
                   && !bbn.fn.isDom(options.helper))
@@ -219,9 +261,8 @@
         options.data = data;
         options.mode = mode;
         if (helper) {
-          options.helper = helper;
+          options.helperElement = helper;
         }
-        bbn.fn.log('aaaaaaaa', options)
         // Add the events listener to capture the long press click and start the drag
         let clickTimeout = 0,
             holdClick = false;
@@ -251,7 +292,9 @@
       }
     },
     update: (el, binding) => {
-      if (binding.value !== false) {
+      if ((binding.value !== false)
+        && !el.classList.contains('bbn-undraggable')
+      ) {
         el.dataset.bbn_draggable = true;
         if (!el.classList.contains('bbn-draggable')) {
           el.classList.add('bbn-draggable');

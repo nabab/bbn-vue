@@ -1,7 +1,9 @@
 (() => {
   Vue.directive('droppable', {
     inserted: (el, binding) => {
-      if (binding.value !== false) {
+      if ((binding.value !== false)
+      && !el.classList.contains('bbn-undroppable')
+      ) {
         el.dataset.bbn_droppable = true;
         if (!el.classList.contains('bbn-droppable')) {
           el.classList.add('bbn-droppable');
@@ -114,7 +116,9 @@
       }
     },
     update: (el, binding) => {
-      if (binding.value !== false) {
+      if ((binding.value !== false)
+      && !el.classList.contains('bbn-undroppable')
+      ) {
         el.dataset.bbn_droppable = true;
         if (!el.classList.contains('bbn-droppable')) {
           el.classList.add('bbn-droppable');
