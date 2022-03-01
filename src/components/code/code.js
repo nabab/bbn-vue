@@ -1009,6 +1009,15 @@
         }
         if (this.currentHints.length) {
           let lst = this.find('bbn-list');
+          if (bbn.var.keys.leftRight.includes(event.keyCode) ||
+              (this.currentHints.length == 1 && bbn.var.keys.upDown.includes(event.keyCode))
+              ) {
+            this.resetFloaters();
+            return;
+          }
+          // if (this.currentHints.length == 1) {
+
+          // }
           if (lst) {
             if (bbn.var.keys.upDown.includes(event.keyCode)) {
               lst.keynav(event);
