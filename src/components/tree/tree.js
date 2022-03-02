@@ -38,10 +38,10 @@ Vue.component('bbn-tree', {
    * @mixin bbn.vue.localStorageComponent
    * @mixin bbn.vue.listComponent
    */
-  mixins: 
+  mixins:
   [
-    bbn.vue.basicComponent, 
-    bbn.vue.localStorageComponent, 
+    bbn.vue.basicComponent,
+    bbn.vue.localStorageComponent,
     bbn.vue.listComponent
   ],
   props: {
@@ -489,9 +489,9 @@ Vue.component('bbn-tree', {
       return res;
     },
     _getTreeState(uid) {
-      if (this.currentState[uid]) {
+      if ((uid !== undefined) && this.currentState[uid]) {
         //bbn.fn.log('CURRENT STATE FOUND', this.currentState[uid][this.children]);
-        return bbn.fn.clone(this.currentState[uid][this.children]);
+        return bbn.fn.clone(this.currentState[uid].items);
       }
       return {};
     },
@@ -905,8 +905,8 @@ Vue.component('bbn-tree', {
     /**
      * Returns the node's path.
      * @method getNodePath
-     * @param {Object} node 
-     * @param {String} field 
+     * @param {Object} node
+     * @param {String} field
      */
     getNodePath(node, field){
       let f = field || this.uid || false,
@@ -951,8 +951,8 @@ Vue.component('bbn-tree', {
     /**
      * Returns true if the first argument node descends from the second.
      * @method isNodeOf
-     * @param {Object} childNode 
-     * @param {Object} parentNode 
+     * @param {Object} childNode
+     * @param {Object} parentNode
      * @return {Boolean}
      */
     isNodeOf(childNode, parentNode){
@@ -1111,6 +1111,7 @@ Vue.component('bbn-tree', {
     getConfig(){
       let cfg = {
         expanded: [],
+        selected: [],
         state: this.currentState
       };
       if (!this.uid) {
@@ -1118,8 +1119,17 @@ Vue.component('bbn-tree', {
       }
       // Expanded
       bbn.fn.each(this.currentExpanded, c => {
-        if (c.source && c.source.data && c.source.data[this.uid]) {
-          cfg.expanded.push(c.source.data[this.uid])
+        if (c.data && c.data[this.uid]) {
+          cfg.expanded.push(c.data[this.uid])
+        }
+      });
+      // Selected
+      bbn.fn.each(this.currentSelected, c => {
+        if (c.data
+          && c.data[this.uid]
+          && (!!this.multiple || !cfg.selected.length)
+        ) {
+          cfg.selected.push(c.data[this.uid])
         }
       });
       return cfg;
@@ -1200,20 +1210,27 @@ Vue.component('bbn-tree', {
     init() {
       if (this.node.isExpanded
           || this.isRoot
-          || (this.currentState && this.currentState.expanded)
+          || bbn.fn.count(Object.values(this.currentState), {expanded: true})
       ) {
         return this.updateData().then(() => {
           this.isInit = true;
-          if (bbn.fn.numProperties(this.currentState) && this.filteredData.length) {
+          if (bbn.fn.numProperties(this.currentState)
+            && this.filteredData.length
+          ) {
             setTimeout(() => {
-              bbn.fn.each(this.currentState, (o, uid) => {
-                let it = this.findNode({[this.uid]: uid}, this.node);
+              bbn.fn.iterate(this.currentState, (o, uid) => {
+                let it = this.uid !== undefined ?
+                  this.findNode({[this.uid]: uid}, this.node) :
+                  false;
                 if (it) {
                   if (o[this.children]) {
                     it.isExpanded = true;
                   }
                   else if (o.expanded) {
                     it.isExpanded = true;
+                  }
+                  if (o.selected) {
+                    it.isSelected = true;
                   }
                 }
                 else {
@@ -1299,7 +1316,7 @@ Vue.component('bbn-tree', {
       })
     }
     else {
-      this.isInit = true;        
+      this.isInit = true;
     }
   },
   watch: {
@@ -1339,7 +1356,7 @@ Vue.component('bbn-tree', {
     },
     /**
      * Updates the ree overNode and overOrder when the prop 'dragging' changes.
-     * @param {Boolean} newVal 
+     * @param {Boolean} newVal
      */
     dragging(newVal){
       if ( !newVal ){
@@ -1671,7 +1688,7 @@ Vue.component('bbn-tree', {
         },
         /**
          * Handles the start of dragging of the tree
-         * @method startDrag  
+         * @method startDrag
          * @param {Event} e The event
          * @emits tree.dragstart
          * @memberof bbn-tree-node
@@ -1828,7 +1845,7 @@ Vue.component('bbn-tree', {
             let arr = this.parent.filteredData.slice();
             // remove the data at old index
             let ele = arr.splice(oldNum-1, 1);
-            // create a new event beforeOrder that is cancelable 
+            // create a new event beforeOrder that is cancelable
             let ev = new Event('beforeOrder', {cancelable: true});
             // if there is datas in ele
             if ( ele.length ){
@@ -1838,10 +1855,10 @@ Vue.component('bbn-tree', {
                 this.tree.$emit('beforeOrder', oldNum, newNum, this.tree.dragging, ev);
               }
               if ( !!force || !ev.defaultPrevented ){
-                // remove the data at the index 
+                // remove the data at the index
                 arr.splice(newNum-1, 0, ele[0]);
                 bbn.fn.each(arr, (e, i) => {
-                  // and add the data 
+                  // and add the data
                   if ( e.num !== (i + 1) ){
                     let data = bbn.fn.extend(true, {}, e.data);
                     e.num = i + 1;
@@ -1900,7 +1917,7 @@ Vue.component('bbn-tree', {
             }
           }
         },
-        // this function get the fullPath where you path the separtor as arguments 
+        // this function get the fullPath where you path the separtor as arguments
         getFullPath(separator, field) {
           let f = field || this.uid || false;
           if (f) {
@@ -1932,13 +1949,13 @@ Vue.component('bbn-tree', {
             if ( (this.tree.selectedNode && !this.tree.multiple) || (sameParent && !this.parent.multiple) ){
               this.tree.selectedNode.isSelected = false;
             }
-            // initializing and calling the event beforeSelect 
+            // initializing and calling the event beforeSelect
             let ev = new Event('beforeSelect', {cancelable: true});
             if ( emit ){
               this.tree.$emit('beforeSelect', this, ev);
             }
             if ( !ev.defaultPrevented ){
-              // adding the node to selected 
+              // adding the node to selected
               this.tree.currentSelected.push(this);
               if ( storage ){
                 this.$nextTick(() => {
@@ -1950,7 +1967,7 @@ Vue.component('bbn-tree', {
               if ( emit ){
                 this.tree.$emit('select', this);
               }
-              // adding the node selected 
+              // adding the node selected
               if ( this.tree !== this.parent ){
                 this.parent.currentSelected.push(this);
                 if ( emit ){
@@ -1958,11 +1975,28 @@ Vue.component('bbn-tree', {
                   this.parent.$emit('select', this);
                 }
               }
+              let path = this.tree.getNodePath(this);
+              // Adds for each of them the expanded property and sets to true
+              path.reduce((o, a) => {
+                if (!a || !o) {
+                  return undefined;
+                }
+                if (o[a] === undefined) {
+                  o[a] = {
+                    items: {},
+                    selected: true
+                  };
+                }
+                else if (!o[a].selected) {
+                  o[a].selected = true;
+                }
+                return o[a].items;
+              }, this.tree.currentState)
             }
           }
         },
         removeFromSelected(emit = true, storage = true){
-          // getting index of the currentTree select dans its parent 
+          // getting index of the currentTree select dans its parent
           let idx = this.tree.currentSelected.indexOf(this);
           let idx2 = this.parent.currentSelected.indexOf(this);
           // initializing and sending an event cancelable if emit is false
@@ -1974,10 +2008,10 @@ Vue.component('bbn-tree', {
           if ( !ev.defaultPrevented ){
             // if the tree is selected
             if ( idx > -1 ){
-              // we remove it 
+              // we remove it
               this.tree.currentSelected.splice(idx, 1);
               if ( storage ){
-                // if storage exists we call setLocalStorage 
+                // if storage exists we call setLocalStorage
                 this.$nextTick(() => {
                   this.tree.setLocalStorage();
                 })
@@ -2005,9 +2039,9 @@ Vue.component('bbn-tree', {
               this.tree.$emit('beforeUnfold', this, ev);
             }
             if (!emit || !ev.defaultPrevented) {
-              // adding to the list of nodes that are currently expanded 
+              // adding to the list of nodes that are currently expanded
               this.tree.currentExpanded.push(this);
-              // if storage is true we update its content 
+              // if storage is true we update its content
               if ( storage ){
                 this.$nextTick(() => {
                   this.tree.setLocalStorage();
@@ -2017,11 +2051,11 @@ Vue.component('bbn-tree', {
               if ( emit ){
                 this.tree.$emit('unfold', this);
               }
-              // Starting from the parent 
+              // Starting from the parent
               let parent = this.parent;
               // going up until there is no parent anymore
               while (parent && (parent !== this.tree)) {
-                // adding itself to the currentExpanded 
+                // adding itself to the currentExpanded
                 parent.currentExpanded.push(this);
                 // parent becomes the next parent tree if it exists otherwise it's null
                 parent = parent.node ? parent.node.parent : null;
@@ -2042,7 +2076,7 @@ Vue.component('bbn-tree', {
                 else if (!o[a].expanded) {
                   o[a].expanded = true;
                 }
-                return o[a][this.children];
+                return o[a].items;
               }, this.tree.currentState)
               return true;
             }
@@ -2059,10 +2093,10 @@ Vue.component('bbn-tree', {
               ev = new Event('beforeFold', {cancelable: true});
               this.tree.$emit('beforeFold', this, ev);
             }
-            // Initializing and sending an event cancelable if emit is true            
+            // Initializing and sending an event cancelable if emit is true
             // if the action has not been prevented
             if (!emit || !ev.defaultPrevented) {
-              // Starting from the parent 
+              // Starting from the parent
               let parent = this.parent;
               // Going up until there is no parent anymore
               while (parent && (parent !== this.tree)) {
@@ -2084,7 +2118,7 @@ Vue.component('bbn-tree', {
               // Index of the last node
               let last = path.length - 1;
               let prev;
-              // Sets the parent to false since we are at root 
+              // Sets the parent to false since we are at root
               parent = false;
               // for each nodes which has the expanded property setted to true it's setted to false
               bbn.fn.each(path, (a, i) => {
@@ -2154,9 +2188,9 @@ Vue.component('bbn-tree', {
        * @memberof bbn-tree-node
        */
       created(){
-        // Looking for the parent 
+        // Looking for the parent
         this.parent = this.closest('bbn-tree');
-        // tree take the value of the parent tree or the parent  
+        // tree take the value of the parent tree or the parent
         this.tree = this.parent.tree || this.parent;
         // If we click a node we're calling the addToSelect function
         if ( this.source.selected ){
@@ -2165,7 +2199,7 @@ Vue.component('bbn-tree', {
         if ( !this.parent.nodes.includes(this) ){
           this.parent.nodes.push(this);
         }
-        // If the tree is opened we're calling the addToExpanded function 
+        // If the tree is opened we're calling the addToExpanded function
         if ( this.tree.opened || (this.level < this.tree.minExpandLevel) ){
           this.$set(this.source, 'expanded', true);
           this.addToExpanded();
@@ -2228,7 +2262,7 @@ Vue.component('bbn-tree', {
         },
         /**
          * Beware it's a computed, use tree.currentData[idx].expanded to change it.
-         * 
+         *
          * @watch isExpanded
          * @fires tree.updateData
          * @fires getRef
