@@ -1802,11 +1802,23 @@ Vue.component('bbn-tree', {
         endDrag(e){
           e.preventDefault();
           e.stopImmediatePropagation();
-          bbn.fn.each(this.tree.dragging.tree.droppableTrees, dt => {
-            dt.dragging = false;
-            dt.overNode = false;
-            dt.realDragging = false;
+          let ev = new CustomEvent('dragend', {
+            cancelable: true,
+            bubbles: true
           });
+          this.tree.$emit('dragend', this.source, ev);
+          if (!ev.defaultPrevented) {
+            bbn.fn.each(this.tree.dragging.tree.droppableTrees, dt => {
+              dt.overNode = false;
+              dt.realDragging = false;
+              dt.dragging = false;
+            });
+            if (!this.tree.dragging.tree.selfDrop) {
+              this.tree.dragging.tree.overNode = false;
+              this.tree.dragging.tree.realDragging = false;
+              this.tree.dragging.tree.dragging = false;
+            }
+          }
         },
         // the args are the old index the new index and if we force the reorder or not
         reorder(oldNum, newNum, force){
