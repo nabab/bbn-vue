@@ -1207,10 +1207,113 @@ Vue.component('bbn-tree', {
         this._setCurrentState(state);
       }
     },
+    expandPath(paths, field){
+      field = field || this.uid || false;
+      if (field
+        && paths
+        && paths.length
+      ) {
+        if (!bbn.fn.isArray(paths) || !bbn.fn.isArray(paths[0])) {
+          paths = [paths];
+        }
+        if (!bbn.fn.isArray(paths[0])) {
+          paths = [paths];
+        }
+        let expanded = 0;
+        bbn.fn.each(paths, path => {
+          path.reduce((tree, uid) => {
+            if (!tree || !uid) {
+              return undefined;
+            }
+            let node = tree.findNode({[field]: uid});
+            if (node) {
+              if (!node.isExpanded) {
+                node.isExpanded = true;
+                expanded++;
+              }
+              return tree.getRef('tree');
+            }
+            return undefined;
+          }, this);
+        });
+        return !!expanded;
+      }
+      return false;
+    },
+    selectPath(paths, field){
+      field = field || this.uid || false;
+      if (field
+        && paths
+        && paths.length
+      ) {
+        if (!bbn.fn.isArray(paths) || !bbn.fn.isArray(paths[0])) {
+          paths = [paths];
+        }
+        if (!bbn.fn.isArray(paths[0])) {
+          paths = [paths];
+        }
+        bbn.fn.each(paths, path => {
+          let currentPaths = path.slice(),
+              uid = currentPaths.shift();
+          bbn.fn.log('uid', uid)
+          if (uid !== undefined) {
+            let isLast = !currentPaths.length,
+                node = this.findNode({[field]: uid});
+          bbn.fn.log('NODE', node, isLast);
+            if (node) {
+              let nodePath = this.tree.getNodePath(node);
+              if (isLast) {
+                if (!node.isSelected && node.selectable) {
+                  node.isSelected = true;
+                }
+              }
+              else if (!!node.numChildren) {
+                let tree = node.getRef('tree');
+                if (tree) {
+                  if (tree.isLoaded && !tree.isLoading) {
+                    if (!node.isExpanded) {
+                      node.isExpanded = true;
+                    }
+                    tree.$nextTick(() => {
+                      tree.selectPath(currentPaths, field);
+                    });
+                  }
+                  else if (!tree.isLoaded) {
+                    (!!nodePath ? nodePath : []).concat(currentPaths).reduce((o, u) => {
+                      if (!u || !o) {
+                        return undefined;
+                      }
+                      if (o[u] === undefined) {
+                        o[u] = {
+                          expanded: false,
+                          items: {},
+                          selected: false
+                        };
+                      }
+                      if (u !== path[path.length - 1]) {
+                        o[u].expanded = true;
+                      }
+                      else {
+                        o[u].selected = true;
+                      }
+                      return o[u].items;
+                    }, tree.tree.currentState);
+                    tree.tree.$forceUpdate();
+                    node.isExpanded = true;
+                  }
+                }
+              }
+            }
+          }
+        })
+      }
+    },
     init() {
+      bbn.fn.log('INITTTTT',this.node.isExpanded, this.isRoot, bbn.fn.count(Object.values(this.currentState), {expanded: true}), bbn.fn.count(Object.values(this.currentState), {selected: true}))
       if (this.node.isExpanded
           || this.isRoot
           || bbn.fn.count(Object.values(this.currentState), {expanded: true})
+          || bbn.fn.count(Object.values(this.currentState), {selected: true})
       ) {
         return this.updateData().then(() => {
           this.isInit = true;
@@ -1223,14 +1326,18 @@ Vue.component('bbn-tree', {
                   this.findNode({[this.uid]: uid}, this.node) :
                   false;
                 if (it) {
-                  if (o[this.children]) {
-                    it.isExpanded = true;
-                  }
-                  else if (o.expanded) {
+                  if ((o.items && bbn.fn.numProperties(o.items))
+                    || o.expanded
+                  ) {
                     it.isExpanded = true;
                   }
                   if (o.selected) {
-                    it.isSelected = true;
+                    if (it.selectable) {
+                      it.isSelected = true;
+                    }
+                    else {
+                      o.selected = false;
+                    }
                   }
                 }
                 else {
@@ -1957,12 +2064,6 @@ Vue.component('bbn-tree', {
             if ( !ev.defaultPrevented ){
               // adding the node to selected
               this.tree.currentSelected.push(this);
-              if ( storage ){
-                this.$nextTick(() => {
-                  // and put it in the local storage
-                  this.tree.setLocalStorage();
-                })
-              }
               // call the event select
               if ( emit ){
                 this.tree.$emit('select', this);
@@ -1975,23 +2076,35 @@ Vue.component('bbn-tree', {
                   this.parent.$emit('select', this);
                 }
               }
-              let path = this.tree.getNodePath(this);
-              // Adds for each of them the expanded property and sets to true
-              path.reduce((o, a) => {
-                if (!a || !o) {
-                  return undefined;
-                }
-                if (o[a] === undefined) {
-                  o[a] = {
-                    items: {},
-                    selected: true
-                  };
-                }
-                else if (!o[a].selected) {
-                  o[a].selected = true;
-                }
-                return o[a].items;
-              }, this.tree.currentState)
+              if (!!this.uid) {
+                // getting all the nodes from root until this
+                let path = this.tree.getNodePath(this);
+                // Set the 'selected' property to true for this node on currentState
+                path.reduce((o, uid) => {
+                  if (!uid || !o) {
+                    return undefined;
+                  }
+                  if (o[uid] === undefined) {
+                    o[uid] = {
+                      expanded: false,
+                      items: {},
+                      selected: false
+                    };
+                  }
+                  if ((uid === this.data[this.uid])
+                    && !o[uid].selected
+                  ) {
+                    o[uid].selected = true;
+                  }
+                  return o[uid].items;
+                }, this.tree.currentState)
+              }
+              if ( storage ){
+                this.$nextTick(() => {
+                  // and put it in the local storage
+                  this.tree.setLocalStorage();
+                })
+              }
             }
           }
         },
@@ -2010,12 +2123,6 @@ Vue.component('bbn-tree', {
             if ( idx > -1 ){
               // we remove it
               this.tree.currentSelected.splice(idx, 1);
-              if ( storage ){
-                // if storage exists we call setLocalStorage
-                this.$nextTick(() => {
-                  this.tree.setLocalStorage();
-                })
-              }
               if (emit && (this.multiple || !this.tree.currentSelected.length)) {
                 this.tree.$emit('unselect', this);
               }
@@ -2027,6 +2134,27 @@ Vue.component('bbn-tree', {
               if (emit && (this.multiple || !this.tree.currentSelected.length)) {
                 this.parent.$emit('unselect', this);
               }
+            }
+            if (!!this.uid) {
+              // getting all the nodes from root until this
+              let path = this.tree.getNodePath(this);
+              // Set the 'selected' property to false for this node on currentState
+              path.reduce((o, uid) => {
+                if (!uid || !o) {
+                  return undefined;
+                }
+                if (uid === this.data[this.uid]) {
+                  o[uid].selected = false;
+                  return undefined
+                }
+                return o[uid].items;
+              }, this.tree.currentState)
+            }
+            if ( storage ){
+              // if storage exists we call setLocalStorage
+              this.$nextTick(() => {
+                this.tree.setLocalStorage();
+              })
             }
           }
         },
@@ -2042,11 +2170,6 @@ Vue.component('bbn-tree', {
               // adding to the list of nodes that are currently expanded
               this.tree.currentExpanded.push(this);
               // if storage is true we update its content
-              if ( storage ){
-                this.$nextTick(() => {
-                  this.tree.setLocalStorage();
-                })
-              }
               // if emit is true we call unfold event
               if ( emit ){
                 this.tree.$emit('unfold', this);
@@ -2060,24 +2183,32 @@ Vue.component('bbn-tree', {
                 // parent becomes the next parent tree if it exists otherwise it's null
                 parent = parent.node ? parent.node.parent : null;
               }
-              // getting all the nodes from root until this
-              let path = this.tree.getNodePath(this);
-              // Adds for each of them the expanded property and sets to true
-              path.reduce((o, a) => {
-                if (!a || !o) {
-                  return undefined;
-                }
-                if (o[a] === undefined) {
-                  o[a] = {
-                    items: {},
-                    expanded: true
-                  };
-                }
-                else if (!o[a].expanded) {
-                  o[a].expanded = true;
-                }
-                return o[a].items;
-              }, this.tree.currentState)
+              if (!!this.uid) {
+                // getting all the nodes from root until this
+                let path = this.tree.getNodePath(this);
+                // Adds for each of them the expanded property and sets to true
+                path.reduce((o, uid) => {
+                  if (!uid || !o) {
+                    return undefined;
+                  }
+                  if (o[uid] === undefined) {
+                    o[uid] = {
+                      expanded: true,
+                      items: {},
+                      selected: false
+                    };
+                  }
+                  else if (!o[uid].expanded) {
+                    o[uid].expanded = true;
+                  }
+                  return o[uid].items;
+                }, this.tree.currentState)
+              }
+              if (storage) {
+                this.$nextTick(() => {
+                  this.tree.setLocalStorage();
+                });
+              }
               return true;
             }
           }
@@ -2121,26 +2252,28 @@ Vue.component('bbn-tree', {
               // Sets the parent to false since we are at root
               parent = false;
               // for each nodes which has the expanded property setted to true it's setted to false
-              bbn.fn.each(path, (a, i) => {
-                if (o[a]) {
+              bbn.fn.each(path, (uid, i) => {
+                if (o[uid]) {
                   if (i === last) {
-                    if (parent && !bbn.fn.numProperties(o[a][this.children])) {
+                    if (parent && !bbn.fn.numProperties(o[uid].items)) {
                       delete parent[prev];
                     }
                     else {
-                      o[a].expanded = false;
+                      o[uid].expanded = false;
                     }
                   }
                   else {
-                    prev = a;
-                    parent = o[a][this.children];
+                    prev = uid;
+                    parent = o[uid].items;
                   }
                 }
               });
 
               if (storage) {
-                // Set the localStorage with the data we get
-                this.tree.setLocalStorage();
+                this.$nextTick(() => {
+                  // Set the localStorage with the data we get
+                  this.tree.setLocalStorage();
+                });
               }
 
               if ( emit ){
