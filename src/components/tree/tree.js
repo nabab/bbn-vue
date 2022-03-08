@@ -2071,6 +2071,11 @@ Vue.component('bbn-tree', {
             this.tree.$emit('beforeUnselect', this, ev);
           }
           if ( !ev.defaultPrevented ){
+            let path = [];
+            if (!!this.uid) {
+              // getting all the nodes from root until this
+              path = this.tree.getNodePath(this);
+            }
             // if the tree is selected
             if ( idx > -1 ){
               // we remove it
@@ -2088,19 +2093,25 @@ Vue.component('bbn-tree', {
               }
             }
             if (!!this.uid) {
-              // getting all the nodes from root until this
-              let path = this.tree.getNodePath(this);
+              // uid of the last node
+              let last = path[path.length - 1];
               // Set the 'selected' property to false for this node on currentState
               path.reduce((o, uid) => {
                 if (!uid || !o) {
                   return undefined;
                 }
-                if (uid === this.data[this.uid]) {
-                  o[uid].selected = false;
-                  return undefined
+                if (o[uid]) {
+                  if (uid === last) {
+                    o[uid].selected = false;
+                    if (!bbn.fn.numProperties(o[uid].items)
+                      && !o[uid].expanded
+                    ) {
+                      delete o[uid];
+                    }
+                  }
                 }
-                return o[uid].items;
-              }, this.tree.currentState)
+                return !!o[uid] ? o[uid].items : false;
+              }, this.tree.currentState);
             }
             if ( storage ){
               // if storage exists we call setLocalStorage
@@ -2179,8 +2190,11 @@ Vue.component('bbn-tree', {
             // Initializing and sending an event cancelable if emit is true
             // if the action has not been prevented
             if (!emit || !ev.defaultPrevented) {
-              // Getting all the nodes from root until this
-              let path = this.tree.getNodePath(this);
+              let path = [];
+              if (!!this.uid) {
+                // Getting all the nodes from root until this
+                path = this.tree.getNodePath(this);
+              }
               // Starting from the parent
               let parent = this.parent;
               // Going up until there is no parent anymore
@@ -2197,30 +2211,25 @@ Vue.component('bbn-tree', {
 
               // And suppress the root currentExpanded
               this.tree.currentExpanded.splice(idx, 1);
-              let o = this.tree.currentState;
-              // Index of the last node
-              let last = path.length - 1;
-              let prev;
-              // Sets the parent to false since we are at root
-              parent = false;
-              // for each nodes which has the expanded property setted to true it's setted to false
-              bbn.fn.each(path, (uid, i) => {
-                if (o[uid]) {
-                  if (i === last) {
-                    if (parent && !bbn.fn.numProperties(o[uid].items)) {
-                      delete parent[prev];
-                    }
-                    else {
+              if (!!this.uid) {
+                // uid of the last node
+                let last = path[path.length - 1];
+                // for each nodes which has the expanded property setted to true it's setted to false
+                path.reduce((o, uid) => {
+                  if (!uid || !o) {
+                    return undefined;
+                  }
+                  if (o[uid]) {
+                    if (uid === last) {
                       o[uid].expanded = false;
+                      if (!o[uid].selected) {
+                        delete o[uid];
+                      }
                     }
                   }
-                  else {
-                    prev = uid;
-                    parent = o[uid].items;
-                  }
-                }
-              });
-
+                  return !!o[uid] ? o[uid].items : false;
+                }, this.tree.currentState);
+              }
               if (storage) {
                 this.$nextTick(() => {
                   // Set the localStorage with the data we get
