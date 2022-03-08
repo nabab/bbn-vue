@@ -592,7 +592,6 @@ Vue.component('bbn-tree', {
         }
 
         let cp = this.isRoot ? this.getRef('scroll') : this;
-        bbn.fn.log('children', cp, cp.$children, this.nodes.length)
         if (cp.$children) {
           let idx = bbn.fn.search(
             bbn.fn.arrayFromProp(
