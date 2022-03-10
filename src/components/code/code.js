@@ -267,7 +267,8 @@
         floaterTop: null,
         floaterBottom: null,
         currentFn: false,
-        currentToken: false
+        currentToken: false,
+        eventKey: "",
       };
     },
 
@@ -821,6 +822,32 @@
         if (this.currentHints.length) {
           this.currentHints.splice(0, this.currentHints.length);
         }
+        // if Enter key is pressed inside the tag(eg: span tag), set cursor automatically
+        if (this.eventKey == 'Enter') {
+          /** Object Cursor's info */
+          let cursor = this.widget.getCursor();
+          /** Array List of tokens */
+          let tokens = this.widget.getLineTokens(cursor.line);
+          if (tokens.length >=3) {
+            if (tokens[tokens.length-1].string === '>' && tokens[tokens.length-3].string === '</') {
+              let tabString = '';
+              if (tokens.length >= 4) {
+                tabString = tokens[tokens.length-4].string;
+              }
+              let pos = {
+                line: cursor.line,
+                ch: 0,
+              }
+              for(let i = 0; i < this.cfg.tabSize; i++) {
+                tabString += ' ';
+              }
+              this.widget.replaceRange(tabString + '\n', pos);
+              cursor.ch = tabString.length + 2;
+              this.widget.setCursor(cursor);
+              return;
+            }
+          }
+        }
         this.hintTimeout = setTimeout(this.realShowHint, 500);
       },
       realShowHint() {
@@ -828,7 +855,6 @@
         if (!this[this.mode + 'Hint']) {
           return this.widget.showHint({completeSingle: false})
         }
-
         /** Object Cursor's info */
         let cursor = this.widget.getCursor();
         if (!cursor.ch) {
@@ -840,20 +866,34 @@
         let currentLine = '';
         /** @var Array The tokens before the cursor */
         let realTokens = [];
+        const beforeCursorToken = tokens.find(element => element.end == cursor.ch);
+        const afterCursorToken = tokens.find(element => element.start == cursor.ch);
+        if (this.mode === 'html') {
+          let visibleSuggestions = tokens.find(element => element.end <= cursor.ch && element.string === "<");
+          /** show hint only inside the tag in the html mode */
+          /** or if cursor is between tags, don't show the hint */
+          if (!visibleSuggestions || (beforeCursorToken.string === '>' && afterCursorToken.string === "</")) {
+            return;
+          }
+        }
+        /** replace --> to -> when the suggestion is selected by Enter key */
+        if (this.mode === 'php' && this.eventKey == 'Enter' && beforeCursorToken.string.includes('-->')) {
+          this.widget.replaceRange("->", {line: cursor.line, ch: beforeCursorToken.start}, {line: cursor.line, ch: beforeCursorToken.end});
+          tokens = this.widget.getLineTokens(cursor.line);
+        }
         bbn.fn.each(tokens, t => {
           let tmp = bbn.fn.clone(t);
           if (t.end >= cursor.ch) {
             tmp.string = bbn.fn.substr(t.string, 0, cursor.ch - t.start);
           }
-
           currentLine += tmp.string;
           realTokens.push(tmp);
           if (t.end >= cursor.ch) {
             return false;
           }
         });
-        let numTokens = realTokens.length;
 
+        let numTokens = realTokens.length;
         if (
           !numTokens ||
           !currentLine.trim() ||
@@ -969,6 +1009,15 @@
         }
         if (this.currentHints.length) {
           let lst = this.find('bbn-list');
+          if (bbn.var.keys.leftRight.includes(event.keyCode) ||
+              (this.currentHints.length == 1 && bbn.var.keys.upDown.includes(event.keyCode))
+              ) {
+            this.resetFloaters();
+            return;
+          }
+          // if (this.currentHints.length == 1) {
+
+          // }
           if (lst) {
             if (bbn.var.keys.upDown.includes(event.keyCode)) {
               lst.keynav(event);
@@ -1006,6 +1055,7 @@
           this.resetFloaters();
           return;
         }
+        this.eventKey = event.key;
         this.showHint();
       }
     },
