@@ -34,7 +34,7 @@
        * @prop {String} ['top'] titlePosition
        */
       titlePosition: {
-			  type: String,
+        type: String,
         default: 'top',
         validator: p => ['top', 'bottom'].includes(p)
       },
@@ -116,14 +116,6 @@
         default: ''
       },
       /**
-       * Set it to true if you're using a YuoTube video code as source property
-       * @prop {Boolean} [false] youtube
-       */
-      youtube: {
-        type: Boolean,
-        default: false
-      },
-      /**
        * Set it to true if yuo want to use a skinned player
        * @prop {Boolean} [false] skin
        */
@@ -146,13 +138,15 @@
         type: String
       }
     },
-    data(){
+    data() {
       return {
         /**
          * This text will only be displayed in browsers that do not support the <video> element.
          * @data {String} ['To view this video please enable JavaScript, and consider upgrading to a web browser that supports HTML5 video.'] browserMessage
          */
-        browserMessage: bbn._('To view this video please enable JavaScript, and consider upgrading to a web browser that supports HTML5 video.')
+        browserMessage: bbn._('To view this video please enable JavaScript, and consider upgrading to a web browser that supports HTML5 video.'),
+        videoType: "video",
+        videoUrl: "",
       }
     },
     computed: {
@@ -161,9 +155,9 @@
        * @computed type
        * @return String|Boolean
        */
-      type(){
-        if ( this.source ){
-          switch ( bbn.fn.substr(this.source, this.source.lastIndexOf('.') + 1).toLowerCase() ){
+      type() {
+        if (this.source) {
+          switch (bbn.fn.substr(this.source, this.source.lastIndexOf('.') + 1).toLowerCase()) {
             case 'mp4':
               return 'video/mp4';
             case 'webm':
@@ -181,8 +175,23 @@
        * @computed youtubeSource
        * @return String
        */
-      youtubeSource(){
-        return this.youtube ? `${document.location.protocol}//youtube.com/embed/${this.source}?rel=0&amp;autoplay=${this.autoplay ? 1 : 0}&controls=${this.controls ? 1 : 0}&mute=${this.muted ? 1 : 0}&loop=${this.loop ? 1 : 0}&playlist=${this.source}` : '';
+      youtubeSource() {
+        return (this.videoType == "youtube") ? `${document.location.protocol}//youtube.com/embed/${this.videoUrl}?rel=0&amp;autoplay=${this.autoplay ? 1 : 0}&controls=${this.controls ? 1 : 0}&mute=${this.muted ? 1 : 0}&loop=${this.loop ? 1 : 0}&playlist=${this.videoUrl}` : '';
+      },
+      vimeoSource() {
+        return (this.videoType == "vimeo") ? `${document.location.protocol}//player.vimeo.com/video/${this.videoUrl}?autoplay=${this.autoplay ? 1 : 0}&controls=${this.controls ? 1 : 0}&mute=${this.muted ? 1 : 0}&loop=${this.loop ? 1 : 0}&playlist=${this.videoUrl}` : '';
+      }
+    },
+    mounted() {
+      let youtubeReg = /^https?:\/\/w{0,3}\.?youtu\.?be(-nocookie)?(\.com)?\//gm;
+      if (this.source.search(youtubeReg) > -1) {
+        this.videoUrl = this.source.substring(this.source.indexOf("watch?v=") + 8);
+        this.videoType = "youtube";
+      }
+      let vimeoReg = /^https?:\/\/vimeo(-nocookie)?(\.com)?\//gm;
+      if (this.source.search(vimeoReg) > -1) {
+        this.videoUrl = this.source.substring(this.source.indexOf("vimeo.com/") + 10);
+        this.videoType = "vimeo";
       }
     }
   });

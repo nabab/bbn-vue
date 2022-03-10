@@ -1,68 +1,46 @@
-<div :class="[componentClass, 'bbn-flex-height', {'bbn-box': skin}]"
-     :style="{
+<div :class="[componentClass, 'bbn-flex-height', {'bbn-box': skin}]" :style="{
        width: width,
        height: height
-     }"
->
-  <div v-if="title && (titlePosition === 'top')"
-       :class="['bbn-c', {
+     }">
+  <div v-if="title && (titlePosition === 'top')" :class="['bbn-c', {
          'bbn-header': skin,
          'bbn-radius-top': skin,
          'bbn-no-border-top': skin,
          'bbn-no-border-left': skin,
          'bbn-no-border-right': skin,
-       }, titleCls]"
-       v-html="title"
-       :style="{
+       }, titleCls]" v-html="title" :style="{
          background: titleBackground,
          color: titleColor
-       }"
-  ></div>
+       }"></div>
   <div class="bbn-flex-fill">
-    <iframe v-if="youtube"
-            width="100%"
-            height="100%"
-            :src="youtubeSource"
-            frameborder="0"
-            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen
-            :class="cls"
-    ></iframe>
-    <video v-else
-           :autoplay="autoplay"
-           :controls="controls"
-           :loop="loop"
-           :muted="muted"
-           preload="auto"
-           :poster="poster"
-           height="100%"
-           width="100%"
-           :style="{background: background}"
-           :class="[cls, {
+    <iframe v-if="videoType == 'youtube'" width="100%" height="100%" :src="youtubeSource" frameborder="0"
+      allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen
+      :class="cls"></iframe>
+    <div v-else-if="videoType == 'vimeo'">
+      <iframe :src="vimeoSource" width="100%" height="100%" frameborder="0"
+        allow="autoplay; fullscreen; picture-in-picture" allowfullscreen :class="cls"></iframe>
+      <p v-text="browserMessage"></p>
+    </div>
+    <video v-else :autoplay="autoplay" :controls="controls" :loop="loop" :muted="muted" preload="auto" :poster="poster"
+      height="100%" width="100%" :style="{background: background}" :class="[cls, {
              'bbn-bordered-bottom': skin,
              'bbn-bordered-left': skin,
              'bbn-bordered-right': skin,
              'bbn-radius-bottom': skin
-           }]"
-    >
-      <source v-if="source"
-              :src="source"
-              :type="type"
-      ></source>
+           }]">
+      <source v-if="source" :src="source" :type="type">
+      </source>
       <p v-text="browserMessage"></p>
     </video>
   </div>
-  <div v-if="title && (titlePosition === 'bottom')"
-       :class="['bbn-c', {
+  <div v-if="title && (titlePosition === 'bottom')" :class="['bbn-c', {
          'bbn-header': skin,
          'bbn-radius-bottom': skin,
          'bbn-no-border-bottom': skin,
          'bbn-no-border-left': skin,
          'bbn-no-border-right': skin,
-       }, titleCls]"
-       v-html="title"
-       :style="{
+       }, titleCls]" v-html="title" :style="{
          background: titleBackground,
          color: titleColor
-       }"
-  ></div>
+       }"></div>
 </div>
