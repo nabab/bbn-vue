@@ -237,9 +237,7 @@
        * @param {Event} e
        */
       dragstart(idx, e){
-        if ( this.removable && e.dataTransfer ){
-          e.dataTransfer.allowedEffect = 'move';
-          e.dataTransfer.dropEffect = 'move';
+        if (this.removable) {
           this.draggedIdx = idx;
           this.visibleBin = true;
         }
