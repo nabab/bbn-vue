@@ -55,7 +55,7 @@
           <div class="bbn-w-100 bbn-c bbn-vsmargin">
             <bbn-input class="bbn-c bbn-w-100"
                       required="required"
-                      buttonLeft="nf nf-fa-envelope_o"
+                      button-left="nf nf-fa-envelope_o"
                       :nullable="true"
                       :placeholder="_('Login name')"
                       v-model="currentFormData.user"/>
@@ -64,10 +64,10 @@
             <bbn-input type="password"
                        class="bbn-c bbn-w-100"
                        required="required"
-                       buttonLeft="nf nf-fa-lock"
+                       button-left="nf nf-fa-lock"
                        :nullable="true"
                        :placeholder="_('Password')"
-                      v-model="currentFormData.pass"/>
+                       v-model="currentFormData.pass"/>
           </div>
           <div class="bbn-c bbn-w-100 bbn-vsmargin bbn-flex-width">
             <bbn-button type="button"
@@ -76,15 +76,15 @@
             <div class="bbn-w-100 bbn-r bbn-xs"
                  v-if="passwordLink">
               <a class="bbn-p bbn-r bbn-xs"
-                  @click="currentMode = 'lost'"
-                  v-text="_('Password forgotten?')"/>
+                 @click="currentMode = 'lost'"
+                 v-text="passwordLink"/>
             </div>
           </div>
         </div>
         <div v-else-if="currentMode === 'lost'"
              class="bbn-w-100">
           <div class="bbn-w-100 bbn-c bbn-vsmargin">
-            <bbn-input buttonLeft="nf nf-fa-envelope_o"
+            <bbn-input button-left="nf nf-fa-envelope_o"
                        class="bbn-w-100"
                        required="required"
                        :placeholder="_('Enter your e-mail address')"

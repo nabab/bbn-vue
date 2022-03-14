@@ -1,12 +1,8 @@
 /**
  * @file bbn-login component
- *
  * @description The bbn-login component
- *
  * @copyright BBN Solutions
- *
  * @author BBN Solutions
- *
  * @created 31/05/2021
  */
 
@@ -16,12 +12,12 @@
   Vue.component('bbn-login', {
     /**
      * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.resizerComponent 
+     * @mixin bbn.vue.resizerComponent
      * @mixin bbn.vue.popupComponent
      */
     mixins: [
-      bbn.vue.basicComponent, 
-      bbn.vue.resizerComponent, 
+      bbn.vue.basicComponent,
+      bbn.vue.resizerComponent,
       bbn.vue.popupComponent
     ],
     props: {
@@ -42,38 +38,38 @@
         default: 's'
       },
       /**
-       * @prop {String} logo 
+       * @prop {String} logo
        */
       logo: {
         type: String
       },
       /**
-       * @prop {String} [''] url 
+       * @prop {String} [''] url
        */
       url: {
         type: String,
         default: ''
       },
       /**
-       * @prop {String} loginUrl 
+       * @prop {String} loginUrl
        */
       loginUrl: {
         type: String
       },
       /**
-       * @prop {String} lostUrl 
+       * @prop {String} lostUrl
        */
       lostUrl: {
         type: String
       },
       /**
-       * @prop {String} changeUrl 
+       * @prop {String} changeUrl
        */
       changeUrl: {
         type: String
       },
       /**
-       * @prop {String} mode 
+       * @prop {String} mode
        */
       mode: {
         type: String,
@@ -123,7 +119,7 @@
         default: 'appui_salt'
       },
       /**
-       * @prop {(Boolean|String)} ['Password forgotten?'] passwordLink 
+       * @prop {(Boolean|String)} ['Password forgotten?'] passwordLink
        */
       passwordLink: {
         type: [Boolean, String],
