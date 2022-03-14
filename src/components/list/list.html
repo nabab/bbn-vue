@@ -2,7 +2,8 @@
      @touchstart="touchstart"
      @mouseleave="mouseleave"
      @touchmove="touchmove"
-     @touchend="touchend">
+     @touchend="touchend"
+     >
   <div class="bbn-hidden" v-if="$slots.default" ref="slot">
     <slot></slot>
   </div>
@@ -85,6 +86,7 @@
                   :level="level + 1"
                   :mode="li.data.mode || 'free'"
                   :uid="uid"
+                  :children="children"
                   :source="li.data[children]">
         </bbn-list>
       </li>
