@@ -35,7 +35,7 @@
         <div :class="['bbn-border-box', {
               'bbn-w-100': !scrollable,
               'bbn-panelbar-selected' : isSelected(idx),
-              'bbn-flex-fill': (isSelected(idx) & (flex || source[idx].flex))
+              'bbn-flex-fill': isSelected(idx) && (flex || source[idx].flex || scrollable)
             }]"
             :style="getStyle(idx)"
         >
