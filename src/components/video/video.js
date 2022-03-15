@@ -152,7 +152,11 @@
         /**
          * @data {RegExp} [/^https?:\/\/vimeo(-nocookie)?(\.com)?\//gm] vimeoReg
          */
-        vimeoReg: /^https?:\/\/vimeo(-nocookie)?(\.com)?\//gm
+        vimeoReg: /^https?:\/\/vimeo(-nocookie)?(\.com)?\//gm,
+        /**
+         * @data {Boolean} [true] showPoster
+         */
+        showPoster: true
       }
     },
     computed: {
@@ -208,6 +212,11 @@
           return `${document.location.protocol}//player.vimeo.com/video/${url}?autoplay=${this.autoplay ? 1 : 0}&controls=${this.controls ? 1 : 0}&mute=${this.muted ? 1 : 0}&loop=${this.loop ? 1 : 0}&playlist=${url}`;
         }
         return this.source;
+      }
+    },
+    watch: {
+      source(){
+        this.showPoster = true;
       }
     }
   });
