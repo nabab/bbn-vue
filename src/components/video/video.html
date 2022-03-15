@@ -18,7 +18,15 @@
        }">
   </div>
   <div class="bbn-flex-fill">
-    <iframe v-if="isYoutube || isVimeo"
+    <div v-if="(isYoutube || isVimeo) && !!poster && showPoster"
+         class="bbn-overlay bbn-video-poster">
+      <img :src="poster">
+      <div class="bbn-overlay bbn-middle">
+        <i class="nf nf-mdi-play_circle_outline bbn-xxl"
+           @click="showPoster = false"/>
+      </div>
+    </div>
+    <iframe v-else-if="isYoutube || isVimeo"
             width="100%"
             height="100%"
             :src="videoSource"
