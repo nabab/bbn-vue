@@ -145,15 +145,21 @@
          * @data {String} ['To view this video please enable JavaScript, and consider upgrading to a web browser that supports HTML5 video.'] browserMessage
          */
         browserMessage: bbn._('To view this video please enable JavaScript, and consider upgrading to a web browser that supports HTML5 video.'),
-        videoType: "video",
-        videoUrl: "",
+        /**
+         * @data {RegExp} [/^https?:\/\/w{0,3}\.?youtu\.?be(-nocookie)?(\.com)?\//gm] youtubeReg
+         */
+        youtubeReg: /^https?:\/\/w{0,3}\.?youtu\.?be(-nocookie)?(\.com)?\//gm,
+        /**
+         * @data {RegExp} [/^https?:\/\/vimeo(-nocookie)?(\.com)?\//gm] vimeoReg
+         */
+        vimeoReg: /^https?:\/\/vimeo(-nocookie)?(\.com)?\//gm
       }
     },
     computed: {
       /**
        * Returns the correct media type
        * @computed type
-       * @return String|Boolean
+       * @return {String|Boolean}
        */
       type() {
         if (this.source) {
@@ -171,27 +177,37 @@
         return false;
       },
       /**
-       * Returns the correct url for YoutTube video
-       * @computed youtubeSource
-       * @return String
+       * @computed isYoutube
+       * @return {Boolean}
        */
-      youtubeSource() {
-        return (this.videoType == "youtube") ? `${document.location.protocol}//youtube.com/embed/${this.videoUrl}?rel=0&amp;autoplay=${this.autoplay ? 1 : 0}&controls=${this.controls ? 1 : 0}&mute=${this.muted ? 1 : 0}&loop=${this.loop ? 1 : 0}&playlist=${this.videoUrl}` : '';
+      isYoutube(){
+        return !!this.source.match(this.youtubeReg);
       },
-      vimeoSource() {
-        return (this.videoType == "vimeo") ? `${document.location.protocol}//player.vimeo.com/video/${this.videoUrl}?autoplay=${this.autoplay ? 1 : 0}&controls=${this.controls ? 1 : 0}&mute=${this.muted ? 1 : 0}&loop=${this.loop ? 1 : 0}&playlist=${this.videoUrl}` : '';
-      }
-    },
-    mounted() {
-      let youtubeReg = /^https?:\/\/w{0,3}\.?youtu\.?be(-nocookie)?(\.com)?\//gm;
-      if (this.source.search(youtubeReg) > -1) {
-        this.videoUrl = this.source.substring(this.source.indexOf("watch?v=") + 8);
-        this.videoType = "youtube";
-      }
-      let vimeoReg = /^https?:\/\/vimeo(-nocookie)?(\.com)?\//gm;
-      if (this.source.search(vimeoReg) > -1) {
-        this.videoUrl = this.source.substring(this.source.indexOf("vimeo.com/") + 10);
-        this.videoType = "vimeo";
+      /**
+       * @computed isVimeo
+       * @return {Boolean}
+       */
+      isVimeo(){
+        return !!this.source.match(this.vimeoReg);
+      },
+      /**
+       * Returns the correct url for embeded video
+       * @computed videoSource
+       * @return {String}
+       */
+      videoSource() {
+        if (this.isYoutube) {
+          let url = this.source.replace(this.youtubeReg, '');
+          if (url.startsWith('watch?v=')) {
+            url = bbn.fn.substr(url, 8);
+          }
+          return `${document.location.protocol}//youtube.com/embed/${url}?rel=0&amp;autoplay=${this.autoplay ? 1 : 0}&controls=${this.controls ? 1 : 0}&mute=${this.muted || this.autoplay ? 1 : 0}&loop=${this.loop ? 1 : 0}&playlist=${url}`;
+        }
+        else if (this.isVimeo) {
+          let url = this.source.replace(this.vimeoReg, '');
+          return `${document.location.protocol}//player.vimeo.com/video/${url}?autoplay=${this.autoplay ? 1 : 0}&controls=${this.controls ? 1 : 0}&mute=${this.muted ? 1 : 0}&loop=${this.loop ? 1 : 0}&playlist=${url}`;
+        }
+        return this.source;
       }
     }
   });
