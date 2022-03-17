@@ -26,6 +26,7 @@
             if ((options.data === undefined)
               || !bbn.fn.isObject(options.data)
             ) {
+              bbn.fn.error(bbn._('No "data" property found or not an object'));
               throw bbn._('No "data" property found or not an object');
             }
             data = options.data;
@@ -102,7 +103,7 @@
                 });
                 e.detail.originalElement.dispatchEvent(ev);
                 if (!ev.defaultPrevented) {
-                  if (!!e.detail.mode && (e.detail.mode === 'move')) {
+                  if (!!e.detail.mode && (e.detail.mode === 'self')) {
                     e.detail.originalParent.insertBefore(e.detail.originalElement, e.detail.nextElement);
                   }
                 }
