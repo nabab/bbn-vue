@@ -1726,8 +1726,9 @@
               toAdd = true;
               this.views.splice(idx, 1);
             }
-            else if (index !== undefined) {
+            else if ((index !== undefined) && (idx !== index)) {
               this.move(idx, index);
+              idx = index;
             }
           }
           else{
@@ -1741,7 +1742,6 @@
               title: view && view.title ? view.title : bbn._('Loading'),
               load: true,
               loading: true,
-              visible: true,
               real: false,
               scrollable: !this.single,
               current: url,
@@ -1750,10 +1750,15 @@
               hidden: false
             }, idx);
           }
+          else if (!this.views[idx].loading) {
+            this.views[idx].loading = true;
+          }
 
           if (!this.single) {
             this.selected = idx;
+            this.$forceUpdate();
           }
+
           this.$emit('update', this.views);
           let dataObj = this.postBaseUrl ? {_bbn_baseURL: this.fullBaseURL} : {};
           return this.post(
@@ -1868,7 +1873,10 @@
             this.urls[this.views[idx].url].isLoaded
           ){
             let url = this.views[idx].current;
-            this.remove(idx);
+            if (this.single) {
+              this.remove(idx);
+            }
+
             setTimeout(() => {
               this.load(url, true, idx);
               this.$nextTick(() => {
@@ -2969,7 +2977,7 @@
     watch: {
       selected(idx) {
         if (this.views[idx]) {
-          bbn.fn.log("In selected watcher ", bbn.fn.filter(this.views, {selected: true}));
+          bbn.fn.log("In selected watcher " + idx, bbn.fn.filter(this.views, {selected: true}));
           bbn.fn.map(bbn.fn.filter(this.views, {selected: true}), a => {
             if (a.idx !== idx) {
               a.selected = false;

@@ -80,7 +80,7 @@
          * True if the container is visible.
          * @data {Boolean} [false] isVisible
          */
-        isVisible: false,
+        isVisible: this.loading,
         /**
          * The router which the container belongs to if it exists.
          * @data [null] router
@@ -90,7 +90,7 @@
          * True if the container shows.
          * @data {Boolean} [false] visible
          */
-        visible: false,
+        visible: this.loading,
         /**
          * True if the data changes and is unsaved.
          * @data {Boolan} [false] dirty
@@ -655,6 +655,9 @@
     },
 
     watch: {
+      selected(v) {
+        this.visible = v;
+      },
       idx() {
         if (this.visual) {
           this.isOver = false;

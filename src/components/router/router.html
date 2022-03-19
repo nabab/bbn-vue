@@ -16,7 +16,7 @@
    :class="['bbn-router-breadcrumb', {'bbn-router-breadcrumb-master': master}]">
  <div v-if="master"
      class="bbn-router-breadcrumb-container">
-   <div class="bbn-h-100 bbn-alt bbn-bordered-bottom bbn-no-border-top bbn-no-border-right bbn-vmiddle"
+   <div class="bbn-transition-bcolor bbn-h-100 bbn-alt bbn-bordered-bottom bbn-no-border-top bbn-no-border-right bbn-vmiddle"
        :style="{
          backgroundColor: getBackgroundColor(selected),
          color: getFontColor(selected)
@@ -133,7 +133,7 @@
                    color: tab.fcolor || null
                  }"
                  :data-index="tabIndex"
-                 :class="['bbn-iblock', 'bbn-bordered', 'bbn-radius-top', 'bbn-state-default', 'bbn-unselectable', {
+                 :class="['bbn-transition-bcolor', 'bbn-iblock', 'bbn-bordered', 'bbn-radius-top', 'bbn-state-default', 'bbn-unselectable', {
                    'bbn-router-tabs-static': !!tab.static,
                    'bbn-background-effect-internal': tabIndex === selected,
                    'bbn-router-tabs-active': tabIndex === selected,
