@@ -283,6 +283,14 @@
         type: Number,
         default: 0
       },
+      /**
+       * Set to true to make the floater draggable
+       * @prop {Boolean} [false] draggable
+       */
+      draggable: {
+        type: Boolean,
+        default: false
+      }
     },
     data() {
       let fns = [];
