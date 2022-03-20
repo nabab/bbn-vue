@@ -20,7 +20,7 @@
           v-show="visible || visual">
         <!-- The header -->
         <div v-if="visual"
-            :class="'bbn-transition-all bbn-b bbn-vspadded bbn-flex-width ' + (visible ? ' bbn-m' : '')"
+            :class="'bbn-transition-bcolor bbn-b bbn-vspadded bbn-flex-width ' + (visible ? ' bbn-m' : '')"
             :style="{
               paddingLeft: '0.5em',
               paddingRight: '0.5em',
@@ -160,14 +160,16 @@
           <!-- These buttons are the real ones (white) -->
           <div class="bbn-bottom-left bbn-w-100 bbn-white">
             <div class="bbn-w-50 bbn-spadded">
+              &nbsp;
               <span class="bbn-spadded bbn-p">
                 <i class="nf nf-fa-bars"/>
               </span>
             </div>
             <div class="bbn-w-50 bbn-right bbn-spadded">
               <span v-if="!pinned && !static"
+                    @click.stop="pin"
                     class="bbn-spadded bbn-p">
-                <i class="nf nf-mdi-pin"/>
+                <i class="nf nf-oct-pin"/>
               </span>
               <span class="bbn-spadded bbn-p"
                     @click.stop="close"
@@ -176,9 +178,10 @@
               </span>
               <span class="bbn-spadded bbn-p"
                     @click.stop="unpin"
-                    v-else-if="pinned">
-                <i class="nf nf-mdi-unpin"/>
+                    v-else-if="pinned && !static">
+                <i class="nf nf-mdi-pin_off"/>
               </span>
+              &nbsp;
             </div>
           </div>
         </div>

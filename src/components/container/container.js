@@ -157,9 +157,10 @@
           let r = this.router;
           if ((r.views.length > 1) && (!this.visible || r.visualShowAll)) {
             return {
+              aspectRatio: 1,
               zoom: 0.1,
               width: '100%',
-              height: '100%',
+              height: 'auto',
               overflow: 'hidden'
             };
           }
@@ -331,6 +332,12 @@
        */
       enter(){
         this.$parent.enter(this);
+      },
+      pin() {
+        this.router.pin(this.idx);
+      },
+      unpin() {
+        this.router.unpin(this.idx);
       },
       /**
        * Fires the parent's method reload.

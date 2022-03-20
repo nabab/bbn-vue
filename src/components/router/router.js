@@ -563,6 +563,7 @@
         }
 
         return {
+          minHeight: '100%',
           display: 'grid',
           gridColumnGap: '0.5em',
           gridRowGap: '0.5em',
@@ -626,10 +627,13 @@
 
         let moreViewsThanSlots = this.numVisuals < this.views.length;
         let numAvailableSlots = this.numVisuals - (moreViewsThanSlots ? 1 : 0);
+        let order = this.visualShowAll ? 
+        {selected: 'asc', static: 'desc', pinned: 'desc', last: 'desc', idx: 'asc'}
+        : {selected: 'desc', last: 'desc', static: 'desc', pinned: 'desc', idx: 'asc'};
         return bbn.fn.map(
           bbn.fn.multiorder(
             this.views,
-            {selected: 'desc', static: 'desc', pinned: 'desc', last: 'desc', idx: 'asc'}
+            order
           ),
           (a, i) => {
             let visible = false;

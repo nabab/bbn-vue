@@ -1,286 +1,292 @@
 <div :class="[componentClass, {
-  'bbn-invisible': !ready,
-  'bbn-overlay': (nav || scrollContent),
-  'bbn-w-100': !scrollContent
-}]">
-<div :class="{
-   'bbn-flex-height': nav && scrollContent,
-   'bbn-router-nav': nav,
-   'bbn-router-nav-bc': nav && isBreadcrumb,
-   'bbn-overlay': !nav && scrollContent,
-   'bbn-w-100': !scrollContent
- }">
-<!-- START OF BREADCRUMB -->
-<div v-if="nav && isBreadcrumb && !isVisual"
-   ref="breadcrumb"
-   :class="['bbn-router-breadcrumb', {'bbn-router-breadcrumb-master': master}]">
- <div v-if="master"
-     class="bbn-router-breadcrumb-container">
-   <div class="bbn-transition-bcolor bbn-h-100 bbn-alt bbn-bordered-bottom bbn-no-border-top bbn-no-border-right bbn-vmiddle"
-       :style="{
-         backgroundColor: getBackgroundColor(selected),
-         color: getFontColor(selected)
-       }">
-     <div class="bbn-flex-width bbn-h-100 bbn-vmiddle">
-       <template v-if="breadcrumbs.length"
-                 v-for="(bc, i) in breadcrumbs">
-         <div v-if="i > 0">
-           <i class="nf nf-fa-angle_right bbn-hsmargin bbn-large bbn-router-breadcrumb-arrow"/>
-         </div>
-         <bbn-context :source="bc.getList(i)"
-                       tag="div"
-                       min-width="10em"
-                       tabindex="0"
-                       :item-component="$options.components.listItem"
-                       class="bbn-h-100 bbn-vmiddle"
-                       :attach="itsMaster ? (itsMaster.getRef('breadcrumb') || undefined) : undefined"
-                       :autobind="false"
-                       :style="{
-                         backgroundColor: bc.getBackgroundColor(bc.selected),
-                         color: bc.getFontColor(bc.selected)
-                       }">
-           <bbn-context :source="bc.getMenuFn"
-                        :source-index="isNumber(bc.selected) ? bc.selected : undefined"
-                        tag="div"
-                        min-width="10em"
-                        tabindex="0"
-                        :context="true"
-                        :autobind="false"
-                        class="bbn-vmiddle bbn-h-100">
-             <div class="bbn-vmiddle bbn-h-100">
-               <div class="bbn-router-breadcrumb-badge-container bbn-middle"
-                     v-if="isNumber(bc.selected) && bc.views[bc.selected] && numProperties(bc.views[bc.selected].events)">
-                 <span class="bbn-badge bbn-small bbn-bg-red"
-                       v-text="numProperties(bc.views[bc.selected].events)"/>
-               </div>
-               <div class="bbn-router-breadcrumb-loader bbn-border-text"
-                   :style="{borderColor: isNumber(bc.selected) && bc.views[bc.selected] && bc.views[bc.selected].fcolor ? bc.views[bc.selected].fcolor : null}"
-                   v-show="isNumber(bc.selected) && bc.views[bc.selected] && bc.views[bc.selected].loading"/>
-               <div :class="[
-                      'bbn-router-breadcrumb-element',
-                      'bbn-h-100',
-                      'bbn-vmiddle',
-                      {
-                       'bbn-router-breadcrumb-dirty': isNumber(bc.selected)
-                                                     && bc.views[bc.selected]
-                                                     && !!bc.views[bc.selected].dirty
-                     }
-                    ]">
-                 <span v-if="isNumber(bc.selected) && bc.views[bc.selected] && bc.views[bc.selected].icon"
-                       :title="bc.views[bc.selected].title"
-                       :class="'bbn-router-breadcrumb-element-icon bbn-h-100 bbn-vmiddle bbn-right-xsspace' + (bc.views[bc.selected].notext ? ' bbn-lg' : ' bbn-m')">
-                   <i :class="bc.views[bc.selected].icon"/>
-                 </span>
-                 <span v-if="isNumber(bc.selected) && bc.views[bc.selected] && !bc.views[bc.selected].notext"
-                       :class="['bbn-router-breadcrumb-element-text', {'bbn-b': !breadcrumbs[i+1]}]"
-                       :title="bc.views[bc.selected].title && (bc.views[bc.selected].title.length > bc.maxTitleLength) ? bc.views[bc.selected].title : ''"
-                       v-html="bc.views[bc.selected].title ? bc.cutTitle(bc.views[bc.selected].title) : _('Untitled')"/>
-               </div>
-               <i v-if="isNumber(bc.selected)
-                         && bc.views[bc.selected]
-                         && !bc.views[bc.selected].static
-                         && !bc.views[bc.selected].pinned"
-                    class="nf nf-fa-times bbn-p bbn-router-breadcrumb-close bbn-router-breadcrumb-icon"
-                    @click.prevent.stop="bc.close(bc.selected)"/>
-               <i v-if="isNumber(bc.selected) && bc.views[bc.selected] && bc.views[bc.selected].menu"
-                  class="nf nf-fa-caret_down bbn-router-breadcrumb-menu bbn-router-breadcrumb-icon bbn-p"
-                  @click.prevent.stop="openMenu($event)"/>
-             </div>
-           </bbn-context>
-         </bbn-context>
-       </template>
-       <div v-if="breadcrumbs.length"
-            class="bbn-flex-fill bbn-h-100"
-            :style="{
-              backgroundColor: breadcrumbs[breadcrumbs.length-1].getBackgroundColor(breadcrumbs[breadcrumbs.length-1].selected),
-              color: breadcrumbs[breadcrumbs.length-1].getFontColor(breadcrumbs[breadcrumbs.length-1].selected)
-            }">
-         &nbsp;
-       </div>
-     </div>
-   </div>
- </div>
-</div>
-<!-- END OF BREADCRUMB -->
-<!-- START OF TABS -->
-<div v-else-if="nav && !isBreadcrumb && !isVisual"
-    :class="['bbn-router-tabs', {'bbn-router-tabs-scrollable': scrollable}]"
-    ref="tabs">
- <div class="bbn-router-tabs-container">
-   <div class="bbn-router-tabs-ul-container">
-     <div class="bbn-flex-width">
-       <div v-if="scrollable"
-           class="bbn-router-tabs-button bbn-router-tabs-button-prev bbn-p">
-         <div class="bbn-100 bbn-middle"
-             @click="scrollTabs('left')">
-           <div class="bbn-block">
-             <i class="nf nf-fa-angle_left bbn-xlarge"/>
-           </div>
-         </div>
-       </div>
-       <div class="bbn-flex-fill">
-         <component :is="scrollable ? 'bbn-scroll' : 'div'"
-                     ref="horizontal-scroll"
-                     v-bind="scrollCfg">
-           <ul ref="tabgroup"
-               class="bbn-alt bbn-router-tabs-tabs bbn-bordered-bottom bbn-flex-fill">
-             <li v-for="(tab, tabIndex) in views"
-                 @click="!tab.disabled && (tabIndex !== selected) ? activateIndex(tabIndex) : false"
-                 :ref="'tab-' + tabIndex"
-                 v-show="!tab.hidden"
-                 :style="{
-                   backgroundColor: tab.bcolor || null,
-                   color: tab.fcolor || null
-                 }"
-                 :data-index="tabIndex"
-                 :class="['bbn-transition-bcolor', 'bbn-iblock', 'bbn-bordered', 'bbn-radius-top', 'bbn-state-default', 'bbn-unselectable', {
-                   'bbn-router-tabs-static': !!tab.static,
-                   'bbn-background-effect-internal': tabIndex === selected,
-                   'bbn-router-tabs-active': tabIndex === selected,
-                   'bbn-disabled': tab.disabled,
-                   'bbn-router-tabs-alarm': tab.alarm
-                 }, tab.cls || '']">
-               <div class="bbn-router-tabs-badge-container bbn-middle"
-                     v-if="numProperties(tab.events)">
-                 <span class="bbn-badge bbn-small bbn-bg-red"
-                       v-text="numProperties(tab.events)"/>
-               </div>
-               <div class="bbn-router-tabs-tab-loader bbn-border-text"
-                     :style="{borderColor: tab.fcolor || null}"
-                     v-show="tab.loading"/>
-               <bbn-context :context="true"
-                            @keydown.space.enter.prevent.stop="tabIndex !== selected ? activateIndex(tabIndex) : false"
-                            @keydown.right.down.prevent.stop="getRef('menu-' + tabIndex) ? getRef('menu-' + tabIndex).$el.focus() : (getRef('closer-' + tabIndex) ? getRef('closer-' + tabIndex).focus() : null)"
-                            :source="getMenuFn"
-                            :source-index="tabIndex"
-                            :autobind="false"
-                            tag="div"
-                            :disabled="tabIndex !== selected"
-                            min-width="10em"
-                            :class="['bbn-router-tabs-tab', 'bbn-iblock', {
-                              'bbn-router-tabs-dirty': tab.dirty,
-                              'bbn-router-tabs-icononly': tab.notext
-                            }]"
-                            :ref="'title-' + tabIndex"
-                            :style="{
-                              color: tab.fcolor ? tab.fcolor : null
-                            }"
-                            tabindex="0">
-                 <span v-if="tab.icon"
-                       :title="tab.title"
-                       :class="'bbn-router-tabs-main-icon bbn-iblock' + (tab.notext ? ' bbn-lg' : ' bbn-m')">
-                   <i :class="tab.icon"/>
-                 </span>
-                 <span v-if="!tab.notext && tab.title"
-                       class="bbn-router-tab-text"
-                       :title="getFullTitle(tab)"
-                       v-html="tab.title.length > maxTitleLength ? cutTitle(tab.title) : tab.title"/>
-               </bbn-context>
-               <div class="bbn-router-tabs-selected"
-                     :ref="'selector-' + tabIndex"
-                     v-show="tabIndex === selected"
-                     :style="{
-                       backgroundColor: getFontColor(tabIndex)
-                     }"/>
-               <span v-if="!tab.static && !tab.pinned"
-                     class="bbn-p bbn-router-tab-close bbn-iblock bbn-top-right bbn-hxspadded"
-                     tabindex="-1"
-                     :ref="'closer-' + tabIndex"
-                     @keydown.left.down.prevent.stop="getRef('menu-' + tabIndex) ? getRef('menu-' + tabIndex).$el.focus() : null"
-                     @keydown.space.enter.prevent.stop="close(tabIndex)"
-                     @click.stop.prevent="close(tabIndex)">
-                 <i class="nf nf-fa-times"/>
-               </span>
-               <bbn-context v-if="(tab.menu !== false) && (tabIndex === selected)"
-                           class="bbn-iblock bbn-router-tab-menu bbn-p bbn-bottom-right bbn-hxspadded"
-                           tabindex="-1"
+             'bbn-invisible': !ready,
+             'bbn-overlay': (nav || scrollContent),
+             'bbn-w-100': !scrollContent
+             }]">
+  <div :class="{
+               'bbn-flex-height': nav && scrollContent,
+               'bbn-router-nav': nav,
+               'bbn-router-nav-bc': nav && isBreadcrumb,
+               'bbn-overlay': !nav && scrollContent,
+               'bbn-w-100': !scrollContent
+               }">
+    <!-- START OF BREADCRUMB -->
+    <div v-if="nav && isBreadcrumb && !isVisual"
+         ref="breadcrumb"
+         :class="['bbn-router-breadcrumb', {'bbn-router-breadcrumb-master': master}]">
+      <div v-if="master"
+           class="bbn-router-breadcrumb-container">
+        <div class="bbn-transition-bcolor bbn-h-100 bbn-alt bbn-bordered-bottom bbn-no-border-top bbn-no-border-right bbn-vmiddle"
+             :style="{
+                     backgroundColor: getBackgroundColor(selected),
+                     color: getFontColor(selected)
+                     }">
+          <div class="bbn-flex-width bbn-h-100 bbn-vmiddle">
+            <template v-if="breadcrumbs.length"
+                      v-for="(bc, i) in breadcrumbs">
+              <div v-if="i > 0">
+                <i class="nf nf-fa-angle_right bbn-hsmargin bbn-large bbn-router-breadcrumb-arrow"/>
+              </div>
+              <bbn-context :source="bc.getList(i)"
+                           tag="div"
                            min-width="10em"
-                           tag="span"
-                           :source="getMenuFn"
+                           tabindex="0"
+                           :item-component="$options.components.listItem"
+                           class="bbn-h-100 bbn-vmiddle"
+                           :attach="itsMaster ? (itsMaster.getRef('breadcrumb') || undefined) : undefined"
                            :autobind="false"
-                           :source-index="tabIndex"
-                           :ref="'menu-' + tabIndex">
-                 <i class="nf nf-fa-caret_down"/>
-               </bbn-context>
-             </li>
-           </ul>
-         </component>
-       </div>
-       <div v-if="scrollable"
-         class="bbn-router-tabs-button bbn-router-tabs-button-next bbn-p">
-         <div class="bbn-100 bbn-middle"
-              @click="scrollTabs('right')">
-           <div class="bbn-block">
-             <i class="nf nf-fa-angle_right bbn-xlarge"/>
-           </div>
-         </div>
-       </div>
-     </div>
-   </div>
- </div>
-</div>
-<!-- END OF TABS -->
-<!-- START OF CONTENT FOR VISUALNAV -->
-<div v-if="ready && isVisual"
-    :class="{
-      'bbn-overlay': scrollContent,
-      'bbn-w-100': !scrollContent,
-      'bbn-vspadded': true
-    }">
- <div :class="{
-   'bbn-100': scrollContent,
-   'bbn-w-100': !scrollContent,
-   'bbn-router-visual': true
-  }"
-      :style="visualStyle">
-   <slot></slot>
-   <template v-for="a in visualList">
-     <bbn-container v-if="!a.view.real && !component"
-                   :key="a.view.uid"
-                   v-show="a.visible"
-                   :visual="true"
-                   v-bind="a.view"/>
-     <bbn-container v-else-if="component && componentSource && componentUrl"
-                   :source="componentSource"
-                   v-show="a.visible"
-                   :visual="true"
-                   :component="component"
-                   :key="componentSource[componentUrl]"
-                   :url="componentSource[componentUrl]"/>
-   </template>
-   <div v-if="(selected !== null) && (views.length > numVisuals)"
-        class="bbn-bg-black bbn-white bbn-p"
-        @click="visualShowAll = !visualShowAll">
-     <div class="bbn-100 bbn-middle">
-       <div class="bbn-block bbn-xxxl">
-         <i :class="'nf nf-fa-' + (visualShowAll ? 'minus' : 'plus')"/>
-       </div>
-     </div>
-   </div>
- </div>
-</div>
-<!-- END OF CONTENT FOR VISUALNAV -->
-<!-- START OF CONTENT -->
-<div :class="{
-      'bbn-flex-fill': !!nav && scrollContent,
-      'bbn-overlay': !nav && scrollContent,
-      'bbn-w-100':  !scrollContent
-    }"
-    v-else-if="ready">
- <slot></slot>
- <bbn-container v-for="view in views"
-                v-if="!view.real && !component"
-                :key="view.uid"
-                :visual="false"
-                v-bind="view"/>
- <bbn-container v-if="component && componentSource && componentUrl"
-                :source="componentSource"
-                :component="component"
-                :visual="false"
-                :key="componentSource[componentUrl]"
-                :url="componentSource[componentUrl]"/>
-</div>
-<!-- END OF CONTENT -->
-<bbn-loader v-else/>
-</div>
+                           :style="{
+                                   backgroundColor: bc.getBackgroundColor(bc.selected),
+                                   color: bc.getFontColor(bc.selected)
+                                   }">
+                <bbn-context :source="bc.getMenuFn"
+                             :source-index="isNumber(bc.selected) ? bc.selected : undefined"
+                             tag="div"
+                             min-width="10em"
+                             tabindex="0"
+                             :context="true"
+                             :autobind="false"
+                             class="bbn-vmiddle bbn-h-100">
+                  <div class="bbn-vmiddle bbn-h-100">
+                    <div class="bbn-router-breadcrumb-badge-container bbn-middle"
+                         v-if="isNumber(bc.selected) && bc.views[bc.selected] && numProperties(bc.views[bc.selected].events)">
+                      <span class="bbn-badge bbn-small bbn-bg-red"
+                            v-text="numProperties(bc.views[bc.selected].events)"/>
+                    </div>
+                    <div class="bbn-router-breadcrumb-loader bbn-border-text"
+                         :style="{borderColor: isNumber(bc.selected) && bc.views[bc.selected] && bc.views[bc.selected].fcolor ? bc.views[bc.selected].fcolor : null}"
+                         v-show="isNumber(bc.selected) && bc.views[bc.selected] && bc.views[bc.selected].loading"/>
+                    <div :class="[
+                                 'bbn-router-breadcrumb-element',
+                                 'bbn-h-100',
+                                 'bbn-vmiddle',
+                                 {
+                                 'bbn-router-breadcrumb-dirty': isNumber(bc.selected)
+                                 && bc.views[bc.selected]
+                                 && !!bc.views[bc.selected].dirty
+                                 }
+                                 ]">
+                      <span v-if="isNumber(bc.selected) && bc.views[bc.selected] && bc.views[bc.selected].icon"
+                            :title="bc.views[bc.selected].title"
+                            :class="'bbn-router-breadcrumb-element-icon bbn-h-100 bbn-vmiddle bbn-right-xsspace' + (bc.views[bc.selected].notext ? ' bbn-lg' : ' bbn-m')">
+                        <i :class="bc.views[bc.selected].icon"/>
+                      </span>
+                      <span v-if="isNumber(bc.selected) && bc.views[bc.selected] && !bc.views[bc.selected].notext"
+                            :class="['bbn-router-breadcrumb-element-text', {'bbn-b': !breadcrumbs[i+1]}]"
+                            :title="bc.views[bc.selected].title && (bc.views[bc.selected].title.length > bc.maxTitleLength) ? bc.views[bc.selected].title : ''"
+                            v-html="bc.views[bc.selected].title ? bc.cutTitle(bc.views[bc.selected].title) : _('Untitled')"/>
+                    </div>
+                    <i v-if="isNumber(bc.selected)
+                             && bc.views[bc.selected]
+                             && !bc.views[bc.selected].static
+                             && !bc.views[bc.selected].pinned"
+                       class="nf nf-fa-times bbn-p bbn-router-breadcrumb-close bbn-router-breadcrumb-icon"
+                       @click.prevent.stop="bc.close(bc.selected)"/>
+                    <i v-if="isNumber(bc.selected) && bc.views[bc.selected] && bc.views[bc.selected].menu"
+                       class="nf nf-fa-caret_down bbn-router-breadcrumb-menu bbn-router-breadcrumb-icon bbn-p"
+                       @click.prevent.stop="openMenu($event)"/>
+                  </div>
+                </bbn-context>
+              </bbn-context>
+            </template>
+            <div v-if="breadcrumbs.length"
+                 class="bbn-flex-fill bbn-h-100"
+                 :style="{
+                         backgroundColor: breadcrumbs[breadcrumbs.length-1].getBackgroundColor(breadcrumbs[breadcrumbs.length-1].selected),
+                         color: breadcrumbs[breadcrumbs.length-1].getFontColor(breadcrumbs[breadcrumbs.length-1].selected)
+                         }">
+              &nbsp;
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- END OF BREADCRUMB -->
+    <!-- START OF TABS -->
+    <div v-else-if="nav && !isBreadcrumb && !isVisual"
+         :class="['bbn-router-tabs', {'bbn-router-tabs-scrollable': scrollable}]"
+         ref="tabs">
+      <div class="bbn-router-tabs-container">
+        <div class="bbn-router-tabs-ul-container">
+          <div class="bbn-flex-width">
+            <div v-if="scrollable"
+                 class="bbn-router-tabs-button bbn-router-tabs-button-prev bbn-p">
+              <div class="bbn-100 bbn-middle"
+                   @click="scrollTabs('left')">
+                <div class="bbn-block">
+                  <i class="nf nf-fa-angle_left bbn-xlarge"/>
+                </div>
+              </div>
+            </div>
+            <div class="bbn-flex-fill">
+              <component :is="scrollable ? 'bbn-scroll' : 'div'"
+                         ref="horizontal-scroll"
+                         v-bind="scrollCfg">
+                <ul ref="tabgroup"
+                    class="bbn-alt bbn-router-tabs-tabs bbn-bordered-bottom bbn-flex-fill">
+                  <li v-for="(tab, tabIndex) in views"
+                      @click="!tab.disabled && (tabIndex !== selected) ? activateIndex(tabIndex) : false"
+                      :ref="'tab-' + tabIndex"
+                      v-show="!tab.hidden"
+                      :style="{
+                              backgroundColor: tab.bcolor || null,
+                              color: tab.fcolor || null
+                              }"
+                      :data-index="tabIndex"
+                      :class="['bbn-transition-bcolor', 'bbn-iblock', 'bbn-bordered', 'bbn-radius-top', 'bbn-state-default', 'bbn-unselectable', {
+                              'bbn-router-tabs-static': !!tab.static,
+                              'bbn-background-effect-internal': tabIndex === selected,
+                              'bbn-router-tabs-active': tabIndex === selected,
+                              'bbn-disabled': tab.disabled,
+                              'bbn-router-tabs-alarm': tab.alarm
+                              }, tab.cls || '']">
+                    <div class="bbn-router-tabs-badge-container bbn-middle"
+                         v-if="numProperties(tab.events)">
+                      <span class="bbn-badge bbn-small bbn-bg-red"
+                            v-text="numProperties(tab.events)"/>
+                    </div>
+                    <div class="bbn-router-tabs-tab-loader bbn-border-text"
+                         :style="{borderColor: tab.fcolor || null}"
+                         v-show="tab.loading"/>
+                    <bbn-context :context="true"
+                                 @keydown.space.enter.prevent.stop="tabIndex !== selected ? activateIndex(tabIndex) : false"
+                                 @keydown.right.down.prevent.stop="getRef('menu-' + tabIndex) ? getRef('menu-' + tabIndex).$el.focus() : (getRef('closer-' + tabIndex) ? getRef('closer-' + tabIndex).focus() : null)"
+                                 :source="getMenuFn"
+                                 :source-index="tabIndex"
+                                 :autobind="false"
+                                 tag="div"
+                                 :disabled="tabIndex !== selected"
+                                 min-width="10em"
+                                 :class="['bbn-router-tabs-tab', 'bbn-iblock', {
+                                         'bbn-router-tabs-dirty': tab.dirty,
+                                         'bbn-router-tabs-icononly': tab.notext
+                                         }]"
+                                 :ref="'title-' + tabIndex"
+                                 :style="{
+                                         color: tab.fcolor ? tab.fcolor : null
+                                         }"
+                                 tabindex="0">
+                      <span v-if="tab.icon"
+                            :title="tab.title"
+                            :class="'bbn-router-tabs-main-icon bbn-iblock' + (tab.notext ? ' bbn-lg' : ' bbn-m')">
+                        <i :class="tab.icon"/>
+                      </span>
+                      <span v-if="!tab.notext && tab.title"
+                            class="bbn-router-tab-text"
+                            :title="getFullTitle(tab)"
+                            v-html="tab.title.length > maxTitleLength ? cutTitle(tab.title) : tab.title"/>
+                    </bbn-context>
+                    <div class="bbn-router-tabs-selected"
+                         :ref="'selector-' + tabIndex"
+                         v-show="tabIndex === selected"
+                         :style="{
+                                 backgroundColor: getFontColor(tabIndex)
+                                 }"/>
+                    <span v-if="!tab.static && !tab.pinned"
+                          class="bbn-p bbn-router-tab-close bbn-iblock bbn-top-right bbn-hxspadded"
+                          tabindex="-1"
+                          :ref="'closer-' + tabIndex"
+                          @keydown.left.down.prevent.stop="getRef('menu-' + tabIndex) ? getRef('menu-' + tabIndex).$el.focus() : null"
+                          @keydown.space.enter.prevent.stop="close(tabIndex)"
+                          @click.stop.prevent="close(tabIndex)">
+                      <i class="nf nf-fa-times"/>
+                    </span>
+                    <bbn-context v-if="(tab.menu !== false) && (tabIndex === selected)"
+                                 class="bbn-iblock bbn-router-tab-menu bbn-p bbn-bottom-right bbn-hxspadded"
+                                 tabindex="-1"
+                                 min-width="10em"
+                                 tag="span"
+                                 :source="getMenuFn"
+                                 :autobind="false"
+                                 :source-index="tabIndex"
+                                 :ref="'menu-' + tabIndex">
+                      <i class="nf nf-fa-caret_down"/>
+                    </bbn-context>
+                  </li>
+                </ul>
+              </component>
+            </div>
+            <div v-if="scrollable"
+                 class="bbn-router-tabs-button bbn-router-tabs-button-next bbn-p">
+              <div class="bbn-100 bbn-middle"
+                   @click="scrollTabs('right')">
+                <div class="bbn-block">
+                  <i class="nf nf-fa-angle_right bbn-xlarge"/>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- END OF TABS -->
+    <!-- START OF CONTENT FOR VISUALNAV -->
+    <div v-if="ready && isVisual"
+         :class="{
+                 'bbn-router-scroller': true,
+                 'bbn-overlay': scrollContent,
+                 'bbn-w-100': !scrollContent,
+                 'bbn-vspadded': true
+                 }"
+         style="overflow: auto;"
+         ref="visualListContainer">
+      <div :class="{
+                   'bbn-100': scrollContent && !visualShowAll,
+                   'bbn-w-100': !scrollContent || visualShowAll,
+                   'bbn-router-visual': true
+                   }"
+           :style="visualStyle">
+        <div v-if="(selected !== null) && (views.length > numVisuals)"
+             class="bbn-bg-black bbn-white bbn-p bbn-container-ratio"
+             @click="visualShowAll = !visualShowAll">
+          <div class="bbn-100 bbn-middle">
+            <div class="bbn-block bbn-xxxl">
+              <i :class="'nf nf-fa-' + (visualShowAll ? 'minus' : 'plus')"/>
+            </div>
+          </div>
+        </div>
+        <slot></slot>
+        <template v-for="a in visualList">
+          <bbn-container v-if="!a.view.real && !component"
+                         :key="a.view.uid"
+                         v-show="a.visible && (!visualShowAll || !a.view.selected)"
+                         :visual="true"
+                         v-bind="a.view"/>
+          <bbn-container v-else-if="component && componentSource && componentUrl"
+                         :source="componentSource"
+                         v-show="a.visible"
+                         :visual="true"
+                         :component="component"
+                         :key="componentSource[componentUrl]"
+                         :url="componentSource[componentUrl]"/>
+        </template>
+      </div>
+    </div>
+    <!-- END OF CONTENT FOR VISUALNAV -->
+    <!-- START OF CONTENT -->
+    <div :class="{
+                 'bbn-flex-fill': !!nav && scrollContent,
+                 'bbn-overlay': !nav && scrollContent,
+                 'bbn-w-100':  !scrollContent
+                 }"
+         v-else-if="ready">
+      <slot></slot>
+      <bbn-container v-for="view in views"
+                     v-if="!view.real && !component"
+                     :key="view.uid"
+                     :visual="false"
+                     v-bind="view"/>
+      <bbn-container v-if="component && componentSource && componentUrl"
+                     :source="componentSource"
+                     :component="component"
+                     :visual="false"
+                     :key="componentSource[componentUrl]"
+                     :url="componentSource[componentUrl]"/>
+    </div>
+    <!-- END OF CONTENT -->
+    <bbn-loader v-else/>
+    <bbn-scrollbar :container="$refs.visualListContainer"
+                   orientation="vertical"
+                   v-if="isVisual && visualShowAll"/>
+  </div>
 </div>
