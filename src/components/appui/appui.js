@@ -667,89 +667,64 @@
       }
     },
     beforeCreate(){
-      let bbnDefaults = {
-        fn: {
-          defaultAjaxErrorFunction(jqXHR, textStatus, errorThrown) {
-            /** @todo */
-            appui.error({title: textStatus, content: errorThrown}, 4);
-            return false;
-          },
+      bbn.fn.defaultAjaxErrorFunction = (jqXHR, textStatus, errorThrown) => {
+        /** @todo */
+        appui.error({title: textStatus, content: errorThrown}, 4);
+        return false;
+      };
+      bbn.fn.defaultPreLinkFunction = url => {
+        let router = appui.getRef('router');
+        if (router) {
+          if (bbn.fn.isFunction(router.route) && !router.disabled) {
+            router.route(url);
+          }
+          return false;
+        }
+        return true;
+      };
+      bbn.fn.defaultAlertFunction = ele => {
+        /** @todo */
+        let c = appui.getCurrentContainer();
+        c.alert.apply(c, arguments);
+      };
 
-          /* defaultPreLinkFunction(url) {
-            if (this.autoload) {
-              let router = appui.getRef('router');
-              bbn.fn.log(url);
-              if ( router && bbn.fn.isFunction(router.route) ){
-                router.route(url);
-              }
-              return false;
+      bbn.fn.defaultStartLoadingFunction = (url, id, data) => {
+        if ( window.appui && appui.status ){
+          appui.loaders.unshift(bbn.env.loadersHistory[0]);
+          let i = appui.loaders.length - 1;
+          while ( (i > 0) && (appui.loaders.length > bbn.env.maxLoadersHistory) ){
+            if (!appui.loaders[i].loading) {
+              appui.loaders.splice(i, 1);
             }
 
-            return true;
-          }, */
-
-          defaultPreLinkFunction(url) {
-            let router = appui.getRef('router');
-            if (router) {
-              if (bbn.fn.isFunction(router.route) && !router.disabled) {
-                router.route(url);
-              }
-              return false;
-            }
-            return true;
-          },
-
-          defaultAlertFunction(ele) {
-            /** @todo */
-            let c = appui.getCurrentContainer();
-            c.alert.apply(c, arguments);
-          },
-
-          defaultStartLoadingFunction(url, id, data) {
-            if ( window.appui && appui.status ){
-              appui.loaders.unshift(bbn.env.loadersHistory[0]);
-              let i = appui.loaders.length - 1;
-              while ( (i > 0) && (appui.loaders.length > bbn.env.maxLoadersHistory) ){
-                if (!appui.loaders[i].loading) {
-                  appui.loaders.splice(i, 1);
-                }
-
-                i--;
-              }
-            }
-          },
-
-          defaultEndLoadingFunction(url, timestamp, data, res) {
-            if (res && res.data && res.data.disconnected) {
-              window.location.reload();
-              return;
-            }
-            if ( window.appui && appui.status ){
-              let history = bbn.fn.getRow(bbn.env.loadersHistory, {url: url, start: timestamp});
-              let loader = bbn.fn.getRow(appui.loaders, {url: url, start: timestamp});
-              if ( loader ){
-                if (  history ){
-                  bbn.fn.iterate(history, (val, prop) => {
-                    if ( loader[prop] !== val ){
-                      loader[prop] = val;
-                    }
-                  });
-                }
-                else{
-                  loader.loading = false;
-                }
-              }
-              //appui.$refs.loading.end(url, id, data, res);
-            }
+            i--;
           }
         }
       };
-      /*
-      if (this.root) {
-        bbnDefaults.env = {root: this.root};
-      }
-      */
-      bbn.fn.init(bbnDefaults, true);
+
+      bbn.fn.defaultEndLoadingFunction = (url, timestamp, data, res) => {
+        if (res && res.data && res.data.disconnected) {
+          window.location.reload();
+          return;
+        }
+        if ( window.appui && appui.status ){
+          let history = bbn.fn.getRow(bbn.env.loadersHistory, {url: url, start: timestamp});
+          let loader = bbn.fn.getRow(appui.loaders, {url: url, start: timestamp});
+          if ( loader ){
+            if (  history ){
+              bbn.fn.iterate(history, (val, prop) => {
+                if ( loader[prop] !== val ){
+                  loader[prop] = val;
+                }
+              });
+            }
+            else{
+              loader.loading = false;
+            }
+          }
+          //appui.$refs.loading.end(url, id, data, res);
+        }
+      };
     },
     created(){
       if ( window.appui ){

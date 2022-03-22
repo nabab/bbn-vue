@@ -444,7 +444,7 @@
         breadcrumbWatcher: false,
         breadcrumbsList: [],
         visualShowAll: false,
-        visualOrientation: this.orientation,
+        visualOrientation: this.orientation !== 'auto' ? this.orientation : null,
         lockedOrientation: false,
         isVisual: this.visual
       };
@@ -698,28 +698,16 @@
                 }
                 this.$nextTick(() => {
                   this.$emit('close', idx, onClose);
-                  this.close(idx, true);
                 });
               });
             }
-            else {
-              if (this.views[idx]) {
-
-                if (this.views[idx].real) {
-                  return;
-                  let url = this.views[idx].url;
-                  this.views.splice(idx, 1);
-                  this.$delete(this.urls, url);
-                }
-                else {
-                  this.$emit('close', idx, onClose);
-                  let url = this.views[idx].url;
-                  this.views.splice(idx, 1);
-                  this.$delete(this.urls, url);
-                }
-                this.fixIndexes()
-                return true;
-              }
+            else if (this.views[idx] && !this.views[idx].real) {
+              this.$emit('close', idx, onClose);
+              let url = this.views[idx].url;
+              this.views.splice(idx, 1);
+              this.$delete(this.urls, url);
+              this.fixIndexes()
+              return true;
             }
           }
         }
@@ -908,8 +896,11 @@
                   this.$set(obj, n, a);
                 }
               });
-              obj.uid = bbn.fn.randomString();
-              if (isValid) {
+              obj.uid = obj.url + '-' + bbn.fn.randomString();
+              if (this.single) {
+                this.views.splice(0, this.views.length, obj);
+              }
+              else if (isValid) {
                 this.views.splice(obj.idx, 0, obj);
               }
               else {
@@ -918,6 +909,18 @@
             }
           }
           this.fixIndexes()
+        }
+      },
+      init(url) {
+        if (!this.isInit){
+          if (this.numRegistered) {
+            this.isInit = true;
+          }
+          setTimeout(() => {
+            if (this.auto) {
+              this.route(url, true);
+            }
+          }, 50)
         }
       },
       /**
@@ -930,7 +933,7 @@
        * @fires route
        * @fires getDefaultURL
        */
-      register(cp, fake){
+      register(cp, fake) {
         if ( fake ){
           this.add(cp);
           return;
@@ -955,15 +958,14 @@
         if (idx === false) {
           this.add(cp);
         }
-        else{
+        else {
           cp.currentIndex = idx;
-          if ( !this.isInit && (this.numRegistered === this.views.length) ){
-            this.isInit = true;
-            if ( this.auto ){
-              this.route(this.single ? cp.url : this.getDefaultURL(), true);
-            }
-          }
         }
+
+        if (this.numRegistered === this.views.length) {
+          this.init(this.single ? cp.url : this.getDefaultURL());
+        }
+
         this.$emit('registered', cp.url)
       },
       /**
@@ -988,10 +990,7 @@
           delete this.urls[cp.url];
         }
         if (idx !== false) {
-          this.remove(idx);
-        }
-        if (this.isInit && (this.views.length !== this.numRegistered)) {
-          this.isInit = false;
+          //this.remove(idx);
         }
       },
       /**
@@ -1460,12 +1459,10 @@
        */
       activateIndex(idx){
         if ( this.isValidIndex(idx) ){
-          if ( this.urls[this.views[idx].url] ){
-            this.route(this.urls[this.views[idx].url].currentURL);
-          }
-          else{
-            this.route(this.views[idx].current);
-          }
+          this.route(
+            this.urls[this.views[idx].url] ? this.urls[this.views[idx].url].current
+            : this.views[idx].current
+          );
         }
       },
       /**
@@ -1727,10 +1724,40 @@
             }
             view = this.views[idx];
             if (force){
-              toAdd = true;
-              this.views.splice(idx, 1);
+              let kept = {
+                loading: true,
+                loaded: false,
+                load: true,
+                url: view.url,
+                current: url,
+                selected: true,
+                title: view.title,
+                static: view.static,
+                pinned: view.pinned,
+                index: idx
+              };
+              if (view.icon) {
+                kept.icon = view.icon;
+              }
+              if (view.bcolor) {
+                kept.bcolor = view.bcolor;
+              }
+              if (view.fcolor) {
+                kept.fcolor = view.fcolor;
+              }
+              bbn.fn.iterate(bbn.fn.extend(this.getDefaultView(), kept), (a, n) => {
+                if (view[n] !== a) {
+                  this.$set(view, n, a);
+                }
+              });
+              if (this.urls[url]) {
+                this.urls[url].isLoading = true;
+                this.urls[url].isLoaded = false;
+                this.urls[url].isInit = false;
+              }
             }
-            else if ((index !== undefined) && (idx !== index)) {
+
+            if ((index !== undefined) && (idx !== index)) {
               this.move(idx, index);
               idx = index;
             }
@@ -1758,10 +1785,8 @@
             this.views[idx].loading = true;
           }
 
-          if (!this.single) {
-            this.selected = idx;
-            this.$forceUpdate();
-          }
+          this.selected = this.single ? 0 : idx;
+          this.$forceUpdate();
 
           this.$emit('update', this.views);
           let dataObj = this.postBaseUrl ? {_bbn_baseURL: this.fullBaseURL} : {};
@@ -1788,7 +1813,7 @@
                 delete d.data;
               }
               if ( (d.url !== d.current) && this.urls[d.current] ){
-                //bbn.fn.warning("DELETING VIEW CASE.... " + d.current + ' ' + this.urls[d.current].idx, d.url, bbn.fn.search(this.views, {idx: this.urls[d.current].idx}));
+                bbn.fn.warning("DELETING VIEW CASE.... " + d.current + ' ' + this.urls[d.current].idx, d.url, bbn.fn.search(this.views, {idx: this.urls[d.current].idx}));
                 this.remove(this.urls[d.current].idx, true);
                 //this.views.splice(this.urls[d.current].idx, 1);
                 callRealInit = false;
@@ -1800,6 +1825,7 @@
                 })
                 
               }
+
               if ( !d.title || (d.title === bbn._('Loading')) ){
                 if (view && view.title) {
                   d.title = view.title;
@@ -1814,9 +1840,11 @@
                   d.title = title;
                 }
               }
+
               if (!d.current && d.url) {
                 d.current = d.url;
               }
+
               this.$nextTick(() => {
                 let o = bbn.fn.extend(view || {}, d, {loading: false, load: true, real: false, loaded: true});
                 this.add(o, idx);
@@ -1837,11 +1865,9 @@
               if ( idx !== false ){
                 let url = this.views[idx].url;
                 if (this.urls[url]) {
-                  this.views.splice(this.urls[url].idx, 1);
-                  //delete this.urls[url];
+                  this.remove(idx);
                 }
               }
-              this.activate(url);
             },
             () => {
               this.isLoading = false;
@@ -1858,7 +1884,8 @@
           this.$emit('update', this.views);
         }
         else {
-          throw new Error(bbn._("Impossible to find the container for URL") + ' ' + url);
+          //bbn.fn.log(url, this.views[0].loading, this.views[0].url, JSON.stringify(Object.keys(this.urls), null, 2));
+          //throw new Error(bbn._("Impossible to find the container for URL") + ' ' + url);
         }
       },
       /**
@@ -1877,18 +1904,17 @@
             this.urls[this.views[idx].url].isLoaded
           ){
             let url = this.views[idx].current;
-            if (this.single) {
-              this.remove(idx);
-            }
 
             setTimeout(() => {
               this.load(url, true, idx);
+              /*
               this.$nextTick(() => {
                 if (!this.single) {
                   this.selected = idx;
                 }
                 this.views[idx].selected = true;
               })
+              */
             }, 100);
           }
         });
@@ -1903,12 +1929,15 @@
         if ( this.url ){
           return this.url;
         }
+
         if ( this.parentContainer && (this.parentContainer.currentURL !== this.parentContainer.url) ){
           return bbn.fn.substr(this.parentContainer.currentURL, this.parentContainer.url.length + 1);
         }
+
         if ( this.def ){
           return this.def;
         }
+
         return this.parseURL(bbn.env.path);
       },
       /**
@@ -2053,14 +2082,27 @@
           });
         }
 
-        items.push({
-          text: bbn._("Enlarge"),
-          key: "enlarge",
-          icon: "nf nf-mdi-arrow_expand_all",
-          action: () => {
-            this.getVue(idx).fullScreen = true;
-          }
-        });
+        if (this.getVue(idx).fullScreen) {
+          items.push({
+            text: bbn._("Exit full screen"),
+            key: "reduce",
+            icon: "nf nf-mdi-arrow_collapse",
+            action: () => {
+              this.getVue(idx).fullScreen = false;
+            }
+          });
+        }
+        else {
+          items.push({
+            text: bbn._("Enlarge"),
+            key: "enlarge",
+            icon: "nf nf-mdi-arrow_expand_all",
+            action: () => {
+              this.getVue(idx).fullScreen = true;
+            }
+          });
+
+        }
 
         if ( tmp && tmp.length ){
           bbn.fn.each(tmp, (a, i) => {
@@ -2223,9 +2265,10 @@
           if (!this.parents.length) {
             let go = () => {
               this.isVisual = true;
-              this.onResize();
               setTimeout(() => {
-                this.activateIndex(this.getIndex(this.getFullCurrentURL()));
+                this.getVue(this.selected).init();
+                this.getVue(this.selected).show();
+                this.onResize();
               }, 250)
             };
 
@@ -2256,7 +2299,9 @@
             this.isVisual = false;
             this.itsMaster.isBreadcrumb = false;
             setTimeout(() => {
-              this.activateIndex(this.getIndex(this.getFullCurrentURL()));
+              this.getVue(this.selected).init();
+              this.getVue(this.selected).show();
+              this.onResize();
             }, 250)
           };
 
@@ -2750,11 +2795,11 @@
       onResize() {
         this.keepCool(() => {
           if (this.setResizeMeasures() && this.setContainerMeasures()) {
-            if (this.isVisual && (this.orientation === 'auto') && !this.lockedOrientation) {
-              this.visualOrientation = this.lastKnownWidth > this.lastKnownHeight ? 'left' : 'top';
-            }
+            this.$emit('resize');
           }
-          this.$emit('resize');
+          if (this.isVisual && (this.orientation === 'auto') && !this.lockedOrientation) {
+            this.visualOrientation = this.lastKnownWidth > this.lastKnownHeight ? 'left' : 'top';
+          }
         }, 'resize', 50);
       },
       visualStyleContainer(ct) {
@@ -2825,6 +2870,7 @@
       this.parent = this.parents.length ? this.parents[0] : false;
       // The root
       this.router = this.parents.length ? this.parents[this.parents.length-1] : this;
+      // Case where the rooter is not at the root level
       if ( this.parent ){
         this.parentContainer = this.closest('bbn-container');
         let uri = this.parentContainer.url;
@@ -2833,14 +2879,17 @@
         }
         this.baseURL = this.formatBaseURL(uri);
       }
-      else{
-        if (db) {
+      // Case where the rooter is at root level
+      else {
+        // Opening the database for the visual mode multiview
+        if (!this.single && db) {
           bbn.db.open('bbn').then(r => {
             this.db = r;
           }, err => {
             bbn.fn.log("Connection error in router", err);
           });
         }
+
         window.addEventListener("beforeunload", e =>{
           e = e || window.event;
           //if ( $(".bbn-tabnav-unsaved").length ){
@@ -2860,7 +2909,7 @@
       let tmp = [];
 
       //Get config from the storage
-      let storage = this.getStorage(this.parentContainer ? this.parentContainer.getFullURL() : this.storageName);
+      let storage = !this.single && this.getStorage(this.parentContainer ? this.parentContainer.getFullURL() : this.storageName);
       if ( storage ){
         if ( storage.breadcrumb !== undefined ){
           this.isBreadcrumb = storage.breadcrumb;
@@ -2875,6 +2924,7 @@
           this.lockedOrientation = true;
         }
       }
+
       // ---- ADDED 16/12/20 (Mirko) ----
       // Adding bbns-container from the slot
       if ( this.$slots.default ){
@@ -2938,18 +2988,23 @@
         });
       }
 
+      // Getting the default URL
       let url = this.getDefaultURL();
+
+      // Adding to the views
       bbn.fn.each(tmp, a => {
         if (!bbn.fn.isString(a.url)) {
           throw new Error(bbn._("The container must have a valid URL"));
         }
+
+        // Setting current if URL starts with default URL
         if (url && url.indexOf(a.url) === 0) {
           a.current = url;
         }
+
         this.add(a);
       });
 
-     
       //Breadcrumb
       if (!this.master && this.parent) {
         this.parent.registerBreadcrumb(this);
@@ -2964,11 +3019,13 @@
           this.parent.registerBreadcrumb(this);
         }
       }
+
       this.ready = true;
-      setTimeout(() => {
-        // bugfix for rendering some nf-mdi icons
-        this.iconsReady = true;
-      }, 1000);
+
+      if (!this.views.length) {
+        this.init(url);
+      }
+
     },
     /**
      * @event beforeDestroy
@@ -2981,7 +3038,7 @@
     watch: {
       selected(idx) {
         if (this.views[idx]) {
-          bbn.fn.log("In selected watcher " + idx, bbn.fn.filter(this.views, {selected: true}));
+          //bbn.fn.log("In selected watcher " + idx, bbn.fn.filter(this.views, {selected: true}));
           bbn.fn.map(bbn.fn.filter(this.views, {selected: true}), a => {
             if (a.idx !== idx) {
               a.selected = false;
@@ -2992,7 +3049,7 @@
           }
         }
         else {
-          throw new Error("The view with index " + idx + " doesn't not exist");
+          throw new Error("The view with index " + idx + " doesn't exist");
         }
       },
       currentTitle(v){
@@ -3033,6 +3090,7 @@
        */
       url(newVal){
         if ( this.ready ){
+          bbn.fn.log("CHANGING ROUTER URL");
           this.route(newVal);
         }
       },

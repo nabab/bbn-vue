@@ -60,6 +60,13 @@
         type: Number
       },
       /**
+       * The timestamp of the last activation
+       * @prop {Number} last
+       */
+      last: {
+        type: Number
+      },
+      /**
        * A unique id for the container that will ben used as index by the router
        * @prop {String} uid
        */
@@ -528,9 +535,7 @@
         }
       },
       showMenu() {
-        if (this.visual) {
-          return this.router.getMenuFn(this.idx);
-        }
+        return this.router.getMenuFn(this.idx);
       },
       takeScreenshot(num_tries = 0) {
         if (this.visual && this.router.db && window.html2canvas) {
@@ -662,6 +667,12 @@
     },
 
     watch: {
+      loaded(v) {
+        this.isLoaded = v;
+      },
+      loading(v) {
+        this.isLoading = v;
+      },
       selected(v) {
         this.visible = v;
       },

@@ -7,6 +7,7 @@
      v-show="visible || visual">
   <div :class="{
     'bbn-100': router.scrollContent,
+    'bbn-container-full-screen': fullScreen,
     'bbn-w-100': !router.scrollContent
   }">
     <transition name="fade"
@@ -14,12 +15,12 @@
                 v-on:after-enter="onResize">
       <div :class="{
         'bbn-overlay': !visual && router.scrollContent,
-        'bbn-flex-height': visual && router.scrollContent,
+        'bbn-flex-height': (visual || fullScreen) && router.scrollContent,
         'bbn-w-100': visual || !router.scrollContent
       }"
           v-show="visible || visual">
         <!-- The header -->
-        <div v-if="visual"
+        <div v-if="visual || fullScreen"
             :class="'bbn-transition-bcolor bbn-b bbn-vspadded bbn-flex-width ' + (visible ? ' bbn-m' : '')"
             :style="{
               paddingLeft: '0.5em',
@@ -43,7 +44,14 @@
             <span v-text="title"
                   style="overflow: hidden"/>
           </div>
-          <div v-if="visible && !static && !pinned && !router.visualShowAll"
+          <!-- Icon for restoring size when in full screen mode -->
+          <div v-if="visible && fullScreen"
+              class="bbn-block bbn-p bbn-vmiddle bbn-h-100"
+              @click="fullScreen = false">
+            <i class="nf nf-mdi-arrow_collapse bbn-lg"/>
+          </div>
+          <!-- Icon for closing  -->
+          <div v-else-if="visible && !static && !pinned && !router.visualShowAll"
               class="bbn-block bbn-p bbn-vmiddle bbn-h-100"
               @click="close">
             <i class="nf nf-fa-times bbn-lg"/>
@@ -53,9 +61,8 @@
         <div :class="{
           'bbn-background': true,
           'bbn-overlay': !fullScreen && !visual && router.scrollContent,
-          'bbn-flex-fill': !fullScreen && visual && router.scrollContent,
+          'bbn-flex-fill': (fullScreen || visual) && router.scrollContent,
           'bbn-w-100': !router.scrollContent,
-          'bbn-container-full-screen': fullScreen,
           'bbn-container-visible': visible
         }"
             ref="canvasSource">
@@ -104,12 +111,6 @@
             <img :src="thumbnail"
                 style="width: 100%; max-height: 100%; height: auto">
           </div>
-          <!-- Icon for closing when in full screen mode -->
-          <span  v-if="fullScreen"
-                class="bbn-container-full-screen-closer bbn-xl bbn-p">
-            <i class="nf nf-fa-times_circle"
-              @click="fullScreen = false"/>
-          </span>
           <!-- The container's popup, from each floater will come -->
           <bbn-popup ref="popup"
                     :source="popups"
