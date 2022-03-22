@@ -290,6 +290,14 @@
       draggable: {
         type: Boolean,
         default: false
+      },
+      /**
+       * Set to true to make the floater resizable
+       * @prop {Boolean} [false] resizable
+       */
+      resizable: {
+        type: Boolean,
+        default: false
       }
     },
     data() {

@@ -13,7 +13,8 @@
       @mouseenter="isResized ? isOver = true : (() => {})()"
       @keydown.esc.prevent.stop="close"
       @subready.stop
-      :style="currentStyle">
+      :style="currentStyle"
+      v-resizable:container.left.right.bottom="ready && resizable ? $el.parentElement : false">
   <div
         v-if="arrow"
         :class="'arrow ' + position"
