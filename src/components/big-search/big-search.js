@@ -1,5 +1,5 @@
 /**
- * @file bbn-search component
+ * @file bbn-big-search component
  *
  * @description The easy-to-implement bbn-dropdown component allows you to choose a single value from a user-supplied list.
  *
@@ -15,7 +15,7 @@
 
     "use strict";
 
-    Vue.component('bbn-search', {
+    Vue.component('bbn-big-search', {
       /**
        * @mixin bbn.vue.basicComponent
        * @mixin bbn.vue.eventsComponent
@@ -152,6 +152,7 @@
       },
       data() {
         return {
+          isOpened: false,
           /**
            * The current min width.
            * @data {String} ['4.2em'] specialWidth
@@ -170,8 +171,7 @@
            /**
            * @data {Number|null} [null] mouseTimeout
            */
-          mouseTimeout: null,
-          isActive: true
+          mouseTimeout: null
         };
       },
       computed: {
@@ -200,6 +200,7 @@
             };
           }
 
+          bbn.fn.log(cp, this.source);
           return cp;
         },
       },
@@ -208,35 +209,6 @@
          * Focuses the search input.
          * @method searchFocus
          */
-        searchFocus(){
-          clearTimeout(this.timeout);
-          this.$emit('focus', this);
-          this.isFocused = true;
-          this.specialWidth = this.maxWidth;
-          this.currentPlaceholder = this.placeholder;
-        },
-        /**
-         * Blurs the search input.
-         * @method searchBlur
-         */
-        searchBlur(){
-          clearTimeout(this.timeout);
-          this.timeout = setTimeout(() => {
-            this.isFocused = false;
-            this.isOpened = false;
-            this.specialWidth = this.minWidth;
-            this.filterString = '';
-            this.currentPlaceholder = '?';
-            this.$emit('blur', this);
-          }, 250);
-        },
-        /**
-         * Closes the search.
-         * @method searchClose
-         */
-        searchClose(){
-          this.isOpened = false;
-        },
         /**
          * Emits the event 'select' 
          * @method select
@@ -245,20 +217,43 @@
          * @param {Number} dataIndex
          * @emit change
          */
-        select(item, idx, dataIndex) {
-          if (item){
+        select(item, idx, dataIndex){
+          if (!this.disabled) {
             let ev = new Event('select', {cancelable: true});
             this.$emit('select', ev, item, idx, dataIndex);
-            if ( !ev.defaultPrevented  && (item[this.sourceValue] !== undefined) ){
-              this.currentText = item[this.sourceText];
-              this.filterString = item[this.sourceText];
-              this.emitInput(item[this.sourceValue]);
-              this.$emit('change', item[this.sourceValue]);
-              this.$nextTick(() => {
-                this.getRef('input').focus();
-              });
+            if (!ev.defaultPrevented) {
+              if (this.sourceAction && item[this.sourceAction]) {
+                if ( typeof(item[this.sourceAction]) === 'string' ){
+                  if ( bbn.fn.isFunction(this[item[this.sourceAction]]) ){
+                    this[item[this.sourceAction]]();
+                  }
+                }
+                else if (bbn.fn.isFunction(item[this.sourceAction]) ){
+                  if (this.actionArguments) {
+                    item[this.sourceAction](...this.actionArguments);
+                  }
+                  else {
+                    item[this.sourceAction](idx, item.data);
+                  }
+                }
+              }
+              else if (this.sourceUrl && item[this.sourceUrl]) {
+                let url = bbn.fn.isFunction(this.sourceUrl) ?
+                  this.sourceUrl(item, idx, dataIndex)
+                  : item[this.sourceUrl];
+                if (url) {
+                  bbn.fn.link(url);
+                }
+              }
+
+              if (this.selectUrl) {
+                bbn.fn.post(this.selectUrl, {
+                  data: item,
+                }, d => {
+                  bbn.fn.log("RESULT OF SELECT URL", d);
+                })
+              }
             }
-            this.isOpened = false;
           }
         },
         /**
@@ -280,32 +275,16 @@
             this.keynav(e);
           }
         },
-        /**
-         * On mouse Leave.
-         * @method leave
-         * @fires searchBlur
-         */
-        leave(){
-          if (this.autohide) {
-            if (this.mouseTimeout) {
-              clearTimeout(this.mouseTimeout);
-            }
-            this.mouseTimeout = setTimeout(() => {
-              this.searchBlur();
-            }, this.autohide);
-          }
-        },
-        /**
-         * On mouse enter.
-         * @method enter
-         */
-        enter(){
-          if (this.mouseTimeout) {
-            clearTimeout(this.mouseTimeout);
-          }
-        }
       },
       watch: {
+        filteredTotal(v, ov) {
+          if (v && !ov) {
+            this.isOpened = true;
+          }
+          else if (!v && ov) {
+            this.isOpened = false;
+          }
+        },
         /**
          * @watch filterString
          * @param {String} v 
@@ -314,40 +293,36 @@
           if (!this.ready) {
             this.ready = true;
           }
+
           clearTimeout(this.filterTimeout);
           if (v !== this.currentText) {
-            this.isOpened = false;
+            this.emitInput(v);
+            this.$emit('change', v);
             if (this.currentData.length) {
               this.currentData.splice(0);
             }
+
             this.$nextTick(() => {
               this.filterTimeout = setTimeout(() => {
                 this.filterTimeout = false;
                 // We don't relaunch the source if the component has been left
-                if ( this.isActive ){
-                  if (v && (v.length >= this.minLength)) {
-                    this.$once('dataloaded', () => {
-                      this.$nextTick(() => {
-                        if (!this.isOpened){
-                          this.isOpened = true;
-                        }
-                        else{
-                          let list = this.find('bbn-scroll');
-                          if ( list ){
-                            list.onResize();
-                          }
-                        }
-                      });
+                if (v && (v.length >= this.minLength)) {
+                  this.$once('dataloaded', () => {
+                    this.$nextTick(() => {
+                      let list = this.find('bbn-scroll');
+                      if ( list ){
+                        list.onResize();
+                      }
                     });
-                    this.currentFilters.conditions.splice(0, this.currentFilters.conditions.length ? 1 : 0, {
-                      field: this.sourceText,
-                      operator: 'startswith',
-                      value: v
-                    });
-                  }
-                  else {
-                    this.unfilter();
-                  }
+                  });
+                  this.currentFilters.conditions.splice(0, this.currentFilters.conditions.length ? 1 : 0, {
+                    field: this.sourceText,
+                    operator: 'startswith',
+                    value: v
+                  });
+                }
+                else {
+                  this.unfilter();
                 }
               }, this.delay);
             })

@@ -256,11 +256,15 @@
              ref="popup"
              :z-index="13"/>
   <!-- SEARCH -->
-  <div v-if="searchOn"
+  <div v-if="searchOn && plugins['appui-search']"
        class="bbn-overlay bbn-secondary"
-       style="z-index: 13">
-    <bbn-search :source="searchBar.source"
+       style="z-index: 13; background-color: transparent !important;">
+    <div v-if="searchOn && plugins['appui-search']"
+        class="bbn-overlay bbn-secondary"
+        style="opacity: 0.9"> </div>
+    <bbn-big-search :source="plugins['appui-search'] + '/results'"
                 :placeholder="searchBar.placeholder"
+                :select-url="plugins['appui-search'] ? plugins['appui-search'] + '/select' : ''"
                 ref="search"
                 v-model="searchBar.value"
                 :suggest="true"

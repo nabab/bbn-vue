@@ -928,12 +928,20 @@
               if (d && d.data) {
                 if (d.data.length) {
                   let data = this.treatData(d.data);
-                  if (this.currentData.length) {
-                    this.currentData.push(...data);
-                  }
-                  else {
-                    this.currentData = data;
-                  }
+                  bbn.fn.each(data, a => {
+                    let todo = true;
+                    if (a.data.hash) {
+                      let row = bbn.fn.filter(this.currentData, r => r.data.hash === a.data.hash);
+                      if (row.length && (row[0].data.score && a.data.score)) {
+                        todo = false;
+                        row[0].data.score += a.data.score;
+                      }
+                    }
+
+                    if (todo) {
+                      this.currentData.push(a);
+                    }
+                  });
 
                   this.updateIndexes();
                 }
