@@ -593,53 +593,61 @@
        * @fires scrollStartX
        * @fires scrollStartY
        */  
-      scrollStart(){
-        this.scrollStartX();
-        this.scrollStartY();
+      scrollStart(anim){
+        this.scrollStartX(anim);
+        this.scrollStartY(anim);
       },
       /**
        * @method scrollEnd
        * @fires scrollEndX
        * @fires scrollEndY
        */  
-      scrollEnd(){
-        this.scrollEndX();
-        this.scrollEndY();
+      scrollEnd(anim){
+        this.scrollEndX(anim);
+        this.scrollEndY(anim);
       },
       /**
        * @method scrollBefore
        * @fires scrollBeforeX
        * @fires scrollBeforeY
        */  
-      scrollBefore(){
-        this.scrollBeforeX();
-        this.scrollBeforeY();
+      scrollBefore(anim){
+        this.scrollBeforeX(anim);
+        this.scrollBeforeY(anim);
       },
       /**
        * @method scrollAfter
        * @fires scrollAfterX
        * @fires scrollAfterY
        */  
-      scrollAfter(){
-        this.scrollAfterX();
-        this.scrollAfterY();
+      scrollAfter(anim){
+        this.scrollAfterX(anim);
+        this.scrollAfterY(anim);
       },
       /**
        * Scroll the x axis to the position 0
        * @method scrollStartX
        * @fires this.$refs.xScroller.scrollTo
        */
-      scrollStartX(){
-        this.getRef('scrollContainer').scrollLeft = 0;
+      scrollStartX(anim){
+        if (this.hasScrollX) {
+          let x = this.getRef('xScroller');
+          if (x) {
+            x.scrollStart(anim);
+          }
+        }
       },
       /**
        * Scroll the y axis to the position 0
        * @method scrollStartY
        * @fires this.$refs.yScroller.scrollTo
        */
-      scrollStartY() {
+      scrollStartY(anim) {
         if (this.hasScrollY) {
-          this.getRef('scrollContainer').scrollTop = 0;
+          let y = this.getRef('yScroller');
+          if (y) {
+            y.scrollStart(anim);
+          }
         }
       },
       /**
@@ -647,10 +655,12 @@
        * @method scrollBeforeX
        * @fires this.$refs.xScroller.scrollBefore
        */
-      scrollBeforeX(){
-        let x = this.getRef('xScroller');
-        if (x) {
-          x.scrollBefore();
+      scrollBeforeX(anim){
+        if (this.hasScrollX) {
+          let x = this.getRef('xScroller');
+          if (x) {
+            x.scrollBefore(anim);
+          }
         }
       },
       /**
@@ -658,11 +668,11 @@
        * @method scrollBeforeY
        * @fires this.$refs.yScroller.scrollBefore
        */
-      scrollBeforeY() {
+      scrollBeforeY(anim) {
         if (this.hasScrollY) {
           let y = this.getRef('yScroller');
           if (y) {
-            y.scrollBefore();
+            y.scrollBefore(anim);
           }
         }
       },
@@ -671,10 +681,12 @@
        * @method scrollBeforeX
        * @fires this.$refs.xScroller.scrollBefore
        */
-      scrollAfterX(){
-        let x = this.getRef('xScroller');
-        if (x) {
-          x.scrollAfter();
+      scrollAfterX(anim){
+        if (this.hasScrollX) {
+          let x = this.getRef('xScroller');
+          if (x) {
+            x.scrollAfter(anim);
+          }
         }
       },
       /**
@@ -682,7 +694,7 @@
        * @method scrollBeforeY
        * @fires this.$refs.yScroller.scrollBefore
        */
-      scrollAfterY() {
+      scrollAfterY(anim) {
         if (this.hasScrollY) {
           let y = this.getRef('yScroller');
           if (y) {
@@ -695,8 +707,13 @@
        * @method scrollEndX
        * @thisfires this.getRef('xScroller').scrollTo
        */
-      scrollEndX(){
-        this.getRef('scrollContainer').scrollLeft = this.contentWidth - this.lastKnownWidth;
+      scrollEndX(anim) {
+        if (this.hasScrollX) {
+          let x = this.getRef('xScroller');
+          if (x) {
+            x.scrollEnd(anim);
+          }
+        }
       },
        /**
        * Scroll the y axis to the end
@@ -704,7 +721,12 @@
        * @thisfires this.getRef('yScroller').scrollTo
        */
       scrollEndY(){
-        this.getRef('scrollContainer').scrollTop = this.contentHeight - this.lastKnownHeight;
+        if (this.hasScrollY) {
+          let y = this.getRef('yScroller');
+          if (y) {
+            y.scrollEnd(anim);
+          }
+        }
       },
       /**
        * Gets the dimensions after a resize
@@ -950,9 +972,9 @@
           // Checks every second if the scroll content has been resized and sends onResize if so
           this.interval = setInterval(() => {
             if (this.scrollable && this.$el.offsetParent) {
-              let container = this.getRef('scrollContainer');
-              let contentWidth = Math.min(container.scrollWidth, this.maxWidth);
-              let contentHeight = Math.min(container.scrollHeight, this.maxHeight);            
+              let container = this.getRef('scrollContent');
+              let contentWidth = Math.min(container.scrollWidth, container.clientWidth);
+              let contentHeight = Math.min(container.scrollHeight, container.clientHeight);            
               if (
                 (
                   contentWidth

@@ -2598,10 +2598,10 @@
         let scroll = this.getRef('horizontal-scroll');
         if ( scroll ){
           if ( dir === 'right' ){
-            scroll.scrollAfter();
+            scroll.scrollAfter(true);
           }
           else{
-            scroll.scrollBefore();
+            scroll.scrollBefore(true);
           }
         }
       },

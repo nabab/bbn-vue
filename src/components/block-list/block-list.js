@@ -21,6 +21,27 @@
     ],
     mounted(){
       this.ready = true;
+    },
+    watch: {
+      currentPage() {
+        let sc = this.closest('bbn-scroll');
+        if (sc) {
+          sc.scrollTo(0, this.$el.offsetTop, true);
+        }
+        else {
+          let p = this.$el;
+          while (p) {
+            if (p.scrollHeight && p.clientHeight && p.scrollTop) {
+              let pos = this.$el.offsetTop;
+              p.scrollTop = pos;
+              break;
+            }
+            else {
+              p = p.parentNode;
+            }
+          }
+        }
+      }
     }
   });
 
