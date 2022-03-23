@@ -249,6 +249,7 @@
               if (this.selectUrl) {
                 bbn.fn.post(this.selectUrl, {
                   data: item,
+                  id: this.searchId
                 }, d => {
                   bbn.fn.log("RESULT OF SELECT URL", d);
                 })

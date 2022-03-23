@@ -346,7 +346,7 @@
         /**
          * @todo not used in the component
          */
-        searchFields: {
+         searchFields: {
           type: Array
         },
       },
@@ -517,7 +517,11 @@
            * If hirarchy and uid and flat will be set to the last entered node UID
            * @data {false|String} the UID of the last entered node
            */
-          parentUid: false
+          parentUid: false,
+          /**
+           * @data {null|String} An ID given with the search results
+           */
+          searchId: null
         };
       },
       computed: {
@@ -1082,6 +1086,10 @@
                 }
                 this.$emit('dataloaded');
                 if (this.isAjax && d && d.next_step) {
+                  if (d.data && d.id) {
+                    this.searchId = d.id;
+                  }
+
                   this.appendData(d.next_step);
                 }
                 //this._dataPromise = false;
