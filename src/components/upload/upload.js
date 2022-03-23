@@ -137,18 +137,11 @@
       },
       /**
        * Shows the preview image of the file uploaded.
-       * @prop {Boolean} [true] thumbs
+       * @prop {Boolean} [false] thumbs
        */
       thumbs: {
         type: Boolean,
-        default: true
-      },
-      /**
-       * If the property 'thumbs' is set to false, a text is shown.
-       * @prop {String} thumbnot
-       */
-      thumbNot : {
-        type: String
+        default: false
       },
       /**
        * The maximum size of the thumb.
@@ -901,13 +894,36 @@
         }
       },
       /**
-       * Gets the extension of the five file.
+       * Gets the extension of the given file.
        * @method getFileExt
        * @param {Object} file
        * @return String
        */
       getFileExt(file){
         return file.fromUser ? file.data.name.substring(file.data.name.lastIndexOf('.')+1) : bbn.fn.substr(file.data.extension, 1)
+      },
+      /**
+       * Gets the thumb url of the given file
+       * @method getThumbURL
+       * @param {Object} file
+       * @return String
+       */
+      getThumbURL(file){
+        return this.isFile(file) ?
+          URL.createObjectURL(file.data) :
+          (!!file.data.thumb && bbn.fn.isURL(file.data.thumb) ?
+            file.data.thumb :
+            ''
+          );
+      },
+      /**
+       * Check if the data property of the given file is an instance of File object
+       * @method isFile
+       * @param {Object} file
+       * @return Boolean
+       */
+      isFile(file){
+        return file.data instanceof File;
       }
     },
     /**
