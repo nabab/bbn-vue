@@ -15,28 +15,14 @@
   Vue.component('bbn-popup', {
     /**
      * @mixin bbn.vue.basicComponent
-     * @minix bbn.vue.resizerComponent
+     * @mixin bbn.vue.resizerComponent
      */
-    mixins: 
+    mixins:
     [
-      bbn.vue.basicComponent, 
+      bbn.vue.basicComponent,
       bbn.vue.resizerComponent
     ],
     props: {
-      /**
-       * @prop {String|Number} ['70%'] defaultWidth
-       */
-      defaultWidth: {
-        type: [String, Number],
-        default: '70%'
-      },
-      /**
-       * @prop {String|Number} ['70%'] defaultHeight
-       */
-      defaultHeight: {
-        type: [String, Number],
-        default: '70%'
-      },
       /**
        * @prop {String} ['United'] united
        */
@@ -116,6 +102,10 @@
       };
     },
     computed: {
+      /**
+       * @computed numPopups
+       * @return {Number}
+       */
       numPopups(){
         return this.items.length
       },
@@ -293,6 +283,10 @@
           new Error("You must give a URL in order to load a popup")
         }
       },
+      /**
+       * @method onClose
+       * @param {Number} index
+       */
       onClose(index) {
         this.items.splice(index, 1);
       },
@@ -576,6 +570,9 @@
         return false;
       }
     },
+    /**
+     * @event created
+     */
     created(){
       this.componentClass.push('bbn-resize-emitter');
     },
@@ -593,6 +590,9 @@
       items() {
         this.makeWindows();
       },
+      /**
+       * @watch numPopups
+       */
       numPopups(v){
         if (v && !this.ready) {
           this.ready = true;
