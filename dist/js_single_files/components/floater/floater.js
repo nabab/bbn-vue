@@ -16,7 +16,8 @@ script.innerHTML = `<div :class="[
       @mouseenter="isResized ? isOver = true : (() => {})()"
       @keydown.esc.prevent.stop="close"
       @subready.stop
-      :style="currentStyle">
+      :style="currentStyle"
+      v-resizable:container.left.right.bottom="ready && resizable ? $el.parentElement : false">
   <div
         v-if="arrow"
         :class="'arrow ' + position"
@@ -34,7 +35,8 @@ script.innerHTML = `<div :class="[
               'bbn-bordered-bottom': true,
               'bbn-unselectable': true,
               'bbn-w-100': !isResizing
-            }">
+            }"
+            v-draggable.mode.helper.container="!!draggable && ready ? {mode: 'move', helper: $el, container: $el.parentElement} : false">
       <div v-if="title"
           class="bbn-w-100">
         <h3 v-html="title"
@@ -58,7 +60,6 @@ script.innerHTML = `<div :class="[
         </div>
       </div>
     </header>
-    
     <div :class="{
           'bbn-flex-fill': footer || title || (buttons && buttons.length),
           'bbn-h-100': !title && !footer && (!buttons || !buttons.length),
@@ -95,7 +96,9 @@ script.innerHTML = `<div :class="[
           <slot v-else-if="$slots.default"/>
           <div v-else-if="!!content" 
               v-html="content"
-              :class="scrollable ? 'bbn-block' : 'bbn-100'"/>
+              :class="scrollable ? 'bbn-block' : 'bbn-100'"
+              :style="HTMLStyle"
+          />
           <bbn-list v-else-if="filteredData.length"
                     :mode="mode"
                     ref="list"
@@ -110,7 +113,9 @@ script.innerHTML = `<div :class="[
                     origin="floater"
                     @select="select"
                     :source-value="sourceValue"
-                    :source-text="sourceText"/>
+                    :source-text="sourceText"
+                    :source-url="sourceUrl"
+                    :source-action="sourceAction"/>
           <h3 v-else v-text="noData"/>
         </bbn-scroll>
       </div>
@@ -445,6 +450,22 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         type: Number,
         default: 0
       },
+      /**
+       * Set to true to make the floater draggable
+       * @prop {Boolean} [false] draggable
+       */
+      draggable: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * Set to true to make the floater resizable
+       * @prop {Boolean} [false] resizable
+       */
+      resizable: {
+        type: Boolean,
+        default: false
+      }
     },
     data() {
       let fns = [];
@@ -551,8 +572,8 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
          * A list of form components contained in this container
          * @data {Array} [[]] forms
          */
-          forms: []
-        };
+        forms: [],
+      };
     },
     computed: {
       /**
@@ -561,14 +582,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @return {String}
        */
       formattedLeft() {
-        let offset = 0;
-        if (this.position == 'left') {
-          offset = -this.distance;
-        }
-        if (this.position == 'right') {
-          offset = this.distance;
-        }
-        return this.currentLeft !== null ? this.formatSize(this.currentLeft + offset) : '0px';
+        return this.currentLeft !== null ? this.formatSize(this.currentLeft) : '0px';
       },
       /**
        * Normalizes the property 'top'.
@@ -576,16 +590,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @return {String}
        */
       formattedTop() {
-        let topPositions = ['topLeft', 'topRight', 'top'];
-        let bottomPositions = ['bottomLeft', 'bottomRight', 'bottom'];
-        let offset = 0;
-        if (topPositions.indexOf(this.position) !== -1) {
-          offset = -this.distance;
-        }
-        if (bottomPositions.indexOf(this.position) !== -1) {
-          offset = this.distance;
-        }
-        return this.currentTop !== null ? this.formatSize(this.currentTop + offset) : '0px';
+        return this.currentTop !== null ? this.formatSize(this.currentTop) : '0px';
       },
       /**
        * Normalizes the property 'width'.
@@ -640,6 +645,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
             bbn.fn.extend(s, {
               maxWidth: this.formatSize(this.currentMaxWidth),
               minWidth: this.formatSize(this.currentMinWidth),
+              //maxHeight: this.formatSize(Math.min(this.currentMaxHeight, this.scrollMaxHeight - this.currentTop)),
               maxHeight: this.formatSize(this.currentMaxHeight),
               minHeight: this.formatSize(this.currentMinHeight)
             });
@@ -653,6 +659,15 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           width: '100%',
           height: '100%'
         }
+      },
+      HTMLStyle() {
+        this.scrollWidth = Math.min(this.scrollWidth, this.currentMaxWidth);
+        this.scrollHeight = Math.min(this.scrollHeight, this.scrollMaxHeight - this.currentTop);
+        let s = {
+          maxWidth: this.isMaximized ? '100%' : (this.currentMaxWidth + 'px') || null,
+          maxHeight: this.isMaximized ? '100%' : ((this.scrollMaxHeight - this.currentTop) + 'px') || null
+        };
+        return s;  
       },
       /**
        * True if there is some content in the component.
@@ -694,7 +709,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       },
       anonymousComponent(){
         return this.$refs.component;
-      }
+      },
     },
     methods: {
       /**
@@ -1284,8 +1299,26 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         });
 
         if (ok  && (r.x.res !== null) && (r.y.res !== null)) {
-          this.currentLeft = Math.ceil(r.x.res);
-          this.currentTop = Math.ceil(r.y.res);
+          // calculate offset for tooltip position
+          let offset = 0;
+          if (this.position == 'left') {
+            offset = -this.distance;
+          }
+          if (this.position == 'right') {
+            offset = this.distance;
+          }
+          this.currentLeft = Math.ceil(r.x.res + offset);
+
+          let topPositions = ['topLeft', 'topRight', 'top'];
+          let bottomPositions = ['bottomLeft', 'bottomRight', 'bottom'];
+          offset = 0;
+          if (topPositions.indexOf(this.position) !== -1) {
+            offset = -this.distance;
+          }
+          if (bottomPositions.indexOf(this.position) !== -1) {
+            offset = this.distance;
+          }
+          this.currentTop = Math.ceil(r.y.res + offset);
         }
 
       },

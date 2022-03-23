@@ -38,7 +38,7 @@ script.innerHTML = `<div :class="[componentClass]">
         <div :class="['bbn-border-box', {
               'bbn-w-100': !scrollable,
               'bbn-panelbar-selected' : isSelected(idx),
-              'bbn-flex-fill': (isSelected(idx) & (flex || source[idx].flex))
+              'bbn-flex-fill': isSelected(idx) && (flex || source[idx].flex || scrollable)
             }]"
             :style="getStyle(idx)"
         >
@@ -251,7 +251,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
             this.selected = idx;
           }
           this.$emit('select', idx, this.source[idx])
-          if ( !this.scrollable && !this.flex ){
+          if ( !this.flex ){
             this.$nextTick(()=>{
               this.getStyle(idx)
             })

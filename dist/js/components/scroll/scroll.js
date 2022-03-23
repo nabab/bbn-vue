@@ -843,7 +843,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @returns Promise
        */
       onResize(force) {
-        // Only executed when the ocmponent is ready
+        // Only executed when the component is ready
         if ( !this.ready ){
           return new Promise(resolve => {
             setTimeout(() => {
@@ -1010,8 +1010,8 @@ document.head.insertAdjacentElement('beforeend', css);
           this.interval = setInterval(() => {
             if (this.scrollable && this.$el.offsetParent) {
               let container = this.getRef('scrollContainer');
-              let contentWidth = container.scrollWidth;
-              let contentHeight = container.scrollHeight;
+              let contentWidth = Math.min(container.scrollWidth, this.maxWidth);
+              let contentHeight = Math.min(container.scrollHeight, this.maxHeight);            
               if (
                 (
                   contentWidth
@@ -1022,8 +1022,8 @@ document.head.insertAdjacentElement('beforeend', css);
                   )
                 )
                 || (
-                  contentWidth
-                  && (this.contentWidth !== contentHeight)
+                  contentHeight
+                  && (this.contentHeight !== contentHeight)
                   && (
                     !this.contentHeight
                     || (Math.abs(contentHeight - this.contentHeight) > 3)

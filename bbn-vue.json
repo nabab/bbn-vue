@@ -5,7 +5,7 @@
         "items": [
             {
                 "text": "appui",
-                "lastmod": 1644803650,
+                "lastmod": 1647995459,
                 "url": "bbn-vue\/component\/appui\/overview",
                 "props": [
                     {
@@ -311,6 +311,142 @@
                         "text": "dropdownComponent",
                         "desc": "",
                         "url": "bbn-vue\/component\/autocomplete\/doc\/mixins#dropdownComponent"
+                    }
+                ]
+            },
+            {
+                "text": "big-search",
+                "lastmod": 1648007778,
+                "url": "bbn-vue\/component\/big-search\/overview",
+                "props": [
+                    {
+                        "text": "filterselection",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/big-search\/doc\/props#filterselection"
+                    },
+                    {
+                        "text": "filterable",
+                        "desc": "Defines if the search is filterable.\n",
+                        "url": "bbn-vue\/component\/big-search\/doc\/props#filterable"
+                    },
+                    {
+                        "text": "autobind",
+                        "desc": "Set to true will automatically update the data before mount.\n",
+                        "url": "bbn-vue\/component\/big-search\/doc\/props#autobind"
+                    },
+                    {
+                        "text": "nullable",
+                        "desc": "Defines if the search can have a null value.\n",
+                        "url": "bbn-vue\/component\/big-search\/doc\/props#nullable"
+                    },
+                    {
+                        "text": "minLength",
+                        "desc": "Defines the min length of the filter string.\n",
+                        "url": "bbn-vue\/component\/big-search\/doc\/props#minLength"
+                    },
+                    {
+                        "text": "leftIcon",
+                        "desc": "Defines the left icon of the search.\n",
+                        "url": "bbn-vue\/component\/big-search\/doc\/props#leftIcon"
+                    },
+                    {
+                        "text": "rightIcon",
+                        "desc": "Defines the right icon of the search.\n",
+                        "url": "bbn-vue\/component\/big-search\/doc\/props#rightIcon"
+                    },
+                    {
+                        "text": "minWidth",
+                        "desc": "Defines the min width of the input.\n",
+                        "url": "bbn-vue\/component\/big-search\/doc\/props#minWidth"
+                    },
+                    {
+                        "text": "maxWidth",
+                        "desc": "Defines the max width of the input.\n",
+                        "url": "bbn-vue\/component\/big-search\/doc\/props#maxWidth"
+                    },
+                    {
+                        "text": "delay",
+                        "desc": "Defines the delay before the component starts to search.\n",
+                        "url": "bbn-vue\/component\/big-search\/doc\/props#delay"
+                    },
+                    {
+                        "text": "shortPlaceholder",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/big-search\/doc\/props#shortPlaceholder"
+                    },
+                    {
+                        "text": "autohide",
+                        "desc": "Delay to auto-hide the results when mouse out (or false to not auto-hide).\n",
+                        "url": "bbn-vue\/component\/big-search\/doc\/props#autohide"
+                    },
+                    {
+                        "text": "sourceAction",
+                        "desc": "The name of the property to be used as action to execute when selected.\n",
+                        "url": "bbn-vue\/component\/big-search\/doc\/props#sourceAction"
+                    },
+                    {
+                        "text": "sourceUrl",
+                        "desc": "The name of the property to be used as URL to go to when selected.\n",
+                        "url": "bbn-vue\/component\/big-search\/doc\/props#sourceUrl"
+                    },
+                    {
+                        "text": "selectUrl",
+                        "desc": "The URL where to send the selected result.\n",
+                        "url": "bbn-vue\/component\/big-search\/doc\/props#selectUrl"
+                    }
+                ],
+                "methods": [
+                    {
+                        "text": "searchFocus",
+                        "desc": "Focuses the search input.\n",
+                        "url": "bbn-vue\/component\/big-search\/doc\/methods#searchFocus"
+                    },
+                    {
+                        "text": "select",
+                        "desc": "Emits the event 'select'\n",
+                        "url": "bbn-vue\/component\/big-search\/doc\/methods#select"
+                    }
+                ],
+                "mixins": [
+                    {
+                        "text": "basicComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/big-search\/doc\/mixins#basicComponent"
+                    },
+                    {
+                        "text": "eventsComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/big-search\/doc\/mixins#eventsComponent"
+                    },
+                    {
+                        "text": "inputComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/big-search\/doc\/mixins#inputComponent"
+                    },
+                    {
+                        "text": "resizerComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/big-search\/doc\/mixins#resizerComponent"
+                    },
+                    {
+                        "text": "listComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/big-search\/doc\/mixins#listComponent"
+                    },
+                    {
+                        "text": "keynavComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/big-search\/doc\/mixins#keynavComponent"
+                    },
+                    {
+                        "text": "urlComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/big-search\/doc\/mixins#urlComponent"
+                    },
+                    {
+                        "text": "dropdownComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/big-search\/doc\/mixins#dropdownComponent"
                     }
                 ]
             },
@@ -1754,7 +1890,7 @@
             },
             {
                 "text": "code",
-                "lastmod": 1644673385,
+                "lastmod": 1647566926,
                 "url": "bbn-vue\/component\/code\/overview",
                 "props": [
                     {
@@ -2334,13 +2470,18 @@
             },
             {
                 "text": "container",
-                "lastmod": 1644804055,
+                "lastmod": 1647913084,
                 "url": "bbn-vue\/component\/container\/overview",
                 "props": [
                     {
                         "text": "idx",
                         "desc": "The index of the container\n",
                         "url": "bbn-vue\/component\/container\/doc\/props#idx"
+                    },
+                    {
+                        "text": "last",
+                        "desc": "The timestamp of the last activation\n",
+                        "url": "bbn-vue\/component\/container\/doc\/props#last"
                     },
                     {
                         "text": "uid",
@@ -2672,7 +2813,7 @@
             },
             {
                 "text": "dashboard",
-                "lastmod": 1644370076,
+                "lastmod": 1647566926,
                 "url": "bbn-vue\/component\/dashboard\/overview",
                 "props": [
                     {
@@ -2833,9 +2974,9 @@
                         "url": "bbn-vue\/component\/dashboard\/doc\/methods#setCurrentSlots"
                     },
                     {
-                        "text": "dragging",
-                        "desc": "For dragging widget.\n",
-                        "url": "bbn-vue\/component\/dashboard\/doc\/methods#dragging"
+                        "text": "drop",
+                        "desc": "On widget drop.\n",
+                        "url": "bbn-vue\/component\/dashboard\/doc\/methods#drop"
                     }
                 ],
                 "mixins": [
@@ -2858,7 +2999,7 @@
             },
             {
                 "text": "datepicker",
-                "lastmod": 1639285137,
+                "lastmod": 1647708740,
                 "url": "bbn-vue\/component\/datepicker\/overview",
                 "props": [
                     {
@@ -3876,7 +4017,7 @@
             },
             {
                 "text": "fisheye",
-                "lastmod": 1644370201,
+                "lastmod": 1647566926,
                 "url": "bbn-vue\/component\/fisheye\/overview",
                 "props": [
                     {
@@ -3981,8 +4122,22 @@
                 ]
             },
             {
+                "text": "flag",
+                "lastmod": 1645716373,
+                "url": "bbn-vue\/component\/flag\/overview",
+                "props": [],
+                "methods": [],
+                "mixins": [
+                    {
+                        "text": "basicComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/flag\/doc\/mixins#basicComponent"
+                    }
+                ]
+            },
+            {
                 "text": "floater",
-                "lastmod": 1644764691,
+                "lastmod": 1648007469,
                 "url": "bbn-vue\/component\/floater\/overview",
                 "props": [
                     {
@@ -4124,6 +4279,16 @@
                         "text": "suggest",
                         "desc": "",
                         "url": "bbn-vue\/component\/floater\/doc\/props#suggest"
+                    },
+                    {
+                        "text": "draggable",
+                        "desc": "Set to true to make the floater draggable\n",
+                        "url": "bbn-vue\/component\/floater\/doc\/props#draggable"
+                    },
+                    {
+                        "text": "resizable",
+                        "desc": "Set to true to make the floater resizable\n",
+                        "url": "bbn-vue\/component\/floater\/doc\/props#resizable"
                     }
                 ],
                 "methods": [
@@ -4459,7 +4624,7 @@
             },
             {
                 "text": "form",
-                "lastmod": 1644423797,
+                "lastmod": 1645679875,
                 "url": "bbn-vue\/component\/form\/overview",
                 "props": [
                     {
@@ -5095,7 +5260,7 @@
             },
             {
                 "text": "input",
-                "lastmod": 1644370076,
+                "lastmod": 1645795827,
                 "url": "bbn-vue\/component\/input\/overview",
                 "props": [
                     {
@@ -5340,7 +5505,7 @@
             },
             {
                 "text": "list",
-                "lastmod": 1644370201,
+                "lastmod": 1648001035,
                 "url": "bbn-vue\/component\/list\/overview",
                 "props": [
                     {
@@ -5672,7 +5837,7 @@
             },
             {
                 "text": "login",
-                "lastmod": 1644370201,
+                "lastmod": 1647566926,
                 "url": "bbn-vue\/component\/login\/overview",
                 "props": [
                     {
@@ -6658,7 +6823,7 @@
             },
             {
                 "text": "panelbar",
-                "lastmod": 1639285137,
+                "lastmod": 1647566926,
                 "url": "bbn-vue\/component\/panelbar\/overview",
                 "props": [
                     {
@@ -6749,7 +6914,7 @@
             },
             {
                 "text": "popup",
-                "lastmod": 1644585600,
+                "lastmod": 1647719024,
                 "url": "bbn-vue\/component\/popup\/overview",
                 "props": [
                     {
@@ -7247,7 +7412,7 @@
             },
             {
                 "text": "router",
-                "lastmod": 1644803785,
+                "lastmod": 1647914442,
                 "url": "bbn-vue\/component\/router\/overview",
                 "props": [
                     {
@@ -7299,6 +7464,11 @@
                         "text": "scrollable",
                         "desc": "Sets if the views' titles will be scrollable in case they have a greater width than the page (true), or if they will be shown multilines (false, default).\n",
                         "url": "bbn-vue\/component\/router\/doc\/props#scrollable"
+                    },
+                    {
+                        "text": "scrollContent",
+                        "desc": "Sets if the router and the ocntainers inside it should be themselves scrollable or part of the global scroll.\n",
+                        "url": "bbn-vue\/component\/router\/doc\/props#scrollContent"
                     },
                     {
                         "text": "storageName",
@@ -7374,6 +7544,16 @@
                         "text": "visualSize",
                         "desc": "The position of the visual mini containers\n",
                         "url": "bbn-vue\/component\/router\/doc\/props#visualSize"
+                    },
+                    {
+                        "text": "bcolor",
+                        "desc": "The default background color for the title bar\n",
+                        "url": "bbn-vue\/component\/router\/doc\/props#bcolor"
+                    },
+                    {
+                        "text": "fcolor",
+                        "desc": "The default text color for the title bar\n",
+                        "url": "bbn-vue\/component\/router\/doc\/props#fcolor"
                     }
                 ],
                 "methods": [
@@ -7829,7 +8009,7 @@
             },
             {
                 "text": "scroll",
-                "lastmod": 1644418127,
+                "lastmod": 1645531991,
                 "url": "bbn-vue\/component\/scroll\/overview",
                 "props": [
                     {
@@ -8221,7 +8401,7 @@
             },
             {
                 "text": "search",
-                "lastmod": 1644370076,
+                "lastmod": 1648007440,
                 "url": "bbn-vue\/component\/search\/overview",
                 "props": [
                     {
@@ -8281,8 +8461,23 @@
                     },
                     {
                         "text": "autohide",
-                        "desc": "",
+                        "desc": "Delay to auto-hide the results when mouse out (or false to not auto-hide).\n",
                         "url": "bbn-vue\/component\/search\/doc\/props#autohide"
+                    },
+                    {
+                        "text": "sourceAction",
+                        "desc": "The name of the property to be used as action to execute when selected.\n",
+                        "url": "bbn-vue\/component\/search\/doc\/props#sourceAction"
+                    },
+                    {
+                        "text": "sourceUrl",
+                        "desc": "The name of the property to be used as URL to go to when selected.\n",
+                        "url": "bbn-vue\/component\/search\/doc\/props#sourceUrl"
+                    },
+                    {
+                        "text": "selectUrl",
+                        "desc": "The URL where to send the selected result.\n",
+                        "url": "bbn-vue\/component\/search\/doc\/props#selectUrl"
                     }
                 ],
                 "methods": [
@@ -8292,9 +8487,29 @@
                         "url": "bbn-vue\/component\/search\/doc\/methods#searchFocus"
                     },
                     {
+                        "text": "searchBlur",
+                        "desc": "Blurs the search input.\n",
+                        "url": "bbn-vue\/component\/search\/doc\/methods#searchBlur"
+                    },
+                    {
+                        "text": "searchClose",
+                        "desc": "Closes the search.\n",
+                        "url": "bbn-vue\/component\/search\/doc\/methods#searchClose"
+                    },
+                    {
                         "text": "select",
                         "desc": "Emits the event 'select'\n",
                         "url": "bbn-vue\/component\/search\/doc\/methods#select"
+                    },
+                    {
+                        "text": "leave",
+                        "desc": "On mouse Leave.\n",
+                        "url": "bbn-vue\/component\/search\/doc\/methods#leave"
+                    },
+                    {
+                        "text": "enter",
+                        "desc": "On mouse enter.\n",
+                        "url": "bbn-vue\/component\/search\/doc\/methods#enter"
                     }
                 ],
                 "mixins": [
@@ -8413,7 +8628,7 @@
             },
             {
                 "text": "slideshow",
-                "lastmod": 1644370201,
+                "lastmod": 1644882636,
                 "url": "bbn-vue\/component\/slideshow\/overview",
                 "props": [
                     {
@@ -9106,7 +9321,7 @@
             },
             {
                 "text": "table",
-                "lastmod": 1644673385,
+                "lastmod": 1645795664,
                 "url": "bbn-vue\/component\/table\/overview",
                 "props": [
                     {
@@ -9283,6 +9498,11 @@
                         "text": "maxRowHeight",
                         "desc": "The max row height value\n",
                         "url": "bbn-vue\/component\/table\/doc\/props#maxRowHeight"
+                    },
+                    {
+                        "text": "toolbarSlotBefore",
+                        "desc": "Property sloBefore for the toolbar\n",
+                        "url": "bbn-vue\/component\/table\/doc\/props#toolbarSlotBefore"
                     }
                 ],
                 "methods": [
@@ -9823,13 +10043,18 @@
             },
             {
                 "text": "toolbar",
-                "lastmod": 1639285138,
+                "lastmod": 1645794965,
                 "url": "bbn-vue\/component\/toolbar\/overview",
                 "props": [
                     {
                         "text": "source",
                         "desc": "The toolbat elements\n",
                         "url": "bbn-vue\/component\/toolbar\/doc\/props#source"
+                    },
+                    {
+                        "text": "slotBefore",
+                        "desc": "If true the content of the slot is placed before the content generated by the configuration.\n",
+                        "url": "bbn-vue\/component\/toolbar\/doc\/props#slotBefore"
                     },
                     {
                         "text": "orientation",
@@ -9919,7 +10144,7 @@
             },
             {
                 "text": "tree",
-                "lastmod": 1644370076,
+                "lastmod": 1647719024,
                 "url": "bbn-vue\/component\/tree\/overview",
                 "props": [
                     {
@@ -10753,7 +10978,7 @@
             },
             {
                 "text": "video",
-                "lastmod": 1644673385,
+                "lastmod": 1647566926,
                 "url": "bbn-vue\/component\/video\/overview",
                 "props": [
                     {
@@ -10820,11 +11045,6 @@
                         "text": "poster",
                         "desc": "Specifies an image to be shown while the video is downloading, or until the user hits the play button\n",
                         "url": "bbn-vue\/component\/video\/doc\/props#poster"
-                    },
-                    {
-                        "text": "youtube",
-                        "desc": "Set it to true if you're using a YuoTube video code as source property\n",
-                        "url": "bbn-vue\/component\/video\/doc\/props#youtube"
                     },
                     {
                         "text": "skin",
@@ -10913,7 +11133,7 @@
             },
             {
                 "text": "widget",
-                "lastmod": 1644370201,
+                "lastmod": 1647566926,
                 "url": "bbn-vue\/component\/widget\/overview",
                 "props": [
                     {

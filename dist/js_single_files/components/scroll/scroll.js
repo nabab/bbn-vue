@@ -836,7 +836,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @returns Promise
        */
       onResize(force) {
-        // Only executed when the ocmponent is ready
+        // Only executed when the component is ready
         if ( !this.ready ){
           return new Promise(resolve => {
             setTimeout(() => {
@@ -1003,8 +1003,8 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           this.interval = setInterval(() => {
             if (this.scrollable && this.$el.offsetParent) {
               let container = this.getRef('scrollContainer');
-              let contentWidth = container.scrollWidth;
-              let contentHeight = container.scrollHeight;
+              let contentWidth = Math.min(container.scrollWidth, this.maxWidth);
+              let contentHeight = Math.min(container.scrollHeight, this.maxHeight);            
               if (
                 (
                   contentWidth
@@ -1015,8 +1015,8 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
                   )
                 )
                 || (
-                  contentWidth
-                  && (this.contentWidth !== contentHeight)
+                  contentHeight
+                  && (this.contentHeight !== contentHeight)
                   && (
                     !this.contentHeight
                     || (Math.abs(contentHeight - this.contentHeight) > 3)

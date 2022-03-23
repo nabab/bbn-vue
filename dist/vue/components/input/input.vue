@@ -11,7 +11,8 @@
 >
   <div :class="{
     'bbn-w-100': (!buttonLeft && !buttonRight && !nullable),
-    'bbn-flex-width' : (buttonLeft || buttonRight || nullable)
+    'bbn-flex-width' : (buttonLeft || buttonRight || nullable),
+    'bbn-nowrap': true
   }">
     <bbn-button v-if="buttonLeft"
           :icon="buttonLeft" 
@@ -23,7 +24,10 @@
             'bbn-m',
             {'bbn-invisible' : autoHideLeft}
           ]"/>
-    <input :value="value"
+    <div v-if="prefix"
+         class="bbn-block bbn-h-100 bbn-vmiddle bbn-nowrap"
+         v-text="prefix"/>
+    <input :value="currentValue"
           :type="currentType"
           v-focused.selected="focused"
           :name="name"
@@ -34,7 +38,7 @@
           :maxlength="maxlength"
           :autocomplete="currentAutocomplete"
           :pattern="currentPattern"
-          @input="emitInput($refs.element.value)"
+          @input="emitValue($refs.element.value)"
           @click="click"
           @paste="$emit('paste', $event)"
           @focus="focus"
@@ -49,10 +53,19 @@
           :size="currentInputSize"
           :inputmode="inputmode"
           :min="min"
-          :max="max">
+          :max="max"
+          :style="{
+            paddingLeft: prefix ? 0 : null
+          }">
     <bbn-loadicon v-if="loading"/>
     <div v-else-if="isNullable && hasValue && !readonly && !disabled"
-         class="bbn-block bbn-h-100 bbn-input-nullable-container">
+         class="bbn-input-nullable-container bbn-vmiddle"
+         :style="{
+           positions: 'absolute',
+           top: 0,
+           bottom: 0,
+           right: buttonRight ? '3em' : '2px'
+         }">
       <i class="nf nf-fa-times_circle bbn-p"
          @mousedown.prevent.stop="clear"></i>
     </div>
@@ -192,6 +205,9 @@
        */
       max: {
         type: [String, Number]
+      },
+      prefix: {
+        type: String
       }
     },
     data(){
@@ -202,11 +218,17 @@
       else if (this.autocomplete && bbn.fn.isString(this.autocomplete)) {
         currentAutocomplete = this.autocomplete;
       }
+
+      let currentValue = this.value;
+      if (this.prefix && (this.value.indexOf(this.prefix) === 0)) {
+        currentValue = bbn.fn.substr(currentValue, this.prefix.length);
+      }
+
       return {
         /**
          * @todo not used
          */
-        currentValue: this.value,
+        currentValue: currentValue,
         /**
          * The property 'autocomplete' normalized.
          * @data {String} [''] currentAutocomplete
@@ -243,7 +265,8 @@
     },
     methods: {
       clear(){
-        this.emitInput('');
+        this.emitInput(this.prefix || '');
+        this.currentValue = '';
       },
       init(){
         if (this.pattern) {
@@ -263,6 +286,13 @@
           this.currentPattern = this.pattern;
           this.currentType = this.type;
         }
+      },
+      emitValue(v) {
+        if (this.prefix && (v.indexOf(this.prefix) !== 0)) {
+          v = this.prefix + v;
+        }
+
+        this.emitInput(v);
       }
     },
     created() {
@@ -276,6 +306,18 @@
       this.ready = true;
     },
     watch: {
+      value(v) {
+        if (this.prefix && (v.indexOf(this.prefix) === 0)) {
+          v = bbn.fn.substr(v, this.prefix.length);
+        }
+
+        this.currentValue = v;
+      },
+      currentValue(v) {
+        if (this.value !== (this.prefix || '') + this.currentValue) {
+          this.emitValue(v);
+        }
+      },
       required(v){
         if (v) {
           this.getRef('element').setAttribute('required', '');

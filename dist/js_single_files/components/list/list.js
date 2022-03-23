@@ -5,7 +5,8 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-floater-list']"
      @touchstart="touchstart"
      @mouseleave="mouseleave"
      @touchmove="touchmove"
-     @touchend="touchend">
+     @touchend="touchend"
+     >
   <div class="bbn-hidden" v-if="$slots.default" ref="slot">
     <slot></slot>
   </div>
@@ -28,6 +29,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-floater-list']"
           :ref="'li' + idx"
           :key="uid ? li.data[uid] : idx"
           @click="select(idx)"
+          @mousedown="select(idx)"
           :class="{
             'bbn-no-padding': !!component,
             'bbn-state-default': true,
@@ -87,6 +89,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-floater-list']"
                   :level="level + 1"
                   :mode="li.data.mode || 'free'"
                   :uid="uid"
+                  :children="children"
                   :source="li.data[children]">
         </bbn-list>
       </li>
@@ -682,7 +685,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
                 item.selected = true;
               }
               else {
-                item.selected = !item.selected;
+                item.selected = !this.isSelected(idx);
               }
               if (v !== undefined) {
                 if (item.selected) {
@@ -760,11 +763,8 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @param {Boolean} newVal 
        */
       overIdx(newVal, oldVal) {
-        bbn.fn.log("overIdx is changing")
         this.keepCool(() => {
-          bbn.fn.log("Scroll to?");
           if (this.hasScroll && newVal && !this.isOver) {
-            bbn.fn.log("Scroll to!")
             this.closest('bbn-scroll').scrollTo(null, this.getRef('li' + newVal));
           }
         }, 'overIdx', 50)

@@ -1,8 +1,12 @@
 <template>
 <div :class="[componentClass, 'bbn-bordered', 'bbn-radius', 'bbn-alt-background', full ? 'full' : '']"
-     @mouseenter="$emit('mouseenter')">
+     @mouseenter="$emit('mouseenter', $event)"
+     @dragover="$emit('dragover', $event)"
+     @drop="$emit('drop', $event)"
+     v-droppable.data="!!sortable ? {data: {widget: _self}} : false">
   <!-- HEADER -->
-  <div class="bbn-header bbn-no-border bbn-bordered-bottom bbn-unselectable" v-if="title">
+  <div class="bbn-header bbn-no-border bbn-bordered-bottom bbn-unselectable"
+       v-if="title">
     <div class="bbn-flex-width bbn-vxspadded bbn-vmiddle">
       <!-- BUTTONS LEFT -->
       <div class="bbn-header-buttons bbn-widget-button-left bbn-hxspadded">
@@ -26,9 +30,14 @@
         <h3 :style="dashboard && dashboard.sortable ? 'cursor: move' : ''"
             :class="['bbn-no-margin', {'bbn-iblock': !!icon}]"
             v-html="title"
-            @mousedown="$emit('sortstart')"
-            @touchstart="$emit('sortstart')"
-            @dragstart="$emit('sortstart')"/>
+            @dragstart="$emit('sortstart', $event)"
+            @dragend="$emit('dragend', $event)"
+            v-if="ready"
+            v-draggable.helper.container.data="!!sortable ? {
+              helper: $el,
+              container: $el.parentElement,
+              data: {widget: _self}
+            } : false"/>
       </div>
       <!-- BUTTONS RIGHT -->
       <div class="bbn-header-buttons bbn-widget-button-right bbn-hxspadded">

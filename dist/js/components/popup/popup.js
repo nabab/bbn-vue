@@ -347,6 +347,9 @@ document.head.insertAdjacentElement('beforeend', css);
         if ( (a.title === undefined) && this.untitled ){
           a.title = this.untitled;
         }
+        if (a.draggable === undefined) {
+          a.draggable = true;
+        }
         return a;
       },
       /**

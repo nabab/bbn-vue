@@ -49,6 +49,15 @@
 .bbn-tree .bbn-tree-node .bbn-tree {
   height: auto;
 }
+.bbn-tree .bbn-tree-node .bbn-tree-order-top,
+.bbn-tree .bbn-tree-node .bbn-tree-order-bottom {
+  height: 2px;
+  line-height: 2px;
+}
+.bbn-tree .bbn-tree-node .bbn-droppable-over {
+  background-color: var(--secondary-background);
+  color: var(--secondary-text);
+}
 .bbn-tree .bbn-tree-node span.bbn-tree-node-block {
   display: inline-block;
   white-space: nowrap;

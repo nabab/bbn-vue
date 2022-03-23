@@ -295,6 +295,7 @@ document.head.insertAdjacentElement('beforeend', css);
        */
       theme: {
         type: String,
+        default: 'pastel-on-dark'
       },
       /**
        * Takes the full height of the container if set to true.
@@ -324,6 +325,10 @@ document.head.insertAdjacentElement('beforeend', css);
       themeButton: {
         type: Boolean,
         default: false
+      },
+      definitionUrl: {
+        type: String,
+        default: ''
       }
     },
 
@@ -345,7 +350,8 @@ document.head.insertAdjacentElement('beforeend', css);
         floaterTop: null,
         floaterBottom: null,
         currentFn: false,
-        currentToken: false
+        currentToken: false,
+        eventKey: "",
       };
     },
 
@@ -652,14 +658,11 @@ document.head.insertAdjacentElement('beforeend', css);
           }
         }
 
+        this.widget.replaceRange(toAdd, cursor);
         cursor.ch += toAdd.length;
         if (row.type === 'fn') {
           cursor.ch--;
         }
-
-        bbn.fn.log("EPLACING WITH", toAdd, this.currentToken);
-
-        this.widget.replaceSelection(toAdd);
         this.widget.setCursor(cursor);
         this.showHint();
       },
@@ -817,6 +820,31 @@ document.head.insertAdjacentElement('beforeend', css);
         }
         //bbn.fn.log("----END OF PHP HINT-----");
       },
+      addDefinition(className, varName) {
+        if (!bbn.fn.getRow(bbn.vue.phpLang, {"name": className})) {
+          if (this.definitionUrl) {
+            // ... for now we add a static method with a static url in the props
+            bbn.fn.post(this.definitionUrl, {"className": className}, d => {
+              if (d.success && d.res) {
+                bbn.vue.phpLang.push(bbn.fn.extend(d.res, {"ref": varName}));
+                if (!bbn.fn.getRow(bbn.vue.phpLang, {"name": varName})) {
+                  let ref = {
+                    "name": varName,
+                    "type": "class",
+                    "items": [],
+                  }
+                  bbn.vue.phpLang.push(ref);
+                }
+              }
+            })
+          }
+        } else {
+          let obj = JSON.parse(JSON.stringify(bbn.fn.getRow(bbn.vue.phpLang, {"name": className})));
+          let newObj = bbn.fn.extend(obj, {"name": varName});
+          bbn.vue.phpLang.push(newObj);
+        }
+      },
+
       /*
       jsHint(str){
         if (bbn.fn.substr(str, -1) === '(') {
@@ -877,6 +905,32 @@ document.head.insertAdjacentElement('beforeend', css);
         if (this.currentHints.length) {
           this.currentHints.splice(0, this.currentHints.length);
         }
+        // if Enter key is pressed inside the tag(eg: span tag), set cursor automatically
+        if (this.eventKey == 'Enter') {
+          /** Object Cursor's info */
+          let cursor = this.widget.getCursor();
+          /** Array List of tokens */
+          let tokens = this.widget.getLineTokens(cursor.line);
+          if (tokens.length >=3) {
+            if (tokens[tokens.length-1].string === '>' && tokens[tokens.length-3].string === '</') {
+              let tabString = '';
+              if (tokens.length >= 4) {
+                tabString = tokens[tokens.length-4].string;
+              }
+              let pos = {
+                line: cursor.line,
+                ch: 0,
+              }
+              for(let i = 0; i < this.cfg.tabSize; i++) {
+                tabString += ' ';
+              }
+              this.widget.replaceRange(tabString + '\n', pos);
+              cursor.ch = tabString.length + 2;
+              this.widget.setCursor(cursor);
+              return;
+            }
+          }
+        }
         this.hintTimeout = setTimeout(this.realShowHint, 500);
       },
       realShowHint() {
@@ -884,7 +938,6 @@ document.head.insertAdjacentElement('beforeend', css);
         if (!this[this.mode + 'Hint']) {
           return this.widget.showHint({completeSingle: false})
         }
-
         /** Object Cursor's info */
         let cursor = this.widget.getCursor();
         if (!cursor.ch) {
@@ -896,20 +949,34 @@ document.head.insertAdjacentElement('beforeend', css);
         let currentLine = '';
         /** @var Array The tokens before the cursor */
         let realTokens = [];
+        const beforeCursorToken = tokens.find(element => element.end == cursor.ch);
+        const afterCursorToken = tokens.find(element => element.start == cursor.ch);
+        if (this.mode === 'html') {
+          let visibleSuggestions = tokens.find(element => element.end <= cursor.ch && element.string === "<");
+          /** show hint only inside the tag in the html mode */
+          /** or if cursor is between tags, don't show the hint */
+          if (!visibleSuggestions || (beforeCursorToken.string === '>' && afterCursorToken.string === "</")) {
+            return;
+          }
+        }
+        /** replace --> to -> when the suggestion is selected by Enter key */
+        if (this.mode === 'php' && this.eventKey == 'Enter' && beforeCursorToken.string.includes('-->')) {
+          this.widget.replaceRange("->", {line: cursor.line, ch: beforeCursorToken.start}, {line: cursor.line, ch: beforeCursorToken.end});
+          tokens = this.widget.getLineTokens(cursor.line);
+        }
         bbn.fn.each(tokens, t => {
           let tmp = bbn.fn.clone(t);
           if (t.end >= cursor.ch) {
             tmp.string = bbn.fn.substr(t.string, 0, cursor.ch - t.start);
           }
-
           currentLine += tmp.string;
           realTokens.push(tmp);
           if (t.end >= cursor.ch) {
             return false;
           }
         });
-        let numTokens = realTokens.length;
 
+        let numTokens = realTokens.length;
         if (
           !numTokens ||
           !currentLine.trim() ||
@@ -1025,6 +1092,15 @@ document.head.insertAdjacentElement('beforeend', css);
         }
         if (this.currentHints.length) {
           let lst = this.find('bbn-list');
+          if (bbn.var.keys.leftRight.includes(event.keyCode) ||
+              (this.currentHints.length == 1 && bbn.var.keys.upDown.includes(event.keyCode))
+              ) {
+            this.resetFloaters();
+            return;
+          }
+          // if (this.currentHints.length == 1) {
+
+          // }
           if (lst) {
             if (bbn.var.keys.upDown.includes(event.keyCode)) {
               lst.keynav(event);
@@ -1062,6 +1138,7 @@ document.head.insertAdjacentElement('beforeend', css);
           this.resetFloaters();
           return;
         }
+        this.eventKey = event.key;
         this.showHint();
       }
     },

@@ -1,0 +1,18 @@
+.bbn-big-search {
+  transition: width 0.5s;
+  display: inline-block;
+  box-sizing: border-box;
+  min-width: 4.2em;
+  cursor: pointer;
+}
+.bbn-big-search input {
+  cursor: pointer;
+  width: 100%;
+  font-size: inherit;
+}
+.bbn-big-search button {
+  height: 100%;
+}
+.bbn-big-search div {
+  box-sizing: border-box;
+}

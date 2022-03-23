@@ -25,14 +25,13 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-100']"
     >
       <li v-for="it in items"
           :key="it.index"
-          :draggable="!it.fixed"
+          v-draggable="!it.fixed"
           @mouseover="mouseover(it.index)"
           @mouseout="mouseout(it.index)"
           @dragstart="dragstart(it.index, $event)"
           @dragend="dragend(it.index, $event)"
       >
         <span class="bbn-iblock bbn-p"
-              draggable="false"
               @click="onClick(it.data, it.index)"
         >
           <i :class="it.data.icon"></i>
@@ -55,7 +54,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-100']"
     <div class="bbn-spadded bbn-fisheye-floater-content">
       <span v-for="it in items"
             :key="it.index"
-            :draggable="!it.fixed"
+            v-draggable="!it.fixed"
             @dragstart="dragstart(it.index, $event)"
             @dragend="dragend(it.index, $event)"
             class="bbn-w-100 bbn-c bbn-smargin bbn-p"
@@ -73,10 +72,10 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-100']"
        :style="binPosition"
   >
     <i :class="['nf nf-fa-trash', {'bbn-red': overBin}]"
-       @dragenter.prevent="overBin = true"
-       @dragover.prevent="() => {}"
+       @dragover="overBin = true"
        @dragleave="dragleave($event)"
        @drop="drop($event)"
+       v-droppable
     ></i>
   </div>
   <div class="bbn-fisheye-text"
@@ -332,9 +331,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @param {Event} e
        */
       dragstart(idx, e){
-        if ( this.removable && e.dataTransfer ){
-          e.dataTransfer.allowedEffect = 'move';
-          e.dataTransfer.dropEffect = 'move';
+        if (this.removable) {
           this.draggedIdx = idx;
           this.visibleBin = true;
         }

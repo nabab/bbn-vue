@@ -3,11 +3,7 @@
 
 let script = document.createElement('script');
 script.innerHTML = `<div :class="['bbn-overlay' , componentClass, {'bbn-unselectable': isSorting}]"
-     @mouseleave="sortTargetIndex = null; isSorting = false"
-     @touchend="isSorting = false"
-     @dragend="isSorting = false"
-     @mousemove="dragging"
-     @mouseup="isSorting = false">
+     @mouseleave="sortTargetIndex = null; isSorting = false">
   <bbn-scroll :scrollable="scrollable"
               ref="scroll"
               v-bind="scrollable ? {axis: 'y'} : {}"
@@ -31,10 +27,11 @@ script.innerHTML = `<div :class="['bbn-overlay' , componentClass, {'bbn-unselect
                     :options="w.options"
                     :uid="w.key"
                     @close="hideWidget(w.key)"
-                    
                     :index="w.index"
-                    @mouseenter="mouseEnterWidget(w.index)"
-                    :class="{'bbn-selected-border': 
+                    @dragover="mouseEnterWidget(w.index)"
+                    @dragend="isDragging = false; isSorting = false;"
+                    @drop.prevent="drop"
+                    :class="{'bbn-selected-border':
                       (sortOriginIndex !== w.index) && (
                         sortOriginIndex > w.index ?
                           (w.index === sortTargetIndex) :
@@ -42,21 +39,12 @@ script.innerHTML = `<div :class="['bbn-overlay' , componentClass, {'bbn-unselect
                           (w.index - 1 === sortTargetIndex)
                       )
                     }"
-                    @sortstart="isSorting = true; sortOriginIndex = w.index; sortTargetIndex = null"
+                    @sortstart="isSorting = true; sortOriginIndex = w.index; sortTargetIndex = null; isDragging = true;"
                     :title="w.title ? w.title : (w.text ? w.text : '')"
         ></bbn-widget>
       </template>
       <slot v-if="!widgets.length"></slot>
     </div>
-    <div class="bbn-widget bbn-sort-helper"
-         ref="sortHelper"
-         :style="{
-           display: isDragging ? 'block' : 'none',
-           width: sortHelperWidth + 'px',
-           height: sortHelperHeight + 'px',
-           left: sortHelperX + 'px',
-           top: sortHelperY + 'px'
-         }"></div>
   </bbn-scroll>
 </div>
 `;
@@ -310,7 +298,6 @@ document.head.insertAdjacentElement('beforeend', css);
        * @emits close
        */
       closeWidget(uid, widget){
-        bbn.fn.log('close',widget)
         let ev = new Event('close', {cancelable: true});
         this.$emit('close', uid, widget);
         if ( !ev.defaultPrevented ){
@@ -429,7 +416,10 @@ document.head.insertAdjacentElement('beforeend', css);
           });
           this.currentOrder = order;
           if ( this.url ){
-            return this.post(this.url + 'order', {order: order}, d => {
+            return this.post(this.url + 'order', {
+              id_dashboard: this.code,
+              order: order
+            }, d => {
               if ( d && d.data && d.data.success ){
                 appui.success();
               }
@@ -548,7 +538,11 @@ document.head.insertAdjacentElement('beforeend', css);
       */
       updateWidget(key, cfg){
         let idx = bbn.fn.search(this.widgets || [], 'key', key),
-            params = {id: key, cfg: cfg},
+            params = {
+              id: key,
+              cfg: cfg,
+              id_dashboard: this.code
+            },
             no_save = ['items', 'num', 'start', 'index'];
         if (idx > -1) {
           bbn.fn.each(no_save, function(a, i){
@@ -756,22 +750,34 @@ document.head.insertAdjacentElement('beforeend', css);
         }) : [];
       },
       /**
-       * For dragging widget.
-       * @method dragging
+       * On widget drop.
+       * @method drop
        * @param {Event} e
        */
-      dragging(e){
-        if ( this.isSorting ){
-          let w = e.clientX - Math.round(this.sortHelperWidth / 2);
-          if ( w < 0 ){
-            w = 1;
-          }
-          this.sortHelperX = w;
-          this.sortHelperY = e.clientY + 3;
-          if (!this.isDragging) {
-            this.isDragging = true;
+      drop(e){
+        if (
+          this.sortable &&
+          (this.sortOriginIndex !== this.sortTargetIndex) &&
+          this.widgets[this.sortOriginIndex] &&
+          this.widgets[this.sortTargetIndex]
+        ){
+          let ev = new Event('move', {cancelable: true});
+          this.$emit('move', ev, this.sortOriginIndex, this.sortTargetIndex);
+          if ( !ev.defaultPrevented ){
+            if (
+              this.move(this.sortOriginIndex, this.sortTargetIndex) &&
+              this.storageFullName
+            ){
+              let cps = bbn.vue.findAll(this.$root, 'bbn-dashboard');
+              bbn.fn.each(cps, (cp, i) => {
+                if ( (cp !== this) && (cp.storageFullName === this.storageFullName) ){
+                  cp.move(this.sortOriginIndex, this.sortTargetIndex);
+                }
+              })
+            }
           }
         }
+        this.sortTargetIndex = null;
       }
     },
     /**
@@ -826,39 +832,9 @@ document.head.insertAdjacentElement('beforeend', css);
        */
       isSorting(newVal){
         if ( !newVal ){
-          if (
-            this.sortable &&
-            (this.sortOriginIndex !== this.sortTargetIndex) &&
-            this.widgets[this.sortOriginIndex] &&
-            this.widgets[this.sortTargetIndex]
-          ){
-            let ev = new Event('move', {cancelable: true});
-            this.$emit('move', ev, this.sortOriginIndex, this.sortTargetIndex);
-            if ( !ev.defaultPrevented ){
-              if (
-                this.move(this.sortOriginIndex, this.sortTargetIndex) &&
-                this.storageFullName
-              ){
-                let cps = bbn.vue.findAll(this.$root, 'bbn-dashboard');
-                bbn.fn.each(cps, (cp, i) => {
-                  if ( (cp !== this) && (cp.storageFullName === this.storageFullName) ){
-                    cp.move(this.sortOriginIndex, this.sortTargetIndex);
-                  }
-                })
-              }
-            }
-          }
-          this.sortTargetIndex = null;
-          this.isDragging = false;
+          
         }
-        else if (this.widgets[this.sortOriginIndex]) {
-          let w = this.widgets[this.sortOriginIndex];
-          this.sortingElement = this.getRef('widget_' + w.key);
-          let pos = this.sortingElement.$el.getBoundingClientRect();
-          this.sortHelperWidth = pos.width;
-          this.sortHelperHeight = pos.height;
-          this.getRef('sortHelper').innerHTML = this.sortingElement.$el.innerHTML;
-        }
+        
       },
       /**
        * @watch source

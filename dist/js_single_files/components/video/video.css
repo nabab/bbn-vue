@@ -1,0 +1,10 @@
+.bbn-video .bbn-video-poster img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+.bbn-video .bbn-video-poster i {
+  cursor: pointer;
+  color: var(--primary-background);
+  font-size: 5rem;
+}

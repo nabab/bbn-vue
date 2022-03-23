@@ -6,8 +6,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-flex-height', {'bbn-box':
      :style="{
        width: width,
        height: height
-     }"
->
+     }">
   <div v-if="title && (titlePosition === 'top')"
        :class="['bbn-c', {
          'bbn-header': skin,
@@ -20,17 +19,26 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-flex-height', {'bbn-box':
        :style="{
          background: titleBackground,
          color: titleColor
-       }"
-  ></div>
+       }">
+  </div>
   <div class="bbn-flex-fill">
-    <iframe v-if="youtube"
+    <div v-if="(isYoutube || isVimeo) && !!poster && showPoster"
+         class="bbn-overlay bbn-video-poster">
+      <img :src="poster">
+      <div class="bbn-overlay bbn-middle">
+        <i class="nf nf-mdi-play_circle_outline bbn-xxl"
+           @click="showPoster = false"/>
+      </div>
+    </div>
+    <iframe v-else-if="isYoutube || isVimeo"
             width="100%"
             height="100%"
-            :src="youtubeSource"
+            :src="videoSource"
             frameborder="0"
-            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen
+            :allow="'autoplay; picture-in-picture;' + (isYoutube ? ' accelerometer; encrypted-media; gyroscope;' : ' fullscreen;')"
             :class="cls"
-    ></iframe>
+            allowfullscreen>
+    </iframe>
     <video v-else
            :autoplay="autoplay"
            :controls="controls"
@@ -46,13 +54,11 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-flex-height', {'bbn-box':
              'bbn-bordered-left': skin,
              'bbn-bordered-right': skin,
              'bbn-radius-bottom': skin
-           }]"
-    >
-      <source v-if="source"
-              :src="source"
-              :type="type"
-      ></source>
-      <p v-text="browserMessage"></p>
+           }]">
+      <source v-if="videoSource"
+              :src="videoSource"
+              :type="type">
+      {{browserMessage}}
     </video>
   </div>
   <div v-if="title && (titlePosition === 'bottom')"
@@ -67,11 +73,17 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-flex-height', {'bbn-box':
        :style="{
          background: titleBackground,
          color: titleColor
-       }"
-  ></div>
+       }">
+  </div>
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-video');
 script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
+
+let css = document.createElement('link');
+css.setAttribute('rel', 'stylesheet');
+css.setAttribute('href', bbn.vue.libURL + 'dist/js/components/video/video.css');
+document.head.insertAdjacentElement('beforeend', css);
 
 /**
  * @file bbn-video component
@@ -109,7 +121,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @prop {String} ['top'] titlePosition
        */
       titlePosition: {
-			  type: String,
+        type: String,
         default: 'top',
         validator: p => ['top', 'bottom'].includes(p)
       },
@@ -191,14 +203,6 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         default: ''
       },
       /**
-       * Set it to true if you're using a YuoTube video code as source property
-       * @prop {Boolean} [false] youtube
-       */
-      youtube: {
-        type: Boolean,
-        default: false
-      },
-      /**
        * Set it to true if yuo want to use a skinned player
        * @prop {Boolean} [false] skin
        */
@@ -221,24 +225,36 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         type: String
       }
     },
-    data(){
+    data() {
       return {
         /**
          * This text will only be displayed in browsers that do not support the <video> element.
          * @data {String} ['To view this video please enable JavaScript, and consider upgrading to a web browser that supports HTML5 video.'] browserMessage
          */
-        browserMessage: bbn._('To view this video please enable JavaScript, and consider upgrading to a web browser that supports HTML5 video.')
+        browserMessage: bbn._('To view this video please enable JavaScript, and consider upgrading to a web browser that supports HTML5 video.'),
+        /**
+         * @data {RegExp} [/^https?:\/\/w{0,3}\.?youtu\.?be(-nocookie)?(\.com)?\//gm] youtubeReg
+         */
+        youtubeReg: /^https?:\/\/w{0,3}\.?youtu\.?be(-nocookie)?(\.com)?\//gm,
+        /**
+         * @data {RegExp} [/^https?:\/\/vimeo(-nocookie)?(\.com)?\//gm] vimeoReg
+         */
+        vimeoReg: /^https?:\/\/vimeo(-nocookie)?(\.com)?\//gm,
+        /**
+         * @data {Boolean} [true] showPoster
+         */
+        showPoster: true
       }
     },
     computed: {
       /**
        * Returns the correct media type
        * @computed type
-       * @return String|Boolean
+       * @return {String|Boolean}
        */
-      type(){
-        if ( this.source ){
-          switch ( bbn.fn.substr(this.source, this.source.lastIndexOf('.') + 1).toLowerCase() ){
+      type() {
+        if (this.source) {
+          switch (bbn.fn.substr(this.source, this.source.lastIndexOf('.') + 1).toLowerCase()) {
             case 'mp4':
               return 'video/mp4';
             case 'webm':
@@ -252,12 +268,42 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         return false;
       },
       /**
-       * Returns the correct url for YoutTube video
-       * @computed youtubeSource
-       * @return String
+       * @computed isYoutube
+       * @return {Boolean}
        */
-      youtubeSource(){
-        return this.youtube ? `${document.location.protocol}//youtube.com/embed/${this.source}?rel=0&amp;autoplay=${this.autoplay ? 1 : 0}&controls=${this.controls ? 1 : 0}&mute=${this.muted ? 1 : 0}&loop=${this.loop ? 1 : 0}&playlist=${this.source}` : '';
+      isYoutube(){
+        return !!this.source.match(this.youtubeReg);
+      },
+      /**
+       * @computed isVimeo
+       * @return {Boolean}
+       */
+      isVimeo(){
+        return !!this.source.match(this.vimeoReg);
+      },
+      /**
+       * Returns the correct url for embeded video
+       * @computed videoSource
+       * @return {String}
+       */
+      videoSource() {
+        if (this.isYoutube) {
+          let url = this.source.replace(this.youtubeReg, '');
+          if (url.startsWith('watch?v=')) {
+            url = bbn.fn.substr(url, 8);
+          }
+          return `${document.location.protocol}//youtube.com/embed/${url}?rel=0&amp;autoplay=${this.autoplay ? 1 : 0}&controls=${this.controls ? 1 : 0}&mute=${this.muted || this.autoplay ? 1 : 0}&loop=${this.loop ? 1 : 0}&playlist=${url}`;
+        }
+        else if (this.isVimeo) {
+          let url = this.source.replace(this.vimeoReg, '');
+          return `${document.location.protocol}//player.vimeo.com/video/${url}?autoplay=${this.autoplay ? 1 : 0}&controls=${this.controls ? 1 : 0}&mute=${this.muted ? 1 : 0}&loop=${this.loop ? 1 : 0}&playlist=${url}`;
+        }
+        return this.source;
+      }
+    },
+    watch: {
+      source(){
+        this.showPoster = true;
       }
     }
   });

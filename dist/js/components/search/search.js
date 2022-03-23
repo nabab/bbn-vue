@@ -2,39 +2,39 @@
 ((bbn) => {
 
 let script = document.createElement('script');
-script.innerHTML = `<div :class="[componentClass, 'bbn-overlay', 'bbn-flex-height']">
-   <div class="bbn-w-100 bbn-c bbn-lg bbn-vlpadded">
-      <bbn-input :placeholder="placeholder"
-                 :style="{width: '75%'}"
-                 :focused="true"
-                 type="search"
-                 ref="input"
-                 @keydown="keydown"
-                 :nullable="isNullable"
-                 autocomplete="off"
-                 v-model="filterString"
-                 :loading="isAjax && isLoading"
-                 button-right="nf nf-fa-search"/>
-   </div>
-   <div class="bbn-flex-fill">
-      <bbn-scroll>
-         <bbn-list v-if="filteredData.length && !disabled && !readonly"
-                  :element="$el"
-                  ref="list"
-                  :auto-hide="false"
-                  :suggest="suggest"
-                  :component="searchComponent"
-                  :children="null"
-                  @select="select"
-                  :source-url="sourceUrl"
-                  :source-action="sourceAction"
-                  :source-text="sourceText"
-                  :source-value="sourceValue"
-                  :pageable="filteredData.length > limit"
-                  :pager-element="_self"
-                  :source="filteredData"/>
-      </bbn-scroll>
-   </div>
+script.innerHTML = `<div :class="[componentClass, 'bbn-iblock']">
+  <bbn-input :placeholder="currentPlaceholder"
+              type="search"
+              ref="input"
+              @focus="searchFocus"
+              @blur="searchBlur"
+              @keydown.esc.prevent="isOpened ? isOpened = false : searchBlur() && getRef('input').getRef('element').blur()"
+              @keydown.stop="keydown"
+              :nullable="nullable"
+              autocomplete="off"
+              v-model="filterString"
+              :loading="isAjax && isLoading"
+              button-right="nf nf-fa-search">
+  </bbn-input>
+  <bbn-floater v-if="filteredData.length && !disabled && !readonly && isOpened && $refs.input"
+               :element="$refs.input.$el"
+               class="bbn-secondary"
+               :max-height="maxHeight"
+               :min-width="$el.offsetWidth"
+               ref="list"
+               @mouseleave.prevent
+               :auto-hide="false"
+               :suggest="suggest"
+               :item-component="searchComponent"
+               :children="null"
+               @select="select"
+               @close="searchClose"
+               :source-text="sourceText"
+               :source-value="sourceValue"
+               :source-url="sourceUrl"
+               :source-action="sourceAction"
+               :source="filteredData">
+  </bbn-floater>
   <input type="hidden"
          v-model="value"
          ref="element"
@@ -171,6 +171,7 @@ document.head.insertAdjacentElement('beforeend', css);
           default: '?'
         },
         /**
+         * Delay to auto-hide the results when mouse out (or false to not auto-hide).
          * @prop {Boolean|Number} [1500] autohide
          */
         autohide: {
@@ -180,7 +181,6 @@ document.head.insertAdjacentElement('beforeend', css);
         /**
          * The name of the property to be used as action to execute when selected.
          * @prop {String} sourceAction
-         * @memberof listComponent
          */
         sourceAction: {
           type: [String, Function],
@@ -189,12 +189,18 @@ document.head.insertAdjacentElement('beforeend', css);
         /**
          * The name of the property to be used as URL to go to when selected.
          * @prop {String} sourceUrl
-         * @memberof listComponent
          */
         sourceUrl: {
           type: [String, Function],
           default: 'url'
         },
+        /**
+         * The URL where to send the selected result.
+         * @prop {String} selectUrl
+         */
+         selectUrl: {
+          type: String
+        }
       },
       data() {
         return {
@@ -216,7 +222,8 @@ document.head.insertAdjacentElement('beforeend', css);
            /**
            * @data {Number|null} [null] mouseTimeout
            */
-          mouseTimeout: null
+          mouseTimeout: null,
+          isActive: true
         };
       },
       computed: {
@@ -245,7 +252,6 @@ document.head.insertAdjacentElement('beforeend', css);
             };
           }
 
-          bbn.fn.log(cp, this.source);
           return cp;
         },
       },
@@ -254,6 +260,35 @@ document.head.insertAdjacentElement('beforeend', css);
          * Focuses the search input.
          * @method searchFocus
          */
+        searchFocus(){
+          clearTimeout(this.timeout);
+          this.$emit('focus', this);
+          this.isFocused = true;
+          this.specialWidth = this.maxWidth;
+          this.currentPlaceholder = this.placeholder;
+        },
+        /**
+         * Blurs the search input.
+         * @method searchBlur
+         */
+        searchBlur(){
+          clearTimeout(this.timeout);
+          this.timeout = setTimeout(() => {
+            this.isFocused = false;
+            this.isOpened = false;
+            this.specialWidth = this.minWidth;
+            this.filterString = '';
+            this.currentPlaceholder = '?';
+            this.$emit('blur', this);
+          }, 250);
+        },
+        /**
+         * Closes the search.
+         * @method searchClose
+         */
+        searchClose(){
+          this.isOpened = false;
+        },
         /**
          * Emits the event 'select' 
          * @method select
@@ -262,38 +297,20 @@ document.head.insertAdjacentElement('beforeend', css);
          * @param {Number} dataIndex
          * @emit change
          */
-        select(item, idx, dataIndex){
-          if (!this.disabled) {
+        select(item, idx, dataIndex) {
+          if (item){
             let ev = new Event('select', {cancelable: true});
             this.$emit('select', ev, item, idx, dataIndex);
-            bbn.fn.log("EMITTING SELECT");
-            if (!ev.defaultPrevented) {
-              bbn.fn.log("NO RPEVENT", item);
-              if (this.sourceAction && item[this.sourceAction]) {
-                if ( typeof(item[this.sourceAction]) === 'string' ){
-                  if ( bbn.fn.isFunction(this[item[this.sourceAction]]) ){
-                    this[item[this.sourceAction]]();
-                  }
-                }
-                else if (bbn.fn.isFunction(item[this.sourceAction]) ){
-                  if (this.actionArguments) {
-                    item[this.sourceAction](...this.actionArguments);
-                  }
-                  else {
-                    item[this.sourceAction](idx, item.data);
-                  }
-                }
-              }
-              else if (this.sourceUrl && item[this.sourceUrl]) {
-                bbn.fn.log("SOURCE URL OK");
-                let url = bbn.fn.isFunction(this.sourceUrl) ?
-                  this.sourceUrl(item, idx, dataIndex)
-                  : item[this.sourceUrl];
-                if (url) {
-                  bbn.fn.link(url);
-                }
-              }
+            if ( !ev.defaultPrevented  && (item[this.sourceValue] !== undefined) ){
+              this.currentText = item[this.sourceText];
+              this.filterString = item[this.sourceText];
+              this.emitInput(item[this.sourceValue]);
+              this.$emit('change', item[this.sourceValue]);
+              this.$nextTick(() => {
+                this.getRef('input').focus();
+              });
             }
+            this.isOpened = false;
           }
         },
         /**
@@ -315,6 +332,30 @@ document.head.insertAdjacentElement('beforeend', css);
             this.keynav(e);
           }
         },
+        /**
+         * On mouse Leave.
+         * @method leave
+         * @fires searchBlur
+         */
+        leave(){
+          if (this.autohide) {
+            if (this.mouseTimeout) {
+              clearTimeout(this.mouseTimeout);
+            }
+            this.mouseTimeout = setTimeout(() => {
+              this.searchBlur();
+            }, this.autohide);
+          }
+        },
+        /**
+         * On mouse enter.
+         * @method enter
+         */
+        enter(){
+          if (this.mouseTimeout) {
+            clearTimeout(this.mouseTimeout);
+          }
+        }
       },
       watch: {
         /**
@@ -325,11 +366,9 @@ document.head.insertAdjacentElement('beforeend', css);
           if (!this.ready) {
             this.ready = true;
           }
-
           clearTimeout(this.filterTimeout);
           if (v !== this.currentText) {
-            this.emitInput(v);
-            this.$emit('change', v);
+            this.isOpened = false;
             if (this.currentData.length) {
               this.currentData.splice(0);
             }
@@ -337,23 +376,30 @@ document.head.insertAdjacentElement('beforeend', css);
               this.filterTimeout = setTimeout(() => {
                 this.filterTimeout = false;
                 // We don't relaunch the source if the component has been left
-                if (v && (v.length >= this.minLength)) {
-                  this.$once('dataloaded', () => {
-                    this.$nextTick(() => {
-                      let list = this.find('bbn-scroll');
-                      if ( list ){
-                        list.onResize();
-                      }
+                if ( this.isActive ){
+                  if (v && (v.length >= this.minLength)) {
+                    this.$once('dataloaded', () => {
+                      this.$nextTick(() => {
+                        if (!this.isOpened){
+                          this.isOpened = true;
+                        }
+                        else{
+                          let list = this.find('bbn-scroll');
+                          if ( list ){
+                            list.onResize();
+                          }
+                        }
+                      });
                     });
-                  });
-                  this.currentFilters.conditions.splice(0, this.currentFilters.conditions.length ? 1 : 0, {
-                    field: this.sourceText,
-                    operator: 'startswith',
-                    value: v
-                  });
-                }
-                else {
-                  this.unfilter();
+                    this.currentFilters.conditions.splice(0, this.currentFilters.conditions.length ? 1 : 0, {
+                      field: this.sourceText,
+                      operator: 'startswith',
+                      value: v
+                    });
+                  }
+                  else {
+                    this.unfilter();
+                  }
                 }
               }, this.delay);
             })

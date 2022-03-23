@@ -3,32 +3,35 @@
 
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, {
-  'bbn-overlay': !visual && scrollable,
-  'bbn-w-100': !scrollable
+  'bbn-overlay': !visual && router.scrollContent,
+  'bbn-w-100': !router.scrollContent
 }]"
      @subready.stop
      :style="visual ? visualStyle : {}"
      v-show="visible || visual">
   <div :class="{
-    'bbn-100': scrollable,
-    'bbn-w-100': !scrollable
+    'bbn-100': router.scrollContent,
+    'bbn-container-full-screen': fullScreen,
+    'bbn-w-100': !router.scrollContent
   }">
     <transition name="fade"
                 v-on:enter="enter"
                 v-on:after-enter="onResize">
       <div :class="{
-        'bbn-overlay': !visual && scrollable,
-        'bbn-flex-height': visual && scrollable,
-        'bbn-w-100': visual || !scrollable
+        'bbn-overlay': !visual && router.scrollContent,
+        'bbn-flex-height': (visual || fullScreen) && router.scrollContent,
+        'bbn-w-100': visual || !router.scrollContent
       }"
           v-show="visible || visual">
         <!-- The header -->
-        <div v-if="visual"
-            :class="'bbn-b bbn-hpadded bbn-vspadded bbn-flex-width ' + (visible ? ' bbn-m' : '')"
+        <div v-if="visual || fullScreen"
+            :class="'bbn-transition-bcolor bbn-b bbn-vspadded bbn-flex-width ' + (visible ? ' bbn-m' : '')"
             :style="{
+              paddingLeft: '0.5em',
+              paddingRight: '0.5em',
               fontSize: visible && !router.visualShowAll ? null : '10em',
-              backgroundColor: bcolor || '#666',
-              color: fcolor || '#EEE'
+              backgroundColor: bcolor || router.bcolor,
+              color: fcolor || router.fcolor
             }">
           <div class="bbn-flex-fill bbn-vmiddle">
             <bbn-context v-if="visible"
@@ -45,7 +48,14 @@ script.innerHTML = `<div :class="[componentClass, {
             <span v-text="title"
                   style="overflow: hidden"/>
           </div>
-          <div v-if="visible && !static && !pinned && !router.visualShowAll"
+          <!-- Icon for restoring size when in full screen mode -->
+          <div v-if="visible && fullScreen"
+              class="bbn-block bbn-p bbn-vmiddle bbn-h-100"
+              @click="fullScreen = false">
+            <i class="nf nf-mdi-arrow_collapse bbn-lg"/>
+          </div>
+          <!-- Icon for closing  -->
+          <div v-else-if="visible && !static && !pinned && !router.visualShowAll"
               class="bbn-block bbn-p bbn-vmiddle bbn-h-100"
               @click="close">
             <i class="nf nf-fa-times bbn-lg"/>
@@ -54,10 +64,9 @@ script.innerHTML = `<div :class="[componentClass, {
         <!-- The main container (the one we take screenshots of) -->
         <div :class="{
           'bbn-background': true,
-          'bbn-overlay': !fullScreen && !visual && scrollable,
-          'bbn-flex-fill': !fullScreen && visual && scrollable,
-          'bbn-w-100': !scrollable,
-          'bbn-container-full-screen': fullScreen,
+          'bbn-overlay': !fullScreen && !visual && router.scrollContent,
+          'bbn-flex-fill': (fullScreen || visual) && router.scrollContent,
+          'bbn-w-100': !router.scrollContent,
           'bbn-container-visible': visible
         }"
             ref="canvasSource">
@@ -68,8 +77,8 @@ script.innerHTML = `<div :class="[componentClass, {
                     ref="scroll"
                     :axis="scrollable ? 'y' : null"
                     :class="{
-                      'bbn-overlay': scrollable,
-                      'bbn-w-100': !scrollable
+                      'bbn-overlay': router.scrollContent,
+                      'bbn-w-100': !router.scrollContent
                     }">
             <!-- This is an ad hoc component with unique name -->
             <component v-if="isComponent"
@@ -106,12 +115,6 @@ script.innerHTML = `<div :class="[componentClass, {
             <img :src="thumbnail"
                 style="width: 100%; max-height: 100%; height: auto">
           </div>
-          <!-- Icon for closing when in full screen mode -->
-          <span  v-if="fullScreen"
-                class="bbn-container-full-screen-closer bbn-xl bbn-p">
-            <i class="nf nf-fa-times_circle"
-              @click="fullScreen = false"/>
-          </span>
           <!-- The container's popup, from each floater will come -->
           <bbn-popup ref="popup"
                     :source="popups"
@@ -124,6 +127,7 @@ script.innerHTML = `<div :class="[componentClass, {
         class="bbn-overlay"
         style="z-index: 12; background-color: black; opacity: 0.2;">
     </div>
+    <!-- When in visual mode this is the interaction layer -->
     <div v-if="visual && (!visible || router.visualShowAll)"
         class="bbn-overlay"
         @click="show() && router.route(current, true)"
@@ -134,39 +138,55 @@ script.innerHTML = `<div :class="[componentClass, {
         <div class="bbn-bottom-left bbn-w-100"
             v-show="isOver"
             :style="{
-                fontSize: visible ? null : '12em'
+                fontSize: visible && !router.visualShowAll ? null : '10em'
               }">
+          <!-- Semi-transparent dark layer these buttons are not used -->
           <div class="bbn-bottom-left bbn-w-100 bbn-bg-black"
-              style="opacity: 0.6; color: transparent">
-              <div class="bbn-w-50 bbn-p bbn-spadded"
-              @click.stop="">
-            <i class="nf nf-fa-bars"/>
-          </div>
-          <div class="bbn-w-50 bbn-right bbn-p bbn-spadded"
-              @click.stop="close"
-              v-if="!pinned && !static">
-              <i class="nf nf-fa-times"/>
-          </div>
-          <div class="bbn-w-50 bbn-right bbn-p bbn-spadded"
-              @click.stop="unpin"
-              v-else-if="pinned">
-              <i class="nf nf-oct-pin"/>
-          </div>
-        </div>
-          <div class="bbn-bottom-left bbn-w-100 bbn-white">
-            <div class="bbn-w-50 bbn-p bbn-spadded"
-                @click.stop="">
-              <i class="nf nf-fa-bars"/>
+               style="opacity: 0.6; color: transparent">
+            <div class="bbn-w-50 bbn-spadded">
+              <span class="bbn-spadded bbn-p">
+                <i class="nf nf-fa-bars"/>
+              </span>
             </div>
-            <div class="bbn-w-50 bbn-right bbn-p bbn-spadded"
-                @click.stop="close"
-                v-if="!pinned && !static">
+            <div class="bbn-w-50 bbn-right bbn-spadded">
+              <span class="bbn-spadded bbn-p"
+                    v-if="!pinned && !static">
                 <i class="nf nf-fa-times"/>
-            </div>
-            <div class="bbn-w-50 bbn-right bbn-p bbn-spadded"
-                @click.stop="unpin"
-                v-else-if="pinned">
+              </span>
+              <span class="bbn-spadded bbn-p"
+                    v-else-if="pinned">
+                <i class="nf nf-mdi-pin"/>
+              </span>
+              <span class="bbn-spadded bbn-p">
                 <i class="nf nf-oct-pin"/>
+              </span>
+            </div>
+          </div>
+          <!-- These buttons are the real ones (white) -->
+          <div class="bbn-bottom-left bbn-w-100 bbn-white">
+            <div class="bbn-w-50 bbn-spadded">
+              &nbsp;
+              <span class="bbn-spadded bbn-p">
+                <i class="nf nf-fa-bars"/>
+              </span>
+            </div>
+            <div class="bbn-w-50 bbn-right bbn-spadded">
+              <span v-if="!pinned && !static"
+                    @click.stop="pin"
+                    class="bbn-spadded bbn-p">
+                <i class="nf nf-oct-pin"/>
+              </span>
+              <span class="bbn-spadded bbn-p"
+                    @click.stop="close"
+                    v-if="!pinned && !static">
+                <i class="nf nf-fa-times"/>
+              </span>
+              <span class="bbn-spadded bbn-p"
+                    @click.stop="unpin"
+                    v-else-if="pinned && !static">
+                <i class="nf nf-mdi-pin_off"/>
+              </span>
+              &nbsp;
             </div>
           </div>
         </div>
@@ -246,6 +266,13 @@ document.head.insertAdjacentElement('beforeend', css);
         type: Number
       },
       /**
+       * The timestamp of the last activation
+       * @prop {Number} last
+       */
+      last: {
+        type: Number
+      },
+      /**
        * A unique id for the container that will ben used as index by the router
        * @prop {String} uid
        */
@@ -266,7 +293,7 @@ document.head.insertAdjacentElement('beforeend', css);
          * True if the container is visible.
          * @data {Boolean} [false] isVisible
          */
-        isVisible: false,
+        isVisible: this.loading,
         /**
          * The router which the container belongs to if it exists.
          * @data [null] router
@@ -276,7 +303,7 @@ document.head.insertAdjacentElement('beforeend', css);
          * True if the container shows.
          * @data {Boolean} [false] visible
          */
-        visible: false,
+        visible: this.loading,
         /**
          * True if the data changes and is unsaved.
          * @data {Boolan} [false] dirty
@@ -343,9 +370,10 @@ document.head.insertAdjacentElement('beforeend', css);
           let r = this.router;
           if ((r.views.length > 1) && (!this.visible || r.visualShowAll)) {
             return {
+              aspectRatio: 1,
               zoom: 0.1,
               width: '100%',
-              height: '100%',
+              height: 'auto',
               overflow: 'hidden'
             };
           }
@@ -518,6 +546,12 @@ document.head.insertAdjacentElement('beforeend', css);
       enter(){
         this.$parent.enter(this);
       },
+      pin() {
+        this.router.pin(this.idx);
+      },
+      unpin() {
+        this.router.unpin(this.idx);
+      },
       /**
        * Fires the parent's method reload.
        * 
@@ -654,7 +688,7 @@ document.head.insertAdjacentElement('beforeend', css);
             // Adding also a few funciton to interact with the tab
             let cont = this;
             let o = bbn.fn.extend(true, res ? res : {}, {
-              template: '<div class="' + (this.scrollable ? '' : 'bbn-w-100') + '">' + this.content + '</div>',
+              template: '<div class="' + (this.router.scrollContent ? '' : 'bbn-w-100') + '">' + this.content + '</div>',
               methods: {
                 getContainer(){
                   if (!this._bbn_container) {
@@ -707,9 +741,7 @@ document.head.insertAdjacentElement('beforeend', css);
         }
       },
       showMenu() {
-        if (this.visual) {
-          return this.router.getMenuFn(this.idx);
-        }
+        return this.router.getMenuFn(this.idx);
       },
       takeScreenshot(num_tries = 0) {
         if (this.visual && this.router.db && window.html2canvas) {
@@ -745,20 +777,21 @@ document.head.insertAdjacentElement('beforeend', css);
             }
             catch (e) {
               bbn.fn.log("Error");
+              ct.style.width = null;
+              ct.style.height = null;
               return;
             }
 
             prom.then(
               canvas => {
-                bbn.fn.log(canvas);
-                bbn.fn.log(canvas.height);
+                ct.style.width = null;
+                ct.style.height = null;
+
                 let img = bbn.fn.canvasToImage(canvas);
                 if (!img) {
                   bbn.fn.log("Error for screenshot image");
                   return;
                 }
-                ct.style.width = null;
-                ct.style.height = null;
 
                 let ctx   = canvas.getContext('2d');
                 let size  = Math.min(w, h);
@@ -840,6 +873,15 @@ document.head.insertAdjacentElement('beforeend', css);
     },
 
     watch: {
+      loaded(v) {
+        this.isLoaded = v;
+      },
+      loading(v) {
+        this.isLoading = v;
+      },
+      selected(v) {
+        this.visible = v;
+      },
       idx() {
         if (this.visual) {
           this.isOver = false;

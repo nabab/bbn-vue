@@ -516,7 +516,6 @@
 }
 .bbn-datepicker .bbn-button.bbn-button-right,
 .bbn-datepicker .bbn-button.bbn-button-left {
-  width: inherit;
   opacity: 0.7;
 }
 .bbn-datepicker .bbn-calendar {

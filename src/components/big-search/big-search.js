@@ -253,6 +253,8 @@
                   bbn.fn.log("RESULT OF SELECT URL", d);
                 })
               }
+
+              this.filterString = '';
             }
           }
         },

@@ -3697,7 +3697,20 @@
         flat: {
           type: Boolean,
           default: false
-        }
+        },
+        /**
+         * @todo not used in the component
+         */
+        search: {
+          type: Boolean,
+          default: false
+        },
+        /**
+         * @todo not used in the component
+         */
+        searchFields: {
+          type: Array
+        },
       },
       data(){
         let order = this.order;
@@ -4277,12 +4290,20 @@
               if (d && d.data) {
                 if (d.data.length) {
                   let data = this.treatData(d.data);
-                  if (this.currentData.length) {
-                    this.currentData.push(...data);
-                  }
-                  else {
-                    this.currentData = data;
-                  }
+                  bbn.fn.each(data, a => {
+                    let todo = true;
+                    if (a.data.hash) {
+                      let row = bbn.fn.filter(this.currentData, r => r.data.hash === a.data.hash);
+                      if (row.length && (row[0].data.score && a.data.score)) {
+                        todo = false;
+                        row[0].data.score += a.data.score;
+                      }
+                    }
+
+                    if (todo) {
+                      this.currentData.push(a);
+                    }
+                  });
 
                   this.updateIndexes();
                 }
@@ -4422,7 +4443,7 @@
                   this.isLoaded = true;
                 }
                 this.$emit('dataloaded');
-                if (this.isAjax && d.next_step) {
+                if (this.isAjax && d && d.next_step) {
                   this.appendData(d.next_step);
                 }
                 //this._dataPromise = false;
@@ -4651,6 +4672,43 @@
               /*
               this.updateData();
               */
+            }
+          }
+        },
+        /**
+         * 
+         */
+        searchValue(v) {
+          bbn.fn.log("WATCHER!!", v);
+          if (this.search) {
+            this.unsetFilter();
+            if (v) {
+              let cond = [];
+              if (this.searchFields) {
+                bbn.fn.each(this.searchFields, a => {
+                  cond.push({
+                    field: a,
+                    operator: 'contains',
+                    value: v
+                  });
+                });
+              }
+              else {
+                bbn.fn.each(this.cols, a => {
+                  if (a.field && !bbn.fn.getRow(cond, {field: a.field})) {
+                    cond.push({
+                      field: a.field,
+                      operator: 'contains',
+                      value: v
+                    });
+                  }
+                });
+              }
+              bbn.fn.log("TABLE FILTER", this.searchFields, cond);
+              this.currentFilters.conditions.push({
+                logic: 'OR',
+                conditions: cond
+              });
             }
           }
         }
@@ -5855,8 +5913,8 @@
          * @memberof viewComponent
          */
         imessages: {
-          type: Array,
-          default(){
+          type: [Array, Function],
+          default() {
             return []
           }
         },
@@ -6712,14 +6770,6 @@
     throw new Error("Impossible to find the library bbn-vue")
   }
   Vue.mixin({
-    data(){
-      return {
-        /**
-         * @data _currentPopup
-         */
-        _currentPopup: null
-      };
-    },
     computed: {
       /**
        * Return the object of the currentPopup.

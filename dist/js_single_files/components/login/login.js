@@ -58,7 +58,7 @@ script.innerHTML = `<div :class="['bbn-overlay', 'bbn-middle', componentClass]"
           <div class="bbn-w-100 bbn-c bbn-vsmargin">
             <bbn-input class="bbn-c bbn-w-100"
                       required="required"
-                      buttonLeft="nf nf-fa-envelope_o"
+                      button-left="nf nf-fa-envelope_o"
                       :nullable="true"
                       :placeholder="_('Login name')"
                       v-model="currentFormData.user"/>
@@ -67,10 +67,10 @@ script.innerHTML = `<div :class="['bbn-overlay', 'bbn-middle', componentClass]"
             <bbn-input type="password"
                        class="bbn-c bbn-w-100"
                        required="required"
-                       buttonLeft="nf nf-fa-lock"
+                       button-left="nf nf-fa-lock"
                        :nullable="true"
                        :placeholder="_('Password')"
-                      v-model="currentFormData.pass"/>
+                       v-model="currentFormData.pass"/>
           </div>
           <div class="bbn-c bbn-w-100 bbn-vsmargin bbn-flex-width">
             <bbn-button type="button"
@@ -79,15 +79,15 @@ script.innerHTML = `<div :class="['bbn-overlay', 'bbn-middle', componentClass]"
             <div class="bbn-w-100 bbn-r bbn-xs"
                  v-if="passwordLink">
               <a class="bbn-p bbn-r bbn-xs"
-                  @click="currentMode = 'lost'"
-                  v-text="_('Password forgotten?')"/>
+                 @click="currentMode = 'lost'"
+                 v-text="passwordLink"/>
             </div>
           </div>
         </div>
         <div v-else-if="currentMode === 'lost'"
              class="bbn-w-100">
           <div class="bbn-w-100 bbn-c bbn-vsmargin">
-            <bbn-input buttonLeft="nf nf-fa-envelope_o"
+            <bbn-input button-left="nf nf-fa-envelope_o"
                        class="bbn-w-100"
                        required="required"
                        :placeholder="_('Enter your e-mail address')"
@@ -148,13 +148,9 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
 
 /**
  * @file bbn-login component
- *
  * @description The bbn-login component
- *
  * @copyright BBN Solutions
- *
  * @author BBN Solutions
- *
  * @created 31/05/2021
  */
 
@@ -164,12 +160,12 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
   Vue.component('bbn-login', {
     /**
      * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.resizerComponent 
+     * @mixin bbn.vue.resizerComponent
      * @mixin bbn.vue.popupComponent
      */
     mixins: [
-      bbn.vue.basicComponent, 
-      bbn.vue.resizerComponent, 
+      bbn.vue.basicComponent,
+      bbn.vue.resizerComponent,
       bbn.vue.popupComponent
     ],
     props: {
@@ -190,38 +186,38 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         default: 's'
       },
       /**
-       * @prop {String} logo 
+       * @prop {String} logo
        */
       logo: {
         type: String
       },
       /**
-       * @prop {String} [''] url 
+       * @prop {String} [''] url
        */
       url: {
         type: String,
         default: ''
       },
       /**
-       * @prop {String} loginUrl 
+       * @prop {String} loginUrl
        */
       loginUrl: {
         type: String
       },
       /**
-       * @prop {String} lostUrl 
+       * @prop {String} lostUrl
        */
       lostUrl: {
         type: String
       },
       /**
-       * @prop {String} changeUrl 
+       * @prop {String} changeUrl
        */
       changeUrl: {
         type: String
       },
       /**
-       * @prop {String} mode 
+       * @prop {String} mode
        */
       mode: {
         type: String,
@@ -271,7 +267,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         default: 'appui_salt'
       },
       /**
-       * @prop {(Boolean|String)} ['Password forgotten?'] passwordLink 
+       * @prop {(Boolean|String)} ['Password forgotten?'] passwordLink
        */
       passwordLink: {
         type: [Boolean, String],

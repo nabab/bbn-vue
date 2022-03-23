@@ -93,3 +93,15 @@
 .bbn-fisheye .bbn-fisheye-bin i {
   font-size: 8em;
 }
+.bbn-fisheye #bbn-draggable-current li {
+  transform: scale(1.4);
+}
+.bbn-fisheye #bbn-draggable-current li i {
+  transform: scale(1.5);
+}
+.bbn-screen-small .bbn-fisheye #bbn-draggable-current li i {
+  transform: none;
+}
+.bbn-screen-small .bbn-fisheye #bbn-draggable-current li {
+  transform: none;
+}

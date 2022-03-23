@@ -10,9 +10,19 @@
          class="bbn-table-toolbar bbn-w-100"
          ref="toolbar"
     >
-      <bbn-toolbar v-if="toolbarButtons.length"
-                   :source="toolbarButtons">
+      <bbn-toolbar v-if="toolbarButtons.length || search"
+                   :source="toolbarButtons"
+                   :slot-before="toolbarSlotBefore">
         <slot name="toolbar"></slot>
+        <template v-slot:right>
+          <div v-if="search"
+               class="bbn-hsmargin">
+            <bbn-input :nullable="true"
+                       button-right="nf nf-fa-search"
+                       class="bbn-wide"
+                       v-model="searchValue"/>
+           </div>
+        </template>
       </bbn-toolbar>
       <div v-else-if="typeof toolbar === 'function'"
            v-html="toolbar()"/>
@@ -106,7 +116,7 @@
                 >
                   <i :class="{
                       nf: true,
-                      'nf-fa-filter': true,
+                      'nf nf-mdi-filter_variant': true,
                       'bbn-p': true,
                       'bbn-red': hasFilter(col)
                     }"
@@ -639,13 +649,6 @@
         default: false
       },
       /**
-       * @todo not used in the component
-       */
-      search: {
-        type: Boolean,
-        default: false
-      },
-      /**
        * A function to define css class(es) for each row.
        * @prop {Function} trClass
        */
@@ -834,6 +837,14 @@
        */
       maxRowHeight: {
         type: Number
+      },
+      /**
+       * Property sloBefore for the toolbar
+       * @prop {Boolean} toolbarSlotBefore
+       */
+      toolbarSlotBefore: {
+        type: Boolean,
+        default: true
       }
     },
     data() {
@@ -1038,7 +1049,8 @@
         /**
          * @data {Boolean} [false] isTableDataUpdating Will be set to true during the whole update process
          */
-        isTableDataUpdating: false
+        isTableDataUpdating: false,
+        searchValue: ''
       };
     },
     computed: {
@@ -2368,6 +2380,7 @@
        */
       getConfig() {
         return {
+          searchValue: this.searchValue,
           limit: this.currentLimit,
           order: this.currentOrder,
           filters: this.currentFilters,
@@ -2404,6 +2417,9 @@
           if (this.pageable && (this.currentLimit !== cfg.limit)) {
             this.currentLimit = cfg.limit;
           }
+          if (this.search) {
+            this.searchValue = cfg.searchValue || '';
+          }
           if (this.sortable && (this.currentOrder !== cfg.order)) {
             if (bbn.fn.isObject(cfg.order)) {
               let currentOrder = [];
@@ -2429,6 +2445,7 @@
             });
           }
           this.currentConfig = {
+            searchValue: this.searchValue,
             limit: this.currentLimit,
             order: this.currentOrder,
             filters: this.currentFilters,
@@ -3757,7 +3774,7 @@
             this.resizeWidth();
           })
         }
-      }
+      },
     },
     components: {
       /**
