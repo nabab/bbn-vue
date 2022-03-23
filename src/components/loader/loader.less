@@ -39,9 +39,9 @@ div.bbn-loader {
       <div class="sk-plane"></div>
  */
 .sk-plane {
-  width: var(--sk-size);
-  height: var(--sk-size);
-  background-color: var(--alt-text);
+  width: ~"var(--sk-size)";
+  height: ~"var(--sk-size)";
+  background-color: ~"var(--alt-text)";
   animation: sk-plane 1.2s infinite ease-in-out; 
 }
 
@@ -68,8 +68,8 @@ div.bbn-loader {
       </div>
  */
 .sk-chase {
-  width: var(--sk-size);
-  height: var(--sk-size);
+  width: ~"var(--sk-size)";
+  height: ~"var(--sk-size)";
   position: relative;
   animation: sk-chase 2.5s infinite linear both; 
 }
@@ -88,7 +88,7 @@ div.bbn-loader {
   display: block;
   width: 25%;
   height: 25%;
-  background-color: var(--alt-text);
+  background-color: ~"var(--alt-text)";
   border-radius: 100%;
   animation: sk-chase-dot-before 2.0s infinite ease-in-out both; 
 }
@@ -131,8 +131,8 @@ div.bbn-loader {
       </div>
   */
 .sk-bounce {
-  width: var(--sk-size);
-  height: var(--sk-size);
+  width: ~"var(--sk-size)";
+  height: ~"var(--sk-size)";
   position: relative;
 }
 
@@ -140,7 +140,7 @@ div.bbn-loader {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background-color: var(--alt-text);
+  background-color: ~"var(--alt-text)";
   opacity: 0.6;
   position: absolute;
   top: 0;
@@ -170,14 +170,14 @@ div.bbn-loader {
       </div>
  */
 .sk-wave {
-  width: var(--sk-size);
-  height: var(--sk-size);
+  width: ~"var(--sk-size)";
+  height: ~"var(--sk-size)";
   display: flex;
   justify-content: space-between;
 }
 
 .sk-wave-rect {
-  background-color: var(--alt-text);
+  background-color: ~"var(--alt-text)";
   height: 100%;
   width: 15%;
   animation: sk-wave 1.2s infinite ease-in-out; 
@@ -203,9 +203,9 @@ div.bbn-loader {
       <div class="sk-pulse"></div>
  */
 .sk-pulse {
-  width: var(--sk-size);
-  height: var(--sk-size);
-  background-color: var(--alt-text);
+  width: ~"var(--sk-size)";
+  height: ~"var(--sk-size)";
+  background-color: ~"var(--alt-text)";
   border-radius: 100%;
   animation: sk-pulse 1.2s infinite cubic-bezier(0.455, 0.03, 0.515, 0.955); 
 }
@@ -229,8 +229,8 @@ div.bbn-loader {
       </div>
  */
 .sk-flow {
-  width: calc(var(--sk-size) * 1.3);
-  height: calc(var(--sk-size) * 1.3);
+  width: calc(~"var(--sk-size)" * 1.3);
+  height: calc(~"var(--sk-size)" * 1.3);
   display: flex;
   justify-content: space-between;
 }
@@ -238,7 +238,7 @@ div.bbn-loader {
 .sk-flow-dot {
   width: 25%;
   height: 25%;
-  background-color: var(--alt-text);
+  background-color: ~"var(--alt-text)";
   border-radius: 50%;
   animation: sk-flow 1.4s cubic-bezier(0.455, 0.03, 0.515, 0.955) 0s infinite both;
 }
@@ -263,8 +263,8 @@ div.bbn-loader {
       </div>
  */
 .sk-swing {
-  width: var(--sk-size);
-  height: var(--sk-size);
+  width: ~"var(--sk-size)";
+  height: ~"var(--sk-size)";
   position: relative;
   animation: sk-swing 1.8s infinite linear; 
 }
@@ -277,7 +277,7 @@ div.bbn-loader {
   left: 0;
   right: 0;
   margin: auto;
-  background-color: var(--alt-text);
+  background-color: ~"var(--alt-text)";
   border-radius: 100%;
   animation: sk-swing-dot 2s infinite ease-in-out; 
 }
@@ -321,8 +321,8 @@ div.bbn-loader {
       </div>
  */
 .sk-circle {
-  width: var(--sk-size);
-  height: var(--sk-size);
+  width: ~"var(--sk-size)";
+  height: ~"var(--sk-size)";
   position: relative; 
 }
 
@@ -339,7 +339,7 @@ div.bbn-loader {
     display: block;
     width: 15%;
     height: 15%;
-    background-color: var(--alt-text);
+    background-color: ~"var(--alt-text)";
     border-radius: 100%;
     animation: sk-circle 1.2s infinite ease-in-out both; 
 }
@@ -394,8 +394,8 @@ div.bbn-loader {
       </div>
  */
 .sk-circle-fade {
-  width: var(--sk-size);
-  height: var(--sk-size);
+  width: ~"var(--sk-size)";
+  height: ~"var(--sk-size)";
   position: relative; 
 }
 
@@ -412,7 +412,7 @@ div.bbn-loader {
   display: block;
   width: 15%;
   height: 15%;
-  background-color: var(--alt-text);
+  background-color: ~"var(--alt-text)";
   border-radius: 100%;
   animation: sk-circle-fade 1.2s infinite ease-in-out both; 
 }
@@ -466,8 +466,8 @@ div.bbn-loader {
     </div>
  */
 .sk-grid {
-  width: var(--sk-size);
-  height: var(--sk-size);
+  width: ~"var(--sk-size)";
+  height: ~"var(--sk-size)";
   /* Cube positions
    * 1 2 3
    * 4 5 6
@@ -477,7 +477,7 @@ div.bbn-loader {
 .sk-grid-cube {
     width: 33.33%;
     height: 33.33%;
-    background-color: var(--alt-text);
+    background-color: ~"var(--alt-text)";
     float: left;
     animation: sk-grid 1.3s infinite ease-in-out; 
 }
@@ -510,8 +510,8 @@ div.bbn-loader {
       </div>
  */
 .sk-fold {
-  width: var(--sk-size);
-  height: var(--sk-size);
+  width: ~"var(--sk-size)";
+  height: ~"var(--sk-size)";
   position: relative;
   transform: rotateZ(45deg); 
 }
@@ -530,7 +530,7 @@ div.bbn-loader {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: var(--alt-text);
+  background-color: ~"var(--alt-text)";
   animation: sk-fold 2.4s infinite linear both;
   transform-origin: 100% 100%; 
 }
@@ -565,19 +565,19 @@ div.bbn-loader {
       </div>
  */
 .sk-wander {
-  width: var(--sk-size);
-  height: var(--sk-size);
+  width: ~"var(--sk-size)";
+  height: ~"var(--sk-size)";
   position: relative; 
 }
 
 .sk-wander-cube {
-  background-color: var(--alt-text);
+  background-color: ~"var(--alt-text)";
   width: 20%;
   height: 20%;
   position: absolute;
   top: 0;
   left: 0;
-  --sk-wander-distance: calc(var(--sk-size) * 0.75);
+  --sk-wander-distance: calc(~"var(--sk-size)" * 0.75);
   animation: sk-wander 2.0s ease-in-out -2.0s infinite both;
 }
 .sk-wander-cube:nth-child(2) { animation-delay: -0.5s; }
@@ -587,13 +587,13 @@ div.bbn-loader {
   0% {
     transform: rotate(0deg); 
   } 25% {
-    transform: translateX(var(--sk-wander-distance)) rotate(-90deg) scale(0.6); 
+    transform: translateX(~"var(--sk-wander-distance)") rotate(-90deg) scale(0.6); 
   } 50% { /* Make FF rotate in the right direction */
-    transform: translateX(var(--sk-wander-distance)) translateY(var(--sk-wander-distance)) rotate(-179deg); 
+    transform: translateX(~"var(--sk-wander-distance)") translateY(~"var(--sk-wander-distance)") rotate(-179deg); 
   } 50.1% {
-    transform: translateX(var(--sk-wander-distance)) translateY(var(--sk-wander-distance)) rotate(-180deg); 
+    transform: translateX(~"var(--sk-wander-distance)") translateY(~"var(--sk-wander-distance)") rotate(-180deg); 
   } 75% {
-    transform: translateX(0) translateY(var(--sk-wander-distance)) rotate(-270deg) scale(0.6);
+    transform: translateX(0) translateY(~"var(--sk-wander-distance)") rotate(-270deg) scale(0.6);
   } 100% {
     transform: rotate(-360deg); 
   }
@@ -610,7 +610,7 @@ div.bbn-loader {
     width: 33%;
     height: 33%;
     float: left;
-    background-color: var(--alt-text);
+    background-color: ~"var(--alt-text)";
     -webkit-animation: sk-cubeGridScaleDelay 1.3s infinite ease-in-out;
     animation: sk-cubeGridScaleDelay 1.3s infinite ease-in-out;
     &.sk-cube1 {
@@ -652,36 +652,6 @@ div.bbn-loader {
   }
 }
 
-@-webkit-keyframes sk-cubeGridScaleDelay {
-  0%, 70%, 100% {
-    -webkit-transform: scale3D(1, 1, 1);
-    transform: scale3D(1, 1, 1);
-  }
-  35% {
-    -webkit-transform: scale3D(0, 0, 1);
-    transform: scale3D(0, 0, 1);
-  }
-}
-@keyframes sk-cubeGridScaleDelay {
-  0%, 70%, 100% {
-    -webkit-transform: scale3D(1, 1, 1);
-    transform: scale3D(1, 1, 1);
-  }
-  35% {
-    -webkit-transform: scale3D(0, 0, 1);
-    transform: scale3D(0, 0, 1);
-  }
-}
-@-webkit-keyframes sk-cubeGridScaleDelay {
-  0%, 70%, 100% {
-    -webkit-transform: scale3D(1, 1, 1);
-    transform: scale3D(1, 1, 1);
-  }
-  35% {
-    -webkit-transform: scale3D(0, 0, 1);
-    transform: scale3D(0, 0, 1);
-  }
-}
 @keyframes sk-cubeGridScaleDelay {
   0%, 70%, 100% {
     -webkit-transform: scale3D(1, 1, 1);

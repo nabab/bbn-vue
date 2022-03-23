@@ -940,42 +940,6 @@ div.bbn-loader .dots span:nth-child(3) {
   -webkit-animation-delay: 0.2s;
   animation-delay: 0.2s;
 }
-@-webkit-keyframes sk-cubeGridScaleDelay {
-  0%,
-  70%,
-  100% {
-    -webkit-transform: scale3D(1,1,1);
-    transform: scale3D(1,1,1);
-  }
-  35% {
-    -webkit-transform: scale3D(0,0,1);
-    transform: scale3D(0,0,1);
-  }
-}
-@keyframes sk-cubeGridScaleDelay {
-  0%,
-  70%,
-  100% {
-    -webkit-transform: scale3D(1,1,1);
-    transform: scale3D(1,1,1);
-  }
-  35% {
-    -webkit-transform: scale3D(0,0,1);
-    transform: scale3D(0,0,1);
-  }
-}
-@-webkit-keyframes sk-cubeGridScaleDelay {
-  0%,
-  70%,
-  100% {
-    -webkit-transform: scale3D(1,1,1);
-    transform: scale3D(1,1,1);
-  }
-  35% {
-    -webkit-transform: scale3D(0,0,1);
-    transform: scale3D(0,0,1);
-  }
-}
 @keyframes sk-cubeGridScaleDelay {
   0%,
   70%,
