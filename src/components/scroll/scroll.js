@@ -973,8 +973,8 @@
           this.interval = setInterval(() => {
             if (this.scrollable && this.$el.offsetParent) {
               let container = this.getRef('scrollContent');
-              let contentWidth = Math.min(container.scrollWidth, container.clientWidth);
-              let contentHeight = Math.min(container.scrollHeight, container.clientHeight);            
+              let contentWidth = Math.max(container.scrollWidth, container.clientWidth);
+              let contentHeight = Math.max(container.scrollHeight, container.clientHeight);
               if (
                 (
                   contentWidth
