@@ -16,9 +16,10 @@
          * @returns {String}
          */
         renderData(data, cfg){
-          if ((!bbn.fn.isString(cfg.field) && !bbn.fn.isNumber(cfg.field)) || !data ){
+          if (!cfg || !cfg.field || (!bbn.fn.isString(cfg.field) && !bbn.fn.isNumber(cfg.field)) || !data) {
             return '';
           }
+
           let v = data[cfg.field] || '';
           if ( cfg.icon ){
             return '<i class="' + cfg.icon + '"> </i>'

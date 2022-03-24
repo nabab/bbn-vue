@@ -207,6 +207,14 @@
           default: 0
         },
         /**
+         * Defines the precision of the component.
+         * @prop {Number} [0] precision 
+         * @memberof fieldComponent
+         */
+        unit: {
+          type: String
+        },
+        /**
          * Defines the options of the component.
          * @prop {Object|Function} options
          * @memberof fieldComponent

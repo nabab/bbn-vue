@@ -648,7 +648,7 @@
           return true;
         },
         hashCfg(){
-          return bbn.fn.md5(JSON.stringify(this.currentFilters) + JSON.stringify(this.currentLimit) + JSON.stringify(this.currentStart) + JSON.stringify(this.currentOrder));
+          return bbn.fn.md5(JSON.stringify(this.currentFilters) + JSON.stringify(this.currentLimit) + JSON.stringify(this.start) + JSON.stringify(this.currentOrder));
         },
         /**
          * Returns the current item icon
@@ -999,6 +999,12 @@
               if ( this.isAjax ){
                 if (this.loadingRequestID) {
                   bbn.fn.abort(this.loadingRequestID);
+                  setTimeout(() => {
+                    this.updateData().then(() => {
+                      resolve();
+                    })
+                  }, 50);
+                  return;
                 }
                 this.isLoading = true;
                 this.$emit('startloading');
@@ -1031,7 +1037,13 @@
                 });
               }
               prom.then(d => {
-                if ( this.loadingRequestID && (this.loadingRequestID === loadingRequestID)){
+                if (this.isAjax) {
+                  if (!this.loadingRequestID || (this.loadingRequestID !== loadingRequestID)) {
+                    this.isLoading = false;
+                    this.loadingRequestID = false;
+                    throw new Error("No loading request");
+                  }
+
                   this.isLoading = false;
                   this.loadingRequestID = false;
                   if ( !d ){
@@ -1262,8 +1274,11 @@
         this.currentComponent = this.realComponent;
       },
       watch: {
-        filters() {
-          this.currentFilters = bbn.fn.clone(this.filters)
+        filters: {
+          deep: true,
+          handler() {
+            this.currentFilters = bbn.fn.clone(this.filters)
+          }
         },
         /**
          * @watch currentLimit
@@ -1284,7 +1299,7 @@
           handler() {
             if (this.ready) {
               this.currentFilter = false;
-              if (this.pageable) {
+              if (this.pageable && this.start) {
                 this.start = 0;
               }
 
@@ -1292,7 +1307,6 @@
               if ( bbn.fn.isFunction(this.setConfig) ){
                 this.setConfig(true);
               }
-              this.$forceUpdate();
             }
           }
         },
@@ -1325,7 +1339,6 @@
          * 
          */
         searchValue(v) {
-          bbn.fn.log("WATCHER!!", v);
           if (this.search) {
             this.unsetFilter();
             if (v) {
@@ -1350,7 +1363,6 @@
                   }
                 });
               }
-              bbn.fn.log("TABLE FILTER", this.searchFields, cond);
               this.currentFilters.conditions.push({
                 logic: 'OR',
                 conditions: cond

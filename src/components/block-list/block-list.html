@@ -4,7 +4,7 @@
   </div>
   <div :class="getComponentName() + '-content'">
     <div v-for="(li, idx) in filteredData"
-         v-if="!pageable || ((idx >= start) && (idx < start + currentLimit))"
+         v-if="isAjax || !pageable || ((idx >= start) && (idx < start + currentLimit))"
          :key="li.key"
          :class="['bbn-w-25', 'bbn-mobile-w-50', getComponentName() + '-items']">
       <component v-if="currentComponent"
