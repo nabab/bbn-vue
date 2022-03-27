@@ -19,7 +19,8 @@
                    v-bind="li"
                    :key="'groupComponent' + li.key"/>
         <div v-else
-             v-text="li.data[sourceGroup]"/>
+             v-text="li.data[sourceGroup]"
+             class="bbn-spadded"/>
       </li>
       <li v-if="!pageable || ((idx >= start) && (idx < start + currentLimit)) || (!!pageable && !!serverPaging)"
           @mouseenter="mouseenter($event, idx)"

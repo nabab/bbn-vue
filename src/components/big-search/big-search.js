@@ -109,7 +109,7 @@
          */
         delay: {
           type: Number,
-          default: 500
+          default: 20
         },
         /** 
          * @prop {String} ['?'] shortPlaceholder
@@ -152,7 +152,7 @@
       },
       data() {
         return {
-          isOpened: false,
+          isOpened: true,
           /**
            * The current min width.
            * @data {String} ['4.2em'] specialWidth
@@ -255,6 +255,7 @@
                 })
               }
 
+              this.isOpened = false;
               this.filterString = '';
             }
           }
@@ -272,7 +273,8 @@
             return;
           }
           if (e.key === 'Escape') {
-            this.resetDropdown();
+            this.isOpened = false;
+            this.filterString = '';
           }
           else if (bbn.var.keys.upDown.includes(e.keyCode)) {
             this.keynav(e);
@@ -280,12 +282,10 @@
         },
       },
       watch: {
-        filteredTotal(v, ov) {
-          if (v && !ov) {
-            this.isOpened = true;
-          }
-          else if (!v && ov) {
-            this.isOpened = false;
+        isOpened(v) {
+          bbn.fn.log("isOpened", this.isOpened);
+          if (!v) {
+            this.$emit('close');
           }
         },
         /**

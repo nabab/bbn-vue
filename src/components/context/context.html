@@ -7,11 +7,10 @@
            @mousedown="onMouseDown"
            @touchstart="touchstart"
            @touchmove="touchmove"
-           @touchend="touchend"
->
+           @touchend="touchend">
   <slot></slot>
-  <bbn-floater :element="attach || $el"
-               :source="filteredData"
+  <bbn-floater :element="attach || null"
+               :source="source"
                :class="'bbn-floater-context-' + bbnUid"
                ref="floater"
                :width="width"
@@ -20,6 +19,10 @@
                :minHeight="minHeight"
                :maxWidth="maxWidth"
                :maxHeight="maxHeight"
+               :top="currentTop"
+               :left="currentLeft"
+               :right="currentRight"
+               :bottom="currentBottom"
                children="items"
                :title="floaterTitle"
                :closable="!!floaterTitle"

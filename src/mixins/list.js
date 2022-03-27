@@ -951,7 +951,15 @@
                 }
 
                 if (d.next_step) {
-                  this.appendData(d.next_step);
+                  if (this.isOpened !== undefined) {
+                    if (this.isOpened) {
+                      bbn.fn.log("APPEING DATA")
+                      this.appendData(d.next_step);
+                    }
+                  }
+                  else {
+                    this.appendData(d.next_step);
+                  }
                 }
               }
             });
@@ -1000,6 +1008,7 @@
                 if (this.loadingRequestID) {
                   bbn.fn.abort(this.loadingRequestID);
                   setTimeout(() => {
+                    this.loadingRequestID = false;
                     this.updateData().then(() => {
                       resolve();
                     })
@@ -1046,17 +1055,21 @@
 
                   this.isLoading = false;
                   this.loadingRequestID = false;
+
                   if ( !d ){
                     return;
                   }
+
                   if ( d.status !== 200 ){
                     d.data = undefined;
                   }
                   else{
                     d = d.data;
                   }
+
                   this.$emit('dataReceived', d);
                 }
+
                 if ( d && bbn.fn.isArray(d.data) ){
                   if (d.data.length && d.data[0]._bbn){
                     this.currentData = d.data;
@@ -1096,9 +1109,9 @@
                 if (!this.isLoaded) {
                   this.isLoaded = true;
                 }
-                this.$emit('dataloaded');
+                this.$emit('dataloaded', d);
                 if (this.isAjax && d && d.next_step) {
-                  if (d.data && d.id) {
+                  if (d.id && (d.data !== undefined)) {
                     this.searchId = d.id;
                   }
 
@@ -1106,6 +1119,10 @@
                 }
                 //this._dataPromise = false;
               });
+            }).catch(e => {
+              bbn.fn.log("CATCHING");
+              this.isLoading = false;
+              this.loadingRequestID = false;
             });
             return this._dataPromise;
           }

@@ -267,7 +267,7 @@
        * The size of every grid cell on which is based the visual view
        * @prop {Number} [180] visualSize
        */
-       visualSize: {
+      visualSize: {
         type: Number,
         default: 180
       },
@@ -275,7 +275,7 @@
        * The position of the visual mini containers
        * @prop {Number} [180] visualSize
        */
-       orientation: {
+      orientation: {
         type: String,
         default(){
           return 'auto'
@@ -288,7 +288,7 @@
        * The default background color for the title bar
        * @prop {String} [#666] bcolor
        */
-       bcolor: {
+      bcolor: {
         type: String,
         default: '#666'
       },
@@ -296,7 +296,7 @@
        * The default text color for the title bar
        * @prop {String} [#EEE] fcolor
        */
-       fcolor: {
+      fcolor: {
         type: String,
         default: '#EEE'
       }
@@ -572,27 +572,42 @@
         }
       },
 
+      visualRatio() {
+        return this.lastKnownWidth / this.lastKnownHeight;
+      },
+
       /**
-       * The number of rows for the visual mode
+       * The number of columns (width) for the visual mode
        *
        * @return {Number} 
        */
-       numVisualRows() {
+       numVisualCols() {
         if (this.isVisual) {
-          return Math.ceil(this.lastKnownHeight / this.visualSize);
+          // Width greater or equal to height
+          if (this.visualRatio >= 1) {
+            return Math.ceil(this.lastKnownWidth / this.visualSize);
+          }
+          else {
+            return Math.ceil(this.lastKnownWidth / (this.visualSize * this.visualRatio));
+          }
         }
 
         return 1;
       },
 
       /**
-       * The number of columns for the visual mode
+       * The number of rows (height) for the visual mode
        *
        * @return {Number} 
        */
-       numVisualCols() {
+       numVisualRows() {
         if (this.isVisual) {
-          return Math.ceil(this.lastKnownWidth / this.visualSize);
+          if (this.visualRatio > 1) {
+            return Math.ceil(this.lastKnownHeight / this.visualSize * this.visualRatio);
+          }
+          else {
+            return Math.ceil(this.lastKnownHeight / this.visualSize);
+          }
         }
 
         return 1;
@@ -3089,8 +3104,7 @@
        * @fires route
        */
       url(newVal){
-        if ( this.ready ){
-          bbn.fn.log("CHANGING ROUTER URL");
+        if (this.ready) {
           this.route(newVal);
         }
       },

@@ -126,6 +126,28 @@
 
     },
     methods: {
+      contextMenu(item) {
+        let res =  [{
+          text: bbn._("Copy URL"),
+          icon: 'nf nf-mdi-content_copy',
+          action() {
+            bbn.fn.copy(item.url);
+            appui.success(bbn._("Copied"));
+          }
+        }];
+
+        if (item.loading) {
+          res.push({
+            text: bbn._("abort"),
+            icon: 'nf nf-mdi-cancel',
+            action() {
+              this.cancel(item);
+            }
+          });
+        }
+
+        return res;
+      },
       /**
        * Return the duration in seconds or milliseconds of a request
        * @method renderDuration

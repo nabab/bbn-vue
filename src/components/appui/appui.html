@@ -273,6 +273,7 @@
                 :source-text="searchBar.sourceText"
                 :min-length="searchBar.minLength"
                 @select="searchSelect"
+                @close="searchOn = false"
                 :limit="50"
                 :pageable="true"
                 class="bbn-no"/>

@@ -65,6 +65,14 @@
         };
       },
       methods: {
+        isActiveResizer() {
+          let ct = this.closest('bbn-container');
+          if (ct) {
+            return ct.selected;
+          }
+  
+          return true;
+        },
         /**
          * A function that can be executed just before the resize event is emitted.
          * @method onResize
@@ -84,7 +92,6 @@
                   if (ms1 || ms2) {
                     if (!this.ready) {
                       setTimeout(() => {
-                        bbn.fn.log("DEFAUT ONRESIZE ON TIMEOUT");
                         this.onResize();
                       }, 100)
                     }

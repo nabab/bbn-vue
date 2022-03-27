@@ -67,15 +67,15 @@
         }"
             ref="canvasSource">
           <!-- This is shown when it's ready -->
-          <component :is="scrollable ? 'bbn-scroll' : 'div'"
-                    v-if="ready && isLoaded && (visible || cached || visual)"
-                    v-show="visible || (visual && !thumbnail)"
-                    ref="scroll"
-                    :axis="scrollable ? 'y' : null"
-                    :class="{
-                      'bbn-overlay': router.scrollContent,
-                      'bbn-w-100': !router.scrollContent
-                    }">
+          <bbn-scroll v-if="ready && isLoaded && (visible || cached || visual)"
+                      v-show="visible || (visual && !thumbnail)"
+                      ref="scroll"
+                      :scrollable="scrollable"
+                      axis="y"
+                      :class="{
+                        'bbn-overlay': router.scrollContent,
+                        'bbn-w-100': !router.scrollContent
+                      }">
             <!-- This is an ad hoc component with unique name -->
             <component v-if="isComponent"
                       :is="$options.components[componentName]"
@@ -101,7 +101,7 @@
                       scoped="scoped"
                       v-html="css"/>
             <bbn-loader v-if="hasLoader"/>
-          </component>
+          </bbn-scroll>
           <!-- If loading showing loader -->
           <bbn-loader v-else-if="visible && !isLoaded"/>
           <!-- Thumbnail image -->
@@ -140,9 +140,9 @@
           <div class="bbn-bottom-left bbn-w-100 bbn-bg-black"
                style="opacity: 0.6; color: transparent">
             <div class="bbn-w-50 bbn-spadded">
-              <span class="bbn-spadded bbn-p">
+              <!--span class="bbn-spadded bbn-p">
                 <i class="nf nf-fa-bars"/>
-              </span>
+              </span-->
             </div>
             <div class="bbn-w-50 bbn-right bbn-spadded">
               <span class="bbn-spadded bbn-p"
@@ -162,9 +162,12 @@
           <div class="bbn-bottom-left bbn-w-100 bbn-white">
             <div class="bbn-w-50 bbn-spadded">
               &nbsp;
-              <span class="bbn-spadded bbn-p">
-                <i class="nf nf-fa-bars"/>
-              </span>
+              <!--bbn-context class="bbn-spadded bbn-iblock bbn-p"
+                           tag="span"
+                           :source="showMenu">
+                <i class="nf nf-fa-bars"
+                   @click.stop="pin"/>
+              </bbn-context-->
             </div>
             <div class="bbn-w-50 bbn-right bbn-spadded">
               <span v-if="!pinned && !static"

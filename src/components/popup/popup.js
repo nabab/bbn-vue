@@ -273,7 +273,6 @@
                 d.uid = 'bbn-popup-' + bbn.fn.timestamp().toString();
               }
               d.index = this.items.length;
-              bbn.fn.log("WIN", d);
               this.items.push(d);
               this.makeWindows();
             }
@@ -530,7 +529,6 @@
             cls: 'bbn-primary',
             icon: 'nf nf-fa-check_circle',
             action($ev, btn){
-              bbn.fn.log("HHHHHHHH", btn);
               btn.closest('bbn-floater').close(true);
               setTimeout(() => {
                 onYes($ev, btn);

@@ -144,7 +144,10 @@
          * @data {Boolean} [false] docEvent
          */
         docEvent: false,
-
+        currentLeft: null,
+        currentTop: null,
+        currentRight: null,
+        currentBottom: null
       };
     },
     methods: {
@@ -169,6 +172,26 @@
           }
           // Don't execute if in the floater
           if (!e.target.closest('.bbn-floater-context-' + this.bbnUid)) {
+            if (!this.showFloater && !this.attach) {
+              if (e.pageX > bbn.env.width / 2) {
+                this.currentLeft = null;
+                this.currentRight = e.pageX + 5;
+              }
+              else {
+                this.currentLeft = e.pageX - 5;
+                this.currentRight = null;
+              }
+
+              if (e.pageY > bbn.env.height / 2) {
+                this.currentTop = null;
+                this.currentBottom = e.pageY + 5;
+              }
+              else {
+                this.currentTop = e.pageY - 5;
+                this.currentBottom = null;
+              }
+            }
+
             this.toggle();
           }
         }
