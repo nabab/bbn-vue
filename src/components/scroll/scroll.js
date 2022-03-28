@@ -834,8 +834,8 @@
               sendResizeContent = true;
             }
 
-            this.contentWidth = content.clientWidth;
-            this.contentHeight = content.clientHeight;
+            this.contentWidth = content.scrollWidth;
+            this.contentHeight = content.scrollHeight;
             this.containerWidth = container.clientWidth;
             this.containerHeight = container.clientHeight;
             // With scrolling on we check the scrollbars
@@ -971,7 +971,7 @@
           }
           // Checks every second if the scroll content has been resized and sends onResize if so
           this.interval = setInterval(() => {
-            if (this.scrollable && this.$el.offsetParent) {
+            if (this.scrollable && this.$el.offsetParent && this.isActiveResizer()) {
               let container = this.getRef('scrollContent');
               let contentWidth = Math.max(container.scrollWidth, container.clientWidth);
               let contentHeight = Math.max(container.scrollHeight, container.clientHeight);
@@ -981,7 +981,7 @@
                   && (this.contentWidth !== contentWidth)
                   && (
                     !this.contentWidth
-                    || (Math.abs(contentWidth - this.contentWidth) > 3)
+                    || (Math.abs(contentWidth - this.contentWidth) > 1)
                   )
                 )
                 || (
@@ -989,7 +989,7 @@
                   && (this.contentHeight !== contentHeight)
                   && (
                     !this.contentHeight
-                    || (Math.abs(contentHeight - this.contentHeight) > 3)
+                    || (Math.abs(contentHeight - this.contentHeight) > 1)
                   )
                 )
               ) {
