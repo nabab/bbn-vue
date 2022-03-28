@@ -484,7 +484,8 @@
             });
           }
         }
-        s.opacity = this.isResized ? 1 : 0;
+
+        s.visibility = this.isResized && this.isInit && this.scrollReady ? 'visible' : 'hidden';
         return s;
       },
       containerStyle(){
@@ -958,7 +959,7 @@
 
           let el = document.createElement('div');
           el.style.position = 'absolute';
-          el.style.opacity = 0;
+          el.style.visibility = 'hidden';
           el.className = 'bbn-reset'
           el.style.width = this.formatSize(width);
           el.style.height = this.formatSize(height);

@@ -9,16 +9,14 @@
       ]"
       v-if="isVisible"
       @resize.stop="onResize"
-      @mouseleave="isResized ? isOver = false : (() => {})()"
-      @mouseenter="isResized ? isOver = true : (() => {})()"
+      @mouseleave="isOver = false"
+      @mouseenter="isOver = true"
       @keydown.esc.prevent.stop="close"
       @subready.stop
       :style="currentStyle"
       v-resizable:container.left.right.bottom="ready && resizable ? $el.parentElement : false">
-  <div
-        v-if="arrow"
-        :class="'arrow ' + position"
-  >
+  <div v-if="arrow"
+       :class="'arrow ' + position">
   </div>
   <div :style="containerStyle"
        :class="{'bbn-flex-height': !isResizing}">
