@@ -290,14 +290,6 @@
       draggable: {
         type: Boolean,
         default: false
-      },
-      /**
-       * Set to true to make the floater resizable
-       * @prop {Boolean} [false] resizable
-       */
-      resizable: {
-        type: Boolean,
-        default: false
       }
     },
     data() {
@@ -569,9 +561,7 @@
         if (this.element && this.elementWidth) {
           tmp = this.element.getBoundingClientRect();
           if (tmp.width) {
-            if (!this.maxWidth || (this.maxWidth > tmp.width)) {
-              minWidth.push(tmp.width);
-            }
+            minWidth.push(tmp.width);
           }
         }
 
@@ -723,12 +713,8 @@
             && this.$el
             && (this.setContainerMeasures() || !this.isInit || force)
         ) {
-          return this.realResize();
+          this.realResize();
         }
-
-        return new Promise(resolve => {
-          setTimeout(() => {resolve();}, 0);
-        });
       },
       /**
        * Handles the resize of the component.
@@ -746,7 +732,6 @@
           let go = this.isVisible
               && this.scrollReady
               && bbn.fn.isDom(this.$el)
-              && this.isActiveResizer()
               && (!this.isResizing || !this.isResized);
           if (go) {
             this.isResizing = true;
@@ -791,7 +776,7 @@
                     scroll.$el.style.height = this.formatSize(this.currentMinHeight || '0px');
                     let containerEle = scroll.getRef('scrollContainer');
                     let contentEle = scroll.getRef('scrollContent');
-                    naturalHeight = contentEle.scrollHeight;
+                    naturalHeight = containerEle.scrollHeight;
                     if (!naturalHeight) {
                       this.isResizing = false;
                       resolve();
@@ -953,6 +938,7 @@
 
         if (parent && (width || height)) {
           if (!parent.insertAdjacentElement) {
+            bbn.fn.log(parent);
             throw new Error("Impossible to insert adjacent element to calculate dimensions");
           }
 
@@ -1093,7 +1079,7 @@
           }
           else {
             if ((coor[a.posStart] !== null) || (coor[a.posEnd] !== null)) {
-              a.res = coor[a.posStart] !== null ? coor[a.posStart] : coor[a.posEnd] - size;
+              a.res = coor[a.posStart] !== null ? coor[a.posStart] : this['container' + a.camel] - coor[a.posEnd] - size;
             }
             else {
               // If no vertical position at all, centered (same top and bottom)
