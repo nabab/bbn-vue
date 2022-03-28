@@ -3,7 +3,8 @@
           'bbn-reset': true,
           'bbn-bordered': !modal,
           'bbn-background-internal': !modal,
-          'bbn-invisible': !isResized
+          'bbn-invisible': !isResized,
+          'bbn-floater-arrowed': !!arrow
         },
         componentClass
       ]"
@@ -16,8 +17,7 @@
       :style="currentStyle"
       v-resizable:container.left.right.bottom="ready && resizable ? $el.parentElement : false">
   <div v-if="arrow"
-       :class="'arrow ' + position">
-  </div>
+       :class="['bbn-floater-arrow', position]"/>
   <div :style="containerStyle"
        class="bbn-flex-height">
     <div v-if="modal"

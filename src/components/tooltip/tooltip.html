@@ -1,31 +1,24 @@
-<div :class="componentClass">
-  <div class="bbn-vmiddle">
-    <div>
-      <slot></slot>
-    </div>
-    <span class="bbn-p bbn-tooltip-icon bbn-left-xsspace"
-          @click="visible=true"
-          @mouseenter="visible=true"
-          ref="helper">
-      <i class="bbn-m nf nf-fa-info_circle"/>
-    </span>
-  </div>
-  <bbn-floater v-if="visible"
-               :class="position"
+<component :is="tag"
+           :class="componentClass"
+           @mouseenter="isVisible = true">
+  <slot></slot>
+  <span class="bbn-p bbn-tooltip-icon bbn-left-xsspace"
+        ref="helper"
+        v-if="icon">
+    <i :class="[icon, 'bbn-m']"/>
+  </span>
+  <bbn-floater v-if="isVisible"
                :tag="tag"
                ref="floater"
                tabindex="-1"
                :position="position"
-               :content="content"
-               @click="action('click', $event)"
-               @contextmenu="action('context', $event)"
-               @keydown="action('keydown', $event)"
-               @mousedown="action('mousedown', $event)"
-               @mouseover="action('mouseover', $event)"
-               @close="visible=false"
+               :content="getContent()"
+               @close="isVisible = false"
                :component="component"
-               :element="$refs.helper"
+               :element="$el"
+               :element-width="false"
                :arrow="true"
                :distance="distance"
-               :auto-hide="500"/>
-</div>
+               :auto-hide="500"
+               :scrollable="false"/>
+</component>
