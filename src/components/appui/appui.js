@@ -381,6 +381,9 @@
 
         return res;
       },
+      onBeforeRoute(ev, path) {
+        this.$emit('beforeroute', ev, path);
+      },
       onRoute(path) {
         this.$emit('route', path)
       },

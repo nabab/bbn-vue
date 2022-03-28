@@ -71,7 +71,6 @@
     },
     computed: {
       items(){
-        bbn.fn.log("REDOING ITEMS");
         let depth = 0;
         let res = [{
           data: this.source,
@@ -88,7 +87,6 @@
           }
           sel += a + '.' + this.children;
           let tmp = bbn.fn.getProperty(this.source, sel);
-          bbn.fn.log(sel, tmp);
           list = tmp
           if (tmp && tmp.length ) {
             depth++;
@@ -160,7 +158,6 @@
        * @emits select
        */
       select(itemIdx, dataIdx){
-        bbn.fn.log("SELE", dataIdx, this.items[itemIdx], this.maxDepth);
         if ((this.items[itemIdx].depth < this.maxDepth) && this.items[itemIdx].data && this.items[itemIdx].data.length) {
           this.currentSelected.push(dataIdx)
           this.selectedIndex = false;

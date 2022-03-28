@@ -153,6 +153,7 @@
                   :nav="nav"
                   :master="true"
                   :url="!!nav ? undefined : url"
+                  @beforeroute="onBeforeRoute"
                   @route="onRoute"
                   @change="$emit('change', $event)"
                   :breadcrumb="isMobile"

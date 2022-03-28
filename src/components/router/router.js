@@ -1148,13 +1148,13 @@
         url = bbn.fn.replaceAll('//', '/', url);
         if (this.ready && (force || !this.activeContainer || (url !== this.currentURL))) {
           let event = new CustomEvent(
-            "beforeRoute",
+            "beforeroute",
             {
               bubbles: false,
               cancelable: true
             }
           );
-          this.$emit("beforeRoute", event, url);
+          this.$emit("beforeroute", event, url);
           if (!event.defaultPrevented) {
             let bits = url.split('#');
             url = bits[0];
@@ -1166,10 +1166,11 @@
             // Checks weather the container is already there
             if (!url) {
               let idx = this.getRoute('', true);
-              if ( idx ){
+              if ( idx && this.urls[idx]) {
                 url = this.urls[idx].currentURL;
               }
             }
+
             let st = url ? this.getRoute(url) : '';
             /** @todo There is asomething to do here */
             //bbn.fn.log("ROUTING FUNCTION EXECUTING FOR " + url + " (CORRESPONDING TO " + st + ")");
@@ -1698,8 +1699,8 @@
         }
         if ( this.parent ){
           let containers = this.ancestors('bbn-container');
-          url = this.getFullBaseURL().substr(this.router.baseURL.length) + url;
-          //bbn.fn.log("CALL ROOT ROUTER WITH URL " + url);
+          url = bbn.fn.substr(this.getFullBaseURL(), this.router.baseURL.length) + url;
+          bbn.fn.log("CALL ROOT ROUTER WITH URL " + url);
           // The URL of the last bbn-container as index of the root router
           this.router.realRoute(url, containers[containers.length - 1].url, true);
         }
@@ -1754,10 +1755,11 @@
           let view;
           //bbn.fn.warning("START LOADING FN FOR IDX " + idx + " ON URL " + finalURL);
           if ( idx !== false ){
-            //bbn.fn.log("INDEX RETRIEVED BEFORE LOAD: " + idx.toString(), this.views[idx].slot, this.views[idx].loading);
+            //bbn.fn.log("INDEX RETRIEVED BEFORE LOAD: " + idx.toString(), JSON.stringify(this.views[idx], null, 2));
             if ( this.views[idx].loading || (!force && !this.views[idx].load) ){
               return;
             }
+
             view = this.views[idx];
             if (force){
               let kept = {
