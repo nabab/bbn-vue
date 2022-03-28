@@ -89,7 +89,7 @@
         default: bbn._("No")
       }
     },
-    data: function(){
+    data(){
       return {
         /**
          * @data [false] type
@@ -578,6 +578,7 @@
      * @event mounted
      */
     mounted(){
+      this.onResize();
       bbn.fn.each(this.popups, a => this.open(a));
     },
     watch: {

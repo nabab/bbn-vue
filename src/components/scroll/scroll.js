@@ -282,6 +282,11 @@
         if ( !this.ready ){
           st += ' bbn-invisible';
         }
+
+        if (!this.scrollable) {
+          st = bbn.fn.replaceAll('bbn-resize-emitter', '', st);
+        }
+
         return st;
       },
       /**
@@ -299,7 +304,7 @@
         if (this.isMeasuring) {
           cfg.width = '100%';
           cfg.height = '100%';
-          cfg.opacity = 0;
+          cfg.visibility = 'hidden';
         }
         if (this.currentWidth) {
           cfg.width = bbn.fn.formatSize(this.currentWidth);
@@ -824,7 +829,7 @@
             let container = this.$el;
             let content = this.getRef('scrollContent');
             let ct = this.getRef('scrollContainer');
-            if (!content) {
+            if (!content || !container.clientWidth || !container.clientHeight) {
               return;
             }
             let x = ct.scrollLeft;

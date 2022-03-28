@@ -439,7 +439,7 @@
       },
       onResize(){
         if (this.visible && this.ready) {
-          this.$emit("resize");
+          bbn.vue.resizerComponent.methods.onResize.apply(this, arguments);
         }
       },
       /**
