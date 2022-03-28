@@ -10,15 +10,7 @@
 
 (function(bbn){
   "use strict";
-  const tpl = `
-  <div style="display: flex;" class="bbn-padded bbn-vmargin">
-    <div>
-      <i class="bbn-xl ---BBN-ICON---"></i>
-    </div>
-    <div style="display: flex; align-items: center; margin-left: 5px;">
-    ---BBN-CONTENT---
-    </div>
-  </div>`;
+
   Vue.component('bbn-tooltip', {
     /**
      * @mixin bbn.vue.basicComponent
@@ -26,31 +18,24 @@
     mixins: [bbn.vue.basicComponent],
     props: {
       /**
-       * @prop {(String|Object)} component
+       * @prop {(String|Object|Vue)} component
        */
       component: {
-        type: [String, Object]
+        type: [String, Object, Vue]
       },
       /**
        * The source of the component tooltip.
        * @prop {Function|Array} source
        */
       source: {
-        type: [Function, String],
-        default: ""
+        type: [Function, String]
       },
       /**
-       * @prop {String} template
-       */
-      template: {
-        type: String
-      },
-      /**
-       * @prop {String} ['bbn-m nf nf-mdi-information_outline'] icon
+       * @prop {String|Boolean} ['nf nf-mdi-information_outline'] icon
        */
       icon: {
-        type: String,
-        default: "bbn-m nf nf-mdi-information_outline"
+        type: [String, Boolean],
+        default: 'nf nf-mdi-information_outline'
       },
       /**
        * The html tag.
@@ -61,24 +46,8 @@
         default: 'span'
       },
       /**
-       * True if the tooltip component has a context menu.
-       * @prop {Boolean} [false] context
-       */
-      context: {
-        type: Boolean,
-        default: false
-      },
-      /**
-       * The mode of the component.
-       * @prop {String} ['free'] mode
-       */
-      mode: {
-        type: String,
-        default: 'free'
-      },
-      /**
        * If an element is given this will force the position.
-       * @prop {String} position
+       * @prop {String} ['bottom'] position
        */
       position: {
         type: String,
@@ -86,40 +55,32 @@
         default: 'bottom'
       },
       /**
-        * Tooltip offset from the icon
-        * @prop {Number} ['0'] pixel
+        * Tooltip offset from the element
+        * @prop {Number} [10] distance
       */
       distance: {
         type: Number,
-        default: 0
+        default: 10
       },
     },
     data(){
       return {
         /**
-         * The items.
-         * @data {Array} items
+         * @data {Boolean} [false] isVisible
          */
-        content: this.getContent(),
-        visible: false,
+        isVisible: false,
       };
     },
     methods: {
       /**
        * Returns the items of the component from the source.
-       * @method getItems
-       * @returns {Array}
+       * @method getContent
+       * @return {String}
        */
       getContent() {
-        let st = bbn.fn.isFunction(this.source) ? this.source() : this.source;
-        let st2 = this.template || tpl;
-        return st2.replace('---BBN-ICON---', this.icon).replace('---BBN-CONTENT---', st);
-      },
-      action(type, ev) {
-
+        return bbn.fn.isFunction(this.source) ? this.source() : this.source;
       }
-    },
-
+    }
   });
 
 })(bbn);

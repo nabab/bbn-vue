@@ -40,111 +40,80 @@ div.bbn-floater{
       }
     }
   }
-  @diagonal: 16px; 
-  @size: @diagonal / 1.414; 
-  @half: (@diagonal / 2);
-  @halfNegative: (@diagonal / -2);
-
-  .arrow {
+  .bbn-floater-arrow {
+    @diagonal: 16px;
+    @size: @diagonal / 1.414;
+    @half: (@diagonal / 2);
+    @halfNegative: (@diagonal / -2);
     position: absolute;
     overflow: hidden;
-    
     &:after {
       content: '';
       width: @size;
       height: @size;
       position: absolute;
-      background: white;
+      background: var(--default-background);
       transform-origin: 0 0;
-      border: 1px solid var(--default-border);
+      border: var(--default-border-width) solid var(--default-border);
+    }
+    &.bottomLeft,
+    &.bottom,
+    &.bottomRight,
+    &.topLeft,
+    &.top,
+    &.topRight {
+      width: @diagonal;
+      height: @half;
+      top: @halfNegative;
+      margin-left: @halfNegative;
+      &:after {
+        left: @half;
+        top: 0;
+        transform: rotate(45deg);
+      }
+    }
+    &.bottomLeft,
+    &.bottom {
+      left: 7px;
+    }
+    &.bottomRight,
+    &.topRight {
+      right: -2px;
+    }
+    &.topLeft,
+    &.top,
+    &.topRight {
+      &:after {
+        left: @diagonal;
+        transform: rotate(135deg);
+      }
+    }
+    &.left,
+    &.right {
+      width: @half;
+      height: @diagonal;
+      top: 8px;
+      margin-top: @halfNegative;
+      &:after {
+        left: 0;
+      }
+    }
+    &.left {
+      right: @halfNegative;
+      &:after {
+        top: 0;
+        transform: rotate(45deg);
+      }
+    }
+    &.right {
+      left: @halfNegative;
+      &:after {
+        top: @half;
+        transform: rotate(-45deg);
+      }
     }
   }
-  .bottomLeft, .bottom {
-    width: @diagonal;
-    height: @half;
-    left: 7px;
-    top: @halfNegative;
-    margin-left: @halfNegative;
-    
-    &:after {
-      left: @half;
-      top: 0;
-      transform: rotate(45deg);
-
-    }
+  &.bbn-floater-arrowed {
+    overflow: unset;
   }
-  .bottomRight {
-    width: @diagonal;
-    height: @half;
-    right: -2px;
-    top: @halfNegative;
-    margin-left: @halfNegative;
-    
-    &:after {
-      left: @half;
-      top: 0;
-      transform: rotate(45deg);
-
-    }
-  }
-  .topLeft, .top {
-    width: @diagonal;
-    height: @half;
-    left: 6px;
-    bottom: @halfNegative;
-    margin-left: @halfNegative;
-    &:after {
-      left: @diagonal;
-      top: 0;
-      transform: rotate(135deg);
-    }
-  }
-  .topRight {
-    width: @diagonal;
-    height: @half;
-    right: -2px;
-    bottom: @halfNegative;
-    margin-left: @halfNegative;
-    &:after {
-      left: @diagonal;
-      top: 0;
-      transform: rotate(135deg);
-    }
-  }
-  .left {
-    width: @half;
-    height: @diagonal;
-    top: 8px;
-    right: @halfNegative;
-    margin-top: @halfNegative;
-    
-    &:after {
-      left: 0;
-      top: 0;
-      transform: rotate(45deg);
-    }
-  }
-  .right {
-    width: @half;
-    height: @diagonal;
-    top: 8px;
-    left: @halfNegative;
-    margin-top: @halfNegative;
-    
-    &:after {
-      left: 0;
-      top: @half;
-      transform: rotate(-45deg);
-    }
-  }
-}
-div.bbn-floater.bottomLeft, div.bbn-floater.bottom, div.bbn-floater.bottomRight {
-  overflow: unset;
-  margin-top: 3px;
-}
-div.bbn-floater.topLeft, div.bbn-floater.top, div.bbn-floater.topRight {
-  overflow: unset;
-}
-div.bbn-floater.left, div.bbn-floater.right {
-  overflow: unset;
 }
