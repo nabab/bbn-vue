@@ -68,7 +68,7 @@
         isActiveResizer() {
           let ct = this.closest('bbn-container');
           if (ct) {
-            return ct.selected;
+            return ct.real ? ct.visible : ct.selected;
           }
   
           return true;

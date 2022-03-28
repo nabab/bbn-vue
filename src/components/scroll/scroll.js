@@ -282,6 +282,11 @@
         if ( !this.ready ){
           st += ' bbn-invisible';
         }
+
+        if (!this.scrollable) {
+          st = bbn.fn.replaceAll('bbn-resize-emitter', '', st);
+        }
+
         return st;
       },
       /**
@@ -299,7 +304,7 @@
         if (this.isMeasuring) {
           cfg.width = '100%';
           cfg.height = '100%';
-          cfg.opacity = 0;
+          cfg.visibility = 'hidden';
         }
         if (this.currentWidth) {
           cfg.width = bbn.fn.formatSize(this.currentWidth);
@@ -824,7 +829,7 @@
             let container = this.$el;
             let content = this.getRef('scrollContent');
             let ct = this.getRef('scrollContainer');
-            if (!content) {
+            if (!content || !container.clientWidth || !container.clientHeight) {
               return;
             }
             let x = ct.scrollLeft;
@@ -834,8 +839,8 @@
               sendResizeContent = true;
             }
 
-            this.contentWidth = content.clientWidth;
-            this.contentHeight = content.clientHeight;
+            this.contentWidth = content.scrollWidth;
+            this.contentHeight = content.scrollHeight;
             this.containerWidth = container.clientWidth;
             this.containerHeight = container.clientHeight;
             // With scrolling on we check the scrollbars
@@ -971,7 +976,7 @@
           }
           // Checks every second if the scroll content has been resized and sends onResize if so
           this.interval = setInterval(() => {
-            if (this.scrollable && this.$el.offsetParent) {
+            if (this.scrollable && this.$el.offsetParent && this.isActiveResizer()) {
               let container = this.getRef('scrollContent');
               let contentWidth = Math.max(container.scrollWidth, container.clientWidth);
               let contentHeight = Math.max(container.scrollHeight, container.clientHeight);
@@ -981,7 +986,7 @@
                   && (this.contentWidth !== contentWidth)
                   && (
                     !this.contentWidth
-                    || (Math.abs(contentWidth - this.contentWidth) > 3)
+                    || (Math.abs(contentWidth - this.contentWidth) > 1)
                   )
                 )
                 || (
@@ -989,7 +994,7 @@
                   && (this.contentHeight !== contentHeight)
                   && (
                     !this.contentHeight
-                    || (Math.abs(contentHeight - this.contentHeight) > 3)
+                    || (Math.abs(contentHeight - this.contentHeight) > 1)
                   )
                 )
               ) {
