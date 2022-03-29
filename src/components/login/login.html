@@ -73,9 +73,9 @@
             <bbn-button type="button"
                         @click="$refs.form.submit()"
                         :text="_('Log in')"/>
-            <div class="bbn-w-100 bbn-r bbn-xs"
+            <div :class="['bbn-w-100', 'bbn-r', currentFontSizeClass]"
                  v-if="passwordLink">
-              <a class="bbn-p bbn-r bbn-xs"
+              <a class="bbn-p"
                  @click="currentMode = 'lost'"
                  v-text="passwordLink"/>
             </div>
