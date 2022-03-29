@@ -175,7 +175,7 @@
             if (!this.showFloater && !this.attach) {
               if (e.pageX > bbn.env.width / 2) {
                 this.currentLeft = null;
-                this.currentRight = e.pageX + 5;
+                this.currentRight = bbn.env.width - e.pageX + 5;
               }
               else {
                 this.currentLeft = e.pageX - 5;
@@ -184,7 +184,7 @@
 
               if (e.pageY > bbn.env.height / 2) {
                 this.currentTop = null;
-                this.currentBottom = e.pageY + 5;
+                this.currentBottom = bbn.env.height - e.pageY + 5;
               }
               else {
                 this.currentTop = e.pageY - 5;
