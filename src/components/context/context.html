@@ -10,7 +10,7 @@
            @touchend="touchend">
   <slot></slot>
   <bbn-floater :element="attach || null"
-               :source="source"
+               :source="filteredData"
                :class="'bbn-floater-context-' + bbnUid"
                ref="floater"
                :width="width"
