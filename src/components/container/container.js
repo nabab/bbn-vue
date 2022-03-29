@@ -570,7 +570,7 @@
           let w  = scroll.clientWidth;
           let h  = scroll.clientHeight;
           let ct = this.getRef('canvasSource');
-          if (!w || !h) {
+          if (!ct || !w || !h) {
             if (num_tries <= 10) {
               setTimeout(() => {
                 return this.takeScreenshot(num_tries + 1);
