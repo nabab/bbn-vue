@@ -1094,7 +1094,7 @@
           }
           else {
             if ((coor[a.posStart] !== null) || (coor[a.posEnd] !== null)) {
-              a.res = coor[a.posStart] !== null ? coor[a.posStart] : coor[a.posEnd] - size;
+              a.res = coor[a.posStart] !== null ? coor[a.posStart] : this['container' + a.camel] - coor[a.posEnd] - size;
             }
             else {
               // If no vertical position at all, centered (same top and bottom)
