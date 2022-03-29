@@ -558,10 +558,11 @@
           if (!scroll) {
             if (num_tries <= 10) {
               setTimeout(() => {
-                return this.takeScreenshot(num_tries + 1);
+                this.takeScreenshot(num_tries + 1);
               }, 1000);
-              return;
             }
+
+            return;
           }
 
           if (scroll.$el) {
@@ -575,8 +576,9 @@
               setTimeout(() => {
                 return this.takeScreenshot(num_tries + 1);
               }, 1000);
-              return;
             }
+
+            return;
           }
 
           ct.style.width = w + 'px !important';

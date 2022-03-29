@@ -278,13 +278,16 @@
        * @return {String}
        */
       elementClass(){
-        let st = this.componentClass.join(' ') + ' bbn-overlay';
+        let st = this.componentClass.join(' ');
         if ( !this.ready ){
           st += ' bbn-invisible';
         }
 
         if (!this.scrollable) {
-          st = bbn.fn.replaceAll('bbn-resize-emitter', '', st);
+          st = bbn.fn.replaceAll('bbn-resize-emitter', '', st) + ' bbn-w-100';
+        }
+        else {
+          st += ' bbn-overlay';
         }
 
         return st;
@@ -323,7 +326,12 @@
         return cfg;
       },
       containerClass() {
-        let cls = 'bbn-scroll-container';
+        let cls = 'bbn-scroll-container bbn-no-scrollbar';
+        if (!this.scrollable) {
+          cls += ' bbn-w-100';
+          return cls;
+        }
+
         if (this.disabled) {
           cls += ' bbn-scroll-disabled';
         }

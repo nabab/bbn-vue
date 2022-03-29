@@ -70,7 +70,7 @@
           <bbn-scroll v-if="ready && isLoaded && (visible || cached || visual)"
                       v-show="visible || (visual && !thumbnail)"
                       ref="scroll"
-                      :scrollable="scrollable"
+                      :scrollable="scrollable && !router.scrollContent"
                       axis="y"
                       :class="{
                         'bbn-overlay': router.scrollContent,
