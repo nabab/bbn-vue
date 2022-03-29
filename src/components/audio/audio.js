@@ -61,18 +61,17 @@
       },
       /**
        * The player's width
-       * @prop {String} ['100%'] width
+       * @prop {String|Number} width
        */
       width: {
-        type: String,
-        default: '100%'
+        type: [String, Number]
       },
       /**
        * The player's height
-       * @prop {String} height
+       * @prop {String|Number} height
        */
       height: {
-        type: String
+        type: [String, Number]
       },
       /**
        * Specifies that the audio will start playing as soon as it is ready
@@ -145,12 +144,28 @@
     },
     computed: {
       /**
+       * The current formatted width
+       * @computed currentWidth,
+       * @return {String}
+       */
+      currentWidth(){
+        return bbn.fn.isNumber(this.width) ? this.width + 'px' : this.width;
+      },
+      /**
+       * The current formatted height
+       * @computed currentHeight,
+       * @return {String}
+       */
+      currentHeight(){
+        return bbn.fn.isNumber(this.height) ? this.height + 'px' : this.height;
+      },
+      /**
        * Returns the correct media type
        * @computed type
-       * @return String|Boolean
+       * @return {String|Boolean}
        */
       type(){
-        if ( this.source ){
+        if (this.source) {
           switch ( bbn.fn.substr(this.source, this.source.lastIndexOf('.') + 1).toLowerCase() ){
             case 'mp3':
               return 'audio/mpeg';
@@ -166,21 +181,56 @@
       }
     },
     methods: {
+      /**
+       * @method play
+       */
       play(){
         this.widget.play();
       },
+      /**
+       * @method pause
+       */
       pause(){
         this.widget.pause();
       },
+      /**
+       * @method onPay
+       * @emits play
+       */
       onPlay(ev){
         this.$emit('play', ev, this);
       },
+      /**
+       * @method onPause
+       * @emits pause
+       */
       onPause(ev){
         this.$emit('pause', ev, this);
       },
     },
+    /**
+     * @event mounted
+     * @fires getRef
+     */
     mounted(){
       this.widget = this.getRef('audio');
+      if (this.muted) {
+        this.widget.muted = true;
+      }
+    },
+    watch: {
+      /**
+       * @watch muted
+       */
+      muted(newVal){
+        this.widget.muted = !!newVal;
+      },
+      /**
+       * @watch loop
+       */
+      loop(newVal){
+        this.widget.loop = !!newVal;
+      }
     }
   });
 })(bbn);
