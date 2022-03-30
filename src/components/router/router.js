@@ -624,10 +624,10 @@
         if (this.isVisual) {
           let h = this.lastKnownHeight - (this.visualIsOnHeight ? this.visualSize : 0);
           if (this.visualRatio > 1) {
-            return Math.ceil(h / this.visualSize * this.visualRatio);
+            return Math.floor(h / this.visualSize * this.visualRatio);
           }
           else {
-            return Math.ceil(h / this.visualSize);
+            return Math.floor(h / this.visualSize);
           }
         }
 

@@ -80,15 +80,13 @@
             <component v-if="isComponent"
                       :is="$options.components[componentName]"
                       :source="source"
-                      ref="component"
-            ></component>
+                      ref="component"/>
             <!-- This is a classic component -->
             <component v-else-if="component"
                       :is="component"
                       :source="source"
                       ref="component"
-                      v-bind="options"
-            ></component>
+                      v-bind="options"/>
             <!-- This is just HTML content -->
             <div v-else-if="content"
                 v-html="content">

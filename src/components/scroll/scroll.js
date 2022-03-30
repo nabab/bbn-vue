@@ -1055,24 +1055,24 @@
       },
       currentX(x) {
         if (!x) {
-          this.$emit('reachLeft');
+          this.$emit('reachleft');
         }
         else {
           let ct = this.getRef('scrollContainer');
           if (ct && (x + ct.clientWidth >= ct.scrollWidth)) {
-            this.$emit('reachRight');
+            this.$emit('reachright');
           }
         }
         this.$emit('scrollx', x);
       },
       currentY(y) {
         if (!y) {
-          this.$emit('reachTop');
+          this.$emit('reachtop');
         }
         else {
           let ct = this.getRef('scrollContainer');
           if (ct && (y + ct.clientHeight >= ct.scrollHeight)) {
-            this.$emit('reachBottom');
+            this.$emit('reachbottom');
           }
         }
         this.$emit('scrolly', y);
