@@ -67,9 +67,10 @@
         }"
             ref="canvasSource">
           <!-- This is shown when it's ready -->
-          <bbn-scroll v-if="ready && isLoaded && (visible || cached || visual)"
-                      v-show="visible || (visual && !thumbnail)"
+          <bbn-scroll v-if="isLoaded && (visible || cached || visual)"
+                      v-show="ready && visible || (visual && !thumbnail)"
                       ref="scroll"
+                      @ready="init"
                       :scrollable="scrollable && !router.scrollContent"
                       axis="y"
                       :class="{

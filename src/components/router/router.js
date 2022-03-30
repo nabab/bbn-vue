@@ -1234,8 +1234,6 @@
           this.activate(url, this.urls[st]);
           if ( this.urls[st] ){
             this.urls[st].currentURL = url;
-            bbn.fn.log("DOES IT INIT?");
-            this.urls[st].init();
             this.$nextTick(() => {
               let child = this.urls[st].find('bbn-router');
               //bbn.fn.log("LOOKING FOR CHILD", child);
@@ -2304,43 +2302,25 @@
           });
 
           if (!this.parents.length) {
-            let go = () => {
-              this.isVisual = true;
-              setTimeout(() => {
-                this.getVue(this.selected).init();
-                this.getVue(this.selected).show();
-                this.onResize();
-              }, 250)
-            };
-
             items.push({
               text: bbn._('Switch to') + ' ' + bbn._('visual') + ' ' + bbn._('mode'),
               key: 'visual',
               icon: 'nf nf-fa-eye',
               action: () => {
-                if (!this.isDirty) {
-                  go();
-                  return;
-                }
-
-                this.confirm(
-                  bbn._("The pages already loaded will be reinitialized") +
-                      '<br>' + bbn._("If you have any unsaved work opened it will be lost.") +
-                      '<br>' + bbn._("Is it ok to continue?"),
-                  () => {
-                    go()
-                  }
-                );
-            }
+                this.isVisual = true;
+                setTimeout(() => {
+                  this.getVue(this.selected).show();
+                  this.onResize();
+                }, 250)
+              }
             });
           }
         }
         else {
-          const go = () => {
+          const toNoVisual = () => {
             this.isVisual = false;
             this.itsMaster.isBreadcrumb = false;
             setTimeout(() => {
-              this.getVue(this.selected).init();
               this.getVue(this.selected).show();
               this.onResize();
             }, 250)
@@ -2381,19 +2361,7 @@
             key: 'tabs',
             icon: 'nf nf-mdi-tab',
             action: () => {
-              if (!this.isDirty) {
-                go();
-                return;
-              }
-
-              this.confirm(
-                bbn._("The pages already loaded will be reinitialized") +
-                    '<br>' + bbn._("You should save your unsaved content or it will be lost.") +
-                    '<br>' + bbn._("Is it ok to continue?"),
-                () => {
-                  go();
-                }
-              );
+              toNoVisual();
             }
           });
 
@@ -2402,19 +2370,7 @@
             key: 'breadcrumbs',
             icon: 'nf nf-fa-ellipsis_h',
             action: () => {
-              if (!this.isDirty) {
-                go();
-                return;
-              }
-
-              this.confirm(
-                bbn._("The pages already loaded will be reloaded") +
-                    '<br>' + bbn._("If you have any unsaved work opened it will be lost.") +
-                    '<br>' + bbn._("Is it ok to continue?"),
-                () => {
-                  go();
-                }
-              );
+              toNoVisual();
             }
           });
         }
