@@ -1234,6 +1234,7 @@
           this.activate(url, this.urls[st]);
           if ( this.urls[st] ){
             this.urls[st].currentURL = url;
+            bbn.fn.log("DOES IT INIT?");
             this.urls[st].init();
             this.$nextTick(() => {
               let child = this.urls[st].find('bbn-router');
