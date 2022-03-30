@@ -1514,6 +1514,7 @@
         if ( this.isValidIndex(idx) ){
           return this.urls[this.views[idx].url];
         }
+
         return false;
       },
       /**
@@ -2037,9 +2038,10 @@
         if ( !this.nav || !this.views[idx]  || (this.views[idx].menu === false) ){
           return [];
         }
-        let items = [],
-            tmp = ((bbn.fn.isFunction(this.views[idx].menu) ? this.views[idx].menu() : this.views[idx].menu) || []).slice(),
-            others = false;
+        let items     = [];
+        let tmp       = ((bbn.fn.isFunction(this.views[idx].menu) ? this.views[idx].menu() : this.views[idx].menu) || []).slice();
+        let others    = false;
+        let container = this.getVue(idx);
         bbn.fn.each(this.views, (a, i) => {
           if ( (i !== idx) && !a.static ){
             others = true;
@@ -2120,23 +2122,23 @@
           });
         }
 
-        if (this.getVue(idx).fullScreen) {
+        if (container && container.fullScreen) {
           items.push({
             text: bbn._("Exit full screen"),
             key: "reduce",
             icon: "nf nf-mdi-arrow_collapse",
             action: () => {
-              this.getVue(idx).fullScreen = false;
+              container.fullScreen = false;
             }
           });
         }
-        else {
+        else if (container) {
           items.push({
             text: bbn._("Enlarge"),
             key: "enlarge",
             icon: "nf nf-mdi-arrow_expand_all",
             action: () => {
-              this.getVue(idx).fullScreen = true;
+              container.fullScreen = true;
             }
           });
 
