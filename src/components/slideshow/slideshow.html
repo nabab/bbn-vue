@@ -82,6 +82,7 @@
                       <img :src="it.content"
                           :ref="'slide-img'+ i.toString()"
                           @load="afterLoad(i)"
+                          @click="clickImage(it)"
                           :class="['img' + i.toString()]"
                           :width="it.imageWidth || 'auto'"
                           :height="it.imageHeight || 'auto'"

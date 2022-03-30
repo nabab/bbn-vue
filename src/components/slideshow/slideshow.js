@@ -15,11 +15,11 @@
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.resizerComponent
      */
-    mixins: 
-    [
-      bbn.vue.basicComponent,
-      bbn.vue.resizerComponent
-    ],
+    mixins:
+      [
+        bbn.vue.basicComponent,
+        bbn.vue.resizerComponent
+      ],
     props: {
       /**
        * The source of the slideshow
@@ -27,6 +27,10 @@
        */
       source: {
         type: [Array, Function, String]
+      },
+      mode: {
+        type: String,
+        default: 'original',
       },
       /**
        * If the type of the source is a string defines which character to use as separator between slides.
@@ -70,7 +74,7 @@
        * Set to true shows the list of previews of the slide.
        * @prop {Boolean|String} [false] preview
        */
-      preview:{
+      preview: {
         type: [Boolean, String],
         default: false
       },
@@ -78,7 +82,7 @@
        * The dimension of the preview.
        * @prop {Number} [45] dimensionPreview
        */
-      dimensionPreview:{
+      dimensionPreview: {
         type: Number,
         default: 45
       },
@@ -86,7 +90,7 @@
        * Set to true enables the autoplay using the default autoplay time (5000ms). If a number is given, multiplied * 1000, will define the new autoplay time .
        * @prop {Boolean|Number} [false] autoplay
        */
-      autoPlay:{
+      autoPlay: {
         type: [Boolean, Number],
         default: false
       },
@@ -94,7 +98,7 @@
        * Shows the actions to start and stop autoplay.
        * @prop {Boolean|String} [false] ctrl
        */
-      ctrl:{
+      ctrl: {
         type: [Boolean, String],
         default: false
       },
@@ -102,7 +106,7 @@
        * Set to true shows the arrow icons to move to next or previous slide. An object with 'left' and 'right' properties can be given to specify the css class for each arrow and to customize the icon.
        * @prop {Bolean|Object} [false] arrows
        */
-      arrows:{
+      arrows: {
         type: [Boolean, Object],
         default: false
       },
@@ -110,7 +114,7 @@
        * Shows or hides the navigation arrow at the bottom of the slider.
        * @prop {Boolean} [false] navigation
        */
-      navigation:{
+      navigation: {
         type: Boolean,
         default: false
       },
@@ -118,7 +122,7 @@
        * Set to true hides the preview images.
        * @prop {Boolean} [false] autoHidePreview
        */
-      autoHidePreview:{
+      autoHidePreview: {
         type: Boolean,
         default: false
       },
@@ -126,7 +130,7 @@
        * Set to true hides the arrow icons.
        * @prop {Boolean} [false] autoHideArrows
        */
-      autoHideArrows:{
+      autoHideArrows: {
         type: Boolean,
         default: false
       },
@@ -134,7 +138,7 @@
        * Set to true hides the action to start and stop the autoplay.
        * @prop {Boolean} [false] autoHideCtrl
        */
-      autoHideCtrl:{
+      autoHideCtrl: {
         type: Boolean,
         default: true
       },
@@ -142,7 +146,7 @@
        * If set to true shows the slides in a loop..
        * @prop {Boolean} [false] loop
        */
-      loop:{
+      loop: {
         type: Boolean,
         default: false
       },
@@ -150,7 +154,7 @@
        * Set to true shows the slide in the full page.
        * @prop {Boolean} [false] fullSlide
        */
-      fullSlide:{
+      fullSlide: {
         type: Boolean,
         default: false
       },
@@ -158,7 +162,7 @@
        * The index of the first slide to show.
        * @prop {Number} [0] initialSlide
        */
-      initialSlide:{
+      initialSlide: {
         type: Number,
         default: 0
       },
@@ -166,7 +170,7 @@
        * Set to true shows the number of the current slide and the total number of slides.
        * @prop {Boolean} [false] showCount
        */
-      showCount:{
+      showCount: {
         type: Boolean,
         default: false
       },
@@ -174,7 +178,7 @@
        * Set to true shows the property info of the item.
        * @prop {Boolean} [false] showInfo
        */
-      showInfo:{
+      showInfo: {
         type: Boolean,
         default: false
       },
@@ -187,20 +191,20 @@
         default: false
       }
     },
-    data(){
+    data() {
       let src = [],
-          valuesCB = {},
-          isAjax   = false;
+        valuesCB = {},
+        isAjax = false;
       if (bbn.fn.isString(this.source)) {
         if (this.separator) {
-          src = this.source.split(this.separator).map(a =>{
+          src = this.source.split(this.separator).map(a => {
             return {
               content: a,
               type: 'text'
             };
           });
         }
-        else{
+        else {
           isAjax = true;
         }
       }
@@ -210,8 +214,8 @@
       else if (bbn.fn.isArray(this.source)) {
         if (this.checkbox) {
           if (this.separator) {
-            this.source.forEach((v, i) =>{
-              v.content.split(this.separator).forEach((a, k) =>{
+            this.source.forEach((v, i) => {
+              v.content.split(this.separator).forEach((a, k) => {
                 let o = {
                   type: 'text',
                   content: a,
@@ -233,7 +237,7 @@
                 type: this.gallery ? 'img' : 'text',
                 content: val
               };
-              if ( val.type === 'img' ){
+              if (val.type === 'img') {
                 bbn.fn.extend(val, {
                   imageWidth: 0,
                   imageHeight: 0,
@@ -319,9 +323,9 @@
          * The classes of the arrow icons
          * @data {Object} [{left: 'nf nf-fa-arrow_circle_left',right: 'nf nf-fa-arrow_circle_right'}] arrowClass
          */
-        arrowClass:{
-          left:  'nf nf-fa-arrow_circle_left',
-          right: 'nf nf-fa-arrow_circle_right',
+        arrowClass: {
+          left: 'nf nf-fa-angle_left',
+          right: 'nf nf-fa-angle_right',
         },
         /**
          * The width of the image.
@@ -351,7 +355,10 @@
        * @method onResize
        * @fires aspectRatio
        */
-      onResize(){
+      clickImage(item) {
+        
+      },
+      onResize() {
         this.setContainerMeasures();
         this.setResizeMeasures();
         if (bbn.fn.isArray(this.source) && this.source.length) {
@@ -368,7 +375,7 @@
        * @param {Number} idx 
        * @fires aspectRatio
        */
-      afterLoad(idx){
+      afterLoad(idx) {
         this.$set(this.items[idx], 'loaded', true);
         this.aspectRatio(idx);
       },
@@ -377,19 +384,19 @@
        * @method aspectRatio
        * @param {Number} idx 
        */
-      aspectRatio(idx){
-        this.$nextTick(()=>{
+      aspectRatio(idx) {
+        this.$nextTick(() => {
           let cont = this.getRef('slideContainer'),
-              ctnRatio = cont.offsetWidth/cont.offsetHeight,
-              img = this.getRef('slide-img' + idx.toString()),
-              imgW = img.naturalWidth,
-              imgH = img.naturalHeight,
-              imgRatio = imgW/imgH,
-              diff = Math.abs(ctnRatio - imgRatio),
-              mode = this.items[idx].mode ? this.items[idx].mode : 'original';
+            ctnRatio = cont.offsetWidth / cont.offsetHeight,
+            img = this.getRef('slide-img' + idx.toString()),
+            imgW = img.naturalWidth,
+            imgH = img.naturalHeight,
+            imgRatio = imgW / imgH,
+            diff = Math.abs(ctnRatio - imgRatio),
+            mode = this.items[idx].mode || this.mode;
 
-          if( imgRatio > ctnRatio ){
-            if( mode === 'zoom' ){
+          if (imgRatio > ctnRatio) {
+            if (mode === 'zoom') {
               this.$set(this.items[idx], 'imageWidth', 'auto');
               this.$set(this.items[idx], 'imageHeight', '100%');
               this.$set(this.items[idx], 'showImg', true);
@@ -398,7 +405,7 @@
               //this.items[idx].imageHeight =  "100%";
               //this.items[idx].showImg =  true;
             }
-            if( mode === 'full' ){
+            if (mode === 'full') {
               this.$set(this.items[idx], 'imageWidth', '100%');
               this.$set(this.items[idx], 'imageHeight', 'auto');
               this.$set(this.items[idx], 'showImg', true);
@@ -407,8 +414,8 @@
               //this.items[idx].showImg = true;
             }
           }
-          if ( imgRatio < ctnRatio ){
-            if ( mode === 'zoom' ){
+          if (imgRatio < ctnRatio) {
+            if (mode === 'zoom') {
               this.$set(this.items[idx], 'imageWidth', '100%');
               this.$set(this.items[idx], 'imageHeight', 'auto');
               this.$set(this.items[idx], 'showImg', true);
@@ -417,7 +424,7 @@
               //this.items[idx].imageHeight = "auto";
               //this.items[idx].showImg =  true;
             }
-            if ( mode === 'full' ){
+            if (mode === 'full') {
               this.$set(this.items[idx], 'imageWidth', 'auto');
               this.$set(this.items[idx], 'imageHeight', '100%');
               this.$set(this.items[idx], 'showImg', true);
@@ -426,8 +433,8 @@
               //this.items[idx].showImg =  true;
             }
           }
-          if ( mode === 'stretch' ){
-            this.$set(this.items[idx], 'imageWidth',  cont.offsetWidth + 'px');
+          if (mode === 'stretch') {
+            this.$set(this.items[idx], 'imageWidth', cont.offsetWidth + 'px');
             this.$set(this.items[idx], 'imageHeight', cont.offsetHeight + 'px');
             this.$set(this.items[idx], 'showImg', true);
 
@@ -435,7 +442,7 @@
             //this.items[idx].imageHeight = this.lastKnownCtHeight + 'px';
             //this.items[idx].showImg =  true;
           }
-          if ( mode === "original" ){
+          if (mode === "original") {
             this.$set(this.items[idx], 'showImg', true);
             //this.items[idx].showImg = true;
           }
@@ -451,15 +458,15 @@
        * Manages the slides' style.
        * @method createStyle
        */
-      createStyle(){
+      createStyle() {
         let st = '',
-            rules = [];
+          rules = [];
         this.items.forEach((it, i) => {
           st += '.bbn-slideshow .slideswitch:target ~ .bbn-slideshow-slide#' + (this.name + i.toString()) + ' .bbn-slideshow-content{opacity: 0}';
           st += '.bbn-slideshow .slideswitch[id="' + this.name + i.toString() + '"]:target ~ .bbn-slideshow-slide#' + this.name + i.toString() + ' .bbn-slideshow-navigation {display: block !important;}';
           st += '.bbn-slideshow .slideswitch[id="' + this.name + i.toString() + '"]:target ~ .bbn-slideshow-slide#' + this.name + i.toString() + ' .bbn-slideshow-content {animation-name: bbn-slideshow-effect-fade_in; animation-duration: 0.5s;}';
-          if ( it.animation ){
-            st += '.bbn-slideshow .slideswitch[id="' + this.name + i.toString() + '"]:target ~ #' + this.name + i.toString() + ' .bbn-slideshow-effect-' + it.animation + ' {animation-name: bbn-slideshow-effect-' + it.animation + ' !important;animation-duration: ' + (it.duration || this.duration || '0.5') + 's;' + ( it.animation === 'flip' ? 'backface-visibility: hidden;' : '')+ '}';
+          if (it.animation) {
+            st += '.bbn-slideshow .slideswitch[id="' + this.name + i.toString() + '"]:target ~ #' + this.name + i.toString() + ' .bbn-slideshow-effect-' + it.animation + ' {animation-name: bbn-slideshow-effect-' + it.animation + ' !important;animation-duration: ' + (it.duration || this.duration || '0.5') + 's;' + (it.animation === 'flip' ? 'backface-visibility: hidden;' : '') + '}';
           }
         });
         return st;
@@ -470,23 +477,23 @@
        * @fires stopAutoPlay
        * @fires startAutoPlay
        */
-      prev(){
+      prev() {
         let idx = this.currentIndex;
-        if ( (idx > 0) && this.items[idx-1] ){
-          if ( !this.items[idx-1].animation ){
-            let slide = this.getRef('slide' + (idx-1).toString());
-            if ( slide ){
+        if ((idx > 0) && this.items[idx - 1]) {
+          if (!this.items[idx - 1].animation) {
+            let slide = this.getRef('slide' + (idx - 1).toString());
+            if (slide) {
               slide.style.animationName = 'bbn-slideshow-effect-slide_from_right';
             }
           }
           this.currentIndex--;
         }
-        if ( this.loop &&  idx === 0 ){
+        if (this.loop && idx === 0) {
           this.currentIndex = this.items.length - 1;
         }
-        if ( this.autoPlay ){
+        if (this.autoPlay) {
           this.stopAutoPlay();
-          this.$nextTick(()=>{
+          this.$nextTick(() => {
             this.startAutoPlay();
           });
         }
@@ -497,27 +504,27 @@
        * @fires stopAutoPlay
        * @fires startAutoPlay
        */
-      next(){
+      next() {
         let idx = this.currentIndex;
-        if ( this.summary ){
+        if (this.summary) {
           idx--;
         }
-        if ( idx < (this.items.length -1) && this.items[idx+1] ){
+        if (idx < (this.items.length - 1) && this.items[idx + 1]) {
 
-          if ( !this.items[idx+1].animation ){
-            let slide = this.getRef('slide' + (idx-1).toString());
-            if ( slide ){
+          if (!this.items[idx + 1].animation) {
+            let slide = this.getRef('slide' + (idx - 1).toString());
+            if (slide) {
               slide.style.animationName = 'bbn-slideshow-effect-slide_from_left';
             }
           }
           this.currentIndex++;
         }
-        if ( this.loop && (idx === (this.items.length - 1)) ){
+        if (this.loop && (idx === (this.items.length - 1))) {
           this.currentIndex = 0;
         }
-        if( this.autoPlay ){
+        if (this.autoPlay) {
           this.stopAutoPlay();
-          this.$nextTick(()=>{
+          this.$nextTick(() => {
             this.startAutoPlay();
           });
         }
@@ -526,25 +533,25 @@
        * Starts the autoplay of slides.
        * @method startAutoPlay
        */
-      startAutoPlay(){
-        this.scrollInterval = setInterval(()=>{
-          if ( this.currentIndex < (this.items.length -1) ){
+      startAutoPlay() {
+        this.scrollInterval = setInterval(() => {
+          if (this.currentIndex < (this.items.length - 1)) {
             this.next();
           }
-          else if( this.currentIndex === (this.items.length-1) ){
+          else if (this.currentIndex === (this.items.length - 1)) {
             this.currentIndex = 0;
           }
-          if( this.preview ){
+          if (this.preview) {
             this.activeMiniature = this.currentIndex;
           }
-        }, typeof(this.autoPlay) === 'number' ? this.autoPlay*1000 : this.defaultAutoPlay);
+        }, typeof (this.autoPlay) === 'number' ? this.autoPlay * 1000 : this.defaultAutoPlay);
       },
-       /**
-       * Stops the autoplay of slides.
-       * @method stopAutoPlay
-       */
-      stopAutoPlay(){
-        if ( this.scrollInterval ){
+      /**
+      * Stops the autoplay of slides.
+      * @method stopAutoPlay
+      */
+      stopAutoPlay() {
+        if (this.scrollInterval) {
           clearInterval(this.scrollInterval);
           this.scrollInterval = false;
         }
@@ -554,8 +561,8 @@
        * @method miniaturePreview
        * @param {Boolean} val 
        */
-      miniaturePreview(val){
-        if( this.autoHidePreview ){
+      miniaturePreview(val) {
+        if (this.autoHidePreview) {
           this.showMiniature = val;
         }
       },
@@ -564,12 +571,12 @@
        * @param {String} direction 
        * @param {Boolean} val 
        */
-      arrowsPreview(direction, val){
-        if( this.autoHideArrows ){
-          if( direction === 'next' ){
+      arrowsPreview(direction, val) {
+        if (this.autoHideArrows) {
+          if (direction === 'next') {
             this.showArrowRight = val;
           }
-          if( direction === 'prev' ){
+          if (direction === 'prev') {
             this.showArrowLeft = val;
           }
         }
@@ -578,8 +585,8 @@
        * Shows ors hides the controller for autoplay.
        * @param {Boolean} val 
        */
-      ctrlPreview(val){
-        if( this.autoHideCtrl ){
+      ctrlPreview(val) {
+        if (this.autoHideCtrl) {
           this.showCtrl = val;
         }
       }
@@ -589,7 +596,7 @@
      * @fires createStyle
      * @fires startAutoPlay
      */
-    mounted(){
+    mounted() {
       /** @todo WTF?? Obliged to execute the following hack to not have scrollLeft and scrollTop when we open a
        *  popup a 2nd time.
        */
@@ -599,37 +606,37 @@
         this.$refs.scrollContainer.style.position = 'absolute';
       }, 0)
       */
-      if ( !this.isAjax && !this.items.length && this.getRef('slot').innerHTML.trim() ){
-        if ( this.separator ){
+      if (!this.isAjax && !this.items.length && this.getRef('slot').innerHTML.trim()) {
+        if (this.separator) {
           this.items = this.getRef('slot').innerHTML.split(this.separator).map((txt, i) => {
-          let el = document.createElement('div'),
+            let el = document.createElement('div'),
               title = '';
             el.innerHTML = txt;
-            if ( el ){
+            if (el) {
               let titles = el.querySelectorAll('h1,h2,h3,h4,h5');
-              if ( titles.length ){
+              if (titles.length) {
                 bbn.fn.each(titles, (v, i) => {
-                 let title = v.innerText.trim();
+                  let title = v.innerText.trim();
                 })
               }
             }
-            return {content: txt, type: 'text', title: title};
+            return { content: txt, type: 'text', title: title };
           });
         }
-        else{
-          this.items = [{content: this.getRef('slot').innerHTML, type: 'text'}]
+        else {
+          this.items = [{ content: this.getRef('slot').innerHTML, type: 'text' }]
         }
       }
       this.$nextTick(() => {
         this.createStyle();
-        if( this.autoPlay ){
+        if (this.autoPlay) {
           this.startAutoPlay();
         }
-        if ( bbn.fn.isObject(this.arrows) ){
-          if ( this.arrows.left && this.arrows.left.length ){
+        if (bbn.fn.isObject(this.arrows)) {
+          if (this.arrows.left && this.arrows.left.length) {
             this.arrowClass.left = this.arrows.left
           }
-          if( this.arrows.right && this.arrows.right.length ){
+          if (this.arrows.right && this.arrows.right.length) {
             this.arrowClass.right = this.arrows.right
           }
         }
@@ -644,8 +651,8 @@
        * @emits show
        * @emits hide
        */
-      show(newVal, oldVal){
-        if ( newVal != oldVal ){
+      show(newVal, oldVal) {
+        if (newVal != oldVal) {
           this.$emit(newVal ? "show" : "hide");
         }
       },
@@ -657,7 +664,7 @@
        */
       valuesCB: {
         deep: true,
-        handler(newVal){
+        handler(newVal) {
           this.$emit(newVal[this.currentIndex] ? 'check' : 'uncheck', this.items[this.currentIndex]);
         }
       },
@@ -666,9 +673,9 @@
        * @emits changeSlide
        * @param {Number} val 
        */
-      currentIndex(val){
+      currentIndex(val) {
         let miniatures = this.getRef('miniatures');
-        if ( miniatures ){
+        if (miniatures) {
           let scroll = miniatures.getRef('scroll');
           if (scroll) {
             let xScroller = scroll.getRef('xScroller');
@@ -734,49 +741,49 @@
            * @prop {Array} [] items
            * @memberof miniature
            */
-         items:{
-           type: Array,
-           default(){
-             return []
-           }
-         },
-         /**
-          * 
-          * @prop {Boolean} [true] compare
-          * @memberof miniature
-          */
-         compare:{
-           type: Boolean,
-           default: true
-         },
+          items: {
+            type: Array,
+            default() {
+              return []
+            }
+          },
+          /**
+           * 
+           * @prop {Boolean} [true] compare
+           * @memberof miniature
+           */
+          compare: {
+            type: Boolean,
+            default: true
+          },
           /**
           * @prop {Boolean|String} ['image'] type
           * @memberof miniature
           */
-         type:{
-           type: [Boolean, String],
-           default: 'image'
-         },
+          type: {
+            type: [Boolean, String],
+            default: 'image'
+          },
           /**
           * @prop {Number} [45] dimension
           * @memberof miniature
           */
-         dimension:{
-           type: Number,
-           default: 45
-         }
-       },
-        data(){
-         return {
-           /**
-            * The parent component bbn-slideshow
-            * @data {Vue} mainComponent
-            */
-           mainComponent: this.closest('bbn-slideshow')
+          dimension: {
+            type: Number,
+            default: 45
+          }
+        },
+        data() {
+          return {
+            /**
+             * The parent component bbn-slideshow
+             * @data {Vue} mainComponent
+             */
+            mainComponent: this.closest('bbn-slideshow')
 
-         }
-       },
-        methods:{
+          }
+        },
+        methods: {
           /**
            * @method clickMiniature
            * @param miniature
@@ -785,12 +792,12 @@
            * @fires startAutoPlay
            * @memberof miniature
            */
-          clickMiniature(miniature, idx){
+          clickMiniature(miniature, idx) {
             this.mainComponent.activeMiniature = idx;
             this.mainComponent.currentIndex = idx;
-            if( this.mainComponent.autoPlay ){
+            if (this.mainComponent.autoPlay) {
               this.mainComponent.stopAutoPlay();
-              this.$nextTick(()=>{
+              this.$nextTick(() => {
                 this.mainComponent.startAutoPlay();
               });
             }
@@ -801,16 +808,16 @@
            * @memberof miniature
            * @return {String}
            */
-          getImgSrc(content){
+          getImgSrc(content) {
             return content.match(/data\:image\/[a-zA-Z]*\;base64/)
               ? content
               : `${content}${content.indexOf('?') > -1 ? '&' : '?'}w=${this.dimension}&thumb=1`;
           },
-          init(){
+          init() {
             const elem = this.$el.querySelector('div.bbn-slideshow-zoom div.bbn-slideshow-content');
-            if ( elem ){
+            if (elem) {
               elem.style.transform = 'scale(0.2)';
-              if ( elem.querySelector('img') ){
+              if (elem.querySelector('img')) {
                 elem.querySelector('img').style.transform = 'scale(0.1)';
               }
             }
