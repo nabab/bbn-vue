@@ -49,7 +49,6 @@
                   :is="li.data && li.data.url && !li.data[children] ? 'a' : 'span'"
                   @click.prevent="() => {}"
                   class="bbn-w-100 bbn-hspadded"
-                  :title="li.data[sourceText]"
                   :href="li.data && li.data.url ? li.data.url : null"
                   :key="li.key">
           <span class="space"
