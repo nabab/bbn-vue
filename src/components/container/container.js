@@ -448,7 +448,7 @@
        * @method init
        */
       init() {
-        if (this.real || (this.isLoaded && !this.ready)) {
+        if (this.visible && (this.real || (this.isLoaded && !this.ready))) {
           let res;
           //bbn.fn.log("INITIATING CONTAINER " + this.url + " " + (this.script ? "(THERE IS A SCRIPT)" : ""));
 

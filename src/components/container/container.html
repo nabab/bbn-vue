@@ -67,7 +67,7 @@
         }"
             ref="canvasSource">
           <!-- This is shown when it's ready -->
-          <bbn-scroll v-if="isLoaded && (visible || cached || visual)"
+          <bbn-scroll v-if="isLoaded && (visible || (cached && ready) || visual)"
                       v-show="ready && visible || (visual && !thumbnail)"
                       ref="scroll"
                       @ready="init"
