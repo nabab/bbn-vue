@@ -175,16 +175,6 @@ Vue.component('bbn-tree', {
       type: Function
     },
     /**
-     * An array containing the expanded nodes idx.
-     * @prop {Array} [[]] expanded
-     */
-    expanded: {
-      type: Array,
-      default(){
-        return [];
-      }
-    },
-    /**
      * The opened path if there is one.
      * @prop {Array} [[]] path
      */
@@ -194,24 +184,6 @@ Vue.component('bbn-tree', {
         return [];
       }
     },
-    /**
-     * The default opened path if there is none in storage.
-     * @prop {Array} [[]] path
-     */
-    defaultPath: {
-      type: Array,
-      default(){
-        return [];
-      }
-    },
-    //@todo never used selectedValues
-    selectedValues: {
-      type: [Array, String],
-      default(){
-        return []
-      }
-    },
-    value: {},
     /**
      * Set to true for a selectable tree.
      * @prop {Boolean} [true] selectable
@@ -248,6 +220,9 @@ Vue.component('bbn-tree', {
         }]
       }
     },
+    /**
+     * @prop {Object} [{}] state
+     */
     state: {
       type: Object,
       default(){
@@ -836,61 +811,6 @@ Vue.component('bbn-tree', {
     load(){
       this.updateData();
     },
-    /**
-     * Opens the node(s) corresponding to the prop 'path'
-     * @method openPath
-     */
-    openPath() {
-      return;
-      this.$nextTick(() => {
-        if ( this.path.length ){
-          let current = bbn.fn.extend(true, [], this.path);
-          if ( bbn.fn.isString(current[0]) ){
-            current = [current];
-          }
-          bbn.fn.each(current, p => {
-            let path = bbn.fn.extend(true, [], p),
-                criteria = path.shift(),
-                idx = -1;
-            if ( bbn.fn.isObject(criteria) ){
-              idx = bbn.fn.search(this.filteredData, {data: criteria});
-              if ( idx === -1 ){
-                bbn.fn.each(this.filteredData, (d, i) => {
-                  if ( !bbn.fn.numProperties(bbn.fn.diffObj(bbn.fn.extend(true, {}, d.data), criteria)) ){
-                    idx = i;
-                    return true;
-                  }
-                })
-              }
-            }
-            else if ( this.tree.uid ){
-              idx = bbn.fn.search(this.filteredData, {['data.' + this.tree.uid]: criteria});
-            }
-            else if ( bbn.fn.isNumber(criteria) ){
-              idx = criteria;
-            }
-            if ( idx > -1 ){
-              if ( path.length ){
-                this.$set(this.filteredData[idx], 'expanded', true);
-                this.$set(this.filteredData[idx], 'selected', false);
-                if ( !bbn.fn.isArray(this.filteredData[idx].path) ){
-                  this.$set(this.filteredData[idx], 'path', []);
-                }
-                this.filteredData[idx].path.push(path);
-              }
-              else {
-                this.$set(this.filteredData[idx], 'selected', true);
-                this.$nextTick(() => {
-                  setTimeout(() => {
-                    this.scrollToSelected();
-                  }, 200)
-                })
-              }
-            }
-          })
-        }
-      })
-    },
     getNodeByUid(uid) {
       let res = false;
       if (this.uid) {
@@ -990,8 +910,6 @@ Vue.component('bbn-tree', {
         let expanded = nodes.filter(n => !!n.isExpanded);
         // and by those who are selected
         let selected = nodes.filter(n => !!n.isSelected);
-        // this path will be the targetTree path
-        let toPath = [];
         // verification if the node had parent et his index is greater than or equel to 0
         if ( (idx >= 0) && parent ){
           // if there is no children then we set the number of children to 1
@@ -1010,39 +928,44 @@ Vue.component('bbn-tree', {
               // if the node is expanded we're adding it to the expanded
               expanded.unshift(node);
             }
-            // adding the path of the parent of the source node
-            bbn.fn.each(expanded, n => {
-              // getting the parent node path
-              let p = parent.getNodePath(n);
-              p.push(false);
-              // adding the parent path to the target node
-              toPath.push(p);
-            });
             // if the node is selected we're adding it to the selected
             if ( node.isSelected ){
               selected.unshift(node);
             }
-            // and we're adding to the path the parent path to the target selected
-            bbn.fn.each(selected, n => {
-              toPath.push(parent.getNodePath(n));
-            });
             // If the source node is inside a parent node and is moved then we lower the number of children by one
             if ( parent.node ){
               parent.node.numChildren--;
             }
             // adding the node and push it to the tree
-            if ( this.tree.isAjax ){
+            if (this.tree.isAjax) {
               let nodeSource = bbn.fn.extend(true, {}, parent.currentData[idx]);
-              // adding in the node source the length of the target tree if there is no length then we set it at 1
-              nodeSource.num = targetTree.currentData.length || 1;
-              // we're adding the index also
-              nodeSource.index = nodeSource.num - 1;
-              // and then we push node source in the targetTree
-              targetTree.currentData.push(nodeSource);
+              if (bbn.fn.isFunction(this.transferData)) {
+                nodeSource = this.transferData(nodeSource);
+              }
+              if (!target.isExpanded) {
+                targetTree.$once('dataloaded', () => {
+                  // adding in the node source the length of the target tree if there is no length then we set it at 1
+                  nodeSource.num = targetTree.currentData.length || 1;
+                  // we're adding the index also
+                  nodeSource.index = nodeSource.num - 1;
+                  // and then we push node source in the targetTree
+                  target.source.data[this.tree.children].push(nodeSource);
+                });
+              }
+              else {
+                // adding in the node source the length of the target tree if there is no length then we set it at 1
+                nodeSource.num = targetTree.currentData.length || 1;
+                // we're adding the index also
+                nodeSource.index = nodeSource.num - 1;
+                // and then we push node source in the targetTree
+                target.source.data[this.tree.children].push(nodeSource);
+              }
             }
-            // replace the old node with the new node
             else {
               let nodeSource = parent.source.splice(idx, 1)[0];
+              if (bbn.fn.isFunction(this.transferData)) {
+                nodeSource = this.transferData(nodeSource);
+              }
               // if the array is empty we set one
               if ( !bbn.fn.isArray(target.source.data[this.tree.children]) ){
                 target.$set(target.source.data, this.tree.children, []);
@@ -1058,33 +981,20 @@ Vue.component('bbn-tree', {
             bbn.fn.each(selected, n => {
               n.removeFromSelected(false);
             });
-            // updating the DOM of VUE
+            // remove the old node
+            parent.currentData.splice(idx, 1);
             this.$nextTick(() => {
-              let callOpenPath = false;
               // if the target node isn't expanded we do it
-              if ( !target.isExpanded ){
-                  target.isExpanded = true;
+              if (!target.isExpanded) {
+                target.isExpanded = true;
               }
               // then we update the data
-              else if ( !this.tree.isAjax ){
-                targetTree.updateData();
-                if (targetTree !== parent) {
-                  parent.updateData();
-                }
-                callOpenPath = true;
+              if (!this.tree.isAjax) {
+                let path = target.getPath();
+                targetTree.updateData().then(() => {
+                  targetTree.expandPath(path);
+                });
               }
-              // and then push the new path to the targetTree
-              if ( toPath.length ){
-                bbn.fn.each(toPath, p => {
-                  targetTree.path.push(p);
-                })
-              }
-              // call a fonction to open the path of the targetTree
-              if ( callOpenPath ){
-                targetTree.openPath();
-              }
-              // and replace the old node with the new node
-              parent.currentData.splice(idx, 1);
             });
           });
         }
@@ -1142,15 +1052,6 @@ Vue.component('bbn-tree', {
     getLocalStorage(){
       if ( this.isRoot && this.hasStorage ){
         return this.getStorage(this.storageFullName || this.storageName, !!this.storageFullName);
-
-        /*
-        if ( cfg && cfg.path !== undefined ){
-          this.path.splice(0, this.path.length, ...cfg.path);
-        }
-        else {
-          this.path.splice(0, this.path.length);
-        }
-        */
       }
     },
     /**
@@ -1260,60 +1161,91 @@ Vue.component('bbn-tree', {
     selectPath(path, field){
       this.expandPath(path, field, true);
     },
-    init() {
-      if (this.node.isExpanded
+    initState(){
+      if ((this.node.isExpanded
           || this.isRoot
           || bbn.fn.count(Object.values(this.currentState), {expanded: true})
-          || bbn.fn.count(Object.values(this.currentState), {selected: true})
+          || bbn.fn.count(Object.values(this.currentState), {selected: true}))
+        && bbn.fn.numProperties(this.currentState)
+        && this.filteredData.length
+      ) {
+        setTimeout(() => {
+          bbn.fn.iterate(this.currentState, (o, uid) => {
+            let it = this.uid !== undefined ?
+              this.findNode({[this.uid]: uid}) :
+              false;
+            if (it) {
+              if ((o.items && bbn.fn.numProperties(o.items))
+                || o.expanded
+              ) {
+                it.isExpanded = true;
+              }
+              if (o.selected) {
+                if (it.selectable) {
+                  it.isSelected = true;
+                }
+                else {
+                  o.selected = false;
+                }
+              }
+            }
+            else {
+              delete this.currentState[uid];
+            }
+          })
+        }, 50);
+      }
+    },
+    /**
+     * @method init
+     * @fires updateData
+     * @fires initState
+     */
+    init(){
+      if (this.node.isExpanded
+        || this.isRoot
+        || bbn.fn.count(Object.values(this.currentState), {expanded: true})
+        || bbn.fn.count(Object.values(this.currentState), {selected: true})
       ) {
         return this.updateData().then(() => {
           this.isInit = true;
-          if (bbn.fn.numProperties(this.currentState)
-            && this.filteredData.length
-          ) {
-            setTimeout(() => {
-              bbn.fn.iterate(this.currentState, (o, uid) => {
-                let it = this.uid !== undefined ?
-                  this.findNode({[this.uid]: uid}) :
-                  false;
-                if (it) {
-                  if ((o.items && bbn.fn.numProperties(o.items))
-                    || o.expanded
-                  ) {
-                    it.isExpanded = true;
-                  }
-                  if (o.selected) {
-                    if (it.selectable) {
-                      it.isSelected = true;
-                    }
-                    else {
-                      o.selected = false;
-                    }
-                  }
-                }
-                else {
-                  delete this.currentState[uid];
-                }
-              })
-            }, 50);
-          }
+          this.initState();
         });
       }
       else {
         this.isInit = true;
       }
     },
-    // Keep to prevent the one from list to exexute
+    /**
+     * Keep to prevent the one from list to exexute
+     * @method listOnBeforeMount
+     */
     listOnBeforeMount(){
-
+      return;
     },
+    /**
+     * @method afterUpdate
+     * @event dataloaded
+     * @fires $nextTick
+     * @fires initState
+     */
+    afterUpdate(){
+      if (!this.isLoaded && this.ready && !this.tree.autobind) {
+        this.$once('dataloaded', () => {
+          this.$nextTick(this.initState);
+        });
+      }
+    }
   },
   /**
    * Emits the event beforeLoad and load. And opens the nodes defined in the prop path.
    * Definition of the root tree and parent node.
-   * @event beforeCreate
-   * @emits beforeLoad
+   * @event beforeUpdate
+   * @event startloading
+   * @event dataReceived
+   * @emits tree,beforeLoad
    * @emits load
+   * @fires closest
    */
   created(){
     this.$on('beforeUpdate', e => {
@@ -1332,13 +1264,6 @@ Vue.component('bbn-tree', {
       //this.tree.isLoading = false;
       this.loading = false;
       this.$emit('load', d);
-    });
-    this.$on('dataloaded', () => {
-      if ( !this.isLoaded && this.ready ){
-        //this.getLocalStorage()
-        this.openPath();
-      }
-      this.isLoaded = true;
     });
     if ( bbn.fn.isFunction(this.source) ){
       this.isFunction = true;
@@ -1397,20 +1322,6 @@ Vue.component('bbn-tree', {
           //scroll.scrollTo(0, newVal.$el);
         }
       }
-    },
-    /**
-     * Opens the corresponding node when the prop 'path' changes.
-     * @watch path
-     * @param {String} newVal
-     * @emits pathChange
-     */
-    path(newVal){
-      if ( !this.isLoaded ){
-        if ( this.isRoot || this.ready ){
-          this.openPath();
-        }
-      }
-      this.$emit('pathChange', newVal);
     },
     /**
      * Updates the ree overNode and overOrder when the prop 'dragging' changes.
