@@ -320,8 +320,8 @@
          * @data {Object} [{left: 'nf nf-fa-arrow_circle_left',right: 'nf nf-fa-arrow_circle_right'}] arrowClass
          */
         arrowClass:{
-          left:  'nf nf-fa-arrow_circle_left',
-          right: 'nf nf-fa-arrow_circle_right',
+          left:  'nf nf-fa-angle_left',
+          right: 'nf nf-fa-angle_right',
         },
         /**
          * The width of the image.

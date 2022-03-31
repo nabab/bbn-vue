@@ -914,17 +914,8 @@
             }
             else{
               let isValid = this.isValidIndex(idx);
-              if (this.single) {
-                if (this.views.length){
-                  this.views.splice(0, this.views.length);
-                }
-                obj.selected = true;
-                obj.idx = this.views.length;
-              }
-              else{
                 obj.selected = false;
                 obj.idx = isValid ? idx : this.views.length;
-              }
 
               bbn.fn.iterate(this.getDefaultView(), (a, n) => {
                 if ( obj[n] === undefined ){
@@ -933,10 +924,7 @@
                 }
               });
               obj.uid = obj.url + '-' + bbn.fn.randomString();
-              if (this.single) {
-                this.views.splice(0, this.views.length, obj);
-              }
-              else if (isValid) {
+              if (isValid) {
                 this.views.splice(obj.idx, 0, obj);
               }
               else {
@@ -999,7 +987,7 @@
         }
 
         if (this.numRegistered === this.views.length) {
-          this.init(this.single ? cp.url : this.getDefaultURL());
+          this.init(this.getDefaultURL());
         }
 
         this.$emit('registered', cp.url)
@@ -1037,9 +1025,9 @@
        * @fires parseURL
        * @returns {String|false}
        */
-      getRoute(url, force){
+      getRoute(url, force) {
         if (!bbn.fn.isString(url)) {
-          throw Error(bbn._('The component bbn-container must have a valid URL defined'));
+          throw Error(bbn._('The bbn-container must have a valid URL defined'));
         }
 
         if (!url && this.hasEmptyURL) {
@@ -1496,7 +1484,7 @@
       activateIndex(idx){
         if ( this.isValidIndex(idx) ){
           this.route(
-            this.urls[this.views[idx].url] ? this.urls[this.views[idx].url].current
+            this.urls[this.views[idx].url] ? this.urls[this.views[idx].url].currentURL
             : this.views[idx].current
           );
         }
@@ -1823,7 +1811,7 @@
             this.views[idx].loading = true;
           }
 
-          this.selected = this.single ? 0 : idx;
+          this.selected = idx;
           this.$forceUpdate();
 
           this.$emit('update', this.views);
@@ -1963,20 +1951,29 @@
        * @return {String}
        */
       getDefaultURL(){
+        let url = '';
+        if (this.autoload) {
+          url = this.parseURL(bbn.env.path);
+        }
+
+        if (!url && this.url ){
+          url = this.url;
+        }
+
         // If there is a parent router we automatically give the proper baseURL
-        if ( this.url ){
-          return this.url;
+        if ( !url && this.parentContainer && (this.parentContainer.currentURL !== this.parentContainer.url) ){
+          url = bbn.fn.substr(this.parentContainer.currentURL, this.parentContainer.url.length + 1);
         }
 
-        if ( this.parentContainer && (this.parentContainer.currentURL !== this.parentContainer.url) ){
-          return bbn.fn.substr(this.parentContainer.currentURL, this.parentContainer.url.length + 1);
+        if ( !url && this.def ){
+          url = this.def;
         }
 
-        if ( this.def ){
-          return this.def;
+        if (!this.autoload && !url) {
+          url = this.parseURL(bbn.env.path);
         }
 
-        return this.parseURL(bbn.env.path);
+        return url;
       },
       /**
        * @method getTitle
@@ -3071,7 +3068,7 @@
               this.changeURL(newVal, bbn._("Loading"));
             }
             let idx = this.search(newVal);
-            if (!this.single && (idx !== false)) {
+            if (idx !== false) {
               this.selected = idx;
               this.views[this.selected].last = bbn.fn.timestamp();
             }

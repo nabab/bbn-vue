@@ -25,6 +25,11 @@
     watch: {
       currentPage() {
         let sc = this.closest('bbn-scroll');
+        while (sc && !sc.scrollable) {
+          sc = sc.closest('bbn-scroll');
+        }
+
+        bbn.fn.log("HELLO???");
         if (sc) {
           sc.scrollTo(0, this.$el.offsetTop, true);
         }
