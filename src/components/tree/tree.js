@@ -1109,7 +1109,7 @@ Vue.component('bbn-tree', {
         this._setCurrentState(state);
       }
     },
-    expandPath(path, field, select = false){
+    expandPath(path, field, select = false, time = 1){
       field = field || this.uid || false;
       if (field
         && path
@@ -1152,6 +1152,11 @@ Vue.component('bbn-tree', {
                     }
                   }
                 }
+              }
+              else if (time === 1) {
+                setTimeout(() => {
+                  this.expandPath(path, field, select, 2);
+                }, 100);
               }
             })
           }
