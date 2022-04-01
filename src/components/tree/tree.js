@@ -566,7 +566,7 @@ Vue.component('bbn-tree', {
           this.node.isExpanded = true;
         }
 
-        let cp = this.isRoot ? this.getRef('scroll') : this;
+        let cp = this.isRoot && this.scrollable ? this.getRef('scroll') : this;
         if (cp.$children) {
           let idx = bbn.fn.search(
             bbn.fn.arrayFromProp(
@@ -1122,7 +1122,7 @@ Vue.component('bbn-tree', {
             uid = currentPaths.shift(),
             isLast = !currentPaths.length;
         if ((uid !== undefined)) {
-          if (this.isLoading ||!this.isLoaded) {
+          if (this.isLoading || !this.isLoaded) {
             this.$once('dataloaded', () => {
               this.$nextTick(() => {
                 this.expandPath(path, field, select);
