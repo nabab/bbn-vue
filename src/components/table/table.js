@@ -185,7 +185,7 @@
        * @prop  {Object|String|Function} expander
        */
       expander: {
-
+        type: [Object, String, Function]
       },
       /**
        * not used in the component
@@ -194,14 +194,13 @@
         type: Boolean,
         default: false
       },
-      
       /**
        * If one or more columns have the property fixed set to true it defines the side of the fixed column(s).
        * @prop {String} ['left'] fixedDefaultSide
        */
       fixedDefaultSide: {
         type: String,
-        default: "left"
+        default: 'left'
       },
       /**
        * Defines the toolbar of the table.
@@ -565,14 +564,11 @@
     },
     computed: {
       realButtons(){
-        bbn.fn.log("WHAT BUTTONS");
         if (this.cols.length && this.cols[this.colButtons] && this.cols[this.colButtons].buttons) {
           if (bbn.fn.isFunction(this.cols[this.colButtons].buttons)) {
-            bbn.fn.log("IS FUNCTION");
             return this.cols[this.colButtons].buttons;
           }
           else if (bbn.fn.isArray(this.cols[this.colButtons].buttons)) {
-            bbn.fn.log("IS ARRAY");
             let res = [];
             bbn.fn.each(this.cols[this.colButtons].buttons, a => {
               if (bbn.fn.isString(a)) {
@@ -2546,20 +2542,22 @@
                   if (maxWidth && (a.realWidth > maxWidth)) {
                     a.realWidth = maxWidth;
                   }
-                  if ( a.buttons !== undefined ) {
-                    colButtons = i;
-                  }
-                  if ( a.fixed ){
-                    if (
-                      (a.fixed !== 'right') &&
-                      ((this.fixedDefaultSide !== 'right') || (a.fixed === 'left'))
+                  if (a.fixed) {
+                    if ((a.fixed === 'left')
+                      || ((a.fixed !== 'right') && (this.fixedDefaultSide === 'left'))
                     ) {
+                      if ( a.buttons !== undefined ) {
+                        colButtons = groupCols[0].cols.length;
+                      }
                       groupCols[0].cols.push(a);
                       if (!a.hidden) {
                         groupCols[0].visible++;
                       }
                     }
                     else {
+                      if ( a.buttons !== undefined ) {
+                        colButtons = groupCols[0].cols.length + groupCols[1].cols.length + groupCols[2].cols.length;
+                      }
                       groupCols[2].cols.push(a);
                       if (!a.hidden) {
                         groupCols[2].visible++;
@@ -2567,6 +2565,9 @@
                     }
                   }
                   else {
+                    if ( a.buttons !== undefined ) {
+                      colButtons = groupCols[0].cols.length + groupCols[1].cols.length;
+                    }
                     groupCols[1].cols.push(a);
                     if (!a.hidden) {
                       groupCols[1].visible++;
@@ -2944,6 +2945,9 @@
           else if (bbn.fn.isFunction(col.render)) {
             obj.content = `<div class="bbn-spadded">${col.render(data, col, itemIndex)}</div>`;
           }
+          else {
+            obj.content = `<div class="bbn-spadded">${data.text}</div>`;
+          }
           this.getPopup().open(obj);
         }
       },
@@ -3136,7 +3140,6 @@
           if (this.columns.length) {
             bbn.fn.each(this.columns, a => this.addColumn(a))
           }
-    
           if (this.defaultConfig.hidden === null) {
             let tmp = [];
             let initColumn = [];

@@ -166,6 +166,7 @@
             ((e.type === 'click') && !this.context)
           )
         ){
+          bbn.fn.log('aaaa', e.target)
           if (e.preventDefault) {
             e.preventDefault();
             e.stopPropagation();
@@ -202,6 +203,7 @@
        */
       clickOut(e){
         if (!e.target.closest('.bbn-floater-context-' + this.bbnUid)) {
+          bbn.fn.log('bbbb', e)
           this.showFloater = false;
         }
       },
@@ -242,7 +244,7 @@
     watch: {
       showFloater(v){
         if (v) {
-          document.addEventListener('click', this.clickOut)
+          document.addEventListener('click', this.clickOut, true)
           this.docEvent = true;
         }
         else {
