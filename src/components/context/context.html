@@ -9,7 +9,8 @@
            @touchmove="touchmove"
            @touchend="touchend">
   <slot></slot>
-  <bbn-floater :element="attach || null"
+  <bbn-floater v-if="showFloater && !disabled"
+               :element="attach || null"
                :source="filteredData"
                :class="'bbn-floater-context-' + bbnUid"
                ref="floater"
@@ -29,7 +30,6 @@
                :content="content"
                :auto-hide="true"
                :mode="mode"
-               v-if="showFloater && !disabled"
                @close="$emit('close'); showFloater = false;"
                @open="$emit('open')"
                :item-component="itemComponent"

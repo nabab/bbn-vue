@@ -102,7 +102,8 @@
             <bbn-loader v-if="hasLoader"/>
           </bbn-scroll>
           <!-- If loading showing loader -->
-          <bbn-loader v-else-if="visible && !isLoaded"/>
+          <bbn-loader v-else-if="visible && !isLoaded"
+                      style="z-index: 999"/>
           <!-- Thumbnail image -->
           <div v-if="!visible && visual && thumbnail"
               style="overflow: hidden"

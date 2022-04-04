@@ -292,7 +292,11 @@
        closeAfter: {
         type: Boolean,
         default: true
-      }
+      },
+      /**
+       * @prop String mode Mode for buttons: normal or big
+       */
+       mode: 'normal'
     },
     data(){
       let currentSchema = [];

@@ -299,6 +299,17 @@
       fcolor: {
         type: String,
         default: '#EEE'
+      },
+      splittable: {
+        type: Boolean,
+        default: false
+      },
+      panes: {
+        type: Array
+      },
+      resizable: {
+        type: Boolean,
+        default: true
       }
     },
     data(){
@@ -450,6 +461,38 @@
       };
     },
     computed: {
+      visualContainerStyle(){
+        let coord = [1, this.numVisualCols + 1, 1, this.numVisualRows + 1];
+        if (this.views.length > 1) {
+          switch (this.visualOrientation) {
+            case 'top':
+              coord[2] = 2;
+              break;
+            case 'bottom':
+              coord[3] = coord[3] - 1;
+              break;
+            case 'left':
+              coord[0] = 2;
+              break;
+            case 'right':
+              coord[1] = coord[1] - 1;
+              break;
+          }
+        }
+
+        return {
+          position: 'relative',
+          top: null,
+          left: null,
+          right: null,
+          bottom: null,
+          gridColumnStart: coord[0],
+          gridColumnEnd: coord[1],
+          gridRowStart: coord[2],
+          gridRowEnd: coord[3],
+          zoom: 1
+        };
+      },
       /**
        * Not only the baseURL but a combination of all the parent's baseURLs.
        * @computed fullBaseURL
@@ -719,10 +762,10 @@
           this.$emit('beforeClose', idx, onBeforeClose);
           if (force || !onBeforeClose.defaultPrevented) {
             if (
+              !force &&
               !this.ignoreDirty &&
               this.isDirty &&
-              this.views[idx].dirty &&
-              !force
+              this.views[idx].dirty
             ) {
               this.confirm(this.confirmLeave, () => {
                 // Looking for dirty ones in registered forms of each container
@@ -732,9 +775,8 @@
                     f.reset();
                   });
                 }
-                this.$nextTick(() => {
-                  this.$emit('close', idx, onClose);
-                });
+
+                return this.close(idx, true);
               });
             }
             else if (this.views[idx] && !this.views[idx].real) {
@@ -742,7 +784,7 @@
               let url = this.views[idx].url;
               this.views.splice(idx, 1);
               this.$delete(this.urls, url);
-              this.fixIndexes()
+              this.fixIndexes();
               return true;
             }
           }
@@ -1891,7 +1933,7 @@
               if ( idx !== false ){
                 let url = this.views[idx].url;
                 if (this.urls[url]) {
-                  this.remove(idx);
+                  this.close(idx, true);
                 }
               }
             },
@@ -2772,19 +2814,6 @@
        */
       getParents(){
         return this.parent ? [...this.parent.getParents(), this.parent] : []
-      },
-      /**
-       * @method openMenu
-       * @param {Event} ev
-       */
-      openMenu(ev){
-        let ele = ev.target.parentElement.parentElement,
-            e = new MouseEvent("contextmenu", {
-              bubbles: true,
-              cancelable: true,
-              view: window
-            });
-        ele.dispatchEvent(e);
       },
       onResize() {
         this.keepCool(() => {

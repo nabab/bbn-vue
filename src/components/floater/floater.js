@@ -1172,15 +1172,9 @@
         if (!this.scrollResized) {
           this.scrollResized = true;
         }
-
         e.preventDefault();
         if ((dimensions.width !== this.scrollWidth) || (dimensions.height !== this.scrollHeight)) {
-          setTimeout(() => {
-            this.onResize(true);
-          }, 50)
-        }
-        else {
-          //this.onResize(true);
+          this.onResize(true);
         }
       },
       /**

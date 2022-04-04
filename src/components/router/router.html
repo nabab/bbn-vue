@@ -82,9 +82,10 @@
                              && !bc.views[bc.selected].pinned"
                        class="nf nf-fa-times bbn-p bbn-router-breadcrumb-close bbn-router-breadcrumb-icon"
                        @click.prevent.stop="bc.close(bc.selected)"/>
-                    <i v-if="isNumber(bc.selected) && bc.views[bc.selected] && bc.views[bc.selected].menu"
-                       class="nf nf-fa-caret_down bbn-router-breadcrumb-menu bbn-router-breadcrumb-icon bbn-p"
-                       @click.prevent.stop="openMenu($event)"/>
+                    <bbn-context v-if="isNumber(bc.selected) && bc.views[bc.selected] && bc.views[bc.selected].menu"
+                                 :source="() => bc.getMenuFn(bc.selected)"
+                                 tag="i"
+                                 class="nf nf-fa-caret_down bbn-router-breadcrumb-icon bbn-router-breadcrumb-menu"/>
                   </div>
                 </bbn-context>
               </bbn-context>
@@ -225,8 +226,7 @@
          :class="{
                  'bbn-router-scroller': true,
                  'bbn-overlay': scrollContent,
-                 'bbn-w-100': !scrollContent,
-                 'bbn-vspadded': true
+                 'bbn-w-100': !scrollContent
                  }"
          style="overflow: auto;"
          ref="visualListContainer">
@@ -285,6 +285,15 @@
     </div>
     <!-- END OF CONTENT -->
     <bbn-loader v-else/>
+    <bbn-splitter v-if="splittable"
+                  :resizable="resizable"
+                  :collapsible="collapsible">
+      <bbn-pane v-for="(pane, i) in panes"
+                :key="i">
+        <div class="bbn-overlay"
+             :id="pane.id"/>
+      </bbn-pane>
+    </bbn-splitter>
     <bbn-scrollbar :container="$refs.visualListContainer"
                    orientation="vertical"
                    v-if="isVisual && visualShowAll"/>
