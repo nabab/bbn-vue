@@ -122,4 +122,17 @@
               :element="_self"
               ref="pager"
               v-if="(pageable || isAjax) && !!pager"/>
+  <bbn-floater v-if="showFloater"
+              :title="false"
+              :top="0"
+              @close="showFloater = false"
+              :closable="true"
+              width="100%"
+              height="100%"
+              :scrollable="false"
+              :resizable="false"
+              :maximizable="false"
+              :component="$options.components.galleryZoom"
+              :source="floaterSource"/>
+  
 </div>
