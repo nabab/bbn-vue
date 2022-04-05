@@ -971,25 +971,26 @@
                 groupNumChecked++;
               }
             }
+            if (this.expander && (
+              !bbn.fn.isFunction(this.expander) ||
+              (bbn.fn.isFunction(this.expander) && this.expander(data[i], i))
+            )) {
+               o = {
+                index: data[i].index,
+                data: a,
+                expansion: true,
+                rowIndex: rowIndex,
+                rowKey: rowIndex + '-' + data[i].key,
+                expanderIndex: expanderIndex
+              };
+            //  rowIndex++;
+            }
             res.push(o);
             rowIndex++;
           } else {
             end++;
           }
-          if (this.expander && (
-              !bbn.fn.isFunction(this.expander) ||
-              (bbn.fn.isFunction(this.expander) && this.expander(data[i], i))
-            )) {
-            res.push({
-              index: data[i].index,
-              data: a,
-              expansion: true,
-              rowIndex: rowIndex,
-              rowKey: rowIndex + '-' + data[i].key,
-              expanderIndex: expanderIndex
-            });
-            rowIndex++;
-          }
+          
           // Group or just global aggregation
 
           if (aggregateModes.length) {
@@ -1094,14 +1095,15 @@
             || d.aggregated
             || (this.isExpanded(d) && d.groupAggregated)
             || (!d.expander
-              && !d.expansion
-              && !this.isExpanded(d)
+              && !!d.expansion
+              && !!res[d.expanderIndex].expanded
               && bbn.fn.isFunction(this.expander)
-              && !this.expander(d))
+              && !!this.expander(d))
           ) {
             fdata.push(d)
           }
         });
+        bbn.fn.log('aaa',bbn.fn.extend(true, [], res), bbn.fn.extend(true, [], fdata))
         return fdata;
       },
       /**
