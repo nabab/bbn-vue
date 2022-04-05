@@ -369,7 +369,7 @@
         if ( this.isMeasuring || !this.scrollable ){
           return cfg;
         }
-        if (this.hasScrollX) {
+        if (this.hasScrollX && !this.hiddenX) {
           cfg.paddingBottom = '1em';
         }
 
