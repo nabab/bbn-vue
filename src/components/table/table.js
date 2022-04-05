@@ -971,28 +971,26 @@
                 groupNumChecked++;
               }
             }
-            if (this.expander && (
-              !bbn.fn.isFunction(this.expander) ||
-              (bbn.fn.isFunction(this.expander) && this.expander(data[i], i))
-            )) {
-               o = {
-                index: data[i].index,
-                data: a,
-                expansion: true,
-                rowIndex: rowIndex,
-                rowKey: rowIndex + '-' + data[i].key,
-                expanderIndex: expanderIndex
-              };
-            //  rowIndex++;
-            }
             res.push(o);
             rowIndex++;
           } else {
             end++;
           }
-          
+          if (this.expander && (
+            !bbn.fn.isFunction(this.expander) ||
+            (bbn.fn.isFunction(this.expander) && this.expander(data[i], i))
+          )) {
+             res.push({
+              index: data[i].index,
+              data: a,
+              expansion: true,
+              rowIndex: rowIndex,
+              rowKey: rowIndex + '-' + data[i].key,
+              expanderIndex: expanderIndex
+            });
+            rowIndex++;
+          }
           // Group or just global aggregation
-
           if (aggregateModes.length) {
             bbn.fn.each(this.aggregatedColumns, ac => {
               let aggr = aggregates[ac.field];
