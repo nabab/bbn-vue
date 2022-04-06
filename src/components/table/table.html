@@ -196,7 +196,9 @@
                   @focusin="focusin(i, $event)"
                   @dblclick="() => {if (focusedRow !== i) {focusedRow = i}}"
                   :class="[{
-                    'bbn-alt': d.expanderIndex !== undefined ? !!(d.expanderIndex % 2) : !!(d.rowIndex % 2),
+                    'bbn-alt': !groupable && (d.expanderIndex !== undefined) ?
+                      !!(d.expanderIndex % 2) :
+                      !!(d.rowIndex % 2),
                     'bbn-header': !!(d.aggregated || d.groupAggregated),
                   }, getTrClass(d.data)]"
                   :style="getTrStyle(d.data)"
@@ -255,6 +257,24 @@
                         left: currentColumns[0].left !== undefined ? currentColumns[0].left + 'px' : '',
                         width: currentColumns[0].realWidth
                       }"/>
+                  <td :class="[getTrClass(d.data), (currentColumns[1].fixed ? ' ' + cssRuleName + ' bbn-table-fixed-cell bbn-table-fixed-cell-left' : '')]"
+                      :style="{
+                        left: currentColumns[1].left !== undefined ? currentColumns[1].left + 'px' : '',
+                        width: currentColumns[1].realWidth
+                      }"
+                      v-if="d.selection">
+                    <div class="bbn-block bbn-spadded">
+                      <div class="bbn-c bbn-w-100">
+                        <bbn-checkbox :checked="d.selected"
+                                      :value="true"
+                                      :novalue="false"
+                                      :strict="true"
+                                      @click.stop
+                                      @change="checkSelection(i)"
+                                      class="bbn-middle bbn-flex"/>
+                      </div>
+                    </div>
+                  </td>
                   <td :class="[getTrClass(d.data), (currentColumns[0].fixed ? ' ' + cssRuleName + ' bbn-table-fixed-cell bbn-table-cell-left' : '')]"
                       :style="{
                         left: currentColumns[1].left !== undefined ? currentColumns[1].left + 'px' : 'auto',
