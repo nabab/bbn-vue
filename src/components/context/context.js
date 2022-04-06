@@ -242,7 +242,7 @@
     watch: {
       showFloater(v){
         if (v) {
-          document.addEventListener('click', this.clickOut)
+          document.addEventListener('click', this.clickOut, true)
           this.docEvent = true;
         }
         else {
