@@ -79,8 +79,8 @@
        * @prop {Number} [45] dimensionPreview
        */
       dimensionPreview:{
-        type: Number,
-        default: 45
+        type: [Number, String],
+        default: '5vmin'
       },
       /**
        * Set to true enables the autoplay using the default autoplay time (5000ms). If a number is given, multiplied * 1000, will define the new autoplay time .
@@ -185,6 +185,10 @@
       scroll: {
         type: Boolean,
         default: false
+      },
+      minimumPreview: {
+        type: [String, Number],
+        default: '50px'
       }
     },
     data(){
@@ -342,7 +346,9 @@
          * The margin top of the image.
          * @data {Number} [0] imageTopMargin
          */
-        imageTopMargin: 0
+        imageTopMargin: 0,
+        maxImgWidth: 0,
+        maxImgHeight: 0,
       }
     },
     methods: {
@@ -361,6 +367,8 @@
             }
           });
         }
+        this.maxImgWidth = this.getRef('slideContainer').offsetWidth;
+        this.maxImgHeight = this.getRef('slideContainer').offsetHeight;
       },
       /**
        * Sets the property loaded to true.
@@ -620,6 +628,7 @@
           this.items = [{content: this.getRef('slot').innerHTML, type: 'text'}]
         }
       }
+      this.ready = true;
       this.$nextTick(() => {
         this.createStyle();
         if( this.autoPlay ){
@@ -633,7 +642,7 @@
             this.arrowClass.right = this.arrows.right
           }
         }
-        this.ready = true;
+        this.onResize();
       })
     },
     watch: {
@@ -710,8 +719,10 @@
                      }]"
                      :style="{
                        'border-width': (mainComponent.currentIndex === i) ? 'medium' : '',
-                       width: dimension +'px',
-                       height: dimension + 'px'
+                       width: dimension,
+                       height: dimension,
+                       minWidth: minimumPreview,
+                       minHeight: minimumPreview,
                      }"
                      ref="items"
                 >
@@ -762,8 +773,10 @@
           * @memberof miniature
           */
          dimension:{
-           type: Number,
-           default: 45
+           type: String,
+         },
+         minimumPreview: {
+           type: String,
          }
        },
         data(){
