@@ -1,4 +1,4 @@
-<div :class="[componentClass, {'bbn-w-100': !fullSlide, 'bbn-overlay': fullSlide}]">
+<div :class="[componentClass, 'bbn-middle', {'bbn-w-100': !fullSlide, 'bbn-overlay': fullSlide}]">
   <div v-if="ready" :class="{'bbn-w-100': !fullSlide, 'bbn-overlay': fullSlide, 'bbn-padded' : !fullSlide}">
     <!-- position aboslute -->
     <div class="bbn-l bbn-slideshow-count bbn-abs" v-if="showCount">
@@ -142,6 +142,12 @@
         </a>
       </div>
     </div>
+  </div>
+  <div v-else class="bbn-vmiddle">
+    <bbn-loadicon class="bbn-vmiddle"
+                  :size="24"/>
+    <span class="bbn-xl bbn-b bbn-left-sspace"
+          v-text="_('Loading') + '...'"/>
   </div>
   <div class="bbn-hidden" ref="slot">
     <slot></slot>

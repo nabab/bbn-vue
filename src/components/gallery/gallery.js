@@ -699,8 +699,6 @@
                */
               action(ev) {
                 bbn.fn.log("ACTION");
-                console.log("---------------ev---------------");
-                console.log(ev)
                 if (this.col.gallery.isSelecting) {
                   let id = !!this.col.gallery.uid ? this.source.data[this.col.gallery.uid] : this.source.index;
                   if (this.isSelected) {

@@ -369,8 +369,6 @@
         }
         this.maxImgWidth = this.getRef('slideContainer').offsetWidth;
         this.maxImgHeight = this.getRef('slideContainer').offsetHeight;
-        console.log(this.maxImgWidth, "maxImgWidth")
-        console.log(this.maxImgHeight, "maxImgHeight")
       },
       /**
        * Sets the property loaded to true.
