@@ -185,7 +185,7 @@
        * @prop  {Object|String|Function} expander
        */
       expander: {
-
+        type: [Object, String, Function]
       },
       /**
        * not used in the component
@@ -194,14 +194,13 @@
         type: Boolean,
         default: false
       },
-      
       /**
        * If one or more columns have the property fixed set to true it defines the side of the fixed column(s).
        * @prop {String} ['left'] fixedDefaultSide
        */
       fixedDefaultSide: {
         type: String,
-        default: "left"
+        default: 'left'
       },
       /**
        * Defines the toolbar of the table.
@@ -565,14 +564,11 @@
     },
     computed: {
       realButtons(){
-        bbn.fn.log("WHAT BUTTONS");
         if (this.cols.length && this.cols[this.colButtons] && this.cols[this.colButtons].buttons) {
           if (bbn.fn.isFunction(this.cols[this.colButtons].buttons)) {
-            bbn.fn.log("IS FUNCTION");
             return this.cols[this.colButtons].buttons;
           }
           else if (bbn.fn.isArray(this.cols[this.colButtons].buttons)) {
-            bbn.fn.log("IS ARRAY");
             let res = [];
             bbn.fn.each(this.cols[this.colButtons].buttons, a => {
               if (bbn.fn.isString(a)) {
@@ -929,22 +925,41 @@
               }
 
               currentLink = res.length;
-              if (!isExpanded && data[i - 1] && (currentGroupValue === data[i - 1].data[groupField])) {
+              if (!isExpanded
+                && data[i - 1]
+                && (currentGroupValue === data[i - 1].data[groupField])
+              ) {
                 if (res.length) {
                   res.push(tmp);
                 }
-              } else {
+              }
+              else {
                 tmp.expanded = isExpanded;
+                if (this.expander) {
+                  expanderIndex = tmp.index;
+                }
                 res.push(tmp);
                 rowIndex++;
               }
             }
           }
           else if (this.expander) {
-            let exp = bbn.fn.isFunction(this.expander) ? this.expander(data[i], i) : this.expander;
-            isExpanded = exp ? this.currentExpanded.indexOf(data[i].index) > -1 : false;
+            let exp = bbn.fn.isFunction(this.expander) ?
+              this.expander(data[i], i) :
+              this.expander;
+            isExpanded = exp ?
+              this.currentExpanded.includes(data[i].index) :
+              false;
           }
-          if (!isGroup || isExpanded || !currentGroupValue) {
+
+          if (!isGroup
+            || isExpanded
+            || !currentGroupValue
+            || (this.expander
+              && (!bbn.fn.isFunction(this.expander)
+                || this.expander(data[i], i))
+            )
+          ) {
             o = {
               index: data[i].index,
               data: a,
@@ -954,21 +969,29 @@
             if (isGroup) {
               if (!currentGroupValue) {
                 o.expanded = true;
-              } else {
+              }
+              else {
                 o.isGrouped = true;
                 o.link = currentLink;
                 o.rowKey = o.rowIndex + '-' + o.rowKey;
               }
-            } else if (this.expander && (
-                !bbn.fn.isFunction(this.expander) ||
-                (bbn.fn.isFunction(this.expander) && this.expander(data[i], i))
-              )) {
-              o.expander = true;
-              expanderIndex = o.index;
-              o.expanderIndex = expanderIndex;
             }
-            if (this.selection && (!bbn.fn.isFunction(this.selection) || this.selection(o))) {
-              o.selected = (!this.uid && this.currentSelected.includes(data[i].index)) || (this.uid && this.currentSelected.includes(data[i].data[this.uid]));
+            if (this.expander
+              && (!bbn.fn.isFunction(this.expander)
+                || this.expander(data[i], i))
+            ) {
+              o.expansion = true;
+              o.expanderIndex = expanderIndex;
+              o.rowKey = rowIndex + '-' + data[i].key;
+            }
+            if (this.selection
+              && (!bbn.fn.isFunction(this.selection)
+                || this.selection(o))
+            ) {
+              o.selected = (!this.uid
+                  && this.currentSelected.includes(data[i].index))
+                || (this.uid
+                  && this.currentSelected.includes(data[i].data[this.uid]));
               o.selection = true;
               groupNumCheckboxes++;
               if (o.selected) {
@@ -977,25 +1000,11 @@
             }
             res.push(o);
             rowIndex++;
-          } else {
+          }
+          else {
             end++;
           }
-          if (this.expander && (
-              !bbn.fn.isFunction(this.expander) ||
-              (bbn.fn.isFunction(this.expander) && this.expander(data[i], i))
-            )) {
-            res.push({
-              index: data[i].index,
-              data: a,
-              expansion: true,
-              rowIndex: rowIndex,
-              rowKey: rowIndex + '-' + data[i].key,
-              expanderIndex: expanderIndex
-            });
-            rowIndex++;
-          }
           // Group or just global aggregation
-
           if (aggregateModes.length) {
             bbn.fn.each(this.aggregatedColumns, ac => {
               let aggr = aggregates[ac.field];
@@ -1098,11 +1107,14 @@
             || d.aggregated
             || (this.isExpanded(d) && d.groupAggregated)
             || (!d.expander
-              && !d.expansion
-              && !this.isExpanded(d)
-              && bbn.fn.isFunction(this.expander)
-              && !this.expander(d))
+              && !!d.expansion
+              && this.isExpanded(bbn.fn.getRow(res, {index: d.expanderIndex, expander: true}))
+              && (!bbn.fn.isFunction(this.expander)
+                || !!this.expander(d)))
           ) {
+            if (fdata.length) {
+              d.rowIndex = fdata[fdata.length - 1].rowIndex + 1;
+            }
             fdata.push(d)
           }
         });
@@ -2342,8 +2354,8 @@
         if (!this.expander && ((this.group === false) || !this.groupable)) {
           return true;
         }
-        if (this.expander) {
-          return this.currentExpanded.indexOf(d.index) > -1;
+        if (this.expander && !this.groupable) {
+          return this.currentExpanded.includes(d.index);
         }
         if (
           this.groupable &&
@@ -2351,12 +2363,14 @@
           this.cols[this.group] &&
           this.cols[this.group].field
         ) {
-          if (d.data[this.cols[this.group].field]) {
-            return this.currentExpandedValues.indexOf(d.data[this.cols[this.group].field]) > -1;
+          if (d.data[this.cols[this.group].field] !== undefined) {
+            return this.currentExpandedValues.includes(d.data[this.cols[this.group].field]);
           }
           return true;
         }
-        if ((d.isGrouped || d.groupAggregated) && (this.currentExpanded.indexOf(d.link) > -1)) {
+        if ((d.isGrouped || d.groupAggregated)
+          && this.currentExpanded.includes(d.link)
+        ) {
           return true;
         }
         return false;
@@ -2379,7 +2393,7 @@
             (this.currentData[idx].data[this.cols[this.group].field] !== undefined)
           ) {
             let groupValue = this.currentData[idx].data[this.cols[this.group].field],
-              groupIndex = this.currentExpandedValues.indexOf(groupValue);
+                groupIndex = this.currentExpandedValues.indexOf(groupValue);
             if (groupIndex > -1) {
               this.currentExpandedValues.splice(groupIndex, 1);
             } else {
@@ -2546,20 +2560,22 @@
                   if (maxWidth && (a.realWidth > maxWidth)) {
                     a.realWidth = maxWidth;
                   }
-                  if ( a.buttons !== undefined ) {
-                    colButtons = i;
-                  }
-                  if ( a.fixed ){
-                    if (
-                      (a.fixed !== 'right') &&
-                      ((this.fixedDefaultSide !== 'right') || (a.fixed === 'left'))
+                  if (a.fixed) {
+                    if ((a.fixed === 'left')
+                      || ((a.fixed !== 'right') && (this.fixedDefaultSide === 'left'))
                     ) {
+                      if ( a.buttons !== undefined ) {
+                        colButtons = groupCols[0].cols.length;
+                      }
                       groupCols[0].cols.push(a);
                       if (!a.hidden) {
                         groupCols[0].visible++;
                       }
                     }
                     else {
+                      if ( a.buttons !== undefined ) {
+                        colButtons = groupCols[0].cols.length + groupCols[1].cols.length + groupCols[2].cols.length;
+                      }
                       groupCols[2].cols.push(a);
                       if (!a.hidden) {
                         groupCols[2].visible++;
@@ -2567,6 +2583,9 @@
                     }
                   }
                   else {
+                    if ( a.buttons !== undefined ) {
+                      colButtons = groupCols[0].cols.length + groupCols[1].cols.length;
+                    }
                     groupCols[1].cols.push(a);
                     if (!a.hidden) {
                       groupCols[1].visible++;
@@ -2944,6 +2963,9 @@
           else if (bbn.fn.isFunction(col.render)) {
             obj.content = `<div class="bbn-spadded">${col.render(data, col, itemIndex)}</div>`;
           }
+          else {
+            obj.content = `<div class="bbn-spadded">${data.text}</div>`;
+          }
           this.getPopup().open(obj);
         }
       },
@@ -3136,7 +3158,6 @@
           if (this.columns.length) {
             bbn.fn.each(this.columns, a => this.addColumn(a))
           }
-    
           if (this.defaultConfig.hidden === null) {
             let tmp = [];
             let initColumn = [];
