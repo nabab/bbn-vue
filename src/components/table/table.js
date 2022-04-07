@@ -246,17 +246,20 @@
       },
       /**
        * Defines the footer of the table.
-       * @prop {String|Object} footer
+       * Allowed values ​​are the name or the object of a component, a boolean or a function (to inject custom html)
+       * @prop {String|Object|Boolean|Function} footer
        */
       footer: {
-        type: [String, Object]
+        type: [String, Object, Boolean, Function],
+        default: true
       },
       /**
-       * Defines the footer for a group of columns.
-       * @prop {String|Object} groupFooter
+       * Defines the footer for a group of rows.
+       * Allowed values ​​are the name or the object of a component or a function (to inject custom html)
+       * @prop {String|Object|Function} groupFooter
        */
       groupFooter: {
-        type: [String, Object]
+        type: [String, Object, Function]
       },
       /**
        * @todo desc
@@ -646,6 +649,18 @@
         return this.toolbarButtons.length || bbn.fn.isObject(this.toolbar) || bbn.fn.isFunction(this.toolbar) || bbn.fn.isString(this.toolbar);
       },
       /**
+       * @computed hasPager
+       * @return {Boolean}
+       */
+      hasPager(){
+        return (this.pageable
+            || this.saveable
+            || this.filterable
+            || this.isAjax
+            || showable)
+          && (this.footer === true);
+      },
+      /**
        * Return an array of shown fields (the hidden ones are excluded).
        * @computed shownFields
        * @returns {Array}
@@ -1000,6 +1015,26 @@
             }
             res.push(o);
             rowIndex++;
+            if (isGroup
+              && this.groupFooter
+              && (!data[i + 1]
+                || (data[i + 1].data[groupField] !== data[i].data[groupField]))
+            ) {
+              res.push({
+                index: data[i].index,
+                data: bbn.fn.filter(data, v => {
+                  return v.data[groupField] === data[i].data[groupField];
+                }),
+                rowIndex: rowIndex,
+                rowKey: data[i].key,
+                isGrouped: true,
+                footer: true,
+                full: true,
+                selection: false,
+                expander: false
+              });
+              rowIndex++;
+            }
           }
           else {
             end++;
@@ -1106,6 +1141,7 @@
             || this.isExpanded(d)
             || d.aggregated
             || (this.isExpanded(d) && d.groupAggregated)
+            || !!d.isFooter
             || (!d.expander
               && !!d.expansion
               && this.isExpanded(bbn.fn.getRow(res, {index: d.expanderIndex, expander: true}))
@@ -1118,6 +1154,7 @@
             fdata.push(d)
           }
         });
+        bbn.fn.log('aaa', res, fdata)
         return fdata;
       },
       /**

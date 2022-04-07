@@ -311,7 +311,14 @@
                   <div v-else
                        v-html="render(d.data, col, i)"/>
                 </td>
-
+                <td v-else-if="d.footer && groupFooter"
+                    :colspan="currentColumns.length">
+                  <div v-if="typeof groupFooter === 'function'"
+                       v-html="groupFooter(d.data)"/>
+                  <component v-else
+                             :is="groupFooter"
+                             :source="d.data"/>
+                </td>
                 <td v-else
                     v-for="(col, index) in currentColumns"
                     :class="[currentClass(col, d.data, i), cssRuleName, {
@@ -455,11 +462,17 @@
     </div>
     <!-- Footer -->
     <bbn-pager class="bbn-table-footer bbn-no-border-right bbn-no-border-left bbn-no-border-bottom"
-               v-if="(pageable || saveable || filterable || isAjax || showable) && (footer !== false)"
+               v-if="hasPager"
                :element="_self"
                :item-name="itemName"
                :page-name="pageName"
                :buttons="footerButtons"/>
+    <component v-else-if="(typeof footer === 'string') || (typeof footer === 'object')"
+               :is="footer"
+               class="bbn-table-footer bbn-no-border-right bbn-no-border-left bbn-no-border-bottom"/>
+    <div v-else-if="(typeof footer === 'function') && footer()"
+         v-html="footer()"
+         class="bbn-table-footer bbn-no-border-right bbn-no-border-left bbn-no-border-bottom"/>
   </div>
   <bbn-floater v-if="currentFilter"
                class="bbn-table-floating-filter bbn-widget"
