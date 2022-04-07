@@ -922,10 +922,10 @@
             }
             this.$emit('resize');
             if (sendResizeContent) {
-              let e = new Event('resizeContent', {
+              let e = new Event('resizecontent', {
                 cancelable: true
               });
-              this.$emit('resizeContent', e, {
+              this.$emit('resizecontent', e, {
                 width: content.clientWidth,
                 height: content.clientHeight
               });
@@ -1010,10 +1010,10 @@
                   )
                 )
               ) {
-                let e = new Event('resizeContent', {
+                let e = new Event('resizecontent', {
                   cancelable: true
                 });
-                this.$emit('resizeContent', e, {
+                this.$emit('resizecontent', e, {
                   width: contentWidth,
                   height: contentHeight
                 });
