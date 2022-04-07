@@ -145,20 +145,6 @@
         default: 150
       },
       /**
-       * @todo not used in the component
-       */
-      paginationType: {
-        type: String,
-        default: 'input'
-      },
-      /**
-       * @todo not used in the component
-       */
-      info: {
-        type: Boolean,
-        default: false
-      },
-      /**
        * A function to define css class(es) for each row.
        * @prop {Function} trClass
        */
@@ -188,11 +174,12 @@
         type: [Object, String, Function]
       },
       /**
-       * not used in the component
+       * Customize the loading text or hide it
+       * @prop {String|Boolean} ['Loading...'] loader
        */
       loader: {
-        type: Boolean,
-        default: false
+        type: [String, Boolean],
+        default: bbn._('Loading') + '...'
       },
       /**
        * If one or more columns have the property fixed set to true it defines the side of the fixed column(s).
@@ -207,7 +194,7 @@
        * @prop {Object|String|Function} toolbar
        */
       toolbar: {
-
+        type: [Object, String, Function]
       },
       /**
        * An array of objects with at least the property 'field' that can replace the html '<bbns-column></bbns-column>' or extend them.
@@ -227,9 +214,8 @@
         type: Number
       },
       /**
-       * @todo desc
+       * The list of expanded rows based on a specific value (ex. group field) and not on the row index
        * @prop {Array|Function} expandedValues
-       *
        */
       expandedValues: {
         type: [Array, Function]
@@ -562,6 +548,9 @@
          * @data {Boolean} [false] isTableDataUpdating Will be set to true during the whole update process
          */
         isTableDataUpdating: false,
+        /**
+         * @data {String} [''] searchValue
+         */
         searchValue: ''
       };
     },

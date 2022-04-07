@@ -337,7 +337,8 @@
           default: false
         },
         /**
-         * @todo not used in the component
+         * Enables the search mode
+         * @prop {Boolean} [false] search
          */
         search: {
           type: Boolean,
