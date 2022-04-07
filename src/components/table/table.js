@@ -191,10 +191,10 @@
       },
       /**
        * Defines the toolbar of the table.
-       * @prop {Object|String|Function} toolbar
+       * @prop {Array|Object|String|Function} toolbar
        */
       toolbar: {
-        type: [Object, String, Function]
+        type: [Array, Object, String, Function]
       },
       /**
        * An array of objects with at least the property 'field' that can replace the html '<bbns-column></bbns-column>' or extend them.
@@ -646,7 +646,7 @@
             || this.saveable
             || this.filterable
             || this.isAjax
-            || showable)
+            || this.showable)
           && (this.footer === true);
       },
       /**
