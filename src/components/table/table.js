@@ -29,7 +29,7 @@
      * @mixin bbn.vue.keepCoolComponent
      * @mixin bbn.vue.dataComponent
      */
-    mixins: 
+    mixins:
     [
       bbn.vue.basicComponent,
       bbn.vue.resizerComponent,
@@ -1016,6 +1016,7 @@
             res.push(o);
             rowIndex++;
             if (isGroup
+              && this.groupable
               && this.groupFooter
               && !this.expander
               && (!data[i + 1]
@@ -3075,6 +3076,27 @@
         }
 
         return {};
+      },
+      /**
+       * The method called on a column resize (by user)
+       * @method onUserResize
+       * @param {Event} e
+       * @fires $forceUpdate
+       */
+      onUserResize(e){
+        let d = e.target._bbn.directives.resizable.options.data,
+            nextCol = this.groupCols[d.groupColIndex].cols[d.columnIndex + 1],
+            nextColSize = nextCol ? nextCol.realWidth + e.detail.movement : 0;
+        if ((d.column.realWidth !== e.detail.size)
+          && (e.detail.size >= this.defaultColumnWidth)
+          && (!nextCol || (nextColSize >= this.defaultColumnWidth))
+        ) {
+          this.groupCols[d.groupColIndex].cols[d.columnIndex].realWidth = e.detail.size;
+          if (nextCol) {
+            this.groupCols[d.groupColIndex].cols[d.columnIndex + 1].realWidth = nextColSize;
+          }
+          this.$forceUpdate();
+        }
       }
     },
     /**

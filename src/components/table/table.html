@@ -112,7 +112,8 @@
                         && (i === 0)
                     }]"
                     :title="col.ftitle || col.title || col.field || ' '"
-                >
+                    v-resizable.right="resizable && col.resizable && !!groupCol.cols[i+1] ? {data: {column: col, columnIndex: i, groupColIndex: groupIndex}} : false"
+                    @resize="onUserResize">
                   <i :class="{
                       nf: true,
                       'nf nf-mdi-filter_variant': true,
@@ -280,7 +281,7 @@
                         left: currentColumns[1].left !== undefined ? currentColumns[1].left + 'px' : 'auto',
                         width: 'auto',
                         borderRight: '0px',
-                        overflow: 'unset' 
+                        overflow: 'unset'
                       }">
                     <div class="bbn-block"
                          :style="{
@@ -311,7 +312,7 @@
                   <div v-else
                        v-html="render(d.data, col, i)"/>
                 </td>
-                <td v-else-if="d.footer && groupFooter"
+                <td v-else-if="d.footer && groupFooter && groupable"
                     :colspan="currentColumns.length">
                   <div v-if="typeof groupFooter === 'function'"
                        v-html="groupFooter(d.data)"/>
