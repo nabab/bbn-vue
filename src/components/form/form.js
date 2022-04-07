@@ -296,7 +296,10 @@
       /**
        * @prop String mode Mode for buttons: normal or big
        */
-       mode: 'normal'
+       mode: {
+         type: String,
+         default: 'normal'
+       }
     },
     data(){
       let currentSchema = [];
@@ -785,7 +788,7 @@
             });
           }
           if ( focusable ){
-            focusable.focus();
+            //focusable.focus();
           }
         }
       },

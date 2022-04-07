@@ -5,11 +5,13 @@
         return;
       }
 
-      bbn.fn.log("INSERTED FOCUSED DIRECTIVE", el, binding);
-      el.focus();
-      if (binding.modifiers.selected) {
-        bbn.fn.selectElementText(el);
-      }
+      setTimeout(() => {
+        el.focus();
+        bbn.env.focused = el;
+        if (binding.modifiers.selected) {
+          bbn.fn.selectElementText(el);
+        }
+      }, 250);
     }
   });
 })()
