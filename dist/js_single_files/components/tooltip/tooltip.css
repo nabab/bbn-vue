@@ -1,7 +1,3 @@
-.bbn-tooltip {
-  cursor: pointer;
-}
-.bbn-tooltip .bbn-abs i {
-  margin-left: 3px;
-  margin-top: -1px;
+.bbn-tooltip .bbn-tooltip-icon i::before {
+  line-height: 0;
 }

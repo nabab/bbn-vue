@@ -23,7 +23,8 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-floater-list']"
                    v-bind="li"
                    :key="'groupComponent' + li.key"/>
         <div v-else
-             v-text="li.data[sourceGroup]"/>
+             v-text="li.data[sourceGroup]"
+             class="bbn-spadded"/>
       </li>
       <li v-if="!pageable || ((idx >= start) && (idx < start + currentLimit)) || (!!pageable && !!serverPaging)"
           @mouseenter="mouseenter($event, idx)"
@@ -52,7 +53,6 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-floater-list']"
                   :is="li.data && li.data.url && !li.data[children] ? 'a' : 'span'"
                   @click.prevent="() => {}"
                   class="bbn-w-100 bbn-hspadded"
-                  :title="li.data[sourceText]"
                   :href="li.data && li.data.url ? li.data.url : null"
                   :key="li.key">
           <span class="space"

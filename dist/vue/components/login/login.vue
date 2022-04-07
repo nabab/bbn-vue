@@ -74,9 +74,9 @@
             <bbn-button type="button"
                         @click="$refs.form.submit()"
                         :text="_('Log in')"/>
-            <div class="bbn-w-100 bbn-r bbn-xs"
+            <div :class="['bbn-w-100', 'bbn-r', currentFontSizeClass]"
                  v-if="passwordLink">
-              <a class="bbn-p bbn-r bbn-xs"
+              <a class="bbn-p"
                  @click="currentMode = 'lost'"
                  v-text="passwordLink"/>
             </div>
@@ -133,7 +133,7 @@
           <div class="bbn-c bbn-vmargin bbn-flex-width">
             <bbn-button type="button"
                         @click="$refs.form.submit()"
-                        :text="_('Log in')"/>
+                        :text="_('Send')"/>
           </div>
         </div>
       </bbn-form>
@@ -175,12 +175,12 @@
         default: 'transparent'
       },
       /**
-       * The size of the font. Allowed values are 's', 'm', 'l', 'xl'
-       * @prop {String} ['s'] fontSize
+       * The size of the font. Allowed values are 'xs', 's', 'm', 'l', 'xl'
+       * @prop {String} ['xs'] fontSize
        */
       fontSize: {
         type: String,
-        default: 's'
+        default: 'xs'
       },
       /**
        * @prop {String} logo
@@ -274,25 +274,64 @@
     },
     data(){
       return{
+        /**
+         * @data {String} currentMode
+         */
         currentMode: this.mode,
+        /**
+         * @data {Object} [{}] formData
+         */
         formData: {},
+        /**
+         * @data {Boolean} [false] passwordVisible
+         */
         passwordVisible: false,
+        /**
+         * @data {Boolean} [false] hasExpired
+         */
         hasExpired: false,
+        /**
+         * @data {Number} clientHeight
+         */
         clientHeight: document.documentElement.clientHeight
       }
     },
     computed: {
+      /**
+       * @computed isLogoTag
+       * @return {Boolean}
+       */
       isLogoTag(){
         return this.logo && (this.logo.trim().substr(0, 1) === '<');
       },
+      /**
+       * @computed currentFormData
+       * @return {Object}
+       */
       currentFormData(){
         return this.formData[this.currentMode] || {};
       },
+      /**
+       * @computed currentUrl
+       * @return {String}
+       */
       currentUrl(){
         return this[this.currentMode + 'Url'] || this.url;
+      },
+      /**
+       * @computed currentFontSizeClass
+       * @return {String}
+       */
+      currentFontSizeClass(){
+        return `bbn-${this.fontSize === 'l' ? 'lg' : this.fontSize}`;
       }
     },
     methods: {
+      /**
+       * @method onSubmit
+       * @param d
+       * @fires alert
+       */
       onSubmit(d){
         if ( d == 1 ){
           window.document.location.href = bbn.env.path;
@@ -314,9 +353,16 @@
           this.alert(d.errorMessage, false);
         }
       },
+      /**
+       * @method setHeight
+       */
       setHeight(){
         this.clientHeight = document.documentElement.clientHeight;
       },
+      /**
+       * @method resetForm
+       * @fires $set
+       */
       resetForm(){
         this.$set(this, 'formData', {
           login: {
@@ -336,6 +382,11 @@
           }
         });
       },
+      /**
+       * @method validation
+       * @fires alert
+       * @return {Boolean}
+       */
       validation(){
         if (!this.currentUrl || !this.currentUrl.length) {
           return false;
@@ -352,10 +403,19 @@
             return true;
         }
       },
+      /**
+       * @method reload
+       */
       reload(){
         window.location.reload();
       }
     },
+    /**
+     * @event mounted
+     * @fires resetForm
+     * @fires $nextTick
+     * @fires alert
+     */
     mounted(){
       this.resetForm();
       this.$nextTick(() => {
@@ -385,13 +445,24 @@
       });
       window.addEventListener('resize', this.setHeight);
     },
+    /**
+     * @event beforeDestroy
+     */
     beforeDestroy(){
       window.removeEventListener('resize', this.setHeight);
     },
     watch: {
+      /**
+       * @watch mode
+       * @param {String} val
+       */
       mode(val){
         this.currentMode = val;
       },
+      /**
+       * @watch currentMode
+       * @fires resetForm
+       */
       currentMode(){
         this.resetForm();
       }

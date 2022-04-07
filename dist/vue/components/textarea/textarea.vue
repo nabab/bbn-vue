@@ -42,21 +42,21 @@
  * You can define actions on the events activated on it.
  *
  * @copyright BBN Solutions
- * 
+ *
  * @author BBN Solutions
  */
 (function(bbn){
   "use strict";
   Vue.component('bbn-textarea', {
-    /** 
+    /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.inputComponent
      * @mixin bbn.vue.eventsComponent
      */
-    mixins: 
+    mixins:
     [
-      bbn.vue.basicComponent, 
-      bbn.vue.inputComponent, 
+      bbn.vue.basicComponent,
+      bbn.vue.inputComponent,
       bbn.vue.eventsComponent
     ],
     props: {
@@ -80,19 +80,14 @@
        */
 			maxlength: {
 				type: Number
-      },
-      /**
-       * The object of configuration.
-       * @prop {object} [{}] cfg
-       */
-      cfg:{
-				type: Object,
-        default: function(){
-          return {}
-				}
-			}
+      }
     },
     methods: {
+      /**
+       * @method textareaKeydown
+       * @param {Event} ev
+       * @fires keydown
+       */
       textareaKeydown(ev) {
         if (this.maxlength && (this.value.length >= this.maxlength)) {
           ev.preventDefault();
@@ -111,7 +106,7 @@
       }
     },
     /**
-     * Adds the css class 'bbn-state-disabled' if the prop disabled is set to true and sets the prop ready to true.
+     * Sets the prop ready to true.
      * @event mounted
      */
     mounted(){

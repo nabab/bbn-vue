@@ -154,7 +154,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
          */
         delay: {
           type: Number,
-          default: 500
+          default: 20
         },
         /** 
          * @prop {String} ['?'] shortPlaceholder
@@ -197,7 +197,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       },
       data() {
         return {
-          isOpened: false,
+          isOpened: true,
           /**
            * The current min width.
            * @data {String} ['4.2em'] specialWidth
@@ -300,6 +300,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
                 })
               }
 
+              this.isOpened = false;
               this.filterString = '';
             }
           }
@@ -317,7 +318,8 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
             return;
           }
           if (e.key === 'Escape') {
-            this.resetDropdown();
+            this.isOpened = false;
+            this.filterString = '';
           }
           else if (bbn.var.keys.upDown.includes(e.keyCode)) {
             this.keynav(e);
@@ -325,12 +327,10 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         },
       },
       watch: {
-        filteredTotal(v, ov) {
-          if (v && !ov) {
-            this.isOpened = true;
-          }
-          else if (!v && ov) {
-            this.isOpened = false;
+        isOpened(v) {
+          bbn.fn.log("isOpened", this.isOpened);
+          if (!v) {
+            this.$emit('close');
           }
         },
         /**

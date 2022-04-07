@@ -5,7 +5,7 @@
   </div>
   <div :class="getComponentName() + '-content'">
     <div v-for="(li, idx) in filteredData"
-         v-if="!pageable || ((idx >= start) && (idx < start + currentLimit))"
+         v-if="isAjax || !pageable || ((idx >= start) && (idx < start + currentLimit))"
          :key="li.key"
          :class="['bbn-w-25', 'bbn-mobile-w-50', getComponentName() + '-items']">
       <component v-if="currentComponent"
@@ -14,8 +14,7 @@
                   :source="li.data"
                   :index="li.index"
                   @remove="remove(idx)"
-                  :key="li.key">
-      </component>
+                  :key="li.key"/>
       <component v-else
                 :is="li.data && li.data.url && !li.data[children] ? 'a' : 'span'"
                 @click.prevent="() => {}"
@@ -26,7 +25,7 @@
         <span class="bbn-top-left"
               v-if="selection || (mode === 'options')">
           <i v-if="li.data.selected"
-              class="nf nf-fa-check"></i>
+              class="nf nf-fa-check"/>
         </span>
         <img v-if="li.data.image"
             :src="li.data.image"
@@ -78,6 +77,31 @@
     ],
     mounted(){
       this.ready = true;
+    },
+    watch: {
+      currentPage() {
+        let sc = this.closest('bbn-scroll');
+        while (sc && !sc.scrollable) {
+          sc = sc.closest('bbn-scroll');
+        }
+
+        if (sc) {
+          sc.scrollTo(0, this.$el.offsetTop, true);
+        }
+        else {
+          let p = this.$el;
+          while (p) {
+            if (p.scrollHeight && p.clientHeight && p.scrollTop) {
+              let pos = this.$el.offsetTop;
+              p.scrollTop = pos;
+              break;
+            }
+            else {
+              p = p.parentNode;
+            }
+          }
+        }
+      }
     }
   });
 

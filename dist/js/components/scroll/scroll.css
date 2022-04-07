@@ -8,7 +8,6 @@
   height: 100%;
   box-sizing: content-box;
   overflow: hidden;
-  scrollbar-width: none;
 }
 .bbn-scroll > .bbn-scroll-container.bbn-scroll-x:not(.bbn-scroll-disabled) {
   overflow-x: scroll;
@@ -18,9 +17,6 @@
 }
 .bbn-scroll > .bbn-scroll-container.bbn-overlay {
   overflow: hidden !important;
-}
-.bbn-scroll > .bbn-scroll-container::-webkit-scrollbar {
-  display: none;
 }
 .bbn-scroll > .bbn-scroll-container > .bbn-scroll-content {
   position: relative;

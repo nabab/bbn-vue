@@ -68,28 +68,27 @@
         }"
             ref="canvasSource">
           <!-- This is shown when it's ready -->
-          <component :is="scrollable ? 'bbn-scroll' : 'div'"
-                    v-if="ready && isLoaded && (visible || cached || visual)"
-                    v-show="visible || (visual && !thumbnail)"
-                    ref="scroll"
-                    :axis="scrollable ? 'y' : null"
-                    :class="{
-                      'bbn-overlay': router.scrollContent,
-                      'bbn-w-100': !router.scrollContent
-                    }">
+          <bbn-scroll v-if="isLoaded && (visible || (cached && ready) || visual)"
+                      v-show="ready && visible || (visual && !thumbnail)"
+                      ref="scroll"
+                      @ready="init"
+                      :scrollable="scrollable && !router.scrollContent"
+                      axis="y"
+                      :class="{
+                        'bbn-overlay': router.scrollContent,
+                        'bbn-w-100': !router.scrollContent
+                      }">
             <!-- This is an ad hoc component with unique name -->
             <component v-if="isComponent"
                       :is="$options.components[componentName]"
                       :source="source"
-                      ref="component"
-            ></component>
+                      ref="component"/>
             <!-- This is a classic component -->
             <component v-else-if="component"
                       :is="component"
                       :source="source"
                       ref="component"
-                      v-bind="options"
-            ></component>
+                      v-bind="options"/>
             <!-- This is just HTML content -->
             <div v-else-if="content"
                 v-html="content">
@@ -102,9 +101,10 @@
                       scoped="scoped"
                       v-html="css"/>
             <bbn-loader v-if="hasLoader"/>
-          </component>
+          </bbn-scroll>
           <!-- If loading showing loader -->
-          <bbn-loader v-else-if="visible && !isLoaded"/>
+          <bbn-loader v-else-if="visible && !isLoaded"
+                      style="z-index: 999"/>
           <!-- Thumbnail image -->
           <div v-if="!visible && visual && thumbnail"
               style="overflow: hidden"
@@ -141,9 +141,9 @@
           <div class="bbn-bottom-left bbn-w-100 bbn-bg-black"
                style="opacity: 0.6; color: transparent">
             <div class="bbn-w-50 bbn-spadded">
-              <span class="bbn-spadded bbn-p">
+              <!--span class="bbn-spadded bbn-p">
                 <i class="nf nf-fa-bars"/>
-              </span>
+              </span-->
             </div>
             <div class="bbn-w-50 bbn-right bbn-spadded">
               <span class="bbn-spadded bbn-p"
@@ -163,9 +163,12 @@
           <div class="bbn-bottom-left bbn-w-100 bbn-white">
             <div class="bbn-w-50 bbn-spadded">
               &nbsp;
-              <span class="bbn-spadded bbn-p">
-                <i class="nf nf-fa-bars"/>
-              </span>
+              <!--bbn-context class="bbn-spadded bbn-iblock bbn-p"
+                           tag="span"
+                           :source="showMenu">
+                <i class="nf nf-fa-bars"
+                   @click.stop="pin"/>
+              </bbn-context-->
             </div>
             <div class="bbn-w-50 bbn-right bbn-spadded">
               <span v-if="!pinned && !static"
@@ -360,7 +363,6 @@
           let r = this.router;
           if ((r.views.length > 1) && (!this.visible || r.visualShowAll)) {
             return {
-              aspectRatio: 1,
               zoom: 0.1,
               width: '100%',
               height: 'auto',
@@ -636,7 +638,7 @@
       },
       onResize(){
         if (this.visible && this.ready) {
-          this.$emit("resize");
+          bbn.vue.resizerComponent.methods.onResize.apply(this, arguments);
         }
       },
       /**
@@ -644,8 +646,8 @@
        * 
        * @method init
        */
-      init(){
-        if ( this.real || (this.isLoaded && !this.ready) ){
+      init() {
+        if (this.visible && (this.real || (this.isLoaded && !this.ready))) {
           let res;
           //bbn.fn.log("INITIATING CONTAINER " + this.url + " " + (this.script ? "(THERE IS A SCRIPT)" : ""));
 
@@ -722,10 +724,10 @@
               }
               
             }
-            if (this.visual) {
-              this.takeScreenshot();
-            }
           }, 2000);
+          if (this.visual) {
+            this.setScreenshot();
+          }
 
           this.ready = true;
         }
@@ -733,72 +735,98 @@
       showMenu() {
         return this.router.getMenuFn(this.idx);
       },
-      takeScreenshot(num_tries = 0) {
-        if (this.visual && this.router.db && window.html2canvas) {
-          setTimeout(() => {
-            let prom;
-            let scroll = this.getRef('scroll');
-            if (!scroll) {
-              if (num_tries <= 10) {
-                this.takeScreenshot(num_tries + 1);
-              }
-
-              return;
-            }
-
-            let w  = scroll.lastKnownWidth;
-            let h  = scroll.lastKnownHeight;
-            let ct = this.getRef('canvasSource');
-            if (!w || !h) {
-              if (num_tries <= 10) {
-                this.takeScreenshot(num_tries + 1);
-              }
-
-              return;
-            }
-
-            ct.style.width = w + 'px';
-            ct.style.height = h + 'px';
-            try {
-              prom = html2canvas(this.getRef('canvasSource'), {
-                width: w,
-                height: h
-              });
-            }
-            catch (e) {
-              bbn.fn.log("Error");
-              ct.style.width = null;
-              ct.style.height = null;
-              return;
-            }
-
-            prom.then(
-              canvas => {
-                ct.style.width = null;
-                ct.style.height = null;
-
-                let img = bbn.fn.canvasToImage(canvas);
-                if (!img) {
-                  bbn.fn.log("Error for screenshot image");
-                  return;
-                }
-
-                let ctx   = canvas.getContext('2d');
-                let size  = Math.min(w, h);
-                let num   = Math.min(this.router.numVisualCols, this.router.numVisualRows);
-                let msize = Math.ceil(size / num);
-                ctx.drawImage(img, 0, 0, size, size, 0, 0, msize, msize);
-                this.router.db.insert('containers', {
-                  url: this.getFullURL(),
-                  image: img.src
-                });
-              }
-            ).catch(e => {
-              bbn.fn.log("ERROR", e);
-            });
-          }, 1000)
+      setScreenshot() {
+        setTimeout(() => {
+          if (this.selected) {
+            this.takeScreenshot();
+            this._screenshotInterval = setInterval(() => {
+              this.takeScreenshot();
+            }, 30000);
+          }
+        }, 3000);
+      },
+      unsetScreenshot() {
+        if (this._screenshotInterval) {
+          clearInterval(this._screenshotInterval)
+          this._screenshotInterval = false;
         }
       },
+      takeScreenshot(num_tries = 0) {
+        if (this.selected && this.router.db && window.html2canvas && document.hasFocus()) {
+          let scroll = this.getRef('scroll');
+          if (!scroll) {
+            if (num_tries <= 10) {
+              setTimeout(() => {
+                this.takeScreenshot(num_tries + 1);
+              }, 1000);
+            }
+
+            return;
+          }
+
+          if (scroll.$el) {
+            scroll = scroll.$el;
+          }
+          let w  = scroll.clientWidth;
+          let h  = scroll.clientHeight;
+          let ct = this.getRef('canvasSource');
+          if (!ct || !w || !h) {
+            if (num_tries <= 10) {
+              setTimeout(() => {
+                return this.takeScreenshot(num_tries + 1);
+              }, 1000);
+            }
+
+            return;
+          }
+
+          ct.style.width = w + 'px !important';
+          ct.style.height = h + 'px !important';
+          html2canvas(this.getRef('canvasSource'), {
+            width: w,
+            height: h,
+            windowWidth: w,
+            windowHeight: h
+          }).then(
+            canvas => {
+              ct.style.width = null;
+              ct.style.height = null;
+
+              let img = bbn.fn.canvasToImage(canvas);
+              if (!img) {
+                bbn.fn.log("Error for screenshot image");
+                return;
+              }
+
+              let ctx   = canvas.getContext('2d');
+              let size  = Math.min(w, h);
+              let num   = Math.min(this.router.numVisualCols, this.router.numVisualRows);
+              let msize = Math.ceil(size / num);
+              ctx.drawImage(img, 0, 0, size, size, 0, 0, msize, msize);
+              this.thumbnail = img.src;
+              // This is in fact an insert/update
+              this.router.db.insert('containers', {
+                url: this.getFullURL(),
+                image: img.src
+              });
+            }
+          ).catch(e => {
+            ct.style.width = null;
+            ct.style.height = null;
+            bbn.fn.log(w, h, "ERROR", e);
+          });
+        }
+      },
+      updateScreenshot() {
+        if (this.visual && this.router.db) {
+          let url = this.getFullURL();
+          this.router.db.selectOne('containers', 'image', {url: url}).then(res => {
+            if (res) {
+              this.thumbnail = res;
+            }
+          })
+        }
+      }
     },
     /**
      * @event created 
@@ -815,16 +843,11 @@
         };
         let res;
       }
+
       // The router is needed
       this.router = this.closest('bbn-router');
-      if (this.visual && this.router.db) {
-        let url = this.getFullURL();
-        this.router.db.selectOne('containers', 'image', {url: url}).then(res => {
-          if (res) {
-            this.thumbnail = res;
-          }
-        })
-      }
+      this.updateScreenshot()
+      this._screenshotInterval = false;
     },
     /**
      * @event mounted
@@ -871,6 +894,14 @@
       },
       selected(v) {
         this.visible = v;
+        if (this.visual) {
+          if (v) {
+            this.setScreenshot()
+          }
+          else {
+            this.unsetScreenshot();
+          }
+        }
       },
       idx() {
         if (this.visual) {
@@ -922,63 +953,6 @@
             this.$nextTick(() => {
               this.onResize();
             });
-          }
-          else if (this.visual) {
-            /*
-            setTimeout(() => {
-              let ct = this.getRef('canvasSource');
-              let w = Math.ceil(ct.clientWidth);
-              let h = Math.ceil(ct.clientHeight);
-              ct.style.width = w + 'px';
-              ct.style.height = h + 'px';
-              bbn.fn.log("CANVAS", w, h);
-              html2canvas(this.getRef('canvasSource'), {
-                width: w,
-                height: h
-              }).then(canvas => {
-                let img = bbn.fn.canvasToImage(canvas);
-                let ctx = camnvas.getContext('2D');
-                ctx.drawImage(img, 0, 0, w, h, 0, 0, Math.ceil(w/10), Math.ceil(h/10));
-                ct.style.width = null;
-                ct.style.height = null;
-                this.getPopup({
-                  component: {
-                    render(createElement) {
-                      return createElement(
-                        'div',
-                        {
-                          class: {
-                            'bbn-block': true
-                          },
-                          style: {
-                            width: Math.ceil(w/10) + 'px',
-                            height: Math.ceil(h/10) + 'px'
-                          }
-                        },
-                        [
-                          createElement(
-                            'img',
-                            {
-                              style: {
-                                maxWidth: '100%',
-                                maxHeight: '100%',
-                                width: 'auto',
-                                height: 'auto'
-                              },
-                              attrs: {
-                                src: img.src
-                              }
-                            }
-                          )
-                        ]
-                      )
-                    }
-                  },
-                  title: false
-                })
-              });
-            },2000)
-            */
           }
         });
       },

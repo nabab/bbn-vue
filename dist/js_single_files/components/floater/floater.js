@@ -6,25 +6,23 @@ script.innerHTML = `<div :class="[
           'bbn-reset': true,
           'bbn-bordered': !modal,
           'bbn-background-internal': !modal,
-          'bbn-invisible': !isResized
+          'bbn-invisible': !isResized,
+          'bbn-floater-arrowed': !!arrow
         },
         componentClass
       ]"
       v-if="isVisible"
       @resize.stop="onResize"
-      @mouseleave="isResized ? isOver = false : (() => {})()"
-      @mouseenter="isResized ? isOver = true : (() => {})()"
+      @mouseleave="isOver = false"
+      @mouseenter="isOver = true"
       @keydown.esc.prevent.stop="close"
       @subready.stop
       :style="currentStyle"
       v-resizable:container.left.right.bottom="ready && resizable ? $el.parentElement : false">
-  <div
-        v-if="arrow"
-        :class="'arrow ' + position"
-  >
-  </div>
+  <div v-if="arrow"
+       :class="['bbn-floater-arrow', position]"/>
   <div :style="containerStyle"
-       :class="{'bbn-flex-height': !isResizing}">
+       class="bbn-flex-height">
     <div v-if="modal"
          class="bbn-overlay bbn-modal"/>
     <header v-if="title"
@@ -94,11 +92,10 @@ script.innerHTML = `<div :class="[
                     :is="component"
                     v-bind="realComponentOptions"/>
           <slot v-else-if="$slots.default"/>
-          <div v-else-if="!!content" 
+          <div v-else-if="!!content"
               v-html="content"
-              :class="scrollable ? 'bbn-block' : 'bbn-100'"
-              :style="HTMLStyle"
-          />
+              :class="scrollable ? 'bbn-block' : 'bbn-overlay'"
+              :style="HTMLStyle"/>
           <bbn-list v-else-if="filteredData.length"
                     :mode="mode"
                     ref="list"
@@ -160,8 +157,7 @@ script.innerHTML = `<div :class="[
                   v-bind="b"/>
     </footer>
   </div>
-</div>
-`;
+</div>`;
 script.setAttribute('id', 'bbn-tpl-component-floater');
 script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
 
@@ -651,7 +647,8 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
             });
           }
         }
-        s.opacity = this.isResized ? 1 : 0;
+
+        s.visibility = this.isResized && this.isInit && this.scrollReady ? 'visible' : 'hidden';
         return s;
       },
       containerStyle(){
@@ -736,7 +733,9 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         if (this.element && this.elementWidth) {
           tmp = this.element.getBoundingClientRect();
           if (tmp.width) {
-            minWidth.push(tmp.width);
+            if (!this.maxWidth || (this.maxWidth > tmp.width)) {
+              minWidth.push(tmp.width);
+            }
           }
         }
 
@@ -888,8 +887,12 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
             && this.$el
             && (this.setContainerMeasures() || !this.isInit || force)
         ) {
-          this.realResize();
+          return this.realResize();
         }
+
+        return new Promise(resolve => {
+          setTimeout(() => {resolve();}, 0);
+        });
       },
       /**
        * Handles the resize of the component.
@@ -907,6 +910,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           let go = this.isVisible
               && this.scrollReady
               && bbn.fn.isDom(this.$el)
+              && this.isActiveResizer()
               && (!this.isResizing || !this.isResized);
           if (go) {
             this.isResizing = true;
@@ -951,7 +955,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
                     scroll.$el.style.height = this.formatSize(this.currentMinHeight || '0px');
                     let containerEle = scroll.getRef('scrollContainer');
                     let contentEle = scroll.getRef('scrollContent');
-                    naturalHeight = containerEle.scrollHeight;
+                    naturalHeight = contentEle.scrollHeight;
                     if (!naturalHeight) {
                       this.isResizing = false;
                       resolve();
@@ -1113,13 +1117,12 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
 
         if (parent && (width || height)) {
           if (!parent.insertAdjacentElement) {
-            bbn.fn.log(parent);
             throw new Error("Impossible to insert adjacent element to calculate dimensions");
           }
 
           let el = document.createElement('div');
           el.style.position = 'absolute';
-          el.style.opacity = 0;
+          el.style.visibility = 'hidden';
           el.className = 'bbn-reset'
           el.style.width = this.formatSize(width);
           el.style.height = this.formatSize(height);
@@ -1332,15 +1335,9 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         if (!this.scrollResized) {
           this.scrollResized = true;
         }
-
         e.preventDefault();
         if ((dimensions.width !== this.scrollWidth) || (dimensions.height !== this.scrollHeight)) {
-          setTimeout(() => {
-            this.onResize(true);
-          }, 50)
-        }
-        else {
-          //this.onResize(true);
+          this.onResize(true);
         }
       },
       /**

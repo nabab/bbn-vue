@@ -8,10 +8,10 @@
            @mousedown="onMouseDown"
            @touchstart="touchstart"
            @touchmove="touchmove"
-           @touchend="touchend"
->
+           @touchend="touchend">
   <slot></slot>
-  <bbn-floater :element="attach || $el"
+  <bbn-floater v-if="showFloater && !disabled"
+               :element="attach || null"
                :source="filteredData"
                :class="'bbn-floater-context-' + bbnUid"
                ref="floater"
@@ -21,13 +21,16 @@
                :minHeight="minHeight"
                :maxWidth="maxWidth"
                :maxHeight="maxHeight"
+               :top="currentTop"
+               :left="currentLeft"
+               :right="currentRight"
+               :bottom="currentBottom"
                children="items"
                :title="floaterTitle"
                :closable="!!floaterTitle"
                :content="content"
                :auto-hide="true"
                :mode="mode"
-               v-if="showFloater && !disabled"
                @close="$emit('close'); showFloater = false;"
                @open="$emit('open')"
                :item-component="itemComponent"
@@ -181,7 +184,10 @@
          * @data {Boolean} [false] docEvent
          */
         docEvent: false,
-
+        currentLeft: null,
+        currentTop: null,
+        currentRight: null,
+        currentBottom: null
       };
     },
     methods: {
@@ -206,6 +212,26 @@
           }
           // Don't execute if in the floater
           if (!e.target.closest('.bbn-floater-context-' + this.bbnUid)) {
+            if (!this.showFloater && !this.attach) {
+              if (e.pageX > bbn.env.width / 2) {
+                this.currentLeft = null;
+                this.currentRight = bbn.env.width - e.pageX + 5;
+              }
+              else {
+                this.currentLeft = e.pageX - 5;
+                this.currentRight = null;
+              }
+
+              if (e.pageY > bbn.env.height / 2) {
+                this.currentTop = null;
+                this.currentBottom = bbn.env.height - e.pageY + 5;
+              }
+              else {
+                this.currentTop = e.pageY - 5;
+                this.currentBottom = null;
+              }
+            }
+
             this.toggle();
           }
         }
@@ -256,7 +282,7 @@
     watch: {
       showFloater(v){
         if (v) {
-          document.addEventListener('click', this.clickOut)
+          document.addEventListener('click', this.clickOut, true)
           this.docEvent = true;
         }
         else {

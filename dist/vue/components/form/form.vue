@@ -7,62 +7,61 @@
       :style="currentStyle"
       @submit.prevent
       @keydown.enter.prevent.stop="submit"
-      @keyup.esc="cancel"
->
+      @keyup.esc="cancel">
   <div :class="{
          'bbn-flex-fill': !window && isInit && scrollable || !!fullSize,
          'bbn-w-100': scrollable,
          'bbn-flex-height': !scrollable && hasFooter,
          'bbn-overlay': !!window
-       }"
-  >
+       }">
     <component :is="scrollable ? 'bbn-scroll' : 'div'"
                :class="{'bbn-overlay': !!fullSize}"
-               ref="container"
-    >
-      <div class="bbn-grid-fields bbn-padded" v-if="schema && schema.length">
+               ref="container">
+      <div class="bbn-grid-fields bbn-padded"
+           v-if="schema && schema.length">
         <template v-for="field in currentSchema"
-                  v-if="field.field && !field.buttons && (field.editable !== false)"
-        >
+                  v-if="field.field && !field.buttons && (field.editable !== false)">
           <component v-if="field.lineComponent"
                      :is="field.lineComponent"
-                     :source="source"
-          ></component>
+                     :source="source"/>
           <template v-else>
             <label v-html="field.title"
                    :for="field.id"
-                   :title="field.ftitle || field.title || field.field"
-            ></label>
+                   :title="field.ftitle || field.title || field.field"/>
             <component v-if="field.editor"
                        :is="field.editor"
                        v-bind="field.options"
-                       v-model="source[field.field]"
-            ></component>
+                       v-model="source[field.field]"/>
             <bbn-field v-else
                        mode="write"
                        v-bind="field"
-                       v-model="source[field.field]"
-            ></bbn-field>
+                       v-model="source[field.field]"/>
           </template>
         </template>
       </div>
       <slot></slot>
+      <div v-if="!hasFooter && !window && realButtons.length && (mode !== 'big')"
+           class="bbn-middle bbn-top-lspace">
+        <bbn-button v-for="(button, i) in realButtons"
+                    :key="i"
+                    class="bbn-hsmargin"
+                    v-bind="button"/>
+      </div>
     </component>
   </div>
   <div v-if="hasFooter && !popup"
-       class="bbn-form-footer bbn-header"
-  >
-    <slot name="footer"></slot>
+       class="bbn-form-footer bbn-header">
+    <slot name="footer"/>
   </div>
-  <div v-else-if="!window && realButtons.length"
-       class="bbn-form-footer bbn-popup-footer bbn-button-group bbn-flex-width bbn-lg"
-  >
+
+  <div v-else-if="!window && realButtons.length && (mode === 'big')"
+       class="bbn-form-footer bbn-popup-footer bbn-button-group bbn-flex-width bbn-lg">
     <bbn-button v-for="(button, i) in realButtons"
                 :key="i"
-                v-bind="button"
-    ></bbn-button>
+                v-bind="button"/>
   </div>
 </form>
+
 </template>
 <script>
   module.exports = /**
@@ -359,7 +358,14 @@
        closeAfter: {
         type: Boolean,
         default: true
-      }
+      },
+      /**
+       * @prop String mode Mode for buttons: normal or big
+       */
+       mode: {
+         type: String,
+         default: 'normal'
+       }
     },
     data(){
       let currentSchema = [];
@@ -848,7 +854,7 @@
             });
           }
           if ( focusable ){
-            focusable.focus();
+            //focusable.focus();
           }
         }
       },
@@ -1078,9 +1084,7 @@
 }
 .bbn-form .bbn-form-footer {
   clear: both;
-  text-align: right;
   position: relative;
-  bottom: 0;
 }
 .bbn-form .bbn-form-footer .bbn-button {
   border-radius: 0px;

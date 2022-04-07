@@ -1,0 +1,7 @@
+.bbn-audio .bbn-audio-container {
+  width: 100%;
+}
+.bbn-audio .bbn-audio-container audio {
+  min-width: 300px;
+  width: 100%;
+}

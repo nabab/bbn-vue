@@ -17,7 +17,7 @@ script.innerHTML = `<div :class="elementClass"
     <div :class="{
           'bbn-scroll-content': true,
           resizing: isMeasuring,
-          'bbn-overlay': !scrollable
+          'bbn-w-100': !scrollable
         }"
          ref="scrollContent"
          @subready.stop="waitReady"
@@ -330,10 +330,18 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @return {String}
        */
       elementClass(){
-        let st = this.componentClass.join(' ') + ' bbn-overlay';
+        let st = this.componentClass.join(' ');
         if ( !this.ready ){
           st += ' bbn-invisible';
         }
+
+        if (!this.scrollable) {
+          st = bbn.fn.replaceAll('bbn-resize-emitter', '', st) + ' bbn-w-100';
+        }
+        else {
+          st += ' bbn-overlay';
+        }
+
         return st;
       },
       /**
@@ -351,7 +359,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         if (this.isMeasuring) {
           cfg.width = '100%';
           cfg.height = '100%';
-          cfg.opacity = 0;
+          cfg.visibility = 'hidden';
         }
         if (this.currentWidth) {
           cfg.width = bbn.fn.formatSize(this.currentWidth);
@@ -370,7 +378,12 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         return cfg;
       },
       containerClass() {
-        let cls = 'bbn-scroll-container';
+        let cls = 'bbn-scroll-container bbn-no-scrollbar';
+        if (!this.scrollable) {
+          cls += ' bbn-w-100';
+          return cls;
+        }
+
         if (this.disabled) {
           cls += ' bbn-scroll-disabled';
         }
@@ -408,6 +421,10 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         if ( this.isMeasuring || !this.scrollable ){
           return cfg;
         }
+        if (this.hasScrollX && !this.hiddenX) {
+          cfg.paddingBottom = '1em';
+        }
+
         cfg.width = (this.axis === 'x') || (this.axis === 'both') ? 'auto' : '100%';
         cfg.height = (this.axis === 'y') || (this.axis === 'both') ? 'auto' : '100%';
         return cfg;
@@ -645,53 +662,61 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @fires scrollStartX
        * @fires scrollStartY
        */  
-      scrollStart(){
-        this.scrollStartX();
-        this.scrollStartY();
+      scrollStart(anim){
+        this.scrollStartX(anim);
+        this.scrollStartY(anim);
       },
       /**
        * @method scrollEnd
        * @fires scrollEndX
        * @fires scrollEndY
        */  
-      scrollEnd(){
-        this.scrollEndX();
-        this.scrollEndY();
+      scrollEnd(anim){
+        this.scrollEndX(anim);
+        this.scrollEndY(anim);
       },
       /**
        * @method scrollBefore
        * @fires scrollBeforeX
        * @fires scrollBeforeY
        */  
-      scrollBefore(){
-        this.scrollBeforeX();
-        this.scrollBeforeY();
+      scrollBefore(anim){
+        this.scrollBeforeX(anim);
+        this.scrollBeforeY(anim);
       },
       /**
        * @method scrollAfter
        * @fires scrollAfterX
        * @fires scrollAfterY
        */  
-      scrollAfter(){
-        this.scrollAfterX();
-        this.scrollAfterY();
+      scrollAfter(anim){
+        this.scrollAfterX(anim);
+        this.scrollAfterY(anim);
       },
       /**
        * Scroll the x axis to the position 0
        * @method scrollStartX
        * @fires this.$refs.xScroller.scrollTo
        */
-      scrollStartX(){
-        this.getRef('scrollContainer').scrollLeft = 0;
+      scrollStartX(anim){
+        if (this.hasScrollX) {
+          let x = this.getRef('xScroller');
+          if (x) {
+            x.scrollStart(anim);
+          }
+        }
       },
       /**
        * Scroll the y axis to the position 0
        * @method scrollStartY
        * @fires this.$refs.yScroller.scrollTo
        */
-      scrollStartY() {
+      scrollStartY(anim) {
         if (this.hasScrollY) {
-          this.getRef('scrollContainer').scrollTop = 0;
+          let y = this.getRef('yScroller');
+          if (y) {
+            y.scrollStart(anim);
+          }
         }
       },
       /**
@@ -699,10 +724,12 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @method scrollBeforeX
        * @fires this.$refs.xScroller.scrollBefore
        */
-      scrollBeforeX(){
-        let x = this.getRef('xScroller');
-        if (x) {
-          x.scrollBefore();
+      scrollBeforeX(anim){
+        if (this.hasScrollX) {
+          let x = this.getRef('xScroller');
+          if (x) {
+            x.scrollBefore(anim);
+          }
         }
       },
       /**
@@ -710,11 +737,11 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @method scrollBeforeY
        * @fires this.$refs.yScroller.scrollBefore
        */
-      scrollBeforeY() {
+      scrollBeforeY(anim) {
         if (this.hasScrollY) {
           let y = this.getRef('yScroller');
           if (y) {
-            y.scrollBefore();
+            y.scrollBefore(anim);
           }
         }
       },
@@ -723,10 +750,12 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @method scrollBeforeX
        * @fires this.$refs.xScroller.scrollBefore
        */
-      scrollAfterX(){
-        let x = this.getRef('xScroller');
-        if (x) {
-          x.scrollAfter();
+      scrollAfterX(anim){
+        if (this.hasScrollX) {
+          let x = this.getRef('xScroller');
+          if (x) {
+            x.scrollAfter(anim);
+          }
         }
       },
       /**
@@ -734,7 +763,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @method scrollBeforeY
        * @fires this.$refs.yScroller.scrollBefore
        */
-      scrollAfterY() {
+      scrollAfterY(anim) {
         if (this.hasScrollY) {
           let y = this.getRef('yScroller');
           if (y) {
@@ -747,8 +776,13 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @method scrollEndX
        * @thisfires this.getRef('xScroller').scrollTo
        */
-      scrollEndX(){
-        this.getRef('scrollContainer').scrollLeft = this.contentWidth - this.lastKnownWidth;
+      scrollEndX(anim) {
+        if (this.hasScrollX) {
+          let x = this.getRef('xScroller');
+          if (x) {
+            x.scrollEnd(anim);
+          }
+        }
       },
        /**
        * Scroll the y axis to the end
@@ -756,7 +790,12 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @thisfires this.getRef('yScroller').scrollTo
        */
       scrollEndY(){
-        this.getRef('scrollContainer').scrollTop = this.contentHeight - this.lastKnownHeight;
+        if (this.hasScrollY) {
+          let y = this.getRef('yScroller');
+          if (y) {
+            y.scrollEnd(anim);
+          }
+        }
       },
       /**
        * Gets the dimensions after a resize
@@ -854,7 +893,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
             let container = this.$el;
             let content = this.getRef('scrollContent');
             let ct = this.getRef('scrollContainer');
-            if (!content) {
+            if (!content || !container.clientWidth || !container.clientHeight) {
               return;
             }
             let x = ct.scrollLeft;
@@ -864,8 +903,8 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
               sendResizeContent = true;
             }
 
-            this.contentWidth = content.clientWidth;
-            this.contentHeight = content.clientHeight;
+            this.contentWidth = content.scrollWidth;
+            this.contentHeight = content.scrollHeight;
             this.containerWidth = container.clientWidth;
             this.containerHeight = container.clientHeight;
             // With scrolling on we check the scrollbars
@@ -1001,17 +1040,17 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           }
           // Checks every second if the scroll content has been resized and sends onResize if so
           this.interval = setInterval(() => {
-            if (this.scrollable && this.$el.offsetParent) {
-              let container = this.getRef('scrollContainer');
-              let contentWidth = Math.min(container.scrollWidth, this.maxWidth);
-              let contentHeight = Math.min(container.scrollHeight, this.maxHeight);            
+            if (this.scrollable && this.$el.offsetParent && this.isActiveResizer()) {
+              let container = this.getRef('scrollContent');
+              let contentWidth = Math.max(container.scrollWidth, container.clientWidth);
+              let contentHeight = Math.max(container.scrollHeight, container.clientHeight);
               if (
                 (
                   contentWidth
                   && (this.contentWidth !== contentWidth)
                   && (
                     !this.contentWidth
-                    || (Math.abs(contentWidth - this.contentWidth) > 3)
+                    || (Math.abs(contentWidth - this.contentWidth) > 1)
                   )
                 )
                 || (
@@ -1019,7 +1058,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
                   && (this.contentHeight !== contentHeight)
                   && (
                     !this.contentHeight
-                    || (Math.abs(contentHeight - this.contentHeight) > 3)
+                    || (Math.abs(contentHeight - this.contentHeight) > 1)
                   )
                 )
               ) {
@@ -1072,24 +1111,24 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       },
       currentX(x) {
         if (!x) {
-          this.$emit('reachLeft');
+          this.$emit('reachleft');
         }
         else {
           let ct = this.getRef('scrollContainer');
           if (ct && (x + ct.clientWidth >= ct.scrollWidth)) {
-            this.$emit('reachRight');
+            this.$emit('reachright');
           }
         }
         this.$emit('scrollx', x);
       },
       currentY(y) {
         if (!y) {
-          this.$emit('reachTop');
+          this.$emit('reachtop');
         }
         else {
           let ct = this.getRef('scrollContainer');
           if (ct && (y + ct.clientHeight >= ct.scrollHeight)) {
-            this.$emit('reachBottom');
+            this.$emit('reachbottom');
           }
         }
         this.$emit('scrolly', y);

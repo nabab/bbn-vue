@@ -83,9 +83,10 @@
                              && !bc.views[bc.selected].pinned"
                        class="nf nf-fa-times bbn-p bbn-router-breadcrumb-close bbn-router-breadcrumb-icon"
                        @click.prevent.stop="bc.close(bc.selected)"/>
-                    <i v-if="isNumber(bc.selected) && bc.views[bc.selected] && bc.views[bc.selected].menu"
-                       class="nf nf-fa-caret_down bbn-router-breadcrumb-menu bbn-router-breadcrumb-icon bbn-p"
-                       @click.prevent.stop="openMenu($event)"/>
+                    <bbn-context v-if="isNumber(bc.selected) && bc.views[bc.selected] && bc.views[bc.selected].menu"
+                                 :source="() => bc.getMenuFn(bc.selected)"
+                                 tag="i"
+                                 class="nf nf-fa-caret_down bbn-router-breadcrumb-icon bbn-router-breadcrumb-menu"/>
                   </div>
                 </bbn-context>
               </bbn-context>
@@ -226,8 +227,7 @@
          :class="{
                  'bbn-router-scroller': true,
                  'bbn-overlay': scrollContent,
-                 'bbn-w-100': !scrollContent,
-                 'bbn-vspadded': true
+                 'bbn-w-100': !scrollContent
                  }"
          style="overflow: auto;"
          ref="visualListContainer">
@@ -238,7 +238,7 @@
                    }"
            :style="visualStyle">
         <div v-if="(selected !== null) && (views.length > numVisuals)"
-             class="bbn-bg-black bbn-white bbn-p bbn-container-ratio"
+             class="bbn-bg-black bbn-white bbn-p"
              @click="visualShowAll = !visualShowAll">
           <div class="bbn-100 bbn-middle">
             <div class="bbn-block bbn-xxxl">
@@ -286,6 +286,15 @@
     </div>
     <!-- END OF CONTENT -->
     <bbn-loader v-else/>
+    <bbn-splitter v-if="splittable"
+                  :resizable="resizable"
+                  :collapsible="collapsible">
+      <bbn-pane v-for="(pane, i) in panes"
+                :key="i">
+        <div class="bbn-overlay"
+             :id="pane.id"/>
+      </bbn-pane>
+    </bbn-splitter>
     <bbn-scrollbar :container="$refs.visualListContainer"
                    orientation="vertical"
                    v-if="isVisual && visualShowAll"/>
@@ -562,15 +571,15 @@
        * The size of every grid cell on which is based the visual view
        * @prop {Number} [180] visualSize
        */
-       visualSize: {
+      visualSize: {
         type: Number,
-        default: 180
+        default: 150
       },
       /**
        * The position of the visual mini containers
        * @prop {Number} [180] visualSize
        */
-       orientation: {
+      orientation: {
         type: String,
         default(){
           return 'auto'
@@ -583,7 +592,7 @@
        * The default background color for the title bar
        * @prop {String} [#666] bcolor
        */
-       bcolor: {
+      bcolor: {
         type: String,
         default: '#666'
       },
@@ -591,9 +600,20 @@
        * The default text color for the title bar
        * @prop {String} [#EEE] fcolor
        */
-       fcolor: {
+      fcolor: {
         type: String,
         default: '#EEE'
+      },
+      splittable: {
+        type: Boolean,
+        default: false
+      },
+      panes: {
+        type: Array
+      },
+      resizable: {
+        type: Boolean,
+        default: true
       }
     },
     data(){
@@ -745,6 +765,38 @@
       };
     },
     computed: {
+      visualContainerStyle(){
+        let coord = [1, this.numVisualCols + 1, 1, this.numVisualRows + 1];
+        if (this.views.length > 1) {
+          switch (this.visualOrientation) {
+            case 'top':
+              coord[2] = 2;
+              break;
+            case 'bottom':
+              coord[3] = coord[3] - 1;
+              break;
+            case 'left':
+              coord[0] = 2;
+              break;
+            case 'right':
+              coord[1] = coord[1] - 1;
+              break;
+          }
+        }
+
+        return {
+          position: 'relative',
+          top: null,
+          left: null,
+          right: null,
+          bottom: null,
+          gridColumnStart: coord[0],
+          gridColumnEnd: coord[1],
+          gridRowStart: coord[2],
+          gridRowEnd: coord[3],
+          zoom: 1
+        };
+      },
       /**
        * Not only the baseURL but a combination of all the parent's baseURLs.
        * @computed fullBaseURL
@@ -867,27 +919,63 @@
         }
       },
 
+      visualIsOnHeight() {
+        if (this.isVisual) {
+          return ['top', 'bottom'].includes(this.visualOrientation);
+        }
+
+        return false;
+      },
+
+      visualRatio() {
+        if (!this.isVisual) {
+          return 1;
+        }
+
+        let diffW = this.visualIsOnHeight ? 0 : this.visualSize;
+        let diffH = this.visualIsOnHeight ? this.visualSize : 0;
+        let ratio = (this.lastKnownWidth - diffW) / (this.lastKnownHeight - diffH);
+        if (ratio > 2) {
+          return 2;
+        }
+
+        return Math.max(0.5, ratio);
+      },
+
       /**
-       * The number of rows for the visual mode
+       * The number of columns (width) for the visual mode
        *
        * @return {Number} 
        */
-       numVisualRows() {
+       numVisualCols() {
         if (this.isVisual) {
-          return Math.ceil(this.lastKnownHeight / this.visualSize);
+          // Width greater or equal to height
+          let w = this.lastKnownWidth - (this.visualIsOnHeight ? 0 : this.visualSize);
+          if (this.visualRatio >= 1) {
+            return Math.floor(w / this.visualSize);
+          }
+          else {
+            return Math.floor(w / (this.visualSize * this.visualRatio));
+          }
         }
 
         return 1;
       },
 
       /**
-       * The number of columns for the visual mode
+       * The number of rows (height) for the visual mode
        *
        * @return {Number} 
        */
-       numVisualCols() {
+       numVisualRows() {
         if (this.isVisual) {
-          return Math.ceil(this.lastKnownWidth / this.visualSize);
+          let h = this.lastKnownHeight - (this.visualIsOnHeight ? this.visualSize : 0);
+          if (this.visualRatio > 1) {
+            return Math.floor(h / this.visualSize * this.visualRatio);
+          }
+          else {
+            return Math.floor(h / this.visualSize);
+          }
         }
 
         return 1;
@@ -978,10 +1066,10 @@
           this.$emit('beforeClose', idx, onBeforeClose);
           if (force || !onBeforeClose.defaultPrevented) {
             if (
+              !force &&
               !this.ignoreDirty &&
               this.isDirty &&
-              this.views[idx].dirty &&
-              !force
+              this.views[idx].dirty
             ) {
               this.confirm(this.confirmLeave, () => {
                 // Looking for dirty ones in registered forms of each container
@@ -991,9 +1079,8 @@
                     f.reset();
                   });
                 }
-                this.$nextTick(() => {
-                  this.$emit('close', idx, onClose);
-                });
+
+                return this.close(idx, true);
               });
             }
             else if (this.views[idx] && !this.views[idx].real) {
@@ -1001,7 +1088,7 @@
               let url = this.views[idx].url;
               this.views.splice(idx, 1);
               this.$delete(this.urls, url);
-              this.fixIndexes()
+              this.fixIndexes();
               return true;
             }
           }
@@ -1173,17 +1260,8 @@
             }
             else{
               let isValid = this.isValidIndex(idx);
-              if (this.single) {
-                if (this.views.length){
-                  this.views.splice(0, this.views.length);
-                }
-                obj.selected = true;
-                obj.idx = this.views.length;
-              }
-              else{
                 obj.selected = false;
                 obj.idx = isValid ? idx : this.views.length;
-              }
 
               bbn.fn.iterate(this.getDefaultView(), (a, n) => {
                 if ( obj[n] === undefined ){
@@ -1192,10 +1270,7 @@
                 }
               });
               obj.uid = obj.url + '-' + bbn.fn.randomString();
-              if (this.single) {
-                this.views.splice(0, this.views.length, obj);
-              }
-              else if (isValid) {
+              if (isValid) {
                 this.views.splice(obj.idx, 0, obj);
               }
               else {
@@ -1258,7 +1333,7 @@
         }
 
         if (this.numRegistered === this.views.length) {
-          this.init(this.single ? cp.url : this.getDefaultURL());
+          this.init(this.getDefaultURL());
         }
 
         this.$emit('registered', cp.url)
@@ -1296,9 +1371,9 @@
        * @fires parseURL
        * @returns {String|false}
        */
-      getRoute(url, force){
+      getRoute(url, force) {
         if (!bbn.fn.isString(url)) {
-          throw Error(bbn._('The component bbn-container must have a valid URL defined'));
+          throw Error(bbn._('The bbn-container must have a valid URL defined'));
         }
 
         if (!url && this.hasEmptyURL) {
@@ -1407,13 +1482,13 @@
         url = bbn.fn.replaceAll('//', '/', url);
         if (this.ready && (force || !this.activeContainer || (url !== this.currentURL))) {
           let event = new CustomEvent(
-            "beforeRoute",
+            "beforeroute",
             {
               bubbles: false,
               cancelable: true
             }
           );
-          this.$emit("beforeRoute", event, url);
+          this.$emit("beforeroute", event, url);
           if (!event.defaultPrevented) {
             let bits = url.split('#');
             url = bits[0];
@@ -1425,10 +1500,11 @@
             // Checks weather the container is already there
             if (!url) {
               let idx = this.getRoute('', true);
-              if ( idx ){
+              if ( idx && this.urls[idx]) {
                 url = this.urls[idx].currentURL;
               }
             }
+
             let st = url ? this.getRoute(url) : '';
             /** @todo There is asomething to do here */
             //bbn.fn.log("ROUTING FUNCTION EXECUTING FOR " + url + " (CORRESPONDING TO " + st + ")");
@@ -1492,7 +1568,6 @@
           this.activate(url, this.urls[st]);
           if ( this.urls[st] ){
             this.urls[st].currentURL = url;
-            this.urls[st].init();
             this.$nextTick(() => {
               let child = this.urls[st].find('bbn-router');
               //bbn.fn.log("LOOKING FOR CHILD", child);
@@ -1755,7 +1830,7 @@
       activateIndex(idx){
         if ( this.isValidIndex(idx) ){
           this.route(
-            this.urls[this.views[idx].url] ? this.urls[this.views[idx].url].current
+            this.urls[this.views[idx].url] ? this.urls[this.views[idx].url].currentURL
             : this.views[idx].current
           );
         }
@@ -1772,6 +1847,7 @@
         if ( this.isValidIndex(idx) ){
           return this.urls[this.views[idx].url];
         }
+
         return false;
       },
       /**
@@ -1957,8 +2033,8 @@
         }
         if ( this.parent ){
           let containers = this.ancestors('bbn-container');
-          url = this.getFullBaseURL().substr(this.router.baseURL.length) + url;
-          //bbn.fn.log("CALL ROOT ROUTER WITH URL " + url);
+          url = bbn.fn.substr(this.getFullBaseURL(), this.router.baseURL.length) + url;
+          bbn.fn.log("CALL ROOT ROUTER WITH URL " + url);
           // The URL of the last bbn-container as index of the root router
           this.router.realRoute(url, containers[containers.length - 1].url, true);
         }
@@ -2013,10 +2089,11 @@
           let view;
           //bbn.fn.warning("START LOADING FN FOR IDX " + idx + " ON URL " + finalURL);
           if ( idx !== false ){
-            //bbn.fn.log("INDEX RETRIEVED BEFORE LOAD: " + idx.toString(), this.views[idx].slot, this.views[idx].loading);
+            //bbn.fn.log("INDEX RETRIEVED BEFORE LOAD: " + idx.toString(), JSON.stringify(this.views[idx], null, 2));
             if ( this.views[idx].loading || (!force && !this.views[idx].load) ){
               return;
             }
+
             view = this.views[idx];
             if (force){
               let kept = {
@@ -2080,7 +2157,7 @@
             this.views[idx].loading = true;
           }
 
-          this.selected = this.single ? 0 : idx;
+          this.selected = idx;
           this.$forceUpdate();
 
           this.$emit('update', this.views);
@@ -2160,7 +2237,7 @@
               if ( idx !== false ){
                 let url = this.views[idx].url;
                 if (this.urls[url]) {
-                  this.remove(idx);
+                  this.close(idx, true);
                 }
               }
             },
@@ -2220,20 +2297,29 @@
        * @return {String}
        */
       getDefaultURL(){
+        let url = '';
+        if (this.autoload) {
+          url = this.parseURL(bbn.env.path);
+        }
+
+        if (!url && this.url ){
+          url = this.url;
+        }
+
         // If there is a parent router we automatically give the proper baseURL
-        if ( this.url ){
-          return this.url;
+        if ( !url && this.parentContainer && (this.parentContainer.currentURL !== this.parentContainer.url) ){
+          url = bbn.fn.substr(this.parentContainer.currentURL, this.parentContainer.url.length + 1);
         }
 
-        if ( this.parentContainer && (this.parentContainer.currentURL !== this.parentContainer.url) ){
-          return bbn.fn.substr(this.parentContainer.currentURL, this.parentContainer.url.length + 1);
+        if ( !url && this.def ){
+          url = this.def;
         }
 
-        if ( this.def ){
-          return this.def;
+        if (!this.autoload && !url) {
+          url = this.parseURL(bbn.env.path);
         }
 
-        return this.parseURL(bbn.env.path);
+        return url;
       },
       /**
        * @method getTitle
@@ -2294,9 +2380,10 @@
         if ( !this.nav || !this.views[idx]  || (this.views[idx].menu === false) ){
           return [];
         }
-        let items = [],
-            tmp = ((bbn.fn.isFunction(this.views[idx].menu) ? this.views[idx].menu() : this.views[idx].menu) || []).slice(),
-            others = false;
+        let items     = [];
+        let tmp       = ((bbn.fn.isFunction(this.views[idx].menu) ? this.views[idx].menu() : this.views[idx].menu) || []).slice();
+        let others    = false;
+        let container = this.getVue(idx);
         bbn.fn.each(this.views, (a, i) => {
           if ( (i !== idx) && !a.static ){
             others = true;
@@ -2377,23 +2464,23 @@
           });
         }
 
-        if (this.getVue(idx).fullScreen) {
+        if (container && container.fullScreen) {
           items.push({
             text: bbn._("Exit full screen"),
             key: "reduce",
             icon: "nf nf-mdi-arrow_collapse",
             action: () => {
-              this.getVue(idx).fullScreen = false;
+              container.fullScreen = false;
             }
           });
         }
-        else {
+        else if (container) {
           items.push({
             text: bbn._("Enlarge"),
             key: "enlarge",
             icon: "nf nf-mdi-arrow_expand_all",
             action: () => {
-              this.getVue(idx).fullScreen = true;
+              container.fullScreen = true;
             }
           });
 
@@ -2558,43 +2645,25 @@
           });
 
           if (!this.parents.length) {
-            let go = () => {
-              this.isVisual = true;
-              setTimeout(() => {
-                this.getVue(this.selected).init();
-                this.getVue(this.selected).show();
-                this.onResize();
-              }, 250)
-            };
-
             items.push({
               text: bbn._('Switch to') + ' ' + bbn._('visual') + ' ' + bbn._('mode'),
               key: 'visual',
               icon: 'nf nf-fa-eye',
               action: () => {
-                if (!this.isDirty) {
-                  go();
-                  return;
-                }
-
-                this.confirm(
-                  bbn._("The pages already loaded will be reinitialized") +
-                      '<br>' + bbn._("If you have any unsaved work opened it will be lost.") +
-                      '<br>' + bbn._("Is it ok to continue?"),
-                  () => {
-                    go()
-                  }
-                );
-            }
+                this.isVisual = true;
+                setTimeout(() => {
+                  this.getVue(this.selected).show();
+                  this.onResize();
+                }, 250)
+              }
             });
           }
         }
         else {
-          const go = () => {
+          const toNoVisual = () => {
             this.isVisual = false;
             this.itsMaster.isBreadcrumb = false;
             setTimeout(() => {
-              this.getVue(this.selected).init();
               this.getVue(this.selected).show();
               this.onResize();
             }, 250)
@@ -2635,19 +2704,7 @@
             key: 'tabs',
             icon: 'nf nf-mdi-tab',
             action: () => {
-              if (!this.isDirty) {
-                go();
-                return;
-              }
-
-              this.confirm(
-                bbn._("The pages already loaded will be reinitialized") +
-                    '<br>' + bbn._("You should save your unsaved content or it will be lost.") +
-                    '<br>' + bbn._("Is it ok to continue?"),
-                () => {
-                  go();
-                }
-              );
+              toNoVisual();
             }
           });
 
@@ -2656,19 +2713,7 @@
             key: 'breadcrumbs',
             icon: 'nf nf-fa-ellipsis_h',
             action: () => {
-              if (!this.isDirty) {
-                go();
-                return;
-              }
-
-              this.confirm(
-                bbn._("The pages already loaded will be reloaded") +
-                    '<br>' + bbn._("If you have any unsaved work opened it will be lost.") +
-                    '<br>' + bbn._("Is it ok to continue?"),
-                () => {
-                  go();
-                }
-              );
+              toNoVisual();
             }
           });
         }
@@ -2893,10 +2938,10 @@
         let scroll = this.getRef('horizontal-scroll');
         if ( scroll ){
           if ( dir === 'right' ){
-            scroll.scrollAfter();
+            scroll.scrollAfter(true);
           }
           else{
-            scroll.scrollBefore();
+            scroll.scrollBefore(true);
           }
         }
       },
@@ -3073,19 +3118,6 @@
        */
       getParents(){
         return this.parent ? [...this.parent.getParents(), this.parent] : []
-      },
-      /**
-       * @method openMenu
-       * @param {Event} ev
-       */
-      openMenu(ev){
-        let ele = ev.target.parentElement.parentElement,
-            e = new MouseEvent("contextmenu", {
-              bubbles: true,
-              cancelable: true,
-              view: window
-            });
-        ele.dispatchEvent(e);
       },
       onResize() {
         this.keepCool(() => {
@@ -3369,7 +3401,7 @@
               this.changeURL(newVal, bbn._("Loading"));
             }
             let idx = this.search(newVal);
-            if (!this.single && (idx !== false)) {
+            if (idx !== false) {
               this.selected = idx;
               this.views[this.selected].last = bbn.fn.timestamp();
             }
@@ -3384,8 +3416,7 @@
        * @fires route
        */
       url(newVal){
-        if ( this.ready ){
-          bbn.fn.log("CHANGING ROUTER URL");
+        if (this.ready) {
           this.route(newVal);
         }
       },
@@ -3939,7 +3970,7 @@ div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadc
 div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadcrumb-container div.bbn-router-breadcrumb-element.bbn-router-breadcrumb-dirty::after {
   content: "*";
 }
-div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadcrumb-container i.bbn-router-breadcrumb-icon {
+div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadcrumb-container .bbn-router-breadcrumb-icon {
   display: block;
   position: absolute;
   right: 2px;
@@ -3947,10 +3978,10 @@ div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadc
   cursor: pointer;
   margin: 0;
 }
-div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadcrumb-container i.bbn-router-breadcrumb-icon.bbn-router-breadcrumb-close {
+div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadcrumb-container .bbn-router-breadcrumb-icon.bbn-router-breadcrumb-close {
   top: 1px;
 }
-div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadcrumb-container i.bbn-router-breadcrumb-icon.bbn-router-breadcrumb-menu {
+div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadcrumb-container .bbn-router-breadcrumb-icon.bbn-router-breadcrumb-menu {
   bottom: -2px;
 }
 div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadcrumb-container .bbn-router-breadcrumb-arrow {

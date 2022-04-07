@@ -154,6 +154,7 @@
                   :nav="nav"
                   :master="true"
                   :url="!!nav ? undefined : url"
+                  @beforeroute="onBeforeRoute"
                   @route="onRoute"
                   @change="$emit('change', $event)"
                   :breadcrumb="isMobile"
@@ -274,6 +275,7 @@
                 :source-text="searchBar.sourceText"
                 :min-length="searchBar.minLength"
                 @select="searchSelect"
+                @close="searchOn = false"
                 :limit="50"
                 :pageable="true"
                 class="bbn-no"/>
@@ -691,6 +693,9 @@
         }
 
         return res;
+      },
+      onBeforeRoute(ev, path) {
+        this.$emit('beforeroute', ev, path);
       },
       onRoute(path) {
         this.$emit('route', path)

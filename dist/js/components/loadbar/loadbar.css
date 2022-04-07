@@ -1,14 +1,6 @@
 .bbn-loadbar {
-  font-size: small;
   white-space: nowrap;
   overflow: visible;
-}
-.bbn-loadbar span i,
-.bbn-loadbar a i {
-  vertical-align: middle;
-}
-.bbn-loadbar i {
-  font-size: 16px;
 }
 .bbn-loadbar a {
   text-overflow: ellipsis;

@@ -4,25 +4,23 @@
           'bbn-reset': true,
           'bbn-bordered': !modal,
           'bbn-background-internal': !modal,
-          'bbn-invisible': !isResized
+          'bbn-invisible': !isResized,
+          'bbn-floater-arrowed': !!arrow
         },
         componentClass
       ]"
       v-if="isVisible"
       @resize.stop="onResize"
-      @mouseleave="isResized ? isOver = false : (() => {})()"
-      @mouseenter="isResized ? isOver = true : (() => {})()"
+      @mouseleave="isOver = false"
+      @mouseenter="isOver = true"
       @keydown.esc.prevent.stop="close"
       @subready.stop
       :style="currentStyle"
       v-resizable:container.left.right.bottom="ready && resizable ? $el.parentElement : false">
-  <div
-        v-if="arrow"
-        :class="'arrow ' + position"
-  >
-  </div>
+  <div v-if="arrow"
+       :class="['bbn-floater-arrow', position]"/>
   <div :style="containerStyle"
-       :class="{'bbn-flex-height': !isResizing}">
+       class="bbn-flex-height">
     <div v-if="modal"
          class="bbn-overlay bbn-modal"/>
     <header v-if="title"
@@ -92,11 +90,10 @@
                     :is="component"
                     v-bind="realComponentOptions"/>
           <slot v-else-if="$slots.default"/>
-          <div v-else-if="!!content" 
+          <div v-else-if="!!content"
               v-html="content"
-              :class="scrollable ? 'bbn-block' : 'bbn-100'"
-              :style="HTMLStyle"
-          />
+              :class="scrollable ? 'bbn-block' : 'bbn-overlay'"
+              :style="HTMLStyle"/>
           <bbn-list v-else-if="filteredData.length"
                     :mode="mode"
                     ref="list"
@@ -159,7 +156,6 @@
     </footer>
   </div>
 </div>
-
 </template>
 <script>
   module.exports = /**
@@ -648,7 +644,8 @@
             });
           }
         }
-        s.opacity = this.isResized ? 1 : 0;
+
+        s.visibility = this.isResized && this.isInit && this.scrollReady ? 'visible' : 'hidden';
         return s;
       },
       containerStyle(){
@@ -733,7 +730,9 @@
         if (this.element && this.elementWidth) {
           tmp = this.element.getBoundingClientRect();
           if (tmp.width) {
-            minWidth.push(tmp.width);
+            if (!this.maxWidth || (this.maxWidth > tmp.width)) {
+              minWidth.push(tmp.width);
+            }
           }
         }
 
@@ -885,8 +884,12 @@
             && this.$el
             && (this.setContainerMeasures() || !this.isInit || force)
         ) {
-          this.realResize();
+          return this.realResize();
         }
+
+        return new Promise(resolve => {
+          setTimeout(() => {resolve();}, 0);
+        });
       },
       /**
        * Handles the resize of the component.
@@ -904,6 +907,7 @@
           let go = this.isVisible
               && this.scrollReady
               && bbn.fn.isDom(this.$el)
+              && this.isActiveResizer()
               && (!this.isResizing || !this.isResized);
           if (go) {
             this.isResizing = true;
@@ -948,7 +952,7 @@
                     scroll.$el.style.height = this.formatSize(this.currentMinHeight || '0px');
                     let containerEle = scroll.getRef('scrollContainer');
                     let contentEle = scroll.getRef('scrollContent');
-                    naturalHeight = containerEle.scrollHeight;
+                    naturalHeight = contentEle.scrollHeight;
                     if (!naturalHeight) {
                       this.isResizing = false;
                       resolve();
@@ -1110,13 +1114,12 @@
 
         if (parent && (width || height)) {
           if (!parent.insertAdjacentElement) {
-            bbn.fn.log(parent);
             throw new Error("Impossible to insert adjacent element to calculate dimensions");
           }
 
           let el = document.createElement('div');
           el.style.position = 'absolute';
-          el.style.opacity = 0;
+          el.style.visibility = 'hidden';
           el.className = 'bbn-reset'
           el.style.width = this.formatSize(width);
           el.style.height = this.formatSize(height);
@@ -1329,15 +1332,9 @@
         if (!this.scrollResized) {
           this.scrollResized = true;
         }
-
         e.preventDefault();
         if ((dimensions.width !== this.scrollWidth) || (dimensions.height !== this.scrollHeight)) {
-          setTimeout(() => {
-            this.onResize(true);
-          }, 50)
-        }
-        else {
-          //this.onResize(true);
+          this.onResize(true);
         }
       },
       /**
@@ -1783,108 +1780,80 @@ div.bbn-floater > div > footer.bbn-button-group button {
   padding-top: 0.3em;
   padding-bottom: 0.3em;
 }
-div.bbn-floater .arrow {
+div.bbn-floater .bbn-floater-arrow {
   position: absolute;
   overflow: hidden;
 }
-div.bbn-floater .arrow:after {
+div.bbn-floater .bbn-floater-arrow:after {
   content: '';
   width: 11.315417256011px;
   height: 11.315417256011px;
   position: absolute;
-  background: white;
+  background: var(--default-background);
   transform-origin: 0 0;
-  border: 1px solid var(--default-border);
+  border: var(--default-border-width) solid var(--default-border);
 }
-div.bbn-floater .bottomLeft,
-div.bbn-floater .bottom {
+div.bbn-floater .bbn-floater-arrow.bottomLeft,
+div.bbn-floater .bbn-floater-arrow.bottom,
+div.bbn-floater .bbn-floater-arrow.bottomRight,
+div.bbn-floater .bbn-floater-arrow.topLeft,
+div.bbn-floater .bbn-floater-arrow.top,
+div.bbn-floater .bbn-floater-arrow.topRight {
   width: 16px;
   height: 8px;
+  top: -8px;
+  margin-left: -8px;
+}
+div.bbn-floater .bbn-floater-arrow.bottomLeft:after,
+div.bbn-floater .bbn-floater-arrow.bottom:after,
+div.bbn-floater .bbn-floater-arrow.bottomRight:after,
+div.bbn-floater .bbn-floater-arrow.topLeft:after,
+div.bbn-floater .bbn-floater-arrow.top:after,
+div.bbn-floater .bbn-floater-arrow.topRight:after {
+  left: 8px;
+  top: 0;
+  transform: rotate(45deg);
+}
+div.bbn-floater .bbn-floater-arrow.bottomLeft,
+div.bbn-floater .bbn-floater-arrow.bottom {
   left: 7px;
-  top: -8px;
-  margin-left: -8px;
 }
-div.bbn-floater .bottomLeft:after,
-div.bbn-floater .bottom:after {
-  left: 8px;
-  top: 0;
-  transform: rotate(45deg);
-}
-div.bbn-floater .bottomRight {
-  width: 16px;
-  height: 8px;
+div.bbn-floater .bbn-floater-arrow.bottomRight,
+div.bbn-floater .bbn-floater-arrow.topRight {
   right: -2px;
-  top: -8px;
-  margin-left: -8px;
 }
-div.bbn-floater .bottomRight:after {
-  left: 8px;
-  top: 0;
-  transform: rotate(45deg);
-}
-div.bbn-floater .topLeft,
-div.bbn-floater .top {
-  width: 16px;
-  height: 8px;
-  left: 6px;
-  bottom: -8px;
-  margin-left: -8px;
-}
-div.bbn-floater .topLeft:after,
-div.bbn-floater .top:after {
+div.bbn-floater .bbn-floater-arrow.topLeft:after,
+div.bbn-floater .bbn-floater-arrow.top:after,
+div.bbn-floater .bbn-floater-arrow.topRight:after {
   left: 16px;
-  top: 0;
   transform: rotate(135deg);
 }
-div.bbn-floater .topRight {
-  width: 16px;
-  height: 8px;
-  right: -2px;
-  bottom: -8px;
-  margin-left: -8px;
-}
-div.bbn-floater .topRight:after {
-  left: 16px;
-  top: 0;
-  transform: rotate(135deg);
-}
-div.bbn-floater .left {
+div.bbn-floater .bbn-floater-arrow.left,
+div.bbn-floater .bbn-floater-arrow.right {
   width: 8px;
   height: 16px;
   top: 8px;
+  margin-top: -8px;
+}
+div.bbn-floater .bbn-floater-arrow.left:after,
+div.bbn-floater .bbn-floater-arrow.right:after {
+  left: 0;
+}
+div.bbn-floater .bbn-floater-arrow.left {
   right: -8px;
-  margin-top: -8px;
 }
-div.bbn-floater .left:after {
-  left: 0;
+div.bbn-floater .bbn-floater-arrow.left:after {
   top: 0;
   transform: rotate(45deg);
 }
-div.bbn-floater .right {
-  width: 8px;
-  height: 16px;
-  top: 8px;
+div.bbn-floater .bbn-floater-arrow.right {
   left: -8px;
-  margin-top: -8px;
 }
-div.bbn-floater .right:after {
-  left: 0;
+div.bbn-floater .bbn-floater-arrow.right:after {
   top: 8px;
   transform: rotate(-45deg);
 }
-div.bbn-floater.bottomLeft,
-div.bbn-floater.bottom,
-div.bbn-floater.bottomRight {
-  overflow: unset;
-  margin-top: 3px;
-}
-div.bbn-floater.topLeft,
-div.bbn-floater.top,
-div.bbn-floater.topRight {
-  overflow: unset;
-}
-div.bbn-floater.left,
-div.bbn-floater.right {
+div.bbn-floater.bbn-floater-arrowed {
   overflow: unset;
 }
 
