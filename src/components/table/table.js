@@ -1017,6 +1017,7 @@
             rowIndex++;
             if (isGroup
               && this.groupFooter
+              && !this.expander
               && (!data[i + 1]
                 || (data[i + 1].data[groupField] !== data[i].data[groupField]))
             ) {
@@ -1029,7 +1030,6 @@
                 rowKey: data[i].key,
                 isGrouped: true,
                 footer: true,
-                full: true,
                 selection: false,
                 expander: false
               });
