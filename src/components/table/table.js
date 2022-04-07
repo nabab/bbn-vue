@@ -1144,7 +1144,6 @@
             fdata.push(d)
           }
         });
-        bbn.fn.log('aaa', res, fdata)
         return fdata;
       },
       /**
