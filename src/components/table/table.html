@@ -178,12 +178,12 @@
                 <div class="bbn-spadded bbn-background bbn-c">
                   <div v-if="!isLoading"
                        v-html="noData || ' '"/>
-                  <div v-else
+                  <div v-else-if="loader"
                        class="bbn-vmiddle">
                     <bbn-loadicon class="bbn-vmiddle"
                                   :size="24"/>
                     <span class="bbn-xl bbn-b bbn-left-sspace"
-                          v-text="_('Loading') + '...'"/>
+                          v-text="loader"/>
                   </div>
                 </div>
               </td>
