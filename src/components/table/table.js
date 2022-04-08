@@ -29,7 +29,7 @@
      * @mixin bbn.vue.keepCoolComponent
      * @mixin bbn.vue.dataComponent
      */
-    mixins: 
+    mixins:
     [
       bbn.vue.basicComponent,
       bbn.vue.resizerComponent,
@@ -145,20 +145,6 @@
         default: 150
       },
       /**
-       * @todo not used in the component
-       */
-      paginationType: {
-        type: String,
-        default: 'input'
-      },
-      /**
-       * @todo not used in the component
-       */
-      info: {
-        type: Boolean,
-        default: false
-      },
-      /**
        * A function to define css class(es) for each row.
        * @prop {Function} trClass
        */
@@ -188,11 +174,12 @@
         type: [Object, String, Function]
       },
       /**
-       * not used in the component
+       * Customize the loading text or hide it
+       * @prop {String|Boolean} ['Loading...'] loader
        */
       loader: {
-        type: Boolean,
-        default: false
+        type: [String, Boolean],
+        default: bbn._('Loading') + '...'
       },
       /**
        * If one or more columns have the property fixed set to true it defines the side of the fixed column(s).
@@ -204,10 +191,10 @@
       },
       /**
        * Defines the toolbar of the table.
-       * @prop {Object|String|Function} toolbar
+       * @prop {Array|Object|String|Function} toolbar
        */
       toolbar: {
-
+        type: [Array, Object, String, Function]
       },
       /**
        * An array of objects with at least the property 'field' that can replace the html '<bbns-column></bbns-column>' or extend them.
@@ -227,9 +214,8 @@
         type: Number
       },
       /**
-       * @todo desc
+       * The list of expanded rows based on a specific value (ex. group field) and not on the row index
        * @prop {Array|Function} expandedValues
-       *
        */
       expandedValues: {
         type: [Array, Function]
@@ -246,17 +232,20 @@
       },
       /**
        * Defines the footer of the table.
-       * @prop {String|Object} footer
+       * Allowed values ​​are the name or the object of a component, a boolean or a function (to inject custom html)
+       * @prop {String|Object|Boolean|Function} footer
        */
       footer: {
-        type: [String, Object]
+        type: [String, Object, Boolean, Function],
+        default: true
       },
       /**
-       * Defines the footer for a group of columns.
-       * @prop {String|Object} groupFooter
+       * Defines the footer for a group of rows.
+       * Allowed values ​​are the name or the object of a component or a function (to inject custom html)
+       * @prop {String|Object|Function} groupFooter
        */
       groupFooter: {
-        type: [String, Object]
+        type: [String, Object, Function]
       },
       /**
        * @todo desc
@@ -559,6 +548,9 @@
          * @data {Boolean} [false] isTableDataUpdating Will be set to true during the whole update process
          */
         isTableDataUpdating: false,
+        /**
+         * @data {String} [''] searchValue
+         */
         searchValue: ''
       };
     },
@@ -644,6 +636,18 @@
        */
       hasToolbar() {
         return this.toolbarButtons.length || bbn.fn.isObject(this.toolbar) || bbn.fn.isFunction(this.toolbar) || bbn.fn.isString(this.toolbar);
+      },
+      /**
+       * @computed hasPager
+       * @return {Boolean}
+       */
+      hasPager(){
+        return (this.pageable
+            || this.saveable
+            || this.filterable
+            || this.isAjax
+            || this.showable)
+          && (this.footer === true);
       },
       /**
        * Return an array of shown fields (the hidden ones are excluded).
@@ -1000,6 +1004,27 @@
             }
             res.push(o);
             rowIndex++;
+            if (isGroup
+              && this.groupable
+              && this.groupFooter
+              && !this.expander
+              && (!data[i + 1]
+                || (data[i + 1].data[groupField] !== data[i].data[groupField]))
+            ) {
+              res.push({
+                index: data[i].index,
+                data: bbn.fn.filter(data, v => {
+                  return v.data[groupField] === data[i].data[groupField];
+                }),
+                rowIndex: rowIndex,
+                rowKey: data[i].key,
+                isGrouped: true,
+                footer: true,
+                selection: false,
+                expander: false
+              });
+              rowIndex++;
+            }
           }
           else {
             end++;
@@ -1106,6 +1131,7 @@
             || this.isExpanded(d)
             || d.aggregated
             || (this.isExpanded(d) && d.groupAggregated)
+            || !!d.isFooter
             || (!d.expander
               && !!d.expansion
               && this.isExpanded(bbn.fn.getRow(res, {index: d.expanderIndex, expander: true}))
@@ -3038,6 +3064,27 @@
         }
 
         return {};
+      },
+      /**
+       * The method called on a column resize (by user)
+       * @method onUserResize
+       * @param {Event} e
+       * @fires $forceUpdate
+       */
+      onUserResize(e){
+        let d = e.target._bbn.directives.resizable.options.data,
+            nextCol = this.groupCols[d.groupColIndex].cols[d.columnIndex + 1],
+            nextColSize = nextCol ? nextCol.realWidth + e.detail.movement : 0;
+        if ((d.column.realWidth !== e.detail.size)
+          && (e.detail.size >= this.defaultColumnWidth)
+          && (!nextCol || (nextColSize >= this.defaultColumnWidth))
+        ) {
+          this.groupCols[d.groupColIndex].cols[d.columnIndex].realWidth = e.detail.size;
+          if (nextCol) {
+            this.groupCols[d.groupColIndex].cols[d.columnIndex + 1].realWidth = nextColSize;
+          }
+          this.$forceUpdate();
+        }
       }
     },
     /**

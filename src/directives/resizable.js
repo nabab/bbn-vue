@@ -28,14 +28,14 @@
       if (!ele._bbn.directives.resizable.container) {
         ele._bbn.directives.resizable.container = bbn.fn.isDom(ele.parentElement) ? ele.parentElement : document.body;
       }
-      let ev = new CustomEvent('userResizeStart', {
+      let ev = new CustomEvent('userresizestart', {
         cancelable: true,
         bubbles: true,
         detail: ele._bbn.directives.resizable
       });
       ele.dispatchEvent(ev);
       if (ele.__vue__ !== undefined) {
-        ele.__vue__.$emit('userResizeStart', ev);
+        ele.__vue__.$emit('userresizestart', ev);
       }
       if (!ev.defaultPrevented) {
         ev.stopImmediatePropagation();
@@ -112,7 +112,7 @@
               size: width,
               oldSize: rectEle.width
             },
-            ev = new CustomEvent('userResize', {
+            ev = new CustomEvent('resize', {
               cancelable: true,
               bubbles: true,
               detail: detail
@@ -124,7 +124,7 @@
           }
           ele.style.width = width + 'px';
           if (ele.__vue__ !== undefined) {
-            ele.__vue__.$emit('userResize', ev, detail);
+            ele.__vue__.$emit('userresize', ev, detail);
             if (!ev.defaultPrevented
               && (ele.__vue__.parentResizer !== undefined)
               && bbn.fn.isFunction(ele.__vue__.parentResizer.onResize)
@@ -141,7 +141,7 @@
               size: height,
               oldSize: rectEle.height
             },
-            ev = new CustomEvent('userResize', {
+            ev = new CustomEvent('userresize', {
               cancelable: true,
               bubbles: true,
               detail: detail
@@ -153,7 +153,7 @@
           }
           ele.style.height = height + 'px';
           if (ele.__vue__ !== undefined) {
-            ele.__vue__.$emit('userResize', ev, detail);
+            ele.__vue__.$emit('userresize', ev, detail);
             if (!ev.defaultPrevented
               && (ele.__vue__.parentResizer !== undefined)
               && bbn.fn.isFunction(ele.__vue__.parentResizer.onResize)
@@ -177,14 +177,14 @@
       document.body.style.cursor = ele._bbn.directives.resizable.cursor;
       e.preventDefault();
       e.stopImmediatePropagation();
-      let ev = new CustomEvent('userResizeEnd', {
+      let ev = new CustomEvent('userresizeend', {
         cancelable: true,
         bubbles: true,
         detail: ele._bbn.directives.resizable
       });
       ele.dispatchEvent(ev);
       if (ele.__vue__ !== undefined) {
-        ele.__vue__.$emit('userResizeStart', ev);
+        ele.__vue__.$emit('userresizestart', ev);
       }
       delete ele._bbn.directives.resizable.mouseX;
       delete ele._bbn.directives.resizable.mouseY;

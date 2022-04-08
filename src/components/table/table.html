@@ -112,7 +112,8 @@
                         && (i === 0)
                     }]"
                     :title="col.ftitle || col.title || col.field || ' '"
-                >
+                    v-resizable.right="resizable && col.resizable && !!groupCol.cols[i+1] ? {data: {column: col, columnIndex: i, groupColIndex: groupIndex}} : false"
+                    @resize="onUserResize">
                   <i :class="{
                       nf: true,
                       'nf nf-mdi-filter_variant': true,
@@ -177,12 +178,12 @@
                 <div class="bbn-spadded bbn-background bbn-c">
                   <div v-if="!isLoading"
                        v-html="noData || ' '"/>
-                  <div v-else
+                  <div v-else-if="loader"
                        class="bbn-vmiddle">
                     <bbn-loadicon class="bbn-vmiddle"
                                   :size="24"/>
                     <span class="bbn-xl bbn-b bbn-left-sspace"
-                          v-text="_('Loading') + '...'"/>
+                          v-text="loader"/>
                   </div>
                 </div>
               </td>
@@ -280,7 +281,7 @@
                         left: currentColumns[1].left !== undefined ? currentColumns[1].left + 'px' : 'auto',
                         width: 'auto',
                         borderRight: '0px',
-                        overflow: 'unset' 
+                        overflow: 'unset'
                       }">
                     <div class="bbn-block"
                          :style="{
@@ -311,7 +312,14 @@
                   <div v-else
                        v-html="render(d.data, col, i)"/>
                 </td>
-
+                <td v-else-if="d.footer && groupFooter && groupable"
+                    :colspan="currentColumns.length">
+                  <div v-if="typeof groupFooter === 'function'"
+                       v-html="groupFooter(d.data)"/>
+                  <component v-else
+                             :is="groupFooter"
+                             :source="d.data"/>
+                </td>
                 <td v-else
                     v-for="(col, index) in currentColumns"
                     :class="[currentClass(col, d.data, i), cssRuleName, {
@@ -455,11 +463,17 @@
     </div>
     <!-- Footer -->
     <bbn-pager class="bbn-table-footer bbn-no-border-right bbn-no-border-left bbn-no-border-bottom"
-               v-if="(pageable || saveable || filterable || isAjax || showable) && (footer !== false)"
+               v-if="hasPager"
                :element="_self"
                :item-name="itemName"
                :page-name="pageName"
                :buttons="footerButtons"/>
+    <component v-else-if="(typeof footer === 'string') || (typeof footer === 'object')"
+               :is="footer"
+               class="bbn-table-footer bbn-no-border-right bbn-no-border-left bbn-no-border-bottom"/>
+    <div v-else-if="(typeof footer === 'function') && footer()"
+         v-html="footer()"
+         class="bbn-table-footer bbn-no-border-right bbn-no-border-left bbn-no-border-bottom"/>
   </div>
   <bbn-floater v-if="currentFilter"
                class="bbn-table-floating-filter bbn-widget"
