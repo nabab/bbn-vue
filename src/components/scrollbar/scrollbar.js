@@ -660,7 +660,7 @@
        * @method scrollTo
        * @fires adjustFromContainer
        */
-      scrollTo(val, anim = false) {
+      scrollTo(val, anim) {
         return new Promise(resolve => {
           if (this.shouldBother) {
             if (this.animationInterval) {
