@@ -715,7 +715,7 @@
         if (this.hasScrollY) {
           let y = this.getRef('yScroller');
           if (y) {
-            y.scrollAfter();
+            y.scrollAfter(anim);
           }
         }
       },
@@ -737,7 +737,7 @@
        * @method scrollEndY
        * @thisfires this.getRef('yScroller').scrollTo
        */
-      scrollEndY(){
+      scrollEndY(anim) {
         if (this.hasScrollY) {
           let y = this.getRef('yScroller');
           if (y) {
