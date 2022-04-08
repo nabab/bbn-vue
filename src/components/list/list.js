@@ -38,36 +38,35 @@
     props: {
       /**
        * @prop {} origin
-       * 
        */
       origin: {},
       /**
        * The maximum width of the floater.
-       * @prop {Number} maxWidth
+       * @prop {Number|String} maxWidth
        */
       maxWidth: {
-        type: Number
+        type: [Number, String]
       },
       /**
        * The maximum height of the floater.
-       * @prop {Number} maxHeight
+       * @prop {Number|String} maxHeight
        */
       maxHeight: {
-        type: Number
+        type: [Number, String]
       },
       /**
        * The minimum width of the floater.
-       * @prop {Number} minWidth
+       * @prop {Number|String} minWidth
        */
       minWidth: {
-        type: Number
+        type: [Number, String]
       },
       /**
        * The minimum height of the floater.
-       * @prop {Number} minHeight
+       * @prop {Number|String} minHeight
        */
       minHeight: {
-        type: Number
+        type: [Number, String]
       },
       /**
        * The width of the floater.
@@ -89,51 +88,6 @@
        */
       source: {
         type: [Function, Array, String, Object]
-      },
-      /**
-       * The html content of the floater.
-       * @prop {String} [''] content
-       */
-      content: {
-        type: String,
-        default: ''
-      },
-      /**
-       * The element used in the render of the floater.
-       * @prop {Element} element
-       */
-      element: {
-        type: Element
-      },
-      /**
-       * The floater's orientation.
-       * @prop {String} ['vertical'] orientation
-       */
-      orientation: {
-        type: String,
-        default: 'vertical'
-      },
-      /**
-       * @prop {String} ['left'] hpos
-       */
-      hpos: {
-        type: String,
-        default: 'left'
-      },
-      /**
-       * @prop {String} ['bottom'] vpos
-       */
-      vpos: {
-        type: String,
-        default: 'bottom'
-      },
-      /**
-       * Defines the ability of the floater to be scrollable.
-       * @prop {Boolean}  [false] scrollable
-       */
-      scrollable: {
-        type: Boolean,
-        default: false
       },
       /**
        * Set to true to show the floater.
@@ -433,21 +387,27 @@
        */
       currentStyle(){
         let s = {
-          left: this.isMaximized ? 0 : this.currentLeft,
-          top: this.isMaximized ? 0 : this.currentTop,
-          width: this.isMaximized ? '100%' : (this.width ? this.formattedWidth : 'auto'),
+          //left: this.isMaximized ? 0 : this.currentLeft,
+          //top: this.isMaximized ? 0 : this.currentTop,
+          width: this.formattedWidth,
           height: this.formattedHeight,
           opacity: this.opacity,
           overflow: 'hidden'
         };
-        if ( this.animation ){
+        if (this.animation) {
           s.transition = 'opacity 0.3s ease-in-out';
         }
-        if ( this.maxWidth ){
+        if (this.maxWidth) {
           s.maxWidth = this.maxWidth + (bbn.fn.isNumber(this.maxWidth) ? 'px' : '')
         }
-        if ( this.maxHeight ){
+        if (this.maxHeight) {
           s.maxHeight = this.maxHeight + (bbn.fn.isNumber(this.maxHeight) ? 'px' : '')
+        }
+        if (this.minWidth) {
+          s.minWidth = this.minWidth + (bbn.fn.isNumber(this.minWidth) ? 'px' : '')
+        }
+        if (this.minHeight) {
+          s.minHeight = this.minHeight + (bbn.fn.isNumber(this.minHeight) ? 'px' : '')
         }
         return s;
       },
@@ -645,6 +605,7 @@
      * @event mounted
      */
     mounted(){
+      this.opacity = 1;
       this.$nextTick(() => {
         if (this.$parent.$options && (this.$parent.$options._componentTag === 'bbn-scroll')) {
           this.hasScroll = true;
