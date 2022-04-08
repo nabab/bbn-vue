@@ -170,6 +170,16 @@
           }
 
           return isNullable;
+        },
+        /**
+         * Returns true if the component is disabled
+         * @computed isDisabled
+         * @fires closest
+         * @returns {Boolean}
+         */
+        isDisabled(){
+          let form = this.closest('bbn-form');
+          return this.disabled || (bbn.fn.isVue(form) && form.disabled);
         }
       },
       methods: {

@@ -154,7 +154,7 @@
           <i class="nf nf-fa-upload bbn-large"></i>
         </div>
         <input title=""
-               :disabled="!!disabled || !canAddFile"
+               :disabled="!!isDisabled || !canAddFile"
                ref="fileInput"
                type="file"
                :multiple="multiple"

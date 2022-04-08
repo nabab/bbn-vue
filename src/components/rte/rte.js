@@ -51,7 +51,6 @@
       /**
        * Defines if the component has to be disabled.
        * @prop {Boolean|Function} [false] disabled
-       * @memberof inputComponent
        */
       disabled: {
         type: [Boolean, Function],
@@ -60,7 +59,6 @@
       /**
        * Defines if the component has to be readonly.
        * @prop {Boolean|Function} [false] readonly
-       * @memberof inputComponent
        */
       readonly: {
         type: [Boolean, Function],
@@ -178,7 +176,7 @@
     mounted(){
       let cfg = {
         iframe: this.iFrame,
-        disabled: this.disabled,
+        disabled: this.isDisabled,
         readonly: this.readonly,
         required: this.required,
         allowResizeX: false,

@@ -1,4 +1,4 @@
-<div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', {'bbn-disabled': !!disabled}]"
+<div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', {'bbn-disabled': !!isDisabled}]"
      @click.stop>
   <div class="bbn-flex-width">
     <div class="bbn-flex-fill">
@@ -7,7 +7,7 @@
              v-model="currentValue"
              :name="name"
              ref="element"
-             :disabled="disabled"
+             :disabled="isDisabled"
              :readonly="readonly"
              :required="required"
              @blur="_blur"
@@ -25,7 +25,7 @@
              :value="inputValue"
              :name="name"
              tabindex="0"
-             :disabled="disabled"
+             :disabled="isDisabled"
              :readonly="readonly || onlySpinners"
              :required="required"
              @focus="_focus"
@@ -42,7 +42,7 @@
       >
     </div>
     <div v-if="spinners"
-         :class="['bbn-numeric-buttons', 'bbn-radius-top-right', 'bbn-radius-bottom-right', {'bbn-disabled' : !!readonly || disabled}]">
+         :class="['bbn-numeric-buttons', 'bbn-radius-top-right', 'bbn-radius-bottom-right', {'bbn-disabled' : !!readonly || isDisabled}]">
       <div :class="[
             'bbn-reactive-block',
             'bbn-middle',
