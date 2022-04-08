@@ -210,7 +210,7 @@
        * @fires emitInput
        */
       reset(){
-        if (!this.disabled && !this.readonly) {
+        if (!this.isDisabled && !this.readonly) {
           this.emitInput(this.originalValue);
         }
       },

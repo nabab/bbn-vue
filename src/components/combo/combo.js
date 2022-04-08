@@ -65,7 +65,7 @@
        * @fires getRef
        */
       click(){
-        if ( !this.disabled && !this.readnly ){
+        if ( !this.isDisabled && !this.readnly ){
           this.getRef('input').focus();
           if ( this.filteredData.length ){
             this.isOpened = !this.isOpened;
@@ -152,7 +152,7 @@
         else if (bbn.var.keys.upDown.includes(e.keyCode)) {
           this.keynav(e);
         }
-        else if ( !this.disabled || !this.readonly ){
+        else if ( !this.isDisabled || !this.readonly ){
           this.writing = true;
         }
       },

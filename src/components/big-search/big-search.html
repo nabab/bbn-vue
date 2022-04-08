@@ -14,7 +14,7 @@
    </div>
    <div class="bbn-flex-fill">
       <bbn-scroll>
-         <bbn-list v-if="filteredTotal && !disabled && !readonly"
+         <bbn-list v-if="filteredTotal && !isDisabled && !readonly"
                   :element="$el"
                   ref="list"
                   :auto-hide="false"

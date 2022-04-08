@@ -7,7 +7,7 @@
        :readonly="readonly"
        @change="onChange"
        :value="value"
-			:disabled="disabled"/>
+			:disabled="isDisabled"/>
 	<div class="bbn-hidden">
 		<slot></slot>
 	</div>
@@ -16,5 +16,5 @@
 						ref="input"
 						:value="value"
 						class="bbn-hidden"
-						:disabled="disabled"/>
+						:disabled="isDisabled"/>
 </div>
