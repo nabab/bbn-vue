@@ -220,7 +220,7 @@
        * @emits change
        */
       toggle(){
-        if ( !this.disabled && !this.readonly ){
+        if ( !this.isDisabled && !this.readonly ){
           let emitVal = !this.state ? this.valueToSet : this.novalue;
           this.$emit('input', emitVal);
           this.$emit('change', emitVal, this);

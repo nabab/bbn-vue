@@ -398,7 +398,7 @@
        * @return {Boolean}
        */
       _canSubmit(){
-        return (this.prefilled || this.isModified()) && this.isValid(false, false);
+        return (this.prefilled || this.isModified()) && this.isValid(false, false) && !this.disabled;
       },
       /**
        * Returns an array containing the form's buttons.
@@ -674,6 +674,9 @@
         }
 
         if ( !force ){
+          if (this.disabled) {
+            return;
+          }
           let ev = new Event('submit', {cancelable: true});
           this.$emit('submit', ev, this);
           if ( ev.defaultPrevented ){

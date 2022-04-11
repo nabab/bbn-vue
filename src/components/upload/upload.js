@@ -338,7 +338,7 @@
        * @return Boolean
        */
       isEnabled(){
-        return !this.disabled && !this.readonly
+        return !this.isDisabled && !this.readonly
       }
     },
     methods: {
@@ -391,7 +391,7 @@
        * @fires upload
        */
       _makeFiles(files, fromUser, status){
-        if ( !this.ready || !this.disabled ){
+        if ( !this.ready || !this.isDisabled ){
           if ( files instanceof FileList ){
             files = Object.values(files)
           }

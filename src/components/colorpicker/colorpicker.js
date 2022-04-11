@@ -351,7 +351,7 @@
         if ( this.showFloater ){
           this.showFloater = false;
         }
-        else if ( !this.disabled && !this.readonly ){
+        else if ( !this.isDisabled && !this.readonly ){
           this.showFloater = true;
         }
       }

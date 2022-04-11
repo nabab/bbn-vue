@@ -13,17 +13,13 @@
 (function($){
   "use strict";
 
-  /**
-   * Classic input with normalized appearance
-   */
   Vue.component('bbn-rte', {
     /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.inputComponent
      * @mixin bbn.vue.positionComponent
      */
-    mixins: 
-    [
+    mixins: [
       bbn.vue.basicComponent,
       bbn.vue.inputComponent,
       bbn.vue.positionComponent
@@ -32,65 +28,24 @@
       /**
        * @prop {Boolean} [false] iFrame
        */
-      iFrame:{
+      iFrame: {
         type: Boolean,
         default: false
       },
       /**
-       * @prop value
-       */
-      value: {},
-      /**
-       * Defines if the component value is required.
-      * @prop {Boolean|Function|String} [false] required
-      */
-      required: {
-        type: [Boolean, Function, String],
-        default: false
-      },
-      /**
-       * Defines if the component has to be disabled.
-       * @prop {Boolean|Function} [false] disabled
-       * @memberof inputComponent
-       */
-      disabled: {
-        type: [Boolean, Function],
-        default: false
-      },
-      /**
-       * Defines if the component has to be readonly.
-       * @prop {Boolean|Function} [false] readonly
-       * @memberof inputComponent
-       */
-      readonly: {
-        type: [Boolean, Function],
-        default: false
-      },
-      /**
-       * @prop pinned
-       */
-      pinned: {},
-      /**
-       * @prop {Boolean} [false] fullSize
-       */
-      fullSize:{
-        default:false,
-        type: Boolean
-      },
-      /**
        * @prop {Array} [bbn.env.cdn + 'lib/bbnjs/1.0.1/src/css/iFrame.less'] iframeCSSLinks
        */
-      iframeCSSLinks :{
+      iframeCSSLinks: {
         default(){
           return [bbn.env.cdn + 'lib/bbnjs/1.0.1/src/css/iFrame.less']
         },
         type: Array
-      }, 
+      },
       /**
        * The height of the editor
        * @prop {Number|String} ['100%'] height
        */
-      height:{
+      height: {
         default: '100%',
         type: [String, Number]
       },
@@ -144,7 +99,7 @@
          */
         realHeight: typeof this.height === 'string' ? this.height : this.height + 'px',
         /**
-         * @data {Boolean} [false] widget
+         * @data [false] widget
          */
         widget: false,
          /**
@@ -162,6 +117,9 @@
         this.$emit('input', this.widget.value);
       }
     },
+    /**
+     * @event created
+     */
     created(){
       if (!this.value
         && this.$slots.default
@@ -174,11 +132,13 @@
     /**
      * Initializes the component
      * @event mounted
+     * @fires getRef
+     * @emits input
      */
     mounted(){
       let cfg = {
         iframe: this.iFrame,
-        disabled: this.disabled,
+        disabled: this.isDisabled,
         readonly: this.readonly,
         required: this.required,
         allowResizeX: false,
@@ -211,11 +171,10 @@
     watch: {
       /**
        * @watch value
-       * @param newVal 
+       * @param newVal
        */
       value(newVal){
         if (this.widget && (this.widget.value !== newVal)) {
-           bbn.fn.log("CHANFING CURRENT VALUE");
            this.widget.value = newVal;
         }
       }

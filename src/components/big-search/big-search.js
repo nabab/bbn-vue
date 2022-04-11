@@ -267,7 +267,7 @@
          * @emit change
          */
         select(item, idx, dataIndex){
-          if (!this.disabled) {
+          if (!this.isDisabled) {
             let ev = new Event('select', {cancelable: true});
             this.$emit('select', ev, item, idx, dataIndex);
             if (!ev.defaultPrevented) {

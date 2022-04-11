@@ -340,7 +340,7 @@
         if (!this.scrollable) {
           cfg.height = 'auto';
         }
-        if ( this.readonly || this.disabled ){
+        if ( this.readonly || this.isDisabled ){
           cfg.readOnly = true;
         }
 

@@ -1,6 +1,6 @@
-<span :class="[componentClass, 'bbn-textbox', {'bbn-disabled': !!disabled}]">
+<span :class="[componentClass, 'bbn-textbox', {'bbn-disabled': !!isDisabled}]">
   <input ref="element"
-         :disabled="disabled"
+         :disabled="isDisabled"
          :required="required"
          :readonly="readonly"
          :placeholder="placeholder"
@@ -24,7 +24,7 @@
   <input :value="value"
          ref="real_masked"
          :name="name"
-         :disabled="disabled"
+         :disabled="isDisabled"
          type="hidden"
          :size="size"
          :maxlength="maxlength"
