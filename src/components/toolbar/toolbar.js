@@ -66,10 +66,8 @@
     },
     methods: {
       updateSlot(){
-        bbn.fn.log("UUPODATIN DLOT");
         if (this.$slots.default) {
           for (let node of this.$slots.default) {
-            bbn.fn.log("CHILDREN", node.children);
             if ((node.tag === 'div') && !node.children) {
               node.elm.classList.add('bbn-toolbar-separator');
             }

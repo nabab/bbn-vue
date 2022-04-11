@@ -919,53 +919,6 @@
           }
           return data;
         },
-        appendData(step) {
-          if (this.isAjax) {
-            this.isLoading = true;
-            this.$emit('startloading');
-            let data = this.getData();
-            data.step = step;
-            this.loadingRequestID = bbn.fn.getRequestId(this.source, data);
-            this.isLoading = true;
-            this.post(this.source, data, d => {
-              this.isLoading = false;
-              this.loadingRequestID = false;
-              if (d && d.data) {
-                if (d.data.length) {
-                  let data = this.treatData(d.data);
-                  bbn.fn.each(data, a => {
-                    let todo = true;
-                    if (a.data.hash) {
-                      let row = bbn.fn.filter(this.currentData, r => r.data.hash === a.data.hash);
-                      if (row.length && (row[0].data.score && a.data.score)) {
-                        todo = false;
-                        row[0].data.score += a.data.score;
-                      }
-                    }
-
-                    if (todo) {
-                      this.currentData.push(a);
-                    }
-                  });
-
-                  this.updateIndexes();
-                }
-
-                if (d.next_step) {
-                  if (this.isOpened !== undefined) {
-                    if (this.isOpened) {
-                      bbn.fn.log("APPEING DATA")
-                      this.appendData(d.next_step);
-                    }
-                  }
-                  else {
-                    this.appendData(d.next_step);
-                  }
-                }
-              }
-            });
-          }
-        },
         treatData(data) {
           if (this.parentUid && this.hierarchy && this.flat && this.uid) {
             data.unshift({
@@ -1005,7 +958,7 @@
             this._dataPromise = new Promise(resolve => {
               let prom;
               let loadingRequestID;
-              if ( this.isAjax ){
+              if (this.isAjax) {
                 if (this.loadingRequestID) {
                   bbn.fn.abort(this.loadingRequestID);
                   setTimeout(() => {
@@ -1016,6 +969,7 @@
                   }, 50);
                   return;
                 }
+
                 this.isLoading = true;
                 this.$emit('startloading');
                 let data = this.getData();
@@ -1110,15 +1064,8 @@
                 if (!this.isLoaded) {
                   this.isLoaded = true;
                 }
-                this.$emit('dataloaded', d);
-                if (this.isAjax && d && d.next_step) {
-                  if (d.id && (d.data !== undefined)) {
-                    this.searchId = d.id;
-                  }
 
-                  this.appendData(d.next_step);
-                }
-                //this._dataPromise = false;
+                this.$emit('dataloaded', d);
               });
             }).catch(e => {
               bbn.fn.log("CATCHING");

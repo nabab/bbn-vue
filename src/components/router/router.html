@@ -174,7 +174,7 @@
                       </span>
                       <span v-if="!tab.notext && tab.title"
                             class="bbn-router-tab-text"
-                            :title="getFullTitle(tab)"
+                            :title="getTabTitle(tab)"
                             v-html="tab.title.length > maxTitleLength ? cutTitle(tab.title) : tab.title"/>
                     </bbn-context>
                     <div class="bbn-router-tabs-selected"
