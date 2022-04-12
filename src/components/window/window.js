@@ -22,7 +22,7 @@
     mixins: [
       bbn.vue.basicComponent,
       bbn.vue.resizerComponent,
-      bbn.vue.dimensionsComponent,
+      bbn.vue.dimensionsComponent
     ],
     props: {
       /**
@@ -153,19 +153,51 @@
         fns.push(this.onClose);
       }
       return {
+        /**
+         * @data {Boolean} isMaximized
+         */
         isMaximized: this.maximized,
+        /**
+         * @data {String} widthUnit
+         */
         widthUnit: (typeof this.width === 'string') && (bbn.fn.substr(this.width, -1) === '%') ? '%' : 'px',
+        /**
+         * @data {Number|String|Boolean} currentWidth
+         */
         currentWidth: this.width,
+        /**
+         * @data {String} heightUnit
+         */
         heightUnit: (typeof this.height === 'string') && (bbn.fn.substr(this.height, -1) === '%') ? '%' : 'px',
+        /**
+         * @data {Number|String|Boolean} currentHeight
+         */
         currentHeight: this.height,
+        /**
+         * @data {Array} closingFunctions
+         */
         closingFunctions: fns,
+        /**
+         * @data {Boolean} [false] showContent
+         */
         showContent: false,
+        /**
+         * @data {Boolean|Vue} [false] popup
+         */
         popup: false,
-        containerCSS: {opacity: 0}
+        /**
+         * @data {Object} [{opacity: 0}] containerCss
+         */
+        containerCSS: {
+          opacity: 0
+        }
       }
     },
-
     computed: {
+      /**
+       * @computed realWidth
+       * @returns {String}
+       */
       realWidth(){
         if ( !this.currentWidth ){
           return 'auto';
@@ -175,6 +207,10 @@
         }
         return this.currentWidth;
       },
+      /**
+       * @computed realHeight
+       * @returns {String}
+       */
       realHeight(){
         if ( !this.currentHeight ){
           return 'auto';
@@ -183,13 +219,20 @@
           return this.currentHeight.toString() + 'px'
         }
         return this.currentHeight;
-      },
+      }
     },
-
     methods: {
+      /**
+       * @method getContainerPosition
+       * @returns {Object}
+       */
       getContainerPosition(){
         return this.$el ? this.$el.parentNode.getBoundingClientRect() : {};
       },
+      /**
+       * @method onResize
+       * @fires getContainerPosition
+       */
       onResize(){
         let o = this.getContainerPosition();
         this.containerCSS = {
@@ -200,6 +243,10 @@
           height: o.height + 'px',
         }
       },
+      /**
+       * @method addClose
+       * @param {Function} fn
+       */
       addClose(fn){
         for ( let i = 0; i < arguments.length; i++ ){
           if ( typeof arguments[i] === 'function' ){
@@ -207,19 +254,38 @@
           }
         }
       },
+      /**
+       * @method removeClose
+       * @param {Function} fn
+       */
       removeClose(fn){
-        if ( !fn ){
+        if (!fn) {
           this.closingFunctions = [];
         }
-        else{
+        else {
           this.closingFunctions = bbn.fn.filter(this.closingFunctions, f => {
             return fn !== f;
           })
         }
       },
-      floaterClose(e, floater){
+      /**
+       * @method floaterClose
+       * @param {Event} e
+       * @fires close
+       */
+      floaterClose(e){
         this.close(false, e);
       },
+      /**
+       * @method close
+       * @param {Boolean} force
+       * @param {Event} ev
+       * @emits {beforeClose}
+       * @fires beforeClose
+       * @fires $nextTick
+       * @fires afterClose
+       * @emits close
+       */
       close(force, ev){
         let ok = true;
         if ( !ev ){
