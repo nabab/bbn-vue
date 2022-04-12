@@ -14,42 +14,19 @@
 
   Vue.component('bbn-window', {
     name: 'bbn-window',
-    /** 
+    /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.resizerComponent
+     * @mixin bbn.vue.dimensionsComponent
      */
-    mixins: 
-    [
-      bbn.vue.basicComponent, 
-      bbn.vue.resizerComponent
+    mixins: [
+      bbn.vue.basicComponent,
+      bbn.vue.resizerComponent,
+      bbn.vue.dimensionsComponent,
     ],
     props: {
       /**
-       * @prop {(String|Number|Boolean)} width
-       */
-      width: {
-        type: [String, Number, Boolean]
-      },
-      /**
-       * @prop {(String|Number|Boolean)} height
-       */
-      height: {
-        type: [String, Number, Boolean]
-      },
-      /**
-       * @prop {(String|Number)} minWidth
-       */
-      minWidth: {
-        type: [String, Number]
-      },
-      /**
-       * @prop {(String|Number)} minHeight
-       */
-      minHeight: {
-        type: [String, Number]
-      },
-      /**
-       * @prop {Boolean} [true] maximazable 
+       * @prop {Boolean} [true] maximazable
        */
       maximizable: {
         type: Boolean,
@@ -115,7 +92,7 @@
         type: Function
       },
       /**
-       * @prop {(Function|String|Object)} footer
+       * @prop {Function|String|Object} footer
        */
       footer: {
         type: [Function, String, Object]
@@ -139,38 +116,32 @@
         }
       },
       /**
-       * @prop {(String|Function|Object)} component
+       * @prop {String|Function|Object} component
        */
        component: {
         type: [String, Function, Object]
       },
       /**
-       * @prop {(String|Boolean)} ['Untitled'] title
+       * @prop {String|Boolean} ['Untitled'] title
        */
       title: {
         type: [String, Boolean],
         default: bbn._("Untitled")
       },
       /**
-       * @prop {(Number)} index
-       */
-      index: {
-        type: Number
-      },
-      /**
-       * @prop {(String)} uid
+       * @prop {String} uid
        */
       uid: {
         type: String
       },
       /**
-       * @prop {(String)} content
+       * @prop {String} content
        */
       content: {
         type: String
       },
       /**
-       * @prop {(String)} mode
+       * @prop {String} mode
        */
       mode: {
         type: String
@@ -190,8 +161,6 @@
         closingFunctions: fns,
         showContent: false,
         popup: false,
-        maxHeight: null,
-        maxWidth: null,
         containerCSS: {opacity: 0}
       }
     },
@@ -287,34 +256,27 @@
         })
       }
     },
+    /**
+     * @event created
+     * @fires closest
+     */
     created(){
       this.popup = this.closest('bbn-popup');
     },
+    /**
+     * @event mounted
+     * @fires onResize
+     */
     mounted(){
       this.ready = true;
-      /*
-      if ( this.resizable ){
-        $(this.getRef('window')).resizable({
-          handles: "se",
-          containment: ".bbn-popup",
-          stop: () => {
-            this.selfEmit(true);
-          }
-        });
-      }
-      */
       this.onResize();
-      // It shouldn't be centered if it's draggable
-      /*
-      if ( this.draggable ){
-        $(this.getRef('window')).draggable({
-          handle: 'header > h4',
-          containment: ".bbn-popup"
-        });
-      }
-      */
     },
     watch: {
+      /**
+       * @watch isMaximized
+       * @fires $nextTick
+       * @fires selfEmit
+       */
       isMaximized(){
         this.$nextTick(() => {
           this.selfEmit(true);
