@@ -8,8 +8,12 @@
               :maximizable="maximizable"
               :closable="closable"
               :animation="true"
-              :width="width || null"
-              :height="height || null"
+              :width="width"
+              :height="height"
+              :min-width="minWidth"
+              :max-width="maxWidth"
+              :min-height="minHeight"
+              :max-height="maxHeight"
               :component="component"
               :buttons="buttons"
               :footer="footer"
@@ -18,7 +22,13 @@
               :container="$el"
               @beforeClose="floaterClose"
               :latency="500"
-              @keydown.esc.prevent.stop="close">
+              @keydown.esc.prevent.stop="close"
+              :scrollable="scrollable"
+              :draggable="draggable"
+              :resizable="resizable"
+              :on-open="onOpen"
+              :on-close="onClose"
+              :uid="uid">
     <slot></slot>
   </bbn-floater>
 </div>
