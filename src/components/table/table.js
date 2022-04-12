@@ -2586,12 +2586,15 @@
                   if (maxWidth && (a.realWidth > maxWidth)) {
                     a.realWidth = maxWidth;
                   }
+                  if ( a.buttons !== undefined ) {
+                    colButtons = i;
+                  }
                   if (a.fixed) {
                     if ((a.fixed === 'left')
                       || ((a.fixed !== 'right') && (this.fixedDefaultSide === 'left'))
                     ) {
                       if ( a.buttons !== undefined ) {
-                        colButtons = groupCols[0].cols.length;
+                        //colButtons = groupCols[0].cols.length;
                       }
                       groupCols[0].cols.push(a);
                       if (!a.hidden) {
@@ -2600,7 +2603,7 @@
                     }
                     else {
                       if ( a.buttons !== undefined ) {
-                        colButtons = groupCols[0].cols.length + groupCols[1].cols.length + groupCols[2].cols.length;
+                        //colButtons = groupCols[0].cols.length + groupCols[1].cols.length + groupCols[2].cols.length;
                       }
                       groupCols[2].cols.push(a);
                       if (!a.hidden) {
@@ -2610,7 +2613,7 @@
                   }
                   else {
                     if ( a.buttons !== undefined ) {
-                      colButtons = groupCols[0].cols.length + groupCols[1].cols.length;
+                      //colButtons = groupCols[0].cols.length + groupCols[1].cols.length;
                     }
                     groupCols[1].cols.push(a);
                     if (!a.hidden) {
