@@ -952,8 +952,34 @@
               this.expander(data[i], i) :
               this.expander;
             isExpanded = exp ?
-              this.currentExpanded.includes(data[i].index) :
+              (this.currentExpanded.includes(data[i].index) || this.allExpanded) :
               false;
+            if (!isGroup) {
+              let tmp = {
+                index: data[i].index,
+                data: a,
+                rowIndex: rowIndex,
+                rowKey: data[i].key,
+                expander: true,
+                expanded: isExpanded
+              };
+              if (this.selection
+                && (!bbn.fn.isFunction(this.selection)
+                  || this.selection(tmp))
+              ) {
+                tmp.selected = (!this.uid
+                    && this.currentSelected.includes(data[i].index))
+                  || (this.uid
+                    && this.currentSelected.includes(data[i].data[this.uid]));
+                tmp.selection = true;
+                groupNumCheckboxes++;
+                if (tmp.selected) {
+                  groupNumChecked++;
+                }
+              }
+              res.push(tmp);
+              rowIndex++;
+            }
           }
 
           if (!isGroup
@@ -989,6 +1015,9 @@
               o.rowKey = rowIndex + '-' + data[i].key;
             }
             if (this.selection
+              && ((!o.isGrouped && !this.expander)
+                || (o.isGrouped && !o.expander)
+                || (o.isGrouped && o.expansion))
               && (!bbn.fn.isFunction(this.selection)
                 || this.selection(o))
             ) {
