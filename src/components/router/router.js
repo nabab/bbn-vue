@@ -2503,7 +2503,7 @@
        * @method getConfig
        * @return {Object}
        */
-      getConfig(){
+      getConfig() {
         let cfg = {
           baseURL: this.parentContainer ? this.parentContainer.getFullURL() : this.storageName,
           views: [],

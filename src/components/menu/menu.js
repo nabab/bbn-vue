@@ -42,8 +42,14 @@
       /**
        * @prop {} ['text'] sourceValue
        */
-      sourceValue: {
+       sourceValue: {
         default: 'text'
+      },
+      /**
+       * @prop {} ['url'] sourceUrl
+       */
+       sourceUrl: {
+        default: 'url'
       },
       /**
        * @prop {String} ['items'] children
@@ -102,6 +108,10 @@
         //getRef('li' + selectedElement).blur(); selectedElement = -1;
       },
       select(item, idx, idx2, ev) {
+        if (this.sourceUrl && item[this.sourceUrl]) {
+          bbn.fn.link(item.url);
+        }
+
         this.$emit('select', item, idx, idx2, ev);
       }
       /*onDataLoaded(){         
