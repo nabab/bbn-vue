@@ -80,7 +80,7 @@
        */
       dimensionPreview:{
         type: [Number, String],
-        default: '5vmin'
+        default: '60px'
       },
       /**
        * Set to true enables the autoplay using the default autoplay time (5000ms). If a number is given, multiplied * 1000, will define the new autoplay time .
@@ -817,7 +817,7 @@
           getImgSrc(content){
             return content.match(/data\:image\/[a-zA-Z]*\;base64/)
               ? content
-              : `${content}${content.indexOf('?') > -1 ? '&' : '?'}w=${this.dimension}&thumb=1`;
+              : `${content}${content.indexOf('?') > -1 ? '&' : '?'}w=${this.dimension.match(/\d+/)}&thumb=1`;
           },
           init(){
             const elem = this.$el.querySelector('div.bbn-slideshow-zoom div.bbn-slideshow-content');
