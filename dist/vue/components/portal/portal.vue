@@ -9,27 +9,11 @@
 (function(bbn){
   "use strict";
 
-  // This alphabet uses `A-Za-z0-9_-` symbols. The genetic algorithm helped
-  // optimize the gzip compression for this alphabet.
-  let urlAlphabet =
-    'ModuleSymbhasOwnPr-0123456789ABCDEFGHNRVfgctiUvz_KqYTJkLxpZXIjQW';
-
-  let nanoid = (size = 21) => {
-    let id = '';
-    // A compact alternative for `for (var i = 0; i < step; i++)`.
-    let i = size;
-    while (i--) {
-      // `| 0` is more compact and faster than `Math.floor()`.
-      id += urlAlphabet[(Math.random() * 64) | 0];
-    }
-    return id
+  let config = {
+    selector: "bbn-portal-target-" + bbn.fn.randomString(20, 30)
   };
 
-  var config = {
-    selector: "bbn-portal-target-".concat(nanoid())
-  };
-
-  var TargetContainer = Vue.extend({
+  let TargetContainer = Vue.extend({
     // as an abstract component, it doesn't appear in
     // the $parent chain of components.
     // which means the next parent of any component rendered inside of this oen
@@ -79,8 +63,8 @@
        * @prop {String} [''] selector
        */
       selector: {
-        type: String,
-        default: () => `#${config.selector}`,
+        type: [HTMLElement, String],
+        required: true
       },
       /**
        * @prop {String} ['div'] tag
@@ -89,6 +73,11 @@
         type: String,
         default: 'DIV',
       },
+    },
+    data() {
+      return {
+        randomId: bbn.fn.randomString(20, 30)
+      }
     },
     render(h) {
       if (this.disabled) {
@@ -133,12 +122,12 @@
     methods: {
       // This returns the element into which the content should be mounted.
       getTargetEl() {
-        return document.querySelector(this.selector)
+        return bbn.fn.isString(this.selector) ? document.querySelector(this.selector) : this.selector;
       },
       insertTargetEl() {
         const parent = document.querySelector('body');
         const child = document.createElement(this.tag);
-        child.id = this.selector.substring(1);
+        child.id = this.randomId;
         parent.appendChild(child);
       },
       mount() {

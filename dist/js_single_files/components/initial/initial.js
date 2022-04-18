@@ -2,20 +2,18 @@
 
 let script = document.createElement('script');
 script.innerHTML = `<span :class="['bbn-iblock', 'bbn-unselectable', componentClass]"
-      :title="userName || name"
+      :title="currentName"
       :style="{
         'background-color': currentColor,
         width: currentWidth,
         height: currentHeight,
         'border-radius': currentRadius,
         '-moz-border-radius': currentRadius
-      }"
->
+      }">
   <div class="bbn-100 bbn-middle">
     <div class="bbn-block"
          :style="fontStyle"
-         v-text="currentLetters">
-    </div>
+         v-text="currentLetters"/>
   </div>
 </span>`;
 script.setAttribute('id', 'bbn-tpl-component-initial');
@@ -40,8 +38,6 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
 (function(bbn){
   "use strict";
 
-  let colors = ["#1abc9c", "#16a085", "#f1c40f", "#f39c12", "#2ecc71", "#27ae60", "#e67e22", "#d35400", "#3498db", "#2980b9", "#e74c3c", "#c0392b", "#9b59b6", "#8e44ad", "#bdc3c7", "#34495e", "#2c3e50", "#95a5a6", "#7f8c8d", "#ec87bf", "#d870ad", "#f69785", "#9ba37e", "#b49255", "#b49255", "#a94136"];
-
   /**
    * Initals
    */
@@ -63,10 +59,6 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @prop {String} userName
        */
       userName: {
-        type: String,
-      },
-      //@todo not used
-      email: {
         type: String,
       },
       /**
@@ -146,7 +138,6 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       /**
        * The border-radius of the main container.
        * @prop {(Number|String)} [3] radius
-       * 
        */
       radius: {
         type: [Number, String],
@@ -182,18 +173,15 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           return window.appui && appui.app && appui.app.users ? 'value' : 'id'
         }
       },
-      // @todo not used
-      url: {
-        type: String
-      }
-    },
-    data(){
-      return {
-        /**
-         * The user's name.
-         * @data {String} name
-         */
-        name: this.userName
+      /**
+       * The background colors palette
+       * @prop {Array} [['#1abc9c', '#16a085', '#f1c40f', '#f39c12', '#2ecc71', '#27ae60', '#e67e22', '#d35400', '#3498db', '#2980b9', '#e74c3c', '#c0392b', '#9b59b6', '#8e44ad', '#bdc3c7', '#34495e', '#2c3e50', '#95a5a6', '#7f8c8d', '#ec87bf', '#d870ad', '#f69785', '#9ba37e', '#b49255', '#b49255', '#a94136']] colors
+       */
+      colors: {
+        type: Array,
+        default(){
+          return ['#1abc9c', '#16a085', '#f1c40f', '#f39c12', '#2ecc71', '#27ae60', '#e67e22', '#d35400', '#3498db', '#2980b9', '#e74c3c', '#c0392b', '#9b59b6', '#8e44ad', '#bdc3c7', '#34495e', '#2c3e50', '#95a5a6', '#7f8c8d', '#ec87bf', '#d870ad', '#f69785', '#9ba37e', '#b49255', '#b49255', '#a94136']
+        }
       }
     },
     computed: {
@@ -214,21 +202,29 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         return o;
       },
       /**
+       * The current name
+       * @computed currentName
+       * @return {String}
+       */
+      currentName(){
+        let name = this.userName;
+        if ( !name && this.userId && this.source ){
+          name = bbn.fn.getField(this.source, this.nameField, this.idField, this.userId);
+        }
+        return name;
+      },
+      /**
        * The letters that will be shown in the component.
        * @computed currentLetters
        * @return {String}
        */
       currentLetters(){
-        let currentLetters = '',
-            name = this.userName;
+        let currentLetters = '';
         if ( this.letters ){
           currentLetters = this.letters;
         }
-        if ( !name && this.userId && this.source ){
-          name = bbn.fn.getField(this.source, this.nameField, this.idField, this.userId);
-        }
-        if ( !this.letters && name ){
-          let tmp = bbn.fn.removeEmpty(name.split(" "));
+        if (!this.letters && this.currentName ) {
+          let tmp = bbn.fn.removeEmpty(this.currentName.split(' '));
           while ( (tmp.length > this.charCount) && (tmp[0].length <= 3) ){
             tmp.shift();
           }
@@ -256,8 +252,8 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           sum += name ?
             bbn.fn.substr(this.userName, -1).charCodeAt() :
             bbn.fn.substr(this.currentLetters, 0, 1).charCodeAt();
-          let colorIndex = Math.floor(sum % colors.length);
-          col = colors[colorIndex]
+          let colorIndex = Math.floor(sum % this.colors.length);
+          col = this.colors[colorIndex]
         }
         return col ? col : '#000'
       },
@@ -299,13 +295,6 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        */
       currentRadius(){
         return bbn.fn.isNumber(this.radius) ? this.radius + 'px' : this.radius;
-      }
-    },
-    methods:{
-    },
-    watch: {
-      userId(va, oldVa){
-        bbn.fn.log("CHANGE OF USER", va, oldVa)
       }
     }
   });

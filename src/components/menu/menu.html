@@ -18,6 +18,7 @@
         @mouseenter="_enterLi(i)">
       <a v-if="item.data.url"
          :href="item.data.url"
+         @click.stop.prevent="clickLi(i, $event)"
          v-html="item.data.text"/>
       <span v-else
             v-html="item.data.text"/>

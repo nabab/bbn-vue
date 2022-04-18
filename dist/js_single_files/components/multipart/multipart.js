@@ -12,6 +12,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-overlay', 'bbn-flex-width
   <div class="bbn-h-100 bbn-flex-fill">
     <bbn-form :full-size="true"
               v-bind="$options.propsData"
+              mode="big"
               ref="form">
       <div class="bbn-abs bbn-no"
            style="width: 1px; height: 1px; background-color: transparent"

@@ -296,7 +296,10 @@
       /**
        * @prop String mode Mode for buttons: normal or big
        */
-       mode: 'normal'
+       mode: {
+         type: String,
+         default: 'normal'
+       }
     },
     data(){
       let currentSchema = [];
@@ -395,7 +398,7 @@
        * @return {Boolean}
        */
       _canSubmit(){
-        return (this.prefilled || this.isModified()) && this.isValid(false, false);
+        return (this.prefilled || this.isModified()) && this.isValid(false, false) && !this.disabled;
       },
       /**
        * Returns an array containing the form's buttons.
@@ -671,6 +674,9 @@
         }
 
         if ( !force ){
+          if (this.disabled) {
+            return;
+          }
           let ev = new Event('submit', {cancelable: true});
           this.$emit('submit', ev, this);
           if ( ev.defaultPrevented ){
@@ -785,7 +791,7 @@
             });
           }
           if ( focusable ){
-            focusable.focus();
+            //focusable.focus();
           }
         }
       },

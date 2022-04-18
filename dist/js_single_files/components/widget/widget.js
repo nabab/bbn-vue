@@ -159,7 +159,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
      * @mixin bbn.vue.observerComponent,
      * @mixin bbn.vue.resizerComponent
      */
-    mixins: 
+    mixins:
     [
       bbn.vue.basicComponent,
       bbn.vue.localStorageComponent,
@@ -221,12 +221,6 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         default: 0
       },
       /**
-       * @prop template
-       */
-      template: {
-
-      },
-      /**
        * @prop {Boolean} [false] hideEmpty
        */
       hideEmpty: {
@@ -238,12 +232,6 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        */
       component: {
         type: [String, Object]
-      },
-      /**
-       * @prop {String} itemTemplate
-       */
-      itemTemplate: {
-        type: String
       },
       /**
        * @prop {(String|Object)} itemComponent
@@ -426,18 +414,45 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
     },
     data(){
       return {
+        /**
+         * @data {Boolean} _1stRun
+         */
         _1stRun: false,
+        /**
+         * @data {Boolean} isLoading
+         */
         isLoading: false,
+        /**
+         * @data dashboard
+         */
         dashboard: false,
+        /**
+         * @data currentItems
+         */
         currentItems: this.items,
+        /**
+         * @data currentStart
+         */
         currentStart: this.start,
+        /**
+         * @data currentTotal
+         */
         currentTotal: this.total,
+        /**
+         * @data currentContent
+         */
         currentContent: this.content || false,
+        /**
+         * @data currentSource
+         */
         currentSource: this.source,
-        lang: {
-          close: bbn._("Close")
-        },
+        /**
+         * @data {Array} [[]] realButtonsRight
+         */
         realButtonsRight: [],
+        /**
+         * @data {Array} [[]] realButtonsLeft
+         */
         realButtonsLeft: []
       };
     },
@@ -452,25 +467,44 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         }
         return this.padding;
       },
+      /**
+       * @computed isClosable
+       * @return {Boolean}
+       */
       isClosable() {
         return this.dadhboard && this.dashboard.closable && this.closable;
-
       },
+      /**
+       * @computed currentPage
+       * @return {Number}
+       */
       currentPage(){
         if ( this.currentTotal > this.limit ){
           return (this.currentStart + this.limit) / this.limit;
         }
         return 0;
       },
+      /**
+       * @computed totalPages
+       * @return {Number}
+       */
       totalPages(){
         if ( this.currentTotal > this.limit ){
           return Math.ceil(this.currentTotal / this.limit);
         }
         return 1;
       },
+      /**
+       * @computed hasMenu
+       * @return {Boolean}
+       */
       hasMenu(){
         return !!this.finalMenu.length;
       },
+      /**
+       * @computed finalMenu
+       * @return {Array}
+       */
       finalMenu(){
         let tmp = this.menu.slice();
         if ( this.url ){
@@ -504,22 +538,47 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       }
     },
     methods: {
-      _: bbn._,
+      /**
+       * @method updateButtons
+       */
       updateButtons(){
         this.realButtonsLeft = bbn.fn.isFunction(this.buttonsLeft) ? this.buttonsLeft() : this.buttonsLeft;
         this.realButtonsRight = bbn.fn.isFunction(this.buttonsRight) ? this.buttonsRight() : this.buttonsRight;
       },
+      /**
+       * @method close
+       * @emits close
+       */
       close(){
         this.$emit("close", this.uid, this);
       },
-      zoom(){
-      },
+      /**
+       * @method zoom
+       */
+      zoom(){},
+      /**
+       * @method reload
+       * @fires $nextTick
+       * @fires load
+       */
       reload(){
         this.currentItems = [];
         this.$nextTick(() => {
           this.load();
         });
       },
+      /**
+       * @method load
+       * @fires $forceUpdate
+       * @fires post
+       * @fires dashboard.updateWidget
+       * @fires observerWatch
+       * @fires $nextTick
+       * @fires onResize
+       * @fires $set
+       * @emits loaded
+       * @return {Promise}
+       */
       load(){
         if ( this.url ){
           let params = {
@@ -588,6 +647,11 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           })
         }
       },
+      /**
+       * @method nav
+       * @param {String} arg
+       * @fires load
+       */
       nav(arg){
         let newStart = false;
         switch ( arg ){
@@ -609,7 +673,11 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           this.load();
         }
       },
-      actionButton(name, uid){
+      /**
+       * @method actionButton
+       * @param name
+       */
+      actionButton(name){
         let tmp = this;
         let comp = this.component || this.itemComponent;
         if (!bbn.fn.isString(comp)) {
@@ -631,6 +699,10 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           tmp = tmp.$parent;
         }
       },
+      /**
+       * @method setConfig
+       * @fires dashboard.setConfig
+       */
       setConfig(){
         if ( this.dashboard ){
           this.dashboard.setConfig(this.uid, {
@@ -642,35 +714,48 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         }
       }
     },
+    /**
+     * @event created
+     * @fires updateButtons
+     */
     created(){
       this.updateButtons();
     },
+    /**
+     * @event beforeMount
+     */
     beforeMount(){
       this.dashboard = bbn.vue.closest(this, "bbn-dashboard");
     },
+    /**
+     * @event mounted
+     * @fires setResizeEvent
+     * @fires load
+     */
     mounted(){
       this.setResizeEvent();
       this.load().then(() => {
         this.ready = true;
       });
     },
+    /**
+     * @event updated
+     * @fires dadhboard.selfEmit
+     */
     updated(){
       if ( this.dashboard ){
         this.dashboard.selfEmit(true);
       }
     },
     watch: {
-      limit(newVal){
+      /**
+       * @watch limit
+       * @fires load
+       */
+      limit(){
         this.load();
       },
-      /*
-      hidden(newVal){
-        if ( !newVal ){
-          this.load();
-        }
-      },
-      */
-     /**
+      /**
       * @watch observerDirty
       * @param {Boolean} newVal
       * @fires load
@@ -681,11 +766,23 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           this.load();
         }
       },
+      /**
+       * @watch source
+       * @param {Object} newVal
+       */
       source: {
         deep: true,
         handler(newVal){
           this.currentSource = newVal
         }
+      },
+      /**
+       * @watch url
+       * @param {Boolean|String} newVal
+       * @fires reload
+       */
+      url(newVal){
+        this.reload();
       }
     }
   });

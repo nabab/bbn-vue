@@ -5,9 +5,7 @@ script.innerHTML = `<div :class="['bbn-overlay', componentClass]"
      v-show="showPopup"
      @subready.stop
      :style="{zIndex: zIndex}"
-     v-if="ready"
->
-
+     v-if="ready">
   <bbn-floater v-for="(popup, i) in popups"
                :key="popup.uid"
                :ref="popup.uid"
@@ -38,34 +36,22 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
  * @created 15/02/2017
  */
 
-(function(bbn){
+(function (bbn) {
   "use strict";
 
   Vue.component('bbn-popup', {
     /**
      * @mixin bbn.vue.basicComponent
-     * @minix bbn.vue.resizerComponent
+     * @mixin bbn.vue.resizerComponent
+     * @mixin bbn.vue.positionComponent
      */
-    mixins: 
-    [
-      bbn.vue.basicComponent, 
-      bbn.vue.resizerComponent
-    ],
+    mixins:
+      [
+        bbn.vue.basicComponent,
+        bbn.vue.resizerComponent,
+        bbn.vue.positionComponent
+      ],
     props: {
-      /**
-       * @prop {String|Number} ['70%'] defaultWidth
-       */
-      defaultWidth: {
-        type: [String, Number],
-        default: '70%'
-      },
-      /**
-       * @prop {String|Number} ['70%'] defaultHeight
-       */
-      defaultHeight: {
-        type: [String, Number],
-        default: '70%'
-      },
       /**
        * @prop {String} ['United'] united
        */
@@ -78,7 +64,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        */
       source: {
         type: Array,
-        default: function(){
+        default: function () {
           return [];
         }
       },
@@ -132,7 +118,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         default: bbn._("No")
       }
     },
-    data: function(){
+    data() {
       return {
         /**
          * @data [false] type
@@ -145,7 +131,11 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       };
     },
     computed: {
-      numPopups(){
+      /**
+       * @computed numPopups
+       * @return {Number}
+       */
+      numPopups() {
         return this.items.length
       },
       /**
@@ -153,7 +143,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @fires getObject
        * @return {Array}
        */
-      popups(){
+      popups() {
         let r = [];
         bbn.fn.each(this.items, (a, i) => {
           //r.push(this.getObject(bbn.fn.extendOut(a, {index: i})));
@@ -169,7 +159,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @computed showPopup
        * @return {Boolean}
        */
-      showPopup(){
+      showPopup() {
         return this.items.length > 0;
       }
     },
@@ -184,48 +174,48 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @param {Object} obj
        * @return {String|Boolean}
        */
-      open(obj){
+      open(obj) {
         let d = {};
-        if ( typeof(obj) !== 'object' ){
-          for ( let i = 0; i < arguments.length; i++ ){
-            if ( !d.content && (typeof(arguments[i]) === 'string') ){
+        if (typeof (obj) !== 'object') {
+          for (let i = 0; i < arguments.length; i++) {
+            if (!d.content && (typeof (arguments[i]) === 'string')) {
               d.content = arguments[i];
             }
-            else if ( bbn.fn.isDimension(arguments[i]) ){
-              if ( !d.width ){
+            else if (bbn.fn.isDimension(arguments[i])) {
+              if (!d.width) {
                 d.width = arguments[i];
               }
-              else if ( !d.height ){
+              else if (!d.height) {
                 d.height = arguments[i];
               }
             }
-            else if ( !d.title && (typeof(arguments[i]) === 'string') ){
+            else if (!d.title && (typeof (arguments[i]) === 'string')) {
               d.title = arguments[i];
             }
-            else if ( !d.title && (arguments[i] === false) ){
+            else if (!d.title && (arguments[i] === false)) {
               d.title = false;
             }
-            else if (bbn.fn.isFunction(arguments[i]) ){
-              if ( !d.onOpen ){
+            else if (bbn.fn.isFunction(arguments[i])) {
+              if (!d.onOpen) {
                 d.onOpen = arguments[i];
               }
-              else if ( !d.onClose ){
+              else if (!d.onClose) {
                 d.onClose = arguments[i];
               }
             }
-            else if ( typeof(arguments[i]) === 'object' ){
+            else if (typeof (arguments[i]) === 'object') {
               d.options = arguments[i];
             }
           }
-          if ( !d.height ){
+          if (!d.height) {
             d.height = false;
           }
         }
-        else{
+        else {
           d = obj;
         }
-        if ( d ){
-          if ( !d.uid ){
+        if (d) {
+          if (!d.uid) {
             d.uid = 'bbn-popup-' + bbn.fn.timestamp().toString() + '-' + bbn.fn.randomString(4, 6);
           }
           d.index = this.items.length;
@@ -233,7 +223,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           //this.makeWindows();
           return d.uid;
         }
-        else{
+        else {
           new Error("You must give a title and either a content or a component to a popup")
         }
         return false;
@@ -244,56 +234,56 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @fires post
        * @fires makeWindows
        */
-      load(obj){
+      load(obj) {
         let d = {};
-        if ( typeof(obj) !== 'object' ){
-          for ( let i = 0; i < arguments.length; i++ ){
-            if ( !d.url && (typeof(arguments[i]) === 'string') ){
+        if (typeof (obj) !== 'object') {
+          for (let i = 0; i < arguments.length; i++) {
+            if (!d.url && (typeof (arguments[i]) === 'string')) {
               d.url = arguments[i];
             }
-            else if ( bbn.fn.isDimension(arguments[i]) || (arguments[i] === 'auto') ){
-              if ( !d.width ){
+            else if (bbn.fn.isDimension(arguments[i]) || (arguments[i] === 'auto')) {
+              if (!d.width) {
                 d.width = arguments[i];
               }
-              else if ( !d.height ){
+              else if (!d.height) {
                 d.height = arguments[i];
               }
             }
-            else if (bbn.fn.isFunction(arguments[i]) ){
-              if ( !d.onOpen ){
+            else if (bbn.fn.isFunction(arguments[i])) {
+              if (!d.onOpen) {
                 d.onOpen = arguments[i];
               }
-              else if ( !d.close ){
+              else if (!d.close) {
                 d.onClose = arguments[i];
               }
             }
-            else if ( typeof(arguments[i]) === 'object' ){
-              if ( !d.data ){
+            else if (typeof (arguments[i]) === 'object') {
+              if (!d.data) {
                 d.data = arguments[i];
               }
-              else if ( !d.options ){
+              else if (!d.options) {
                 d.options = arguments[i];
               }
             }
           }
-          if ( !d.height ){
+          if (!d.height) {
             d.height = false;
           }
         }
-        else{
+        else {
           d = obj;
         }
-        if ( d.url ){
+        if (d.url) {
           return this.post(d.url, d.data || {}, r => {
-            if ( r.content || r.title ){
-              if ( r.script ){
+            if (r.content || r.title) {
+              if (r.script) {
                 let tmp = eval(r.script);
                 delete r.script;
-                if (bbn.fn.isFunction(tmp) ){
+                if (bbn.fn.isFunction(tmp)) {
                   d.open = tmp;
                 }
                 // anonymous vuejs component initialization
-                else if ( typeof(tmp) === 'object' ){
+                else if (typeof (tmp) === 'object') {
                   bbn.fn.extendOut(tmp, {
                     name: bbn.fn.randomString(20, 15).toLowerCase(),
                     template: '<div class="bbn-overlay">' + (r.content || '') + '</div>',
@@ -308,20 +298,23 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
               bbn.fn.extend(d, r);
               delete d.url;
               delete d.data;
-              if ( !d.uid ){
+              if (!d.uid) {
                 d.uid = 'bbn-popup-' + bbn.fn.timestamp().toString();
               }
               d.index = this.items.length;
-              bbn.fn.log("WIN", d);
               this.items.push(d);
               this.makeWindows();
             }
           })
         }
-        else{
+        else {
           new Error("You must give a URL in order to load a popup")
         }
       },
+      /**
+       * @method onClose
+       * @param {Number} index
+       */
       onClose(index) {
         this.items.splice(index, 1);
       },
@@ -330,14 +323,14 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @param {Object} a
        * @return {Object}
        */
-      getObject(a){
-        if ( !a.uid ){
+      getObject(a) {
+        if (!a.uid) {
           a.uid = 'bbn-popup-' + bbn.fn.timestamp().toString()
         }
-        if ( a.closable === undefined ){
+        if (a.closable === undefined) {
           a.closable = true;
         }
-        if ( (a.title === undefined) && this.untitled ){
+        if ((a.title === undefined) && this.untitled) {
           a.title = this.untitled;
         }
         if (a.draggable === undefined) {
@@ -350,7 +343,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @fires open
        * @return {String|Boolean}
        */
-      loading(){
+      loading() {
         return this.open({
           title: false,
           content: `
@@ -368,12 +361,12 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @param {Boolean} force
        * @fires getWindows
        */
-      close(idx, force){
-        if ( idx === undefined ){
+      close(idx, force) {
+        if (idx === undefined) {
           idx = this.items.length - 1;
         }
         let win = this.getWindow(idx);
-        if ( this.items[idx] && win ){
+        if (this.items[idx] && win) {
           win.close(force);
           this.$forceUpdate();
         }
@@ -383,14 +376,14 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @param {String} uid
        * @return {Number}
        */
-      getIndexByUID(uid){
-        return bbn.fn.search(this.items, {uid: uid});
+      getIndexByUID(uid) {
+        return bbn.fn.search(this.items, { uid: uid });
       },
       /**
        * @method alert
        * @fires open
        */
-      alert(){
+      alert() {
         let has_msg = false;
         let has_title = false;
         let has_width = false;
@@ -399,32 +392,32 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         let onOpen;
         let onClose;
         let o = {};
-        for (let i = 0; i < arguments.length; i++ ){
-          if ( !has_msg && (typeof(arguments[i]) === 'string') ){
+        for (let i = 0; i < arguments.length; i++) {
+          if (!has_msg && (typeof (arguments[i]) === 'string')) {
             o.content = arguments[i];
             has_msg = 1;
           }
-          else if ( bbn.fn.isDimension(arguments[i]) || (arguments[i] === 'auto') ){
-            if ( has_width ){
+          else if (bbn.fn.isDimension(arguments[i]) || (arguments[i] === 'auto')) {
+            if (has_width) {
               o.height = arguments[i];
             }
-            else{
+            else {
               o.width = arguments[i];
               has_width = 1;
             }
           }
-          else if ( !has_title && (typeof arguments[i] === 'string') ){
+          else if (!has_title && (typeof arguments[i] === 'string')) {
             o.title = arguments[i];
             has_title = true;
           }
-          else if ( typeof arguments[i] === 'string' ){
+          else if (typeof arguments[i] === 'string') {
             okText = arguments[i];
           }
-          else if (bbn.fn.isFunction(arguments[i]) ){
-            if ( has_callback ){
+          else if (bbn.fn.isFunction(arguments[i])) {
+            if (has_callback) {
               onClose = arguments[i];
             }
-            else{
+            else {
               onOpen = arguments[i];
               has_callback = 1;
             }
@@ -436,17 +429,17 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
             bbn.fn.extend(o, arguments[i]);
           }
         }
-        if ( typeof(o) === 'object' ){
+        if (typeof (o) === 'object') {
           if (o.closable === undefined) {
             o.closable = true;
           }
-          if ( !o.content ){
+          if (!o.content) {
             o.content = this.alertMessage;
           }
           if (!o.title) {
             o.title = false;
           }
-          if ( !okText ){
+          if (!okText) {
             okText = this.okText;
           }
           o.content = '<div class="' + (this.isMobile || this.isTablet ? 'bbn-padded' : 'bbn-lpadded') + ' bbn-large bbn-c" style="min-width: ' + (this.isMobile || this.isTablet ? '15' : '30') + 'em">' + o.content + '</div>';
@@ -455,8 +448,8 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
             cls: 'bbn-primary',
             icon: 'nf nf-fa-check_circle',
             focused: true,
-            action($ev, btn){
-              if ( onClose ){
+            action($ev, btn) {
+              if (onClose) {
                 onClose($ev, btn);
               }
               btn.closest('bbn-floater').close(true);
@@ -484,7 +477,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @method confirm
        * @fires open
        */
-      confirm(){
+      confirm() {
         let onYes = false;
         let onNo = false;
         let yesText = bbn._('Yes');
@@ -499,51 +492,51 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           o = arguments[0];
         }
         else {
-          for ( i = 0; i < arguments.length; i++ ){
-            if ( !has_msg && (typeof(arguments[i]) === 'string') ){
+          for (i = 0; i < arguments.length; i++) {
+            if (!has_msg && (typeof (arguments[i]) === 'string')) {
               o.content = arguments[i];
               has_msg = 1;
             }
-            else if ( bbn.fn.isDimension(arguments[i]) || (arguments[i] === 'auto') ){
-              if ( has_width ){
+            else if (bbn.fn.isDimension(arguments[i]) || (arguments[i] === 'auto')) {
+              if (has_width) {
                 o.height = arguments[i];
               }
-              else{
+              else {
                 o.width = arguments[i];
                 has_width = 1;
               }
             }
-            else if ( (typeof arguments[i] === 'string') ){
-              if ( !has_yes ){
+            else if ((typeof arguments[i] === 'string')) {
+              if (!has_yes) {
                 yesText = arguments[i];
                 has_yes = true;
               }
-              else{
+              else {
                 noText = arguments[i];
               }
             }
-            else if (bbn.fn.isFunction(arguments[i]) ){
-              if ( onYes ){
+            else if (bbn.fn.isFunction(arguments[i])) {
+              if (onYes) {
                 onNo = arguments[i];
               }
-              else{
+              else {
                 onYes = arguments[i];
               }
             }
             else if (bbn.fn.isVue(arguments[i])) {
               o.opener = arguments[i];
             }
-            else if ( typeof(arguments[i]) === 'object' ){
+            else if (typeof (arguments[i]) === 'object') {
               options = arguments[i];
             }
           }
         }
 
-        if ( (typeof(o) === 'object') && onYes ){
-          if ( !o.content ){
+        if ((typeof (o) === 'object') && onYes) {
+          if (!o.content) {
             o.content = this.confirmMessage;
           }
-          if ( !o.title ){
+          if (!o.title) {
             o.title = false;
           }
 
@@ -564,8 +557,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
             text: yesText,
             cls: 'bbn-primary',
             icon: 'nf nf-fa-check_circle',
-            action($ev, btn){
-              bbn.fn.log("HHHHHHHH", btn);
+            action($ev, btn) {
               btn.closest('bbn-floater').close(true);
               setTimeout(() => {
                 onYes($ev, btn);
@@ -583,7 +575,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       /**
        * @method makeWindows
        */
-      makeWindows(){
+      makeWindows() {
         this.$forceUpdate();
       },
       /**
@@ -591,12 +583,12 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @param {Number} idx
        * @return {Object|Boolean}
        */
-      getWindow(idx){
-        if ( this.popups.length ){
-          if ( idx === undefined ){
+      getWindow(idx) {
+        if (this.popups.length) {
+          if (idx === undefined) {
             idx = this.popups.length - 1;
           }
-          if ( this.popups[idx] ){
+          if (this.popups[idx]) {
             //return bbn.vue.getChildByKey(this.$children[0], this.popups[idx].uid);
             //return bbn.vue.getChildByKey(this, idx);
             return bbn.vue.getChildByKey(this, this.popups[idx].uid);
@@ -605,13 +597,17 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         return false;
       }
     },
-    created(){
+    /**
+     * @event created
+     */
+    created() {
       this.componentClass.push('bbn-resize-emitter');
     },
     /**
      * @event mounted
      */
-    mounted(){
+    mounted() {
+      this.onResize();
       bbn.fn.each(this.popups, a => this.open(a));
     },
     watch: {
@@ -622,7 +618,10 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       items() {
         this.makeWindows();
       },
-      numPopups(v){
+      /**
+       * @watch numPopups
+       */
+      numPopups(v) {
         if (v && !this.ready) {
           this.ready = true;
         }

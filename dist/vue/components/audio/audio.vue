@@ -1,12 +1,11 @@
 <template>
-<div :class="[componentClass, 'bbn-flex-height', {'bbn-box': skin}]"
+<div :class="[componentClass, 'bbn-iflex-height', {'bbn-box': skin}]"
      :style="{
-       width: width,
-       height: height
-     }"
->
+       height: currentHeight,
+       width: currentWidth
+     }">
   <div v-if="title && (titlePosition === 'top')"
-       :class="['bbn-c', {
+       :class="['bbn-c', 'bbn-audio-title', 'bbn-xspadded', {
          'bbn-header': skin,
          'bbn-radius-top': skin,
          'bbn-no-border-top': skin,
@@ -19,28 +18,20 @@
          color: titleColor
        }"
   ></div>
-  <div class="bbn-flex-fill"
-      :style="{
-        background: background || (skin ? '#F1F3F4' : '')
-      }"
-  >
+  <div class="bbn-audio-container bbn-flex-fill bbn-vmiddle"
+       :style="{
+         background: background
+       }">
     <audio ref="audio"
            :autoplay="autoplay"
            :controls="controls"
-           :loop="false"
+           :loop="loop"
            :muted="muted"
            preload="auto"
            :style="{
-             background: background,
-             width: '100%',
-             height: height ? '100%' : ''
+             background: background
            }"
-           :class="[cls, {
-             'bbn-bordered-bottom': skin,
-             'bbn-bordered-left': skin,
-             'bbn-bordered-right': skin,
-             'bbn-radius-bottom': skin
-           }]"
+           :class="cls"
            @play="onPlay"
            @pause="onPause"
     >
@@ -52,7 +43,7 @@
     </audio>
   </div>
   <div v-if="title && (titlePosition === 'bottom')"
-       :class="['bbn-c', {
+       :class="['bbn-c', 'bbn-audio-title', 'bbn-xspadded', {
          'bbn-header': skin,
          'bbn-radius-bottom': skin,
          'bbn-no-border-bottom': skin,
@@ -131,18 +122,17 @@
       },
       /**
        * The player's width
-       * @prop {String} ['100%'] width
+       * @prop {String|Number} width
        */
       width: {
-        type: String,
-        default: '100%'
+        type: [String, Number]
       },
       /**
        * The player's height
-       * @prop {String} height
+       * @prop {String|Number} height
        */
       height: {
-        type: String
+        type: [String, Number]
       },
       /**
        * Specifies that the audio will start playing as soon as it is ready
@@ -215,12 +205,28 @@
     },
     computed: {
       /**
+       * The current formatted width
+       * @computed currentWidth,
+       * @return {String}
+       */
+      currentWidth(){
+        return bbn.fn.isNumber(this.width) ? this.width + 'px' : this.width;
+      },
+      /**
+       * The current formatted height
+       * @computed currentHeight,
+       * @return {String}
+       */
+      currentHeight(){
+        return bbn.fn.isNumber(this.height) ? this.height + 'px' : this.height;
+      },
+      /**
        * Returns the correct media type
        * @computed type
-       * @return String|Boolean
+       * @return {String|Boolean}
        */
       type(){
-        if ( this.source ){
+        if (this.source) {
           switch ( bbn.fn.substr(this.source, this.source.lastIndexOf('.') + 1).toLowerCase() ){
             case 'mp3':
               return 'audio/mpeg';
@@ -236,23 +242,68 @@
       }
     },
     methods: {
+      /**
+       * @method play
+       */
       play(){
         this.widget.play();
       },
+      /**
+       * @method pause
+       */
       pause(){
         this.widget.pause();
       },
+      /**
+       * @method onPay
+       * @emits play
+       */
       onPlay(ev){
         this.$emit('play', ev, this);
       },
+      /**
+       * @method onPause
+       * @emits pause
+       */
       onPause(ev){
         this.$emit('pause', ev, this);
       },
     },
+    /**
+     * @event mounted
+     * @fires getRef
+     */
     mounted(){
       this.widget = this.getRef('audio');
+      if (this.muted) {
+        this.widget.muted = true;
+      }
+    },
+    watch: {
+      /**
+       * @watch muted
+       */
+      muted(newVal){
+        this.widget.muted = !!newVal;
+      },
+      /**
+       * @watch loop
+       */
+      loop(newVal){
+        this.widget.loop = !!newVal;
+      }
     }
   });
 })(bbn);
 
 </script>
+<style scoped>
+.bbn-audio .bbn-audio-container {
+  width: 100%;
+}
+.bbn-audio .bbn-audio-container audio {
+  min-width: 300px;
+  width: 100%;
+}
+
+</style>

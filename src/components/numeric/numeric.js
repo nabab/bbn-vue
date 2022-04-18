@@ -140,7 +140,7 @@
        * @returns {Boolean}
        */
       disableDecrease(){
-        return (bbn.fn.isNumber(this.min) && (parseFloat(this.currentValue)  <= this.min)) || !!this.readonly || this.disabled;
+        return (bbn.fn.isNumber(this.min) && (parseFloat(this.currentValue)  <= this.min)) || !!this.readonly || this.isDisabled;
       },
       /**
        * True if the increase functionality must to disabled.
@@ -148,7 +148,7 @@
        * @returns {Boolean}
        */
       disableIncrease(){
-        return (bbn.fn.isNumber(this.max) && (parseFloat(this.currentValue) >= this.max)) || !!this.readonly || this.disabled;
+        return (bbn.fn.isNumber(this.max) && (parseFloat(this.currentValue) >= this.max)) || !!this.readonly || this.isDisabled;
       },
       /**
        * The pattern of the input.  ^\-?[0-9]+\.0*[1-9]{0}$
@@ -239,7 +239,7 @@
        * @fires focus
        */
       _focus(e){
-        if ( !this.disabled && !this.readonly && !this.onlySpinners ){
+        if ( !this.isDisabled && !this.readonly && !this.onlySpinners ){
           //this.currentValue = this.value;
           this.currentValue = this.value === null ? '' : (bbn.fn.isNumber(this.value) ? parseFloat(this.value).toFixed(this.decimals) : this.value);
           this.editMode = true;
@@ -334,7 +334,7 @@
        * @emits change
        */
       increment(event, negative){
-        if ( !this.readonly && !this.disabled && (negative ? !this.disableDecrease : !this.disableIncrease)){
+        if ( !this.readonly && !this.isDisabled && (negative ? !this.disableDecrease : !this.disableIncrease)){
           let evName = negative ? 'decrement' : 'increment',
               beforeEvName = 'before' + bbn.fn.correctCase(evName),
               ev = new Event(beforeEvName, {cancelable: true}),

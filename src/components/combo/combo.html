@@ -2,7 +2,7 @@
        componentClass,
        'bbn-iblock',
        'bbn-textbox',
-       {'bbn-disabled': !!disabled}
+       {'bbn-disabled': !!isDisabled}
      ]"
      @mouseleave="isOverDropdown = false"
      @mouseenter="isOverDropdown = true"
@@ -12,7 +12,7 @@
 >
   <div class="bbn-flex-width">
     <div class="bbn-flex-fill">
-      <input v-if="!disabled && !readonly"
+      <input v-if="!isDisabled && !readonly"
               tabindex="0"
               class="bbn-no-border"
               v-model="filterString"
@@ -37,15 +37,15 @@
         ></bbn-loadicon>
       </div>
       <bbn-button v-else
-                  :icon="isOpened && !disabled && !readonly && filteredData.length ? iconUp : iconDown"
+                  :icon="isOpened && !isDisabled && !readonly && filteredData.length ? iconUp : iconDown"
                   class="bbn-button-right bbn-no-vborder bbn-m"
                   @click.prevent.stop="click"
                   tabindex="-1"
-                  :disabled="disabled"
+                  :disabled="isDisabled"
       ></bbn-button>
     </div>
   </div>
-  <bbn-floater v-if="!disabled && !readonly && isOpened"
+  <bbn-floater v-if="!isDisabled && !readonly && isOpened"
                :element="$el"
                :max-height="maxHeight"
                :min-width="currentWidth"

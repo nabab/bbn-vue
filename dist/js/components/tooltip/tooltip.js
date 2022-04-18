@@ -2,36 +2,30 @@
 ((bbn) => {
 
 let script = document.createElement('script');
-script.innerHTML = `<div
-  :class="componentClass"
->
-<slot>
-</slot>
-  <span class="bbn-abs" @click="visible=true" @mouseenter="visible=true" ref="helper">
-    <i class="bbn-m nf nf-fa-info_circle"></i>
+script.innerHTML = `<component :is="tag"
+           :class="componentClass"
+           @mouseenter="isVisible = true">
+  <slot></slot>
+  <span class="bbn-p bbn-tooltip-icon bbn-left-xsspace"
+        ref="helper"
+        v-if="icon">
+    <i :class="[icon, 'bbn-m']"/>
   </span>
-  <bbn-floater
-              v-if="visible" 
-              :class="position"
-              :tag="tag"
-              ref="floater"
-              tabindex="-1"
-              :position="position"
-              :content="content"
-              @click="action('click', $event)"
-              @contextmenu="action('context', $event)"
-              @keydown="action('keydown', $event)"
-              @mousedown="action('mousedown', $event)"
-              @mouseover="action('mouseover', $event)"
-              @close="visible=false"
-              :component="component"
-              :element="$refs.helper"
-              :arrow="true"
-              :distance="distance"
-              :auto-hide="true"
-  >
-  </bbn-floater>
-</div>`;
+  <bbn-floater v-if="isVisible"
+               :tag="tag"
+               ref="floater"
+               tabindex="-1"
+               :position="position"
+               :content="getContent()"
+               @close="isVisible = false"
+               :component="component"
+               :element="$el"
+               :element-width="false"
+               :arrow="true"
+               :distance="distance"
+               :auto-hide="500"
+               :scrollable="false"/>
+</component>`;
 script.setAttribute('id', 'bbn-tpl-component-tooltip');
 script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
 
@@ -53,15 +47,7 @@ document.head.insertAdjacentElement('beforeend', css);
 
 (function(bbn){
   "use strict";
-  const tpl = `
-  <div style="display: flex;" class="bbn-padded bbn-vmargin">
-    <div>
-      <i class="bbn-xl ---BBN-ICON---"></i>
-    </div>
-    <div style="display: flex; align-items: center; margin-left: 5px;">
-    ---BBN-CONTENT---
-    </div>
-  </div>`;
+
   Vue.component('bbn-tooltip', {
     /**
      * @mixin bbn.vue.basicComponent
@@ -69,31 +55,24 @@ document.head.insertAdjacentElement('beforeend', css);
     mixins: [bbn.vue.basicComponent],
     props: {
       /**
-       * @prop {(String|Object)} component
+       * @prop {(String|Object|Vue)} component
        */
       component: {
-        type: [String, Object]
+        type: [String, Object, Vue]
       },
       /**
        * The source of the component tooltip.
        * @prop {Function|Array} source
        */
       source: {
-        type: [Function, String],
-        default: ""
+        type: [Function, String]
       },
       /**
-       * @prop {String} template
-       */
-      template: {
-        type: String
-      },
-      /**
-       * @prop {String} ['bbn-m nf nf-mdi-information_outline'] icon
+       * @prop {String|Boolean} ['nf nf-mdi-information_outline'] icon
        */
       icon: {
-        type: String,
-        default: "bbn-m nf nf-mdi-information_outline"
+        type: [String, Boolean],
+        default: 'nf nf-mdi-information_outline'
       },
       /**
        * The html tag.
@@ -104,24 +83,8 @@ document.head.insertAdjacentElement('beforeend', css);
         default: 'span'
       },
       /**
-       * True if the tooltip component has a context menu.
-       * @prop {Boolean} [false] context
-       */
-      context: {
-        type: Boolean,
-        default: false
-      },
-      /**
-       * The mode of the component.
-       * @prop {String} ['free'] mode
-       */
-      mode: {
-        type: String,
-        default: 'free'
-      },
-      /**
        * If an element is given this will force the position.
-       * @prop {String} position
+       * @prop {String} ['bottom'] position
        */
       position: {
         type: String,
@@ -129,40 +92,32 @@ document.head.insertAdjacentElement('beforeend', css);
         default: 'bottom'
       },
       /**
-        * Tooltip offset from the icon
-        * @prop {Number} ['0'] pixel
+        * Tooltip offset from the element
+        * @prop {Number} [10] distance
       */
       distance: {
         type: Number,
-        default: 0
+        default: 10
       },
     },
     data(){
       return {
         /**
-         * The items.
-         * @data {Array} items
+         * @data {Boolean} [false] isVisible
          */
-        content: this.getContent(),
-        visible: false,
+        isVisible: false,
       };
     },
     methods: {
       /**
        * Returns the items of the component from the source.
-       * @method getItems
-       * @returns {Array}
+       * @method getContent
+       * @return {String}
        */
       getContent() {
-        let st = bbn.fn.isFunction(this.source) ? this.source() : this.source;
-        let st2 = this.template || tpl;
-        return st2.replace('---BBN-ICON---', this.icon).replace('---BBN-CONTENT---', st);
-      },
-      action(type, ev) {
-
+        return bbn.fn.isFunction(this.source) ? this.source() : this.source;
       }
-    },
-
+    }
   });
 
 })(bbn);

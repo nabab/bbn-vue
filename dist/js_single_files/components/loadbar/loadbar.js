@@ -5,57 +5,6 @@ script.innerHTML = `<div :class="['bbn-100', 'bbn-unselectable', componentClass]
   <span class="bbn-loadbar-content bbn-h-100 bbn-flex-width"
         @click="info = !info"
         ref="bar">
-    <!--span class="buttons" v-if="data.length">
-      <i :title="_('History informations')"
-         :class="{
-           'bbn-p': false,
-           'bbn-lg': true,
-           'fa': true,
-           'fa-info_circle': true
-         }"
-         @click="getInfo"
-      ></i>
-      <i :title="_('Delete history')"
-         :class="{
-           'bbn-p': data.length,
-           'bbn-lg': true,
-           'far': true,
-           'fa-times_circle': true,
-           'bbn-invisible': !data.length
-         }"
-         @click="deleteHistory"
-      ></i>
-      <i :title="_('Previous Ajax call')"
-         :class="{
-           'bbn-p': selected < data.length - 1,
-           'bbn-lg': true,
-           'fas': true,
-           'fa-angle_left': true,
-           'bbn-invisible': selected >= data.length - 1
-         }"
-         @click="selected++"
-      ></i>
-      <i :title="_('Next Ajax call')"
-         :class="{
-           'bbn-p': selected > 0,
-           'bbn-lg': true,
-           'fa': true,
-           'fa-angle_right': true,
-           'bbn-invisible': selected <= 0
-         }"
-         @click="selected--"
-      ></i>
-      <i :title="_('Play current calls')"
-         :class="{
-           'bbn-p': selected > 0,
-           'bbn-lg': true,
-           'fa': true,
-           'fa-play': true,
-           'bbn-invisible': selected <= 0
-         }"
-         @click="selected = 0"
-      ></i>
-    </span-->
     <span class="bbn-loadbar-state bbn-hxspadded bbn-c bbn-block bbn-h-100 bbn-middle">
       <bbn-loadicon v-if="currentItem.loading" class="bbn-blue"></bbn-loadicon>
       <i v-else-if="currentItem.error" class="nf nf-fa-times_circle bbn-red"></i>
@@ -64,7 +13,7 @@ script.innerHTML = `<div :class="['bbn-100', 'bbn-unselectable', componentClass]
     </span>
     <span class="bbn-flex-fill">
       <span class="bbn-overlay">
-        <span class="bbn-h-100 bbn-vmiddle">
+        <span class="bbn-h-100 bbn-vmiddle bbn-s">
           <a href="javascript:;"
              :title="text + ' ' + _('Loading')"
              style="color: inherit; cursor: default"
@@ -97,19 +46,21 @@ script.innerHTML = `<div :class="['bbn-100', 'bbn-unselectable', componentClass]
       ></bbn-input>
       <ul class="bbn-reset bbn-w-100 bbn-ul">
         <li v-for="it of items">
-          <div class="bbn-vmiddle"
-               @click="cancel(it)">
+          <bbn-context tag="div"
+                       class="bbn-vmiddle"
+                       :max-width="300"
+                       :source="contextMenu(it)">
             <span class="bbn-loadbar-state bbn-hxspadded bbn-c">
               <bbn-loadicon v-if="it.loading" class="bbn-blue"></bbn-loadicon>
               <i v-else-if="it.error" class="nf nf-fa-times_circle bbn-red"></i>
               <i v-else-if="it.success" class="nf nf-fa-check bbn-green"></i>
               <i v-else-if="it.abort" class="nf nf-mdi-stop bbn-orange"></i>
             </span>
-            <div class="bbn-loadbar-time bbn-c">
+            <div class="bbn-loadbar-time bbn-c bbn-s">
               <span v-text="renderDuration(it.duration)"></span>
             </div>
-            <span class="bbn-hxspadded" v-text="it.url"></span>
-          </div>
+            <span class="bbn-hxspadded bbn-s" v-text="it.url"></span>
+          </bbn-context>
           <div v-if="it.error && it.errorMessage"
                 class="bbn-loadbar-error bbn-red"
                 v-text="it.errorMessage"
@@ -250,6 +201,28 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
 
     },
     methods: {
+      contextMenu(item) {
+        let res =  [{
+          text: bbn._("Copy URL"),
+          icon: 'nf nf-mdi-content_copy',
+          action() {
+            bbn.fn.copy(item.url);
+            appui.success(bbn._("Copied"));
+          }
+        }];
+
+        if (item.loading) {
+          res.push({
+            text: bbn._("abort"),
+            icon: 'nf nf-mdi-cancel',
+            action() {
+              this.cancel(item);
+            }
+          });
+        }
+
+        return res;
+      },
       /**
        * Return the duration in seconds or milliseconds of a request
        * @method renderDuration

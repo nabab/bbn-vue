@@ -103,7 +103,7 @@
        * @fires getRef
        */
       click(){
-        if (!this.disabled) {
+        if (!this.isDisabled) {
           this.getRef('input').focus();
           if (this.filteredData.length) {
             this.isOpened = !this.isOpened;
@@ -206,7 +206,6 @@
        * @param {String} v
        */
       filterString(v){
-        bbn.fn.log("on Filter String", this.disabled, this.readonly, this.isOpened, !this.disabled && !this.readonly && this.isOpened);
         if (!this.ready) {
           this.ready = true;
         }

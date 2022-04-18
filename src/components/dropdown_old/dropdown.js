@@ -45,9 +45,9 @@
     */
     computed: {
       currentIcon(){
-        return this.isOpened && !this.disabled && !this.readonly && this.filteredData.length ?
+        return this.isOpened && !this.isDisabled && !this.readonly && this.filteredData.length ?
             this.iconUp : this.iconDown;
-        //isOpened && !disabled && !readonly && filteredData.length ? iconUp : iconDown
+        //isOpened && !isDisabled && !readonly && filteredData.length ? iconUp : iconDown
       }
     },
     beforeMount() {

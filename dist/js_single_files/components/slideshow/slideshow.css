@@ -1,6 +1,6 @@
 .bbn-slideshow .bbn-slideshow-count {
   top: 0;
-  right: 0;
+  left: 0;
   z-index: 10;
 }
 .bbn-slideshow .bbn-slideshow-commands {
@@ -102,6 +102,9 @@
   -o-animation-name: flip;
   animation-name: flip;
   backface-visibility: hidden;
+}
+.bbn-slideshow .slide-preview-img {
+  max-height: calc(100vh - 70px) !important;
 }
 @keyframes bbn-slideshow-effect-fade_in {
   from {

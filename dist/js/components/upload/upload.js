@@ -7,8 +7,8 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-box', 'bbn-spadded']">
          style="z-index: 2">
       <div v-for="(f, idx) in currentData"
            :class="['bbn-flex-width', 'bbn-bordered', 'bbn-spadded', 'bbn-vmiddle', {
-             'bbn-alt-background-effect': (f.status !== 'progress') && (f.status !== 'error'),
-             'bbn-background-effect-tertiary': f.status === 'progress',
+             'bbn-alt-background': (f.status !== 'progress') && (f.status !== 'error'),
+             'bbn-background-tertiary': f.status === 'progress',
              'bbn-bg-red': f.status === 'error',
              'bbn-bottom-sspace': currentData[idx+1],
              'bbn-alt-dark': !!(idx % 2),
@@ -16,7 +16,35 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-box', 'bbn-spadded']">
            }]"
       >
         <div v-if="icons">
-          <i :class="['bbn-large', getFileIcon(f)]"></i>
+          <i :class="['bbn-large', getFileIcon(f)]"/>
+        </div>
+        <div v-else-if="thumbs"
+             class="bbn-upload-thumb bbn-block">
+          <template v-if="isFile(f)">
+            <img v-if="f.data.type.startsWith('image/')"
+                 :src="getThumbURL(f)">
+            <video v-else-if="f.data.type.startsWith('video/')"
+                   muted>
+              <source :src="getThumbURL(f)"
+                      :type="f.data.type">
+              <div class="bbn-middle">
+                <i :class="['bbn-large', getFileIcon(f)]"/>
+              </div>
+            </video>
+            <object v-else-if="f.data.type === 'application/pdf'"
+                    :data="getThumbURL(f)"/>
+            <div v-else
+                 class="bbn-middle">
+              <i :class="['bbn-large', getFileIcon(f)]"/>
+            </div>
+          </template>
+          <img v-else-if="getThumbURL(f)"
+               :src="getThumbURL(f)">
+          <div v-else
+               class="bbn-middle">
+            <i :class="['bbn-large', getFileIcon(f)]"/>
+          </div>
+          <div class="bbn-overlay" style="opacity: 0;"/>
         </div>
         <div class="bbn-flex-fill bbn-hmargin">
           <div v-if="f.edit === false"
@@ -44,7 +72,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-box', 'bbn-spadded']">
                            type="percent"
                            class="bbn-no-border"
                            style="text-align: right"
-                           bar-class="bbn-background-effect-tertiary"
+                           bar-class="bbn-background-tertiary"
           ></bbn-progressbar>
         </div>
         <div>
@@ -151,6 +179,12 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-box', 'bbn-spadded']">
 </div>`;
 script.setAttribute('id', 'bbn-tpl-component-upload');
 script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
+
+let css = document.createElement('link');
+css.setAttribute('rel', 'stylesheet');
+css.setAttribute('href', bbn.vue.libURL + 'dist/js/components/upload/upload.css');
+document.head.insertAdjacentElement('beforeend', css);
 
 /**
   * @file bbn-upload component
@@ -291,18 +325,11 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       },
       /**
        * Shows the preview image of the file uploaded.
-       * @prop {Boolean} [true] thumbs
+       * @prop {Boolean} [false] thumbs
        */
       thumbs: {
         type: Boolean,
-        default: true
-      },
-      /**
-       * If the property 'thumbs' is set to false, a text is shown.
-       * @prop {String} thumbnot
-       */
-      thumbNot : {
-        type: String
+        default: false
       },
       /**
        * The maximum size of the thumb.
@@ -1055,13 +1082,36 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         }
       },
       /**
-       * Gets the extension of the five file.
+       * Gets the extension of the given file.
        * @method getFileExt
        * @param {Object} file
        * @return String
        */
       getFileExt(file){
         return file.fromUser ? file.data.name.substring(file.data.name.lastIndexOf('.')+1) : bbn.fn.substr(file.data.extension, 1)
+      },
+      /**
+       * Gets the thumb url of the given file
+       * @method getThumbURL
+       * @param {Object} file
+       * @return String
+       */
+      getThumbURL(file){
+        return this.isFile(file) ?
+          URL.createObjectURL(file.data) :
+          (!!file.data.thumb && bbn.fn.isURL(file.data.thumb) ?
+            file.data.thumb :
+            ''
+          );
+      },
+      /**
+       * Check if the data property of the given file is an instance of File object
+       * @method isFile
+       * @param {Object} file
+       * @return Boolean
+       */
+      isFile(file){
+        return file.data instanceof File;
       }
     },
     /**

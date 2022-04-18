@@ -2404,9 +2404,10 @@
          * @returns {String}
          */
         renderData(data, cfg){
-          if ((!bbn.fn.isString(cfg.field) && !bbn.fn.isNumber(cfg.field)) || !data ){
+          if (!cfg || !cfg.field || (!bbn.fn.isString(cfg.field) && !bbn.fn.isNumber(cfg.field)) || !data) {
             return '';
           }
+
           let v = data[cfg.field] || '';
           if ( cfg.icon ){
             return '<i class="' + cfg.icon + '"> </i>'
@@ -4010,7 +4011,7 @@
           return true;
         },
         hashCfg(){
-          return bbn.fn.md5(JSON.stringify(this.currentFilters) + JSON.stringify(this.currentLimit) + JSON.stringify(this.currentStart) + JSON.stringify(this.currentOrder));
+          return bbn.fn.md5(JSON.stringify(this.currentFilters) + JSON.stringify(this.currentLimit) + JSON.stringify(this.start) + JSON.stringify(this.currentOrder));
         },
         /**
          * Returns the current item icon
@@ -4313,7 +4314,15 @@
                 }
 
                 if (d.next_step) {
-                  this.appendData(d.next_step);
+                  if (this.isOpened !== undefined) {
+                    if (this.isOpened) {
+                      bbn.fn.log("APPEING DATA")
+                      this.appendData(d.next_step);
+                    }
+                  }
+                  else {
+                    this.appendData(d.next_step);
+                  }
                 }
               }
             });
@@ -4361,6 +4370,13 @@
               if ( this.isAjax ){
                 if (this.loadingRequestID) {
                   bbn.fn.abort(this.loadingRequestID);
+                  setTimeout(() => {
+                    this.loadingRequestID = false;
+                    this.updateData().then(() => {
+                      resolve();
+                    })
+                  }, 50);
+                  return;
                 }
                 this.isLoading = true;
                 this.$emit('startloading');
@@ -4393,20 +4409,30 @@
                 });
               }
               prom.then(d => {
-                if ( this.loadingRequestID && (this.loadingRequestID === loadingRequestID)){
+                if (this.isAjax) {
+                  if (!this.loadingRequestID || (this.loadingRequestID !== loadingRequestID)) {
+                    this.isLoading = false;
+                    this.loadingRequestID = false;
+                    throw new Error("No loading request");
+                  }
+
                   this.isLoading = false;
                   this.loadingRequestID = false;
+
                   if ( !d ){
                     return;
                   }
+
                   if ( d.status !== 200 ){
                     d.data = undefined;
                   }
                   else{
                     d = d.data;
                   }
+
                   this.$emit('dataReceived', d);
                 }
+
                 if ( d && bbn.fn.isArray(d.data) ){
                   if (d.data.length && d.data[0]._bbn){
                     this.currentData = d.data;
@@ -4446,9 +4472,9 @@
                 if (!this.isLoaded) {
                   this.isLoaded = true;
                 }
-                this.$emit('dataloaded');
+                this.$emit('dataloaded', d);
                 if (this.isAjax && d && d.next_step) {
-                  if (d.data && d.id) {
+                  if (d.id && (d.data !== undefined)) {
                     this.searchId = d.id;
                   }
 
@@ -4456,6 +4482,10 @@
                 }
                 //this._dataPromise = false;
               });
+            }).catch(e => {
+              bbn.fn.log("CATCHING");
+              this.isLoading = false;
+              this.loadingRequestID = false;
             });
             return this._dataPromise;
           }
@@ -4624,8 +4654,11 @@
         this.currentComponent = this.realComponent;
       },
       watch: {
-        filters() {
-          this.currentFilters = bbn.fn.clone(this.filters)
+        filters: {
+          deep: true,
+          handler() {
+            this.currentFilters = bbn.fn.clone(this.filters)
+          }
         },
         /**
          * @watch currentLimit
@@ -4646,7 +4679,7 @@
           handler() {
             if (this.ready) {
               this.currentFilter = false;
-              if (this.pageable) {
+              if (this.pageable && this.start) {
                 this.start = 0;
               }
 
@@ -4654,7 +4687,6 @@
               if ( bbn.fn.isFunction(this.setConfig) ){
                 this.setConfig(true);
               }
-              this.$forceUpdate();
             }
           }
         },
@@ -4687,7 +4719,6 @@
          * 
          */
         searchValue(v) {
-          bbn.fn.log("WATCHER!!", v);
           if (this.search) {
             this.unsetFilter();
             if (v) {
@@ -4712,7 +4743,6 @@
                   }
                 });
               }
-              bbn.fn.log("TABLE FILTER", this.searchFields, cond);
               this.currentFilters.conditions.push({
                 logic: 'OR',
                 conditions: cond
@@ -5191,6 +5221,14 @@
         };
       },
       methods: {
+        isActiveResizer() {
+          let ct = this.closest('bbn-container');
+          if (ct) {
+            return ct.real ? ct.visible : ct.selected;
+          }
+  
+          return true;
+        },
         /**
          * A function that can be executed just before the resize event is emitted.
          * @method onResize
@@ -5210,7 +5248,6 @@
                   if (ms1 || ms2) {
                     if (!this.ready) {
                       setTimeout(() => {
-                        bbn.fn.log("DEFAUT ONRESIZE ON TIMEOUT");
                         this.onResize();
                       }, 100)
                     }
@@ -5666,6 +5703,14 @@
         precision: {
           type: Number,
           default: 0
+        },
+        /**
+         * Defines the precision of the component.
+         * @prop {Number} [0] precision 
+         * @memberof fieldComponent
+         */
+        unit: {
+          type: String
         },
         /**
          * Defines the options of the component.

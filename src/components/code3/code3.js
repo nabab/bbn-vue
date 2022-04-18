@@ -297,7 +297,7 @@
               theme: this.currentTheme,
               value: this.value
             }, this.cfg);
-        if ( this.readonly || this.disabled ){
+        if ( this.readonly || this.isDisabled ){
           cfg.readOnly = true;
         }
         if ( tmp = this.getMode(this.mode) ){

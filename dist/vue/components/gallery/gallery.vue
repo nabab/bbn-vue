@@ -123,6 +123,19 @@
               :element="_self"
               ref="pager"
               v-if="(pageable || isAjax) && !!pager"/>
+  <bbn-floater v-if="showFloater"
+              :title="false"
+              :top="0"
+              @close="showFloater = false"
+              :closable="true"
+              width="100%"
+              height="100%"
+              :scrollable="false"
+              :resizable="false"
+              :maximizable="false"
+              :component="$options.components.galleryZoom"
+              :source="floaterSource"/>
+  
 </div>
 </template>
 <script>
@@ -142,12 +155,12 @@
      * @mixin bbn.vue.resizerComponent
      * @mixin bbn.vue.listComponent
      */
-    mixins: 
-    [
-      bbn.vue.basicComponent,
-      bbn.vue.resizerComponent,
-      bbn.vue.listComponent
-    ],
+    mixins:
+      [
+        bbn.vue.basicComponent,
+        bbn.vue.resizerComponent,
+        bbn.vue.listComponent
+      ],
     props: {
       /**
        * Set to true to allow the component to have a scroll.
@@ -171,7 +184,7 @@
        */
       toolbarButtons: {
         type: Array,
-        default(){
+        default() {
           return [];
         }
       },
@@ -361,7 +374,7 @@
         default: true
       }
     },
-    data(){
+    data() {
       return {
         /**
          * The width of the component.
@@ -372,7 +385,7 @@
          * True if the gallery is on selection mode.
          * @data {Boolean} [false] isSelecting
          */
-        isSelecting:  false,
+        isSelecting: false,
         /**
          * The selection mode.
          * @data {Boolean|String} [false] selectingMode
@@ -402,7 +415,9 @@
          * The data of the current selected items
          * @data {Array} [[]] currentSelectedData
          */
-        currentSelectedData: []
+        currentSelectedData: [],
+        showFloater: false,
+        floaterSource: {},
       }
     },
     computed: {
@@ -411,7 +426,7 @@
        * @computed cols
        * @return {Number}
        */
-      cols(){
+      cols() {
         return parseInt(this.width / (this.currentItemWidth + this.columnGap)) || 1
       },
       /**
@@ -419,8 +434,8 @@
        * @computed viewData
        * @return {Array}
        */
-      currentView(){
-        if ( this.pageable && this.currentLimit && (!this.isAjax || !this.serverSorting) ){
+      currentView() {
+        if (this.pageable && this.currentLimit && (!this.isAjax || !this.serverSorting)) {
           return this.filteredData.slice(this.start, this.start + this.currentLimit);
         }
         return this.filteredData;
@@ -430,7 +445,7 @@
        * @computed currentMinItemWidth
        * @return {Number}
        */
-      currentMinItemWidth(){
+      currentMinItemWidth() {
         let mw = this.itemWidth - 200;
         return this.minItemWidth || (mw > 50 ? mw : 50);
       },
@@ -439,7 +454,7 @@
        * @computed currentMaxItemWidth
        * @return {Number}
        */
-      currentMaxItemWidth(){
+      currentMaxItemWidth() {
         return this.minItemWidth || (this.itemWidth + 200);
       }
     },
@@ -467,8 +482,8 @@
        * @method setSelecting
        * @param {String} mode
        */
-      setSelecting(mode){
-        if (bbn.fn.isString(mode)){
+      setSelecting(mode) {
+        if (bbn.fn.isString(mode)) {
           this.isSelecting = true;
           this.selectingMode = mode;
         }
@@ -484,7 +499,7 @@
        * @method action
        * @fires setSelecting
        */
-       emitAction(){
+      emitAction() {
         if (this.currentSelected.length) {
           let mess = '';
           if (this.selectingMode === 'download') {
@@ -509,10 +524,10 @@
        * Handles the resize of the component.
        * @method onResize
        */
-      onResize(){
+      onResize() {
         this.width = this.$refs.gallery.offsetWidth;
       },
-      resetSearch(){
+      resetSearch() {
         this.currentSearch = '';
       }
     },
@@ -520,7 +535,7 @@
      * @event mounted
      * @fires onResize
      */
-    mounted(){
+    mounted() {
       this.$nextTick(() => {
         this.onResize();
         this.ready = true;
@@ -530,12 +545,12 @@
       /**
        * @watch currentSearch
        */
-      currentSearch(newVal){
+      currentSearch(newVal) {
         if (this.searchTimeout) {
           clearTimeout(this.searchTimeout);
         }
         this.searchTimeout = setTimeout(() => {
-          let idx = bbn.fn.search(this.currentFilters.conditions, {field: this.searchName});
+          let idx = bbn.fn.search(this.currentFilters.conditions, { field: this.searchName });
           bbn.fn.log(idx)
           if (idx > -1) {
             if (newVal) {
@@ -554,8 +569,13 @@
           }
         }, 1000)
       },
-      itemWidth(val){
+      itemWidth(val) {
         this.currentItemWidth = val;
+      },
+      showFloater(val) {
+        if (!val) {
+          this.floaterSource = {};
+        }
       }
     },
     components: {
@@ -579,7 +599,7 @@
            */
           source: {
             type: Array,
-            default(){
+            default() {
               return [];
             }
           },
@@ -599,7 +619,7 @@
            * @memberof gallery-col
            * @return {Object}
            */
-          gallery(){
+          gallery() {
             return this.closest('bbn-gallery');
           },
           /**
@@ -608,7 +628,7 @@
            * @memberof gallery-col
            * @return {Object}
            */
-          colStyle(){
+          colStyle() {
             return {
               width: `${this.gallery.currentItemWidth}px`,
               margin: `0 ${this.gallery.columnGap / 2}px`,
@@ -680,7 +700,7 @@
                 type: [String, Object]
               }
             },
-            data(){
+            data() {
               return {
                 /**
                  * True if the gallery-item is loaded.
@@ -694,7 +714,7 @@
                  * @memberof gallery-item
                  */
                 buttonMenuElement: undefined,
-                error: false
+                error: false,
               }
             },
             computed: {
@@ -704,7 +724,7 @@
                * @memberof gallery-item
                * @return {Vue}
                */
-              col(){
+              col() {
                 return this.closest('gallery-col');
               },
               /**
@@ -713,12 +733,12 @@
                * @memberof gallery-item
                * @return {Object}
                */
-              aStyle(){
+              aStyle() {
                 let style = {
                   margin: `0 0 ${this.col.gallery.rowGap}px 0`,
                   border: this.isSelected ? '5px dotted' : ''
                 };
-                if ( !this.col.gallery.zoomable ){
+                if (!this.col.gallery.zoomable) {
                   style.cursor = 'default';
                 }
                 return style;
@@ -729,7 +749,7 @@
                * @memberof gallery-item
                * @return {Object}
                */
-              imgStyle(){
+              imgStyle() {
                 return {
                   width: this.loaded ? '100%' : 0,
                   height: this.loaded ? '' : 0,
@@ -744,7 +764,7 @@
                * @return {Boolean}
                * @memberof gallery-item
                */
-              isObj(){
+              isObj() {
                 return bbn.fn.isObject(this.source);
               },
               /**
@@ -753,7 +773,7 @@
                * @return {Boolean}
                * @memberof gallery-item
                */
-              showOverlay(){
+              showOverlay() {
                 return this.col.gallery.overlay && this.isObj && (this.source.data[this.col.gallery.overlayName] !== undefined);
               },
               /**
@@ -762,7 +782,7 @@
                * @return {Boolean}
                * @memberof gallery-item
                */
-              isSelected(){
+              isSelected() {
                 return this.col.gallery.currentSelected.includes(!!this.col.gallery.uid ? this.source.data[this.col.gallery.uid] : this.source.index);
               },
               /**
@@ -771,7 +791,7 @@
                * @memberof gallery-item
                * @return {String}
                */
-              imgSrc(){
+              imgSrc() {
                 let src = '';
                 if (bbn.fn.isString(this.source.data)) {
                   src = this.source.data;
@@ -786,6 +806,23 @@
                   return bbn.fn.escapeUrl(src, 'w=' + this.col.gallery.currentItemWidth + '&thumb=1');
                 }
                 return null;
+              },
+              floaterSource() {
+                return {
+                  data: bbn.fn.map(this.col.gallery.currentData, d => {
+                    let obj = bbn.fn.extend(true, {}, d.data);
+                    obj.content = obj[this.col.gallery.pathName];
+                    obj.type = 'img';
+                    obj.mode = 'original';
+                    if (!obj.info) {
+                      obj.info = obj[this.col.gallery.overlayName];
+                    }
+                    return obj;
+                  }),
+                  info: this.col.gallery.info,
+                  slide: this.source.index,
+                  preview: this.col.gallery.preview
+                }
               }
             },
             methods: {
@@ -801,11 +838,11 @@
                * @memberof gallery-item
                * @fires getPopup
                */
-              action(ev){
+              action(ev) {
                 bbn.fn.log("ACTION");
-                if ( this.col.gallery.isSelecting ){
+                if (this.col.gallery.isSelecting) {
                   let id = !!this.col.gallery.uid ? this.source.data[this.col.gallery.uid] : this.source.index;
-                  if ( this.isSelected ){
+                  if (this.isSelected) {
                     this.col.gallery.currentSelected.splice(this.col.gallery.currentSelected.indexOf(id), 1);
                     if (!!this.col.gallery.uid) {
                       let idx = bbn.fn.search(this.col.gallery.currentSelectedData, this.col.gallery.uid, id);
@@ -826,30 +863,8 @@
                   && this.col.gallery.zoomable
                 ) {
                   bbn.fn.log("ACTION 2");
-                  this.getPopup({
-                    title: bbn._('Gallery'),
-                    width: '100%',
-                    height: '100%',
-                    scrollable: false,
-                    resizable: false,
-                    maximizable: false,
-                    component: this.col.gallery.$options.components.galleryZoom,
-                    source: {
-                      data: bbn.fn.map(this.col.gallery.currentData, d => {
-                        let obj = bbn.fn.extend(true, {}, d.data);
-                        obj.content = obj[this.col.gallery.pathName];
-                        obj.type = 'img';
-                        obj.mode = 'original';
-                        if (!obj.info) {
-                          obj.info = obj[this.col.gallery.overlayName];
-                        }
-                        return obj;
-                      }),
-                      info: this.col.gallery.info,
-                      slide: this.source.index,
-                      preview: this.col.gallery.preview
-                    }
-                  });
+                  this.col.gallery.floaterSource = this.floaterSource;
+                  this.col.gallery.showFloater = true;
                 }
                 else {
                   this.col.gallery.$emit('clickItem', this.source);
@@ -916,7 +931,7 @@
            * @fires closest
            * @return {Vue}
            */
-          gallery(){
+          gallery() {
             return this.closest('bbn-gallery');
           },
           /**
@@ -924,10 +939,10 @@
            * @memberof gallery-selected
            * @return {String|null}
            */
-          imgSrc(){
+          imgSrc() {
             if (this.gallery) {
               let data = {},
-                  src = '';
+                src = '';
               if (!!this.gallery.uid) {
                 data = bbn.fn.getRow(this.gallery.currentSelectedData, this.gallery.uid, this.source);
               }
@@ -953,8 +968,8 @@
            * @method unselect
            * @memberof gallery-selected
            */
-          unselect(){
-            if (this.gallery){
+          unselect() {
+            if (this.gallery) {
               this.gallery.currentSelected.splice(this.gallery.currentSelected.indexOf(this.source), 1);
             }
           }

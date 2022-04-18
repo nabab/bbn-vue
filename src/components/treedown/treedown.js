@@ -209,7 +209,7 @@
         });
       },
       click(){
-        if (!this.disabled && this.filteredData.length) {
+        if (!this.isDisabled && this.filteredData.length) {
           this.isOpened = !this.isOpened;
           if ( this.autocomplete ){
             this.getRef('filter').focus();

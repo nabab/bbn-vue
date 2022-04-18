@@ -301,6 +301,9 @@
       }
     },
     methods: {
+      registerSearch() {
+        this.getRef('search').registerFunction(this.getRef('router').searchForString);
+      },
       onCopy(){
         let cpb = this.getRef('clipboardButton');
         //bbn.fn.log("AWATCH", cpb);

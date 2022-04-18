@@ -71,7 +71,7 @@
                       v-show="ready && visible || (visual && !thumbnail)"
                       ref="scroll"
                       @ready="init"
-                      :scrollable="scrollable && !router.scrollContent"
+                      :scrollable="scrollable && router.scrollContent"
                       axis="y"
                       :class="{
                         'bbn-overlay': router.scrollContent,
@@ -90,7 +90,7 @@
                       v-bind="options"/>
             <!-- This is just HTML content -->
             <div v-else-if="content"
-                v-html="content">
+                 v-html="content">
             </div>
             <!-- This is the slot -->
             <slot v-else></slot>

@@ -3,7 +3,7 @@
   <input :value="ivalue"
          ref="element"
          class="bbn-textbox"
-         :disabled="disabled"
+         :disabled="isDisabled"
          :required="required"
          readonly="readonly"
   >

@@ -483,7 +483,7 @@
        * @emits input
       */
       keydownEvent(event){
-        if ( !this.disabled && !this.readonly ){
+        if ( !this.isDisabled && !this.readonly ){
           if (
             !this.isShiftKey(event.keyCode) &&
             !this.isControlKey(event.keyCode) &&
@@ -591,7 +591,7 @@
        * @fires keyup
       */
       keyupEvent(event){
-        if ( !this.disabled && !this.readonly ){
+        if ( !this.isDisabled && !this.readonly ){
           if (
             !this.isShiftKey(event.keyCode) &&
             !this.isControlKey(event.keyCode) &&
@@ -647,7 +647,7 @@
        * @fires blur
        */
       blurEvent(event){
-        if ( !this.disabled && !this.readonly ){
+        if ( !this.isDisabled && !this.readonly ){
           if ( !this.value ){
             this.inputValue = '';
           }
@@ -663,7 +663,7 @@
        * @fires focus
        */
       focusEvent(event){
-        if ( !this.disabled && !this.readonly ){
+        if ( !this.isDisabled && !this.readonly ){
           this.setInputValue()
           this.$nextTick(() => {
             this.$refs.element.setSelectionRange(0, 0)
@@ -682,7 +682,7 @@
        * @fires emitInput
       */
       pasteEvent(event){
-        if ( !this.disabled && !this.readonly ){
+        if ( !this.isDisabled && !this.readonly ){
           let text = event.clipboardData ? event.clipboardData.getData('text') : '',
               pos = this.getPos(this.$refs.element.selectionStart),
               p = this.getIdxRange(0, pos),
@@ -708,7 +708,7 @@
        * @fires emitInput
        */
       cutEvent(event){
-        if ( !this.disabled && !this.readonly ){
+        if ( !this.isDisabled && !this.readonly ){
           let sel = document.getSelection(),
               text = sel.toString(),
               oriPos = this.$refs.element.selectionStart,

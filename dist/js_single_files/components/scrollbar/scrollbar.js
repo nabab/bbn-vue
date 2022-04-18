@@ -307,6 +307,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       realSize(){
         return this.containerSize ? this.containerSize / 100 * this.size : 0;
       },
+
       /**
        * @computed isVisible
        * @returns {Boolean}
@@ -354,7 +355,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       stopDrag() {
         this.dragging = false;
       },
-      setSliderPos(pos){
+      setSliderPos(pos) {
         if (bbn.fn.isNumber(pos)) {
           if (pos < 0) {
             pos = 0;
@@ -362,6 +363,8 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           if (pos > this.maxSliderPos) {
             pos = this.maxSliderPos;
           }
+
+
           if (this.sliderPos !== pos) {
             this.sliderPos = pos;
             return true;
@@ -404,16 +407,24 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       /**
        * @method adjustFromBar
        */
-      adjustFromBar(){
+      adjustFromBar(anim){
         if ( this.shouldBother ){
-          this.containerPos = (this.sliderPos / this.ratio);
-          let prop = this.isVertical ? 'scrollTop' : 'scrollLeft';
-          this.realContainer[prop] = this.containerPos;
-          bbn.fn.each(this.scrollableElements(), a => {
-            a[prop] = this.containerPos;
-          });
-          let e = new Event('scroll');
-          this.$emit('scroll' + (this.isVertical ? 'y' : 'x'), e, this.containerPos);
+          this.$nextTick(() => {
+            this.containerPos = (this.sliderPos / this.ratio);
+            let prop = this.isVertical ? 'scrollTop' : 'scrollLeft';
+            if (this.scroller) {
+              this.scrollTo(this.containerPos, anim);
+            }
+            else {
+              this.realContainer[prop] = this.containerPos;
+              bbn.fn.each(this.scrollableElements(), a => {
+                a[prop] = this.containerPos;
+              });
+            }
+
+            let e = new Event('scroll');
+            this.$emit('scroll' + (this.isVertical ? 'y' : 'x'), e, this.containerPos);
+          })
         }
       },
 
@@ -439,14 +450,15 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
                       clickPoint - (position[this.isVertical ? 'top' : 'left']) - (position[this.isVertical ? 'height' : 'width']);
               if ( !precise ){
                 if ( isBefore ){
-                  this.scrollBefore();
+                  this.scrollBefore(true);
                 }
                 else{
-                  this.scrollAfter();
+                  this.scrollAfter(true);
                 }
               }
-              else if (this.setSliderPos(this.sliderPos + movement)) {
-                this.adjustFromBar();              }
+              else {
+                this.scrollTo(Math.round((this.sliderPos + movement) / this.ratio));
+              }
             }
           }
         }
@@ -456,31 +468,30 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @method scrollLevel
        * @param {Boolean} before 
        */
-      scrollLevel(before){
+      scrollLevel(before, anim) {
         if ( this.sliderSize ){
           let movement = Math.round(this.sliderSize - (this.sliderSize * 0.1));
           if ( before ){
             movement = -movement;
           }
-          if (this.setSliderPos(this.sliderPos + movement)) {
-            this.adjustFromBar();
-          }
+
+          this.scrollTo(Math.round((this.sliderPos + movement) / this.ratio), true);
         }
       },
       /**
        * @method scrollBefore
        * @fires scrollLevel
        */
-      scrollBefore(){
-        return this.scrollLevel(true);
+      scrollBefore(anim) {
+        return this.scrollLevel(true, anim);
       },
       
       /**
        * @method scrollAfter
        * @fires scrollLevel
        */
-      scrollAfter(){
-        return this.scrollLevel();
+      scrollAfter(anim) {
+        return this.scrollLevel(false, anim);
       },
 
       /**
@@ -664,7 +675,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
               resolve();
             }
             this.nextLevel = Math.round(newPos);
-            this.realContainer['scroll' + (this.isVertical ? 'Top' : 'Left')] = newPos;
+            this.realContainer['scroll' + (this.isVertical ? 'Top' : 'Left')] = this.nextLevel;
           }, 1000 / 60); // 60 fps
         });
       },
@@ -726,13 +737,13 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
 
               //bbn.fn.log("scrollTo part 2", num);
               this.containerPos = num;
-              this.sliderPos = this.containerPos * this.ratio;
               if (anim) {
                 this.smoothScrollTo(num).then(() => {
                   resolve();
                 });
               }
               else {
+                this.sliderPos = this.containerPos * this.ratio;
                 this.nextLevel = Math.round(num);
                 this.realContainer['scroll' + (this.isVertical ? 'Top' : 'Left')] = num;
                 resolve();
