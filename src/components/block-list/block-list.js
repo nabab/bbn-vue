@@ -19,10 +19,33 @@
       bbn.vue.listComponent,
       bbn.vue.componentInsideComponent
     ],
+    props: {
+      /**
+       * Max Image Width
+       *
+       * @prop {Number} [''] imgWidth
+       */
+      imgWidth: {
+        type: Number,
+        default: 420
+      },
+    },
+    data(){
+      return {
+        windowWidth: window.innerWidth,
+        rowCount: Math.ceil(window.innerWidth / this.imgWidth),
+      }
+    },
     mounted(){
       this.ready = true;
+      this.$nextTick(() => {
+        window.addEventListener('resize', this.onResize);
+      });
     },
     watch: {
+      windowWidth(newWidth, oldWidth) {
+        this.rowCount = Math.ceil(newWidth / this.imgWidth);
+      },
       currentPage() {
         let sc = this.closest('bbn-scroll');
         while (sc && !sc.scrollable) {
@@ -45,6 +68,11 @@
             }
           }
         }
+      }
+    },
+    methods: {
+      onResize() {
+        this.windowWidth = window.innerWidth;
       }
     }
   });

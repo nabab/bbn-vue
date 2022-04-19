@@ -2,11 +2,14 @@
   <div class="bbn-hidden" v-if="$slots.default" ref="slot">
     <slot></slot>
   </div>
-  <div :class="getComponentName() + '-content'">
+  <div :class="getComponentName() + '-content'"
+    :style="'grid-template-columns: repeat(' + rowCount + ',' + 100/rowCount + '%);'"
+  >
     <div v-for="(li, idx) in filteredData"
          v-if="isAjax || !pageable || ((idx >= start) && (idx < start + currentLimit))"
          :key="li.key"
-         :class="['bbn-w-25', 'bbn-mobile-w-50', getComponentName() + '-items']">
+         :class="[getComponentName() + '-items']"
+    >
       <component v-if="currentComponent"
                   :is="currentComponent"
                   v-bind="componentOptions"
