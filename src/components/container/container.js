@@ -147,15 +147,41 @@
          * @data {String} currentURL
          */
         currentURL: this.current || this.url,
-        hasLoader: false,
+        /**
+         * Reacts to mouse movements.
+         * @data {Boolean} isOver
+         */
         isOver: false,
+        /**
+         * The closest bbn-container if any.
+         * @data {Vue|null} _bbn_container
+         */
         _bbn_container: null,
+        /**
+         * The base 64 encoded thumbnail image.
+         * @data {String} thumbnail
+         */
         thumbnail: false,
         /**
          * A list of form components contained in this container
          * @data {Array} [[]] forms
          */
-        forms: []
+        forms: [],
+        /**
+         * The error status if loading goes bad.
+         * @data {null|Object} errorStatus
+         */
+        errorStatus: null,
+        /**
+         * The title actually shown.
+         * @data {String} currentTitle
+         */
+        currentTitle: this.title,
+        /**
+         * The icon actually shown.
+         * @data {String} currentIcon
+         */
+        currentIcon: this.icon
       };
     },
     computed: {
@@ -291,7 +317,28 @@
        */
       setTitle(title){
         if ( this.router ){
-          this.router.views[this.idx].title = title;
+          if (!this.real) {
+            this.router.views[this.idx].title = title;
+          }
+          else {
+            this.currentTitle = title;
+          }
+        }
+      },
+      /**
+       * Sets the icon of the container.
+       * 
+       * @method setIcon
+       * @param {String} title 
+       */
+      setIcon(icon){
+        if ( this.router ){
+          if (!this.real) {
+            this.router.views[this.idx].icon = icon;
+          }
+          else {
+            this.currentIcon = icon;
+          }
         }
       },
       /**
@@ -687,6 +734,12 @@
     },
 
     watch: {
+      title(v) {
+        this.currentTitle = v;
+      },
+      icon(v) {
+        this.currentIcon = v;
+      },
       loaded(v) {
         this.isLoaded = v;
       },
