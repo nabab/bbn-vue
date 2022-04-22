@@ -175,11 +175,11 @@
       },
       /**
        * Customize the loading text or hide it
-       * @prop {String|Boolean} ['Loading...'] loader
+       * @prop {String|Boolean} [true] loader
        */
       loader: {
         type: [String, Boolean],
-        default: bbn._('Loading') + '...'
+        default: true
       },
       /**
        * If one or more columns have the property fixed set to true it defines the side of the fixed column(s).
@@ -551,7 +551,17 @@
         /**
          * @data {String} [''] searchValue
          */
-        searchValue: ''
+        searchValue: '',
+        /**
+         * The text shown during loading
+         * @data {String} ['Loading...'] currentLoaderText
+         */
+        currentLoaderText: bbn.fn.isString(this.loader) ? this.loader : bbn._('Loading') + '...',
+        /**
+         * True if the table is resizing its width
+         * @data {Boolean} [false] isResizingWidth
+         */
+        isResizingWidth: false
       };
     },
     computed: {
@@ -1193,8 +1203,9 @@
        * @returns {Array}
        */
       currentColumns(){
-        let r = [];
-        bbn.fn.each(this.groupCols, (a, i) => {
+        let r = [],
+            cols = bbn.fn.extend(true, [], this.groupCols);
+        bbn.fn.each(cols, (a, i) => {
           bbn.fn.each(a.cols, b => {
             r.push(bbn.fn.extend(true, {}, b, {
               fixed: i !== 1,
@@ -2338,6 +2349,7 @@
               ? (diff / (numDynCols || numStaticCols))
               : 0;
         if (newWidth) {
+          this.isResizingWidth = true;
           bbn.fn.each(this.groupCols, (groupCol, groupIdx) => {
             let sum = 0,
                 sumRight= 0,
@@ -2372,21 +2384,21 @@
                     tmp = maxWidth;
                   }
 
-                  col.realWidth = tmp;
+                  this.$set(col, 'realWidth', tmp);
                 }
                 sum += col.realWidth;
                 if (groupIdx === 0) {
-                  col.left = sumLeft;
+                  this.$set(col, 'left', sumLeft);
                   sumLeft += col.realWidth;
                 }
 
                 if (groupIdx === 2) {
-                  col.right = sumRight;
+                  this.$set(col, 'right', sumRight);
                   sumRight += col.realWidth;
                 }
               }
             })
-            groupCol.width = sum;
+            this.$set(this.groupCols[groupIdx], 'width', sum);
             sum = 0;
             sumLeft = 0;
             sumRight = 0;
@@ -2565,7 +2577,8 @@
               aggregatedColTitle = false,
               aggregatedColumns = [],
               parentWidth = this.$el.offsetParent ? this.$el.offsetParent.getBoundingClientRect().width : this.lastKnownCtWidth;
-          this.groupCols = bbn.fn.clone(groupCols);
+          this.groupCols.splice(0);
+          this.$set(this, 'groupCols', bbn.fn.clone(groupCols));
           bbn.fn.each(this.cols, a => {
             a.realWidth = 0;
           });
@@ -2770,25 +2783,24 @@
               sumLeft = 0;
               sumRight = 0;
             });
-            this.groupCols = groupCols;
+            this.groupCols.splice(0);
+            this.$set(this, 'groupCols', groupCols);
             this.colButtons = colButtons;
             this.isAggregated = isAggregated;
             this.aggregatedColumns = aggregatedColumns;
             this.resizeWidth();
-            this.initReady = true;
-            if (with_data) {
-              this.$nextTick(() => {
+            this.$nextTick(() => {
+              this.initReady = true;
+              if (with_data) {
                 this.$once('dataloaded', () => {
                   this.initStarted = false;
                 });
                 this.updateData();
-              })
-            }
-            else{
-              this.$nextTick(() => {
+              }
+              else{
                 this.initStarted = false;
-              });
-            }
+              }
+            });
           });
         }, 'init', 1000);
       },
@@ -3384,7 +3396,7 @@
             this.resizeWidth();
           })
         }
-      },
+      }
     },
     components: {
       /**

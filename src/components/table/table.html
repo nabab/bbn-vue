@@ -29,7 +29,7 @@
                  :is="toolbar"/>
     </div>
     <div :class="['bbn-w-100', 'bbn-table-container', {'bbn-flex-fill': scrollable}]">
-      <div v-if="initStarted"
+      <div v-if="initStarted || isResizing"
            class="bbn-overlay bbn-middle bbn-background"
            style="z-index: 5"
       >
@@ -183,7 +183,7 @@
                     <bbn-loadicon class="bbn-vmiddle"
                                   :size="24"/>
                     <span class="bbn-xl bbn-b bbn-left-sspace"
-                          v-text="loader"/>
+                          v-text="currentLoaderText"/>
                   </div>
                 </div>
               </td>
