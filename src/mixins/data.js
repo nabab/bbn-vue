@@ -54,27 +54,26 @@
               case "percent":
                 return v ? bbn.fn.money(v * 100, false, "%", '-', '.', ' ', 2) : '-';
               case "number":
-                return v ?
-                  bbn.fn.money(
-                    v,
-                    (cfg.precision === -4) || (cfg.format && (cfg.format.toLowerCase() === 'k')),
-                    cfg.unit || "",
-                    '-',
-                    '.',
-                    ' ',
-                    cfg.precision === -4 ? 3 : (cfg.precision || cfg.decimals || 0)
-                  ) : '-';
+                return bbn.fn.money(
+                  v,
+                  (cfg.precision === -4) || (cfg.format && (cfg.format.toLowerCase() === 'k')),
+                  cfg.unit || "",
+                  '-',
+                  '.',
+                  ' ',
+                  cfg.precision === -4 ? 3 : (cfg.precision || cfg.decimals || 0)
+                );
               case "money":
-                return v ?
-                  bbn.fn.money(
-                    v,
-                    (cfg.precision === -4) || (cfg.format && (cfg.format.toLowerCase() === 'k')),
-                    cfg.currency || cfg.unit || "",
-                    '-',
-                    ',',
-                    ' ',
-                    cfg.precision === -4 ? 3 : cfg.precision
-                  ) : '-';
+                bbn.fn.log(cfg)
+                return bbn.fn.money(
+                  v,
+                  (cfg.precision === -4) || (cfg.format && (cfg.format.toLowerCase() === 'k')),
+                  cfg.currency || cfg.unit || "",
+                  '-',
+                  ',',
+                  ' ',
+                  cfg.precision === -4 ? 3 : (cfg.precision || cfg.decimals || 0)
+                );
               case "bool":
               case "boolean":
                 return '<i class="nf nf-fa-'

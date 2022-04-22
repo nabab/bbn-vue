@@ -3143,19 +3143,21 @@
       // Adding bbns-column from the slot
       if (this.$slots.default) {
         for (let node of this.$slots.default) {
-          //bbn.fn.log("TRYING TO ADD COLUMN", node);
+          /** @todo Check when used: when in DOM? Not sure */
           if (
             node.componentOptions &&
             (node.componentOptions.tag === 'bbns-column')
           ) {
             this.addColumn(node.componentOptions.propsData);
           }
+          // Regular bbn-column case
           else if (
             (node.tag === 'bbns-column') &&
             node.data && node.data.attrs
           ) {
             this.addColumn(node.data.attrs);
           }
+          /** @todo Check if inserting tr in the slot works */
           else if (node.tag === 'tr') {
             this.hasTrSlot = true
           }
