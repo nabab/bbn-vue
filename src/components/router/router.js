@@ -2005,6 +2005,8 @@
                 let url = this.views[idx].url;
                 if (this.urls[url]) {
                   this.urls[url].errorStatus = xhr;
+                  this.urls[url].setTitle(bbn._("Error"));
+                  this.urls[url].setIcon("nf nf-fa-warning");
                   this.callRouter(finalURL, url);
                 }
               }
