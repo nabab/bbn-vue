@@ -3044,6 +3044,7 @@
        * @param {Number} idx 
        */
       focusout(idx){
+        this.clickedTd = null;
         if ((idx === undefined) || (idx === this.focusedRow)) {
           this.focused = false;
           //this.focusedElement = undefined;
@@ -3065,6 +3066,7 @@
           || e.target.closest('td').classList.contains('bbn-table-edit-buttons')
         ) {
           this.focused = true;
+          this.clickedTd = e.target;
           //this.setFocusedElement(e)
           if (this.focusedRow !== idx) {
             this.focusedRow = idx;
@@ -3364,9 +3366,10 @@
             this.$nextTick(() => {
               this.edit(this.items[newIndex].data, null, newIndex);
               this.$nextTick(() => {
-                let tr = this.getTr(newIndex),
-                    nextInputs = tr ? tr.querySelectorAll('input') : [],
-                    nextInput;
+
+                let ele = this.clickedTd || this.getTr(newIndex);
+                let nextInputs = ele ? ele.querySelectorAll('input') : [];
+                let nextInput;
                 bbn.fn.each(nextInputs, a => {
                   if (a.offsetWidth) {
                     nextInput = a;

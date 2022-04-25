@@ -191,11 +191,8 @@
             <template v-else>
               <tr v-for="(d, i) in items"
                   :key="d.rowKey"
-                  :index="i"
-                  :tabindex="0"
                   @focusout="focusout(i)"
-                  @focusin="focusin(i, $event)"
-                  @dblclick="() => {if (focusedRow !== i) {focusedRow = i}}"
+                  :index="i"
                   :class="[{
                     'bbn-alt': !groupable && (d.expanderIndex !== undefined) ?
                       !!(d.expanderIndex % 2) :
@@ -332,6 +329,8 @@
                       'bbn-table-edit-buttons': !!col.buttons && isEdited(d.data, col, i),
                       'bbn-table-buttons': !!col.buttons
                     }]"
+                    :tabindex="0"
+                    @focusin="focusin(i, $event)"
                     @click="clickCell(col, index, d.index)"
                     @dblclick="dbclickCell(col, index, d.index, d.data, i)"
                     :style="{
