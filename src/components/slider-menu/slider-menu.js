@@ -93,6 +93,7 @@
           data: this.source,
           selected: true,
           visible: this.currentSelected.length === 0,
+          // visible: true,
           last: false,
           depth: depth
         }];
@@ -143,6 +144,8 @@
 
         }
         this.maxDepth = depth;
+        console.log(this.maxDepth, "---------this.maxDepth--------");
+        console.log(res, "-------------items-----------");
         return res;
       }
     },

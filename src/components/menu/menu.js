@@ -109,7 +109,12 @@
       },
       select(item, idx, idx2, ev) {
         if (this.sourceUrl && item[this.sourceUrl]) {
-          bbn.fn.link(item.url);
+          if(item.url.indexOf('#') === -1 ) {
+            bbn.fn.link(item.url);
+          }
+          else {
+            window.location.href = location.protocol + "//" + window.location.hostname + "/" + item.url;
+          }
         }
 
         this.$emit('select', item, idx, idx2, ev);
