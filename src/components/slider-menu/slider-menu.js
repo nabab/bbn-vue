@@ -144,8 +144,6 @@
 
         }
         this.maxDepth = depth;
-        console.log(this.maxDepth, "---------this.maxDepth--------");
-        console.log(res, "-------------items-----------");
         return res;
       }
     },
