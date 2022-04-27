@@ -390,12 +390,18 @@
                                       @click.prevent.stop="cancel"
                                       style="margin: 0 .1em"/>
                         </div>
-                        <bbn-field v-else-if="(editMode === 'inline') && isValidField(col.field) && (col.editable !== false)"
+                        <component v-else-if="(editMode === 'inline') && isValidField(col.field) && (col.editable !== false)"
+                                   v-bind="getEditableOptions(col, d.data)"
+                                   :is="getEditableComponent(col, d.data)"
+                                   @click.stop
+                                   v-model="editedRow[col.field]"
+                                   style="width: 100%"/>
+                        <!--<bbn-field v-else-if="(editMode === 'inline') && isValidField(col.field) && (col.editable !== false)"
                                    v-bind="col"
                                    mode="write"
                                    @click.stop
                                    v-model="editedRow[col.field]"
-                                   style="width: 100%"/>
+                                   style="width: 100%"/>-->
                         <bbn-field v-else-if="isValidField(col.field) && !col.render && !col.buttons"
                                   v-bind="col"
                                   @click.stop
