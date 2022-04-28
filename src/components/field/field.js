@@ -137,7 +137,7 @@
               case "money":
                 // this.renderedComponent = 'bbn-numeric';
                 // this.renderedOptions.decimals = 2;
-                this.renderedOptions.value = bbn.fn.money(this.value, false, this.unit, false, ',', " ", 2);
+                this.renderedContent = bbn.fn.money(this.value, false, this.unit, false, ',', ' ', 2);
                 break;
               case "json":
                 this.renderedComponent = 'bbn-json-editor';
@@ -194,7 +194,9 @@
                 this.renderedContent = this.render(this.actualData, this.index, this.field, this.value);
               }
               else {
-                this.renderedContent = this.renderData(this.actualData, this)
+                if (this.type !== "money") {
+                  this.renderedContent = this.renderData(this.actualData, this)
+                }
               }
             }
             /*

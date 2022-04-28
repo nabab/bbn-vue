@@ -8,9 +8,6 @@
 >
   <div v-if="renderedContent" v-html="renderedContent"></div>
 </component>
-<span v-else-if="type === 'money'">
-{{this.renderedOptions.value}}
-</span>
 <component v-else
            :is="renderedComponent"
            v-bind="renderedOptions"
