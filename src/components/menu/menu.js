@@ -109,11 +109,11 @@
       },
       select(item, idx, idx2, ev) {
         if (this.sourceUrl && item[this.sourceUrl]) {
-          if(item.url.indexOf('#') === -1 ) {
-            bbn.fn.link(item.url);
+          if(item[this.sourceUrl].indexOf('#') === -1 ) {
+            bbn.fn.link(item[this.sourceUrl]);
           }
           else {
-            window.location.href = location.protocol + "//" + window.location.hostname + "/" + item.url;
+            window.location.href = location.protocol + "//" + window.location.hostname + "/" + item[this.sourceUrl];
           }
         }
 
