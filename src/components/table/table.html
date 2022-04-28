@@ -29,7 +29,7 @@
                  :is="toolbar"/>
     </div>
     <div :class="['bbn-w-100', 'bbn-table-container', {'bbn-flex-fill': scrollable}]">
-      <div v-if="initStarted"
+      <div v-if="initStarted || isResizing"
            class="bbn-overlay bbn-middle bbn-background"
            style="z-index: 5"
       >
@@ -183,7 +183,7 @@
                     <bbn-loadicon class="bbn-vmiddle"
                                   :size="24"/>
                     <span class="bbn-xl bbn-b bbn-left-sspace"
-                          v-text="loader"/>
+                          v-text="currentLoaderText"/>
                   </div>
                 </div>
               </td>
@@ -191,11 +191,8 @@
             <template v-else>
               <tr v-for="(d, i) in items"
                   :key="d.rowKey"
-                  :index="i"
-                  :tabindex="0"
                   @focusout="focusout(i)"
-                  @focusin="focusin(i, $event)"
-                  @dblclick="() => {if (focusedRow !== i) {focusedRow = i}}"
+                  :index="i"
                   :class="[{
                     'bbn-alt': !groupable && (d.expanderIndex !== undefined) ?
                       !!(d.expanderIndex % 2) :
@@ -332,6 +329,8 @@
                       'bbn-table-edit-buttons': !!col.buttons && isEdited(d.data, col, i),
                       'bbn-table-buttons': !!col.buttons
                     }]"
+                    :tabindex="0"
+                    @focusin="focusin(i, $event)"
                     @click="clickCell(col, index, d.index)"
                     @dblclick="dbclickCell(col, index, d.index, d.data, i)"
                     :style="{
@@ -392,11 +391,17 @@
                                       style="margin: 0 .1em"/>
                         </div>
                         <component v-else-if="(editMode === 'inline') && isValidField(col.field) && (col.editable !== false)"
-                                  v-bind="getEditableOptions(col, d.data)"
-                                  :is="getEditableComponent(col, d.data)"
-                                  @click.stop
-                                  v-model="editedRow[col.field]"
-                                  style="width: 100%"/>
+                                   v-bind="getEditableOptions(col, d.data)"
+                                   :is="getEditableComponent(col, d.data)"
+                                   @click.stop
+                                   v-model="editedRow[col.field]"
+                                   style="width: 100%"/>
+                        <!--<bbn-field v-else-if="(editMode === 'inline') && isValidField(col.field) && (col.editable !== false)"
+                                   v-bind="col"
+                                   mode="write"
+                                   @click.stop
+                                   v-model="editedRow[col.field]"
+                                   style="width: 100%"/>-->
                         <bbn-field v-else-if="isValidField(col.field) && !col.render && !col.buttons"
                                   v-bind="col"
                                   @click.stop

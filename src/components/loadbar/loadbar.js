@@ -140,7 +140,7 @@
           res.push({
             text: bbn._("abort"),
             icon: 'nf nf-mdi-cancel',
-            action() {
+            action: () => {
               this.cancel(item);
             }
           });

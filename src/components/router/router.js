@@ -1279,7 +1279,7 @@
             this.$emit("route1", this);
           }
           this.activate(url, this.urls[st]);
-          if ( this.urls[st] ){
+          if ( this.urls[st] && this.urls[st].isLoaded ){
             this.urls[st].currentURL = url;
             this.$nextTick(() => {
               let child = this.urls[st].find('bbn-router');
@@ -1998,19 +1998,31 @@
                 })
               })
             },
-            (xhr, textStatus, errorThrown) => {
+            xhr => {
               this.isLoading = false;
-              this.alert(textStatus);
               let idx = this.search(this.parseURL(finalURL));
               if ( idx !== false ){
                 let url = this.views[idx].url;
                 if (this.urls[url]) {
-                  this.close(idx, true);
+                  this.urls[url].errorStatus = xhr;
+                  this.urls[url].setTitle(bbn._("Error"));
+                  this.urls[url].setIcon("nf nf-fa-warning");
+                  this.callRouter(finalURL, url);
                 }
               }
             },
             () => {
               this.isLoading = false;
+              let idx = this.search(this.parseURL(finalURL));
+              if ( idx !== false ){
+                let url = this.views[idx].url;
+                if (this.urls[url]) {
+                  this.callRouter(finalURL, url);
+                  this.$nextTick(() => {
+                    this.close(idx);
+                  });
+                }
+              }
             }
           );
         }

@@ -94,16 +94,30 @@
             </div>
             <!-- This is the slot -->
             <slot v-else></slot>
-            <!-- Adding style as acomponent -->
+            <!-- Adding style as a component -->
             <component is="style"
                       v-if="css"
                       scoped="scoped"
                       v-html="css"/>
-            <bbn-loader v-if="hasLoader"/>
           </bbn-scroll>
           <!-- If loading showing loader -->
-          <bbn-loader v-else-if="visible && !isLoaded"
-                      style="z-index: 999"/>
+          <div v-else-if="visible && errorStatus"
+               class="bbn-overlay bbn-middle bbn-lg">
+            <div class="bbn-lpadded bbn-state-error bbn-block bbn-nowrap">
+              <h1 v-text="errorStatus.status"/>
+              <div v-text="url"/>
+              <div class="bbn-vlpadded bbn-b"
+                   v-text="errorStatus.statusText"/>
+              <div class="bbn-c">
+                <bbn-button @click="close"
+                            icon="nf nf-fa-times"
+                            :text="_('Close')"
+                            class="bbn-state-error"/>
+              </div>
+            </div>
+          </div>
+          <!-- If loading showing loader -->
+          <bbn-loader v-else-if="visible && !isLoaded"/>
           <!-- Thumbnail image -->
           <div v-if="!visible && visual && thumbnail"
               style="overflow: hidden"

@@ -203,8 +203,15 @@
          * @memberof fieldComponent
          */
         precision: {
-          type: Number,
-          default: 0
+          type: Number
+        },
+        /**
+         * Defines the number of decimals for the component.
+         * @prop {Number} [0] decimals 
+         * @memberof fieldComponent
+         */
+        decimals: {
+          type: Number
         },
         /**
          * Defines the precision of the component.

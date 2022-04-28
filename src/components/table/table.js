@@ -175,11 +175,11 @@
       },
       /**
        * Customize the loading text or hide it
-       * @prop {String|Boolean} ['Loading...'] loader
+       * @prop {String|Boolean} [true] loader
        */
       loader: {
         type: [String, Boolean],
-        default: bbn._('Loading') + '...'
+        default: true
       },
       /**
        * If one or more columns have the property fixed set to true it defines the side of the fixed column(s).
@@ -551,7 +551,17 @@
         /**
          * @data {String} [''] searchValue
          */
-        searchValue: ''
+        searchValue: '',
+        /**
+         * The text shown during loading
+         * @data {String} ['Loading...'] currentLoaderText
+         */
+        currentLoaderText: bbn.fn.isString(this.loader) ? this.loader : bbn._('Loading') + '...',
+        /**
+         * True if the table is resizing its width
+         * @data {Boolean} [false] isResizingWidth
+         */
+        isResizingWidth: false
       };
     },
     computed: {
@@ -1193,8 +1203,9 @@
        * @returns {Array}
        */
       currentColumns(){
-        let r = [];
-        bbn.fn.each(this.groupCols, (a, i) => {
+        let r = [],
+            cols = bbn.fn.extend(true, [], this.groupCols);
+        bbn.fn.each(cols, (a, i) => {
           bbn.fn.each(a.cols, b => {
             r.push(bbn.fn.extend(true, {}, b, {
               fixed: i !== 1,
@@ -2338,6 +2349,7 @@
               ? (diff / (numDynCols || numStaticCols))
               : 0;
         if (newWidth) {
+          this.isResizingWidth = true;
           bbn.fn.each(this.groupCols, (groupCol, groupIdx) => {
             let sum = 0,
                 sumRight= 0,
@@ -2372,21 +2384,21 @@
                     tmp = maxWidth;
                   }
 
-                  col.realWidth = tmp;
+                  this.$set(col, 'realWidth', tmp);
                 }
                 sum += col.realWidth;
                 if (groupIdx === 0) {
-                  col.left = sumLeft;
+                  this.$set(col, 'left', sumLeft);
                   sumLeft += col.realWidth;
                 }
 
                 if (groupIdx === 2) {
-                  col.right = sumRight;
+                  this.$set(col, 'right', sumRight);
                   sumRight += col.realWidth;
                 }
               }
             })
-            groupCol.width = sum;
+            this.$set(this.groupCols[groupIdx], 'width', sum);
             sum = 0;
             sumLeft = 0;
             sumRight = 0;
@@ -2565,7 +2577,8 @@
               aggregatedColTitle = false,
               aggregatedColumns = [],
               parentWidth = this.$el.offsetParent ? this.$el.offsetParent.getBoundingClientRect().width : this.lastKnownCtWidth;
-          this.groupCols = bbn.fn.clone(groupCols);
+          this.groupCols.splice(0);
+          this.$set(this, 'groupCols', bbn.fn.clone(groupCols));
           bbn.fn.each(this.cols, a => {
             a.realWidth = 0;
           });
@@ -2770,25 +2783,24 @@
               sumLeft = 0;
               sumRight = 0;
             });
-            this.groupCols = groupCols;
+            this.groupCols.splice(0);
+            this.$set(this, 'groupCols', groupCols);
             this.colButtons = colButtons;
             this.isAggregated = isAggregated;
             this.aggregatedColumns = aggregatedColumns;
             this.resizeWidth();
-            this.initReady = true;
-            if (with_data) {
-              this.$nextTick(() => {
+            this.$nextTick(() => {
+              this.initReady = true;
+              if (with_data) {
                 this.$once('dataloaded', () => {
                   this.initStarted = false;
                 });
                 this.updateData();
-              })
-            }
-            else{
-              this.$nextTick(() => {
+              }
+              else{
                 this.initStarted = false;
-              });
-            }
+              }
+            });
           });
         }, 'init', 1000);
       },
@@ -3032,6 +3044,7 @@
        * @param {Number} idx 
        */
       focusout(idx){
+        this.clickedTd = null;
         if ((idx === undefined) || (idx === this.focusedRow)) {
           this.focused = false;
           //this.focusedElement = undefined;
@@ -3053,6 +3066,7 @@
           || e.target.closest('td').classList.contains('bbn-table-edit-buttons')
         ) {
           this.focused = true;
+          this.clickedTd = e.target;
           //this.setFocusedElement(e)
           if (this.focusedRow !== idx) {
             this.focusedRow = idx;
@@ -3131,19 +3145,21 @@
       // Adding bbns-column from the slot
       if (this.$slots.default) {
         for (let node of this.$slots.default) {
-          //bbn.fn.log("TRYING TO ADD COLUMN", node);
+          /** @todo Check when used: when in DOM? Not sure */
           if (
             node.componentOptions &&
             (node.componentOptions.tag === 'bbns-column')
           ) {
             this.addColumn(node.componentOptions.propsData);
           }
+          // Regular bbn-column case
           else if (
             (node.tag === 'bbns-column') &&
             node.data && node.data.attrs
           ) {
             this.addColumn(node.data.attrs);
           }
+          /** @todo Check if inserting tr in the slot works */
           else if (node.tag === 'tr') {
             this.hasTrSlot = true
           }
@@ -3350,9 +3366,10 @@
             this.$nextTick(() => {
               this.edit(this.items[newIndex].data, null, newIndex);
               this.$nextTick(() => {
-                let tr = this.getTr(newIndex),
-                    nextInputs = tr ? tr.querySelectorAll('input') : [],
-                    nextInput;
+
+                let ele = this.clickedTd || this.getTr(newIndex);
+                let nextInputs = ele ? ele.querySelectorAll('input') : [];
+                let nextInput;
                 bbn.fn.each(nextInputs, a => {
                   if (a.offsetWidth) {
                     nextInput = a;
@@ -3384,7 +3401,7 @@
             this.resizeWidth();
           })
         }
-      },
+      }
     },
     components: {
       /**
