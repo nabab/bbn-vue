@@ -109,6 +109,57 @@
        */
       init(){
         if ( this.field ){
+          if ( this.type ){
+            switch ( this.type ){
+              case "datetime":
+                this.renderedComponent = 'bbn-datetimepicker';
+                break;
+              case "date":
+                this.renderedComponent = 'bbn-datepicker';
+                break;
+              case "time":
+                this.renderedComponent = 'bbn-timepicker';
+                break;
+              case "email":
+                this.renderedComponent ='bbn-input';
+                break;
+              case "url":
+                this.renderedComponent = 'bbn-input';
+                break;
+              case "number":
+                this.renderedComponent = 'bbn-numeric';
+                break;
+              case "percent":
+                this.renderedComponent = 'bbn-numeric';
+                this.renderedOptions.unit = '%';
+                this.renderedOptions.decimals = 2;
+                break;
+              case "money":
+                // this.renderedComponent = 'bbn-numeric';
+                // this.renderedOptions.decimals = 2;
+                this.renderedOptions.value = bbn.fn.money(this.value, false, this.unit, false, ',', " ", 2);
+                break;
+              case "json":
+                this.renderedComponent = 'bbn-json-editor';
+                if (!bbn.fn.isString(this.value)) {
+                  this.renderedOptions.value = this.value ? JSON.stringify(this.value) : '';
+                }
+                break;
+              case "bool":
+              case "boolean":
+                this.renderedComponent = 'bbn-checkbox';
+                this.renderedOptions.value = this.options && (this.options.value !== undefined) ? this.options.value : 1;
+                this.renderedOptions.novalue = this.options && (this.options.novalue !== undefined) ? this.options.novalue : 0;
+                break;
+              case "multilines":
+              case "textarea":
+                  this.renderedComponent = 'bbn-textarea';
+                break;
+              default:
+                this.renderedComponent = 'bbn-input';
+                break;
+            }
+          }
           if ( (this.mode === 'write') && this.editable ){
             if ( this.required !== undefined ){
               this.renderedOptions.required = this.required;
@@ -119,56 +170,6 @@
             else if ( (this.render !== undefined) && bbn.fn.isFunction(this.render) ){
               this.renderedComponent = 'div';
               this.renderedContent = this.render(this.actualData, this.index, this.field, this.value);
-            }
-            else if ( this.type ){
-              switch ( this.type ){
-                case "datetime":
-                  this.renderedComponent = 'bbn-datetimepicker';
-                  break;
-                case "date":
-                  this.renderedComponent = 'bbn-datepicker';
-                  break;
-                case "time":
-                  this.renderedComponent = 'bbn-timepicker';
-                  break;
-                case "email":
-                  this.renderedComponent ='bbn-input';
-                  break;
-                case "url":
-                  this.renderedComponent = 'bbn-input';
-                  break;
-                case "number":
-                  this.renderedComponent = 'bbn-numeric';
-                  break;
-                case "percent":
-                  this.renderedComponent = 'bbn-numeric';
-                  this.renderedOptions.unit = '%';
-                  this.renderedOptions.decimals = 2;
-                  break;
-                case "money":
-                  this.renderedComponent = 'bbn-numeric';
-                  this.renderedOptions.decimals = 2;
-                  break;
-                case "json":
-                  this.renderedComponent = 'bbn-json-editor';
-                  if (!bbn.fn.isString(this.value)) {
-                    this.renderedOptions.value = this.value ? JSON.stringify(this.value) : '';
-                  }
-                  break;
-                case "bool":
-                case "boolean":
-                  this.renderedComponent = 'bbn-checkbox';
-                  this.renderedOptions.value = this.options && (this.options.value !== undefined) ? this.options.value : 1;
-                  this.renderedOptions.novalue = this.options && (this.options.novalue !== undefined) ? this.options.novalue : 0;
-                  break;
-                case "multilines":
-                case "textarea":
-                    this.renderedComponent = 'bbn-textarea';
-                  break;
-                default:
-                  this.renderedComponent = 'bbn-input';
-                  break;
-              }
             }
             else if ( this.source ){
               this.renderedComponent = 'bbn-dropdown';
