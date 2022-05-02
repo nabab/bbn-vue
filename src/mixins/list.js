@@ -895,8 +895,8 @@
           return {};
         },
         beforeUpdate(){
-          let e = new Event('beforeUpdate', {cancelable: true});
-          this.$emit('beforeUpdate', e);
+          let e = new Event('beforeupdate', {cancelable: true});
+          this.$emit('beforeupdate', e);
           return e.defaultPrevented ? false : true;
         },
         afterUpdate() {
@@ -1022,7 +1022,7 @@
                     d = d.data;
                   }
 
-                  this.$emit('dataReceived', d);
+                  this.$emit('datareceived', d);
                 }
 
                 if ( d && bbn.fn.isArray(d.data) ){

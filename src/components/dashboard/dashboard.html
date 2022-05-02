@@ -24,6 +24,7 @@
                     :uid="w.key"
                     @close="hideWidget(w.key)"
                     :index="w.index"
+                    :data="w.data || {}"
                     @dragover="mouseEnterWidget(w.index)"
                     @dragend="isDragging = false; isSorting = false;"
                     @drop.prevent="drop"
@@ -36,10 +37,9 @@
                       )
                     }"
                     @sortstart="isSorting = true; sortOriginIndex = w.index; sortTargetIndex = null; isDragging = true;"
-                    :title="w.title ? w.title : (w.text ? w.text : '')"
-        ></bbn-widget>
+                    :title="w.title ? w.title : (w.text ? w.text : '')"/>
       </template>
-      <slot v-if="!widgets.length"></slot>
+      <slot v-if="!widgets.length"/>
     </div>
   </bbn-scroll>
 </div>

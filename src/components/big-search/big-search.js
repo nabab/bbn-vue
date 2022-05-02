@@ -370,7 +370,7 @@
                   d = d.data;
                 }
 
-                this.$emit('dataReceived', d);
+                this.$emit('datareceived', d);
                 if (bbn.fn.isArray(d.data) ){
                   this.appendData(d.data);
                 }

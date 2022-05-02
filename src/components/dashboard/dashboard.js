@@ -481,7 +481,7 @@
         let idx = bbn.fn.search(this.widgets || [], 'key', key),
             params = {
               id: key,
-              cfg: cfg,
+              cfg: bbn.fn.extend({}, cfg),
               id_dashboard: this.code
             },
             no_save = ['items', 'num', 'start', 'index'];
@@ -491,7 +491,14 @@
               delete params.cfg[a];
             }
           });
-          if ( bbn.fn.numProperties(params.cfg) ){
+          let numProps = bbn.fn.numProperties(params.cfg);
+          if (numProps) {
+            // If it's only the default limit we don't save
+            if ((numProps === 1) && params.cfg.limit && (this.widgets[idx].limit === undefined)) {
+              this.widgets[idx].limit = params.cfg.limit;
+              return;
+            }
+
             bbn.fn.iterate(params.cfg, (a, k) => {
               if ( this.widgets[idx][k] === undefined ){
                 this.$set(this.widgets[idx], k, a);
@@ -535,7 +542,7 @@
               });
             }
             else{
-              success();
+              appui.success();
             }
           }
         }

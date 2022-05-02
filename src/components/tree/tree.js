@@ -1245,30 +1245,31 @@ Vue.component('bbn-tree', {
   /**
    * Emits the event beforeLoad and load. And opens the nodes defined in the prop path.
    * Definition of the root tree and parent node.
-   * @event beforeUpdate
+   * @event beforeupdate
    * @event startloading
-   * @event dataReceived
+   * @event datareceived
    * @emits tree,beforeLoad
    * @emits load
    * @fires closest
    */
   created(){
-    this.$on('beforeUpdate', e => {
+    this.$on('beforeupdate', e => {
       if ( this.isAjax && (this.tree.isLoading || this.isLoading) ){
         e.preventDefault();
       }
       if ( !e.defaultPrevented ){
-        this.tree.$emit('beforeLoad', this.getPostData());
+        this.tree.$emit('beforeload', this.getPostData());
       }
     });
     this.$on('startloading', () => {
-      //this.tree.isLoading = true;
       this.loading = true;
     });
-    this.$on('dataReceived', d => {
-      //this.tree.isLoading = false;
+    this.$on('datareceived', d => {
       this.loading = false;
-      this.$emit('load', d);
+      this.tree.$emit('load', d);
+    });
+    this.$on('dataloaded', d => {
+      this.tree.$emit('afterload', d);
     });
     if ( bbn.fn.isFunction(this.source) ){
       this.isFunction = true;

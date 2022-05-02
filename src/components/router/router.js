@@ -322,6 +322,14 @@
       resizable: {
         type: Boolean,
         default: true
+      },
+      /**
+       * Decides if real bbn-container are shown before or after the ones in the config or fake container 9bbns-container)
+       * @prop {String} ['real] first
+       */
+      first: {
+        type: String,
+        default: 'real'
       }
     },
     data(){
@@ -864,6 +872,7 @@
           bbn.fn.isString(obj.url)
         ){
           obj.url = bbn.fn.replaceAll('//', '/', obj.url);
+          // This is a component
           if (obj.$options) {
             if (!obj.current && !obj.currentURL) {
               if ( bbn.env.path.indexOf(this.getFullBaseURL() + (obj.url ? obj.url + '/' : '')) === 0 ){
@@ -919,6 +928,10 @@
             }
             if (this.search(obj2.url) === false) {
               if (this.isValidIndex(idx)) {
+                this.views.splice(idx, 0, obj2);
+              }
+              else if (this.hasRealContainers && (this.first !== 'real') && !obj2.real) {
+                idx = bbn.fn.search(this.views, {real: true});
                 this.views.splice(idx, 0, obj2);
               }
               else {
@@ -985,6 +998,10 @@
               obj.uid = obj.url + '-' + bbn.fn.randomString();
               if (isValid) {
                 this.views.splice(obj.idx, 0, obj);
+              }
+              else if (this.hasRealContainers && (this.first !== 'real') && !obj.real) {
+                idx = bbn.fn.search(this.views, {real: true});
+                this.views.splice(idx, 0, obj);
               }
               else {
                 this.views.push(obj);
@@ -2233,7 +2250,7 @@
           })
         }
 
-        if ( this.autoload ){
+        if ( this.autoload || this.views[idx].load) {
           items.push({
             text: bbn._("Reload"),
             key: "reload",
@@ -3106,7 +3123,7 @@
       }
       // ---- END ----
 
-      bbn.fn.each(this.source, a => {
+      bbn.fn.each(this.source, (a, i) => {
         if (a.url === '') {
           if (a.load) {
             throw new Error(bbn._("You cannot use containers with empty URL for loading"));
@@ -3121,7 +3138,7 @@
         bbn.fn.each(storage.views, a => {
           let idx = bbn.fn.search(tmp, {url: a.url});
           if ( idx > -1 ){
-            // Static comes only form configuration
+            // Static comes only from configuration
             let isStatic = tmp[idx].static;
             bbn.fn.extend(tmp[idx], a, {static: isStatic});
           }
@@ -3133,6 +3150,10 @@
 
       // Getting the default URL
       let url = this.getDefaultURL();
+
+      if (this.first !== 'real') {
+        tmp = bbn.fn.multiorder(tmp, {real: 'desc'});
+      }
 
       // Adding to the views
       bbn.fn.each(tmp, a => {
