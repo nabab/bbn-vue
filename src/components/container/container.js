@@ -350,11 +350,14 @@
        */
       setColor(bcolor, fcolor){
         if ( this.router ){
-          if ( bcolor ){
-            this.router.$set(this.router.views[this.idx], "bcolor", bcolor);
-          }
-          if ( fcolor ){
-            this.router.$set(this.router.views[this.idx], "fcolor", fcolor);
+          let view = this.router.getView(this.url);
+          if (view) {
+            if ( bcolor ){
+              this.router.$set(view, "bcolor", bcolor);
+            }
+            if ( fcolor ){
+              this.router.$set(view, "fcolor", fcolor);
+            }
           }
         }
       },
@@ -872,9 +875,11 @@
         })
       },
       dirty(v){
-        //bbn.fn.log("DIRTY WATCHER", this.idx, this.router.views);
-        this.router.views[this.idx].dirty = v;
-        this.router.retrieveDirtyContainers();
+        let view = this.router.getView(this.url);
+        if (view) {
+          view.dirty = v;
+          this.router.retrieveDirtyContainers();
+        }
       }
     },
 

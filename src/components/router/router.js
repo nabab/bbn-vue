@@ -2952,7 +2952,11 @@
       getParents(){
         return this.parent ? [...this.parent.getParents(), this.parent] : []
       },
-      onResize() {
+      /**
+       * @method onResize
+       * @return {Promise}
+       */
+       onResize() {
         this.keepCool(() => {
           if (this.setResizeMeasures() && this.setContainerMeasures()) {
             this.$emit('resize');
@@ -2962,7 +2966,18 @@
           }
         }, 'resize', 50);
       },
-      visualStyleContainer(ct) {
+      /**
+       * @method getView
+       * @return {Object|null}
+       */
+      getView(url) {
+        return bbn.fn.getRow(this.views, {url: url})
+      },
+      /**
+       * @method visualStyleContainer
+       * @return {Object}
+       */
+       visualStyleContainer(ct) {
         if (!ct.visible || this.visualShowAll) {
           return {zoom: 0.1};
         }
