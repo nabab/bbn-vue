@@ -13,7 +13,7 @@ script.innerHTML = `<div :class="[{'bbn-widget': true, 'bbn-h-100': true}, compo
                     ref="dropdown"
       ></bbn-dropdown>
     </div>
-    <div class="bbn-block bbn-w-100 bbn-vpadded bbn-c" v-if="search">
+    <div class="bbn-block bbn-w-100 bbn-bottom-padded bbn-c" v-if="search">
       <!--bbn-search name="search" style="width: 80%" ref="search" :placeholder="placeholder"></bbn-search-->
       <bbn-input name="search"
                  v-model="searchExp"
@@ -56,7 +56,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
  * @copyright BBN Solutions
  *
  * @author BBN Solutions
- * 
+ *
  * @created 15/02/2017
  */
 
@@ -70,11 +70,11 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
     name: 'bbn-treemenu',
     /**
      * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.resizerComponent 
+     * @mixin bbn.vue.resizerComponent
      */
-    mixins: 
+    mixins:
     [
-      bbn.vue.basicComponent, 
+      bbn.vue.basicComponent,
       bbn.vue.resizerComponent
     ],
     props: {
@@ -84,11 +84,11 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        */
       placeholder: {
         type: String,
-        default: "Search"
+        default: bbn._('Search')
       },
       /**
        * The source of the tree.
-       * @prop {String|Array|Function} source
+       * @prop {String|Array|Function} [[]] source
        */
       source: {
         type: [String, Array, Function],
@@ -97,7 +97,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         }
       },
       /**
-       * @prop {Boolean} shortcuts
+       * @prop {Boolean} [false] shortcuts
        */
       shortcuts: {
         type: Boolean,
@@ -105,7 +105,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       },
       /**
        * Set to false hide the search input.
-       * @prop {Boolean}  [false] search
+       * @prop {Boolean} [true] search
        */
       search: {
         type: Boolean,
@@ -146,7 +146,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         posBottom: this.bottom,
         /**
          * True if the type of the prop source is not Array.
-         * @data {Number} isAjax
+         * @data {Boolean} isAjax
          */
         isAjax: isAjax,
         /**
@@ -156,7 +156,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         items: isAjax ? [] : this.source,
         /**
          * The current menu.
-         * @data [null] current
+         * @data {String} current
          */
         currentMenu: this.current || null,
         /**
@@ -169,7 +169,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
     computed: {
       /**
        * Defines position and width of the component.
-       * @method elementStyle 
+       * @computed elementStyle
        * @return {Object}
        */
       elementStyle(){
@@ -192,7 +192,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       /**
        * Creates the menu of the given node.
        * @method getMenu
-       * @param {Object} node 
+       * @param {Object} node
        * @returns {Array}
        */
       getMenu(node){
@@ -208,7 +208,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         };
         return [{
           text: bbn._('Create a shortcut'),
-          icon: 'nf nf-fa-external_link_alt',
+          icon: 'nf nf-fa-external_link',
           action: () => {
             this.$emit('shortcut', obj);
           }
@@ -217,8 +217,8 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       /**
        * Maps the source of the tree.
        * @method mapSrc
-       * @param {Object} data 
-       * @param {Number} level 
+       * @param {Object} data
+       * @param {Number} level
        * @return {Object}
        */
       mapSrc(data, level){
@@ -237,9 +237,8 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       /**
        * Links to the prop link or url of the given item.
        * @method go
-       * @param {Object} node 
-       * @param {Event} event 
-       * @fires hide
+       * @param {Object} node
+       * @param {Event} event
        * @emits select
        */
       go(node, event){
@@ -254,6 +253,8 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       /**
        * Handles the resize of the scroll
        * @method resizeScroll
+       * @fires $nextTick
+       * @fires focusSearch
        */
       resizeScroll(){
         if ( this.$refs.scroll ){
@@ -270,6 +271,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       /**
        * Reload the tree
        * @method reset
+       * @fires getRef
        */
       reset(){
         let tree = this.getRef('tree');
@@ -289,7 +291,10 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       },
       /**
        * Method triggered at '@ready' of the component to set the current menu.
-       * @method readyTree 
+       * @method readyTree
+       * @fires $nextTick
+       * @fires getRef
+       * @fires reset
        */
       readyTree(){
         this.$nextTick(() => {
@@ -309,6 +314,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       /**
        * Focuses the search input.
        * @method focusSearch
+       * @focus getRef
        */
       focusSearch(){
         if (!bbn.fn.isMobile()) {
@@ -334,6 +340,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * Resets the tree-menu when the current menu changes.
        * @watch currentMenu
        * @fires reset
+       * @fires getRef
        */
       currentMenu(val){
         if ( (val !== null) && bbn.fn.isVue(this.getRef('tree')) ){

@@ -1,7 +1,7 @@
 ((bbn) => {
 
 let script = document.createElement('script');
-script.innerHTML = `<div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', 'bbn-reactive', {'bbn-disabled': !!disabled}]"
+script.innerHTML = `<div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', 'bbn-reactive', {'bbn-disabled': !!isDisabled}]"
      @mouseleave="leave"
      @focusin="isActive = true"
      @focusout="isActive = false"
@@ -9,16 +9,16 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', '
   <div class="bbn-flex-width bbn-h-100">
     <div class="bbn-flex-fill"
          @click.stop="click">
-      <input :disabled="disabled"
+      <input :disabled="isDisabled"
               class="bbn-unselectable bbn-textbox bbn-no-border bbn-abs bbn-top-left"
               @keydown.stop="keydownInput"
               ref="input"
               :required="required"
               readonly="readonly"
               :placeholder="filterString ? '' : placeholder"
-              :tabindex="autocomplete || disabled || readonly ? -1 : 0"
+              :tabindex="autocomplete || isDisabled || readonly ? -1 : 0"
               :value="filterString">
-      <input v-if="autocomplete && !disabled && !readonly"
+      <input v-if="autocomplete && !isDisabled && !readonly"
               tabindex="0"
               class="bbn-textbox bbn-no-border"
               v-model="filterString"
@@ -32,11 +32,11 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', '
               :name="name">
     </div>
     <div>
-      <bbn-button :icon="'nf nf-fa-caret_' + (isOpened && !disabled && !readonly && filteredData.length ? 'up' : 'down')"
+      <bbn-button :icon="'nf nf-fa-caret_' + (isOpened && !isDisabled && !readonly && filteredData.length ? 'up' : 'down')"
                   class="bbn-p bbn-button-right bbn-no-vborder"
                   @click.prevent.stop="click"
                   tabindex="-1"
-                  :disabled="disabled">
+                  :disabled="isDisabled">
       </bbn-button>
     </div>
   </div>
@@ -44,7 +44,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', '
          v-model="value"
          ref="element"
          :name="name">
-  <bbn-floater v-if="!disabled && !readonly && isOpened"
+  <bbn-floater v-if="!isDisabled && !readonly && isOpened"
                :element="$el"
                :max-height="maxHeight"
                :min-width="currentWidth"
@@ -272,7 +272,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         });
       },
       click(){
-        if (!this.disabled && this.filteredData.length) {
+        if (!this.isDisabled && this.filteredData.length) {
           this.isOpened = !this.isOpened;
           if ( this.autocomplete ){
             this.getRef('filter').focus();

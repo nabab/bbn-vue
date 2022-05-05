@@ -6,7 +6,7 @@
   <input type="hidden"
          ref="element"
          v-model="value"
-         :disabled="disabled"
+         :disabled="isDisabled"
          :required="required"
          :readonly="readonly"
   >

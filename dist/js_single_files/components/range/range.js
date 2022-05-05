@@ -19,7 +19,7 @@ script.innerHTML = `<span :class="[componentClass, 'bbn-flex-width', 'bbn-vmiddl
          :name="name"
          ref="element"
          :readonly="readonly"
-         :disabled="disabled"
+         :disabled="isDisabled"
          :required="required"
          :min="currentMin"
          :max="currentMax"
@@ -260,7 +260,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @fires emitInput
        */
       reset(){
-        if (!this.disabled && !this.readonly) {
+        if (!this.isDisabled && !this.readonly) {
           this.emitInput(this.originalValue);
         }
       },

@@ -252,7 +252,8 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-background', {
                   :top="50"
                   :shortcuts="true"
                   @shortcut="addShortcut"
-                  @ready="menuMounted = true"/>
+                  @ready="menuMounted = true"
+                  class="bbn-top-spadded bbn-no-border"/>
   </bbn-slider>
   <!-- POPUPS -->
   <bbn-popup v-if="!popup"
@@ -267,20 +268,20 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-background', {
         class="bbn-overlay bbn-secondary"
         style="opacity: 0.9"> </div>
     <bbn-big-search :source="plugins['appui-search'] + '/results'"
-                :placeholder="searchBar.placeholder"
-                :select-url="plugins['appui-search'] ? plugins['appui-search'] + '/select' : ''"
-                ref="search"
-                v-model="searchBar.value"
-                :suggest="true"
-                :autofocus="true"
-                :source-value="searchBar.sourceValue"
-                :source-text="searchBar.sourceText"
-                :min-length="searchBar.minLength"
-                @select="searchSelect"
-                @close="searchOn = false"
-                :limit="50"
-                :pageable="true"
-                class="bbn-no"/>
+                    :placeholder="searchBar.placeholder"
+                    :select-url="plugins['appui-search'] ? plugins['appui-search'] + '/select' : ''"
+                    ref="search"
+                    v-model="searchBar.value"
+                    :suggest="true"
+                    @ready="registerSearch"
+                    :source-value="searchBar.sourceValue"
+                    :source-text="searchBar.sourceText"
+                    :min-length="searchBar.minLength"
+                    @select="searchSelect"
+                    @close="searchOn = false"
+                    :limit="50"
+                    :pageable="true"
+                    class="bbn-no"/>
     <div class="bbn-top-right bbn-p bbn-spadded bbn-xxxl"
          @click.stop="searchOn = false">
       <i class="nf nf-fa-times"/>
@@ -617,6 +618,9 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       }
     },
     methods: {
+      registerSearch() {
+        this.getRef('search').registerFunction(this.getRef('router').searchForString);
+      },
       onCopy(){
         let cpb = this.getRef('clipboardButton');
         //bbn.fn.log("AWATCH", cpb);

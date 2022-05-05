@@ -7,12 +7,12 @@ script_dep.onload = () => {
 
 
 let script = document.createElement('script');
-script.innerHTML = `<span :class="['bbn-iblock', componentClass, {'bbn-disabled': !!disabled}]">
+script.innerHTML = `<span :class="['bbn-iblock', componentClass, {'bbn-disabled': !!isDisabled}]">
   <input :value="value"
          class="bbn-colorpicker-input-hidden"
          :name="name"
          ref="element"
-         :disabled="disabled"
+         :disabled="isDisabled"
          :readonly="readonly"
          :required="required"
          @click="click($event)"
@@ -21,8 +21,8 @@ script.innerHTML = `<span :class="['bbn-iblock', componentClass, {'bbn-disabled'
          @keydown="keydown($event)"
          @keyup="keyup($event)"
   >
-  <div :class="['bbn-textbox', 'bbn-colorpicker-input', {'bbn-disabled': !!disabled}]">
-    <div :class="['bbn-flex-width', 'bbn-radius', {'bbn-p': !disabled && !readonly}]"
+  <div :class="['bbn-textbox', 'bbn-colorpicker-input', {'bbn-disabled': !!isDisabled}]">
+    <div :class="['bbn-flex-width', 'bbn-radius', {'bbn-p': !isDisabled && !readonly}]"
          @click="openCloseFloater"
     >
       <div class="bbn-flex-fill bbn-right-xsspace bbn-radius-top-left bbn-radius-bottom-right bbn-colorpicker-input-color bbn-middle bbn-bordered"
@@ -41,7 +41,7 @@ script.innerHTML = `<span :class="['bbn-iblock', componentClass, {'bbn-disabled'
                :element="$el"
                hpos="right"
                :auto-hide="200"
-               v-if="!!showFloater && !disabled && !readonly"
+               v-if="!!showFloater && !isDisabled && !readonly"
                ref="floater"
                @close="showFloater = false"
                @hook:mounted="init"
@@ -515,7 +515,7 @@ document.head.insertAdjacentElement('beforeend', css);
         if ( this.showFloater ){
           this.showFloater = false;
         }
-        else if ( !this.disabled && !this.readonly ){
+        else if ( !this.isDisabled && !this.readonly ){
           this.showFloater = true;
         }
       }

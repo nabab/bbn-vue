@@ -774,7 +774,7 @@ document.head.insertAdjacentElement('beforeend', css);
         if (this.hasScrollY) {
           let y = this.getRef('yScroller');
           if (y) {
-            y.scrollAfter();
+            y.scrollAfter(anim);
           }
         }
       },
@@ -796,7 +796,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @method scrollEndY
        * @thisfires this.getRef('yScroller').scrollTo
        */
-      scrollEndY(){
+      scrollEndY(anim) {
         if (this.hasScrollY) {
           let y = this.getRef('yScroller');
           if (y) {
@@ -981,10 +981,10 @@ document.head.insertAdjacentElement('beforeend', css);
             }
             this.$emit('resize');
             if (sendResizeContent) {
-              let e = new Event('resizeContent', {
+              let e = new Event('resizecontent', {
                 cancelable: true
               });
-              this.$emit('resizeContent', e, {
+              this.$emit('resizecontent', e, {
                 width: content.clientWidth,
                 height: content.clientHeight
               });
@@ -1069,10 +1069,10 @@ document.head.insertAdjacentElement('beforeend', css);
                   )
                 )
               ) {
-                let e = new Event('resizeContent', {
+                let e = new Event('resizecontent', {
                   cancelable: true
                 });
-                this.$emit('resizeContent', e, {
+                this.$emit('resizecontent', e, {
                   width: contentWidth,
                   height: contentHeight
                 });

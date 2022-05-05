@@ -3,7 +3,7 @@
        componentClass,
        'bbn-iblock',
        'bbn-textbox',
-       {'bbn-disabled': !!disabled}
+       {'bbn-disabled': !!isDisabled}
      ]"
      @mouseenter="isOverDropdown = true"
      @mouseleave="isOverDropdown = false"
@@ -25,7 +25,7 @@
            @click.stop="click">
     </div>
     <bbn-input v-if="!native"
-               :disabled="disabled"
+               :disabled="isDisabled"
                @keydown="keydown"
                @keyup="keyup"
                @click.stop="click"
@@ -37,7 +37,7 @@
                :required="required"
                :nullable="isNullable"
                :placeholder="placeholder"
-               :tabindex="disabled ? -1 : 0"
+               :tabindex="isDisabled ? -1 : 0"
                v-model="notext ? undefined : currentText"
                autocomplete="off"
                :button-right="currentIcon"
@@ -55,7 +55,7 @@
               @change="isOpened = false"
               @focus="isOpened = true"
               @click="isOpened = true"
-              :disabled="!!disabled || !!readonly">
+              :disabled="!!isDisabled || !!readonly">
         <option value=""
                 v-html="placeholder"
                 :disabled="!isNullable"
@@ -67,7 +67,7 @@
       <bbn-button :icon="currentIcon"
                   tabindex="-1"
                   :class="['bbn-dropdown-select-button', 'bbn-button-right', 'bbn-no-vborder', 'bbn-m', 'bbn-top-right', {
-                    'bbn-disabled': !!disabled || !!readonly
+                    'bbn-disabled': !!isDisabled || !!readonly
                   }]"/>
     </template>
   </div>
@@ -79,7 +79,7 @@
   <bbn-floater v-if="!popup
                  && !asMobile
                  && filteredData.length
-                 && !disabled
+                 && !isDisabled
                  && !readonly
                  && !native
                  && (isOpened || preload)"
@@ -105,7 +105,7 @@
   <bbn-floater v-else-if="!popup
                  && asMobile
                  && filteredData.length
-                 && !disabled
+                 && !isDisabled
                  && !readonly
                  && !native
                  && (isOpened || preload)"
@@ -186,9 +186,9 @@
     */
     computed: {
       currentIcon(){
-        return this.isOpened && !this.disabled && !this.readonly && this.filteredData.length ?
+        return this.isOpened && !this.isDisabled && !this.readonly && this.filteredData.length ?
             this.iconUp : this.iconDown;
-        //isOpened && !disabled && !readonly && filteredData.length ? iconUp : iconDown
+        //isOpened && !isDisabled && !readonly && filteredData.length ? iconUp : iconDown
       }
     },
     beforeMount() {

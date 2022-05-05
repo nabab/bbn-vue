@@ -9,7 +9,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-w-100', 'bbn-textbox']"
   <input type="hidden"
          ref="element"
          v-model="value"
-         :disabled="disabled"
+         :disabled="isDisabled"
          :required="required"
          :readonly="readonly"
   >

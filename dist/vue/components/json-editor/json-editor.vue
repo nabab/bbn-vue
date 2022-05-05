@@ -16,7 +16,7 @@
          type="hidden"
          ref="input"
          :name="name"
-         :disabled="disabled"
+         :disabled="isDisabled"
          :readonly="readonly"
   >
 </div>

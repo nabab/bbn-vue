@@ -3,11 +3,14 @@
   <div class="bbn-hidden" v-if="$slots.default" ref="slot">
     <slot></slot>
   </div>
-  <div :class="getComponentName() + '-content'">
+  <div :class="getComponentName() + '-content'"
+    :style="'grid-template-columns: repeat(' + rowCount + ',' + 100/rowCount + '%);'"
+  >
     <div v-for="(li, idx) in filteredData"
          v-if="isAjax || !pageable || ((idx >= start) && (idx < start + currentLimit))"
          :key="li.key"
-         :class="['bbn-w-25', 'bbn-mobile-w-50', getComponentName() + '-items']">
+         :class="[getComponentName() + '-items']"
+    >
       <component v-if="currentComponent"
                   :is="currentComponent"
                   v-bind="componentOptions"
@@ -75,10 +78,33 @@
       bbn.vue.listComponent,
       bbn.vue.componentInsideComponent
     ],
+    props: {
+      /**
+       * Max Image Width
+       *
+       * @prop {Number} [''] imgWidth
+       */
+      imgWidth: {
+        type: Number,
+        default: 420
+      },
+    },
+    data(){
+      return {
+        windowWidth: window.innerWidth,
+        rowCount: Math.ceil(window.innerWidth / this.imgWidth),
+      }
+    },
     mounted(){
       this.ready = true;
+      this.$nextTick(() => {
+        window.addEventListener('resize', this.onResize);
+      });
     },
     watch: {
+      windowWidth(newWidth, oldWidth) {
+        this.rowCount = Math.ceil(newWidth / this.imgWidth);
+      },
       currentPage() {
         let sc = this.closest('bbn-scroll');
         while (sc && !sc.scrollable) {
@@ -102,6 +128,11 @@
           }
         }
       }
+    },
+    methods: {
+      onResize() {
+        this.windowWidth = window.innerWidth;
+      }
     }
   });
 
@@ -113,7 +144,7 @@
   width: 100%;
 }
 .bbn-block-list .bbn-block-list-content {
-  display: flex;
+  display: grid;
   flex-wrap: wrap;
   width: 100%;
 }

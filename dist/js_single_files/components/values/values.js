@@ -27,7 +27,7 @@ script.innerHTML = `<div :class="[componentClass]"
        title="_('Delete')"/>
     <span class="bbn-left-space" v-text="v"/>
   </div>
-  <bbn-floater v-if="ready && !disabled && !readonly && filteredData.length && currentInput.length"
+  <bbn-floater v-if="ready && !isDisabled && !readonly && filteredData.length && currentInput.length"
                :element="$refs.input.$el"
                v-show="isOpened"
                :min-width="$refs.input.$el.clientWidth"

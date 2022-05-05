@@ -26,7 +26,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-textbox']"
   <textarea :value="value"
             :name="name"
             ref="element"
-            :disabled="disabled"
+            :disabled="isDisabled"
             :required="required"
   ></textarea>
 </div>`;
@@ -202,7 +202,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       },
       readonlyWidget(v){
         this.widget.codemirror.setOption('readOnly', !!v);
-        if ( !v && !this.disabled ){
+        if ( !v && !this.isDisabled ){
           this.$el.querySelector("div.editor-toolbar").display =  'block'
         }
         else {
@@ -211,7 +211,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       }
     },
     watch: {
-      disabled(newVal){
+      isDisabled(newVal){
         this.disableWidget(newVal);
       },
       readonly(newVal){
@@ -234,7 +234,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       this.widget.codemirror.on("change", () => {
         this.emitInput(this.widget.value());
       });
-      if ( this.disabled ){
+      if ( this.isDisabled ){
         this.disableWidget(true);
       }
       if ( this.readonly ){

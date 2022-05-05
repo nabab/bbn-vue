@@ -31,7 +31,7 @@ script.innerHTML = `<div :class="[
         type="hidden"
         :value="value"
         :name="name"
-        :disabled="disabled"
+        :disabled="isDisabled"
         :required="required"
   >
   <div class="bbn-bg-black bbn-p bbn-middle theme-button"
@@ -416,7 +416,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         if (!this.scrollable) {
           cfg.height = 'auto';
         }
-        if ( this.readonly || this.disabled ){
+        if ( this.readonly || this.isDisabled ){
           cfg.readOnly = true;
         }
 

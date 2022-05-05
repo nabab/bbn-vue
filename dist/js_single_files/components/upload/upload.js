@@ -157,7 +157,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-box', 'bbn-spadded']">
           <i class="nf nf-fa-upload bbn-large"></i>
         </div>
         <input title=""
-               :disabled="!!disabled || !canAddFile"
+               :disabled="!!isDisabled || !canAddFile"
                ref="fileInput"
                type="file"
                :multiple="multiple"
@@ -519,7 +519,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @return Boolean
        */
       isEnabled(){
-        return !this.disabled && !this.readonly
+        return !this.isDisabled && !this.readonly
       }
     },
     methods: {
@@ -572,7 +572,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @fires upload
        */
       _makeFiles(files, fromUser, status){
-        if ( !this.ready || !this.disabled ){
+        if ( !this.ready || !this.isDisabled ){
           if ( files instanceof FileList ){
             files = Object.values(files)
           }

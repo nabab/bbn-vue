@@ -1,7 +1,7 @@
 <template>
 <span :class="[componentClass, 'bbn-textbox', {'bbn-input-nullable': isNullable}]">
   <bbn-masked ref="element"
-              :disabled="disabled"
+              :disabled="isDisabled"
               :readonly="readonly"
               :required="required"
               :mask="currentMask"
@@ -14,7 +14,7 @@
               :inputmode="inputmode"
               :placeholder="placeholder"
   ></bbn-masked>
-  <div v-if="isNullable && !readonly && !disabled"
+  <div v-if="isNullable && !readonly && !isDisabled"
       class="bbn-block bbn-h-100 bbn-input-nullable-container"
   >
     <i v-if="hasValue" class="nf nf-fa-times_circle bbn-p"
@@ -23,16 +23,16 @@
   </div>
   <bbn-button icon="nf nf-fa-calendar"
               @click="showCalendar"
-              :disabled="disabled || readonly"
+              :disabled="isDisabled || readonly"
               class="bbn-datetimepicker-calendar bbn-no-vborder bbn-no-border-right"
               tabindex="-1"
   ></bbn-button>
   <bbn-button icon="nf nf-fa-clock_o"
               @click="showTime"
-              :disabled="disabled || readonly"
+              :disabled="isDisabled || readonly"
               class="bbn-datetimepicker-clock bbn-button-right bbn-no-vborder"
   ></bbn-button>
-  <bbn-floater v-if="isCalendarOpened && !disabled && !readonly"
+  <bbn-floater v-if="isCalendarOpened && !isDisabled && !readonly"
                 :element="$el"
                 :auto-hide="1000"
                 ref="calendarFloater"
@@ -53,11 +53,10 @@
                     :element-width="false"
     ></bbn-calendar>
   </bbn-floater>
-  <bbn-floater v-if="isTimeOpened && !disabled && !readonly"
+  <bbn-floater v-if="isTimeOpened && !isDisabled && !readonly"
                 :element="$el"
                 ref="timeFloater"
                 @close="isTimeOpened = false"
-                
                 max-width="10em"
                 :scrollable="!!blocksMode || !scrollMode"
                 hpos="right"

@@ -2,9 +2,9 @@
 ((bbn) => {
 
 let script = document.createElement('script');
-script.innerHTML = `<span :class="[componentClass, 'bbn-textbox', {'bbn-disabled': !!disabled}]">
+script.innerHTML = `<span :class="[componentClass, 'bbn-textbox', {'bbn-disabled': !!isDisabled}]">
   <input ref="element"
-         :disabled="disabled"
+         :disabled="isDisabled"
          :required="required"
          :readonly="readonly"
          :placeholder="placeholder"
@@ -28,7 +28,7 @@ script.innerHTML = `<span :class="[componentClass, 'bbn-textbox', {'bbn-disabled
   <input :value="value"
          ref="real_masked"
          :name="name"
-         :disabled="disabled"
+         :disabled="isDisabled"
          type="hidden"
          :size="size"
          :maxlength="maxlength"
@@ -529,7 +529,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @emits input
       */
       keydownEvent(event){
-        if ( !this.disabled && !this.readonly ){
+        if ( !this.isDisabled && !this.readonly ){
           if (
             !this.isShiftKey(event.keyCode) &&
             !this.isControlKey(event.keyCode) &&
@@ -637,7 +637,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @fires keyup
       */
       keyupEvent(event){
-        if ( !this.disabled && !this.readonly ){
+        if ( !this.isDisabled && !this.readonly ){
           if (
             !this.isShiftKey(event.keyCode) &&
             !this.isControlKey(event.keyCode) &&
@@ -693,7 +693,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @fires blur
        */
       blurEvent(event){
-        if ( !this.disabled && !this.readonly ){
+        if ( !this.isDisabled && !this.readonly ){
           if ( !this.value ){
             this.inputValue = '';
           }
@@ -709,7 +709,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @fires focus
        */
       focusEvent(event){
-        if ( !this.disabled && !this.readonly ){
+        if ( !this.isDisabled && !this.readonly ){
           this.setInputValue()
           this.$nextTick(() => {
             this.$refs.element.setSelectionRange(0, 0)
@@ -728,7 +728,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @fires emitInput
       */
       pasteEvent(event){
-        if ( !this.disabled && !this.readonly ){
+        if ( !this.isDisabled && !this.readonly ){
           let text = event.clipboardData ? event.clipboardData.getData('text') : '',
               pos = this.getPos(this.$refs.element.selectionStart),
               p = this.getIdxRange(0, pos),
@@ -754,7 +754,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @fires emitInput
        */
       cutEvent(event){
-        if ( !this.disabled && !this.readonly ){
+        if ( !this.isDisabled && !this.readonly ){
           let sel = document.getSelection(),
               text = sel.toString(),
               oriPos = this.$refs.element.selectionStart,

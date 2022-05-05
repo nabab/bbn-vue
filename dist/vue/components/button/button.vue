@@ -1,5 +1,12 @@
 <template>
-<button :class="['bbn-iblock', {'bbn-button-icon-only': notext}, componentClass]"
+<button :class="[
+                  {
+                    'bbn-button-icon-only': notext,
+                    'bbn-active': active
+                  },
+                  'bbn-iblock',
+                  componentClass
+                ]"
         ref="element"
         @click="click($event)"
         @focus="focus($event)"
@@ -193,7 +200,15 @@
       focused: {
         type: Boolean,
         default: false
-      }
+      },
+      /**
+       * If true the button will have the bbn-active class
+       * @prop {Boolean} [false] active
+       */
+      active: {
+        type: Boolean,
+        default: false
+      },
     },
     data(){
       return {

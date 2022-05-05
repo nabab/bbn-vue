@@ -149,7 +149,15 @@
       focused: {
         type: Boolean,
         default: false
-      }
+      },
+      /**
+       * If true the button will have the bbn-active class
+       * @prop {Boolean} [false] active
+       */
+      active: {
+        type: Boolean,
+        default: false
+      },
     },
     data(){
       return {

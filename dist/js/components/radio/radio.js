@@ -6,7 +6,7 @@ script.innerHTML = `<div :class="['bbn-iblock', componentClass]">
   <input class="bbn-hidden"
          ref="element"
          :value="modelValue"
-         :disabled="disabled"
+         :disabled="isDisabled"
          :required="required"
   >
   <div :style="getStyle()">
@@ -21,7 +21,7 @@ script.innerHTML = `<div :class="['bbn-iblock', componentClass]">
              :name="name"
              class="bbn-radio"
              type="radio"
-             :disabled="disabled || d.disabled"
+             :disabled="isDisabled || d.disabled"
              :required="required"
              :id="id + '_' + idx"
              @change="changed(d[sourceValue], d, $event)"

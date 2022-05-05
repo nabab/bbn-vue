@@ -11,14 +11,6 @@ script.innerHTML = `
        :style="orientationStyle"
        type="type"
   >
-    <div :class="['bbn-wrap', realValuePosition, 'bbn-no-border']"
-         style="height: 100%"
-    >
-      <div :class="['bbn-progress-status', {'bbn-hspadded': (orientation === 'horizontal')}]"
-            v-text="(showValue ? (value + ( showUnit ? unit : '' ) ) : '') + (!!text ? ( showValue ? ' ' : '') + '(' + text + ')' : '')"
-            :style="textColor.length ? 'color: '+ textColor : ''"
-      ></div>
-    </div>
     <div :class="['bbn-overlay', barClass]"
          :style="style"
          v-if="type !== 'chunk'"
@@ -32,6 +24,14 @@ script.innerHTML = `
            :style="barColor.length && ( ((!reverse) && (n <= selectedChunks)) || ((reverse) && (n > chunknumber - selectedChunks))) ? 'background-color:'+ barColor : ''"
            v-for="n in chunknumber"
       ></div>
+    </div>
+    <div :class="['bbn-wrap', realValuePosition, 'bbn-no-border']"
+        style="height: 100%"
+    >
+    <div :class="['bbn-progress-status', {'bbn-hspadded': (orientation === 'horizontal')}]"
+          v-text="(showValue ? (value + ( showUnit ? unit : '' ) ) : '') + (!!text ? ( showValue ? ' ' : '') + '(' + text + ')' : '')"
+          :style="textColor.length ? 'color: '+ textColor + '!important' : ''"
+    ></div>
     </div>
   </div>`;
 script.setAttribute('id', 'bbn-tpl-component-progressbar');
@@ -229,6 +229,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
          * @data {String} [''] realValuePosition
          */
         realValuePosition: '',
+        percent: 0,
       }
     },
     computed: {
@@ -254,16 +255,19 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       style(){
         let st = '';
         if ( this.orientation === 'horizontal' ){
-          st += 'width:' + this.value  + '%;'
+          st += 'width:' + this.percent  + '%;'
         }
         else if ( this.orientation === 'vertical' ){
-          st += 'height:' + this.value  + '%;'
+          st += 'height:' + this.percent  + '%;'
         }
         if ( this.barColor ){
           st += 'background-color: ' + this.barColor + '!important;border-color: '+ this.barColor + '!important;'
         }
+        if (this.reverse) {
+          st += 'margin-left: auto;'
+        }
         return st;
-      }
+      },
     },
     /**
      * Checks the type of the value 
@@ -273,6 +277,10 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
     beforeMount(){
       if ( this.type === 'percent' ){
         this.unit = '%';
+        this.percent = this.value;
+      }
+      if(this.type === 'value') {
+        this.percent = (this.value - this.min) / (this.max - this.min) * 100;
       }
       if ( this.value ){
         if( bbn.fn.isString(this.value) ){
@@ -289,14 +297,16 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           this.realValuePosition = this.valuePosition;
         }
       }
-      else if ( (this.orientation === 'horizontal') && (this.width) ){
+      else if (this.orientation === 'horizontal') {
         this.realValuePosition = this.valuePosition;
+      }
+      if ( (this.orientation === 'horizontal') && (this.width) ){
         st += 'height: 1.9em; min-width: ' + (bbn.fn.isNumber(this.width) ? ( this.width  + 'px') : this.width);
       }
       this.orientationStyle = st += ';';
       if ( this.type === 'chunk' ){
         this.chunknumber = ( this.max - this.min ) / this.step,
-        this.selectedChunks = this.value / this.chunknumber;
+        this.selectedChunks = (this.value / 100) * this.chunknumber;
       }
       if ( this.max && ( this.value > this.max ) ){
         this.emitInput(this.max);

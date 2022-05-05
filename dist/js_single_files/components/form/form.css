@@ -18,3 +18,15 @@
 .bbn-form .bbn-grid-fields > .bbn-label {
   min-height: 1.8em;
 }
+.bbn-form .bbn-form-fieldset {
+  margin-inline-start: 0;
+  margin-inline-end: 0;
+  margin-block-start: 0;
+  margin-block-end: 0;
+  padding-inline-start: 0;
+  padding-inline-end: 0;
+  padding-block-start: 0;
+  padding-block-end: 0;
+  min-inline-size: unset;
+  height: 100%;
+}

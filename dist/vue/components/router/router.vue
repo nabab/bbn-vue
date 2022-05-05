@@ -175,7 +175,7 @@
                       </span>
                       <span v-if="!tab.notext && tab.title"
                             class="bbn-router-tab-text"
-                            :title="getFullTitle(tab)"
+                            :title="getTabTitle(tab)"
                             v-html="tab.title.length > maxTitleLength ? cutTitle(tab.title) : tab.title"/>
                     </bbn-context>
                     <div class="bbn-router-tabs-selected"
@@ -604,16 +604,36 @@
         type: String,
         default: '#EEE'
       },
+      /**
+       * If true a menu will offer to put the current container in an adjacent pane
+       * @prop {Boolean} [false] splittable
+       */
       splittable: {
         type: Boolean,
         default: false
       },
+      /**
+       * A list of panes used by default if splittable is true
+       * @prop {Array} panes
+       */
       panes: {
         type: Array
       },
+      /**
+       * If true ???
+       * @prop {Boolean} [false] resizable
+       */
       resizable: {
         type: Boolean,
         default: true
+      },
+      /**
+       * Decides if real bbn-container are shown before or after the ones in the config or fake container 9bbns-container)
+       * @prop {String} ['real] first
+       */
+      first: {
+        type: String,
+        default: 'real'
       }
     },
     data(){
@@ -683,7 +703,12 @@
          * @data {Array} [[]] parents
          */
         parents: [],
-        /**
+         /**
+         * An object with each mounted children router.
+         * @data {Object} [{}] routers
+         */
+        routers: {},
+          /**
          * The direct parent router if there is one.
          * @data {Vue} [null] parent
          */
@@ -1151,6 +1176,7 @@
           bbn.fn.isString(obj.url)
         ){
           obj.url = bbn.fn.replaceAll('//', '/', obj.url);
+          // This is a component
           if (obj.$options) {
             if (!obj.current && !obj.currentURL) {
               if ( bbn.env.path.indexOf(this.getFullBaseURL() + (obj.url ? obj.url + '/' : '')) === 0 ){
@@ -1206,6 +1232,10 @@
             }
             if (this.search(obj2.url) === false) {
               if (this.isValidIndex(idx)) {
+                this.views.splice(idx, 0, obj2);
+              }
+              else if (this.hasRealContainers && (this.first !== 'real') && !obj2.real) {
+                idx = bbn.fn.search(this.views, {real: true});
                 this.views.splice(idx, 0, obj2);
               }
               else {
@@ -1272,6 +1302,10 @@
               obj.uid = obj.url + '-' + bbn.fn.randomString();
               if (isValid) {
                 this.views.splice(obj.idx, 0, obj);
+              }
+              else if (this.hasRealContainers && (this.first !== 'real') && !obj.real) {
+                idx = bbn.fn.search(this.views, {real: true});
+                this.views.splice(idx, 0, obj);
               }
               else {
                 this.views.push(obj);
@@ -1566,7 +1600,7 @@
             this.$emit("route1", this);
           }
           this.activate(url, this.urls[st]);
-          if ( this.urls[st] ){
+          if ( this.urls[st] && this.urls[st].isLoaded ){
             this.urls[st].currentURL = url;
             this.$nextTick(() => {
               let child = this.urls[st].find('bbn-router');
@@ -2020,6 +2054,61 @@
         }
         return r > -1 ? r : false;
       },
+      searchForString(needle) {
+        let res = [];
+        let st = needle.toLowerCase().trim();
+        bbn.fn.each(this.views, a => {
+          let found = false;
+          bbn.fn.iterate(this.routers, router => {
+            let tmp = router.searchForString(needle);
+            if (tmp.length) {
+              bbn.fn.each(tmp, t => {
+                t.url = this.getBaseURL() + t.url;
+                if (!bbn.fn.getRow(res, {url: t.url})) {
+                  found = true;
+                  res.push(t);
+                }
+              });
+            }
+          });
+
+          if (!found) {
+            let match = false;
+            let idx = -1;
+            let obj = {
+              url: a.current || a.url,
+              title: this.getFullTitle(a)
+            };
+            if ((idx = obj.url.toLowerCase().indexOf(st)) > -1) {
+              match = "url";
+            }
+            else if ((idx = obj.title.toLowerCase().indexOf(st)) > -1) {
+              match = "title";
+            }
+
+            if (match) {
+              let url = this.getBaseURL() + obj.url;
+              res.push({
+                url: url,
+                title: obj.title,
+                score: match === 'url' ? 10 : 20,
+                icon: a.icon || null,
+                hash: url,
+                bcolor: a.bcolor || null,
+                fcolor: a.fcolor || null,
+                component: this.$options.components.searchResult,
+                match: bbn.fn.substr(obj[match], 0, idx)
+                    + '<strong><em>'
+                    + bbn.fn.substr(obj[match], idx, st.length)
+                    + '</em></strong>'
+                    + bbn.fn.substr(obj[match], idx + st.length)
+              });
+            }
+          }
+        });
+
+        return res;
+      },
       /**
        * @method callRouter
        * @param {String} url
@@ -2230,19 +2319,31 @@
                 })
               })
             },
-            (xhr, textStatus, errorThrown) => {
+            xhr => {
               this.isLoading = false;
-              this.alert(textStatus);
               let idx = this.search(this.parseURL(finalURL));
               if ( idx !== false ){
                 let url = this.views[idx].url;
                 if (this.urls[url]) {
-                  this.close(idx, true);
+                  this.urls[url].errorStatus = xhr;
+                  this.urls[url].setTitle(bbn._("Error"));
+                  this.urls[url].setIcon("nf nf-fa-warning");
+                  this.callRouter(finalURL, url);
                 }
               }
             },
             () => {
               this.isLoading = false;
+              let idx = this.search(this.parseURL(finalURL));
+              if ( idx !== false ){
+                let url = this.views[idx].url;
+                if (this.urls[url]) {
+                  this.callRouter(finalURL, url);
+                  this.$nextTick(() => {
+                    this.close(idx);
+                  });
+                }
+              }
             }
           );
         }
@@ -2453,7 +2554,7 @@
           })
         }
 
-        if ( this.autoload ){
+        if ( this.autoload || this.views[idx].load) {
           items.push({
             text: bbn._("Reload"),
             key: "reload",
@@ -2492,7 +2593,7 @@
           });
         }
 
-        if ( this.views[idx].icon && this.views[idx].title && !this.isBreadcrumb ){
+        if ( this.views[idx].icon && this.views[idx].title && !this.isBreadcrumb && !this.isVisual ){
           items.push({
             text: this.views[idx].notext ? bbn._("Show text") : bbn._("Show only icon"),
             key: "notext",
@@ -2735,7 +2836,7 @@
        * @method getConfig
        * @return {Object}
        */
-      getConfig(){
+      getConfig() {
         let cfg = {
           baseURL: this.parentContainer ? this.parentContainer.getFullURL() : this.storageName,
           views: [],
@@ -2879,11 +2980,13 @@
         return bbn.fn.shorten(title, this.maxTitleLength)
       },
       /**
-       * @method getFullTitle
+       * Returns the title attribute for the tab.
+       * 
+       * @method getTabTitle
        * @param {Object} obj
        * @return {String|null}
        */
-      getFullTitle(obj){
+       getTabTitle(obj){
         let t = '';
         if ( obj.notext || (obj.title.length > this.maxTitleLength) ){
           t += obj.title;
@@ -2892,6 +2995,23 @@
           t += (t.length ? ' - ' : '') + obj.ftitle;
         }
         return t || null;
+      },
+      /**
+       * Returns the full title (combination of title and ftitle if any)
+       * 
+       * @method getFullTitle
+       * @param {Object} obj
+       * @return {String|null}
+       */
+      getFullTitle(obj) {
+        let t = '';
+        if (obj.title) {
+          t += obj.title;
+        }
+        if ( obj.ftitle ){
+          t += (t.length ? ' - ' : '') + obj.ftitle;
+        }
+        return t;
       },
       /**
        * @method getFontColor
@@ -3026,6 +3146,23 @@
         }
       },
 
+      /**
+       * @method registerRouter
+       * @param {Vue} bc
+       * @param {String} url
+       */
+      registerRouter(router) {
+        this.routers[bbn.fn.substr(router.getBaseURL(), 0, -1)] = router;
+      },
+      /**
+       * @method unregisterRouter
+       * @param {Vue} bc
+       * @param {String} url
+       */
+      unregisterRouter(router){
+        delete this.routers[bbn.fn.substr(router.getBaseURL(), 0, -1)];
+      },
+
       //Breadcrumb
       /**
        * @method registerBreadcrumb
@@ -3119,7 +3256,11 @@
       getParents(){
         return this.parent ? [...this.parent.getParents(), this.parent] : []
       },
-      onResize() {
+      /**
+       * @method onResize
+       * @return {Promise}
+       */
+       onResize() {
         this.keepCool(() => {
           if (this.setResizeMeasures() && this.setContainerMeasures()) {
             this.$emit('resize');
@@ -3129,7 +3270,18 @@
           }
         }, 'resize', 50);
       },
-      visualStyleContainer(ct) {
+      /**
+       * @method getView
+       * @return {Object|null}
+       */
+      getView(url) {
+        return bbn.fn.getRow(this.views, {url: url})
+      },
+      /**
+       * @method visualStyleContainer
+       * @return {Object}
+       */
+       visualStyleContainer(ct) {
         if (!ct.visible || this.visualShowAll) {
           return {zoom: 0.1};
         }
@@ -3290,7 +3442,7 @@
       }
       // ---- END ----
 
-      bbn.fn.each(this.source, a => {
+      bbn.fn.each(this.source, (a, i) => {
         if (a.url === '') {
           if (a.load) {
             throw new Error(bbn._("You cannot use containers with empty URL for loading"));
@@ -3305,7 +3457,7 @@
         bbn.fn.each(storage.views, a => {
           let idx = bbn.fn.search(tmp, {url: a.url});
           if ( idx > -1 ){
-            // Static comes only form configuration
+            // Static comes only from configuration
             let isStatic = tmp[idx].static;
             bbn.fn.extend(tmp[idx], a, {static: isStatic});
           }
@@ -3317,6 +3469,10 @@
 
       // Getting the default URL
       let url = this.getDefaultURL();
+
+      if (this.first !== 'real') {
+        tmp = bbn.fn.multiorder(tmp, {real: 'desc'});
+      }
 
       // Adding to the views
       bbn.fn.each(tmp, a => {
@@ -3347,6 +3503,10 @@
         }
       }
 
+      if (this.parent) {
+        this.parent.registerRouter(this);
+      }
+
       this.ready = true;
 
       if (!this.views.length) {
@@ -3360,6 +3520,9 @@
     beforeDestroy(){
       if (!this.master && this.parent){
         this.parent.unregisterBreadcrumb(this);
+      }
+      if (this.parent) {
+        this.parent.unregisterRouter(this);
       }
     },
     watch: {
@@ -3643,6 +3806,32 @@
             return src.view.title.length > src.maxTitleLength ?
               bbn.fn.shorten(src.view.title, src.maxTitleLength) :
               src.view.title;
+          }
+        }
+      },
+      searchResult: {
+        template: `
+<div class="bbn-router-search-result bbn-w-100 bbn-spadded bbn-default-alt-background bbn-p bbn-hover-effect-element"
+     :style="{backgroundColor: source.bcolor, color: source.fcolor}">
+  <div class="bbn-flex-width">
+    <div class="bbn-flex-fill bbn-nowrap">
+      <span class="bbn-s bbn-badge bbn-bg-blue"
+            v-text="source.score"/>
+      <span v-text="_('Opened container')"/>
+      <em v-text="'URL: ' + source.url"></em><br>
+      <span class="bbn-lg" v-text="source.title"></span>
+    </div>
+    <div class="bbn-hlpadded bbn-h-100 bbn-r"
+          style="vertical-align: middle"
+          v-html="source.match">
+    </div>
+  </div>
+</div>
+`,
+        props: {
+          source: {
+            type: Object,
+            required: true
           }
         }
       }
@@ -4093,6 +4282,10 @@ div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadc
     -webkit-transform: scale3D(0,0,1);
     transform: scale3D(0,0,1);
   }
+}
+.bbn-state-hover .bbn-router-search-result,
+.bbn-state-selected .bbn-router-search-result {
+  filter: saturate(1.8);
 }
 
 </style>

@@ -2,7 +2,7 @@
 ((bbn) => {
 
 let script = document.createElement('script');
-script.innerHTML = `<div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', {'bbn-disabled': !!disabled}]"
+script.innerHTML = `<div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', {'bbn-disabled': !!isDisabled}]"
      @click.stop>
   <div class="bbn-flex-width">
     <div class="bbn-flex-fill">
@@ -11,7 +11,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', {
              v-model="currentValue"
              :name="name"
              ref="element"
-             :disabled="disabled"
+             :disabled="isDisabled"
              :readonly="readonly"
              :required="required"
              @blur="_blur"
@@ -29,7 +29,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', {
              :value="inputValue"
              :name="name"
              tabindex="0"
-             :disabled="disabled"
+             :disabled="isDisabled"
              :readonly="readonly || onlySpinners"
              :required="required"
              @focus="_focus"
@@ -46,7 +46,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', {
       >
     </div>
     <div v-if="spinners"
-         :class="['bbn-numeric-buttons', 'bbn-radius-top-right', 'bbn-radius-bottom-right', {'bbn-disabled' : !!readonly || disabled}]">
+         :class="['bbn-numeric-buttons', 'bbn-radius-top-right', 'bbn-radius-bottom-right', {'bbn-disabled' : !!readonly || isDisabled}]">
       <div :class="[
             'bbn-reactive-block',
             'bbn-middle',
@@ -240,7 +240,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @returns {Boolean}
        */
       disableDecrease(){
-        return (bbn.fn.isNumber(this.min) && (parseFloat(this.currentValue)  <= this.min)) || !!this.readonly || this.disabled;
+        return (bbn.fn.isNumber(this.min) && (parseFloat(this.currentValue)  <= this.min)) || !!this.readonly || this.isDisabled;
       },
       /**
        * True if the increase functionality must to disabled.
@@ -248,7 +248,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @returns {Boolean}
        */
       disableIncrease(){
-        return (bbn.fn.isNumber(this.max) && (parseFloat(this.currentValue) >= this.max)) || !!this.readonly || this.disabled;
+        return (bbn.fn.isNumber(this.max) && (parseFloat(this.currentValue) >= this.max)) || !!this.readonly || this.isDisabled;
       },
       /**
        * The pattern of the input.  ^\-?[0-9]+\.0*[1-9]{0}$
@@ -339,7 +339,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @fires focus
        */
       _focus(e){
-        if ( !this.disabled && !this.readonly && !this.onlySpinners ){
+        if ( !this.isDisabled && !this.readonly && !this.onlySpinners ){
           //this.currentValue = this.value;
           this.currentValue = this.value === null ? '' : (bbn.fn.isNumber(this.value) ? parseFloat(this.value).toFixed(this.decimals) : this.value);
           this.editMode = true;
@@ -434,7 +434,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @emits change
        */
       increment(event, negative){
-        if ( !this.readonly && !this.disabled && (negative ? !this.disableDecrease : !this.disableIncrease)){
+        if ( !this.readonly && !this.isDisabled && (negative ? !this.disableDecrease : !this.disableIncrease)){
           let evName = negative ? 'decrement' : 'increment',
               beforeEvName = 'before' + bbn.fn.correctCase(evName),
               ev = new Event(beforeEvName, {cancelable: true}),

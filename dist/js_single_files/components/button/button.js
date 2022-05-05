@@ -1,7 +1,14 @@
 ((bbn) => {
 
 let script = document.createElement('script');
-script.innerHTML = `<button :class="['bbn-iblock', {'bbn-button-icon-only': notext}, componentClass]"
+script.innerHTML = `<button :class="[
+                  {
+                    'bbn-button-icon-only': notext,
+                    'bbn-active': active
+                  },
+                  'bbn-iblock',
+                  componentClass
+                ]"
         ref="element"
         @click="click($event)"
         @focus="focus($event)"
@@ -196,7 +203,15 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       focused: {
         type: Boolean,
         default: false
-      }
+      },
+      /**
+       * If true the button will have the bbn-active class
+       * @prop {Boolean} [false] active
+       */
+      active: {
+        type: Boolean,
+        default: false
+      },
     },
     data(){
       return {

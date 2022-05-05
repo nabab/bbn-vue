@@ -561,7 +561,6 @@
               }, 0);
             }
           }];
-
           this.open(bbn.fn.extend(o, options, {
             resizable: false,
             maximizable: false,

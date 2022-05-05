@@ -6,11 +6,11 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-textbox', {'bbn-input-nul
   <bbn-button v-if="buttonPosition === 'left'"
               icon="nf nf-fa-calendar"
               @click="isOpened = !isOpened"
-              :disabled="disabled || readonly"
+              :disabled="isDisabled || readonly"
               tabindex="-1"
               class="bbn-button-left bbn-no-vborder"/>
   <bbn-masked ref="element"
-              :disabled="disabled"
+              :disabled="isDisabled"
               :readonly="readonly"
               :required="required"
               :mask="currentMask"
@@ -22,7 +22,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-textbox', {'bbn-input-nul
               :autosize="autosize"
               :inputmode="inputmode"
               :placeholder="placeholder"/>
-  <div v-if="isNullable && !readonly && !disabled"
+  <div v-if="isNullable && !readonly && !isDisabled"
        class="bbn-block bbn-h-100 bbn-input-nullable-container">
     <i v-if="hasValue"
        class="nf nf-fa-times_circle bbn-p"
@@ -31,10 +31,10 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-textbox', {'bbn-input-nul
   <bbn-button v-if="buttonPosition === 'right'"
               icon="nf nf-fa-calendar"
               @click="isOpened = !isOpened"
-              :disabled="disabled || readonly"
+              :disabled="isDisabled || readonly"
               tabindex="-1"
               class="bbn-button-right bbn-no-vborder"/>
-  <bbn-floater v-if="isOpened && !disabled && !readonly"
+  <bbn-floater v-if="isOpened && !isDisabled && !readonly"
                :element="$el"
                ref="floater"
                :auto-hide="1000"

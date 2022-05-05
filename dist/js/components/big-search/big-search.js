@@ -18,7 +18,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-overlay', 'bbn-flex-heigh
    </div>
    <div class="bbn-flex-fill">
       <bbn-scroll>
-         <bbn-list v-if="filteredTotal && !disabled && !readonly"
+         <bbn-list v-if="filteredTotal && !isDisabled && !readonly"
                   :element="$el"
                   ref="list"
                   :auto-hide="false"
@@ -29,7 +29,8 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-overlay', 'bbn-flex-heigh
                   :source-url="sourceUrl"
                   :source-action="sourceAction"
                   :source-text="sourceText"
-                  :source-value="sourceValue"
+                  source-value="hash"
+                  uid="hash"
                   :pageable="filteredTotal > limit"
                   :pager-element="_self"
                   :source="filteredData"/>
@@ -198,8 +199,28 @@ document.head.insertAdjacentElement('beforeend', css);
          * The URL where to send the selected result.
          * @prop {String} selectUrl
          */
-         selectUrl: {
+        selectUrl: {
           type: String
+        },
+        /**
+         * An array of javascript search functions
+         * @prop {Array} searchFunctions
+         */
+        searchFunctions: {
+          type: Array,
+          default(){
+            return [];
+          },
+          validator(a) {
+            let ok = true;
+            bbn.fn.each(a, f => {
+              if (!bbn.fn.isFunction(f)) {
+                ok = false;
+                return false;
+              }
+            });
+            return ok;
+          }
         }
       },
       data() {
@@ -220,10 +241,14 @@ document.head.insertAdjacentElement('beforeend', css);
            * @data {Number|null} [null] timeout
            */
           timeout: null,
-           /**
+          /**
            * @data {Number|null} [null] mouseTimeout
            */
-          mouseTimeout: null
+          mouseTimeout: null,
+          /**
+           * @data {Array} [null] registeredFunctions
+           */
+          registeredFunctions: this.searchFunctions.slice()
         };
       },
       computed: {
@@ -257,10 +282,35 @@ document.head.insertAdjacentElement('beforeend', css);
         },
       },
       methods: {
-        /***
-         * Focuses the search input.
-         * @method searchFocus
+        /**
+         * Register a new search function
+         * @method registerFunction
+         * @param {Function} fn 
          */
+        registerFunction(fn) {
+          if (!bbn.fn.isFunction(fn)) {
+            throw new Error(bbn._("%s takes a function as argument", "registerFunction"));
+          }
+
+          let signature = bbn.fn.md5(fn.toString());
+          if (!bbn.fn.getRow(this.registeredFunctions, {signature: signature})) {
+            this.registeredFunctions.push({
+              signature: signature,
+              fn: fn
+            });
+          }
+        },
+        /**
+         * Unregister a search function
+         * @method registerFunction
+         * @param {Function} fn 
+         */
+         unregisterFunction(fn) {
+          let idx = this.registeredFunctions.indexOf(fn);
+          if (idx > -1) {
+            this.registeredFunctions.splice(idx, 1);
+          }
+        },
         /**
          * Emits the event 'select' 
          * @method select
@@ -270,7 +320,7 @@ document.head.insertAdjacentElement('beforeend', css);
          * @emit change
          */
         select(item, idx, dataIndex){
-          if (!this.disabled) {
+          if (!this.isDisabled) {
             let ev = new Event('select', {cancelable: true});
             this.$emit('select', ev, item, idx, dataIndex);
             if (!ev.defaultPrevented) {
@@ -332,6 +382,141 @@ document.head.insertAdjacentElement('beforeend', css);
             this.keynav(e);
           }
         },
+        async updateData() {
+          if (this.beforeUpdate() !== false) {
+            this._dataPromise = new Promise(resolve => {
+              let loadingRequestID;
+              if (this.loadingRequestID) {
+                bbn.fn.abort(this.loadingRequestID);
+                setTimeout(() => {
+                  this.loadingRequestID = false;
+                  this.updateData().then(() => {
+                    resolve();
+                  })
+                }, 50);
+                return;
+              }
+
+              this.isLoading = true;
+              this.$emit('startloading');
+              let data = this.getData();
+              loadingRequestID = bbn.fn.getRequestId(this.source, data);
+              this.loadingRequestID = loadingRequestID;
+              this.post(this.source, data).then(d => {
+                if (!this.loadingRequestID || (this.loadingRequestID !== loadingRequestID)) {
+                  this.isLoading = false;
+                  this.loadingRequestID = false;
+                  throw new Error("No loading request");
+                }
+
+                this.isLoading = false;
+                this.loadingRequestID = false;
+
+                if ( !d ){
+                  return;
+                }
+
+                if ( d.status !== 200 ){
+                  d.data = undefined;
+                }
+                else {
+                  d = d.data;
+                }
+
+                this.$emit('datareceived', d);
+                if (bbn.fn.isArray(d.data) ){
+                  this.appendData(d.data);
+                }
+                this.afterUpdate();
+                resolve(this.currentData);
+                if (!this.isLoaded) {
+                  this.isLoaded = true;
+                }
+                this.$emit('dataloaded', d);
+                if (this.isAjax && d && d.next_step) {
+                  if (d.id && (d.data !== undefined)) {
+                    this.searchId = d.id;
+                  }
+
+                  this.getMoreData(d.next_step);
+                }
+              });
+            }).catch(e => {
+              this.isLoading = false;
+              this.loadingRequestID = false;
+              bbn.fn.log("ERROR", e);
+            });
+            return this._dataPromise;
+          }
+        },
+        appendData(data) {
+          bbn.fn.each(this.treatData(data), a => {
+            let todo = true;
+            if (a.data.hash) {
+              let row = bbn.fn.filter(this.currentData, r => r.data.hash === a.data.hash);
+              if (row.length && (row[0].data.score && a.data.score)) {
+                todo = false;
+                row[0].data.score += a.data.score;
+              }
+            }
+
+            if (todo) {
+              this.currentData.push(a);
+            }
+          });
+          bbn.fn.order(this.currentData, 'data.score', 'desc');
+          this.updateIndexes();
+        },
+
+        getMoreData(step = 0) {
+          if (this.isAjax) {
+            this.isLoading = true;
+            this.$emit('startloading');
+            let data = this.getData();
+            data.step = step;
+            this.loadingRequestID = bbn.fn.getRequestId(this.source, data);
+            this.isLoading = true;
+            this.post(this.source, data, d => {
+              this.isLoading = false;
+              this.loadingRequestID = false;
+              if (d && d.data) {
+                if (d.data.length) {
+                  this.appendData(d.data);
+                }
+
+                if (d.next_step) {
+                  if (this.isOpened !== undefined) {
+                    if (this.isOpened) {
+                      bbn.fn.log("APPEING DATA")
+                      this.getMoreData(d.next_step);
+                    }
+                  }
+                  else {
+                    this.getMoreData(d.next_step);
+                  }
+                }
+              }
+            });
+          }
+        },
+        launchRegisteredFunctions(search) {
+          bbn.fn.each(this.registeredFunctions, o => {
+            let res = o.fn(search);
+            if (bbn.fn.isArray(res) && res.length) {
+              bbn.fn.each(res, r => {
+                let d = bbn.fn.extend({}, r);
+                delete d.score;
+                if (!r.hash) {
+                  r.hash = bbn.fn.md5(JSON.stringify(d));
+                }
+
+                r.signature = o.signature;
+              });
+
+              this.appendData(res);
+            }
+          });
+        }
       },
       watch: {
         isOpened(v) {
@@ -356,6 +541,8 @@ document.head.insertAdjacentElement('beforeend', css);
             if (this.currentData.length) {
               this.currentData.splice(0);
             }
+
+            this.launchRegisteredFunctions(v);
 
             this.$nextTick(() => {
               this.filterTimeout = setTimeout(() => {
@@ -383,6 +570,9 @@ document.head.insertAdjacentElement('beforeend', css);
             })
           }
         }
+      },
+      mounted() {
+        this.ready = true;
       }
     });
 

@@ -2,7 +2,7 @@
   width: 100%;
 }
 .bbn-block-list .bbn-block-list-content {
-  display: flex;
+  display: grid;
   flex-wrap: wrap;
   width: 100%;
 }

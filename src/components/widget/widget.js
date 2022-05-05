@@ -189,10 +189,7 @@
        * @prop {Object} [[]] items
        */
       items: {
-        type: Array,
-        default: function(){
-          return [];
-        }
+        type: Array
       },
       /**
        * @prop {String} ['There is no available data'] noData
@@ -275,6 +272,13 @@
         default(){
           return {}
         }
+      },
+      /**
+       * A component to show if items is empty
+       * @prop {String|Object} noDataComponent
+       */
+      noDataComponent: {
+        type: [String, Object]
       }
     },
     data(){

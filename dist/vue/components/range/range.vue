@@ -17,7 +17,7 @@
          :name="name"
          ref="element"
          :readonly="readonly"
-         :disabled="disabled"
+         :disabled="isDisabled"
          :required="required"
          :min="currentMin"
          :max="currentMax"
@@ -257,7 +257,7 @@
        * @fires emitInput
        */
       reset(){
-        if (!this.disabled && !this.readonly) {
+        if (!this.isDisabled && !this.readonly) {
           this.emitInput(this.originalValue);
         }
       },

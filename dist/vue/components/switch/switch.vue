@@ -5,7 +5,7 @@
          :name="name"
          :value="value"
          :required="required"
-         :disabled="disabled"
+         :disabled="isDisabled"
          :checked="state"
          ref="element"
   >
@@ -248,7 +248,7 @@
        * @emits change
        */
       toggle(){
-        if ( !this.disabled && !this.readonly ){
+        if ( !this.isDisabled && !this.readonly ){
           let emitVal = !this.state ? this.valueToSet : this.novalue;
           this.$emit('input', emitVal);
           this.$emit('change', emitVal, this);

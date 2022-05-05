@@ -3,7 +3,7 @@
   <div :class="['bbn-h-100', 'bbn-alt-background-internal', 'bbn-reactive', 'bbn-middle', 'bbn-unselectable', 'bbn-p', {'bbn-disabled': !hasPrev}]"
        style="width: 10%; min-width: 10%"
        @click="prev">
-    <div class="bbn-block bbn-xl">
+    <div class="bbn-block bbn-xxxxl">
       <i class="nf nf-fa-chevron_left"></i>
     </div>
   </div>
@@ -35,7 +35,7 @@
   <div :class="['bbn-h-100', 'bbn-alt-background-internal', 'bbn-reactive', 'bbn-middle', 'bbn-unselectable', 'bbn-p', {'bbn-disabled': !hasNext}]"
        style="width: 10%; min-width: 10%"
        @click="next">
-    <div class="bbn-block bbn-xl">
+    <div class="bbn-block  bbn-xxxxl">
       <i class="nf nf-fa-chevron_right"></i>
     </div>
   </div>

@@ -692,7 +692,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @method scrollTo
        * @fires adjustFromContainer
        */
-      scrollTo(val, anim = false) {
+      scrollTo(val, anim) {
         return new Promise(resolve => {
           if (this.shouldBother) {
             if (this.animationInterval) {
@@ -764,16 +764,16 @@ document.head.insertAdjacentElement('beforeend', css);
        * @method scrollStart
        * @fires scrollTo
        */
-      scrollStart(){
-        this.scrollTo(0);
+      scrollStart(anim){
+        this.scrollTo(0, anim);
       },
        /**
        * Moves the scrollbar to the end position.
        * @method scrollEnd
        * @fires scrollTo
        */
-      scrollEnd(){
-        this.scrollTo(this.contentSize - this.containerSize);
+      scrollEnd(anim){
+        this.scrollTo(this.contentSize - this.containerSize, anim);
       }
     },
     watch: {

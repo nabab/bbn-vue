@@ -15,7 +15,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-iblock']">
               :loading="isAjax && isLoading"
               button-right="nf nf-fa-search">
   </bbn-input>
-  <bbn-floater v-if="filteredData.length && !disabled && !readonly && isOpened && $refs.input"
+  <bbn-floater v-if="filteredData.length && !isDisabled && !readonly && isOpened && $refs.input"
                :element="$refs.input.$el"
                class="bbn-secondary"
                :max-height="maxHeight"

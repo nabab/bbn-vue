@@ -4,14 +4,14 @@ let script = document.createElement('script');
 script.innerHTML = `<div :class="[
         'bbn-textbox',
         componentClass,
-        {'bbn-state-disabled': !!disabled}
+        {'bbn-state-disabled': !!isDisabled}
       ]">
   <textarea :class="{
               'bbn-no-border': true,
               'bbn-radius': true,
               'bbn-w-100': !cols,
               'bbn-spadded': true,
-              'bbn-state-disabled': !!disabled
+              'bbn-state-disabled': !!isDisabled
             }"
             :value="value"
             :name="name"
@@ -25,7 +25,7 @@ script.innerHTML = `<div :class="[
             @keydown.enter.stop
             @keyup="keyup($event)"
             @paste="$emit('paste', $event)"
-            :disabled="disabled"
+            :disabled="isDisabled"
             :readonly="readonly"
             :required="required"
             :placeholder="placeholder"

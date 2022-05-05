@@ -764,7 +764,7 @@
         if (this.hasScrollY) {
           let y = this.getRef('yScroller');
           if (y) {
-            y.scrollAfter();
+            y.scrollAfter(anim);
           }
         }
       },
@@ -786,7 +786,7 @@
        * @method scrollEndY
        * @thisfires this.getRef('yScroller').scrollTo
        */
-      scrollEndY(){
+      scrollEndY(anim) {
         if (this.hasScrollY) {
           let y = this.getRef('yScroller');
           if (y) {
@@ -971,10 +971,10 @@
             }
             this.$emit('resize');
             if (sendResizeContent) {
-              let e = new Event('resizeContent', {
+              let e = new Event('resizecontent', {
                 cancelable: true
               });
-              this.$emit('resizeContent', e, {
+              this.$emit('resizecontent', e, {
                 width: content.clientWidth,
                 height: content.clientHeight
               });
@@ -1059,10 +1059,10 @@
                   )
                 )
               ) {
-                let e = new Event('resizeContent', {
+                let e = new Event('resizecontent', {
                   cancelable: true
                 });
-                this.$emit('resizeContent', e, {
+                this.$emit('resizecontent', e, {
                   width: contentWidth,
                   height: contentHeight
                 });

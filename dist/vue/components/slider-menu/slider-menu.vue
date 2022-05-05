@@ -25,7 +25,7 @@
               'bbn-no-padding': !!component,
               'bbn-state-default': true,
               'bbn-disabled': !!li.disabled,
-              'bbn-state-selected': item.visible && (idx === selectedIndex) 
+              'bbn-state-selected': item.visible && (idx === selectedIndex)
             }">
           <component v-if="currentComponent"
                     :is="currentComponent"
@@ -51,23 +51,23 @@
 </template>
 <script>
   module.exports = /**
- * @file bbn-lists component
+ * @file bbn-slider-menu component
  *
- * @description A fully customizable selectable list.
+ * @description bbn-slider-menu component
  *
  * @author BBN Solutions
  *
  * @copyright BBN Solutions
  */
 (function(Vue, bbn){
-  "use strict";
-  /**
-   * Classic input with normalized appearance
-   */
-  let isClicked = false;
   Vue.component('bbn-slider-menu', {
-    mixins: 
-    [
+    /**
+     * @mixin bbn.vue.basicComponent
+     * @mixin bbn.vue.listComponent
+     * @mixin bbn.vue.keynavComponent
+     * @mixin bbn.vue.resizerComponent
+     */
+    mixins: [
       bbn.vue.basicComponent,
       bbn.vue.listComponent,
       bbn.vue.keynavComponent,
@@ -76,7 +76,7 @@
     props: {
       /**
        * The source of the floater.
-       * @prop {(Function|Array|String|Object)} source
+       * @prop {Function|Array|String|Object} source
        */
       source: {
         type: [Function, Array, String, Object]
@@ -89,6 +89,9 @@
         type: String,
         default: 'items'
       },
+      /**
+       * @prop {Array} [[]] selected
+       */
       selected: {
         type: Array,
         default(){
@@ -96,7 +99,7 @@
         }
       },
       /**
-       * @prop {(String|Object|Function)} component
+       * @prop {String|Object|Function} component
        */
       component: {
         type: [String, Object, Function]
@@ -105,23 +108,37 @@
     data(){
       return {
         /**
-         * @data [] currentSelected
+         * @data {Array} [[]] currentSelected
          */
         currentSelected: this.selected.slice(),
         /**
          * The index (on filteredData) on which is the mouse cursor or the keyboard navigation
-         * @data {Number} [-1] overItem
-         * @memberof listComponent
+         * @data {Number} overIdx
          */
         overIdx: this.suggest ? 0 : null,
+        /**
+         * @data {Number|Boolean} [false] mouseLeaveTimeout
+         */
         mouseLeaveTimeout: false,
+        /**
+         * @data {String|Object|Function} currentComponent
+         */
         currentComponent: this.component,
+        /**
+         * @data {Number|Boolean} [false] selectedIndex
+         */
         selectedIndex: false,
+        /**
+         * @data {Number} [0] maxDepth
+         */
         maxDepth: 0
-
       };
     },
     computed: {
+      /**
+       * @computed items
+       * @returns {Array}
+       */
       items(){
         let depth = 0;
         let res = [{
@@ -182,6 +199,11 @@
       }
     },
     methods: {
+      /**
+       * @method getStyle
+       * @param {Object} item
+       * @returns {Object}
+       */
       getStyle(item){
         let left = '100%';
         if (item.visible) {
@@ -194,10 +216,18 @@
           left: left
         }
       },
+      /**
+       * @method mouseleave
+       */
       mouseleave(){
         this.isOver = false;
         this.overIdx = this.suggest ? 0 : null;
       },
+      /**
+       * @method remove
+       * @param {Number} idx
+       * @fires realDelete
+       */
       remove(idx){
         //bbn.fn.log(this.currentData, idx);
         this.realDelete(idx);
@@ -205,8 +235,8 @@
       /**
        * Handles the selection of the floater's items.
        * @method select
-       * @param {Number} idx 
-       * @fires closeAll
+       * @param {Number} itemIdx
+       * @param {Number} dataIdx
        * @emits select
        */
       select(itemIdx, dataIdx){
@@ -219,11 +249,18 @@
         }
         this.$emit('select', this.items[itemIdx].data[dataIdx]);
       },
+      /**
+       * @method unselect
+       * @emits unselect
+       */
       unselect(){
         this.selectedIndex = false;
         this.currentSelected.pop();
         this.$emit('unselect', this.currentSelected)
       },
+      /**
+       * @method reset
+       */
       reset(){
         this.selectedIndex = false;
         this.currentSelected.splice(0, this.currentSelected.length);
@@ -231,6 +268,8 @@
     },
     /**
      * @event mounted
+     * @fires getRef
+     * @fires $nextTick
      */
     mounted(){
       this.currentComponent = this.realComponent;
@@ -255,6 +294,10 @@
       });
     },
     watch: {
+      /**
+       * @watch source
+       * @fires reset
+       */
       source(){
         this.reset()
       }

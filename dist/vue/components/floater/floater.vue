@@ -84,7 +84,7 @@
                     :max-height="isMaximized ? '100%' : scrollMaxHeight || null"
                     :min-width="currentMinWidth || null"
                     :min-height="currentMinHeight > outHeight ? currentMinHeight - outHeight : null"
-                    @resizeContent="scrollResize">
+                    @resizecontent="scrollResize">
           <component v-if="component"
                     ref="component"
                     :is="component"

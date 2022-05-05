@@ -11,7 +11,7 @@
                     ref="dropdown"
       ></bbn-dropdown>
     </div>
-    <div class="bbn-block bbn-w-100 bbn-vpadded bbn-c" v-if="search">
+    <div class="bbn-block bbn-w-100 bbn-bottom-padded bbn-c" v-if="search">
       <!--bbn-search name="search" style="width: 80%" ref="search" :placeholder="placeholder"></bbn-search-->
       <bbn-input name="search"
                  v-model="searchExp"
@@ -53,7 +53,7 @@
  * @copyright BBN Solutions
  *
  * @author BBN Solutions
- * 
+ *
  * @created 15/02/2017
  */
 
@@ -67,11 +67,11 @@
     name: 'bbn-treemenu',
     /**
      * @mixin bbn.vue.basicComponent
-     * @mixin bbn.vue.resizerComponent 
+     * @mixin bbn.vue.resizerComponent
      */
-    mixins: 
+    mixins:
     [
-      bbn.vue.basicComponent, 
+      bbn.vue.basicComponent,
       bbn.vue.resizerComponent
     ],
     props: {
@@ -81,11 +81,11 @@
        */
       placeholder: {
         type: String,
-        default: "Search"
+        default: bbn._('Search')
       },
       /**
        * The source of the tree.
-       * @prop {String|Array|Function} source
+       * @prop {String|Array|Function} [[]] source
        */
       source: {
         type: [String, Array, Function],
@@ -94,7 +94,7 @@
         }
       },
       /**
-       * @prop {Boolean} shortcuts
+       * @prop {Boolean} [false] shortcuts
        */
       shortcuts: {
         type: Boolean,
@@ -102,7 +102,7 @@
       },
       /**
        * Set to false hide the search input.
-       * @prop {Boolean}  [false] search
+       * @prop {Boolean} [true] search
        */
       search: {
         type: Boolean,
@@ -143,7 +143,7 @@
         posBottom: this.bottom,
         /**
          * True if the type of the prop source is not Array.
-         * @data {Number} isAjax
+         * @data {Boolean} isAjax
          */
         isAjax: isAjax,
         /**
@@ -153,7 +153,7 @@
         items: isAjax ? [] : this.source,
         /**
          * The current menu.
-         * @data [null] current
+         * @data {String} current
          */
         currentMenu: this.current || null,
         /**
@@ -166,7 +166,7 @@
     computed: {
       /**
        * Defines position and width of the component.
-       * @method elementStyle 
+       * @computed elementStyle
        * @return {Object}
        */
       elementStyle(){
@@ -189,7 +189,7 @@
       /**
        * Creates the menu of the given node.
        * @method getMenu
-       * @param {Object} node 
+       * @param {Object} node
        * @returns {Array}
        */
       getMenu(node){
@@ -205,7 +205,7 @@
         };
         return [{
           text: bbn._('Create a shortcut'),
-          icon: 'nf nf-fa-external_link_alt',
+          icon: 'nf nf-fa-external_link',
           action: () => {
             this.$emit('shortcut', obj);
           }
@@ -214,8 +214,8 @@
       /**
        * Maps the source of the tree.
        * @method mapSrc
-       * @param {Object} data 
-       * @param {Number} level 
+       * @param {Object} data
+       * @param {Number} level
        * @return {Object}
        */
       mapSrc(data, level){
@@ -234,9 +234,8 @@
       /**
        * Links to the prop link or url of the given item.
        * @method go
-       * @param {Object} node 
-       * @param {Event} event 
-       * @fires hide
+       * @param {Object} node
+       * @param {Event} event
        * @emits select
        */
       go(node, event){
@@ -251,6 +250,8 @@
       /**
        * Handles the resize of the scroll
        * @method resizeScroll
+       * @fires $nextTick
+       * @fires focusSearch
        */
       resizeScroll(){
         if ( this.$refs.scroll ){
@@ -267,6 +268,7 @@
       /**
        * Reload the tree
        * @method reset
+       * @fires getRef
        */
       reset(){
         let tree = this.getRef('tree');
@@ -286,7 +288,10 @@
       },
       /**
        * Method triggered at '@ready' of the component to set the current menu.
-       * @method readyTree 
+       * @method readyTree
+       * @fires $nextTick
+       * @fires getRef
+       * @fires reset
        */
       readyTree(){
         this.$nextTick(() => {
@@ -306,6 +311,7 @@
       /**
        * Focuses the search input.
        * @method focusSearch
+       * @focus getRef
        */
       focusSearch(){
         if (!bbn.fn.isMobile()) {
@@ -331,6 +337,7 @@
        * Resets the tree-menu when the current menu changes.
        * @watch currentMenu
        * @fires reset
+       * @fires getRef
        */
       currentMenu(val){
         if ( (val !== null) && bbn.fn.isVue(this.getRef('tree')) ){

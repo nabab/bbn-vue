@@ -6,7 +6,7 @@
          :value="value"
          class="bbn-checkbox"
          :required="required"
-         :disabled="disabled"
+         :disabled="isDisabled"
          :readonly="readonly"
          @change="toggle"
          :checked="state"
@@ -206,7 +206,7 @@
        * @emits change
        */
       toggle(){
-        if ( !this.disabled && !this.readonly ){
+        if ( !this.isDisabled && !this.readonly ){
           let emitVal = !this.state ? this.valueToSet : this.novalue;
           this.$emit('input', emitVal);
           this.$emit('change', emitVal, this);
@@ -220,7 +220,7 @@
        * @fires click
        */
       onClick(ev){
-        if (this.disabled || this.readonly){
+        if (this.isDisabled || this.readonly){
           ev.preventDefault();
         }
         else {
@@ -233,7 +233,7 @@
        * @fires keydown
        */
       onKeyDown(ev){
-        if ((this.disabled || this.readonly) && (ev.keyCode === 32)) {
+        if ((this.isDisabled || this.readonly) && (ev.keyCode === 32)) {
           ev.preventDefault()
         }
         else {

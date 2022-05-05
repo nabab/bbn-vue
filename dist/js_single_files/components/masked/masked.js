@@ -1,9 +1,9 @@
 ((bbn) => {
 
 let script = document.createElement('script');
-script.innerHTML = `<span :class="[componentClass, 'bbn-textbox', {'bbn-disabled': !!disabled}]">
+script.innerHTML = `<span :class="[componentClass, 'bbn-textbox', {'bbn-disabled': !!isDisabled}]">
   <input ref="element"
-         :disabled="disabled"
+         :disabled="isDisabled"
          :required="required"
          :readonly="readonly"
          :placeholder="placeholder"
@@ -27,7 +27,7 @@ script.innerHTML = `<span :class="[componentClass, 'bbn-textbox', {'bbn-disabled
   <input :value="value"
          ref="real_masked"
          :name="name"
-         :disabled="disabled"
+         :disabled="isDisabled"
          type="hidden"
          :size="size"
          :maxlength="maxlength"
@@ -522,7 +522,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @emits input
       */
       keydownEvent(event){
-        if ( !this.disabled && !this.readonly ){
+        if ( !this.isDisabled && !this.readonly ){
           if (
             !this.isShiftKey(event.keyCode) &&
             !this.isControlKey(event.keyCode) &&
@@ -630,7 +630,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @fires keyup
       */
       keyupEvent(event){
-        if ( !this.disabled && !this.readonly ){
+        if ( !this.isDisabled && !this.readonly ){
           if (
             !this.isShiftKey(event.keyCode) &&
             !this.isControlKey(event.keyCode) &&
@@ -686,7 +686,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @fires blur
        */
       blurEvent(event){
-        if ( !this.disabled && !this.readonly ){
+        if ( !this.isDisabled && !this.readonly ){
           if ( !this.value ){
             this.inputValue = '';
           }
@@ -702,7 +702,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @fires focus
        */
       focusEvent(event){
-        if ( !this.disabled && !this.readonly ){
+        if ( !this.isDisabled && !this.readonly ){
           this.setInputValue()
           this.$nextTick(() => {
             this.$refs.element.setSelectionRange(0, 0)
@@ -721,7 +721,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @fires emitInput
       */
       pasteEvent(event){
-        if ( !this.disabled && !this.readonly ){
+        if ( !this.isDisabled && !this.readonly ){
           let text = event.clipboardData ? event.clipboardData.getData('text') : '',
               pos = this.getPos(this.$refs.element.selectionStart),
               p = this.getIdxRange(0, pos),
@@ -747,7 +747,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @fires emitInput
        */
       cutEvent(event){
-        if ( !this.disabled && !this.readonly ){
+        if ( !this.isDisabled && !this.readonly ){
           let sel = document.getSelection(),
               text = sel.toString(),
               oriPos = this.$refs.element.selectionStart,

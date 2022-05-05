@@ -1,5 +1,5 @@
 <template>
-<div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', {'bbn-disabled': !!disabled}]"
+<div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', {'bbn-disabled': !!isDisabled}]"
      @mouseleave="leave"
      @focusin="isActive = true"
      @focusout="isActive = false"
@@ -8,7 +8,7 @@
     <div class="bbn-flex-fill"
          @click.stop="click"
     >
-      <bbn-input :disabled="disabled"
+      <bbn-input :disabled="isDisabled"
                 class="bbn-unselectable bbn-no-border"
                 :required="required"
                 :readonly="readonly"
@@ -20,7 +20,7 @@
                 @focus="_setInputVisible"
                 :style="{display: inputIsVisible ? 'none' : 'inline-block'}"
       ></bbn-input>
-      <bbn-input v-if="!disabled && !readonly"
+      <bbn-input v-if="!isDisabled && !readonly"
                 :tabindex="0"
                 class="bbn-no-border"
                 v-model="filterString"
@@ -49,11 +49,11 @@
         ></bbn-loadicon>
       </div>
       <bbn-button v-else
-                  :icon="isOpened && !disabled && !readonly && filteredData.length ? iconUp : iconDown"
+                  :icon="isOpened && !isDisabled && !readonly && filteredData.length ? iconUp : iconDown"
                   class="bbn-button-right bbn-no-vborder bbn-m"
                   @click.prevent.stop="click"
                   tabindex="-1"
-                  :disabled="disabled"
+                  :disabled="isDisabled"
       ></bbn-button>
     </div>
   </div>
@@ -62,7 +62,7 @@
          ref="element"
          :name="name"
   >
-  <bbn-floater v-if="!disabled && !readonly && isOpened"
+  <bbn-floater v-if="!isDisabled && !readonly && isOpened"
                :element="$el"
                :max-height="maxHeight"
                :min-width="$el.clientWidth"
@@ -184,7 +184,7 @@
        * @fires getRef
        */
       click(){
-        if (!this.disabled) {
+        if (!this.isDisabled) {
           this.getRef('input').focus();
           if (this.filteredData.length) {
             this.isOpened = !this.isOpened;
@@ -287,7 +287,6 @@
        * @param {String} v
        */
       filterString(v){
-        bbn.fn.log("on Filter String", this.disabled, this.readonly, this.isOpened, !this.disabled && !this.readonly && this.isOpened);
         if (!this.ready) {
           this.ready = true;
         }

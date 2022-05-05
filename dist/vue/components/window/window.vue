@@ -9,8 +9,12 @@
               :maximizable="maximizable"
               :closable="closable"
               :animation="true"
-              :width="width || null"
-              :height="height || null"
+              :width="width"
+              :height="height"
+              :min-width="minWidth"
+              :max-width="maxWidth"
+              :min-height="minHeight"
+              :max-height="maxHeight"
               :component="component"
               :buttons="buttons"
               :footer="footer"
@@ -19,7 +23,13 @@
               :container="$el"
               @beforeClose="floaterClose"
               :latency="500"
-              @keydown.esc.prevent.stop="close">
+              @keydown.esc.prevent.stop="close"
+              :scrollable="scrollable"
+              :draggable="draggable"
+              :resizable="resizable"
+              :on-open="onOpen"
+              :on-close="onClose"
+              :uid="uid">
     <slot></slot>
   </bbn-floater>
 </div>
@@ -41,42 +51,19 @@
 
   Vue.component('bbn-window', {
     name: 'bbn-window',
-    /** 
+    /**
      * @mixin bbn.vue.basicComponent
      * @mixin bbn.vue.resizerComponent
+     * @mixin bbn.vue.dimensionsComponent
      */
-    mixins: 
-    [
-      bbn.vue.basicComponent, 
-      bbn.vue.resizerComponent
+    mixins: [
+      bbn.vue.basicComponent,
+      bbn.vue.resizerComponent,
+      bbn.vue.dimensionsComponent
     ],
     props: {
       /**
-       * @prop {(String|Number|Boolean)} width
-       */
-      width: {
-        type: [String, Number, Boolean]
-      },
-      /**
-       * @prop {(String|Number|Boolean)} height
-       */
-      height: {
-        type: [String, Number, Boolean]
-      },
-      /**
-       * @prop {(String|Number)} minWidth
-       */
-      minWidth: {
-        type: [String, Number]
-      },
-      /**
-       * @prop {(String|Number)} minHeight
-       */
-      minHeight: {
-        type: [String, Number]
-      },
-      /**
-       * @prop {Boolean} [true] maximazable 
+       * @prop {Boolean} [true] maximazable
        */
       maximizable: {
         type: Boolean,
@@ -142,7 +129,7 @@
         type: Function
       },
       /**
-       * @prop {(Function|String|Object)} footer
+       * @prop {Function|String|Object} footer
        */
       footer: {
         type: [Function, String, Object]
@@ -166,38 +153,32 @@
         }
       },
       /**
-       * @prop {(String|Function|Object)} component
+       * @prop {String|Function|Object} component
        */
        component: {
         type: [String, Function, Object]
       },
       /**
-       * @prop {(String|Boolean)} ['Untitled'] title
+       * @prop {String|Boolean} ['Untitled'] title
        */
       title: {
         type: [String, Boolean],
         default: bbn._("Untitled")
       },
       /**
-       * @prop {(Number)} index
-       */
-      index: {
-        type: Number
-      },
-      /**
-       * @prop {(String)} uid
+       * @prop {String} uid
        */
       uid: {
         type: String
       },
       /**
-       * @prop {(String)} content
+       * @prop {String} content
        */
       content: {
         type: String
       },
       /**
-       * @prop {(String)} mode
+       * @prop {String} mode
        */
       mode: {
         type: String
@@ -209,21 +190,51 @@
         fns.push(this.onClose);
       }
       return {
+        /**
+         * @data {Boolean} isMaximized
+         */
         isMaximized: this.maximized,
+        /**
+         * @data {String} widthUnit
+         */
         widthUnit: (typeof this.width === 'string') && (bbn.fn.substr(this.width, -1) === '%') ? '%' : 'px',
+        /**
+         * @data {Number|String|Boolean} currentWidth
+         */
         currentWidth: this.width,
+        /**
+         * @data {String} heightUnit
+         */
         heightUnit: (typeof this.height === 'string') && (bbn.fn.substr(this.height, -1) === '%') ? '%' : 'px',
+        /**
+         * @data {Number|String|Boolean} currentHeight
+         */
         currentHeight: this.height,
+        /**
+         * @data {Array} closingFunctions
+         */
         closingFunctions: fns,
+        /**
+         * @data {Boolean} [false] showContent
+         */
         showContent: false,
+        /**
+         * @data {Boolean|Vue} [false] popup
+         */
         popup: false,
-        maxHeight: null,
-        maxWidth: null,
-        containerCSS: {opacity: 0}
+        /**
+         * @data {Object} [{opacity: 0}] containerCss
+         */
+        containerCSS: {
+          opacity: 0
+        }
       }
     },
-
     computed: {
+      /**
+       * @computed realWidth
+       * @returns {String}
+       */
       realWidth(){
         if ( !this.currentWidth ){
           return 'auto';
@@ -233,6 +244,10 @@
         }
         return this.currentWidth;
       },
+      /**
+       * @computed realHeight
+       * @returns {String}
+       */
       realHeight(){
         if ( !this.currentHeight ){
           return 'auto';
@@ -241,13 +256,20 @@
           return this.currentHeight.toString() + 'px'
         }
         return this.currentHeight;
-      },
+      }
     },
-
     methods: {
+      /**
+       * @method getContainerPosition
+       * @returns {Object}
+       */
       getContainerPosition(){
         return this.$el ? this.$el.parentNode.getBoundingClientRect() : {};
       },
+      /**
+       * @method onResize
+       * @fires getContainerPosition
+       */
       onResize(){
         let o = this.getContainerPosition();
         this.containerCSS = {
@@ -258,6 +280,10 @@
           height: o.height + 'px',
         }
       },
+      /**
+       * @method addClose
+       * @param {Function} fn
+       */
       addClose(fn){
         for ( let i = 0; i < arguments.length; i++ ){
           if ( typeof arguments[i] === 'function' ){
@@ -265,19 +291,38 @@
           }
         }
       },
+      /**
+       * @method removeClose
+       * @param {Function} fn
+       */
       removeClose(fn){
-        if ( !fn ){
+        if (!fn) {
           this.closingFunctions = [];
         }
-        else{
+        else {
           this.closingFunctions = bbn.fn.filter(this.closingFunctions, f => {
             return fn !== f;
           })
         }
       },
-      floaterClose(e, floater){
+      /**
+       * @method floaterClose
+       * @param {Event} e
+       * @fires close
+       */
+      floaterClose(e){
         this.close(false, e);
       },
+      /**
+       * @method close
+       * @param {Boolean} force
+       * @param {Event} ev
+       * @emits {beforeClose}
+       * @fires beforeClose
+       * @fires $nextTick
+       * @fires afterClose
+       * @emits close
+       */
       close(force, ev){
         let ok = true;
         if ( !ev ){
@@ -314,34 +359,27 @@
         })
       }
     },
+    /**
+     * @event created
+     * @fires closest
+     */
     created(){
       this.popup = this.closest('bbn-popup');
     },
+    /**
+     * @event mounted
+     * @fires onResize
+     */
     mounted(){
       this.ready = true;
-      /*
-      if ( this.resizable ){
-        $(this.getRef('window')).resizable({
-          handles: "se",
-          containment: ".bbn-popup",
-          stop: () => {
-            this.selfEmit(true);
-          }
-        });
-      }
-      */
       this.onResize();
-      // It shouldn't be centered if it's draggable
-      /*
-      if ( this.draggable ){
-        $(this.getRef('window')).draggable({
-          handle: 'header > h4',
-          containment: ".bbn-popup"
-        });
-      }
-      */
     },
     watch: {
+      /**
+       * @watch isMaximized
+       * @fires $nextTick
+       * @fires selfEmit
+       */
       isMaximized(){
         this.$nextTick(() => {
           this.selfEmit(true);

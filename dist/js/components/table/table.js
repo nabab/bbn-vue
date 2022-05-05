@@ -33,7 +33,7 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                  :is="toolbar"/>
     </div>
     <div :class="['bbn-w-100', 'bbn-table-container', {'bbn-flex-fill': scrollable}]">
-      <div v-if="initStarted"
+      <div v-if="initStarted || isResizing"
            class="bbn-overlay bbn-middle bbn-background"
            style="z-index: 5"
       >
@@ -116,7 +116,8 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                         && (i === 0)
                     }]"
                     :title="col.ftitle || col.title || col.field || ' '"
-                >
+                    v-resizable.right="resizable && col.resizable && !!groupCol.cols[i+1] ? {data: {column: col, columnIndex: i, groupColIndex: groupIndex}} : false"
+                    @resize="onUserResize">
                   <i :class="{
                       nf: true,
                       'nf nf-mdi-filter_variant': true,
@@ -181,12 +182,12 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                 <div class="bbn-spadded bbn-background bbn-c">
                   <div v-if="!isLoading"
                        v-html="noData || ' '"/>
-                  <div v-else
+                  <div v-else-if="loader"
                        class="bbn-vmiddle">
                     <bbn-loadicon class="bbn-vmiddle"
                                   :size="24"/>
                     <span class="bbn-xl bbn-b bbn-left-sspace"
-                          v-text="_('Loading') + '...'"/>
+                          v-text="currentLoaderText"/>
                   </div>
                 </div>
               </td>
@@ -194,11 +195,8 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
             <template v-else>
               <tr v-for="(d, i) in items"
                   :key="d.rowKey"
-                  :index="i"
-                  :tabindex="0"
                   @focusout="focusout(i)"
-                  @focusin="focusin(i, $event)"
-                  @dblclick="() => {if (focusedRow !== i) {focusedRow = i}}"
+                  :index="i"
                   :class="[{
                     'bbn-alt': !groupable && (d.expanderIndex !== undefined) ?
                       !!(d.expanderIndex % 2) :
@@ -284,7 +282,7 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                         left: currentColumns[1].left !== undefined ? currentColumns[1].left + 'px' : 'auto',
                         width: 'auto',
                         borderRight: '0px',
-                        overflow: 'unset' 
+                        overflow: 'unset'
                       }">
                     <div class="bbn-block"
                          :style="{
@@ -315,7 +313,14 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                   <div v-else
                        v-html="render(d.data, col, i)"/>
                 </td>
-
+                <td v-else-if="d.footer && groupFooter && groupable"
+                    :colspan="currentColumns.length">
+                  <div v-if="typeof groupFooter === 'function'"
+                       v-html="groupFooter(d.data)"/>
+                  <component v-else
+                             :is="groupFooter"
+                             :source="d.data"/>
+                </td>
                 <td v-else
                     v-for="(col, index) in currentColumns"
                     :class="[currentClass(col, d.data, i), cssRuleName, {
@@ -328,6 +333,8 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                       'bbn-table-edit-buttons': !!col.buttons && isEdited(d.data, col, i),
                       'bbn-table-buttons': !!col.buttons
                     }]"
+                    :tabindex="0"
+                    @focusin="focusin(i, $event)"
                     @click="clickCell(col, index, d.index)"
                     @dblclick="dbclickCell(col, index, d.index, d.data, i)"
                     :style="{
@@ -388,11 +395,17 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                                       style="margin: 0 .1em"/>
                         </div>
                         <component v-else-if="(editMode === 'inline') && isValidField(col.field) && (col.editable !== false)"
-                                  v-bind="getEditableOptions(col, d.data)"
-                                  :is="getEditableComponent(col, d.data)"
-                                  @click.stop
-                                  v-model="editedRow[col.field]"
-                                  style="width: 100%"/>
+                                   v-bind="getEditableOptions(col, d.data)"
+                                   :is="getEditableComponent(col, d.data)"
+                                   @click.stop
+                                   v-model="editedRow[col.field]"
+                                   style="width: 100%"/>
+                        <!--<bbn-field v-else-if="(editMode === 'inline') && isValidField(col.field) && (col.editable !== false)"
+                                   v-bind="col"
+                                   mode="write"
+                                   @click.stop
+                                   v-model="editedRow[col.field]"
+                                   style="width: 100%"/>-->
                         <bbn-field v-else-if="isValidField(col.field) && !col.render && !col.buttons"
                                   v-bind="col"
                                   @click.stop
@@ -421,7 +434,7 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                           </span>
                         </bbn-context>
                       </template>
-                      <template v-else-if="col.buttons && (colButtons === index)">
+                      <template v-else-if="col.buttons && (colButtons === col.index)">
                         <bbn-button v-for="(button, bi) in buttonSource(d.data, col, i)"
                                     :key="bi"
                                     v-bind="button"
@@ -459,11 +472,17 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
     </div>
     <!-- Footer -->
     <bbn-pager class="bbn-table-footer bbn-no-border-right bbn-no-border-left bbn-no-border-bottom"
-               v-if="(pageable || saveable || filterable || isAjax || showable) && (footer !== false)"
+               v-if="hasPager"
                :element="_self"
                :item-name="itemName"
                :page-name="pageName"
                :buttons="footerButtons"/>
+    <component v-else-if="(typeof footer === 'string') || (typeof footer === 'object')"
+               :is="footer"
+               class="bbn-table-footer bbn-no-border-right bbn-no-border-left bbn-no-border-bottom"/>
+    <div v-else-if="(typeof footer === 'function') && footer()"
+         v-html="footer()"
+         class="bbn-table-footer bbn-no-border-right bbn-no-border-left bbn-no-border-bottom"/>
   </div>
   <bbn-floater v-if="currentFilter"
                class="bbn-table-floating-filter bbn-widget"
@@ -548,7 +567,7 @@ document.head.insertAdjacentElement('beforeend', css);
      * @mixin bbn.vue.keepCoolComponent
      * @mixin bbn.vue.dataComponent
      */
-    mixins: 
+    mixins:
     [
       bbn.vue.basicComponent,
       bbn.vue.resizerComponent,
@@ -664,20 +683,6 @@ document.head.insertAdjacentElement('beforeend', css);
         default: 150
       },
       /**
-       * @todo not used in the component
-       */
-      paginationType: {
-        type: String,
-        default: 'input'
-      },
-      /**
-       * @todo not used in the component
-       */
-      info: {
-        type: Boolean,
-        default: false
-      },
-      /**
        * A function to define css class(es) for each row.
        * @prop {Function} trClass
        */
@@ -707,11 +712,12 @@ document.head.insertAdjacentElement('beforeend', css);
         type: [Object, String, Function]
       },
       /**
-       * not used in the component
+       * Customize the loading text or hide it
+       * @prop {String|Boolean} [true] loader
        */
       loader: {
-        type: Boolean,
-        default: false
+        type: [String, Boolean],
+        default: true
       },
       /**
        * If one or more columns have the property fixed set to true it defines the side of the fixed column(s).
@@ -723,10 +729,10 @@ document.head.insertAdjacentElement('beforeend', css);
       },
       /**
        * Defines the toolbar of the table.
-       * @prop {Object|String|Function} toolbar
+       * @prop {Array|Object|String|Function} toolbar
        */
       toolbar: {
-
+        type: [Array, Object, String, Function]
       },
       /**
        * An array of objects with at least the property 'field' that can replace the html '<bbns-column></bbns-column>' or extend them.
@@ -746,9 +752,8 @@ document.head.insertAdjacentElement('beforeend', css);
         type: Number
       },
       /**
-       * @todo desc
+       * The list of expanded rows based on a specific value (ex. group field) and not on the row index
        * @prop {Array|Function} expandedValues
-       *
        */
       expandedValues: {
         type: [Array, Function]
@@ -765,17 +770,20 @@ document.head.insertAdjacentElement('beforeend', css);
       },
       /**
        * Defines the footer of the table.
-       * @prop {String|Object} footer
+       * Allowed values ​​are the name or the object of a component, a boolean or a function (to inject custom html)
+       * @prop {String|Object|Boolean|Function} footer
        */
       footer: {
-        type: [String, Object]
+        type: [String, Object, Boolean, Function],
+        default: true
       },
       /**
-       * Defines the footer for a group of columns.
-       * @prop {String|Object} groupFooter
+       * Defines the footer for a group of rows.
+       * Allowed values ​​are the name or the object of a component or a function (to inject custom html)
+       * @prop {String|Object|Function} groupFooter
        */
       groupFooter: {
-        type: [String, Object]
+        type: [String, Object, Function]
       },
       /**
        * @todo desc
@@ -1078,7 +1086,20 @@ document.head.insertAdjacentElement('beforeend', css);
          * @data {Boolean} [false] isTableDataUpdating Will be set to true during the whole update process
          */
         isTableDataUpdating: false,
-        searchValue: ''
+        /**
+         * @data {String} [''] searchValue
+         */
+        searchValue: '',
+        /**
+         * The text shown during loading
+         * @data {String} ['Loading...'] currentLoaderText
+         */
+        currentLoaderText: bbn.fn.isString(this.loader) ? this.loader : bbn._('Loading') + '...',
+        /**
+         * True if the table is resizing its width
+         * @data {Boolean} [false] isResizingWidth
+         */
+        isResizingWidth: false
       };
     },
     computed: {
@@ -1163,6 +1184,18 @@ document.head.insertAdjacentElement('beforeend', css);
        */
       hasToolbar() {
         return this.toolbarButtons.length || bbn.fn.isObject(this.toolbar) || bbn.fn.isFunction(this.toolbar) || bbn.fn.isString(this.toolbar);
+      },
+      /**
+       * @computed hasPager
+       * @return {Boolean}
+       */
+      hasPager(){
+        return (this.pageable
+            || this.saveable
+            || this.filterable
+            || this.isAjax
+            || this.showable)
+          && (this.footer === true);
       },
       /**
        * Return an array of shown fields (the hidden ones are excluded).
@@ -1467,8 +1500,34 @@ document.head.insertAdjacentElement('beforeend', css);
               this.expander(data[i], i) :
               this.expander;
             isExpanded = exp ?
-              this.currentExpanded.includes(data[i].index) :
+              (this.currentExpanded.includes(data[i].index) || this.allExpanded) :
               false;
+            if (!isGroup) {
+              let tmp = {
+                index: data[i].index,
+                data: a,
+                rowIndex: rowIndex,
+                rowKey: data[i].key,
+                expander: true,
+                expanded: isExpanded
+              };
+              if (this.selection
+                && (!bbn.fn.isFunction(this.selection)
+                  || this.selection(tmp))
+              ) {
+                tmp.selected = (!this.uid
+                    && this.currentSelected.includes(data[i].index))
+                  || (this.uid
+                    && this.currentSelected.includes(data[i].data[this.uid]));
+                tmp.selection = true;
+                groupNumCheckboxes++;
+                if (tmp.selected) {
+                  groupNumChecked++;
+                }
+              }
+              res.push(tmp);
+              rowIndex++;
+            }
           }
 
           if (!isGroup
@@ -1504,6 +1563,9 @@ document.head.insertAdjacentElement('beforeend', css);
               o.rowKey = rowIndex + '-' + data[i].key;
             }
             if (this.selection
+              && ((!o.isGrouped && !this.expander)
+                || (o.isGrouped && !o.expander)
+                || (o.isGrouped && o.expansion))
               && (!bbn.fn.isFunction(this.selection)
                 || this.selection(o))
             ) {
@@ -1519,6 +1581,27 @@ document.head.insertAdjacentElement('beforeend', css);
             }
             res.push(o);
             rowIndex++;
+            if (isGroup
+              && this.groupable
+              && this.groupFooter
+              && !this.expander
+              && (!data[i + 1]
+                || (data[i + 1].data[groupField] !== data[i].data[groupField]))
+            ) {
+              res.push({
+                index: data[i].index,
+                data: bbn.fn.filter(data, v => {
+                  return v.data[groupField] === data[i].data[groupField];
+                }),
+                rowIndex: rowIndex,
+                rowKey: data[i].key,
+                isGrouped: true,
+                footer: true,
+                selection: false,
+                expander: false
+              });
+              rowIndex++;
+            }
           }
           else {
             end++;
@@ -1625,6 +1708,7 @@ document.head.insertAdjacentElement('beforeend', css);
             || this.isExpanded(d)
             || d.aggregated
             || (this.isExpanded(d) && d.groupAggregated)
+            || !!d.isFooter
             || (!d.expander
               && !!d.expansion
               && this.isExpanded(bbn.fn.getRow(res, {index: d.expanderIndex, expander: true}))
@@ -1657,8 +1741,9 @@ document.head.insertAdjacentElement('beforeend', css);
        * @returns {Array}
        */
       currentColumns(){
-        let r = [];
-        bbn.fn.each(this.groupCols, (a, i) => {
+        let r = [],
+            cols = bbn.fn.extend(true, [], this.groupCols);
+        bbn.fn.each(cols, (a, i) => {
           bbn.fn.each(a.cols, b => {
             r.push(bbn.fn.extend(true, {}, b, {
               fixed: i !== 1,
@@ -2802,6 +2887,7 @@ document.head.insertAdjacentElement('beforeend', css);
               ? (diff / (numDynCols || numStaticCols))
               : 0;
         if (newWidth) {
+          this.isResizingWidth = true;
           bbn.fn.each(this.groupCols, (groupCol, groupIdx) => {
             let sum = 0,
                 sumRight= 0,
@@ -2836,21 +2922,21 @@ document.head.insertAdjacentElement('beforeend', css);
                     tmp = maxWidth;
                   }
 
-                  col.realWidth = tmp;
+                  this.$set(col, 'realWidth', tmp);
                 }
                 sum += col.realWidth;
                 if (groupIdx === 0) {
-                  col.left = sumLeft;
+                  this.$set(col, 'left', sumLeft);
                   sumLeft += col.realWidth;
                 }
 
                 if (groupIdx === 2) {
-                  col.right = sumRight;
+                  this.$set(col, 'right', sumRight);
                   sumRight += col.realWidth;
                 }
               }
             })
-            groupCol.width = sum;
+            this.$set(this.groupCols[groupIdx], 'width', sum);
             sum = 0;
             sumLeft = 0;
             sumRight = 0;
@@ -3029,7 +3115,8 @@ document.head.insertAdjacentElement('beforeend', css);
               aggregatedColTitle = false,
               aggregatedColumns = [],
               parentWidth = this.$el.offsetParent ? this.$el.offsetParent.getBoundingClientRect().width : this.lastKnownCtWidth;
-          this.groupCols = bbn.fn.clone(groupCols);
+          this.groupCols.splice(0);
+          this.$set(this, 'groupCols', bbn.fn.clone(groupCols));
           bbn.fn.each(this.cols, a => {
             a.realWidth = 0;
           });
@@ -3079,12 +3166,15 @@ document.head.insertAdjacentElement('beforeend', css);
                   if (maxWidth && (a.realWidth > maxWidth)) {
                     a.realWidth = maxWidth;
                   }
+                  if ( a.buttons !== undefined ) {
+                    colButtons = i;
+                  }
                   if (a.fixed) {
                     if ((a.fixed === 'left')
                       || ((a.fixed !== 'right') && (this.fixedDefaultSide === 'left'))
                     ) {
                       if ( a.buttons !== undefined ) {
-                        colButtons = groupCols[0].cols.length;
+                        //colButtons = groupCols[0].cols.length;
                       }
                       groupCols[0].cols.push(a);
                       if (!a.hidden) {
@@ -3093,7 +3183,7 @@ document.head.insertAdjacentElement('beforeend', css);
                     }
                     else {
                       if ( a.buttons !== undefined ) {
-                        colButtons = groupCols[0].cols.length + groupCols[1].cols.length + groupCols[2].cols.length;
+                        //colButtons = groupCols[0].cols.length + groupCols[1].cols.length + groupCols[2].cols.length;
                       }
                       groupCols[2].cols.push(a);
                       if (!a.hidden) {
@@ -3103,7 +3193,7 @@ document.head.insertAdjacentElement('beforeend', css);
                   }
                   else {
                     if ( a.buttons !== undefined ) {
-                      colButtons = groupCols[0].cols.length + groupCols[1].cols.length;
+                      //colButtons = groupCols[0].cols.length + groupCols[1].cols.length;
                     }
                     groupCols[1].cols.push(a);
                     if (!a.hidden) {
@@ -3231,25 +3321,24 @@ document.head.insertAdjacentElement('beforeend', css);
               sumLeft = 0;
               sumRight = 0;
             });
-            this.groupCols = groupCols;
+            this.groupCols.splice(0);
+            this.$set(this, 'groupCols', groupCols);
             this.colButtons = colButtons;
             this.isAggregated = isAggregated;
             this.aggregatedColumns = aggregatedColumns;
             this.resizeWidth();
-            this.initReady = true;
-            if (with_data) {
-              this.$nextTick(() => {
+            this.$nextTick(() => {
+              this.initReady = true;
+              if (with_data) {
                 this.$once('dataloaded', () => {
                   this.initStarted = false;
                 });
                 this.updateData();
-              })
-            }
-            else{
-              this.$nextTick(() => {
+              }
+              else{
                 this.initStarted = false;
-              });
-            }
+              }
+            });
           });
         }, 'init', 1000);
       },
@@ -3493,6 +3582,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @param {Number} idx 
        */
       focusout(idx){
+        this.clickedTd = null;
         if ((idx === undefined) || (idx === this.focusedRow)) {
           this.focused = false;
           //this.focusedElement = undefined;
@@ -3514,6 +3604,7 @@ document.head.insertAdjacentElement('beforeend', css);
           || e.target.closest('td').classList.contains('bbn-table-edit-buttons')
         ) {
           this.focused = true;
+          this.clickedTd = e.target;
           //this.setFocusedElement(e)
           if (this.focusedRow !== idx) {
             this.focusedRow = idx;
@@ -3557,6 +3648,27 @@ document.head.insertAdjacentElement('beforeend', css);
         }
 
         return {};
+      },
+      /**
+       * The method called on a column resize (by user)
+       * @method onUserResize
+       * @param {Event} e
+       * @fires $forceUpdate
+       */
+      onUserResize(e){
+        let d = e.target._bbn.directives.resizable.options.data,
+            nextCol = this.groupCols[d.groupColIndex].cols[d.columnIndex + 1],
+            nextColSize = nextCol ? nextCol.realWidth + e.detail.movement : 0;
+        if ((d.column.realWidth !== e.detail.size)
+          && (e.detail.size >= this.defaultColumnWidth)
+          && (!nextCol || (nextColSize >= this.defaultColumnWidth))
+        ) {
+          this.groupCols[d.groupColIndex].cols[d.columnIndex].realWidth = e.detail.size;
+          if (nextCol) {
+            this.groupCols[d.groupColIndex].cols[d.columnIndex + 1].realWidth = nextColSize;
+          }
+          this.$forceUpdate();
+        }
       }
     },
     /**
@@ -3571,19 +3683,21 @@ document.head.insertAdjacentElement('beforeend', css);
       // Adding bbns-column from the slot
       if (this.$slots.default) {
         for (let node of this.$slots.default) {
-          //bbn.fn.log("TRYING TO ADD COLUMN", node);
+          /** @todo Check when used: when in DOM? Not sure */
           if (
             node.componentOptions &&
             (node.componentOptions.tag === 'bbns-column')
           ) {
             this.addColumn(node.componentOptions.propsData);
           }
+          // Regular bbn-column case
           else if (
             (node.tag === 'bbns-column') &&
             node.data && node.data.attrs
           ) {
             this.addColumn(node.data.attrs);
           }
+          /** @todo Check if inserting tr in the slot works */
           else if (node.tag === 'tr') {
             this.hasTrSlot = true
           }
@@ -3790,9 +3904,10 @@ document.head.insertAdjacentElement('beforeend', css);
             this.$nextTick(() => {
               this.edit(this.items[newIndex].data, null, newIndex);
               this.$nextTick(() => {
-                let tr = this.getTr(newIndex),
-                    nextInputs = tr ? tr.querySelectorAll('input') : [],
-                    nextInput;
+
+                let ele = this.clickedTd || this.getTr(newIndex);
+                let nextInputs = ele ? ele.querySelectorAll('input') : [];
+                let nextInput;
                 bbn.fn.each(nextInputs, a => {
                   if (a.offsetWidth) {
                     nextInput = a;
@@ -3824,7 +3939,7 @@ document.head.insertAdjacentElement('beforeend', css);
             this.resizeWidth();
           })
         }
-      },
+      }
     },
     components: {
       /**

@@ -215,7 +215,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           res.push({
             text: bbn._("abort"),
             icon: 'nf nf-mdi-cancel',
-            action() {
+            action: () => {
               this.cancel(item);
             }
           });

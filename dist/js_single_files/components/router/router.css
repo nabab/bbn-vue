@@ -440,3 +440,7 @@ div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadc
     transform: scale3D(0,0,1);
   }
 }
+.bbn-state-hover .bbn-router-search-result,
+.bbn-state-selected .bbn-router-search-result {
+  filter: saturate(1.8);
+}

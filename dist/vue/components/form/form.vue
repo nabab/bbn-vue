@@ -1,6 +1,5 @@
 <template>
 <form :action="action"
-      :disabled="disabled"
       :method="method"
       :autocomplete="autocomplete"
       :class="currentClass"
@@ -17,31 +16,34 @@
     <component :is="scrollable ? 'bbn-scroll' : 'div'"
                :class="{'bbn-overlay': !!fullSize}"
                ref="container">
-      <div class="bbn-grid-fields bbn-padded"
-           v-if="schema && schema.length">
-        <template v-for="field in currentSchema"
-                  v-if="field.field && !field.buttons && (field.editable !== false)">
-          <component v-if="field.lineComponent"
-                     :is="field.lineComponent"
-                     :source="source"/>
-          <template v-else>
-            <label v-html="field.title"
-                   :for="field.id"
-                   :title="field.ftitle || field.title || field.field"/>
-            <component v-if="field.editor"
-                       :is="field.editor"
-                       v-bind="field.options"
-                       v-model="source[field.field]"/>
-            <bbn-field v-else
-                       mode="write"
-                       v-bind="field"
-                       v-model="source[field.field]"/>
+      <fieldset class="bbn-form-fieldset bbn-no-border bbn-no-radius bbn-no-margin bbn-no-padding"
+                :disabled="disabled">
+        <div class="bbn-grid-fields bbn-padded"
+            v-if="schema && schema.length">
+          <template v-for="field in currentSchema"
+                    v-if="field.field && !field.buttons && (field.editable !== false)">
+            <component v-if="field.lineComponent"
+                      :is="field.lineComponent"
+                      :source="source"/>
+            <template v-else>
+              <label v-html="field.title"
+                    :for="field.id"
+                    :title="field.ftitle || field.title || field.field"/>
+              <component v-if="field.editor"
+                        :is="field.editor"
+                        v-bind="field.options"
+                        v-model="source[field.field]"/>
+              <bbn-field v-else
+                        mode="write"
+                        v-bind="field"
+                        v-model="source[field.field]"/>
+            </template>
           </template>
-        </template>
-      </div>
-      <slot></slot>
+        </div>
+        <slot></slot>
+      </fieldset>
       <div v-if="!hasFooter && !window && realButtons.length && (mode !== 'big')"
-           class="bbn-middle bbn-top-lspace">
+          class="bbn-middle bbn-top-lspace">
         <bbn-button v-for="(button, i) in realButtons"
                     :key="i"
                     class="bbn-hsmargin"
@@ -464,7 +466,7 @@
        * @return {Boolean}
        */
       _canSubmit(){
-        return (this.prefilled || this.isModified()) && this.isValid(false, false);
+        return (this.prefilled || this.isModified()) && this.isValid(false, false) && !this.disabled;
       },
       /**
        * Returns an array containing the form's buttons.
@@ -740,6 +742,9 @@
         }
 
         if ( !force ){
+          if (this.disabled) {
+            return;
+          }
           let ev = new Event('submit', {cancelable: true});
           this.$emit('submit', ev, this);
           if ( ev.defaultPrevented ){
@@ -1098,6 +1103,18 @@
 .bbn-form .bbn-grid-fields > label,
 .bbn-form .bbn-grid-fields > .bbn-label {
   min-height: 1.8em;
+}
+.bbn-form .bbn-form-fieldset {
+  margin-inline-start: 0;
+  margin-inline-end: 0;
+  margin-block-start: 0;
+  margin-block-end: 0;
+  padding-inline-start: 0;
+  padding-inline-end: 0;
+  padding-block-start: 0;
+  padding-block-end: 0;
+  min-inline-size: unset;
+  height: 100%;
 }
 
 </style>

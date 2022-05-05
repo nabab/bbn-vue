@@ -28,6 +28,7 @@ script.innerHTML = `<div :class="['bbn-overlay' , componentClass, {'bbn-unselect
                     :uid="w.key"
                     @close="hideWidget(w.key)"
                     :index="w.index"
+                    :data="w.data || {}"
                     @dragover="mouseEnterWidget(w.index)"
                     @dragend="isDragging = false; isSorting = false;"
                     @drop.prevent="drop"
@@ -40,10 +41,9 @@ script.innerHTML = `<div :class="['bbn-overlay' , componentClass, {'bbn-unselect
                       )
                     }"
                     @sortstart="isSorting = true; sortOriginIndex = w.index; sortTargetIndex = null; isDragging = true;"
-                    :title="w.title ? w.title : (w.text ? w.text : '')"
-        ></bbn-widget>
+                    :title="w.title ? w.title : (w.text ? w.text : '')"/>
       </template>
-      <slot v-if="!widgets.length"></slot>
+      <slot v-if="!widgets.length"/>
     </div>
   </bbn-scroll>
 </div>
@@ -540,7 +540,7 @@ document.head.insertAdjacentElement('beforeend', css);
         let idx = bbn.fn.search(this.widgets || [], 'key', key),
             params = {
               id: key,
-              cfg: cfg,
+              cfg: bbn.fn.extend({}, cfg),
               id_dashboard: this.code
             },
             no_save = ['items', 'num', 'start', 'index'];
@@ -550,7 +550,14 @@ document.head.insertAdjacentElement('beforeend', css);
               delete params.cfg[a];
             }
           });
-          if ( bbn.fn.numProperties(params.cfg) ){
+          let numProps = bbn.fn.numProperties(params.cfg);
+          if (numProps) {
+            // If it's only the default limit we don't save
+            if ((numProps === 1) && params.cfg.limit && (this.widgets[idx].limit === undefined)) {
+              this.widgets[idx].limit = params.cfg.limit;
+              return;
+            }
+
             bbn.fn.iterate(params.cfg, (a, k) => {
               if ( this.widgets[idx][k] === undefined ){
                 this.$set(this.widgets[idx], k, a);
@@ -594,7 +601,7 @@ document.head.insertAdjacentElement('beforeend', css);
               });
             }
             else{
-              success();
+              appui.success();
             }
           }
         }

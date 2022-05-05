@@ -2442,27 +2442,26 @@
               case "percent":
                 return v ? bbn.fn.money(v * 100, false, "%", '-', '.', ' ', 2) : '-';
               case "number":
-                return v ?
-                  bbn.fn.money(
-                    v,
-                    (cfg.precision === -4) || (cfg.format && (cfg.format.toLowerCase() === 'k')),
-                    cfg.unit || "",
-                    '-',
-                    '.',
-                    ' ',
-                    cfg.precision === -4 ? 3 : (cfg.precision || cfg.decimals || 0)
-                  ) : '-';
+                return bbn.fn.money(
+                  v,
+                  (cfg.precision === -4) || (cfg.format && (cfg.format.toLowerCase() === 'k')),
+                  cfg.unit || "",
+                  '-',
+                  '.',
+                  ' ',
+                  cfg.precision === -4 ? 3 : (cfg.precision || cfg.decimals || 0)
+                );
               case "money":
-                return v ?
-                  bbn.fn.money(
-                    v,
-                    (cfg.precision === -4) || (cfg.format && (cfg.format.toLowerCase() === 'k')),
-                    cfg.currency || cfg.unit || "",
-                    '-',
-                    ',',
-                    ' ',
-                    cfg.precision === -4 ? 3 : cfg.precision
-                  ) : '-';
+                bbn.fn.log(cfg)
+                return bbn.fn.money(
+                  v,
+                  (cfg.precision === -4) || (cfg.format && (cfg.format.toLowerCase() === 'k')),
+                  cfg.currency || cfg.unit || "",
+                  '-',
+                  ',',
+                  ' ',
+                  cfg.precision === -4 ? 3 : (cfg.precision || cfg.decimals || 0)
+                );
               case "bool":
               case "boolean":
                 return '<i class="nf nf-fa-'
@@ -3700,7 +3699,8 @@
           default: false
         },
         /**
-         * @todo not used in the component
+         * Enables the search mode
+         * @prop {Boolean} [false] search
          */
         search: {
           type: Boolean,
@@ -4257,8 +4257,8 @@
           return {};
         },
         beforeUpdate(){
-          let e = new Event('beforeUpdate', {cancelable: true});
-          this.$emit('beforeUpdate', e);
+          let e = new Event('beforeupdate', {cancelable: true});
+          this.$emit('beforeupdate', e);
           return e.defaultPrevented ? false : true;
         },
         afterUpdate() {
@@ -4280,53 +4280,6 @@
             data.fields = this.shownFields;
           }
           return data;
-        },
-        appendData(step) {
-          if (this.isAjax) {
-            this.isLoading = true;
-            this.$emit('startloading');
-            let data = this.getData();
-            data.step = step;
-            this.loadingRequestID = bbn.fn.getRequestId(this.source, data);
-            this.isLoading = true;
-            this.post(this.source, data, d => {
-              this.isLoading = false;
-              this.loadingRequestID = false;
-              if (d && d.data) {
-                if (d.data.length) {
-                  let data = this.treatData(d.data);
-                  bbn.fn.each(data, a => {
-                    let todo = true;
-                    if (a.data.hash) {
-                      let row = bbn.fn.filter(this.currentData, r => r.data.hash === a.data.hash);
-                      if (row.length && (row[0].data.score && a.data.score)) {
-                        todo = false;
-                        row[0].data.score += a.data.score;
-                      }
-                    }
-
-                    if (todo) {
-                      this.currentData.push(a);
-                    }
-                  });
-
-                  this.updateIndexes();
-                }
-
-                if (d.next_step) {
-                  if (this.isOpened !== undefined) {
-                    if (this.isOpened) {
-                      bbn.fn.log("APPEING DATA")
-                      this.appendData(d.next_step);
-                    }
-                  }
-                  else {
-                    this.appendData(d.next_step);
-                  }
-                }
-              }
-            });
-          }
         },
         treatData(data) {
           if (this.parentUid && this.hierarchy && this.flat && this.uid) {
@@ -4367,7 +4320,7 @@
             this._dataPromise = new Promise(resolve => {
               let prom;
               let loadingRequestID;
-              if ( this.isAjax ){
+              if (this.isAjax) {
                 if (this.loadingRequestID) {
                   bbn.fn.abort(this.loadingRequestID);
                   setTimeout(() => {
@@ -4378,6 +4331,7 @@
                   }, 50);
                   return;
                 }
+
                 this.isLoading = true;
                 this.$emit('startloading');
                 let data = this.getData();
@@ -4430,7 +4384,7 @@
                     d = d.data;
                   }
 
-                  this.$emit('dataReceived', d);
+                  this.$emit('datareceived', d);
                 }
 
                 if ( d && bbn.fn.isArray(d.data) ){
@@ -4472,15 +4426,8 @@
                 if (!this.isLoaded) {
                   this.isLoaded = true;
                 }
-                this.$emit('dataloaded', d);
-                if (this.isAjax && d && d.next_step) {
-                  if (d.id && (d.data !== undefined)) {
-                    this.searchId = d.id;
-                  }
 
-                  this.appendData(d.next_step);
-                }
-                //this._dataPromise = false;
+                this.$emit('dataloaded', d);
               });
             }).catch(e => {
               bbn.fn.log("CATCHING");
@@ -4959,6 +4906,16 @@
           }
 
           return isNullable;
+        },
+        /**
+         * Returns true if the component is disabled
+         * @computed isDisabled
+         * @fires closest
+         * @returns {Boolean}
+         */
+        isDisabled(){
+          let form = this.closest('bbn-form');
+          return this.disabled || (bbn.fn.isVue(form) && form.disabled);
         }
       },
       methods: {
@@ -5701,8 +5658,15 @@
          * @memberof fieldComponent
          */
         precision: {
-          type: Number,
-          default: 0
+          type: Number
+        },
+        /**
+         * Defines the number of decimals for the component.
+         * @prop {Number} [0] decimals 
+         * @memberof fieldComponent
+         */
+        decimals: {
+          type: Number
         },
         /**
          * Defines the precision of the component.

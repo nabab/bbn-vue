@@ -195,9 +195,9 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
          */
         widget: null,
         /**
-         * @data {Boolean} [!disabled] isEnabled
+         * @data {Boolean} [true] isEnabled
          */
-        isEnabled: !this.disabled,
+        isEnabled: !this.isDisabled,
         /**
          * @data {Array} [[]] widgedValue
          */
@@ -266,7 +266,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         if ( this.value && this.getSource ){
           this.widget.addInitialFiles(this.getSource);
         }
-        if ( this.disabled ){
+        if ( this.isDisabled ){
           this.enable(false);
         }
         */
@@ -280,7 +280,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           xRequestedWith: 'XMLHttpRequest'
         });
         widget.event('send', files => {
-          if ( !this.disabled ){
+          if ( !this.isDisabled ){
             this.uploading = true;
             files.each(file => {
               if ( !this.isAllowed(file) ){

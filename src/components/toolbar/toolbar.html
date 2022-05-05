@@ -16,14 +16,22 @@
       <div v-else-if="!s.end && (s.content !== undefined)"
           class="bbn-block bbn-spadded"
           v-html="s.content"
-          :key="'item' + i"/>
-      <bbn-button v-else-if="!s.end && ((s.url || s.action) && (s.text || s.icon))"
+          :key="'item' + i"
+          :ref="'item' + i"/>
+      <bbn-button v-else-if="!s.end && ((s.url || s.action || s.items) && (s.text || s.icon))"
                   v-bind="s"
-                  class="bbn-hxsmargin"
-                  :key="'item' + i"/>
+                  :class="{
+                    'bbn-hxsmargin': buttonSpace
+                  }"
+                  @click.prevent="clickButton(s)"
+                  :key="'item' + i"
+                  :ref="'item' + i"/>
       <div v-else-if="!s.end"
           class="bbn-toolbar-separator"
           :key="'item' + i"/>
+      <bbn-floater v-if="s.items && $refs['item' + i]"
+                   :source="items"
+                   :element="'item' + i"/>
     </template>
   </div>
   <div class="bbn-block bbn-nowrap">
@@ -37,13 +45,18 @@
           v-html="s.content"
           :key="'item' + i"/>
       <bbn-button v-else-if="s.end && ((s.url || s.action) && (s.text || s.icon))"
+                  :class="{
+                    'bbn-hxsmargin': true
+                  }"
                   v-bind="s"
-                  class="bbn-hxsmargin"
                   :key="'item' + i"/>
       <div v-else-if="s.end"
           class="bbn-toolbar-separator"
           :key="'item' + i"
       >|</div>
+      <bbn-floater v-if="s.items && $refs['item' + i]"
+                   :source="items"
+                   :element="'item' + i"/>
     </template>
   </div>
   <slot v-if="!slotBefore"></slot>

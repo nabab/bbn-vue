@@ -148,9 +148,9 @@ document.head.insertAdjacentElement('beforeend', css);
         let o = {};
         switch (this.orientation) {
           case 'left':
-            o['-webkit-box-shadow'] = '5px 0 5px 0 !important';
-            o['-moz-box-shadow'] = '5px 0 5px 0 !important';
-            o['box-shadow'] = '5px 0 5px 0 !important';
+            o['-webkit-box-shadow'] = '2px 0 20px 0 !important';
+            o['-moz-box-shadow'] = '2px 0 20px 0 !important';
+            o['box-shadow'] = '2px 0 20px 0 !important';
             o.width = 'auto';
             o.top = 0;
             o.left = this.currentVisible ? 0 : -this.currentSize + 'px';
@@ -162,9 +162,9 @@ document.head.insertAdjacentElement('beforeend', css);
             }
             break;
           case 'right':
-            o['-webkit-box-shadow'] = '-5px 0 5px 0 !important';
-            o['-moz-box-shadow'] = '-5px 0 5px 0 !important';
-            o['box-shadow'] = '-5px 0 5px 0 !important';
+            o['-webkit-box-shadow'] = '-2px 0 20px 0 !important';
+            o['-moz-box-shadow'] = '-2px 0 20px 0 !important';
+            o['box-shadow'] = '-2px 0 20px 0 !important';
             o.width = 'auto';
             o.top = 0;
             o.right = this.currentVisible ? 0 : -this.currentSize + 'px';
@@ -176,9 +176,9 @@ document.head.insertAdjacentElement('beforeend', css);
             }
             break;
           case 'top':
-            o['-webkit-box-shadow'] = '0 5px 5px 0 !important';
-            o['-moz-box-shadow'] = '0 5px 5px 0 !important';
-            o['box-shadow'] = '0 5px 5px 0 !important';
+            o['-webkit-box-shadow'] = '0 2px 20px 0 !important';
+            o['-moz-box-shadow'] = '0 2px 20px 0 !important';
+            o['box-shadow'] = '0 2px 20px 0 !important';
             o.left = 0;
             o.top = this.currentVisible ? 0 : -this.currentSize + 'px';
             if (this.ready && !this.isResizing) {
@@ -189,9 +189,9 @@ document.head.insertAdjacentElement('beforeend', css);
             }
             break;
           case 'bottom':
-            o['-webkit-box-shadow'] = '0 -5px 5px 0 !important';
-            o['-moz-box-shadow'] = '0 -5px 5px 0 !important';
-            o['box-shadow'] = '0 -5px 5px 0 !important';
+            o['-webkit-box-shadow'] = '0 -2px 20px 0 !important';
+            o['-moz-box-shadow'] = '0 -2px 20px 0 !important';
+            o['box-shadow'] = '0 -2px 20px 0 !important';
             o.left = 0;
             o.bottom = this.currentVisible ? 0 : -this.currentSize + 'px';
             if (this.ready && !this.isResizing) {

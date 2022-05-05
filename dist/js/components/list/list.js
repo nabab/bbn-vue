@@ -7,14 +7,22 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-floater-list']"
      @mouseleave="mouseleave"
      @touchmove="touchmove"
      @touchend="touchend"
-     >
-  <div class="bbn-hidden" v-if="$slots.default" ref="slot">
+     :style="currentStyle">
+  <div class="bbn-hidden"
+       v-if="$slots.default"
+       ref="slot">
     <slot></slot>
   </div>
   <ul v-if="filteredData.length && ready"
       :class="['bbn-menulist', mode]">
     <template v-for="(li, idx) in filteredData">
-      <li v-if="groupable && (!pageable || ((idx >= start) && (idx < start + currentLimit))) && ((idx === 0) || (idx === start) || (li.data[sourceGroup] !== filteredData[idx-1].data[sourceGroup]))"
+      <li v-if="groupable
+            && (!pageable
+              || ((idx >= start)
+                && (idx < start + currentLimit)))
+            && ((idx === 0)
+              || (idx === start)
+              || (li.data[sourceGroup] !== filteredData[idx-1].data[sourceGroup]))"
           class="bbn-list-group-li bbn-m bbn-header bbn-hspadded bbn-unselectable bbn-vmiddle"
           :style="groupStyle"
           :group="li.data[sourceGroup]">
@@ -26,10 +34,13 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-floater-list']"
              v-text="li.data[sourceGroup]"
              class="bbn-spadded"/>
       </li>
-      <li v-if="!pageable || ((idx >= start) && (idx < start + currentLimit)) || (!!pageable && !!serverPaging)"
-          @mouseenter="mouseenter($event, idx)"
+      <li v-if="!pageable
+            || ((idx >= start)
+              && (idx < start + currentLimit))
+            || (!!pageable && !!serverPaging)"
+          @mouseover="mouseenter($event, idx)"
           :ref="'li' + idx"
-          :key="uid ? li.data[uid] : idx"
+          :key="uid ? li.data[uid] : li.key"
           @click="select(idx)"
           @mousedown="select(idx)"
           :class="{
@@ -37,7 +48,11 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-floater-list']"
             'bbn-state-default': true,
             'bbn-disabled': !component && !!li.data && !!li.data.disabled,
             'bbn-state-selected': isSelected(idx),
-            'bbn-state-hover': overIdx === idx,
+            'bbn-state-hover': (overIdx === idx)
+              && ((origin === 'floater')
+                || (isOver
+                  && rootList
+                  && (_self === rootList.overList))),
             'bbn-alt': alternateBackground && (idx % 2)
           }">
         <component v-if="currentComponent"
@@ -67,14 +82,16 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-floater-list']"
                 v-html="li.data[sourceText]"></span>
         </component>
         <div v-if="!currentComponent && li.data[children] && li.data[children].length"
-            class="bbn-block bbn-top-right bbn-vmiddle bbn-hspadded bbn-h-100">
+             :class="['bbn-block', 'bbn-top-right', 'bbn-hspadded', 'bbn-h-100', {
+              'bbn-vmiddle': (origin === 'floater')
+             }]">
           <i class="nf nf-fa-chevron_right"></i>
         </div>
-        <bbn-floater v-if="isOpened && children &&
-                            (origin === 'floater') &&
-                            li.data[children] &&
-                            (overIdx === idx) &&
-                            getRef('li' + idx)"
+        <bbn-floater v-if="isOpened
+                      && children
+                      && (origin === 'floater')
+                      && li.data[children]
+                      && (overIdx === idx)"
                     :uid="uid"
                     @select="select"
                     :level="level + 1"
@@ -83,15 +100,16 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-floater-list']"
                     :element="getRef('li' + idx)"
                     orientation="horizontal">
         </bbn-floater>
-        <bbn-list v-else-if="(origin !== 'floater') &&
-                              children &&
-                              li.data[children] &&
-                              getRef('li' + idx)"
+        <bbn-list v-else-if="(origin !== 'floater')
+                    && children
+                    && li.data[children]
+                    && li.opened"
                   :level="level + 1"
                   :mode="li.data.mode || 'free'"
                   :uid="uid"
                   :children="children"
-                  :source="li.data[children]">
+                  :source="li.data[children]"
+                  :key="'sublist-' + li.key">
         </bbn-list>
       </li>
     </template>
@@ -133,8 +151,7 @@ document.head.insertAdjacentElement('beforeend', css);
      * @mixin bbn.vue.eventsComponent
      * @mixin bbn.vue.componentInsideComponent
      */
-    mixins: 
-    [
+    mixins: [
       bbn.vue.basicComponent,
       bbn.vue.listComponent,
       bbn.vue.keynavComponent,
@@ -147,36 +164,35 @@ document.head.insertAdjacentElement('beforeend', css);
     props: {
       /**
        * @prop {} origin
-       * 
        */
       origin: {},
       /**
        * The maximum width of the floater.
-       * @prop {Number} maxWidth
+       * @prop {Number|String} maxWidth
        */
       maxWidth: {
-        type: Number
+        type: [Number, String]
       },
       /**
        * The maximum height of the floater.
-       * @prop {Number} maxHeight
+       * @prop {Number|String} maxHeight
        */
       maxHeight: {
-        type: Number
+        type: [Number, String]
       },
       /**
        * The minimum width of the floater.
-       * @prop {Number} minWidth
+       * @prop {Number|String} minWidth
        */
       minWidth: {
-        type: Number
+        type: [Number, String]
       },
       /**
        * The minimum height of the floater.
-       * @prop {Number} minHeight
+       * @prop {Number|String} minHeight
        */
       minHeight: {
-        type: Number
+        type: [Number, String]
       },
       /**
        * The width of the floater.
@@ -200,70 +216,12 @@ document.head.insertAdjacentElement('beforeend', css);
         type: [Function, Array, String, Object]
       },
       /**
-       * The html content of the floater.
-       * @prop {String} [''] content
+       * Only one selection at a time if "true"
+       * @prop {Boolean} [true] unique
        */
-      content: {
-        type: String,
-        default: ''
-      },
-      /**
-       * The element used in the render of the floater.
-       * @prop {Element} element
-       */
-      element: {
-        type: Element
-      },
-      /**
-       * The floater's orientation.
-       * @prop {String} ['vertical'] orientation
-       */
-      orientation: {
-        type: String,
-        default: 'vertical'
-      },
-      /**
-       * @prop {String} ['left'] hpos
-       */
-      hpos: {
-        type: String,
-        default: 'left'
-      },
-      /**
-       * @prop {String} ['bottom'] vpos
-       */
-      vpos: {
-        type: String,
-        default: 'bottom'
-      },
-      /**
-       * Defines the ability of the floater to be scrollable.
-       * @prop {Boolean}  [false] scrollable
-       */
-      scrollable: {
-        type: Boolean,
-        default: false
-      },
-      /**
-       * Set to true to show the floater.
-       * @prop {Boolean} [true] visible
-       */
-      visible: {
-        type: Boolean,
-        default: true
-      },
-      //@todo not used.
       unique: {
         type: Boolean,
         default: true
-      },
-      //@todo not used
-      parent: {
-        default: false
-      },
-      //@todo not used
-      noIcon: {
-        default: false
       },
       /**
        * The hierarchical level, root is 0, and for each generation 1 is added to the level.
@@ -274,85 +232,12 @@ document.head.insertAdjacentElement('beforeend', css);
         default: 0
       },
       /**
-       * Set to true to auto-hide the component.
-       * @prop {Boolean} [false] autoHide
-       */
-      autoHide: {
-        type: Boolean,
-        default: false
-      },
-      /**
        * The array containings the tree's children.
        * @prop {String} ['items'] children
        */
       children: {
         type: String,
         default: 'items'
-      },
-      /**
-       * The title of the floater's header.
-       * @psop {String} title
-       */
-      title: {
-        type: String
-      },
-      /**
-       * The footer of the floater.
-       * @psop {String} footer
-       */
-      footer: {
-        type: String
-      },
-      /**
-       * The buttons in the footer.
-       * @psop {Array} buttons
-       */
-      buttons: {
-        type: Array,
-        default(){
-          return [];
-        }
-      },
-      /**
-       * Set to true to show the icon that allows the closing of the floater.
-       * @prop {Boolean} [false] closable
-       */
-      closable: {
-        type: Boolean,
-        default: false
-      },
-      /**
-       * Set to true to show the icon that allows the maximization of the window.
-       * @prop {Boolean} [false] maximizable
-       */
-      maximizable: {
-        type: Boolean,
-        default: false
-      },
-      /**
-       * Set to true to open and close the window with opacity animation.
-       * @prop {Boolean} [false] maximizable
-       */
-      animation: {
-        type: Boolean,
-        default: false
-      },
-      /**
-       * The latency of the floater.
-       * @prop {Number} [25] latency
-       */
-      latency: {
-        type: Number,
-        default: 25
-      },
-      /**
-       * @prop {Array} [[]] expanded
-       */
-      expanded: {
-        type: Array,
-        default(){
-          return [];
-        }
       },
       /**
        * @prop {(Boolean|Number)} [false] suggest
@@ -448,10 +333,6 @@ document.head.insertAdjacentElement('beforeend', css);
          */
         currentScroll: false,
         /**
-         * @data {Boolean} currentVisible
-         */
-        currentVisible: this.visible,
-        /**
          * @data {Number} [0] currentWidth
          */
         containerWidth: 0,
@@ -463,10 +344,6 @@ document.head.insertAdjacentElement('beforeend', css);
          * @data {Boolean} focused
          */
         focused: bbn.env.focused || null,
-        /**
-         * @data {Number} [0] opacity
-         */
-        opacity: 0,
         /**
          * @data {Number} [0] floaterHeight
          */
@@ -487,10 +364,9 @@ document.head.insertAdjacentElement('beforeend', css);
          * @data {Boolean} [false] isMaximized
          */
         isMaximized: false,
-        scrollMaxHeight: 0,
-        scrollMinWidth: 0,
-        currentButtons: this.buttons.slice(),
-        mountedComponents: [],
+        /**
+         * @data {Boolean} [false] isOver
+         */
         isOver: false,
         /**
          * The index (on filteredData) on which is the mouse cursor or the keyboard navigation
@@ -498,12 +374,36 @@ document.head.insertAdjacentElement('beforeend', css);
          * @memberof listComponent
          */
         overIdx: -1,
-        mouseLeaveTimeout: false,
+        /**
+         * @data {Boolean} [true] isOpened
+         */
         isOpened: true,
+        /**
+         * @data [null] scroll
+         */
         scroll: null,
+        /**
+         * @data {Boolean} [false] hasScroll
+         */
         hasScroll: false,
+        /**
+         * @data [null] currentComponent
+         */
         currentComponent: null,
-        tmpDisabled: false
+        /**
+         * @data {Boolean} [false] tmpDisabled
+         */
+        tmpDisabled: false,
+        /**
+         * The main list in a hierarchical system
+         * @data {Boolean|Vue} [false] rootList
+         */
+        rootList: false,
+        /**
+         * The current list with the mouse over
+         * @data {Boolean|Vue} [false] overList
+         */
+        overList: false
       };
     },
     computed: {
@@ -542,24 +442,29 @@ document.head.insertAdjacentElement('beforeend', css);
        */
       currentStyle(){
         let s = {
-          left: this.isMaximized ? 0 : this.currentLeft,
-          top: this.isMaximized ? 0 : this.currentTop,
-          width: this.isMaximized ? '100%' : (this.width ? this.formattedWidth : 'auto'),
+          width: this.formattedWidth,
           height: this.formattedHeight,
-          opacity: this.opacity,
           overflow: 'hidden'
         };
-        if ( this.animation ){
-          s.transition = 'opacity 0.3s ease-in-out';
-        }
-        if ( this.maxWidth ){
+        if (this.maxWidth) {
           s.maxWidth = this.maxWidth + (bbn.fn.isNumber(this.maxWidth) ? 'px' : '')
         }
-        if ( this.maxHeight ){
+        if (this.maxHeight) {
           s.maxHeight = this.maxHeight + (bbn.fn.isNumber(this.maxHeight) ? 'px' : '')
+        }
+        if (this.minWidth) {
+          s.minWidth = this.minWidth + (bbn.fn.isNumber(this.minWidth) ? 'px' : '')
+        }
+        if (this.minHeight) {
+          s.minHeight = this.minHeight + (bbn.fn.isNumber(this.minHeight) ? 'px' : '')
         }
         return s;
       },
+      /**
+       * @computed filteredData
+       * @fires _checkConditionsOnItem
+       * @returns {Array}
+       */
       filteredData(){
         let data = this.currentData;
         if (this.currentData.length
@@ -592,6 +497,16 @@ document.head.insertAdjacentElement('beforeend', css);
         }
         return data;
       },
+      /**
+       * The parent list in a hierarchical system
+       * @computed parentList
+       * @fires closest
+       * @returns {Vue|Boolean}
+       */
+      parentList(){
+        let list = this.closest('bbn-list');
+        return list.level < this.level ? list : false;
+      }
     },
     methods: {
       /**
@@ -610,19 +525,24 @@ document.head.insertAdjacentElement('beforeend', css);
           this.hasIcons = hasIcons;
         }
       },
+      /**
+       * The method called on the mouseenter event
+       * @method mouseenter
+       * @param {Event} e
+       * @param {Number} idx
+       */
       mouseenter(e, idx){
-        if ( !this.isOver ){
-          // if the list appears under the nouse while it is inactive
-          e.target.addEventListener('mousemove', () => {
+        let list = e.target.closest('div.bbn-list')
+        if (list.__vue__ === this) {
             this.overIdx = idx;
             this.isOver = true;
-          }, {once: true});
-        }
-        else{
-          this.overIdx = idx;
-          this.isOver = true;
+            this.rootList.overList = this;
+            this.filteredData[idx].opened = true;
         }
       },
+      /**
+       * @method resetOverIdx
+       */
       resetOverIdx(){
         if (this.suggest === false) {
           this.overIdx = -1;
@@ -634,10 +554,21 @@ document.head.insertAdjacentElement('beforeend', css);
           this.overIdx = this.suggest;
         }
       },
+      /**
+       * The method called on mouseleave event
+       * @method mouseleave
+       * @fires resetOverIdx
+       */
       mouseleave(){
         this.isOver = false;
+        this.rootList.overList = false;
         this.resetOverIdx();
       },
+      /**
+       * @method isSelected
+       * @param {Number} idx
+       * @returns {Boolean}
+       */
       isSelected(idx){
         let r = false;
         if ( this.filteredData[idx] ){
@@ -652,6 +583,11 @@ document.head.insertAdjacentElement('beforeend', css);
         }
         return r;
       },
+      /**
+       * @method remove
+       * @param {Number} idx
+       * @fires realDelete
+       */
       remove(idx){
         //bbn.fn.log(this.currentData, idx);
         this.realDelete(idx);
@@ -659,8 +595,7 @@ document.head.insertAdjacentElement('beforeend', css);
       /**
        * Handles the selection of the floater's items.
        * @method select
-       * @param {Number} idx 
-       * @fires closeAll
+       * @param {Number} idx
        * @emits select
        */
       select(idx){
@@ -730,7 +665,10 @@ document.head.insertAdjacentElement('beforeend', css);
           }
         }
       },
-      unselect(value){
+      /**
+       * @method unselect
+       */
+      unselect(){
         bbn.fn.each(bbn.fn.filter(this.currentData, a => {
           return this.selected.includes(a.data[this.sourceValue]);
         }), a => {
@@ -744,18 +682,40 @@ document.head.insertAdjacentElement('beforeend', css);
     /**
      * @event created
      * @fires _updateIconSituation
+     * @fires closest
      */
     created(){
       this.$on('dataloaded', () => {
         this._updateIconSituation();
       });
+      if (!this.level) {
+        this.rootList = this;
+      }
+      else {
+        let cp = this.closest('bbn-list');
+        if (!cp) {
+          this.rootList = this;
+        }
+        else {
+          while (cp && cp.level) {
+            cp = cp.closest('bbn-list');
+          }
+          if (cp && !cp.level) {
+            this.rootList = cp;
+          }
+        }
+      }
     },
     /**
      * @event mounted
+     * @fires $nextTick
+     * @fires resetOverIdx
      */
     mounted(){
       this.$nextTick(() => {
-        if (this.$parent.$options && (this.$parent.$options._componentTag === 'bbn-scroll')) {
+        if (this.$parent.$options
+          && (this.$parent.$options._componentTag === 'bbn-scroll')
+        ) {
           this.hasScroll = true;
         }
         this.ready = true;
@@ -766,10 +726,12 @@ document.head.insertAdjacentElement('beforeend', css);
     },
     watch: {
       /**
-       * @watch currentOver
-       * @param {Boolean} newVal 
+       * @watch overIdx
+       * @param {Number} newVal
+       * @fires keepCool
+       * @fires closest
        */
-      overIdx(newVal, oldVal) {
+      overIdx(newVal) {
         this.keepCool(() => {
           if (this.hasScroll && newVal && !this.isOver) {
             this.closest('bbn-scroll').scrollTo(null, this.getRef('li' + newVal));
@@ -778,6 +740,7 @@ document.head.insertAdjacentElement('beforeend', css);
       },
       /**
        * @watch source
+       * @fires updateData
        */
       source: {
         deep: true,

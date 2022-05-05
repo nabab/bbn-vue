@@ -1,7 +1,7 @@
 <template>
 <div :class="[
 	componentClass, 'bbn-textbox', {
-		'bbn-disabled': !!disabled,
+		'bbn-disabled': !!isDisabled,
 		'bbn-input-button-left' : !!buttonLeft,
 		'bbn-input-button-right' : !!buttonRight,
 		'bbn-invisible' : (type === 'hidden'),
@@ -33,7 +33,7 @@
           :name="name"
           ref="element"
           :readonly="readonly"
-          :disabled="disabled"
+          :disabled="isDisabled"
           :placeholder="placeholder"
           :maxlength="maxlength"
           :autocomplete="currentAutocomplete"
@@ -58,7 +58,7 @@
             paddingLeft: prefix ? 0 : null
           }">
     <bbn-loadicon v-if="loading"/>
-    <div v-else-if="isNullable && hasValue && !readonly && !disabled"
+    <div v-else-if="isNullable && hasValue && !readonly && !isDisabled"
          class="bbn-input-nullable-container bbn-vmiddle"
          :style="{
            positions: 'absolute',

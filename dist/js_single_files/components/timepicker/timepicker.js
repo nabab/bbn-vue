@@ -4,7 +4,7 @@ let script = document.createElement('script');
 script.innerHTML = `<span :class="[componentClass, 'bbn-textbox', {'bbn-input-nullable': isNullable}]">
   <bbn-masked v-model="inputValue"
               ref="element"
-              :disabled="disabled"
+              :disabled="isDisabled"
               :readonly="readonly"
               :required="required"
               :mask="currentMask"
@@ -16,7 +16,7 @@ script.innerHTML = `<span :class="[componentClass, 'bbn-textbox', {'bbn-input-nu
               :inputmode="inputmode"
               :placeholder="placeholder"
   ></bbn-masked>
-  <div v-if="isNullable && !readonly && !disabled"
+  <div v-if="isNullable && !readonly && !isDisabled"
         class="bbn-block bbn-h-100 bbn-input-nullable-container"
   >
     <i v-if="hasValue" class="nf nf-fa-times_circle bbn-p"
@@ -25,11 +25,11 @@ script.innerHTML = `<span :class="[componentClass, 'bbn-textbox', {'bbn-input-nu
   </div>
   <bbn-button icon="nf nf-fa-clock_o"
               @click="isOpened = !isOpened"
-              :disabled="disabled || readonly"
+              :disabled="isDisabled || readonly"
               tabindex="-1"
               class="bbn-button-right bbn-no-vborder"
   ></bbn-button>
-  <bbn-floater v-if="isOpened && !disabled && !readonly"
+  <bbn-floater v-if="isOpened && !isDisabled && !readonly"
                :element="$el"
                ref="floater"
                @close="isOpened = false"

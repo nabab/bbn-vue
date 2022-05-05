@@ -1,4 +1,11 @@
-<button :class="['bbn-iblock', {'bbn-button-icon-only': notext}, componentClass]"
+<button :class="[
+                  {
+                    'bbn-button-icon-only': notext,
+                    'bbn-active': active
+                  },
+                  'bbn-iblock',
+                  componentClass
+                ]"
         ref="element"
         @click="click($event)"
         @focus="focus($event)"

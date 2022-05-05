@@ -72,7 +72,7 @@
                       v-show="ready && visible || (visual && !thumbnail)"
                       ref="scroll"
                       @ready="init"
-                      :scrollable="scrollable && !router.scrollContent"
+                      :scrollable="scrollable && router.scrollContent"
                       axis="y"
                       :class="{
                         'bbn-overlay': router.scrollContent,
@@ -91,20 +91,34 @@
                       v-bind="options"/>
             <!-- This is just HTML content -->
             <div v-else-if="content"
-                v-html="content">
+                 v-html="content">
             </div>
             <!-- This is the slot -->
             <slot v-else></slot>
-            <!-- Adding style as acomponent -->
+            <!-- Adding style as a component -->
             <component is="style"
                       v-if="css"
                       scoped="scoped"
                       v-html="css"/>
-            <bbn-loader v-if="hasLoader"/>
           </bbn-scroll>
           <!-- If loading showing loader -->
-          <bbn-loader v-else-if="visible && !isLoaded"
-                      style="z-index: 999"/>
+          <div v-else-if="visible && errorStatus"
+               class="bbn-overlay bbn-middle bbn-lg">
+            <div class="bbn-lpadded bbn-state-error bbn-block bbn-nowrap">
+              <h1 v-text="errorStatus.status"/>
+              <div v-text="url"/>
+              <div class="bbn-vlpadded bbn-b"
+                   v-text="errorStatus.statusText"/>
+              <div class="bbn-c">
+                <bbn-button @click="close"
+                            icon="nf nf-fa-times"
+                            :text="_('Close')"
+                            class="bbn-state-error"/>
+              </div>
+            </div>
+          </div>
+          <!-- If loading showing loader -->
+          <bbn-loader v-else-if="visible && !isLoaded"/>
           <!-- Thumbnail image -->
           <div v-if="!visible && visual && thumbnail"
               style="overflow: hidden"
@@ -346,15 +360,41 @@
          * @data {String} currentURL
          */
         currentURL: this.current || this.url,
-        hasLoader: false,
+        /**
+         * Reacts to mouse movements.
+         * @data {Boolean} isOver
+         */
         isOver: false,
+        /**
+         * The closest bbn-container if any.
+         * @data {Vue|null} _bbn_container
+         */
         _bbn_container: null,
+        /**
+         * The base 64 encoded thumbnail image.
+         * @data {String} thumbnail
+         */
         thumbnail: false,
         /**
          * A list of form components contained in this container
          * @data {Array} [[]] forms
          */
-        forms: []
+        forms: [],
+        /**
+         * The error status if loading goes bad.
+         * @data {null|Object} errorStatus
+         */
+        errorStatus: null,
+        /**
+         * The title actually shown.
+         * @data {String} currentTitle
+         */
+        currentTitle: this.title,
+        /**
+         * The icon actually shown.
+         * @data {String} currentIcon
+         */
+        currentIcon: this.icon
       };
     },
     computed: {
@@ -490,7 +530,28 @@
        */
       setTitle(title){
         if ( this.router ){
-          this.router.views[this.idx].title = title;
+          if (!this.real) {
+            this.router.views[this.idx].title = title;
+          }
+          else {
+            this.currentTitle = title;
+          }
+        }
+      },
+      /**
+       * Sets the icon of the container.
+       * 
+       * @method setIcon
+       * @param {String} title 
+       */
+      setIcon(icon){
+        if ( this.router ){
+          if (!this.real) {
+            this.router.views[this.idx].icon = icon;
+          }
+          else {
+            this.currentIcon = icon;
+          }
         }
       },
       /**
@@ -502,11 +563,14 @@
        */
       setColor(bcolor, fcolor){
         if ( this.router ){
-          if ( bcolor ){
-            this.router.$set(this.router.views[this.idx], "bcolor", bcolor);
-          }
-          if ( fcolor ){
-            this.router.$set(this.router.views[this.idx], "fcolor", fcolor);
+          let view = this.router.getView(this.url);
+          if (view) {
+            if ( bcolor ){
+              this.router.$set(view, "bcolor", bcolor);
+            }
+            if ( fcolor ){
+              this.router.$set(view, "fcolor", fcolor);
+            }
           }
         }
       },
@@ -886,6 +950,12 @@
     },
 
     watch: {
+      title(v) {
+        this.currentTitle = v;
+      },
+      icon(v) {
+        this.currentIcon = v;
+      },
       loaded(v) {
         this.isLoaded = v;
       },
@@ -1018,9 +1088,11 @@
         })
       },
       dirty(v){
-        //bbn.fn.log("DIRTY WATCHER", this.idx, this.router.views);
-        this.router.views[this.idx].dirty = v;
-        this.router.retrieveDirtyContainers();
+        let view = this.router.getView(this.url);
+        if (view) {
+          view.dirty = v;
+          this.router.retrieveDirtyContainers();
+        }
       }
     },
 

@@ -5,7 +5,7 @@ script.innerHTML = `<div :class="[
        componentClass,
        'bbn-iblock',
        'bbn-textbox',
-       {'bbn-disabled': !!disabled}
+       {'bbn-disabled': !!isDisabled}
      ]"
      @mouseleave="isOverDropdown = false"
      @mouseenter="isOverDropdown = true"
@@ -15,7 +15,7 @@ script.innerHTML = `<div :class="[
 >
   <div class="bbn-flex-width">
     <div class="bbn-flex-fill">
-      <input v-if="!disabled && !readonly"
+      <input v-if="!isDisabled && !readonly"
               tabindex="0"
               class="bbn-no-border"
               v-model="filterString"
@@ -40,15 +40,15 @@ script.innerHTML = `<div :class="[
         ></bbn-loadicon>
       </div>
       <bbn-button v-else
-                  :icon="isOpened && !disabled && !readonly && filteredData.length ? iconUp : iconDown"
+                  :icon="isOpened && !isDisabled && !readonly && filteredData.length ? iconUp : iconDown"
                   class="bbn-button-right bbn-no-vborder bbn-m"
                   @click.prevent.stop="click"
                   tabindex="-1"
-                  :disabled="disabled"
+                  :disabled="isDisabled"
       ></bbn-button>
     </div>
   </div>
-  <bbn-floater v-if="!disabled && !readonly && isOpened"
+  <bbn-floater v-if="!isDisabled && !readonly && isOpened"
                :element="$el"
                :max-height="maxHeight"
                :min-width="currentWidth"
@@ -133,7 +133,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @fires getRef
        */
       click(){
-        if ( !this.disabled && !this.readnly ){
+        if ( !this.isDisabled && !this.readnly ){
           this.getRef('input').focus();
           if ( this.filteredData.length ){
             this.isOpened = !this.isOpened;
@@ -220,7 +220,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         else if (bbn.var.keys.upDown.includes(e.keyCode)) {
           this.keynav(e);
         }
-        else if ( !this.disabled || !this.readonly ){
+        else if ( !this.isDisabled || !this.readonly ){
           this.writing = true;
         }
       },

@@ -72,6 +72,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-bordered', 'bbn-radius', 
          v-html="content"
          class="bbn-widget-content"/>
     <!-- LIST OF ITEMS -->
+    <slot v-else-if="currentItems === undefined"/>
     <ul v-else-if="currentItems.length" class="bbn-widget-list bbn-widget-content">
       <template v-for="(it, idx) in currentItems">
         <li :class="itemClass"
@@ -92,6 +93,8 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-bordered', 'bbn-radius', 
       </template>
     </ul>
     <!-- NO DATA MESSAGE -->
+    <component v-else-if="noDataComponent"
+               :is="noDataComponent"/>
     <div v-else>
       <slot>
         <div v-html="noData" class="bbn-widget-content bbn-w-100 bbn-c bbn-padded"/>
@@ -331,10 +334,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @prop {Object} [[]] items
        */
       items: {
-        type: Array,
-        default: function(){
-          return [];
-        }
+        type: Array
       },
       /**
        * @prop {String} ['There is no available data'] noData
@@ -417,6 +417,13 @@ document.head.insertAdjacentElement('beforeend', css);
         default(){
           return {}
         }
+      },
+      /**
+       * A component to show if items is empty
+       * @prop {String|Object} noDataComponent
+       */
+      noDataComponent: {
+        type: [String, Object]
       }
     },
     data(){

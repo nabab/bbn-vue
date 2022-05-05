@@ -4,7 +4,7 @@
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[
 	componentClass, 'bbn-textbox', {
-		'bbn-disabled': !!disabled,
+		'bbn-disabled': !!isDisabled,
 		'bbn-input-button-left' : !!buttonLeft,
 		'bbn-input-button-right' : !!buttonRight,
 		'bbn-invisible' : (type === 'hidden'),
@@ -36,7 +36,7 @@ script.innerHTML = `<div :class="[
           :name="name"
           ref="element"
           :readonly="readonly"
-          :disabled="disabled"
+          :disabled="isDisabled"
           :placeholder="placeholder"
           :maxlength="maxlength"
           :autocomplete="currentAutocomplete"
@@ -61,7 +61,7 @@ script.innerHTML = `<div :class="[
             paddingLeft: prefix ? 0 : null
           }">
     <bbn-loadicon v-if="loading"/>
-    <div v-else-if="isNullable && hasValue && !readonly && !disabled"
+    <div v-else-if="isNullable && hasValue && !readonly && !isDisabled"
          class="bbn-input-nullable-container bbn-vmiddle"
          :style="{
            positions: 'absolute',

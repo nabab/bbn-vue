@@ -1,10 +1,4 @@
 .bbn-rte {
-  min-height: unset !important;
-  height: calc(99.2%);
-  padding: 0.4em;
   box-sizing: content-box;
-}
-.bbn-rte > div {
-  color: black;
-  background-color: white;
+  clear: both;
 }

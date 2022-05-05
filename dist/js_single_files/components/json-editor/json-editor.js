@@ -31,7 +31,7 @@ script.innerHTML = `<div :class="[{'bbn-100': true, 'bbn-block': true}, componen
          type="hidden"
          ref="input"
          :name="name"
-         :disabled="disabled"
+         :disabled="isDisabled"
          :readonly="readonly"
   >
 </div>`;

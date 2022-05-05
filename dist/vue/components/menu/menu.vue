@@ -19,6 +19,7 @@
         @mouseenter="_enterLi(i)">
       <a v-if="item.data.url"
          :href="item.data.url"
+         @click.stop.prevent="clickLi(i, $event)"
          v-html="item.data.text"/>
       <span v-else
             v-html="item.data.text"/>
@@ -84,8 +85,14 @@
       /**
        * @prop {} ['text'] sourceValue
        */
-      sourceValue: {
+       sourceValue: {
         default: 'text'
+      },
+      /**
+       * @prop {} ['url'] sourceUrl
+       */
+       sourceUrl: {
+        default: 'url'
       },
       /**
        * @prop {String} ['items'] children
@@ -144,6 +151,10 @@
         //getRef('li' + selectedElement).blur(); selectedElement = -1;
       },
       select(item, idx, idx2, ev) {
+        if (this.sourceUrl && item[this.sourceUrl]) {
+          bbn.fn.link(item.url);
+        }
+
         this.$emit('select', item, idx, idx2, ev);
       }
       /*onDataLoaded(){         
