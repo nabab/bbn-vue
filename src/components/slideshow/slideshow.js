@@ -237,15 +237,15 @@
                 type: this.gallery ? 'img' : 'text',
                 content: val
               };
-              if ( val.type === 'img' ){
-                bbn.fn.extend(val, {
-                  imageWidth: 0,
-                  imageHeight: 0,
-                  imageLeftMargin: 0,
-                  imageTopMargin: 0,
-                  showImg: false
-                });
-              }
+            }
+            if ( val.type === 'img' ){
+              bbn.fn.extend(val, {
+                imageWidth: 0,
+                imageHeight: 0,
+                imageLeftMargin: 0,
+                imageTopMargin: 0,
+                showImg: false
+              });
             }
             if (bbn.fn.isObject(val) && (!val.type || ((val.type !== 'img') && (val.type !== 'text')))) {
               val.type = 'text';
@@ -376,7 +376,7 @@
        * @param {Number} idx 
        * @fires aspectRatio
        */
-      afterLoad(idx){
+      afterLoad(idx) {
         this.$set(this.items[idx], 'loaded', true);
         this.aspectRatio(idx);
       },
@@ -406,7 +406,7 @@
               //this.items[idx].imageHeight =  "100%";
               //this.items[idx].showImg =  true;
             }
-            if( mode === 'full' ){
+            else if( mode === 'full' ){
               this.$set(this.items[idx], 'imageWidth', '100%');
               this.$set(this.items[idx], 'imageHeight', 'auto');
               this.$set(this.items[idx], 'showImg', true);
@@ -415,7 +415,7 @@
               //this.items[idx].showImg = true;
             }
           }
-          if ( imgRatio < ctnRatio ){
+          else if ( imgRatio <= ctnRatio ){
             if ( mode === 'zoom' ){
               this.$set(this.items[idx], 'imageWidth', '100%');
               this.$set(this.items[idx], 'imageHeight', 'auto');
@@ -425,7 +425,7 @@
               //this.items[idx].imageHeight = "auto";
               //this.items[idx].showImg =  true;
             }
-            if ( mode === 'full' ){
+            else if ( mode === 'full' ){
               this.$set(this.items[idx], 'imageWidth', 'auto');
               this.$set(this.items[idx], 'imageHeight', '100%');
               this.$set(this.items[idx], 'showImg', true);
