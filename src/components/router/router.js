@@ -2236,8 +2236,9 @@
                   props: ['source'],
                   template: `
                   <bbn-slideshow :source="source.content"
-                                 class="bbn-bg-webblue bbn-white"
-                                 separator="---slide---"></bbn-slideshow>`
+                                class="bbn-bg-webblue bbn-white"
+                                :full-slide="true"
+                                separator="---slide---"></bbn-slideshow>`
                 },
                 source: {
                   content: this.views[idx].help

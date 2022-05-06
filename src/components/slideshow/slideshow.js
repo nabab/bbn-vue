@@ -104,7 +104,7 @@
        */
       arrows:{
         type: [Boolean, Object],
-        default: false
+        default: true
       },
       /**
        * Shows or hides the navigation arrow at the bottom of the slider.
@@ -180,9 +180,9 @@
       },
       /**
        * If the property content is given to the item, set to true insert the html content inside a scroll.
-       * @prop {Boolean} [false] scroll
+       * @prop {Boolean} [false] scrollable
        */
-      scroll: {
+      scrollable: {
         type: Boolean,
         default: false
       },
@@ -349,6 +349,30 @@
         imageTopMargin: 0,
         maxImgWidth: 0,
         maxImgHeight: 0,
+      }
+    },
+    computed: {
+      /**
+       * The left arrow class
+       * @computed {String} leftArrowClass
+       */
+       leftArrowClass() {
+        if (bbn.fn.isObject(this.arrows) && this.arrows.left) {
+          return this.arrows.left;
+        }
+
+        return this.arrowClass.left;
+      },
+      /**
+       * The right arrow class
+       * @computed {String} rightArrowClass
+       */
+       rightArrowClass() {
+        if (bbn.fn.isObject(this.arrows) && this.arrows.right) {
+          return this.arrows.right;
+        }
+
+        return this.arrowClass.right;
       }
     },
     methods: {

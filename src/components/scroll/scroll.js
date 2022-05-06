@@ -369,9 +369,6 @@
         if ( this.isMeasuring || !this.scrollable ){
           return cfg;
         }
-        if (this.hasScrollX && !this.hiddenX) {
-          cfg.paddingBottom = '1em';
-        }
 
         cfg.width = (this.axis === 'x') || (this.axis === 'both') ? 'auto' : '100%';
         cfg.height = (this.axis === 'y') || (this.axis === 'both') ? 'auto' : '100%';
