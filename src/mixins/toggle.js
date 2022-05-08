@@ -99,6 +99,9 @@
               if ( this.focusable && this.focusable.focus ){
                 this.focusable.focus();
               }
+              else if (this.$el && this.$el.focus) {
+                this.$el.focus();
+              }
             }
             else if ( this.prevFocused && this.prevFocused.focus ){
               this.prevFocused.focus();

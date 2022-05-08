@@ -180,8 +180,8 @@
        * @method getPopup
        * @return {Object}
        */
-      getPopup(){
-        let popup = bbn.vue.getPopup(this);
+      getPopup() {
+        let popup = bbn.vue.getPopup(t);
         if (arguments.length && popup) {
           let cfg = arguments[0];
           let args = [];

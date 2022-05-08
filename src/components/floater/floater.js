@@ -1517,9 +1517,7 @@
       },
       scrollReady(v) {
         if (v) {
-          setTimeout(() => {
-            this.realResize();
-          }, 50);
+          this.realResize();
         }
       },
       /**
@@ -1540,7 +1538,7 @@
       /**
        * @watch isOver
        */
-      isOver(v, oldV){
+      isOver(v) {
         if (this.autoHide && this.isResized && this.ready && !this.isResizing) {
           if (v && this.mouseLeaveTimeout) {
             clearTimeout(this.mouseLeaveTimeout);

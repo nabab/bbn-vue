@@ -834,14 +834,27 @@
         }
         else if ( res && (this.selected === idx) ){
           if ( this.views.length ){
+            let newIdx = false;
             bbn.fn.each(this.history, a => {
               let tmp = this.getIndex(a);
               if ( tmp !== false ){
-                idx = tmp;
+                newIdx = tmp;
                 return false;
               }
             });
-            this.activateIndex(this.views[idx] ? idx : idx - 1);
+            if (newIdx === false) {
+              while (idx >= 0) {
+                if (this.views[idx]) {
+                  newIdx = idx;
+                  break;
+                }
+                idx--;
+              }
+            }
+
+            if (this.views[newIdx]) {
+              this.activateIndex(this.views[idx] ? idx : idx - 1);
+            }
           }
           else {
             this.selected = false;
@@ -1372,12 +1385,12 @@
             if (this.scrollable && this.nav && !this.breadcrumb) {
               let scroll = this.getRef('horizontal-scroll');
               if (scroll.ready) {
-                this.getRef('horizontal-scroll').scrollTo(this.getRef('tab-' + this.activeContainer.idx));
+                this.getRef('horizontal-scroll').scrollTo(this.getRef('tab-' + this.activeContainer.currentIndex));
               }
               else if (scroll) {
                 scroll.$on('ready', () => {
                   setTimeout(() => {
-                    this.getRef('horizontal-scroll').scrollTo(this.getRef('tab-' + this.activeContainer.idx));
+                    this.getRef('horizontal-scroll').scrollTo(this.getRef('tab-' + this.activeContainer.currentIndex));
                   }, 100);
                 })
               }
@@ -1908,8 +1921,6 @@
                 }
               });
               if (this.urls[url]) {
-                this.urls[url].isLoading = true;
-                this.urls[url].isLoaded = false;
                 this.urls[url].isInit = false;
               }
             }
@@ -1970,9 +1981,8 @@
                 delete d.data;
               }
               if ( (d.url !== d.current) && this.urls[d.current] ){
-                bbn.fn.warning("DELETING VIEW CASE.... " + d.current + ' ' + this.urls[d.current].idx, d.url, bbn.fn.search(this.views, {idx: this.urls[d.current].idx}));
-                this.remove(this.urls[d.current].idx, true);
-                //this.views.splice(this.urls[d.current].idx, 1);
+                bbn.fn.warning("DELETING VIEW CASE.... " + d.current + ' ' + this.urls[d.current].currentIndex, d.url, bbn.fn.search(this.views, {idx: this.urls[d.current].idx}));
+                this.remove(this.urls[d.current].currentIndex, true);
                 callRealInit = false;
                 this.$on('registered', url => {
                   if (url === d.url) {
@@ -2057,36 +2067,45 @@
           //throw new Error(bbn._("Impossible to find the container for URL") + ' ' + url);
         }
       },
+      checkLoaded(idx) {
+        return this.views[idx] &&
+          //!this.views[idx].real &&
+          this.views[idx].load &&
+          this.urls[this.views[idx].url] &&
+          this.urls[this.views[idx].url].isLoaded;
+      },
       /**
        * @method reload
        * @param {Number} idx
        * @fires route
        */
-      reload(idx){
-        // So if the ac6tion comes from within the container components can finish whatever they're doing
-        this.$nextTick(() => {
-          if (
-            this.views[idx] &&
-            //!this.views[idx].real &&
-            this.views[idx].load &&
-            this.urls[this.views[idx].url] &&
-            this.urls[this.views[idx].url].isLoaded
-          ){
-            let url = this.views[idx].current;
-
-            setTimeout(() => {
-              this.load(url, true, idx);
-              /*
-              this.$nextTick(() => {
-                if (!this.single) {
-                  this.selected = idx;
+      reload(idx, force) {
+        if (this.checkLoaded(idx)) {
+          let url = this.views[idx].current;
+          if (!force
+            && !this.ignoreDirty
+            && this.isDirty
+            && this.views[idx].dirty
+          ) {
+            this.confirm(this.confirmLeave, () => {
+              if (this.checkLoaded(idx)) {
+                // Looking for dirty ones in registered forms of each container
+                let forms = this.urls[this.views[idx].url].forms;
+                if ( Array.isArray(forms) && forms.length ){
+                  bbn.fn.each(forms, (f, k) => {
+                    f.reset();
+                  });
                 }
-                this.views[idx].selected = true;
-              })
-              */
-            }, 100);
+                this.load(url, true, idx);
+              }
+            });
           }
-        });
+          else {
+            this.$nextTick(() => {
+              this.load(url, true, idx);
+            });
+          }
+        }
       },
       /**
        * @method getDefaultURL
@@ -2132,12 +2151,12 @@
         if ( cp.views[idx] ){
           res += (cp.views[idx].title || bbn._('Untitled'));
           if ( cp.parentTab ){
-            idx = cp.parentTab.idx;
+            idx = cp.parentTab.currentIndex;
             cp = cp.parentTab.router;
             while ( cp ){
               res += ' < ' + (cp.views[idx].title || bbn._('Untitled'));
               if ( cp.parentTab ){
-                idx = cp.parentTab.idx;
+                idx = cp.parentTab.currentIndex;
                 cp = cp.parentTab.router;
               }
               else{
@@ -2159,7 +2178,7 @@
         bbn.fn.iterate(this.urls, v => {
           if ( v.dirty ){
             this.dirtyContainers.push({
-              idx: v.idx,
+              idx: v.currentIndex,
               url: v.url
             });
           }

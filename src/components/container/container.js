@@ -70,7 +70,7 @@
        * A unique id for the container that will ben used as index by the router
        * @prop {String} uid
        */
-       uid: {
+      uid: {
         type: String,
         default() {
           return bbn.fn.randomString();
@@ -181,7 +181,12 @@
          * The icon actually shown.
          * @data {String} currentIcon
          */
-        currentIcon: this.icon
+        currentIcon: this.icon,
+        /**
+         * The index in the router's views
+         * @data {Number} currentIndex
+         */
+         currentIndex: this.idx
       };
     },
     computed: {
@@ -294,7 +299,7 @@
         return true;
       },
       close() {
-        this.router.close(this.idx);
+        this.router.close(this.currentIndex);
       },
       /**
        * Sets the current url.
@@ -318,7 +323,7 @@
       setTitle(title){
         if ( this.router ){
           if (!this.real) {
-            this.router.views[this.idx].title = title;
+            this.router.views[this.currentIndex].title = title;
           }
           else {
             this.currentTitle = title;
@@ -334,7 +339,7 @@
       setIcon(icon){
         if ( this.router ){
           if (!this.real) {
-            this.router.views[this.idx].icon = icon;
+            this.router.views[this.currentIndex].icon = icon;
           }
           else {
             this.currentIcon = icon;
@@ -390,10 +395,10 @@
         this.$parent.enter(this);
       },
       pin() {
-        this.router.pin(this.idx);
+        this.router.pin(this.currentIndex);
       },
       unpin() {
-        this.router.unpin(this.idx);
+        this.router.unpin(this.currentIndex);
       },
       /**
        * Fires the parent's method reload.
@@ -402,7 +407,7 @@
        * @fires $parent.reload
        */
       reload(){
-        this.router.reload(this.idx);
+        this.router.reload(this.currentIndex);
       },
       /**
        * Handles the configuration of the container's menu.
@@ -411,19 +416,19 @@
        */
       addMenu(obj){
         if (
-          (this.idx > -1) &&
+          (this.currentIndex > -1) &&
           obj.text &&
           this.$parent.views &&
-          this.$parent.views[this.idx]
+          this.$parent.views[this.currentIndex]
         ){
-          if ( this.$parent.views[this.idx].menu === undefined ){
-            this.$parent.views[this.idx].menu = [];
+          if ( this.$parent.views[this.currentIndex].menu === undefined ){
+            this.$parent.views[this.currentIndex].menu = [];
           }
-          let menu = this.$parent.views[this.idx].menu || [],
+          let menu = this.$parent.views[this.currentIndex].menu || [],
               idx = bbn.fn.isFunction(menu) ? -1 : bbn.fn.search(menu || [], {text: obj.text});
           if (idx === -1) {
             if (bbn.fn.isFunction(menu) ){
-              this.$parent.views[this.idx].menu = () => {
+              this.$parent.views[this.currentIndex].menu = () => {
                 let items = menu() || [];
                 if ( bbn.fn.search(items, obj) === -1 ){
                   if ( !obj.key ){
@@ -445,7 +450,7 @@
             obj.key = menu[idx].key;
             menu.splice(idx, 1, obj);
           }
-          this.$parent.views[this.idx].menu = menu;
+          this.router.views[this.currentIndex].menu = menu;
           return obj.key;
         }
         return false;
@@ -458,18 +463,18 @@
        */
       deleteMenu(key){
         if (
-          (this.idx > -1) &&
-          this.$parent.views &&
-          this.$parent.views[this.idx]
+          (this.currentIndex > -1) &&
+          this.router.views &&
+          this.router.views[this.currentIndex]
         ){
-          let menu = this.$parent.views[this.idx].menu || [];
+          let menu = this.router.views[this.currentIndex].menu || [];
           if (bbn.fn.isFunction(menu) ){
             menu = () => {
               let items = menu() || [];
               let idx = bbn.fn.search(items, "key", key);
               if ( idx > -1 ){
                 items.splice(idx, 1);
-                this.$parent.views[this.idx].menu = items;
+                this.router.views[this.currentIndex].menu = items;
                 this.$parent.$forceUpdate();
                 return true;
               }
@@ -479,7 +484,7 @@
             let idx = bbn.fn.search(menu, "key", key);
             if ( idx > -1 ){
               menu.splice(idx, 1);
-              this.$parent.views[this.idx].menu = menu;
+              this.router.views[this.currentIndex].menu = menu;
               this.$parent.$forceUpdate();
               return true;
             }
@@ -584,16 +589,16 @@
         }
       },
       showMenu() {
-        return this.router.getMenuFn(this.idx);
+        return this.router.getMenuFn(this.currentIndex);
       },
       setScreenshot() {
         setTimeout(() => {
-          if (this.selected) {
+          if (this.currentIndex === this.router.selected) {
             this.takeScreenshot();
-            this._screenshotInterval = setInterval(() => {
-              this.takeScreenshot();
-            }, 30000);
           }
+          this._screenshotInterval = setInterval(() => {
+            this.takeScreenshot();
+          }, 300000);
         }, 3000);
       },
       unsetScreenshot() {
@@ -603,7 +608,11 @@
         }
       },
       takeScreenshot(num_tries = 0) {
-        if (this.selected && this.router.db && window.html2canvas && document.hasFocus()) {
+        if ((this.currentIndex === this.router.selected)
+            && this.router.db
+            && window.html2canvas
+            && document.hasFocus()
+        ) {
           let scroll = this.getRef('scroll');
           if (!scroll) {
             if (num_tries <= 10) {
@@ -760,10 +769,12 @@
           }
         }
       },
-      idx() {
+      idx(v) {
         if (this.visual) {
           this.isOver = false;
         }
+
+        this.currentIndex = v;
       },
       current(newVal){
         if (newVal.indexOf(this.url) === 0){
@@ -879,6 +890,12 @@
         if (view) {
           view.dirty = v;
           this.router.retrieveDirtyContainers();
+        }
+      },
+      isInit(v) {
+        if (!v) {
+          this.isLoaded = !this.load || this.loaded;
+          this.dirty = false;
         }
       }
     },
