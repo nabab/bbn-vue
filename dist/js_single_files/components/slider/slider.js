@@ -43,6 +43,29 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
  */
 (function(bbn){
   "use strict";
+  const orientations = {
+    left: {
+      shadow: '2px 0 20px 0',
+      size: 'width',
+      prop: 'top'
+    },
+    right: {
+      shadow: '-2px 0 20px 0',
+      size: 'width',
+      prop: 'top'
+    },
+    top: {
+      shadow: '2px 0 20px 0',
+      size: 'height',
+      prop: 'left'
+    },
+    bottom: {
+      shadow: '2px 0 20px 0',
+      size: 'height',
+      prop: 'left'
+    }
+  };
+
   Vue.component('bbn-slider', {
     /**
      * @mixin bbn.vue.basicComponent 
@@ -121,6 +144,11 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
          * @data {Number|Boolean} [false] transitionTimeout
          */
         transitionTimeout: false,
+        /**
+         * Internal setting for when showing shadow.
+         * @data {Boolean} showShadow
+         */
+         showShadow: this.visible
       };
     },
     computed: {
@@ -138,63 +166,25 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @returns {String}
        */
       currentStyle(){
-        let o = {};
-        switch (this.orientation) {
-          case 'left':
-            o['-webkit-box-shadow'] = '2px 0 20px 0 !important';
-            o['-moz-box-shadow'] = '2px 0 20px 0 !important';
-            o['box-shadow'] = '2px 0 20px 0 !important';
-            o.width = 'auto';
-            o.top = 0;
-            o.left = this.currentVisible ? 0 : -this.currentSize + 'px';
-            if (this.ready && !this.isResizing) {
-              o.transition = 'left 0.5s';
-            }
-            else {
-              o.opacity = 0;
-            }
-            break;
-          case 'right':
-            o['-webkit-box-shadow'] = '-2px 0 20px 0 !important';
-            o['-moz-box-shadow'] = '-2px 0 20px 0 !important';
-            o['box-shadow'] = '-2px 0 20px 0 !important';
-            o.width = 'auto';
-            o.top = 0;
-            o.right = this.currentVisible ? 0 : -this.currentSize + 'px';
-            if (this.ready && !this.isResizing) {
-              o.transition = 'right 0.5s';
-            }
-            else {
-              o.opacity = 0;
-            }
-            break;
-          case 'top':
-            o['-webkit-box-shadow'] = '0 2px 20px 0 !important';
-            o['-moz-box-shadow'] = '0 2px 20px 0 !important';
-            o['box-shadow'] = '0 2px 20px 0 !important';
-            o.left = 0;
-            o.top = this.currentVisible ? 0 : -this.currentSize + 'px';
-            if (this.ready && !this.isResizing) {
-              o.transition = 'top 0.5s';
-            }
-            else {
-              o.opacity = 0;
-            }
-            break;
-          case 'bottom':
-            o['-webkit-box-shadow'] = '0 -2px 20px 0 !important';
-            o['-moz-box-shadow'] = '0 -2px 20px 0 !important';
-            o['box-shadow'] = '0 -2px 20px 0 !important';
-            o.left = 0;
-            o.bottom = this.currentVisible ? 0 : -this.currentSize + 'px';
-            if (this.ready && !this.isResizing) {
-              o.transition = 'bottom 0.5s';
-            }
-            else {
-              o.opacity = 0;
-            }
-            break;
+        if (!orientations[this.orientation]) {
+          throw new Error(bbn._("Impossible to get an orientation for the slider"));
         }
+        let o = {};
+        let or = orientations[this.orientation];
+        if (this.showShadow) {
+          o['-webkit-box-shadow'] = o['-moz-box-shadow'] = o['box-shadow'] = or.shadow + ' !important';
+        }
+
+        o[or.size] = 'auto';
+        o[or.prop] = 0;
+        o[this.orientation] = this.currentVisible ? 0 : -this.currentSize + 'px';
+        if (this.ready && !this.isResizing) {
+          o.transition = this.orientation + ' 0.5s';
+        }
+        else {
+          o.opacity = 0;
+        }
+
         return o;
       }
     },
@@ -292,6 +282,19 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       },
       visible(v){
         this.currentVisible = v;
+      },
+      currentVisible(v) {
+        if (!v) {
+          this._shadowTimeout = setTimeout(() => {
+            this.showShadow = false;
+          }, 500)
+        }
+        else {
+          if (this._shadowTimeout) {
+            clearTimeout(this._shadowTimeout);
+          }
+          this.showShadow = true;
+        }
       }
     }
   });

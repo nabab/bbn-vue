@@ -212,7 +212,8 @@
               @click.stop.prevent="getRef('clipboard').toggle()"
               ref="clipboardButton"
               class="bbn-appui-clipboard-button bbn-right-space bbn-p bbn-rel">
-            <i class="nf nf-fa-clipboard bbn-m" tabindex="-1"/>
+            <i class="nf nf-fa-clipboard bbn-m"
+               tabindex="-1"/>
             <input class="bbn-invisible bbn-overlay bbn-p"
                   @keydown.space.enter.prevent="getRef('clipboard').toggle()"
                   @drop.prevent.stop="getRef('clipboard').copy($event); getRef('clipboard').show()">
@@ -1427,12 +1428,6 @@
   transition: all 0.25s;
   background-color: transparent;
   color: inherit;
-}
-.bbn-appui .bbn-appui-clipboard-button:hover,
-.bbn-appui .bbn-appui-clipboard-button:active,
-.bbn-appui .bbn-appui-clipboard-button:focus-within {
-  background-color: green;
-  color: white;
 }
 .bbn-appui .bbn-appui-clipboard {
   min-width: 25em;

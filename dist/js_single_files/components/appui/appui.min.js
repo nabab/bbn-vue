@@ -211,7 +211,8 @@
               @click.stop.prevent="getRef('clipboard').toggle()"
               ref="clipboardButton"
               class="bbn-appui-clipboard-button bbn-right-space bbn-p bbn-rel">
-            <i class="nf nf-fa-clipboard bbn-m" tabindex="-1"/>
+            <i class="nf nf-fa-clipboard bbn-m"
+               tabindex="-1"/>
             <input class="bbn-invisible bbn-overlay bbn-p"
                   @keydown.space.enter.prevent="getRef('clipboard').toggle()"
                   @drop.prevent.stop="getRef('clipboard').copy($event); getRef('clipboard').show()">

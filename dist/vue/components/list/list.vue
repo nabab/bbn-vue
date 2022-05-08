@@ -423,7 +423,7 @@
         if ( this.height ){
           return this.height + (bbn.fn.isNumber(this.height) ? 'px' : '')
         }
-        return this.currentHeight ? this.currentHeight + 'px' : '100%';
+        return this.currentHeight ? this.currentHeight + 'px' : 'auto';
       },
       /**
        * An object of css property to apply to the floater.

@@ -1,3 +1,6 @@
+.bbn-slideshow {
+  list-style-position: inside;
+}
 .bbn-slideshow .bbn-slideshow-count {
   top: 0;
   left: 0;

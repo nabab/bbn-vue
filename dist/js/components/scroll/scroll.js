@@ -364,9 +364,13 @@ document.head.insertAdjacentElement('beforeend', css);
         };
 
         if (this.isMeasuring) {
+          bbn.fn.log("IS MEASURING");
           cfg.width = '100%';
           cfg.height = '100%';
           cfg.visibility = 'hidden';
+        }
+        else {
+          bbn.fn.log("IS NOT MEASURING");
         }
         if (this.currentWidth) {
           cfg.width = bbn.fn.formatSize(this.currentWidth);
@@ -427,9 +431,6 @@ document.head.insertAdjacentElement('beforeend', css);
         }
         if ( this.isMeasuring || !this.scrollable ){
           return cfg;
-        }
-        if (this.hasScrollX && !this.hiddenX) {
-          cfg.paddingBottom = '1em';
         }
 
         cfg.width = (this.axis === 'x') || (this.axis === 'both') ? 'auto' : '100%';
@@ -812,7 +813,7 @@ document.head.insertAdjacentElement('beforeend', css);
       getNaturalDimensions(){
         this.isMeasuring = true;
         return new Promise((resolve, reject) => {
-          this.$nextTick().then(() => {
+          this.$nextTick(() => {
             let sc = this.find('bbn-scroll');
             //bbn.fn.log(sc ? "THERE IS A SCROLL" : "THERE IS NO SCROLL");
             if (this.scrollable) {
@@ -822,38 +823,31 @@ document.head.insertAdjacentElement('beforeend', css);
                   sc.getNaturalDimensions().then(d => {
                     this.naturalWidth = sc.naturalWidth;
                     this.naturalHeight = sc.naturalHeight;
-                    this.isMeasuring = false;
-                    resolve({w: this.naturalWidth, h: this.naturalHeight});
                   })
                 }
                 else{
                   this.naturalWidth = this.$el.offsetWidth;
                   this.naturalHeight = this.$el.offsetHeight;
-                  this.isMeasuring = false;
-                  resolve({w: this.naturalWidth, h: this.naturalHeight});
                 }
               }
               else{
                 this.naturalWidth = d.width;
                 this.naturalHeight = d.height;
-                this.isMeasuring = false;
-                resolve({w: this.naturalWidth, h: this.naturalHeight});
               }
             }
             else if (sc && (sc.$el.clientWidth === this.$el.clientWidth) && (sc.$el.clientHeight === this.$el.clientHeight)) {
               sc.getNaturalDimensions().then(d => {
                 this.naturalWidth = sc.naturalWidth;
                 this.naturalHeight = sc.naturalHeight;
-                this.isMeasuring = false;
-                resolve({w: this.naturalWidth, h: this.naturalHeight});
               })
             }
             else{
               this.naturalWidth = this.$el.offsetWidth;
               this.naturalHeight = this.$el.offsetHeight;
-              this.isMeasuring = false;
-              resolve({w: this.naturalWidth, h: this.naturalHeight});
             }
+
+            this.isMeasuring = false;
+            resolve({w: this.naturalWidth, h: this.naturalHeight});
           });
         });
       },

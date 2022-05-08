@@ -78,7 +78,6 @@ script.innerHTML = `<div :class="[
         <bbn-scroll :latency="latency"
                     ref="scroll"
                     :class="{'bbn-flex-fill': pageable}"
-                    v-if="ready"
                     @ready="scrollReady = true"
                     :scrollable="scrollable"
                     :axis="axis"
@@ -1680,9 +1679,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       },
       scrollReady(v) {
         if (v) {
-          setTimeout(() => {
-            this.realResize();
-          }, 50);
+          this.realResize();
         }
       },
       /**
@@ -1703,7 +1700,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       /**
        * @watch isOver
        */
-      isOver(v, oldV){
+      isOver(v) {
         if (this.autoHide && this.isResized && this.ready && !this.isResizing) {
           if (v && this.mouseLeaveTimeout) {
             clearTimeout(this.mouseLeaveTimeout);

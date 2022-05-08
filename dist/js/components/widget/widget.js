@@ -642,14 +642,16 @@ document.head.insertAdjacentElement('beforeend', css);
         }
         else {
           return new Promise(resolve => {
-            let items = this.items.slice();
-            if ( this.limit && 
-              ((items.length > this.currentStart) && (items.length > this.limit))
-            ){
-              items = items.splice(this.currentStart, this.limit); 
-            }
+            if (this.items !== undefined) {
+              let items = this.items.slice();
+              if ( this.limit && 
+                ((items.length > this.currentStart) && (items.length > this.limit))
+              ){
+                items = items.splice(this.currentStart, this.limit); 
+              }
 
-            this.$set(this, 'currentItems', items); 
+              this.currentItems = items; 
+            }
             return this.$nextTick(() => {
               resolve();
               this.isLoading = false;

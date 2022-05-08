@@ -2128,6 +2128,9 @@
               if ( this.focusable && this.focusable.focus ){
                 this.focusable.focus();
               }
+              else if (this.$el && this.$el.focus) {
+                this.$el.focus();
+              }
             }
             else if ( this.prevFocused && this.prevFocused.focus ){
               this.prevFocused.focus();
@@ -5181,7 +5184,7 @@
         isActiveResizer() {
           let ct = this.closest('bbn-container');
           if (ct) {
-            return ct.real ? ct.visible : ct.selected;
+            return ct.real ? ct.visible : (ct.currentIndex === ct.router.selected);
           }
   
           return true;
@@ -6959,8 +6962,8 @@
        * @method getPopup
        * @return {Object}
        */
-      getPopup(){
-        let popup = bbn.vue.getPopup(this);
+      getPopup() {
+        let popup = bbn.vue.getPopup(t);
         if (arguments.length && popup) {
           let cfg = arguments[0];
           let args = [];

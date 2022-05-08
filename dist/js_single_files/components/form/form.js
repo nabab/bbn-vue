@@ -13,7 +13,7 @@ script.innerHTML = `<form :action="action"
          'bbn-flex-fill': !window && isInit && scrollable || !!fullSize,
          'bbn-w-100': scrollable,
          'bbn-flex-height': !scrollable && hasFooter,
-         'bbn-overlay': !!window
+         'bbn-overlay': scrollable && !!window
        }">
     <component :is="scrollable ? 'bbn-scroll' : 'div'"
                :class="{'bbn-overlay': !!fullSize}"

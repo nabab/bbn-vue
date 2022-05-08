@@ -222,6 +222,9 @@ document.head.insertAdjacentElement('beforeend', css);
           d = obj;
         }
         if (d) {
+          if (d.url) {
+            return this.load(d);
+          }
           if (!d.uid) {
             d.uid = 'bbn-popup-' + bbn.fn.timestamp().toString() + '-' + bbn.fn.randomString(4, 6);
           }

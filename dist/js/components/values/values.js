@@ -25,7 +25,7 @@ script.innerHTML = `<div :class="[componentClass]"
        @click="remove(idx)"
        tabindex="0"
        @keyup.enter.space="remove(idx)"
-       title="_('Delete')"/>
+       :title="_('Delete')"/>
     <span class="bbn-left-space" v-text="v"/>
   </div>
   <bbn-floater v-if="ready && !isDisabled && !readonly && filteredData.length && currentInput.length"

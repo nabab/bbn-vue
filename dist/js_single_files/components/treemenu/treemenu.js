@@ -202,8 +202,8 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
 
         let obj = {
           url: node.data.link,
-          icon: node.icon,
-          text: node.text,
+          icon: node.data.icon,
+          text: node.data.text,
           id: node.data.id
         };
         return [{
