@@ -540,7 +540,9 @@
         searchIsActive: false,
         bigMessage: false,
         hasBigMessage: false,
-        searchOn: false
+        searchOn: false,
+        pressedKey: false,
+        pressedTimeout: false
       }
     },
     computed: {
@@ -953,6 +955,9 @@
         }, 500)
       },
       keydown(e) {
+        if (this.pressedKey) {
+          this.pressedKey = false;
+        }
         if (e.ctrlKey && !e.shiftKey && !e.altKey) {
           // Arrows do history
           if ([37, 39].includes(e.keyCode)) {
@@ -979,6 +984,15 @@
             idx--;
             this.getRef('router').activateIndex(idx);
           }
+        }
+        else if (!e.ctrlKey && !e.shiftKey && !e.altKey) {
+          this.pressedKey = e.key;
+        }
+      },
+      longPress(key) {
+        bbn.fn.log('longPress', key);
+        if (key === 'f') {
+          this.searchOn = true;
         }
       },
       searchSelect() {
@@ -1126,9 +1140,10 @@
         }
         bbn.vue.preloadBBN(preloaded);
 
-        window.onkeydown = e => {
-          this.keydown(e);
-        };
+        document.addEventListener('keydown', this.keydown);
+        document.addEventListener('keyup', () => {
+          this.pressedKey = false;
+        });
 
         this.$on('messageToChannel', data => {
           this.messageChannel(this.primaryChannel, data);
@@ -1257,6 +1272,15 @@
       this.$off('appui-notification');
     },
     watch: {
+      pressedKey(v) {
+        clearTimeout(this.pressedTimeout);
+        if (v) {
+          this.pressedTimeout = setTimeout(() => {
+            this.longPress(v);
+            this.pressedKey = false;
+          }, 500)
+        }
+      },
       observers: {
         deep: true,
         handler(){

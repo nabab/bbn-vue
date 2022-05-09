@@ -1143,6 +1143,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           if ( this.views.length ){
             let newIdx = false;
             bbn.fn.each(this.history, a => {
+              bbn.fn.log("HISTORY", a);
               let tmp = this.getIndex(a);
               if ( tmp !== false ){
                 newIdx = tmp;
@@ -1160,7 +1161,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
             }
 
             if (this.views[newIdx]) {
-              this.activateIndex(this.views[idx] ? idx : idx - 1);
+              this.activateIndex(newIdx);
             }
           }
           else {

@@ -357,28 +357,19 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         };
 
         if (this.isMeasuring) {
-          bbn.fn.log("IS MEASURING");
           cfg.width = '100%';
           cfg.height = '100%';
           cfg.visibility = 'hidden';
         }
-        else {
-          bbn.fn.log("IS NOT MEASURING");
-        }
+
         if (this.currentWidth) {
           cfg.width = bbn.fn.formatSize(this.currentWidth);
         }
+
         if (this.currentHeight) {
           cfg.height = bbn.fn.formatSize(this.currentHeight);
         }
-        /*
-        if ( this.currentWidth ){
-          cfg.width = (this.currentWidth < this.lastKnownCtWidth ? this.currentWidth : this.lastKnownCtWidth) + 'px';
-        }
-        if ( this.currentHeight ){
-          cfg.height = (this.currentHeight < this.lastKnownCtHeight ? this.currentHeight : this.lastKnownCtHeight) + 'px';
-        }
-        */
+
         return cfg;
       },
       containerClass() {

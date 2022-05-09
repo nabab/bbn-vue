@@ -6963,7 +6963,7 @@
        * @return {Object}
        */
       getPopup() {
-        let popup = bbn.vue.getPopup(t);
+        let popup = bbn.vue.getPopup(this);
         if (arguments.length && popup) {
           let cfg = arguments[0];
           let args = [];
