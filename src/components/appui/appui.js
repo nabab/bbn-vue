@@ -676,8 +676,16 @@
       },
       longPress(key) {
         bbn.fn.log('longPress', key);
-        if (key === 'f') {
-          this.searchOn = true;
+        switch (key) {
+          case 'f':
+            this.searchOn = true;
+            break;
+          case 'g':
+            let loadbar = this.getRef('loading');
+            if (loadbar) {
+              loadbar.show();
+            }
+            break;
         }
       },
       searchSelect() {
