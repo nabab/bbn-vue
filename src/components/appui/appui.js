@@ -675,7 +675,6 @@
         }
       },
       longPress(key) {
-        bbn.fn.log('longPress', key);
         switch (key) {
           case 'f':
             this.searchOn = true;
@@ -684,6 +683,12 @@
             let loadbar = this.getRef('loading');
             if (loadbar) {
               loadbar.show();
+            }
+            break;
+          case 'c':
+            let clipboard = this.getRef('clipboard');
+            if (clipboard) {
+              clipboard.show();
             }
             break;
         }
