@@ -232,10 +232,11 @@
          style="overflow: auto;"
          ref="visualListContainer">
       <div :class="{
-                   'bbn-100': !isVisual || (scrollContent && !visualShowAll),
-                   'bbn-w-100': isVisual && !scrollContent || visualShowAll,
-                   'bbn-router-visual': true
-                   }"
+                  'bbn-overlay': !isVisual && scrollContent,
+                  'bbn-100': isVisual && scrollContent && !visualShowAll,
+                  'bbn-w-100': isVisual && !scrollContent || visualShowAll,
+                  'bbn-router-visual': true
+                 }"
            :style="isVisual ? visualStyle : {}"
            ref="visualRouter"
            @keydown.esc="onEscape"
@@ -253,12 +254,12 @@
         <template v-for="a in isVisual ? visualList : views">
           <bbn-container v-if="(isVisual ? !a.view.real : !a.real) && !component"
                          :key="isVisual ? a.view.uid : a.uid"
-                         v-show="!isVisual || (a.visible && (!visualShowAll || !a.view.selected))"
+                         v-show="(!isVisual && a.selected) || (isVisual && a.visible && (!visualShowAll || !a.view.selected))"
                          :visual="isVisual"
                          v-bind="isVisual ? a.view : a"/>
           <bbn-container v-else-if="component && componentSource && componentUrl"
                          :source="componentSource"
-                         v-show="isVisual ? a.visible : true"
+                         v-show="isVisual ? a.visible : a.selected"
                          :visual="isVisual"
                          :component="component"
                          :key="componentSource[componentUrl]"
