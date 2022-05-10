@@ -553,7 +553,8 @@
         if ( this.master ){
           return this;
         }
-        return bbn.fn.getRow(this.parents, {master: true})
+
+        return bbn.fn.getRow(this.parents, {master: true}) || this;
       },
       /**
        * Returns the bbn-tabs component of this router.
