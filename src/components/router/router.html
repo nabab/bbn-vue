@@ -221,25 +221,26 @@
       </div>
     </div>
     <!-- END OF TABS -->
-    <!-- START OF CONTENT FOR VISUALNAV -->
-    <div v-if="ready && isVisual"
+    <!-- START OF CONTENT -->
+    <div v-if="ready"
          :class="{
-                 'bbn-router-scroller': true,
-                 'bbn-overlay': scrollContent,
-                 'bbn-w-100': !scrollContent
+                 'bbn-router-scroller': isVisual,
+                 'bbn-overlay': isVisual && scrollContent,
+                 'bbn-flex-fill': !isVisual && !!nav && scrollContent,
+                 'bbn-w-100': !isVisual && !scrollContent
                  }"
          style="overflow: auto;"
          ref="visualListContainer">
       <div :class="{
-                   'bbn-100': scrollContent && !visualShowAll,
-                   'bbn-w-100': !scrollContent || visualShowAll,
+                   'bbn-100': !isVisual || (scrollContent && !visualShowAll),
+                   'bbn-w-100': isVisual && !scrollContent || visualShowAll,
                    'bbn-router-visual': true
                    }"
-           :style="visualStyle"
+           :style="isVisual ? visualStyle : {}"
            ref="visualRouter"
            @keydown.esc="onEscape"
-           :tabindex="visualShowAll ? 0 : -1">
-        <div v-if="(selected !== null) && (views.length > numVisuals)"
+           :tabindex="isVisual && visualShowAll ? 0 : -1">
+        <div v-if="isVisual && (selected !== null) && (views.length > numVisuals)"
              class="bbn-bg-black bbn-white bbn-p"
              @click="visualShowAll = !visualShowAll">
           <div class="bbn-100 bbn-middle">
@@ -249,42 +250,21 @@
           </div>
         </div>
         <slot></slot>
-        <template v-for="a in visualList">
-          <bbn-container v-if="!a.view.real && !component"
-                         :key="a.view.uid"
-                         v-show="a.visible && (!visualShowAll || !a.view.selected)"
-                         :visual="true"
-                         v-bind="a.view"/>
+        <template v-for="a in isVisual ? visualList : views">
+          <bbn-container v-if="(isVisual ? !a.view.real : !a.real) && !component"
+                         :key="isVisual ? a.view.uid : a.uid"
+                         v-show="!isVisual || (a.visible && (!visualShowAll || !a.view.selected))"
+                         :visual="isVisual"
+                         v-bind="isVisual ? a.view : a"/>
           <bbn-container v-else-if="component && componentSource && componentUrl"
                          :source="componentSource"
-                         v-show="a.visible"
-                         :visual="true"
+                         v-show="isVisual ? a.visible : true"
+                         :visual="isVisual"
                          :component="component"
                          :key="componentSource[componentUrl]"
                          :url="componentSource[componentUrl]"/>
         </template>
       </div>
-    </div>
-    <!-- END OF CONTENT FOR VISUALNAV -->
-    <!-- START OF CONTENT -->
-    <div :class="{
-                 'bbn-flex-fill': !!nav && scrollContent,
-                 'bbn-overlay': !nav && scrollContent,
-                 'bbn-w-100':  !scrollContent
-                 }"
-         v-else-if="ready">
-      <slot></slot>
-      <bbn-container v-for="view in views"
-                     v-if="!view.real && !component"
-                     :key="view.uid"
-                     :visual="false"
-                     v-bind="view"/>
-      <bbn-container v-if="component && componentSource && componentUrl"
-                     :source="componentSource"
-                     :component="component"
-                     :visual="false"
-                     :key="componentSource[componentUrl]"
-                     :url="componentSource[componentUrl]"/>
     </div>
     <!-- END OF CONTENT -->
     <bbn-loader v-else/>
