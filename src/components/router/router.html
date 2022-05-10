@@ -254,7 +254,7 @@
         <template v-for="a in isVisual ? visualList : views">
           <bbn-container v-if="(isVisual ? !a.view.real : !a.real) && !component"
                          :key="isVisual ? a.view.uid : a.uid"
-                         v-show="(!isVisual && a.selected) || (isVisual && a.visible && (!visualShowAll || !a.view.selected))"
+                         v-show="(!isVisual && (a.idx === selected)) || (isVisual && a.visible && (!visualShowAll || !a.view.selected))"
                          :visual="isVisual"
                          v-bind="isVisual ? a.view : a"/>
           <bbn-container v-else-if="component && componentSource && componentUrl"
