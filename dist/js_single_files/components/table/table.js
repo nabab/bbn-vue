@@ -332,7 +332,7 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                       'bbn-table-edit-buttons': !!col.buttons && isEdited(d.data, col, i),
                       'bbn-table-buttons': !!col.buttons
                     }]"
-                    :tabindex="0"
+                    :tabindex="editable && (col.editable !== false) ? 0 : -1"
                     @focusin="focusin(i, $event)"
                     @click="clickCell(col, index, d.index)"
                     @dblclick="dbclickCell(col, index, d.index, d.data, i)"

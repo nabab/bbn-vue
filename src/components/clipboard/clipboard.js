@@ -384,29 +384,29 @@
           let item = this.getItem(this.uid);
           if (item) {
             e.clipboardData.setData('text/plain', this.mode === 'html' ? item.content : item.text);
-            bbn.fn.log("ITEM IS FOUND");
+            //bbn.fn.log("ITEM IS FOUND");
             let v;
             switch (this.mode) {
               case 'html':
                 e.clipboardData.setData('text/html', item.content);
                 break;
               case 'image':
-                bbn.fn.log("IMAGE!", item.type);
+                //bbn.fn.log("IMAGE!", item.type);
                 if (item.file) {
                   e.clipboardData.setData(item.type, item.file);
                   e.clipboardData.setData('text/html', '<img src="data:' + item.type + ';base64, ' + btoa(item.file) + '" alt="' + item.text + '">');
                 }
                 break;
               case 'file':
-                bbn.fn.log(this.file);
+                //bbn.fn.log(this.file);
                 if (this.file) {
                   e.clipboardData.setData(item.type, this.file);
                 }
                 break;
             }
-            bbn.fn.log("SETTING " + item.text);
-            bbn.fn.log(e.clipboardData.items, e.clipboardData.items[0], e.clipboardData.items.length);
-            e.preventDefault();
+            //bbn.fn.log("SETTING " + item.text);
+            //bbn.fn.log(e.clipboardData.items, e.clipboardData.items[0], e.clipboardData.items.length);
+            //e.preventDefault();
             /*
             bbn.fn.each(e.clipboardData.items, item => {
               bbn.fn.log("ITEM FROM THE CLIPBOARD OFFICIAL", item);

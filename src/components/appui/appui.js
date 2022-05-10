@@ -670,11 +670,37 @@
             this.getRef('router').activateIndex(idx);
           }
         }
-        else if (!e.ctrlKey && !e.shiftKey && !e.altKey) {
+        else if (!e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
           this.pressedKey = e.key;
         }
       },
       longPress(key) {
+        if (bbn.fn.isNumber(key)) {
+          let router = this.getRef('router');
+          if (key === '0') {
+            if (router.isVisual) {
+              router.visualShowAll = !router.visualShowAll;
+            }
+            return
+          }
+
+          let idx = parseInt(key);
+          if (router.isVisual) {
+            if (router.visualList[idx]) {
+              idx = router.visualList[idx].view.idx
+              this.getRef('router').activateIndex(idx);
+            }
+          }
+          else {
+            idx--;
+            if (router.isValidIndex(idx)) {
+              this.getRef('router').activateIndex(idx);
+            }
+          }
+          return;
+        }
+
+        bbn.fn.log(key);
         switch (key) {
           case 'f':
             this.searchOn = true;
@@ -690,6 +716,18 @@
             if (clipboard) {
               clipboard.show();
             }
+            break;
+          case 'm':
+            let menu = this.getRef('slider');
+            if (menu) {
+              menu.show();
+            }
+            break;
+          case 'ArrowLeft':
+            history.back();
+            break;
+          case 'ArrowRight':
+            history.forward();
             break;
         }
       },

@@ -836,7 +836,6 @@
           if ( this.views.length ){
             let newIdx = false;
             bbn.fn.each(this.history, a => {
-              bbn.fn.log("HISTORY", a);
               let tmp = this.getIndex(a);
               if ( tmp !== false ){
                 newIdx = tmp;
@@ -1833,7 +1832,7 @@
         if ( this.parent ){
           let containers = this.ancestors('bbn-container');
           url = bbn.fn.substr(this.getFullBaseURL(), this.router.baseURL.length) + url;
-          bbn.fn.log("CALL ROOT ROUTER WITH URL " + url);
+          //bbn.fn.log("CALL ROOT ROUTER WITH URL " + url);
           // The URL of the last bbn-container as index of the root router
           this.router.realRoute(url, containers[containers.length - 1].url, true);
         }
@@ -2186,6 +2185,17 @@
         });
       },
       /**
+       * @method onEscape
+       * @param {Event} e
+       */
+       onEscape(e) {
+        if (this.isVisual && this.visualShowAll) {
+          this.visualShowAll = false;
+          e.stopPropagation();
+          e.preventDefault();
+        }
+      },
+      /**
        * @method getMenuFn
        * @param {Number} idx
        * @fires getSubRouter
@@ -2301,8 +2311,9 @@
               container.fullScreen = true;
             }
           });
-
         }
+
+
 
         if ( tmp && tmp.length ){
           bbn.fn.each(tmp, (a, i) => {
@@ -2318,6 +2329,61 @@
             action: () => {
               this.$set(this.views[idx], 'notext', !this.views[idx].notext);
             }
+          });
+        }
+
+        if (container) {
+          items.push({
+            text: bbn._("Screenshot"),
+            icon: "nf nf-mdi-image_album",
+            key: "screenshot",
+            items: [
+              {
+                text: bbn._("Download"),
+                key: "screenshot_dl",
+                icon: "nf nf-mdi-arrow_expand_all",
+                action: () => {
+                  container.takeScreenshot().then(canvas => {
+                    if (canvas) {
+                      bbn.fn.downloadContent(
+                        bbn.fn.replaceAll('/', '-', container.getFullCurrentURL() + '_' + bbn.fn.dateSQL(undefined, true) + '.png'),
+                        canvas
+                      )
+                    }
+                  });
+                }
+              }, {
+                text: bbn._("Copy"),
+                key: "screenshot_copy",
+                icon: "nf nf-mdi-image_multiple",
+                action: () => {
+                  container.takeScreenshot(0.5).then(canvas => {
+                    if (canvas) {
+                      canvas.toBlob(blob => {
+                        bbn.fn.copy(blob).then(() => {
+                          appui.success();
+                        })
+                      });
+                    }
+                  });
+                }
+              }, {
+                text: bbn._("Copy full size"),
+                key: "screenshot_copy",
+                icon: "nf nf-mdi-image_multiple",
+                action: () => {
+                  container.takeScreenshot(1).then(canvas => {
+                    if (canvas) {
+                      canvas.toBlob(blob => {
+                        bbn.fn.copy(blob).then(() => {
+                          appui.success();
+                        })
+                      });
+                    }
+                  });
+                }
+              }
+            ]
           });
         }
 
@@ -3243,6 +3309,11 @@
       }
     },
     watch: {
+      visualShowAll(v) {
+        if (v && this.isVisual) {
+          this.getRef('visualRouter').focus();
+        }
+      },
       selected(idx) {
         if (this.views[idx]) {
           //bbn.fn.log("In selected watcher " + idx, bbn.fn.filter(this.views, {selected: true}));

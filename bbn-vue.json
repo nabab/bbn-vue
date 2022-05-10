@@ -5,7 +5,7 @@
         "items": [
             {
                 "text": "appui",
-                "lastmod": 1652055685,
+                "lastmod": 1652138398,
                 "url": "bbn-vue\/component\/appui\/overview",
                 "props": [
                     {
@@ -1734,7 +1734,7 @@
             },
             {
                 "text": "clipboard",
-                "lastmod": 1644673385,
+                "lastmod": 1652137855,
                 "url": "bbn-vue\/component\/clipboard\/overview",
                 "props": [
                     {
@@ -2531,7 +2531,7 @@
             },
             {
                 "text": "container",
-                "lastmod": 1652016484,
+                "lastmod": 1652141313,
                 "url": "bbn-vue\/component\/container\/overview",
                 "props": [
                     {
@@ -5797,7 +5797,7 @@
             },
             {
                 "text": "loadbar",
-                "lastmod": 1650592625,
+                "lastmod": 1652093981,
                 "url": "bbn-vue\/component\/loadbar\/overview",
                 "props": [
                     {
@@ -5816,6 +5816,21 @@
                         "text": "cancel",
                         "desc": "Aborts the selected request\n",
                         "url": "bbn-vue\/component\/loadbar\/doc\/methods#cancel"
+                    },
+                    {
+                        "text": "go",
+                        "desc": "Opens the given link\n",
+                        "url": "bbn-vue\/component\/loadbar\/doc\/methods#go"
+                    },
+                    {
+                        "text": "show",
+                        "desc": "Shows the information panel\n",
+                        "url": "bbn-vue\/component\/loadbar\/doc\/methods#show"
+                    },
+                    {
+                        "text": "hide",
+                        "desc": "Hides the information panel\n",
+                        "url": "bbn-vue\/component\/loadbar\/doc\/methods#hide"
                     }
                 ],
                 "mixins": [
@@ -7494,7 +7509,7 @@
             },
             {
                 "text": "router",
-                "lastmod": 1652051370,
+                "lastmod": 1652139369,
                 "url": "bbn-vue\/component\/router\/overview",
                 "props": [
                     {
@@ -7860,6 +7875,11 @@
                         "url": "bbn-vue\/component\/router\/doc\/methods#retrieveDirtyContainers"
                     },
                     {
+                        "text": "onEscape",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/router\/doc\/methods#onEscape"
+                    },
+                    {
                         "text": "getMenuFn",
                         "desc": "",
                         "url": "bbn-vue\/component\/router\/doc\/methods#getMenuFn"
@@ -8060,7 +8080,7 @@
             },
             {
                 "text": "rte",
-                "lastmod": 1651785832,
+                "lastmod": 1652148342,
                 "url": "bbn-vue\/component\/rte\/overview",
                 "props": [
                     {
@@ -8684,7 +8704,7 @@
             },
             {
                 "text": "slider",
-                "lastmod": 1651926065,
+                "lastmod": 1652136982,
                 "url": "bbn-vue\/component\/slider\/overview",
                 "props": [
                     {
@@ -9499,7 +9519,7 @@
             },
             {
                 "text": "table",
-                "lastmod": 1651483219,
+                "lastmod": 1652099121,
                 "url": "bbn-vue\/component\/table\/overview",
                 "props": [
                     {

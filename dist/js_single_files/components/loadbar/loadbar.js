@@ -260,10 +260,29 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         });
         this.data = tmp;
       },
-      go(){
+      /**
+       * Opens the given link
+       * @method go
+       */
+       go(){
         if (this.link) {
           bbn.fn.link(this.link);
+          this.hide();
         }
+      },
+      /**
+       * Shows the information panel
+       * @method show
+       */
+      show() {
+        this.info = true;
+      },
+      /**
+       * Hides the information panel
+       * @method hide
+       */
+      hide() {
+        this.info = false;
       }
     },
     /**

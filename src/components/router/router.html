@@ -235,7 +235,10 @@
                    'bbn-w-100': !scrollContent || visualShowAll,
                    'bbn-router-visual': true
                    }"
-           :style="visualStyle">
+           :style="visualStyle"
+           ref="visualRouter"
+           @keydown.esc="onEscape"
+           :tabindex="visualShowAll ? 0 : -1">
         <div v-if="(selected !== null) && (views.length > numVisuals)"
              class="bbn-bg-black bbn-white bbn-p"
              @click="visualShowAll = !visualShowAll">

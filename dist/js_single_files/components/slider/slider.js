@@ -9,6 +9,7 @@ script.innerHTML = `<div :class="['bbn-abs', 'bbn-bordered', 'bbn-background', c
 }]"
      @mouseup.stop
      @mousedown.stop
+     @keydown.escape="hide"
      :style="currentStyle"
 >
   <slot></slot>

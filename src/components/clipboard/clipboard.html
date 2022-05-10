@@ -14,6 +14,8 @@
       <bbn-input :placeholder="_('Search clipboard')"
                  :button-right="(search === '') ? 'nf nf-fa-search' : 'nf nf-fa-close'"
                  v-model="search"
+                 ref="search"
+                 :focused="true"
                  @clickRightButton="unsearch"/>
     </div>
     <div class="bbn-w-100 bbn-p bbn-hpadded"

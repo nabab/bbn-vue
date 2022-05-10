@@ -7,6 +7,7 @@
 }]"
      @mouseup.stop
      @mousedown.stop
+     @keydown.escape="hide"
      :style="currentStyle"
 >
   <slot></slot>
