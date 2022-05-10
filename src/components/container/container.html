@@ -4,7 +4,7 @@
 }]"
      @subready.stop
      :style="visual ? visualStyle : {}"
-     v-show="(!router.isVisual && (router.selected === currentIndex)) || (router.isVisual && a.visible && (!router.visualShowAll || (router.selected !== currentIndex)))">
+     v-show="(!router.isVisual && (router.selected === currentIndex)) || (router.isVisual && isVisible && (!router.visualShowAll || (router.selected !== currentIndex)))">
   <div :class="{
     'bbn-100': router.scrollContent,
     'bbn-container-full-screen': fullScreen,
