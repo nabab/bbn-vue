@@ -136,7 +136,6 @@
     data(){
       return {
         isFocused: false,
-        search: '',
         style: this.source && this.source.style ? this.source.style : {},
         isOpened: true,
         currentWidth: this.minWidth,

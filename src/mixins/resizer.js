@@ -68,7 +68,7 @@
         isActiveResizer() {
           let ct = this.closest('bbn-container');
           if (ct) {
-            return ct.real ? ct.visible : (ct.currentIndex === ct.router.selected);
+            return ct.isVisible;
           }
   
           return true;
@@ -186,7 +186,7 @@
           // Creating the callback function which will be used in the timeout in the listener
           this.onParentResizerEmit = () => {
             let ct = this.closest('bbn-container');
-            if (ct && !ct.visible) {
+            if (ct && !ct.isVisible) {
               return;
             }
 
