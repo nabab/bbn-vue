@@ -623,6 +623,12 @@
           }
         }
       },
+      filteredTotal(v, ov) {
+        if (!ov) {
+          this.$nextTick(this.resetOverIdx);
+        }
+
+      }
       /*
       selected(){
         this.updateData();

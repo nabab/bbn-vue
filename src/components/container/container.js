@@ -629,7 +629,9 @@
             img = await this.takeScreenshot(scale, 5000);
           }
           if (!img) {
-            throw new Error(bbn._("Impossible to take the screenshot of " + this.getFullCurrentURL()));
+            bbn.fn.log(bbn._("Impossible to take the screenshot of") + ' ' + this.getFullCurrentURL());
+            return;
+            //throw new Error(bbn._("Impossible to take the screenshot of " + this.getFullCurrentURL()));
           }
           this.thumbnail = img.src;
           // This is in fact an insert/update

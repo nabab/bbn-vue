@@ -1085,9 +1085,6 @@
         if (this.isVisual) {
           cp.$on('view', () => {
             this.visualShowAll = false;
-            if (this.activeContainer && (this.activeContainer.url !== cp.url)) {
-              this.activeContainer.hide();
-            }
           })
         }
         let idx = this.search(cp.url);
@@ -1392,17 +1389,8 @@
         //bbn.fn.log("ACTIVATING " + url + " AND SENDING FOLLOWING CONTAINER:", container);
         if ( !this.activeContainer || (container && (this.activeContainer !== container)) ){
           this.activeContainer = null;
-          bbn.fn.each(this.$children, cp => {
-            if ( bbn.fn.isFunction(cp.hide) ){
-              if ( (cp !== container) ){
-                cp.hide();
-              }
-              else{
-                cp.setCurrent(url);
-                this.activeContainer = cp;
-              }
-            }
-          });
+          container.setCurrent(url);
+          this.activeContainer = container;
           if ( this.activeContainer ){
             this.activeContainer.show();
             if (this.scrollable && this.nav && !this.breadcrumb) {
@@ -1432,7 +1420,7 @@
        * @param {Boolean} replace
        * @fires getFullBaseURL
        */
-      changeURL(url, title, replace){
+      changeURL(url, title, replace) {
         if (!bbn.fn.isString(url) ){
           throw Error(bbn._('The component bbn-container must have a valid URL defined'));
         }
