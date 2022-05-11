@@ -475,13 +475,35 @@
         isBreadcrumb: this.breadcrumb,
         /**
          * itsMaster.isBreadcrumb watcher.
-         * @data breadcrumbWatcher
+         * @data {Boolean} breadcrumbWatcher
          */
         breadcrumbWatcher: false,
+        /**
+         * List of breadcrumbs
+         * @data {Array} breadcrumbsList
+         */
         breadcrumbsList: [],
+        /**
+         * If true and visual will show all the containers as icons.
+         * Starts at true for better updating when displays changes
+         * @data {Boolean} visualShowAll
+         */
         visualShowAll: false,
+        /**
+         * In visual mode the side on which the thumbnails are shown.
+         * If auto (default) the bar will be top if H > W, left otherwise
+         * @data {String} ['auto'] visualOrientation
+         */
         visualOrientation: this.orientation !== 'auto' ? this.orientation : null,
+        /**
+         * If true the auto orientation won't be taken into account.
+         * @data {Boolean} lockedOrientation
+         */
         lockedOrientation: false,
+        /**
+         * If true visual mode is used for nav (instead of tabs or breadcrumbs)
+         * @data {Boolean} visual
+         */
         isVisual: this.visual
       };
     },
@@ -3066,7 +3088,7 @@
        * @return {Object}
        */
        visualStyleContainer(ct) {
-        if (!ct.visible || this.visualShowAll) {
+        if (!ct.isVisible || this.visualShowAll) {
           return {zoom: 0.1};
         }
 
@@ -3282,7 +3304,7 @@
         ct.$on('unview', () => {
           this.parent.unregisterBreadcrumb(this);
         });
-        if (ct.visible) {
+        if (ct.isVisible) {
           this.parent.registerBreadcrumb(this);
         }
       }
@@ -3413,7 +3435,7 @@
        * @watch isVisual
        * @fires setConfig
        */
-       isVisual() {
+       isVisual(v) {
         this.$nextTick(() => {
           this.setConfig();
         })

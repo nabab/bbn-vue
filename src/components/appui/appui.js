@@ -184,6 +184,8 @@
       },
     },
     data(){
+      let isMobile = bbn.fn.isMobile();
+      let isTablet = bbn.fn.isTabletDevice();
       return {
         isFocused: false,
         intervalBugChrome: null,
@@ -227,7 +229,11 @@
         hasBigMessage: false,
         searchOn: false,
         pressedKey: false,
-        pressedTimeout: false
+        pressedTimeout: false,
+        isMobile: isMobile,
+        isTablet: isTablet,
+        isTouch: isMobile || isTablet,
+        isDesktop: !isTablet && !isMobile
       }
     },
     computed: {
@@ -643,34 +649,12 @@
         if (this.pressedKey) {
           this.pressedKey = false;
         }
-        if (e.ctrlKey && !e.shiftKey && !e.altKey) {
-          // Arrows do history
-          if ([37, 39].includes(e.keyCode)) {
-            if (!bbn.env.focused
-              || (!['input', 'textarea', 'select'].includes(bbn.env.focused.tagName.toLowerCase()))
-            ) {
-              e.preventDefault();
-              e.stopPropagation();
-              if (e.keyCode === 37) {
-                history.back();
-              }
-              else {
-                history.forward();
-              }
-            }
+        if (!e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey && !this.isTouch) {
+          let tag = e.target.tagName;
+          if ((tag === 'INPUT') || (tag === 'TEXTAREA') || (tag === 'SELECT') || ((tag === 'DIV') && e.target.isContentEditable)) {
+            return;
           }
-          else if (!this.single
-            && bbn.fn.isNumber(e.key)
-            && (e.key !== '0')
-          ) {
-            e.preventDefault();
-            e.stopPropagation();
-            let idx = parseInt(e.key);
-            idx--;
-            this.getRef('router').activateIndex(idx);
-          }
-        }
-        else if (!e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
+
           this.pressedKey = e.key;
         }
       },

@@ -4,7 +4,7 @@
 }]"
      @subready.stop
      :style="visual ? visualStyle : {}"
-     v-show="(!router.isVisual && (router.selected === currentIndex)) || (router.isVisual && isVisible && (!router.visualShowAll || (router.selected !== currentIndex)))">
+     v-show="(!router.isVisual && (router.selected === currentIndex)) || (router.isVisual && isVisualVisible && (!router.visualShowAll || (router.selected !== currentIndex)))">
   <div :class="{
     'bbn-100': router.scrollContent,
     'bbn-container-full-screen': fullScreen,
@@ -18,19 +18,19 @@
         'bbn-flex-height': (visual || fullScreen) && router.scrollContent,
         'bbn-w-100': visual || !router.scrollContent
       }"
-          v-show="visible || visual">
+          v-show="isVisible || router.isVisual">
         <!-- The header -->
         <div v-if="visual || fullScreen"
-            :class="'bbn-transition-bcolor bbn-b bbn-vspadded bbn-flex-width ' + (visible ? ' bbn-m' : '')"
+            :class="'bbn-transition-bcolor bbn-b bbn-vspadded bbn-flex-width ' + (isVisible ? ' bbn-m' : '')"
             :style="{
               paddingLeft: '0.5em',
               paddingRight: '0.5em',
-              fontSize: visible && !router.visualShowAll ? null : '10em',
+              fontSize: isVisible && !router.visualShowAll ? null : '10em',
               backgroundColor: bcolor || router.bcolor,
               color: fcolor || router.fcolor
             }">
           <div class="bbn-flex-fill bbn-vmiddle">
-            <bbn-context v-if="visible"
+            <bbn-context v-if="isVisible"
                         class="bbn-right-sspace bbn-lg bbn-p"
                         :floater-title="_('Container menu')"
                         tag="span"
@@ -45,13 +45,13 @@
                   style="overflow: hidden"/>
           </div>
           <!-- Icon for restoring size when in full screen mode -->
-          <div v-if="visible && fullScreen"
+          <div v-if="isVisible && fullScreen"
               class="bbn-block bbn-p bbn-vmiddle bbn-h-100"
               @click="fullScreen = false">
             <i class="nf nf-mdi-arrow_collapse bbn-lg"/>
           </div>
           <!-- Icon for closing  -->
-          <div v-else-if="visible && !static && !pinned && !router.visualShowAll"
+          <div v-else-if="isVisible && !static && !pinned && !router.visualShowAll"
               class="bbn-block bbn-p bbn-vmiddle bbn-h-100"
               @click="close">
             <i class="nf nf-fa-times bbn-lg"/>
@@ -63,12 +63,12 @@
           'bbn-overlay': !fullScreen && !visual && router.scrollContent,
           'bbn-flex-fill': (fullScreen || visual) && router.scrollContent,
           'bbn-w-100': !router.scrollContent,
-          'bbn-container-visible': visible
+          'bbn-container-visible': isVisible
         }"
             ref="canvasSource">
           <!-- This is shown when it's ready -->
-          <bbn-scroll v-if="isLoaded && (visible || ((real || cached) && ready) || visual)"
-                      v-show="ready && visible || (visual && !thumbnail)"
+          <bbn-scroll v-if="isLoaded && (isVisible || ((real || cached) && ready) || router.isVisual)"
+                      v-show="ready && isVisible || (visual && !thumbnail)"
                       ref="scroll"
                       @ready="init"
                       :scrollable="scrollable && router.scrollContent"
@@ -101,7 +101,7 @@
                       v-html="css"/>
           </bbn-scroll>
           <!-- If loading showing loader -->
-          <div v-else-if="visible && errorStatus"
+          <div v-else-if="isVisible && errorStatus"
                class="bbn-overlay bbn-middle bbn-lg">
             <div class="bbn-lpadded bbn-state-error bbn-block bbn-nowrap">
               <h1 v-text="errorStatus.status"/>
@@ -117,9 +117,9 @@
             </div>
           </div>
           <!-- If loading showing loader -->
-          <bbn-loader v-else-if="visible && !isLoaded"/>
+          <bbn-loader v-else-if="isVisible && !isLoaded"/>
           <!-- Thumbnail image -->
-          <div v-if="!visible && visual && thumbnail"
+          <div v-if="!isVisible && visual && thumbnail"
               style="overflow: hidden"
               class="bbn-overlay">
             <img :src="thumbnail"
@@ -128,17 +128,17 @@
           <!-- The container's popup, from each floater will come -->
           <bbn-popup ref="popup"
                     :source="popups"
-                    v-if="!hidden && ready && isLoaded && (visible || cached)"/>
+                    v-if="!hidden && ready && isLoaded && (isVisible || cached)"/>
         </div>
       </div>
     </transition>
     <!-- When in visual mode a layer prevents interaction with the content -->
-    <div v-if="visual && (!visible || router.visualShowAll)"
+    <div v-if="router.isVisual && (!isVisible || router.visualShowAll)"
         class="bbn-overlay"
         style="z-index: 12; background-color: black; opacity: 0.2;">
     </div>
     <!-- When in visual mode this is the interaction layer -->
-    <div v-if="visual && (!visible || router.visualShowAll)"
+    <div v-if="router.isVisual && (!isVisible || router.visualShowAll)"
         class="bbn-overlay"
         @click="show() && router.route(current, true)"
         @mouseenter="isOver = true"
@@ -148,7 +148,7 @@
         <div class="bbn-bottom-left bbn-w-100"
             v-show="isOver"
             :style="{
-                fontSize: visible && !router.visualShowAll ? null : '10em'
+                fontSize: isVisible && !router.visualShowAll ? null : '10em'
               }">
           <!-- Semi-transparent dark layer these buttons are not used -->
           <div class="bbn-bottom-left bbn-w-100 bbn-bg-black"

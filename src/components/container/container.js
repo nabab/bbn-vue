@@ -84,20 +84,10 @@
     data(){
       return {
         /**
-         * True if the container is visible.
-         * @data {Boolean} [false] isVisible
-         */
-        isVisible: this.loading,
-        /**
          * The router which the container belongs to if it exists.
          * @data [null] router
          */
         router: null,
-        /**
-         * True if the container shows.
-         * @data {Boolean} [false] visible
-         */
-        visible: this.loading,
         /**
          * True if the data changes and is unsaved.
          * @data {Boolan} [false] dirty
@@ -190,10 +180,31 @@
       };
     },
     computed: {
+      /**
+       * True if the container is shown.
+       * @data {Boolean} [false] isVisible
+       */
+      isVisible() {
+        if (this.router) {
+          return this.router.selected === this.currentIndex;
+        }
+
+        return false;
+      },
+      isVisualVisible() {
+        if (this.router.isVisual) {
+          let row = bbn.fn.getRow(this.router.visualList, 'view.idx', this.currentIndex);
+          if (row) {
+            return row.visible;
+          }
+        }
+
+        return false;
+      },
       visualStyle() {
         if (this.visual) {
           let r = this.router;
-          if ((r.views.length > 1) && (!this.visible || r.visualShowAll)) {
+          if ((r.views.length > 1) && (!this.isVisible || r.visualShowAll)) {
             return {
               zoom: 0.1,
               width: '100%',
@@ -283,19 +294,10 @@
        * @method show
        */
       show(){
-        this.visible = true;
+        this.router.selected = this.currentIndex;
         if (this.visual && this.router.visualShowAll) {
           this.router.visualShowAll = false;
         }
-        return true;
-      },
-      /**
-       * Hides the container.
-       * 
-       * @method hide
-       */
-      hide(){
-        this.visible = false
         return true;
       },
       close() {
@@ -493,7 +495,7 @@
         return false;
       },
       onResize(){
-        if (this.visible && this.ready) {
+        if (this.isVisible && this.ready) {
           bbn.vue.resizerComponent.methods.onResize.apply(this, arguments);
         }
       },
@@ -503,7 +505,7 @@
        * @method init
        */
       init() {
-        if (this.visible && (this.real || (this.isLoaded && !this.ready))) {
+        if (this.isVisible && (this.real || (this.isLoaded && !this.ready))) {
           let res;
           //bbn.fn.log("INITIATING CONTAINER " + this.url + " " + (this.script ? "(THERE IS A SCRIPT)" : ""));
 
@@ -655,7 +657,7 @@
               resolve(false);
             };
             if ((this.currentIndex === this.router.selected)
-                && this.visible
+                && this.isVisible
                 && window.html2canvas
                 && bbn.fn.isActiveInterface(600)
                 && !this.router.visualShowAll
@@ -787,17 +789,6 @@
       loading(v) {
         this.isLoading = v;
       },
-      selected(v) {
-        this.visible = v;
-        if (this.visual) {
-          if (v) {
-            this.setScreenshot()
-          }
-          else {
-            this.unsetScreenshot();
-          }
-        }
-      },
       idx(v) {
         if (this.visual) {
           this.isOver = false;
@@ -843,15 +834,21 @@
        * @param {Boolean} ov 
        * @fires selfEmit
        */
-      visible(nv, ov){
-        this.$nextTick(() => {
-          this.$emit(nv ? 'view' : 'unview', this);
+      isVisible(nv, ov){
+        if (this.visual) {
           if (nv) {
-            this.$nextTick(() => {
-              this.onResize();
-            });
+            this.setScreenshot()
           }
-        });
+          else {
+            this.unsetScreenshot();
+          }
+        }
+        this.$emit(nv ? 'view' : 'unview', this);
+        if (nv) {
+          this.$nextTick(() => {
+            this.onResize();
+          });
+        }
       },
       /**
        * @watch content
