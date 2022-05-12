@@ -621,7 +621,7 @@
         }
       },
       async saveScreenshot(scale = 0.1, timeout = 0) {
-        if (this.router.db) {
+        if (this.router.db && this.isVisible) {
           let img       = await this.takeScreenshot(scale, timeout, true);
           let num_tries = 0;
           while (!img && (num_tries < 5)) {
