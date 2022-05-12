@@ -4,7 +4,7 @@
   <div class="bbn-w-100"
 			 style="min-height: 100%">
 		<bbn-toolbar :source="currentButtons"
-								class="bbn-header bbn-radius-top bbn-no-border bbn-c"
+								class="bbn-rte-toolbar bbn-header bbn-radius-top bbn-no-border"
 								:button-space="false"/>
 		<div class="bbn-w-100"
 				:style="textboxStyle">
@@ -15,7 +15,7 @@
 						@input="rteOnInput"
 						@keydown="rteOnKeydown"
 						@keyup="updateButtonsState"
-						@click="updateButtonsState"/>
+						@click="rteOnClick"/>
 			<div class="bbn-hidden">
 				<slot></slot>
 			</div>
