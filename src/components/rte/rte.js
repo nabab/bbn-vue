@@ -65,15 +65,17 @@
       action: () => exec('strikeThrough')
     },
     fontcolor: {
-      //icon: 'nf nf-fa-strikethrough',
       text: bbn._('Font Color'),
       notext: true,
       active: false,
       component: {
         name: 'bbn-rte-fontcolor',
         template: `
-          <bbn-colorpicker @change="setColor"
-                           v-model="currentColor"/>
+          <span class="bbn-rte-fontcolor bbn-vmiddle bbn-bordered bbn-radius">
+            <i class="nf nf-mdi-format_color_text bbn-hxsspace"/>
+            <bbn-colorpicker @change="setColor"
+                             v-model="currentColor"/>
+          </span>
         `,
         data(){
           return {
@@ -91,15 +93,17 @@
       }
     },
     fontbgcolor: {
-      //icon: 'nf nf-fa-strikethrough',
       text: bbn._('Font Background Color'),
       notext: true,
       active: false,
       component: {
         name: 'bbn-rte-fontbgcolor',
         template: `
-          <bbn-colorpicker @change="setColor"
-                           v-model="currentColor"/>
+        <span class="bbn-rte-fontbgcolor bbn-vmiddle bbn-bordered bbn-radius">
+            <i class="nf nf-mdi-format_color_fill bbn-hxsspace bbn-lg"/>
+            <bbn-colorpicker @change="setColor"
+                             v-model="currentColor"/>
+          </span>
         `,
         data(){
           return {
@@ -285,7 +289,6 @@
        * @prop {Number|String} ['100%'] height
        */
       height: {
-        default: '100%',
         type: [String, Number]
       },
       /**
@@ -348,7 +351,13 @@
          * @data {String|Number} currentValue
          */
         currentValue: this.value,
+        /**
+         * @data {Vue} fontColorComponent
+         */
         fontColorComponent : null,
+        /**
+         * @data {Vue} fontBgColorComponent
+         */
         fontBgColorComponent : null
       }
     },
@@ -368,9 +377,18 @@
           }
         }
         return style;
+      },
+      currentHeight(){
+        if (!!this.height) {
+          return bbn.fn.isNumber(this.height) && (this.height > 0) ? this.height + 'px' : this.height;
+        }
+        return '';
       }
     },
     methods: {
+      /**
+       * @method setButtons
+       */
       setButtons() {
         this.currentButtons = setButtons(this.buttons);
       },
@@ -387,13 +405,23 @@
       },
       /**
        * @method rteOnKeydown
+       * @fires setColors
        */
       rteOnKeydown(event) {
+        if (event.key === 'Enter') {
+          event.stopPropagation();
+          event.stopImmediatePropagation();
+        }
         if (event.key === 'Enter' && queryCommandValue(formatBlock) === 'blockquote') {
           setTimeout(() => exec(formatBlock, `<${this.defaultParagraphSeparator}>`), 0);
         }
         this.setColors();
       },
+      /**
+       * @method rteOnClick
+       * @fires updateButtonsState
+       * @fires setColors
+       */
       rteOnClick(event){
         this.updateButtonsState();
         this.setColors();
@@ -413,12 +441,18 @@
         this.currentValue = this.content.innerHTML;
         this.emitInput(this.currentValue);
       },
+      /**
+       * @method setColors
+       */
       setColors(){
         if (this.fontColorComponent) {
-          this.fontColorComponent.currentColor = bbn.fn.rgb2hex(document.queryCommandValue('foreColor'));
+          this.fontColorComponent.currentColor = bbn.fn.rgb2hex(queryCommandValue('foreColor'));
         }
         if (this.fontBgColorComponent) {
-          this.fontBgColorComponent.currentColor = bbn.fn.rgb2hex(document.queryCommandValue('hiliteColor'));
+          this.fontBgColorComponent.currentColor = bbn.fn.rgb2hex(queryCommandValue('hiliteColor'));
+          if (!this.fontBgColorComponent.currentColor) {
+            this.fontBgColorComponent.currentColor = bbn.fn.rgb2hex(queryCommandValue('backColor'));
+          }
         }
       }
     },
