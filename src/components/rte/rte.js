@@ -38,71 +38,127 @@
   const defaultButtons = {
     bold: {
       icon: 'nf nf-fa-bold',
-      text: 'Bold',
+      text: bbn._('Bold'),
       notext: true,
       active: false,
       action: () => exec('bold')
     },
     italic: {
       icon: 'nf nf-fa-italic',
-      text: 'Italic',
+      text: bbn._('Italic'),
       notext: true,
       active: false,
       action: () => exec('italic')
     },
     underline: {
       icon: 'nf nf-fa-underline',
-      text: 'Underline',
+      text: bbn._('Underline'),
       notext: true,
       active: false,
       action: () => exec('underline')
     },
     strikethrough: {
       icon: 'nf nf-fa-strikethrough',
-      text: 'Strike-through',
+      text: bbn._('Strike-through'),
       notext: true,
       active: false,
       action: () => exec('strikeThrough')
     },
+    fontcolor: {
+      text: bbn._('Font Color'),
+      notext: true,
+      active: false,
+      component: {
+        name: 'bbn-rte-fontcolor',
+        template: `
+          <span class="bbn-rte-fontcolor bbn-vmiddle bbn-bordered bbn-radius">
+            <i class="nf nf-mdi-format_color_text bbn-hxsspace"/>
+            <bbn-colorpicker @change="setColor"
+                             v-model="currentColor"/>
+          </span>
+        `,
+        data(){
+          return {
+            currentColor: bbn.fn.rgb2hex(window.getComputedStyle(document.body).color)
+          }
+        },
+        methods: {
+          setColor(color){
+            exec('foreColor', color);
+          }
+        },
+        mounted(){
+          this.closest('bbn-rte').fontColorComponent = this;
+        }
+      }
+    },
+    fontbgcolor: {
+      text: bbn._('Font Background Color'),
+      notext: true,
+      active: false,
+      component: {
+        name: 'bbn-rte-fontbgcolor',
+        template: `
+        <span class="bbn-rte-fontbgcolor bbn-vmiddle bbn-bordered bbn-radius">
+            <i class="nf nf-mdi-format_color_fill bbn-hxsspace bbn-lg"/>
+            <bbn-colorpicker @change="setColor"
+                             v-model="currentColor"/>
+          </span>
+        `,
+        data(){
+          return {
+            currentColor: ''
+          }
+        },
+        methods: {
+          setColor(color){
+            exec('hiliteColor', color);
+          }
+        },
+        mounted(){
+          this.closest('bbn-rte').fontBgColorComponent = this;
+        }
+      }
+    },
     /*
     heading: {
       icon: 'nf nf-fa-header',
-      text: 'Heading 1',
+      text: bbn._('Heading 1'),
       notext: true,
       items: [
         {
           icon: 'nf nf-mdi-format_header_1',
-          text: 'Heading 1',
+          text: bbn._('Heading 1'),
           notext: true,
           action: () => exec(formatBlock, '<h1>')
         },
         {
           icon: 'nf nf-mdi-format_header_2',
-          text: 'Heading 2',
+          text: bbn._('Heading 2'),
           notext: true,
           action: () => exec(formatBlock, '<h2>')
         },
         {
           icon: 'nf nf-mdi-format_header_3',
-          text: 'Heading 3',
+          text: bbn._('Heading 3'),
           notext: true,
           action: () => exec(formatBlock, '<h3>')
         },
         {
           icon: 'nf nf-mdi-format_header_4',
-          text: 'Heading 4',
+          text: bbn._('Heading 4'),
           notext: true,
           action: () => exec(formatBlock, '<h4>')
         },
         {
           icon: 'nf nf-mdi-format_header_5',
-          text: 'Heading 5',
+          text: bbn._('Heading 5'),
           notext: true,
           action: () => exec(formatBlock, '<h5>')
         },
         {
           icon: 'nf nf-mdi-format_header_6',
-          text: 'Heading 6',
+          text: bbn._('Heading 6'),
           notext: true,
           action: () => exec(formatBlock, '<h6>')
         },
@@ -110,56 +166,56 @@
     },
     paragraph: {
       icon: 'nf nf-fa-paragraph',
-      text: 'Paragraph',
+      text: bbn._('Paragraph'),
       notext: true,
       action: () => exec(formatBlock, '<p>')
     },
     */
     quote: {
       icon: 'nf nf-mdi-format_quote_open',
-      text: 'Quote',
+      text: bbn._('Quote'),
       notext: true,
       action: () => exec(formatBlock, '<blockquote>')
     },
     olist: {
       icon: 'nf nf-mdi-format_list_numbers',
-      text: 'Ordered List',
+      text: bbn._('Ordered List'),
       notext: true,
       action: () => exec('insertOrderedList')
     },
     ulist: {
       icon: 'nf nf-mdi-format_list_bulleted_type',
-      text: 'Unordered List',
+      text: bbn._('Unordered List'),
       notext: true,
       action: () => exec('insertUnorderedList')
     },
     code: {
       icon: 'nf nf-mdi-code_tags',
-      text: 'Code',
+      text: bbn._('Code'),
       notext: true,
       action: () => exec(formatBlock, '<pre>')
     },
     line: {
       icon: 'nf nf-oct-horizontal_rule',
-      text: 'Horizontal Line',
+      text: bbn._('Horizontal Line'),
       notext: true,
       action: () => exec('insertHorizontalRule')
     },
     link: {
       icon: 'nf nf-oct-link',
-      text: 'Link',
+      text: bbn._('Link'),
       notext: true,
       action: () => {
-        const url = window.prompt('Enter the link URL')
+        const url = window.prompt(bbn._('Enter the link URL'))
         if (url) exec('createLink', url)
       }
     },
     image: {
       icon: 'nf nf-mdi-image',
-      text: 'Image',
+      text: bbn._('Image'),
       notext: true,
       action: () => {
-        const url = window.prompt('Enter the image URL')
+        const url = window.prompt(bbn._('Enter the image URL'))
         if (url) exec('insertImage', url)
       }
     }
@@ -233,7 +289,6 @@
        * @prop {Number|String} ['100%'] height
        */
       height: {
-        default: '100%',
         type: [String, Number]
       },
       /**
@@ -295,7 +350,15 @@
          /**
          * @data {String|Number} currentValue
          */
-        currentValue: this.value
+        currentValue: this.value,
+        /**
+         * @data {Vue} fontColorComponent
+         */
+        fontColorComponent : null,
+        /**
+         * @data {Vue} fontBgColorComponent
+         */
+        fontBgColorComponent : null
       }
     },
     computed: {
@@ -314,9 +377,18 @@
           }
         }
         return style;
+      },
+      currentHeight(){
+        if (!!this.height) {
+          return bbn.fn.isNumber(this.height) && (this.height > 0) ? this.height + 'px' : this.height;
+        }
+        return '';
       }
     },
     methods: {
+      /**
+       * @method setButtons
+       */
       setButtons() {
         this.currentButtons = setButtons(this.buttons);
       },
@@ -333,11 +405,26 @@
       },
       /**
        * @method rteOnKeydown
+       * @fires setColors
        */
       rteOnKeydown(event) {
+        if (event.key === 'Enter') {
+          event.stopPropagation();
+          event.stopImmediatePropagation();
+        }
         if (event.key === 'Enter' && queryCommandValue(formatBlock) === 'blockquote') {
           setTimeout(() => exec(formatBlock, `<${this.defaultParagraphSeparator}>`), 0);
         }
+        this.setColors();
+      },
+      /**
+       * @method rteOnClick
+       * @fires updateButtonsState
+       * @fires setColors
+       */
+      rteOnClick(event){
+        this.updateButtonsState();
+        this.setColors();
       },
       /**
        * @method rteOnInput
@@ -354,7 +441,20 @@
         this.currentValue = this.content.innerHTML;
         this.emitInput(this.currentValue);
       },
-
+      /**
+       * @method setColors
+       */
+      setColors(){
+        if (this.fontColorComponent) {
+          this.fontColorComponent.currentColor = bbn.fn.rgb2hex(queryCommandValue('foreColor'));
+        }
+        if (this.fontBgColorComponent) {
+          this.fontBgColorComponent.currentColor = bbn.fn.rgb2hex(queryCommandValue('hiliteColor'));
+          if (!this.fontBgColorComponent.currentColor) {
+            this.fontBgColorComponent.currentColor = bbn.fn.rgb2hex(queryCommandValue('backColor'));
+          }
+        }
+      }
     },
     /**
      * @event created

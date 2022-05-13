@@ -1,30 +1,33 @@
 <div :class="[componentClass, 'bbn-textbox', 'bbn-no-padding']"
-     @keydown.enter.tab.stop=""
-		 @mouseup.stop="getRef('element').focus()">
-  <div class="bbn-w-100"
-			 style="min-height: 100%">
+     @keydown.tab.stop=""
+		 :style="{height: currentHeight}">
+  <div class="bbn-iflex-height"
+			 style="min-height: 100%; width: 100%;">
 		<bbn-toolbar :source="currentButtons"
-								class="bbn-header bbn-radius-top bbn-no-border bbn-c"
-								:button-space="false"/>
-		<div class="bbn-w-100"
-				:style="textboxStyle">
-			<div class="bbn-w-100 bbn-spadded"
-						style="min-height: max(4em, 100%)"
-						contenteditable="true"
-						ref="element"
-						@input="rteOnInput"
-						@keydown="rteOnKeydown"
-						@keyup="updateButtonsState"
-						@click="updateButtonsState"/>
-			<div class="bbn-hidden">
-				<slot></slot>
-			</div>
-			<textarea :required="required"
-								:readonly="readonly"
-								ref="input"
-								:value="value"
-								class="bbn-hidden"
-								:disabled="isDisabled"/>
+								 class="bbn-rte-toolbar bbn-header bbn-radius-top bbn-no-border"
+								 :button-space="false"/>
+		<div class="bbn-flex-fill"
+				 :style="textboxStyle"
+				 @mouseup.stop="getRef('element').focus()">
+			<component :is="currentHeight ? 'bbn-scroll' : 'div'">
+				<div class="bbn-spadded"
+							style="min-height: max(4em, 100%)"
+							contenteditable="true"
+							ref="element"
+							@input="rteOnInput"
+							@keydown="rteOnKeydown"
+							@keyup="rteOnClick"
+							@click="rteOnClick"/>
+				<div class="bbn-hidden">
+					<slot></slot>
+				</div>
+				<textarea :required="required"
+									:readonly="readonly"
+									ref="input"
+									:value="value"
+									class="bbn-hidden"
+									:disabled="isDisabled"/>
+			</component>
 		</div>
 	</div>
 </div>
