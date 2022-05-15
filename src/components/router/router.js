@@ -528,6 +528,10 @@
         return this.splittable && !this.single;
       },
       visualContainerStyle(){
+        if (!this.isVisual) {
+          return {};
+        }
+
         let coord = [1, this.numVisualCols + 1, 1, this.numVisualRows + 1];
         if (this.views.length > 1) {
           switch (this.visualOrientation) {
@@ -749,7 +753,7 @@
        *
        * @return {Number} 
        */
-       numVisuals() {
+      numVisuals() {
         if (this.isVisual) {
           if (['left', 'right'].includes(this.visualOrientation)) {
             return this.numVisualRows;
@@ -758,6 +762,22 @@
             return this.numVisualCols;
           }
         }
+
+        return 0;
+      },
+
+
+      /**
+       * The number of cells on the side where the thumbnails are shown in the visual mode
+       *
+       * @return {Number} 
+       */
+      numVisualReals() {
+        if (this.isVisual) {
+          return bbn.fn.filter(this.visualList, a => (a.view.idx !== this.selected) && !a.view.pane).length;
+        }
+
+        return 0;
       },
 
 
@@ -1263,7 +1283,7 @@
           source: null,
           title: bbn._("Untitled"),
           options: null,
-          cached: true,
+          cached: !this.single && this.nav,
           scrollable: true,
           component: null,
           icon: '',
@@ -1981,6 +2001,7 @@
                 url: view.url,
                 current: url,
                 selected: true,
+                cached: view.cached !== undefined ? view.cached : (this.single || !this.nav ? false : true),
                 pane: view.pane,
                 title: view.title,
                 static: view.static,
@@ -2420,26 +2441,6 @@
         }
 
         if (container) {
-          if (this.splittable) {
-            items.push({
-              text: bbn._("Show aside"),
-              key: "split",
-              icon: "nf nf-mdi-format_horizontal_align_right",
-              action: () => {
-                this.addToPane(container);
-              }
-            });
-            items.push({
-              text: bbn._("Remove from pane"),
-              key: "unpane",
-              icon: "nf nf-mdi-window_restore",
-              action: () => {
-                this.views[idx].pane = false;
-                this.currentPanes.splice(this.views[idx].pane-1, 1);
-              }
-            });
-          }
-
           items.push({
             text: bbn._("Copy content text"),
             icon: "nf nf-fa-copy",
@@ -2651,6 +2652,48 @@
           }
         }
 
+
+        if (container && this.splittable) {
+          if (container.isPane) {
+            items.push({
+              text: bbn._("Remove from pane"),
+              key: "unpane",
+              icon: "nf nf-mdi-window_restore",
+              action: () => {
+                this.removeFromPane(idx);
+              }
+            });
+          }
+          else {
+            items.push({
+              text: bbn._("Show in a new pane"),
+              key: "split",
+              icon: "nf nf-mdi-format_horizontal_align_right",
+              action: () => {
+                this.addToPane(idx);
+              }
+            });
+            if (this.currentPanes.length) {
+              let tmp = {
+                text: bbn._("Show in pane"),
+                key: "panes",
+                icon: "nf nf-mdi-checkbox_multiple_blank_outline",
+                items: []
+              };
+              bbn.fn.each(this.currentPanes, (a, i) => {
+                tmp.items.push({
+                  text: '<div class="bbn-badge">' + (i + 1) + '</div>',
+                  key: "pane" + (i+1),
+                  action: () => {
+                    this.addToPane(idx, a.id);
+                  }
+                })
+              });
+              items.push(tmp);
+            }
+          }
+        }
+
         if ( others && !this.views[idx].static && !this.views[idx].pane){
           items.push({
             text: bbn._("Close All"),
@@ -2776,7 +2819,8 @@
           views: [],
           breadcrumb: this.isBreadcrumb,
           visual: this.isVisual,
-          orientation: this.lockedOrientation ? this.visualOrientation : null
+          orientation: this.lockedOrientation ? this.visualOrientation : null,
+          panes: this.currentPanes.map(a => { return {id: a.id, tabs: [], selected: a.selected}})
         };
 
         bbn.fn.each(this.views, (obj, i) => {
@@ -3246,20 +3290,62 @@
           zoom: 1
         }
       },
-      addToPane(container, paneIndex) {
-        if (!paneIndex || !this.currentPanes[paneIndex-1]) {
-          this.currentPanes.push({
-            id: bbn.fn.randomString().toLowerCase(),
-          });
-          paneIndex = this.currentPanes.length;
+      addPane(paneId, selected) {
+        if (!paneId) {
+          paneId = bbn.fn.randomString().toLowerCase();
         }
 
+        if (!bbn.fn.getRow(this.currentPanes, {id: paneId})) {
+          this.currentPanes.push({
+            id: paneId,
+            tabs: [],
+            selected: selected === undefined ? -1 : selected
+          });
+        }
+
+        return paneId;
+      },
+      removePane(paneId) {
+        let paneIndex = bbn.fn.search(this.currentPanes, {id: paneId});
+        let pane = this.currentPanes[paneIndex];
+        if (!pane) {
+          throw new Error(bbn._("Impossible to find the pane with ID %s", paneId));
+        }
+        if (pane.tabs.length) {
+          throw new Error(bbn._("Impossible to remove the pane with ID %s as it has still containers inside", paneId));
+        }
+
+        this.currentPanes.splice(paneIndex, 1);
+      },
+      addToPane(containerIdx, paneId) {
+        let view = this.views[containerIdx];
+        if (!view) {
+          throw new Error(bbn._("Impossible to find the view with index") + ' ' + containerIdx);
+        }
+
+        let pane = bbn.fn.getRow(this.currentPanes, {id: paneId});
+        if (!pane) {
+          paneId = this.addPane(paneId);
+          pane = bbn.fn.getRow(this.currentPanes, {id: paneId});
+        }
+
+        pane.tabs.push(view);
         setTimeout(() => {
-          this.$set(this.views[container.currentIndex], "pane", paneIndex);
-          if (container.currentIndex === this.selected) {
-            this.selectClosest(container.currentIndex);
+          this.$set(this.views[containerIdx], "pane", paneId);
+          if (containerIdx === this.selected) {
+            this.selectClosest(containerIdx);
           }
+          pane.selected = pane.tabs.length - 1;
         }, 250);
+      },
+      removeFromPane(containerIdx) {
+        if (this.views[containerIdx]) {
+          this.views[containerIdx].pane = false;
+          this.currentPanes.splice(this.views[containerIdx].pane-1, 1);
+        }
+      },
+      slashToHyphen(str) {
+        return bbn.fn.replaceAll('/', '-', str);
       }
     },
 
@@ -3415,6 +3501,11 @@
             tmp.push(a);
           }
         });
+        if (storage.panes) {
+          bbn.fn.each(storage.panes, a => {
+            this.addPane(a.id, a.selected);
+          })
+        }
       }
 
       // Getting the default URL
@@ -3422,18 +3513,6 @@
 
       if (this.first !== 'real') {
         tmp = bbn.fn.multiorder(tmp, {real: 'desc'});
-      }
-
-      if (this.splittable) {
-        let i = 0;
-        bbn.fn.each(bbn.fn.multiorder(tmp, {pane: 'ASC'}), a => {
-          if (a.pane) {
-            a.pane = ++i;
-            this.currentPanes.push({
-              id: bbn.fn.randomString().toLowerCase()
-            });
-          }
-        });
       }
 
       // Adding to the views
@@ -3449,6 +3528,17 @@
 
         this.add(a);
       });
+
+      if (this.splittable) {
+        bbn.fn.each(this.views, a => {
+          if (a.pane) {
+            let pane = bbn.fn.getRow(this.currentPanes, {id: a.pane});
+            if (pane) {
+              pane.tabs.push(a);
+            }
+          }
+        });
+      }
 
       //Breadcrumb
       if (!this.master && this.parent) {
@@ -3578,13 +3668,24 @@
           }
         }
       },
+      currentPanes: {
+        deep: true,
+        handler() {
+          if (this.ready) {
+            this.setConfig();
+          }
+        }
+
+      },
       /**
        * @watch isBreadcrumb
        * @fires setConfig
        */
       isBreadcrumb(newVal){
         this.$nextTick(() => {
-          this.setConfig();
+          if (this.ready) {
+            this.setConfig();
+          }
         })
       },
       /**

@@ -257,7 +257,7 @@
             <bbn-portal v-for="a in isVisual ? visualList : views"
                         :key="isVisual ? a.view.uid : (component && componentSource && componentUrl ? componentSource[componentUrl] : a.uid)"
                         :disabled="!routed || !getPane(a)"
-                        :selector="getPane(a) && (currentPanes.length >= getPane(a)) ? '#' + currentPanes[getPane(a) - 1].id : null">
+                        :selector="getPane(a) ? '#' + getPane(a) + slashToHyphen(isVisual ? a.view.url : a.url) : null">
               <bbn-container v-if="(isVisual ? !a.view.real : !a.real) && !component"
                             :key="isVisual ? a.view.uid : a.uid"
                             :visual="isVisual"
@@ -287,9 +287,84 @@
                   :key="i"
                   :size="i ? Math.floor(100/currentPanes.length) + '%' : null"
                   :scrollable="false">
-          <div class="bbn-overlay"
-                :id="pane.id"
-                :ref="'pane' + (i+1)"/>
+          <div class="bbn-overlay bbn-flex-height bbn-router-nav">
+            <!-- PANE TABS -->
+            <ul class="bbn-router-tabs bbn-router-tabs-scrollable">
+              <li v-for="(tab, tabIndex) in pane.tabs"
+                  :style="{
+                    backgroundColor: tab.bcolor || null,
+                    color: tab.fcolor || null
+                    }"
+                  @click="pane.selected = tabIndex"
+                  :class="['bbn-transition-bcolor', 'bbn-iblock', 'bbn-bordered', 'bbn-radius-top', 'bbn-state-default', 'bbn-unselectable', {
+                          'bbn-background-effect-internal': tabIndex === selected,
+                          'bbn-router-tabs-active': tabIndex === pane.selected,
+                          'bbn-disabled': tab.disabled,
+                          'bbn-router-tabs-alarm': tab.alarm
+                          }, tab.cls || '']">
+                <div class="bbn-router-tabs-badge-container bbn-middle"
+                    v-if="numProperties(tab.events)">
+                  <span class="bbn-badge bbn-small bbn-bg-red"
+                        v-text="numProperties(tab.events)"/>
+                </div>
+                <div class="bbn-router-tabs-tab-loader bbn-border-text"
+                    :style="{borderColor: tab.fcolor || null}"
+                    v-show="tab.loading"/>
+                <bbn-context :context="true"
+                            @keydown.space.enter.prevent.stop="pane.selected = tabIndex"
+                            :source="getMenuFn(tab.idx)"
+                            :source-index="tabIndex"
+                            :autobind="false"
+                            tag="div"
+                            :disabled="tabIndex !== pane.selected"
+                            min-width="10em"
+                            :class="['bbn-router-tabs-tab', 'bbn-iblock', {
+                                    'bbn-router-tabs-dirty': tab.dirty,
+                                    'bbn-router-tabs-icononly': tab.notext
+                                    }]"
+                            :ref="'title-' + pane.id + '-' + tab.idx"
+                            :style="{
+                                    color: tab.fcolor ? tab.fcolor : null
+                                    }"
+                            tabindex="0">
+                  <span v-if="tab.icon"
+                        :title="tab.title"
+                        :class="'bbn-router-tabs-main-icon bbn-iblock' + (tab.notext ? ' bbn-lg' : ' bbn-m')">
+                    <i :class="tab.icon"/>
+                  </span>
+                  <span v-if="!tab.notext && tab.title"
+                        class="bbn-router-tab-text"
+                        :title="getTabTitle(tab)"
+                        v-html="tab.title.length > maxTitleLength ? cutTitle(tab.title) : tab.title"/>
+                </bbn-context>
+                <div class="bbn-router-tabs-selected"
+                    :ref="'selector-' + slashToHyphen(tab.url)"
+                    v-show="tabIndex === pane.selected"
+                    :style="{
+                            backgroundColor: getFontColor(tab.idx)
+                            }"/>
+                <bbn-context v-if="(tab.menu !== false) && (tabIndex === selected)"
+                            class="bbn-iblock bbn-router-tab-menu bbn-p bbn-bottom-right bbn-hxspadded"
+                            tabindex="-1"
+                            min-width="10em"
+                            tag="span"
+                            :source="getMenuFn"
+                            :autobind="false"
+                            :source-index="tabIndex"
+                            :ref="'menu-' + pane.id + '-' + slashToHyphen(tab.url)">
+                  <i class="nf nf-fa-caret_down"/>
+                </bbn-context>
+
+              </li>
+            </ul>
+            <!-- PANE CONTENT -->
+            <div class="bbn-flex-fill">
+              <div v-for="(tab, tabIndex) in pane.tabs"
+                   class="bbn-overlay"
+                   v-show="pane.selected === tabIndex"
+                   :id="pane.id + slashToHyphen(tab.url)"/>
+            </div>
+          </div>
         </bbn-pane>
       </bbn-splitter>
 

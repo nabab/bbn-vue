@@ -4,7 +4,7 @@
 }]"
      @subready.stop
      :style="visual ? visualStyle : {}"
-     v-show="(!router.isVisual && isVisible) || (router.isVisual && isVisualVisible && (!router.visualShowAll || isVisible))">
+     v-show="(!router.isVisual && isVisible) || isVisualVisible">
   <div :class="{
     'bbn-overlay': router.scrollContent,
     'bbn-container-full-screen': fullScreen,
@@ -14,13 +14,13 @@
                 v-on:enter="enter"
                 v-on:after-enter="onResize">
       <div :class="{
-        'bbn-overlay': !visual && router.scrollContent,
-        'bbn-flex-height': (visual || fullScreen || isPane) && router.scrollContent,
+        'bbn-overlay': (isPane || !router.isVisual) && router.scrollContent,
+        'bbn-flex-height': (!isPane && (router.isVisual || fullScreen)) && router.scrollContent,
         'bbn-w-100': visual || !router.scrollContent
       }"
           v-show="isVisible || router.isVisual">
         <!-- The header -->
-        <div v-if="visual || fullScreen || isPane"
+        <div v-if="!isPane && (visual || fullScreen)"
             :class="'bbn-transition-bcolor bbn-b bbn-vspadded bbn-flex-width ' + (isVisible ? ' bbn-m' : '')"
             :style="{
               paddingLeft: '0.5em',
@@ -60,15 +60,15 @@
         <!-- The main container (the one we take screenshots of) -->
         <div :class="{
           'bbn-background': true,
-          'bbn-overlay': !fullScreen && !visual && !isPane && router.scrollContent,
-          'bbn-flex-fill': (fullScreen || visual || isPane) && router.scrollContent,
+          'bbn-overlay': !fullScreen && !router.isVisual && !isPane && router.scrollContent,
+          'bbn-flex-fill': (fullScreen || (router.isVisual && !isPane)) && router.scrollContent,
           'bbn-w-100': !router.scrollContent,
           'bbn-container-visible': isVisible
         }"
             ref="canvasSource">
           <!-- This is shown when it's ready -->
           <bbn-scroll v-if="isLoaded && (isVisible || ((real || cached) && ready) || router.isVisual)"
-                      v-show="ready && isVisible || (visual && !thumbnail)"
+                      v-show="ready && isVisible || (router.isVisual && !thumbnail)"
                       ref="scroll"
                       @ready="init"
                       :scrollable="scrollable && router.scrollContent"
@@ -140,7 +140,7 @@
     <!-- When in visual mode this is the interaction layer -->
     <div v-if="router.isVisual && (!isVisible || router.visualShowAll)"
         class="bbn-overlay"
-        @click="show() && router.route(current, true)"
+        @click="router.activateIndex(currentIndex)"
         @mouseenter="isOver = true"
         @mouseleave="isOver = false"
         style="z-index: 12">
