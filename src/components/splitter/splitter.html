@@ -1,6 +1,8 @@
 <div :class="[
        {
-         'bbn-overlay': true,
+         'bbn-overlay': fullSize,
+         'bbn-w-100': !fullSize && ((panes.lengh <= 1) || (currentOrientation === 'vertical')),
+         'bbn-h-100': !fullSize && (panes.lengh <= 1) && (currentOrientation === 'horizontal'),
          'bbn-splitter-horizontal': currentOrientation === 'horizontal',
          'bbn-splitter-vertical': currentOrientation === 'vertical'
        },

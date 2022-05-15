@@ -1,19 +1,26 @@
 <div :class="[componentClass, 'bbn-background']">
-  <div :class="['bbn-overlay', $parent.currentOrientation === 'vertical' ? 'bbn-flex-height' : 'bbn-flex-width']">
-    <div v-if="title" class="bbn-b bbn-c bbn-header" v-html="title"></div>
-    <div class="bbn-flex-fill">
-      <div class="bbn-overlay">
-        <bbn-scroll v-if="scrollable"
-                    v-show="!isCollapsed"
-                    ref="scroll">
-          <slot></slot>
-        </bbn-scroll>
-        <div v-else v-show="!isCollapsed"
-            class="bbn-overlay"
-            :style="{overflow: overflow}">
-          <slot></slot>
-        </div>
-      </div>
+  <div :class="{
+    'bbn-overlay': $parent.fullSize,
+    'bbn-w-100': !$parent.fullSize && (($parent.panes.length === 1) || ($parent.currentOrientation === 'vertical')),
+    'bbn-h-100': !$parent.fullSize && ($parent.panes.length > 1) && ($parent.currentOrientation !== 'vertical'),
+    'bbn-flex-height': $parent.fullSize && title && ($parent.currentOrientation === 'vertical'),
+    'bbn-flex-width': $parent.fullSize && title && ($parent.currentOrientation !== 'vertical')
+  }">
+    <div v-if="title"
+         class="bbn-b bbn-c bbn-header"
+         v-html="title"/>
+    <div :class="{
+      'bbn-overlay': $parent.fullSize && !title,
+      'bbn-flex-fill': $parent.fullSize && title,
+      'bbn-w-100': !$parent.fullSize && (($parent.panes.length === 1) || ($parent.currentOrientation === 'vertical')),
+      'bbn-h-100': !$parent.fullSize && ($parent.panes.length > 1) && ($parent.currentOrientation !== 'vertical'),
+    }">
+      <component :is="scrollable ? 'bbn-scroll' : 'div'"
+                 v-show="!isCollapsed"
+                 :class="{'bbn-overlay': $parent.fullSize, 'bbn-w-100': !scrollable && $parent.fullSize}"
+                 ref="scroll">
+        <slot></slot>
+      </component>
     </div>
   </div>
 </div>

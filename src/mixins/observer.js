@@ -97,7 +97,7 @@
               value: this.observerValue
             });
             setTimeout(() => {
-              this.observationTower.$on('bbnObs' + this.observerUID + this.observerID, newVal => {
+              this.observationTower.$on('bbnobserver' + this.observerUID + this.observerID, newVal => {
                 //bbn.fn.log("NEW VALUE!");
                 // Integration of the functionnality is done through a watcher on this property
                 this.observerDirty = true;
@@ -122,7 +122,7 @@
             else{
               this.observers.push(obs);
               if ( this.observerCheck() ){
-                this.observationTower.$on('bbnObs' + obs.element + obs.id, newVal => {
+                this.observationTower.$on('bbnobserver' + obs.element + obs.id, newVal => {
                   this.observerEmit(newVal, obs);
                 });
               }
@@ -167,8 +167,7 @@
        */
       created(){
         if ( this.componentClass ){
-          this.componentClass.push('bbn-observer-component');
-          this.componentClass.push('bbn-observer', 'bbn-observer-' + this.observerUID);
+          this.componentClass.push('bbn-observer-component', 'bbn-observer', 'bbn-observer-' + this.observerUID);
         }
       },
       /**
@@ -193,7 +192,7 @@
           if ( idx > -1 ){
             this.observationTower.observers.splice(idx, 1);
           }
-          this.observationTower.$off('bbnObs' + this.observerUID + this.observerID);
+          this.observationTower.$off('bbnobserver' + this.observerUID + this.observerID);
         }
       },
       watch: {

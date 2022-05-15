@@ -137,7 +137,7 @@
         if (item) {
           let content = item.file || item.text;
           if (!title) {
-            bbn.fn.log("NO TITLE");
+            bbn.fn.log("NO TITLE", item);
             title = item.text;
             if (!item.file && (title.length > 15)) {
               title = bbn.fn.sanitize(bbn.fn.substr(title, 0, 50)).substr(15);

@@ -182,6 +182,14 @@
         type: Boolean,
         default: false
       },
+      /**
+       * Will be passed to the top router in order to make it splittable.
+       * @prop {Boolean} [false] splittable
+       */
+      splittable: {
+        type: Boolean,
+        default: false
+      },
     },
     data(){
       let isMobile = bbn.fn.isMobile();

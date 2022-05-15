@@ -350,6 +350,14 @@
          searchFields: {
           type: Array
         },
+        /**
+         * The operator used by filterString filter
+         * @prop {String} ['startswith'] searchOperator
+         */
+        searchOperator: {
+          type: String,
+          default: 'startswith'
+        }
       },
       data(){
         let order = this.order;

@@ -4,9 +4,9 @@
 }]"
      @subready.stop
      :style="visual ? visualStyle : {}"
-     v-show="(!router.isVisual && (router.selected === currentIndex)) || (router.isVisual && isVisualVisible && (!router.visualShowAll || (router.selected !== currentIndex)))">
+     v-show="(!router.isVisual && isVisible) || (router.isVisual && isVisualVisible && (!router.visualShowAll || isVisible))">
   <div :class="{
-    'bbn-100': router.scrollContent,
+    'bbn-overlay': router.scrollContent,
     'bbn-container-full-screen': fullScreen,
     'bbn-w-100': !router.scrollContent
   }">
@@ -15,12 +15,12 @@
                 v-on:after-enter="onResize">
       <div :class="{
         'bbn-overlay': !visual && router.scrollContent,
-        'bbn-flex-height': (visual || fullScreen) && router.scrollContent,
+        'bbn-flex-height': (visual || fullScreen || isPane) && router.scrollContent,
         'bbn-w-100': visual || !router.scrollContent
       }"
           v-show="isVisible || router.isVisual">
         <!-- The header -->
-        <div v-if="visual || fullScreen"
+        <div v-if="visual || fullScreen || isPane"
             :class="'bbn-transition-bcolor bbn-b bbn-vspadded bbn-flex-width ' + (isVisible ? ' bbn-m' : '')"
             :style="{
               paddingLeft: '0.5em',
@@ -51,7 +51,7 @@
             <i class="nf nf-mdi-arrow_collapse bbn-lg"/>
           </div>
           <!-- Icon for closing  -->
-          <div v-else-if="isVisible && !static && !pinned && !router.visualShowAll"
+          <div v-else-if="isVisible && !isPane && !static && !pinned && !router.visualShowAll"
               class="bbn-block bbn-p bbn-vmiddle bbn-h-100"
               @click="close">
             <i class="nf nf-fa-times bbn-lg"/>
@@ -60,8 +60,8 @@
         <!-- The main container (the one we take screenshots of) -->
         <div :class="{
           'bbn-background': true,
-          'bbn-overlay': !fullScreen && !visual && router.scrollContent,
-          'bbn-flex-fill': (fullScreen || visual) && router.scrollContent,
+          'bbn-overlay': !fullScreen && !visual && !isPane && router.scrollContent,
+          'bbn-flex-fill': (fullScreen || visual || isPane) && router.scrollContent,
           'bbn-w-100': !router.scrollContent,
           'bbn-container-visible': isVisible
         }"

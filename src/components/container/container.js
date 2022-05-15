@@ -181,12 +181,26 @@
     },
     computed: {
       /**
+       * True if the router configuration object has pane (ie is in a splitter pane).
+       * @data {Boolean} [false] isVisible
+       */
+      isPane() {
+        return !!this.currentView.pane;
+      },
+      currentView() {
+        if (this.router) {
+          return bbn.fn.getRow(this.router.views, {idx: this.currentIndex})
+        }
+
+        return {};
+      },
+      /**
        * True if the container is shown.
        * @data {Boolean} [false] isVisible
        */
       isVisible() {
         if (this.router) {
-          return this.router.selected === this.currentIndex;
+          return this.isPane || (this.router.selected === this.currentIndex);
         }
 
         return false;
@@ -293,15 +307,18 @@
        * 
        * @method show
        */
-      show(){
-        this.router.selected = this.currentIndex;
-        if (this.visual && this.router.visualShowAll) {
-          this.router.visualShowAll = false;
+      show() {
+        if (!this.isPane) {
+          this.router.selected = this.currentIndex;
+          if (this.visual && this.router.visualShowAll) {
+            this.router.visualShowAll = false;
+          }
         }
-        return true;
       },
       close() {
-        this.router.close(this.currentIndex);
+        if (!this.isPane) {
+          this.router.close(this.currentIndex);
+        }
       },
       /**
        * Sets the current url.
@@ -391,10 +408,10 @@
        * Fires the parent's method enter.
        * 
        * @method enter
-       * @fires $parent.enter
+       * @fires router.enter
        */
       enter(){
-        this.$parent.enter(this);
+        this.router.enter(this);
       },
       pin() {
         this.router.pin(this.currentIndex);
@@ -406,7 +423,7 @@
        * Fires the parent's method reload.
        * 
        * @method reload
-       * @fires $parent.reload
+       * @fires router.reload
        */
       reload(){
         this.router.reload(this.currentIndex);
@@ -420,17 +437,17 @@
         if (
           (this.currentIndex > -1) &&
           obj.text &&
-          this.$parent.views &&
-          this.$parent.views[this.currentIndex]
+          this.router.views &&
+          this.router.views[this.currentIndex]
         ){
-          if ( this.$parent.views[this.currentIndex].menu === undefined ){
-            this.$parent.views[this.currentIndex].menu = [];
+          if ( this.router.views[this.currentIndex].menu === undefined ){
+            this.router.views[this.currentIndex].menu = [];
           }
-          let menu = this.$parent.views[this.currentIndex].menu || [],
+          let menu = this.router.views[this.currentIndex].menu || [],
               idx = bbn.fn.isFunction(menu) ? -1 : bbn.fn.search(menu || [], {text: obj.text});
           if (idx === -1) {
             if (bbn.fn.isFunction(menu) ){
-              this.$parent.views[this.currentIndex].menu = () => {
+              this.router.views[this.currentIndex].menu = () => {
                 let items = menu() || [];
                 if ( bbn.fn.search(items, obj) === -1 ){
                   if ( !obj.key ){
@@ -477,7 +494,7 @@
               if ( idx > -1 ){
                 items.splice(idx, 1);
                 this.router.views[this.currentIndex].menu = items;
-                this.$parent.$forceUpdate();
+                this.router.$forceUpdate();
                 return true;
               }
             };
@@ -487,7 +504,7 @@
             if ( idx > -1 ){
               menu.splice(idx, 1);
               this.router.views[this.currentIndex].menu = menu;
-              this.$parent.$forceUpdate();
+              this.router.$forceUpdate();
               return true;
             }
           }
@@ -505,6 +522,11 @@
        * @method init
        */
       init() {
+        if (this.isPane && this.load && !this.isLoaded) {
+          this.router.load(this.getFullCurrentURL());
+          return;
+        }
+
         if (this.isVisible && (this.real || (this.isLoaded && !this.ready))) {
           let res;
           //bbn.fn.log("INITIATING CONTAINER " + this.url + " " + (this.script ? "(THERE IS A SCRIPT)" : ""));
@@ -550,10 +572,10 @@
                   return this.getContainer();
                 },
                 addMenu(){
-                  return this.getContainer().addMenu.apply(this.$parent, arguments)
+                  return this.getContainer().addMenu.apply(this.router, arguments)
                 },
                 deleteMenu(){
-                  return this.getContainer().deleteMenu.apply(this.$parent, arguments)
+                  return this.getContainer().deleteMenu.apply(this.router, arguments)
                 }
               },
               props: ['source']
@@ -561,7 +583,7 @@
             // The local anonymous component gets defined
             this.$options.components[this.componentName] = o;
           }
-          else{
+          else {
             this.isComponent = false;
           }
 
@@ -754,7 +776,6 @@
       if ( !this.router.ready ){
         this.router.$on('ready', () => {
           //this.init();
-          this.router.register(this);
         });
       }
       else{
@@ -820,24 +841,15 @@
           }
         }
       },
-      load(nv, ov){
-        /** Why????
-        if ( nv && this.$options.components[this.componentName] ){
-          delete this.$options.components[this.componentName];
-        }
-        else if ( !nv && ov ){
-          this.init()
-        }
-         */
-      },
       /**
        * @watch visible
        * @param {Boolean} nv 
        * @param {Boolean} ov 
        * @fires selfEmit
        */
-      isVisible(nv, ov){
-        if (this.visual) {
+      isVisible(nv) {
+        let emit = true;
+        if (!this.isPane && this.router.isVisual) {
           if (nv) {
             this.setScreenshot()
           }
@@ -845,7 +857,11 @@
             this.unsetScreenshot();
           }
         }
-        this.$emit(nv ? 'view' : 'unview', this);
+
+        if (emit) {
+          this.$emit(nv ? 'view' : 'unview', this);
+        }
+
         if (nv) {
           this.$nextTick(() => {
             this.onResize();

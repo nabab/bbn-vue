@@ -301,27 +301,14 @@
         default: '#EEE'
       },
       /**
-       * If true a menu will offer to put the current container in an adjacent pane
-       * @prop {Boolean} [false] splittable
-       */
-      splittable: {
-        type: Boolean,
-        default: false
-      },
-      /**
        * A list of panes used by default if splittable is true
-       * @prop {Array} panes
+       * @prop {Array} [[]] panes
        */
       panes: {
-        type: Array
-      },
-      /**
-       * If true ???
-       * @prop {Boolean} [false] resizable
-       */
-      resizable: {
-        type: Boolean,
-        default: true
+        type: Array,
+        default() {
+          return []
+        }
       },
       /**
        * Decides if real bbn-container are shown before or after the ones in the config or fake container 9bbns-container)
@@ -330,6 +317,30 @@
       first: {
         type: String,
         default: 'real'
+      },
+      /**
+       * If true another tab can be opened aside
+       * @prop {Boolean} [false] splittable
+       */
+      splittable: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * If true when splittable the extra panes can be collapsed
+       * @prop {Boolean} [false] collapsible
+       */
+      collapsible: {
+        type: Boolean,
+        default: true
+      },
+      /**
+       * If true when splittable the extra panes can be resized
+       * @prop {Boolean} [false] resizable
+       */
+      resizable: {
+        type: Boolean,
+        default: true
       }
     },
     data(){
@@ -504,10 +515,18 @@
          * If true visual mode is used for nav (instead of tabs or breadcrumbs)
          * @data {Boolean} visual
          */
-        isVisual: this.visual
+        isVisual: this.visual,
+        /**
+         * The panes for when splittable is true
+         * @data {Array} currentPanes
+         */
+        currentPanes: this.panes.slice()
       };
     },
     computed: {
+      isSplittable() {
+        return this.splittable && !this.single;
+      },
       visualContainerStyle(){
         let coord = [1, this.numVisualCols + 1, 1, this.numVisualRows + 1];
         if (this.views.length > 1) {
@@ -839,6 +858,63 @@
         }
         return false;
       },
+      getPane(obj) {
+        if (!obj) {
+          return false;
+        }
+
+        if (this.isVisual) {
+          return obj.view.pane || false;
+        }
+
+        return obj.pane || false;
+      },
+      selectClosest(idx) {
+        if ((idx === this.selected) && !this.views[idx].pane) {
+          return;
+        }
+
+        if (this.selected === idx) {
+          if ( this.views.length ){
+            let newIdx = false;
+            bbn.fn.each(this.history, a => {
+              let tmp = this.getIndex(a);
+              if ((tmp !== false) && !this.views[tmp].pane) {
+                newIdx = tmp;
+                return false;
+              }
+            });
+            if (newIdx === false) {
+              let tmp = idx;
+              while (tmp >= 0) {
+                if (this.views[tmp] && !this.views[tmp].pane) {
+                  newIdx = tmp;
+                  break;
+                }
+                tmp--;
+              }
+
+              if (newIdx === false) {
+                tmp = idx;
+                while (tmp < this.views.length) {
+                  if (this.views[tmp] && !this.views[tmp].pane) {
+                    newIdx = tmp;
+                    break;
+                  }
+                  tmp++;
+                }
+              }
+            }
+
+            if (this.views[newIdx]) {
+              this.activateIndex(newIdx);
+            }
+          }
+          else {
+            this.selected = false;
+          }
+        }
+      },
       /**
        * @method close
        * @param {Number}  idx   The index of the container to close
@@ -852,40 +928,17 @@
        */
        close(idx, force, noCfg) {
         let res = this.remove(idx, force);
-        if ( res && (this.selected > idx) ){
-          this.selected--;
-        }
-        else if ( res && (this.selected === idx) ){
-          if ( this.views.length ){
-            let newIdx = false;
-            bbn.fn.each(this.history, a => {
-              let tmp = this.getIndex(a);
-              if ( tmp !== false ){
-                newIdx = tmp;
-                return false;
-              }
-            });
-            if (newIdx === false) {
-              while (idx >= 0) {
-                if (this.views[idx]) {
-                  newIdx = idx;
-                  break;
-                }
-                idx--;
-              }
-            }
-
-            if (this.views[newIdx]) {
-              this.activateIndex(newIdx);
-            }
+        if (res) {
+          if (this.selected > idx) {
+            this.selected--;
           }
-          else {
-            this.selected = false;
+          else if (idx === this.selected) {
+            this.selectClosest(idx);
           }
-        }
 
-        if (!noCfg) {
-          this.setConfig();
+          if (!noCfg) {
+            this.setConfig();
+          }
         }
 
         return res;
@@ -1074,13 +1127,24 @@
           this.add(cp);
           return;
         }
+
+        bbn.fn.log("REGISTERING " + cp.url);
         if (!bbn.fn.isString(cp.url)) {
           throw Error(bbn._('The component bbn-container must have a URL defined'));
         }
         if (this.urls[cp.url]) {
           throw Error(bbn._('Two containers cannot have the same URL defined (' + cp.url + ')'));
         }
+
         this.numRegistered++;
+        if (cp.isPane && cp.load) {
+          let url = cp.url;
+          this.load(cp.getFullCurrentURL()).then(() => {
+            bbn.fn.log("AFTER LOAD", url);
+            cp.init();
+          });
+        }
+
         this.urls[cp.url] = cp;
         if (this.isVisual) {
           cp.$on('view', () => {
@@ -1108,7 +1172,8 @@
        * @fires remove
        * @param {Vue} cp
        */
-      unregister(cp){
+      unregister(cp) {
+        bbn.fn.log("UNREGISTERING " + cp.url);
         if (!bbn.fn.isString(cp.url)) {
           throw Error(bbn._('The component bbn-container must have a URL defined'));
         }
@@ -1209,6 +1274,7 @@
           fcolor: null,
           bcolor: null,
           load: false,
+          pane: false,
           selected: null,
           css: '',
           advert: null,
@@ -1293,7 +1359,7 @@
               if (!st && force && this.views.length) {
                 st = this.views[0].url;
                 if (st) {
-                  url = this.urls[st].currentURL || st;
+                  url = this.urls[st] ? this.urls[st].currentURL : st;
                 }
               }
               if (st) {
@@ -1319,14 +1385,16 @@
         }
         if (this.urls[st]) {
           //bbn.fn.log("REAL ROUTING GOING ON FOR " + url);
-          if ( url !== this.currentURL ){
+          if (!this.urls[st].isPane && (url !== this.currentURL)) {
             //bbn.fn.log("THE URL IS DIFFERENT FROM THE ORIGINAL " + this.currentURL);
             this.currentURL = url;
           }
           // First routing, triggered only once
-          if ( !this.routed ){
-            this.routed = true;
-            this.$emit("route1", this);
+          if (!this.urls[st].currentView.pane) {
+            if ( !this.routed ){
+              this.routed = true;
+              this.$emit("route1", this);
+            }
           }
           this.activate(url, this.urls[st]);
           if ( this.urls[st] && this.urls[st].isLoaded ){
@@ -1385,7 +1453,6 @@
         if (!bbn.fn.isString(url) ){
           throw Error(bbn._('The component bbn-container must have a valid URL defined'));
         }
-        let todo = false;
         //bbn.fn.log("ACTIVATING " + url + " AND SENDING FOLLOWING CONTAINER:", container);
         if ( !this.activeContainer || (container && (this.activeContainer !== container)) ){
           this.activeContainer = null;
@@ -1459,7 +1526,9 @@
         if (this.urlNavigation) {
           if ( this.parentContainer ){
             this.parentContainer.currentTitle = title + ' < ' + this.parentContainer.title;
-            this.parent.changeURL(this.baseURL + url, this.parentContainer.currentTitle, replace);
+            if (!this.parentContainer.isPane) {
+              this.parent.changeURL(this.baseURL + url, this.parentContainer.currentTitle, replace);
+            }
           }
           else if ( replace || (url !== bbn.env.path) ){
             if ( !replace ){
@@ -1912,6 +1981,7 @@
                 url: view.url,
                 current: url,
                 selected: true,
+                pane: view.pane,
                 title: view.title,
                 static: view.static,
                 pinned: view.pinned,
@@ -1953,6 +2023,7 @@
               load: true,
               loading: true,
               real: false,
+              pane: false,
               scrollable: !this.single,
               current: url,
               error: false,
@@ -1964,9 +2035,11 @@
             this.views[idx].loading = true;
           }
 
-          this.selected = idx;
-          this.$forceUpdate();
+          if (!this.views[idx].pane) {
+            this.selected = idx;
+          }
 
+          this.$forceUpdate();
           this.$emit('update', this.views);
           let dataObj = this.postBaseUrl ? {_bbn_baseURL: this.fullBaseURL} : {};
           return this.post(
@@ -1998,7 +2071,10 @@
                 this.$on('registered', url => {
                   if (url === d.url) {
                     this.$off('registered', url);
-                    this.realInit(url);
+                    let view = bbn.fn.getRow(this.views, {url: url});
+                    if ((this.selected === view.idx) || view.pane) {
+                      this.realInit(url);
+                    }
                   }
                 })
                 
@@ -2344,6 +2420,70 @@
         }
 
         if (container) {
+          if (this.splittable) {
+            items.push({
+              text: bbn._("Show aside"),
+              key: "split",
+              icon: "nf nf-mdi-format_horizontal_align_right",
+              action: () => {
+                this.addToPane(container);
+              }
+            });
+            items.push({
+              text: bbn._("Remove from pane"),
+              key: "unpane",
+              icon: "nf nf-mdi-window_restore",
+              action: () => {
+                this.views[idx].pane = false;
+                this.currentPanes.splice(this.views[idx].pane-1, 1);
+              }
+            });
+          }
+
+          items.push({
+            text: bbn._("Copy content text"),
+            icon: "nf nf-fa-copy",
+            key: "text_copy",
+            action: () => {
+              let scroll = container.getRef('scroll');
+              let ok = false;
+              if (scroll) {
+                let scrollContent = scroll.getRef('scrollContent');
+                if (scrollContent) {
+                  bbn.fn.copy(scrollContent.innerText)
+                  ok = true;
+                }
+              }
+              if (ok) {
+                appui.success(bbn._("Copied!"))
+              }
+              else {
+                appui.error(bbn._("Not copied!"))
+              }
+            }
+          });
+          items.push({
+            text: bbn._("Copy content HTML"),
+            icon: "nf nf-fa-html5",
+            key: "html_copy",
+            action: () => {
+              let scroll = container.getRef('scroll');
+              let ok = false;
+              if (scroll) {
+                let scrollContent = scroll.getRef('scrollContent');
+                if (scrollContent) {
+                  bbn.fn.copy(scrollContent.innerHTML)
+                  ok = true;
+                }
+              }
+              if (ok) {
+                appui.success(bbn._("Copied!"))
+              }
+              else {
+                appui.error(bbn._("Not copied!"))
+              }
+            }
+          });
           items.push({
             text: bbn._("Screenshot"),
             icon: "nf nf-mdi-image_album",
@@ -2398,7 +2538,7 @@
           });
         }
 
-        if ( !this.views[idx].static ){
+        if (!this.views[idx].static && !this.views[idx].pane){
           if ( this.isBreadcrumb ){
             items.push({
               text: bbn._("Close"),
@@ -2511,7 +2651,7 @@
           }
         }
 
-        if ( others && !this.views[idx].static ){
+        if ( others && !this.views[idx].static && !this.views[idx].pane){
           items.push({
             text: bbn._("Close All"),
             key: "close_all",
@@ -2650,6 +2790,7 @@
               title: obj.title ? obj.title : bbn._('Untitled'),
               static: !!obj.static,
               pinned: !!obj.pinned,
+              pane: obj.pane || false,
               current: obj.current ? obj.current : obj.url,
               cfg: {},
               real: obj.real,
@@ -3020,7 +3161,7 @@
           parents.splice(0, parents.length - idx);
         }
         bbn.fn.each(this.views, (t, i) => {
-          if ( !t.hidden && (t.idx !== this.selected) ){
+          if ( !t.hidden && (t.idx !== this.selected) && !t.pane){
             list.push({
               view: t,
               key: t.url,
@@ -3075,7 +3216,7 @@
        * @method visualStyleContainer
        * @return {Object}
        */
-       visualStyleContainer(ct) {
+      visualStyleContainer(ct) {
         if (!ct.isVisible || this.visualShowAll) {
           return {zoom: 0.1};
         }
@@ -3104,6 +3245,21 @@
           gridRowEnd: coord[3],
           zoom: 1
         }
+      },
+      addToPane(container, paneIndex) {
+        if (!paneIndex || !this.currentPanes[paneIndex-1]) {
+          this.currentPanes.push({
+            id: bbn.fn.randomString().toLowerCase(),
+          });
+          paneIndex = this.currentPanes.length;
+        }
+
+        setTimeout(() => {
+          this.$set(this.views[container.currentIndex], "pane", paneIndex);
+          if (container.currentIndex === this.selected) {
+            this.selectClosest(container.currentIndex);
+          }
+        }, 250);
       }
     },
 
@@ -3136,7 +3292,7 @@
      * @fires getDefaultURL
      * @fires add
      */
-    mounted(){
+    mounted() {
       // All routers above (which constitute the fullBaseURL)
       this.parents = this.ancestors('bbn-router');
       // The closest
@@ -3268,6 +3424,18 @@
         tmp = bbn.fn.multiorder(tmp, {real: 'desc'});
       }
 
+      if (this.splittable) {
+        let i = 0;
+        bbn.fn.each(bbn.fn.multiorder(tmp, {pane: 'ASC'}), a => {
+          if (a.pane) {
+            a.pane = ++i;
+            this.currentPanes.push({
+              id: bbn.fn.randomString().toLowerCase()
+            });
+          }
+        });
+      }
+
       // Adding to the views
       bbn.fn.each(tmp, a => {
         if (!bbn.fn.isString(a.url)) {
@@ -3333,7 +3501,7 @@
               a.selected = false;
             }
           });
-          if (!this.views[idx].selected) {
+          if (!this.views[idx].selected && !this.views[idx].pane) {
             this.views[idx].selected = true;
           }
         }

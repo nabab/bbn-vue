@@ -707,9 +707,15 @@
         if (typeof selector === 'number') {
           return vm._uid === selector;
         }
-        if ( vm.$vnode && vm.$vnode.componentOptions && (vm.$vnode.componentOptions.tag === selector) ){
+
+        if (vm.$vnode && vm.$vnode.componentOptions && (vm.$vnode.componentOptions.tag === 'bbn-portal')) {
+          return false;
+        }
+
+        if ( vm.$vnode && vm.$vnode.componentOptions && (vm.$vnode.componentOptions.tag === selector)) {
           return true;
         }
+
         if (vm.$el && bbn.fn.isFunction(vm.$el.matches)) {
           return vm.$el.matches(selector);
         }

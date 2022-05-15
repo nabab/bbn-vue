@@ -117,6 +117,24 @@
         native: {
           type: Boolean,
           default: false
+        },
+        /**
+         * The icon representing the arrow up.
+         * @prop {String} ['nf nf-fa-caret_up'] iconUp
+         * @memberof dropdownComponent
+         */
+        iconUp: {
+          type: String,
+          default: 'nf nf-fa-caret_up'
+        },
+        /**
+         * The icon representing the arrow down.
+         * @prop {String} ['nf nf-fa-caret_down'] iconDown
+         * @memberof dropdownComponent
+         */
+        iconDown: {
+          type: String,
+          default: 'nf nf-fa-caret_down'
         }
       },
       data(){
@@ -133,18 +151,6 @@
            * @memberof dropdownComponent
            */
           closeTimeout: 0,
-          /**
-           * The icon representing the arrow up.
-           * @data {String} ['nf nf-fa-caret_up'] iconUp
-           * @memberof dropdownComponent
-           */
-          iconUp: 'nf nf-fa-caret_up',
-          /**
-           * The icon representing the arrow down.
-           * @data {String} ['nf nf-fa-caret_down'] iconDown
-           * @memberof dropdownComponent
-           */
-          iconDown: 'nf nf-fa-caret_down',
           /**
            * True if the floating menu of the component is opened.
            * @data {Boolean} [false] isOpened

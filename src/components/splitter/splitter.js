@@ -71,6 +71,10 @@
       minPaneSize: {
         type: Number,
         default: 40
+      },
+      fullSize: {
+        type: Boolean,
+        default: true
       }
     },
     data(){
@@ -272,7 +276,7 @@
        * @return {String}
        */
       getOrientation(){
-        return this.lastKnownCtWidth > this.lastKnownCtHeight ? 'horizontal' : 'vertical';
+        return this.lastKnownWidth > this.lastKnownHeight ? 'horizontal' : 'vertical';
       },
       /**
        * Handles the resize of the splitter
