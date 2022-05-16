@@ -616,7 +616,7 @@
         return this.router.getMenuFn(this.currentIndex);
       },
       setScreenshot() {
-        if (!this._screenshotInterval && this.visual && this.router.db) {
+        if (!this._screenshotInterval && this.router.isVisual && this.router.db && !this.isPane) {
           let url = this.getFullURL();
           this.router.db.selectOne('containers', 'time', {url: url}).then(time => {
             // Checking if we have a screenshot of less than an hour
@@ -643,7 +643,7 @@
         }
       },
       async saveScreenshot(scale = 0.1, timeout = 0) {
-        if (this.router.db && this.isVisible) {
+        if (this.router.db && this.isVisible && !this.isPane) {
           let img       = await this.takeScreenshot(scale, timeout, true);
           let num_tries = 0;
           while (!img && (num_tries < 5)) {
