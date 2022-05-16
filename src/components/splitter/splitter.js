@@ -117,6 +117,9 @@
       };
     },
     computed: {
+      isHorizontal() {
+        return this.currentOrientation === 'horizontal';
+      },
       /**
        * Return true if at least 2 panes are resizable - and so is the splitter.
        * @computed isResizable
@@ -131,8 +134,7 @@
        * @return {String}
        */
       columnsCfg(){
-        return this.panes.length && (this.currentOrientation === 'horizontal') ?
-          this.getFormatted() : 'auto';
+        return this.panes.length && this.isHorizontal ? this.getFormatted() : 'auto';
       },
       /**
        * What will be actually in the CSS for grid-template-rows.
@@ -140,8 +142,7 @@
        * @return {String}
        */
       rowsCfg(){
-        return this.panes.length && (this.currentOrientation === 'vertical') ?
-          this.getFormatted() : 'auto';
+        return this.panes.length && !this.isHorizontal ? this.getFormatted() : 'auto';
       },
       /**
        * X or y depending on the current orientation.
@@ -149,7 +150,7 @@
        * @return {String}
        */
       currentAxis(){
-        return this.currentOrientation === 'horizontal' ? 'x' : 'y'
+        return this.isHorizontal ? 'x' : 'y'
       },
       /**
        * Width or height depending on the current orientation.
@@ -157,7 +158,7 @@
        * @return {String}
        */
       currentSizeType(){
-        return this.currentOrientation === 'horizontal' ? 'Width' : 'Height';
+        return this.isHorizontal ? 'Width' : 'Height';
       },
       /**
        * Width or height depending on the current orientation.
@@ -165,7 +166,7 @@
        * @return {String}
        */
       currentOffsetType(){
-        return this.currentOrientation === 'horizontal' ? 'left' : 'top';
+        return this.isHorizontal ? 'left' : 'top';
       },
       /**
        * Size of the container as given by bbn.

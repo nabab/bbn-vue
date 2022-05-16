@@ -642,19 +642,12 @@
         }
         return this;
       },
-      /**
-       * Returns the scroll configuration
-       * @computed scrollCfg
-       * @return {Object}
-       */
-      scrollCfg(){
-        return this.scrollable ? {
-          axis: 'x',
-          container: true,
-          hidden: true
-        } : {};
-      },
 
+      /**
+       * Returns the breadcrumbs array
+       * @computed breadcrumbs
+       * @return {Array}
+       */
       breadcrumbs(){
         let res = [];
         if (this.isBreadcrumb) {
@@ -668,10 +661,10 @@
 
       /**
        * The grid style for showing the router in visual mode
-       *
+       * @computed visualStyle
        * @return {Object} 
        */
-       visualStyle() {
+      visualStyle() {
         if (!this.isVisual) {
           return {};
         }
@@ -686,6 +679,11 @@
         }
       },
 
+      /**
+       * Returns true if the visual blocks are on top or bottom of the selected container
+       * @computed visualIsOnHeight
+       * @return {Boolean} 
+       */
       visualIsOnHeight() {
         if (this.isVisual) {
           return ['top', 'bottom'].includes(this.visualOrientation);
@@ -694,6 +692,11 @@
         return false;
       },
 
+      /**
+       * The ratio between height and width for each block
+       * @computed visualRatio
+       * @return {Object} 
+       */
       visualRatio() {
         if (!this.isVisual) {
           return 1;
@@ -711,7 +714,7 @@
 
       /**
        * The number of columns (width) for the visual mode
-       *
+       * @computed numVisualCols
        * @return {Number} 
        */
        numVisualCols() {
@@ -731,7 +734,7 @@
 
       /**
        * The number of rows (height) for the visual mode
-       *
+       * @computed numVisualRows
        * @return {Number} 
        */
        numVisualRows() {
@@ -750,7 +753,7 @@
 
       /**
        * The number of cells on the side where the thumbnails are shown in the visual mode
-       *
+       * @computed numVisuals
        * @return {Number} 
        */
       numVisuals() {
@@ -769,7 +772,7 @@
 
       /**
        * The number of cells on the side where the thumbnails are shown in the visual mode
-       *
+       * @computed numVisualReals
        * @return {Number} 
        */
       numVisualReals() {
@@ -783,10 +786,10 @@
 
       /**
        * The views to show, in a specific different order, for the visual mode
-       *
+       * @computed visualList
        * @return {Array} 
        */
-       visualList() {
+      visualList() {
         if (!this.isVisual) {
           return [];
         }
@@ -812,7 +815,15 @@
             }
           }
         );
-      }
+      },
+      /**
+       * The views to show in the tabs, without the ones in the pane if splittable
+       * @computed tabsList
+       * @return {Array} 
+       */
+      tabsList() {
+        return this.splittable ? bbn.fn.filter(this.views, a => !a.pane) : this.views;
+      },
     },
 
     methods: {
@@ -1148,7 +1159,6 @@
           return;
         }
 
-        bbn.fn.log("REGISTERING " + cp.url);
         if (!bbn.fn.isString(cp.url)) {
           throw Error(bbn._('The component bbn-container must have a URL defined'));
         }
@@ -1158,11 +1168,7 @@
 
         this.numRegistered++;
         if (cp.isPane && cp.load) {
-          let url = cp.url;
-          this.load(cp.getFullCurrentURL()).then(() => {
-            bbn.fn.log("AFTER LOAD", url);
-            cp.init();
-          });
+          this.load(cp.getFullCurrentURL());
         }
 
         this.urls[cp.url] = cp;
@@ -1383,7 +1389,10 @@
                 }
               }
               if (st) {
-                this.urls[st].setCurrent(url);
+                if (this.urls[st]) {
+                  this.urls[st].setCurrent(url);
+                }
+
                 this.realRoute(url, st, force, bits[1]);
               }
             }
@@ -1483,12 +1492,12 @@
             if (this.scrollable && this.nav && !this.breadcrumb) {
               let scroll = this.getRef('horizontal-scroll');
               if (scroll.ready) {
-                this.getRef('horizontal-scroll').scrollTo(this.getRef('tab-' + this.activeContainer.currentIndex));
+                scroll.scrollTo(this.getRef('tab-' + this.activeContainer.currentIndex));
               }
               else if (scroll) {
-                scroll.$on('ready', () => {
+                scroll.$on('ready', sc => {
                   setTimeout(() => {
-                    this.getRef('horizontal-scroll').scrollTo(this.getRef('tab-' + this.activeContainer.currentIndex));
+                    sc.scrollTo(this.getRef('tab-' + this.activeContainer.currentIndex));
                   }, 100);
                 })
               }
@@ -2410,7 +2419,7 @@
             }
           });
         }
-        else if (container) {
+        else if (container && !container.isPane) {
           items.push({
             text: bbn._("Enlarge"),
             key: "enlarge",
@@ -2436,6 +2445,22 @@
             icon: this.views[idx].notext ? "nf nf-fa-font" : "nf nf-fa-font_awesome",
             action: () => {
               this.$set(this.views[idx], 'notext', !this.views[idx].notext);
+            }
+          });
+        }
+
+        // Adding a shortcut
+        if (window.appui) {
+          items.push({
+            text: bbn._("Create a shortcut"),
+            key: "shortcut",
+            icon: "nf nf-fa-link",
+            action: () => {
+              this.$emit('shortcut', {
+                text: this.views[idx].title,
+                icon: this.views[idx].icon || 'nf nf-fa-link',
+                url: this.getFullBaseURL() + this.views[idx].url
+              });
             }
           });
         }
@@ -2712,7 +2737,7 @@
           });
         }
 
-        if (!this.isVisual) {
+        if (!this.isVisual && !this.views[idx].pane) {
           items.push({
             text: bbn._('Switch to') + ' ' + (this.isBreadcrumb ? bbn._('tabs') : bbn._('breadcrumb')) + ' ' + bbn._('mode'),
             key: 'switch',
@@ -2722,7 +2747,7 @@
             }
           });
 
-          if (!this.parents.length) {
+          if (!this.parents.length && !this.views[idx].pane) {
             items.push({
               text: bbn._('Switch to') + ' ' + bbn._('visual') + ' ' + bbn._('mode'),
               key: 'visual',
@@ -2737,7 +2762,7 @@
             });
           }
         }
-        else {
+        else if (!this.views[idx].pane) {
           const toNoVisual = () => {
             this.isVisual = false;
             this.itsMaster.isBreadcrumb = false;
@@ -2959,23 +2984,6 @@
         return bbn.fn.shorten(title, this.maxTitleLength)
       },
       /**
-       * Returns the title attribute for the tab.
-       * 
-       * @method getTabTitle
-       * @param {Object} obj
-       * @return {String|null}
-       */
-       getTabTitle(obj){
-        let t = '';
-        if ( obj.notext || (obj.title.length > this.maxTitleLength) ){
-          t += obj.title;
-        }
-        if ( obj.ftitle ){
-          t += (t.length ? ' - ' : '') + obj.ftitle;
-        }
-        return t || null;
-      },
-      /**
        * Returns the full title (combination of title and ftitle if any)
        * 
        * @method getFullTitle
@@ -3029,22 +3037,6 @@
         return '';
       },
       /**
-       * @method scrollTabs
-       * @param {String} dir
-       * @fires getRef
-       */
-      scrollTabs(dir){
-        let scroll = this.getRef('horizontal-scroll');
-        if ( scroll ){
-          if ( dir === 'right' ){
-            scroll.scrollAfter(true);
-          }
-          else{
-            scroll.scrollBefore(true);
-          }
-        }
-      },
-      /**
        * @method getTab
        * @param {Number} idx
        * @fires getRef
@@ -3054,7 +3046,7 @@
         if ( idx === undefined ){
           idx = this.selected;
         }
-        return this.getRef('tab-' + idx);
+        return this.getRef('tabs').getRef('tab-' + idx);
       },
       /**
        * @method closeAll
@@ -3371,6 +3363,12 @@
           }
         }
       });
+      let storage = !this.single && this.getStorage(this.parentContainer ? this.parentContainer.getFullURL() : this.storageName);
+      if (storage && storage.panes) {
+        bbn.fn.each(storage.panes, a => {
+          this.addPane(a.id, a.selected);
+        })
+      }
     },
     /**
      * @event mounted
@@ -3501,11 +3499,6 @@
             tmp.push(a);
           }
         });
-        if (storage.panes) {
-          bbn.fn.each(storage.panes, a => {
-            this.addPane(a.id, a.selected);
-          })
-        }
       }
 
       // Getting the default URL

@@ -89,12 +89,29 @@
         default: 10000
       }
     },
-    data(){
+    data() {
       return {
-        checker: false,
+        /**
+         * The current collapsed state.
+         * @data {Boolean} isCollapsed
+         */
         isCollapsed: this.collapsed,
-        isResizable: this.resizable
+        /**
+         * The current resizable state.
+         * @data {Boolean} isResizable
+         */
+        isResizable: this.resizable,
+        /**
+         * The splitter to which the pane belongs.
+         * @data {Vue} splitter
+         */
+        splitter: null
       };
+    },
+    computed: {
+      isHorizontal() {
+        return this.splitter && this.splitter.isHorizontal;
+      }
     },
     watch:{
       collapsed(val){
@@ -110,8 +127,10 @@
         if (this.resizable === undefined) {
           this.isResizable = this.$parent.resizable;
         }
+
         this.selfEmit(true);
-        this.$parent.init();
+        this.splitter = this.closest('bbn-splitter');
+        this.splitter.init();
         setTimeout(() => {
           this.ready = true;
         }, 40)

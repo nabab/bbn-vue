@@ -1,19 +1,26 @@
 <div :class="[componentClass, 'bbn-background']">
   <div :class="{
-    'bbn-overlay': $parent.fullSize,
-    'bbn-w-100': !$parent.fullSize && (($parent.panes.length === 1) || ($parent.currentOrientation === 'vertical')),
-    'bbn-h-100': !$parent.fullSize && ($parent.panes.length > 1) && ($parent.currentOrientation !== 'vertical'),
-    'bbn-flex-height': $parent.fullSize && title && ($parent.currentOrientation === 'vertical'),
-    'bbn-flex-width': $parent.fullSize && title && ($parent.currentOrientation !== 'vertical')
+    'bbn-overlay': $parent.fullSize && !isCollapsed,
+    'bbn-w-100': !$parent.fullSize && (($parent.panes.length === 1) || !isHorizontal),
+    'bbn-h-100': !$parent.fullSize && ($parent.panes.length > 1) && isHorizontal,
+    'bbn-flex-height': $parent.fullSize && title && !isHorizontal && !isCollapsed,
+    'bbn-flex-width': $parent.fullSize && title && isHorizontal && !isCollapsed
   }">
     <div v-if="title"
-         class="bbn-b bbn-c bbn-header"
+         :class="['bbn-b bbn-c bbn-header bbn-block bbn-pane-title bbn-xsvpadding', {
+           'bbn-w-100': !isHorizontal,
+           'bbn-h-100': isHorizontal
+         }]"
+         :style="{
+           writingMode: isHorizontal ? 'vertical-rl' : null,
+           textOrientation: isHorizontal ? 'upright' : null,
+         }"
          v-html="title"/>
     <div :class="{
       'bbn-overlay': $parent.fullSize && !title,
       'bbn-flex-fill': $parent.fullSize && title,
-      'bbn-w-100': !$parent.fullSize && (($parent.panes.length === 1) || ($parent.currentOrientation === 'vertical')),
-      'bbn-h-100': !$parent.fullSize && ($parent.panes.length > 1) && ($parent.currentOrientation !== 'vertical'),
+      'bbn-w-100': !$parent.fullSize && (($parent.panes.length === 1) || !isHorizontal),
+      'bbn-h-100': !$parent.fullSize && ($parent.panes.length > 1) && isHorizontal,
     }">
       <component :is="scrollable ? 'bbn-scroll' : 'div'"
                  v-show="!isCollapsed"

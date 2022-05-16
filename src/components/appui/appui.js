@@ -620,15 +620,29 @@
         }
       },
       addShortcut(data){
-        if ( this.plugins['appui-menu'] && data.id ){
-          let idx = bbn.fn.search(this.shortcuts, {id: data.id});
-          if ( idx === -1 ){
+        if (this.plugins['appui-menu']) {
+          let ok = !!(data.id || data.url);
+          if (data.id) {
+            let idx = bbn.fn.search(this.shortcuts, {id: data.id});
+            if ( idx > -1 ){
+              ok = false;
+            }
+          }
+
+          if (ok) {
             this.post(this.plugins['appui-menu'] + '/shortcuts/insert', data, d => {
               if ( d.success ){
                 this.shortcuts.push(data);
               }
             });
           }
+        }
+        else if ( this.plugins['appui-menu'] && data.url ){
+          this.post(this.plugins['appui-menu'] + '/shortcuts/insert', data, d => {
+            if ( d.success ){
+              this.shortcuts.push(data);
+            }
+          });
         }
       },
       removeShortcut(data){

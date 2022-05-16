@@ -159,6 +159,7 @@
                   @beforeroute="onBeforeRoute"
                   @route="onRoute"
                   @change="$emit('change', $event)"
+                  @shortcut="addShortcut"
                   :breadcrumb="isMobile"
                   :scroll-content="scrollable"
                   :component="component"

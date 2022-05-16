@@ -108,122 +108,12 @@
         </div>
         <!-- END OF BREADCRUMB -->
         <!-- START OF TABS -->
-        <div v-else-if="nav && !isBreadcrumb && !isVisual"
-            :class="['bbn-router-tabs', {'bbn-router-tabs-scrollable': scrollable}]"
-            ref="tabs">
-          <div class="bbn-router-tabs-container">
-            <div class="bbn-router-tabs-ul-container">
-              <div class="bbn-flex-width">
-                <div v-if="scrollable"
-                    class="bbn-router-tabs-button bbn-router-tabs-button-prev bbn-p">
-                  <div class="bbn-100 bbn-middle"
-                      @click="scrollTabs('left')">
-                    <div class="bbn-block">
-                      <i class="nf nf-fa-angle_left bbn-xlarge"/>
-                    </div>
-                  </div>
-                </div>
-                <div class="bbn-flex-fill">
-                  <component :is="scrollable ? 'bbn-scroll' : 'div'"
-                            ref="horizontal-scroll"
-                            v-bind="scrollCfg">
-                    <ul ref="tabgroup"
-                        class="bbn-alt bbn-router-tabs-tabs bbn-bordered-bottom bbn-flex-fill">
-                      <li v-for="(tab, tabIndex) in views"
-                          @click="!tab.disabled && (tabIndex !== selected) ? activateIndex(tabIndex) : false"
-                          :ref="'tab-' + tabIndex"
-                          v-show="!tab.hidden && !tab.pane"
-                          :style="{
-                                  backgroundColor: tab.bcolor || null,
-                                  color: tab.fcolor || null
-                                  }"
-                          :data-index="tabIndex"
-                          :class="['bbn-transition-bcolor', 'bbn-iblock', 'bbn-bordered', 'bbn-radius-top', 'bbn-state-default', 'bbn-unselectable', {
-                                  'bbn-router-tabs-static': !!tab.static,
-                                  'bbn-background-effect-internal': tabIndex === selected,
-                                  'bbn-router-tabs-active': tabIndex === selected,
-                                  'bbn-disabled': tab.disabled,
-                                  'bbn-router-tabs-alarm': tab.alarm
-                                  }, tab.cls || '']">
-                        <div class="bbn-router-tabs-badge-container bbn-middle"
-                            v-if="numProperties(tab.events)">
-                          <span class="bbn-badge bbn-small bbn-bg-red"
-                                v-text="numProperties(tab.events)"/>
-                        </div>
-                        <div class="bbn-router-tabs-tab-loader bbn-border-text"
-                            :style="{borderColor: tab.fcolor || null}"
-                            v-show="tab.loading"/>
-                        <bbn-context :context="true"
-                                    @keydown.space.enter.prevent.stop="tabIndex !== selected ? activateIndex(tabIndex) : false"
-                                    @keydown.right.down.prevent.stop="getRef('menu-' + tabIndex) ? getRef('menu-' + tabIndex).$el.focus() : (getRef('closer-' + tabIndex) ? getRef('closer-' + tabIndex).focus() : null)"
-                                    :source="getMenuFn"
-                                    :source-index="tabIndex"
-                                    :autobind="false"
-                                    tag="div"
-                                    :disabled="tabIndex !== selected"
-                                    min-width="10em"
-                                    :class="['bbn-router-tabs-tab', 'bbn-iblock', {
-                                            'bbn-router-tabs-dirty': tab.dirty,
-                                            'bbn-router-tabs-icononly': tab.notext
-                                            }]"
-                                    :ref="'title-' + tabIndex"
-                                    :style="{
-                                            color: tab.fcolor ? tab.fcolor : null
-                                            }"
-                                    tabindex="0">
-                          <span v-if="tab.icon"
-                                :title="tab.title"
-                                :class="'bbn-router-tabs-main-icon bbn-iblock' + (tab.notext ? ' bbn-lg' : ' bbn-m')">
-                            <i :class="tab.icon"/>
-                          </span>
-                          <span v-if="!tab.notext && tab.title"
-                                class="bbn-router-tab-text"
-                                :title="getTabTitle(tab)"
-                                v-html="tab.title.length > maxTitleLength ? cutTitle(tab.title) : tab.title"/>
-                        </bbn-context>
-                        <div class="bbn-router-tabs-selected"
-                            :ref="'selector-' + tabIndex"
-                            v-show="tabIndex === selected"
-                            :style="{
-                                    backgroundColor: getFontColor(tabIndex)
-                                    }"/>
-                        <span v-if="!tab.static && !tab.pinned"
-                              class="bbn-p bbn-router-tab-close bbn-iblock bbn-top-right bbn-hxspadded"
-                              tabindex="-1"
-                              :ref="'closer-' + tabIndex"
-                              @keydown.left.down.prevent.stop="getRef('menu-' + tabIndex) ? getRef('menu-' + tabIndex).$el.focus() : null"
-                              @keydown.space.enter.prevent.stop="close(tabIndex)"
-                              @click.stop.prevent="close(tabIndex)">
-                          <i class="nf nf-fa-times"/>
-                        </span>
-                        <bbn-context v-if="(tab.menu !== false) && (tabIndex === selected)"
-                                    class="bbn-iblock bbn-router-tab-menu bbn-p bbn-bottom-right bbn-hxspadded"
-                                    tabindex="-1"
-                                    min-width="10em"
-                                    tag="span"
-                                    :source="getMenuFn"
-                                    :autobind="false"
-                                    :source-index="tabIndex"
-                                    :ref="'menu-' + tabIndex">
-                          <i class="nf nf-fa-caret_down"/>
-                        </bbn-context>
-                      </li>
-                    </ul>
-                  </component>
-                </div>
-                <div v-if="scrollable"
-                    class="bbn-router-tabs-button bbn-router-tabs-button-next bbn-p">
-                  <div class="bbn-100 bbn-middle"
-                      @click="scrollTabs('right')">
-                    <div class="bbn-block">
-                      <i class="nf nf-fa-angle_right bbn-xlarge"/>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <bbn-tabs v-else-if="nav && !isBreadcrumb && !isVisual"
+                  ref="tabs"
+                  v-model="selected"
+                  :scrollable="scrollable"
+                  :max-title-length="maxTitleLength"
+                  :source="tabsList"/>
         <!-- END OF TABS -->
         <!-- START OF CONTENT -->
         <div v-if="ready"
@@ -274,10 +164,11 @@
         <!-- END OF CONTENT -->
         <bbn-loader v-else/>
         <bbn-scrollbar :container="$refs.visualListContainer"
-                      orientation="vertical"
-                      v-if="isVisual && visualShowAll"/>
+                       orientation="vertical"
+                       v-if="isVisual && visualShowAll"/>
       </div>
     </bbn-pane>
+    <!-- START FOR SPLITTABLE MODE -->
     <bbn-pane v-if="!single && splittable && currentPanes.length"
               :scrollable="false"
               size="30%">
@@ -285,78 +176,15 @@
                     :collapsible="collapsible">
         <bbn-pane v-for="(pane, i) in currentPanes"
                   :key="i"
+                  :title="pane.tabs[pane.selected] ? pane.tabs[pane.selected].title : null"
                   :size="i ? Math.floor(100/currentPanes.length) + '%' : null"
                   :scrollable="false">
           <div class="bbn-overlay bbn-flex-height bbn-router-nav">
             <!-- PANE TABS -->
-            <ul class="bbn-router-tabs bbn-router-tabs-scrollable">
-              <li v-for="(tab, tabIndex) in pane.tabs"
-                  :style="{
-                    backgroundColor: tab.bcolor || null,
-                    color: tab.fcolor || null
-                    }"
-                  @click="pane.selected = tabIndex"
-                  :class="['bbn-transition-bcolor', 'bbn-iblock', 'bbn-bordered', 'bbn-radius-top', 'bbn-state-default', 'bbn-unselectable', {
-                          'bbn-background-effect-internal': tabIndex === selected,
-                          'bbn-router-tabs-active': tabIndex === pane.selected,
-                          'bbn-disabled': tab.disabled,
-                          'bbn-router-tabs-alarm': tab.alarm
-                          }, tab.cls || '']">
-                <div class="bbn-router-tabs-badge-container bbn-middle"
-                    v-if="numProperties(tab.events)">
-                  <span class="bbn-badge bbn-small bbn-bg-red"
-                        v-text="numProperties(tab.events)"/>
-                </div>
-                <div class="bbn-router-tabs-tab-loader bbn-border-text"
-                    :style="{borderColor: tab.fcolor || null}"
-                    v-show="tab.loading"/>
-                <bbn-context :context="true"
-                            @keydown.space.enter.prevent.stop="pane.selected = tabIndex"
-                            :source="getMenuFn(tab.idx)"
-                            :source-index="tabIndex"
-                            :autobind="false"
-                            tag="div"
-                            :disabled="tabIndex !== pane.selected"
-                            min-width="10em"
-                            :class="['bbn-router-tabs-tab', 'bbn-iblock', {
-                                    'bbn-router-tabs-dirty': tab.dirty,
-                                    'bbn-router-tabs-icononly': tab.notext
-                                    }]"
-                            :ref="'title-' + pane.id + '-' + tab.idx"
-                            :style="{
-                                    color: tab.fcolor ? tab.fcolor : null
-                                    }"
-                            tabindex="0">
-                  <span v-if="tab.icon"
-                        :title="tab.title"
-                        :class="'bbn-router-tabs-main-icon bbn-iblock' + (tab.notext ? ' bbn-lg' : ' bbn-m')">
-                    <i :class="tab.icon"/>
-                  </span>
-                  <span v-if="!tab.notext && tab.title"
-                        class="bbn-router-tab-text"
-                        :title="getTabTitle(tab)"
-                        v-html="tab.title.length > maxTitleLength ? cutTitle(tab.title) : tab.title"/>
-                </bbn-context>
-                <div class="bbn-router-tabs-selected"
-                    :ref="'selector-' + slashToHyphen(tab.url)"
-                    v-show="tabIndex === pane.selected"
-                    :style="{
-                            backgroundColor: getFontColor(tab.idx)
-                            }"/>
-                <bbn-context v-if="(tab.menu !== false) && (tabIndex === selected)"
-                            class="bbn-iblock bbn-router-tab-menu bbn-p bbn-bottom-right bbn-hxspadded"
-                            tabindex="-1"
-                            min-width="10em"
-                            tag="span"
-                            :source="getMenuFn"
-                            :autobind="false"
-                            :source-index="tabIndex"
-                            :ref="'menu-' + pane.id + '-' + slashToHyphen(tab.url)">
-                  <i class="nf nf-fa-caret_down"/>
-                </bbn-context>
-
-              </li>
-            </ul>
+            <bbn-tabs :scrollable="true"
+                      :source="pane.tabs"
+                      v-model="pane.selected"
+                      :limit="5"/>
             <!-- PANE CONTENT -->
             <div class="bbn-flex-fill">
               <div v-for="(tab, tabIndex) in pane.tabs"
