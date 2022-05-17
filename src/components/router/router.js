@@ -2797,7 +2797,7 @@
           });
         }
 
-        if (!this.views[idx].pane) {
+        if (!this.views[idx].pane && !this.parent) {
           items.push({
             text: bbn._("Configuration"),
             key: "config",
