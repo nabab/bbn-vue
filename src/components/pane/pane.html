@@ -10,7 +10,8 @@
     <div v-if="title"
          :class="['bbn-b bbn-c bbn-header bbn-block bbn-pane-title bbn-xsvpadding', {
            'bbn-w-100': !isHorizontal,
-           'bbn-h-100': isHorizontal
+           'bbn-h-100': isHorizontal,
+           'bbn-abs': isCollapsed
          }]"
          :style="{
            writingMode: isHorizontal ? 'vertical-rl' : null,
