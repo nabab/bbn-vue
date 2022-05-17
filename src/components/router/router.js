@@ -1205,7 +1205,7 @@
        * @param {Vue} cp
        */
       unregister(cp) {
-        bbn.fn.log("UNREGISTERING " + cp.url);
+        //bbn.fn.log("UNREGISTERING " + cp.url);
         if (!bbn.fn.isString(cp.url)) {
           throw Error(bbn._('The component bbn-container must have a URL defined'));
         }
@@ -1993,7 +1993,6 @@
        * @emit update
       */
       load(url, force, index){
-        bbn.fn.log("LOADING??", url);
         if (url){
           this.isLoading = true;
           let finalURL = this.fullBaseURL + url;

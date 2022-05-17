@@ -524,11 +524,9 @@
       init() {
 
         if (this.isPane) {
-          bbn.fn.log("IN PANE", this.url, this.isVisible, this.isLoaded, this.ready);
         }
         if (this.isVisible && (this.real || (this.isLoaded && !this.ready))) {
           let res;
-          bbn.fn.log("INITIATING CONTAINER " + this.url + " " + (this.currentView.script ? "(THERE IS A SCRIPT)" : ""));
 
           if (this.currentView.script){
             res = typeof this.currentView.script === 'string' ? eval(this.currentView.script) : this.currentView.script;
@@ -539,7 +537,6 @@
             }
             // Otherwise if it's an object we assume it is a component
             else if (res && (typeof(res) === 'object')) {
-              bbn.fn.log("THERE IS SCRIPT for " + this.url + " AND IT IS AN OBJECT");
               this.isComponent = true;
             }
           }
@@ -698,7 +695,6 @@
 
               ct.style.width = w + 'px !important';
               ct.style.height = h + 'px !important';
-              bbn.fn.log("Screenshot of " + this.getFullURL());
               html2canvas(ct, {
                 width: w,
                 height: h,
