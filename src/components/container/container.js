@@ -200,7 +200,7 @@
        */
       isVisible() {
         if (this.router) {
-          return this.isPane || (this.router.selected === this.currentIndex);
+          return (this.router.routed && this.isPane) || (this.router.selected === this.currentIndex);
         }
 
         return false;
@@ -522,31 +522,25 @@
        * @method init
        */
       init() {
-        if (this.isPane && this.load && !this.isLoaded) {
-          this.router.load(this.getFullCurrentURL());
-          return;
-        }
 
+        if (this.isPane) {
+          bbn.fn.log("IN PANE", this.url, this.isVisible, this.isLoaded, this.ready);
+        }
         if (this.isVisible && (this.real || (this.isLoaded && !this.ready))) {
           let res;
-          //bbn.fn.log("INITIATING CONTAINER " + this.url + " " + (this.script ? "(THERE IS A SCRIPT)" : ""));
+          bbn.fn.log("INITIATING CONTAINER " + this.url + " " + (this.currentView.script ? "(THERE IS A SCRIPT)" : ""));
 
-          if ( this.script ){
-            res = typeof this.script === 'string' ? eval(this.script) : this.script;
+          if (this.currentView.script){
+            res = typeof this.currentView.script === 'string' ? eval(this.currentView.script) : this.currentView.script;
             // if evaluating the script property returns a function that will be onMount
-            if ( res ){
-              if (bbn.fn.isFunction(res) ){
-                this.onMount = res;
-                this.isComponent = false;
-              }
-              // Otherwise if it's an object we assume it is a component
-              else if ( typeof(res) === 'object' ){
-                //bbn.fn.log("THERE IS SCRIPT for " + this.url + " AND IT IS AN OBJECT");
-                this.isComponent = true;
-              }
-              else{
-                //bbn.fn.log("THERE IS SCRIPT for " + this.url + " AND WTF???");
-              }
+            if (bbn.fn.isFunction(res) ){
+              this.onMount = res;
+              this.isComponent = false;
+            }
+            // Otherwise if it's an object we assume it is a component
+            else if (res && (typeof(res) === 'object')) {
+              bbn.fn.log("THERE IS SCRIPT for " + this.url + " AND IT IS AN OBJECT");
+              this.isComponent = true;
             }
           }
           else if ( this.content ){
@@ -560,7 +554,7 @@
             // Adding also a few funciton to interact with the tab
             let cont = this;
             let o = bbn.fn.extend(true, res ? res : {}, {
-              template: '<div class="' + (this.router.scrollContent ? '' : 'bbn-w-100') + '">' + this.content + '</div>',
+              template: '<div class="' + (this.router.scrollContent ? '' : 'bbn-w-100') + '">' + this.currentView.content + '</div>',
               methods: {
                 getContainer(){
                   if (!this._bbn_container) {
@@ -863,6 +857,9 @@
         }
 
         if (nv) {
+          if (!this.isLoaded && !this.isLoading) {
+            this.router.load(this.currentURL, true)
+          }
           this.$nextTick(() => {
             this.onResize();
           });
@@ -934,12 +931,6 @@
         if (view) {
           view.dirty = v;
           this.router.retrieveDirtyContainers();
-        }
-      },
-      isInit(v) {
-        if (!v) {
-          this.isLoaded = !this.load || this.loaded;
-          this.dirty = false;
         }
       }
     },

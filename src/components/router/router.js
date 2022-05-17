@@ -349,7 +349,7 @@
          * IndexedDb connection
          * @return {Object} 
          */
-         db: null,
+        db: null,
          /**
          * Number of conatainers registered - as they say it.
          * @data {Number} [0] numRegistered
@@ -520,10 +520,23 @@
          * The panes for when splittable is true
          * @data {Array} currentPanes
          */
-        currentPanes: this.panes.slice()
+        currentPanes: this.panes.slice(),
+        /**
+         * If true the configuration will be shown
+         * @data {Boolean} visual
+         */
+        showRouterCfg: false
       };
     },
     computed: {
+      selectedTab: {
+        get() {
+          return bbn.fn.search(this.tabsList, {idx: this.selected})
+        },
+        set(v) {
+          this.selected = this.tabsList[v].idx;
+        }
+      },
       isSplittable() {
         return this.splittable && !this.single;
       },
@@ -987,10 +1000,7 @@
       add(obj, idx){
         let index;
         //obj must be an object with property url
-        if (
-          (typeof(obj) === 'object') &&
-          bbn.fn.isString(obj.url)
-        ){
+        if (bbn.fn.isObject(obj) && bbn.fn.isString(obj.url)) {
           obj.url = bbn.fn.replaceAll('//', '/', obj.url);
           // This is a component
           if (obj.$options) {
@@ -1059,7 +1069,7 @@
               }
             }
           }
-          else{
+          else {
             if ( !obj.current ){
               if ( bbn.env.path.indexOf(this.getFullBaseURL() + (obj.url ? obj.url + '/' : '')) === 0 ){
                 obj.current = bbn.fn.substr(bbn.env.path, this.getFullBaseURL().length);
@@ -1167,10 +1177,6 @@
         }
 
         this.numRegistered++;
-        if (cp.isPane && cp.load) {
-          this.load(cp.getFullCurrentURL());
-        }
-
         this.urls[cp.url] = cp;
         if (this.isVisual) {
           cp.$on('view', () => {
@@ -1987,7 +1993,7 @@
        * @emit update
       */
       load(url, force, index){
-        //bbn.fn.log("LOADING??", url);
+        bbn.fn.log("LOADING??", url);
         if (url){
           this.isLoading = true;
           let finalURL = this.fullBaseURL + url;
@@ -2002,7 +2008,7 @@
             }
 
             view = this.views[idx];
-            if (force){
+            if (force) {
               let kept = {
                 loading: true,
                 loaded: false,
@@ -2032,7 +2038,8 @@
                 }
               });
               if (this.urls[url]) {
-                this.urls[url].isInit = false;
+                this.urls[url].isLoaded = false;
+                this.urls[url].dirty = false;
               }
             }
 
@@ -2098,6 +2105,7 @@
                 bbn.fn.warning("DELETING VIEW CASE.... " + d.current + ' ' + this.urls[d.current].currentIndex, d.url, bbn.fn.search(this.views, {idx: this.urls[d.current].idx}));
                 this.remove(this.urls[d.current].currentIndex, true);
                 callRealInit = false;
+                /*
                 this.$on('registered', url => {
                   if (url === d.url) {
                     this.$off('registered', url);
@@ -2106,7 +2114,8 @@
                       this.realInit(url);
                     }
                   }
-                })
+                });
+                */
                 
               }
 
@@ -2707,7 +2716,7 @@
               };
               bbn.fn.each(this.currentPanes, (a, i) => {
                 tmp.items.push({
-                  text: '<div class="bbn-badge">' + (i + 1) + '</div>',
+                  text: 'Pane <div class="bbn-badge">' + (i + 1) + '</div>',
                   key: "pane" + (i+1),
                   action: () => {
                     this.addToPane(idx, a.id);
@@ -2960,19 +2969,6 @@
       enter(container){
         //bbn.fn.log("THE CONTAINER WILL BE SHOWN: ", container);
       },
-      /**
-       * @method containerComponentMount
-       * @fires init
-       * @fires show
-       */
-      containerComponentMount(){
-        let ct = this.getRef('container');
-        ct.init();
-        this.$nextTick(() => {
-          ct.show();
-        })
-      },
-
       //Tabs
       /**
        * Cuts the given string by 'maxTitleLength' property value
@@ -3283,36 +3279,51 @@
         }
       },
       addPane(paneId, selected) {
-        if (!paneId) {
-          paneId = bbn.fn.randomString().toLowerCase();
-        }
+        if (this.splittable) {
+          if (!paneId) {
+            paneId = bbn.fn.randomString().toLowerCase();
+          }
 
-        if (!bbn.fn.getRow(this.currentPanes, {id: paneId})) {
-          this.currentPanes.push({
-            id: paneId,
-            tabs: [],
-            selected: selected === undefined ? -1 : selected
-          });
+          if (!bbn.fn.getRow(this.currentPanes, {id: paneId})) {
+            this.currentPanes.push({
+              id: paneId,
+              tabs: [],
+              selected: selected === undefined ? -1 : selected
+            });
+          }
         }
 
         return paneId;
       },
+      closeTab(idx) {
+        this.close(this.tabsList[idx].idx);
+      },
       removePane(paneId) {
-        let paneIndex = bbn.fn.search(this.currentPanes, {id: paneId});
-        let pane = this.currentPanes[paneIndex];
-        if (!pane) {
-          throw new Error(bbn._("Impossible to find the pane with ID %s", paneId));
-        }
-        if (pane.tabs.length) {
-          throw new Error(bbn._("Impossible to remove the pane with ID %s as it has still containers inside", paneId));
-        }
+        if (this.splittable) {
+          let paneIndex = bbn.fn.search(this.currentPanes, {id: paneId});
+          let pane = this.currentPanes[paneIndex];
+          if (!pane) {
+            throw new Error(bbn._("Impossible to find the pane with ID %s", paneId));
+          }
+          if (pane.tabs.length) {
+            throw new Error(bbn._("Impossible to remove the pane with ID %s as it has still containers inside", paneId));
+          }
 
-        this.currentPanes.splice(paneIndex, 1);
+          this.currentPanes.splice(paneIndex, 1);
+          if (this.routed) {
+            this.$nextTick(() => this.getRef('splitter').init());
+          }
+        }
       },
       addToPane(containerIdx, paneId) {
         let view = this.views[containerIdx];
         if (!view) {
           throw new Error(bbn._("Impossible to find the view with index") + ' ' + containerIdx);
+        }
+
+        if (view.dirty) {
+          this.alert(bbn._("Save your changes or discard them before moving the container"));
+          return;
         }
 
         let pane = bbn.fn.getRow(this.currentPanes, {id: paneId});
@@ -3321,9 +3332,9 @@
           pane = bbn.fn.getRow(this.currentPanes, {id: paneId});
         }
 
+        this.$set(this.views[containerIdx], "pane", paneId);
         pane.tabs.push(view);
         setTimeout(() => {
-          this.$set(this.views[containerIdx], "pane", paneId);
           if (containerIdx === this.selected) {
             this.selectClosest(containerIdx);
           }
@@ -3331,9 +3342,32 @@
         }, 250);
       },
       removeFromPane(containerIdx) {
-        if (this.views[containerIdx]) {
-          this.views[containerIdx].pane = false;
-          this.currentPanes.splice(this.views[containerIdx].pane-1, 1);
+        let view = this.views[containerIdx];
+        if (view) {
+          if (view.dirty) {
+            this.alert(bbn._("Save your changes or discard them before moving the container"));
+            return;
+          }
+  
+          let paneId = view.pane;
+          if (paneId) {
+            let pane = bbn.fn.getRow(this.currentPanes, {id: paneId});
+            let idx = bbn.fn.search(pane.tabs, {idx: containerIdx});
+            if (idx > -1) {
+              this.selected = containerIdx;
+              view.pane = false;
+              this.$nextTick(() => {
+                pane.tabs.splice(idx, 1);
+                if (!pane.tabs.length) {
+                  this.removePane(paneId);
+                }
+                else if (pane.selected >= idx) {
+                  pane.selected--;
+                  this.getRef('pane' + pane.id).onResize(true);
+                }
+              })
+            }
+          }
         }
       },
       slashToHyphen(str) {
@@ -3587,6 +3621,9 @@
           if (!this.views[idx].selected && !this.views[idx].pane) {
             this.views[idx].selected = true;
           }
+          if (this.currentURL !== this.views[idx].current) {
+            this.route(this.views[idx].current);
+          }
         }
         else {
           throw new Error("The view with index " + idx + " doesn't exist");
@@ -3668,7 +3705,6 @@
             this.setConfig();
           }
         }
-
       },
       /**
        * @watch isBreadcrumb

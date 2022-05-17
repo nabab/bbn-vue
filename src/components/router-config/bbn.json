@@ -1,0 +1,10 @@
+{
+  "name": "router-config",
+  "version": "0.0.1",
+  "authors": [
+    "Thomas Nabet <thomas.nabet@gmail.com>",
+    "Mirko Argentino <mirko@bbn.solutions>"
+  ],
+  "components": ["input", "dropdown", "radio", "floater"],
+  "license": "MIT"
+}

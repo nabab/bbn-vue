@@ -40,7 +40,7 @@
                 </div>
                 <div class="bbn-tabs-tab-loader bbn-border-text"
                     :style="{borderColor: tab.fcolor || null}"
-                    v-show="tab.loading"/>
+                    v-if="tab.loading"/>
                 <bbn-context :context="true"
                             @keydown.space.enter.prevent.stop="tabIndex !== selected ? emitInput(tabIndex) : false"
                             @keydown.right.down.prevent.stop="getRef('menu-' + tabIndex) ? getRef('menu-' + tabIndex).$el.focus() : (getRef('closer-' + tabIndex) ? getRef('closer-' + tabIndex).focus() : null)"

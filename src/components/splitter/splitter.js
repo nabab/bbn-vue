@@ -226,7 +226,7 @@
               }
               // If the pane is collapsed we just mark its size at 0
               if ( a.collapsed ){
-                sz += '0 ';
+                sz += (a.title ? this.resizerSize + 'px' : '0') + ' ';
               }
               // If it's a number it will be a sum with the existing diff
               else {

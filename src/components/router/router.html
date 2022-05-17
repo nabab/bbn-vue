@@ -110,7 +110,8 @@
         <!-- START OF TABS -->
         <bbn-tabs v-else-if="nav && !isBreadcrumb && !isVisual"
                   ref="tabs"
-                  v-model="selected"
+                  v-model="selectedTab"
+                  @close="closeTab"
                   :scrollable="scrollable"
                   :max-title-length="maxTitleLength"
                   :source="tabsList"/>
@@ -173,9 +174,11 @@
               :scrollable="false"
               size="30%">
       <bbn-splitter :resizable="resizable"
-                    :collapsible="collapsible">
+                    :collapsible="collapsible"
+                    ref="splitter">
         <bbn-pane v-for="(pane, i) in currentPanes"
                   :key="i"
+                  :ref="'pane' + pane.id"
                   :title="pane.tabs[pane.selected] ? pane.tabs[pane.selected].title : null"
                   :size="i ? Math.floor(100/currentPanes.length) + '%' : null"
                   :scrollable="false">
@@ -198,4 +201,15 @@
 
     </bbn-pane>
   </bbn-splitter>
+  <bbn-floater v-if="!single && showRouterCfg"
+               :modal="true"
+               :title="false"
+               width="100%"
+               height="100%">
+    <div class="bbn-overlay bbn-middle">
+      <div class="bbn-block bbn-background">
+        <bbn-router-config :router="this"/>
+      </div>
+    </div>
+  </bbn-floater>
 </div>

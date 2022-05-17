@@ -1,0 +1,110 @@
+<div :class="[componentClass, 'bbn-padded', 'bbn-block']">
+  <h2 v-text="_('Navigation mode')"/>
+  <div class="bbn-router-config-mode bbn-w-100 bbn-grid">
+
+    <div class="bbn-h-100">
+      <div :class="'bbn-bordered bbn-w-100 bbn-flex-height' + (mode === 'visual' ? ' bbn-selected-border' : '')">
+        <div class="bbn-flex-fill">
+          <div class="bbn-router-config bbn-router-config-visual">
+            <div class="bbn-bg-black bbn-white">
+              <div class="bbn-100 bbn-middle">
+                <div class="bbn-block">
+                  <i :class="'bbn-xl bbn-p nf nf-fa-' + (visualShowAll ? 'minus' : 'plus')"
+                     @click="visualShowAll = !visualShowAll"/>
+                </div>
+              </div>
+            </div>
+            <div v-for="i in 14"
+                 :key="i"
+                 v-show="visualShowAll || (i < (visualSelected <= 6 ? 6 : 5))"
+                 @click="visualSelected = i; visualShowAll = false"
+                 :class="{
+                   'bbn-reactive': visualSelected !== i,
+                   'bbn-router-config-mode-selected': !visualShowAll && (visualSelected === i),
+                   'bbn-state-selected': visualShowAll && (visualSelected === i)
+                 }">
+              <div class="bbn-100 bbn-middle">
+                <div class="bbn-block">
+                  <bbn-icon :content="svg"
+                            width="1.5em"
+                            v-if="i !== visualSelected"/>
+                  <div :class="{
+                    'bbn-s': visualSelected !== i,
+                    'bbn-lg': visualSelected === i,
+                    'bbn-badge': true
+                  }"
+                       v-text="i"/>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <div class="bbn-b bbn-spadding">
+          <div class="bbn-iblock bbn-left-margin bbn-upper bbn-reactive-text"
+               v-text="_('visual')"
+               @click="mode = 'visual'"/>
+        </div>
+      </div>
+    </div>
+
+    <div class="bbn-h-100 bbn-hspadding">
+      <div :class="'bbn-bordered bbn-w-100 bbn-flex-height' + (mode === 'tabs' ? ' bbn-selected-border' : '')">
+        <div class="bbn-flex-fill">
+          <div class="bbn-router-config bbn-router-config-tabs">
+            <div v-for="i in 9"
+                 :key="i"
+                 @click="tabsSelected = i"
+                 :class="{'bbn-reactive': tabsSelected !== i, 'bbn-state-selected': tabsSelected === i}">
+              <div class="bbn-badge bbn-s" v-text="i"/>
+            </div>
+            <div class="bbn-router-config-mode-selected">
+              <div class="bbn-100 bbn-middle">
+                <div class="bbn-block">
+                  <div class="bbn-lg bbn-badge"
+                       v-text="tabsSelected"/>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="bbn-b bbn-spadding">
+          <div class="bbn-iblock bbn-left-margin bbn-upper bbn-reactive-text"
+               v-text="_('tabs')"
+               @click="mode = 'tabs'"/>
+        </div>
+      </div>
+    </div>
+
+    <div class="bbn-h-100">
+      <div :class="'bbn-bordered bbn-w-100 bbn-flex-height' + (mode === 'breadcrumb' ? ' bbn-selected-border' : '')">
+        <div class="bbn-flex-fill">
+          <div class="bbn-router-config bbn-router-config-breadcrumb">
+            <div v-for="i in 6"
+                 :key="i"
+                 v-show="breadcrumbActive || (i === breadcrumbSelected)"
+                 @click="breadcrumbActive = !breadcrumbActive; breadcrumbSelected = i"
+                 :class="{'bbn-reactive': breadcrumbSelected !== i, 'bbn-state-selected': breadcrumbSelected === i}">
+              <div class="bbn-badge bbn-s" v-text="i"/>
+            </div>
+            <div class="bbn-router-config-mode-selected"
+                 v-show="!breadcrumbActive">
+              <div class="bbn-100 bbn-middle">
+                <div class="bbn-block">
+                  <div class="bbn-lg bbn-badge"
+                       v-text="breadcrumbSelected"/>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <div class="bbn-b bbn-spadding">
+          <div class="bbn-iblock bbn-left-margin bbn-upper bbn-reactive-text"
+               v-text="_('breadcrumb')"
+               @click="mode = 'breadcrumb'"/>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

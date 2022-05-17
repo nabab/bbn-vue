@@ -79,7 +79,7 @@
     },
     render(h) {
       if (this.disabled) {
-        const nodes = this.$scopedSlots && this.$scopedSlots.default()
+        const nodes = this.$scopedSlots && bbn.fn.isFunction(this.$scopedSlots.default) && this.$scopedSlots.default()
         if (!nodes) {
           return h();
         }

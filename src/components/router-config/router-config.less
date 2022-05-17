@@ -1,0 +1,63 @@
+div.bbn-router-config {
+  .bbn-router-config-mode {
+    height: auto;
+    grid-template-columns: repeat(3, 1fr);
+    width: 80em;
+    max-width: 90vw;
+    max-height: 90vh;
+    > div {
+      text-align: center;
+      > div {
+        white-space: nowrap;
+      }
+    }
+  }
+
+  .bbn-router-config {
+    display: grid;
+    height: 100%;
+    gap: 0;
+
+    > div {
+      min-height: 0.5em;
+    }
+
+    &.bbn-router-config-visual {
+      gap: 0.2em;
+      grid-template-rows: repeat(5, 1fr);
+      grid-template-columns: repeat(5, 1fr);
+      > div {
+        min-height: 1.5em;
+        fill: ~"var(--alt-text)";
+        &:hover {
+          fill: ~"var(--hover-text)";
+        }
+      }
+      .bbn-router-config-mode-selected {
+        grid-area: ~"2 / 1 / 6 / 6";
+      }
+    }
+
+    &.bbn-router-config-tabs {
+      grid-template-rows: repeat(9, 1fr);
+      grid-template-columns: repeat(5, 1fr);
+      .bbn-router-config-mode-selected {
+        grid-area: ~"3 / 1 / 10 / 6";
+      }
+    }
+
+    &.bbn-router-config-breadcrumb {
+      row-gap: 0.3em;
+      grid-template-rows: repeat(9, 1fr);
+      grid-template-columns: 1fr;
+      .bbn-router-config-mode-selected {
+        grid-area: ~"2 / 1 / 10 / 6";
+      }
+    }
+
+    .bbn-router-config-mode-selected {
+      color: ~"var(--alt-text)";
+      background-color: ~"var(--alt-background)";
+    }
+  }
+}
