@@ -291,7 +291,10 @@
             icon: 'nf nf-oct-versions',
             action: () => {
               bbn.fn.post(this.plugins['appui-core'] + '/service/increase').then(() => {
-                document.location.reload();
+                if (window.bbnSW) {
+                  window.bbnSW.unregister();
+                  this.$nextTick(() => window.document.location.reload());
+                }
               });
             }
           }

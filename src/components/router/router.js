@@ -1341,7 +1341,34 @@
           throw Error(bbn._('The component bbn-container must have a valid URL defined'));
         }
         url = bbn.fn.replaceAll('//', '/', url);
-        if (this.ready && (force || !this.activeContainer || (url !== this.currentURL))) {
+        /** @var {Boolean} ok Will prevent the route to happen if false */ 
+        let ok = true;
+
+        // Looking first in the opened panes if splittable
+        if (this.splittable) {
+          bbn.fn.each(this.currentPanes, a => {
+            bbn.fn.each(a.tabs, (v, i) => {
+              if (url.indexOf(v.url) === 0) {
+                /** @var {Vue} container The bbn-container component for the given URL if it's in a pane] */
+                let container = this.urls[v.url];
+                if (!container) {
+                  ok = false;
+                }
+ 
+                if (a.selected !== i) {
+                  a.selected = i;
+                  ok = false;
+                  return false;
+                }
+              }
+            })
+ 
+            if (!ok) {
+              return false;
+            }
+          });
+        }
+        if (ok && this.ready && (force || !this.activeContainer || (url !== this.currentURL))) {
           let event = new CustomEvent(
             "beforeroute",
             {
@@ -1488,30 +1515,62 @@
         if (!bbn.fn.isString(url) ){
           throw Error(bbn._('The component bbn-container must have a valid URL defined'));
         }
+        if (!container) {
+          let row = bbn.fn.getRow(this.views, {current: url});
+          if (!row) {
+            row = bbn.fn.getRow(this.views, {url: url});
+          }
+          if (!row) {
+            throw new Error(bbn._("Impossible to find a container for the URL %s", url));
+          }
+          if (!this.urls[row.url]) {
+            throw new Error(bbn._("The container for the URL %s is not registered", row.url));
+          }
+          container = this.urls[row.url];
+        }
+
         //bbn.fn.log("ACTIVATING " + url + " AND SENDING FOLLOWING CONTAINER:", container);
-        if ( !this.activeContainer || (container && (this.activeContainer !== container)) ){
-          this.activeContainer = null;
+        if (this.selected !== container.currentIndex) {
           container.setCurrent(url);
-          this.activeContainer = container;
-          if ( this.activeContainer ){
-            this.activeContainer.show();
-            if (this.scrollable && this.nav && !this.breadcrumb) {
-              let scroll = this.getRef('horizontal-scroll');
-              if (scroll.ready) {
-                scroll.scrollTo(this.getRef('tab-' + this.activeContainer.currentIndex));
-              }
-              else if (scroll) {
-                scroll.$on('ready', sc => {
-                  setTimeout(() => {
-                    sc.scrollTo(this.getRef('tab-' + this.activeContainer.currentIndex));
-                  }, 100);
-                })
-              }
+          if (!container.isPane) {
+            this.activeContainer = container;
+          }
+          container.show();
+          if (this.scrollable && this.nav && !this.breadcrumb) {
+            let scroll = this.getRef('horizontal-scroll');
+            let tab = this.getRef('tab-' + container.currentIndex);
+            if (scroll.ready) {
+              scroll.scrollTo(tab);
+            }
+            else if (scroll) {
+              scroll.$on('ready', sc => {
+                setTimeout(() => {
+                  sc.scrollTo(this.getRef('tab-' + container.currentIndex));
+                }, 100);
+              })
             }
           }
         }
-        else if ( url !== this.activeContainer.currentURL ){
-          this.activeContainer.setCurrent(url);
+        else if (url !== container.currentURL) {
+          if (container.routers) {
+            let rt;
+            bbn.fn.iterate(container.routers, (r, n) => {
+              if (!rt) {
+                rt = r;
+              }
+
+              if (url.indexOf(r.baseURL) === 0) {
+                rt = r;
+                return false;
+              }
+            });
+            if (rt) {
+              rt.route(url.indexOf(r.baseURL) === 0 ? bbn.fn.substr(url, r.baseURL.length) : '');
+            }
+          }
+          else {
+            this.activeContainer.setCurrent(url);
+          }
         }
         //bbn.fn.log("ACTIVATED " + url + " AND ACTIVATED CONTAINER BELOW:", this.activeContainer);
       },
@@ -2615,7 +2674,7 @@
           }
         }
 
-        if ( others ){
+        if ( others && !this.views[idx].pane ){
           items.push({
             text: bbn._("Close Others"),
             key: "close_others",
@@ -2738,14 +2797,16 @@
           });
         }
 
-        items.push({
-          text: bbn._("Configuration"),
-          key: "config",
-          icon: "nf nf-fa-cogs",
-          action: () => {
-            this.showRouterCfg = true;
-          }
-        });
+        if (!this.views[idx].pane) {
+          items.push({
+            text: bbn._("Configuration"),
+            key: "config",
+            icon: "nf nf-fa-cogs",
+            action: () => {
+              this.showRouterCfg = true;
+            }
+          });
+        }
 
         let menu = bbn.fn.isArray(this.menu) ? this.menu : this.menu(this.views[idx], this);
         if (menu.length) {
@@ -3492,22 +3553,21 @@
       }
 
       //Breadcrumb
-      if (!this.master && this.parent) {
+      if (!this.master && this.parent && this.parentContainer) {
         this.parent.registerBreadcrumb(this);
-        let ct = this.closest('bbn-container');
-        ct.$on('view', () => {
+        this.parentContainer.$on('view', () => {
           this.parent.registerBreadcrumb(this);
         });
-        ct.$on('unview', () => {
+        this.parentContainer.$on('unview', () => {
           this.parent.unregisterBreadcrumb(this);
         });
-        if (ct.isVisible) {
+        if (this.parentContainer.isVisible) {
           this.parent.registerBreadcrumb(this);
         }
       }
 
-      if (this.parent) {
-        this.parent.registerRouter(this);
+      if (this.parentContainer) {
+        this.parentContainer.registerRouter(this);
       }
 
       this.ready = true;
@@ -3524,8 +3584,8 @@
       if (!this.master && this.parent){
         this.parent.unregisterBreadcrumb(this);
       }
-      if (this.parent) {
-        this.parent.unregisterRouter(this);
+      if (this.parentContainer) {
+        this.parentContainer.unregisterRouter(this);
       }
     },
     watch: {
@@ -3568,16 +3628,20 @@
       currentURL(newVal, oldVal){
         if ( this.ready ){
           this.$nextTick(() => {
-            if ( this.activeContainer ){
-              this.changeURL(newVal, this.activeContainer.title);
-            }
-            else if ( this.isLoading ){
-              this.changeURL(newVal, bbn._("Loading"));
-            }
             let idx = this.search(newVal);
             if (idx !== false) {
-              this.selected = idx;
-              this.views[this.selected].last = bbn.fn.timestamp();
+              let v = this.views[idx];
+              let ct = this.urls[v.url];
+              v.last = bbn.fn.timestamp();
+              if (!v.pane) {
+                this.selected = idx;
+                if (ct) {
+                  this.changeURL(newVal, ct.title);
+                }
+                else if (this.isLoading) {
+                  this.changeURL(newVal, bbn._("Loading"));
+                }
+              }
             }
 
             this.$emit('change', newVal);

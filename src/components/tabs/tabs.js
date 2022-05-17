@@ -36,6 +36,10 @@
         type: Boolean,
         default: false
       },
+      closable: {
+        type: Boolean,
+        default: true
+      },
       limit: {
         type: Number
       },
