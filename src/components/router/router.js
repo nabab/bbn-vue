@@ -2738,94 +2738,19 @@
           });
         }
 
+        items.push({
+          text: bbn._("Configuration"),
+          key: "config",
+          icon: "nf nf-fa-cogs",
+          action: () => {
+            this.showRouterCfg = true;
+          }
+        });
+
         let menu = bbn.fn.isArray(this.menu) ? this.menu : this.menu(this.views[idx], this);
         if (menu.length) {
           bbn.fn.each(menu, a => {
             items.push(a);
-          });
-        }
-
-        if (!this.isVisual && !this.views[idx].pane) {
-          items.push({
-            text: bbn._('Switch to') + ' ' + (this.isBreadcrumb ? bbn._('tabs') : bbn._('breadcrumb')) + ' ' + bbn._('mode'),
-            key: 'switch',
-            icon: this.isBreadcrumb ? 'nf nf-mdi-tab' : 'nf nf-fa-ellipsis_h',
-            action: () => {
-              this.itsMaster.isBreadcrumb = !this.itsMaster.isBreadcrumb;
-            }
-          });
-
-          if (!this.parents.length && !this.views[idx].pane) {
-            items.push({
-              text: bbn._('Switch to') + ' ' + bbn._('visual') + ' ' + bbn._('mode'),
-              key: 'visual',
-              icon: 'nf nf-fa-eye',
-              action: () => {
-                this.isVisual = true;
-                setTimeout(() => {
-                  this.getVue(this.selected).show();
-                  this.onResize();
-                }, 250)
-              }
-            });
-          }
-        }
-        else if (!this.views[idx].pane) {
-          const toNoVisual = () => {
-            this.isVisual = false;
-            this.itsMaster.isBreadcrumb = false;
-            setTimeout(() => {
-              this.getVue(this.selected).show();
-              this.onResize();
-            }, 250)
-          };
-
-          let visualPositions = [];
-          bbn.fn.each(possibleOrientations, a => {
-            if ((a.name === 'auto') && (this.orientation === 'auto') && !this.lockedOrientation) {
-              return;
-            }
-
-            if (this.visualOrientation !== a.name) {
-              visualPositions.push({
-                text: a.text,
-                icon: a.name === 'auto' ? 'nf nf-mdi-auto_fix' : 'nf nf-mdi-border_' + a.name,
-                action: () => {
-                  if (a.name === 'auto') {
-                    this.lockedOrientation = false;
-                  }
-                  else {
-                    this.visualOrientation = a.name;
-                    this.lockedOrientation = true;
-                  }
-                  this.onResize();
-                  this.setConfig();
-                }
-              });
-            }
-          });
-          items.push({
-            text: bbn._("Change visual blocks' position"),
-            icon: 'nf nf-mdi-cursor_move',
-            items: visualPositions
-          });
-
-          items.push({
-            text: bbn._('Switch to') + ' ' + bbn._('tabs') + ' ' + bbn._('mode'),
-            key: 'tabs',
-            icon: 'nf nf-mdi-tab',
-            action: () => {
-              toNoVisual();
-            }
-          });
-
-          items.push({
-            text: bbn._('Switch to') + ' ' + bbn._('breadcrumb') + ' ' + bbn._('mode'),
-            key: 'breadcrumbs',
-            icon: 'nf nf-fa-ellipsis_h',
-            action: () => {
-              toNoVisual();
-            }
           });
         }
 

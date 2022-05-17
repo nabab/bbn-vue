@@ -49,7 +49,7 @@
       </div>
     </div>
 
-    <div class="bbn-h-100 bbn-hspadding">
+    <div class="bbn-h-100">
       <div :class="'bbn-bordered bbn-w-100 bbn-flex-height' + (mode === 'tabs' ? ' bbn-selected-border' : '')">
         <div class="bbn-flex-fill">
           <div class="bbn-router-config bbn-router-config-tabs">
@@ -110,6 +110,45 @@
       </div>
     </div>
   </div>
+  <h2 v-text="_('Visual orientation')"
+      v-if="mode === 'visual'"/>
+  <div v-if="mode === 'visual'"
+       class="bbn-router-config-orientation bbn-grid bbn-w-100">
+    <div class="bbn-h-100"
+         v-for="(ori, dir) in orientations"
+         :key="dir">
+      <div :class="'bbn-bordered bbn-w-100 bbn-flex-height' + (currentOrientation === dir ? ' bbn-selected-border' : '')">
+        <div class="bbn-flex-fill">
+          <div class="bbn-router-config bbn-router-visual-orientation">
+            <div v-for="i in 5"
+                 :key="i"
+                 class="bbn-alt-background">
+              <div class="bbn-100 bbn-middle">
+                <div class="bbn-block">
+                  <bbn-icon :content="svg"
+                            width="1em"/>
+                </div>
+              </div>
+            </div>
+            <div :style="'grid-area: ' + ori.area">
+              <div class="bbn-100 bbn-middle bbn-p"
+                   @click="currentOrientation = dir">
+                <div class="bbn-block bbn-s bbn-light"
+                     v-text="ori.text"/>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <div class="bbn-b bbn-spadding bbn-upper"
+             v-text="dir"/>
+      </div>
+    </div>
+  </div>
   <h2 v-text="_('Presets')"/>
+  <div class="bbn-w-100 bbn-vspadding bbn-light bbn-m"
+       v-text="_('Soon...')"></div>
   <h2 v-text="_('Configuration backups')"/>
+  <div class="bbn-w-100 bbn-vspadding bbn-light bbn-m"
+       v-text="_('Soon...')"></div>
 </div>

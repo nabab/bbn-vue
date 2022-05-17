@@ -1,15 +1,30 @@
 div.bbn-router-config {
+  h2, h3 {
+    float: left;
+    width: 100%;
+    position: relative;
+  }
   .bbn-router-config-mode {
     height: auto;
     grid-template-columns: repeat(3, 1fr);
     width: 80em;
     max-width: 90vw;
-    max-height: 90vh;
+    max-height: 30vh;
     > div {
       text-align: center;
       > div {
         white-space: nowrap;
       }
+    }
+  }
+  .bbn-router-config-orientation {
+    height: auto;
+    grid-template-columns: repeat(5, 1fr);
+    width: 80em;
+    max-width: 90vw;
+    max-height: 30vh;
+    > div {
+      text-align: center;
     }
   }
 
@@ -58,6 +73,11 @@ div.bbn-router-config {
     .bbn-router-config-mode-selected {
       color: ~"var(--alt-text)";
       background-color: ~"var(--alt-background)";
+    }
+    &.bbn-router-visual-orientation {
+      gap: 0.1em;
+      grid-template-rows: repeat(5, 1fr);
+      grid-template-columns: repeat(5, 1fr);
     }
   }
 }
