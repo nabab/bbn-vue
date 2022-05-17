@@ -98,9 +98,11 @@
           switch (v) {
             case 'visual':
               this.router.isVisual = true;
+              this.router.isBreadcrumb = false;
               break;
             case 'breadcrumb':
               this.router.isBreadcrumb = true;
+              this.router.isVisual = false;
               break;
             default:
               this.router.isBreadcrumb = false;
@@ -112,6 +114,18 @@
     },
 
     methods: {
+      onSelect(mode, index) {
+        let v = this[mode + 'Selected'];
+        if (v !== undefined) {
+          if (v === index) {
+            this.mode = mode;
+          }
+          else {
+            this[mode + 'Selected'] = index;
+            this.visualShowAll = false;
+          }
+        }
+      }
     },
 
     /**

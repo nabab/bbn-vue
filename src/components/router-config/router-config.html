@@ -1,4 +1,5 @@
 <div :class="[componentClass, 'bbn-padded', 'bbn-block']">
+  <h1 v-text="_('Router Configuration')"/>
   <h2 v-text="_('Navigation mode')"/>
   <div class="bbn-router-config-mode bbn-w-100 bbn-grid">
 
@@ -16,8 +17,8 @@
             </div>
             <div v-for="i in 14"
                  :key="i"
-                 v-show="visualShowAll || (i < (visualSelected <= 6 ? 6 : 5))"
-                 @click="visualSelected = i; visualShowAll = false"
+                 v-show="visualShowAll || (i < (visualSelected <= 6 ? 6 : 5)) || (i === visualSelected)"
+                 @click="onSelect('visual', i)"
                  :class="{
                    'bbn-reactive': visualSelected !== i,
                    'bbn-router-config-mode-selected': !visualShowAll && (visualSelected === i),
@@ -54,11 +55,12 @@
           <div class="bbn-router-config bbn-router-config-tabs">
             <div v-for="i in 9"
                  :key="i"
-                 @click="tabsSelected = i"
+                 @click="onSelect('tabs', i)"
                  :class="{'bbn-reactive': tabsSelected !== i, 'bbn-state-selected': tabsSelected === i}">
               <div class="bbn-badge bbn-s" v-text="i"/>
             </div>
-            <div class="bbn-router-config-mode-selected">
+            <div class="bbn-router-config-mode-selected"
+                 @click="onSelect('tabs', tabsSelected)">
               <div class="bbn-100 bbn-middle">
                 <div class="bbn-block">
                   <div class="bbn-lg bbn-badge"
@@ -71,7 +73,7 @@
         <div class="bbn-b bbn-spadding">
           <div class="bbn-iblock bbn-left-margin bbn-upper bbn-reactive-text"
                v-text="_('tabs')"
-               @click="mode = 'tabs'"/>
+               @click="onSelect('tabs', tabsSelected)"/>
         </div>
       </div>
     </div>
@@ -88,7 +90,8 @@
               <div class="bbn-badge bbn-s" v-text="i"/>
             </div>
             <div class="bbn-router-config-mode-selected"
-                 v-show="!breadcrumbActive">
+                 v-show="!breadcrumbActive"
+                 @click="onSelect('breadcrumb', breadcrumbSelected)">
               <div class="bbn-100 bbn-middle">
                 <div class="bbn-block">
                   <div class="bbn-lg bbn-badge"
@@ -102,9 +105,11 @@
         <div class="bbn-b bbn-spadding">
           <div class="bbn-iblock bbn-left-margin bbn-upper bbn-reactive-text"
                v-text="_('breadcrumb')"
-               @click="mode = 'breadcrumb'"/>
+               @click="onSelect('breadcrumb', breadcrumbSelected)"/>
         </div>
       </div>
     </div>
   </div>
+  <h2 v-text="_('Presets')"/>
+  <h2 v-text="_('Configuration backups')"/>
 </div>

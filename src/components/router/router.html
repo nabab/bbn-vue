@@ -205,9 +205,13 @@
                :modal="true"
                :title="false"
                width="100%"
+               :closable="true"
+               ref="cfgwindow"
                height="100%">
-    <div class="bbn-overlay bbn-middle">
-      <div class="bbn-block bbn-background">
+    <div class="bbn-overlay bbn-middle"
+         @click="showRouterCfg = false">
+      <div class="bbn-block bbn-background"
+           @click.stop>
         <bbn-router-config :router="this"/>
       </div>
     </div>
