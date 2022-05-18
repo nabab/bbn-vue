@@ -220,7 +220,7 @@
                   sz = '';
               // If position is not the one expected it means a resizer is before so it's added as a column
               while ( a.position > pos ){
-                sz += lastVisibleResizer ? '0 ' : this.resizerSize + 'px ';
+                sz += lastVisibleResizer && !a.title ? '0 ' : this.resizerSize + 'px ';
                 lastVisibleResizer = true;
                 pos++;
               }
