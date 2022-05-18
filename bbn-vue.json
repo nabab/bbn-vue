@@ -6852,7 +6852,7 @@
             },
             {
                 "text": "pane",
-                "lastmod": 1652811949,
+                "lastmod": 1652881415,
                 "url": "bbn-vue\/component\/pane\/overview",
                 "props": [
                     {
@@ -9166,7 +9166,7 @@
             },
             {
                 "text": "splitter",
-                "lastmod": 1652880160,
+                "lastmod": 1652881328,
                 "url": "bbn-vue\/component\/splitter\/overview",
                 "props": [
                     {

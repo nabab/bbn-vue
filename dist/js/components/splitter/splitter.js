@@ -25,6 +25,7 @@ script.innerHTML = `<div :class="[
          'bbn-unselectable',
          'bbn-middle',
          'bbn-splitter-bar',
+         'bbn-light',
          'bbn-header',
          currentOrientation,
          {'bbn-splitter-resizer': !!rs.pane2},
@@ -35,7 +36,9 @@ script.innerHTML = `<div :class="[
           gridColumn: isHorizontal ? rs.position : 1,
           gridRow: !isHorizontal ? rs.position : 1,
           minWidth: resizerSize + 'px',
-          minHeight: resizerSize + 'px'
+          minHeight: resizerSize + 'px',
+          maxWidth: isHorizontal ? resizerSize + 'px' : null,
+          maxHeight: isHorizontal ? null : resizerSize + 'px'
         }"
        @mousedown.prevent.stop="resizeStart($event, rs)"
        @touchstart.prevent.stop="resizeStart($event, rs)"
@@ -413,13 +416,13 @@ document.head.insertAdjacentElement('beforeend', css);
                   sz = '';
               // If position is not the one expected it means a resizer is before so it's added as a column
               while ( a.position > pos ){
-                sz += lastVisibleResizer && !a.title ? '0 ' : this.resizerSize + 'px ';
+                sz += lastVisibleResizer && !a.title ? '0 ' : 'max-content ';
                 lastVisibleResizer = true;
                 pos++;
               }
               // If the pane is collapsed we just mark its size at 0
               if ( a.collapsed ){
-                sz += (a.title ? this.resizerSize + 'px' : '0') + ' ';
+                sz += a.title ? 'max-content ' : '0 ';
               }
               // If it's a number it will be a sum with the existing diff
               else {

@@ -4,15 +4,13 @@
     'bbn-overlay': $parent.fullSize && !isCollapsed,
     'bbn-w-100': ((isCollapsed && title) || !$parent.fullSize) && (($parent.panes.length === 1) || !isHorizontal),
     'bbn-h-100': ((isCollapsed && title) || !$parent.fullSize) && ($parent.panes.length > 1) && isHorizontal,
-    'bbn-block': isCollapsed && title,
     'bbn-flex-height': $parent.fullSize && title && !isHorizontal && !isCollapsed,
     'bbn-flex-width': $parent.fullSize && title && isHorizontal && !isCollapsed
   }">
     <div v-if="title"
-         :class="['bbn-b bbn-c bbn-header bbn-block bbn-pane-title bbn-xsvpadding', {
+         :class="['bbn-light bbn-c bbn-header bbn-block bbn-pane-title bbn-m bbn-spadding', {
            'bbn-w-100': !isHorizontal,
-           'bbn-h-100': isHorizontal,
-           'bbn-abs': isCollapsed
+           'bbn-h-100': isHorizontal
          }]"
          :style="{
            writingMode: isHorizontal ? 'vertical-rl' : null,

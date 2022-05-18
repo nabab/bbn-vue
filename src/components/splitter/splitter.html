@@ -21,6 +21,7 @@
          'bbn-unselectable',
          'bbn-middle',
          'bbn-splitter-bar',
+         'bbn-light',
          'bbn-header',
          currentOrientation,
          {'bbn-splitter-resizer': !!rs.pane2},
@@ -31,7 +32,9 @@
           gridColumn: isHorizontal ? rs.position : 1,
           gridRow: !isHorizontal ? rs.position : 1,
           minWidth: resizerSize + 'px',
-          minHeight: resizerSize + 'px'
+          minHeight: resizerSize + 'px',
+          maxWidth: isHorizontal ? resizerSize + 'px' : null,
+          maxHeight: isHorizontal ? null : resizerSize + 'px'
         }"
        @mousedown.prevent.stop="resizeStart($event, rs)"
        @touchstart.prevent.stop="resizeStart($event, rs)"

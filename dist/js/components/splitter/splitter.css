@@ -14,9 +14,6 @@
   margin: 0;
   padding: 0;
 }
-.bbn-splitter .bbn-splitter-bar i {
-  font-weight: bold;
-}
 .bbn-splitter .bbn-splitter-bar.vertical .bbn-splitter-collapser > div {
   padding: 0 0.5em;
 }
