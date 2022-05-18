@@ -1565,7 +1565,7 @@
               }
             });
             if (rt) {
-              rt.route(url.indexOf(r.baseURL) === 0 ? bbn.fn.substr(url, rt.baseURL.length) : '');
+              rt.route(url.indexOf(rt.baseURL) === 0 ? bbn.fn.substr(url, rt.baseURL.length) : '');
             }
           }
           else {
