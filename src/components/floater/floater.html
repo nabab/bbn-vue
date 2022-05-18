@@ -35,7 +35,11 @@
       <div v-if="title"
           class="bbn-w-100">
         <h3 v-html="title"
-            class="bbn-no-margin bbn-spadded"
+            class="bbn-no-margin bbn-vpadded bbn-light bbn-c bbn-lg"
+            :style="{
+              paddingLeft: maximizable || closable ? '3.6em' : 'var(--space)',
+              paddingRight: maximizable || closable ? '3.6em' : 'var(--space)',
+            }"
             ref="title"/>
       </div>
       <div class="bbn-top-right bbn-p bbn-lg">

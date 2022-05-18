@@ -15,7 +15,6 @@ div.bbn-floater > div {
 }
 div.bbn-floater > div > header {
   white-space: nowrap;
-  padding-right: 3.6em;
   min-height: 2em;
 }
 div.bbn-floater > div > header .bbn-top-right {
