@@ -1140,7 +1140,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         return obj.pane || false;
       },
       selectClosest(idx) {
-        if ((idx === this.selected) && !this.views[idx].pane) {
+        if ((idx === this.selected) && this.views[idx] && !this.views[idx].pane) {
           return;
         }
 

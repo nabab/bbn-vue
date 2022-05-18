@@ -1137,7 +1137,7 @@
         return obj.pane || false;
       },
       selectClosest(idx) {
-        if ((idx === this.selected) && !this.views[idx].pane) {
+        if ((idx === this.selected) && this.views[idx] && !this.views[idx].pane) {
           return;
         }
 
