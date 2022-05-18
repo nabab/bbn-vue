@@ -47,7 +47,8 @@ script.innerHTML = `<div :class="elementClass"
                  @scroll="scrollVertical"
                  :offset="offsetY">
   </bbn-scrollbar>
-</div>`;
+</div>
+`;
 script.setAttribute('id', 'bbn-tpl-component-scroll');
 script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
 

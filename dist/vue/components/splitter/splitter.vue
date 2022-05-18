@@ -1,9 +1,11 @@
 <template>
 <div :class="[
        {
-         'bbn-overlay': true,
-         'bbn-splitter-horizontal': currentOrientation === 'horizontal',
-         'bbn-splitter-vertical': currentOrientation === 'vertical'
+         'bbn-overlay': fullSize,
+         'bbn-w-100': !fullSize && ((panes.lengh <= 1) || !isHorizontal),
+         'bbn-h-100': !fullSize && (panes.lengh <= 1) && isHorizontal,
+         'bbn-splitter-horizontal': isHorizontal,
+         'bbn-splitter-vertical': !isHorizontal
        },
        componentClass
      ]"
@@ -27,8 +29,8 @@
        ]"
        ref="resizer"
        :style="{
-          gridColumn: currentOrientation === 'horizontal' ? rs.position : 1,
-          gridRow: currentOrientation === 'vertical' ? rs.position : 1,
+          gridColumn: isHorizontal ? rs.position : 1,
+          gridRow: !isHorizontal ? rs.position : 1,
           minWidth: resizerSize + 'px',
           minHeight: resizerSize + 'px'
         }"
@@ -40,56 +42,56 @@
          :style="{fontSize: (resizerSize * 1.2) + 'px'}">
       <div v-if="isCollapsiblePrev(rs.panec1, rs.panec2)"
            :class="{
-             'bbn-w-100': currentOrientation === 'horizontal',
-             'bbn-h-100': currentOrientation === 'vertical',
+             'bbn-w-100': isHorizontal,
+             'bbn-h-100': !isHorizontal,
              'bbn-c': true
            }">
         <i :class="{
               'bbn-p': true,
-              'nf nf-fa-angle_left': currentOrientation === 'horizontal',
-              'nf nf-fa-angle_up': currentOrientation === 'vertical'
+              'nf nf-fa-angle_left': isHorizontal,
+              'nf nf-fa-angle_up': !isHorizontal
             }"
             @click.stop="collapse(rs.panec1, rs.panec2)"
         ></i>
       </div>
       <div v-if="isCollapsibleNext(rs.panec1, rs.panec2)"
            :class="{
-             'bbn-w-100': currentOrientation === 'horizontal',
-             'bbn-h-100': currentOrientation === 'vertical',
+             'bbn-w-100': isHorizontal,
+             'bbn-h-100': !isHorizontal,
              'bbn-c': true
            }">
         <i :class="{
              'bbn-p': true,
-             'nf nf-fa-angle_right': currentOrientation === 'horizontal',
-             'nf nf-fa-angle_down': currentOrientation === 'vertical'
+             'nf nf-fa-angle_right': isHorizontal,
+             'nf nf-fa-angle_down': !isHorizontal
            }"
            @click.stop="collapse(rs.panec2, rs.panec1)"
         ></i>
       </div>
       <div v-if="isFullyCollapsiblePrev(rs.panec1, rs.panec2, i)"
            :class="{
-             'bbn-w-100': currentOrientation === 'horizontal',
-             'bbn-h-100': currentOrientation === 'vertical',
+             'bbn-w-100': isHorizontal,
+             'bbn-h-100': !isHorizontal,
              'bbn-c': true
            }">
         <i :class="{
              'bbn-p': true,
-             'nf nf-fa-angle_double_left': currentOrientation === 'horizontal',
-             'nf nf-fa-angle_double_up': currentOrientation === 'vertical'
+             'nf nf-fa-angle_double_left': isHorizontal,
+             'nf nf-fa-angle_double_up': !isHorizontal
            }"
            @click.stop="collapse(rs.panec1, rs.panec2, true)"
         ></i>
       </div>
       <div v-if="isFullyCollapsibleNext(rs.panec1, rs.panec2, i)"
            :class="{
-             'bbn-w-100': currentOrientation === 'horizontal',
-             'bbn-h-100': currentOrientation === 'vertical',
+             'bbn-w-100': isHorizontal,
+             'bbn-h-100': !isHorizontal,
              'bbn-c': true
            }">
         <i :class="{
              'bbn-p': true,
-             'nf nf-fa-angle_double_right': currentOrientation === 'horizontal',
-             'nf nf-fa-angle_double_down': currentOrientation === 'vertical'
+             'nf nf-fa-angle_double_right': isHorizontal,
+             'nf nf-fa-angle_double_down': !isHorizontal
            }"
            @click.stop="collapse(rs.panec2, rs.panec1, true)"
         ></i>
@@ -103,8 +105,8 @@
                     !panes[rs.panec1].collapsed"
          :class="{
            'bbn-p': true,
-           'nf nf-fa-angle_double_left': currentOrientation === 'horizontal',
-           'nf nf-fa-angle_double_top': currentOrientation === 'vertical'
+           'nf nf-fa-angle_double_left': isHorizontal,
+           'nf nf-fa-angle_double_top': !isHorizontal
          }"
          @click="collapse(rs.panec1, rs.panec2, true)">
       </i>
@@ -116,8 +118,8 @@
                     panes[rs.panec1].collapsed"
          :class="{
            'bbn-p': true,
-           'nf nf-fa-angle_double_right': currentOrientation === 'horizontal',
-           'nf nf-fa-angle_double_bottom': currentOrientation === 'vertical'
+           'nf nf-fa-angle_double_right': isHorizontal,
+           'nf nf-fa-angle_double_bottom': !isHorizontal
          }"
          @click="collapse(rs.panec2, rs.panec1, true)">
       </i>
@@ -130,8 +132,8 @@
                !panes[rs.panec2].collapsed"
          :class="{
            'bbn-p': true,
-           'nf nf-fa-angle_right': currentOrientation === 'horizontal',
-           'nf nf-fa-angle_bottom': currentOrientation === 'vertical'
+           'nf nf-fa-angle_right': isHorizontal,
+           'nf nf-fa-angle_bottom': !isHorizontal
          }"
          @click="collapse(rs.panec2, rs.panec1)">
       </i>
@@ -143,8 +145,8 @@
                panes[rs.panec2].collapsed"
          :class="{
            'bbn-p': true,
-           'nf nf-fa-angle_left': currentOrientation === 'horizontal',
-           'nf nf-fa-angle_top': currentOrientation === 'vertical'
+           'nf nf-fa-angle_left': isHorizontal,
+           'nf nf-fa-angle_top': !isHorizontal
          }"
          @click="collapse(rs.panec1, rs.panec2)">
       </i>
@@ -156,8 +158,8 @@
                !panes[rs.panec2].collapsed"
          :class="{
            'bbn-p': true,
-           'nf nf-fa-angle_double_right': currentOrientation === 'horizontal',
-           'nf nf-fa-angle_double_bottom': currentOrientation === 'vertical'
+           'nf nf-fa-angle_double_right': isHorizontal,
+           'nf nf-fa-angle_double_bottom': !isHorizontal
          }"
          @click="collapse(rs.panec1, rs.panec2, true)">
       </i>
@@ -169,8 +171,8 @@
                panes[rs.panec2].collapsed"
          :class="{
            'bbn-p': true,
-           'nf nf-fa-angle_double_left': currentOrientation === 'horizontal',
-           'nf nf-fa-angle_double_top': currentOrientation === 'vertical'
+           'nf nf-fa-angle_double_left': isHorizontal,
+           'nf nf-fa-angle_double_top': !isHorizontal
          }"
          @click="collapse(i, rs.panec2, true);">
       </i-->
@@ -252,6 +254,10 @@
       minPaneSize: {
         type: Number,
         default: 40
+      },
+      fullSize: {
+        type: Boolean,
+        default: true
       }
     },
     data(){
@@ -294,6 +300,9 @@
       };
     },
     computed: {
+      isHorizontal() {
+        return this.currentOrientation === 'horizontal';
+      },
       /**
        * Return true if at least 2 panes are resizable - and so is the splitter.
        * @computed isResizable
@@ -308,8 +317,7 @@
        * @return {String}
        */
       columnsCfg(){
-        return this.panes.length && (this.currentOrientation === 'horizontal') ?
-          this.getFormatted() : 'auto';
+        return this.panes.length && this.isHorizontal ? this.getFormatted() : 'auto';
       },
       /**
        * What will be actually in the CSS for grid-template-rows.
@@ -317,8 +325,7 @@
        * @return {String}
        */
       rowsCfg(){
-        return this.panes.length && (this.currentOrientation === 'vertical') ?
-          this.getFormatted() : 'auto';
+        return this.panes.length && !this.isHorizontal ? this.getFormatted() : 'auto';
       },
       /**
        * X or y depending on the current orientation.
@@ -326,7 +333,7 @@
        * @return {String}
        */
       currentAxis(){
-        return this.currentOrientation === 'horizontal' ? 'x' : 'y'
+        return this.isHorizontal ? 'x' : 'y'
       },
       /**
        * Width or height depending on the current orientation.
@@ -334,7 +341,7 @@
        * @return {String}
        */
       currentSizeType(){
-        return this.currentOrientation === 'horizontal' ? 'Width' : 'Height';
+        return this.isHorizontal ? 'Width' : 'Height';
       },
       /**
        * Width or height depending on the current orientation.
@@ -342,7 +349,7 @@
        * @return {String}
        */
       currentOffsetType(){
-        return this.currentOrientation === 'horizontal' ? 'left' : 'top';
+        return this.isHorizontal ? 'left' : 'top';
       },
       /**
        * Size of the container as given by bbn.
@@ -402,7 +409,7 @@
               }
               // If the pane is collapsed we just mark its size at 0
               if ( a.collapsed ){
-                sz += '0 ';
+                sz += (a.title ? this.resizerSize + 'px' : '0') + ' ';
               }
               // If it's a number it will be a sum with the existing diff
               else {
@@ -453,7 +460,7 @@
        * @return {String}
        */
       getOrientation(){
-        return this.lastKnownCtWidth > this.lastKnownCtHeight ? 'horizontal' : 'vertical';
+        return this.lastKnownWidth > this.lastKnownHeight ? 'horizontal' : 'vertical';
       },
       /**
        * Handles the resize of the splitter
@@ -1116,6 +1123,8 @@
 .bbn-splitter .bbn-pane {
   box-sizing: border-box !important;
   position: relative;
+  width: 100%;
+  height: 100%;
 }
 .bbn-splitter .bbn-splitter-bar {
   margin: 0;

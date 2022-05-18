@@ -8,9 +8,9 @@ script.innerHTML = `<div :class="[componentClass, {
 }]"
      @subready.stop
      :style="visual ? visualStyle : {}"
-     v-show="visible || visual">
+     v-show="(!router.isVisual && isVisible) || isVisualVisible">
   <div :class="{
-    'bbn-100': router.scrollContent,
+    'bbn-overlay': router.scrollContent,
     'bbn-container-full-screen': fullScreen,
     'bbn-w-100': !router.scrollContent
   }">
@@ -18,23 +18,23 @@ script.innerHTML = `<div :class="[componentClass, {
                 v-on:enter="enter"
                 v-on:after-enter="onResize">
       <div :class="{
-        'bbn-overlay': !visual && router.scrollContent,
-        'bbn-flex-height': (visual || fullScreen) && router.scrollContent,
+        'bbn-overlay': (isPane || !router.isVisual) && router.scrollContent,
+        'bbn-flex-height': (!isPane && (router.isVisual || fullScreen)) && router.scrollContent,
         'bbn-w-100': visual || !router.scrollContent
       }"
-          v-show="visible || visual">
+          v-show="isVisible || router.isVisual">
         <!-- The header -->
-        <div v-if="visual || fullScreen"
-            :class="'bbn-transition-bcolor bbn-b bbn-vspadded bbn-flex-width ' + (visible ? ' bbn-m' : '')"
+        <div v-if="!isPane && (visual || fullScreen)"
+            :class="'bbn-transition-bcolor bbn-b bbn-vspadded bbn-flex-width ' + (isVisible ? ' bbn-m' : '')"
             :style="{
               paddingLeft: '0.5em',
               paddingRight: '0.5em',
-              fontSize: visible && !router.visualShowAll ? null : '10em',
+              fontSize: isVisible && !router.visualShowAll ? null : '10em',
               backgroundColor: bcolor || router.bcolor,
               color: fcolor || router.fcolor
             }">
           <div class="bbn-flex-fill bbn-vmiddle">
-            <bbn-context v-if="visible"
+            <bbn-context v-if="isVisible"
                         class="bbn-right-sspace bbn-lg bbn-p"
                         :floater-title="_('Container menu')"
                         tag="span"
@@ -49,13 +49,13 @@ script.innerHTML = `<div :class="[componentClass, {
                   style="overflow: hidden"/>
           </div>
           <!-- Icon for restoring size when in full screen mode -->
-          <div v-if="visible && fullScreen"
+          <div v-if="isVisible && fullScreen"
               class="bbn-block bbn-p bbn-vmiddle bbn-h-100"
               @click="fullScreen = false">
             <i class="nf nf-mdi-arrow_collapse bbn-lg"/>
           </div>
           <!-- Icon for closing  -->
-          <div v-else-if="visible && !static && !pinned && !router.visualShowAll"
+          <div v-else-if="isVisible && !isPane && !static && !pinned && !router.visualShowAll"
               class="bbn-block bbn-p bbn-vmiddle bbn-h-100"
               @click="close">
             <i class="nf nf-fa-times bbn-lg"/>
@@ -64,15 +64,15 @@ script.innerHTML = `<div :class="[componentClass, {
         <!-- The main container (the one we take screenshots of) -->
         <div :class="{
           'bbn-background': true,
-          'bbn-overlay': !fullScreen && !visual && router.scrollContent,
-          'bbn-flex-fill': (fullScreen || visual) && router.scrollContent,
+          'bbn-overlay': !fullScreen && !router.isVisual && !isPane && router.scrollContent,
+          'bbn-flex-fill': (fullScreen || (router.isVisual && !isPane)) && router.scrollContent,
           'bbn-w-100': !router.scrollContent,
-          'bbn-container-visible': visible
+          'bbn-container-visible': isVisible
         }"
             ref="canvasSource">
           <!-- This is shown when it's ready -->
-          <bbn-scroll v-if="isLoaded && (visible || ((real || cached) && ready) || visual)"
-                      v-show="ready && visible || (visual && !thumbnail)"
+          <bbn-scroll v-if="isLoaded && (isVisible || ((real || cached) && ready) || router.isVisual)"
+                      v-show="ready && isVisible || (router.isVisual && !thumbnail)"
                       ref="scroll"
                       @ready="init"
                       :scrollable="scrollable && router.scrollContent"
@@ -105,7 +105,7 @@ script.innerHTML = `<div :class="[componentClass, {
                       v-html="css"/>
           </bbn-scroll>
           <!-- If loading showing loader -->
-          <div v-else-if="visible && errorStatus"
+          <div v-else-if="isVisible && errorStatus"
                class="bbn-overlay bbn-middle bbn-lg">
             <div class="bbn-lpadded bbn-state-error bbn-block bbn-nowrap">
               <h1 v-text="errorStatus.status"/>
@@ -121,9 +121,9 @@ script.innerHTML = `<div :class="[componentClass, {
             </div>
           </div>
           <!-- If loading showing loader -->
-          <bbn-loader v-else-if="visible && !isLoaded"/>
+          <bbn-loader v-else-if="isVisible && !isLoaded"/>
           <!-- Thumbnail image -->
-          <div v-if="!visible && visual && thumbnail"
+          <div v-if="!isVisible && visual && thumbnail"
               style="overflow: hidden"
               class="bbn-overlay">
             <img :src="thumbnail"
@@ -132,19 +132,19 @@ script.innerHTML = `<div :class="[componentClass, {
           <!-- The container's popup, from each floater will come -->
           <bbn-popup ref="popup"
                     :source="popups"
-                    v-if="!hidden && ready && isLoaded && (visible || cached)"/>
+                    v-if="!hidden && ready && isLoaded && (isVisible || cached)"/>
         </div>
       </div>
     </transition>
     <!-- When in visual mode a layer prevents interaction with the content -->
-    <div v-if="visual && (!visible || router.visualShowAll)"
+    <div v-if="router.isVisual && (!isVisible || router.visualShowAll)"
         class="bbn-overlay"
         style="z-index: 12; background-color: black; opacity: 0.2;">
     </div>
     <!-- When in visual mode this is the interaction layer -->
-    <div v-if="visual && (!visible || router.visualShowAll)"
+    <div v-if="router.isVisual && (!isVisible || router.visualShowAll)"
         class="bbn-overlay"
-        @click="show() && router.route(current, true)"
+        @click="router.activateIndex(currentIndex)"
         @mouseenter="isOver = true"
         @mouseleave="isOver = false"
         style="z-index: 12">
@@ -152,7 +152,7 @@ script.innerHTML = `<div :class="[componentClass, {
         <div class="bbn-bottom-left bbn-w-100"
             v-show="isOver"
             :style="{
-                fontSize: visible && !router.visualShowAll ? null : '10em'
+                fontSize: isVisible && !router.visualShowAll ? null : '10em'
               }">
           <!-- Semi-transparent dark layer these buttons are not used -->
           <div class="bbn-bottom-left bbn-w-100 bbn-bg-black"
@@ -307,20 +307,10 @@ document.head.insertAdjacentElement('beforeend', css);
     data(){
       return {
         /**
-         * True if the container is visible.
-         * @data {Boolean} [false] isVisible
-         */
-        isVisible: this.loading,
-        /**
          * The router which the container belongs to if it exists.
          * @data [null] router
          */
         router: null,
-        /**
-         * True if the container shows.
-         * @data {Boolean} [false] visible
-         */
-        visible: this.loading,
         /**
          * True if the data changes and is unsaved.
          * @data {Boolan} [false] dirty
@@ -346,6 +336,11 @@ document.head.insertAdjacentElement('beforeend', css);
          * @data {Array} [[]] popups
          */
         popups: [],
+         /**
+         * An object with each mounted children router.
+         * @data {Object} [{}] routers
+         */
+        routers: {},
         /**
          * @todo not used
          */
@@ -413,10 +408,45 @@ document.head.insertAdjacentElement('beforeend', css);
       };
     },
     computed: {
+      /**
+       * True if the router configuration object has pane (ie is in a splitter pane).
+       * @data {Boolean} [false] isVisible
+       */
+      isPane() {
+        return !!this.currentView.pane;
+      },
+      currentView() {
+        if (this.router) {
+          return bbn.fn.getRow(this.router.views, {idx: this.currentIndex})
+        }
+
+        return {};
+      },
+      /**
+       * True if the container is shown.
+       * @data {Boolean} [false] isVisible
+       */
+      isVisible() {
+        if (this.router) {
+          return (this.router.routed && this.isPane) || (this.router.selected === this.currentIndex);
+        }
+
+        return false;
+      },
+      isVisualVisible() {
+        if (this.router.isVisual) {
+          let row = bbn.fn.getRow(this.router.visualList, 'view.idx', this.currentIndex);
+          if (row) {
+            return row.visible;
+          }
+        }
+
+        return false;
+      },
       visualStyle() {
-        if (this.visual) {
-          let r = this.router;
-          if ((r.views.length > 1) && (!this.visible || r.visualShowAll)) {
+        let r = this.router;
+        if (r && r.isVisual) {
+          if ((r.numVisualReals > 0) && (!this.isVisible || r.visualShowAll)) {
             return {
               zoom: 0.1,
               width: '100%',
@@ -426,7 +456,7 @@ document.head.insertAdjacentElement('beforeend', css);
           }
 
           let coord = [1, r.numVisualCols + 1, 1, r.numVisualRows + 1];
-          if (r.views.length > 1) {
+          if (r.numVisualReals > 0) {
             switch (r.visualOrientation) {
               case 'top':
                 coord[2] = 2;
@@ -505,24 +535,18 @@ document.head.insertAdjacentElement('beforeend', css);
        * 
        * @method show
        */
-      show(){
-        this.visible = true;
-        if (this.visual && this.router.visualShowAll) {
-          this.router.visualShowAll = false;
+      show() {
+        if (!this.isPane) {
+          this.router.selected = this.currentIndex;
+          if (this.visual && this.router.visualShowAll) {
+            this.router.visualShowAll = false;
+          }
         }
-        return true;
-      },
-      /**
-       * Hides the container.
-       * 
-       * @method hide
-       */
-      hide(){
-        this.visible = false
-        return true;
       },
       close() {
-        this.router.close(this.currentIndex);
+        if (!this.isPane) {
+          this.router.close(this.currentIndex);
+        }
       },
       /**
        * Sets the current url.
@@ -612,10 +636,10 @@ document.head.insertAdjacentElement('beforeend', css);
        * Fires the parent's method enter.
        * 
        * @method enter
-       * @fires $parent.enter
+       * @fires router.enter
        */
       enter(){
-        this.$parent.enter(this);
+        this.router.enter(this);
       },
       pin() {
         this.router.pin(this.currentIndex);
@@ -627,7 +651,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * Fires the parent's method reload.
        * 
        * @method reload
-       * @fires $parent.reload
+       * @fires router.reload
        */
       reload(){
         this.router.reload(this.currentIndex);
@@ -641,17 +665,17 @@ document.head.insertAdjacentElement('beforeend', css);
         if (
           (this.currentIndex > -1) &&
           obj.text &&
-          this.$parent.views &&
-          this.$parent.views[this.currentIndex]
+          this.router.views &&
+          this.router.views[this.currentIndex]
         ){
-          if ( this.$parent.views[this.currentIndex].menu === undefined ){
-            this.$parent.views[this.currentIndex].menu = [];
+          if ( this.router.views[this.currentIndex].menu === undefined ){
+            this.router.views[this.currentIndex].menu = [];
           }
-          let menu = this.$parent.views[this.currentIndex].menu || [],
+          let menu = this.router.views[this.currentIndex].menu || [],
               idx = bbn.fn.isFunction(menu) ? -1 : bbn.fn.search(menu || [], {text: obj.text});
           if (idx === -1) {
             if (bbn.fn.isFunction(menu) ){
-              this.$parent.views[this.currentIndex].menu = () => {
+              this.router.views[this.currentIndex].menu = () => {
                 let items = menu() || [];
                 if ( bbn.fn.search(items, obj) === -1 ){
                   if ( !obj.key ){
@@ -698,7 +722,7 @@ document.head.insertAdjacentElement('beforeend', css);
               if ( idx > -1 ){
                 items.splice(idx, 1);
                 this.router.views[this.currentIndex].menu = items;
-                this.$parent.$forceUpdate();
+                this.router.$forceUpdate();
                 return true;
               }
             };
@@ -708,7 +732,7 @@ document.head.insertAdjacentElement('beforeend', css);
             if ( idx > -1 ){
               menu.splice(idx, 1);
               this.router.views[this.currentIndex].menu = menu;
-              this.$parent.$forceUpdate();
+              this.router.$forceUpdate();
               return true;
             }
           }
@@ -716,7 +740,7 @@ document.head.insertAdjacentElement('beforeend', css);
         return false;
       },
       onResize(){
-        if (this.visible && this.ready) {
+        if (this.isVisible && this.ready) {
           bbn.vue.resizerComponent.methods.onResize.apply(this, arguments);
         }
       },
@@ -726,26 +750,22 @@ document.head.insertAdjacentElement('beforeend', css);
        * @method init
        */
       init() {
-        if (this.visible && (this.real || (this.isLoaded && !this.ready))) {
-          let res;
-          //bbn.fn.log("INITIATING CONTAINER " + this.url + " " + (this.script ? "(THERE IS A SCRIPT)" : ""));
 
-          if ( this.script ){
-            res = typeof this.script === 'string' ? eval(this.script) : this.script;
+        if (this.isPane) {
+        }
+        if (this.isVisible && (this.real || (this.isLoaded && !this.ready))) {
+          let res;
+
+          if (this.currentView.script){
+            res = typeof this.currentView.script === 'string' ? eval(this.currentView.script) : this.currentView.script;
             // if evaluating the script property returns a function that will be onMount
-            if ( res ){
-              if (bbn.fn.isFunction(res) ){
-                this.onMount = res;
-                this.isComponent = false;
-              }
-              // Otherwise if it's an object we assume it is a component
-              else if ( typeof(res) === 'object' ){
-                //bbn.fn.log("THERE IS SCRIPT for " + this.url + " AND IT IS AN OBJECT");
-                this.isComponent = true;
-              }
-              else{
-                //bbn.fn.log("THERE IS SCRIPT for " + this.url + " AND WTF???");
-              }
+            if (bbn.fn.isFunction(res) ){
+              this.onMount = res;
+              this.isComponent = false;
+            }
+            // Otherwise if it's an object we assume it is a component
+            else if (res && (typeof(res) === 'object')) {
+              this.isComponent = true;
             }
           }
           else if ( this.content ){
@@ -759,7 +779,7 @@ document.head.insertAdjacentElement('beforeend', css);
             // Adding also a few funciton to interact with the tab
             let cont = this;
             let o = bbn.fn.extend(true, res ? res : {}, {
-              template: '<div class="' + (this.router.scrollContent ? '' : 'bbn-w-100') + '">' + this.content + '</div>',
+              template: '<div class="' + (this.router.scrollContent ? '' : 'bbn-w-100') + '">' + this.currentView.content + '</div>',
               methods: {
                 getContainer(){
                   if (!this._bbn_container) {
@@ -771,10 +791,10 @@ document.head.insertAdjacentElement('beforeend', css);
                   return this.getContainer();
                 },
                 addMenu(){
-                  return this.getContainer().addMenu.apply(this.$parent, arguments)
+                  return this.getContainer().addMenu.apply(this.router, arguments)
                 },
                 deleteMenu(){
-                  return this.getContainer().deleteMenu.apply(this.$parent, arguments)
+                  return this.getContainer().deleteMenu.apply(this.router, arguments)
                 }
               },
               props: ['source']
@@ -782,7 +802,7 @@ document.head.insertAdjacentElement('beforeend', css);
             // The local anonymous component gets defined
             this.$options.components[this.componentName] = o;
           }
-          else{
+          else {
             this.isComponent = false;
           }
 
@@ -815,7 +835,7 @@ document.head.insertAdjacentElement('beforeend', css);
         return this.router.getMenuFn(this.currentIndex);
       },
       setScreenshot() {
-        if (!this._screenshotInterval && this.visual && this.router.db) {
+        if (!this._screenshotInterval && this.router.isVisual && this.router.db && !this.isPane) {
           let url = this.getFullURL();
           this.router.db.selectOne('containers', 'time', {url: url}).then(time => {
             // Checking if we have a screenshot of less than an hour
@@ -842,7 +862,7 @@ document.head.insertAdjacentElement('beforeend', css);
         }
       },
       async saveScreenshot(scale = 0.1, timeout = 0) {
-        if (this.router.db) {
+        if (this.router.db && this.isVisible && !this.isPane) {
           let img       = await this.takeScreenshot(scale, timeout, true);
           let num_tries = 0;
           while (!img && (num_tries < 5)) {
@@ -850,7 +870,9 @@ document.head.insertAdjacentElement('beforeend', css);
             img = await this.takeScreenshot(scale, 5000);
           }
           if (!img) {
-            throw new Error(bbn._("Impossible to take the screenshot of " + this.getFullCurrentURL()));
+            bbn.fn.log(bbn._("Impossible to take the screenshot of") + ' ' + this.getFullCurrentURL());
+            return;
+            //throw new Error(bbn._("Impossible to take the screenshot of " + this.getFullCurrentURL()));
           }
           this.thumbnail = img.src;
           // This is in fact an insert/update
@@ -878,7 +900,7 @@ document.head.insertAdjacentElement('beforeend', css);
               resolve(false);
             };
             if ((this.currentIndex === this.router.selected)
-                && this.visible
+                && this.isVisible
                 && window.html2canvas
                 && bbn.fn.isActiveInterface(600)
                 && !this.router.visualShowAll
@@ -901,7 +923,6 @@ document.head.insertAdjacentElement('beforeend', css);
 
               ct.style.width = w + 'px !important';
               ct.style.height = h + 'px !important';
-              bbn.fn.log("Screenshot of " + this.getFullURL());
               html2canvas(ct, {
                 width: w,
                 height: h,
@@ -938,7 +959,25 @@ document.head.insertAdjacentElement('beforeend', css);
             }
           });
         }
-      }
+      },
+      /**
+       * @method registerRouter
+       * @param {Vue} bc
+       * @param {String} url
+       */
+      registerRouter(router) {
+        this.routers[bbn.fn.substr(router.getBaseURL(), 0, -1)] = router;
+        this.router.registerRouter(router);
+      },
+      /**
+       * @method unregisterRouter
+       * @param {Vue} bc
+       * @param {String} url
+       */
+      unregisterRouter(router){
+        delete this.routers[bbn.fn.substr(router.getBaseURL(), 0, -1)];
+        this.router.unregisterRouter(router);
+      },
     },
     /**
      * @event created 
@@ -973,7 +1012,6 @@ document.head.insertAdjacentElement('beforeend', css);
       if ( !this.router.ready ){
         this.router.$on('ready', () => {
           //this.init();
-          this.router.register(this);
         });
       }
       else{
@@ -1010,17 +1048,6 @@ document.head.insertAdjacentElement('beforeend', css);
       loading(v) {
         this.isLoading = v;
       },
-      selected(v) {
-        this.visible = v;
-        if (this.visual) {
-          if (v) {
-            this.setScreenshot()
-          }
-          else {
-            this.unsetScreenshot();
-          }
-        }
-      },
       idx(v) {
         if (this.visual) {
           this.isOver = false;
@@ -1050,31 +1077,35 @@ document.head.insertAdjacentElement('beforeend', css);
           }
         }
       },
-      load(nv, ov){
-        /** Why????
-        if ( nv && this.$options.components[this.componentName] ){
-          delete this.$options.components[this.componentName];
-        }
-        else if ( !nv && ov ){
-          this.init()
-        }
-         */
-      },
       /**
        * @watch visible
        * @param {Boolean} nv 
        * @param {Boolean} ov 
        * @fires selfEmit
        */
-      visible(nv, ov){
-        this.$nextTick(() => {
-          this.$emit(nv ? 'view' : 'unview', this);
+      isVisible(nv) {
+        let emit = true;
+        if (!this.isPane && this.router.isVisual) {
           if (nv) {
-            this.$nextTick(() => {
-              this.onResize();
-            });
+            this.setScreenshot()
           }
-        });
+          else {
+            this.unsetScreenshot();
+          }
+        }
+
+        if (emit) {
+          this.$emit(nv ? 'view' : 'unview', this);
+        }
+
+        if (nv) {
+          if (!this.isLoaded && !this.isLoading) {
+            this.router.load(this.currentURL, true)
+          }
+          this.$nextTick(() => {
+            this.onResize();
+          });
+        }
       },
       /**
        * @watch content
@@ -1142,12 +1173,6 @@ document.head.insertAdjacentElement('beforeend', css);
         if (view) {
           view.dirty = v;
           this.router.retrieveDirtyContainers();
-        }
-      },
-      isInit(v) {
-        if (!v) {
-          this.isLoaded = !this.load || this.loaded;
-          this.dirty = false;
         }
       }
     },

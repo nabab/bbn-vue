@@ -2,7 +2,8 @@
   display: none;
 }
 .bbn-colorpicker .bbn-colorpicker-input {
-  padding: .3em;
+  padding: .15em;
+  line-height: calc(var(--line-height) - .15em);
 }
 .bbn-colorpicker .bbn-colorpicker-input .bbn-colorpicker-input-color {
   width: 2em;

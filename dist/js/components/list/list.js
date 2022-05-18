@@ -48,11 +48,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-floater-list']"
             'bbn-state-default': true,
             'bbn-disabled': !component && !!li.data && !!li.data.disabled,
             'bbn-state-selected': isSelected(idx),
-            'bbn-state-hover': (overIdx === idx)
-              && ((origin === 'floater')
-                || (isOver
-                  && rootList
-                  && (_self === rootList.overList))),
+            'bbn-state-hover': (overIdx === idx),
             'bbn-alt': alternateBackground && (idx % 2)
           }">
         <component v-if="currentComponent"
@@ -750,6 +746,12 @@ document.head.insertAdjacentElement('beforeend', css);
           }
         }
       },
+      filteredTotal(v, ov) {
+        if (!ov) {
+          this.$nextTick(this.resetOverIdx);
+        }
+
+      }
       /*
       selected(){
         this.updateData();

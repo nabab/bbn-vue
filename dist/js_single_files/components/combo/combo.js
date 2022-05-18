@@ -23,6 +23,7 @@ script.innerHTML = `<div :class="[
               @focus="selectText"
               autocomplete="off"
               autocorrect="off"
+              :placeholder="placeholder"
               autocapitalize="off"
               spellcheck="false"
               :required="required"
@@ -265,7 +266,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
               if (v && (v.length >= this.minLength)) {
                 this.currentFilters.conditions.splice(0, this.currentFilters.conditions.length ? 1 : 0, {
                   field: this.sourceText,
-                  operator: 'startswith',
+                  operator: this.searchOperator,
                   value: v
                 });
                 this.$nextTick(() => {

@@ -45,6 +45,7 @@
                  :offset="offsetY">
   </bbn-scrollbar>
 </div>
+
 </template>
 <script>
   module.exports =  /**

@@ -745,9 +745,15 @@
         if (typeof selector === 'number') {
           return vm._uid === selector;
         }
-        if ( vm.$vnode && vm.$vnode.componentOptions && (vm.$vnode.componentOptions.tag === selector) ){
+
+        if (vm.$vnode && vm.$vnode.componentOptions && (vm.$vnode.componentOptions.tag === 'bbn-portal')) {
+          return false;
+        }
+
+        if ( vm.$vnode && vm.$vnode.componentOptions && (vm.$vnode.componentOptions.tag === selector)) {
           return true;
         }
+
         if (vm.$el && bbn.fn.isFunction(vm.$el.matches)) {
           return vm.$el.matches(selector);
         }
@@ -1577,6 +1583,24 @@
         native: {
           type: Boolean,
           default: false
+        },
+        /**
+         * The icon representing the arrow up.
+         * @prop {String} ['nf nf-fa-caret_up'] iconUp
+         * @memberof dropdownComponent
+         */
+        iconUp: {
+          type: String,
+          default: 'nf nf-fa-caret_up'
+        },
+        /**
+         * The icon representing the arrow down.
+         * @prop {String} ['nf nf-fa-caret_down'] iconDown
+         * @memberof dropdownComponent
+         */
+        iconDown: {
+          type: String,
+          default: 'nf nf-fa-caret_down'
         }
       },
       data(){
@@ -1593,18 +1617,6 @@
            * @memberof dropdownComponent
            */
           closeTimeout: 0,
-          /**
-           * The icon representing the arrow up.
-           * @data {String} ['nf nf-fa-caret_up'] iconUp
-           * @memberof dropdownComponent
-           */
-          iconUp: 'nf nf-fa-caret_up',
-          /**
-           * The icon representing the arrow down.
-           * @data {String} ['nf nf-fa-caret_down'] iconDown
-           * @memberof dropdownComponent
-           */
-          iconDown: 'nf nf-fa-caret_down',
           /**
            * True if the floating menu of the component is opened.
            * @data {Boolean} [false] isOpened
@@ -3715,6 +3727,14 @@
          searchFields: {
           type: Array
         },
+        /**
+         * The operator used by filterString filter
+         * @prop {String} ['startswith'] searchOperator
+         */
+        searchOperator: {
+          type: String,
+          default: 'startswith'
+        }
       },
       data(){
         let order = this.order;
@@ -5184,7 +5204,7 @@
         isActiveResizer() {
           let ct = this.closest('bbn-container');
           if (ct) {
-            return ct.real ? ct.visible : (ct.currentIndex === ct.router.selected);
+            return ct.isVisible;
           }
   
           return true;
@@ -5302,7 +5322,7 @@
           // Creating the callback function which will be used in the timeout in the listener
           this.onParentResizerEmit = () => {
             let ct = this.closest('bbn-container');
-            if (ct && !ct.visible) {
+            if (ct && !ct.isVisible) {
               return;
             }
 
@@ -6125,7 +6145,7 @@
               value: this.observerValue
             });
             setTimeout(() => {
-              this.observationTower.$on('bbnObs' + this.observerUID + this.observerID, newVal => {
+              this.observationTower.$on('bbnobserver' + this.observerUID + this.observerID, newVal => {
                 //bbn.fn.log("NEW VALUE!");
                 // Integration of the functionnality is done through a watcher on this property
                 this.observerDirty = true;
@@ -6150,7 +6170,7 @@
             else{
               this.observers.push(obs);
               if ( this.observerCheck() ){
-                this.observationTower.$on('bbnObs' + obs.element + obs.id, newVal => {
+                this.observationTower.$on('bbnobserver' + obs.element + obs.id, newVal => {
                   this.observerEmit(newVal, obs);
                 });
               }
@@ -6195,8 +6215,7 @@
        */
       created(){
         if ( this.componentClass ){
-          this.componentClass.push('bbn-observer-component');
-          this.componentClass.push('bbn-observer', 'bbn-observer-' + this.observerUID);
+          this.componentClass.push('bbn-observer-component', 'bbn-observer', 'bbn-observer-' + this.observerUID);
         }
       },
       /**
@@ -6221,7 +6240,7 @@
           if ( idx > -1 ){
             this.observationTower.observers.splice(idx, 1);
           }
-          this.observationTower.$off('bbnObs' + this.observerUID + this.observerID);
+          this.observationTower.$off('bbnobserver' + this.observerUID + this.observerID);
         }
       },
       watch: {

@@ -1,0 +1,76 @@
+div.bbn-router-config h2,
+div.bbn-router-config h3 {
+  float: left;
+  width: 100%;
+  position: relative;
+}
+div.bbn-router-config .bbn-router-config-mode {
+  height: auto;
+  grid-template-columns: repeat(3,1fr);
+  width: 80em;
+  max-width: 90vw;
+  max-height: 30vh;
+}
+div.bbn-router-config .bbn-router-config-mode > div {
+  text-align: center;
+}
+div.bbn-router-config .bbn-router-config-mode > div > div {
+  white-space: nowrap;
+}
+div.bbn-router-config .bbn-router-config-orientation {
+  height: auto;
+  grid-template-columns: repeat(5,1fr);
+  width: 80em;
+  max-width: 90vw;
+  max-height: 30vh;
+}
+div.bbn-router-config .bbn-router-config-orientation > div {
+  text-align: center;
+}
+div.bbn-router-config .bbn-router-config {
+  display: grid;
+  height: 100%;
+  gap: 0;
+}
+div.bbn-router-config .bbn-router-config > div {
+  min-height: 0.5em;
+}
+div.bbn-router-config .bbn-router-config.bbn-router-config-visual {
+  gap: 0.2em;
+  grid-template-rows: repeat(5,1fr);
+  grid-template-columns: repeat(5,1fr);
+}
+div.bbn-router-config .bbn-router-config.bbn-router-config-visual > div {
+  min-height: 1.5em;
+  fill: var(--alt-text);
+}
+div.bbn-router-config .bbn-router-config.bbn-router-config-visual > div:hover {
+  fill: var(--hover-text);
+}
+div.bbn-router-config .bbn-router-config.bbn-router-config-visual .bbn-router-config-mode-selected {
+  grid-area: 2 / 1 / 6 / 6;
+}
+div.bbn-router-config .bbn-router-config.bbn-router-config-tabs {
+  grid-template-rows: repeat(9,1fr);
+  grid-template-columns: repeat(5,1fr);
+}
+div.bbn-router-config .bbn-router-config.bbn-router-config-tabs .bbn-router-config-mode-selected {
+  grid-area: 3 / 1 / 10 / 6;
+}
+div.bbn-router-config .bbn-router-config.bbn-router-config-breadcrumb {
+  row-gap: 0.3em;
+  grid-template-rows: repeat(9,1fr);
+  grid-template-columns: 1fr;
+}
+div.bbn-router-config .bbn-router-config.bbn-router-config-breadcrumb .bbn-router-config-mode-selected {
+  grid-area: 2 / 1 / 10 / 6;
+}
+div.bbn-router-config .bbn-router-config .bbn-router-config-mode-selected {
+  color: var(--alt-text);
+  background-color: var(--alt-background);
+}
+div.bbn-router-config .bbn-router-config.bbn-router-visual-orientation {
+  gap: 0.1em;
+  grid-template-rows: repeat(5,1fr);
+  grid-template-columns: repeat(5,1fr);
+}

@@ -104,6 +104,9 @@ script.innerHTML = `<div :class="[
                :source="filteredData"
                :source-text="sourceText"
                :source-value="sourceValue"
+               :source-url="sourceUrl"
+               :source-action="sourceAction"
+               :source-icon="sourceIcon"
                :title="floaterTitle"/>
   <bbn-floater v-else-if="!popup
                  && asMobile

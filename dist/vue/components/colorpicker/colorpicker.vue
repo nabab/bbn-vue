@@ -17,7 +17,7 @@
     <div :class="['bbn-flex-width', 'bbn-radius', {'bbn-p': !isDisabled && !readonly}]"
          @click="openCloseFloater"
     >
-      <div class="bbn-flex-fill bbn-right-xsspace bbn-radius-top-left bbn-radius-bottom-right bbn-colorpicker-input-color bbn-middle bbn-bordered"
+      <div class="bbn-flex-fill bbn-right-xsspace bbn-radius bbn-colorpicker-input-color bbn-middle bbn-bordered"
            :style="{backgroundColor: value || ''}"
       >
         <i v-if="!value"
@@ -527,7 +527,8 @@
   display: none;
 }
 .bbn-colorpicker .bbn-colorpicker-input {
-  padding: .3em;
+  padding: .15em;
+  line-height: calc(var(--line-height) - .15em);
 }
 .bbn-colorpicker .bbn-colorpicker-input .bbn-colorpicker-input-color {
   width: 2em;

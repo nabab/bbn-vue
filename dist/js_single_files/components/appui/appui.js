@@ -154,11 +154,15 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-background', {
                   :post-base-url="!single"
                   ref="router"
                   :nav="nav"
+                  :splittable="splittable"
+                  :resizable="true"
+                  :collapsible="true"
                   :master="true"
                   :url="!!nav ? undefined : url"
                   @beforeroute="onBeforeRoute"
                   @route="onRoute"
                   @change="$emit('change', $event)"
+                  @shortcut="addShortcut"
                   :breadcrumb="isMobile"
                   :scroll-content="scrollable"
                   :component="component"
@@ -500,8 +504,18 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         type: Boolean,
         default: false
       },
+      /**
+       * Will be passed to the top router in order to make it splittable.
+       * @prop {Boolean} [false] splittable
+       */
+      splittable: {
+        type: Boolean,
+        default: false
+      },
     },
     data(){
+      let isMobile = bbn.fn.isMobile();
+      let isTablet = bbn.fn.isTabletDevice();
       return {
         isFocused: false,
         intervalBugChrome: null,
@@ -545,7 +559,11 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         hasBigMessage: false,
         searchOn: false,
         pressedKey: false,
-        pressedTimeout: false
+        pressedTimeout: false,
+        isMobile: isMobile,
+        isTablet: isTablet,
+        isTouch: isMobile || isTablet,
+        isDesktop: !isTablet && !isMobile
       }
     },
     computed: {
@@ -595,7 +613,10 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
             icon: 'nf nf-oct-versions',
             action: () => {
               bbn.fn.post(this.plugins['appui-core'] + '/service/increase').then(() => {
-                document.location.reload();
+                if (window.bbnSW) {
+                  window.bbnSW.unregister();
+                  this.$nextTick(() => window.document.location.reload());
+                }
               });
             }
           }
@@ -924,15 +945,29 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         }
       },
       addShortcut(data){
-        if ( this.plugins['appui-menu'] && data.id ){
-          let idx = bbn.fn.search(this.shortcuts, {id: data.id});
-          if ( idx === -1 ){
+        if (this.plugins['appui-menu']) {
+          let ok = !!(data.id || data.url);
+          if (data.id) {
+            let idx = bbn.fn.search(this.shortcuts, {id: data.id});
+            if ( idx > -1 ){
+              ok = false;
+            }
+          }
+
+          if (ok) {
             this.post(this.plugins['appui-menu'] + '/shortcuts/insert', data, d => {
               if ( d.success ){
                 this.shortcuts.push(data);
               }
             });
           }
+        }
+        else if ( this.plugins['appui-menu'] && data.url ){
+          this.post(this.plugins['appui-menu'] + '/shortcuts/insert', data, d => {
+            if ( d.success ){
+              this.shortcuts.push(data);
+            }
+          });
         }
       },
       removeShortcut(data){
@@ -961,34 +996,12 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         if (this.pressedKey) {
           this.pressedKey = false;
         }
-        if (e.ctrlKey && !e.shiftKey && !e.altKey) {
-          // Arrows do history
-          if ([37, 39].includes(e.keyCode)) {
-            if (!bbn.env.focused
-              || (!['input', 'textarea', 'select'].includes(bbn.env.focused.tagName.toLowerCase()))
-            ) {
-              e.preventDefault();
-              e.stopPropagation();
-              if (e.keyCode === 37) {
-                history.back();
-              }
-              else {
-                history.forward();
-              }
-            }
+        if (!e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey && !this.isTouch) {
+          let tag = e.target.tagName;
+          if ((tag === 'INPUT') || (tag === 'TEXTAREA') || (tag === 'SELECT') || ((tag === 'DIV') && e.target.isContentEditable)) {
+            return;
           }
-          else if (!this.single
-            && bbn.fn.isNumber(e.key)
-            && (e.key !== '0')
-          ) {
-            e.preventDefault();
-            e.stopPropagation();
-            let idx = parseInt(e.key);
-            idx--;
-            this.getRef('router').activateIndex(idx);
-          }
-        }
-        else if (!e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
+
           this.pressedKey = e.key;
         }
       },

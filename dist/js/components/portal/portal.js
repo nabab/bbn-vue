@@ -64,8 +64,7 @@
        * @prop {String} [''] selector
        */
       selector: {
-        type: [HTMLElement, String],
-        required: true
+        type: [HTMLElement, String]
       },
       /**
        * @prop {String} ['div'] tag
@@ -82,7 +81,7 @@
     },
     render(h) {
       if (this.disabled) {
-        const nodes = this.$scopedSlots && this.$scopedSlots.default()
+        const nodes = this.$scopedSlots && bbn.fn.isFunction(this.$scopedSlots.default) && this.$scopedSlots.default()
         if (!nodes) {
           return h();
         }
@@ -93,7 +92,7 @@
       return h();
     },
     created() {
-      if (!this.getTargetEl()) {
+      if (!this.disabled && !this.getTargetEl()) {
         this.insertTargetEl()
       }
     },
@@ -119,6 +118,14 @@
           disabled ? this.unmount() : this.$nextTick(this.mount)
         },
       },
+      element: {
+        immediate: true,
+        handler() {
+          if (!this.disabled) {
+            this.$nextTick(this.mount)
+          }
+        },
+      },
     },
     methods: {
       // This returns the element into which the content should be mounted.
@@ -126,19 +133,23 @@
         return bbn.fn.isString(this.selector) ? document.querySelector(this.selector) : this.selector;
       },
       insertTargetEl() {
-        const parent = document.querySelector('body');
-        const child = document.createElement(this.tag);
-        child.id = this.randomId;
-        parent.appendChild(child);
+        if (!this.disabled) {
+          const parent = document.querySelector('body');
+          const child = document.createElement(this.tag);
+          child.id = this.randomId;
+          parent.appendChild(child);
+        }
       },
       mount() {
         const targetEl = this.getTargetEl();
         const el = document.createElement('DIV');
-        if (this.prepend && targetEl.firstChild) {
-          targetEl.insertBefore(el, targetEl.firstChild);
-        }
-        else {
-          targetEl.appendChild(el);
+        if (targetEl) {
+          if (this.prepend && targetEl.firstChild) {
+            targetEl.insertBefore(el, targetEl.firstChild);
+          }
+          else {
+            targetEl.appendChild(el);
+          }
         }
   
         this.container = new TargetContainer({

@@ -2,3 +2,20 @@
   box-sizing: content-box;
   clear: both;
 }
+.bbn-rte .bbn-rte-toolbar > .bbn-flex-fill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.bbn-rte .bbn-rte-toolbar > .bbn-flex-fill > * {
+  margin: 0 .15em;
+}
+.bbn-rte .bbn-rte-toolbar > .bbn-flex-fill .bbn-rte-fontcolor,
+.bbn-rte .bbn-rte-toolbar > .bbn-flex-fill .bbn-rte-fontbgcolor {
+  background-color: var(--default-background);
+}
+.bbn-rte .bbn-rte-toolbar > .bbn-flex-fill .bbn-rte-fontcolor .bbn-colorpicker-input,
+.bbn-rte .bbn-rte-toolbar > .bbn-flex-fill .bbn-rte-fontbgcolor .bbn-colorpicker-input {
+  border: 0;
+}

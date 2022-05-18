@@ -2,7 +2,8 @@
 ((bbn) => {
 
 let script = document.createElement('script');
-script.innerHTML = `<span :class="componentClass">
+script.innerHTML = `<div :class="[componentClass, 'bbn-iblock']"
+     :style="currentStyle">
   <svg v-if="isLoading"
        xmlns="http://www.w3.org/2000/svg"
        viewBox="0 0 100 100"
@@ -28,13 +29,16 @@ script.innerHTML = `<span :class="componentClass">
       </animateTransform>
     </circle>
   </svg>
-  <template v-else-if="content" v-html="content"></template>
+  <div v-else-if="currentContent"
+       v-html="currentContent"
+       class="bbn-iblock"
+       :style="currentStyle"/>
   <svg v-else
        xmlns="http://www.w3.org/2000/svg"
        x="0px"
        y="0px"
        viewBox="0 0 426.667 426.667"
-       style="enable-background:new 0 0 426.667 426.667; width: inherit; height: inherit">
+       style="enable-background:new 0 0 426.667 426.667; width: inherit; height: inherit"
        xml:space="preserve">
     <path style="fill:#F05228;"
           d="M213.333,0C95.514,0,0,95.514,0,213.333s95.514,213.333,213.333,213.333	s213.333-95.514,213.333-213.333S331.153,0,213.333,0z M330.995,276.689l-54.302,54.306l-63.36-63.356l-63.36,63.36l-54.302-54.31	l63.356-63.356l-63.356-63.36l54.302-54.302l63.36,63.356l63.36-63.356l54.302,54.302l-63.356,63.36L330.995,276.689z"></path>
@@ -54,9 +58,15 @@ script.innerHTML = `<span :class="componentClass">
     <g></g>
     <g></g>
   </svg>
-</span>`;
+</div>`;
 script.setAttribute('id', 'bbn-tpl-component-icon');
 script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
+
+
+let css = document.createElement('link');
+css.setAttribute('rel', 'stylesheet');
+css.setAttribute('href', bbn.vue.libURL + 'dist/js/components/icon/icon.css');
+document.head.insertAdjacentElement('beforeend', css);
 
 /**
  * @file bbn-icon component
@@ -75,11 +85,55 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
      * @mixin bbn.vue.basicComponent
      */
     mixins: [bbn.vue.basicComponent],
+    props: {
+      content: {
+        type: String
+      },
+      loading: {
+        type: Boolean,
+        default: false
+      },
+      width: {
+        type: [String, Number]
+      },
+      height: {
+        type: [String, Number]
+      }
+    },
     data(){
       return {
-        content: '',
-        isLoading: true,
+        currentContent: this.content || '',
+        isLoading: this.loading || false,
         isNotFound: false
+      }
+    },
+    computed: {
+      currentStyle() {
+        let o = {
+          background: 'none'
+        };
+        let props = ['width', 'height'];
+        bbn.fn.each(props, (p, i) => {
+          if (this[p]) {
+            o[p] = this[p];
+            if (bbn.fn.isNumber(this[p])) {
+              o[p] += 'px';
+            }
+            if (!this[props[i === 1 ? 0 : 1]]) {
+              o[props[i === 1 ? 0 : 1]] = 'auto';
+              o['max' + bbn.fn.correctCase(props[i === 1 ? 0 : 1])] = '100%';
+            }
+          }
+        });
+        if (!this.width && !this.height) {
+          o.width = 'auto';
+          o.height = 'auto';
+          o.maxHeight = '100% !important';
+          o.maxWidth = '100% !important';
+          o.minWidth = '4em';
+        }
+
+        return o;
       }
     }
   })
