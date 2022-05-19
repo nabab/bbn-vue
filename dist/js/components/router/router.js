@@ -9,7 +9,8 @@ script.innerHTML = `<div :class="[componentClass, {
              }]">
   <bbn-splitter :resizable="resizable"
                 :collapsible="collapsible"
-                :full-size="scrollContent">
+                :full-size="scrollContent"
+                ref="topSplitter">
     <bbn-pane :scrollable="false">
       <div :class="{
                   'bbn-overlay': scrollContent,
@@ -3529,7 +3530,11 @@ document.head.insertAdjacentElement('beforeend', css);
 
           this.currentPanes.splice(paneIndex, 1);
           if (this.routed) {
-            this.$nextTick(() => this.getRef('splitter').init());
+            this.$nextTick(() => {
+              this.currentPanes.length ?
+                this.getRef('splitter').init()
+                : this.getRef('topSplitter').init()
+            })
           }
         }
       },

@@ -3296,7 +3296,11 @@
 
           this.currentPanes.splice(paneIndex, 1);
           if (this.routed) {
-            this.$nextTick(() => this.getRef('splitter').init());
+            this.$nextTick(() => {
+              this.currentPanes.length ?
+                this.getRef('splitter').init()
+                : this.getRef('topSplitter').init()
+            })
           }
         }
       },

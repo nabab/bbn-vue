@@ -5,7 +5,8 @@
              }]">
   <bbn-splitter :resizable="resizable"
                 :collapsible="collapsible"
-                :full-size="scrollContent">
+                :full-size="scrollContent"
+                ref="topSplitter">
     <bbn-pane :scrollable="false">
       <div :class="{
                   'bbn-overlay': scrollContent,
