@@ -1273,7 +1273,7 @@
           }
         }
 
-        if (this.forms.length && !confirm) {
+        if (!force && this.forms.length && !confirm) {
           this.forms[0].closePopup();
         }
         else{
