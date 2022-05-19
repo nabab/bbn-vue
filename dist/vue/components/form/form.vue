@@ -667,25 +667,23 @@
               ev.preventDefault();
             }
             this.confirm(this.confirmLeave, () => {
-              if ( this.reset() ){
-                this.$nextTick(() => {
-                  if (this.window) {
-                    this.window.close(true, true);
-                    this.isClosing = false;
-                  }
-                });
-              }
-            });
-          }
-          else{
-            if ( this.reset() ){
+              this.reinit();
               this.$nextTick(() => {
                 if (this.window) {
                   this.window.close(true, true);
                   this.isClosing = false;
                 }
               });
-            }
+            });
+          }
+          else{
+            this.reinit();
+            this.$nextTick(() => {
+              if (this.window) {
+                this.window.close(true, true);
+                this.isClosing = false;
+              }
+            });
           }
         }
       },
