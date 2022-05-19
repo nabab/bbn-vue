@@ -658,10 +658,14 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @param {Event} ev 
        * @fires isModified
        */
-      closePopup(window, ev){
+      closePopup(force, ev){
         if ( this.window && this.$el && !this.isClosing){
           this.isClosing = true;
-          if ( !this.isPosted && this.confirmLeave && this.isModified() ){
+          // In case the event is sent
+          if (force !== true) {
+            force = false;
+          }
+          if (!force && !this.isPosted && this.confirmLeave && this.isModified() ){
             if ( ev ){
               ev.preventDefault();
             }

@@ -13,7 +13,7 @@
       @resize.stop="onResize"
       @mouseleave="isOver = false"
       @mouseenter="isOver = true"
-      @keydown.esc.prevent.stop="close"
+      @keydown.esc.prevent.stop="close()"
       @subready.stop
       :style="currentStyle"
       v-resizable:container.left.right.bottom="ready && resizable ? $el.parentElement : false">
@@ -43,7 +43,7 @@
             }"
             ref="title"/>
       </div>
-      <div class="bbn-top-right bbn-p bbn-lg">
+      <div class="bbn-top-right bbn-p bbn-lg bbn-h-100">
         <div v-if="maximizable !== false"
             class="bbn-h-100 bbn-middle bbn-reactive"
             @click.stop.prevent="isMaximized = !isMaximized"
@@ -53,7 +53,7 @@
         </div>
         <div v-if="closable !== false"
             class="bbn-h-100 bbn-middle bbn-reactive"
-            @click.stop.prevent="close"
+            @click.stop.prevent="close()"
             tabindex="0"
             :title="_('Close')">
           <i class="nf nf-fa-times"/>
@@ -141,7 +141,7 @@
         'bbn-lg': !modal
       }">
         <i class="nf nf-fa-times bbn-p"
-           @click="close"/>
+           @click="close()"/>
       </div>
     </div>
     <footer v-if="footer"
@@ -1437,7 +1437,7 @@
         }
 
         if (this.forms.length && !confirm) {
-          this.forms[0].closePopup();
+          this.forms[0].closePopup(force);
         }
         else{
           let closeEvent = new Event('close');
