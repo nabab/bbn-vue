@@ -154,10 +154,10 @@ document.head.insertAdjacentElement('beforeend', css);
         }
       },
       /**
-       * @prop {Object} [{}] source
+       * @prop {Function|Array|Object} [{}] source
        */
       source: {
-        type: Object,
+        type: [Function, Array, Object],
         default(){
           return {};
         }
@@ -191,7 +191,9 @@ document.head.insertAdjacentElement('beforeend', css);
        * @prop {String} mode
        */
       mode: {
-        type: String
+        type: String,
+        default: "free",
+        validator: mode => ['free', 'options', 'selection'].includes(mode)
       }
     },
     data(){
