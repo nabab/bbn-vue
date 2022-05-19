@@ -6852,7 +6852,7 @@
             },
             {
                 "text": "pane",
-                "lastmod": 1652881415,
+                "lastmod": 1652956027,
                 "url": "bbn-vue\/component\/pane\/overview",
                 "props": [
                     {
@@ -6884,6 +6884,11 @@
                         "text": "collapsed",
                         "desc": "",
                         "url": "bbn-vue\/component\/pane\/doc\/props#collapsed"
+                    },
+                    {
+                        "text": "hidden",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/pane\/doc\/props#hidden"
                     },
                     {
                         "text": "scrollable",
@@ -7519,7 +7524,7 @@
             },
             {
                 "text": "router",
-                "lastmod": 1652874271,
+                "lastmod": 1652957596,
                 "url": "bbn-vue\/component\/router\/overview",
                 "props": [
                     {
@@ -8050,7 +8055,7 @@
             },
             {
                 "text": "router-config",
-                "lastmod": 1652797143,
+                "lastmod": 1652958190,
                 "url": "bbn-vue\/component\/router-config\/overview",
                 "props": [],
                 "methods": [],
@@ -9166,7 +9171,7 @@
             },
             {
                 "text": "splitter",
-                "lastmod": 1652881328,
+                "lastmod": 1652955997,
                 "url": "bbn-vue\/component\/splitter\/overview",
                 "props": [
                     {

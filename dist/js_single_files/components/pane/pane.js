@@ -108,6 +108,13 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         default: false
       },
       /**
+       * @prop {Boolean} [false] hidden
+       */
+      hidden: {
+        type: Boolean,
+        default: false
+      },
+      /**
        * @prop {Boolean} [false] scrollable
        */
       scrollable: {

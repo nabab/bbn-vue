@@ -1,15 +1,14 @@
 {
-    "Router Configuration": "Configuration du Router",
+    "Router Configuration": "Configuration du Routeur",
     "Navigation mode": "Mode de navigation",
     "visual": "visuel",
     "tabs": "onglets",
-    "breadcrumb": "miette de pain",
+    "breadcrumb": "fil d\u0027Ariane",
     "Visual orientation": "Orientation visuelle",
-    "Presets": "Pr\u00e9configurations",
+    "Presets": "Pr\u00e9r\u00e9glages",
     "Soon...": "Bient\u00f4t",
     "Configuration backups": "Sauvegardes de configuration",
-    "Picks left or top in function of your wiondow's size": "Picks \u00e0 gauche ou en haut en fonction de la taille de votre fen\u00ea
-tre",
+    "Picks left or top in function of your window's size": "Choisis \u00e0 gauche ou en haut en fonction de la taille de votre fen\u00eatre",
     "On the left of the main content": "A gauche du contenu principal",
     "On the top of the main content": "En haut du contenu principal",
     "On the right of the main content": "A droite du contenu principal",
@@ -18,6 +17,10 @@ tre",
     "Loading": "Chargement",
     "Impossible to find the container for URL": "Impossible de trrouver un conteneur correspondant \u00e0 cette URL",
     "Untitled site": "Site sans titre",
-    "You have unsaved data, are you sure you want to leave?": "Vous avez des donn\u00e9es non sauvegard\u00e9es, \u00ea
-tes-vous sûr de vouloir quitter?"
+    "You have unsaved data, are you sure you want to leave?": "Vous avez des donn\u00e9es non sauvegard\u00e9es, \u00eates-vous sûr de vouloir quitter?",
+    "Auto": "Auto",
+    "Left": "Gauche",
+    "Right": "Droite",
+    "Top": "Haut",
+    "Bottom": "Bas"
 }

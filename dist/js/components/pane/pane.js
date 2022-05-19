@@ -115,6 +115,13 @@ document.head.insertAdjacentElement('beforeend', css);
         default: false
       },
       /**
+       * @prop {Boolean} [false] hidden
+       */
+      hidden: {
+        type: Boolean,
+        default: false
+      },
+      /**
        * @prop {Boolean} [false] scrollable
        */
       scrollable: {

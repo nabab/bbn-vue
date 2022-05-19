@@ -84,25 +84,30 @@
       orientations() {
         let tmp = {
           auto: {
-            text: bbn._("Picks left or top in function of your wiondow's size"),
+            pos: bbn._("Auto"),
+            text: bbn._("Picks left or top in function of your window's size"),
             value: false
           },
           left: {
+            pos: bbn._("Left"),
             text: bbn._("On the left of the main content"),
             area: '1 / 2 / 6 / 6',
             value: false
           },
           top: {
+            pos: bbn._("Top"),
             text: bbn._("On the top of the main content"),
             area: '2 / 1 / 6 / 6',
             value: false
           },
           right: {
+            pos: bbn._("Right"),
             text: bbn._("On the right of the main content"),
             area: '1 / 1 / 6 / 5',
             value: false
           },
           bottom: {
+            pos: bbn._("Bottom"),
             text: bbn._("On the bottom of the main content"),
             area: '1 / 1 / 5 / 6',
             value: false
