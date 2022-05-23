@@ -71,10 +71,8 @@
                 </bbn-context>
                 <div class="bbn-tabs-selected"
                      :ref="'selector-' + tabIndex"
-                     v-show="tabIndex === value"
-                     :style="{
-                            backgroundColor: getFontColor(tabIndex)
-                            }"/>
+                     v-if="tabIndex === value"
+                     :style="{backgroundColor: selectedBarColor}"/>
                 <span v-if="!tab.static && !tab.pinned && closable"
                       class="bbn-p bbn-router-tab-close bbn-iblock bbn-top-right bbn-hxspadded"
                       tabindex="-1"

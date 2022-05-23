@@ -66,6 +66,11 @@
           'bbn-container-visible': isVisible
         }"
             ref="canvasSource">
+          <!-- The container's popup, from which each floater will come -->
+          <bbn-popup ref="popup"
+                    :source="popups"
+                    v-if="ready"
+                    v-show="!hidden && isLoaded && (isVisible || cached)"/>
           <!-- This is shown when it's ready -->
           <bbn-scroll v-if="isLoaded && (isVisible || ((real || cached) && ready) || router.isVisual)"
                       v-show="ready && isVisible || (router.isVisual && !thumbnail)"
@@ -125,10 +130,6 @@
             <img :src="thumbnail"
                 style="width: 100%; max-height: 100%; height: auto">
           </div>
-          <!-- The container's popup, from each floater will come -->
-          <bbn-popup ref="popup"
-                    :source="popups"
-                    v-if="!hidden && ready && isLoaded && (isVisible || cached)"/>
         </div>
       </div>
     </transition>

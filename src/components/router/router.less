@@ -5,11 +5,8 @@ div.bbn-router {
   box-sizing: border-box;
   margin: 0;
   .bbn-router-nav {
-    margin-top: 0;
     .bbn-router-nav:not(.bbn-router-nav-bc) {
-      //margin-top: 0.5em;
-      //height: calc(100% - 0.5em);
-      padding-top: 0.5em;
+      padding-top: ~"var(--sspace)";
       height: 100%;
     }
     &.bbn-router-nav-bc .bbn-router-breadcrumb-master{
@@ -34,10 +31,10 @@ div.bbn-router {
       animation: bbn-router-loader 1.2s linear infinite;
     }
     .bbn-pane .bbn-router-nav:not(.bbn-router-nav-bc){
-      margin-top: 0;
+      padding-top: 0;
     }
     .bbn-pane .bbn-router-nav:not(.bbn-router-nav-bc) .bbn-router-nav:not(.bbn-router-nav-bc){
-      margin-top: 0.5em;
+      padding-top: ~"var(--sspace)";
     }
 
     div.bbn-router-breadcrumb {

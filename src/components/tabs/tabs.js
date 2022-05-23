@@ -54,7 +54,8 @@
          * The value of the component.
          * @data {Boolean} valueToSet
          */
-        valueToSet: this.value
+        valueToSet: this.value,
+        selectedBarColor: null
       }
     },
     computed: {
@@ -69,7 +70,7 @@
           container: true,
           hidden: true
         } : {};
-      },
+      }
     },
     methods: {
       numProperties: bbn.fn.numProperties,
@@ -140,6 +141,11 @@
       }
     },
     watch: {
+      value(v) {
+        this.$nextTick(() => {
+          this.selectedBarColor = this.source[v] ? this.getFontColor(v) : null;
+        })
+      }
     },
     /**
      * Sets the initial state of the component.
@@ -150,6 +156,11 @@
     mounted(){
       this.router = this.closest('bbn-router');
       this.ready = true;
+      this.$nextTick(() => {
+        if (this.source[this.value]) {
+          this.selectedBarColor = this.getFontColor(this.value);
+        }
+      })
     }
   });
 })(bbn);

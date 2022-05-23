@@ -48,6 +48,13 @@
                     class="bbn-hsmargin"
                     v-bind="button"/>
       </div>
+      <div v-else-if="!hasFooter && realButtons.length && (mode !== 'big')"
+          class="bbn-w-100 bbn-top-lspace">
+        <bbn-button v-for="(button, i) in realButtons"
+                    :key="i"
+                    class="bbn-hxspadded"
+                    v-bind="button"/>
+      </div>
     </component>
   </div>
   <div v-if="hasFooter && !popup"

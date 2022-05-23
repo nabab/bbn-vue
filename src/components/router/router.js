@@ -3706,6 +3706,7 @@
         this.$nextTick(() => {
           if (this.ready) {
             this.setConfig();
+            this.onResize();
           }
         })
       },
@@ -3715,7 +3716,10 @@
        */
        isVisual(v) {
         this.$nextTick(() => {
-          this.setConfig();
+          if (this.ready) {
+            this.setConfig();
+            this.onResize();
+          }
         })
       }
     },

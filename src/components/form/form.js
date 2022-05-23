@@ -298,7 +298,7 @@
        */
        mode: {
          type: String,
-         default: 'normal'
+         default: 'big'
        }
     },
     data(){
@@ -398,7 +398,7 @@
        * @return {Boolean}
        */
       _canSubmit(){
-        return (this.prefilled || this.isModified()) && this.isValid(false, false) && !this.disabled;
+        return (this.prefilled || this.isModified()) && this.isValid(false, true) && !this.disabled;
       },
       /**
        * Returns an array containing the form's buttons.
@@ -533,12 +533,12 @@
         if (this.realButtons.length) {
           this.realButtons.splice(0, this.realButtons.length);
         }
-        if ( this.window && bbn.fn.isArray(this.window.currentButtons) ){
+        if (this.window && bbn.fn.isArray(this.window.currentButtons) && (this.mode === 'big')) {
           this.window.currentButtons.splice(0, this.window.currentButtons.length);
         }
         bbn.fn.each(this.getRealButtons(), b => {
           this.realButtons.push(b);
-          if ( this.window && bbn.fn.isArray(this.window.currentButtons) ){
+          if (this.window && bbn.fn.isArray(this.window.currentButtons) && (this.mode === 'big')) {
             this.window.currentButtons.push(b);
           }
         });
@@ -843,6 +843,10 @@
        */
       reportValidity() {
         return this.$el.reportValidity();
+      },
+      update() {
+        this.canSubmit = this._canSubmit();
+        this.$forceUpdate();
       }
     },
     /**
@@ -910,8 +914,6 @@
             }
           });
           this._isSetting = false;
-          this.canSubmit = this._canSubmit();
-          this.$forceUpdate();
         }
       }
       this.init();
@@ -972,7 +974,7 @@
               clearTimeout(this.sourceTimeout);
             }
             this.sourceTimeout = setTimeout(() => {
-              this.canSubmit  = this._canSubmit();
+              this.update();
             }, 200)
           })
         }
