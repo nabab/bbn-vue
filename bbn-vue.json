@@ -2536,7 +2536,7 @@
             },
             {
                 "text": "container",
-                "lastmod": 1652823759,
+                "lastmod": 1653353412,
                 "url": "bbn-vue\/component\/container\/overview",
                 "props": [
                     {
@@ -2553,6 +2553,16 @@
                         "text": "uid",
                         "desc": "A unique id for the container that will ben used as index by the router\n",
                         "url": "bbn-vue\/component\/container\/doc\/props#uid"
+                    },
+                    {
+                        "text": "uid",
+                        "desc": "A unique id for the container that will ben used as index by the router\n",
+                        "url": "bbn-vue\/component\/container\/doc\/props#uid"
+                    },
+                    {
+                        "text": "screenshotDelay",
+                        "desc": "Time between 2 automatic screenshot in visual mode, in milliseconds\n",
+                        "url": "bbn-vue\/component\/container\/doc\/props#screenshotDelay"
                     }
                 ],
                 "methods": [
@@ -4213,7 +4223,7 @@
             },
             {
                 "text": "floater",
-                "lastmod": 1652948255,
+                "lastmod": 1653313573,
                 "url": "bbn-vue\/component\/floater\/overview",
                 "props": [
                     {
@@ -4700,7 +4710,7 @@
             },
             {
                 "text": "form",
-                "lastmod": 1652975697,
+                "lastmod": 1653225123,
                 "url": "bbn-vue\/component\/form\/overview",
                 "props": [
                     {
@@ -5177,6 +5187,20 @@
                         "text": "basicComponent",
                         "desc": "",
                         "url": "bbn-vue\/component\/grapes\/doc\/mixins#basicComponent"
+                    }
+                ]
+            },
+            {
+                "text": "grid-configuration",
+                "lastmod": 1653313468,
+                "url": "bbn-vue\/component\/grid-configuration\/overview",
+                "props": [],
+                "methods": [],
+                "mixins": [
+                    {
+                        "text": "basicComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/grid-configuration\/doc\/mixins#basicComponent"
                     }
                 ]
             },
@@ -7524,7 +7548,7 @@
             },
             {
                 "text": "router",
-                "lastmod": 1652965346,
+                "lastmod": 1653157671,
                 "url": "bbn-vue\/component\/router\/overview",
                 "props": [
                     {
@@ -10064,7 +10088,7 @@
             },
             {
                 "text": "tabs",
-                "lastmod": 1652827041,
+                "lastmod": 1653130803,
                 "url": "bbn-vue\/component\/tabs\/overview",
                 "props": [
                     {

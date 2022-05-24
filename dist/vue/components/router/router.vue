@@ -3930,6 +3930,7 @@
         this.$nextTick(() => {
           if (this.ready) {
             this.setConfig();
+            this.onResize();
           }
         })
       },
@@ -3939,7 +3940,10 @@
        */
        isVisual(v) {
         this.$nextTick(() => {
-          this.setConfig();
+          if (this.ready) {
+            this.setConfig();
+            this.onResize();
+          }
         })
       }
     },
@@ -4161,11 +4165,8 @@ div.bbn-router {
   box-sizing: border-box;
   margin: 0;
 }
-div.bbn-router .bbn-router-nav {
-  margin-top: 0;
-}
 div.bbn-router .bbn-router-nav .bbn-router-nav:not(.bbn-router-nav-bc) {
-  padding-top: 0.5em;
+  padding-top: var(--sspace);
   height: 100%;
 }
 div.bbn-router .bbn-router-nav.bbn-router-nav-bc .bbn-router-breadcrumb-master {
@@ -4190,10 +4191,10 @@ div.bbn-router .bbn-router-nav .bbn-router-loading {
   animation: bbn-router-loader 1.2s linear infinite;
 }
 div.bbn-router .bbn-router-nav .bbn-pane .bbn-router-nav:not(.bbn-router-nav-bc) {
-  margin-top: 0;
+  padding-top: 0;
 }
 div.bbn-router .bbn-router-nav .bbn-pane .bbn-router-nav:not(.bbn-router-nav-bc) .bbn-router-nav:not(.bbn-router-nav-bc) {
-  margin-top: 0.5em;
+  padding-top: var(--sspace);
 }
 div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb {
   border: 0 !important;

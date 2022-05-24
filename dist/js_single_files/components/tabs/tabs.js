@@ -74,10 +74,8 @@ script.innerHTML = `<div :class="[componentClass, {'bbn-tabs-scrollable': scroll
                 </bbn-context>
                 <div class="bbn-tabs-selected"
                      :ref="'selector-' + tabIndex"
-                     v-show="tabIndex === value"
-                     :style="{
-                            backgroundColor: getFontColor(tabIndex)
-                            }"/>
+                     v-if="tabIndex === value"
+                     :style="{backgroundColor: selectedBarColor}"/>
                 <span v-if="!tab.static && !tab.pinned && closable"
                       class="bbn-p bbn-router-tab-close bbn-iblock bbn-top-right bbn-hxspadded"
                       tabindex="-1"
@@ -175,7 +173,8 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
          * The value of the component.
          * @data {Boolean} valueToSet
          */
-        valueToSet: this.value
+        valueToSet: this.value,
+        selectedBarColor: null
       }
     },
     computed: {
@@ -190,7 +189,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           container: true,
           hidden: true
         } : {};
-      },
+      }
     },
     methods: {
       numProperties: bbn.fn.numProperties,
@@ -261,6 +260,11 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       }
     },
     watch: {
+      value(v) {
+        this.$nextTick(() => {
+          this.selectedBarColor = this.source[v] ? this.getFontColor(v) : null;
+        })
+      }
     },
     /**
      * Sets the initial state of the component.
@@ -271,6 +275,11 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
     mounted(){
       this.router = this.closest('bbn-router');
       this.ready = true;
+      this.$nextTick(() => {
+        if (this.source[this.value]) {
+          this.selectedBarColor = this.getFontColor(this.value);
+        }
+      })
     }
   });
 })(bbn);

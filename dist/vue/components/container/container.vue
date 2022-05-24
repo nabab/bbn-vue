@@ -5,7 +5,7 @@
 }]"
      @subready.stop
      :style="visual ? visualStyle : {}"
-     v-show="(!router.isVisual && isVisible) || isVisualVisible">
+     v-show="(!router.isVisual && isVisible) || isVisualVisible || isPane">
   <div :class="{
     'bbn-overlay': router.scrollContent,
     'bbn-container-full-screen': fullScreen,
@@ -67,6 +67,11 @@
           'bbn-container-visible': isVisible
         }"
             ref="canvasSource">
+          <!-- The container's popup, from which each floater will come -->
+          <bbn-popup ref="popup"
+                    :source="popups"
+                    v-if="ready"
+                    v-show="!hidden && isLoaded && (isVisible || cached)"/>
           <!-- This is shown when it's ready -->
           <bbn-scroll v-if="isLoaded && (isVisible || ((real || cached) && ready) || router.isVisual)"
                       v-show="ready && isVisible || (router.isVisual && !thumbnail)"
@@ -126,10 +131,6 @@
             <img :src="thumbnail"
                 style="width: 100%; max-height: 100%; height: auto">
           </div>
-          <!-- The container's popup, from each floater will come -->
-          <bbn-popup ref="popup"
-                    :source="popups"
-                    v-if="!hidden && ready && isLoaded && (isVisible || cached)"/>
         </div>
       </div>
     </transition>
@@ -289,9 +290,21 @@
           return bbn.fn.randomString();
         }
       },
+      /**
+       * A unique id for the container that will ben used as index by the router
+       * @prop {String} uid
+       */
       visual: {
         type: Boolean,
         default: false
+      },
+      /**
+       * Time between 2 automatic screenshot in visual mode, in milliseconds
+       * @prop {Number} [43200000] screenshotDelay (12 hours)
+       */
+      screenshotDelay: {
+        type: Number,
+        default: 43200000
       }
     },
     data(){
@@ -331,6 +344,11 @@
          * @data {Object} [{}] routers
          */
         routers: {},
+         /**
+         * Time between 2 automatic screenshot in visual mode, in milliseconds
+         * @data {Number} currentScreenshotDelay
+         */
+        currentScreenshotDelay: this.screenshotDelay,
         /**
          * @todo not used
          */
@@ -394,7 +412,7 @@
          * The index in the router's views
          * @data {Number} currentIndex
          */
-         currentIndex: this.idx
+        currentIndex: this.idx
       };
     },
     computed: {
@@ -829,7 +847,7 @@
           let url = this.getFullURL();
           this.router.db.selectOne('containers', 'time', {url: url}).then(time => {
             // Checking if we have a screenshot of less than an hour
-            if ((bbn.fn.timestamp() - (time || 0)) > 3600000) {
+            if ((bbn.fn.timestamp() - (time || 0)) >= this.currentScreenshotDelay) {
               this.saveScreenshot(0.1, 10000);
             }
           }).catch(() => {
@@ -838,7 +856,7 @@
 
           this._screenshotInterval = setInterval(() => {
             this.saveScreenshot(0.1);
-          }, 300000);
+          }, this.currentScreenshotDelay);
         }
       },
       unsetScreenshot() {
@@ -852,7 +870,7 @@
         }
       },
       async saveScreenshot(scale = 0.1, timeout = 0) {
-        if (this.router.db && this.isVisible && !this.isPane) {
+        if (this.router.db && (this.currentView.idx === this.router.selected) && !this.isPane) {
           let img       = await this.takeScreenshot(scale, timeout, true);
           let num_tries = 0;
           while (!img && (num_tries < 5)) {

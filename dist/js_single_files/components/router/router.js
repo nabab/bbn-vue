@@ -3933,6 +3933,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         this.$nextTick(() => {
           if (this.ready) {
             this.setConfig();
+            this.onResize();
           }
         })
       },
@@ -3942,7 +3943,10 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        */
        isVisual(v) {
         this.$nextTick(() => {
-          this.setConfig();
+          if (this.ready) {
+            this.setConfig();
+            this.onResize();
+          }
         })
       }
     },

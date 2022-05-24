@@ -3940,6 +3940,7 @@ document.head.insertAdjacentElement('beforeend', css);
         this.$nextTick(() => {
           if (this.ready) {
             this.setConfig();
+            this.onResize();
           }
         })
       },
@@ -3949,7 +3950,10 @@ document.head.insertAdjacentElement('beforeend', css);
        */
        isVisual(v) {
         this.$nextTick(() => {
-          this.setConfig();
+          if (this.ready) {
+            this.setConfig();
+            this.onResize();
+          }
         })
       }
     },

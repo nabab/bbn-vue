@@ -52,6 +52,13 @@ script.innerHTML = `<form :action="action"
                     class="bbn-hsmargin"
                     v-bind="button"/>
       </div>
+      <div v-else-if="!hasFooter && realButtons.length && (mode !== 'big')"
+          class="bbn-w-100 bbn-top-lspace">
+        <bbn-button v-for="(button, i) in realButtons"
+                    :key="i"
+                    class="bbn-hxspadded"
+                    v-bind="button"/>
+      </div>
     </component>
   </div>
   <div v-if="hasFooter && !popup"
@@ -376,7 +383,7 @@ document.head.insertAdjacentElement('beforeend', css);
        */
        mode: {
          type: String,
-         default: 'normal'
+         default: 'big'
        }
     },
     data(){
@@ -476,7 +483,7 @@ document.head.insertAdjacentElement('beforeend', css);
        * @return {Boolean}
        */
       _canSubmit(){
-        return (this.prefilled || this.isModified()) && this.isValid(false, false) && !this.disabled;
+        return (this.prefilled || this.isModified()) && this.isValid(false, true) && !this.disabled;
       },
       /**
        * Returns an array containing the form's buttons.
@@ -611,12 +618,12 @@ document.head.insertAdjacentElement('beforeend', css);
         if (this.realButtons.length) {
           this.realButtons.splice(0, this.realButtons.length);
         }
-        if ( this.window && bbn.fn.isArray(this.window.currentButtons) ){
+        if (this.window && bbn.fn.isArray(this.window.currentButtons) && (this.mode === 'big')) {
           this.window.currentButtons.splice(0, this.window.currentButtons.length);
         }
         bbn.fn.each(this.getRealButtons(), b => {
           this.realButtons.push(b);
-          if ( this.window && bbn.fn.isArray(this.window.currentButtons) ){
+          if (this.window && bbn.fn.isArray(this.window.currentButtons) && (this.mode === 'big')) {
             this.window.currentButtons.push(b);
           }
         });
@@ -921,6 +928,10 @@ document.head.insertAdjacentElement('beforeend', css);
        */
       reportValidity() {
         return this.$el.reportValidity();
+      },
+      update() {
+        this.canSubmit = this._canSubmit();
+        this.$forceUpdate();
       }
     },
     /**
@@ -988,8 +999,6 @@ document.head.insertAdjacentElement('beforeend', css);
             }
           });
           this._isSetting = false;
-          this.canSubmit = this._canSubmit();
-          this.$forceUpdate();
         }
       }
       this.init();
@@ -1050,7 +1059,7 @@ document.head.insertAdjacentElement('beforeend', css);
               clearTimeout(this.sourceTimeout);
             }
             this.sourceTimeout = setTimeout(() => {
-              this.canSubmit  = this._canSubmit();
+              this.update();
             }, 200)
           })
         }
