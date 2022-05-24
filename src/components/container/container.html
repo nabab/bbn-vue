@@ -4,7 +4,7 @@
 }]"
      @subready.stop
      :style="visual ? visualStyle : {}"
-     v-show="(!router.isVisual && isVisible) || isVisualVisible">
+     v-show="(!router.isVisual && isVisible) || isVisualVisible || isPane">
   <div :class="{
     'bbn-overlay': router.scrollContent,
     'bbn-container-full-screen': fullScreen,
