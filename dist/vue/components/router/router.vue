@@ -1031,19 +1031,26 @@
           return [];
         }
 
-        let moreViewsThanSlots = this.numVisuals < this.views.length;
+        let moreViewsThanSlots = this.numVisuals < bbn.fn.filter(this.views, {pane: false}).length;
         let numAvailableSlots = this.numVisuals - (moreViewsThanSlots ? 1 : 0);
         let order = this.visualShowAll ? 
         {selected: 'asc', static: 'desc', pinned: 'desc', last: 'desc', idx: 'asc'}
         : {selected: 'desc', last: 'desc', static: 'desc', pinned: 'desc', idx: 'asc'};
+        let idx = 0;
         return bbn.fn.map(
           bbn.fn.multiorder(
             this.views,
             order
           ),
-          (a, i) => {
+          a => {
             let visible = false;
-            if (this.visualShowAll || (i <= numAvailableSlots) || (this.selected === a.index)) {
+            if (this.visualShowAll || (idx <= numAvailableSlots) || (this.selected === a.index)) {
+              visible = true;
+              if (!a.pane) {
+                idx++;
+              }
+            }
+            else if (a.pane) {
               visible = true;
             }
             return {
