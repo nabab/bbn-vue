@@ -52,7 +52,7 @@
       }
     },
     methods: {
-      mouseEnter(rowidx, colidx) {
+      mouseEnter(colidx, rowidx) {
         this.currentRow = rowidx;
         this.currentCol = colidx;
       },
