@@ -70,7 +70,7 @@
           <bbn-popup ref="popup"
                     :source="popups"
                     v-if="ready"
-                    v-show="!hidden && isLoaded && (isVisible || cached)"/>
+                    v-show="!hidden && isLoaded && (isVisible || cached) && popups.length"/>
           <!-- This is shown when it's ready -->
           <bbn-scroll v-if="isLoaded && (isVisible || ((real || cached) && ready) || router.isVisual)"
                       v-show="ready && isVisible || (router.isVisual && !thumbnail)"
