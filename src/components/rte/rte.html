@@ -1,7 +1,33 @@
-<div :class="[componentClass, 'bbn-textbox', 'bbn-no-padding']"
+<div :class="[componentClass, {'bbn-textbox': !floating}, 'bbn-no-padding']"
      @keydown.tab.stop=""
 		 :style="{height: currentHeight}">
-  <div class="bbn-iflex-height"
+	<div v-if="floating"
+	     class="bbn-iflex-height"
+			 ref="container"
+			 style="min-height: 100%; width: 100%; overflow: visible">
+		<div contenteditable="true"
+		     @focusin="isEditing = true"
+				 @keydown="updateContenteditable"
+				 ref="element"
+				 @blur="updateContenteditable"/>
+		<bbn-portal :selector="body">
+			<bbn-floater v-if="ready"
+									 :scrollable="false"
+									 ref="floater"
+									 @focusin="isEditing = true"
+									 :visible="isEditing"
+									 :element="$el"
+									 position="topLeft"
+									 :title="false">
+				<bbn-toolbar :source="currentButtons"
+									   class="bbn-rte-toolbar bbn-header bbn-radius-top bbn-no-border"
+									 	 :button-space="false"/>
+			</bbn-floater>
+		</bbn-portal>
+
+	</div>
+	<div v-else
+	     class="bbn-iflex-height"
 			 style="min-height: 100%; width: 100%;">
 		<bbn-toolbar :source="currentButtons"
 								 class="bbn-rte-toolbar bbn-header bbn-radius-top bbn-no-border"

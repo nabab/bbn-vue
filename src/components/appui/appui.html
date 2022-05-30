@@ -187,6 +187,17 @@
                       :source="loaders"/>
         </div>
         <div class="bbn-vmiddle">
+          <!-- POST ITS -->
+          <bbn-context v-if="plugins['appui-note']"
+                       class="bbn-right-space"
+                       :source="postItMenu"
+                       :context="true">
+            <i v-for="postit in postits"
+               class="bbn-p nf nf-fa-sticky_note"
+               :title="_('Post-it from')"
+               :style="{color: postit.color}"
+               @click="showPostIt(postit)"/>
+          </bbn-context>
           <!-- TASK TRACKER -->
           <div v-if="plugins['appui-task']"
               class="bbn-right-space">

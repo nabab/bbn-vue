@@ -159,7 +159,7 @@
        */  
       extend(deep, src, obj1){
         let args = [this];
-        for ( let i = 0; i < arguments.length; i++ ){
+        for (let i = 0; i < arguments.length; i++) {
           args.push(arguments[i]);
         }
         return bbn.vue.extend(...args);

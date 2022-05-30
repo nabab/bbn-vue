@@ -1028,7 +1028,7 @@
           if ( a === true ){
             deep = true;
           }
-          else{
+          else if (a !== vm) {
             args.push(a);
           }
         }
@@ -1047,7 +1047,7 @@
               bbn.fn.extend(true, out[n], o);
             }
             else if ( out[n] !== o ){
-              vm.$set(out[n], o);
+              vm.$set(out, n, o);
             }
           });
         }

@@ -36,12 +36,17 @@
   </span>
   <div v-if="secondary"
        class="bbn-overlay">
-    <i :class="secondary + ' bbn-button-secondary bbn-abs'"
-       :style="{
-         color: secondaryColor,
-         transform: 'scale(0.7)',
-         bottom: '0.15em',
-         right: '0.15em'
-       }"/>
+    <div class="bbn-abs"
+         :style="{
+           transform: 'scale(0.7)',
+           bottom: '0.15em',
+           right: '0.15em',
+           height: '50%'
+         }">
+      <i :class="secondary + ' bbn-button-secondary'"
+        :style="{
+          color: secondaryColor,
+        }"/>
+    </div>
   </div>
 </button>

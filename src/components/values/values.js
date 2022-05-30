@@ -131,7 +131,7 @@
         return bbn.fn.isArray(this.obj);
       },
       add(){
-        if (this.currentInput.length) {
+        if (this.currentInput.length && (this.obj.indexOf(this.currentInput) === -1)) {
           this.obj.push(this.currentInput);
           this.emitInput(this.isJSON ? JSON.stringify(this.obj) : this.obj);
           this.currentInput = '';

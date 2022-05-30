@@ -194,6 +194,18 @@
     data(){
       let isMobile = bbn.fn.isMobile();
       let isTablet = bbn.fn.isTabletDevice();
+      let emptyPostIt = {
+        content: '',
+        color: '#fd4db0',
+        title: '',
+        creation: bbn.fn.dateSQL()
+      };
+      let postits = [];
+      if (this.plugins['appui-note']) {
+        postits.push(emptyPostIt);
+      }
+
+      
       return {
         isFocused: false,
         intervalBugChrome: null,
@@ -241,10 +253,20 @@
         isMobile: isMobile,
         isTablet: isTablet,
         isTouch: isMobile || isTablet,
-        isDesktop: !isTablet && !isMobile
+        isDesktop: !isTablet && !isMobile,
+        emptyPostIt: emptyPostIt,
+        postits: postits
       }
     },
     computed: {
+      postItMenu() {
+        if (this.plugins['appui-note']) {
+
+          
+        }
+
+        return [];
+      },
       appComponent(){
         return bbn.fn.extend({
           render(createElement){

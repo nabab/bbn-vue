@@ -135,7 +135,7 @@
         /**
          * @data {Boolean} [false] showPalette
          */
-        showPalette: this.onlyPalette,
+        showPalette: this.onlyPalette || this.palette.length,
         /**
          * @data {String} currentValue
          */

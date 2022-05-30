@@ -134,7 +134,7 @@
       </div>
     </transition>
     <!-- When in visual mode a layer prevents interaction with the content -->
-    <div v-if="router.isVisual && (!isVisible || router.visualShowAll)"
+    <div v-if="router.isVisual && (!isVisible || router.visualShowAll) && !isPane"
         class="bbn-overlay"
         style="z-index: 12; background-color: black; opacity: 0.2;">
     </div>

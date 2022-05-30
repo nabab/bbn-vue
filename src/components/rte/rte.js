@@ -334,6 +334,10 @@
             right: 5,
           }
         }
+      },
+      floating: {
+        type: Boolean,
+        default: false
       }
     },
     data(){
@@ -358,7 +362,13 @@
         /**
          * @data {Vue} fontBgColorComponent
          */
-        fontBgColorComponent : null
+        fontBgColorComponent : null,
+        /**
+         * @data {Bool} [false] isEditing
+         */
+        isEditing: false,
+        body: document.body
+
       }
     },
     computed: {
@@ -454,6 +464,23 @@
             this.fontBgColorComponent.currentColor = bbn.fn.rgb2hex(queryCommandValue('backColor'));
           }
         }
+      },
+      onClickDocument(e) {
+        let floater = this.getRef('floater');
+        let element = this.getRef('element');
+        if (floater && element) {
+          if (!bbn.fn.isInside(e.target, floater.$el) && !bbn.fn.isInside(e.target, element) && (e.target !== element)) {
+            this.isEditing = false;
+          }
+        }
+      },
+      updateContenteditable() {
+        let element = this.getRef('element');
+        let st = element.innerHTML;
+        if (st !== this.currentValue) {
+          this.currentValue = st;
+          this.emitInput(st);
+        }
       }
     },
     /**
@@ -523,6 +550,11 @@
 
       this.ready = true;
     },
+    beforeDestroy() {
+      if (this.floating) {
+        window.document.body.removeEventListener('click', this.onClickDocument);
+      }
+    },
     watch: {
       value(v) {
         if (v !== this.currentValue) {
@@ -538,6 +570,14 @@
         deep: true,
         handler() {
           this.setButtons();
+        }
+      },
+      isEditing(v) {
+        if (v) {
+          window.document.body.addEventListener('click', this.onClickDocument);
+        }
+        else {
+          window.document.body.removeEventListener('click', this.onClickDocument);
         }
       }
     }

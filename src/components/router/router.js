@@ -1596,6 +1596,7 @@
           return;
         }
         if (title && (title !== this.currentTitle)) {
+          bbn.fn.log("CHANGIN URL", this.currentTitle, title)
           this.currentTitle = title;
         }
         if ( url !== this.currentURL ){
