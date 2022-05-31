@@ -133,10 +133,10 @@
         },
         /**
          * Defines the min width of the input.
-         * @prop {String} ['4,2em'] minWidth
+         * @prop {String} ['4,2rem'] minWidth
          */
         minWidth: {
-          default: '4.2em'
+          default: '4.2rem'
         },
         /**
          * Defines the max width of the input.
@@ -196,7 +196,7 @@
         return {
           /**
            * The current min width.
-           * @data {String} ['4.2em'] specialWidth
+           * @data {String} ['4.2rem'] specialWidth
            */
           specialWidth: this.minWidth,
           /**
@@ -407,7 +407,7 @@
   transition: width 0.5s;
   display: inline-block;
   box-sizing: border-box;
-  min-width: 4.2em;
+  min-width: 4.2rem;
   cursor: pointer;
 }
 .bbn-search input {

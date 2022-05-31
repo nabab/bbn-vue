@@ -1,6 +1,6 @@
 .bbn-chat .bbn-badge {
-  padding-left: 0.5em;
-  padding-right: 0.5em;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
 }
 .bbn-chat > .bbn-block > span.bbn-badge {
   position: absolute;
@@ -39,31 +39,31 @@
   position: absolute;
   width: 0;
   height: 0;
-  border: 0.5em solid transparent;
+  border: 0.5rem solid transparent;
 }
 .bbn-chat .bbn-chat-conversation .bbn-chat-conversation-message.bbn-chat-conversation-message-received {
   border-top-left-radius: 0;
 }
 .bbn-chat .bbn-chat-conversation .bbn-chat-conversation-message.bbn-chat-conversation-message-received:after {
   left: 0;
-  top: 0.5em;
+  top: 0.5rem;
   border-right-color: inherit;
   border-left: 0;
   border-top: 0;
-  margin-top: -0.5em;
-  margin-left: -0.5em;
+  margin-top: -0.5rem;
+  margin-left: -0.5rem;
 }
 .bbn-chat .bbn-chat-conversation .bbn-chat-conversation-message.bbn-chat-conversation-message-sent {
   border-bottom-right-radius: 0;
 }
 .bbn-chat .bbn-chat-conversation .bbn-chat-conversation-message.bbn-chat-conversation-message-sent:after {
   right: 0;
-  bottom: 0.5em;
+  bottom: 0.5rem;
   border-left-color: inherit;
   border-right: 0;
   border-bottom: 0;
-  margin-bottom: -0.5em;
-  margin-right: -0.5em;
+  margin-bottom: -0.5rem;
+  margin-right: -0.5rem;
 }
 .bbn-chat .bbn-chat-conversation .bbn-chat-conversation-input button {
   border-radius: 0 !important;

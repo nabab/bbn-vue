@@ -5,8 +5,8 @@
   max-width: 100%;
 }
 .bbn-screen-small .bbn-appui .bbn-appui-fisheye {
-  min-height: 4em;
-  width: 2.7em;
+  min-height: 4rem;
+  width: 2.7rem;
 }
 .bbn-appui .bbn-logo-container {
   height: 100%;
@@ -17,13 +17,18 @@
   max-width: min(20vw,100%);
   width: auto;
 }
+.bbn-appui .bbn-appui-logo {
+  max-height: 3rem;
+  width: auto;
+  height: auto;
+}
 .bbn-screen-small .bbn-appui .bbn-appui-logo {
   max-width: 90%;
   height: auto;
-  max-height: 4em;
+  max-height: 4rem;
 }
 .bbn-appui .bbn-screen-small.bbn-appui-search {
-  width: 4.2em;
+  width: 4.2rem;
   justify-content: flex-end;
   left: unset;
   right: unset;
@@ -38,7 +43,7 @@
   color: inherit;
 }
 .bbn-appui .bbn-appui-clipboard {
-  min-width: 25em;
+  min-width: 25rem;
   max-width: 50vw;
 }
 .bbn-appui .bbn-appui-clipboard li {
@@ -56,4 +61,13 @@
   font-size: 12vmin;
   transition: opacity 250ms;
   z-index: 10;
+}
+.bbn-appui .appui-ide-debugger-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 1rem 2rem;
+}
+.bbn-appui .appui-ide-debugger-container > div {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

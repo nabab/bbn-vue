@@ -107,7 +107,7 @@
           <div class="bbn-w-100 bbn-c bbn-vsmargin">
             <bbn-input :type="!!passwordVisible ? 'text' : 'password'"
                       class="bbn-c bbn-w-100"
-                      style="min-width: 20em"
+                      style="min-width: 20rem"
                       required="required"
                       :title="_('Mandatory field, 8 characters minimum')"
                       :placeholder="_('Choose your new password')"
@@ -120,7 +120,7 @@
           <div class="bbn-c bbn-w-100 bbn-vsmargin">
             <bbn-input :type="!!passwordVisible ? 'text' : 'password'"
                       class="bbn-c bbn-w-100"
-                      style="min-width: 20em"
+                      style="min-width: 20rem"
                       required="required"
                       :title="_('Mandatory field, 8 characters minimum')"
                       :placeholder="_('Confirm your new password')"
@@ -482,7 +482,7 @@ div.bbn-login {
   overflow: auto;
 }
 div.bbn-login div.bbn-login-container {
-  min-width: 25em;
+  min-width: 25rem;
   display: flex;
   justify-content: space-between;
   flex-direction: column;

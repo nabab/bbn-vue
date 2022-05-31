@@ -11,7 +11,7 @@
     >
       <bbn-context :source="getList"
                    tag="span"
-                   min-width="10em"
+                   min-width="10rem"
                    tabindex="0"
                    :item-component="$options.components.listItem"
                    :class="{'bbn-breadcrumb-dirty': isNumber(selected) && source[selected] && !!source[selected].dirty}"
@@ -20,7 +20,7 @@
         <bbn-context :source="getMenuFn"
                      :source-index="isNumber(selected) ? selected : undefined"
                      tag="span"
-                     min-width="10em"
+                     min-width="10rem"
                      tabindex="0"
                      :context="true"
         >
@@ -50,7 +50,7 @@
         </span>
         <bbn-context :source="sn.getList"
                      tag="span"
-                     min-width="10em"
+                     min-width="10rem"
                      tabindex="0"
                      :item-component="$options.components.listItem"
                      :class="{'bbn-breadcrumb-dirty': isNumber(sn.selected) && sn.source[sn.selected] && !!sn.source[sn.selected].dirty}"
@@ -59,7 +59,7 @@
           <bbn-context :source="sn.getMenuFn"
                        :source-index="isNumber(sn.selected) ? sn.selected : undefined"
                        tag="span"
-                       min-width="10em"
+                       min-width="10rem"
                        tabindex="0"
                        :context="true"
           >
@@ -629,7 +629,7 @@ div.bbn-breadcrumb > div.bbn-breadcrumb-container .bbn-breadcrumb-dirty::after {
   content: '*';
 }
 div.bbn-breadcrumb > div.bbn-breadcrumb-container .bbn-breadcrumb-icons {
-  font-size: 1em;
+  font-size: 1rem;
   margin: 0;
 }
 div.bbn-breadcrumb > div.bbn-breadcrumb-container .bbn-breadcrumb-icons.bbn-breadcrumb-icons-menu {
@@ -639,8 +639,8 @@ div.bbn-breadcrumb > div.bbn-breadcrumb-container .bbn-breadcrumb-icons.bbn-brea
   top: 1px;
 }
 div.bbn-breadcrumb > div.bbn-breadcrumb-container .bbn-breadcrumb-arrow {
-  margin-right: .7em;
-  margin-left: .7em;
+  margin-right: .7rem;
+  margin-left: .7rem;
   vertical-align: middle;
 }
 div.bbn-breadcrumb > div.bbn-breadcrumb-container > div.bbn-loader {
@@ -651,12 +651,12 @@ div.bbn-breadcrumb > div.bbn-breadcrumb-container > div.bbn-loader {
   color: white;
 }
 div.bbn-breadcrumb > div.bbn-breadcrumb-container > div.bbn-loader div.loader-animation {
-  margin-top: 2em;
+  margin-top: 2rem;
 }
 div.bbn-breadcrumb > div.bbn-breadcrumb-container > div.bbn-loader div.loader-animation h1 {
-  font-size: 3.5em !important;
+  font-size: 3.5rem !important;
   text-align: center;
-  margin-top: 1em;
+  margin-top: 1rem;
   color: white;
 }
 div.bbn-breadcrumb > div.bbn-breadcrumb-container > div.bbn-loader div.loader-animation .sk-cube-grid {

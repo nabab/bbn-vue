@@ -143,10 +143,10 @@ document.head.insertAdjacentElement('beforeend', css);
         },
         /**
          * Defines the min width of the input.
-         * @prop {String} ['4,2em'] minWidth
+         * @prop {String} ['4,2rem'] minWidth
          */
         minWidth: {
-          default: '4.2em'
+          default: '4.2rem'
         },
         /**
          * Defines the max width of the input.
@@ -206,7 +206,7 @@ document.head.insertAdjacentElement('beforeend', css);
         return {
           /**
            * The current min width.
-           * @data {String} ['4.2em'] specialWidth
+           * @data {String} ['4.2rem'] specialWidth
            */
           specialWidth: this.minWidth,
           /**

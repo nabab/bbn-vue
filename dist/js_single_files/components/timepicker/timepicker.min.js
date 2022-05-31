@@ -34,7 +34,7 @@
                hpos="right"
                :auto-hide="1000"
                :element-width="false"
-               max-width="15em"
+               max-width="15rem"
   >
     <timepicker inline-template
                 ref="timepicker"

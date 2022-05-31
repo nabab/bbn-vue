@@ -287,8 +287,8 @@
 </script>
 <style scoped>
 .bbn-switch {
-  width: 2.96em;
-  height: 1.7em;
+  width: 2.96rem;
+  height: 1.7rem;
   position: relative;
 }
 .bbn-switch input {
@@ -309,16 +309,16 @@
   position: absolute;
   text-align: center;
   color: #666;
-  height: 1.26em;
-  width: 1.26em;
-  left: 0.22em;
-  bottom: 0.22em;
+  height: 1.26rem;
+  width: 1.26rem;
+  left: 0.22rem;
+  bottom: 0.22rem;
   background-color: white;
   -webkit-transition: .4s;
   transition: .4s;
 }
 .bbn-switch .bbn-switch-slider.bbn-switch-round {
-  border-radius: 1.7em;
+  border-radius: 1.7rem;
 }
 .bbn-switch .bbn-switch-slider.bbn-switch-round .bbn-switch-slider-button {
   border-radius: 50%;
@@ -334,9 +334,9 @@
   cursor: default;
 }
 .bbn-switch input:checked + .bbn-switch-slider .bbn-switch-slider-button {
-  -webkit-transform: translateX(1.26em);
-  -ms-transform: translateX(1.26em);
-  transform: translateX(1.26em);
+  -webkit-transform: translateX(1.26rem);
+  -ms-transform: translateX(1.26rem);
+  transform: translateX(1.26rem);
 }
 
 </style>

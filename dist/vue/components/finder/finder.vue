@@ -44,7 +44,7 @@
       </div>
       
       
-      <div class="bbn-w-100 bbn-widget bbn-finder-info" style="height: 12em">
+      <div class="bbn-w-100 bbn-widget bbn-finder-info" style="height: 12rem">
         <div :class="{
                       'bbn-overlay': true,
                       'bbn-state-default': true,
@@ -1199,14 +1199,14 @@
   text-align: center;
 }
 .bbn-finder .bbn-finder-info-file-container {
-  width: 60em;
+  width: 60rem;
   float: left;
 }
 .bbn-finder .bbn-finder-info-file-container .CodeMirror {
   font-size: 10px !important;
 }
 .bbn-finder .bbn-finder-pane {
-  width: 25em;
+  width: 25rem;
   border-right: 2px dotted;
   float: left;
 }

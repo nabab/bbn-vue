@@ -765,7 +765,7 @@
 .bbn-list > ul > li {
   position: relative;
   box-sizing: border-box;
-  min-width: 7em;
+  min-width: 7rem;
   white-space: nowrap;
   user-select: none;
 }
@@ -774,16 +774,16 @@
 }
 .bbn-list > ul > li .space {
   display: inline-block;
-  width: 1.8em;
+  width: 1.8rem;
   text-align: left;
-  line-height: 1.5em;
+  line-height: 1.5rem;
 }
 .bbn-list > ul > li .text {
-  min-height: 1.2em;
-  line-height: 1.2em;
+  min-height: 1.2rem;
+  line-height: 1.2rem;
 }
 .bbn-list > ul > li .text i {
-  margin-right: 1em;
+  margin-right: 1rem;
 }
 .bbn-list > ul > li .text.bbn-disabled i {
   opacity: 0.5;
@@ -792,8 +792,8 @@
   opacity: 0 !important;
 }
 .bbn-list > ul > li.bbn-list-group-li {
-  padding-left: 0.5em;
-  padding-right: 0.5em;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
 }
 
 </style>

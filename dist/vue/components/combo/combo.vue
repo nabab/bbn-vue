@@ -34,7 +34,7 @@
     <div class="bbn-list-component-button">
       <div v-if="isAjax && isLoading"
            class="bbn-middle">
-        <bbn-loadicon size="1.2em"
+        <bbn-loadicon size="1.2rem"
                       tabindex="-1"
         ></bbn-loadicon>
       </div>
@@ -297,7 +297,7 @@
 .bbn-combo {
   display: inline-block;
   box-sizing: border-box;
-  min-width: 4em;
+  min-width: 4rem;
   cursor: pointer;
 }
 .bbn-combo input {
@@ -313,7 +313,7 @@
 }
 .bbn-combo .bbn-list-component-button,
 .bbn-combo .bbn-button-right {
-  min-width: 2em;
+  min-width: 2rem;
   line-height: normal;
 }
 .bbn-combo .bbn-button-right {

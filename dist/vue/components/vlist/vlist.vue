@@ -413,11 +413,11 @@ div.bbn-vlist > ul > li.disabled .k-link {
 }
 div.bbn-vlist > ul > li .space {
   display: inline-block;
-  width: 1.8em;
+  width: 1.8rem;
   text-align: left;
 }
 div.bbn-vlist > ul > li .text i {
-  margin-right: 1em;
+  margin-right: 1rem;
 }
 div.bbn-vlist > ul > li .text.disabled i {
   opacity: 0.5;

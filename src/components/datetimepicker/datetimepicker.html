@@ -56,7 +56,7 @@
                 :element="$el"
                 ref="timeFloater"
                 @close="isTimeOpened = false"
-                max-width="10em"
+                max-width="10rem"
                 :scrollable="!!blocksMode || !scrollMode"
                 hpos="right"
                 :auto-hide="1000"

@@ -26,7 +26,7 @@
       },
       cellSize: {
         type: [String, Number],
-        default: '1em'
+        default: '1rem'
       }
     },
     data() {

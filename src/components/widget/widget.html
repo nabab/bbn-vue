@@ -52,7 +52,7 @@
   <div :class="['bbn-content', 'bbn-radius-bottom', 'bbn-no-border', {'bbn-padded': !component || (contentPadding === true)}]"
        :style="{padding: contentPadding ? contentPadding : false}">
     <!-- LOADING -->
-    <div v-if="isLoading" style="min-height: 15em">
+    <div v-if="isLoading" style="min-height: 15rem">
       <bbn-loader text=""
                   type="swing"/>
     </div>

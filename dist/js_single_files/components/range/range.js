@@ -9,7 +9,7 @@ script.innerHTML = `<span :class="[componentClass, 'bbn-flex-width', 'bbn-vmiddl
 	<bbn-numeric v-if="showNumeric"
                 v-model="numericValue"
                 class="bbn-right-space"
-                :style="'width: calc(1em + ' + (currentMax ? currentMax.toString().length : 8) + 'em)'"
+                :style="'width: calc(1rem + ' + (currentMax ? currentMax.toString().length : 8) + 'em)'"
                 :min="currentMin"
                 :max="currentMax"
                 :step="currentStep"

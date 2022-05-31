@@ -6,37 +6,37 @@
   transition: opacity 150ms ease-in-out;
 }
 .bbn-scrollbar.vertical {
-  width: 0.7em;
-  padding: 0 0.2em 0 0;
+  width: 0.7rem;
+  padding: 0 0.2rem 0 0;
   bottom: 0;
   top: 0;
   right: 0;
 }
 .bbn-scrollbar.vertical .bbn-scroll-slider {
-  width: 0.7em;
+  width: 0.7rem;
   height: 100%;
-  right: 0.2em;
+  right: 0.2rem;
 }
 .bbn-scrollbar.vertical .bbn-scroll-slider.bbn-scroll-not-dragged {
   transition: top 100ms;
 }
 .bbn-scrollbar.horizontal {
-  height: 0.7em;
-  padding: 0.7em 0 0.2em 0;
+  height: 0.7rem;
+  padding: 0.7rem 0 0.2rem 0;
   left: 0;
   right: 0;
   bottom: 0;
 }
 .bbn-scrollbar.horizontal .bbn-scroll-slider {
-  height: 0.7em;
+  height: 0.7rem;
   width: 100%;
-  bottom: 0.2em;
+  bottom: 0.2rem;
 }
 .bbn-scrollbar.horizontal .bbn-scroll-slider.bbn-scroll-not-dragged {
   transition: left 100ms;
 }
 .bbn-scrollbar .bbn-scroll-slider {
   opacity: 0.6;
-  border-radius: 0.3em;
+  border-radius: 0.3rem;
   position: absolute;
 }

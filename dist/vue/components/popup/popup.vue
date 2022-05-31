@@ -665,7 +665,7 @@
   vertical-align: middle;
 }
 .bbn-popup > .bbn-floater .bbn-popup-title .bbn-top-right > div {
-  width: 1.8em;
+  width: 1.8rem;
   float: left;
 }
 .bbn-popup > .bbn-floater .bbn-popup-title .bbn-button {
@@ -677,7 +677,7 @@
 .bbn-popup > .bbn-floater .bbn-popup-title h4,
 .bbn-popup > .bbn-floater .bbn-popup-title h5,
 .bbn-popup > .bbn-floater .bbn-popup-title h6 {
-  margin: .2em 5em .2em 1em;
+  margin: .2rem 5rem .2rem 1rem;
   overflow: hidden;
 }
 .bbn-popup > .bbn-floater .bbn-popup-title .bbn-popup-actions {

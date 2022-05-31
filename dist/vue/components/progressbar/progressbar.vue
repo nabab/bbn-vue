@@ -286,7 +286,7 @@
       }
       let st = 'margin: auto;';
       if ( this.orientation === 'vertical' ){
-        st += 'width: 1.9em; min-height: ' + (bbn.fn.isNumber(this.height) ? ( this.height  + 'px') : this.height);
+        st += 'width: 1.9rem; min-height: ' + (bbn.fn.isNumber(this.height) ? ( this.height  + 'px') : this.height);
         if ( this.valuePosition === 'right' ){
           this.realValuePosition = 'top';
         }
@@ -298,7 +298,7 @@
         this.realValuePosition = this.valuePosition;
       }
       if ( (this.orientation === 'horizontal') && (this.width) ){
-        st += 'height: 1.9em; min-width: ' + (bbn.fn.isNumber(this.width) ? ( this.width  + 'px') : this.width);
+        st += 'height: 1.9rem; min-width: ' + (bbn.fn.isNumber(this.width) ? ( this.width  + 'px') : this.width);
       }
       this.orientationStyle = st += ';';
       if ( this.type === 'chunk' ){
@@ -346,7 +346,7 @@
 .bbn-progressbar.bbn-progressbar-wrap .bar-wrap {
   position: absolute;
   border: 1px solid transparent;
-  line-height: 2em;
+  line-height: 2rem;
   height: 100%;
 }
 .bbn-progressbar.bbn-progressbar-wrap .chunk {
@@ -354,7 +354,7 @@
   grid-gap: 1px;
 }
 .bbn-progressbar.bbn-progressbar-wrap.bbn-progressbar-vertical {
-  width: 1.9em;
+  width: 1.9rem;
 }
 .bbn-progressbar.bbn-progressbar-wrap.bbn-progressbar-vertical .bbn-wrap.top .bbn-progress-status {
   top: 10px;
@@ -370,7 +370,7 @@
   left: 0;
   display: unset;
   writing-mode: vertical-lr;
-  line-height: 1.9em;
+  line-height: 1.9rem;
 }
 .bbn-progressbar.bbn-progressbar-wrap.bbn-progressbar-vertical .chunk {
   height: 100%;
@@ -379,7 +379,7 @@
   width: 100%;
 }
 .bbn-progressbar.bbn-progressbar-wrap.bbn-progressbar-horizontal {
-  height: 1.9em;
+  height: 1.9rem;
   width: 100%;
 }
 .bbn-progressbar.bbn-progressbar-wrap.bbn-progressbar-horizontal .chunk {
@@ -392,7 +392,7 @@
   position: absolute;
   height: 100%;
   width: 100%;
-  line-height: 1.9em;
+  line-height: 1.9rem;
 }
 .bbn-progressbar.bbn-progressbar-wrap.bbn-progressbar-horizontal .bbn-wrap.left .bbn-progress-status {
   text-align: left;

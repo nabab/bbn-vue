@@ -1020,17 +1020,17 @@
 <style scoped>
 .bbn-filter:first-child {
   border-top: 0 !important;
-  padding: 1em;
+  padding: 1rem;
 }
 .bbn-filter {
-  padding: 0em 0.4em;
-  margin: 0.3em 0;
+  padding: 0rem 0.4rem;
+  margin: 0.3rem 0;
   border-left: 2px solid;
   float: left;
   clear: right;
 }
 .bbn-filter .bbn-form-full {
-  margin: 0 0 0.5em 0;
+  margin: 0 0 0.5rem 0;
 }
 .bbn-filter h3 {
   margin-top: 0;
@@ -1038,27 +1038,27 @@
 .bbn-filter .bbn-filter-control {
   border: 0;
   border-radius: 0;
-  padding-right: 3em;
+  padding-right: 3rem;
   padding: 0;
   margin: 0;
 }
 .bbn-filter .bbn-form-label {
-  width: 2.7em !important;
-  max-width: 2.7em;
-  min-width: 2.7em;
-  margin: 0.3em;
+  width: 2.7rem !important;
+  max-width: 2.7rem;
+  min-width: 2.7rem;
+  margin: 0.3rem;
 }
 .bbn-filter .bbn-form-label.bbn-filter-block {
-  margin: 3em 0.3em 0.3em;
+  margin: 3rem 0.3rem 0.3rem;
 }
 .bbn-filter .bbn-filter-left {
-  width: 5em;
+  width: 5rem;
 }
 .bbn-filter .bbn-filter-bordered {
   margin: 0;
 }
 .bbn-filter .bbn-filter-bordered .bbn-filter-main {
-  margin: 0 1em;
+  margin: 0 1rem;
 }
 .bbn-filter .bbn-filter-items {
   position: relative;
@@ -1074,18 +1074,18 @@
 }
 .bbn-filter .bbn-filter-items .bbn-filter-main .bbn-filter-form > div.bbn-block {
   display: inline-block;
-  min-height: 2em;
-  line-height: 2em;
+  min-height: 2rem;
+  line-height: 2rem;
   vertical-align: middle;
 }
 .bbn-filter .bbn-filter-items .bbn-filter-buttons {
   float: left;
   clear: left;
-  max-height: 1em;
-  margin-left: 0.5em;
+  max-height: 1rem;
+  margin-left: 0.5rem;
 }
 .bbn-filter .bbn-filter-items .bbn-filter-logic {
-  width: 4.5em;
+  width: 4.5rem;
   font-weight: bold;
   float: left;
 }
@@ -1101,8 +1101,8 @@
   display: table;
 }
 .bbn-filter .bbn-filter-padding {
-  padding-left: 0.1em;
-  padding-right: 0.1em;
+  padding-left: 0.1rem;
+  padding-right: 0.1rem;
 }
 
 </style>

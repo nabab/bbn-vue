@@ -105,7 +105,7 @@
       <div v-else
            class="bbn-overlay bbn-middle"
       >
-        <bbn-loadicon size="1.5em"></bbn-loadicon>
+        <bbn-loadicon size="1.5rem"></bbn-loadicon>
         <span class="bbn-left-sspace" v-text="_('Loading...')"></span>
       </div>
     </div>
@@ -181,7 +181,7 @@
         </div>
       </div>
       <div v-if="isLoading" class="bbn-middle bbn-top-xsspace bbn-s">
-        <bbn-loadicon size="1.5em"></bbn-loadicon>
+        <bbn-loadicon size="1.5rem"></bbn-loadicon>
         <span class="bbn-left-sspace" v-text="_('Loading...')"></span>
       </div>
       <div v-if="showInfo"
@@ -278,7 +278,7 @@
           </bbn-scroll>
         </div>
         <div v-if="cp.currentOnline"
-             style="min-height: 2em"
+             style="min-height: 2rem"
              class="bbn-flex-width"
         >
           <div class="bbn-middle bbn-bordered-left bbn-bordered-top bbn-bordered-bottom bbn-alt-background bbn-hxspadded">
@@ -1640,7 +1640,7 @@
 <div class="bbn-grid bbn-p bbn-vmiddle bbn-vxsmargin"
       style="grid-template-columns: max-content auto max-content"
 >
-  <div class="bbn-middle" style="min-width: 1.5em">
+  <div class="bbn-middle" style="min-width: 1.5rem">
     <bbn-initial :user-name="source.text"
                 :width="16"
                 :height="16"
@@ -1649,7 +1649,7 @@
   <div class="bbn-ellipsis bbn-w-100"
        v-text="source.text"
   ></div>
-  <div class="bbn-middle" style="min-width: 1.5em">
+  <div class="bbn-middle" style="min-width: 1.5rem">
     <i :class="{
          'nf nf-fa-circle': cp.isOnline(source.value),
          'bbn-green': cp.isOnline(source.value)
@@ -1690,7 +1690,7 @@
       style="grid-template-columns: max-content auto max-content max-content"
       :title="participantsFormatted"
 >
-  <div class="bbn-middle" style="min-width: 1.5em">
+  <div class="bbn-middle" style="min-width: 1.5rem">
     <bbn-initial :user-name="participantsFormatted"
                  :width="16"
                  :height="16"
@@ -1708,7 +1708,7 @@
           v-text="source.unread">
     </span>
   </div>
-  <div class="bbn-middle" style="min-width: 1.5em">
+  <div class="bbn-middle" style="min-width: 1.5rem">
     <i v-if="cp.currentOnline && (online.length === participants.length)"
        class="nf nf-fa-circle bbn-green"
        :title="onlineFormatted"
@@ -1833,7 +1833,7 @@
   >
     <template v-for="p in currentParticipants">
       <div class="bbn-middle"
-          style="min-width: 1.5em"
+          style="min-width: 1.5rem"
       >
         <bbn-initial :user-name="p.text"
                     :width="16"
@@ -1844,7 +1844,7 @@
           v-text="p.text"
       ></div>
       <div class="bbn-middle"
-          style="min-width: 1.5em"
+          style="min-width: 1.5rem"
       >
         <template v-if="isAdmin">
           <i v-if="!admins.includes(p.value) || isCreator"
@@ -2355,8 +2355,8 @@
 </script>
 <style scoped>
 .bbn-chat .bbn-badge {
-  padding-left: 0.5em;
-  padding-right: 0.5em;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
 }
 .bbn-chat > .bbn-block > span.bbn-badge {
   position: absolute;
@@ -2395,31 +2395,31 @@
   position: absolute;
   width: 0;
   height: 0;
-  border: 0.5em solid transparent;
+  border: 0.5rem solid transparent;
 }
 .bbn-chat .bbn-chat-conversation .bbn-chat-conversation-message.bbn-chat-conversation-message-received {
   border-top-left-radius: 0;
 }
 .bbn-chat .bbn-chat-conversation .bbn-chat-conversation-message.bbn-chat-conversation-message-received:after {
   left: 0;
-  top: 0.5em;
+  top: 0.5rem;
   border-right-color: inherit;
   border-left: 0;
   border-top: 0;
-  margin-top: -0.5em;
-  margin-left: -0.5em;
+  margin-top: -0.5rem;
+  margin-left: -0.5rem;
 }
 .bbn-chat .bbn-chat-conversation .bbn-chat-conversation-message.bbn-chat-conversation-message-sent {
   border-bottom-right-radius: 0;
 }
 .bbn-chat .bbn-chat-conversation .bbn-chat-conversation-message.bbn-chat-conversation-message-sent:after {
   right: 0;
-  bottom: 0.5em;
+  bottom: 0.5rem;
   border-left-color: inherit;
   border-right: 0;
   border-bottom: 0;
-  margin-bottom: -0.5em;
-  margin-right: -0.5em;
+  margin-bottom: -0.5rem;
+  margin-right: -0.5rem;
 }
 .bbn-chat .bbn-chat-conversation .bbn-chat-conversation-input button {
   border-radius: 0 !important;

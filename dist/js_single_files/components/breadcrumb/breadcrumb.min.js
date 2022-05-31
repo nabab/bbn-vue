@@ -10,7 +10,7 @@
     >
       <bbn-context :source="getList"
                    tag="span"
-                   min-width="10em"
+                   min-width="10rem"
                    tabindex="0"
                    :item-component="$options.components.listItem"
                    :class="{'bbn-breadcrumb-dirty': isNumber(selected) && source[selected] && !!source[selected].dirty}"
@@ -19,7 +19,7 @@
         <bbn-context :source="getMenuFn"
                      :source-index="isNumber(selected) ? selected : undefined"
                      tag="span"
-                     min-width="10em"
+                     min-width="10rem"
                      tabindex="0"
                      :context="true"
         >
@@ -49,7 +49,7 @@
         </span>
         <bbn-context :source="sn.getList"
                      tag="span"
-                     min-width="10em"
+                     min-width="10rem"
                      tabindex="0"
                      :item-component="$options.components.listItem"
                      :class="{'bbn-breadcrumb-dirty': isNumber(sn.selected) && sn.source[sn.selected] && !!sn.source[sn.selected].dirty}"
@@ -58,7 +58,7 @@
           <bbn-context :source="sn.getMenuFn"
                        :source-index="isNumber(sn.selected) ? sn.selected : undefined"
                        tag="span"
-                       min-width="10em"
+                       min-width="10rem"
                        tabindex="0"
                        :context="true"
           >

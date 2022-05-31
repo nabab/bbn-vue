@@ -44,7 +44,7 @@
       <div v-if="isAjax && isLoading"
            class="bbn-middle"
       >
-        <bbn-loadicon size="1.2em"
+        <bbn-loadicon size="1.2rem"
                       tabindex="-1"
         ></bbn-loadicon>
       </div>
@@ -340,7 +340,7 @@
 <style scoped>
 .bbn-autocomplete {
   box-sizing: border-box;
-  min-width: 4em;
+  min-width: 4rem;
   cursor: pointer;
 }
 .bbn-autocomplete > .bbn-flex-width .bbn-w-100 {
@@ -363,7 +363,7 @@
 }
 .bbn-autocomplete .bbn-list-component-button,
 .bbn-autocomplete .bbn-button-right {
-  min-width: 2em;
+  min-width: 2rem;
   line-height: normal;
 }
 .bbn-autocomplete .bbn-button-right {

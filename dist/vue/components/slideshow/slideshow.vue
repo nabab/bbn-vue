@@ -1064,12 +1064,12 @@
   z-index: 10;
 }
 .bbn-slideshow .bbn-slideshow-commands {
-  width: 10em;
-  height: 10em;
+  width: 10rem;
+  height: 10rem;
 }
 .bbn-slideshow .bbn-slideshow-circleMiniature {
-  width: 0.2em;
-  height: 0.2em;
+  width: 0.2rem;
+  height: 0.2rem;
 }
 .bbn-slideshow .bbn-slideshow-circleMiniature i {
   opacity: .7;
@@ -1109,7 +1109,7 @@
 }
 .bbn-slideshow .bbn-slideshow-summary,
 .bbn-slideshow .bbn-slideshow-prev {
-  margin-right: 0.3em;
+  margin-right: 0.3rem;
 }
 .bbn-slideshow .bbn-slideshow-slide {
   width: 100%;

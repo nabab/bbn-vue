@@ -28,7 +28,7 @@
               <div class="bbn-100 bbn-middle">
                 <div class="bbn-block">
                   <bbn-icon :content="svg"
-                            width="1.5em"
+                            width="1.5rem"
                             v-if="i !== visualSelected"/>
                   <div :class="{
                     'bbn-s': visualSelected !== i,
@@ -127,7 +127,7 @@
               <div class="bbn-100 bbn-middle">
                 <div class="bbn-block bbn-spadded">
                   <bbn-icon :content="svg"
-                            width="1em"/>
+                            width="1rem"/>
                 </div>
               </div>
             </div>
@@ -370,7 +370,8 @@ div.bbn-router-config h3 {
 div.bbn-router-config .bbn-router-config-mode {
   height: auto;
   grid-template-columns: repeat(3,1fr);
-  width: 80em;
+  grid-column-gap: 4rem;
+  width: 80rem;
   max-width: 90vw;
   max-height: 30vh;
 }
@@ -383,7 +384,8 @@ div.bbn-router-config .bbn-router-config-mode > div > div {
 div.bbn-router-config .bbn-router-config-orientation {
   height: auto;
   grid-template-columns: repeat(5,1fr);
-  width: 80em;
+  grid-column-gap: 3rem;
+  width: 80rem;
   max-width: 90vw;
   max-height: 30vh;
 }
@@ -396,15 +398,15 @@ div.bbn-router-config .bbn-router-config {
   gap: 0;
 }
 div.bbn-router-config .bbn-router-config > div {
-  min-height: 0.5em;
+  min-height: 0.5rem;
 }
 div.bbn-router-config .bbn-router-config.bbn-router-config-visual {
-  gap: 0.2em;
+  gap: 0.2rem;
   grid-template-rows: repeat(5,1fr);
   grid-template-columns: repeat(5,1fr);
 }
 div.bbn-router-config .bbn-router-config.bbn-router-config-visual > div {
-  min-height: 1.5em;
+  min-height: 1.5rem;
   fill: var(--alt-text);
 }
 div.bbn-router-config .bbn-router-config.bbn-router-config-visual > div:hover {
@@ -421,7 +423,7 @@ div.bbn-router-config .bbn-router-config.bbn-router-config-tabs .bbn-router-conf
   grid-area: 3 / 1 / 10 / 6;
 }
 div.bbn-router-config .bbn-router-config.bbn-router-config-breadcrumb {
-  row-gap: 0.3em;
+  row-gap: 0.3rem;
   grid-template-rows: repeat(9,1fr);
   grid-template-columns: 1fr;
 }
@@ -433,7 +435,7 @@ div.bbn-router-config .bbn-router-config .bbn-router-config-mode-selected {
   background-color: var(--alt-background);
 }
 div.bbn-router-config .bbn-router-config.bbn-router-visual-orientation {
-  gap: 0.1em;
+  gap: 0.1rem;
   grid-template-rows: repeat(5,1fr);
   grid-template-columns: repeat(5,1fr);
 }

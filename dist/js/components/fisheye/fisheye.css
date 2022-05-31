@@ -6,22 +6,22 @@
 }
 .bbn-fisheye .bbn-fisheye-floater-content {
   display: grid;
-  grid-template-columns: repeat(auto-fill,minmax(7.5em,1fr));
+  grid-template-columns: repeat(auto-fill,minmax(7.5rem,1fr));
   justify-items: center;
 }
 .bbn-fisheye .bbn-fisheye-floater-content span {
-  width: 6em;
+  width: 6rem;
 }
 .bbn-fisheye .bbn-fisheye-floater-content span i {
-  min-width: 1.4em;
-  min-height: 1.4em;
+  min-width: 1.4rem;
+  min-height: 1.4rem;
 }
 .bbn-fisheye .bbn-fisheye-floater-content .bbn-fisheye-floater-icon {
   backface-visibility: hidden;
-  font-size: 3em;
+  font-size: 3rem;
 }
 .bbn-fisheye .bbn-fisheye-dots {
-  font-size: 2em;
+  font-size: 2rem;
 }
 .bbn-fisheye a {
   color: inherit;
@@ -44,12 +44,12 @@
   backface-visibility: hidden;
   transition: all 0.2s ease-in-out;
   transform: translateZ(0);
-  padding: 0.5em;
+  padding: 0.5rem;
   box-sizing: border-box;
 }
 .bbn-fisheye ul li i {
   backface-visibility: hidden;
-  font-size: 2em;
+  font-size: 2rem;
   display: inline-block;
   transition: all 0.2s ease-in-out;
   transform: translateZ(0);
@@ -73,25 +73,25 @@
   top: 150%;
   white-space: nowrap;
   color: #FFF;
-  font-size: 3em;
-  text-shadow: 0 0 0.3em #000;
+  font-size: 3rem;
+  text-shadow: 0 0 0.3rem #000;
 }
 .bbn-fisheye .bbn-fisheye-bin {
   position: absolute;
   width: 100%;
   text-align: center;
-  text-shadow: 0 0 0.8em #000;
+  text-shadow: 0 0 0.8rem #000;
   white-space: nowrap;
   color: #FFF;
   z-index: 200;
 }
 .bbn-fisheye .bbn-fisheye-bin span {
   display: inline-block;
-  min-width: 8em;
-  min-height: 8em;
+  min-width: 8rem;
+  min-height: 8rem;
 }
 .bbn-fisheye .bbn-fisheye-bin i {
-  font-size: 8em;
+  font-size: 8rem;
 }
 .bbn-fisheye #bbn-draggable-current li {
   transform: scale(1.4);

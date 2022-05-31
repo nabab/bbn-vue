@@ -3452,7 +3452,7 @@
                     styleSecond = window.getComputedStyle(td.firstElementChild.firstElementChild);
                 this.visible = (parseFloat(styleSecond.height) + parseFloat(styleFirst.paddingTop) + parseFloat(styleFirst.paddingBottom)) > this.table.maxRowHeight;
                 if (this.visible) {
-                  td.firstElementChild.firstElementChild.style.setProperty('height', 'calc(' + this.table.maxRowHeight + 'px - 2.3em)');
+                  td.firstElementChild.firstElementChild.style.setProperty('height', 'calc(' + this.table.maxRowHeight + 'px - 2.3rem)');
                   td.firstElementChild.firstElementChild.style.overflow = 'hidden';
                 }
               }

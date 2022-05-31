@@ -64,7 +64,7 @@
            positions: 'absolute',
            top: 0,
            bottom: 0,
-           right: buttonRight ? '3em' : '2px'
+           right: buttonRight ? '3rem' : '2px'
          }">
       <i class="nf nf-fa-times_circle bbn-p"
          @mousedown.prevent.stop="clear"></i>
@@ -345,7 +345,7 @@
 }
 .bbn-input .bbn-button {
   opacity: 0.7;
-  min-width: 2em;
+  min-width: 2rem;
 }
 .bbn-input input {
   width: 100%;
@@ -358,7 +358,7 @@
   transition: opacity 0.2s;
   line-height: 100%;
   margin: auto;
-  padding-right: 0.2em;
+  padding-right: 0.2rem;
 }
 .bbn-input.bbn-input-nullable .bbn-input-nullable-container .nf-fa-times_circle {
   line-height: 100%;

@@ -107,7 +107,7 @@
   flex-direction: row;
 }
 .bbn-cursor .bbn-cursor-label {
-  padding-right: 1em;
+  padding-right: 1rem;
 }
 .bbn-cursor input {
   width: 90%;

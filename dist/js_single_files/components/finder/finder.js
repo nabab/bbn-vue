@@ -46,7 +46,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-overlay']">
       </div>
       
       
-      <div class="bbn-w-100 bbn-widget bbn-finder-info" style="height: 12em">
+      <div class="bbn-w-100 bbn-widget bbn-finder-info" style="height: 12rem">
         <div :class="{
                       'bbn-overlay': true,
                       'bbn-state-default': true,

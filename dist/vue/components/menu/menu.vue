@@ -189,7 +189,7 @@
   user-select: none;
   white-space: nowrap;
   margin: 0;
-  padding: 0.3em 1em;
+  padding: 0.3rem 1rem;
   zoom: 1;
   line-height: normal;
   font-size: 100%;
@@ -198,7 +198,7 @@
   cursor: pointer;
 }
 .bbn-menu > ul > li.bbn-menu-item span.bbn-menu-icon {
-  margin-right: 0.5em;
+  margin-right: 0.5rem;
 }
 .bbn-menu > ul > li.bbn-reactive-block:focus:not(.bbn-disabled) {
   border-color: var(--default-border);
@@ -207,7 +207,7 @@
   border-color: var(--selected-border) !important;
 }
 .bbn-menu .bbn-menu-floater .bbn-menulist li {
-  line-height: 2.5em !important;
+  line-height: 2.5rem !important;
 }
 
 </style>

@@ -331,16 +331,16 @@
   height: 100%;
 }
 .bbn-loadbar .bbn-loadbar-state {
-  width: 1.8em;
+  width: 1.8rem;
 }
 .bbn-loadbar .bbn-loadbar-time {
-  width: 4em;
+  width: 4rem;
   display: inline-block;
 }
 .bbn-loadbar .bbn-loadbar-error {
   padding-top: 2px;
   padding-bottom: 2px;
-  padding-left: 7em;
+  padding-left: 7rem;
 }
 
 </style>

@@ -1,29 +1,36 @@
 <template>
 <div :class="[componentClass]"
      tabindex="-1">
-  <div>
-    <bbn-input v-model="currentInput"
-               :readonly="max && (value.length > max)"
-               @keydown="keydown"
-               @focus="isOpened = true"
-               ref="input"
-               @ready="ready = true"
-               :placeholder="max && (value.length > max) ? _('Max number of') + ' ' + max : _('Value')"/>
-    <bbn-button v-if="!max || (value.length <= max)"
-                icon="nf nf-fa-plus"
-                @click="add"
-                @keyup.prevent.stop.enter.space="add"
-                text="_('Add')"
-                :notext="true"/>
+  <div class="bbn-flex-width">
+    <div class="bbn-flex-fill">
+      <bbn-input v-model="currentInput"
+                :readonly="max && (value.length > max)"
+                @keydown="keydown"
+                @focus="isOpened = true"
+                ref="input"
+                @ready="ready = true"
+                class="bbn-w-100"
+                :placeholder="max && (value.length > max) ? _('Max number of') + ' ' + max : _('Value')"/>
+    </div>
+    <div>
+      <bbn-button v-if="!max || (value.length <= max)"
+                  icon="nf nf-fa-plus"
+                  @click="add"
+                  @keyup.prevent.stop.enter.space="add"
+                  text="_('Add')"
+                  :notext="true"/>
+    </div>
   </div>
-  <div v-for="(v, idx) in value"
-       class="bbn-vxspadded">
-    <i class="nf nf-fa-times_circle"
-       @click="remove(idx)"
-       tabindex="0"
-       @keyup.enter.space="remove(idx)"
-       :title="_('Delete')"/>
-    <span class="bbn-left-space" v-text="v"/>
+  <div class="bbn-w-100">
+    <div v-for="(v, idx) in value"
+         class="bbn-vxspadding bbn-hspadding bbn-iblock">
+      <span class="bbn-right-xshmargin" v-text="v"/>
+      <i class="nf nf-fa-times_circle"
+         @click="remove(idx)"
+         tabindex="0"
+         @keyup.enter.space="remove(idx)"
+         :title="_('Delete')"/>
+    </div>
   </div>
   <bbn-floater v-if="ready && !isDisabled && !readonly && filteredData.length && currentInput.length"
                :element="$refs.input.$el"
@@ -173,7 +180,7 @@
         return bbn.fn.isArray(this.obj);
       },
       add(){
-        if (this.currentInput.length) {
+        if (this.currentInput.length && (this.obj.indexOf(this.currentInput) === -1)) {
           this.obj.push(this.currentInput);
           this.emitInput(this.isJSON ? JSON.stringify(this.obj) : this.obj);
           this.currentInput = '';
@@ -196,51 +203,51 @@
   position: relative;
   display: inline-block;
   color: #aaa;
-  font: bold 0.9em arial;
+  font: bold 0.9rem arial;
   text-decoration: none;
   text-align: center;
-  width: 3.7em;
-  height: 3.4em;
+  width: 3.7rem;
+  height: 3.4rem;
   background: #eff0f2;
-  border-radius: 0.3em;
+  border-radius: 0.3rem;
   border-top: 1px solid rgba(255,255,255,0.8);
-  box-shadow: inset 0 0 2em #e8e8e8, 0 0.1em 0 #c3c3c3, 0 0.15em 0 #c9c9c9, 0 0.15em 0.2em #333;
-  margin: 0.2em;
+  box-shadow: inset 0 0 2rem #e8e8e8, 0 0.1rem 0 #c3c3c3, 0 0.15rem 0 #c9c9c9, 0 0.15rem 0.2rem #333;
+  margin: 0.2rem;
 }
 .bbn-key span {
   position: absolute;
   top: 50%;
-  margin-top: -0.5em;
+  margin-top: -0.5rem;
   left: 0;
   right: 0;
   margin-left: auto;
   margin-right: auto;
 }
 .bbn-key.bbn-key-double {
-  width: 7.4em;
+  width: 7.4rem;
 }
 .bbn-key.bbn-key-space {
-  width: 14.8em;
+  width: 14.8rem;
 }
 .bbn-key.bbn-key-narrow {
-  height: 2.8em;
+  height: 2.8rem;
 }
 .bbn-key.bbn-key-bottom span {
   top: auto;
-  bottom: 0.4em;
+  bottom: 0.4rem;
 }
 .bbn-key.bbn-key-right span {
   left: auto;
-  right: 0.4em;
+  right: 0.4rem;
 }
 .bbn-key.bbn-key-left span {
-  left: 0.4em;
+  left: 0.4rem;
   right: auto;
 }
 .bbn-theme-dark .bbn-key {
   color: #aaa;
   background: #222;
-  box-shadow: inset 0 0 2em #333, 0 0.1em 0 #000, 0 0.15em 0 #222, 0 0.15em 0.2em #333;
+  box-shadow: inset 0 0 2rem #333, 0 0.1rem 0 #000, 0 0.15rem 0 #222, 0 0.15rem 0.2rem #333;
 }
 
 </style>

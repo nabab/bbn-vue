@@ -111,10 +111,10 @@
         default: 'nf nf-fa-search'
       },
       /**
-       * @prop {} ['4em'] minWidth
+       * @prop {} ['4rem'] minWidth
        */
       minWidth: {
-        default: '4em'
+        default: '4rem'
       },
       /**
        * @prop {} ['100%'] maxWidth

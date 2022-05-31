@@ -40,8 +40,8 @@ script.innerHTML = `<div :class="[
         <h3 v-html="title"
             class="bbn-no-margin bbn-vpadded bbn-light bbn-c bbn-lg"
             :style="{
-              paddingLeft: maximizable || closable ? '3.6em' : 'var(--space)',
-              paddingRight: maximizable || closable ? '3.6em' : 'var(--space)',
+              paddingLeft: maximizable || closable ? '3.6rem' : 'var(--space)',
+              paddingRight: maximizable || closable ? '3.6rem' : 'var(--space)',
             }"
             ref="title"/>
       </div>
@@ -138,7 +138,7 @@ script.innerHTML = `<div :class="[
       <div :class="{
         'bbn-top-right': true,
         'bbn-spadded': true,
-        'bbn-xl': !!modal,
+        'bbn-xxxl': !!modal,
         'bbn-white': !!modal,
         'bbn-lg': !modal
       }">

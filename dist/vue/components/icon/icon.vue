@@ -120,7 +120,7 @@
           o.height = 'auto';
           o.maxHeight = '100% !important';
           o.maxWidth = '100% !important';
-          o.minWidth = '4em';
+          o.minWidth = '4rem';
         }
 
         return o;

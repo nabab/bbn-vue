@@ -839,7 +839,7 @@
 <style scoped>
 .bbn-masked {
   display: inline-block;
-  min-width: 2em;
+  min-width: 2rem;
 }
 .bbn-masked input {
   width: 100%;

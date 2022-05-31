@@ -2,21 +2,21 @@
   display: none;
 }
 .bbn-colorpicker .bbn-colorpicker-input {
-  padding: .15em;
-  line-height: calc(var(--line-height) - .15em);
+  padding: .15rem;
+  line-height: calc(var(--line-height) - .15rem);
 }
 .bbn-colorpicker .bbn-colorpicker-input .bbn-colorpicker-input-color {
-  width: 2em;
+  width: 2rem;
 }
 .bbn-colorpicker .bbn-colorpicker-palette {
-  width: 2em;
-  height: 2em;
+  width: 2rem;
+  height: 2rem;
 }
 .bbn-colorpicker .bbn-colorpicker-details .bbn-colorpicker-preview {
-  height: 8em;
+  height: 8rem;
 }
 .bbn-colorpicker .bbn-colorpicker-details .bbn-colorpicker-preview i {
-  font-size: 4em;
+  font-size: 4rem;
 }
 .bbn-colorpicker .bbn-colorpicker-details .bbn-colorpicker-details-inputs {
   grid-template-columns: minmax(auto,max-content) max-content auto;

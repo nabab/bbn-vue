@@ -7,7 +7,7 @@
 	<bbn-numeric v-if="showNumeric"
                 v-model="numericValue"
                 class="bbn-right-space"
-                :style="'width: calc(1em + ' + (currentMax ? currentMax.toString().length : 8) + 'em)'"
+                :style="'width: calc(1rem + ' + (currentMax ? currentMax.toString().length : 8) + 'em)'"
                 :min="currentMin"
                 :max="currentMax"
                 :step="currentStep"
@@ -318,7 +318,7 @@
 .bbn-range .bbn-range-input {
   -webkit-appearance: none;
   width: 100%;
-  height: 0.5em;
+  height: 0.5rem;
   outline: none;
   opacity: 0.7;
   -webkit-transition: .2s;
@@ -330,14 +330,14 @@
 .bbn-range .bbn-range-input::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 1.2em;
-  height: 1.2em;
+  width: 1.2rem;
+  height: 1.2rem;
   border-radius: 50%;
   cursor: pointer;
 }
 .bbn-range .bbn-range-input::-moz-range-thumb {
-  width: 1.2em;
-  height: 1.2em;
+  width: 1.2rem;
+  height: 1.2rem;
   border-radius: 50%;
   cursor: pointer;
 }

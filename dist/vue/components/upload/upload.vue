@@ -122,7 +122,7 @@
     <div v-if="isEnabled"
          class="bbn-rel"
          :style="{
-           'padding-top': !!currentData.length && canAddFile ? '.5em' : '0',
+           'padding-top': !!currentData.length && canAddFile ? '.5rem' : '0',
            'z-index': 2
          }"
     >
@@ -1163,15 +1163,15 @@
 .bbn-upload .bbn-upload-thumb img,
 .bbn-upload .bbn-upload-thumb video,
 .bbn-upload .bbn-upload-thumb div:not(.bbn-overlay) {
-  height: 4em;
-  width: 4em;
+  height: 4rem;
+  width: 4rem;
 }
 .bbn-upload .bbn-upload-thumb img,
 .bbn-upload .bbn-upload-thumb video {
   object-fit: cover;
 }
 .bbn-upload .bbn-upload-thumb i {
-  font-size: 3.5em;
+  font-size: 3.5rem;
 }
 
 </style>

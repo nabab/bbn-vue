@@ -19,7 +19,7 @@
              @change="_change"
              v-show="editMode"
              :size="currentInputSize"
-             :style="{'paddingRight': spinners ? '0.5em !important' : ''}"
+             :style="{'paddingRight': spinners ? '0.5rem !important' : ''}"
              :inputmode="inputmode"
       >
       <input autocomplete="off"
@@ -35,7 +35,7 @@
              v-show="!editMode"
              ref="formatted"
              :size="currentInputSize"
-             :style="{'paddingRight': spinners ? '0.5em !important' : ''}"
+             :style="{'paddingRight': spinners ? '0.5rem !important' : ''}"
              :placeholder="placeholder"
       >
       <input type="hidden"
@@ -553,7 +553,7 @@
 <style scoped>
 .bbn-numeric {
   display: inline-block;
-  min-width: 4em;
+  min-width: 4rem;
   box-sizing: border-box;
 }
 .bbn-numeric .bbn-flex-width {
@@ -581,10 +581,10 @@
   border-top-right-radius: 0;
 }
 .bbn-numeric .bbn-flex-width .bbn-numeric-buttons > div {
-  width: 1.2em;
+  width: 1.2rem;
 }
 .bbn-numeric .bbn-flex-width .bbn-numeric-buttons > div i {
-  max-height: .6em;
+  max-height: .6rem;
 }
 .bbn-numeric input {
   text-align: right !important;

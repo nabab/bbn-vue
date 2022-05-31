@@ -358,25 +358,25 @@
   clear: both;
 }
 .bbn-treemenu div.bbn-tree .bbn-treemenu-1 {
-  font-size: 1.2em;
+  font-size: 1.2rem;
 }
 .bbn-treemenu div.bbn-tree .bbn-treemenu-2 {
-  font-size: 1.1em;
+  font-size: 1.1rem;
 }
 .bbn-treemenu div.bbn-tree .bbn-treemenu-3 {
-  font-size: 1.05em;
+  font-size: 1.05rem;
 }
 .bbn-treemenu div.bbn-tree .bbn-treemenu-4 {
-  font-size: 1em;
+  font-size: 1rem;
 }
 .bbn-treemenu div.bbn-tree .bbn-treemenu-5 {
-  font-size: 0.95em;
+  font-size: 0.95rem;
 }
 .bbn-treemenu div.bbn-tree .bbn-treemenu-6 {
-  font-size: 0.9em;
+  font-size: 0.9rem;
 }
 .bbn-treemenu div.bbn-tree .bbn-treemenu-x {
-  font-size: 0.85em;
+  font-size: 0.85rem;
 }
 
 </style>

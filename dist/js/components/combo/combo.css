@@ -1,7 +1,7 @@
 .bbn-combo {
   display: inline-block;
   box-sizing: border-box;
-  min-width: 4em;
+  min-width: 4rem;
   cursor: pointer;
 }
 .bbn-combo input {
@@ -17,7 +17,7 @@
 }
 .bbn-combo .bbn-list-component-button,
 .bbn-combo .bbn-button-right {
-  min-width: 2em;
+  min-width: 2rem;
   line-height: normal;
 }
 .bbn-combo .bbn-button-right {

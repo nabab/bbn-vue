@@ -181,7 +181,7 @@
        * @returns {String}
        */
       binPosition(){
-        return this.showIcons ? 'top: 15em' : 'bottom: calc(-' + bbn.env.height + 'px + 5em)';
+        return this.showIcons ? 'top: 15rem' : 'bottom: calc(-' + bbn.env.height + 'px + 5rem)';
       }
     },
     methods: {

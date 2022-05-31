@@ -125,7 +125,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-box', 'bbn-spadded']">
     <div v-if="isEnabled"
          class="bbn-rel"
          :style="{
-           'padding-top': !!currentData.length && canAddFile ? '.5em' : '0',
+           'padding-top': !!currentData.length && canAddFile ? '.5rem' : '0',
            'z-index': 2
          }"
     >

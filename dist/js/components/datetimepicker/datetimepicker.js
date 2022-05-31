@@ -60,7 +60,7 @@ script.innerHTML = `<span :class="[componentClass, 'bbn-textbox', {'bbn-input-nu
                 :element="$el"
                 ref="timeFloater"
                 @close="isTimeOpened = false"
-                max-width="10em"
+                max-width="10rem"
                 :scrollable="!!blocksMode || !scrollMode"
                 hpos="right"
                 :auto-hide="1000"

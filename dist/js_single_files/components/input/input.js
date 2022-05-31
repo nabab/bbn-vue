@@ -66,7 +66,7 @@ script.innerHTML = `<div :class="[
            positions: 'absolute',
            top: 0,
            bottom: 0,
-           right: buttonRight ? '3em' : '2px'
+           right: buttonRight ? '3rem' : '2px'
          }">
       <i class="nf nf-fa-times_circle bbn-p"
          @mousedown.prevent.stop="clear"></i>

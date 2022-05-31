@@ -44,7 +44,7 @@
 .bbn-table .bbn-table-container table.bbn-table-table > thead tr th {
   border-top: 0px;
   position: relative;
-  padding: 0.5em;
+  padding: 0.5rem;
   font-weight: bold;
   vertical-align: middle;
 }
@@ -81,7 +81,7 @@
   box-sizing: border-box;
 }
 .bbn-table .bbn-table-container table.bbn-table-table > tbody > tr td > div > .bbn-table-expander {
-  line-height: 1em;
+  line-height: 1rem;
 }
 .bbn-table .bbn-table-container table.bbn-table-table > tbody > tr td > div > .bbn-table-expander i:focus {
   color: red;
@@ -108,9 +108,9 @@
   justify-content: flex-start;
 }
 .bbn-table .bbn-table-container table.bbn-table-table > tbody > tr td.bbn-buttons-flex .bbn-block div .bbn-button.bbn-button-icon-only {
-  margin: .1em .1em !important;
-  height: 2em;
-  width: 2em;
+  margin: .1rem .1rem !important;
+  height: 2rem;
+  width: 2rem;
 }
 .bbn-table .bbn-table-container table.bbn-table-table > tbody > tr td.bbn-buttons-flex.bbn-c .bbn-block div {
   justify-content: center;
@@ -126,15 +126,15 @@
   overflow: hidden;
   position: relative;
   border-style: solid;
-  border-width: 0.0833em;
-  line-height: 2em;
-  padding: .333em .25em;
+  border-width: 0.0833rem;
+  line-height: 2rem;
+  padding: .333rem .25rem;
 }
 .bbn-table .toolbar-buttons {
-  padding: 0.3em 0;
+  padding: 0.3rem 0;
 }
 .bbn-table .toolbar-buttons button {
-  margin: 0 0.3em;
+  margin: 0 0.3rem;
 }
 .bbn-table-column-picker ul {
   list-style: none;

@@ -119,7 +119,7 @@
                 'bbn-secondary-text': item.colored && !item.hidden && !item.extra,
                 'bbn-tertiary-text': item.isCurrent && (!item.inRange || (item.inRange && item.over))
               }]"
-                  style="margin-right: .2em"
+                  style="margin-right: .2rem"
               >
                 <span v-text="item.text"></span>
               </div>
@@ -1138,8 +1138,8 @@
 </script>
 <style scoped>
 .bbn-calendar {
-  min-width: 16em;
-  min-height: 8em;
+  min-width: 16rem;
+  min-height: 8rem;
   height: 100%;
 }
 .bbn-calendar .bbn-calendar-header {
@@ -1147,28 +1147,28 @@
   min-height: unset;
 }
 .bbn-calendar .bbn-calendar-header .bbn-calendar-header-title {
-  font-size: 1em;
+  font-size: 1rem;
 }
 .bbn-calendar .bbn-calendar-container {
   display: grid;
 }
 .bbn-calendar .bbn-calendar-container .bbn-calendar-labels {
   text-align: center;
-  margin-bottom: .5em;
-  font-size: 1em;
+  margin-bottom: .5rem;
+  font-size: 1rem;
 }
 .bbn-calendar .bbn-calendar-container .bbn-calendar-item-box {
   position: relative;
   border-radius: 0;
 }
 .bbn-calendar .bbn-calendar-container .bbn-calendar-item-box .bbn-calendar-item {
-  font-size: 1em;
+  font-size: 1rem;
 }
 .bbn-calendar .bbn-calendar-container .bbn-calendar-item-box .bbn-calendar-item-icon {
   position: absolute;
-  top: .2em;
-  left: .2em;
-  font-size: 1em;
+  top: .2rem;
+  left: .2rem;
+  font-size: 1rem;
 }
 .bbn-calendar .bbn-calendar-container .bbn-calendar-item-box.bbn-calendar-colored-item:not(:hover) {
   background-color: lightcoral !important;

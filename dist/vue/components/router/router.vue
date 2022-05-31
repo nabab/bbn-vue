@@ -35,7 +35,7 @@
                   </div>
                   <bbn-context :source="bc.getList(i)"
                               tag="div"
-                              min-width="10em"
+                              min-width="10rem"
                               tabindex="0"
                               :item-component="$options.components.listItem"
                               class="bbn-h-100 bbn-vmiddle"
@@ -48,7 +48,7 @@
                     <bbn-context :source="bc.getMenuFn"
                                 :source-index="isNumber(bc.selected) ? bc.selected : undefined"
                                 tag="div"
-                                min-width="10em"
+                                min-width="10rem"
                                 tabindex="0"
                                 :context="true"
                                 :autobind="false"
@@ -151,7 +151,7 @@
                         :key="isVisual ? a.view.uid : (component && componentSource && componentUrl ? componentSource[componentUrl] : a.uid)"
                         :disabled="!routed || !getPane(a)"
                         :selector="getPane(a) ? '#' + getPane(a) + slashToHyphen(isVisual ? a.view.url : a.url) : null">
-              <bbn-container v-if="(isVisual ? !a.view.real : !a.real) && !component"
+              <bbn-container v-if="(isVisual ? !a.view.real : !a.real) && !component && (!a.pane || routed)"
                             :key="isVisual ? a.view.uid : a.uid"
                             :visual="isVisual"
                             v-bind="isVisual ? a.view : a"/>
@@ -190,6 +190,7 @@
                       :source="pane.tabs"
                       :closable="false"
                       v-model="pane.selected"
+                      @input="selectPaneTab(pane)"
                       :limit="5"/>
             <!-- PANE CONTENT -->
             <div class="bbn-flex-fill">
@@ -909,8 +910,8 @@
         return {
           minHeight: '100%',
           display: 'grid',
-          gridColumnGap: '0.5em',
-          gridRowGap: '0.5em',
+          gridColumnGap: '0.5rem',
+          gridRowGap: '0.5rem',
           gridTemplateRows: 'repeat(' + this.numVisualRows + ', 1fr)',
           gridTemplateColumns: 'repeat(' + this.numVisualCols + ', 1fr)'
         }
@@ -1820,6 +1821,7 @@
           return;
         }
         if (title && (title !== this.currentTitle)) {
+          bbn.fn.log("CHANGIN URL", this.currentTitle, title)
           this.currentTitle = title;
         }
         if ( url !== this.currentURL ){
@@ -3511,6 +3513,9 @@
 
         return paneId;
       },
+      selectPaneTab(pane) {
+        bbn.fn.log(pane);
+      },
       closeTab(idx) {
         this.close(this.tabsList[idx].idx);
       },
@@ -3961,7 +3966,7 @@
       listItem: {
         template: `
 <div class="bbn-w-100 bbn-vmiddle bbn-bordered-bottom"
-     style="height: 2.5em"
+     style="height: 2.5rem"
      @mouseenter="isHover = true"
      @mouseleave="isHover = false">
   <div class="bbn-flex-width bbn-vmiddle bbn-h-100">
@@ -4177,7 +4182,7 @@ div.bbn-router .bbn-router-nav .bbn-router-nav:not(.bbn-router-nav-bc) {
   height: 100%;
 }
 div.bbn-router .bbn-router-nav.bbn-router-nav-bc .bbn-router-breadcrumb-master {
-  height: 2.5em;
+  height: 2.5rem;
 }
 div.bbn-router .bbn-router-nav > .bbn-router-scroller::-webkit-scrollbar {
   height: 0px;
@@ -4227,7 +4232,7 @@ div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadc
   width: 12px;
   height: 12px;
   position: absolute;
-  top: 0.4em;
+  top: 0.4rem;
   left: 2px;
 }
 div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadcrumb-container .bbn-router-breadcrumb-loader:after {
@@ -4245,7 +4250,7 @@ div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadc
 }
 div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadcrumb-container div.bbn-router-breadcrumb-element {
   color: inherit;
-  padding: 0 0.8em;
+  padding: 0 0.8rem;
   vertical-align: middle;
 }
 div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadcrumb-container div.bbn-router-breadcrumb-element > .bbn-router-breadcrumb-element-icon {
@@ -4264,7 +4269,7 @@ div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadc
   display: block;
   position: absolute;
   right: 2px;
-  font-size: 1em;
+  font-size: 1rem;
   cursor: pointer;
   margin: 0;
 }
@@ -4275,8 +4280,8 @@ div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadc
   bottom: -2px;
 }
 div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadcrumb-container .bbn-router-breadcrumb-arrow {
-  margin-right: .7em;
-  margin-left: .7em;
+  margin-right: .7rem;
+  margin-left: .7rem;
   vertical-align: middle;
 }
 div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadcrumb-container > div.bbn-loader {
@@ -4287,12 +4292,12 @@ div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadc
   color: white;
 }
 div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadcrumb-container > div.bbn-loader div.loader-animation {
-  margin-top: 2em;
+  margin-top: 2rem;
 }
 div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadcrumb-container > div.bbn-loader div.loader-animation h1 {
-  font-size: 3.5em !important;
+  font-size: 3.5rem !important;
   text-align: center;
-  margin-top: 1em;
+  margin-top: 1rem;
   color: white;
 }
 div.bbn-router .bbn-router-nav div.bbn-router-breadcrumb > div.bbn-router-breadcrumb-container > div.bbn-loader div.loader-animation .sk-cube-grid {

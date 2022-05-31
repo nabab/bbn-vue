@@ -63,7 +63,10 @@
        * @prop {String} [''] selector
        */
       selector: {
-        type: [HTMLElement, String]
+        type: [HTMLElement, String],
+        default() {
+          return document.body;
+        }
       },
       /**
        * @prop {String} ['div'] tag

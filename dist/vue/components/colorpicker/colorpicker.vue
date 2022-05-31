@@ -11,21 +11,17 @@
          @focus="focus($event)"
          @blur="blur($event)"
          @keydown="keydown($event)"
-         @keyup="keyup($event)"
-  >
+         @keyup="keyup($event)">
   <div :class="['bbn-textbox', 'bbn-colorpicker-input', {'bbn-disabled': !!isDisabled}]">
     <div :class="['bbn-flex-width', 'bbn-radius', {'bbn-p': !isDisabled && !readonly}]"
-         @click="openCloseFloater"
-    >
+         @click="openCloseFloater">
       <div class="bbn-flex-fill bbn-right-xsspace bbn-radius bbn-colorpicker-input-color bbn-middle bbn-bordered"
-           :style="{backgroundColor: value || ''}"
-      >
+           :style="{backgroundColor: value || ''}">
         <i v-if="!value"
-           class="nf nf-fae-thin_close bbn-s bbn-red"
-        ></i>
+           class="nf nf-fae-thin_close bbn-s bbn-red"/>
       </div>
       <div class="bbn-colorpicker-icon">
-        <i :class="{'nf nf-fa-caret_down': !readonly, 'nf nf-fa-lock': !!readonly}"></i>
+        <i :class="{'nf nf-fa-caret_down': !readonly, 'nf nf-fa-lock': !!readonly}"/>
       </div>
     </div>
   </div>
@@ -37,11 +33,10 @@
                ref="floater"
                @close="showFloater = false"
                @hook:mounted="init"
-               height="24em"
-               width="45em"
+               height="24rem"
+               width="45rem"
                :min-width="450"
-               :min-height="300"
-  >
+               :min-height="300">
     <bbn-splitter orientation="horizontal">
       <bbn-pane>
         <div class="bbn-overlay bbn-middle">
@@ -54,8 +49,7 @@
               <div v-for="p in palette"
                    class="bbn-iblock bbn-colorpicker-palette bbn-bordered bbn-smargin bbn-p"
                    :style="{backgroundColor: p}"
-                   @click="setColor(p)"
-              ></div>
+                   @click="setColor(p)"/>
             </div>
           </bbn-scroll>
         </div>
@@ -64,50 +58,43 @@
         <div class="bbn-overlay bbn-middle">
           <div class="bbn-colorpicker-details">
             <div class="bbn-colorpicker-preview bbn-bottom-space bbn-box bbn-middle"
-                 :style="{backgroundColor: currentValue}"
-            >
+                 :style="{backgroundColor: currentValue}">
               <i v-if="!currentValue"
-                 class="nf nf-fae-thin_close bbn-red"
-              ></i>
+                 class="nf nf-fae-thin_close bbn-red"/>
             </div>
             <div v-if="showCodes"
-                 class="bbn-colorpicker-details-inputs bbn-grid bbn-bottom-space"
-            >
+                 class="bbn-colorpicker-details-inputs bbn-grid bbn-bottom-space">
               <span class="bbn-vmiddle">HEX</span>
               <span class="bbn-vmiddle">
-                <i class="nf nf-fa-long_arrow_right"></i>
+                <i class="nf nf-fa-long_arrow_right"/>
               </span>
               <div>
                 <bbn-input :value="currentHex"
-                           @change="fromInput"
-                ></bbn-input>
+                           @change="fromInput"/>
               </div>
               <span class="bbn-vmiddle">RGB</span>
               <span class="bbn-vmiddle">
-                <i class="nf nf-fa-long_arrow_right"></i>
+                <i class="nf nf-fa-long_arrow_right"/>
               </span>
               <div>
                 <bbn-input :value="currentRgb"
-                           @change="fromInput"
-                ></bbn-input>
+                           @change="fromInput"/>
               </div>
               <span class="bbn-vmiddle">RGBA</span>
               <span class="bbn-vmiddle">
-                <i class="nf nf-fa-long_arrow_right"></i>
+                <i class="nf nf-fa-long_arrow_right"/>
               </span>
               <div>
                 <bbn-input :value="currentRgba"
-                           @change="fromInput"
-                ></bbn-input>
+                           @change="fromInput"/>
               </div>
               <span class="bbn-vmiddle">HSL</span>
               <span class="bbn-vmiddle">
-                <i class="nf nf-fa-long_arrow_right"></i>
+                <i class="nf nf-fa-long_arrow_right"/>
               </span>
               <div>
                 <bbn-input :value="currentHsl"
-                           @change="fromInput"
-                ></bbn-input>
+                           @change="fromInput"/>
               </div>
             </div>
             <div class="bbn-flex-width">
@@ -116,26 +103,21 @@
                             :notext="true"
                             :text="!showPalette ? _('Show palette') : _('Close palette')"
                             @click="showPalette = !showPalette"
-                            v-if="!onlyPalette"
-                ></bbn-button>
+                            v-if="!onlyPalette"/>
               </div>
               <div class="bbn-flex-fill bbn-r">
                 <bbn-button icon="nf nf-fa-close"
                             :notext="true"
                             :text="_('Close')"
-                            @click="showFloater = false"
-                ></bbn-button>
+                            @click="showFloater = false"/>
                 <bbn-button icon="nf nf-oct-diff_ignored"
                             :notext="true"
                             :text="_('Empty')"
                             @click="empty"
-                            v-if="emptyButton"
-                ></bbn-button>
+                            v-if="emptyButton"/>
                 <bbn-button icon="nf nf-fa-check"
-                            :notext="true"
-                            :text="_('Save')"
-                            @click="save"
-                ></bbn-button>
+                            :text="_('Confirm')"
+                            @click="save"/>
               </div>
             </div>
           </div>
@@ -284,7 +266,7 @@
         /**
          * @data {Boolean} [false] showPalette
          */
-        showPalette: this.onlyPalette,
+        showPalette: this.onlyPalette || this.palette.length,
         /**
          * @data {String} currentValue
          */
@@ -527,21 +509,21 @@
   display: none;
 }
 .bbn-colorpicker .bbn-colorpicker-input {
-  padding: .15em;
-  line-height: calc(var(--line-height) - .15em);
+  padding: .15rem;
+  line-height: calc(var(--line-height) - .15rem);
 }
 .bbn-colorpicker .bbn-colorpicker-input .bbn-colorpicker-input-color {
-  width: 2em;
+  width: 2rem;
 }
 .bbn-colorpicker .bbn-colorpicker-palette {
-  width: 2em;
-  height: 2em;
+  width: 2rem;
+  height: 2rem;
 }
 .bbn-colorpicker .bbn-colorpicker-details .bbn-colorpicker-preview {
-  height: 8em;
+  height: 8rem;
 }
 .bbn-colorpicker .bbn-colorpicker-details .bbn-colorpicker-preview i {
-  font-size: 4em;
+  font-size: 4rem;
 }
 .bbn-colorpicker .bbn-colorpicker-details .bbn-colorpicker-details-inputs {
   grid-template-columns: minmax(auto,max-content) max-content auto;

@@ -1524,7 +1524,7 @@ div.bbn-floater2.bbn-invisible {
 }
 div.bbn-floater2 > div > header {
   white-space: nowrap;
-  padding-right: 3.6em;
+  padding-right: 3.6rem;
 }
 div.bbn-floater2 > div > header .bbn-top-right {
   height: 100%;
@@ -1533,7 +1533,7 @@ div.bbn-floater2 > div > header .bbn-top-right {
   vertical-align: middle;
 }
 div.bbn-floater2 > div > header .bbn-top-right > div {
-  width: 1.8em;
+  width: 1.8rem;
   float: left;
 }
 div.bbn-floater2 > div > header h3 {
@@ -1541,11 +1541,11 @@ div.bbn-floater2 > div > header h3 {
   overflow: hidden;
 }
 div.bbn-floater2 > div > footer.bbn-button-group {
-  min-height: 3em;
+  min-height: 3rem;
 }
 div.bbn-floater2 > div > footer.bbn-button-group button {
-  padding-top: 0.3em;
-  padding-bottom: 0.3em;
+  padding-top: 0.3rem;
+  padding-bottom: 0.3rem;
 }
 
 </style>

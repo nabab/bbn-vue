@@ -57,7 +57,7 @@
                 :element="$el"
                 ref="timeFloater"
                 @close="isTimeOpened = false"
-                max-width="10em"
+                max-width="10rem"
                 :scrollable="!!blocksMode || !scrollMode"
                 hpos="right"
                 :auto-hide="1000"
@@ -1083,23 +1083,23 @@
 }
 .bbn-datetimepicker .bbn-calendar {
   height: auto;
-  max-height: 16em;
-  max-width: 40em;
+  max-height: 16rem;
+  max-width: 40rem;
 }
 .bbn-datetimepicker .bbn-calendar .bbn-widget:first-child {
   border: 0;
 }
 .bbn-datetimepicker .bbn-datetimepicker-timeblock {
-  width: 2em;
-  height: 2em;
+  width: 2rem;
+  height: 2rem;
 }
 .bbn-datetimepicker.bbn-input-nullable .bbn-input-nullable-container {
   opacity: 0;
   transition: opacity 0.2s;
   line-height: 100%;
   margin: auto;
-  padding-right: 0.2em;
-  width: 1.05em;
+  padding-right: 0.2rem;
+  width: 1.05rem;
 }
 .bbn-datetimepicker.bbn-input-nullable .bbn-input-nullable-container .nf-fa-times_circle {
   line-height: 100%;

@@ -23,9 +23,9 @@
         <div v-if="!isPane && (visual || fullScreen)"
             :class="'bbn-transition-bcolor bbn-b bbn-vspadded bbn-flex-width ' + (isVisible ? ' bbn-m' : '')"
             :style="{
-              paddingLeft: '0.5em',
-              paddingRight: '0.5em',
-              fontSize: isVisible && !router.visualShowAll ? null : '10em',
+              paddingLeft: '0.5rem',
+              paddingRight: '0.5rem',
+              fontSize: isVisible && !router.visualShowAll ? null : '10rem',
               backgroundColor: bcolor || router.bcolor,
               color: fcolor || router.fcolor
             }">
@@ -149,7 +149,7 @@
         <div class="bbn-bottom-left bbn-w-100"
             v-show="isOver"
             :style="{
-                fontSize: isVisible && !router.visualShowAll ? null : '10em'
+                fontSize: isVisible && !router.visualShowAll ? null : '10rem'
               }">
           <!-- Semi-transparent dark layer these buttons are not used -->
           <div class="bbn-bottom-left bbn-w-100 bbn-bg-black"

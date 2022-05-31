@@ -1106,14 +1106,14 @@
   border-radius: 0px;
 }
 .bbn-form .bbn-form-footer.bbn-button-group {
-  min-height: 3em;
+  min-height: 3rem;
 }
 .bbn-form.bbn-flex-height .bbn-form-footer.bbn-button-group {
   font-size: 200%;
 }
 .bbn-form .bbn-grid-fields > label,
 .bbn-form .bbn-grid-fields > .bbn-label {
-  min-height: 1.8em;
+  min-height: 1.8rem;
 }
 .bbn-form .bbn-form-fieldset {
   margin-inline-start: 0;

@@ -26,9 +26,9 @@ script.innerHTML = `<div :class="[componentClass, {
         <div v-if="!isPane && (visual || fullScreen)"
             :class="'bbn-transition-bcolor bbn-b bbn-vspadded bbn-flex-width ' + (isVisible ? ' bbn-m' : '')"
             :style="{
-              paddingLeft: '0.5em',
-              paddingRight: '0.5em',
-              fontSize: isVisible && !router.visualShowAll ? null : '10em',
+              paddingLeft: '0.5rem',
+              paddingRight: '0.5rem',
+              fontSize: isVisible && !router.visualShowAll ? null : '10rem',
               backgroundColor: bcolor || router.bcolor,
               color: fcolor || router.fcolor
             }">
@@ -137,7 +137,7 @@ script.innerHTML = `<div :class="[componentClass, {
       </div>
     </transition>
     <!-- When in visual mode a layer prevents interaction with the content -->
-    <div v-if="router.isVisual && (!isVisible || router.visualShowAll)"
+    <div v-if="router.isVisual && (!isVisible || router.visualShowAll) && !isPane"
         class="bbn-overlay"
         style="z-index: 12; background-color: black; opacity: 0.2;">
     </div>
@@ -152,7 +152,7 @@ script.innerHTML = `<div :class="[componentClass, {
         <div class="bbn-bottom-left bbn-w-100"
             v-show="isOver"
             :style="{
-                fontSize: isVisible && !router.visualShowAll ? null : '10em'
+                fontSize: isVisible && !router.visualShowAll ? null : '10rem'
               }">
           <!-- Semi-transparent dark layer these buttons are not used -->
           <div class="bbn-bottom-left bbn-w-100 bbn-bg-black"
@@ -457,7 +457,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       visualStyle() {
         let r = this.router;
         if (r && r.isVisual) {
-          if ((r.numVisualReals > 0) && (!this.isVisible || r.visualShowAll)) {
+          if ((r.numVisualReals > 0) && (!this.isVisible || r.visualShowAll) && (!this.ready || !this.isPane)) {
             return {
               zoom: 0.1,
               width: '100%',

@@ -216,7 +216,7 @@
                  ' bbn-primary-text': value !== idx,
                  'bbn-primary-text-alt': value === idx
                }]"
-               style="width: 02em; height: 0.2em"/>
+               style="width: 02rem; height: 0.2rem"/>
           </div>
         `,
         props: {

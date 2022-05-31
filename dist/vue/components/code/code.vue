@@ -1269,8 +1269,8 @@
   font-family: "FiraCode" !important;
 }
 .bbn-code .CodeMirror {
-  padding: 0.5em 0;
-  font-size: 0.85em;
+  padding: 0.5rem 0;
+  font-size: 0.85rem;
   font-family: "FiraCode";
   font-feature-settings: "calt" 1;
   text-rendering: optimizeLegibility;

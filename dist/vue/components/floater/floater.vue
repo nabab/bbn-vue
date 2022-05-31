@@ -38,8 +38,8 @@
         <h3 v-html="title"
             class="bbn-no-margin bbn-vpadded bbn-light bbn-c bbn-lg"
             :style="{
-              paddingLeft: maximizable || closable ? '3.6em' : 'var(--space)',
-              paddingRight: maximizable || closable ? '3.6em' : 'var(--space)',
+              paddingLeft: maximizable || closable ? '3.6rem' : 'var(--space)',
+              paddingRight: maximizable || closable ? '3.6rem' : 'var(--space)',
             }"
             ref="title"/>
       </div>
@@ -136,7 +136,7 @@
       <div :class="{
         'bbn-top-right': true,
         'bbn-spadded': true,
-        'bbn-xl': !!modal,
+        'bbn-xxxl': !!modal,
         'bbn-white': !!modal,
         'bbn-lg': !modal
       }">
@@ -1757,7 +1757,7 @@ div.bbn-floater > div {
 }
 div.bbn-floater > div > header {
   white-space: nowrap;
-  min-height: 2em;
+  min-height: 2rem;
 }
 div.bbn-floater > div > header .bbn-top-right {
   height: 100%;
@@ -1766,7 +1766,7 @@ div.bbn-floater > div > header .bbn-top-right {
   vertical-align: middle;
 }
 div.bbn-floater > div > header .bbn-top-right > div {
-  width: 1.8em;
+  width: 1.8rem;
   float: left;
 }
 div.bbn-floater > div > header h3 {
@@ -1774,11 +1774,11 @@ div.bbn-floater > div > header h3 {
   overflow: hidden;
 }
 div.bbn-floater > div > footer.bbn-button-group {
-  min-height: 3em;
+  min-height: 3rem;
 }
 div.bbn-floater > div > footer.bbn-button-group button {
-  padding-top: 0.3em;
-  padding-bottom: 0.3em;
+  padding-top: 0.3rem;
+  padding-bottom: 0.3rem;
 }
 div.bbn-floater .bbn-floater-arrow {
   position: absolute;

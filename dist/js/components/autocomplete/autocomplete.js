@@ -47,7 +47,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', {
       <div v-if="isAjax && isLoading"
            class="bbn-middle"
       >
-        <bbn-loadicon size="1.2em"
+        <bbn-loadicon size="1.2rem"
                       tabindex="-1"
         ></bbn-loadicon>
       </div>

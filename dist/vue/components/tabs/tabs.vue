@@ -50,7 +50,7 @@
                             :autobind="false"
                             tag="div"
                             :disabled="tabIndex !== value"
-                            min-width="10em"
+                            min-width="10rem"
                             :class="['bbn-tabs-tab', 'bbn-iblock', {
                                     'bbn-tabs-dirty': tab.dirty,
                                     'bbn-tabs-icononly': tab.notext
@@ -86,7 +86,7 @@
                 <bbn-context v-if="(tab.menu !== false) && (tabIndex === value)"
                              class="bbn-iblock bbn-router-tab-menu bbn-p bbn-bottom-right bbn-hxspadded"
                              tabindex="-1"
-                             min-width="10em"
+                             min-width="10rem"
                              tag="span"
                              :source="getMenuFn"
                              :autobind="false"
@@ -299,7 +299,7 @@ div.bbn-tabs div.bbn-tabs-ul-container {
 }
 div.bbn-tabs.bbn-tabs-scrollable > div.bbn-tabs-container div.bbn-tabs-ul-container {
   padding: 0 !important;
-  height: 2.4em;
+  height: 2.4rem;
 }
 div.bbn-tabs.bbn-tabs-scrollable > div.bbn-tabs-container div.bbn-tabs-ul-container ul.bbn-tabs-tabs:first-child {
   white-space: nowrap;
@@ -318,7 +318,7 @@ div.bbn-tabs > div.bbn-tabs-container ul.bbn-tabs-tabs:first-child {
   border-right-width: 0px;
 }
 div.bbn-tabs > div.bbn-tabs-container ul.bbn-tabs-tabs:first-child > li {
-  height: 2.4em;
+  height: 2.4rem;
   list-style-type: none;
   text-decoration: none;
   margin: 0 !important;
@@ -341,7 +341,7 @@ div.bbn-tabs > div.bbn-tabs-container ul.bbn-tabs-tabs:first-child > li .bbn-tab
   width: 12px;
   height: 12px;
   position: absolute;
-  top: 0.4em;
+  top: 0.4rem;
   left: 2px;
 }
 div.bbn-tabs > div.bbn-tabs-container ul.bbn-tabs-tabs:first-child > li .bbn-tabs-tab-loader:after {
@@ -360,11 +360,11 @@ div.bbn-tabs > div.bbn-tabs-container ul.bbn-tabs-tabs:first-child > li .bbn-tab
 div.bbn-tabs > div.bbn-tabs-container ul.bbn-tabs-tabs:first-child > li div.bbn-tabs-tab {
   cursor: pointer;
   color: inherit;
-  padding: 0.3em 1.15em 0.5em 1.15em;
+  padding: 0.3rem 1.15rem 0.5rem 1.15rem;
   vertical-align: middle;
 }
 div.bbn-tabs > div.bbn-tabs-container ul.bbn-tabs-tabs:first-child > li div.bbn-tabs-tab > .bbn-router-tab-text {
-  font-size: 1.1em;
+  font-size: 1.1rem;
 }
 div.bbn-tabs > div.bbn-tabs-container ul.bbn-tabs-tabs:first-child > li div.bbn-tabs-tab > .bbn-tabs-main-icon {
   line-height: 100%;
@@ -390,7 +390,7 @@ div.bbn-tabs > div.bbn-tabs-container ul.bbn-tabs-tabs:first-child > li div.bbn-
   right: 0px;
   padding: 2px;
   padding-right: 2px;
-  font-size: 1em;
+  font-size: 1rem;
   cursor: pointer;
   margin: 0;
 }
@@ -404,8 +404,8 @@ div.bbn-tabs > div.bbn-tabs-container ul.bbn-tabs-tabs:first-child > li div.bbn-
   display: none;
   position: absolute;
   bottom: 1px;
-  left: 1.15em;
-  right: 1.15em;
+  left: 1.15rem;
+  right: 1.15rem;
   height: 3px;
 }
 div.bbn-tabs > div.bbn-tabs-container ul.bbn-tabs-tabs:first-child > li.bbn-tabs-static div.bbn-tabs-icons i.bbn-router-tab-close {
@@ -425,12 +425,12 @@ div.bbn-tabs > div.bbn-tabs-container > div.bbn-loader {
   color: white;
 }
 div.bbn-tabs > div.bbn-tabs-container > div.bbn-loader div.loader-animation {
-  margin-top: 2em;
+  margin-top: 2rem;
 }
 div.bbn-tabs > div.bbn-tabs-container > div.bbn-loader div.loader-animation h1 {
-  font-size: 3.5em !important;
+  font-size: 3.5rem !important;
   text-align: center;
-  margin-top: 1em;
+  margin-top: 1rem;
   color: white;
 }
 div.bbn-tabs > div.bbn-tabs-container > div.bbn-loader div.loader-animation .sk-cube-grid {
@@ -483,15 +483,15 @@ div.bbn-tabs > div.bbn-tabs-container > div.bbn-loader div.loader-animation .sk-
   animation-delay: 0.2s;
 }
 div.bbn-tabs > div.bbn-tabs-container div.bbn-tabs-button {
-  width: 2.5em;
-  height: 2.4em;
+  width: 2.5rem;
+  height: 2.4rem;
 }
 div.bbn-tabs > div.bbn-tabs-container > span.bbn-button {
-  top: 0.4em;
+  top: 0.4rem;
   position: absolute;
 }
 div.bbn-tabs .bbn-tabs {
-  margin-top: 0.5em;
+  margin-top: 0.5rem;
   height: calc(99.5%);
 }
 div.bbn-tabs .bbn-tabs .bbn-tabs {
@@ -501,7 +501,7 @@ div.bbn-tabs .bbn-pane .bbn-tabs {
   margin-top: 0;
 }
 div.bbn-tabs .bbn-pane .bbn-tabs .bbn-tabs {
-  margin-top: 0.5em;
+  margin-top: 0.5rem;
 }
 @keyframes bbn-tabs-tab-loader {
   0% {

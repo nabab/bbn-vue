@@ -520,8 +520,8 @@
 }
 .bbn-datepicker .bbn-calendar {
   height: auto;
-  max-height: 16em;
-  max-width: 40em;
+  max-height: 16rem;
+  max-width: 40rem;
 }
 .bbn-datepicker .bbn-calendar .bbn-widget:first-child {
   border: 0;
@@ -531,8 +531,8 @@
   transition: opacity 0.2s;
   line-height: 100%;
   margin: auto;
-  padding-right: 0.2em;
-  width: 1.05em;
+  padding-right: 0.2rem;
+  width: 1.05rem;
 }
 .bbn-datepicker.bbn-input-nullable .bbn-input-nullable-container .nf-fa-times_circle {
   line-height: 100%;

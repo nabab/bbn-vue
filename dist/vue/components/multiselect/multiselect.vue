@@ -2,7 +2,7 @@
 <div :class="[componentClass, 'bbn-w-100', 'bbn-textbox']"
      tabindex="0"
      @keydown.stop="keydown($event)"
-     style="min-height: 6.5em">
+     style="min-height: 6.5rem">
   <input type="hidden"
          ref="element"
          v-model="value"
@@ -138,10 +138,10 @@
         default: 'nf nf-fa-search'
       },
       /**
-       * @prop {} ['4em'] minWidth
+       * @prop {} ['4rem'] minWidth
        */
       minWidth: {
-        default: '4em'
+        default: '4rem'
       },
       /**
        * @prop {} ['100%'] maxWidth

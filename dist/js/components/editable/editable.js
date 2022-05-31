@@ -27,9 +27,9 @@ script.innerHTML = `<div :class="['bbn-iblock', componentClass]"
   <div :style="{
       position: 'absolute',
       top: '0px',
-      right: '-8em',
-      width: '8em',
-      paddingLeft: '1em',
+      right: '-8rem',
+      width: '8rem',
+      paddingLeft: '1rem',
       textAlign: 'left',
       display: isEditing || over ? 'block' : 'none'
     }">

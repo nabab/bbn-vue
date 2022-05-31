@@ -1080,7 +1080,7 @@
   position: absolute;
   right: 0;
   top: 0;
-  height: 1.6em;
+  height: 1.6rem;
 }
 .bbn-cms-block .bbn-cms-block-icons i {
   display: inline-block;
@@ -1093,7 +1093,7 @@
   border: 1px dashed #6e9ecf;
 }
 .bbn-cms-block .bbn-cms-block-component {
-  min-height: 1.6em;
+  min-height: 1.6rem;
 }
 .bbn-cms-block h1,
 .bbn-cms-block h2,
@@ -1101,12 +1101,12 @@
 .bbn-cms-block h4,
 .bbn-cms-block h5,
 .bbn-cms-block h6 {
-  margin: 0.5em 0 0 0;
+  margin: 0.5rem 0 0 0;
   line-height: 1.2;
   font-weight: bold;
   font-weight: 100;
   font-style: normal;
-  line-height: 1.2em;
+  line-height: 1.2rem;
   letter-spacing: 0px;
   text-transform: none;
 }
@@ -1207,7 +1207,7 @@
   opacity: .7;
   margin: 0;
   font-size: 13px;
-  line-height: 1.4em;
+  line-height: 1.4rem;
   text-transform: none;
 }
 .bbn-cms-block .bbn-block-carousel .control i {
@@ -1243,9 +1243,9 @@
 }
 .bbn-cms-block .bbn-block-image .image-details-title,
 .bbn-cms-block .bbn-block-gallery .image-details-title {
-  font-size: 1.3em;
-  line-height: 1em;
-  margin: 1em 0 .2em 0;
+  font-size: 1.3rem;
+  line-height: 1rem;
+  margin: 1rem 0 .2rem 0;
   display: inline-block;
 }
 .bbn-cms-block .bbn-block-social ul.bbn-menulist.free {

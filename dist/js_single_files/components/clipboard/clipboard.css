@@ -1,19 +1,19 @@
 .bbn-clipboard {
-  min-width: 32em;
+  min-width: 32rem;
 }
 .bbn-clipboard li .bbn-clipboard-buttons {
-  width: 12em;
+  width: 12rem;
   vertical-align: middle;
 }
 .bbn-clipboard li .bbn-clipboard-text {
   vertical-align: middle;
   max-width: 40vw;
-  min-width: 15em;
+  min-width: 15rem;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
 }
 .bbn-clipboard li .bbn-block-right {
-  padding-left: 1em;
+  padding-left: 1rem;
   vertical-align: middle;
 }

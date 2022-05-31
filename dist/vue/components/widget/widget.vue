@@ -53,7 +53,7 @@
   <div :class="['bbn-content', 'bbn-radius-bottom', 'bbn-no-border', {'bbn-padded': !component || (contentPadding === true)}]"
        :style="{padding: contentPadding ? contentPadding : false}">
     <!-- LOADING -->
-    <div v-if="isLoading" style="min-height: 15em">
+    <div v-if="isLoading" style="min-height: 15rem">
       <bbn-loader text=""
                   type="swing"/>
     </div>
@@ -803,7 +803,7 @@
   word-wrap: break-word;
   display: inline-block;
   float: left;
-  padding-bottom: 1.5em;
+  padding-bottom: 1.5rem;
   width: 100%;
   position: relative;
   overflow: hidden;
@@ -838,7 +838,7 @@
   list-style: none;
 }
 .bbn-widget li {
-  padding: 0.3em 0em;
+  padding: 0.3rem 0rem;
 }
 .bbn-widget li .bbn-grid-fields {
   padding: 0;
@@ -855,7 +855,7 @@
 .bbn-widget div.bbn-header h4,
 .bbn-widget div.bbn-header h5,
 .bbn-widget div.bbn-header h6 {
-  margin: 0 3em;
+  margin: 0 3rem;
 }
 .bbn-widget div.bbn-header i.nf {
   vertical-align: middle;
@@ -864,10 +864,10 @@
   vertical-align: middle;
 }
 .bbn-widget div.bbn-header .bbn-widget-button-left i {
-  margin-left: .25em;
+  margin-left: .25rem;
 }
 .bbn-widget div.bbn-header .bbn-widget-button-right i {
-  margin-right: .25em;
+  margin-right: .25rem;
 }
 
 </style>

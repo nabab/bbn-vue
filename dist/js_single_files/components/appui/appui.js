@@ -100,8 +100,8 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-background', {
           <bbn-context tag="div"
                        class="bbn-block"
                        :source="userMenu">
-            <bbn-initial font-size="2em" :user-name="app.user.name"/>
-            <div style="position: absolute; bottom: -0.4em; right: -0.4em; border: #CCC 1px solid; width: 1.1em; height: 1.1e"
+            <bbn-initial font-size="2rem" :user-name="app.user.name"/>
+            <div style="position: absolute; bottom: -0.4rem; right: -0.4rem; border: #CCC 1px solid; width: 1.1rem; height: 1.1e"
                  class="bbn-bg-white bbn-black bbn-middle">
               <i class="nf nf-fa-bars bbn-xs"/>
             </div>
@@ -190,6 +190,14 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-background', {
                       :source="loaders"/>
         </div>
         <div class="bbn-vmiddle">
+          <!-- POST ITS -->
+          <div v-if="plugins['appui-note']"
+               class="bbn-right-space">
+            <i class="bbn-p nf nf-fa-sticky_note"
+               :title="_('Show my post-its')"
+               style="color: #EE05CF"
+               @click="showPostIt = true"/>
+          </div>
           <!-- TASK TRACKER -->
           <div v-if="plugins['appui-task']"
               class="bbn-right-space">
@@ -224,6 +232,13 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-background', {
                   @keydown.space.enter.prevent="getRef('clipboard').toggle()"
                   @drop.prevent.stop="getRef('clipboard').copy($event); getRef('clipboard').show()">
           </div>
+          <!-- DEBUGGER -->
+          <div v-if="plugins['appui-ide'] && ready && app.user && app.user.isAdmin"
+               class="bbn-right-space">
+            <i class="bbn-p nf nf-mdi-bug"
+               :title="_('Show my post-its')"
+               @click="toggleDebug"/>
+          </div>
           <!-- POWER/ENV ICON -->
           <bbn-context class="bbn-iblock bbn-right-space bbn-p bbn-rel"
                        :title="appMode"
@@ -242,7 +257,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-background', {
               orientation="left"
               ref="slider"
               :style="{
-                width: isMobile && !isTablet ? '100%' : '35em',
+                width: isMobile && !isTablet ? '100%' : '35rem',
                 zIndex: 100,
                 maxWidth: '100%'
               }"
@@ -315,6 +330,42 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-background', {
   </div>
   <component ref="app"
              :is="appComponent"/>
+  <!-- POST-IT COMPONENT -->
+  <appui-note-postits v-if="plugins['appui-note'] && showPostIt"
+                      :source="postits"
+                      @close="showPostIt = false"/>
+  <!-- DEBUG COMPONENT -->
+  <bbn-slider v-if="plugins['appui-ide'] && ready && app.user && app.user.isAdmin"
+              orientation="right"
+              ref="debug"
+              :style="{
+                width: isMobile && !isTablet ? '100%' : '35rem',
+                zIndex: 100,
+                maxWidth: '100%'
+              }"
+              close-button="top-right">
+    <div class="bbn-w-100 bbn-padded bbn-wrap bbn-l appui-ide-debugger-container">
+      <div class="bbn-b"
+           v-text="_('Current URL')"/>
+      <div class="bbn-b"
+           v-text="getRef('router').currentURL"/>
+
+      <div class="bbn-b"
+           v-text="_('Current title')"/>
+      <div class="bbn-b"
+           v-text="getRef('router').currentTitle"/>
+
+      <div class="bbn-b"
+           v-text="_('Selected index')"/>
+      <div class="bbn-b"
+           v-text="getRef('router').selected"/>
+
+      <template v-for="view in getRef('router').views">
+        <div v-text="view.idx + '/ ' + view.current"/>
+        <div v-html="fdate(view.last) + '<br>' + view.url"/>
+      </template>
+    </div>
+  </bbn-slider>
 </div>
 `;
 script.setAttribute('id', 'bbn-tpl-component-appui');
@@ -516,6 +567,18 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
     data(){
       let isMobile = bbn.fn.isMobile();
       let isTablet = bbn.fn.isTabletDevice();
+      let emptyPostIt = {
+        content: '',
+        color: '#fd4db0',
+        title: '',
+        creation: bbn.fn.dateSQL()
+      };
+      let postits = [];
+      if (this.plugins['appui-note']) {
+        postits.push(emptyPostIt);
+      }
+
+      
       return {
         isFocused: false,
         intervalBugChrome: null,
@@ -563,10 +626,16 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         isMobile: isMobile,
         isTablet: isTablet,
         isTouch: isMobile || isTablet,
-        isDesktop: !isTablet && !isMobile
+        isDesktop: !isTablet && !isMobile,
+        emptyPostIt: emptyPostIt,
+        postits: postits,
+        showPostIt: false
       }
     },
     computed: {
+      isDev() {
+        return bbn.env.isDev;
+      },
       appComponent(){
         return bbn.fn.extend({
           render(createElement){
@@ -642,6 +711,16 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       }
     },
     methods: {
+      fdate: bbn.fn.fdate,
+      updatePostIts() {
+        if (this.plugins['appui-note']) {
+          bbn.fn.post(this.plugins['appui-note'] + '/data/postits', {pinned: 1}, d => {
+            if (d&& d.data) {
+              this.postits = d.data;
+            }
+          })
+        }
+      },
       registerSearch() {
         this.getRef('search').registerFunction(this.getRef('router').searchForString);
       },
@@ -770,6 +849,13 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         let menu = this.getRef('slider');
         if ( menu ){
           menu.toggle();
+        }
+      },
+
+      toggleDebug(){
+        let debug = this.getRef('debug');
+        if ( debug ){
+          debug.toggle();
         }
       },
 
@@ -1318,6 +1404,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
             this._postMessage({
               type: 'initCompleted'
             });
+            this.updatePostIts();
             this.registerChannel('appui', true);
             if (this.plugins['appui-chat']){
               this.registerChannel('appui-chat');

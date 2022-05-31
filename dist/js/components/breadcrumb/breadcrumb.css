@@ -15,7 +15,7 @@ div.bbn-breadcrumb > div.bbn-breadcrumb-container .bbn-breadcrumb-dirty::after {
   content: '*';
 }
 div.bbn-breadcrumb > div.bbn-breadcrumb-container .bbn-breadcrumb-icons {
-  font-size: 1em;
+  font-size: 1rem;
   margin: 0;
 }
 div.bbn-breadcrumb > div.bbn-breadcrumb-container .bbn-breadcrumb-icons.bbn-breadcrumb-icons-menu {
@@ -25,8 +25,8 @@ div.bbn-breadcrumb > div.bbn-breadcrumb-container .bbn-breadcrumb-icons.bbn-brea
   top: 1px;
 }
 div.bbn-breadcrumb > div.bbn-breadcrumb-container .bbn-breadcrumb-arrow {
-  margin-right: .7em;
-  margin-left: .7em;
+  margin-right: .7rem;
+  margin-left: .7rem;
   vertical-align: middle;
 }
 div.bbn-breadcrumb > div.bbn-breadcrumb-container > div.bbn-loader {
@@ -37,12 +37,12 @@ div.bbn-breadcrumb > div.bbn-breadcrumb-container > div.bbn-loader {
   color: white;
 }
 div.bbn-breadcrumb > div.bbn-breadcrumb-container > div.bbn-loader div.loader-animation {
-  margin-top: 2em;
+  margin-top: 2rem;
 }
 div.bbn-breadcrumb > div.bbn-breadcrumb-container > div.bbn-loader div.loader-animation h1 {
-  font-size: 3.5em !important;
+  font-size: 3.5rem !important;
   text-align: center;
-  margin-top: 1em;
+  margin-top: 1rem;
   color: white;
 }
 div.bbn-breadcrumb > div.bbn-breadcrumb-container > div.bbn-loader div.loader-animation .sk-cube-grid {

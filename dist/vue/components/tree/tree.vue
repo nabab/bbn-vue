@@ -2586,10 +2586,10 @@ Vue.component('bbn-tree', {
   padding: 0;
 }
 .bbn-tree ul.bbn-tree-child {
-  padding-left: 2em;
+  padding-left: 2rem;
 }
 .bbn-tree ul.bbn-tree-root {
-  padding-left: 0.25em;
+  padding-left: 0.25rem;
 }
 .bbn-tree ul.bbn-tree-helper {
   position: fixed;
@@ -2601,7 +2601,7 @@ Vue.component('bbn-tree', {
 }
 .bbn-tree ul.bbn-tree-helper.bbn-tree-child,
 .bbn-tree ul.bbn-tree-helper.root {
-  padding-left: 2em;
+  padding-left: 2rem;
 }
 .bbn-tree ul.bbn-tree-helper.bbn-tree-root {
   padding-left: 0;
@@ -2649,13 +2649,13 @@ Vue.component('bbn-tree', {
   padding: 1px;
 }
 .bbn-tree .bbn-tree-node span.bbn-tree-node-block .bbn-tree-node-block-expander {
-  width: 0.7em;
-  padding-left: 0.2em;
-  font-size: 1.1em;
+  width: 0.7rem;
+  padding-left: 0.2rem;
+  font-size: 1.1rem;
 }
 .bbn-tree .bbn-tree-node span.bbn-tree-node-block .bbn-tree-node-block-icon {
   text-align: center;
-  width: 1.3em;
+  width: 1.3rem;
 }
 .bbn-tree .bbn-tree-node span.bbn-tree-node-block .bbn-tree-node-block-icon img {
   width: 100%;

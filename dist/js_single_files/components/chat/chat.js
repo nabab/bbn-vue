@@ -107,7 +107,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-vmiddle']">
       <div v-else
            class="bbn-overlay bbn-middle"
       >
-        <bbn-loadicon size="1.5em"></bbn-loadicon>
+        <bbn-loadicon size="1.5rem"></bbn-loadicon>
         <span class="bbn-left-sspace" v-text="_('Loading...')"></span>
       </div>
     </div>
@@ -183,7 +183,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-vmiddle']">
         </div>
       </div>
       <div v-if="isLoading" class="bbn-middle bbn-top-xsspace bbn-s">
-        <bbn-loadicon size="1.5em"></bbn-loadicon>
+        <bbn-loadicon size="1.5rem"></bbn-loadicon>
         <span class="bbn-left-sspace" v-text="_('Loading...')"></span>
       </div>
       <div v-if="showInfo"
@@ -280,7 +280,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-vmiddle']">
           </bbn-scroll>
         </div>
         <div v-if="cp.currentOnline"
-             style="min-height: 2em"
+             style="min-height: 2rem"
              class="bbn-flex-width"
         >
           <div class="bbn-middle bbn-bordered-left bbn-bordered-top bbn-bordered-bottom bbn-alt-background bbn-hxspadded">
@@ -1643,7 +1643,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
 <div class="bbn-grid bbn-p bbn-vmiddle bbn-vxsmargin"
       style="grid-template-columns: max-content auto max-content"
 >
-  <div class="bbn-middle" style="min-width: 1.5em">
+  <div class="bbn-middle" style="min-width: 1.5rem">
     <bbn-initial :user-name="source.text"
                 :width="16"
                 :height="16"
@@ -1652,7 +1652,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
   <div class="bbn-ellipsis bbn-w-100"
        v-text="source.text"
   ></div>
-  <div class="bbn-middle" style="min-width: 1.5em">
+  <div class="bbn-middle" style="min-width: 1.5rem">
     <i :class="{
          'nf nf-fa-circle': cp.isOnline(source.value),
          'bbn-green': cp.isOnline(source.value)
@@ -1693,7 +1693,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       style="grid-template-columns: max-content auto max-content max-content"
       :title="participantsFormatted"
 >
-  <div class="bbn-middle" style="min-width: 1.5em">
+  <div class="bbn-middle" style="min-width: 1.5rem">
     <bbn-initial :user-name="participantsFormatted"
                  :width="16"
                  :height="16"
@@ -1711,7 +1711,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           v-text="source.unread">
     </span>
   </div>
-  <div class="bbn-middle" style="min-width: 1.5em">
+  <div class="bbn-middle" style="min-width: 1.5rem">
     <i v-if="cp.currentOnline && (online.length === participants.length)"
        class="nf nf-fa-circle bbn-green"
        :title="onlineFormatted"
@@ -1836,7 +1836,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
   >
     <template v-for="p in currentParticipants">
       <div class="bbn-middle"
-          style="min-width: 1.5em"
+          style="min-width: 1.5rem"
       >
         <bbn-initial :user-name="p.text"
                     :width="16"
@@ -1847,7 +1847,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           v-text="p.text"
       ></div>
       <div class="bbn-middle"
-          style="min-width: 1.5em"
+          style="min-width: 1.5rem"
       >
         <template v-if="isAdmin">
           <i v-if="!admins.includes(p.value) || isCreator"

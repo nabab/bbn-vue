@@ -1,8 +1,34 @@
 <template>
-<div :class="[componentClass, 'bbn-textbox', 'bbn-no-padding']"
+<div :class="[componentClass, {'bbn-textbox': !floating}, 'bbn-no-padding']"
      @keydown.tab.stop=""
 		 :style="{height: currentHeight}">
-  <div class="bbn-iflex-height"
+	<div v-if="floating"
+	     class="bbn-iflex-height"
+			 ref="container"
+			 @click.stop.prevent
+			 style="min-height: 100%; width: 100%; overflow: visible">
+		<div contenteditable="true"
+		     @focusin="isEditing = true"
+				 @keyup="updateContenteditable"
+				 ref="element"
+				 @blur="updateContenteditable"/>
+		<bbn-portal>
+			<bbn-floater v-if="ready && isEditing"
+			             :scrollable="false"
+									 ref="floater"
+									 @focusin="isEditing = true"
+									 :element="$el"
+									 position="topLeft"
+									 :title="false">
+				<bbn-toolbar :source="currentButtons"
+									   class="bbn-rte-toolbar bbn-header bbn-radius-top bbn-no-border"
+									 	 :button-space="false"/>
+			</bbn-floater>
+		</bbn-portal>
+
+	</div>
+	<div v-else
+	     class="bbn-iflex-height"
 			 style="min-height: 100%; width: 100%;">
 		<bbn-toolbar :source="currentButtons"
 								 class="bbn-rte-toolbar bbn-header bbn-radius-top bbn-no-border"
@@ -12,7 +38,7 @@
 				 @mouseup.stop="getRef('element').focus()">
 			<component :is="currentHeight ? 'bbn-scroll' : 'div'">
 				<div class="bbn-spadded"
-							style="min-height: max(4em, 100%)"
+							style="min-height: max(4rem, 100%)"
 							contenteditable="true"
 							ref="element"
 							@input="rteOnInput"
@@ -277,6 +303,8 @@
     content: 'pell-content',
     selected: 'pell-button-selected'
   };
+
+  let openedFloatingRTE = [];
   
   Vue.component('bbn-rte', {
     /**
@@ -370,6 +398,10 @@
             right: 5,
           }
         }
+      },
+      floating: {
+        type: Boolean,
+        default: false
       }
     },
     data(){
@@ -394,7 +426,13 @@
         /**
          * @data {Vue} fontBgColorComponent
          */
-        fontBgColorComponent : null
+        fontBgColorComponent : null,
+        /**
+         * @data {Bool} [false] isEditing
+         */
+        isEditing: false,
+        body: document.body
+
       }
     },
     computed: {
@@ -490,6 +528,26 @@
             this.fontBgColorComponent.currentColor = bbn.fn.rgb2hex(queryCommandValue('backColor'));
           }
         }
+      },
+      onClickDocument(e) {
+        bbn.fn.log("onClickDocument");
+        let floater = this.getRef('floater');
+        let element = this.getRef('element');
+        if (floater && element) {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          if (!bbn.fn.isInside(e.target, floater.$el) && !bbn.fn.isInside(e.target, element) && (e.target !== element)) {
+            this.isEditing = false;
+          }
+        }
+      },
+      updateContenteditable() {
+        let element = this.getRef('element');
+        let st = element.innerHTML;
+        if (st !== this.currentValue) {
+          this.currentValue = st;
+          this.emitInput(st);
+        }
       }
     },
     /**
@@ -559,6 +617,13 @@
 
       this.ready = true;
     },
+    beforeDestroy() {
+      if (this.floating) {
+        bbn.fn.log("FLOATING DESTROY");
+        this.ready = false;
+        window.document.body.removeEventListener('click', this.onClickDocument);
+      }
+    },
     watch: {
       value(v) {
         if (v !== this.currentValue) {
@@ -575,6 +640,31 @@
         handler() {
           this.setButtons();
         }
+      },
+      isEditing(v) {
+        if (this.floating) {
+          if (v) {
+            if (openedFloatingRTE.indexOf(this) === -1) {
+              openedFloatingRTE.push(this);
+              window.document.body.addEventListener('click', this.onClickDocument);
+            }
+            bbn.fn.each(openedFloatingRTE, a => {
+              if (a !== this) {
+                a.isEditing = false;
+                a.$forceUpdate();
+              }
+            });
+
+          }
+          else {
+            window.document.body.removeEventListener('click', this.onClickDocument);
+            let idx = openedFloatingRTE.indexOf(this);
+            if (idx > -1) {
+              openedFloatingRTE.splice(idx, 1);
+            }
+          }
+          this.$forceUpdate();
+        }
       }
     }
   });
@@ -586,21 +676,21 @@
   box-sizing: content-box;
   clear: both;
 }
-.bbn-rte .bbn-rte-toolbar > .bbn-flex-fill {
+.bbn-rte-toolbar > .bbn-flex-fill {
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
 }
-.bbn-rte .bbn-rte-toolbar > .bbn-flex-fill > * {
-  margin: 0 .15em;
+.bbn-rte-toolbar > .bbn-flex-fill > * {
+  margin: 0 .15rem;
 }
-.bbn-rte .bbn-rte-toolbar > .bbn-flex-fill .bbn-rte-fontcolor,
-.bbn-rte .bbn-rte-toolbar > .bbn-flex-fill .bbn-rte-fontbgcolor {
+.bbn-rte-toolbar > .bbn-flex-fill .bbn-rte-fontcolor,
+.bbn-rte-toolbar > .bbn-flex-fill .bbn-rte-fontbgcolor {
   background-color: var(--default-background);
 }
-.bbn-rte .bbn-rte-toolbar > .bbn-flex-fill .bbn-rte-fontcolor .bbn-colorpicker-input,
-.bbn-rte .bbn-rte-toolbar > .bbn-flex-fill .bbn-rte-fontbgcolor .bbn-colorpicker-input {
+.bbn-rte-toolbar > .bbn-flex-fill .bbn-rte-fontcolor .bbn-colorpicker-input,
+.bbn-rte-toolbar > .bbn-flex-fill .bbn-rte-fontbgcolor .bbn-colorpicker-input {
   border: 0;
 }
 

@@ -53,7 +53,7 @@ script.innerHTML = `<div :class="[componentClass, {'bbn-tabs-scrollable': scroll
                             :autobind="false"
                             tag="div"
                             :disabled="tabIndex !== value"
-                            min-width="10em"
+                            min-width="10rem"
                             :class="['bbn-tabs-tab', 'bbn-iblock', {
                                     'bbn-tabs-dirty': tab.dirty,
                                     'bbn-tabs-icononly': tab.notext
@@ -89,7 +89,7 @@ script.innerHTML = `<div :class="[componentClass, {'bbn-tabs-scrollable': scroll
                 <bbn-context v-if="(tab.menu !== false) && (tabIndex === value)"
                              class="bbn-iblock bbn-router-tab-menu bbn-p bbn-bottom-right bbn-hxspadded"
                              tabindex="-1"
-                             min-width="10em"
+                             min-width="10rem"
                              tag="span"
                              :source="getMenuFn"
                              :autobind="false"

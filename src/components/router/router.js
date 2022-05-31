@@ -685,8 +685,8 @@
         return {
           minHeight: '100%',
           display: 'grid',
-          gridColumnGap: '0.5em',
-          gridRowGap: '0.5em',
+          gridColumnGap: '0.5rem',
+          gridRowGap: '0.5rem',
           gridTemplateRows: 'repeat(' + this.numVisualRows + ', 1fr)',
           gridTemplateColumns: 'repeat(' + this.numVisualCols + ', 1fr)'
         }
@@ -3741,7 +3741,7 @@
       listItem: {
         template: `
 <div class="bbn-w-100 bbn-vmiddle bbn-bordered-bottom"
-     style="height: 2.5em"
+     style="height: 2.5rem"
      @mouseenter="isHover = true"
      @mouseleave="isHover = false">
   <div class="bbn-flex-width bbn-vmiddle bbn-h-100">

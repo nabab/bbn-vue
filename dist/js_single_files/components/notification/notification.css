@@ -2,7 +2,7 @@
   transition: top left right bottom 0.5s ease-in-out !important;
 }
 .bbn-notification .bbn-notification-icon {
-  margin-right: 1em;
+  margin-right: 1rem;
 }
 .bbn-notification .bbn-notification-content {
   white-space: nowrap;

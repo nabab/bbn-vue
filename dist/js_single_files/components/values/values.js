@@ -3,29 +3,36 @@
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass]"
      tabindex="-1">
-  <div>
-    <bbn-input v-model="currentInput"
-               :readonly="max && (value.length > max)"
-               @keydown="keydown"
-               @focus="isOpened = true"
-               ref="input"
-               @ready="ready = true"
-               :placeholder="max && (value.length > max) ? _('Max number of') + ' ' + max : _('Value')"/>
-    <bbn-button v-if="!max || (value.length <= max)"
-                icon="nf nf-fa-plus"
-                @click="add"
-                @keyup.prevent.stop.enter.space="add"
-                text="_('Add')"
-                :notext="true"/>
+  <div class="bbn-flex-width">
+    <div class="bbn-flex-fill">
+      <bbn-input v-model="currentInput"
+                :readonly="max && (value.length > max)"
+                @keydown="keydown"
+                @focus="isOpened = true"
+                ref="input"
+                @ready="ready = true"
+                class="bbn-w-100"
+                :placeholder="max && (value.length > max) ? _('Max number of') + ' ' + max : _('Value')"/>
+    </div>
+    <div>
+      <bbn-button v-if="!max || (value.length <= max)"
+                  icon="nf nf-fa-plus"
+                  @click="add"
+                  @keyup.prevent.stop.enter.space="add"
+                  text="_('Add')"
+                  :notext="true"/>
+    </div>
   </div>
-  <div v-for="(v, idx) in value"
-       class="bbn-vxspadded">
-    <i class="nf nf-fa-times_circle"
-       @click="remove(idx)"
-       tabindex="0"
-       @keyup.enter.space="remove(idx)"
-       :title="_('Delete')"/>
-    <span class="bbn-left-space" v-text="v"/>
+  <div class="bbn-w-100">
+    <div v-for="(v, idx) in value"
+         class="bbn-vxspadding bbn-hspadding bbn-iblock">
+      <span class="bbn-right-xshmargin" v-text="v"/>
+      <i class="nf nf-fa-times_circle"
+         @click="remove(idx)"
+         tabindex="0"
+         @keyup.enter.space="remove(idx)"
+         :title="_('Delete')"/>
+    </div>
   </div>
   <bbn-floater v-if="ready && !isDisabled && !readonly && filteredData.length && currentInput.length"
                :element="$refs.input.$el"
@@ -176,7 +183,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         return bbn.fn.isArray(this.obj);
       },
       add(){
-        if (this.currentInput.length) {
+        if (this.currentInput.length && (this.obj.indexOf(this.currentInput) === -1)) {
           this.obj.push(this.currentInput);
           this.emitInput(this.isJSON ? JSON.stringify(this.obj) : this.obj);
           this.currentInput = '';

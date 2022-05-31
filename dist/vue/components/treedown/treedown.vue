@@ -532,7 +532,7 @@
 .bbn-treedown {
   display: inline-block;
   box-sizing: border-box;
-  min-width: 4em;
+  min-width: 4rem;
   cursor: pointer;
 }
 .bbn-treedown input {

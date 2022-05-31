@@ -385,13 +385,13 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                                       :notext="true"
                                       @focusin.stop
                                       @click.prevent.stop="saveInline"
-                                      style="margin: 0 .1em"/>
+                                      style="margin: 0 .1rem"/>
                           <bbn-button :text="_('Cancel')"
                                       icon="nf nf-fa-times"
                                       :notext="true"
                                       @focusin.stop
                                       @click.prevent.stop="cancel"
-                                      style="margin: 0 .1em"/>
+                                      style="margin: 0 .1rem"/>
                         </div>
                         <component v-else-if="(editMode === 'inline') && isValidField(col.field) && (col.editable !== false)"
                                    v-bind="getEditableOptions(col, d.data)"
@@ -440,7 +440,7 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                                     @focusin.prevent.stop
                                     @focusout.prevent.stop
                                     @click.prevent.stop="_execCommand(button, d.data, col, i, $event)"
-                                    style="margin: 0 .1em"/>
+                                    style="margin: 0 .1rem"/>
                       </template>
                       <template v-else-if="col.buttons">
                         <bbn-button v-for="(button, bi) in (Array.isArray(col.buttons) ? col.buttons : col.buttons(d.data, col, i))"
@@ -449,7 +449,7 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                                     @focusin.prevent.stop
                                     @focusout.prevent.stop
                                     @click.prevent.stop="_execCommand(button, d.data, col, i, $event)"
-                                    style="margin: 0 .1em"/>
+                                    style="margin: 0 .1rem"/>
                       </template>
                       <div v-else
                            v-html="render(d.data, col, i)"></div>
@@ -515,13 +515,13 @@ script.innerHTML = `<div :class="[{'bbn-overlay': scrollable, 'bbn-block': !scro
                     icon="nf nf-fa-save"
                     :notext="true"
                     @click.prevent.stop="saveInline"
-                    style="margin: 0 .1em"
+                    style="margin: 0 .1rem"
                     tabindex="-1"/>
         <bbn-button :text="_('Cancel')"
                     icon="nf nf-fa-times"
                     :notext="true"
                     @click.prevent.stop="cancel"
-                    style="margin: 0 .1em"
+                    style="margin: 0 .1rem"
                     tabindex="-1"/>
   </bbn-floater>
 </div>
@@ -3983,7 +3983,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
                     styleSecond = window.getComputedStyle(td.firstElementChild.firstElementChild);
                 this.visible = (parseFloat(styleSecond.height) + parseFloat(styleFirst.paddingTop) + parseFloat(styleFirst.paddingBottom)) > this.table.maxRowHeight;
                 if (this.visible) {
-                  td.firstElementChild.firstElementChild.style.setProperty('height', 'calc(' + this.table.maxRowHeight + 'px - 2.3em)');
+                  td.firstElementChild.firstElementChild.style.setProperty('height', 'calc(' + this.table.maxRowHeight + 'px - 2.3rem)');
                   td.firstElementChild.firstElementChild.style.overflow = 'hidden';
                 }
               }

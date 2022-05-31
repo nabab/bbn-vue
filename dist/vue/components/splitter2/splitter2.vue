@@ -1187,10 +1187,10 @@
   font-weight: bold;
 }
 .bbn-splitter2 .bbn-splitter-bar.vertical .bbn-splitter-collapser > div {
-  padding: 0 0.5em;
+  padding: 0 0.5rem;
 }
 .bbn-splitter2 .bbn-splitter-bar.horizontal .bbn-splitter-collapser > div {
-  padding: 0.5em 0;
+  padding: 0.5rem 0;
 }
 .bbn-splitter2 .bbn-splitter-bar.bbn-splitter-resizer.vertical {
   cursor: ns-resize;

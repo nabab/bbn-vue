@@ -37,7 +37,7 @@ script.innerHTML = `<div :class="[componentClass, {
                   </div>
                   <bbn-context :source="bc.getList(i)"
                               tag="div"
-                              min-width="10em"
+                              min-width="10rem"
                               tabindex="0"
                               :item-component="$options.components.listItem"
                               class="bbn-h-100 bbn-vmiddle"
@@ -50,7 +50,7 @@ script.innerHTML = `<div :class="[componentClass, {
                     <bbn-context :source="bc.getMenuFn"
                                 :source-index="isNumber(bc.selected) ? bc.selected : undefined"
                                 tag="div"
-                                min-width="10em"
+                                min-width="10rem"
                                 tabindex="0"
                                 :context="true"
                                 :autobind="false"
@@ -153,7 +153,7 @@ script.innerHTML = `<div :class="[componentClass, {
                         :key="isVisual ? a.view.uid : (component && componentSource && componentUrl ? componentSource[componentUrl] : a.uid)"
                         :disabled="!routed || !getPane(a)"
                         :selector="getPane(a) ? '#' + getPane(a) + slashToHyphen(isVisual ? a.view.url : a.url) : null">
-              <bbn-container v-if="(isVisual ? !a.view.real : !a.real) && !component"
+              <bbn-container v-if="(isVisual ? !a.view.real : !a.real) && !component && (!a.pane || routed)"
                             :key="isVisual ? a.view.uid : a.uid"
                             :visual="isVisual"
                             v-bind="isVisual ? a.view : a"/>
@@ -192,6 +192,7 @@ script.innerHTML = `<div :class="[componentClass, {
                       :source="pane.tabs"
                       :closable="false"
                       v-model="pane.selected"
+                      @input="selectPaneTab(pane)"
                       :limit="5"/>
             <!-- PANE CONTENT -->
             <div class="bbn-flex-fill">
@@ -912,8 +913,8 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         return {
           minHeight: '100%',
           display: 'grid',
-          gridColumnGap: '0.5em',
-          gridRowGap: '0.5em',
+          gridColumnGap: '0.5rem',
+          gridRowGap: '0.5rem',
           gridTemplateRows: 'repeat(' + this.numVisualRows + ', 1fr)',
           gridTemplateColumns: 'repeat(' + this.numVisualCols + ', 1fr)'
         }
@@ -1823,6 +1824,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           return;
         }
         if (title && (title !== this.currentTitle)) {
+          bbn.fn.log("CHANGIN URL", this.currentTitle, title)
           this.currentTitle = title;
         }
         if ( url !== this.currentURL ){
@@ -3514,6 +3516,9 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
 
         return paneId;
       },
+      selectPaneTab(pane) {
+        bbn.fn.log(pane);
+      },
       closeTab(idx) {
         this.close(this.tabsList[idx].idx);
       },
@@ -3964,7 +3969,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       listItem: {
         template: `
 <div class="bbn-w-100 bbn-vmiddle bbn-bordered-bottom"
-     style="height: 2.5em"
+     style="height: 2.5rem"
      @mouseenter="isHover = true"
      @mouseleave="isHover = false">
   <div class="bbn-flex-width bbn-vmiddle bbn-h-100">

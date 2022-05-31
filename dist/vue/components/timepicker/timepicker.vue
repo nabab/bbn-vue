@@ -35,7 +35,7 @@
                hpos="right"
                :auto-hide="1000"
                :element-width="false"
-               max-width="15em"
+               max-width="15rem"
   >
     <timepicker inline-template
                 ref="timepicker"
@@ -930,15 +930,15 @@
 }
 .bbn-timepicker .bbn-timepicker-timeblock {
   width: auto;
-  height: 2em;
+  height: 2rem;
 }
 .bbn-timepicker.bbn-input-nullable .bbn-input-nullable-container {
   opacity: 0;
   transition: opacity 0.2s;
   line-height: 100%;
   margin: auto;
-  padding-right: 0.2em;
-  width: 1.05em;
+  padding-right: 0.2rem;
+  width: 1.05rem;
 }
 .bbn-timepicker.bbn-input-nullable .bbn-input-nullable-container .nf-fa-times_circle {
   line-height: 100%;

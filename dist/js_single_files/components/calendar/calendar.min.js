@@ -118,7 +118,7 @@
                 'bbn-secondary-text': item.colored && !item.hidden && !item.extra,
                 'bbn-tertiary-text': item.isCurrent && (!item.inRange || (item.inRange && item.over))
               }]"
-                  style="margin-right: .2em"
+                  style="margin-right: .2rem"
               >
                 <span v-text="item.text"></span>
               </div>

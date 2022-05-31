@@ -7,7 +7,7 @@
 .bbn-dashboard .bbn-masonry > div.bbn-widget,
 .bbn-dashboard .bbn-masonry #bbn-draggable-current > div.bbn-widget {
   display: grid;
-  margin-bottom: 1em;
+  margin-bottom: 1rem;
   width: 100%;
   page-break-inside: avoid;
 }

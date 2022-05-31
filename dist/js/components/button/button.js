@@ -30,8 +30,8 @@ script.innerHTML = `<button :class="[
   <span v-if="!notext && text"
         v-html="text"
         :style="{
-          paddingLeft: icon && (iconPosition === 'left') ? (secondary ? '1em' : '0.3em') : '',
-          paddingRight: icon && (iconPosition === 'right') ? (secondary ? '1em' : '0.3em') : ''
+          paddingLeft: icon && (iconPosition === 'left') ? (secondary ? '1rem' : '0.3rem') : '',
+          paddingRight: icon && (iconPosition === 'right') ? (secondary ? '1rem' : '0.3rem') : ''
         }"
         :class="{'bbn-ellipsis': ellipsis}"/>
   <span v-else-if="!notext"><slot></slot></span>
@@ -40,13 +40,18 @@ script.innerHTML = `<button :class="[
   </span>
   <div v-if="secondary"
        class="bbn-overlay">
-    <i :class="secondary + ' bbn-button-secondary bbn-abs'"
-       :style="{
-         color: secondaryColor,
-         transform: 'scale(0.7)',
-         bottom: '0.15em',
-         right: '0.15em'
-       }"/>
+    <div class="bbn-abs"
+         :style="{
+           transform: 'scale(0.7)',
+           bottom: '0.15rem',
+           right: '0.15rem',
+           height: '50%'
+         }">
+      <i :class="secondary + ' bbn-button-secondary'"
+        :style="{
+          color: secondaryColor,
+        }"/>
+    </div>
   </div>
 </button>
 `;

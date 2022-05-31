@@ -20,9 +20,9 @@
            :style="{gridTemplateColumns: 'repeat(' + cols + ', ' + realCellSize + ')'}">
         <div v-for="colidx in cols"
              :class="['bbn-bordered', {'bbn-state-selected': (currentRow >= rowidx) && (currentCol >= colidx)}]"
-             @mouseenter="mouseEnter(rowidx, colidx)"
-             @mouseleave="mouseLeave(rowidx, colidx)"
-             @click="$emit('select', [rowidx, colidx])"
+             @mouseenter="mouseEnter(colidx, rowidx)"
+             @mouseleave="mouseLeave()"
+             @click="$emit('select', [colidx, rowidx])"
              :title="_('Row') + ': ' + rowidx + ' / ' + _('Col') + ': ' + colidx"/>
       </div>
     </div>
@@ -58,7 +58,7 @@
       },
       cellSize: {
         type: [String, Number],
-        default: '1em'
+        default: '1rem'
       }
     },
     data() {
@@ -84,7 +84,7 @@
       }
     },
     methods: {
-      mouseEnter(rowidx, colidx) {
+      mouseEnter(colidx, rowidx) {
         this.currentRow = rowidx;
         this.currentCol = colidx;
       },

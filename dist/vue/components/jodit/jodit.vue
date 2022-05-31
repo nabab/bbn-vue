@@ -153,7 +153,7 @@
 <style scoped>
 .bbn-jodit {
   height: calc(99.2%);
-  padding: 0.4em;
+  padding: 0.4rem;
   box-sizing: content-box;
 }
 

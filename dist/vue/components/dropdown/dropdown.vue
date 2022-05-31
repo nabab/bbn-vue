@@ -379,7 +379,7 @@
   line-height: normal;
 }
 .bbn-dropdown .bbn-dropdown-container.bbn-dropdown-container-native {
-  min-width: 6em;
+  min-width: 6rem;
 }
 .bbn-dropdown .bbn-dropdown-container .bbn-dropdown-content {
   white-space: nowrap;
@@ -409,21 +409,21 @@
   cursor: pointer;
 }
 .bbn-dropdown .bbn-dropdown-container select {
-  min-width: 4em;
+  min-width: 4rem;
   font-size: inherit;
   font-weight: inherit;
   border-radius: inherit;
   color: inherit;
   border: 0;
-  padding: 0.0833em 0.25em;
-  padding-right: 2.45em;
+  padding: 0.0833rem 0.25rem;
+  padding-right: 2.45rem;
   box-sizing: border-box;
   appearance: none;
   -webkit-appearance: none;
   z-index: 1;
 }
 .bbn-dropdown .bbn-dropdown-container .bbn-dropdown-select-button {
-  min-width: 2em;
+  min-width: 2rem;
   opacity: 0.7;
   z-index: 0;
   min-height: 100%;

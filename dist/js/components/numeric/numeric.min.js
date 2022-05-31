@@ -18,7 +18,7 @@
              @change="_change"
              v-show="editMode"
              :size="currentInputSize"
-             :style="{'paddingRight': spinners ? '0.5em !important' : ''}"
+             :style="{'paddingRight': spinners ? '0.5rem !important' : ''}"
              :inputmode="inputmode"
       >
       <input autocomplete="off"
@@ -34,7 +34,7 @@
              v-show="!editMode"
              ref="formatted"
              :size="currentInputSize"
-             :style="{'paddingRight': spinners ? '0.5em !important' : ''}"
+             :style="{'paddingRight': spinners ? '0.5rem !important' : ''}"
              :placeholder="placeholder"
       >
       <input type="hidden"

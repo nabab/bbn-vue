@@ -1066,7 +1066,7 @@
           if ( a === true ){
             deep = true;
           }
-          else{
+          else if (a !== vm) {
             args.push(a);
           }
         }
@@ -1085,7 +1085,7 @@
               bbn.fn.extend(true, out[n], o);
             }
             else if ( out[n] !== o ){
-              vm.$set(out[n], o);
+              vm.$set(out, n, o);
             }
           });
         }
@@ -4852,8 +4852,8 @@
          * @memberof inputComponent
          */
         tabindex: {
-          type: Number,
-          default: 0
+          type: [String, Number],
+          default: '0'
         },
         /**
          * @prop {Boolean} [false] nullable
@@ -6960,7 +6960,7 @@
        */  
       extend(deep, src, obj1){
         let args = [this];
-        for ( let i = 0; i < arguments.length; i++ ){
+        for (let i = 0; i < arguments.length; i++) {
           args.push(arguments[i]);
         }
         return bbn.vue.extend(...args);

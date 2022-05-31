@@ -289,7 +289,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       }
       let st = 'margin: auto;';
       if ( this.orientation === 'vertical' ){
-        st += 'width: 1.9em; min-height: ' + (bbn.fn.isNumber(this.height) ? ( this.height  + 'px') : this.height);
+        st += 'width: 1.9rem; min-height: ' + (bbn.fn.isNumber(this.height) ? ( this.height  + 'px') : this.height);
         if ( this.valuePosition === 'right' ){
           this.realValuePosition = 'top';
         }
@@ -301,7 +301,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         this.realValuePosition = this.valuePosition;
       }
       if ( (this.orientation === 'horizontal') && (this.width) ){
-        st += 'height: 1.9em; min-width: ' + (bbn.fn.isNumber(this.width) ? ( this.width  + 'px') : this.width);
+        st += 'height: 1.9rem; min-width: ' + (bbn.fn.isNumber(this.width) ? ( this.width  + 'px') : this.width);
       }
       this.orientationStyle = st += ';';
       if ( this.type === 'chunk' ){

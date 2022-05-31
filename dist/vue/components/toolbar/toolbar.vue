@@ -203,7 +203,7 @@
 </script>
 <style scoped>
 .bbn-toolbar {
-  min-height: 2.5em;
+  min-height: 2.5rem;
 }
 .bbn-toolbar.bbn-h-100 {
   text-align: center;
@@ -216,14 +216,14 @@
 }
 .bbn-toolbar .bbn-toolbar-separator {
   display: inline-block;
-  margin: 1em;
+  margin: 1rem;
 }
 .bbn-toolbar .bbn-toolbar-separator:before {
   content: '\0399';
 }
 .bbn-toolbar .bbn-toolbar-horizontal-separator {
   display: inline-block;
-  margin: 1em;
+  margin: 1rem;
 }
 .bbn-toolbar .bbn-toolbar-horizontal-separator:before {
   content: '\2014';

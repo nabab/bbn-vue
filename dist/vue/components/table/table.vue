@@ -383,13 +383,13 @@
                                       :notext="true"
                                       @focusin.stop
                                       @click.prevent.stop="saveInline"
-                                      style="margin: 0 .1em"/>
+                                      style="margin: 0 .1rem"/>
                           <bbn-button :text="_('Cancel')"
                                       icon="nf nf-fa-times"
                                       :notext="true"
                                       @focusin.stop
                                       @click.prevent.stop="cancel"
-                                      style="margin: 0 .1em"/>
+                                      style="margin: 0 .1rem"/>
                         </div>
                         <component v-else-if="(editMode === 'inline') && isValidField(col.field) && (col.editable !== false)"
                                    v-bind="getEditableOptions(col, d.data)"
@@ -438,7 +438,7 @@
                                     @focusin.prevent.stop
                                     @focusout.prevent.stop
                                     @click.prevent.stop="_execCommand(button, d.data, col, i, $event)"
-                                    style="margin: 0 .1em"/>
+                                    style="margin: 0 .1rem"/>
                       </template>
                       <template v-else-if="col.buttons">
                         <bbn-button v-for="(button, bi) in (Array.isArray(col.buttons) ? col.buttons : col.buttons(d.data, col, i))"
@@ -447,7 +447,7 @@
                                     @focusin.prevent.stop
                                     @focusout.prevent.stop
                                     @click.prevent.stop="_execCommand(button, d.data, col, i, $event)"
-                                    style="margin: 0 .1em"/>
+                                    style="margin: 0 .1rem"/>
                       </template>
                       <div v-else
                            v-html="render(d.data, col, i)"></div>
@@ -513,13 +513,13 @@
                     icon="nf nf-fa-save"
                     :notext="true"
                     @click.prevent.stop="saveInline"
-                    style="margin: 0 .1em"
+                    style="margin: 0 .1rem"
                     tabindex="-1"/>
         <bbn-button :text="_('Cancel')"
                     icon="nf nf-fa-times"
                     :notext="true"
                     @click.prevent.stop="cancel"
-                    style="margin: 0 .1em"
+                    style="margin: 0 .1rem"
                     tabindex="-1"/>
   </bbn-floater>
 </div>
@@ -3980,7 +3980,7 @@
                     styleSecond = window.getComputedStyle(td.firstElementChild.firstElementChild);
                 this.visible = (parseFloat(styleSecond.height) + parseFloat(styleFirst.paddingTop) + parseFloat(styleFirst.paddingBottom)) > this.table.maxRowHeight;
                 if (this.visible) {
-                  td.firstElementChild.firstElementChild.style.setProperty('height', 'calc(' + this.table.maxRowHeight + 'px - 2.3em)');
+                  td.firstElementChild.firstElementChild.style.setProperty('height', 'calc(' + this.table.maxRowHeight + 'px - 2.3rem)');
                   td.firstElementChild.firstElementChild.style.overflow = 'hidden';
                 }
               }
@@ -4054,7 +4054,7 @@
 .bbn-table .bbn-table-container table.bbn-table-table > thead tr th {
   border-top: 0px;
   position: relative;
-  padding: 0.5em;
+  padding: 0.5rem;
   font-weight: bold;
   vertical-align: middle;
 }
@@ -4091,7 +4091,7 @@
   box-sizing: border-box;
 }
 .bbn-table .bbn-table-container table.bbn-table-table > tbody > tr td > div > .bbn-table-expander {
-  line-height: 1em;
+  line-height: 1rem;
 }
 .bbn-table .bbn-table-container table.bbn-table-table > tbody > tr td > div > .bbn-table-expander i:focus {
   color: red;
@@ -4118,9 +4118,9 @@
   justify-content: flex-start;
 }
 .bbn-table .bbn-table-container table.bbn-table-table > tbody > tr td.bbn-buttons-flex .bbn-block div .bbn-button.bbn-button-icon-only {
-  margin: .1em .1em !important;
-  height: 2em;
-  width: 2em;
+  margin: .1rem .1rem !important;
+  height: 2rem;
+  width: 2rem;
 }
 .bbn-table .bbn-table-container table.bbn-table-table > tbody > tr td.bbn-buttons-flex.bbn-c .bbn-block div {
   justify-content: center;
@@ -4136,15 +4136,15 @@
   overflow: hidden;
   position: relative;
   border-style: solid;
-  border-width: 0.0833em;
-  line-height: 2em;
-  padding: .333em .25em;
+  border-width: 0.0833rem;
+  line-height: 2rem;
+  padding: .333rem .25rem;
 }
 .bbn-table .toolbar-buttons {
-  padding: 0.3em 0;
+  padding: 0.3rem 0;
 }
 .bbn-table .toolbar-buttons button {
-  margin: 0 0.3em;
+  margin: 0 0.3rem;
 }
 .bbn-table-column-picker ul {
   list-style: none;

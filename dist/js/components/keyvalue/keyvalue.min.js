@@ -2,7 +2,7 @@
      tabindex="-1"
 >
   <bbn-form :scrollable="false" ref="form" :buttons="false" @submit="add">
-    <div class="bbn-grid-fields" style="grid-template-columns: minmax(auto,max-content) auto 3em">
+    <div class="bbn-grid-fields" style="grid-template-columns: minmax(auto,max-content) auto 3rem">
       <template v-for="v in items">
         <div v-text="v.key" :key="v.key"/>
         <div v-text="v.value"/>

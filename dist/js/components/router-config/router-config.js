@@ -31,7 +31,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-padded', 'bbn-block']">
               <div class="bbn-100 bbn-middle">
                 <div class="bbn-block">
                   <bbn-icon :content="svg"
-                            width="1.5em"
+                            width="1.5rem"
                             v-if="i !== visualSelected"/>
                   <div :class="{
                     'bbn-s': visualSelected !== i,
@@ -130,7 +130,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-padded', 'bbn-block']">
               <div class="bbn-100 bbn-middle">
                 <div class="bbn-block bbn-spadded">
                   <bbn-icon :content="svg"
-                            width="1em"/>
+                            width="1rem"/>
                 </div>
               </div>
             </div>
