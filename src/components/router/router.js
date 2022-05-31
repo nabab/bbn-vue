@@ -3288,6 +3288,9 @@
 
         return paneId;
       },
+      selectPaneTab(pane) {
+        bbn.fn.log(pane);
+      },
       closeTab(idx) {
         this.close(this.tabsList[idx].idx);
       },

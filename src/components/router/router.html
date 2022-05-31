@@ -150,7 +150,7 @@
                         :key="isVisual ? a.view.uid : (component && componentSource && componentUrl ? componentSource[componentUrl] : a.uid)"
                         :disabled="!routed || !getPane(a)"
                         :selector="getPane(a) ? '#' + getPane(a) + slashToHyphen(isVisual ? a.view.url : a.url) : null">
-              <bbn-container v-if="(isVisual ? !a.view.real : !a.real) && !component"
+              <bbn-container v-if="(isVisual ? !a.view.real : !a.real) && !component && (!a.pane || routed)"
                             :key="isVisual ? a.view.uid : a.uid"
                             :visual="isVisual"
                             v-bind="isVisual ? a.view : a"/>
@@ -189,6 +189,7 @@
                       :source="pane.tabs"
                       :closable="false"
                       v-model="pane.selected"
+                      @input="selectPaneTab(pane)"
                       :limit="5"/>
             <!-- PANE CONTENT -->
             <div class="bbn-flex-fill">

@@ -4,18 +4,18 @@
 	<div v-if="floating"
 	     class="bbn-iflex-height"
 			 ref="container"
+			 @click.stop.prevent
 			 style="min-height: 100%; width: 100%; overflow: visible">
 		<div contenteditable="true"
 		     @focusin="isEditing = true"
-				 @keydown="updateContenteditable"
+				 @keyup="updateContenteditable"
 				 ref="element"
 				 @blur="updateContenteditable"/>
-		<bbn-portal :selector="body">
-			<bbn-floater v-if="ready"
-									 :scrollable="false"
+		<bbn-portal>
+			<bbn-floater v-if="ready && isEditing"
+			             :scrollable="false"
 									 ref="floater"
 									 @focusin="isEditing = true"
-									 :visible="isEditing"
 									 :element="$el"
 									 position="topLeft"
 									 :title="false">

@@ -188,16 +188,13 @@
         </div>
         <div class="bbn-vmiddle">
           <!-- POST ITS -->
-          <bbn-context v-if="plugins['appui-note']"
-                       class="bbn-right-space"
-                       :source="postItMenu"
-                       :context="true">
-            <i v-for="postit in postits"
-               class="bbn-p nf nf-fa-sticky_note"
-               :title="_('Post-it from')"
-               :style="{color: postit.color}"
-               @click="showPostIt(postit)"/>
-          </bbn-context>
+          <div v-if="plugins['appui-note']"
+               class="bbn-right-space">
+            <i class="bbn-p nf nf-fa-sticky_note"
+               :title="_('Show my post-its')"
+               style="color: #EE05CF"
+               @click="showPostIt = true"/>
+          </div>
           <!-- TASK TRACKER -->
           <div v-if="plugins['appui-task']"
               class="bbn-right-space">
@@ -231,6 +228,13 @@
             <input class="bbn-invisible bbn-overlay bbn-p"
                   @keydown.space.enter.prevent="getRef('clipboard').toggle()"
                   @drop.prevent.stop="getRef('clipboard').copy($event); getRef('clipboard').show()">
+          </div>
+          <!-- DEBUGGER -->
+          <div v-if="plugins['appui-ide'] && ready && app.user && app.user.isAdmin"
+               class="bbn-right-space">
+            <i class="bbn-p nf nf-mdi-bug"
+               :title="_('Show my post-its')"
+               @click="toggleDebug"/>
           </div>
           <!-- POWER/ENV ICON -->
           <bbn-context class="bbn-iblock bbn-right-space bbn-p bbn-rel"
@@ -323,4 +327,40 @@
   </div>
   <component ref="app"
              :is="appComponent"/>
+  <!-- POST-IT COMPONENT -->
+  <appui-note-postits v-if="plugins['appui-note'] && showPostIt"
+                      :source="postits"
+                      @close="showPostIt = false"/>
+  <!-- DEBUG COMPONENT -->
+  <bbn-slider v-if="plugins['appui-ide'] && ready && app.user && app.user.isAdmin"
+              orientation="right"
+              ref="debug"
+              :style="{
+                width: isMobile && !isTablet ? '100%' : '35em',
+                zIndex: 100,
+                maxWidth: '100%'
+              }"
+              close-button="top-right">
+    <div class="bbn-w-100 bbn-padded bbn-wrap bbn-l appui-ide-debugger-container">
+      <div class="bbn-b"
+           v-text="_('Current URL')"/>
+      <div class="bbn-b"
+           v-text="getRef('router').currentURL"/>
+
+      <div class="bbn-b"
+           v-text="_('Current title')"/>
+      <div class="bbn-b"
+           v-text="getRef('router').currentTitle"/>
+
+      <div class="bbn-b"
+           v-text="_('Selected index')"/>
+      <div class="bbn-b"
+           v-text="getRef('router').selected"/>
+
+      <template v-for="view in getRef('router').views">
+        <div v-text="view.idx + '/ ' + view.current"/>
+        <div v-html="fdate(view.last) + '<br>' + view.url"/>
+      </template>
+    </div>
+  </bbn-slider>
 </div>

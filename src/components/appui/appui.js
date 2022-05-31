@@ -255,17 +255,13 @@
         isTouch: isMobile || isTablet,
         isDesktop: !isTablet && !isMobile,
         emptyPostIt: emptyPostIt,
-        postits: postits
+        postits: postits,
+        showPostIt: false
       }
     },
     computed: {
-      postItMenu() {
-        if (this.plugins['appui-note']) {
-
-          
-        }
-
-        return [];
+      isDev() {
+        return bbn.env.isDev;
       },
       appComponent(){
         return bbn.fn.extend({
@@ -342,6 +338,16 @@
       }
     },
     methods: {
+      fdate: bbn.fn.fdate,
+      updatePostIts() {
+        if (this.plugins['appui-note']) {
+          bbn.fn.post(this.plugins['appui-note'] + '/data/postits', {pinned: 1}, d => {
+            if (d&& d.data) {
+              this.postits = d.data;
+            }
+          })
+        }
+      },
       registerSearch() {
         this.getRef('search').registerFunction(this.getRef('router').searchForString);
       },
@@ -470,6 +476,13 @@
         let menu = this.getRef('slider');
         if ( menu ){
           menu.toggle();
+        }
+      },
+
+      toggleDebug(){
+        let debug = this.getRef('debug');
+        if ( debug ){
+          debug.toggle();
         }
       },
 
@@ -1018,6 +1031,7 @@
             this._postMessage({
               type: 'initCompleted'
             });
+            this.updatePostIts();
             this.registerChannel('appui', true);
             if (this.plugins['appui-chat']){
               this.registerChannel('appui-chat');

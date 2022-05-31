@@ -241,6 +241,8 @@
     content: 'pell-content',
     selected: 'pell-button-selected'
   };
+
+  let openedFloatingRTE = [];
   
   Vue.component('bbn-rte', {
     /**
@@ -466,9 +468,12 @@
         }
       },
       onClickDocument(e) {
+        bbn.fn.log("onClickDocument");
         let floater = this.getRef('floater');
         let element = this.getRef('element');
         if (floater && element) {
+          e.preventDefault();
+          e.stopImmediatePropagation();
           if (!bbn.fn.isInside(e.target, floater.$el) && !bbn.fn.isInside(e.target, element) && (e.target !== element)) {
             this.isEditing = false;
           }
@@ -552,6 +557,8 @@
     },
     beforeDestroy() {
       if (this.floating) {
+        bbn.fn.log("FLOATING DESTROY");
+        this.ready = false;
         window.document.body.removeEventListener('click', this.onClickDocument);
       }
     },
@@ -573,11 +580,28 @@
         }
       },
       isEditing(v) {
-        if (v) {
-          window.document.body.addEventListener('click', this.onClickDocument);
-        }
-        else {
-          window.document.body.removeEventListener('click', this.onClickDocument);
+        if (this.floating) {
+          if (v) {
+            if (openedFloatingRTE.indexOf(this) === -1) {
+              openedFloatingRTE.push(this);
+              window.document.body.addEventListener('click', this.onClickDocument);
+            }
+            bbn.fn.each(openedFloatingRTE, a => {
+              if (a !== this) {
+                a.isEditing = false;
+                a.$forceUpdate();
+              }
+            });
+
+          }
+          else {
+            window.document.body.removeEventListener('click', this.onClickDocument);
+            let idx = openedFloatingRTE.indexOf(this);
+            if (idx > -1) {
+              openedFloatingRTE.splice(idx, 1);
+            }
+          }
+          this.$forceUpdate();
         }
       }
     }
