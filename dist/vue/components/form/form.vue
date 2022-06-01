@@ -373,7 +373,7 @@
        */
        mode: {
          type: String,
-         default: 'big'
+         default: 'normal'
        }
     },
     data(){

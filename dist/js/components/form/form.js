@@ -383,7 +383,7 @@ document.head.insertAdjacentElement('beforeend', css);
        */
        mode: {
          type: String,
-         default: 'big'
+         default: 'normal'
        }
     },
     data(){

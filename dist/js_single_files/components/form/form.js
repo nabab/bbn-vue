@@ -376,7 +376,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        */
        mode: {
          type: String,
-         default: 'big'
+         default: 'normal'
        }
     },
     data(){
