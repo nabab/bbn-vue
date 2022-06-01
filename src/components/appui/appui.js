@@ -636,7 +636,6 @@
         }
       },
       poll(data){
-        bbn.fn.info("POLL");
         if ( this.pollable && this.pollerPath ){
           if (!data) {
             data = {
@@ -646,7 +645,6 @@
             };
           }
           if (this._postMessage(bbn.fn.extendOut({}, data, this.pollerObject))) {
-            bbn.fn.info("ALL OK");
             this.observersCopy = bbn.fn.clone(this.observers);
           }
         }
@@ -744,7 +742,6 @@
           return;
         }
 
-        bbn.fn.log(key);
         switch (key) {
           case 'f':
             this.searchOn = true;

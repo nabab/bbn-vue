@@ -19,7 +19,6 @@
         return bbn.vue.loadComponentsByPrefix(tag)
       };
       Vue.config.devtools = !(!bbn.env.mode || (bbn.env.mode === 'prod'));
-      bbn.fn.log("devtools", Vue.config.devtools, bbn.env.mode, bbn.env.isInit, 'iiii');
 
       Vue.config.errorHandler = function (err, vm, info) {
         // handle error

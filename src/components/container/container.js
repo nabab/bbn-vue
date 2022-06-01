@@ -222,7 +222,27 @@
        */
       isVisible() {
         if (this.router) {
-          return (this.router.routed && this.isPane) || (this.router.selected === this.currentIndex);
+
+          if (this.isPane) {
+            if (!this.router.routed) {
+              return false;
+            }
+            if (this.isLoaded) {
+              return true;
+            }
+
+            let pane = bbn.fn.getRow(this.router.currentPanes, {id: this.currentView.pane});
+            if (pane) {
+              let idx = bbn.fn.search(pane.tabs, {url: this.currentView.url});
+              if (pane.tabs[idx]) {
+                return idx === pane.selected;
+              }
+            }
+            return (this.router.routed && this.isPane) || (this.router.selected === this.currentIndex);
+          }
+          else {
+            return this.router.selected === this.currentIndex;
+          }
         }
 
         return false;

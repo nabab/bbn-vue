@@ -716,6 +716,10 @@
           return true;
         }
 
+        if (vm && (bbn.vue.getComponentName(vm) === selector)) {
+          return true;
+        }
+
         if (vm.$el && bbn.fn.isFunction(vm.$el.matches)) {
           return vm.$el.matches(selector);
         }
