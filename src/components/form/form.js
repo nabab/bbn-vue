@@ -415,6 +415,7 @@
               switch ( a ){
                 case 'cancel':
                   r.push({
+                    preset: 'cancel',
                     text: this.cancelText,
                     icon: 'nf nf-fa-times_circle',
                     action: () => {
@@ -425,6 +426,7 @@
                   break;
                 case 'reset':
                   r.push({
+                    preset: 'reset',
                     text: this.resetText,
                     icon: 'nf nf-fa-refresh',
                     action: () => {
@@ -435,6 +437,7 @@
                   break;
                 case 'submit':
                   r.push({
+                    preset: 'submit',
                     text: this.submitText,
                     icon: 'nf nf-fa-check_circle',
                     action: () => {
@@ -470,27 +473,31 @@
           let data = bbn.fn.extend(true, {}, this.data || {}, this.source || {});
           let method = this.blank || this.self || this.target ? 'postOut' : 'post';
           this[method](this.action, data, d => {
-            this.originalData = bbn.fn.clone(this.source || {});
-            if (this.successMessage && p) {
-              p.alert(this.successMessage);
-              bbn.fn.info(this.successMessage, p);
-            }
-
-            let e = new Event('success', {cancelable: true});
-            /*
-            if ( this.sendModel && this.source ){
-              this.originalData = bbn.fn.extend(true, {}, this.source || {});
-            }
-            */
-
-            this.dirty = false;
-            this.isLoading = false;
             if (d && (d.success === false)) {
+
 
             }
             else if (d) {
+              let e = new Event('success', {cancelable: true});
               this.$emit('success', d, e);
-              if (!e.defaultPrevented && this.window) {
+              if (!e.defaultPrevented) {
+                this.originalData = bbn.fn.clone(this.source || {});
+                if (this.successMessage && p) {
+                  p.alert(this.successMessage);
+                  bbn.fn.info(this.successMessage, p);
+                }
+  
+                /*
+                if ( this.sendModel && this.source ){
+                  this.originalData = bbn.fn.extend(true, {}, this.source || {});
+                }
+                */
+  
+                this.dirty = false;
+                this.isLoading = false;
+              }
+
+              if (this.window) {
                 this.$nextTick(() => {
                   this.window.close(true);
                 });
@@ -599,7 +606,7 @@
               ev.preventDefault();
             }
             this.confirm(this.confirmLeave, () => {
-              this.reinit();
+              this.reset();
               this.$nextTick(() => {
                 if (this.window) {
                   this.window.close(true, true);

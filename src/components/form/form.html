@@ -10,10 +10,11 @@
          'bbn-flex-fill': !window && isInit && scrollable || !!fullSize,
          'bbn-w-100': scrollable,
          'bbn-flex-height': !scrollable && hasFooter,
-         'bbn-overlay': scrollable && !!window
+         'bbn-overlay': scrollable && !!window,
        }">
     <component :is="scrollable ? 'bbn-scroll' : 'div'"
-               :class="{'bbn-overlay': !!fullSize}"
+               :class="{'bbn-overlay': !!fullSize, 'bbn-form-container': true}"
+               :axis="scrollable ? 'y' : null"
                ref="container">
       <fieldset class="bbn-form-fieldset bbn-no-border bbn-no-radius bbn-no-margin bbn-no-padding"
                 :disabled="disabled">
@@ -41,18 +42,40 @@
         </div>
         <slot></slot>
       </fieldset>
-      <div v-if="!hasFooter && !window && realButtons.length && (mode !== 'big')"
+      <!-- SMALL BUTTONS OUTSIDE WINDOW -->
+      <div v-if="!hasFooter && !window && realButtons.length && (mode === 'small')"
           class="bbn-middle bbn-top-lspace">
         <bbn-button v-for="(button, i) in realButtons"
                     :key="i"
                     class="bbn-hsmargin"
                     v-bind="button"/>
       </div>
-      <div v-else-if="!hasFooter && realButtons.length && (mode !== 'big')"
-          class="bbn-w-100 bbn-top-lspace">
+      <!-- DEFAULT BUTTONS OUTSIDE WINDOW -->
+      <div v-else-if="!hasFooter && !window && realButtons.length && (mode !== 'big')"
+           class="bbn-vlpadding bbn-c bbn-button-group bbn-grid"
+           :style="'grid-template-columns: repeat(' + realButtons.length + ', 1fr);'">
         <bbn-button v-for="(button, i) in realButtons"
                     :key="i"
+                    :class="{'bbn-primary': button.preset === 'submit', 'bbn-spadded': true}"
+                    v-bind="button"/>
+      </div>
+      <!-- SMALL BUTTONS IN WINDOW -->
+      <div v-else-if="!hasFooter && realButtons.length && (mode === 'small')"
+          class="bbn-w-100 bbn-vpadding bbn-c">
+        <bbn-button v-for="(button, i) in realButtons"
+                    :class="{'bbn-primary': button.preset === 'submit'}"
+                    :key="i"
                     class="bbn-hxspadded"
+                    v-bind="button"/>
+      </div>
+      <!-- DEFAULT BUTTONS IN WINDOW -->
+      <div v-else-if="!hasFooter && realButtons.length && (mode !== 'big')"
+           class="bbn-vpadding bbn-c bbn-button-group bbn-grid"
+           :style="'grid-template-columns: repeat(' + realButtons.length + ', 1fr)'">
+        <bbn-button v-for="(button, i) in realButtons"
+                    :class="{'bbn-primary': button.preset === 'submit'}"
+                    :key="i"
+                    :style="{width: '10em'}"
                     v-bind="button"/>
       </div>
     </component>
@@ -62,9 +85,11 @@
     <slot name="footer"/>
   </div>
 
+  <!-- BIG BUTTONS IN WINDOW -->
   <div v-else-if="!window && realButtons.length && (mode === 'big')"
        class="bbn-form-footer bbn-popup-footer bbn-button-group bbn-flex-width bbn-lg">
     <bbn-button v-for="(button, i) in realButtons"
+                :class="{'bbn-primary': button.preset === 'submit'}"
                 :key="i"
                 v-bind="button"/>
   </div>

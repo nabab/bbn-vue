@@ -14,10 +14,11 @@ script.innerHTML = `<form :action="action"
          'bbn-flex-fill': !window && isInit && scrollable || !!fullSize,
          'bbn-w-100': scrollable,
          'bbn-flex-height': !scrollable && hasFooter,
-         'bbn-overlay': scrollable && !!window
+         'bbn-overlay': scrollable && !!window,
        }">
     <component :is="scrollable ? 'bbn-scroll' : 'div'"
-               :class="{'bbn-overlay': !!fullSize}"
+               :class="{'bbn-overlay': !!fullSize, 'bbn-form-container': true}"
+               :axis="scrollable ? 'y' : null"
                ref="container">
       <fieldset class="bbn-form-fieldset bbn-no-border bbn-no-radius bbn-no-margin bbn-no-padding"
                 :disabled="disabled">
@@ -45,18 +46,40 @@ script.innerHTML = `<form :action="action"
         </div>
         <slot></slot>
       </fieldset>
-      <div v-if="!hasFooter && !window && realButtons.length && (mode !== 'big')"
+      <!-- SMALL BUTTONS OUTSIDE WINDOW -->
+      <div v-if="!hasFooter && !window && realButtons.length && (mode === 'small')"
           class="bbn-middle bbn-top-lspace">
         <bbn-button v-for="(button, i) in realButtons"
                     :key="i"
                     class="bbn-hsmargin"
                     v-bind="button"/>
       </div>
-      <div v-else-if="!hasFooter && realButtons.length && (mode !== 'big')"
-          class="bbn-w-100 bbn-top-lspace">
+      <!-- DEFAULT BUTTONS OUTSIDE WINDOW -->
+      <div v-else-if="!hasFooter && !window && realButtons.length && (mode !== 'big')"
+           class="bbn-vlpadding bbn-c bbn-button-group bbn-grid"
+           :style="'grid-template-columns: repeat(' + realButtons.length + ', 1fr);'">
         <bbn-button v-for="(button, i) in realButtons"
                     :key="i"
+                    :class="{'bbn-primary': button.preset === 'submit', 'bbn-spadded': true}"
+                    v-bind="button"/>
+      </div>
+      <!-- SMALL BUTTONS IN WINDOW -->
+      <div v-else-if="!hasFooter && realButtons.length && (mode === 'small')"
+          class="bbn-w-100 bbn-vpadding bbn-c">
+        <bbn-button v-for="(button, i) in realButtons"
+                    :class="{'bbn-primary': button.preset === 'submit'}"
+                    :key="i"
                     class="bbn-hxspadded"
+                    v-bind="button"/>
+      </div>
+      <!-- DEFAULT BUTTONS IN WINDOW -->
+      <div v-else-if="!hasFooter && realButtons.length && (mode !== 'big')"
+           class="bbn-vpadding bbn-c bbn-button-group bbn-grid"
+           :style="'grid-template-columns: repeat(' + realButtons.length + ', 1fr)'">
+        <bbn-button v-for="(button, i) in realButtons"
+                    :class="{'bbn-primary': button.preset === 'submit'}"
+                    :key="i"
+                    :style="{width: '10em'}"
                     v-bind="button"/>
       </div>
     </component>
@@ -66,9 +89,11 @@ script.innerHTML = `<form :action="action"
     <slot name="footer"/>
   </div>
 
+  <!-- BIG BUTTONS IN WINDOW -->
   <div v-else-if="!window && realButtons.length && (mode === 'big')"
        class="bbn-form-footer bbn-popup-footer bbn-button-group bbn-flex-width bbn-lg">
     <bbn-button v-for="(button, i) in realButtons"
+                :class="{'bbn-primary': button.preset === 'submit'}"
                 :key="i"
                 v-bind="button"/>
   </div>
@@ -500,6 +525,7 @@ document.head.insertAdjacentElement('beforeend', css);
               switch ( a ){
                 case 'cancel':
                   r.push({
+                    preset: 'cancel',
                     text: this.cancelText,
                     icon: 'nf nf-fa-times_circle',
                     action: () => {
@@ -510,6 +536,7 @@ document.head.insertAdjacentElement('beforeend', css);
                   break;
                 case 'reset':
                   r.push({
+                    preset: 'reset',
                     text: this.resetText,
                     icon: 'nf nf-fa-refresh',
                     action: () => {
@@ -520,6 +547,7 @@ document.head.insertAdjacentElement('beforeend', css);
                   break;
                 case 'submit':
                   r.push({
+                    preset: 'submit',
                     text: this.submitText,
                     icon: 'nf nf-fa-check_circle',
                     action: () => {
@@ -555,27 +583,31 @@ document.head.insertAdjacentElement('beforeend', css);
           let data = bbn.fn.extend(true, {}, this.data || {}, this.source || {});
           let method = this.blank || this.self || this.target ? 'postOut' : 'post';
           this[method](this.action, data, d => {
-            this.originalData = bbn.fn.clone(this.source || {});
-            if (this.successMessage && p) {
-              p.alert(this.successMessage);
-              bbn.fn.info(this.successMessage, p);
-            }
-
-            let e = new Event('success', {cancelable: true});
-            /*
-            if ( this.sendModel && this.source ){
-              this.originalData = bbn.fn.extend(true, {}, this.source || {});
-            }
-            */
-
-            this.dirty = false;
-            this.isLoading = false;
             if (d && (d.success === false)) {
+
 
             }
             else if (d) {
+              let e = new Event('success', {cancelable: true});
               this.$emit('success', d, e);
-              if (!e.defaultPrevented && this.window) {
+              if (!e.defaultPrevented) {
+                this.originalData = bbn.fn.clone(this.source || {});
+                if (this.successMessage && p) {
+                  p.alert(this.successMessage);
+                  bbn.fn.info(this.successMessage, p);
+                }
+  
+                /*
+                if ( this.sendModel && this.source ){
+                  this.originalData = bbn.fn.extend(true, {}, this.source || {});
+                }
+                */
+  
+                this.dirty = false;
+                this.isLoading = false;
+              }
+
+              if (this.window) {
                 this.$nextTick(() => {
                   this.window.close(true);
                 });
@@ -684,7 +716,7 @@ document.head.insertAdjacentElement('beforeend', css);
               ev.preventDefault();
             }
             this.confirm(this.confirmLeave, () => {
-              this.reinit();
+              this.reset();
               this.$nextTick(() => {
                 if (this.window) {
                   this.window.close(true, true);
