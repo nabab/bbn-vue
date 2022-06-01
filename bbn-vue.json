@@ -5,7 +5,7 @@
         "items": [
             {
                 "text": "appui",
-                "lastmod": 1653967937,
+                "lastmod": 1654044143,
                 "url": "bbn-vue\/component\/appui\/overview",
                 "props": [
                     {
@@ -2299,7 +2299,7 @@
             },
             {
                 "text": "colorpicker",
-                "lastmod": 1653967937,
+                "lastmod": 1654025581,
                 "url": "bbn-vue\/component\/colorpicker\/overview",
                 "props": [
                     {
@@ -2356,6 +2356,11 @@
                         "text": "codeColor",
                         "desc": "Defines the color code.\nAccepted values: 'hex', 'rgb', 'rgba', 'hsl'.\n",
                         "url": "bbn-vue\/component\/colorpicker\/doc\/props#codeColor"
+                    },
+                    {
+                        "text": "autoSelect",
+                        "desc": "Clicking a palette element will automatically select the color and close the widget.\n",
+                        "url": "bbn-vue\/component\/colorpicker\/doc\/props#autoSelect"
                     }
                 ],
                 "methods": [
@@ -2536,7 +2541,7 @@
             },
             {
                 "text": "container",
-                "lastmod": 1653967937,
+                "lastmod": 1654043154,
                 "url": "bbn-vue\/component\/container\/overview",
                 "props": [
                     {
@@ -6800,7 +6805,7 @@
             },
             {
                 "text": "pager",
-                "lastmod": 1653967937,
+                "lastmod": 1654043673,
                 "url": "bbn-vue\/component\/pager\/overview",
                 "props": [
                     {
@@ -7176,7 +7181,7 @@
             },
             {
                 "text": "portal",
-                "lastmod": 1653949150,
+                "lastmod": 1654002924,
                 "url": "bbn-vue\/component\/portal\/overview",
                 "props": [
                     {
@@ -7548,7 +7553,7 @@
             },
             {
                 "text": "router",
-                "lastmod": 1653967937,
+                "lastmod": 1654043407,
                 "url": "bbn-vue\/component\/router\/overview",
                 "props": [
                     {
@@ -8128,7 +8133,7 @@
             },
             {
                 "text": "rte",
-                "lastmod": 1653967937,
+                "lastmod": 1654036211,
                 "url": "bbn-vue\/component\/rte\/overview",
                 "props": [
                     {
@@ -10088,7 +10093,7 @@
             },
             {
                 "text": "tabs",
-                "lastmod": 1653967938,
+                "lastmod": 1654038506,
                 "url": "bbn-vue\/component\/tabs\/overview",
                 "props": [
                     {

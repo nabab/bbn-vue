@@ -195,7 +195,6 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-background', {
                class="bbn-right-space">
             <i class="bbn-p nf nf-fa-sticky_note"
                :title="_('Show my post-its')"
-               style="color: #EE05CF"
                @click="showPostIt = true"/>
           </div>
           <!-- TASK TRACKER -->
@@ -236,7 +235,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-background', {
           <div v-if="plugins['appui-ide'] && ready && app.user && app.user.isAdmin"
                class="bbn-right-space">
             <i class="bbn-p nf nf-mdi-bug"
-               :title="_('Show my post-its')"
+               :title="_('Show the debugger')"
                @click="toggleDebug"/>
           </div>
           <!-- POWER/ENV ICON -->
@@ -1009,7 +1008,6 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         }
       },
       poll(data){
-        bbn.fn.info("POLL");
         if ( this.pollable && this.pollerPath ){
           if (!data) {
             data = {
@@ -1019,7 +1017,6 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
             };
           }
           if (this._postMessage(bbn.fn.extendOut({}, data, this.pollerObject))) {
-            bbn.fn.info("ALL OK");
             this.observersCopy = bbn.fn.clone(this.observers);
           }
         }
@@ -1117,7 +1114,6 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           return;
         }
 
-        bbn.fn.log(key);
         switch (key) {
           case 'f':
             this.searchOn = true;

@@ -754,6 +754,10 @@
           return true;
         }
 
+        if (vm && (bbn.vue.getComponentName(vm) === selector)) {
+          return true;
+        }
+
         if (vm.$el && bbn.fn.isFunction(vm.$el.matches)) {
           return vm.$el.matches(selector);
         }
@@ -7205,7 +7209,6 @@
         return bbn.vue.loadComponentsByPrefix(tag)
       };
       Vue.config.devtools = !(!bbn.env.mode || (bbn.env.mode === 'prod'));
-      bbn.fn.log("devtools", Vue.config.devtools, bbn.env.mode, bbn.env.isInit, 'iiii');
 
       Vue.config.errorHandler = function (err, vm, info) {
         // handle error

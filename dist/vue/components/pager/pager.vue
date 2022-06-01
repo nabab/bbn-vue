@@ -305,10 +305,8 @@
     },
     methods: {
       updatePager() {
-        bbn.fn.log('update pager');
         this.currentNumericPage = this.element.currentPage;
         this.numPages = this.element.numPages;
-        bbn.fn.log('update pager', this.numPages);
       },
       /**
        * @method firstPage

@@ -193,6 +193,7 @@ script.innerHTML = `<div :class="[componentClass, {
                       :source="pane.tabs"
                       :closable="false"
                       v-model="pane.selected"
+                      v-if="routed"
                       @input="selectPaneTab(pane)"
                       :limit="5"/>
             <!-- PANE CONTENT -->
@@ -1598,6 +1599,7 @@ document.head.insertAdjacentElement('beforeend', css);
                 }
  
                 if (a.selected !== i) {
+                  bbn.fn.log("CHAINGING BY ROUTRE", url);
                   a.selected = i;
                   ok = false;
                   return false;
@@ -1694,13 +1696,22 @@ document.head.insertAdjacentElement('beforeend', css);
             this.currentURL = url;
           }
           // First routing, triggered only once
-          if (!this.urls[st].currentView.pane) {
+          if (this.urls[st].currentView.pane) {
+            let pane = bbn.fn.getRow(this.currentPanes, {id: this.urls[st].currentView.pane});
+            if (pane) {
+              let idx  = bbn.fn.search(pane.tabs, {url: st});
+              if (pane.tabs[idx] && (pane.selected === idx)) {
+                this.activate(url, this.urls[st]);
+              }
+            }
+          }
+          else {
             if ( !this.routed ){
               this.routed = true;
               this.$emit("route1", this);
             }
+            this.activate(url, this.urls[st]);
           }
-          this.activate(url, this.urls[st]);
           if ( this.urls[st] && this.urls[st].isLoaded ){
             this.urls[st].currentURL = url;
             this.$nextTick(() => {
@@ -1831,7 +1842,6 @@ document.head.insertAdjacentElement('beforeend', css);
           return;
         }
         if (title && (title !== this.currentTitle)) {
-          bbn.fn.log("CHANGIN URL", this.currentTitle, title)
           this.currentTitle = title;
         }
         if ( url !== this.currentURL ){
@@ -2461,7 +2471,9 @@ document.head.insertAdjacentElement('beforeend', css);
                   this.urls[url].errorStatus = xhr;
                   this.urls[url].setTitle(bbn._("Error"));
                   this.urls[url].setIcon("nf nf-fa-warning");
-                  this.callRouter(finalURL, url);
+                  if (this.selected === idx) {
+                    this.callRouter(finalURL, url);
+                  }
                 }
               }
             },
@@ -3082,7 +3094,7 @@ document.head.insertAdjacentElement('beforeend', css);
           breadcrumb: this.isBreadcrumb,
           visual: this.isVisual,
           orientation: this.lockedOrientation ? this.visualOrientation : null,
-          panes: this.currentPanes.map(a => { return {id: a.id, tabs: [], selected: a.selected}})
+          panes: this.currentPanes.map(a => { return {id: a.id, tabs: a.tabs.map(b => b.url), selected: a.selected}})
         };
 
         bbn.fn.each(this.views, (obj, i) => {
@@ -3506,7 +3518,7 @@ document.head.insertAdjacentElement('beforeend', css);
           zoom: 1
         }
       },
-      addPane(paneId, selected) {
+      addPane(paneId) {
         if (this.splittable) {
           if (!paneId) {
             paneId = bbn.fn.randomString().toLowerCase();
@@ -3516,7 +3528,7 @@ document.head.insertAdjacentElement('beforeend', css);
             this.currentPanes.push({
               id: paneId,
               tabs: [],
-              selected: selected === undefined ? -1 : selected
+              selected: -1
             });
           }
         }
@@ -3524,7 +3536,10 @@ document.head.insertAdjacentElement('beforeend', css);
         return paneId;
       },
       selectPaneTab(pane) {
-        bbn.fn.log(pane);
+        let view = pane.tabs[pane.selected];
+        if (view) {
+          view.last = bbn.fn.timestamp();
+        }
       },
       closeTab(idx) {
         this.close(this.tabsList[idx].idx);
@@ -3635,7 +3650,7 @@ document.head.insertAdjacentElement('beforeend', css);
       let storage = !this.single && this.getStorage(this.parentContainer ? this.parentContainer.getFullURL() : this.storageName);
       if (storage && storage.panes) {
         bbn.fn.each(storage.panes, a => {
-          this.addPane(a.id, a.selected);
+          this.addPane(a.id);
         })
       }
     },
@@ -3792,14 +3807,44 @@ document.head.insertAdjacentElement('beforeend', css);
       });
 
       if (this.splittable) {
+        if (storage && storage.panes) {
+          bbn.fn.each(storage.panes, pane => {
+            bbn.fn.each(pane.tabs, tab => {
+              let view = bbn.fn.getRow(this.views, {url: tab});
+              let realPane = bbn.fn.getRow(this.currentPanes, {id: pane.id});
+              if (view && realPane) {
+                if (!view.pane) {
+                  view.pane = pane.id;
+                }
+                realPane.tabs.push(view);
+              }
+            });
+          })
+        }
+
         bbn.fn.each(this.views, a => {
           if (a.pane) {
             let pane = bbn.fn.getRow(this.currentPanes, {id: a.pane});
-            if (pane) {
+            if (pane && !bbn.fn.getRow(pane.tabs, {url: a.url})) {
               pane.tabs.push(a);
             }
           }
         });
+
+        bbn.fn.each(this.currentPanes, pane => {
+          let done = false;
+          if (storage && storage.panes) {
+            let p = bbn.fn.getRow(storage.panes, {id: pane.id});
+            if (p && pane.tabs[p.selected]) {
+              pane.selected = p.selected;
+              done = true;
+            }
+            
+          }
+          if (!done) {
+            pane.selected = pane.tabs.length ? 0 : -1;
+          }
+        })
       }
 
       //Breadcrumb

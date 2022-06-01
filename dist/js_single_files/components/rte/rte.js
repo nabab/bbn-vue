@@ -2,30 +2,29 @@
 
 let script = document.createElement('script');
 script.innerHTML = `<div :class="[componentClass, {'bbn-textbox': !floating}, 'bbn-no-padding']"
-     @keydown.tab.stop=""
 		 :style="{height: currentHeight}">
 	<div v-if="floating"
 	     class="bbn-iflex-height"
 			 ref="container"
-			 @click.stop.prevent
 			 style="min-height: 100%; width: 100%; overflow: visible">
 		<div contenteditable="true"
 		     @focusin="isEditing = true"
-				 @keyup="updateContenteditable"
-				 ref="element"
-				 @blur="updateContenteditable"/>
+				 @input="updateContenteditable"
+				 class="bbn-rte-element"
+				 ref="element"/>
 		<bbn-portal>
-			<bbn-floater v-if="ready && isEditing"
-			             :scrollable="false"
-									 ref="floater"
-									 @focusin="isEditing = true"
-									 :element="$el"
-									 position="topLeft"
-									 :title="false">
-				<bbn-toolbar :source="currentButtons"
-									   class="bbn-rte-toolbar bbn-header bbn-radius-top bbn-no-border"
-									 	 :button-space="false"/>
-			</bbn-floater>
+			<div v-show="isEditing">
+				<bbn-floater :scrollable="false"
+										ref="floater"
+										@focusin="isEditing = true"
+										:element="$el"
+										position="topLeft"
+										:title="false">
+					<bbn-toolbar :source="currentButtons"
+											class="bbn-rte-toolbar bbn-header bbn-radius-top bbn-no-border"
+											:button-space="false"/>
+				</bbn-floater>
+			</div>
 		</bbn-portal>
 
 	</div>
@@ -39,7 +38,7 @@ script.innerHTML = `<div :class="[componentClass, {'bbn-textbox': !floating}, 'b
 				 :style="textboxStyle"
 				 @mouseup.stop="getRef('element').focus()">
 			<component :is="currentHeight ? 'bbn-scroll' : 'div'">
-				<div class="bbn-spadded"
+				<div class="bbn-spadded bbn-rte-element"
 							style="min-height: max(4rem, 100%)"
 							contenteditable="true"
 							ref="element"
@@ -467,7 +466,19 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        * @method setButtons
        */
       setButtons() {
-        this.currentButtons = setButtons(this.buttons);
+        let tmp = setButtons(this.buttons);
+        if (this.floating) {
+          tmp.push({
+            icon: 'nf nf-fa-times',
+            text: bbn._('Close'),
+            notext: true,
+            active: false,
+            action: () => {
+              this.isEditing = false;
+            }
+          });
+        }
+        this.currentButtons = tmp;
       },
       /**
        * @method updateButtonsState
@@ -533,13 +544,11 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         }
       },
       onClickDocument(e) {
-        bbn.fn.log("onClickDocument");
         let floater = this.getRef('floater');
         let element = this.getRef('element');
         if (floater && element) {
-          e.preventDefault();
-          e.stopImmediatePropagation();
           if (!bbn.fn.isInside(e.target, floater.$el) && !bbn.fn.isInside(e.target, element) && (e.target !== element)) {
+            bbn.fn.log("onClickDocument");
             this.isEditing = false;
           }
         }
@@ -551,6 +560,15 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           this.currentValue = st;
           this.emitInput(st);
         }
+      },
+      stopEdit() {
+        if (bbn.fn.isNumber(this.stopEditTimeout)) {
+          clearTimeout(this.stopEditTimeout);            
+        }
+
+        this.stopEditTimeout = setTimeout(() => {
+          this.isEditing = false;
+        }, 2000)
       }
     },
     /**
@@ -622,8 +640,6 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
     },
     beforeDestroy() {
       if (this.floating) {
-        bbn.fn.log("FLOATING DESTROY");
-        this.ready = false;
         window.document.body.removeEventListener('click', this.onClickDocument);
       }
     },
@@ -647,9 +663,18 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
       isEditing(v) {
         if (this.floating) {
           if (v) {
+            window.document.body.addEventListener('click', this.onClickDocument);
+            this.$nextTick(() => {
+              this.getRef('floater').onResize(true);
+            })
+          }
+          else {
+            window.document.body.removeEventListener('click', this.onClickDocument);
+          }
+          /*
+          if (v) {
             if (openedFloatingRTE.indexOf(this) === -1) {
               openedFloatingRTE.push(this);
-              window.document.body.addEventListener('click', this.onClickDocument);
             }
             bbn.fn.each(openedFloatingRTE, a => {
               if (a !== this) {
@@ -660,13 +685,14 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
 
           }
           else {
-            window.document.body.removeEventListener('click', this.onClickDocument);
             let idx = openedFloatingRTE.indexOf(this);
             if (idx > -1) {
               openedFloatingRTE.splice(idx, 1);
             }
           }
+          */
           this.$forceUpdate();
+
         }
       }
     }

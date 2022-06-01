@@ -153,16 +153,19 @@
           else {
             targetEl.appendChild(el);
           }
+          this.container = new TargetContainer({
+            el,
+            parent: this,
+            propsData: {
+              tag: this.tag,
+              nodes: this.$scopedSlots.default,
+            },
+          });
+        }
+        else {
+          this.unmount()
         }
   
-        this.container = new TargetContainer({
-          el,
-          parent: this,
-          propsData: {
-            tag: this.tag,
-            nodes: this.$scopedSlots.default,
-          },
-        });
       },
       unmount() {
         if (this.container) {

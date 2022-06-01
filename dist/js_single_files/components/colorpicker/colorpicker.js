@@ -259,6 +259,14 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         type: String,
         default: "hex",
         validator: c => ['hex', 'rgb', 'rgba', 'hsl'].includes(c)
+      },
+      /**
+       * Clicking a palette element will automatically select the color and close the widget.
+       * @prop {Boolean} [false] autoSelect
+       */
+      autoSelect: {
+        type: Boolean,
+        default: false
       }
     },
     data(){
@@ -473,6 +481,11 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
        */
       setColor(color){
         this.widget.color.set(color);
+        if (this.autoSelect) {
+          this.$nextTick(() => {
+            this.save();
+          })
+        }
       },
       /**
        * Sets the color inserted from the inputs.
