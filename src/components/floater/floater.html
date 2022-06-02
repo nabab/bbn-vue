@@ -25,7 +25,6 @@
     <header v-if="title"
             ref="header"
             :class="{
-              'bbn-rel': true,
               'bbn-header': headerTitle,
               'bbn-bordered-bottom': true,
               'bbn-unselectable': true,
@@ -33,9 +32,9 @@
             }"
             v-draggable.mode.helper.container="!!draggable && ready ? {mode: 'move', helper: $el, container: $el.parentElement} : false">
       <div v-if="title"
-          class="bbn-w-100">
+          class="bbn-w-100 bbn-hpadding bbn-vxspadded bbn-vmiddle">
         <h3 v-html="title"
-            class="bbn-no-margin bbn-vpadded bbn-light bbn-c bbn-lg"
+            class="bbn-no-margin bbn-c"
             :style="{
               paddingLeft: maximizable || closable ? '3.6rem' : 'var(--space)',
               paddingRight: maximizable || closable ? '3.6rem' : 'var(--space)',

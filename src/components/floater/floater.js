@@ -266,7 +266,7 @@
       },
       headerTitle: {
         type: Boolean,
-        default: false
+        default: true
       },
       /**
        * Set to true to make an arrow with position
