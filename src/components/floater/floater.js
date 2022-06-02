@@ -298,6 +298,22 @@
       resizable: {
         type: Boolean,
         default: false
+      },
+      /**
+       * The distance on the given axis between the element and the floater
+       * @prop {Number} [0] distanceX
+       */
+      distanceX: {
+        type: Number,
+        default: 0
+      },
+      /**
+       * The distance on the given axis between the element and the floater
+       * @prop {Number} [0] distanceY
+       */
+      distanceY: {
+        type: Number,
+        default: 0
       }
     },
     data() {
