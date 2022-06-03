@@ -297,8 +297,7 @@
        * @prop String mode Mode for buttons: normal or big
        */
        mode: {
-         type: String,
-         default: 'normal'
+         type: String
        }
     },
     data(){
@@ -322,6 +321,7 @@
         isPosted: false,
         isLoading: false,
         currentSchema: currentSchema,
+        currentMode: this.mode || (this.closest('bbn-floater') ? 'big' : 'normal'),
         _isSetting: false,
         window: null,
         isInit: false,
@@ -540,12 +540,12 @@
         if (this.realButtons.length) {
           this.realButtons.splice(0, this.realButtons.length);
         }
-        if (this.window && bbn.fn.isArray(this.window.currentButtons) && (this.mode === 'big')) {
+        if (this.window && bbn.fn.isArray(this.window.currentButtons) && (this.currentMode === 'big')) {
           this.window.currentButtons.splice(0, this.window.currentButtons.length);
         }
         bbn.fn.each(this.getRealButtons(), b => {
           this.realButtons.push(b);
-          if (this.window && bbn.fn.isArray(this.window.currentButtons) && (this.mode === 'big')) {
+          if (this.window && bbn.fn.isArray(this.window.currentButtons) && (this.currentMode === 'big')) {
             this.window.currentButtons.push(b);
           }
         });
@@ -1019,6 +1019,9 @@
         if (this.tab) {
           this.tab.dirty = v;
         }
+      },
+      mode(v) {
+        this.currentMode = v;
       }
     }
   });
