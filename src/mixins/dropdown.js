@@ -135,6 +135,15 @@
         iconDown: {
           type: String,
           default: 'nf nf-fa-caret_down'
+        },
+        /**
+         * Convertes the current text from HTML code to pure text.
+         * @prop {Boolean} [false] clearHtml
+         * @memberof dropdownComponent
+         */
+        clearHtml: {
+          type: Boolean,
+          default: false
         }
       },
       data(){
@@ -218,6 +227,9 @@
               return a.data[this.sourceValue] === this.value;
             });
             if ( idx > -1 ){
+              if (this.clearHtml) {
+                return bbn.fn.html2text(this.currentData[idx].data[this.sourceText]);
+              }
               return this.currentData[idx].data[this.sourceText];
             }
           }
