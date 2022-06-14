@@ -97,6 +97,30 @@
         }
       }
     },
+    fontincrease: {
+      icon: 'nf nf-fa-plus',
+      text: bbn._('Increase font size'),
+      notext: true,
+      active: false,
+      action: () => {
+        let current = parseInt(queryCommandValue('fontSize'));
+        if (current < 7) {
+          exec('fontSize', current + 1);
+        }
+      }
+    },
+    fontdecrease: {
+      icon: 'nf nf-fa-minus',
+      text: bbn._('Decrease font size'),
+      notext: true,
+      active: false,
+      action: () => {
+        let current = parseInt(queryCommandValue('fontSize'));
+        if (current > 1) {
+          exec('fontSize', current - 1);
+        }
+      }
+    },
     bold: {
       icon: 'nf nf-fa-bold',
       text: bbn._('Bold'),
