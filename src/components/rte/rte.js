@@ -36,6 +36,67 @@
   };
   const exec = (command, value = null) => document.execCommand(command, false, value);
   const defaultButtons = {
+    blockStyle: {
+      text: bbn._('Style'),
+      active: false,
+      component: {
+        name: 'bbn-rte-style',
+        template: `
+          <bbn-dropdown class="bbn-rte-style"
+                        :source="styles"
+                        v-model="currentStyle"
+                        :writable="false"
+                        @change="setStyle"
+                        :clear-html="true"/>
+        `,
+        data(){
+          return {
+            styles: [{
+              text: bbn._('Normal'),
+              value: '<div>'
+            }, {
+              text: '<p>' + bbn._('Paragraph') + '</p>',
+              value: '<p>'
+            }, {
+              text: '<h1>' + bbn._('Heading 1') + '</h1>',
+              value: '<h1>'
+            }, {
+              text: '<h2>' + bbn._('Heading 2') + '</h2>',
+              value: '<h2>'
+            }, {
+              text: '<h3>' + bbn._('Heading 3') + '</h3>',
+              value: '<h3>'
+            }, {
+              text: '<h4>' + bbn._('Heading 4') + '</h4>',
+              value: '<h4>'
+            }, {
+              text: '<h5>' + bbn._('Heading 5') + '</h5>',
+              value: '<h5>'
+            }, {
+              text: '<h6>' + bbn._('Heading 6') + '</h6>',
+              value: '<h6>'
+            }, {
+              text: '<pre>' + bbn._('Preformatted') + '</pre>',
+              value: '<pre>'
+            }, {
+              text: '<blockquote>' + bbn._('Quote') + '</blockquote>',
+              value: '<blockquote>'
+            }],
+            currentStyle: ''
+          }
+        },
+        methods: {
+          setStyle(style, a,b){
+            exec(formatBlock, style);
+          }
+        },
+        mounted(){
+          let rte = this.closest('bbn-rte')
+          rte.styleComponent = this;
+          rte.setStyle();
+        }
+      }
+    },
     bold: {
       icon: 'nf nf-fa-bold',
       text: bbn._('Bold'),
@@ -440,6 +501,7 @@
           setTimeout(() => exec(formatBlock, `<${this.defaultParagraphSeparator}>`), 0);
         }
         this.setColors();
+        this.setStyle();
       },
       /**
        * @method rteOnClick
@@ -449,6 +511,7 @@
       rteOnClick(event){
         this.updateButtonsState();
         this.setColors();
+        this.setStyle();
       },
       /**
        * @method rteOnInput
@@ -464,6 +527,15 @@
         this.updateButtonsState();
         this.currentValue = this.content.innerHTML;
         this.emitInput(this.currentValue);
+      },
+      /**
+       * @method setStyle
+       */
+      setStyle(){
+        if (this.styleComponent) {
+          let style = queryCommandValue(formatBlock);
+          this.styleComponent.currentStyle =  !!style ? `<${style}>` : '<div>';
+        }
       },
       /**
        * @method setColors
