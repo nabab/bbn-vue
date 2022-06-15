@@ -340,9 +340,9 @@
     methods: {
       fdate: bbn.fn.fdate,
       updatePostIts() {
-        if (this.plugins['appui-note']) {
+        if (this.plugins['appui-note'] && !!this.app.uer) {
           bbn.fn.post(this.plugins['appui-note'] + '/data/postits', {pinned: 1}, d => {
-            if (d&& d.data) {
+            if (d && d.data) {
               this.postits = d.data;
             }
           })
