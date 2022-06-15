@@ -1292,12 +1292,14 @@
         if (this.forms.length && !confirm) {
           this.forms[0].closePopup(force);
         }
-        else{
-          let closeEvent = new Event('close');
-          this.hide();
-          this.$emit("close", this, closeEvent);
-          if (this.afterClose) {
-            this.afterClose(this);
+        else {
+          let popup = this.closest('bbn-popup');
+          if (popup && this.uid) {
+            let idx = popup.getIndexByUID(this.uid);
+            popup.close(idx, true);
+          }
+          else {
+            this.hide();
           }
         }
       },

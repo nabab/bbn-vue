@@ -398,7 +398,7 @@
        * @return {Boolean}
        */
       _canSubmit(){
-        return (this.prefilled || this.isModified()) && this.isValid(false, true) && !this.disabled;
+        return (this.prefilled || this.isModified()) && !this.disabled;
       },
       /**
        * Returns an array containing the form's buttons.
@@ -495,13 +495,14 @@
   
                 this.dirty = false;
                 this.isLoading = false;
+
+                if (this.window) {
+                  this.$nextTick(() => {
+                    this.window.close(true, true);
+                  });
+                }
               }
 
-              if (this.window) {
-                this.$nextTick(() => {
-                  this.window.close(true);
-                });
-              }
             }
           }, !this.blank && !this.self && !this.target ? (xhr, textStatus, errorThrown) => {
             this.$emit('failure', xhr, textStatus, errorThrown);
