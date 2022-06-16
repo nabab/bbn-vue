@@ -250,7 +250,7 @@
         return {
           opacity: this.show && this.shouldBother ? 1 : 0,
           [this.isVertical ? 'top' : 'left'] : this.offsetStart + 'px',
-          [this.isVertical ? 'bottom' : 'right']: this.offsetEnd + 'px'
+          [this.isVertical ? 'right' : 'bottom']: this.offsetEnd + 'px'
         }
       },
       /**

@@ -1,81 +1,72 @@
 <div :class="[componentClass, 'bbn-100']"
-     :style="{zIndex: zIndex}"
->
+     :style="{zIndex: zIndex}">
   <bbn-scroll :scrollable="scrollable"
-              @hook:mounted="onScrollMounted"
-  >
+              @hook:mounted="onScrollMounted">
     <div v-if="!showIcons"
          :class="['bbn-fisheye-dots', 'bbn-overlay', 'bbn-middle', {'bbn-invisible': !ready}]"
-         :style="{zIndex: zIndex}"
-    >
+         :style="{zIndex: zIndex}">
       <span class="bbn-block bbn-p"
             @click="toggleFloater"
-            ref="dots"
-        >
-          <i class="nf nf-mdi-dots_horizontal bbn-middle"></i>
+            ref="dots">
+          <i class="nf nf-mdi-dots_horizontal bbn-middle"/>
         </span>
     </div>
     <ul ref="container"
         :class="['bbn-spadded', {'bbn-invisible': !showIcons || !ready}]"
-        :style="{zIndex: zIndex}"
-    >
+        :style="{zIndex: zIndex}">
       <li v-for="it in items"
           :key="it.index"
           v-draggable="!it.fixed"
           @mouseover="mouseover(it.index)"
           @mouseout="mouseout(it.index)"
           @dragstart="dragstart(it.index, $event)"
-          @dragend="dragend(it.index, $event)"
-      >
+          @dragend="dragend(it.index, $event)">
         <span class="bbn-iblock bbn-p"
-              @click="onClick(it.data, it.index)"
-        >
-          <i :class="it.data.icon"></i>
+              @click="onClick(it.data, it.index)">
+          <i :class="it.data.icon"/>
         </span>
       </li>
     </ul>
   </bbn-scroll>
-  <bbn-floater v-if="visibleFloater"
-               ref="floater"
-               class="bbn-widget"
-               :auto-hide="1000"
-               @close="visibleFloater = false"
-               :scrollable="true"
-               width="100%"
-               height="100%"
-               :left="0"
-               :right="0"
-               :top="floaterTop"
-  >
-    <div class="bbn-spadded bbn-fisheye-floater-content">
-      <span v-for="it in items"
-            :key="it.index"
-            v-draggable="!it.fixed"
-            @dragstart="dragstart(it.index, $event)"
-            @dragend="dragend(it.index, $event)"
-            class="bbn-w-100 bbn-c bbn-smargin bbn-p"
-            @click="onClick(it.data, it.index)"
-      >
-        <div class="bbn-w-100 bbn-middle">
-          <i :class="[it.data.icon, 'bbn-fisheye-floater-icon', 'bbn-box', ' bbn-xxspadded', 'bbn-middle']"></i>
-        </div>
-        <div class="bbn-w-100 bbn-top-sspace" v-text="it.data[sourceText]"></div>
-      </span>
-    </div>
-  </bbn-floater>
+  <bbn-portal>
+    <bbn-floater v-if="visibleFloater"
+                ref="floater"
+                :class="[componentClass, 'bbn-widget']"
+                :auto-hide="1000"
+                @close="visibleFloater = false"
+                :scrollable="true"
+                width="100%"
+                height="100%"
+                :left="0"
+                :right="0"
+                :top="floaterTop">
+      <div class="bbn-spadded bbn-fisheye-floater-content">
+        <span v-for="it in items"
+              :key="it.index"
+              v-draggable="!it.fixed"
+              @dragstart="dragstart(it.index, $event)"
+              @dragend="dragend(it.index, $event)"
+              class="bbn-w-100 bbn-c bbn-smargin bbn-p"
+              @click="onClick(it.data, it.index)">
+          <div class="bbn-w-100 bbn-middle">
+            <i :class="[it.data.icon, 'bbn-fisheye-floater-icon', 'bbn-box', ' bbn-xxspadded', 'bbn-middle']"></i>
+          </div>
+          <div class="bbn-w-100 bbn-top-sspace"
+              v-text="it.data[sourceText]"/>
+        </span>
+      </div>
+    </bbn-floater>
+  </bbn-portal>
   <div class="bbn-fisheye-bin"
        v-if="visibleBin"
-       :style="binPosition"
-  >
+       :style="binPosition">
     <i :class="['nf nf-fa-trash', {'bbn-red': overBin}]"
        @dragover="overBin = true"
        @dragleave="dragleave($event)"
        @drop="drop($event)"
-       v-droppable
-    ></i>
+       v-droppable/>
   </div>
   <div class="bbn-fisheye-text"
        v-if="(visibleText > -1) && showIcons"
-       v-html="items[visibleText].data[sourceText]"
-  ></div>
+       v-html="items[visibleText].data[sourceText]"/>
 </div>

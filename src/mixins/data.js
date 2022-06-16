@@ -64,7 +64,7 @@
                   cfg.precision === -4 ? 3 : (cfg.precision || cfg.decimals || 0)
                 );
               case "money":
-                bbn.fn.log(cfg)
+                //bbn.fn.log(cfg)
                 return bbn.fn.money(
                   v,
                   (cfg.precision === -4) || (cfg.format && (cfg.format.toLowerCase() === 'k')),

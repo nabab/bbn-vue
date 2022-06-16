@@ -171,11 +171,12 @@
       </div>
     </bbn-pane>
     <!-- START FOR SPLITTABLE MODE -->
-    <bbn-pane v-if="!single && splittable && currentPanes.length"
+    <bbn-pane v-if="!single && splittable && currentPanes.length && ready"
               :scrollable="false"
               size="30%">
       <bbn-splitter :resizable="resizable"
                     :collapsible="collapsible"
+                    @resize="splitterMounted = true"
                     ref="splitter">
         <bbn-pane v-for="(pane, i) in currentPanes"
                   :key="i"

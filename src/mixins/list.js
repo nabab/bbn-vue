@@ -1076,7 +1076,7 @@
                 this.$emit('dataloaded', d);
               });
             }).catch(e => {
-              bbn.fn.log("CATCHING");
+              bbn.fn.log("Better catching should be done here");
               this.isLoading = false;
               this.loadingRequestID = false;
             });

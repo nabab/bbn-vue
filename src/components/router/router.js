@@ -269,7 +269,9 @@
        */
       visualSize: {
         type: Number,
-        default: 150
+        default(){
+          return Math.min(120, Math.round(Math.min(bbn.env.width, bbn.env.height) / 5))
+        }
       },
       /**
        * The position of the visual mini containers
@@ -525,7 +527,12 @@
          * If true the configuration will be shown
          * @data {Boolean} visual
          */
-        showRouterCfg: false
+        showRouterCfg: false,
+        /**
+         * Becomes true once the pane splitter is mounted
+         * @data {Boolean} visual
+         */
+         splitterMounted: false
       };
     },
     computed: {
@@ -731,14 +738,20 @@
        * @return {Number} 
        */
        numVisualCols() {
-        if (this.isVisual) {
+        if (this.isVisual && this.ready) {
           // Width greater or equal to height
           let w = this.lastKnownWidth - (this.visualIsOnHeight ? 0 : this.visualSize);
+          if (this.splitterMounted) {
+            let splitter = this.getRef('splitter');
+            if (splitter.$el.clientWidth < w) {
+              w -= splitter.$el.clientWidth;
+            }
+          }
           if (this.visualRatio >= 1) {
             return Math.floor(w / this.visualSize);
           }
           else {
-            return Math.floor(w / (this.visualSize * this.visualRatio));
+            return Math.floor(w / (this.visualSize * 1));
           }
         }
 
@@ -751,10 +764,16 @@
        * @return {Number} 
        */
        numVisualRows() {
-        if (this.isVisual) {
+        if (this.isVisual && this.ready) {
           let h = this.lastKnownHeight - (this.visualIsOnHeight ? this.visualSize : 0);
+          if (this.splitterMounted) {
+            let splitter = this.getRef('splitter');
+            if (splitter.$el.clientHeight < h) {
+              h -= splitter.$el.clientHeight;
+            }
+          }
           if (this.visualRatio > 1) {
-            return Math.floor(h / this.visualSize * this.visualRatio);
+            return Math.floor(h / this.visualSize * 1);
           }
           else {
             return Math.floor(h / this.visualSize);
@@ -1363,11 +1382,18 @@
                 }
  
                 if (a.selected !== i) {
-                  bbn.fn.log("CHAINGING BY ROUTRE", url);
                   a.selected = i;
                   ok = false;
-                  return false;
                 }
+
+                if (v.current !== url) {
+                  v.current = url;
+                  if (container) {
+                    container.setCurrent(url);
+                  }
+                }
+
+                return false;
               }
             })
  
@@ -1464,7 +1490,12 @@
             let pane = bbn.fn.getRow(this.currentPanes, {id: this.urls[st].currentView.pane});
             if (pane) {
               let idx  = bbn.fn.search(pane.tabs, {url: st});
+              /*
               if (pane.tabs[idx] && (pane.selected === idx)) {
+                this.activate(url, this.urls[st]);
+              }
+              */
+              if (pane.tabs[idx]) {
                 this.activate(url, this.urls[st]);
               }
             }
@@ -1639,6 +1670,9 @@
             this.parentContainer.currentTitle = title + ' < ' + this.parentContainer.title;
             if (!this.parentContainer.isPane) {
               this.parent.changeURL(this.baseURL + url, this.parentContainer.currentTitle, replace);
+            }
+            else {
+              this.parentContainer.currentView.current = this.baseURL + url;
             }
           }
           else if ( replace || (url !== bbn.env.path) ){
