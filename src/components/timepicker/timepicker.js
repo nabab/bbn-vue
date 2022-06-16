@@ -25,7 +25,7 @@
        */
       mode: {
         type: String,
-        default: 'scroll',
+        default: 'dropdown',
         validator: m => ['scroll', 'dropdown', 'block'].includes(m)
       },
       /**
