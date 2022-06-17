@@ -250,6 +250,7 @@
         searchOn: false,
         pressedKey: false,
         pressedTimeout: false,
+        longPressed: false,
         isMobile: isMobile,
         isTablet: isTablet,
         isTouch: isMobile || isTablet,
@@ -704,6 +705,9 @@
         }, 500)
       },
       keydown(e) {
+        if (this.longPressed) {
+          e.preventDefault();
+        }
         if (this.pressedKey) {
           this.pressedKey = false;
         }
@@ -716,7 +720,13 @@
           this.pressedKey = e.key;
         }
       },
+      removePressListener() {
+        this.longPressed = false;
+        document.removeEventListener('keyup', this.removePressListener);
+      },
       longPress(key) {
+        this.longPressed = true;
+        document.addEventListener('keyup', this.removePressListener)
         if (bbn.fn.isNumber(key)) {
           let router = this.getRef('router');
           if (key === '0') {
