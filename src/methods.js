@@ -2,6 +2,7 @@
   "use strict";
   const isReservedTag = Vue.config.isReservedTag;
   let loadingComponents = [];
+  let maxUrlLength = 1800;
   bbn.fn.autoExtend("vue", {
     /**
      * Retrieves the closest popup component in the Vue tree
@@ -276,12 +277,18 @@
      */
     executeQueueItems(items){
       if ( items.length ){
-        let url = 'components';
-        bbn.fn.iterate(items, a => {
-          url += '/' + a.name;
-        });
+        let url = 'components/';
+        let i = 0;
+        while (items[i] && (url.length < maxUrlLength)) {
+          if (i) {
+            url += '/';
+          }
+
+          url += items[i].name;
+          i++;
+        }
         url += '?v=' + bbn.version;
-        return axios.get(url, {responseType:'json'}).then(d => {
+        let prom = axios.get(url, {responseType:'json'}).then(d => {
           d = d.data;
           if ( d && d.success && d.components ){
             bbn.fn.iterate(items, a => {
@@ -296,8 +303,16 @@
               }
             })
           }
-        })
+        });
+
+        if (i < (items.length -1)) {
+          items.splice(0, i);
+          bbn.vue.executeQueueItems(items);
+        }
+
+        return prom;
       }
+
       return false;
     },
 
@@ -406,16 +421,24 @@
         ) {
           url += bbn_root_url + bbn_root_dir;
         }
-        url += 'components/?components=' + bbn.fn.map(todo, a => {
-          return a.name;
-        }).join(',') + '&v=' + bbn.version;
+        url += 'components/?components=';
+        let i = 0;
+        while (todo[i] && (url.length < maxUrlLength)) {
+          if (i) {
+            url += ',';
+          }
+
+          url += todo[i].name;
+          i++;
+        }
+        url += '&v=' + bbn.version;
         if ( bbn.env.isDev ){
           url += '&test=1';
         }
         if ( bbn.env.lang ){
           url += '&lang=' + bbn.env.lang;
         }
-        return bbn.fn.ajax(url, 'text')
+        let prom = bbn.fn.ajax(url, 'text')
           .then(
             // resolve from server
             res => {
@@ -476,7 +499,13 @@
               throw new Error("Impossible to find the components from " + url)
             }
           );
+        if (i < (todo.length -1)) {
+          todo.splice(0, i);
+          bbn.vue.executeQueueBBNItem(todo);
         }
+
+        return prom;
+      }
     },
 
     /**
