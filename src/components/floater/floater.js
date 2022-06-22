@@ -314,6 +314,32 @@
       distanceY: {
         type: Number,
         default: 0
+      },
+      /**
+       * @prop {Boolean} [false] groupable
+       */
+       groupable: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * @prop {String} ['group'] sourceGroup
+       */
+      sourceGroup: {
+        type: String,
+        default: 'group'
+      },
+      /**
+       * @prop {(String|Object|Vue)} groupComponent
+       */
+      groupComponent: {
+        type: [String, Object, Vue]
+      },
+      /**
+       * @prop {String} groupStyle
+       */
+      groupStyle: {
+        type: String
       }
     },
     data() {
