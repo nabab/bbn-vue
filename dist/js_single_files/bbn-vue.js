@@ -40,6 +40,7 @@
   "use strict";
   const isReservedTag = Vue.config.isReservedTag;
   let loadingComponents = [];
+  let maxUrlLength = 1800;
   bbn.fn.autoExtend("vue", {
     /**
      * Retrieves the closest popup component in the Vue tree
@@ -314,12 +315,18 @@
      */
     executeQueueItems(items){
       if ( items.length ){
-        let url = 'components';
-        bbn.fn.iterate(items, a => {
-          url += '/' + a.name;
-        });
+        let url = 'components/';
+        let i = 0;
+        while (items[i] && (url.length < maxUrlLength)) {
+          if (i) {
+            url += '/';
+          }
+
+          url += items[i].name;
+          i++;
+        }
         url += '?v=' + bbn.version;
-        return axios.get(url, {responseType:'json'}).then(d => {
+        let prom = axios.get(url, {responseType:'json'}).then(d => {
           d = d.data;
           if ( d && d.success && d.components ){
             bbn.fn.iterate(items, a => {
@@ -334,8 +341,16 @@
               }
             })
           }
-        })
+        });
+
+        if (i < (items.length -1)) {
+          items.splice(0, i);
+          bbn.vue.executeQueueItems(items);
+        }
+
+        return prom;
       }
+
       return false;
     },
 
@@ -444,16 +459,24 @@
         ) {
           url += bbn_root_url + bbn_root_dir;
         }
-        url += 'components/?components=' + bbn.fn.map(todo, a => {
-          return a.name;
-        }).join(',') + '&v=' + bbn.version;
+        url += 'components/?components=';
+        let i = 0;
+        while (todo[i] && (url.length < maxUrlLength)) {
+          if (i) {
+            url += ',';
+          }
+
+          url += todo[i].name;
+          i++;
+        }
+        url += '&v=' + bbn.version;
         if ( bbn.env.isDev ){
           url += '&test=1';
         }
         if ( bbn.env.lang ){
           url += '&lang=' + bbn.env.lang;
         }
-        return bbn.fn.ajax(url, 'text')
+        let prom = bbn.fn.ajax(url, 'text')
           .then(
             // resolve from server
             res => {
@@ -514,7 +537,13 @@
               throw new Error("Impossible to find the components from " + url)
             }
           );
+        if (i < (todo.length -1)) {
+          todo.splice(0, i);
+          bbn.vue.executeQueueBBNItem(todo);
         }
+
+        return prom;
+      }
     },
 
     /**
@@ -1605,6 +1634,41 @@
         iconDown: {
           type: String,
           default: 'nf nf-fa-caret_down'
+        },
+        /**
+         * Convertes the current text from HTML code to pure text.
+         * @prop {Boolean} [false] clearHtml
+         * @memberof dropdownComponent
+         */
+        clearHtml: {
+          type: Boolean,
+          default: false
+        },
+        /**
+         * @prop {Boolean} [false] groupable
+         */
+         groupable: {
+          type: Boolean,
+          default: false
+        },
+        /**
+         * @prop {String} ['group'] sourceGroup
+         */
+        sourceGroup: {
+          type: String,
+          default: 'group'
+        },
+        /**
+         * @prop {(String|Object|Vue)} groupComponent
+         */
+        groupComponent: {
+          type: [String, Object, Vue]
+        },
+        /**
+         * @prop {String} groupStyle
+         */
+        groupStyle: {
+          type: String
         }
       },
       data(){
@@ -1688,6 +1752,9 @@
               return a.data[this.sourceValue] === this.value;
             });
             if ( idx > -1 ){
+              if (this.clearHtml) {
+                return bbn.fn.html2text(this.currentData[idx].data[this.sourceText]);
+              }
               return this.currentData[idx].data[this.sourceText];
             }
           }
@@ -2471,7 +2538,7 @@
                   cfg.precision === -4 ? 3 : (cfg.precision || cfg.decimals || 0)
                 );
               case "money":
-                bbn.fn.log(cfg)
+                //bbn.fn.log(cfg)
                 return bbn.fn.money(
                   v,
                   (cfg.precision === -4) || (cfg.format && (cfg.format.toLowerCase() === 'k')),
@@ -4457,7 +4524,7 @@
                 this.$emit('dataloaded', d);
               });
             }).catch(e => {
-              bbn.fn.log("CATCHING");
+              bbn.fn.log("Better catching should be done here");
               this.isLoading = false;
               this.loadingRequestID = false;
             });

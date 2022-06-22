@@ -275,11 +275,12 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
     mounted(){
       this.router = this.closest('bbn-router');
       this.ready = true;
-      this.$nextTick(() => {
+      // If no timeout color won't work
+      setTimeout(() => {
         if (this.source[this.value]) {
           this.selectedBarColor = this.getFontColor(this.value);
         }
-      })
+      }, 500)
     }
   });
 })(bbn);

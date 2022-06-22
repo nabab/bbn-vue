@@ -593,8 +593,8 @@
           this.tmpDisabled = false;
         }, 1000);
         let item = this.filteredData[idx] || null;
-        let ev = new Event('select', {cancelable: true});
         if ( item && item.data && !item.data.disabled ) {
+          let ev = new Event('select', {cancelable: true});
           this.currentIndex = idx;
           if ( item.data[this.children] && item.data[this.children].length ){
             this.isOpened = !this.isOpened;

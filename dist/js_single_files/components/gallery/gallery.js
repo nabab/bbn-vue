@@ -109,7 +109,8 @@ script.innerHTML = `<div :class="[componentClass, {'bbn-flex-height': scrollable
         </div>
         <component :is="scrollable ? 'bbn-scroll' : 'div'"
                   v-else-if="total">
-          <div :style="{margin: '0 auto', textAlign: align}">
+          <div class="bbn-gallery-columns-container"
+               :style="{margin: '0 auto', textAlign: align}">
             <gallery-col v-for="(col, index) in cols"
                         :key="'gallery-col-'+index"
                         :index="index"

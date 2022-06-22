@@ -51,14 +51,12 @@
 
   <!-- MAIN CONTENT -->
   <div :class="['bbn-content', 'bbn-radius-bottom', 'bbn-no-border', {'bbn-padded': !component || (contentPadding === true)}]"
-       :style="{padding: contentPadding ? contentPadding : false}">
-    <!-- LOADING -->
-    <div v-if="isLoading" style="min-height: 15rem">
-      <bbn-loader text=""
-                  type="swing"/>
-    </div>
+       :style="{
+         padding: contentPadding ? contentPadding : null,
+         minHeight: isLoading && (!currentItems || !currentItems.length) ? '15em' : null
+       }">
     <!-- COMPONENT -->
-    <component v-else-if="component"
+    <component v-if="component"
                 :is="component"
                 :source="currentSource"
                 @hook:mounted="$emit('loaded')"
@@ -70,12 +68,13 @@
          class="bbn-widget-content"/>
     <!-- LIST OF ITEMS -->
     <slot v-else-if="currentItems === undefined"/>
-    <ul v-else-if="currentItems.length" class="bbn-widget-list bbn-widget-content">
+    <ul v-else-if="currentItems.length"
+        class="bbn-widget-list bbn-widget-content">
       <template v-for="(it, idx) in currentItems">
         <li :class="itemClass"
             v-if="limit ? idx < limit : true"
             :style="itemStyle"
-            :key="idx">
+            :key="uid ? it[uid] : idx">
           <component v-if="itemComponent"
                       :is="itemComponent"
                       v-bind="options"
@@ -128,7 +127,14 @@
             :style="{visibility: currentStart < (currentTotal-limit) ? 'visible' : 'hidden'}"/>
       </div>
     </div>
+    <!-- LOADING -->
+    <div v-if="isLoading" class="bbn-overlay" style="opacity: 0.5">
+      <bbn-loader text=""
+                  type="swing"/>
+    </div>
+    
   </div>
+
 </div>
 
 </template>

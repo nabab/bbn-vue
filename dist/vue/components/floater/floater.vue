@@ -26,7 +26,6 @@
     <header v-if="title"
             ref="header"
             :class="{
-              'bbn-rel': true,
               'bbn-header': headerTitle,
               'bbn-bordered-bottom': true,
               'bbn-unselectable': true,
@@ -34,9 +33,9 @@
             }"
             v-draggable.mode.helper.container="!!draggable && ready ? {mode: 'move', helper: $el, container: $el.parentElement} : false">
       <div v-if="title"
-          class="bbn-w-100">
+          class="bbn-w-100 bbn-hpadding bbn-vxspadded">
         <h3 v-html="title"
-            class="bbn-no-margin bbn-vpadded bbn-light bbn-c bbn-lg"
+            class="bbn-no-margin bbn-c"
             :style="{
               paddingLeft: maximizable || closable ? '3.6rem' : 'var(--space)',
               paddingRight: maximizable || closable ? '3.6rem' : 'var(--space)',
@@ -113,7 +112,11 @@
                     :source-value="sourceValue"
                     :source-text="sourceText"
                     :source-url="sourceUrl"
-                    :source-action="sourceAction"/>
+                    :source-action="sourceAction"
+                    :groupable="groupable"
+                    :source-group="sourceGroup"
+                    :group-component="groupComponent"
+                    :group-style="groupStyle"/>
           <h3 v-else v-text="noData"/>
         </bbn-scroll>
       </div>
@@ -429,7 +432,7 @@
       },
       headerTitle: {
         type: Boolean,
-        default: false
+        default: true
       },
       /**
        * Set to true to make an arrow with position
@@ -461,6 +464,48 @@
       resizable: {
         type: Boolean,
         default: false
+      },
+      /**
+       * The distance on the given axis between the element and the floater
+       * @prop {Number} [0] distanceX
+       */
+      distanceX: {
+        type: Number,
+        default: 0
+      },
+      /**
+       * The distance on the given axis between the element and the floater
+       * @prop {Number} [0] distanceY
+       */
+      distanceY: {
+        type: Number,
+        default: 0
+      },
+      /**
+       * @prop {Boolean} [false] groupable
+       */
+       groupable: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * @prop {String} ['group'] sourceGroup
+       */
+      sourceGroup: {
+        type: String,
+        default: 'group'
+      },
+      /**
+       * @prop {(String|Object|Vue)} groupComponent
+       */
+      groupComponent: {
+        type: [String, Object, Vue]
+      },
+      /**
+       * @prop {String} groupStyle
+       */
+      groupStyle: {
+        type: String
       }
     },
     data() {
@@ -1439,12 +1484,14 @@
         if (this.forms.length && !confirm) {
           this.forms[0].closePopup(force);
         }
-        else{
-          let closeEvent = new Event('close');
-          this.hide();
-          this.$emit("close", this, closeEvent);
-          if (this.afterClose) {
-            this.afterClose(this);
+        else {
+          let popup = this.closest('bbn-popup');
+          if (popup && this.uid) {
+            let idx = popup.getIndexByUID(this.uid);
+            popup.close(idx, true);
+          }
+          else {
+            this.hide();
           }
         }
       },

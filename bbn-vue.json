@@ -5,7 +5,7 @@
         "items": [
             {
                 "text": "appui",
-                "lastmod": 1654044143,
+                "lastmod": 1655429678,
                 "url": "bbn-vue\/component\/appui\/overview",
                 "props": [
                     {
@@ -2541,7 +2541,7 @@
             },
             {
                 "text": "container",
-                "lastmod": 1654043154,
+                "lastmod": 1655333687,
                 "url": "bbn-vue\/component\/container\/overview",
                 "props": [
                     {
@@ -3211,7 +3211,7 @@
             },
             {
                 "text": "datetimepicker",
-                "lastmod": 1653967937,
+                "lastmod": 1655345605,
                 "url": "bbn-vue\/component\/datetimepicker\/overview",
                 "props": [
                     {
@@ -3342,7 +3342,7 @@
             },
             {
                 "text": "dropdown",
-                "lastmod": 1653967937,
+                "lastmod": 1655941399,
                 "url": "bbn-vue\/component\/dropdown\/overview",
                 "props": [
                     {
@@ -4108,7 +4108,7 @@
             },
             {
                 "text": "fisheye",
-                "lastmod": 1653967937,
+                "lastmod": 1655347381,
                 "url": "bbn-vue\/component\/fisheye\/overview",
                 "props": [
                     {
@@ -4228,7 +4228,7 @@
             },
             {
                 "text": "floater",
-                "lastmod": 1653967937,
+                "lastmod": 1655941399,
                 "url": "bbn-vue\/component\/floater\/overview",
                 "props": [
                     {
@@ -4380,6 +4380,36 @@
                         "text": "resizable",
                         "desc": "Set to true to make the floater resizable\n",
                         "url": "bbn-vue\/component\/floater\/doc\/props#resizable"
+                    },
+                    {
+                        "text": "distanceX",
+                        "desc": "The distance on the given axis between the element and the floater\n",
+                        "url": "bbn-vue\/component\/floater\/doc\/props#distanceX"
+                    },
+                    {
+                        "text": "distanceY",
+                        "desc": "The distance on the given axis between the element and the floater\n",
+                        "url": "bbn-vue\/component\/floater\/doc\/props#distanceY"
+                    },
+                    {
+                        "text": "groupable",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/floater\/doc\/props#groupable"
+                    },
+                    {
+                        "text": "sourceGroup",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/floater\/doc\/props#sourceGroup"
+                    },
+                    {
+                        "text": "groupComponent",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/floater\/doc\/props#groupComponent"
+                    },
+                    {
+                        "text": "groupStyle",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/floater\/doc\/props#groupStyle"
                     }
                 ],
                 "methods": [
@@ -4715,7 +4745,7 @@
             },
             {
                 "text": "form",
-                "lastmod": 1654126258,
+                "lastmod": 1655293280,
                 "url": "bbn-vue\/component\/form\/overview",
                 "props": [
                     {
@@ -4981,7 +5011,7 @@
             },
             {
                 "text": "gallery",
-                "lastmod": 1653967937,
+                "lastmod": 1655941399,
                 "url": "bbn-vue\/component\/gallery\/overview",
                 "props": [
                     {
@@ -5620,7 +5650,7 @@
             },
             {
                 "text": "list",
-                "lastmod": 1653967937,
+                "lastmod": 1655298124,
                 "url": "bbn-vue\/component\/list\/overview",
                 "props": [
                     {
@@ -7050,7 +7080,7 @@
             },
             {
                 "text": "popup",
-                "lastmod": 1653967938,
+                "lastmod": 1655262094,
                 "url": "bbn-vue\/component\/popup\/overview",
                 "props": [
                     {
@@ -7553,7 +7583,7 @@
             },
             {
                 "text": "router",
-                "lastmod": 1654043407,
+                "lastmod": 1655344089,
                 "url": "bbn-vue\/component\/router\/overview",
                 "props": [
                     {
@@ -8133,7 +8163,7 @@
             },
             {
                 "text": "rte",
-                "lastmod": 1654036211,
+                "lastmod": 1655254666,
                 "url": "bbn-vue\/component\/rte\/overview",
                 "props": [
                     {
@@ -8197,6 +8227,11 @@
                         "text": "rteOnInput",
                         "desc": "",
                         "url": "bbn-vue\/component\/rte\/doc\/methods#rteOnInput"
+                    },
+                    {
+                        "text": "setStyle",
+                        "desc": "",
+                        "url": "bbn-vue\/component\/rte\/doc\/methods#setStyle"
                     },
                     {
                         "text": "setColors",
@@ -8445,7 +8480,7 @@
             },
             {
                 "text": "scrollbar",
-                "lastmod": 1653967937,
+                "lastmod": 1655316150,
                 "url": "bbn-vue\/component\/scrollbar\/overview",
                 "props": [
                     {
@@ -9200,7 +9235,7 @@
             },
             {
                 "text": "splitter",
-                "lastmod": 1653967937,
+                "lastmod": 1655345226,
                 "url": "bbn-vue\/component\/splitter\/overview",
                 "props": [
                     {
@@ -10093,7 +10128,7 @@
             },
             {
                 "text": "tabs",
-                "lastmod": 1654038506,
+                "lastmod": 1655555317,
                 "url": "bbn-vue\/component\/tabs\/overview",
                 "props": [
                     {
@@ -10198,7 +10233,7 @@
             },
             {
                 "text": "timepicker",
-                "lastmod": 1653967938,
+                "lastmod": 1655345605,
                 "url": "bbn-vue\/component\/timepicker\/overview",
                 "props": [
                     {
@@ -11450,7 +11485,7 @@
             },
             {
                 "text": "widget",
-                "lastmod": 1653967938,
+                "lastmod": 1654137921,
                 "url": "bbn-vue\/component\/widget\/overview",
                 "props": [
                     {

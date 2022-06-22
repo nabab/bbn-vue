@@ -944,16 +944,17 @@
 
               let w  = scroll.clientWidth;
               let h  = scroll.clientHeight;
+              let s = Math.min(w, h);
               let ct = this.getRef('canvasSource');
-              if (!ct || !w || !h) {
+              if (!ct || !s) {
                 return exit();
               }
 
-              ct.style.width = w + 'px !important';
-              ct.style.height = h + 'px !important';
+              ct.style.width = s + 'px !important';
+              ct.style.height = s + 'px !important';
               html2canvas(ct, {
-                width: w,
-                height: h,
+                width: s,
+                height: s,
                 scale: scale
               }).then(canvas => {
                 ct.style.width = null;

@@ -46,8 +46,7 @@ script.innerHTML = `<div :class="[
                @clickRightButton="click"
                class="bbn-no-border bbn-flex-fill"
                :autosize="autosize"
-               :readonly="!writable"
-    ></bbn-input>
+               :readonly="!writable"/>
     <template v-else>
       <select v-model="currentSelectValue"
               class="bbn-textbox bbn-no-border bbn-flex-fill bbn-p"
@@ -76,23 +75,21 @@ script.innerHTML = `<div :class="[
   <input type="hidden"
          v-model="value"
          ref="element"
-         :name="name"
-  >
+         :name="name">
   <bbn-floater v-if="!popup
-                 && !asMobile
                  && filteredData.length
                  && !isDisabled
                  && !readonly
                  && !native
                  && (isOpened || preload)"
                v-show="isOpened"
-               :element="$el"
-               :max-height="maxHeight"
+               :element="asMobile ? undefined : $el"
+               :max-height="asMobile ? undefined : maxHeight"
                :min-width="$el.clientWidth"
-               :width="undefined"
-               :height="undefined"
+               :width="asMobile ? '100%' : undefined"
+               :height="asMobile ? '100%' : undefined"
                ref="list"
-               :auto-hide="500"
+               :auto-hide="asMobile ? false : 500"
                :uid="sourceValue"
                :item-component="realComponent"
                @select="select"
@@ -104,34 +101,15 @@ script.innerHTML = `<div :class="[
                :source-text="sourceText"
                :source-value="sourceValue"
                :source-url="sourceUrl"
-               :source-action="sourceAction"
                :source-icon="sourceIcon"
-               :title="floaterTitle"/>
-  <bbn-floater v-else-if="!popup
-                 && asMobile
-                 && filteredData.length
-                 && !isDisabled
-                 && !readonly
-                 && !native
-                 && (isOpened || preload)"
-               v-show="isOpened"
-               width="100%"
-               height="100%"
-               ref="list"
-               :uid="sourceValue"
-               :item-component="realComponent"
-               @select="select"
-               :children="null"
-               :suggest="true"
-               :selected="[value]"
-               @close="isOpened = false"
-               :source="filteredData"
-               :source-text="sourceText"
-               :source-value="sourceValue"
-               :closable="closable"
-               :buttons="realButtons"
-               :title="floaterTitle"/>
-</div>`;
+               :title="floaterTitle"
+               :buttons="asMobile ? realButtons : []"
+               :groupable="groupable"
+               :source-group="sourceGroup"
+               :group-component="groupComponent"
+               :group-style="groupStyle"/>
+</div>
+`;
 script.setAttribute('id', 'bbn-tpl-component-dropdown');
 script.setAttribute('type', 'text/x-template');document.body.insertAdjacentElement('beforeend', script);
 

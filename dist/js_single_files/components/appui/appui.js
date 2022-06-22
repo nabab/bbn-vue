@@ -37,7 +37,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-background', {
           <div tabindex="0"
                @keydown.enter="toggleMenu"
                @keydown.space="toggleMenu"
-               @mousedown.prevent.stop="toggleMenu"
+               @click.prevent.stop="toggleMenu"
                class="bbn-c bbn-p bbn-padded">
             <i ref="icon" class="nf nf-fa-bars bbn-xxxl"> </i>
           </div>
@@ -622,6 +622,7 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         searchOn: false,
         pressedKey: false,
         pressedTimeout: false,
+        longPressed: false,
         isMobile: isMobile,
         isTablet: isTablet,
         isTouch: isMobile || isTablet,
@@ -712,9 +713,9 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
     methods: {
       fdate: bbn.fn.fdate,
       updatePostIts() {
-        if (this.plugins['appui-note']) {
+        if (this.plugins['appui-note'] && !!this.app.uer) {
           bbn.fn.post(this.plugins['appui-note'] + '/data/postits', {pinned: 1}, d => {
-            if (d&& d.data) {
+            if (d && d.data) {
               this.postits = d.data;
             }
           })
@@ -1076,6 +1077,9 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
         }, 500)
       },
       keydown(e) {
+        if (this.longPressed) {
+          e.preventDefault();
+        }
         if (this.pressedKey) {
           this.pressedKey = false;
         }
@@ -1088,7 +1092,13 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           this.pressedKey = e.key;
         }
       },
+      removePressListener() {
+        this.longPressed = false;
+        document.removeEventListener('keyup', this.removePressListener);
+      },
       longPress(key) {
+        this.longPressed = true;
+        document.addEventListener('keyup', this.removePressListener)
         if (bbn.fn.isNumber(key)) {
           let router = this.getRef('router');
           if (key === '0') {

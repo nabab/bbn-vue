@@ -38,7 +38,7 @@ script.innerHTML = `<div :class="[componentClass, 'bbn-background', {
           <div tabindex="0"
                @keydown.enter="toggleMenu"
                @keydown.space="toggleMenu"
-               @mousedown.prevent.stop="toggleMenu"
+               @click.prevent.stop="toggleMenu"
                class="bbn-c bbn-p bbn-padded">
             <i ref="icon" class="nf nf-fa-bars bbn-xxxl"> </i>
           </div>
@@ -629,6 +629,7 @@ document.head.insertAdjacentElement('beforeend', css);
         searchOn: false,
         pressedKey: false,
         pressedTimeout: false,
+        longPressed: false,
         isMobile: isMobile,
         isTablet: isTablet,
         isTouch: isMobile || isTablet,
@@ -719,9 +720,9 @@ document.head.insertAdjacentElement('beforeend', css);
     methods: {
       fdate: bbn.fn.fdate,
       updatePostIts() {
-        if (this.plugins['appui-note']) {
+        if (this.plugins['appui-note'] && !!this.app.uer) {
           bbn.fn.post(this.plugins['appui-note'] + '/data/postits', {pinned: 1}, d => {
-            if (d&& d.data) {
+            if (d && d.data) {
               this.postits = d.data;
             }
           })
@@ -1083,6 +1084,9 @@ document.head.insertAdjacentElement('beforeend', css);
         }, 500)
       },
       keydown(e) {
+        if (this.longPressed) {
+          e.preventDefault();
+        }
         if (this.pressedKey) {
           this.pressedKey = false;
         }
@@ -1095,7 +1099,13 @@ document.head.insertAdjacentElement('beforeend', css);
           this.pressedKey = e.key;
         }
       },
+      removePressListener() {
+        this.longPressed = false;
+        document.removeEventListener('keyup', this.removePressListener);
+      },
       longPress(key) {
+        this.longPressed = true;
+        document.addEventListener('keyup', this.removePressListener)
         if (bbn.fn.isNumber(key)) {
           let router = this.getRef('router');
           if (key === '0') {

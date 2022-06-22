@@ -33,18 +33,18 @@
               <component v-if="field.editor"
                         :is="field.editor"
                         v-bind="field.options"
-                        v-model="source[field.field]"/>
+                        v-currentModel="source[field.field]"/>
               <bbn-field v-else
-                        mode="write"
+                        currentMode="write"
                         v-bind="field"
-                        v-model="source[field.field]"/>
+                        v-currentModel="source[field.field]"/>
             </template>
           </template>
         </div>
         <slot></slot>
       </fieldset>
       <!-- SMALL BUTTONS OUTSIDE WINDOW -->
-      <div v-if="!hasFooter && !window && realButtons.length && (mode === 'small')"
+      <div v-if="!hasFooter && !window && realButtons.length && (currentMode === 'small')"
           class="bbn-middle bbn-top-lspace">
         <bbn-button v-for="(button, i) in realButtons"
                     :key="i"
@@ -52,7 +52,7 @@
                     v-bind="button"/>
       </div>
       <!-- DEFAULT BUTTONS OUTSIDE WINDOW -->
-      <div v-else-if="!hasFooter && !window && realButtons.length && (mode !== 'big')"
+      <div v-else-if="!hasFooter && !window && realButtons.length && (currentMode !== 'big')"
            class="bbn-vlpadding bbn-c bbn-button-group bbn-grid"
            :style="'grid-template-columns: repeat(' + realButtons.length + ', 1fr);'">
         <bbn-button v-for="(button, i) in realButtons"
@@ -61,7 +61,7 @@
                     v-bind="button"/>
       </div>
       <!-- SMALL BUTTONS IN WINDOW -->
-      <div v-else-if="!hasFooter && realButtons.length && (mode === 'small')"
+      <div v-else-if="!hasFooter && realButtons.length && (currentMode === 'small')"
           class="bbn-w-100 bbn-vpadding bbn-c">
         <bbn-button v-for="(button, i) in realButtons"
                     :class="{'bbn-primary': button.preset === 'submit'}"
@@ -70,7 +70,7 @@
                     v-bind="button"/>
       </div>
       <!-- DEFAULT BUTTONS IN WINDOW -->
-      <div v-else-if="!hasFooter && realButtons.length && (mode !== 'big')"
+      <div v-else-if="!hasFooter && realButtons.length && (currentMode !== 'big')"
            class="bbn-vpadding bbn-c bbn-button-group bbn-grid"
            :style="'grid-template-columns: repeat(' + realButtons.length + ', 1fr)'">
         <bbn-button v-for="(button, i) in realButtons"
@@ -87,7 +87,7 @@
   </div>
 
   <!-- BIG BUTTONS IN WINDOW -->
-  <div v-else-if="!window && realButtons.length && (mode === 'big')"
+  <div v-else-if="!window && realButtons.length && (currentMode === 'big')"
        class="bbn-form-footer bbn-popup-footer bbn-button-group bbn-flex-width bbn-lg">
     <bbn-button v-for="(button, i) in realButtons"
                 :class="{'bbn-primary': button.preset === 'submit'}"
@@ -397,8 +397,7 @@
        * @prop String mode Mode for buttons: normal or big
        */
        mode: {
-         type: String,
-         default: 'normal'
+         type: String
        }
     },
     data(){
@@ -422,6 +421,7 @@
         isPosted: false,
         isLoading: false,
         currentSchema: currentSchema,
+        currentMode: this.mode || (this.closest('bbn-floater') ? 'big' : 'normal'),
         _isSetting: false,
         window: null,
         isInit: false,
@@ -498,7 +498,7 @@
        * @return {Boolean}
        */
       _canSubmit(){
-        return (this.prefilled || this.isModified()) && this.isValid(false, true) && !this.disabled;
+        return (this.prefilled || this.isModified()) && !this.disabled;
       },
       /**
        * Returns an array containing the form's buttons.
@@ -595,13 +595,14 @@
   
                 this.dirty = false;
                 this.isLoading = false;
+
+                if (this.window) {
+                  this.$nextTick(() => {
+                    this.window.close(true, true);
+                  });
+                }
               }
 
-              if (this.window) {
-                this.$nextTick(() => {
-                  this.window.close(true);
-                });
-              }
             }
           }, !this.blank && !this.self && !this.target ? (xhr, textStatus, errorThrown) => {
             this.$emit('failure', xhr, textStatus, errorThrown);
@@ -640,12 +641,12 @@
         if (this.realButtons.length) {
           this.realButtons.splice(0, this.realButtons.length);
         }
-        if (this.window && bbn.fn.isArray(this.window.currentButtons) && (this.mode === 'big')) {
+        if (this.window && bbn.fn.isArray(this.window.currentButtons) && (this.currentMode === 'big')) {
           this.window.currentButtons.splice(0, this.window.currentButtons.length);
         }
         bbn.fn.each(this.getRealButtons(), b => {
           this.realButtons.push(b);
-          if (this.window && bbn.fn.isArray(this.window.currentButtons) && (this.mode === 'big')) {
+          if (this.window && bbn.fn.isArray(this.window.currentButtons) && (this.currentMode === 'big')) {
             this.window.currentButtons.push(b);
           }
         });
@@ -1119,6 +1120,9 @@
         if (this.tab) {
           this.tab.dirty = v;
         }
+      },
+      mode(v) {
+        this.currentMode = v;
       }
     }
   });

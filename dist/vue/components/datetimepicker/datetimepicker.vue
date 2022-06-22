@@ -420,7 +420,7 @@
       */
       scrollMode: {
         type: Boolean,
-        default: true
+        default: false
       },
       /**
        * Shows an alternative view for the time selection instead of the dropdowns.

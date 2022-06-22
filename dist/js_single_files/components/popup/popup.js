@@ -369,8 +369,12 @@ script.setAttribute('type', 'text/x-template');document.body.insertAdjacentEleme
           idx = this.items.length - 1;
         }
         let win = this.getWindow(idx);
-        if (this.items[idx] && win) {
-          win.close(force);
+        if (win && !force) {
+          return win.close(idx);
+        }
+
+        if (this.items[idx]) {
+          this.items.splice(idx, 1);
           this.$forceUpdate();
         }
       },
