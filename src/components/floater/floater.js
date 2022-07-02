@@ -1326,6 +1326,7 @@
           }
           else {
             this.hide();
+            this.$emit('close');
           }
         }
       },
