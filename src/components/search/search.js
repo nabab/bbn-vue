@@ -161,7 +161,7 @@
            * The placeholder.
            * @data {String} ['?'] currentPlaceholder 
            */
-          currentPlaceholder: this.shortPlaceholder,
+          currentPlaceholder: this.shortPlaceholder || this.placeholder,
           /**
            * The timeout.
            * @data {Number|null} [null] timeout
