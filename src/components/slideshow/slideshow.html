@@ -60,7 +60,8 @@
                          'bbn-lpadded',
                          'bbn-block',
                          'bbn-lg'
-                       ]">
+                       ]"
+                       :style="{height: fullSlide ? '100%' : 'auto'}">
                     <component v-if="it.component"
                                :is="it.component"
                                :data="it.data || {}"
