@@ -25,9 +25,25 @@
 
       <div class="bbn-flex-fill bbn-iflex-height">
         <div class="bbn-flex-fill">
+          <div v-if="arrowsPosition.startsWith('top')"
+               class="bbn-flex"
+               :style="arrowsStyle">
+            <i v-show="showArrowLeft"
+               :class="[leftArrowClass, 'bbn-p', 'bbn-xxxl']"
+               @click="prev"
+               :style="{visibility: (currentIndex === 0 && !loop)? 'hidden' : 'visible'}"/>
+            <i v-show="showArrowRight"
+               @click="next"
+               :class="[
+                 rightArrowClass,
+                 'bbn-p',
+                 'bbn-xxxl'
+               ]"
+               :style="{visibility: (currentIndex >= items.length - 1) && !loop ? 'hidden' : 'visible'}"/>
+          </div>
           <div :class="[{'bbn-w-100': !fullSlide, 'bbn-overlay': fullSlide}, 'bbn-flex-width']">
             <!--Left arrow-->
-            <div v-if="arrows && (items.length > 1)"
+            <div v-if="arrows && (arrowsPosition === 'default') && (items.length > 1)"
                  :class="[
                   {'bbn-middle': fullSlide},
                   'bbn-padded',
@@ -127,7 +143,7 @@
               </div>
             </div>
             <!-- Right arrow-->
-            <div v-if="arrows && (items.length > 1)"
+            <div v-if="arrows && (arrowsPosition === 'default') && (items.length > 1)"
                  :class="[
                   {'bbn-middle': fullSlide},
                   'bbn-padded',
@@ -144,6 +160,22 @@
                  ]"
                  :style="{visibility: (currentIndex >= items.length - 1) && !loop ? 'hidden' : 'visible'}"/>
             </div>
+          </div>
+          <div v-if="arrowsPosition.startsWith('bottom')"
+               class="bbn-flex"
+               :style="arrowsStyle">
+            <i v-show="showArrowLeft"
+               :class="[leftArrowClass, 'bbn-p', 'bbn-xxxl']"
+               @click="prev"
+               :style="{visibility: (currentIndex === 0 && !loop)? 'hidden' : 'visible'}"/>
+            <i v-show="showArrowRight"
+               @click="next"
+               :class="[
+                 rightArrowClass,
+                 'bbn-p',
+                 'bbn-xxxl'
+               ]"
+               :style="{visibility: (currentIndex >= items.length - 1) && !loop ? 'hidden' : 'visible'}"/>
           </div>
         </div>
         <div v-if="showInfo && items[currentIndex].info && items[currentIndex].info.length"
