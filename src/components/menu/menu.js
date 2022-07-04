@@ -82,7 +82,6 @@
           else {
             this.select(this.filteredData[idx].data, idx, idx, ev);
           }
-
           this.currentSelectedIndex = idx;
         }
       },
@@ -108,6 +107,18 @@
         //getRef('li' + selectedElement).blur(); selectedElement = -1;
       },
       select(item, idx, idx2, ev) {
+        if (this.selection) {
+          let selected = this.currentSelected.includes(this.filteredData[idx].index);
+          if (!this.multiple) {
+            this.currentSelected.splice(0);
+          }
+          if (!selected) {
+            this.currentSelected.push(this.filteredData[idx].index);
+          }
+          else if (!!this.multiple) {
+            this.currentSelected.splice(this.currentSelected.indexOf(this.filteredData[idx].index), 1);
+          }
+        }
         if (this.sourceUrl && item[this.sourceUrl]) {
           bbn.fn.link(item.url);
         }

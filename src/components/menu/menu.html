@@ -6,7 +6,7 @@
         :class="[
           'bbn-menu-item',
           'bbn-reactive-block',
-          {'bbn-menu-selected': currentSelectedIndex === i}
+          {'bbn-menu-selected': (!!multiple && currentSelected.includes(item.index)) || (!multiple && (currentSelectedIndex === i))}
         ]"
         role="menuitem"
         :ref="'li' + i"
