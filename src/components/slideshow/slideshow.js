@@ -106,6 +106,11 @@
         type: [Boolean, Object],
         default: true
       },
+      arrowsPosition: {
+        type: String,
+        default: 'default',
+        validator: p => ['default', 'top', 'topleft', 'topright', 'bottom', 'bottomleft', 'bottomright'].includes(p)
+      },
       /**
        * Shows or hides the navigation arrow at the bottom of the slider.
        * @prop {Boolean} [false] navigation
@@ -373,6 +378,26 @@
         }
 
         return this.arrowClass.right;
+      },
+      arrowsStyle(){
+        let style = {
+          clear: 'both'
+        };
+        switch (this.arrowsPosition) {
+          case 'top':
+          case 'bottom':
+            style.justifyContent = 'center';
+            break;
+          case 'topleft':
+          case 'bottomleft':
+            style.justifyContent = 'flex-start';
+            break;
+          case 'topright':
+          case 'bottomright':
+            style.justifyContent = 'flex-end';
+            break;
+        }
+        return style;
       }
     },
     methods: {
