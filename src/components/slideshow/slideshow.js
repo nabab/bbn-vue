@@ -197,68 +197,6 @@
       }
     },
     data(){
-      let src = [],
-          valuesCB = {},
-          isAjax   = false;
-      if (bbn.fn.isString(this.source)) {
-        if (this.separator) {
-          src = this.source.split(this.separator).map(a =>{
-            return {
-              content: a,
-              type: 'text'
-            };
-          });
-        }
-        else{
-          isAjax = true;
-        }
-      }
-      else if (bbn.fn.isFunction(this.source)) {
-        src = this.source();
-      }
-      else if (bbn.fn.isArray(this.source)) {
-        if (this.checkbox) {
-          if (this.separator) {
-            this.source.forEach((v, i) =>{
-              v.content.split(this.separator).forEach((a, k) =>{
-                let o = {
-                  type: 'text',
-                  content: a,
-                  id: v.id
-                };
-                if (k === 0) {
-                  o.checkable = true;
-                }
-                src.push(o);
-              });
-              valuesCB[i] = false;
-            });
-          }
-        }
-        else {
-          src = bbn.fn.extend(true, [], this.source).map(val => {
-            if (bbn.fn.isString(val)) {
-              val = {
-                type: this.gallery ? 'img' : 'text',
-                content: val
-              };
-            }
-            if ( val.type === 'img' ){
-              bbn.fn.extend(val, {
-                imageWidth: 0,
-                imageHeight: 0,
-                imageLeftMargin: 0,
-                imageTopMargin: 0,
-                showImg: false
-              });
-            }
-            if (bbn.fn.isObject(val) && (!val.type || ((val.type !== 'img') && (val.type !== 'text')))) {
-              val.type = 'text';
-            }
-            return bbn.fn.isObject(val) ? val : {};
-          });
-        }
-      }
       return {
         /**
          * @data {String} [bbn.fn.randomString().toLowerCase()] name
@@ -266,19 +204,19 @@
         name: bbn.fn.randomString().toLowerCase(),
         /**
          * The current slide index
-         * @data {Number} currentIndex
+         * @data {Number} [0] currentIndex
          */
-        currentIndex: this.initialSlide > src.length ? 0 : this.initialSlide,
+        currentIndex: 0,
         /**
          * The array of items.
-         * @data {Array} items
+         * @data {Array} [[]] items
          */
-        items: src,
+        items: [],
         /**
          * True if the type of the prop source is string and the prop separator is false.
          * @data {Boolean} isAjax
          */
-        isAjax: isAjax,
+        isAjax: bbn.fn.isString(this.source) && !this.separator,
         /**
          * The default text to show as label of the checkbox in a selectable slideshow.
          * @data {String} ['Don't show it again'] defaultTextCB
@@ -286,9 +224,9 @@
         defaultTextCB: bbn._("Don't show it again"),
         /**
          * The values of the checkbox in a selectable slideshow.
-         * @data valuesCB
+         * @data {Object} [{}] valuesCB
          */
-        valuesCB: valuesCB,
+        valuesCB: {},
         /**
          * The active miniature.
          * @data {Number} [0] activeMiniature
@@ -354,6 +292,7 @@
         imageTopMargin: 0,
         maxImgWidth: 0,
         maxImgHeight: 0,
+        loaded: false
       }
     },
     computed: {
@@ -639,6 +578,69 @@
         if( this.autoHideCtrl ){
           this.showCtrl = val;
         }
+      },
+      updateData(){
+        let src = [];
+        if (bbn.fn.isString(this.source) && this.separator) {
+          src = this.source.split(this.separator).map(a =>{
+            return {
+              content: a,
+              type: 'text'
+            };
+          });
+        }
+        else if (bbn.fn.isFunction(this.source)) {
+          src = this.source();
+        }
+        else if (bbn.fn.isArray(this.source)) {
+          if (this.checkbox) {
+            if (this.separator) {
+              this.source.forEach((v, i) =>{
+                v.content.split(this.separator).forEach((a, k) =>{
+                  let o = {
+                    type: 'text',
+                    content: a,
+                    id: v.id
+                  };
+                  if (k === 0) {
+                    o.checkable = true;
+                  }
+                  src.push(o);
+                });
+                if (this.valuesCB[i] === undefined) {
+                  this.valuesCB[i] = false;
+                }
+              });
+            }
+          }
+          else {
+            src = bbn.fn.extend(true, [], this.source).map(val => {
+              if (bbn.fn.isString(val)) {
+                val = {
+                  type: this.gallery ? 'img' : 'text',
+                  content: val
+                };
+              }
+              if ( val.type === 'img' ){
+                bbn.fn.extend(val, {
+                  imageWidth: 0,
+                  imageHeight: 0,
+                  imageLeftMargin: 0,
+                  imageTopMargin: 0,
+                  showImg: false
+                });
+              }
+              if (bbn.fn.isObject(val) && (!val.type || ((val.type !== 'img') && (val.type !== 'text')))) {
+                val.type = 'text';
+              }
+              return bbn.fn.isObject(val) ? val : {};
+            });
+          }
+        }
+        this.items.splice(0, this.items.length, ...src);
+        if (!this.loaded) {
+          this.loaded = true;
+        }
       }
     },
     /**
@@ -647,58 +649,53 @@
      * @fires startAutoPlay
      */
     mounted(){
-      /** @todo WTF?? Obliged to execute the following hack to not have scrollLeft and scrollTop when we open a
-       *  popup a 2nd time.
-       */
-      /*
-      this.$refs.scrollContainer.style.position = 'relative';
-      setTimeout(() => {
-        this.$refs.scrollContainer.style.position = 'absolute';
-      }, 0)
-      */
-      if ( !this.isAjax && !this.items.length && this.getRef('slot').innerHTML.trim() ){
-        if ( this.separator ){
-          this.items = this.getRef('slot').innerHTML.split(this.separator).map((txt, i) => {
-          let el = document.createElement('div'),
-              title = '';
-            el.innerHTML = txt;
-            if ( el ){
-              let titles = el.querySelectorAll('h1,h2,h3,h4,h5');
-              if ( titles.length ){
-                bbn.fn.each(titles, (v, i) => {
-                 let title = v.innerText.trim();
-                })
-              }
-            }
-            return {content: txt, type: 'text', title: title};
-          });
-        }
-        else{
-          this.items = [{content: this.getRef('slot').innerHTML, type: 'text'}]
-        }
-      }
-      this.ready = true;
+      this.updateData();
       this.$nextTick(() => {
-        this.createStyle();
-        if( this.autoPlay ){
-          this.startAutoPlay();
-        }
-        if ( bbn.fn.isObject(this.arrows) ){
-          if ( this.arrows.left && this.arrows.left.length ){
-            this.arrowClass.left = this.arrows.left
+        this.currentIndex = this.initialSlide > this.items.length ? 0 : this.initialSlide;
+        if ( !this.isAjax && !this.items.length && this.getRef('slot').innerHTML.trim() ){
+          if ( this.separator ){
+            this.items = this.getRef('slot').innerHTML.split(this.separator).map((txt, i) => {
+            let el = document.createElement('div'),
+                title = '';
+              el.innerHTML = txt;
+              if ( el ){
+                let titles = el.querySelectorAll('h1,h2,h3,h4,h5');
+                if ( titles.length ){
+                  bbn.fn.each(titles, (v, i) => {
+                    let title = v.innerText.trim();
+                  })
+                }
+              }
+              return {content: txt, type: 'text', title: title};
+            });
           }
-          if( this.arrows.right && this.arrows.right.length ){
-            this.arrowClass.right = this.arrows.right
+          else{
+            this.items = [{content: this.getRef('slot').innerHTML, type: 'text'}]
           }
         }
-        this.onResize();
-      })
+        this.ready = true;
+        this.$nextTick(() => {
+          this.createStyle();
+          if (this.autoPlay) {
+            this.startAutoPlay();
+          }
+          if (bbn.fn.isObject(this.arrows)) {
+            if (this.arrows.left && this.arrows.left.length) {
+              this.arrowClass.left = this.arrows.left
+            }
+            if (this.arrows.right && this.arrows.right.length) {
+              this.arrowClass.right = this.arrows.right
+            }
+          }
+          this.onResize();
+        })
+     })
     },
     watch: {
       /**
        * @watch show
-       * @param newVal 
-       * @param oldVal 
+       * @param newVal
+       * @param oldVal
        * @emits show
        * @emits hide
        */
@@ -711,7 +708,6 @@
        * @watch valuesCB
        * @emits check
        * @emits uncheck
-       * 
        */
       valuesCB: {
         deep: true,
@@ -736,6 +732,12 @@
           }
         }
         this.$emit('changeSlide', val);
+      },
+      source: {
+        deep: true,
+        handler(){
+          this.updateData();
+        }
       }
     },
     components: {
