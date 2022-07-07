@@ -942,6 +942,11 @@ Vue.component('bbn-tree', {
               if (bbn.fn.isFunction(this.transferData)) {
                 nodeSource = this.transferData(nodeSource);
               }
+              let children = target.source.data[this.tree.children];
+              if (!children === undefined) {
+                target.source.data[this.tree.children] = [];
+                children = target.source.data[this.tree.children]
+              }
               if (!target.isExpanded) {
                 targetTree.$once('dataloaded', () => {
                   // adding in the node source the length of the target tree if there is no length then we set it at 1
@@ -949,7 +954,7 @@ Vue.component('bbn-tree', {
                   // we're adding the index also
                   nodeSource.index = nodeSource.num - 1;
                   // and then we push node source in the targetTree
-                  target.source.data[this.tree.children].push(nodeSource);
+                  children.push(nodeSource);
                 });
               }
               else {
@@ -958,7 +963,7 @@ Vue.component('bbn-tree', {
                 // we're adding the index also
                 nodeSource.index = nodeSource.num - 1;
                 // and then we push node source in the targetTree
-                target.source.data[this.tree.children].push(nodeSource);
+                children.push(nodeSource);
               }
             }
             else {
