@@ -943,7 +943,6 @@ Vue.component('bbn-tree', {
                 nodeSource = this.transferData(nodeSource);
               }
               let children = target.source.data[this.tree.children];
-              bbn.fn.log(children, target.source.data, this.tree.children);
               if (!children) {
                 target.source.data[this.tree.children] = [];
                 children = target.source.data[this.tree.children]
