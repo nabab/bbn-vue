@@ -8,7 +8,7 @@
             v-text="(currentIndex+1) + '/' + items.length"/>
     </div>
 
-    <div class="bbn-w-100 bbn-flex-width">
+    <div :class="['bbn-flex-width', {'bbn-w-100': !fullSlide, 'bbn-100': !!fullSlide}]">
       <!-- SUMMARY -->
       <div v-if="summary && items.length"
            class="first bbn-flex-fill bbn-slide"
@@ -178,7 +178,7 @@
                :style="{visibility: (currentIndex >= items.length - 1) && !loop ? 'hidden' : 'visible'}"/>
           </div>
         </div>
-        <div v-if="showInfo && items[currentIndex].info && items[currentIndex].info.length"
+        <div v-if="showInfo && items[currentIndex] && items[currentIndex].info && items[currentIndex].info.length"
           class="bbn-middle bbn-padded bbn-slideshow-info" v-html="items[currentIndex].info"/>
         <!-- Miniatures -->
         <div v-if=" [true, 'image', 'circle'].includes(preview)" :class="[
@@ -186,7 +186,7 @@
                'bbn-middle',
                'bbns-gallery-miniature',
                'bbn-hsmargin',
-               {'bbn-top-sspace': !showInfo || !items[currentIndex].info || !items[currentIndex].info.length}
+               {'bbn-top-sspace': !showInfo || (!!items[currentIndex] && (!items[currentIndex].info || !items[currentIndex].info.length))}
              ]" 
              :style="{'min-height': typeof(dimensionPreview)=== 'Number' ? dimensionPreview + 'px': dimensionPreview}" 
              @mouseover="miniaturePreview(true)"
