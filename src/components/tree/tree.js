@@ -559,11 +559,14 @@ Vue.component('bbn-tree', {
      * @param {Object} node
      * @return {Object}
      */
-    findNode(props){
+    findNode(props, expand){
       let ret = false;
       if (this.isRoot || (this.node.numChildren && bbn.fn.isObject(props))) {
-        if (!this.isRoot && !this.node.isExpanded) {
+        if (expand && !this.isRoot && !this.node.isExpanded) {
           this.node.isExpanded = true;
+        }
+        else if (!this.node.isExpanded) {
+          return false;
         }
 
         let cp = this.isRoot && this.scrollable ? this.getRef('scroll') : this;
@@ -577,6 +580,18 @@ Vue.component('bbn-tree', {
           );
           if (idx > -1) {
             ret = cp.$children[idx];
+          }
+          else {
+            bbn.fn.each(cp.$children, node => {
+              let tree = node.getRef('tree');
+              if (tree) {
+                ret = tree.findNode(props, expand);
+                if (ret) {
+                  return false;
+                }
+              }
+            })
+
           }
         }
       }
