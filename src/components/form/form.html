@@ -32,11 +32,11 @@
               <component v-if="field.editor"
                         :is="field.editor"
                         v-bind="field.options"
-                        v-currentModel="source[field.field]"/>
+                        v-model="source[field.field]"/>
               <bbn-field v-else
-                        currentMode="write"
+                        mode="write"
                         v-bind="field"
-                        v-currentModel="source[field.field]"/>
+                        v-model="source[field.field]"/>
             </template>
           </template>
         </div>
