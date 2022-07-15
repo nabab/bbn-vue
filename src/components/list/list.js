@@ -625,7 +625,16 @@
       },
       filteredTotal(v, ov) {
         if (!ov) {
-          this.$nextTick(this.resetOverIdx);
+          this.$nextTick(() => {
+            this.resetOverIdx();
+          });
+        }
+        if (v < ov) {
+          let fl = this.closest('bbn-scroll');
+          if (fl) {
+            fl.isResized = false;
+            fl.onResize(true);
+          }
         }
 
       }

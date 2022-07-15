@@ -259,24 +259,31 @@
             :source="data"
             :data="obj"
             @success="success"
-            @failure="failure">
+            @failure="failure"
+            @cancel="cancel">
   </bbn-form>`,
                 methods: {
                   success(d, e) {
                     e.preventDefault();
-                    if (table.successEdit(d)) {
+                    if (table.successEdit && table.successEdit(d)) {
                       table.getPopup().close();
                     }
                   },
                   failure(d) {
                     table.$emit('editFailure', d);
                   },
+                  cancel() {
+                    if (table && table.cancel) {
+                      table.cancel();
+                    }
+                  }
                 },
               };
             } else {
               throw new Error(bbn._("Impossible to open a window if either an editor or a URL is not set"))
             }
-            popup.afterClose = () => {
+            popup.onClose = () => {
+              bbn.fn.log("AFTER CLOSER");
               //  this.currentData.push(bbn.fn.clone( this.tmpRow)); // <-- Error. This add a new row into table when it's in edit mode
               this._removeTmp();
               this.editedRow = false;

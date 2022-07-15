@@ -84,7 +84,8 @@
         if ( this.commonKeydown(e) ){
           return;
         }
-        else if ((e.key === 'Escape')) {
+        else if (this.isOpened && (e.key === 'Escape')) {
+          e.stopPropagation();
           e.preventDefault();
           this.resetDropdown();
         }
@@ -100,6 +101,10 @@
           e.preventDefault();
           this.isOpened = !this.isOpened;
         }
+        else if (this.isOpened && (e.key === 'Enter')) {
+          e.preventDefault();
+          this.selectOver();
+        }
       },
       paste(){
         alert("PASTE");
@@ -112,12 +117,6 @@
           if (this.currentText === this.currentTextValue) {
             this.currentText = '';
           }
-        }
-      },
-      onFocusOut(){
-        this.isActive = false;
-        if (this.native) {
-          this.isOpened = false;
         }
       }
     },
@@ -135,6 +134,13 @@
           }
         }
       })
+    },
+    beforeDestroy() {
+      let fl = this.getRef('list');
+      if (fl && fl.$el) {
+        fl.$destroy();
+        fl.$el.parentNode.removeChild(fl.$el);
+      }
     },
     watch: {
      /**

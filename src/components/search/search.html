@@ -25,6 +25,7 @@
                :children="null"
                @select="select"
                @close="searchClose"
+               @hook:mounted="attachList(getRef('list'))"
                :source-text="sourceText"
                :source-value="sourceValue"
                :source-url="sourceUrl"

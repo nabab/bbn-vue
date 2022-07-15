@@ -1276,7 +1276,10 @@
                 this.start = 0;
               }
 
-              this.updateData();
+              if (this.autobind) {
+                this.updateData();
+              }
+
               if ( bbn.fn.isFunction(this.setConfig) ){
                 this.setConfig(true);
               }

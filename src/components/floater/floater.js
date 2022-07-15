@@ -1584,6 +1584,7 @@
        * @watch isOver
        */
       isOver(v) {
+        this.$emit(v ? 'mouseenter' : 'mouseleave');
         if (this.autoHide && this.isResized && this.ready && !this.isResizing) {
           if (v && this.mouseLeaveTimeout) {
             clearTimeout(this.mouseLeaveTimeout);

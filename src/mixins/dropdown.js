@@ -170,6 +170,14 @@
          */
         groupStyle: {
           type: String
+        },
+        /**
+         * @prop {Number} closeDelay The time it will take for the floater/menu to close when the mouse leaves
+         * This  allows to cancel if the mouse comes back
+         */
+        closeDelay: {
+          type: Number,
+          default: 1000
         }
       },
       data(){
@@ -227,7 +235,14 @@
            * @data {String|Number|Boolean} currentSelectValue
            * @memberof dropdownComponent
            */
-          currentSelectValue: this.value
+          currentSelectValue: this.value,
+          /**
+           * The floater component
+           * @data {Vue} list
+           * @memberof dropdownComponent
+           */
+          list: null
+
         };
       },
       computed: {
@@ -335,26 +350,48 @@
           }
           this.isOpened = false;
         },
+        attachList() {
+          let list = this.getRef('list');
+          bbn.fn.log("attahc", list);
+          if (list) {
+            this.list = list;
+          }
+        },
         /**
          * Defines the behavior of component when the key 'alt' or a common key defined in the object bbn.var.keys is pressed. 
          * @method commonKeydown
          * @memberof dropdownComponent
          * @param {Event} e 
+         * @return {Boolean}
          */
-        commonKeydown(e){
-          if (!this.filteredData.length || e.altKey || e.ctrlKey || e.metaKey) {
-            return;
+        selectOver() {
+          if (this.list) {
+            let lst = this.list.getRef('list');
+            if (lst && (lst.overIdx > -1)) {
+              this.select(lst.filteredData[lst.overIdx].data);
+            }
           }
+        },
+        /**
+         * Defines the behavior of component when the key 'alt' or a common key defined in the object bbn.var.keys is pressed. 
+         * @method commonKeydown
+         * @memberof dropdownComponent
+         * @param {Event} e 
+         * @return {Boolean}
+         */
+        commonKeydown(e) {
+          if (e.altKey || e.ctrlKey || e.metaKey) {
+            return true;
+          }
+
           if ((e.key.length >= 2) && (e.key[0] === 'F')) {
-            return;
+            return true;
           }
+
           if (e.key === 'Tab') {
-            let list = this.find('bbn-list');
-            if ( list && (list.overIdx > -1)) {
-              if ( !this.value ){
-                this.emitInput(list.filteredData[list.overIdx].data[this.uid || this.sourceValue]);
-                return true;
-              }
+            if (this.isOpened) {
+              this.selectOver();
+              return true;
             }
             this.resetDropdown();
             this.isOpened = false;
@@ -364,17 +401,13 @@
             this.isOpened && (
               bbn.var.keys.confirm.includes(e.which) || ((e.key === ' ') && !this.isSearching)
             )
-          ){
+          ) {
+            bbn.fn.log("JJJJ", this.list);
             e.preventDefault();
-            let list = this.find('bbn-list');
-            if (list && (list.overIdx > -1)) {
-              this.select(list.filteredData[list.overIdx].data);
-            }
-            else if (this.isNullable) {
-              this.selfEmit('');
-            }
+            this.selectOver();
             return true;
           }
+
           return false;
         },
         /**
@@ -442,6 +475,12 @@
          */
         updateButtons(){
           this.realButtons.splice(0, this.realButtons.length, ...this.getRealButtons());
+        },
+        onFocusOut(){
+          this.isActive = false;
+          if (this.native) {
+            this.isOpened = false;
+          }
         }
       },
       beforeMount() {
@@ -463,17 +502,17 @@
          * @param element 
          * @memberof dropdownComponent
          */
-         isOverDropdown(v) {
-           if (v) {
-             clearTimeout(this.closeTimeout);
-           }
-           else {
+        isOverDropdown(v) {
+          if (v) {
+            clearTimeout(this.closeTimeout);
+          }
+          else {
             this.closeTimeout = setTimeout(() => {
               let lst = this.getRef('list');
               if ( lst ){
                 lst.close(true);
               }
-            }, 1000);
+            }, this.closeDelay);
           }
         },
         /**

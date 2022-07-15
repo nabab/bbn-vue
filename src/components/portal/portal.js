@@ -35,6 +35,7 @@
         : h(this.tag || 'DIV', nodes);
     },
     destroyed() {
+      bbn.fn.log("DESTROYING PORTAL TARGET", this);
       const { $el: el } = this;
       el && el.parentNode && el.parentNode.removeChild(el);
     },
@@ -77,25 +78,19 @@
     },
     data() {
       return {
+        target: null,
         randomId: bbn.fn.randomString(20, 30)
       }
     },
     render(h) {
       if (this.disabled) {
-        const nodes = this.$scopedSlots && bbn.fn.isFunction(this.$scopedSlots.default) && this.$scopedSlots.default()
-        if (!nodes) {
-          return h();
+        const nodes = this.$scopedSlots && bbn.fn.isFunction(this.$scopedSlots.default) && this.$scopedSlots.default();
+        if (nodes) {
+          return nodes.length < 2 && !nodes[0].text ? nodes : h(this.tag, nodes);
         }
-
-        return nodes.length < 2 && !nodes[0].text ? nodes : h(this.tag, nodes);
       }
 
       return h();
-    },
-    created() {
-      if (!this.disabled && !this.getTargetEl()) {
-        this.insertTargetEl()
-      }
     },
     updated() {
       // We only update the target container component
@@ -133,41 +128,30 @@
       getTargetEl() {
         return bbn.fn.isString(this.selector) ? document.querySelector(this.selector) : this.selector;
       },
-      insertTargetEl() {
-        if (!this.disabled) {
-          const parent = document.querySelector('body');
-          const child = document.createElement(this.tag);
-          child.id = this.randomId;
-          parent.appendChild(child);
-        }
-      },
       mount() {
-        const targetEl = this.getTargetEl();
+        bbn.fn.log("MOUNT PORTAL");
+        const target = this.getTargetEl();
         const el = document.createElement('DIV');
-        if (targetEl) {
-          if (this.prepend && targetEl.firstChild) {
-            targetEl.insertBefore(el, targetEl.firstChild);
-          }
-          else {
-            targetEl.appendChild(el);
-          }
-          this.container = new TargetContainer({
-            el,
-            parent: this,
-            propsData: {
-              tag: this.tag,
-              nodes: this.$scopedSlots.default,
-            },
-          });
+        if (this.prepend && target.firstChild) {
+          target.insertBefore(el, target.firstChild);
         }
         else {
-          this.unmount()
+          target.appendChild(el);
         }
-  
+        this.container = new TargetContainer({
+          el,
+          parent: this,
+          propsData: {
+            tag: this.tag,
+            nodes: this.$scopedSlots.default,
+          },
+        });
       },
       unmount() {
+        bbn.fn.log(this.container);
         if (this.container) {
           this.container.$destroy();
+          //this.target.removeChild(this.container.$el);
           delete this.container;
         }
       },

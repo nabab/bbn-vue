@@ -48,7 +48,7 @@
        */
       minLength: {
         type: Number,
-        default: 0
+        default: 2
       },
       /**
        * Specifies the time of delay.
@@ -67,6 +67,15 @@
       filterMode: {
         type: String,
         default: 'startswith'
+      },
+      /**
+       * Autobind defaults at false.
+       *
+       * @prop {Boolean} [false] autobind
+       */
+      autobind: {
+        type: Boolean,
+        default: false
       }
     },
     data(){
@@ -168,11 +177,14 @@
        * @fires keynav
        */
       keydown(e){
-        if ((e.key === ' ') || this.commonKeydown(e)) {
+        if ( this.commonKeydown(e) ){
           return;
         }
-        if (e.key === 'Escape') {
+        else if (this.isOpened && (e.key === 'Escape')) {
+          e.stopPropagation();
+          e.preventDefault();
           this.resetDropdown();
+          return;
         }
         else if (bbn.var.keys.upDown.includes(e.keyCode)) {
           this.keynav(e);
@@ -209,42 +221,44 @@
         if (!this.ready) {
           this.ready = true;
         }
+
         clearTimeout(this.filterTimeout);
+        bbn.fn.log("CLEARED")
         if (!v && this.nullable && this.inputIsVisible) {
+          bbn.fn.log("NO VALUE")
           this.unfilter();
           this.emitInput(null);
           this.currentText = '';
+          if (this.currentData.length) {
+            this.currentData.splice(0, this.currentData.length);
+          }
         }
-        else if (v !== this.currentText) {
-          this.isOpened = false;
-          this.filterTimeout = setTimeout(() => {
-            // this.filterTimeout = false;
-            // We don't relaunch the source if the component has been left
-            if (this.isActive) {
-              if (v && (v.length >= this.minLength)) {
+        else if (v) {
+          bbn.fn.log("VALUE")
+          if (v.length < this.minLength) {
+            if (this.currentData.length) {
+              this.currentData.splice(0, this.currentData.length);
+            }
+          }
+          else if ((v !== this.currentText)) {
+            bbn.fn.log("MIN PASSED")
+            this.isOpened = false;
+            this.filterTimeout = setTimeout(() => {
+              // this.filterTimeout = false;
+              // We don't relaunch the source if the component has been left
+              if (this.isActive) {
+                bbn.fn.log("UPDATING AUTOC");
                 this.currentFilters.conditions.splice(0, this.currentFilters.conditions.length ? 1 : 0, {
                   field: this.sourceText,
                   operator: this.filterMode,
                   value: v
                 });
-                this.$nextTick(() => {
-                  if ( !this.isOpened ){
-                    this.isOpened = true;
-                  }
-                  else {
-                    let floater = this.getRef('list');
-                    let list = floater ? floater.getRef('scroll') : false;
-                    if (list) {
-                      list.onResize();
-                    }
-                  }
-                });
+                this.updateData().then(() => {
+                  this.isOpened = true;
+                })
               }
-              else {
-                this.unfilter();
-              }
-            }
-          }, this.delay);
+            }, this.delay);
+          }
         }
         else if ( !v ){
           this.unfilter();
