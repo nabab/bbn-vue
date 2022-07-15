@@ -530,7 +530,11 @@
           /**
            * @data {null|String} An ID given with the search results
            */
-          searchId: null
+          searchId: null,
+          /**
+           * @data {String} [''] searchValue
+           */
+          searchValue: '',
         };
       },
       computed: {

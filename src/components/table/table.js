@@ -549,10 +549,6 @@
          */
         isTableDataUpdating: false,
         /**
-         * @data {String} [''] searchValue
-         */
-        searchValue: '',
-        /**
          * The text shown during loading
          * @data {String} ['Loading...'] currentLoaderText
          */
