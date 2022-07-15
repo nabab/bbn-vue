@@ -468,7 +468,10 @@
        * @fires router.reload
        */
       reload(){
-        this.router.reload(this.currentIndex);
+        this.popups.splice(0);
+        this.$nextTick(() => {
+          this.router.reload(this.currentIndex);
+        });
       },
       /**
        * Handles the configuration of the container's menu.
