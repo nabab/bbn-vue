@@ -614,6 +614,8 @@
                   this.isClosing = false;
                 }
               });
+            }, () => {
+              this.isClosing = false;
             });
           }
           else{
