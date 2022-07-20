@@ -1315,19 +1315,21 @@
           }
         }
 
+        let popup = this.$parent && bbn.fn.isDom(this.$parent.$el) && (this.$parent.$el.className.indexOf('bbn-popup') > -1) ? this.$parent : null;
         if (this.forms.length && !confirm) {
+          bbn.fn.log("The form should have closed the floater");
           this.forms[0].closePopup(force);
         }
+        else if (popup && this.uid) {
+          bbn.fn.log("The popup should have closed the floater");
+          let idx = popup.getIndexByUID(this.uid);
+          popup.close(idx, true);
+          this.$destroy();
+        }
         else {
-          let popup = this.closest('bbn-popup');
-          if (popup && this.uid) {
-            let idx = popup.getIndexByUID(this.uid);
-            popup.close(idx, true);
-          }
-          else {
-            this.hide();
-            this.$emit('close');
-          }
+          bbn.fn.log("The floater should have closed itself");
+          this.hide();
+          this.$emit('close');
         }
       },
       /**

@@ -72,13 +72,14 @@
          v-model="value"
          ref="element"
          :name="name">
-  <bbn-portal>
+  <bbn-portal v-if="portalSelector"
+              :selector="portalSelector">
     <bbn-floater v-if="!popup
                   && filteredData.length
                   && !isDisabled
                   && !readonly
-                  && !native
                   && ready
+                  && !native
                   && (isOpened || preload)"
                 v-show="isOpened"
                 :element="asMobile ? undefined : $el"

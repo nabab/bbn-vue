@@ -241,8 +241,8 @@
            * @data {Vue} list
            * @memberof dropdownComponent
            */
-          list: null
-
+          list: null,
+          portalSelector: null
         };
       },
       computed: {
@@ -483,6 +483,8 @@
         }
       },
       beforeMount() {
+        let ct = this.closest('bbn-container');
+        this.portalSelector = ct ? ct.$el : document.body;
         this.updateButtons();
       },
       watch: {
@@ -509,6 +511,7 @@
             this.closeTimeout = setTimeout(() => {
               let lst = this.getRef('list');
               if ( lst ){
+                bbn.fn.log("SHOULD CLOSE");
                 lst.close(true);
               }
             }, this.closeDelay);
