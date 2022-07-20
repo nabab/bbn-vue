@@ -34,7 +34,7 @@
                  spellcheck="false"
                  :name="name"
                  :nullable="isNullable"
-                 :style="{visibility: inputIsVisible ? 'visible' : 'hidden'}"/>
+                 :style="{display: inputIsVisible ? 'inline-block' : 'none'}"/>
     </div>
     <div class="bbn-list-component-button">
       <div v-if="isAjax && isLoading"
