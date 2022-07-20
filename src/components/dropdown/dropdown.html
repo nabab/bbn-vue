@@ -37,13 +37,12 @@
                :nullable="isNullable"
                :placeholder="placeholder"
                :tabindex="isDisabled ? -1 : 0"
-               v-model="notext ? undefined : currentText"
-               autocomplete="off"
+               v-model="notext ? placeholder : currentText"
                :button-right="currentIcon"
                @clickRightButton="click"
                class="bbn-no-border bbn-flex-fill"
                :autosize="autosize"
-               :readonly="!writable"/>
+               :readonly="true"/>
     <template v-else>
       <select v-model="currentSelectValue"
               class="bbn-textbox bbn-no-border bbn-flex-fill bbn-p"

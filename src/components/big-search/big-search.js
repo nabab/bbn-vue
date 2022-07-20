@@ -57,7 +57,7 @@
          * @prop {Boolean} [false] autobind 
          */
         autobind: {
-          default: false
+          default: true
         },
         /**
          * Defines if the search can have a null value.

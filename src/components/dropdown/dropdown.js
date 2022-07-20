@@ -47,6 +47,12 @@
         default: false
       }
     },
+    data() {
+      return {
+        startingTmpValue: '',
+        startingTmpTimeout: null      
+      };
+    },
     /**
      * The current icon.
      *
@@ -111,11 +117,9 @@
       },
       keyup(e) {
         if ( e.key.match(/^[A-z0-9\s]{1}$/)) {
+          this.startingTmpValue += e.key;
           if (!this.isOpened) {
             this.isOpened = true;
-          }
-          if (this.currentText === this.currentTextValue) {
-            this.currentText = '';
           }
         }
       }
@@ -143,6 +147,24 @@
       }
     },
     watch: {
+      startingTmpValue(v) {
+        if (v) {
+          let fl = this.getRef('list');
+          if (fl) {
+            let lst = fl.getRef('list');
+            if (lst) {
+              bbn.fn.log("TEOUVE");
+              lst.overByString(v);
+            }
+          }
+          if (this.startingTmpTimeout) {
+            clearTimeout(this.startingTmpTimeout);
+          }
+          this.startingTmpTimeout = setTimeout(() => {
+            this.startingTmpValue = '';
+          }, 1000)
+        }
+      },
      /**
       * @watch  isActive
       */

@@ -550,6 +550,11 @@
           }
         });
         this.selected.splice(0, this.selected.length);
+      },
+      overByString(st) {
+        let idx = bbn.fn.search(this.filteredData, 'data.' + this.sourceText, st, 'startswith');
+        bbn.fn.log("overByString", st, idx);
+        this.overIdx = idx;
       }
     },
     /**

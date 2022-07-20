@@ -166,7 +166,7 @@
         isNullable(){
           let isNullable = !!this.nullable;
           if ( this.nullable === null ){
-            isNullable = this.required ? false : !!this.placeholder;
+            isNullable = !this.required;
           }
 
           return isNullable;

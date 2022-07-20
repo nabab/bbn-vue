@@ -1316,53 +1316,6 @@
           }
         },
         /**
-         * @watch filterString
-         * @param {String} v 
-         */
-         filterString(v){
-          if (!this.ready) {
-            this.ready = true;
-          }
-          clearTimeout(this.filterTimeout);
-          if (v !== this.currentText) {
-            this.isOpened = false;
-            if (this.currentData.length) {
-              this.currentData.splice(0);
-            }
-            this.$nextTick(() => {
-              this.filterTimeout = setTimeout(() => {
-                this.filterTimeout = false;
-                // We don't relaunch the source if the component has been left
-                if ( this.isActive ){
-                  if (v && (v.length >= this.minLength)) {
-                    this.$once('dataloaded', () => {
-                      this.$nextTick(() => {
-                        if (!this.isOpened){
-                          this.isOpened = true;
-                        }
-                        else{
-                          let list = this.find('bbn-scroll');
-                          if ( list ){
-                            list.onResize();
-                          }
-                        }
-                      });
-                    });
-                    this.currentFilters.conditions.splice(0, this.currentFilters.conditions.length ? 1 : 0, {
-                      field: this.sourceText,
-                      operator: 'startswith',
-                      value: v
-                    });
-                  }
-                  else {
-                    this.unfilter();
-                  }
-                }
-              }, this.delay);
-            })
-          }
-        },
-        /**
          * 
          */
         searchValue(v) {

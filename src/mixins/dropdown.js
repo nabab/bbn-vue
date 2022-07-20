@@ -402,7 +402,6 @@
               bbn.var.keys.confirm.includes(e.which) || ((e.key === ' ') && !this.isSearching)
             )
           ) {
-            bbn.fn.log("JJJJ", this.list);
             e.preventDefault();
             this.selectOver();
             return true;
