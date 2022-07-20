@@ -142,10 +142,7 @@
        * @prop {Object} [{}] component
        */
       component: {
-        type: [String, Object, Function],
-        default() {
-          return {};
-        }
+        type: [String, Object, Function]
       },
       /**
        * The component options used for a single filter.
@@ -461,7 +458,9 @@
            * @memberof bbn-filter-form
            *
            */
-          component: {},
+          component: {
+            type: [String, Object, Function]
+          },
            /**
            * The component options used for a single filter.
            * @prop {Object} [{}] componentOptions
@@ -508,7 +507,7 @@
              * @data {String} currentComponent
              * @memberof bbn-filter-form
              */
-            currentComponent: this.component || '',
+            currentComponent: this.component || false,
             /**
              * The current component's options.
              * @data {Object} currentComponentOptions

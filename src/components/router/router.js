@@ -2333,12 +2333,24 @@
                     f.reset();
                   });
                 }
+                if (this.urls[this.views[idx].url]
+                  && this.urls[this.views[idx].url].popups
+                  && this.urls[this.views[idx].url].popups.length
+                ) {
+                  this.urls[this.views[idx].url].popups.splice(0);
+                }
                 this.load(url, true, idx);
               }
             });
           }
           else {
             this.$nextTick(() => {
+              if (this.urls[this.views[idx].url]
+                && this.urls[this.views[idx].url].popups
+                && this.urls[this.views[idx].url].popups.length
+              ) {
+                this.urls[this.views[idx].url].popups.splice(0);
+              }
               this.load(url, true, idx);
             });
           }
