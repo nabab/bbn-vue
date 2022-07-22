@@ -1,5 +1,5 @@
 .bbn-gallery {
-  *, *:before, *:after {
+  *:not(#bbn-draggable-current), *:before, *:after {
     -webkit-transition: all 0.1s ease-in;
     -moz-transition: all 0.1s ease-in;
     -o-transition: all 0.1s ease-in;
@@ -58,6 +58,17 @@
     }
     &:hover i.bbn-gallery-button-menu {
       opacity: 1;
+    }
+    .bbn-gallery-item-position {
+      background-color: var(--primary-border);
+      color: var(--primary-text);
+    }
+    &.bbn-droppable-over {
+      border-color: var(--secondary-border) !important;
+      .bbn-gallery-item-position {
+        background-color: var(--secondary-border) !important;
+        color: var(--secondary-text) !important;
+      }
     }
   }
   div.bbn-gallery-pager {
