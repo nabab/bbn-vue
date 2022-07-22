@@ -157,7 +157,11 @@
                   :key="i"
                   :ref="'button' + i"
                   @ready="t => focusable = t"
-                  v-bind="b"/>
+                  v-bind="b"
+                  :class="['bbn-no-radius', {
+                    'bbn-primary': b.preset === 'submit',
+                    'bbn-no-border-right': !currentButtons[i + 1]
+                  }]"/>
     </footer>
   </div>
 </div>

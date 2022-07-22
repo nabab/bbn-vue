@@ -1,0 +1,78 @@
+<div :class="componentClass">
+  <bbn-button icon="nf nf-fa-chevron_up"
+              class="bbn-no-radius bbn-no-border"
+              :disabled="upButtonDisabled"
+              @click="goUp"/>
+  <div class="bbn-wheel-container bbn-rel bbn-bordered-top bbn-bordered-bottom"
+       ref="container">
+    <div class="bbn-overlay">
+      <div class="bbn-middle bbn-wheel-item">
+        <span>&nbsp;</span>
+      </div>
+      <div class="bbn-middle bbn-wheel-item">
+        <span>&nbsp;</span>
+      </div>
+      <div v-if="filteredData.length"
+           :class="['bbn-middle', 'bbn-wheel-item', {'bbn-primary': !isNull(value)}]"
+           ref="bar">
+        <span>&nbsp;</span>
+      </div>
+      <div v-else
+           class="bbn-middle bbn-wheel-item">
+        <span v-text="noData"/>
+      </div>
+      <div class="bbn-middle bbn-wheel-item">
+        <span>&nbsp;</span>
+      </div>
+      <div class="bbn-middle bbn-wheel-item">
+        <span>&nbsp;</span>
+      </div>
+    </div>
+    <bbn-scroll :full-page="true"
+                ref="scroll"
+                axis="y"
+                @ready="scrollReady = true"
+                @scroll="onScroll"
+                @afterscroll="onAfterScroll"
+                :step-y="barElement"
+                :after-scroll-delay="100"
+                :hidden="true">
+      <div class="bbn-middle bbn-wheel-item"
+            ref="top0">
+        <span>&nbsp;</span>
+      </div>
+      <div class="bbn-middle bbn-wheel-item"
+            ref="top1">
+        <span>&nbsp;</span>
+      </div>
+      <div v-for="(o, i) in filteredData"
+          :class="['bbn-middle', 'bbn-wheel-item', {
+            'bbn-p': o.data[sourceValue] !== value,
+            'bbn-primary-text': !isScrolling && (o.data[sourceValue] === value)
+          }]"
+          @click="setValue(o.data[sourceValue])"
+          :ref="'v-' + o.index">
+        <span v-if="o.data[sourceText]"
+              v-text="o.data[sourceText]"
+              :index="o.index"/>
+        <span v-else>&nbsp;</span>
+      </div>
+      <div class="bbn-middle bbn-wheel-item"
+            ref="bottom0">
+        <span>&nbsp;</span>
+      </div>
+      <div class="bbn-middle bbn-wheel-item"
+            ref="bottom1">
+        <span>&nbsp;</span>
+      </div>
+    </bbn-scroll>
+  </div>
+  <bbn-button icon="nf nf-fa-chevron_down"
+              class="bbn-no-radius bbn-no-border"
+              :disabled="downButtonDisabled"
+              @click="goDown"/>
+  <input type="hidden"
+         v-model="value"
+         ref="element"
+         :name="name">
+</div>
