@@ -1,43 +1,50 @@
 <div :class="[componentClass, {'bbn-flex-height': scrollable}]">
   <div v-if="toolbar"
-       class="bbn-l bbn-widget bbn-gallery-toolbar bbn-spadded">
+       class="bbn-l bbn-widget bbn-gallery-toolbar bbn-spadded bbn-vmiddle">
     <component v-if="isObject(toolbar) || isVue(toolbar)"
                :is="toolbar"/>
     <template v-else>
-      <div class="bbn-flex-width">
+      <div class="bbn-flex-width bbn-vmiddle">
         <div class="bbn-flex-fill">
-          <div class="bbn-flex-width">
+          <div class="bbn-flex-width bbn-vmiddle">
             <bbn-button v-if="toolbarButtons && toolbarButtons.length"
                         v-for="(btn, idx) in toolbarButtons"
-                        :disabled="isSelecting"
+                        :disabled="isSelecting || isSorting"
                         v-bind="btn"
                         :key="idx"/>
             <bbn-button :text="_('Select')"
                         icon="nf nf-mdi-vector_selection"
                         @click="setSelecting('selection')"
                         :notext="buttonsNoText"
-                        :disabled="isSelecting"
+                        :disabled="isSelecting || isSorting"
                         v-if="!!selection"/>
             <bbn-button :text="_('Upload')"
                         icon="nf nf-fa-upload"
                         @click="$emit('upload')"
                         v-if="uploadable"
                         :notext="buttonsNoText"
-                        :disabled="isSelecting"/>
+                        :disabled="isSelecting || isSorting"/>
             <bbn-button :text="_('Download')"
                         icon="nf nf-fa-download"
                         @click="setSelecting('download')"
                         v-if="downloadable"
-                        :disabled="isSelecting || !total"
+                        :disabled="isSelecting || !total || isSorting"
                         :notext="buttonsNoText"
                         class="bbn-left-xsspace"/>
             <bbn-button :text="_('Delete')"
                         icon="nf nf-fa-trash"
                         @click="setSelecting('delete')"
                         v-if="deletable"
-                        :disabled="isSelecting || !total"
+                        :disabled="isSelecting || !total || isSorting"
                         :notext="buttonsNoText"
                         class="bbn-left-xsspace"/>
+            <bbn-button :text="_('Order')"
+                        icon="nf nf-fa-sort_numeric_asc"
+                        @click="isSorting = !isSorting"
+                        v-if="sortable && !!uid"
+                        :disabled="isSelecting || !total"
+                        :notext="buttonsNoText"
+                        :class="['bbn-left-xsspace', {'bbn-primary': isSorting}]"/>
             <bbn-button :text="_('Ok')"
                         icon="nf nf-fa-check"
                         @click="emitAction()"
@@ -111,7 +118,7 @@
             <gallery-col v-for="(col, index) in cols"
                         :key="'gallery-col-'+index"
                         :index="index"
-                        :source="currentView.filter((it, i) => {
+                        :source="items.filter((it, i) => {
                             return i % cols === index;
                           })"/>
           </div>

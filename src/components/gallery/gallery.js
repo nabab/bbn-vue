@@ -231,6 +231,9 @@
       pager: {
         type: Boolean,
         default: true
+      },
+      sourceOrder: {
+        type: String
       }
     },
     data() {
@@ -275,8 +278,18 @@
          * @data {Array} [[]] currentSelectedData
          */
         currentSelectedData: [],
+        /**
+         * @data {Boolean} [false] showFloater
+         */
         showFloater: false,
+        /**
+         * @data {Object} [{}] floaterSource
+         */
         floaterSource: {},
+        /**
+         * @data {Boolean} [false] isSorting
+         */
+        isSorting: false
       }
     },
     computed: {
@@ -290,14 +303,21 @@
       },
       /**
        * The data of the current view
-       * @computed viewData
+       * @computed items
        * @return {Array}
        */
-      currentView() {
-        if (this.pageable && this.currentLimit && (!this.isAjax || !this.serverSorting)) {
-          return this.filteredData.slice(this.start, this.start + this.currentLimit);
+      items() {
+        let data = this.filteredData;
+        if (this.sortable && !this.serverSorting) {
+          data = bbn.fn.order(data, 'data.' + this.sourceOrder, 'asc');
         }
-        return this.filteredData;
+        if (this.pageable
+          && this.currentLimit
+          && (!this.isAjax || !this.serverPaging)
+        ) {
+          return data.slice(this.start, this.start + this.currentLimit);
+        }
+        return data;
       },
       /**
        * The min item width
@@ -508,7 +528,10 @@
     :class="['bbn-gallery-item', 'bbn-box', {'bbn-primary': isSelected, 'bbn-p': !!col.gallery.zoomable}]"
     @click="action"
     @contextmenu.prevent.stop="getRef('itemMenu').click()"
-    :style="aStyle">
+    :style="aStyle"
+    v-draggable="!!col.gallery.isSorting && !!col.gallery.uid"
+    v-droppable="!!col.gallery.isSorting && !!col.gallery.uid"
+    @drop="changeOrder">
   <span :class="{
           'bbn-spadded': !loaded,
           'bbn-c': !loaded
@@ -517,11 +540,13 @@
     <img :src="imgSrc"
          @load="loaded = true"
          @error="error = true"
-         :class="['bbn-radius', {
+         :class="{
+           'bbn-radius': !col.gallery.isSorting,
            'bbn-gallery-item-selected': isSelected,
            'bbn-invisible': !loaded
-         }]"
-         :style="imgStyle">
+         }"
+         :style="imgStyle"
+         :draggable="!col.gallery.isSorting">
     <bbn-loadicon class="bbn-gallery-item-loading bbn-c"
                   v-if="!loaded && !error"/>
     <i v-else-if="error && !loaded" class="bbn-red nf nf-mdi-image_off"/>
@@ -529,9 +554,9 @@
           class="bbn-gallery-overlay bbn-widget bbn-ellipsis bbn-radius-bottom bbn-hxspadded"
           v-text="source.data[col.gallery.overlayName]"
           :title="source.data[col.gallery.overlayName]"/>
-    <i v-if="col.gallery.zoomable && loaded && !col.gallery.isSelecting"
+    <i v-if="col.gallery.zoomable && loaded && !col.gallery.isSelecting && !col.gallery.isSorting"
        class="bbn-gallery-zoverlay nf nf-fa-search"/>
-    <bbn-context v-if="!!col.gallery.buttonMenu && loaded && !col.gallery.isSelecting"
+    <bbn-context v-if="!!col.gallery.buttonMenu && loaded && !col.gallery.isSelecting && !col.gallery.isSorting"
                  tag="span"
                  :source="!!col.gallery.buttonMenu
                    ? (isFunction(col.gallery.buttonMenu)
@@ -547,6 +572,9 @@
          ref="itemMenu"/>
     </bbn-context>
   </span>
+  <div v-if="col.gallery.sortable && col.gallery.isSorting && col.gallery.sourceOrder"
+        v-text="source.data[col.gallery.sourceOrder]"
+        class="bbn-b bbn-gallery-item-position bbn-lg"/>
 </a>
             `,
             props: {
@@ -595,7 +623,7 @@
               aStyle() {
                 let style = {
                   margin: `0 0 ${this.col.gallery.rowGap}px 0`,
-                  border: this.isSelected ? '5px dotted' : ''
+                  border: this.isSelected ? '5px dotted' : (this.col.gallery.isSorting ? '5px var(--primary-border) solid' : ''),
                 };
                 if (!this.col.gallery.zoomable) {
                   style.cursor = 'default';
@@ -614,7 +642,8 @@
                   height: this.loaded ? '' : 0,
                   margin: 0,
                   display: 'block',
-                  visibility: this.loaded ? 'visible' : 'hidden'
+                  visibility: this.loaded ? 'visible' : 'hidden',
+                  '-webkit-user-drag': !this.col.gallery.isSorting
                 }
               },
               /**
@@ -698,7 +727,6 @@
                * @fires getPopup
                */
               action(ev) {
-                bbn.fn.log("ACTION");
                 if (this.col.gallery.isSelecting) {
                   let id = !!this.col.gallery.uid ? this.source.data[this.col.gallery.uid] : this.source.index;
                   if (this.isSelected) {
@@ -727,6 +755,21 @@
                 }
                 else {
                   this.col.gallery.$emit('clickItem', this.source);
+                }
+              },
+              changeOrder(ev) {
+                ev.preventDefault();
+                let sortEvent = new Event('sort', {cancelable: true}),
+                    data = ev.detail.from.originalElement.__vue__.source.data,
+                    pos = data[this.col.gallery.sourceOrder],
+                    posNew = this.source.data[this.col.gallery.sourceOrder];
+                this.col.gallery.$emit('sort', sortEvent, {
+                  [data[this.col.gallery.uid]]: posNew,
+                  [this.source.data[this.col.gallery.uid]]: pos
+                });
+                if (!sortEvent.defaultPrevented) {
+                  this.$set(data, this.col.gallery.sourceOrder, posNew);
+                  this.source.data[this.col.gallery.sourceOrder] = pos;
                 }
               }
             }
