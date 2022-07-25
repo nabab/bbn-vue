@@ -577,6 +577,33 @@
       this.$on('dataloaded', () => {
         this._updateIconSituation();
       });
+      this.$once('dataloaded', () => {
+        if (this.selected
+          && this.selected.length
+          && this.uid
+        ) {
+          this.$nextTick(() => {
+            if (this.hasScroll) {
+              let overIdx = bbn.fn.search(this.filteredData, 'data.' + this.uid, this.selected[0]),
+                  scroll = this.closest('bbn-scroll');
+              if (scroll.ready) {
+                this.isOver = false;
+                this.overIdx = overIdx;
+              }
+              else {
+                scroll.$once('ready', () => {
+                  this.$nextTick(() => {
+                    setTimeout(() => {
+                      this.isOver = false;
+                      this.overIdx = overIdx;
+                    }, 50)
+                  })
+                });
+              }
+            }
+          });
+        }
+      });
       if (!this.level) {
         this.rootList = this;
       }

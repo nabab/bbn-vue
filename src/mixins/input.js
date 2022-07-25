@@ -140,6 +140,13 @@
          focused: {
           type: Boolean,
           default: false
+        },
+        /**
+         * @prop {Boolean} [false] ellipsis
+         */
+        ellipsis: {
+          type: Boolean,
+          default: false
         }
       },
       data(){
