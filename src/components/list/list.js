@@ -161,11 +161,20 @@
         type: Array
       },
       /**
+       * The name of the property to be used as icon.
+       * @prop {String} sourceIcon
+       * @memberof listComponent
+       */
+      sourceIcon: {
+        type: String,
+        default: 'icon'
+      },
+      /**
        * The name of the property to be used as action to execute when selected.
        * @prop {String} sourceAction
        * @memberof listComponent
        */
-       sourceAction: {
+      sourceAction: {
         type: [String, Function],
         default: 'action'
       },
@@ -386,14 +395,16 @@
        * Manages the icon of the items.
        * @method _updateIconSituation
        */
-      _updateIconSituation(){
+      _updateIconSituation() {
         let hasIcons = false;
-        bbn.fn.each(this.filteredData, a => {
-          if ( a.data && a.data.icon ){
-            hasIcons = true;
-            return false;
-          }
-        });
+        if (this.sourceIcon) {
+          bbn.fn.each(this.filteredData, a => {
+            if ( a.data && a.data.icon ){
+              hasIcons = true;
+              return false;
+            }
+          });
+        }
         if ( hasIcons !== this.hasIcons ){
           this.hasIcons = hasIcons;
         }

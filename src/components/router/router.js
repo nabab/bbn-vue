@@ -213,7 +213,7 @@
       },
       /**
        * Set it to true if you want to send the variable _baseUrl.
-       * @prop {Boolean} [true] master
+       * @prop {Boolean} [true] postBaseUrl
        */
       postBaseUrl: {
         type: Boolean,
@@ -615,11 +615,29 @@
        * @return {Vue}
        */
       itsMaster(){
+        let r = this;
         if ( this.master ){
-          return this;
+          return r;
         }
 
-        return bbn.fn.getRow(this.parents, {master: true}) || this;
+        if (this.parents.length) {
+          let i = 0;
+          while (this.parents[i] && this.parents[i].isBreadcrumb) {
+            r = this.parents[i];
+            i++;
+            if (r.master) {
+              break;
+            }
+          }
+        }
+        return r;
+      },
+      isBreadcrumbMaster() {
+        if (this.isBreadcrumb) {
+          return this.itsMaster === this;
+        }
+
+        return false;
       },
       /**
        * Returns the bbn-tabs component of this router.
@@ -854,6 +872,19 @@
             }
           }
         );
+      },
+
+      numOutOfPane() {
+        return bbn.fn.filter(this.views, {pane: false}).length;
+      },
+
+      /**
+       * The number of panes displayed
+       * @computed numPanes
+       * @return {Number} 
+       */
+      numPanes() {
+        return this.currentPanes.length;
       },
       /**
        * The views to show in the tabs, without the ones in the pane if splittable
@@ -1217,10 +1248,10 @@
           cp.currentIndex = idx;
         }
 
-        if (this.numRegistered === this.views.length) {
+        //bbn.fn.log(this.numRegistered + " OUT OF " + this.numOutOfPane, cp.currentView.pane)
+        if (this.numRegistered === this.numOutOfPane) {
           this.init(this.getDefaultURL());
         }
-
         this.$emit('registered', cp.url)
       },
       /**
@@ -1363,6 +1394,7 @@
        * @returns {void}
        */
       route(url, force) {
+        //bbn.fn.log("ROUTING ON " + url);
         if (!bbn.fn.isString(url)) {
           throw Error(bbn._('The component bbn-container must have a valid URL defined'));
         }
@@ -1488,7 +1520,7 @@
           // First routing, triggered only once
           if (this.urls[st].currentView.pane) {
             let pane = bbn.fn.getRow(this.currentPanes, {id: this.urls[st].currentView.pane});
-            if (pane) {
+            if (pane && pane.tabs) {
               let idx  = bbn.fn.search(pane.tabs, {url: st});
               /*
               if (pane.tabs[idx] && (pane.selected === idx)) {
@@ -1666,7 +1698,7 @@
           this.$set(this.views[this.selected], 'current', url);
         }
         if (this.urlNavigation) {
-          if ( this.parentContainer ){
+          if (this.parentContainer) {
             this.parentContainer.currentTitle = title + ' < ' + this.parentContainer.title;
             if (!this.parentContainer.isPane) {
               this.parent.changeURL(this.baseURL + url, this.parentContainer.currentTitle, replace);
@@ -1745,7 +1777,6 @@
        * @returns {String}
        */
       parseURL(fullURL){
-        let url = fullURL;
         if ( fullURL === undefined ){
           return '';
         }
@@ -2103,13 +2134,12 @@
        * @emit update
       */
       load(url, force, index){
-        if (url){
+        if (url) {
           this.isLoading = true;
           let finalURL = this.fullBaseURL + url;
           let idx = this.search(url);
           let toAdd = false;
           let view;
-          //bbn.fn.warning("START LOADING FN FOR IDX " + idx + " ON URL " + finalURL);
           if ( idx !== false ){
             //bbn.fn.log("INDEX RETRIEVED BEFORE LOAD: " + idx.toString(), JSON.stringify(this.views[idx], null, 2));
             if ( this.views[idx].loading || (!force && !this.views[idx].load) ){
@@ -2206,12 +2236,21 @@
                 d.current = url;
                 //bbn.fn.warning("CURRENT DEFINED AS " + d.current);
               }
+              else {
+                bbn.fn.warning(url + ' != ' + d.url);
+                let searchIdx = this.search(url);
+                if (searchIdx !== false) {
+                  idx = searchIdx;
+                  this.remove(searchIdx, true);
+                }
+              }
+
               if ( d.data && bbn.fn.numProperties(d.data)){
                 d.source = d.data;
                 delete d.data;
               }
               if ( (d.url !== d.current) && this.urls[d.current] ){
-                bbn.fn.warning("DELETING VIEW CASE.... " + d.current + ' ' + this.urls[d.current].currentIndex, d.url, bbn.fn.search(this.views, {idx: this.urls[d.current].idx}));
+                //bbn.fn.warning("DELETING VIEW CASE.... " + d.current + ' ' + this.urls[d.current].currentIndex, d.url, bbn.fn.search(this.views, {idx: this.urls[d.current].idx}));
                 this.remove(this.urls[d.current].currentIndex, true);
                 callRealInit = false;
                 /*
@@ -2249,8 +2288,14 @@
 
               this.$nextTick(() => {
                 let o = bbn.fn.extend(view || {}, d, {loading: false, load: true, real: false, loaded: true});
+                let searchIndex = this.search(o.url);
+                //bbn.fn.log("Looking for " + o.url);
+                if (searchIndex !== false) {
+                  //bbn.fn.log("FOUND AND REMOVED " + idx);
+                  this.remove(idx, true);
+                }
                 this.add(o, idx);
-                if (o.title) {
+                if (o.title && !o.pane) {
                   this.currentTitle = o.title;
                 }
                 this.$nextTick(() => {
@@ -2862,7 +2907,7 @@
           });
         }
 
-        if (!this.views[idx].pane && !this.parent) {
+        if (!this.views[idx].pane) {
           items.push({
             text: bbn._("Configuration"),
             key: "config",
@@ -3199,15 +3244,16 @@
        * @param {String} url
        */
       unregisterBreadcrumb(bc){
-        let url = bbn.fn.substr(bc.baseURL, 0, bc.baseURL.length - 1);
-        let idx = bbn.fn.search(this.breadcrumbsList, {baseURL: bc.baseURL});
-        if (idx !== -1) {
-          this.breadcrumbsList.splice(idx, 1);
-        }
-        if (this.itsMaster && !this.master) {
-          idx = bbn.fn.search(this.itsMaster.breadcrumbsList, {baseURL: bc.baseURL});
+        if (this.breadcrumbsList) {
+          let idx = bbn.fn.search(this.breadcrumbsList, {baseURL: bc.baseURL});
           if (idx !== -1) {
-            this.itsMaster.breadcrumbsList.splice(idx, 1);
+            this.breadcrumbsList.splice(idx, 1);
+          }
+          if (this.itsMaster && !this.master) {
+            idx = bbn.fn.search(this.itsMaster.breadcrumbsList, {baseURL: bc.baseURL});
+            if (idx !== -1) {
+              this.itsMaster.breadcrumbsList.splice(idx, 1);
+            }
           }
         }
       },
@@ -3279,7 +3325,9 @@
        */
        onResize() {
         this.keepCool(() => {
-          if (this.setResizeMeasures() && this.setContainerMeasures()) {
+          let m = this.setResizeMeasures();
+          let c = this.setContainerMeasures();
+          if (m || c) {
             this.$emit('resize');
           }
           if (this.isVisual && (this.orientation === 'auto') && !this.lockedOrientation) {
@@ -3355,7 +3403,7 @@
         this.close(this.tabsList[idx].idx);
       },
       removePane(paneId) {
-        if (this.splittable) {
+        if (this.splittable && this.currentPanes) {
           let paneIndex = bbn.fn.search(this.currentPanes, {id: paneId});
           let pane = this.currentPanes[paneIndex];
           if (!pane) {
@@ -3412,20 +3460,22 @@
           let paneId = view.pane;
           if (paneId) {
             let pane = bbn.fn.getRow(this.currentPanes, {id: paneId});
-            let idx = bbn.fn.search(pane.tabs, {idx: containerIdx});
-            if (idx > -1) {
-              this.selected = containerIdx;
-              view.pane = false;
-              this.$nextTick(() => {
-                pane.tabs.splice(idx, 1);
-                if (!pane.tabs.length) {
-                  this.removePane(paneId);
-                }
-                else if (pane.selected >= idx) {
-                  pane.selected--;
-                  this.getRef('pane' + pane.id).onResize(true);
-                }
-              })
+            if (pane && pane.tabs) {
+              let idx = bbn.fn.search(pane.tabs, {idx: containerIdx});
+              if (idx > -1) {
+                this.selected = containerIdx;
+                view.pane = false;
+                this.$nextTick(() => {
+                  pane.tabs.splice(idx, 1);
+                  if (!pane.tabs.length) {
+                    this.removePane(paneId);
+                  }
+                  else if (pane.selected >= idx) {
+                    pane.selected--;
+                    this.getRef('pane' + pane.id).onResize(true);
+                  }
+                })
+              }
             }
           }
         }
@@ -3581,7 +3631,7 @@
       });
 
       //Get config from the storage
-      if ( storage && storage.views ){
+      if (storage && storage.views && tmp) {
         bbn.fn.each(storage.views, a => {
           let idx = bbn.fn.search(tmp, {url: a.url});
           if ( idx > -1 ){
@@ -3694,6 +3744,12 @@
       }
     },
     watch: {
+      numVisuals() {
+        this.onResize();
+      },
+      numPanes() {
+        this.onResize();
+      },
       visualShowAll(v) {
         if (v && this.isVisual) {
           this.getRef('visualRouter').focus();
@@ -3798,6 +3854,9 @@
             this.setConfig();
           }
         }
+      },
+      breadcrumb(v) {
+        this.isBreadcrumb = v;
       },
       /**
        * @watch isBreadcrumb
@@ -3979,7 +4038,7 @@
             let k = this.source.key;
             if (this.source.closeAction()){
               let list = this.closest('bbn-list');
-              if (bbn.fn.isVue(list)) {
+              if (bbn.fn.isVue(list) && list.source) {
                 let idx = bbn.fn.search(list.source, {'data.key': k});
                 if (idx > -1) {
                   list.source.splice(idx, 1);

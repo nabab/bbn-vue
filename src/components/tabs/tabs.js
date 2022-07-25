@@ -123,15 +123,18 @@
        * @return {String}
        */
       getFontColor(idx){
-        if (bbn.fn.isNumber(idx)) {
-          if ( this.source[idx] && this.source[idx].fcolor ){
+        if (bbn.fn.isNumber(idx) && this.source[idx]) {
+          if (this.source[idx].fcolor) {
             return this.source[idx].fcolor;
           }
+          /*
           let el = this.getRef('title-' + idx);
-          if ( el ){
-            return window.getComputedStyle(el.$el ? el.$el : el).color;
+          if (el) {
+            return window.getComputedStyle(el.$el ? el.$el : el).color || '';
           }
+          */
         }
+
         return '';
       },
       getMenuFn(idx) {
@@ -146,6 +149,12 @@
           this.selectedBarColor = this.source[v] ? this.getFontColor(v) : null;
         })
       }
+    },
+    updated() {
+      if (!this.selectedBarColor && this.source[this.value]) {
+        this.selectedBarColor = this.getFontColor(this.value);
+      }
+
     },
     /**
      * Sets the initial state of the component.

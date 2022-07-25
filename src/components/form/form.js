@@ -796,7 +796,7 @@
           else {
             bbn.fn.each(all, a => {
               if (a.offsetHeight && a.offsetWidth && !a.disabled && !a.classList.contains('bbn-no')) {
-                bbn.fn.log(a);
+                //bbn.fn.log(a);
                 focusable = a;
                 return false;
               }

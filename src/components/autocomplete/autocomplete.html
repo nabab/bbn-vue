@@ -1,90 +1,98 @@
-<div :class="[componentClass, 'bbn-iblock', 'bbn-textbox', {'bbn-disabled': !!isDisabled}]"
+<div :class="[
+       componentClass,
+       'bbn-iblock',
+       'bbn-textbox',
+       {'bbn-disabled': !!isDisabled}
+     ]"
      @mouseenter="isOverDropdown = true"
      @mouseleave="isOverDropdown = false"
      @focusin="isActive = true"
      @focusout="onFocusOut">
-  <div class="bbn-flex-width">
-    <div class="bbn-flex-fill"
-         @click.stop="click">
-      <bbn-input :disabled="isDisabled"
-                 class="bbn-unselectable bbn-no-border"
-                 :required="required"
-                 :readonly="readonly"
-                 :placeholder="inputIsVisible || isOpened ? '' : placeholder"
-                 autocorrect="off"
-                 autocapitalize="off"
-                 spellcheck="false"
-                 :value="inputIsVisible || isOpened ? filterString : currentText"
-                 @focus="_setInputVisible"
-                 :style="{display: inputIsVisible ? 'none' : 'inline-block'}"/>
-      <bbn-input v-if="!isDisabled && !readonly"
-                 :tabindex="0"
-                 class="bbn-no-border bbn-i"
-                 v-model="filterString"
-                 ref="input"
-                 @focus="selectText"
-                 @blur="inputIsVisible = false"
-                 autocomplete="off"
-                 :required="required"
-                 :readonly="readonly"
-                 @keydown.stop="keydown"
-                 @change="onChange"
-                 autocorrect="off"
-                 autocapitalize="off"
-                 spellcheck="false"
-                 :name="name"
-                 :nullable="isNullable"
-                 :style="{visibility: inputIsVisible ? 'visible' : 'hidden'}"/>
+  <div :class="['bbn-rel', 'bbn-autocomplete-container', 'bbn-flex-width', 'bbn-vmiddle', currentItemCls, {
+    'bbn-autocomplete-container-native': native
+  }]">
+    <div v-if="sourceIcon && hasValue && !!currentItemIcon"
+         class="bbn-left-xspadded">
+      <i :class="currentItemIcon"
+         @click.stop="click" />
     </div>
-    <div class="bbn-list-component-button">
-      <div v-if="isAjax && isLoading"
-           class="bbn-middle">
-        <bbn-loadicon size="1.2rem"
-                      tabindex="-1"/>
-      </div>
-      <bbn-button v-else
-                  :icon="isOpened && !isDisabled && !readonly && filteredData.length ? iconUp : iconDown"
-                  :class="[
-                    'bbn-button-right',
-                    'bbn-no-vborder',
-                    'bbn-m',
-                    {'bbn-disabled': !filteredData.length}
-                  ]"
-                  @click.prevent.stop="click"
-                  tabindex="-1"
-                  :disabled="isDisabled"/>
+    <div v-if="sourceImg && hasValue && !!currentItemImg"
+         class="bbn-left-xspadded">
+      <img src="currentItemImg"
+           @click.stop="click">
     </div>
+    <bbn-input :disabled="isDisabled"
+               class="bbn-no-border bbn-flex-fill bbn-unselectable"
+               :required="required"
+               :readonly="readonly"
+               :placeholder="inputIsVisible || isOpened ? '' : placeholder"
+               autocorrect="off"
+               autocapitalize="off"
+               spellcheck="false"
+               :value="inputIsVisible || isOpened ? filterString : currentText"
+               :button-right="currentIcon"
+               :button-right-disabled="!filteredData.length"
+               :action-right="() => {isOpened = !isOpened}"
+               :autosize="autosize"
+               :nullable="isNullable"
+               @focus="_setInputVisible"
+               v-show="!inputIsVisible"/>
+    <bbn-input v-if="!isDisabled && !readonly"
+               v-show="inputIsVisible"
+                :tabindex="0"
+                class="bbn-no-border bbn-i"
+                v-model="filterString"
+                ref="input"
+                @focus="selectText"
+                @blur="inputIsVisible = false"
+                autocomplete="off"
+                :required="required"
+                :readonly="readonly"
+                @keydown.stop="keydown"
+                @change="onChange"
+                :autosize="autosize"
+                autocorrect="off"
+                autocapitalize="off"
+                spellcheck="false"
+                :name="name"
+                :button-right="currentIcon"
+                :button-right-disabled="!filteredData.length"
+                :action-right="() => {isOpened = !isOpened}"
+                :nullable="isNullable"/>
   </div>
   <input type="hidden"
          v-model="value"
          ref="element"
          :name="name">
-  <bbn-floater v-if="!popup
-                  && filteredData.length
-                  && !isDisabled
-                  && !readonly
-                  && !native
-                  && ready
-                  && isOpened"
-               :element="asMobile ? undefined : $el"
-               :max-height="asMobile ? undefined : maxHeight"
-               :min-width="$el.clientWidth"
-               :width="asMobile ? '100%' : undefined"
-               :height="asMobile ? '100%' : undefined"
-               ref="list"
-               :children="null"
-               :source-value="sourceValue"
-               :source-text="sourceText"
-               :source-url="sourceUrl"
-               :source-icon="sourceIcon"
-               :title="floaterTitle"
-               :buttons="asMobile ? realButtons : []"
-               :item-component="realComponent"
-               @mouseenter="isOverDropdown = true"
-               @mouseleave="isOverDropdown = false"
-               @ready="attachList"
-               @select="select"
-               :selected="value ? [value] : []"
-               @close="isOpened = false"
-               :source="filteredData"/>
+  <bbn-portal v-if="portalSelector"
+              :selector="portalSelector">
+    <bbn-floater v-if="!popup
+                    && filteredData.length
+                    && !isDisabled
+                    && !readonly
+                    && !native
+                    && ready
+                    && isOpened"
+                :element="asMobile ? undefined : $el"
+                :max-height="asMobile ? undefined : maxHeight"
+                :min-width="$el.clientWidth"
+                :width="asMobile ? '100%' : undefined"
+                :height="asMobile ? '100%' : undefined"
+                ref="list"
+                :children="null"
+                :source-value="sourceValue"
+                :source-text="sourceText"
+                :source-url="sourceUrl"
+                :source-icon="sourceIcon"
+                :title="floaterTitle"
+                :buttons="asMobile ? realButtons : []"
+                :item-component="realComponent"
+                @mouseenter="isOverDropdown = true"
+                @mouseleave="isOverDropdown = false"
+                @ready="attachList"
+                @select="select"
+                :selected="value ? [value] : []"
+                @close="isOpened = false"
+                :source="filteredData"/>
+  </bbn-portal>
 </div>

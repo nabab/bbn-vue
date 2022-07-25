@@ -68,10 +68,34 @@
       router: {
         type: Vue,
         required: true
-      }
+      },
+      visual: {
+        type: Boolean,
+        default: true
+      },
+      tabs: {
+        type: Boolean,
+        default: true
+      },
+      breadcrumb: {
+        type: Boolean,
+        default: true
+      },
     },
-    data(){
+    data() {
+      let modes = ['visual', 'tabs', 'breadcrumb'];
+      let num = 0;
+      bbn.fn.each(modes, m => {
+        if (this[m]) {
+          num++;
+        }
+      });
+      if (num < 2) {
+        throw new Error(bbn._("You cannot have more then one mode disabled"))
+      }
+
       return {
+        numModes: num,
         svg: img,
         visualSelected: 2,
         breadcrumbSelected: 2,

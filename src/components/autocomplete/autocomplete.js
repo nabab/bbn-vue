@@ -103,7 +103,6 @@
         if (!this.ready) {
           this.ready = true;
         }
-
       },
       /**
        * Puts the focus on the element.

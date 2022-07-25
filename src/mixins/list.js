@@ -262,7 +262,7 @@
          * @prop {String} sourceAction
          * @memberof listComponent
          */
-         sourceAction: {
+        sourceAction: {
           type: [String, Function]
         },
         /**
@@ -270,7 +270,7 @@
          * @prop {String} sourceUrl
          * @memberof listComponent
          */
-         sourceUrl: {
+        sourceUrl: {
           type: [String, Function]
         },
         /**
@@ -1095,6 +1095,17 @@
                 //a.index = i;
               }
             });
+          }
+        },
+        /**
+         * Deletes all the current data from the view.
+         * @method realDelete
+         * @emit delete
+         * @param {Number} index
+         */
+        emptyData() {
+          if (this.currentData) {
+            this.currentData.splice(0, this.currentData.length);
           }
         },
         /**

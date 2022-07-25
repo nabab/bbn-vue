@@ -129,7 +129,7 @@
         return bbn.fn.isString(this.selector) ? document.querySelector(this.selector) : this.selector;
       },
       mount() {
-        bbn.fn.log("MOUNT PORTAL");
+        //bbn.fn.log("MOUNT PORTAL");
         const target = this.getTargetEl();
         const el = document.createElement('DIV');
         if (this.prepend && target.firstChild) {
@@ -148,7 +148,6 @@
         });
       },
       unmount() {
-        bbn.fn.log(this.container);
         if (this.container) {
           this.container.$destroy();
           //this.target.removeChild(this.container.$el);

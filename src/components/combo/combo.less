@@ -1,24 +1,79 @@
 .bbn-combo{
   display: inline-block;
   box-sizing: border-box;
-  max-height: 1.9rem;
-
   cursor: pointer;
-  > .bbn-flex-width {
-    min-height: 100%;
+  max-height: 1.9rem;
+  &.bbn-combo-autosize {
+    min-width: 4rem;
   }
-  input{
-    width: 100%;
-    font-size: inherit;
+  &:hover{
+    .bbn-combo-select-button:not(.bbn-disabled) {
+      opacity: 1;
+      background: none, linear-gradient(to bottom,var(--effect) 0%,rgba(255,255,255,0) 100%) 50% 50% repeat var(--hover-background);
+    }
   }
-  div{
-    box-sizing: border-box;
-  }
-  .bbn-list-component-button, .bbn-button-right{
-    min-width: 2rem;
+  .bbn-combo-container {
     line-height: normal;
-  }
-  .bbn-button-right {
-    opacity: 0.7;
+    height: 100%;
+    &.bbn-combo-container-native {
+      min-width: 6rem;
+    }
+    .bbn-combo-content{
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+    .bbn-input, select{
+      background-color: transparent;
+      max-width: 100%;
+      width: 100%;
+      //min-width: 4rem;
+      height: 100%;
+      div.bbn-flex-width {
+        height: 100%;
+        box-sizing: border-box;
+        /* 
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        bottom: 0px;
+        right: 0px;
+        overflow: hidden; */
+        
+        .bbn-button{
+          font-size: 125%;
+          line-height: 100%;
+          //important for safari
+          margin: 0;
+        }
+      }
+      input{
+        //important for safari
+        //margin: 0;
+        //color: transparent;
+        cursor: pointer;
+      }
+    }
+    select {
+      min-width: 4rem;
+      font-size: inherit;
+      font-weight: inherit;
+      border-radius: inherit;
+      color: inherit;
+      border: 0;
+      padding: 0.0833rem 0.25rem;
+      padding-right: 2.45rem;
+      box-sizing: border-box;
+      appearance: none;
+      -webkit-appearance: none;
+      z-index: 1;
+    }
+    .bbn-combo-select-button {
+      min-width: 2rem;
+      opacity: 0.7;
+      z-index: 0;
+      min-height: 100%;
+      max-height: 100%;
+    }
   }
 }
