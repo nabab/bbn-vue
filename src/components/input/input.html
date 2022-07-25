@@ -51,7 +51,7 @@
           @mouseenter="over"
           @mouseleave="out"
           :tabindex="tabindex"
-          :class="{'bbn-flex-fill' : (buttonLeft || buttonRight || isNullable)}"
+          :class="{'bbn-flex-fill' : (buttonLeft || buttonRight || isNullable), 'bbn-ellipsis': ellipsis}"
           :size="currentInputSize"
           :inputmode="inputmode"
           :min="min"

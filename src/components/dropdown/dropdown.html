@@ -40,7 +40,8 @@
                :tabindex="isDisabled ? -1 : 0"
                :button-right="currentIcon"
                :autosize="autosize"
-               :readonly="true"/>
+               :readonly="true"
+               :ellipsis="true"/>
     <template v-else>
       <select v-model="currentSelectValue"
               class="bbn-textbox bbn-no-border bbn-flex-fill bbn-p"
