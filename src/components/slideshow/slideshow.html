@@ -44,11 +44,7 @@
           <div :class="[{'bbn-w-100': !fullSlide, 'bbn-overlay': fullSlide}, 'bbn-flex-width']">
             <!--Left arrow-->
             <div v-if="arrows && (arrowsPosition === 'default') && (items.length > 1)"
-                 :class="[
-                  {'bbn-middle': fullSlide},
-                  'bbn-padded',
-                  'bbn-slideshow-arrow-left'
-                 ]"
+                 class="bbn-middle bbn-padded bbn-slideshow-arrow-left"
                  @mouseover="arrowsPreview('prev', true)"
                  @mouseleave="arrowsPreview('prev', false)">
               <i v-show="showArrowLeft"
@@ -144,11 +140,7 @@
             </div>
             <!-- Right arrow-->
             <div v-if="arrows && (arrowsPosition === 'default') && (items.length > 1)"
-                 :class="[
-                  {'bbn-middle': fullSlide},
-                  'bbn-padded',
-                  'bbn-slideshow-arrow-right'
-                 ]"
+                 class="bbn-middle bbn-padded bbn-slideshow-arrow-right"
                  @mouseover="arrowsPreview('next', true)"
                  @mouseleave="arrowsPreview('next', false)">
               <i v-show="showArrowRight"

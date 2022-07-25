@@ -1,0 +1,26 @@
+<div :class="componentClass">
+  <div class="bbn-grid">
+    <bbn-wheel :source="hours"
+               v-model="hour"
+               @ready="hourReady = true"
+               ref="hour"/>
+    <bbn-wheel :source="minsec"
+               v-model="minute"
+               @ready="minuteReady = true"
+               ref="minute"/>
+    <bbn-wheel v-if="showSecond"
+               :source="minsec"
+               v-model="second"
+               @ready="secondReady = true"
+               ref="second"/>
+  </div>
+  <footer v-if="buttons && buttons.length"
+          class="bbn-vmiddle bbn-top-sspace">
+    <bbn-button v-for="(b, i) in currentButtons"
+                :title="b.title || ''"
+                :icon="b.icon"
+                :class="['bbn-no-radius', b.cls]"
+                :key="i"
+                v-bind="b"/>
+  </footer>
+</div>
