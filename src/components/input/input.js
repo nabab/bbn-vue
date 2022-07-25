@@ -85,15 +85,31 @@
        * Called when click the left button. 
        * @prop {Function} actionLeft
        */
-       actionLeft: {
+      actionLeft: {
         type: Function
       },
       /**
        * Called when click the right button. 
        * @prop {Function} actionRight
        */
-       actionRight: {
+      actionRight: {
         type: Function
+      },
+      /**
+       * Sets the left button disabled.
+       * @prop {Boolean} [false] autoHideRight
+       */
+      buttonLeftDisabled: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * Sets the left button disabled.
+       * @prop {Boolean} [false] autoHideRight
+       */
+      buttonRightDisabled: {
+        type: Boolean,
+        default: false
       },
       /**
        * The input's attribute 'pattern'. 

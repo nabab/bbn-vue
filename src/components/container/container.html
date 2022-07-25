@@ -21,10 +21,8 @@
           v-show="isVisible || router.isVisual">
         <!-- The header -->
         <div v-if="!isPane && (visual || fullScreen)"
-            :class="'bbn-transition-bcolor bbn-b bbn-vspadded bbn-flex-width ' + (isVisible ? ' bbn-m' : '')"
+            :class="'bbn-transition-bcolor bbn-b bbn-spadded bbn-flex-width ' + (isVisible ? ' bbn-m' : '')"
             :style="{
-              paddingLeft: '0.5rem',
-              paddingRight: '0.5rem',
               fontSize: isVisible && !router.visualShowAll ? null : '10rem',
               backgroundColor: bcolor || router.bcolor,
               color: fcolor || router.fcolor

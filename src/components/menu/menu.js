@@ -131,7 +131,13 @@
     },
     watch: {
       overIdx(nv, ov) {
-        //bbn.fn.log("changed overIdx from " + ov + " to " + nv);
+        if (nv > -1) {
+          let fl = this.getRef('floater');
+          if (fl) {
+            // Allows to downsize
+            fl.fullResize();
+          }
+        }
       }
     },
     mounted() {

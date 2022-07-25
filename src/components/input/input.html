@@ -21,7 +21,10 @@
             'bbn-button-left',
             'bbn-no-vborder',
             'bbn-m',
-            {'bbn-invisible' : autoHideLeft}
+            {
+              'bbn-invisible': autoHideLeft,
+              'bbn-disabled': buttonLeftDisabled
+            }
           ]"/>
     <div v-if="prefix"
          class="bbn-block bbn-h-100 bbn-vmiddle bbn-nowrap"
@@ -77,7 +80,10 @@
                   'bbn-button-right',
                   'bbn-no-vborder',
                   'bbn-m',
-                  {'bbn-invisible' : autoHideRight}
+                  {
+                    'bbn-invisible' : autoHideRight,
+                    'bbn-disabled': buttonRightDisabled
+                  }
                 ]"/>
   </div>
 </div>

@@ -54,12 +54,11 @@
                    :index="li.index"
                    @remove="remove(idx)"
                    @hook:mounted="selfEmit(true)"
-                   :key="li.key">
-        </component>
+                   :key="li.key"/>
         <component v-else
                   :is="li.data && li.data.url && !li.data[children] ? 'a' : 'span'"
                   @click.prevent="() => {}"
-                  class="bbn-w-100 bbn-hspadded"
+                  class="bbn-w-100"
                   :href="li.data && li.data.url ? li.data.url : null"
                   :key="li.key">
           <span class="space"
@@ -67,8 +66,10 @@
             <i v-if="li.data.selected"
                class="nf nf-fa-check"></i>
           </span>
-          <span class="space" v-if="hasIcons">
-            <i v-if="li.data.icon" :class="li.data.icon"></i>
+          <span v-if="hasIcons"
+                class="space bbn-c bbn-iblock">
+            <i v-if="li.data[sourceIcon]"
+               :class="'bbn-m ' + li.data[sourceIcon]"></i>
           </span>
           <span class="text"
                 v-html="li.data[sourceText]"></span>
@@ -77,7 +78,7 @@
              :class="['bbn-block', 'bbn-top-right', 'bbn-hspadded', 'bbn-h-100', {
               'bbn-vmiddle': (origin === 'floater')
              }]">
-          <i class="nf nf-fa-chevron_right"></i>
+          <i class="nf nf-fa-chevron_right"/>
         </div>
         <bbn-floater v-if="isOpened
                       && children

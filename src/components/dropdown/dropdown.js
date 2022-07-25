@@ -59,13 +59,6 @@
      * @computed currentIcon
      * @return {String}
     */
-    computed: {
-      currentIcon(){
-        return this.isOpened && !this.isDisabled && !this.readonly && this.filteredData.length ?
-            this.iconUp : this.iconDown;
-        //isOpened && !isDisabled && !readonly && filteredData.length ? iconUp : iconDown
-      }
-    },
     beforeMount() {
       if (this.hasStorage) {
         let v = this.getStorage();
@@ -201,10 +194,6 @@
           });
         }
 
-        if ((this.currentText === this.currentTextValue) && this.writable && !this.native) {
-          this.selectText();
-        }
-
         if (!val && this.preload && !this.native) {
           this.getRef('list').currentVisible = true;
         }
@@ -216,7 +205,6 @@
         if (this.ready) {
           if (!newVal && this.value && this.isNullable){
             this.emitInput('');
-            this.selectText();
             this.filterString = '';
           }
           else {

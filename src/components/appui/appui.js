@@ -299,7 +299,9 @@
                 bbn._("Are you sure you want to delete the browser storage?"),
                 () => {
                   window.localStorage.clear();
-                  document.location.reload();
+                  this.$nextTick(() => {
+                    document.location.reload();
+                  });
                 }
               );
             },
@@ -311,8 +313,12 @@
             action: () => {
               bbn.fn.post(this.plugins['appui-core'] + '/service/increase').then(() => {
                 if (window.bbnSW) {
-                  window.bbnSW.unregister();
-                  this.$nextTick(() => window.document.location.reload());
+                  window.bbnSW.unregister().then(() => {
+                    document.location.reload();
+                  });
+                }
+                else {
+                  this.$nextTick(() => document.location.reload());
                 }
               });
             }
@@ -1030,9 +1036,9 @@
             this.$el.scrollLeft = 0;
           }
         }, 1000)
+        this.onResize();
         setTimeout(() => {
           this.ready = true;
-          this.$emit('resize');
           this.opacity = 1;
           setTimeout(() => {
             this._postMessage({

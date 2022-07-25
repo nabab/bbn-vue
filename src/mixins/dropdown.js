@@ -241,8 +241,8 @@
            * @data {Vue} list
            * @memberof dropdownComponent
            */
-          list: null
-
+          list: null,
+          portalSelector: null
         };
       },
       computed: {
@@ -294,6 +294,15 @@
          */
         asMobile(){
           return this.isMobile && this.mobile;
+        },
+        /**
+         * @computed currentIcon
+         * @memberof dropdownComponent
+         * @return {String}
+         */
+         currentIcon(){
+          return this.isOpened && !this.isDisabled && !this.readonly && this.filteredData.length ?
+              this.iconUp : this.iconDown;
         }
       },
       methods: {
@@ -438,6 +447,9 @@
          */
         unfilter(){
           this.currentFilters.conditions.splice(0, this.currentFilters.conditions.length);
+          if (this.currentFilters.logic && (this.currentFilters.logic.toLowerCase() === 'or')) {
+            this.currentFilters.logic = 'AND';
+          }
         },
         /**
          * Gets the buttons list
@@ -483,6 +495,8 @@
         }
       },
       beforeMount() {
+        let ct = this.closest('bbn-container');
+        this.portalSelector = ct ? ct.$el : document.body;
         this.updateButtons();
       },
       watch: {
@@ -509,6 +523,7 @@
             this.closeTimeout = setTimeout(() => {
               let lst = this.getRef('list');
               if ( lst ){
+                bbn.fn.log("SHOULD CLOSE");
                 lst.close(true);
               }
             }, this.closeDelay);

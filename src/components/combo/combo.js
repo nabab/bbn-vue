@@ -109,8 +109,7 @@
        * @fires getRef
        */
       selectText(){
-        let input = this.getRef('input');
-        input.setSelectionRange(0, input.value.length);
+        this.getRef('input').selectText();
       },
       /**
        * Function to do the reset and if the component is open it closes it.
@@ -190,35 +189,29 @@
         }
         clearTimeout(this.filterTimeout);
         if ( this.writing ){
-          this.isOpened = false;
           this.filterTimeout = setTimeout(() => {
             this.filterTimeout = false;
-            if ( this.isActive ){
+            if (this.isActive) {
               if (v && (v.length >= this.minLength)) {
                 this.currentFilters.conditions.splice(0, this.currentFilters.conditions.length ? 1 : 0, {
                   field: this.sourceText,
                   operator: this.searchOperator,
                   value: v
                 });
-                this.$nextTick(() => {
-                  if (!this.isOpened){
-                    this.isOpened = true;
-                  }
-                  else{
-                    let list = this.getRef('list');
-                    list = list ? list.getRef('scroll') : false;
-                    if ( list ){
-                      list.onResize();
-                    }
-                  }
-                });
               }
               else {
                 this.unfilter();
+                this.enptyData();
               }
             }
             this.emitInput(v);
           }, this.delay);
+        }
+      },
+      filteredTotal() {
+        let fl = this.getRef('list');
+        if (this.isOpened && fl) {
+          fl.fullResize();
         }
       }
     }

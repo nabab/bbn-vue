@@ -19,9 +19,9 @@
         <div v-if="nav && isBreadcrumb && !isVisual"
             ref="breadcrumb"
             :class="['bbn-router-breadcrumb', {'bbn-router-breadcrumb-master': master}]">
-          <div v-if="master"
+          <div v-if="isBreadcrumbMaster"
               class="bbn-router-breadcrumb-container">
-            <div class="bbn-transition-bcolor bbn-h-100 bbn-alt bbn-bordered-bottom bbn-no-border-top bbn-no-border-right bbn-vmiddle"
+            <div class="bbn-transition-bcolor bbn-spadded bbn-alt bbn-bordered-bottom bbn-no-border-top bbn-no-border-right bbn-vmiddle"
                 :style="{
                         backgroundColor: getBackgroundColor(selected),
                         color: getFontColor(selected)
@@ -217,7 +217,8 @@
          @click="showRouterCfg = false">
       <div class="bbn-block bbn-background"
            @click.stop>
-        <bbn-router-config :router="this"/>
+        <bbn-router-config :router="this"
+                           :visual="!parent"/>
       </div>
     </div>
   </bbn-floater>

@@ -7,9 +7,7 @@
      @mouseenter="isOverDropdown = true"
      @mouseleave="isOverDropdown = false"
      @focusin="isActive = true"
-     @focusout="onFocusOut"
-     :title="currentText || placeholder || null"
->
+     @focusout="onFocusOut">
   <div :class="['bbn-rel', 'bbn-dropdown-container', 'bbn-flex-width', 'bbn-vmiddle', currentItemCls, {
     'bbn-dropdown-container-native': native
   }]">
@@ -24,12 +22,15 @@
            @click.stop="click">
     </div>
     <bbn-input v-if="!native"
-               :disabled="isDisabled"
+               ref="input"
+               class="bbn-no-border bbn-flex-fill"
+               v-model="notext ? placeholder : currentText"
                @keydown="keydown"
                @keyup="keyup"
                @click.stop="click"
                @paste="paste"
-               ref="input"
+               @clickRightButton="click"
+               :disabled="isDisabled"
                autocorrect="off"
                autocapitalize="off"
                spellcheck="false"
@@ -37,10 +38,7 @@
                :nullable="isNullable"
                :placeholder="placeholder"
                :tabindex="isDisabled ? -1 : 0"
-               v-model="notext ? placeholder : currentText"
                :button-right="currentIcon"
-               @clickRightButton="click"
-               class="bbn-no-border bbn-flex-fill"
                :autosize="autosize"
                :readonly="true"/>
     <template v-else>
@@ -72,13 +70,14 @@
          v-model="value"
          ref="element"
          :name="name">
-  <bbn-portal>
+  <bbn-portal v-if="portalSelector"
+              :selector="portalSelector">
     <bbn-floater v-if="!popup
                   && filteredData.length
                   && !isDisabled
                   && !readonly
-                  && !native
                   && ready
+                  && !native
                   && (isOpened || preload)"
                 v-show="isOpened"
                 :element="asMobile ? undefined : $el"
