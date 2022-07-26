@@ -238,6 +238,14 @@
        */
       sourceOrder: {
         type: String
+      },
+      /**
+       * The data property name of an intem used to open a link
+       * @prop {String} ['link'] sourceAction
+       */
+      sourceAction: {
+        type: String,
+        default: 'link'
       }
     },
     data() {
@@ -757,9 +765,11 @@
                   && (!ev.target.closest('.bbn-floater-list'))
                   && this.col.gallery.zoomable
                 ) {
-                  bbn.fn.log("ACTION 2");
                   this.col.gallery.floaterSource = this.floaterSource;
                   this.col.gallery.showFloater = true;
+                }
+                else if (this.col.gallery.sourceAction && !!this.source.data[this.col.gallery.sourceAction]) {
+                  bbn.fn.link(this.source.data[this.col.gallery.sourceAction]);
                 }
                 else {
                   this.col.gallery.$emit('clickItem', this.source);
