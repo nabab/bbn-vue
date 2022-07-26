@@ -232,6 +232,10 @@
         type: Boolean,
         default: true
       },
+      /**
+       * The data property name of an item used to sort the items
+       * @prop {String} sourceOrder
+       */
       sourceOrder: {
         type: String
       }
@@ -289,7 +293,11 @@
         /**
          * @data {Boolean} [false] isSorting
          */
-        isSorting: false
+        isSorting: false,
+        /**
+         * @data {Number} currentLimit
+         */
+        currentLimit: !!this.pageable ? this.limit : 0
       }
     },
     computed: {
