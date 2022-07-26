@@ -1,4 +1,8 @@
-<div :class="[componentClass, 'bbn-middle', {'bbn-w-100': !fullSlide, 'bbn-overlay': fullSlide}]">
+<div :class="[componentClass, 'bbn-middle', {'bbn-w-100': !fullSlide, 'bbn-overlay': fullSlide}]"
+     @keydown.right="next"
+     @keyup.left="prev"
+     tabindex="0"
+     v-focused>
   <div v-if="ready"
        :class="{'bbn-w-100': !fullSlide, 'bbn-overlay': fullSlide, 'bbn-padded' : !fullSlide}">
     <!-- position aboslute -->
