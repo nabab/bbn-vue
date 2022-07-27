@@ -641,7 +641,7 @@
                   margin: `0 0 ${this.col.gallery.rowGap}px 0`,
                   border: this.isSelected ? '5px dotted' : (this.col.gallery.isSorting ? '5px var(--primary-border) solid' : ''),
                 };
-                if (!this.col.gallery.zoomable) {
+                if (!this.col.gallery.zoomable && !this.hasLink) {
                   style.cursor = 'default';
                 }
                 return style;
@@ -727,6 +727,10 @@
                   slide: this.source.index,
                   preview: this.col.gallery.preview
                 }
+              },
+              hasLink() {
+                return this.col.gallery.sourceAction
+                  && !!this.source.data[this.col.gallery.sourceAction];
               }
             },
             methods: {
@@ -768,7 +772,7 @@
                   this.col.gallery.floaterSource = this.floaterSource;
                   this.col.gallery.showFloater = true;
                 }
-                else if (this.col.gallery.sourceAction && !!this.source.data[this.col.gallery.sourceAction]) {
+                else if (this.hasLink) {
                   bbn.fn.link(this.source.data[this.col.gallery.sourceAction]);
                 }
                 else {
