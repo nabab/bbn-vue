@@ -278,13 +278,13 @@
              :z-index="13"/>
   <!-- BBOKMARKS -->
   <div v-show="plugins['appui-bookmark'] && showBookmarks">
-
+    <div class="bbn-overlay bbn-modal"
+         v-if="showBookmarks"/>
     <bbn-floater component="appui-bookmark-list"
                  :source="plugins['appui-bookmark'] + '/bookmarks'"
                  v-show="showBookmarks"
                  width="90%"
                  height="90%"
-                 :modal="true"
                  @ready="bookmarksLoaded = true"
                  @close="$event.preventDefault()"
                  :closable="true"
