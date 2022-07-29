@@ -276,6 +276,23 @@
              :source="popups"
              ref="popup"
              :z-index="13"/>
+  <!-- BBOKMARKS -->
+  <div v-show="plugins['appui-bookmark'] && showBookmarks">
+
+    <bbn-floater component="appui-bookmark-list"
+                 :source="plugins['appui-bookmark'] + '/bookmarks'"
+                 v-show="showBookmarks"
+                 width="100%"
+                 @ready="bookmarksLoaded = true"
+                 @close="$event.preventDefault()"
+                 :closable="true"
+                 :title="false"
+                 height="100%"
+                 :filterable="true"
+                 :pageable="true"
+                 :url="plugins['appui-bookmark'] + '/actions'"
+                 :search="true"/>
+  </div>
   <!-- SEARCH -->
   <div v-if="searchOn && plugins['appui-search']"
        class="bbn-overlay bbn-secondary"
