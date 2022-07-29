@@ -257,7 +257,9 @@
         isDesktop: !isTablet && !isMobile,
         emptyPostIt: emptyPostIt,
         postits: postits,
-        showPostIt: false
+        showPostIt: false,
+        showBookmarks: false,
+        bookmarksLoaded: false
       }
     },
     computed: {
@@ -761,6 +763,9 @@
         switch (key) {
           case 'f':
             this.searchOn = true;
+            break;
+          case 'b':
+            this.showBookmarks = true;
             break;
           case 'g':
             let loadbar = this.getRef('loading');
