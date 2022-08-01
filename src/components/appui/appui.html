@@ -35,8 +35,9 @@
                @keydown.enter="toggleMenu"
                @keydown.space="toggleMenu"
                @click.prevent.stop="toggleMenu"
-               class="bbn-c bbn-p bbn-padded">
-            <i ref="icon" class="nf nf-fa-bars bbn-xxxl"> </i>
+               class="bbn-c bbn-p bbn-hpadded">
+            <i ref="icon"
+               class="nf nf-mdi-menu bbn-xxxl"/>
           </div>
         </div>
         <!-- LOGO -->
@@ -283,6 +284,7 @@
     <bbn-floater component="appui-bookmark-list"
                  :source="plugins['appui-bookmark'] + '/bookmarks'"
                  v-show="showBookmarks"
+                 v-if="showBookmarks || bookmarksLoaded"
                  class="bbn-radius"
                  width="90%"
                  height="90%"

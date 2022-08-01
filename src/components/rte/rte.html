@@ -36,16 +36,22 @@
 				 @mouseup.stop="getRef('element').focus()">
 			<component :is="currentHeight ? 'bbn-scroll' : 'div'">
 				<div class="bbn-spadded bbn-rte-element"
-							style="min-height: max(4rem, 100%)"
-							contenteditable="true"
-							ref="element"
-							@input="rteOnInput"
-							@keydown="rteOnKeydown"
-							@keyup="rteOnClick"
-							@click="rteOnClick"/>
-				<div class="bbn-hidden">
+						 style="min-height: max(4rem, 100%)"
+						 contenteditable="true"
+						 ref="element"
+						 @input="rteOnInput"
+						 @keydown="rteOnKeydown"
+						 @keyup="rteOnClick"
+						 @click="rteOnClick"/>
+				<div class="bbn-hidden"
+				     ref="content">
 					<slot></slot>
 				</div>
+				<bbn-code v-model="currentValue"
+				          v-if="showSource"
+									class="bbn-overlay"
+									style="min-height: max(4rem, 100%)"
+									mode="html"/>
 				<textarea :required="required"
 									:readonly="readonly"
 									ref="input"
