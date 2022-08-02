@@ -126,7 +126,7 @@
     data(){
       let currentUnit = this.unit;
       if (!!this.value) {
-        let match = this.value.toString().match(/\D+/);
+        let match = this.value.toString().match(/(?!^\-{0,1}\d+)\D+/);
         if (!!match) {
           currentUnit = match[0];
         }
