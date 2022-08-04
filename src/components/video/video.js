@@ -136,6 +136,14 @@
        */
       cls: {
         type: String
+      },
+      /**
+       * Force an aspect ratio
+       * @prop {String} aspectRatio
+       */
+      aspectRatio: {
+        type: String,
+        validator: ar => ['1/1', '16/9', '4/3', '3/2', '8/5'].includes(ar)
       }
     },
     data() {

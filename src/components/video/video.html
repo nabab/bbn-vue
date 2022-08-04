@@ -1,7 +1,8 @@
 <div :class="[componentClass, 'bbn-flex-height', {'bbn-box': skin}]"
      :style="{
        width: width,
-       height: height
+       height: height,
+       aspectRatio: aspectRatio
      }">
   <div v-if="title && (titlePosition === 'top')"
        :class="['bbn-c', {
