@@ -60,7 +60,7 @@
             paddingLeft: prefix ? 0 : null
           }">
     <bbn-loadicon v-if="loading"/>
-    <div v-else-if="isNullable && !readonly && !isDisabled"
+    <div v-else-if="isNullable && (!readonly || forceNullable) && !isDisabled"
          class="bbn-input-nullable-container bbn-vmiddle"
          :style="{
            positions: 'absolute',

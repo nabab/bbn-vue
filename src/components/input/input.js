@@ -137,8 +137,19 @@
       max: {
         type: [String, Number]
       },
+      /**
+       * @prop {String} prefix
+       */
       prefix: {
         type: String
+      },
+      /**
+       * Forces the input to show the nullable icon even if it is in the read-only state
+       * @prop {Boolean} [false] forceNullable
+       */
+      forceNullable: {
+        type: Boolean,
+        default: false
       }
     },
     data(){

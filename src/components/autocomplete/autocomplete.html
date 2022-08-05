@@ -35,6 +35,7 @@
                :action-right="() => {isOpened = !isOpened}"
                :autosize="autosize"
                :nullable="isNullable"
+               :force-nullable="isNullable"
                @focus="_setInputVisible"
                v-show="!inputIsVisible"/>
     <bbn-input v-if="!isDisabled && !readonly"
@@ -58,7 +59,8 @@
                 :button-right="currentIcon"
                 :button-right-disabled="!filteredData.length"
                 :action-right="() => {isOpened = !isOpened}"
-                :nullable="isNullable"/>
+                :nullable="isNullable"
+                :force-nullable="isNullable"/>
   </div>
   <input type="hidden"
          v-model="value"
