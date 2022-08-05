@@ -188,7 +188,12 @@
        * @fires alert
        */
       onSubmit(d){
-        if ( d == 1 ){
+        let ev = new Event('aftersubmit', {cancelable: true});
+        this.$emit('aftersubmit', ev, d, this.currentMode, this);
+        if (ev.defaultPrevented) {
+          return;
+        }
+        if (d == 1) {
           window.document.location.href = bbn.env.path;
         }
         else if (d.success){

@@ -191,9 +191,19 @@
         type: Boolean,
         default: false
       },
+      /**
+       * @prop {String|Number} ['50px'] minimumPreview
+       */
       minimumPreview: {
         type: [String, Number],
         default: '50px'
+      },
+      /**
+       * @prop {Boolean} [false] itemClickable
+       */
+      itemClickable: {
+        type: Boolean,
+        default: false
       }
     },
     data(){
