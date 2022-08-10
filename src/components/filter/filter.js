@@ -27,6 +27,7 @@
             }
             return 'number';
           case 'boolean':
+          case 'bool':
             return 'boolean';
           case 'float':
           case 'decimal':

@@ -96,6 +96,12 @@
               o.componentOptions.source = col.source;
               o.componentOptions.placeholder = bbn._('Choose');
             }
+            else if ( col.type === 'boolean' ){
+              o.type = 'enums';
+              o.component = 'bbn-dropdown';
+              o.componentOptions.source = [0, 1];
+              o.componentOptions.placeholder = bbn._('Choose');
+            }
             else if ( col.type ){
               switch ( col.type ){
                 case 'number':
